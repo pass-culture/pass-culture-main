@@ -1,5 +1,6 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_a11y.scss" as a11y;
 
 /**
  * TODO (mdesquilbet-pass, 2026-02-16): clean tmp style
@@ -72,6 +73,6 @@
   gap: var(--size-spacing-xl);
 }
 
-.is-hidden {
-  display: none;
+.visually-hidden {
+  @include a11y.visually-hidden;
 }

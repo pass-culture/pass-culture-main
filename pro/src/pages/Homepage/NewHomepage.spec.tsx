@@ -68,7 +68,7 @@ describe('NewHomepage', () => {
         })
 
         if (shouldDisplayTabs) {
-          expect(screen.queryByRole('tablist')).toBeVisible()
+          expect(screen.getByRole('tablist')).toBeVisible()
         } else {
           expect(screen.queryByRole('tablist')).not.toBeInTheDocument()
         }
@@ -106,16 +106,20 @@ describe('NewHomepage', () => {
       })
 
       await user.click(screen.getByRole('tab', { name: /Collectif/ }))
-      expect(screen.getByRole('tabpanel', { name: /Collectif/ })).toBeVisible()
       expect(
-        screen.queryByRole('tabpanel', { name: /Individuel/ })
+        screen.getByRole('tabpanel', { description: /part collective/ })
+      ).toBeVisible()
+      expect(
+        screen.queryByRole('tabpanel', { description: /part individuelle/ })
       ).not.toBeInTheDocument()
 
       await user.click(screen.getByRole('tab', { name: /Individuel/ }))
       expect(
-        screen.queryByRole('tabpanel', { name: /Collectif/ })
+        screen.queryByRole('tabpanel', { description: /part collective/ })
       ).not.toBeInTheDocument()
-      expect(screen.getByRole('tabpanel', { name: /Individuel/ })).toBeVisible()
+      expect(
+        screen.getByRole('tabpanel', { description: /part individuelle/ })
+      ).toBeVisible()
     })
 
     describe('initial tab', () => {
@@ -138,11 +142,11 @@ describe('NewHomepage', () => {
 
         expect(utils.getInitialTab).toHaveBeenCalledOnce()
         expect(
-          screen.getByRole('tabpanel', { name: /Individuel/ })
+          screen.getByRole('tabpanel', { description: /part individuelle/ })
         ).toBeVisible()
 
         // It's not the Homepage component's role to save the first computed value
-        // it's done in tabManagement module
+        // it's done in getInitialTab function
         expect(utils.onNewTabSelected).not.toHaveBeenCalled()
 
         await user.click(screen.getByRole('tab', { name: /Collectif/ }))
