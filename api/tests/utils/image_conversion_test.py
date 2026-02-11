@@ -1,15 +1,22 @@
 import io
 import pathlib
+from unittest.mock import patch
 
 import PIL
+import PIL.Image
+import PIL.ImageChops
 import pytest
 
+from pcapi.utils.image_conversion import MAX_THUMB_WIDTH
 from pcapi.utils.image_conversion import CropParams
 from pcapi.utils.image_conversion import ImageRatio
 from pcapi.utils.image_conversion import ImageRatioError
+from pcapi.utils.image_conversion import _check_ratio
 from pcapi.utils.image_conversion import _crop_image
+from pcapi.utils.image_conversion import _post_process_image
 from pcapi.utils.image_conversion import _pre_process_image
 from pcapi.utils.image_conversion import _resize_image
+from pcapi.utils.image_conversion import _shrink_image
 from pcapi.utils.image_conversion import get_crop_params
 from pcapi.utils.image_conversion import process_original_image
 from pcapi.utils.image_conversion import standardize_image
@@ -20,117 +27,239 @@ import tests
 IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 
-class ImageConversionTest:
-    def when_image_is_correctly_cropped(self):
-        # given
-        crop_origin_x = 0.3288307188857965
-        crop_origin_y = 0.14834245742092478
-        crop_rect_height = 0.7299270072992701
-        crop_rect_width = 0.7299270072992701
-
+class CropImageTest:
+    def test_correctly_crops_image(self):
         image_as_bytes = (IMAGES_DIR / "mosaique.png").read_bytes()
         raw_image = PIL.Image.open(io.BytesIO(image_as_bytes)).convert("RGB")
-
         expected_image_as_bytes = (IMAGES_DIR / "mosaique_cropped.png").read_bytes()
         expected_image = PIL.Image.open(io.BytesIO(expected_image_as_bytes)).convert("RGB")
 
-        # when
-        cropped_image = _crop_image(crop_origin_x, crop_origin_y, crop_rect_height, crop_rect_width, raw_image)
+        cropped_image = _crop_image(
+            0.3288307188857965, 0.14834245742092478, 0.7299270072992701, 0.7299270072992701, raw_image
+        )
 
-        # then
         difference = PIL.ImageChops.difference(cropped_image, expected_image)
         assert difference.getbbox() is None
 
-    def when_image_has_an_original_orientation(self):
-        # given
+
+class PreProcessImageTest:
+    def test_removes_exif_orientation(self):
         image_as_bytes = (IMAGES_DIR / "image_with_exif_orientation.jpeg").read_bytes()
         expected_image = PIL.Image.open(io.BytesIO(image_as_bytes)).convert("RGB")
-
         exif_info = expected_image.getexif()
-        # They exif tag 274 is the image orientation
         assert 274 in exif_info
 
-        # when
         transposed_image = _pre_process_image(image_as_bytes)
 
-        # then
         exif_info = transposed_image.getexif()
         assert 274 not in exif_info
 
-    def when_resize_image_that_have_width_less_than_max_width(self):
-        # given
-        image_as_bytes = (IMAGES_DIR / "mosaique_cropped.png").read_bytes()
-        expected_image = PIL.Image.open(io.BytesIO(image_as_bytes)).convert("RGB")
-
-        # when
-        resized_image = _resize_image(expected_image, ratio=ImageRatio.PORTRAIT)
-
-        # then
-        difference = PIL.ImageChops.difference(resized_image, expected_image)
-        assert difference.getbbox() is None
-
-    def test_image_ratio_portrait(self):
+    def test_handles_truncated_image(self):
         image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
 
-        standardized_image = standardize_image(image_as_bytes, ratio=ImageRatio.PORTRAIT)
+        result = _pre_process_image(image_as_bytes[:-25])
 
-        result_image = PIL.Image.open(io.BytesIO(standardized_image)).convert("RGB")
-        assert (result_image.width / result_image.height) == pytest.approx(ImageRatio.PORTRAIT.value, 0.01)
+        assert result.size == (1786, 1785)
 
-    def test_image_ratio_landscape(self):
+    def test_converts_to_rgb(self):
         image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
 
-        standardized_image = standardize_image(image_as_bytes, ratio=ImageRatio.LANDSCAPE)
+        result = _pre_process_image(image_as_bytes)
 
-        result_image = PIL.Image.open(io.BytesIO(standardized_image)).convert("RGB")
-        assert (result_image.width / result_image.height) == pytest.approx(ImageRatio.LANDSCAPE.value, 0.01)
+        assert result.mode == "RGB"
 
-    def test_crop_with_incorrect_ratio(self):
-        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+
+class ShrinkImageTest:
+    def test_shrinks_large_image(self):
+        image = PIL.Image.new("RGB", (1500, 1000), "red")
+
+        result = _shrink_image(image)
+
+        assert result.width == MAX_THUMB_WIDTH
+
+    def test_does_not_shrink_small_image(self):
+        image = PIL.Image.new("RGB", (400, 300), "red")
+
+        result = _shrink_image(image)
+
+        assert result.size == (400, 300)
+
+    def test_preserves_ratio(self):
+        image = PIL.Image.new("RGB", (2000, 1000), "red")
+        original_ratio = image.width / image.height
+
+        result = _shrink_image(image)
+
+        assert (result.width / result.height) == original_ratio
+
+
+class ResizeImageTest:
+    def test_resizes_large_landscape_image(self):
+        image = PIL.Image.new("RGB", (1500, 1000), "red")
+
+        result = _resize_image(image, ImageRatio.LANDSCAPE)
+
+        assert result.width == MAX_THUMB_WIDTH
+        assert result.height == 500
+
+    def test_resizes_large_portrait_image(self):
+        image = PIL.Image.new("RGB", (1000, 1500), "red")
+
+        result = _resize_image(image, ImageRatio.PORTRAIT)
+
+        assert result.width == MAX_THUMB_WIDTH
+        assert result.height == 1125
+
+    def test_does_not_resize_small_image(self):
+        image = PIL.Image.new("RGB", (400, 600), "red")
+
+        result = _resize_image(image, ImageRatio.PORTRAIT)
+
+        assert result.size == (400, 600)
+
+
+class CheckRatioTest:
+    def test_accepts_correct_portrait_ratio(self):
+        image = PIL.Image.new("RGB", (200, 300), "red")
+
+        result = _check_ratio(image, ImageRatio.PORTRAIT)
+
+        assert result is image
+
+    def test_accepts_correct_landscape_ratio(self):
+        image = PIL.Image.new("RGB", (300, 200), "red")
+
+        result = _check_ratio(image, ImageRatio.LANDSCAPE)
+
+        assert result is image
+
+    def test_raises_on_incorrect_ratio(self):
+        image = PIL.Image.new("RGB", (100, 100), "red")
 
         with pytest.raises(ImageRatioError):
-            crop_params = CropParams(height_crop_percent=0.3, width_crop_percent=0.3)
-            standardize_image(image_as_bytes, crop_params=crop_params, ratio=ImageRatio.LANDSCAPE)
+            _check_ratio(image, ImageRatio.LANDSCAPE)
 
-    def test_image_shrink_with_same_ratio(self):
-        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
-        original_image = PIL.Image.open(io.BytesIO(image_as_bytes))
 
-        expected_ratio = original_image.width / original_image.height
+class PostProcessImageTest:
+    def test_returns_jpeg_bytes(self):
+        image = PIL.Image.new("RGB", (100, 100), "red")
 
-        standardized_image = process_original_image(image_as_bytes, resize=True)
+        result = _post_process_image(image)
 
-        result_image = PIL.Image.open(io.BytesIO(standardized_image))
+        result_image = PIL.Image.open(io.BytesIO(result))
+        assert result_image.format == "JPEG"
 
-        assert result_image.width < original_image.width
-        assert result_image.height < original_image.height
-        assert (result_image.width / result_image.height) == pytest.approx(expected_ratio, 0.01)
 
-    def test_do_not_raise_error_when_image_is_truncated(self):
-        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
-        assert _pre_process_image(image_as_bytes[:-25]).size == (1786, 1785)
+class StandardizeImageTest:
+    @patch("pcapi.utils.image_conversion._post_process_image")
+    @patch("pcapi.utils.image_conversion._check_ratio")
+    @patch("pcapi.utils.image_conversion._resize_image")
+    @patch("pcapi.utils.image_conversion._crop_image")
+    @patch("pcapi.utils.image_conversion._pre_process_image")
+    def test_standardize_portrait_image(
+        self, mock_pre_process, mock_crop, mock_resize, mock_check_ratio, mock_post_process
+    ):
+        mock_pre_process.return_value = b"pre-processed-image"
+        mock_crop.return_value = b"cropped-image"
+        mock_resize.return_value = b"resized-image"
+        mock_check_ratio.return_value = b"validated-image"
+        mock_post_process.return_value = b"post-processed-image"
 
-    def test_get_crop_params(self):
+        result = standardize_image(b"fake-image", ratio=ImageRatio.PORTRAIT)
+
+        assert result == b"post-processed-image"
+        mock_pre_process.assert_called_once_with(b"fake-image")
+        mock_crop.assert_called_once_with(0.0, 0.0, 1.0, 1.0, b"pre-processed-image")
+        mock_resize.assert_called_once_with(b"cropped-image", ImageRatio.PORTRAIT)
+        mock_check_ratio.assert_called_once_with(b"resized-image", ImageRatio.PORTRAIT)
+        mock_post_process.assert_called_once_with(b"validated-image")
+
+    @patch("pcapi.utils.image_conversion._post_process_image")
+    @patch("pcapi.utils.image_conversion._check_ratio")
+    @patch("pcapi.utils.image_conversion._resize_image")
+    @patch("pcapi.utils.image_conversion._crop_image")
+    @patch("pcapi.utils.image_conversion._pre_process_image")
+    def test_standardize_landscape_image_with_crop_params(
+        self, mock_pre_process, mock_crop, mock_resize, mock_check_ratio, mock_post_process
+    ):
+        mock_pre_process.return_value = b"pre-processed-image"
+        mock_crop.return_value = b"cropped-image"
+        mock_resize.return_value = b"resized-image"
+        mock_check_ratio.return_value = b"validated-image"
+        mock_post_process.return_value = b"post-processed-image"
+        crop_params = CropParams(
+            x_crop_percent=0.1, y_crop_percent=0.2, height_crop_percent=0.8, width_crop_percent=0.7
+        )
+
+        result = standardize_image(b"fake-image", ratio=ImageRatio.LANDSCAPE, crop_params=crop_params)
+
+        assert result == b"post-processed-image"
+        mock_pre_process.assert_called_once_with(b"fake-image")
+        mock_crop.assert_called_once_with(0.1, 0.2, 0.8, 0.7, b"pre-processed-image")
+        mock_resize.assert_called_once_with(b"cropped-image", ImageRatio.LANDSCAPE)
+        mock_check_ratio.assert_called_once_with(b"resized-image", ImageRatio.LANDSCAPE)
+        mock_post_process.assert_called_once_with(b"validated-image")
+
+
+class ProcessOriginalImageTest:
+    @patch("pcapi.utils.image_conversion._post_process_image")
+    @patch("pcapi.utils.image_conversion._shrink_image")
+    @patch("pcapi.utils.image_conversion._pre_process_image")
+    def test_process_original_image_with_resize(self, mock_pre_process, mock_shrink, mock_post_process):
+        mock_pre_process.return_value = b"pre-processed-image"
+        mock_shrink.return_value = b"shrunk-image"
+        mock_post_process.return_value = b"post-processed-image"
+
+        result = process_original_image(b"fake-image", resize=True)
+
+        assert result == b"post-processed-image"
+        mock_pre_process.assert_called_once_with(b"fake-image")
+        mock_shrink.assert_called_once_with(b"pre-processed-image")
+        mock_post_process.assert_called_once_with(b"shrunk-image")
+
+    @patch("pcapi.utils.image_conversion._post_process_image")
+    @patch("pcapi.utils.image_conversion._shrink_image")
+    @patch("pcapi.utils.image_conversion._pre_process_image")
+    def test_process_original_image_without_resize(self, mock_pre_process, mock_shrink, mock_post_process):
+        mock_pre_process.return_value = b"pre-processed-image"
+        mock_post_process.return_value = b"post-processed-image"
+
+        result = process_original_image(b"fake-image")
+
+        assert result == b"post-processed-image"
+        mock_shrink.assert_not_called()
+        mock_post_process.assert_called_once_with(b"pre-processed-image")
+
+
+class GetCropParamsTest:
+    def test_landscape_wider_image(self):
         crop_params = get_crop_params(400, 200, ImageRatio.LANDSCAPE)
-        assert crop_params.y_crop_percent == 0
+
         assert crop_params.x_crop_percent == 0.125
-        assert crop_params.height_crop_percent == 1
-        assert crop_params.width_crop_percent == 0.75
-
-        crop_params = get_crop_params(300, 1000, ImageRatio.LANDSCAPE)
-        assert crop_params.y_crop_percent == 0.4
-        assert crop_params.x_crop_percent == 0
-        assert crop_params.height_crop_percent == 0.2
-        assert crop_params.width_crop_percent == 1
-
-        crop_params = get_crop_params(200, 400, ImageRatio.PORTRAIT)
-        assert crop_params.y_crop_percent == 0.125
-        assert crop_params.x_crop_percent == 0
-        assert crop_params.height_crop_percent == 0.75
-        assert crop_params.width_crop_percent == 1
-
-        crop_params = get_crop_params(1000, 300, ImageRatio.PORTRAIT)
         assert crop_params.y_crop_percent == 0
-        assert crop_params.x_crop_percent == 0.4
+        assert crop_params.width_crop_percent == 0.75
         assert crop_params.height_crop_percent == 1
+
+    def test_landscape_taller_image(self):
+        crop_params = get_crop_params(300, 1000, ImageRatio.LANDSCAPE)
+
+        assert crop_params.x_crop_percent == 0
+        assert crop_params.y_crop_percent == 0.4
+        assert crop_params.width_crop_percent == 1
+        assert crop_params.height_crop_percent == 0.2
+
+    def test_portrait_taller_image(self):
+        crop_params = get_crop_params(200, 400, ImageRatio.PORTRAIT)
+
+        assert crop_params.x_crop_percent == 0
+        assert crop_params.y_crop_percent == 0.125
+        assert crop_params.width_crop_percent == 1
+        assert crop_params.height_crop_percent == 0.75
+
+    def test_portrait_wider_image(self):
+        crop_params = get_crop_params(1000, 300, ImageRatio.PORTRAIT)
+
+        assert crop_params.x_crop_percent == 0.4
+        assert crop_params.y_crop_percent == 0
         assert crop_params.width_crop_percent == 0.2
+        assert crop_params.height_crop_percent == 1
