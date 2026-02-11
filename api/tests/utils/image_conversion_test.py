@@ -9,7 +9,7 @@ from pcapi.utils.image_conversion import ImageRatio
 from pcapi.utils.image_conversion import ImageRatioError
 from pcapi.utils.image_conversion import _crop_image
 from pcapi.utils.image_conversion import _pre_process_image
-from pcapi.utils.image_conversion import _resize_image
+from pcapi.utils.image_conversion import get_crop_params
 from pcapi.utils.image_conversion import process_original_image
 from pcapi.utils.image_conversion import standardize_image
 
@@ -108,3 +108,28 @@ class ImageConversionTest:
     def test_do_not_raise_error_when_image_is_truncated(self):
         image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         assert _pre_process_image(image_as_bytes[:-25]).size == (1786, 1785)
+
+    def test_get_crop_params(self):
+        crop_params = get_crop_params(400, 200, ImageRatio.LANDSCAPE)
+        assert crop_params.y_crop_percent == 0
+        assert crop_params.x_crop_percent == 0.125
+        assert crop_params.height_crop_percent == 1
+        assert crop_params.width_crop_percent == 0.75
+
+        crop_params = get_crop_params(300, 1000, ImageRatio.LANDSCAPE)
+        assert crop_params.y_crop_percent == 0.4
+        assert crop_params.x_crop_percent == 0
+        assert crop_params.height_crop_percent == 0.2
+        assert crop_params.width_crop_percent == 1
+
+        crop_params = get_crop_params(200, 400, ImageRatio.PORTRAIT)
+        assert crop_params.y_crop_percent == 0.125
+        assert crop_params.x_crop_percent == 0
+        assert crop_params.height_crop_percent == 0.75
+        assert crop_params.width_crop_percent == 1
+
+        crop_params = get_crop_params(1000, 300, ImageRatio.PORTRAIT)
+        assert crop_params.y_crop_percent == 0
+        assert crop_params.x_crop_percent == 0.4
+        assert crop_params.height_crop_percent == 1
+        assert crop_params.width_crop_percent == 0.2
