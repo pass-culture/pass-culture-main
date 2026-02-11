@@ -7,12 +7,13 @@ import {
   type SubcategoryResponseModel,
 } from '@/apiClient/v1'
 import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
+import { isOfferProductBased } from '@/commons/core/Offers/utils/typology'
 
 function stringifyArtist(
   artistOfferLinks: GetIndividualOfferWithAddressResponseModel['artistOfferLinks'],
   filter: ArtistType
 ) {
-  if (!artistOfferLinks || artistOfferLinks.length < 1) {
+  if (artistOfferLinks.length < 1) {
     return
   }
 
@@ -29,7 +30,7 @@ export function serializeArtist(
   defaultValue: string,
   artistType: ArtistType
 ) {
-  const isProductBased = !!offer.productId
+  const isProductBased = isOfferProductBased(offer)
 
   if (areArtistsEnabled && !isProductBased) {
     return stringifyArtist(offer.artistOfferLinks, artistType) ?? defaultValue
@@ -112,14 +113,14 @@ const serializerOfferSubCategoryFields = (
     author: serializeArtist(
       offer,
       { areArtistsEnabled },
-      offer.extraData.author,
+      offer.extraData?.author,
       defaultValue('author'),
       ArtistType.AUTHOR
     ),
     stageDirector: serializeArtist(
       offer,
       { areArtistsEnabled },
-      offer.extraData.stageDirector,
+      offer.extraData?.stageDirector,
       defaultValue('stageDirector'),
       ArtistType.STAGE_DIRECTOR
     ),
@@ -133,7 +134,7 @@ const serializerOfferSubCategoryFields = (
     performer: serializeArtist(
       offer,
       { areArtistsEnabled },
-      offer.extraData.performer,
+      offer.extraData?.performer,
       defaultValue('performer'),
       ArtistType.PERFORMER
     ),
