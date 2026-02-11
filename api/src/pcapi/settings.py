@@ -728,4 +728,4 @@ PROMETHEUS_MULTIPROC_DIR = str(os.environ.get("PROMETHEUS_MULTIPROC_DIR", ""))
 
 
 # DIGITAL CAP
-DIGITAL_CAP_V2_DATETIME = datetime.fromisoformat(os.environ.get("DIGITAL_CAP_V2_DATETIME", "2026-01-01"))
+DIGITAL_CAP_V2_DATETIME = datetime.fromisoformat(os.environ.get("DIGITAL_CAP_V2_DATETIME", "2026-03-01"))

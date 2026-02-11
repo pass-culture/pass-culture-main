@@ -257,9 +257,7 @@ class CheckExpenseLimitsDepositVersion2Test:
         ]
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
+@pytest.mark.usefixtures("db_session")
 class CheckExpenseLimitsDepositVersion3Test:
     def test_user_can_book_offer_within_digital_limit_V2(self):
         with time_machine.travel(settings.DIGITAL_CAP_V2_DATETIME):
