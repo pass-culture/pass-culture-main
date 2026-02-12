@@ -46,6 +46,27 @@ export interface ProUserWithActiveCollectiveOfferResponse {
   providerApiKey: string
 }
 
+export interface ProUserWithCollectiveOffersData {
+  user: {
+    email: string
+  }
+  offerDraft: {
+    id: number
+    name: string
+    venueName: string
+  }
+}
+
+export async function createProUserWithCollectiveOffers(
+  request: APIRequestContext
+): Promise<ProUserWithCollectiveOffersData> {
+  return await sandboxCall<ProUserWithCollectiveOffersData>(
+    request,
+    'GET',
+    `${BASE_API_URL}/sandboxes/pro/create_pro_user_with_collective_offers`
+  )
+}
+
 export interface DeskBookingsData {
   user: {
     email: string

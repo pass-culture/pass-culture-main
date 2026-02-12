@@ -2,21 +2,12 @@ import { expect, request as playwrightRequest, test } from '@playwright/test'
 
 import { expectCollectiveOffersAreFound } from './helpers/assertions'
 import { login } from './helpers/auth'
+import { BOOKABLE_OFFERS_COLUMNS } from './helpers/constants'
 import {
   BASE_API_URL,
   createProUserWithActiveCollectiveOffer,
   sandboxCall,
 } from './helpers/sandbox'
-
-const BOOKABLE_OFFERS_COLUMNS = [
-  '',
-  'Nom de l’offre',
-  'Dates',
-  'Prix et participants',
-  'Établissement',
-  'Localisation',
-  'Statut',
-]
 
 function collectiveFormatEventDate(date: string): string {
   return new Intl.DateTimeFormat('fr-FR', {
