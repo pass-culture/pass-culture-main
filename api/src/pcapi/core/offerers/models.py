@@ -634,10 +634,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     @property
     def is_eligible_for_search(self) -> bool:
         return (
-            bool(self.isOpenToPublic)
-            and self.managingOfferer.isActive
-            and self.managingOfferer.isValidated
-            and bool(self.hasAtLeastOneBookableOffer)
+            self.managingOfferer.isActive and self.managingOfferer.isValidated and bool(self.hasAtLeastOneBookableOffer)
         )
 
     @property
