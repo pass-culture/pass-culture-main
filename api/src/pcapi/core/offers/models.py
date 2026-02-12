@@ -8,7 +8,6 @@ from dataclasses import dataclass
 import psycopg2.extras
 import sqlalchemy as sa
 import sqlalchemy.event as sa_event
-import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext import mutable as sa_mutable
@@ -522,19 +521,6 @@ class Stock(PcObject, Model, SoftDeletableMixin):
     @classmethod
     def queryNotSoftDeleted(cls) -> sa_orm.Query:
         return db.session.query(Stock).filter_by(isSoftDeleted=False)
-
-    @staticmethod
-    def restize_internal_error(internal_error: sa_exc.InternalError) -> tuple[str, str]:
-        if "check_stock" in str(internal_error.orig):
-            if "quantity_too_low" in str(internal_error.orig):
-                return ("quantity", "Le stock total ne peut être inférieur au nombre de réservations")
-            if "bookingLimitDatetime_too_late" in str(internal_error.orig):
-                return (
-                    "bookingLimitDatetime",
-                    "La date limite de réservation pour cette offre est postérieure à la date de début de l'évènement",
-                )
-            logger.error("Unexpected error in patch stocks: %s", internal_error)
-        return PcObject.restize_internal_error(internal_error)
 
     @property
     def canHaveActivationCodes(self) -> bool:

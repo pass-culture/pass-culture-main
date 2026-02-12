@@ -1,10 +1,8 @@
 import logging
-import re
 import typing
 from pprint import pprint
 
 import sqlalchemy as sa
-import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 
 
@@ -38,72 +36,3 @@ class PcObject:
 
     def is_soft_deleted(self) -> bool:
         return getattr(self, "isSoftDeleted", False)
-
-    @staticmethod
-    def restize_global_error(global_error: Exception) -> tuple[str, str]:
-        logger.exception("UNHANDLED ERROR : %s", global_error)
-        return (
-            "global",
-            "Une erreur technique s'est produite. Elle a été notée, et nous allons investiguer au plus vite.",
-        )
-
-    @staticmethod
-    def restize_data_error(data_error: sa_exc.DataError) -> tuple[str, str]:
-        if data_error.args and len(data_error.args) > 0:
-            if match := re.search(
-                r"\(psycopg2.DataError\) value too long for type (.*?) varying\((.*?)\)",
-                data_error.args[0],
-                re.IGNORECASE,
-            ):
-                max_length = match.group(2)
-                return ("global", "La valeur d'une entrée est trop longue (max " + max_length + ")")
-        return PcObject.restize_global_error(data_error)
-
-    @staticmethod
-    def restize_integrity_error(integrity_error: sa_exc.IntegrityError) -> tuple[str, str]:
-        message = integrity_error.args[0]
-        if not hasattr(getattr(integrity_error, "orig"), "pgcode"):
-            return PcObject.restize_global_error(integrity_error)
-        if getattr(integrity_error.orig, "pgcode", None) == DUPLICATE_KEY_ERROR_CODE:
-            if m := re.search(r"Key \((.*?)\)=", message, re.IGNORECASE):
-                field = m.group(1)
-                if "," in field:
-                    field = "global"
-                return (field, "Une entrée avec cet identifiant existe déjà dans notre base de données")
-        elif getattr(integrity_error.orig, "pgcode", None) == NOT_FOUND_KEY_ERROR_CODE:
-            if m := re.search(r"Key \((.*?)\)=", message, re.IGNORECASE):
-                field = m.group(1)
-                return (field, "Aucun objet ne correspond à cet identifiant dans notre base de données")
-        if getattr(integrity_error.orig, "pgcode", None) == OBLIGATORY_FIELD_ERROR_CODE:
-            match = re.search(
-                'column "(.*?)"',
-                getattr(integrity_error.orig, "pgerror", ""),
-                re.IGNORECASE,
-            )
-            if match:
-                field = match.group(1)
-                return (field, "Ce champ est obligatoire")
-        return PcObject.restize_global_error(integrity_error)
-
-    @staticmethod
-    def restize_internal_error(internal_error: sa_exc.InternalError) -> tuple[str, str]:
-        return PcObject.restize_global_error(internal_error)
-
-    @staticmethod
-    def restize_type_error(type_error: TypeError) -> tuple[str, str]:
-        if type_error.args and len(type_error.args) > 1 and type_error.args[1] == "geography":
-            return (type_error.args[2], "doit être une liste de nombre décimaux comme par exemple : [2.22, 3.22]")
-        if type_error.args and len(type_error.args) > 1 and type_error.args[1] and type_error.args[1] == "decimal":
-            return (type_error.args[2], "doit être un nombre décimal")
-        if type_error.args and len(type_error.args) > 1 and type_error.args[1] and type_error.args[1] == "integer":
-            return (type_error.args[2], "doit être un entier")
-        return PcObject.restize_global_error(type_error)
-
-    @staticmethod
-    def restize_value_error(value_error: ValueError) -> tuple[str, str]:
-        if len(value_error.args) > 1 and value_error.args[1] == "enum":
-            return (
-                value_error.args[2],
-                " doit être dans cette liste : " + ",".join(map(lambda x: '"' + x + '"', value_error.args[3])),
-            )
-        return PcObject.restize_global_error(value_error)

@@ -15,11 +15,12 @@ from pcapi import settings
 from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
 from pcapi.core.providers.clients import cinema_client
 from pcapi.core.providers.models import BoostCinemaDetails
+from pcapi.models import db
 from pcapi.utils import date as date_utils
-from pcapi.utils import repository
 from pcapi.utils import requests
 from pcapi.utils.date import get_naive_utc_now
 from pcapi.utils.queue import add_to_queue
+from pcapi.utils.transaction_manager import is_managed_transaction
 
 from . import boost_serializers
 
@@ -225,7 +226,10 @@ class BoostAPIClient(cinema_client.CinemaAPIClient):
         jwt_token, jwt_expiration_datetime = self._generate_jwt_token()
         self.cinema_details.token = jwt_token
         self.cinema_details.tokenExpirationDate = jwt_expiration_datetime
-        repository.save()
+        if is_managed_transaction():
+            db.session.flush()
+        else:
+            db.session.commit()
 
     def _unset_cinema_details_token(self) -> None:
         """
@@ -233,7 +237,10 @@ class BoostAPIClient(cinema_client.CinemaAPIClient):
         """
         self.cinema_details.token = None
         self.cinema_details.tokenExpirationDate = None
-        repository.save()
+        if is_managed_transaction():
+            db.session.flush()
+        else:
+            db.session.commit()
 
     def _get_authentication_header(self) -> dict:
         """

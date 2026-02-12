@@ -21,7 +21,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import date as date_utils
 from pcapi.utils import human_ids
-from pcapi.utils import repository
+from pcapi.utils.repository import add_to_session
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -571,7 +571,8 @@ def test_stock_cannot_have_a_negative_price():
     stock = factories.StockFactory()
     with pytest.raises(ApiErrors) as e:
         stock.price = -10
-        repository.save(stock)
+        add_to_session(stock)
+        db.session.commit()
     assert e.value.errors["price"] is not None
 
 
@@ -580,7 +581,8 @@ class StockQuantityTest:
         stock = factories.StockFactory()
         with pytest.raises(ApiErrors) as e:
             stock.quantity = -4
-            repository.save(stock)
+            add_to_session(stock)
+            db.session.commit()
         assert e.value.errors["quantity"] == ["La quantité doit être positive."]
 
     def test_stock_can_have_an_quantity_stock_equal_to_zero(self):
@@ -588,46 +590,38 @@ class StockQuantityTest:
         assert stock.quantity == 0
 
     def test_quantity_update_with_cancellations_exceed_quantity(self):
-        # Given
         stock = factories.ThingStockFactory(quantity=2)
         bookings_factories.CancelledBookingFactory(stock=stock)
         bookings_factories.CancelledBookingFactory(stock=stock)
         bookings_factories.BookingFactory(stock=stock)
         bookings_factories.BookingFactory(stock=stock)
 
-        # When
         stock.quantity = 3
         db.session.add(stock)
         db.session.commit()
 
-        # Then
         assert db.session.get(models.Stock, stock.id).quantity == 3
 
     def test_quantity_update_with_more_than_sum_of_bookings(self):
-        # Given
         stock = factories.StockFactory(quantity=2)
         bookings_factories.BookingFactory(stock=stock)
 
-        # When
         stock.quantity = 3
         db.session.add(stock)
         db.session.commit()
 
-        # Then
         assert db.session.get(models.Stock, stock.id).quantity == 3
 
     def test_cannot_update_if_less_than_sum_of_bookings(self):
-        # Given
         stock = factories.StockFactory(quantity=2)
         bookings_factories.BookingFactory(stock=stock, quantity=2)
 
-        # When
         stock.quantity = 1
-        with pytest.raises(ApiErrors) as e:
-            repository.save(stock)
+        with pytest.raises(sa_exc.InternalError) as exc:
+            add_to_session(stock)
+            db.session.commit()
 
-        # Then
-        assert e.value.errors["quantity"] == ["Le stock total ne peut être inférieur au nombre de réservations"]
+        assert "quantity_too_low" in str(exc)
 
 
 class StockIsBookableTest:
