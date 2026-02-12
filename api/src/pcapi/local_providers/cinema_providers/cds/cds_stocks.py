@@ -7,6 +7,7 @@ from typing import Iterator
 
 import PIL
 
+import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
@@ -149,7 +150,12 @@ class CDSStocks(LocalProvider):
     def fill_offer_attributes(self, offer: offers_models.Offer) -> None:
         assert self.provider  # helps mypy
         offer.venueId = self.venue.id
-        offer.offererAddress = self.venue.offererAddress
+        destination_oa = offerers_api.get_or_create_offer_location(
+            self.venue.managingOffererId,
+            self.venue.offererAddress.addressId,
+            self.venue.publicName,
+        )
+        offer.offererAddress = destination_oa
         offer.bookingEmail = self.venue.bookingEmail
         offer.withdrawalDetails = self.venue.withdrawalDetails
         offer.subcategoryId = subcategories.SEANCE_CINE.id

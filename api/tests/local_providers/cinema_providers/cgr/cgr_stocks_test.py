@@ -185,7 +185,10 @@ class CGRStocksTest:
 
         assert created_offers[0].name == "Venom"
         assert created_offers[0].venue == venue_provider.venue
-        assert created_offers[0].offererAddress == venue_provider.venue.offererAddress
+        assert created_offers[0].offererAddress != venue_provider.venue.offererAddress
+        assert created_offers[0].offererAddress.address == venue_provider.venue.offererAddress.address
+        assert created_offers[0].offererAddress.label == venue_provider.venue.publicName
+        assert created_offers[0].offererAddress.type != "VENUE_LOCATION"
         assert (
             created_offers[0].description
             == "Possédé par un symbiote qui agit de manière autonome, le journaliste Eddie Brock devient le protecteur létal Venom."
@@ -243,7 +246,10 @@ class CGRStocksTest:
 
         assert created_offers[0].name == "Produit allociné 1"
         assert created_offers[0].venue == venue_provider.venue
-        assert created_offers[0].offererAddress == venue_provider.venue.offererAddress
+        assert created_offers[0].offererAddress != venue_provider.venue.offererAddress
+        assert created_offers[0].offererAddress.address == venue_provider.venue.offererAddress.address
+        assert created_offers[0].offererAddress.label == venue_provider.venue.publicName
+        assert created_offers[0].offererAddress.type != "VENUE_LOCATION"
         assert created_offers[0].description == "Description du produit allociné 1"
         assert created_offers[0].durationMinutes == 111
         assert created_offers[0].isDuo

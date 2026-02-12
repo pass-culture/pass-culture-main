@@ -10,6 +10,7 @@ from pcapi.connectors.serialization import ems_serializers
 from pcapi.core import search
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import api as finance_api
+from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
@@ -148,7 +149,12 @@ class EMSStocks:
         offer.subcategoryId = subcategories.SEANCE_CINE.id
 
         offer.venueId = venue.id
-        offer.offererAddress = self.venue.offererAddress
+        destination_oa = offerers_api.get_or_create_offer_location(
+            self.venue.managingOffererId,
+            self.venue.offererAddress.addressId,
+            self.venue.publicName,
+        )
+        offer.offererAddress = destination_oa
         offer.bookingEmail = venue.bookingEmail
         offer.withdrawalDetails = venue.withdrawalDetails
         offer.publicationDatetime = offer.publicationDatetime or datetime.datetime.now(datetime.UTC)
