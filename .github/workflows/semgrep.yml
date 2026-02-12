@@ -1,0 +1,37 @@
+name: Semgrep
+on:
+  push:
+    branches:
+      - semgrep
+
+jobs:
+  semgrep:
+    name: semgrep/ci
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+#    env:
+#      SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+    container:
+      image: semgrep/semgrep
+    if: (github.actor != 'dependabot[bot]')
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scan Semgrep
+        run: semgrep ci --sarif -o semgrep.sarif
+
+      - name: Save SARIF results as artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: semgrep-scan-results
+          path: semgrep.sarif
+
+      - name: Upload SARIF result to the GitHub Security Dashboard
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: semgrep.sarif
+
+
+  
