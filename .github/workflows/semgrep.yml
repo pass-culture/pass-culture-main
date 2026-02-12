@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Scan Semgrep
-        run: semgrep scan -q --config auto --sarif -o semgrep.sarif
+        run: semgrep scan -q --config auto --sarif -o semgrep.sarif .
 
       - name: Save SARIF results as artifact
         uses: actions/upload-artifact@v6
@@ -29,7 +29,7 @@ jobs:
           path: semgrep.sarif
 
       - name: Upload SARIF result to the GitHub Security Dashboard
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: semgrep.sarif
 
