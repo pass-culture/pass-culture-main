@@ -180,7 +180,7 @@ class OfferFactory(BaseFactory[models.Offer]):
 
     venue = factory.SubFactory(offerers_factories.VenueFactory)
     subcategoryId = factory.LazyAttribute(
-        lambda o: (o.product.subcategoryId if hasattr(o, "product") else subcategories.SUPPORT_PHYSIQUE_FILM.id)
+        lambda o: o.product.subcategoryId if hasattr(o, "product") else subcategories.SUPPORT_PHYSIQUE_FILM.id
     )
     name = factory.LazyAttributeSequence(
         lambda o, n: o.product.name if hasattr(o, "product") and o.product else f"Offer {n}"
@@ -285,19 +285,19 @@ def _check_offer_kwargs(product: models.Product, kwargs: dict[str, typing.Any]) 
 
 class EventOfferFactory(OfferFactory):
     subcategoryId = factory.LazyAttribute(
-        lambda o: (o.product.subcategoryId if hasattr(o, "product") else subcategories.SEANCE_CINE.id)
+        lambda o: o.product.subcategoryId if hasattr(o, "product") else subcategories.SEANCE_CINE.id
     )
 
 
 class ThingOfferFactory(OfferFactory):
     subcategoryId = factory.LazyAttribute(
-        lambda o: (o.product.subcategoryId if hasattr(o, "product") else subcategories.CARTE_CINE_ILLIMITE.id)
+        lambda o: o.product.subcategoryId if hasattr(o, "product") else subcategories.CARTE_CINE_ILLIMITE.id
     )
 
 
 class DigitalOfferFactory(OfferFactory):
     subcategoryId = factory.LazyAttribute(
-        lambda o: (o.product.subcategoryId if hasattr(o, "product") else subcategories.VOD.id)
+        lambda o: o.product.subcategoryId if hasattr(o, "product") else subcategories.VOD.id
     )
     url = factory.Sequence("http://example.com/offer/{}".format)
     venue = factory.SubFactory(offerers_factories.VenueFactory)

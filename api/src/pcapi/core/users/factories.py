@@ -602,8 +602,10 @@ class BeneficiaryGrant18Factory(BaseFactory):
     dateCreated = LazyAttribute(lambda _: date_utils.get_naive_utc_now())
     lastConnectionDate = LazyAttribute(lambda _: date_utils.get_naive_utc_now() - relativedelta(days=1))
     dateOfBirth = LazyAttribute(  # LazyAttribute to allow freez_time overrides
-        lambda _: datetime.combine(date.today(), time(0, 0))
-        - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, months=1)
+        lambda _: (
+            datetime.combine(date.today(), time(0, 0))
+            - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, months=1)
+        )
     )
     firstName = "Jeanne"
     lastName = "Doux"

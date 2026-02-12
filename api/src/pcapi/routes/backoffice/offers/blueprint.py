@@ -145,9 +145,9 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
     "PRODUCT": {
         "field": "integer",
         "column": offers_models.Offer.productId,
-        "special": lambda i: db.session.query(offers_models.Offer.productId)
-        .filter(offers_models.Offer.id == i)
-        .scalar_subquery(),
+        "special": lambda i: (
+            db.session.query(offers_models.Offer.productId).filter(offers_models.Offer.id == i).scalar_subquery()
+        ),
     },
     "NAME": {
         "field": "string",

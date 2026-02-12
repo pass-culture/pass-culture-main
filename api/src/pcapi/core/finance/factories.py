@@ -27,9 +27,11 @@ class RecreditFactory(BaseFactory):
 
     deposit = factory.SubFactory(users_factories.DepositGrantFactory)
     amount = factory.LazyAttribute(
-        lambda recredit: conf.BONUS_CREDIT_AMOUNT
-        if recredit.recreditType == models.RecreditType.BONUS_CREDIT
-        else conf.RECREDIT_TYPE_AMOUNT_MAPPING[recredit.recreditType]
+        lambda recredit: (
+            conf.BONUS_CREDIT_AMOUNT
+            if recredit.recreditType == models.RecreditType.BONUS_CREDIT
+            else conf.RECREDIT_TYPE_AMOUNT_MAPPING[recredit.recreditType]
+        )
     )
     recreditType = models.RecreditType.RECREDIT_16
 
@@ -180,8 +182,8 @@ class PricingFactory(_BasePricingFactory):
     venue = factory.SelfAttribute("booking.venue")
     valueDate = factory.SelfAttribute("booking.dateUsed")
     amount = factory.LazyAttribute(
-        lambda pricing: -int(
-            100 * (pricing.booking.total_amount if pricing.booking else pricing.event.booking.total_amount)
+        lambda pricing: (
+            -int(100 * (pricing.booking.total_amount if pricing.booking else pricing.event.booking.total_amount))
         )
     )
     standardRule = "Remboursement total pour les offres physiques"
@@ -317,9 +319,11 @@ class PaymentFactory(BaseFactory):
     recipientSiren = factory.SelfAttribute("booking.stock.offer.venue.managingOfferer.siren")
     reimbursementRule: str | factory.Iterator | None = factory.Iterator(REIMBURSEMENT_RULE_DESCRIPTIONS)
     reimbursementRate: decimal.Decimal | factory.LazyAttribute | None = factory.LazyAttribute(
-        lambda payment: reimbursement_rules.get_reimbursement_rule(  # type: ignore[attr-defined]
-            payment.collectiveBooking or payment.booking, reimbursement_rules.CustomRuleFinder(), 0
-        ).rate
+        lambda payment: (
+            reimbursement_rules.get_reimbursement_rule(  # type: ignore[attr-defined]
+                payment.collectiveBooking or payment.booking, reimbursement_rules.CustomRuleFinder(), 0
+            ).rate
+        )
     )
     recipientName = "Récipiendaire"
     iban = "CF13QSDFGH456789"
