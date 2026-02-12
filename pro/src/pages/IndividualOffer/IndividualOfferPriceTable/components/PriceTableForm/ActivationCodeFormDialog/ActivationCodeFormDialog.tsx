@@ -1,8 +1,8 @@
 import type React from 'react'
 import { useState } from 'react'
 
-import { Dialog } from '@/components/Dialog/Dialog'
 import strokeCodeIcon from '@/icons/stroke-code.svg'
+import { Dialog } from '@/ui-kit/Dialog/Dialog'
 
 import {
   checkAndParseUploadedFile,

@@ -7,14 +7,14 @@ import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import { BoxFormLayout, type BoxFormLayoutProps } from './BoxFormLayout'
+import { Panel, PanelProps } from './Panel'
 
 export default {
-  title: '@/ui-kit/BoxFormLayout',
-  component: BoxFormLayout,
+  title: '@/ui-kit/Panel',
+  component: Panel,
 }
 
-const DefaultBoxFormLayout = (args: BoxFormLayoutProps) => {
+const DefaultPanel = (args: PanelProps) => {
   const [showForm, setShowForm] = useState(false)
 
   const methods = useForm({
@@ -32,7 +32,7 @@ const DefaultBoxFormLayout = (args: BoxFormLayoutProps) => {
   }
 
   return (
-    <BoxFormLayout {...args}>
+    <Panel {...args}>
         {showForm ? (
               <FormProvider {...methods}>
                 <form onSubmit={handleSubmit(onSubmit)}>
@@ -72,18 +72,16 @@ const DefaultBoxFormLayout = (args: BoxFormLayoutProps) => {
                 </form>
               </FormProvider>
         ) : (
-          <>
-            <BoxFormLayout.Header
+            <Panel.Header
               subtitle={'Je suis le sous-titre'}
               title="Adresse email"
               onClickModify={() => setShowForm(true) }
             />
-          </>
         )}
-    </BoxFormLayout>
+    </Panel>
   )
 }
 
-export const Default: StoryObj<typeof BoxFormLayout> = {
-  render: () => <DefaultBoxFormLayout />,
+export const Default: StoryObj<typeof Panel> = {
+  render: () => <DefaultPanel />,
 }

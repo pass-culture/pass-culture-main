@@ -1,5 +1,3 @@
-import cn from 'classnames'
-
 import type {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
@@ -12,7 +10,6 @@ import {
   VenueEvents,
 } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { Card } from '@/components/Card/Card'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -21,6 +18,7 @@ import {
 } from '@/design-system/Button/types'
 import fullInfoIcon from '@/icons/full-info.svg'
 import fullNextIcon from '@/icons/full-next.svg'
+import { Panel } from '@/ui-kit/Panel/Panel'
 
 import {
   shouldDisplayEACInformationSectionForVenue,
@@ -33,8 +31,6 @@ export interface VenueOfferStepsProps {
   venue?: GetOffererVenueResponseModel | GetVenueResponseModel
   hasVenue: boolean
   isFirstVenue?: boolean
-  isInsidePartnerBlock?: boolean
-  className?: string
 }
 
 export const VenueOfferSteps = ({
@@ -42,8 +38,6 @@ export const VenueOfferSteps = ({
   venue,
   hasVenue = false,
   isFirstVenue = false,
-  isInsidePartnerBlock = false,
-  className,
 }: VenueOfferStepsProps) => {
   const { logEvent } = useAnalytics()
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
@@ -85,25 +79,19 @@ export const VenueOfferSteps = ({
 
   return (
     (displayNextStepsSection || displayAddEACInfoButton) && (
-      <Card
-        className={cn(styles['card-wrapper'], className, {
-          [styles['no-shadow']]: hasVenue || isInsidePartnerBlock,
-          [styles['inside-partner-block']]: isInsidePartnerBlock,
-        })}
-        data-testid={hasVenue ? 'venue-offer-steps' : 'home-offer-steps'}
-      >
-        {displayNextStepsSection && (
-          <>
-            <h3 className={styles['card-title']}>Prochaines étapes : </h3>
+      <Panel>
+        <div className={styles['card-wrapper']}>
+          {displayNextStepsSection && (
+            <>
+              <h3 className={styles['card-title']}>Prochaines étapes : </h3>
 
-            <div className={styles['venue-offer-steps']}>
               {displayCreateStructureButton && (
-                <div className={styles['step-venue-creation']}>
+                <div className={styles['venue-offer-steps']}>
                   <Button
                     as="a"
                     variant={ButtonVariant.SECONDARY}
                     color={ButtonColor.NEUTRAL}
-                    iconPosition={IconPositionEnum.RIGHT}
+                    iconPosition={IconPositionEnum.LEFT}
                     icon={fullNextIcon}
                     to={venueCreationUrl}
                     onClick={() => {
@@ -156,26 +144,24 @@ export const VenueOfferSteps = ({
                   as="a"
                   variant={ButtonVariant.SECONDARY}
                   color={ButtonColor.NEUTRAL}
-                  iconPosition={IconPositionEnum.RIGHT}
+                  iconPosition={IconPositionEnum.LEFT}
                   icon={fullNextIcon}
                   to={`/structures/${offerer.id}/lieux/${venue.id}/collectif`}
                   label="Renseigner mes informations à destination des enseignants"
                 />
               )}
-            </div>
-          </>
-        )}
+            </>
+          )}
 
-        {displayAddEACInfoButton && (
-          <>
-            <h3 className={styles['card-title']}>Démarche en cours : </h3>
+          {displayAddEACInfoButton && (
+            <>
+              <h3 className={styles['card-title']}>Démarche en cours : </h3>
 
-            <div className={styles['venue-offer-steps']}>
               <Button
                 as="a"
                 variant={ButtonVariant.SECONDARY}
                 color={ButtonColor.NEUTRAL}
-                iconPosition={IconPositionEnum.RIGHT}
+                iconPosition={IconPositionEnum.LEFT}
                 icon={fullNextIcon}
                 to={`/structures/${offerer.id}/lieux/${venue.id}/collectif`}
                 onClick={() => {
@@ -185,10 +171,10 @@ export const VenueOfferSteps = ({
                 }}
                 label="Suivre ma demande de référencement ADAGE"
               />
-            </div>
-          </>
-        )}
-      </Card>
+            </>
+          )}
+        </div>
+      </Panel>
     )
   )
 }

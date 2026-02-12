@@ -1,5 +1,5 @@
-import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import strokeTrashIcon from '@/icons/stroke-trash.svg'
+import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 interface DialogStockDeleteConfirmProps {
   onConfirm: () => void

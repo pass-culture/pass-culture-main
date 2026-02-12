@@ -11,12 +11,12 @@ import type {
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import fullLinkIcon from '@/icons/full-link.svg'
 import strokeValidIcon from '@/icons/stroke-valid.svg'
 import type { VenueSettingsFormValues } from '@/pages/VenueSettings/commons/types'
+import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 

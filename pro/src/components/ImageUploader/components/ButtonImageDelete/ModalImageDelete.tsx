@@ -1,7 +1,7 @@
 import type React from 'react'
 
-import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import strokeTrashIcon from '@/icons/stroke-trash.svg'
+import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 interface ModalImageDeleteProps {
   isLoading: boolean

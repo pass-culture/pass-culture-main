@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import type { Location } from 'react-router'
 import { useBlocker } from 'react-router'
 
-import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
+import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 export type BlockerFunction = (args: {
   currentLocation: Location

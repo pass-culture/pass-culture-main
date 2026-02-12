@@ -38,9 +38,12 @@
 }
 
 .container-stats-highlight {
-  display: flex;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
   gap: var(--size-spacing-l);
-  flex: 1;
-  flex-wrap: wrap;
-  align-items: stretch;
+  margin-bottom: var(--size-spacing-xxl);
+
+  @media (max-width: size.$tablet) {
+    grid-template-columns: 1fr;
+  }
 }

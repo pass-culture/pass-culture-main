@@ -17,7 +17,6 @@ import {
 } from '@/commons/utils/imageUploadTypes'
 import { noop } from '@/commons/utils/noop'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
-import { Card } from '@/components/Card/Card'
 import { ImageUploader } from '@/components/ImageUploader/ImageUploader'
 import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import { Button } from '@/design-system/Button/Button'
@@ -29,6 +28,7 @@ import {
 import fullParametersIcon from '@/icons/full-parameters.svg'
 import { VenueOfferSteps } from '@/pages/Homepage/components/VenueOfferSteps/VenueOfferSteps'
 import { buildInitialValues } from '@/pages/VenueEdition/components/VenueEditionHeader'
+import { Panel } from '@/ui-kit/Panel/Panel'
 
 import styles from './PartnerPage.module.scss'
 import { PartnerPageCollectiveSection } from './PartnerPageCollectiveSection'
@@ -84,7 +84,7 @@ export const PartnerPage = ({
   }
 
   return (
-    <Card>
+    <Panel>
       <div className={styles['header']}>
         <ImageUploader
           className={styles['image-uploader']}
@@ -118,13 +118,7 @@ export const PartnerPage = ({
         </div>
       </div>
 
-      <VenueOfferSteps
-        className={styles['venue-offer-steps']}
-        offerer={offerer}
-        venue={venue}
-        hasVenue
-        isInsidePartnerBlock
-      />
+      <VenueOfferSteps offerer={offerer} venue={venue} hasVenue />
       {venueHasPartnerPage && (
         <PartnerPageIndividualSection
           venueId={venue.id}
@@ -140,6 +134,6 @@ export const PartnerPage = ({
         allowedOnAdage={venue.allowedOnAdage}
         isDisplayedInHomepage
       />
-    </Card>
+    </Panel>
   )
 }

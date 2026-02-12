@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
-import { BoxFormLayout } from './BoxFormLayout'
+import { Panel } from './Panel'
 
-describe('components:BoxFormLayout', () => {
+describe('components:Panel', () => {
   it('renders component successfully without accessibility violations', async () => {
-    const { container } = render(<BoxFormLayout>I’m a test</BoxFormLayout>)
+    const { container } = render(<Panel>I’m a test</Panel>)
     expect(screen.getByText('I’m a test')).toBeInTheDocument()
 
     expect(await axe(container)).toHaveNoViolations()

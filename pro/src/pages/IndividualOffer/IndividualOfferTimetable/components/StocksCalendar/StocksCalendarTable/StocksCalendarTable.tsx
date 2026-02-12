@@ -16,7 +16,6 @@ import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from '@/commons/utils/date'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
-import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -27,6 +26,7 @@ import fullEditIcon from '@/icons/full-edit.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import strokeTrashIcon from '@/icons/stroke-trash.svg'
 import { getPriceCategoryName } from '@/pages/IndividualOffer/commons/getPriceCategoryOptions'
+import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { type Column, Table, TableVariant } from '@/ui-kit/Table/Table'
 

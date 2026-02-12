@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { Dialog } from '@/components/Dialog/Dialog'
+import { Dialog } from '@/ui-kit/Dialog/Dialog'
 
 describe('Dialog', () => {
   const onCancel = vi.fn()

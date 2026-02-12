@@ -7,7 +7,6 @@ import type {
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { VenueEvents } from '@/commons/core/FirebaseEvents/constants'
-import { Card } from '@/components/Card/Card'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
@@ -15,6 +14,7 @@ import fullDisclosureCloseIcon from '@/icons/full-disclosure-close.svg'
 import fullDisclosureOpenIcon from '@/icons/full-disclosure-open.svg'
 import { shouldShowVenueOfferStepsForVenue } from '@/pages/Homepage/components/Offerers/components/VenueList/venueUtils'
 import { VenueOfferSteps } from '@/pages/Homepage/components/VenueOfferSteps/VenueOfferSteps'
+import { Panel } from '@/ui-kit/Panel/Panel'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Venue.module.scss'
@@ -54,7 +54,7 @@ export const Venue = ({ offerer, venue, isFirstVenue = false }: VenueProps) => {
     : venue.publicName
 
   return (
-    <Card data-testid="venue-wrapper">
+    <Panel>
       <div className={styles['header-row']}>
         <h3 className={styles['toggle-wrapper']}>
           {shouldShowVenueOfferSteps ? (
@@ -127,6 +127,6 @@ export const Venue = ({ offerer, venue, isFirstVenue = false }: VenueProps) => {
           />
         </div>
       )}
-    </Card>
+    </Panel>
   )
 }

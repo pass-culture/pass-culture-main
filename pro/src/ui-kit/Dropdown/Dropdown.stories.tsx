@@ -8,7 +8,7 @@ import { ButtonVariant } from '@/design-system/Button/types'
 import { DropdownItem } from './DropdownItem'
 
 const meta: Meta<typeof Dropdown> = {
-  title: '@/ui-kit/Dropdown/Dropdown',
+  title: '@/ui-kit/Dropdown',
   component: Dropdown,
   parameters: { layout: 'centered' },
   args: {

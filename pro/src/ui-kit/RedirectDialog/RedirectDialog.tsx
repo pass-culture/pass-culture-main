@@ -2,8 +2,8 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
 import fullNextIcon from '@/icons/full-next.svg'
+import { Dialog, type DialogProps } from '@/ui-kit/Dialog/Dialog'
 
-import { Dialog, type DialogProps } from '../Dialog/Dialog'
 import styles from './RedirectDialog.module.scss'
 
 type RedirectDialogProps = DialogProps & {

@@ -1,6 +1,6 @@
 import type { UserIdentityFormValues } from '@/components/UserIdentityForm/types'
 import { UserIdentityForm } from '@/components/UserIdentityForm/UserIdentityForm'
-import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
+import { Panel } from '@/ui-kit/Panel/Panel'
 
 import { Forms } from '../constants'
 
@@ -18,16 +18,16 @@ export const UserIdentity = ({
   const onClickModify = () => setCurrentForm(Forms.USER_IDENTITY)
   const resetForm = () => setCurrentForm(null)
   return (
-    <BoxFormLayout>
+    <Panel>
       {showForm ? (
         <UserIdentityForm closeForm={resetForm} initialValues={initialValues} />
       ) : (
-        <BoxFormLayout.Header
+        <Panel.Header
           subtitle={`${initialValues.firstName} ${initialValues.lastName}`}
           title="Prénom et nom"
           onClickModify={onClickModify}
         />
       )}
-    </BoxFormLayout>
+    </Panel>
   )
 }
