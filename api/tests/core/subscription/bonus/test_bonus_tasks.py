@@ -31,7 +31,7 @@ def test_get_quotient_familial_task(mocked_get_quotient_familial):
     tasks.apply_for_quotient_familial_bonus_task.delay(payload.model_dump())
 
     assert len(mocked_get_quotient_familial.mock_calls) == 12
-    mocked_get_quotient_familial.assert_called_with(custodian, birth_date + relativedelta(years=16, months=11))
+    mocked_get_quotient_familial.assert_called_with(custodian, birth_date + relativedelta(years=17, months=11))
 
     fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).get(fraud_check_id)
     assert fraud_check.status == subscription_models.FraudCheckStatus.KO

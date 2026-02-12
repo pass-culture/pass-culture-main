@@ -79,14 +79,12 @@ def _get_user_quotient_familial_response(
     if not birth_date:
         raise ValueError("Beneficiaries applying for the bonus are expected to have a non-null birth date")
 
-    # the quotient familial is computed on the beneficiary's 17th year, not when the user is 17
-    # that means we actually have to compute the quotient familial when the user is 16
-    sixteenth_birthday = birth_date + relativedelta(years=16)
+    seventeenth_birthday = birth_date + relativedelta(years=17)
 
     all_quotient_familial_responses = []
     MONTHS_IN_A_YEAR = 12
     for month_offset in range(MONTHS_IN_A_YEAR):
-        at_date = sixteenth_birthday + relativedelta(months=month_offset)
+        at_date = seventeenth_birthday + relativedelta(months=month_offset)
 
         if settings.ENABLE_PARTICULIER_API_MOCK:
             quotient_familial_at_date = staging_api.get_and_mock_quotient_familial(custodian, at_date, user)
