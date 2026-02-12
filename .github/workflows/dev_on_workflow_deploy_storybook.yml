@@ -24,7 +24,7 @@ jobs:
         working-directory: pro
         run: yarn build-storybook
       - name: "Deploy 🚀"
-        uses: JamesIves/github-pages-deploy-action@v4.7.4
+        uses: JamesIves/github-pages-deploy-action@v4.8.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: "docs"
