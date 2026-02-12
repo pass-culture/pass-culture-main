@@ -37,7 +37,9 @@ class EducationalOffersReimbursement(finance_models.ReimbursementRule):
     def is_relevant(self, booking: Booking | CollectiveBooking, cumulative_revenue: int) -> bool:
         return isinstance(booking, CollectiveBooking)
 
-    def apply(self, booking: CollectiveBooking, custom_total_amount: int | None = None) -> int:
+    def apply(self, booking: Booking | CollectiveBooking, custom_total_amount: int | None = None) -> int:
+        assert isinstance(booking, CollectiveBooking)
+
         base = custom_total_amount or finance_utils.to_cents(booking.collectiveStock.price)
         return int(base * self.rate)
 

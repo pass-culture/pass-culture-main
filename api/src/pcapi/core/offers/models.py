@@ -12,7 +12,6 @@ import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext import mutable as sa_mutable
-from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
@@ -954,42 +953,32 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     chroniclesCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
     likesCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
 
-    @declared_attr.directive
-    def __table_args__(cls) -> tuple:
-        parent_args: list = []
-
-        # Retrieves indexes from parent mixins defined in __table_args__
-        for base_class in cls.__mro__:
-            try:
-                parent_args += super(base_class, cls).__table_args__
-            except (AttributeError, TypeError):
-                pass
-
-        parent_args += [
-            sa.UniqueConstraint("idAtProvider", "venueId", name="unique_idAtProvider_venueId"),
-            sa.CheckConstraint("ean ~ '^\\d{13}$'", name="check_ean_validity"),
-            sa.Index("idx_offer_trgm_name", "name", postgresql_using="gin"),
-            sa.Index("offer_idAtProvider", "idAtProvider"),
-            sa.Index("offer_visa_idx", cls._extraData["visa"].astext),  # type: ignore [index, union-attr]
-            sa.Index("offer_authorId_idx", "authorId", postgresql_using="btree"),
-            sa.Index("ix_offer_lastProviderId", "lastProviderId", postgresql_where='"lastProviderId" IS NOT NULL'),
-            sa.Index(
-                "ix_offer_publicationDatetime",
-                "publicationDatetime",
-                postgresql_where='"publicationDatetime" IS NOT NULL',
-            ),
-            sa.Index(
-                "ix_offer_bookingAllowedDatetime",
-                "bookingAllowedDatetime",
-                postgresql_where='"bookingAllowedDatetime" IS NOT NULL',
-            ),
-            sa.Index(
-                "ix_offer_offererAddressId", "offererAddressId", postgresql_where='"offererAddressId" IS NOT NULL'
-            ),
-            sa.Index("ix_offer_venueId_subcategoryId", "venueId", "subcategoryId"),
-        ]
-
-        return tuple(parent_args)
+    __table_args__ = (
+        sa.Index(
+            "idx_offer_lastValidationAuthorUserId",
+            "lastValidationAuthorUserId",
+            postgresql_where='"lastValidationAuthorUserId IS NOT NULL"',
+        ),
+        sa.UniqueConstraint("idAtProvider", "venueId", name="unique_idAtProvider_venueId"),
+        sa.CheckConstraint("ean ~ '^\\d{13}$'", name="check_ean_validity"),
+        sa.Index("idx_offer_trgm_name", "name", postgresql_using="gin"),
+        sa.Index("offer_idAtProvider", "idAtProvider"),
+        sa.Index("offer_visa_idx", _extraData["visa"].astext),
+        sa.Index("offer_authorId_idx", "authorId", postgresql_using="btree"),
+        sa.Index("ix_offer_lastProviderId", "lastProviderId", postgresql_where='"lastProviderId" IS NOT NULL'),
+        sa.Index(
+            "ix_offer_publicationDatetime",
+            "publicationDatetime",
+            postgresql_where='"publicationDatetime" IS NOT NULL',
+        ),
+        sa.Index(
+            "ix_offer_bookingAllowedDatetime",
+            "bookingAllowedDatetime",
+            postgresql_where='"bookingAllowedDatetime" IS NOT NULL',
+        ),
+        sa.Index("ix_offer_offererAddressId", "offererAddressId", postgresql_where='"offererAddressId" IS NOT NULL'),
+        sa.Index("ix_offer_venueId_subcategoryId", "venueId", "subcategoryId"),
+    )
 
     @property
     def extraData(self) -> OfferExtraData | None:

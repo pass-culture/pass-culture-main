@@ -68,14 +68,3 @@ class ValidationMixin:
     @declared_attr
     def lastValidationAuthor(cls) -> sa_orm.Mapped["User | None"]:
         return sa_orm.relationship("User", foreign_keys=[cls.lastValidationAuthorUserId])  # type: ignore [list-item]
-
-    @declared_attr.directive
-    def __table_args__(cls) -> tuple:
-        table_name = getattr(cls, "__tablename__", "")  # to help mypy
-        return (
-            sa.Index(
-                f"idx_{table_name}_lastValidationAuthorUserId",
-                "lastValidationAuthorUserId",
-                postgresql_where='"lastValidationAuthorUserId IS NOT NULL"',
-            ),
-        )

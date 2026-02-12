@@ -664,7 +664,7 @@ class ReimbursementRule:
 
     def apply(
         self,
-        booking: "bookings_models.Booking",
+        booking: "bookings_models.Booking | educational_models.CollectiveBooking",
         custom_total_amount: int | None = None,
     ) -> int:
         base = custom_total_amount or utils.to_cents(booking.total_amount)
@@ -775,9 +775,11 @@ class CustomReimbursementRule(PcObject, ReimbursementRule, Model):
 
     def apply(
         self,
-        booking: "bookings_models.Booking",
+        booking: "bookings_models.Booking | educational_models.CollectiveBooking",
         custom_total_amount: int | None = None,
     ) -> int:
+        booking = typing.cast("bookings_models.Booking", booking)
+
         if self.amount is not None:
             return booking.quantity * self.amount
         return super().apply(booking, custom_total_amount)
