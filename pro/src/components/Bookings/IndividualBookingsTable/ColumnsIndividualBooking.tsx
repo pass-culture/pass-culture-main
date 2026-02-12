@@ -60,9 +60,7 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
       label: 'Réservation',
       sortable: true,
       ordererField: (row) => new Date(row.bookingDate).getTime(),
-      render: (row) => (
-        <BookingDateCell bookingDateTimeIsoString={row.bookingDate} />
-      ),
+      render: (row) => <BookingDateCell bookingDateTime={row.bookingDate} />,
     },
     {
       id: 'bookingToken',
