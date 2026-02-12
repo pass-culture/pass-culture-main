@@ -46,7 +46,10 @@ export const SummaryDescriptionList = ({
   return (
     <ul data-testid={listDataTestId}>
       {descriptions.map(({ text, title }, index) => (
-        <li key={index} className={cn(style['summary-layout-row'], className)}>
+        <li
+          key={`${index + 1}`}
+          className={cn(style['summary-layout-row'], className)}
+        >
           <DescriptionTextContent text={text} title={title} />
         </li>
       ))}

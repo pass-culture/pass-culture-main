@@ -19,7 +19,6 @@ describe('components:UserEmailForm', () => {
     vi.spyOn(api, 'postUserEmail').mockResolvedValue()
     props = {
       closeForm: vi.fn(),
-      getPendingEmailRequest: vi.fn(),
     }
   })
 

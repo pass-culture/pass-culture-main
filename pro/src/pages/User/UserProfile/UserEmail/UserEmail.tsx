@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -32,23 +31,11 @@ export const UserEmail = ({
 }: UserEmailProps) => {
   const onClickModify = () => setCurrentForm(Forms.USER_EMAIL)
   const resetForm = () => setCurrentForm(null)
-  const [pendingEmailValidation, setPendingEmailValidation] =
-    useState<string>('')
 
-  const { data } = useSWR(
-    () => {
-      return [GET_USER_EMAIL_PENDING_VALIDATION]
-    },
-    async () => {
-      const response = await api.getUserEmailPendingValidation()
-      return response
-    }
+  const { data: pendingEmailValidation } = useSWR(
+    [GET_USER_EMAIL_PENDING_VALIDATION],
+    () => api.getUserEmailPendingValidation()
   )
-
-  const getPendingEmailRequest = () => {
-    const newEmail = data?.newEmail || ''
-    setPendingEmailValidation(newEmail)
-  }
 
   return (
     <SummarySection
@@ -64,16 +51,9 @@ export const UserEmail = ({
       }
       shouldShowDivider={true}
     >
-      {showForm ? (
-        <UserEmailForm
-          closeForm={resetForm}
-          getPendingEmailRequest={getPendingEmailRequest}
-        />
-      ) : (
-        initialValues.email
-      )}
-      {!showForm && pendingEmailValidation && (
-        <BannerPendingEmailValidation email={pendingEmailValidation} />
+      {showForm ? <UserEmailForm closeForm={resetForm} /> : initialValues.email}
+      {!showForm && pendingEmailValidation?.newEmail && (
+        <BannerPendingEmailValidation email={pendingEmailValidation.newEmail} />
       )}
     </SummarySection>
   )
