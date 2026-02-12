@@ -121,7 +121,11 @@ class Deposit(PcObject, Model):
 
         if self.type == DepositType.GRANT_17_18:
             physical_cap = conf.GRANT_17_18_PHYSICAL_CAP
-            digital_cap = conf.GRANT_17_18_DIGITAL_CAP
+
+            if self.dateCreated >= settings.DIGITAL_CAP_V2_DATETIME:
+                digital_cap = conf.GRANT_17_18_DIGITAL_CAP_V2
+            else:
+                digital_cap = conf.GRANT_17_18_DIGITAL_CAP
 
         if self.user.departementCode in conf.SPECIFIC_DIGITAL_CAPS_BY_DEPARTMENT_CODE:
             digital_cap = conf.SPECIFIC_DIGITAL_CAPS_BY_DEPARTMENT_CODE[self.user.departementCode]

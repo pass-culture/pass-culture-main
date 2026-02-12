@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 import pytest
 import pytz
+import time_machine
 from dateutil.relativedelta import relativedelta
 from flask import url_for
 
@@ -1095,7 +1096,8 @@ class GetPublicAccountTest(GetEndpointHelper):
     def test_get_beneficiary_credit(
         self, authenticated_client, user_factory, expected_remaining_text, expected_digital_remaining_text
     ):
-        beneficiary = user_factory()
+        with time_machine.travel(pcapi_settings.DIGITAL_CAP_V2_DATETIME - relativedelta(minutes=1)):
+            beneficiary = user_factory()
 
         bookings_factories.BookingFactory(
             user=beneficiary,
