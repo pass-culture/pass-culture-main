@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
+import { GET_USER_EMAIL_PENDING_VALIDATION } from '@/commons/config/swrQueryKeys'
 import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 import { Button } from '@/design-system/Button/Button'
 import {
@@ -33,16 +35,20 @@ export const UserEmail = ({
   const [pendingEmailValidation, setPendingEmailValidation] =
     useState<string>('')
 
-  const getPendingEmailRequest = async () => {
-    const response = await api.getUserEmailPendingValidation()
-    const newEmail = response.newEmail || ''
+  const { data } = useSWR(
+    () => {
+      return [GET_USER_EMAIL_PENDING_VALIDATION]
+    },
+    async () => {
+      const response = await api.getUserEmailPendingValidation()
+      return response
+    }
+  )
+
+  const getPendingEmailRequest = () => {
+    const newEmail = data?.newEmail || ''
     setPendingEmailValidation(newEmail)
   }
-
-  useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    getPendingEmailRequest()
-  }, [])
 
   return (
     <SummarySection
