@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Scan Semgrep
-        run: semgrep ci --sarif -o semgrep.sarif
+        run: semgrep scan -q --config auto --sarif -o semgrep.sarif
 
       - name: Save SARIF results as artifact
         uses: actions/upload-artifact@v6
