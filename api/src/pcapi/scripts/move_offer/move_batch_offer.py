@@ -310,7 +310,6 @@ def _connect_venue_to_cinema_provider(
     provider: providers_models.Provider,
     payload: providers_models.VenueProviderCreationPayload,
 ) -> providers_models.VenueProvider:
-    # Rewriting those methods as they are still using repository.save() in repo
     provider_pivot = providers_repository.get_cinema_provider_pivot_for_venue(venue)
 
     if not provider_pivot:
@@ -333,7 +332,6 @@ def _connect_venue_to_provider(
     venue: offerers_models.Venue,
     venue_provider: providers_models.VenueProvider,
 ) -> providers_models.VenueProvider:
-    # Rewriting those methods as they are still using repository.save() in repo
     new_venue_provider = providers_models.VenueProvider()
     new_venue_provider.isActive = False
     new_venue_provider.venue = venue

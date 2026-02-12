@@ -7,6 +7,7 @@ from itertools import groupby
 from operator import attrgetter
 
 import sqlalchemy as sa
+import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 from flask import current_app
 from sqlalchemy.sql.base import ExecutableOption
@@ -46,11 +47,11 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users.repository import get_and_lock_user
 from pcapi.core.users.utils import get_age_at_date
 from pcapi.models import db
+from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.utils import date as date_utils
 from pcapi.utils import queue
-from pcapi.utils import repository as pcapi_repository
 from pcapi.utils.repository import transaction
 from pcapi.utils.requests import exceptions as requests_exceptions
 from pcapi.utils.transaction_manager import is_managed_transaction
@@ -659,11 +660,35 @@ def _execute_cancel_booking(
                     },
                 )
                 return False
+
             stock.dnBookedQuantity -= booking.quantity
             if booking.activationCode and stock.quantity:
                 stock.quantity -= 1
+
             db.session.add(booking)
-            pcapi_repository.save(stock)
+            db.session.add(stock)
+            if stock.quantity is not None and stock.quantity < 0:
+                if is_managed_transaction():
+                    mark_transaction_as_invalid()
+                else:
+                    db.session.rollback()
+                raise ApiErrors(errors={"quantity": "La quantité doit être positive."})
+
+            try:
+                if is_managed_transaction():
+                    db.session.flush()
+                else:
+                    db.session.commit()
+            except sa_exc.InternalError as exc:
+                if is_managed_transaction():
+                    mark_transaction_as_invalid()
+                else:
+                    db.session.rollback()
+                if exc.orig and "quantity_too_low" in str(exc.orig):
+                    raise ApiErrors(
+                        errors={"quantity": "Le stock total ne peut être inférieur au nombre de réservations"}
+                    )
+                raise
     return True
 
 
