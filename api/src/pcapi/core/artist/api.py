@@ -33,8 +33,9 @@ class ArtistOfferLinkKey:
     custom_name: str | None
 
 
-def get_artist_image_url(artist: Artist) -> str | None:
+def get_artist_image_url(artist: Artist) -> tuple[str | None, str | None]:
     image_url = artist.image
+    product_mediation_uuid = None
     if not image_url:
         most_popular_product_mediation: ProductMediation | None = (
             db.session.query(ProductMediation)
@@ -51,8 +52,9 @@ def get_artist_image_url(artist: Artist) -> str | None:
 
         if most_popular_product_mediation:
             image_url = most_popular_product_mediation.url
+            product_mediation_uuid = most_popular_product_mediation.uuid
 
-    return image_url
+    return image_url, product_mediation_uuid
 
 
 def create_artist_offer_link(offer_id: int, artist_offer_link: ArtistOfferLinkKey) -> None:
