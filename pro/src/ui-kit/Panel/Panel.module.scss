@@ -6,16 +6,3 @@
   padding: var(--size-spacing-l);
   background-color: var(--color-background);
 }
-
-.panel-header {
-  display: flex;
-  flex-flow: row wrap;
-  align-items: flex-start;
-  gap: var(--size-spacing-s);
-  justify-content: space-between;
-}
-
-.panel-header-title {
-  margin-bottom: var(--size-spacing-s);
-  color: var(--color-text-subtle);
-}

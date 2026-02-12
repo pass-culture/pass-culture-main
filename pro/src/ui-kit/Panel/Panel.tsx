@@ -1,4 +1,3 @@
-import { Header } from './components/PanelHeader'
 import style from './Panel.module.scss'
 
 export interface PanelProps {
@@ -8,5 +7,3 @@ export interface PanelProps {
 export const Panel = ({ children }: PanelProps): JSX.Element => (
   <div className={style['panel']}>{children}</div>
 )
-
-Panel.Header = Header
