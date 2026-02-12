@@ -41,23 +41,23 @@ class OfferOffererResponse(HttpBodyModel):
 
 
 class OfferStockActivationCodeResponse(HttpBodyModel):
-    expiration_date: datetime.datetime | None
+    expiration_date: datetime.datetime | None = None
 
 
 class OfferStockResponse(HttpBodyModel):
     id: int
-    activation_code: OfferStockActivationCodeResponse | None
-    beginning_datetime: datetime.datetime | None
-    booking_limit_datetime: datetime.datetime | None
-    cancellation_limit_datetime: datetime.datetime | None
+    activation_code: OfferStockActivationCodeResponse | None = None
+    beginning_datetime: datetime.datetime | None = None
+    booking_limit_datetime: datetime.datetime | None = None
+    cancellation_limit_datetime: datetime.datetime | None = None
     features: list[str]
     is_bookable: bool
     is_expired: bool
     is_forbidden_to_underage: bool
     is_sold_out: bool
     price: int
-    price_category_label: str | None
-    remaining_quantity: int | None
+    price_category_label: str | None = None
+    remaining_quantity: int | None = None
 
     @classmethod
     def build(cls, stock: models.Stock) -> "OfferStockResponse":
@@ -98,23 +98,23 @@ class OfferStockResponse(HttpBodyModel):
 
 
 class OfferVenueCoordinates(HttpBodyModel):
-    latitude: float | None
-    longitude: float | None
+    latitude: float | None = None
+    longitude: float | None = None
 
     _to_float = pydantic_v2.field_validator("latitude", "longitude", mode="before")(float)
 
 
 class OfferVenueResponse(HttpBodyModel):
     id: int
-    address: str | None
-    banner_url: str | None
-    city: str | None
+    address: str | None = None
+    banner_url: str | None = None
+    city: str | None = None
     coordinates: OfferVenueCoordinates
     is_open_to_public: bool
     is_permanent: bool
     offerer: OfferOffererResponse
     name: str
-    postal_code: str | None
+    postal_code: str | None = None
     public_name: str
     timezone: str
 
@@ -154,10 +154,10 @@ def get_id_converter(labels_by_id: dict, field_name: str) -> Callable[[str | Non
 
 class GtlLabels(HttpBodyModel):
     label: str
-    level_01_label: str | None
-    level_02_label: str | None
-    level_03_label: str | None
-    level_04_label: str | None
+    level_01_label: str | None = None
+    level_02_label: str | None = None
+    level_03_label: str | None = None
+    level_04_label: str | None = None
 
 
 class OfferExtraDataResponse(HttpBodyModel):
@@ -209,14 +209,14 @@ class OfferExtraDataResponse(HttpBodyModel):
 
 
 class OfferAccessibilityResponse(HttpBodyModel):
-    audio_disability: bool | None
-    mental_disability: bool | None
-    motor_disability: bool | None
-    visual_disability: bool | None
+    audio_disability: bool | None = None
+    mental_disability: bool | None = None
+    motor_disability: bool | None = None
+    visual_disability: bool | None = None
 
 
 class OfferImageResponse(HttpBodyModel):
-    credit: str | None
+    credit: str | None = None
     url: str
 
 
@@ -240,21 +240,21 @@ def get_gtl_labels(gtl_id: str) -> GtlLabels | None:
 class OfferAddressResponse(HttpBodyModel):
     city: str
     coordinates: OfferVenueCoordinates
-    label: str | None
+    label: str | None = None
     postal_code: str
-    street: str | None
+    street: str | None = None
     timezone: str
 
 
 class ChronicleAuthor(HttpBodyModel):
-    age: int | None
-    first_name: str | None
-    city: str | None
+    age: int | None = None
+    first_name: str | None = None
+    city: str | None = None
 
 
 class ChroniclePreview(HttpBodyModel):
     id: int
-    author: ChronicleAuthor | None
+    author: ChronicleAuthor | None = None
     content_preview: str
     date_created: datetime.datetime
 
@@ -277,17 +277,21 @@ class ChroniclePreview(HttpBodyModel):
 
 
 class OfferArtist(HttpBodyModel):
-    id: str | None
-    image: str | None
+    id: str | None = None
+    image: str | None = None
     name: str
     role: ArtistType | None = None
 
 
 class OfferVideo(HttpBodyModel):
     id: str
-    duration_seconds: int | None
-    thumb_url: str | None
-    title: str | None
+    duration_seconds: int | None = None
+    thumb_url: str | None = None
+    title: str | None = None
+
+
+class ReactionCount(HttpBodyModel):
+    likes: int
 
 
 class OfferResponse(HttpBodyModel):
@@ -314,7 +318,7 @@ class OfferResponse(HttpBodyModel):
     is_sold_out: bool
     images: dict[str, OfferImageResponse] | None = None
     last_30_days_bookings: int | None = None
-    likes_count: int
+    reactions_count: ReactionCount
     metadata: offer_metadata.Metadata
     name: str
     publication_date: datetime.datetime | None
@@ -434,7 +438,7 @@ class OfferResponse(HttpBodyModel):
             is_released=offer.isReleased,
             is_sold_out=offer.isSoldOut,
             last_30_days_bookings=offer.product.last_30_days_booking if offer.product else None,
-            likes_count=likes_count,
+            reactions_count=ReactionCount(likes=likes_count),
             metadata=offer_metadata.get_metadata_from_offer(offer),
             name=offer.name,
             publication_date=offer.bookingAllowedDatetime,

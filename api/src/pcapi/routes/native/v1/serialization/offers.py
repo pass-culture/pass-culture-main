@@ -250,7 +250,7 @@ def get_gtl_labels(gtl_id: str) -> GtlLabelsV2 | None:
 BaseOfferResponseType = TypeVar("BaseOfferResponseType", bound="BaseOfferResponse")
 
 
-class ReactionCount(BaseModel):
+class ReactionCountV2(BaseModel):
     likes: int
 
 
@@ -267,7 +267,7 @@ class BaseOfferResponseGetterDict(GetterDict):
                 likes = product.likesCount or 0
             else:
                 likes = offer.likesCount or 0
-            return ReactionCount(likes=likes)
+            return ReactionCountV2(likes=likes)
 
         if key == "accessibility":
             return {
@@ -505,7 +505,7 @@ class BaseOfferResponse(ConfiguredBaseModel):
     name: str
     publicationDate: datetime | None
     bookingAllowedDatetime: datetime | None
-    reactions_count: ReactionCount
+    reactions_count: ReactionCountV2
     stocks: list[OfferStockResponseV2]
     subcategoryId: subcategories.SubcategoryIdEnum
     venue: OfferVenueResponseV2

@@ -526,7 +526,7 @@ class OffersV3Test:
             response = client.get(f"/native/v3/offer/{offer_id}")
 
         assert response.status_code == 200
-        assert response.json["likesCount"] == 2
+        assert response.json["reactionsCount"]["likes"] == 2
 
     def test_get_offer_attached_to_product_with_user_reaction(self, client):
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id)
@@ -541,7 +541,7 @@ class OffersV3Test:
             response = client.get(f"/native/v3/offer/{offer_id}")
 
         assert response.status_code == 200
-        assert response.json["likesCount"] == 2
+        assert response.json["reactionsCount"]["likes"] == 2
 
     def test_get_event_offer_with_no_reactions(self, client):
         offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
@@ -552,7 +552,7 @@ class OffersV3Test:
             response = client.get(f"/native/v3/offer/{offer_id}")
 
         assert response.status_code == 200
-        assert response.json["likesCount"] == 0
+        assert response.json["reactionsCount"]["likes"] == 0
 
     @pytest.mark.parametrize(
         "provider_class,ff_name,ff_value,booking_disabled",
