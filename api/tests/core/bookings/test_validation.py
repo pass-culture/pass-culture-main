@@ -297,6 +297,23 @@ class CheckExpenseLimitsDepositVersion3Test:
 
         validation.check_expenses_limits(beneficiary, 1, offer)
 
+    @pytest.mark.parametrize("dept_code", [986, 975, 976])
+    def test_digital_cap_does_not_apply_for_excluded_departments(self, dept_code):
+        """
+        Covers Wallis and Futuna (986), Saint Pierre et Miquelon (975), and Mayotte (976)
+        """
+        with time_machine.travel(settings.DIGITAL_CAP_V2_DATETIME):
+            beneficiary = users_factories.BeneficiaryFactory(departementCode=dept_code)
+
+        digital_offer = offers_factories.DigitalOfferFactory()
+        factories.BookingFactory(
+            user=beneficiary,
+            stock__price=50,
+            stock__offer=digital_offer,
+        )
+
+        validation.check_expenses_limits(beneficiary, 1, digital_offer)
+
 
 @pytest.mark.usefixtures("db_session")
 class InsufficientFundsSQLCheckTest:

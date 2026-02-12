@@ -127,8 +127,10 @@ class Deposit(PcObject, Model):
             else:
                 digital_cap = conf.GRANT_17_18_DIGITAL_CAP
 
-        if self.user.departementCode in conf.SPECIFIC_DIGITAL_CAPS_BY_DEPARTMENT_CODE:
-            digital_cap = conf.SPECIFIC_DIGITAL_CAPS_BY_DEPARTMENT_CODE[self.user.departementCode]
+        dept_config = conf.SPECIFIC_DIGITAL_CAPS_BY_DEPARTMENT_CODE.get(self.user.departementCode or "")
+        if dept_config:
+            version = "v2" if self.dateCreated >= settings.DIGITAL_CAP_V2_DATETIME else "v1"
+            digital_cap = dept_config.get(version)
 
         return conf.SpecificCaps(digital_cap=digital_cap, physical_cap=physical_cap)
 
