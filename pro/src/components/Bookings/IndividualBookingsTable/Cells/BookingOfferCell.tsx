@@ -11,10 +11,7 @@ import {
   convertEuroToPacificFranc,
   formatPacificFranc,
 } from '@/commons/utils/convertEuroToPacificFranc'
-import {
-  FORMAT_DD_MM_YYYY_HH_mm,
-  toDateStrippedOfTimezone,
-} from '@/commons/utils/date'
+import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
 import { formatPrice } from '@/commons/utils/formatPrice'
 import strokeDuoIcon from '@/icons/stroke-duo.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -41,10 +38,7 @@ export const BookingOfferCell = ({
   const eventBeginningDatetime = booking.stock.eventBeginningDatetime
 
   const eventDatetimeFormatted = eventBeginningDatetime
-    ? format(
-        toDateStrippedOfTimezone(eventBeginningDatetime),
-        FORMAT_DD_MM_YYYY_HH_mm
-      )
+    ? format(eventBeginningDatetime, FORMAT_DD_MM_YYYY_HH_mm)
     : null
 
   const formattedPacificFrancPrice = formatPacificFranc(
