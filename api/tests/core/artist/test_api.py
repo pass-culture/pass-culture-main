@@ -27,18 +27,20 @@ class GetArtistImageUrlTest:
     def test_get_image_from_artist(self):
         artist = artist_factories.ArtistFactory()
 
-        image_url = get_artist_image_url(artist)
+        image_url, product_mediation_uuid = get_artist_image_url(artist)
 
         assert image_url == artist.image
+        assert product_mediation_uuid is None
 
     def test_get_image_from_product(self):
         artist = artist_factories.ArtistFactory(image=None)
         product_mediation = offers_factories.ProductMediationFactory()
         artist_factories.ArtistProductLinkFactory(artist_id=artist.id, product_id=product_mediation.product.id)
 
-        image_url = get_artist_image_url(artist)
+        image_url, product_mediation_uuid = get_artist_image_url(artist)
 
         assert image_url == product_mediation.url
+        assert product_mediation_uuid == product_mediation.uuid
 
     def test_get_image_from_most_popular_product(self):
         artist = artist_factories.ArtistFactory(image=None)
@@ -55,9 +57,10 @@ class GetArtistImageUrlTest:
             artist_id=artist.id, product_id=most_popular_product_mediation.product.id
         )
 
-        image_url = get_artist_image_url(artist)
+        image_url, product_mediation_uuid = get_artist_image_url(artist)
 
         assert image_url == most_popular_product_mediation.url
+        assert product_mediation_uuid == most_popular_product_mediation.uuid
 
     def test_get_image_from_most_recent_product_if_equal_popularity(self):
         artist = artist_factories.ArtistFactory(image=None)
@@ -66,16 +69,18 @@ class GetArtistImageUrlTest:
         last_product_mediation = offers_factories.ProductMediationFactory()
         artist_factories.ArtistProductLinkFactory(artist_id=artist.id, product_id=last_product_mediation.product.id)
 
-        image_url = get_artist_image_url(artist)
+        image_url, product_mediation_uuid = get_artist_image_url(artist)
 
         assert image_url == last_product_mediation.url
+        assert product_mediation_uuid == last_product_mediation.uuid
 
     def test_return_none_if_no_image_available(self):
         artist = artist_factories.ArtistFactory(image=None)
 
-        image_url = get_artist_image_url(artist)
+        image_url, product_mediation_uuid = get_artist_image_url(artist)
 
         assert image_url is None
+        assert product_mediation_uuid is None
 
 
 class CreateArtistOfferLinkTest:
