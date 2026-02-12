@@ -288,7 +288,7 @@ jobs:
       # (the same key is not enough - cf https://github.com/actions/cache/blob/main/README.md#cache-version).
       - name: Restore test durations
         id: restore-test-durations
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: /tests/.test_durations
           key: tests-durations-${{ steps.get-date.outputs.date }}
@@ -502,7 +502,7 @@ jobs:
       # Finally, we cache the new test durations. This file will be restored in next CI execution
       # (see step "Restore test durations" above).
       - name: Cache final test durations
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: ${{ runner.temp }}/.test_durations
           key: tests-durations-${{ steps.get-date.outputs.date }}-${{ github.run_id }}
