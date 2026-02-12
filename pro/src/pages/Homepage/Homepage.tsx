@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { useMemo, useRef } from 'react'
 
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
@@ -81,7 +82,12 @@ export const Homepage = (): JSX.Element => {
                   Présence sur l’application pass Culture
                 </h2>
               </div>
-              <div className={styles['container-stats-highlight']}>
+              <div
+                className={cn(styles['container-stats'], {
+                  [styles['container-stats-with-highlights']]:
+                    areHighlightsEnable,
+                })}
+              >
                 <StatisticsDashboard offerer={selectedOfferer} />
                 {areHighlightsEnable && <HighlightHome />}
               </div>

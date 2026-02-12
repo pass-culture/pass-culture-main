@@ -4,15 +4,11 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: var(--size-spacing-l);
+  gap: var(--size-spacing-s);
 }
 
 .block-title {
   @include fonts.title3;
-}
-
-.caption {
-  @include fonts.body-accent-xs;
 }
 
 .top-offers {
@@ -27,7 +23,7 @@
   gap: var(--size-spacing-l);
 
   &-title {
-    @include fonts.body-accent-xs;
+    @include fonts.body-accent-s;
   }
 
   &-headline-tag {
@@ -39,8 +35,8 @@
   }
 
   &-thumbnail {
-    width: rem.torem(80px);
-    height: rem.torem(80px);
+    width: rem.torem(62px);
+    height: rem.torem(72px);
     flex-shrink: 0;
 
     &-placeholder {
@@ -52,5 +48,12 @@
     @include fonts.body-xs;
 
     flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-spacing-xs);
+  }
+
+  &-views {
+    @include fonts.body-accent-xs;
   }
 }

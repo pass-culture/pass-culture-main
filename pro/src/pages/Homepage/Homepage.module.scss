@@ -37,13 +37,16 @@
   @include fonts.title2;
 }
 
-.container-stats-highlight {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: var(--size-spacing-l);
+.container-stats {
   margin-bottom: var(--size-spacing-xxl);
 
-  @media (max-width: size.$tablet) {
+  &-with-highlights {
+    display: grid;
+    gap: var(--size-spacing-l);
+    grid-template-columns: 3fr 310px;
+  }
+
+  @media (max-width: size.$laptop) {
     grid-template-columns: 1fr;
   }
 }
