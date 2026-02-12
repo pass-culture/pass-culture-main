@@ -1833,6 +1833,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Age"
                     },
                     "city": {
@@ -1844,6 +1845,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "City"
                     },
                     "firstName": {
@@ -1855,14 +1857,10 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Firstname"
                     }
                 },
-                "required": [
-                    "age",
-                    "firstName",
-                    "city"
-                ],
                 "title": "ChronicleAuthor",
                 "type": "object"
             },
@@ -1877,7 +1875,8 @@
                             {
                                 "type": "null"
                             }
-                        ]
+                        ],
+                        "default": null
                     },
                     "contentPreview": {
                         "title": "Contentpreview",
@@ -1895,7 +1894,6 @@
                 },
                 "required": [
                     "id",
-                    "author",
                     "contentPreview",
                     "dateCreated"
                 ],
@@ -2854,6 +2852,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Level01Label"
                     },
                     "level02Label": {
@@ -2865,6 +2864,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Level02Label"
                     },
                     "level03Label": {
@@ -2876,6 +2876,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Level03Label"
                     },
                     "level04Label": {
@@ -2887,15 +2888,12 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Level04Label"
                     }
                 },
                 "required": [
-                    "label",
-                    "level01Label",
-                    "level02Label",
-                    "level03Label",
-                    "level04Label"
+                    "label"
                 ],
                 "title": "GtlLabels",
                 "type": "object"
@@ -3391,6 +3389,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Audiodisability"
                     },
                     "mentalDisability": {
@@ -3402,6 +3401,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Mentaldisability"
                     },
                     "motorDisability": {
@@ -3413,6 +3413,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Motordisability"
                     },
                     "visualDisability": {
@@ -3424,15 +3425,10 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Visualdisability"
                     }
                 },
-                "required": [
-                    "audioDisability",
-                    "mentalDisability",
-                    "motorDisability",
-                    "visualDisability"
-                ],
                 "title": "OfferAccessibilityResponse",
                 "type": "object"
             },
@@ -3481,6 +3477,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Label"
                     },
                     "postalCode": {
@@ -3496,6 +3493,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Street"
                     },
                     "timezone": {
@@ -3506,9 +3504,7 @@
                 "required": [
                     "city",
                     "coordinates",
-                    "label",
                     "postalCode",
-                    "street",
                     "timezone"
                 ],
                 "title": "OfferAddressResponse",
@@ -3563,6 +3559,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Id"
                     },
                     "image": {
@@ -3574,6 +3571,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Image"
                     },
                     "name": {
@@ -3593,8 +3591,6 @@
                     }
                 },
                 "required": [
-                    "id",
-                    "image",
                     "name"
                 ],
                 "title": "OfferArtist",
@@ -4082,6 +4078,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Credit"
                     },
                     "url": {
@@ -4090,7 +4087,6 @@
                     }
                 },
                 "required": [
-                    "credit",
                     "url"
                 ],
                 "title": "OfferImageResponse",
@@ -4309,10 +4305,6 @@
                         "default": null,
                         "title": "Last30Daysbookings"
                     },
-                    "likesCount": {
-                        "title": "Likescount",
-                        "type": "integer"
-                    },
                     "metadata": {
                         "additionalProperties": true,
                         "title": "Metadata",
@@ -4333,6 +4325,9 @@
                             }
                         ],
                         "title": "Publicationdate"
+                    },
+                    "reactionsCount": {
+                        "$ref": "#/components/schemas/ReactionCount"
                     },
                     "stocks": {
                         "items": {
@@ -4388,7 +4383,7 @@
                     "isHeadline",
                     "isReleased",
                     "isSoldOut",
-                    "likesCount",
+                    "reactionsCount",
                     "metadata",
                     "name",
                     "publicationDate",
@@ -4535,7 +4530,7 @@
                         "type": "string"
                     },
                     "reactionsCount": {
-                        "$ref": "#/components/schemas/ReactionCount"
+                        "$ref": "#/components/schemas/ReactionCountV2"
                     },
                     "stocks": {
                         "items": {
@@ -4604,12 +4599,10 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Expirationdate"
                     }
                 },
-                "required": [
-                    "expirationDate"
-                ],
                 "title": "OfferStockActivationCodeResponse",
                 "type": "object"
             },
@@ -4636,7 +4629,8 @@
                             {
                                 "type": "null"
                             }
-                        ]
+                        ],
+                        "default": null
                     },
                     "beginningDatetime": {
                         "anyOf": [
@@ -4648,6 +4642,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Beginningdatetime"
                     },
                     "bookingLimitDatetime": {
@@ -4660,6 +4655,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Bookinglimitdatetime"
                     },
                     "cancellationLimitDatetime": {
@@ -4672,6 +4668,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Cancellationlimitdatetime"
                     },
                     "features": {
@@ -4714,6 +4711,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Pricecategorylabel"
                     },
                     "remainingQuantity": {
@@ -4725,23 +4723,18 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Remainingquantity"
                     }
                 },
                 "required": [
                     "id",
-                    "activationCode",
-                    "beginningDatetime",
-                    "bookingLimitDatetime",
-                    "cancellationLimitDatetime",
                     "features",
                     "isBookable",
                     "isExpired",
                     "isForbiddenToUnderage",
                     "isSoldOut",
-                    "price",
-                    "priceCategoryLabel",
-                    "remainingQuantity"
+                    "price"
                 ],
                 "title": "OfferStockResponse",
                 "type": "object"
@@ -4841,6 +4834,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Latitude"
                     },
                     "longitude": {
@@ -4852,13 +4846,10 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Longitude"
                     }
                 },
-                "required": [
-                    "latitude",
-                    "longitude"
-                ],
                 "title": "OfferVenueCoordinates",
                 "type": "object"
             },
@@ -4874,6 +4865,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Address"
                     },
                     "bannerUrl": {
@@ -4885,6 +4877,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Bannerurl"
                     },
                     "city": {
@@ -4896,6 +4889,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "City"
                     },
                     "coordinates": {
@@ -4929,6 +4923,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Postalcode"
                     },
                     "publicName": {
@@ -4942,15 +4937,11 @@
                 },
                 "required": [
                     "id",
-                    "address",
-                    "bannerUrl",
-                    "city",
                     "coordinates",
                     "isOpenToPublic",
                     "isPermanent",
                     "offerer",
                     "name",
-                    "postalCode",
                     "publicName",
                     "timezone"
                 ],
@@ -5035,6 +5026,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Durationseconds"
                     },
                     "id": {
@@ -5050,6 +5042,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Thumburl"
                     },
                     "title": {
@@ -5061,14 +5054,12 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Title"
                     }
                 },
                 "required": [
-                    "id",
-                    "durationSeconds",
-                    "thumbUrl",
-                    "title"
+                    "id"
                 ],
                 "title": "OfferVideo",
                 "type": "object"
@@ -5564,6 +5555,7 @@
                 "type": "object"
             },
             "ReactionCount": {
+                "additionalProperties": false,
                 "properties": {
                     "likes": {
                         "title": "Likes",
@@ -5574,6 +5566,19 @@
                     "likes"
                 ],
                 "title": "ReactionCount",
+                "type": "object"
+            },
+            "ReactionCountV2": {
+                "properties": {
+                    "likes": {
+                        "title": "Likes",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "likes"
+                ],
+                "title": "ReactionCountV2",
                 "type": "object"
             },
             "ReactionTypeEnum": {
