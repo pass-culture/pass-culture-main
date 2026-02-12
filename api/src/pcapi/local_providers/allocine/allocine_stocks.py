@@ -237,8 +237,10 @@ def _filter_only_digital_and_non_experience_showtimes(
 ) -> list[allocine_serializers.AllocineShowtime]:
     return list(
         filter(
-            lambda showtime: showtime.projection == allocine_serializers.AllocineShowtimeProjection.DIGITAL
-            and showtime.experience is None,
+            lambda showtime: (
+                showtime.projection == allocine_serializers.AllocineShowtimeProjection.DIGITAL
+                and showtime.experience is None
+            ),
             showtimes_information,
         )
     )
