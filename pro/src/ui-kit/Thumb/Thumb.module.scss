@@ -7,7 +7,7 @@
   display: flex;
   justify-content: center;
   background-color: var(--color-background-subtle);
-  width: rem.torem(80px);
+  min-width: rem.torem(80px);
   height: rem.torem(80px);
 
   &-small {

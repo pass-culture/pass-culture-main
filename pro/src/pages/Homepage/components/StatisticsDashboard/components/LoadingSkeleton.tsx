@@ -2,7 +2,7 @@ import { Skeleton } from '@/ui-kit/Skeleton/Skeleton'
 
 import styles from './LoadingSkeleton.module.scss'
 
-export function LoadingSkeleton() {
+export const LoadingSkeleton = () => {
   return (
     <div className={styles['skeleton-wrapper']}>
       <Skeleton height="2.5rem" width="2rem" />

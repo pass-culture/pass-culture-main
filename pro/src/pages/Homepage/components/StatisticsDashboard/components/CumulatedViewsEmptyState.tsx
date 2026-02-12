@@ -19,27 +19,25 @@ export const CumulatedViewsEmptyState = () => {
         width="128"
       />
 
-      <div className={styles['no-data-caption']}>
+      <p className={styles['no-data-caption']}>
         Vos offres n’ont pas encore été découvertes par les bénéficiaires
-      </div>
+      </p>
 
-      <div>
+      <p>
         Inspirez-vous des conseils de nos équipes pour améliorer la visibilité
         de vos offres
-      </div>
+      </p>
 
-      <div>
-        <Button
-          as="a"
-          to={BEST_PRACTICES_URL}
-          isExternal
-          opensInNewTab
-          variant={ButtonVariant.TERTIARY}
-          color={ButtonColor.NEUTRAL}
-          icon={fullLinkIcon}
-          label="Bonnes pratiques de création d'offres"
-        />
-      </div>
+      <Button
+        as="a"
+        to={BEST_PRACTICES_URL}
+        isExternal
+        opensInNewTab
+        variant={ButtonVariant.TERTIARY}
+        color={ButtonColor.NEUTRAL}
+        icon={fullLinkIcon}
+        label="Bonnes pratiques de création d'offres"
+      />
     </div>
   )
 }

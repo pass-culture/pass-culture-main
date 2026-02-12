@@ -88,28 +88,12 @@ describe('StatisticsDashboard', () => {
     renderStatisticsDashboard()
 
     expect(
-      await screen.findByText('Évolution des consultations de vos offres')
+      await screen.findByRole('heading', {
+        name: /Les statistiques sur l’individuel/,
+      })
     ).toBeInTheDocument()
     expect(
       screen.queryByText('Vos offres les plus consultées')
     ).not.toBeInTheDocument()
-  })
-
-  it('should display the last sync date', async () => {
-    vi.spyOn(api, 'getOffererStats').mockResolvedValueOnce({
-      jsonData: {
-        dailyViews: [{ eventDate: '2020-10-10', numberOfViews: 10 }],
-        topOffers: [],
-        totalViewsLast30Days: 0,
-      },
-      syncDate: '2020-10-10',
-      offererId: 1,
-    })
-
-    renderStatisticsDashboard()
-
-    expect(
-      await screen.findByText('Dernière mise à jour : 10/10/2020 00:00')
-    ).toBeInTheDocument()
   })
 })

@@ -1,28 +1,65 @@
 import type { Chart as ChartJS } from 'chart.js'
+import {
+  Chart,
+  Filler,
+  LinearScale,
+  LineController,
+  LineElement,
+  PointElement,
+  TimeSeriesScale,
+  Tooltip,
+} from 'chart.js'
 import { startOfMonth, subMonths } from 'date-fns'
 import { fr } from 'date-fns/locale'
+import { format } from 'date-fns-tz'
 import { useId, useMemo, useRef } from 'react'
 import { Line } from 'react-chartjs-2'
-import '@/ui-kit/chartGlobals'
+import 'chartjs-adapter-date-fns'
 
 import type { OffererViewsModel } from '@/apiClient/v1'
-import {
-  createMonthAxisFormatter,
-  getDateTimeToFrenchText,
-} from '@/commons/utils/date'
+import { getDateTimeToFrenchText } from '@/commons/utils/date'
 import { formatNumberLabel } from '@/commons/utils/formatNumber'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 
 import styles from './CumulatedViews.module.scss'
 import { CumulatedViewsEmptyState } from './CumulatedViewsEmptyState'
-import { callback } from 'chart.js/dist/helpers/helpers.core'
+
+const MONTH_FORMAT = 'LLLL'
+const FORMAT_OPTIONS = { locale: fr }
+
+const createMonthAxisFormatter = (firstMonth: string | null) => {
+  return (value: string | number): string => {
+    const month = format(new Date(value), MONTH_FORMAT, FORMAT_OPTIONS)
+
+    if (month === firstMonth) {
+      return ''
+    }
+
+    return month.charAt(0).toUpperCase() + month.slice(1)
+  }
+}
 
 export interface CumulatedViewsProps {
   dailyViews: OffererViewsModel[]
+  totalViewsLast30Days: number
 }
 
 type XYPoint = { x: string; y: number }
 
-export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
+Chart.register(
+  Filler,
+  LineController,
+  LineElement,
+  LinearScale,
+  PointElement,
+  TimeSeriesScale,
+  Tooltip
+)
+
+export const CumulatedViews = ({
+  dailyViews,
+  totalViewsLast30Days,
+}: CumulatedViewsProps) => {
   const chartRef = useRef<ChartJS<'line', XYPoint[], unknown> | null>(null)
 
   const hasNoViews =
@@ -49,8 +86,12 @@ export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
           rawDate: view.eventDate,
         })
 
-        if (views < min) min = views
-        if (views > max) max = views
+        if (views < min) {
+          min = views
+        }
+        if (views > max) {
+          max = views
+        }
       }
     }
 
@@ -100,7 +141,9 @@ export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
 
   const stepSize = useMemo(() => {
     const range = maxViews - minViews
-    if (range <= 0) return 1
+    if (range <= 0) {
+      return 1
+    }
 
     const roughStep = range / 3
     const magnitude = 10 ** Math.floor(Math.log10(roughStep))
@@ -114,6 +157,13 @@ export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
       responsive: true,
       maintainAspectRatio: false,
       resizeDelay: 0,
+      layout: {
+        padding: {
+          left: 4,
+          right: 16,
+          top: 8,
+        },
+      },
       scales: {
         x: {
           title: { display: false, text: 'Date' },
@@ -128,6 +178,9 @@ export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
               family: 'Montserrat-SemiBold, system-ui, sans-serif',
               size: 12,
             },
+            maxRotation: 0,
+            autoSkip: true,
+            padding: 8,
             callback: (value: string | number) => tickFormatter(value),
           },
         },
@@ -150,6 +203,7 @@ export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
               family: 'Montserrat-SemiBold, system-ui, sans-serif',
               size: 12,
             },
+            padding: 8,
             callback: formatNumberLabel,
           },
         },
@@ -165,11 +219,15 @@ export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
 
   return (
     <div className={styles['cumulated-views']}>
-      <div>
+      <div className={styles['header']}>
         <h3 className={styles['block-title']}>
-          Évolution des consultations de vos offres
+          Les statistiques sur l’individuel
         </h3>
-        <span>ces 6 derniers mois</span>
+        <span className={styles['total-views']}>
+          Vos offres individuelles ont été vues{' '}
+          {totalViewsLast30Days.toLocaleString('fr-FR')}{' '}
+          {pluralizeFr(totalViewsLast30Days, 'vue', 'vues')}
+        </span>
       </div>
 
       {hasNoViews ? (

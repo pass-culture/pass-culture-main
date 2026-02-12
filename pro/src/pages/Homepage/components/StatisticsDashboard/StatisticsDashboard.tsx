@@ -1,18 +1,15 @@
 import cn from 'classnames'
-import { useEffect, useState } from 'react'
+import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import type {
-  GetOffererResponseModel,
-  GetOffererStatsResponseModel,
-} from '@/apiClient/v1'
-import { FORMAT_DD_MM_YYYY_HH_mm, formatDate } from '@/commons/utils/date'
+import type { GetOffererResponseModel } from '@/apiClient/v1'
+import { GET_OFFERER_STATS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import strokeNoBookingIcon from '@/icons/stroke-no-booking.svg'
 import { Panel as HomeCard } from '@/ui-kit/Panel/Panel'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { CumulatedViews } from './components/CumulatedViews'
-import { LoadingSkeleton } from './components/LoadingSkeleton'
+import { CumulatedViewsSkeleton } from './components/CumulatedViewsSkeleton'
 import { MostViewedOffers } from './components/MostViewedOffers'
 import styles from './StatisticsDashboard.module.scss'
 
@@ -21,25 +18,15 @@ interface StatisticsDashboardProps {
 }
 
 export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
-  const [stats, setStats] = useState<GetOffererStatsResponseModel | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-
-  useEffect(() => {
-    const loadStats = async () => {
-      setIsLoading(true)
-      const response = await api.getOffererStats(offerer.id)
-      setStats(response)
-      setIsLoading(false)
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadStats()
-  }, [offerer.id])
+  const { isLoading, data: stats } = useSWR(
+    [GET_OFFERER_STATS_QUERY_KEY, offerer.id],
+    ([, offererId]) => api.getOffererStats(offererId)
+  )
 
   return (
     <HomeCard>
       {isLoading ? (
-        <LoadingSkeleton />
+        <CumulatedViewsSkeleton />
       ) : stats?.jsonData.topOffers.length ||
         stats?.jsonData.dailyViews.length ? (
         <div
@@ -47,19 +34,13 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
             [styles['has-top-offers']]: stats.jsonData.topOffers.length > 0,
           })}
         >
-          <CumulatedViews dailyViews={stats.jsonData.dailyViews} />
+          <CumulatedViews
+            dailyViews={stats.jsonData.dailyViews}
+            totalViewsLast30Days={stats.jsonData.totalViewsLast30Days}
+          />
           {stats.jsonData.topOffers.length > 0 && (
-            <MostViewedOffers
-              last30daysViews={stats.jsonData.totalViewsLast30Days}
-              topOffers={stats.jsonData.topOffers}
-            />
+            <MostViewedOffers topOffers={stats.jsonData.topOffers} />
           )}
-          {stats?.syncDate ? (
-            <div className={styles['sync-date']}>
-              Dernière mise à jour :{' '}
-              {formatDate(stats.syncDate, FORMAT_DD_MM_YYYY_HH_mm)}
-            </div>
-          ) : null}
         </div>
       ) : (
         <div className={styles['no-data']}>
