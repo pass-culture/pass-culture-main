@@ -608,37 +608,30 @@ class CollectiveOffer(
         "NationalProgram", foreign_keys=[nationalProgramId], back_populates="collectiveOffers"
     )
 
-    @sa_orm.declared_attr.directive
-    def __table_args__(cls) -> tuple:
-        parent_args: list = []
-        # Retrieves indexes from parent mixins defined in __table_args__
-        for base_class in cls.__mro__:
-            try:
-                parent_args += super(base_class, cls).__table_args__
-            except (AttributeError, TypeError):
-                pass
-
-        parent_args += [
-            sa.CheckConstraint(
-                f"length(description) <= {constants.MAX_COLLECTIVE_DESCRIPTION_LENGTH}",
-                name="collective_offer_description_constraint",
-            ),
-            sa.CheckConstraint(
-                '"locationComment" IS NULL OR length("locationComment") <= 200',
-                name="collective_offer_location_comment_constraint",
-            ),
-            sa.CheckConstraint(
-                '("locationType" = \'ADDRESS\' AND "offererAddressId" IS NOT NULL) OR ("locationType" != \'ADDRESS\' AND "offererAddressId" IS NULL)',
-                name="collective_offer_location_type_and_address_constraint",
-            ),
-            sa.CheckConstraint(
-                '"locationType" = \'TO_BE_DEFINED\' OR "locationComment" IS NULL',
-                name="collective_offer_location_type_and_comment_constraint",
-            ),
-            sa.Index("ix_collective_offer_locationType_offererAddressId", "locationType", "offererAddressId"),
-        ]
-
-        return tuple(parent_args)
+    __table_args__ = (
+        sa.Index(
+            "idx_collective_offer_lastValidationAuthorUserId",
+            "lastValidationAuthorUserId",
+            postgresql_where='"lastValidationAuthorUserId IS NOT NULL"',
+        ),
+        sa.CheckConstraint(
+            f"length(description) <= {constants.MAX_COLLECTIVE_DESCRIPTION_LENGTH}",
+            name="collective_offer_description_constraint",
+        ),
+        sa.CheckConstraint(
+            '"locationComment" IS NULL OR length("locationComment") <= 200',
+            name="collective_offer_location_comment_constraint",
+        ),
+        sa.CheckConstraint(
+            '("locationType" = \'ADDRESS\' AND "offererAddressId" IS NOT NULL) OR ("locationType" != \'ADDRESS\' AND "offererAddressId" IS NULL)',
+            name="collective_offer_location_type_and_address_constraint",
+        ),
+        sa.CheckConstraint(
+            '"locationType" = \'TO_BE_DEFINED\' OR "locationComment" IS NULL',
+            name="collective_offer_location_type_and_comment_constraint",
+        ),
+        sa.Index("ix_collective_offer_locationType_offererAddressId", "locationType", "offererAddressId"),
+    )
 
     @property
     def isPublicApi(self) -> bool:
@@ -1056,53 +1049,47 @@ class CollectiveOfferTemplate(
 
     dateArchived: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
-    @sa_orm.declared_attr.directive
-    def __table_args__(cls) -> tuple:
-        parent_args: list = []
-        # Retrieves indexes from parent mixins defined in __table_args__
-        for base_class in cls.__mro__:
-            try:
-                parent_args += super(base_class, cls).__table_args__
-            except (AttributeError, TypeError):
-                pass
-        parent_args += [
-            sa.Index("ix_collective_offer_template_locationType_offererAddressId", "locationType", "offererAddressId"),
-            sa.UniqueConstraint("dateRange", "id", name="collective_offer_template_unique_daterange"),
-            sa.CheckConstraint(
-                '"dateRange" is NULL OR ('
-                'NOT isempty("dateRange") '
-                'AND lower("dateRange") is NOT NULL '
-                'AND upper("dateRange") IS NOT NULL '
-                'AND lower("dateRange")::date >= "dateCreated"::date)',
-                name="template_dates_non_empty_daterange",
-            ),
-            sa.CheckConstraint(
-                '("contactEmail" is not null) or ("contactPhone" is not null) or ("contactUrl" is not null) or ("contactForm" is not null)',
-                name="collective_offer_tmpl_contact_request_form_data_constraint",
-            ),
-            sa.CheckConstraint(
-                '("contactUrl" IS NULL OR "contactForm" IS NULL)',
-                name="collective_offer_tmpl_contact_form_switch_constraint",
-            ),
-            sa.CheckConstraint(
-                f"length(description) <= {constants.MAX_COLLECTIVE_DESCRIPTION_LENGTH}",
-                name="collective_offer_tmpl_description_constraint",
-            ),
-            sa.CheckConstraint(
-                '"locationComment" IS NULL OR length("locationComment") <= 200',
-                name="collective_offer_tmpl_location_comment_constraint",
-            ),
-            sa.CheckConstraint(
-                '("locationType" = \'ADDRESS\' AND "offererAddressId" IS NOT NULL) OR ("locationType" != \'ADDRESS\' AND "offererAddressId" IS NULL)',
-                name="collective_offer_template_location_type_and_address_constraint",
-            ),
-            sa.CheckConstraint(
-                '"locationType" = \'TO_BE_DEFINED\' OR "locationComment" IS NULL',
-                name="collective_offer_template_location_type_and_comment_constraint",
-            ),
-        ]
-
-        return tuple(parent_args)
+    __table_args__ = (
+        sa.Index(
+            "idx_collective_offer_template_lastValidationAuthorUserId",
+            "lastValidationAuthorUserId",
+            postgresql_where='"lastValidationAuthorUserId IS NOT NULL"',
+        ),
+        sa.Index("ix_collective_offer_template_locationType_offererAddressId", "locationType", "offererAddressId"),
+        sa.UniqueConstraint("dateRange", "id", name="collective_offer_template_unique_daterange"),
+        sa.CheckConstraint(
+            '"dateRange" is NULL OR ('
+            'NOT isempty("dateRange") '
+            'AND lower("dateRange") is NOT NULL '
+            'AND upper("dateRange") IS NOT NULL '
+            'AND lower("dateRange")::date >= "dateCreated"::date)',
+            name="template_dates_non_empty_daterange",
+        ),
+        sa.CheckConstraint(
+            '("contactEmail" is not null) or ("contactPhone" is not null) or ("contactUrl" is not null) or ("contactForm" is not null)',
+            name="collective_offer_tmpl_contact_request_form_data_constraint",
+        ),
+        sa.CheckConstraint(
+            '("contactUrl" IS NULL OR "contactForm" IS NULL)',
+            name="collective_offer_tmpl_contact_form_switch_constraint",
+        ),
+        sa.CheckConstraint(
+            f"length(description) <= {constants.MAX_COLLECTIVE_DESCRIPTION_LENGTH}",
+            name="collective_offer_tmpl_description_constraint",
+        ),
+        sa.CheckConstraint(
+            '"locationComment" IS NULL OR length("locationComment") <= 200',
+            name="collective_offer_tmpl_location_comment_constraint",
+        ),
+        sa.CheckConstraint(
+            '("locationType" = \'ADDRESS\' AND "offererAddressId" IS NOT NULL) OR ("locationType" != \'ADDRESS\' AND "offererAddressId" IS NULL)',
+            name="collective_offer_template_location_type_and_address_constraint",
+        ),
+        sa.CheckConstraint(
+            '"locationType" = \'TO_BE_DEFINED\' OR "locationComment" IS NULL',
+            name="collective_offer_template_location_type_and_comment_constraint",
+        ),
+    )
 
     @hybrid_property
     def displayedStatus(self) -> CollectiveOfferDisplayedStatus:

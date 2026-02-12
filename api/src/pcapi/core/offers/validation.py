@@ -589,6 +589,7 @@ def check_booking_limit_datetime(
         return []
 
     if stock:
+        offer: educational_models.CollectiveOffer | models.Offer
         if isinstance(stock, educational_models.CollectiveStock):
             offer = stock.collectiveOffer
         else:
