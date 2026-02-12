@@ -13,8 +13,8 @@ import {
   formatPacificFranc,
 } from '@/commons/utils/convertEuroToPacificFranc'
 import { formatPrice } from '@/commons/utils/formatPrice'
-import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
-import { SummarySection } from '@/components/SummaryLayout/SummarySection'
+import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
+import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
 
 import styles from './PriceCategoriesSection.module.scss'
 

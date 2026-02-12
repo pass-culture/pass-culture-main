@@ -5,7 +5,7 @@ import type {
 import {
   type Description,
   SummaryDescriptionList,
-} from '@/components/SummaryLayout/SummaryDescriptionList'
+} from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
 
 interface CollectiveOfferVisibilitySectionProps {
   institution?: EducationalInstitutionResponseModel | null

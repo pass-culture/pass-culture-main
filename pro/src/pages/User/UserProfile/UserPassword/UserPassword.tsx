@@ -1,4 +1,3 @@
-import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 import { UserPasswordForm } from '@/components/UserPasswordForm/UserPasswordForm'
 import { Button } from '@/design-system/Button/Button'
 import {
@@ -6,6 +5,7 @@ import {
   ButtonSize,
   ButtonVariant,
 } from '@/design-system/Button/types'
+import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
 
 import { Forms } from '../constants'
 

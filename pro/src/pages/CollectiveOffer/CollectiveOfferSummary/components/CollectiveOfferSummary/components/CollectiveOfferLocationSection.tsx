@@ -3,12 +3,12 @@ import {
   type GetCollectiveOfferResponseModel,
   type GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
+import { getInterventionAreaLabels } from '@/pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/utils/getInterventionAreaLabels'
 import {
   type Description,
   SummaryDescriptionList,
-} from '@/components/SummaryLayout/SummaryDescriptionList'
-import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
-import { getInterventionAreaLabels } from '@/pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/utils/getInterventionAreaLabels'
+} from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
+import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 
 import styles from '../CollectiveOfferSummary.module.scss'
 

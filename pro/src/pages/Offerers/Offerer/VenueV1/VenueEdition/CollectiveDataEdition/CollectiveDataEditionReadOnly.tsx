@@ -1,9 +1,9 @@
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { getActivityLabel } from '@/commons/mappings/mappings'
-import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
-import { SummarySection } from '@/components/SummaryLayout/SummarySection'
-import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
 import { getInterventionAreaLabels } from '@/pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/utils/getInterventionAreaLabels'
+import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
+import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
+import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 
 interface CollectiveDataEditionReadOnlyProps {
   venue: GetVenueResponseModel

@@ -6,14 +6,14 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { getDelayToFrenchText } from '@/commons/utils/date'
-import { SummaryContent } from '@/components/SummaryLayout/SummaryContent'
+import { SummaryContent } from '@/ui-kit/SummaryLayout/SummaryContent'
 import {
   type Description,
   SummaryDescriptionList,
-} from '@/components/SummaryLayout/SummaryDescriptionList'
-import { SummaryLayout } from '@/components/SummaryLayout/SummaryLayout'
-import { SummarySection } from '@/components/SummaryLayout/SummarySection'
-import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
+} from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
+import { SummaryLayout } from '@/ui-kit/SummaryLayout/SummaryLayout'
+import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
+import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 
 import styles from './IndividualOfferSummaryPracticalInfosScreen.module.scss'
 

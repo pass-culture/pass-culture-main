@@ -9,11 +9,11 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
-import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
-import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 import { getStockWarningText } from '@/pages/IndividualOfferSummary/commons/getStockWarningText'
 import { PriceCategoriesSection } from '@/pages/IndividualOfferSummary/components/PriceCategoriesSection/PriceCategoriesSection'
 import { StockThingSection } from '@/pages/IndividualOfferSummary/components/StockThingSection/StockThingSection'
+import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
+import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
 
 interface IndividualOfferSummaryPriceTableScreenProps {
   offer: GetIndividualOfferWithAddressResponseModel

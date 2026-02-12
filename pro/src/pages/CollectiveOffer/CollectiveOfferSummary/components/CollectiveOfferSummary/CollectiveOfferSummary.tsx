@@ -12,10 +12,10 @@ import {
   isCollectiveStockEditable,
 } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
-import { SummaryContent } from '@/components/SummaryLayout/SummaryContent'
-import { SummaryLayout } from '@/components/SummaryLayout/SummaryLayout'
-import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 import { SynchronizedProviderInformation } from '@/components/SynchronisedProviderInformation/SynchronizedProviderInformation'
+import { SummaryContent } from '@/ui-kit/SummaryLayout/SummaryContent'
+import { SummaryLayout } from '@/ui-kit/SummaryLayout/SummaryLayout'
+import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
 
 import styles from './CollectiveOfferSummary.module.scss'
 import { CollectiveOfferContactSection } from './components/CollectiveOfferContactSection'

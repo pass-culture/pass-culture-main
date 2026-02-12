@@ -6,8 +6,8 @@ import { Markdown } from '@/components/Markdown/Markdown'
 import {
   type Description,
   SummaryDescriptionList,
-} from '@/components/SummaryLayout/SummaryDescriptionList'
-import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
+} from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
+import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 
 import { DEFAULT_RECAP_VALUE } from './constants'
 import { formatDuration } from './utils/formatDuration'

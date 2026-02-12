@@ -14,11 +14,11 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
-import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
-import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 import { getStockWarningText } from '@/pages/IndividualOfferSummary/commons/getStockWarningText'
 import { StockThingSection } from '@/pages/IndividualOfferSummary/components/StockThingSection/StockThingSection'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
+import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
+import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
 
 import { RecurrenceSection } from './RecurrenceSection/RecurrenceSection'
 import styles from './StockSection.module.scss'

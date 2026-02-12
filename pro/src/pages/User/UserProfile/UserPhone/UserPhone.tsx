@@ -1,5 +1,4 @@
 import type { UserPhoneBodyModel } from '@/apiClient/v1'
-import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 import { UserPhoneForm } from '@/components/UserPhoneForm/UserPhoneForm'
 import { Button } from '@/design-system/Button/Button'
 import {
@@ -7,6 +6,7 @@ import {
   ButtonSize,
   ButtonVariant,
 } from '@/design-system/Button/types'
+import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
 
 import { Forms } from '../constants'
 

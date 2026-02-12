@@ -7,9 +7,9 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { SummarySection } from '@/components/SummaryLayout/SummarySection'
-import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
 import { OpeningHoursReadOnly } from '@/pages/VenueEdition/components/OpeningHoursAndAddressReadOnly/OpeningHoursReadOnly'
+import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
+import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 
 type IndividualOfferSummaryStocksTimetableScreenProps = {
   offer: GetIndividualOfferWithAddressResponseModel

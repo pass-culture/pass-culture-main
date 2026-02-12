@@ -3,7 +3,6 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { GET_USER_EMAIL_PENDING_VALIDATION } from '@/commons/config/swrQueryKeys'
-import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -11,6 +10,7 @@ import {
   ButtonVariant,
 } from '@/design-system/Button/types'
 import { UserEmailForm } from '@/pages/User/UserProfile/UserEmail/UserEmailForm/UserEmailForm'
+import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
 
 import { Forms } from '../constants'
 import { BannerPendingEmailValidation } from './BannerPendingEmailValidation/BannerPendingEmailValidation'

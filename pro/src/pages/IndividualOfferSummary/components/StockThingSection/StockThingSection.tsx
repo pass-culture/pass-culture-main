@@ -11,7 +11,7 @@ import {
   toDateStrippedOfTimezone,
 } from '@/commons/utils/date'
 import { formatPrice } from '@/commons/utils/formatPrice'
-import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
+import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
 
 interface StockThingSectionProps {
   stock?: GetOfferStockResponseModel
