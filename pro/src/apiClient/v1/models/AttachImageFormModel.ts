@@ -8,5 +8,6 @@ export type AttachImageFormModel = {
   croppingRectWidth: number;
   croppingRectX: number;
   croppingRectY: number;
+  thumb?: (Blob | null);
 };
 

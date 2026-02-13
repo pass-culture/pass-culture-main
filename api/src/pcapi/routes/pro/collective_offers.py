@@ -21,6 +21,7 @@ from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization import educational_redactors
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import date as date_utils
+from pcapi.utils.image_conversion import CropParams
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.transaction_manager import atomic
 
@@ -547,6 +548,17 @@ def create_collective_offer_template(
     return collective_offers_serialize.CollectiveOfferResponseIdModel(id=offer.id)
 
 
+def _get_image_as_bytes() -> bytes:
+    """Get the image from the POSTed data (request)"""
+
+    if "thumb" in request.files:
+        blob = request.files["thumb"]
+        image_as_bytes = blob.read()
+        return image_as_bytes
+
+    raise offers_validation.exceptions.MissingImage()
+
+
 def _check_image(image_as_bytes: bytes) -> None:
     try:
         offers_validation.check_image(
@@ -572,6 +584,15 @@ def _check_image(image_as_bytes: bytes) -> None:
         )
 
 
+def _get_crop_params(image_form: collective_offers_serialize.AttachImageFormModel) -> CropParams:
+    return CropParams.build(
+        x_crop_percent=image_form.cropping_rect_x,
+        y_crop_percent=image_form.cropping_rect_y,
+        height_crop_percent=image_form.cropping_rect_height,
+        width_crop_percent=image_form.cropping_rect_width,
+    )
+
+
 @private_api.route("/collective/offers/<int:offer_id>/image", methods=["POST"])
 @atomic()
 @login_required
@@ -595,7 +616,7 @@ def attach_offer_image(
     except exceptions.CollectiveOfferForbiddenAction:
         raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
 
-    image_as_bytes = form.get_image_as_bytes(request)
+    image_as_bytes = _get_image_as_bytes()
 
     _check_image(image_as_bytes)
 
@@ -603,13 +624,13 @@ def attach_offer_image(
         api_offer.attach_image(
             obj=offer,
             image=image_as_bytes,
-            crop_params=form.crop_params,
+            crop_params=_get_crop_params(form),
             credit=form.credit,
         )
     except UnidentifiedImageError:
         raise ApiErrors({"image": "Impossible d'identifier l'image"}, status_code=400)
 
-    return collective_offers_serialize.AttachImageResponseModel.from_orm(offer)
+    return collective_offers_serialize.AttachImageResponseModel.model_validate(offer)
 
 
 @private_api.route("/collective/offers-template/<int:offer_id>/image", methods=["POST"])
@@ -630,7 +651,7 @@ def attach_offer_template_image(
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    image_as_bytes = form.get_image_as_bytes(request)
+    image_as_bytes = _get_image_as_bytes()
 
     _check_image(image_as_bytes)
 
@@ -638,7 +659,7 @@ def attach_offer_template_image(
         api_offer.attach_image(
             obj=offer,
             image=image_as_bytes,
-            crop_params=form.crop_params,
+            crop_params=_get_crop_params(form),
             credit=form.credit,
         )
     except UnidentifiedImageError:
