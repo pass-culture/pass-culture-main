@@ -1,5 +1,6 @@
 from flask import Blueprint
 from spectree import SecurityScheme
+from spectree import SecuritySchemeData
 
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
@@ -13,7 +14,9 @@ EAC_API_KEY_AUTH = "ApiKeyAuth"
 SECURITY_SCHEMES = [
     SecurityScheme(
         name=EAC_API_KEY_AUTH,
-        data={"type": "http", "scheme": "bearer", "description": "API key shared by Adage and pass Culture"},  # type: ignore[arg-type]
+        data=SecuritySchemeData.parse_obj(
+            {"type": "http", "scheme": "bearer", "description": "API key shared by Adage and pass Culture"}
+        ),
     ),
 ]
 
