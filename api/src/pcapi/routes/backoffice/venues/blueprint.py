@@ -1447,7 +1447,8 @@ def _suspend_venue_reimbursement(venue_id: int, suspend: bool) -> utils.Backoffi
         flash(
             Markup("Les remboursements vers le partenaire culturel <strong>{name}</strong> ont été {verb}.").format(
                 name=venue.common_name, verb="gelés" if suspend else "rétablis"
-            )
+            ),
+            "success",
         )
 
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
