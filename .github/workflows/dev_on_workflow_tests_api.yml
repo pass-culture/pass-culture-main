@@ -192,7 +192,7 @@ jobs:
       - name: "Check for alembic multiple heads"
         run: |
           docker run --rm \
-            -v /var/run/docker.sock:/var/run/docker.sock \
+            --volume /var/run/docker.sock:/var/run/docker.sock \
             --network "${{ job.container.network }}" \
             --entrypoint=bash \
             ${{ steps.compute-image-name.outputs.image_name }} \
@@ -207,6 +207,7 @@ jobs:
             -v /var/run/docker.sock:/var/run/docker.sock \
             --network "${{ job.container.network }}" \
             --entrypoint=bash \
+            --env RUN_ENV --env DATABASE_URL_TEST \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c '
               set -e
