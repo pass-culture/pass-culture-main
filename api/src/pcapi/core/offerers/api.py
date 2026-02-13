@@ -3108,7 +3108,7 @@ def get_or_create_offer_location(offerer_id: int, address_id: int, label: str | 
     if not offerer_address:
         offerer_address = models.OffererAddress(offererId=offerer_id, addressId=address_id, label=label)
         db.session.add(offerer_address)
-        db.session.flush()
+        db.session.flush([offerer_address])
 
     return offerer_address
 
