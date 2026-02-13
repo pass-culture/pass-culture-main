@@ -71,15 +71,13 @@ jobs:
       - name: "Show installed Python packages"
         run: |
           docker run \
-            --volume /var/run/docker.sock:/var/run/docker.sock \
-            --entrypoint=sh \
+            --entrypoint sh \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c 'pip freeze'
       - name: "Run mypy"
         run: |
           docker run \
-            --volume /var/run/docker.sock:/var/run/docker.sock \
-            --entrypoint=sh \
+            --entrypoint sh \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c 'mypy src'
 
@@ -192,10 +190,7 @@ jobs:
       - name: "Check for alembic multiple heads"
         run: |
           docker run \
-            --volume /var/run/docker.sock:/var/run/docker.sock \
-            --network "${{ job.container.network }}" \
-            --env RUN_ENV --env DATABASE_URL_TEST \
-            --entrypoint=bash \
+            --entrypoint bash \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c '
               LINE_COUNT=$(wc -l <<< "$(alembic heads)")
@@ -205,10 +200,9 @@ jobs:
       - name: "Check database and model are aligned"
         run: |
           docker run \
-            --volume /var/run/docker.sock:/var/run/docker.sock \
             --network "${{ job.container.network }}" \
             --env RUN_ENV --env DATABASE_URL_TEST \
-            --entrypoint=bash \
+            --entrypoint bash \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c '
               set -e
@@ -221,10 +215,9 @@ jobs:
       - name: "Check that downgrade scripts are correctly written"
         run: |
           docker run \
-            --volume /var/run/docker.sock:/var/run/docker.sock \
             --network "${{ job.container.network }}" \
             --env RUN_ENV --env DATABASE_URL_TEST \
-            --entrypoint=bash \
+            --entrypoint bash \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c '
               set -e
@@ -236,10 +229,9 @@ jobs:
       - name: "Lint migration upgrades"
         run: |
           docker run \
-            --volume /var/run/docker.sock:/var/run/docker.sock \
             --network "${{ job.container.network }}" \
             --env RUN_ENV --env DATABASE_URL_TEST \
-            --entrypoint=bash \
+            --entrypoint bash \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c '
               set -uo pipefail
@@ -262,11 +254,10 @@ jobs:
             '
       - name: "Lint migration downgrades"
         run: |
-          docker run --rm \
-            --volume /var/run/docker.sock:/var/run/docker.sock \
+          docker run \
             --network "${{ job.container.network }}" \
             --env RUN_ENV --env DATABASE_URL_TEST \
-            --entrypoint=bash \
+            --entrypoint bash \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c '
               set -uo pipefail
@@ -414,10 +405,9 @@ jobs:
       - name: "Setup database"
         run: |
           docker run \
-            --volume /var/run/docker.sock:/var/run/docker.sock \
             --network "${{ job.container.network }}" \
             --env RUN_ENV --env DATABASE_URL_TEST \
-            --entrypoint=bash \
+            --entrypoint bash \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c '
               set -e
@@ -430,12 +420,9 @@ jobs:
       - name: "Mount a Volume with pcapi rights"
         run: |
           docker run \
-            --volume /var/run/docker.sock:/var/run/docker.sock \
             --volume ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests \
-            --network "${{ job.container.network }}" \
             --user 0 \
-            --env RUN_ENV --env DATABASE_URL_TEST --env REDIS_URL \
-            --entrypoint=bash \
+            --entrypoint bash \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c '
               echo "Changing owner and group fort directory test"
@@ -461,17 +448,16 @@ jobs:
       - name: "Run pytest"
         run: |
           docker run \
-            --volume /var/run/docker.sock:/var/run/docker.sock \
             --volume ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests \
             --network "${{ job.container.network }}" \
-            --entrypoint=bash \
+            --entrypoint bash \
             --env RUN_ENV --env DATABASE_URL_TEST --env REDIS_URL --env SQLALCHEMY_WARN_20 \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c '
               pytest ${{ matrix.pytest_args.collection }} \
               --splits 4 --group ${{ matrix.group }} \
               --store-durations --durations-path /tests/.test_durations --clean-durations \
-              --durations=10 --junitxml='/tests/junit.xml' \
+              --durations=10 --junitxml="/tests/junit.xml" \
               -q --color=yes
             '
 
