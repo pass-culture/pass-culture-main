@@ -204,7 +204,9 @@ test.describe('Didactic Onboarding feature', () => {
       page.waitForResponse(isPatchStocksResponse),
       page.getByText('Enregistrer et continuer').click(),
     ])
-    expect(page.getByText('Informations pratiques\n')).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'Informations pratiques' })
+    ).toBeVisible()
     await Promise.all([
       page.waitForResponse(isPatchOffersResponse),
       page.getByText('Enregistrer et continuer').click(),

@@ -37,7 +37,7 @@ export const test = base.extend<{
   authenticatedPage: Page
 }>({
   authSession: async ({ browser, callSandbox }, use, testInfo) => {
-    const projectName = testInfo.project.name
+    const projectName = `${testInfo.file}-${testInfo.project.name}`
     const cached = sessionCache.get(projectName)
 
     if (cached) {
