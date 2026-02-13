@@ -191,9 +191,10 @@ jobs:
           password: "${{ steps.openid-auth.outputs.access_token }}"
       - name: "Check for alembic multiple heads"
         run: |
-          docker run --rm \
+          docker run \
             --volume /var/run/docker.sock:/var/run/docker.sock \
             --network "${{ job.container.network }}" \
+            --env RUN_ENV --env DATABASE_URL_TEST \
             --entrypoint=bash \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c '
@@ -203,11 +204,11 @@ jobs:
             '
       - name: "Check database and model are aligned"
         run: |
-          docker run --rm \
+          docker run \
             -v /var/run/docker.sock:/var/run/docker.sock \
             --network "${{ job.container.network }}" \
-            --entrypoint=bash \
             --env RUN_ENV --env DATABASE_URL_TEST \
+            --entrypoint=bash \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c '
               set -e
@@ -219,9 +220,10 @@ jobs:
             '
       - name: "Check that downgrade scripts are correctly written"
         run: |
-          docker run --rm \
-            -v /var/run/docker.sock:/var/run/docker.sock \
+          docker run \
+            --volume /var/run/docker.sock:/var/run/docker.sock \
             --network "${{ job.container.network }}" \
+            --env RUN_ENV --env DATABASE_URL_TEST \
             --entrypoint=bash \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c '
@@ -233,9 +235,10 @@ jobs:
             '
       - name: "Lint migration upgrades"
         run: |
-          docker run --rm \
-            -v /var/run/docker.sock:/var/run/docker.sock \
+          docker run \
+            --volume /var/run/docker.sock:/var/run/docker.sock \
             --network "${{ job.container.network }}" \
+            --env RUN_ENV --env DATABASE_URL_TEST \
             --entrypoint=bash \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c '
@@ -260,8 +263,9 @@ jobs:
       - name: "Lint migration downgrades"
         run: |
           docker run --rm \
-            -v /var/run/docker.sock:/var/run/docker.sock \
+            --volume /var/run/docker.sock:/var/run/docker.sock \
             --network "${{ job.container.network }}" \
+            --env RUN_ENV --env DATABASE_URL_TEST \
             --entrypoint=bash \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c '
