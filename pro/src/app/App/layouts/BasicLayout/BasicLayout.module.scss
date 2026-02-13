@@ -59,6 +59,6 @@ $connect-as-header-height: rem.torem(52px);
   flex-flow: column wrap;
   place-content: center center;
   display: flex;
+  min-width: 60%;
   justify-self: center;
-  width: rem.torem(830px);
 }
