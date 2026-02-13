@@ -3,6 +3,7 @@ from typing import Type
 from pcapi import settings
 from pcapi.connectors.big_query.importer.base import AbstractImporter
 from pcapi.connectors.big_query.queries import artist as bq_artist_queries
+from pcapi.core.artist import api as artist_api
 from pcapi.core.artist import models as artist_models
 from pcapi.core.artist.utils import get_artist_type
 from pcapi.core.artist.utils import sanitize_author_html
@@ -44,6 +45,9 @@ class ArtistImporter(
                 destination_folder=settings.ARTIST_THUMBS_FOLDER_NAME,
                 file_id=model.mediation_uuid,
             )
+            if mediation_uuid:
+                image_as_bytes = self.gcp_backend.get_public_object(settings.ARTIST_THUMBS_FOLDER_NAME, mediation_uuid)
+                artist_api.store_mini_thumb(image_as_bytes, mediation_uuid)
 
         return artist_models.Artist(
             id=model.id,
@@ -70,13 +74,17 @@ class ArtistImporter(
         sqlalchemy_obj.biography = delta_model.biography
         sqlalchemy_obj.wikipedia_url = delta_model.wikipedia_url
         if delta_model.mediation_uuid and delta_model.mediation_uuid != sqlalchemy_obj.mediation_uuid:
-            sqlalchemy_obj.mediation_uuid = copy_file_between_storage_backends(
+            mediation_uuid = copy_file_between_storage_backends(
                 source_storage=self.gcp_data,
                 destination_storage=self.gcp_backend,
                 source_folder=settings.DATA_ARTIST_THUMBS_FOLDER_NAME,
                 destination_folder=settings.ARTIST_THUMBS_FOLDER_NAME,
                 file_id=delta_model.mediation_uuid,
             )
+            sqlalchemy_obj.mediation_uuid = mediation_uuid
+            if mediation_uuid:
+                image_as_bytes = self.gcp_backend.get_public_object(settings.ARTIST_THUMBS_FOLDER_NAME, mediation_uuid)
+                artist_api.store_mini_thumb(image_as_bytes, mediation_uuid)
 
 
 class ArtistProductLinkImporter(
