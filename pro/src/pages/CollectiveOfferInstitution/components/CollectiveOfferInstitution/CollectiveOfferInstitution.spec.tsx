@@ -30,7 +30,6 @@ import {
 
 import {
   INSTITUTION_GENERIC_ERROR_MESSAGE,
-  POST_INSTITUTION_FORM_ERROR_MESSAGE,
   REDACTOR_GENERIC_ERROR_MESSAGE,
 } from '../../commons/constants'
 import {
@@ -397,7 +396,7 @@ describe('CollectiveOfferInstitution', () => {
     )
 
     expect(
-      screen.queryByRole('option', { name: 'KHTEUR REDA' })
+      screen.queryByRole('option', { name: 'REDA KHTEUR' })
     ).not.toBeInTheDocument()
   })
 
@@ -473,7 +472,7 @@ describe('CollectiveOfferInstitution', () => {
       )
 
       await waitFor(() => {
-        expect(teacherInput).toHaveValue('Khteur Reda')
+        expect(teacherInput).toHaveValue('Reda Khteur')
       })
     })
 
@@ -530,7 +529,7 @@ describe('CollectiveOfferInstitution', () => {
       ).toBeInTheDocument()
     })
 
-    it('should display institution generic error message when receiving an api error with form keys', async () => {
+    it('should display institution specific error message when receiving an api error with form keys', async () => {
       vi.spyOn(
         api,
         'patchCollectiveOffersEducationalInstitution'
@@ -540,7 +539,7 @@ describe('CollectiveOfferInstitution', () => {
           {
             status: 400,
             body: {
-              educationalInstitutionId: ['Erreur api surcharge cote front'],
+              educationalInstitutionId: ["L'établissement est introuvable"],
             },
           } as ApiResult,
           ''
@@ -558,19 +557,15 @@ describe('CollectiveOfferInstitution', () => {
       )
       expect(api.patchCollectiveOffersEducationalInstitution).toHaveBeenCalled()
 
-      expect(
-        screen.queryByText(INSTITUTION_GENERIC_ERROR_MESSAGE)
-      ).toBeInTheDocument()
-
       await waitFor(() =>
         expect(snackBarError).toHaveBeenNthCalledWith(
           1,
-          POST_INSTITUTION_FORM_ERROR_MESSAGE
+          "L'établissement est introuvable"
         )
       )
     })
 
-    it('should display teacher generic error message when receiving an api error with form keys', async () => {
+    it('should display teacher specific error message when receiving an api error with form keys', async () => {
       vi.spyOn(
         api,
         'patchCollectiveOffersEducationalInstitution'
@@ -580,7 +575,7 @@ describe('CollectiveOfferInstitution', () => {
           {
             status: 400,
             body: {
-              teacherEmail: ['Erreur api surcharge cote front'],
+              teacherEmail: ["L'enseignant est introuvable"],
             },
           } as ApiResult,
           ''
@@ -601,7 +596,7 @@ describe('CollectiveOfferInstitution', () => {
       await waitFor(() =>
         expect(snackBarError).toHaveBeenNthCalledWith(
           1,
-          POST_INSTITUTION_FORM_ERROR_MESSAGE
+          "L'enseignant est introuvable"
         )
       )
     })
