@@ -1,4 +1,5 @@
 from spectree import SecurityScheme
+from spectree import SecuritySchemeData
 from spectree.models import Server
 
 from pcapi.serialization import utils as serialization_utils
@@ -29,7 +30,9 @@ public_api_schema = ExtendedSpecTree(
     security_schemes=[
         SecurityScheme(
             name=API_KEY_AUTH_NAME,
-            data={"type": "http", "scheme": "bearer", "description": "Api key issued by passculture"},  # type: ignore[arg-type]
+            data=SecuritySchemeData.parse_obj(
+                {"type": "http", "scheme": "bearer", "description": "Api key issued by passculture"}
+            ),
         ),
     ],
     servers=_servers,
@@ -46,7 +49,9 @@ deprecated_collective_public_api_schema = ExtendedSpecTree(
     security_schemes=[
         SecurityScheme(
             name=API_KEY_AUTH_NAME,
-            data={"type": "http", "scheme": "bearer", "description": "Api key issued by passculture"},  # type: ignore[arg-type]
+            data=SecuritySchemeData.parse_obj(
+                {"type": "http", "scheme": "bearer", "description": "Api key issued by passculture"}
+            ),
         ),
     ],
     servers=_servers,
