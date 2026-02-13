@@ -134,12 +134,13 @@ test.describe('Create individual offers new flow', () => {
     await expect(page.getByText('Définir le calendrier')).toBeVisible()
     await page.getByRole('button', { name: 'Retour' }).click()
 
-    expect(await page.getByLabel('Intitulé du tarif').count()).toEqual(4)
-    const deleteButtons = await page
+    await expect(page.getByLabel('Intitulé du tarif')).toHaveCount(4)
+
+    await page
       .getByRole('button', { name: /Supprimer ce tarif/ })
-      .all()
-    await deleteButtons[3].click()
-    expect(await page.getByLabel('Intitulé du tarif').count()).toEqual(3)
+      .last()
+      .click()
+    await expect(page.getByLabel('Intitulé du tarif')).toHaveCount(3)
 
     await Promise.all([
       page.waitForResponse(isPutPriceCategoriesResponse),
@@ -157,15 +158,10 @@ test.describe('Create individual offers new flow', () => {
     await page.getByText('Ajouter un créneau').click()
     await page.getByLabel(/Horaire 2/).fill('21:00')
 
-    await page.getByText('Ajouter d’autres places et tarifs').dblclick()
-    expect(
-      await page.getByTestId(/wrapper-quantityPerPriceCategories/).count()
-    ).toEqual(2)
-    await page.getByText('Ajouter d’autres places et tarifs')
     await page.getByText('Ajouter d’autres places et tarifs').click()
     expect(
       await page.getByTestId(/wrapper-quantityPerPriceCategories/).count()
-    ).toEqual(3)
+    ).toEqual(2)
 
     const row = await page
       .getByTestId(/wrapper-quantityPerPriceCategories/)
@@ -177,7 +173,16 @@ test.describe('Create individual offers new flow', () => {
     await row[1].getByLabel(/Tarif/).selectOption('10,00\xa0€ - Fosse Debout')
     await row[1].getByLabel('Nombre de places').fill('20')
 
-    await row[2].getByLabel(/Tarif/).selectOption('100,00\xa0€ - Carré Or')
+    await page.getByText('Ajouter d’autres places et tarifs').click()
+    expect(
+      await page.getByTestId(/wrapper-quantityPerPriceCategories/).count()
+    ).toEqual(3)
+
+    await page
+      .getByTestId(/wrapper-quantityPerPriceCategories/)
+      .last()
+      .getByLabel(/Tarif/)
+      .selectOption('100,00\xa0€ - Carré Or')
 
     await page
       .getByLabel('Nombre de jours avant le début de l’évènement')

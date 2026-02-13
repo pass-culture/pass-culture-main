@@ -1,4 +1,4 @@
-import type { Expect, Page } from '@playwright/test'
+import type { Expect, Locator, Page } from '@playwright/test'
 
 export const MOCKED_BACK_ADDRESS_LABEL = '3 Rue de Valois 75001 Paris'
 export const MOCKED_BACK_ADDRESS_STREET = '3 RUE DE VALOIS'
@@ -58,21 +58,38 @@ export async function autoCompleteAddress(
     .click()
 }
 
+async function fillAndCheckValidity(
+  locator: Locator,
+  value: string,
+  expect: Expect
+) {
+  await locator.fill(value)
+  await locator.blur()
+  await expect(locator).toHaveAttribute('aria-invalid', 'false')
+}
+
 export async function fillCustomAddress(page: Page, expect: Expect) {
   await page
     .getByRole('button', { name: 'Vous ne trouvez pas votre adresse ?' })
     .click()
-  await page
-    .getByLabel('Intitulé de la localisation')
-    .fill('Libellé de mon adresse custom')
-  await page
-    .getByLabel(/Adresse postale/)
-    .last()
-    .fill('Place de la gare')
-  await page.getByLabel(/Code postal/).fill('123123')
-  await page.getByLabel(/Ville/).fill('Y')
-  await page.getByLabel(/Coordonnées GPS/).fill('48.853320, 2.348979')
-  await page.getByLabel(/Coordonnées GPS/).blur()
+  await fillAndCheckValidity(
+    page.getByLabel('Intitulé de la localisation'),
+    'Libellé de mon adresse custom',
+    expect
+  )
+  await fillAndCheckValidity(
+    page.getByLabel(/Adresse postale/).last(),
+    'Place de la gare',
+    expect
+  )
+  await fillAndCheckValidity(page.getByLabel(/Code postal/), '123123', expect)
+  await fillAndCheckValidity(page.getByLabel(/Ville/), 'Y', expect)
+  await fillAndCheckValidity(
+    page.getByLabel(/Coordonnées GPS/),
+    '48.853320, 2.348979',
+    expect
+  )
+
   await expect(
     page.getByText('Contrôlez la précision de vos coordonnées GPS.')
   ).toBeVisible()
