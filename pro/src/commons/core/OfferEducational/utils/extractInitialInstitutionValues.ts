@@ -27,6 +27,7 @@ export const extractInitialInstitutionValues = (
   const teacherNameFromRequest = requestInformations
     ? `${requestInformations.redactor.firstName} ${requestInformations.redactor.lastName}`
     : ''
+
   return {
     institution: institution?.id.toString() ?? '',
     teacherEmail: teacher ? `${teacher.email}` : teacherEmailFromRequest,

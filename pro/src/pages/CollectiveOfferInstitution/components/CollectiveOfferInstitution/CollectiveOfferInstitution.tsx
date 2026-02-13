@@ -5,7 +5,7 @@ import useSWR from 'swr'
 import { useDebouncedCallback } from 'use-debounce'
 
 import { api } from '@/apiClient/api'
-import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
+import { getHumanReadableApiError, isErrorAPIError } from '@/apiClient/helpers'
 import {
   CollectiveOfferAllowedAction,
   type EducationalInstitutionResponseModel,
@@ -41,8 +41,6 @@ import { SelectAutocomplete } from '@/ui-kit/form/SelectAutoComplete/SelectAutoc
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import {
-  DEFAULT_FORM_FIELD_ERRORS,
-  FORM_KEYS_MAPPING,
   GET_REDACTOR_NOT_FOUND_ERROR_MESSAGE,
   INSTITUTION_GENERIC_ERROR_MESSAGE,
   POST_INSTITUTION_FORM_ERROR_MESSAGE,
@@ -148,7 +146,7 @@ export const CollectiveOfferInstitutionScreen = ({
   }
 
   const onSubmit = async (values: InstitutionFormValues) => {
-    if (!form.formState.isDirty) {
+    if (!form.formState.isDirty && !requestId) {
       onSuccess({
         offerId: offer.id.toString(),
         message:
@@ -189,21 +187,11 @@ export const CollectiveOfferInstitutionScreen = ({
         ...extractInitialInstitutionValues(collectiveOffer.institution),
       })
     } catch (error) {
+      // FIXME(anoukhello - 13/02/25): this error handling is not ideal, wait for this PR https://github.com/pass-culture/pass-culture-main/pull/21252 to be merged
       if (isErrorAPIError(error)) {
-        const serializedApiErrors = serializeApiErrors(
-          error.body,
-          FORM_KEYS_MAPPING
+        snackBar.error(
+          getHumanReadableApiError(error) || POST_INSTITUTION_FORM_ERROR_MESSAGE
         )
-
-        snackBar.error(POST_INSTITUTION_FORM_ERROR_MESSAGE)
-
-        Object.entries(serializedApiErrors).forEach(([field]) => {
-          form.setError(field as keyof InstitutionFormValues, {
-            message:
-              DEFAULT_FORM_FIELD_ERRORS[field as keyof InstitutionFormValues] ||
-              SENT_DATA_ERROR_MESSAGE,
-          })
-        })
       } else {
         snackBar.error(SENT_DATA_ERROR_MESSAGE)
       }
@@ -297,7 +285,7 @@ export const CollectiveOfferInstitutionScreen = ({
     const { firstName, lastName, email } = requestInformations.redactor
     setTeachersOptions([
       {
-        label: `${lastName ?? ''} ${firstName ?? ''}`.trim(),
+        label: `${firstName ?? ''} ${lastName ?? ''}`.trim(),
         value: email,
         surname: lastName ?? '',
         name: firstName ?? '',

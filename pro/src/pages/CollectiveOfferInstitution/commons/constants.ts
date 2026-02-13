@@ -1,5 +1,3 @@
-import type { InstitutionFormValues } from './validationSchema'
-
 export const GET_REDACTOR_NOT_FOUND_ERROR_MESSAGE =
   "Nous n'avons pas trouvé d'enseignant correspondant à votre recherche"
 
@@ -11,25 +9,3 @@ export const INSTITUTION_GENERIC_ERROR_MESSAGE =
 
 export const REDACTOR_GENERIC_ERROR_MESSAGE =
   "Nous n'avons pas trouvé d'enseignant correspondant à votre recherche. Veuillez en sélectionner un autre dans la liste."
-
-type BackendFormKeys =
-  | 'educationalInstitutionId'
-  | 'educationalInstitution'
-  | 'teacherEmail'
-
-export const FORM_KEYS_MAPPING: Record<
-  BackendFormKeys,
-  keyof InstitutionFormValues
-> = {
-  educationalInstitutionId: 'institution',
-  educationalInstitution: 'institution',
-  teacherEmail: 'teacherEmail',
-}
-export const DEFAULT_FORM_FIELD_ERRORS: Record<
-  keyof InstitutionFormValues,
-  string
-> = {
-  institution: INSTITUTION_GENERIC_ERROR_MESSAGE,
-  teacherEmail: REDACTOR_GENERIC_ERROR_MESSAGE,
-  teacherName: REDACTOR_GENERIC_ERROR_MESSAGE,
-}
