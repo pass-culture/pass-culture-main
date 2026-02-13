@@ -77,7 +77,7 @@ jobs:
             -c 'pip freeze'
       - name: "Run mypy"
         run: |
-          docker run --rm \
+          docker run \
             --volume /var/run/docker.sock:/var/run/docker.sock \
             --entrypoint=sh \
             ${{ steps.compute-image-name.outputs.image_name }} \
