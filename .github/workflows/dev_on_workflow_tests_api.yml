@@ -70,15 +70,15 @@ jobs:
           password: "${{ steps.openid-auth.outputs.access_token }}"
       - name: "Show installed Python packages"
         run: |
-          docker run --rm \
-            -v /var/run/docker.sock:/var/run/docker.sock \
+          docker run \
+            --volume /var/run/docker.sock:/var/run/docker.sock \
             --entrypoint=sh \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c 'pip freeze'
       - name: "Run mypy"
         run: |
           docker run --rm \
-            -v /var/run/docker.sock:/var/run/docker.sock \
+            --volume /var/run/docker.sock:/var/run/docker.sock \
             --entrypoint=sh \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c 'mypy src'
@@ -205,7 +205,7 @@ jobs:
       - name: "Check database and model are aligned"
         run: |
           docker run \
-            -v /var/run/docker.sock:/var/run/docker.sock \
+            --volume /var/run/docker.sock:/var/run/docker.sock \
             --network "${{ job.container.network }}" \
             --env RUN_ENV --env DATABASE_URL_TEST \
             --entrypoint=bash \
@@ -413,10 +413,10 @@ jobs:
           password: "${{ steps.openid-auth.outputs.access_token }}"
       - name: "Setup database"
         run: |
-          docker run --rm \
-            -v /var/run/docker.sock:/var/run/docker.sock \
+          docker run \
+            --volume /var/run/docker.sock:/var/run/docker.sock \
             --network "${{ job.container.network }}" \
-            -e RUN_ENV -e DATABASE_URL_TEST \
+            --env RUN_ENV --env DATABASE_URL_TEST \
             --entrypoint=bash \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c '
@@ -430,10 +430,12 @@ jobs:
       - name: "Mount a Volume with pcapi rights"
         run: |
           docker run \
-            -v /var/run/docker.sock:/var/run/docker.sock \
+            --volume /var/run/docker.sock:/var/run/docker.sock \
+            --volume ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests \
             --network "${{ job.container.network }}" \
+            --user 0 \
+            --env RUN_ENV --env DATABASE_URL_TEST --env REDIS_URL \
             --entrypoint=bash \
-            -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -v ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests -u 0 \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c '
               echo "Changing owner and group fort directory test"
@@ -458,11 +460,12 @@ jobs:
         # > Removes the test duration info for tests which are not present while running the suite with > '--store-durations'.
       - name: "Run pytest"
         run: |
-          docker run --rm \
-            -v /var/run/docker.sock:/var/run/docker.sock \
+          docker run \
+            --volume /var/run/docker.sock:/var/run/docker.sock \
+            --volume ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests \
             --network "${{ job.container.network }}" \
             --entrypoint=bash \
-            -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -e SQLALCHEMY_WARN_20 -v ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests \
+            --env RUN_ENV --env DATABASE_URL_TEST --env REDIS_URL --env SQLALCHEMY_WARN_20 \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c '
               pytest ${{ matrix.pytest_args.collection }} \
