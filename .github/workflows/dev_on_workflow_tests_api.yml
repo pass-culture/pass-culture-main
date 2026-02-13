@@ -72,7 +72,6 @@ jobs:
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
-            --network "${{ job.container.network }}" \
             --entrypoint=sh \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c 'pip freeze'
@@ -80,7 +79,6 @@ jobs:
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
-            --network "${{ job.container.network }}" \
             --entrypoint=sh \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c 'mypy src'
@@ -210,7 +208,6 @@ jobs:
             --network "${{ job.container.network }}" \
             --entrypoint=bash \
             ${{ steps.compute-image-name.outputs.image_name }} \
-            -e RUN_ENV -e DATABASE_URL_TEST \
             -c '
               set -e
               flask install_postgres_extensions
@@ -225,7 +222,6 @@ jobs:
             -v /var/run/docker.sock:/var/run/docker.sock \
             --network "${{ job.container.network }}" \
             --entrypoint=bash \
-            -e RUN_ENV -e DATABASE_URL_TEST \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c '
               set -e
@@ -240,7 +236,6 @@ jobs:
             -v /var/run/docker.sock:/var/run/docker.sock \
             --network "${{ job.container.network }}" \
             --entrypoint=bash \
-            -e RUN_ENV -e DATABASE_URL_TEST \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c '
               set -uo pipefail
@@ -258,7 +253,6 @@ jobs:
             -v /var/run/docker.sock:/var/run/docker.sock \
             --network "${{ job.container.network }}" \
             --entrypoint=bash \
-            -e RUN_ENV -e DATABASE_URL_TEST \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c '
               set -uo pipefail
@@ -402,8 +396,8 @@ jobs:
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
             --network "${{ job.container.network }}" \
-            --entrypoint=bash \
             -e RUN_ENV -e DATABASE_URL_TEST \
+            --entrypoint=bash \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c '
               set -e
@@ -415,7 +409,7 @@ jobs:
 
       - name: "Mount a Volume with pcapi rights"
         run: |
-          docker run --rm \
+          docker run \
             -v /var/run/docker.sock:/var/run/docker.sock \
             --network "${{ job.container.network }}" \
             --entrypoint=bash \
