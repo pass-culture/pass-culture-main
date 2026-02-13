@@ -105,9 +105,17 @@ jobs:
             flask install_data
             alembic check"
       - name: "Mount a Volume with pcapi rights"
-        run: docker run -v ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests -u 0 -v "/var/run/docker.sock":"/var/run/docker.sock" -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL ${{ steps.compute-image-name.outputs.image_name }} sh -c "
-            echo 'Changing owner and group fort directory test'
-            chown -R pcapi:pcapi /tests"
+        run: |
+          docker run \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            --network "${{ job.container.network }}" \
+            --entrypoint=bash \
+            -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -v ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests -u 0 \
+            ${{ steps.compute-image-name.outputs.image_name }} \
+            -c '
+              echo "Changing owner and group fort directory test"
+              chown -R pcapi:pcapi /tests
+            '
 
       - name: "Run pytest"
         run: |
