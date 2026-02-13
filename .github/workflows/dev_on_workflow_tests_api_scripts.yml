@@ -97,17 +97,13 @@ jobs:
           username: "oauth2accesstoken"
           password: "${{ steps.openid-auth.outputs.access_token }}"
       - name: "Setup database"
-        uses: addnab/docker-run-action@v3
-        with:
-          image: ${{ steps.compute-image-name.outputs.image_name }}
-          shell: bash
-          options: -e RUN_ENV -e DATABASE_URL_TEST
-          run: |
-            set -e
-            flask install_postgres_extensions
-            alembic upgrade pre@head
-            alembic upgrade post@head
-            flask install_data
+        shell: bash
+        run: |
+          docker run \
+            -v "/var/run/docker.sock":"/var/run/docker.sock" \
+            -e RUN_ENV -e DATABASE_URL_TEST \
+            ${{ steps.compute-image-name.outputs.image_name }} \
+            -c "set -e; flask install_postgres_extensions; alembic upgrade pre@head; alembic upgrade post@head; flask install_data"
       - name: "Mount a Volume with pcapi rights"
         uses: addnab/docker-run-action@v3
         with:

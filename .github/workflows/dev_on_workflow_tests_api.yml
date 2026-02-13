@@ -69,10 +69,8 @@ jobs:
           username: "oauth2accesstoken"
           password: "${{ steps.openid-auth.outputs.access_token }}"
       - name: "Show installed Python packages"
-        uses: addnab/docker-run-action@v3
-        with:
-          image: ${{ steps.compute-image-name.outputs.image_name }}
-          run: pip freeze
+        shell: bash
+        run: docker run -v "/var/run/docker.sock":"/var/run/docker.sock" ${{ steps.compute-image-name.outputs.image_name }} -c "pip freeze"
       - name: "Run mypy"
         uses: addnab/docker-run-action@v3
         with:
