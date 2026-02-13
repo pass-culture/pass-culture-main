@@ -2333,7 +2333,7 @@ class VenueBannerTest:
     def test_save_venue_banner_when_no_default_available(self, mock_search_async_index_venue_ids, tmpdir, settings):
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
-        image_content = (VenueBannerTest.IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+        image_content = (VenueBannerTest.IMAGES_DIR / "mouette_landscape.jpg").read_bytes()
         directory = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
 
         settings.OBJECT_STORAGE_URL = tmpdir.dirname
@@ -2363,7 +2363,7 @@ class VenueBannerTest:
     def test_save_venue_banner_when_default_available(self, mock_search_async_index_venue_ids, tmpdir, settings):
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.MOVIE)
-        image_content = (VenueBannerTest.IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+        image_content = (VenueBannerTest.IMAGES_DIR / "mouette_landscape.jpg").read_bytes()
         directory = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
 
         settings.OBJECT_STORAGE_URL = tmpdir.dirname
@@ -2392,8 +2392,8 @@ class VenueBannerTest:
     def test_replace_venue_banner(self, mock_search_async_index_venue_ids, tmpdir, settings):
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
-        first_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
-        second_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_landscape.jpg").read_bytes()
+        first_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_landscape.jpg").read_bytes()
+        second_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_landscape_bigger.jpg").read_bytes()
         directory = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
 
         settings.OBJECT_STORAGE_URL = tmpdir.dirname
@@ -2418,8 +2418,8 @@ class VenueBannerTest:
     def test_replace_venue_legacy_banner(self, mock_search_async_index_venue_ids, tmpdir, settings):
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
-        first_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
-        second_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_landscape.jpg").read_bytes()
+        first_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_landscape.jpg").read_bytes()
+        second_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_landscape_bigger.jpg").read_bytes()
         directory = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
 
         settings.OBJECT_STORAGE_URL = tmpdir.dirname
