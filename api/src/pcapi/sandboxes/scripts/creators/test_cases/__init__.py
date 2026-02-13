@@ -1280,8 +1280,8 @@ def create_venues_with_practical_info_graphical_edge_cases() -> None:
 @atomic()
 def create_institutional_website_offer_playlist() -> None:
     criterion = criteria_factories.CriterionFactory.create(name="home_site_instit")
-    image_paths = sorted(pathlib.Path(generic_picture_thumbs.__path__[0]).iterdir())
-    portrait_image_paths = image_paths[13:18]
+    image_dir = pathlib.Path(generic_picture_thumbs.__path__[0])
+    portrait_image_paths = sorted(image_dir.glob("portrait_*.jpg"))
 
     for i, image_path in zip(range(1, 11), itertools.cycle(portrait_image_paths)):
         offer = offers_factories.OfferFactory.create(name=f"Offre {i} de la playlist du site institutionnel")

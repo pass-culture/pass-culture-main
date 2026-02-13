@@ -1,4 +1,5 @@
 import logging
+import pathlib
 import random
 import re
 
@@ -6,6 +7,7 @@ import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
+import pcapi.sandboxes.thumbs.generic_pictures as generic_pictures
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.providers import factories as providers_factories
@@ -23,22 +25,14 @@ OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO = 3
 OFFERERS_WITH_PHYSICAL_VENUE_WITH_SIRET_REMOVE_MODULO = OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO * 2
 OFFERERS_WITH_A_SECOND_VENUE_WITH_SIRET_MODULO = 4
 
-DEFAULT_VENUE_IMAGES = 4
-VENUE_IMAGE_INDEX_START_AT = 21
 
-
-def add_default_image_to_venue(image_venue_counter: int, offerer: Offerer, venue: Venue) -> None:
-    image_number = image_venue_counter + VENUE_IMAGE_INDEX_START_AT
-    with open(
-        f"./src/pcapi/sandboxes/thumbs/generic_pictures/Picture_0{image_number}.jpg",
-        mode="rb",
-    ) as file:
-        offerers_api.save_venue_banner(
-            user=offerer.UserOfferers[0].user,
-            venue=venue,
-            content=file.read(),
-            image_credit="industrial sandbox picture provider",
-        )
+def add_default_image_to_venue(image_path: pathlib.Path, offerer: Offerer, venue: Venue) -> None:
+    offerers_api.save_venue_banner(
+        user=offerer.UserOfferers[0].user,
+        venue=venue,
+        content=image_path.read_bytes(),
+        image_credit="industrial sandbox picture provider",
+    )
 
 
 @log_func_duration
@@ -51,7 +45,7 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
 
     application_id_prefix = "12"
 
-    image_venue_counter = 0
+    landscape_image_paths = iter(sorted(pathlib.Path(generic_pictures.__path__[0]).glob("landscape_*.jpg")))
 
     for offerer_index, (offerer_name, offerer) in enumerate(offerers_by_name.items()):
         geoloc_match = re.match(r"(.*)lat\:(.*) lon\:(.*)", offerer_name)
@@ -107,9 +101,9 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
             if offerer.validationStatus == ValidationStatus.NEW:
                 offerers_factories.VenueRegistrationFactory.create(venue=venue)
 
-            if image_venue_counter < DEFAULT_VENUE_IMAGES:
-                add_default_image_to_venue(image_venue_counter, offerer, venue)
-                image_venue_counter += 1
+            image_path = next(landscape_image_paths, None)
+            if image_path is not None:
+                add_default_image_to_venue(image_path, offerer, venue)
 
             venue_by_name[venue_name] = venue
 
