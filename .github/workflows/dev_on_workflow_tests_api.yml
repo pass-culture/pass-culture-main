@@ -197,37 +197,32 @@ jobs:
             alembic upgrade pre@head
             alembic upgrade post@head"
       - name: "Lint migration upgrades"
-        run: docker run -v "/var/run/docker.sock":"/var/run/docker.sock" -e RUN_ENV -e DATABASE_URL_TEST ${{ steps.compute-image-name.outputs.image_name }} sh -c "
-            set -uo pipefail
-            status_code=0
-            alembic upgrade ${{ steps.base_heads.outputs.pre }}:pre@head --sql |
-              sed '/squawk:ignore-next-statement/,/;$/d' |
-              squawk --config .squawk.toml ||
-              status_code=1
-            alembic upgrade ${{ steps.base_heads.outputs.post }}:post@head --sql |
-              sed '/squawk:ignore-next-statement/,/;$/d' |
-              squawk --config .squawk.toml ||
-              status_code=1
-            YELLOW='\033[0;33m'
-            RESET='\033[0m'
-            if [ ${status_code} -ne 0 ];then
-              echo -e \"\${YELLOW}Hint An SQL statement can be ignored if preceded by \`-- squawk:ignore-next-statement\`.${RESET}\"
+        run: >
+            docker run -v "/var/run/docker.sock":"/var/run/docker.sock"
+            -e RUN_ENV -e DATABASE_URL_TEST ${{ steps.compute-image-name.outputs.image_name }}
+            sh -c
+            "set -uo pipefail;
+            status_code=0;
+            alembic upgrade ${{ steps.base_heads.outputs.pre }}:pre@head --sql | sed '/squawk:ignore-next-statement/,/;$/d' | squawk --config .squawk.toml || status_code=1;
+            alembic upgrade ${{ steps.base_heads.outputs.post }}:post@head --sql | sed '/squawk:ignore-next-statement/,/;$/d' | squawk --config .squawk.toml || status_code=1;
+            YELLOW='\033[0;33m';
+            RESET='\033[0m';
+            if [ ${status_code} -ne 0 ];
+            then;
+              echo -e \"\${YELLOW}Hint An SQL statement can be ignored if preceded by \`-- squawk:ignore-next-statement\`.${RESET}\";
               echo -e \"${YELLOW}See https://github.com/pass-culture/pass-culture-main/blob/master/api/src/pcapi/alembic/CONTRIBUTING.md#lint${RESET}\";
-            fi
-            exit $status_code"
+            fi;
+            exit $status_code";
       - name: "Lint migration downgrades"
-        run: docker run -v "/var/run/docker.sock":"/var/run/docker.sock" -e RUN_ENV -e DATABASE_URL_TEST ${{ steps.compute-image-name.outputs.image_name }} sh -c "
-            set -uo pipefail
-            status_code=0
-            alembic downgrade pre@head:${{ steps.base_heads.outputs.pre }} --sql |
-              sed '/squawk:ignore-next-statement/,/;$/d' |
-              squawk --config .squawk.toml ||
-              status_code=1
-            alembic downgrade post@head:${{ steps.base_heads.outputs.post }} --sql |
-              sed '/squawk:ignore-next-statement/,/;$/d' |
-              squawk --config .squawk.toml ||
-              status_code=1
-            exit $status_code"
+        run: >
+            docker run -v "/var/run/docker.sock":"/var/run/docker.sock" 
+            -e RUN_ENV -e DATABASE_URL_TEST ${{ steps.compute-image-name.outputs.image_name }}
+            sh -c
+            "set -uo pipefail;
+            status_code=0;
+            alembic downgrade pre@head:${{ steps.base_heads.outputs.pre }} --sql | sed '/squawk:ignore-next-statement/,/;$/d' | squawk --config .squawk.toml || status_code=1;
+            alembic downgrade post@head:${{ steps.base_heads.outputs.post }} --sql | sed '/squawk:ignore-next-statement/,/;$/d' | squawk --config .squawk.toml || status_code=1;
+            exit $status_code";
 
   restore-test-durations:
     name: Restore pytest durations
