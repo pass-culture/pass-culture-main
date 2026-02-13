@@ -58,7 +58,6 @@ from pcapi.utils.requests import ExternalAPIException
 
 
 if typing.TYPE_CHECKING:
-    from pcapi.connectors import google_oauth
     from pcapi.routes.native.v1.serialization import account as account_serialization
 
 
@@ -897,11 +896,11 @@ def create_oauth_state_token() -> str:
     return token.encoded_token
 
 
-def create_account_creation_token(google_user: "google_oauth.GoogleUser") -> str:
+def create_account_creation_token(sso_user_data: dict[str, typing.Any]) -> str:
     token = token_utils.UUIDToken.create(
         token_utils.TokenType.ACCOUNT_CREATION,
         constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME,
-        data=google_user.model_dump(),
+        data=sso_user_data,
     )
     return token.encoded_token
 

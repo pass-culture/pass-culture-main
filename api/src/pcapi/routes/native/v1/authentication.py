@@ -4,6 +4,7 @@ from flask_login import current_user
 
 import pcapi.core.token as token_utils
 from pcapi.connectors import api_recaptcha
+from pcapi.connectors import apple_oauth
 from pcapi.connectors import google_oauth
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.subscription.dms import api as dms_subscription_api
@@ -29,7 +30,6 @@ from pcapi.routes.native.v1.serialization.authentication import ResetPasswordRes
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailRequest
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailResponse
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.repository import transaction
 from pcapi.utils.transaction_manager import atomic
 
 from .. import blueprint
@@ -206,10 +206,27 @@ def google_oauth_state() -> authentication.OauthStateResponse:
     on_error_statuses=[400, 401],
     api=blueprint.api,
 )
-def google_auth(body: authentication.GoogleSigninRequest) -> authentication.SigninResponse:
+def google_auth(body: authentication.OAuthSigninRequest) -> authentication.SigninResponse:
+    return sso_authorize("google", body.oauth_state_token, body.authorization_code, body.device_info)
+
+
+@blueprint.native_route("/oauth/apple/authorize", methods=["POST"])
+@spectree_serialize(
+    response_model=authentication.SigninResponse,
+    on_success_status=200,
+    on_error_statuses=[400, 401],
+    api=blueprint.api,
+)
+def apple_auth(body: authentication.OAuthSigninRequest) -> authentication.SigninResponse:
+    return sso_authorize("apple", body.oauth_state_token, body.authorization_code, body.device_info)
+
+
+def sso_authorize(
+    provider: str, request_state_token: str, authorization_code: str, device_info: user_models.TrustedDevice | None
+) -> authentication.SigninResponse:
     try:
-        oauth_state_token = token_utils.UUIDToken.load_and_check(
-            body.oauth_state_token, token_utils.TokenType.OAUTH_STATE
+        stored_state_token = token_utils.UUIDToken.load_and_check(
+            request_state_token, token_utils.TokenType.OAUTH_STATE
         )
     except (users_exceptions.ExpiredToken, users_exceptions.InvalidToken) as e:
         raise ApiErrors(
@@ -219,13 +236,19 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
             },
             status_code=400,
         ) from e
-    oauth_state_token.expire()
+    stored_state_token.expire()
 
-    google_user = google_oauth.get_google_user(body.authorization_code)
-    email = google_user.email
-    sso_user_id = google_user.sub
+    sso_user = None
+    if provider == "apple":
+        sso_user = apple_oauth.get_apple_user(authorization_code)
+    elif provider == "google":
+        sso_user = google_oauth.get_google_user(authorization_code)
 
-    single_sign_on = users_repo.get_single_sign_on("google", sso_user_id)
+    email = sso_user.email
+    email_verified = sso_user.email_verified
+    sso_user_id = sso_user.sub
+    single_sign_on = users_repo.get_single_sign_on(provider, sso_user_id)
+
     if not single_sign_on:
         user = users_repo.find_user_by_email(email)
     else:
@@ -236,15 +259,15 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
             "Successful SSO authentication but no matching email found, sending account creation token",
             extra={
                 "identifier": email,
-                "sso_provider": "google",
+                "sso_provider": provider,
                 "sso_user_id": sso_user_id,
                 "user": None,
                 "avoid_current_user": True,
                 "success": True,
             },
-            technical_message_id="users.login.sso.google",
+            technical_message_id="users.login.sso",
         )
-        encoded_account_creation_token = users_api.create_account_creation_token(google_user)
+        encoded_account_creation_token = users_api.create_account_creation_token(sso_user.model_dump())
         # the frontends (web, ios & android app) will handle this error and redirect to the account creation form
         raise ApiErrors(
             {
@@ -256,15 +279,23 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
             status_code=401,
         )
 
-    user_ssos = user.single_sign_ons if user else []
-    user_has_another_google_account_linked = user_ssos and sso_user_id not in [sso.ssoUserId for sso in user_ssos]
-    if user_has_another_google_account_linked:
-        raise ApiErrors(
-            {
-                "code": "SSO_DUPLICATE_GOOGLE_ACCOUNT",
-                "general": ["Un autre compte Google est déjà associé à ce compte."],
-            }
-        )
+    user_ssos_for_provider = [sso.ssoUserId for sso in user.single_sign_ons if sso.ssoProvider == provider]
+    user_has_another_provider_account_linked = user_ssos_for_provider and sso_user_id not in user_ssos_for_provider
+    if user_has_another_provider_account_linked:
+        if provider == "apple":
+            raise ApiErrors(
+                {
+                    "code": "SSO_DUPLICATE_APPLE_ACCOUNT",
+                    "general": ["Un autre compte Apple est déjà associé à ce compte."],
+                }
+            )
+        if provider == "google":
+            raise ApiErrors(
+                {
+                    "code": "SSO_DUPLICATE_GOOGLE_ACCOUNT",
+                    "general": ["Un autre compte Google est déjà associé à ce compte."],
+                }
+            )
 
     if user.account_state.is_deleted:
         raise ApiErrors({"code": "SSO_ACCOUNT_DELETED", "general": ["Le compte a été supprimé"]})
@@ -272,10 +303,10 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
     if user.account_state == user_models.AccountState.ANONYMIZED:
         raise ApiErrors({"code": "SSO_ACCOUNT_ANONYMIZED", "general": ["Le compte a été anonymisé"]})
 
-    if not google_user.email_verified:
+    if not email_verified:
         raise ApiErrors({"code": "SSO_EMAIL_NOT_VALIDATED", "general": ["L'email n'a pas été validé."]})
 
-    with transaction():
+    with atomic():
         if not user.isEmailValidated:
             # An account registered with a password and with its email not validated is a symptom
             # of an account pre-hijacking attack waiting for an email validation. To prevent this
@@ -284,10 +315,10 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
             user.isEmailValidated = True
 
         if not single_sign_on:
-            single_sign_on = users_repo.create_single_sign_on(user, "google", sso_user_id)
+            single_sign_on = users_repo.create_single_sign_on(user, provider, sso_user_id)
             db.session.add(single_sign_on)
 
-    users_api.save_device_info_and_notify_user(user, body.device_info)
+    users_api.save_device_info_and_notify_user(user, device_info)
 
     users_api.update_last_connection_date(user)
     logger.info(
@@ -295,17 +326,14 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
         extra={
             "identifier": email,
             "user": user.id,
-            "sso_provider": "google",
+            "sso_provider": provider,
             "sso_user_id": sso_user_id,
             "avoid_current_user": True,
             "success": True,
         },
-        technical_message_id="users.login.sso.google",
+        technical_message_id="users.login.sso",
     )
-    tokens = create_user_jwt_tokens(
-        user=user,
-        device_info=body.device_info,
-    )
+    tokens = create_user_jwt_tokens(user=user, device_info=device_info)
     return authentication.SigninResponse(
         access_token=tokens.access,
         refresh_token=tokens.refresh,

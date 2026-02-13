@@ -235,7 +235,6 @@ app.config.from_mapping(
 
 celery_init_app(app)
 
-
 backoffice_oauth = OAuth(app)
 backoffice_oauth.register(
     name="google",

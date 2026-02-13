@@ -1,7 +1,9 @@
 import copy
+import datetime
 import logging
+import time
 import uuid
-from datetime import datetime
+from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
@@ -13,7 +15,10 @@ from flask_jwt_extended.utils import create_refresh_token
 import pcapi.core.mails.testing as mails_testing
 import pcapi.notifications.push.testing as bash_testing
 from pcapi import settings
+from pcapi.connectors import apple_oauth
 from pcapi.connectors import google_oauth
+from pcapi.connectors.apple_oauth import AppleUser
+from pcapi.connectors.apple_oauth import get_apple_user
 from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.google_oauth import GoogleUser
@@ -254,7 +259,7 @@ class SigninTest:
     def test_refresh_token_route_updates_user_last_connection_date(self, client):
         data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
         user = users_factories.UserFactory(
-            email=data["identifier"], password=data["password"], lastConnectionDate=datetime(1990, 1, 1)
+            email=data["identifier"], password=data["password"], lastConnectionDate=datetime.datetime(1990, 1, 1)
         )
 
         refresh_token = create_refresh_token(identity=user.email)
@@ -263,8 +268,46 @@ class SigninTest:
         refresh_response = client.post("/native/v1/refresh_access_token")
         assert refresh_response.status_code == 200
 
-        assert user.lastConnectionDate == datetime(2020, 3, 15)
+        assert user.lastConnectionDate == datetime.datetime(2020, 3, 15)
         assert len(sendinblue_testing.sendinblue_requests) == 1
+
+
+class GetAppleUserTest:
+    def _create_id_token(self):
+        now = int(time.time())
+        identity_token_payload = {
+            "iss": "https://appleid.apple.com",
+            "aud": "app.passculture",
+            "exp": int(time.time()),
+            "iat": now + 3600,
+            "sub": "001234.abcdef123456789.7890",
+            "email": "user@example.com",
+            "email_verified": True,
+            "is_private_email": False,
+        }
+        return identity_token_payload
+
+    @patch.object(apple_oauth, "_get_jwks_client")
+    def test_valid_token_with_email_returns_apple_user(self, mock_jwks_client):
+        mock_key = MagicMock()
+        mock_key.key = "fake_public_key"
+        mock_jwks_client.return_value.get_signing_key_from_jwt.return_value = mock_key
+
+        payload = self._create_id_token()
+
+        with patch("jwt.decode", return_value=payload):
+            result = get_apple_user("random.auth/code")
+
+        assert result == AppleUser(
+            sub="001234.abcdef123456789.7890",
+            email="user@example.com",
+            email_verified=True,
+            is_private_email=False,
+        )
+        assert result.sub == "001234.abcdef123456789.7890"
+        assert result.email == "user@example.com"
+        assert result.email_verified is True
+        assert result.is_private_email is False
 
 
 class SSOSigninTest:
@@ -1089,7 +1132,7 @@ class EmailValidationTest:
     def test_validate_email_when_eligible(self, client):
         user = users_factories.UserFactory(
             isEmailValidated=False,
-            dateOfBirth=datetime(2000, 6, 1),
+            dateOfBirth=datetime.datetime(2000, 6, 1),
         )
         token = self.initialize_token(user)
 
@@ -1133,7 +1176,7 @@ class EmailValidationTest:
 
     @time_machine.travel("2018-06-01")
     def test_validate_email_when_not_eligible(self, client):
-        user = users_factories.UserFactory(isEmailValidated=False, dateOfBirth=datetime(2000, 7, 1))
+        user = users_factories.UserFactory(isEmailValidated=False, dateOfBirth=datetime.datetime(2000, 7, 1))
         token = self.initialize_token(user)
 
         assert not user.isEmailValidated
@@ -1164,7 +1207,9 @@ class EmailValidationTest:
         application_number = 1234
         email = "dms_orphan@example.com"
 
-        user = users_factories.UserFactory(isEmailValidated=False, dateOfBirth=datetime(2000, 7, 1), email=email)
+        user = users_factories.UserFactory(
+            isEmailValidated=False, dateOfBirth=datetime.datetime(2000, 7, 1), email=email
+        )
         token = self.initialize_token(user)
 
         assert not user.isEmailValidated

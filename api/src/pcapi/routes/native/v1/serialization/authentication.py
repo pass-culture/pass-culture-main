@@ -55,7 +55,7 @@ class OauthStateResponse(ConfiguredBaseModel):
     oauth_state_token: str
 
 
-class GoogleSigninRequest(ConfiguredBaseModel):
+class OAuthSigninRequest(ConfiguredBaseModel):
     authorization_code: str
     oauth_state_token: str
     device_info: TrustedDevice | None = None
