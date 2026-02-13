@@ -958,7 +958,6 @@ def create_new_location_if_offer_uses_origin_venue_location(
         destination_oa = offerers_api.get_or_create_offer_location(
             source_venue.managingOffererId, source_venue.offererAddress.addressId, source_venue.publicName
         )
-        db.session.add(destination_oa)
         collective_offer.offererAddress = destination_oa
 
 

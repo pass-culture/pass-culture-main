@@ -2115,7 +2115,6 @@ def move_event_offer(
                 destination_oa = offerers_api.get_or_create_offer_location(
                     offer.venue.managingOffererId, offer.venue.offererAddress.addressId, offer.venue.publicName
                 )
-                db.session.add(destination_oa)
                 offer.offererAddress = destination_oa
         offer.venue = destination_venue
         db.session.add(offer)
