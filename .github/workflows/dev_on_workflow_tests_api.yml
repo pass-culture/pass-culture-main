@@ -72,6 +72,7 @@ jobs:
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
+            --network "${{ job.container.network }}" \
             --entrypoint=sh \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c 'pip freeze'
@@ -79,6 +80,7 @@ jobs:
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
+            --network "${{ job.container.network }}" \
             --entrypoint=sh \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c 'mypy src'
@@ -193,6 +195,7 @@ jobs:
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
+            --network "${{ job.container.network }}" \
             --entrypoint=bash \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c '
@@ -204,6 +207,7 @@ jobs:
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
+            --network "${{ job.container.network }}" \
             --entrypoint=bash \
             ${{ steps.compute-image-name.outputs.image_name }} \
             -e RUN_ENV -e DATABASE_URL_TEST \
@@ -219,6 +223,7 @@ jobs:
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
+            --network "${{ job.container.network }}" \
             --entrypoint=bash \
             -e RUN_ENV -e DATABASE_URL_TEST \
             ${{ steps.compute-image-name.outputs.image_name }} \
@@ -233,6 +238,7 @@ jobs:
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
+            --network "${{ job.container.network }}" \
             --entrypoint=bash \
             -e RUN_ENV -e DATABASE_URL_TEST \
             ${{ steps.compute-image-name.outputs.image_name }} \
@@ -250,6 +256,7 @@ jobs:
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
+            --network "${{ job.container.network }}" \
             --entrypoint=bash \
             -e RUN_ENV -e DATABASE_URL_TEST \
             ${{ steps.compute-image-name.outputs.image_name }} \
@@ -394,6 +401,7 @@ jobs:
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
+            --network "${{ job.container.network }}" \
             --entrypoint=bash \
             -e RUN_ENV -e DATABASE_URL_TEST \
             ${{ steps.compute-image-name.outputs.image_name }} \
@@ -409,6 +417,7 @@ jobs:
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
+            --network "${{ job.container.network }}" \
             --entrypoint=bash \
             -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -v ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests -u 0 \
             ${{ steps.compute-image-name.outputs.image_name }} \
@@ -437,6 +446,7 @@ jobs:
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
+            --network "${{ job.container.network }}" \
             --entrypoint=bash \
             -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -e SQLALCHEMY_WARN_20 -v ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests \
             ${{ steps.compute-image-name.outputs.image_name }} \
