@@ -133,7 +133,7 @@ def build_new_offer_from_product(
 ) -> models.Offer:
     if offerer_address_id is None:
         offerer_address_id = offerers_api.get_or_create_offer_location(
-            venue.managingOffererId, venue.offererAddress.addressId, venue.common_name
+            venue.managingOffererId, venue.offererAddress.addressId, venue.publicName
         ).id
 
     return models.Offer(
@@ -257,7 +257,7 @@ def create_offer(
     offerer_address = offerer_address or offerers_api.get_or_create_offer_location(
         offerer_id=venue.managingOffererId,
         address_id=venue.offererAddress.addressId,
-        label=venue.common_name,
+        label=venue.publicName,
     )
 
     if body.subcategory_id in subcategories.ONLINE_SUBCATEGORIES:  # i.e. it is a digital offer
@@ -304,7 +304,7 @@ def get_or_create_offerer_address_from_address_body(
     if isinstance(address_body, offerers_schemas.LocationOnlyOnVenueModel):
         # Use the same address as the venue, but offer must not be linked to a VENUE_LOCATION
         return offerers_api.get_or_create_offer_location(
-            venue.managingOffererId, venue.offererAddress.addressId, label=venue.common_name
+            venue.managingOffererId, venue.offererAddress.addressId, label=venue.publicName
         )
 
     return offerers_api.get_offer_location_from_address(venue.managingOffererId, address_body)
@@ -2020,7 +2020,7 @@ def move_offer(
         # Use a different OA if the offer uses the venue's OA
         if offer.offererAddress and offer.offererAddress == original_venue.offererAddress:
             destination_oa = offerers_api.get_or_create_offer_location(
-                original_venue.managingOffererId, original_venue.offererAddress.addressId, original_venue.common_name
+                original_venue.managingOffererId, original_venue.offererAddress.addressId, original_venue.publicName
             )
             db.session.add(destination_oa)
             offer.offererAddress = destination_oa
@@ -2107,13 +2107,13 @@ def move_event_offer(
             offer.offererAddress = offerers_api.get_or_create_offer_location(
                 offerer_id=destination_venue.managingOffererId,
                 address_id=destination_venue.offererAddress.addressId,
-                label=destination_venue.common_name,
+                label=destination_venue.publicName,
             )
         else:
             # Use a different OA if the offer uses the venue OA
             if offer.offererAddress and offer.offererAddress == offer.venue.offererAddress:
                 destination_oa = offerers_api.get_or_create_offer_location(
-                    offer.venue.managingOffererId, offer.venue.offererAddress.addressId, offer.venue.common_name
+                    offer.venue.managingOffererId, offer.venue.offererAddress.addressId, offer.venue.publicName
                 )
                 db.session.add(destination_oa)
                 offer.offererAddress = destination_oa
