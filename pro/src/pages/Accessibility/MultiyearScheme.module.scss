@@ -33,7 +33,7 @@
 }
 
 .page-content {
-  width: rem.torem(826px);
   margin-bottom: var(--size-spacing-xxl);
   justify-self: center;
+  max-width: 80%;
 }
