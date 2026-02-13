@@ -134,6 +134,14 @@ jobs:
       image: pcapi-tests
       tag: ${{ github.sha }}
 
+  build-pcapi:
+    name: "[pcapi] build docker image."
+    needs: [pcapi-init-job]
+    uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
+    with:
+      image: pcapi
+      tag: ${{ github.sha }}
+
   run-mypy-cop:
     name: "MyPy cop"
     needs: [pcapi-init-job]

@@ -1,5 +1,5 @@
-name: 'Build docker image and saved it as github artifact'
-description: 'Build a docker image from the context directory and save it as a github artifact'
+name: "Build docker image and saved it as github artifact"
+description: "Build a docker image from the context directory and save it as a github artifact"
 inputs:
   image:
     description: The docker image name
@@ -55,3 +55,8 @@ runs:
         name: ${{ inputs.image }}-${{ inputs.tag }}.tar
         path: ${{ inputs.artifact_path }}
         retention-days: 1
+
+    - name: debug
+      shell: bash
+      run: |
+        docker inspect "${{ inputs.image }}:${{ inputs.tag }}"
