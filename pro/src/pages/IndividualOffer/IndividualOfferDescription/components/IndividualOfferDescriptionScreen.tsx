@@ -126,7 +126,7 @@ export const IndividualOfferDescriptionScreen = ({
       if (isNewOfferDraft) {
         await mutate(
           [GET_OFFER_QUERY_KEY, offerId],
-          api.postOffer(
+          api.createOffer(
             serializeDetailsPostData(formValues, isOfferArtistsFeatureActive)
           ),
           {

@@ -37,7 +37,7 @@ describe('Create individual offers new flow', () => {
     cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
 
     cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
-    cy.intercept({ method: 'POST', url: '/offers' }).as('postOffer')
+    cy.intercept({ method: 'POST', url: '/v2/offers' }).as('postOffer')
     cy.intercept({ method: 'PATCH', url: '/offers/*/stocks' }).as(
       'patchNonEventStocks'
     )
