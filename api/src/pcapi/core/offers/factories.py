@@ -249,7 +249,7 @@ class OfferFactory(BaseFactory[models.Offer]):
                 kwargs["offererAddress"] = offerers_api.get_or_create_offer_location(
                     offerer_id=venue.managingOffererId,
                     address_id=venue.offererAddress.addressId,
-                    label=venue.common_name,
+                    label=venue.publicName,
                 )
 
         kwargs.pop("isActive", None)

@@ -348,7 +348,7 @@ def _get_location_from_public_model(
             offerer_address = offerers_api.get_or_create_offer_location(
                 offerer_id=venue.managingOffererId,
                 address_id=venue.offererAddress.addressId,
-                label=venue.common_name,
+                label=venue.publicName,
             )
             location = CollectiveOfferLocation(
                 location_type=models.CollectiveLocationType.ADDRESS,
@@ -956,7 +956,7 @@ def create_new_location_if_offer_uses_origin_venue_location(
     source_venue = collective_offer.venue
     if collective_offer.offererAddress and collective_offer.offererAddress == source_venue.offererAddress:
         destination_oa = offerers_api.get_or_create_offer_location(
-            source_venue.managingOffererId, source_venue.offererAddress.addressId, source_venue.common_name
+            source_venue.managingOffererId, source_venue.offererAddress.addressId, source_venue.publicName
         )
         db.session.add(destination_oa)
         collective_offer.offererAddress = destination_oa
