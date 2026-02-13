@@ -50,7 +50,7 @@ import {
 vi.mock('@/apiClient/api', () => ({
   api: {
     getMusicTypes: vi.fn(),
-    postOffer: vi.fn(),
+    createOffer: vi.fn(),
     patchOffer: vi.fn(),
     getProductByEan: vi.fn(),
     getActiveVenueOfferByEan: vi.fn(),
@@ -324,7 +324,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: mockLogEvent,
       }))
-      vi.spyOn(api, 'postOffer').mockResolvedValue(
+      vi.spyOn(api, 'createOffer').mockResolvedValue(
         getIndividualOfferFactory({
           id: 12,
         })
@@ -506,7 +506,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.spyOn(api, 'postOffer').mockRejectedValue({
+    vi.spyOn(api, 'createOffer').mockRejectedValue({
       message: 'oups',
       name: 'ApiError',
       body: { ean: 'broken ean from api' },
@@ -565,7 +565,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.spyOn(api, 'postOffer').mockResolvedValue(
+    vi.spyOn(api, 'createOffer').mockResolvedValue(
       getIndividualOfferFactory({
         id: 12,
       })
@@ -579,8 +579,8 @@ describe('<IndividualOfferDescriptionScreen />', () => {
 
     await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
 
-    expect(api.postOffer).toHaveBeenCalledOnce()
-    expect(api.postOffer).toHaveBeenCalledWith({
+    expect(api.createOffer).toHaveBeenCalledOnce()
+    expect(api.createOffer).toHaveBeenCalledWith({
       artistOfferLinks: [],
       audioDisabilityCompliant: true,
       description: 'My super description',
