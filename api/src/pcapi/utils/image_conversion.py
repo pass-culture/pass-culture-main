@@ -69,23 +69,11 @@ def standardize_image(content: bytes, ratio: ImageRatio, crop_params: CropParams
     Standardization steps are:
         * transpose image
         * convert to RGB mode
-        * crop image (if specified), see below
+        * resize image in three stages:
+            1. Crop original image if needed (crop_params)
+            2. Shrink the image to max thumb width: 750px
+            3. Check if the image ratio is correct
         * convert to jpeg using predefined values
-
-    The cropping sets a new top left corner position, the crop_params
-    are used to compute its new coordinates. The bottom right corner's
-    coordinates will be computed using the top left's ones using width
-    and max height (see constants below).
-
-    crop_params values must be between 0.0 and 1.0.
-
-    The first value will be used to set the top left corner's abscissa
-    (X): width * <first_value> = new X value. The second value will be
-    used to set the ordinate (Y). The third to set the height.
-
-    Check PIL's documentation regarding the coordinate system to have a
-    better understanding of how the cropping works:
-        https://pillow.readthedocs.io/en/stable/handbook/concepts.html#coordinate-system
     """
     preprocessed_image = _pre_process_image(content)
 
@@ -97,10 +85,10 @@ def standardize_image(content: bytes, ratio: ImageRatio, crop_params: CropParams
         crop_params.width_crop_percent,
         preprocessed_image,
     )
-    resized_image = _resize_image(cropped_image, ratio)
-    resized_image = _check_ratio(resized_image, ratio)
+    shrunk_image = _shrink_image(cropped_image)
+    validated_image = _check_ratio(shrunk_image, ratio)
 
-    return _post_process_image(resized_image)
+    return _post_process_image(validated_image)
 
 
 def process_original_image(content: bytes, resize: bool = True) -> bytes:
@@ -158,10 +146,15 @@ def _crop_image(
     image: PIL.Image.Image,
 ) -> PIL.Image.Image:
     """
-    x_crop_percent and y_crop_percent will be used to compute new top left
-    corner coordinates.
+    Crop a rectangular region from the image using percentage-based parameters.
 
-    height_crop_percent will be used to compute the bottom right corner's
+    All crop_params are floats between 0.0 and 1.0 :
+        - x_crop_percent: horizontal offset of the crop box's top-left corner
+        - y_crop_percent: vertical offset of the crop box's top-left corner
+        - width_crop_percent: width of the crop box
+        - height_crop_percent: height of the crop box
+
+    See: https://pillow.readthedocs.io/en/stable/handbook/concepts.html#coordinate-system
     """
     if (x_crop_percent, y_crop_percent, height_crop_percent, width_crop_percent) == DO_NOT_CROP:
         return image
@@ -185,18 +178,6 @@ def _crop_image(
     cropped_img = image.crop((top_left_corner.x, top_left_corner.y, bottom_right_corner.x, bottom_right_corner.y))
 
     return cropped_img
-
-
-def _resize_image(image: PIL.Image.Image, ratio: ImageRatio) -> PIL.Image.Image:
-    """
-    Resize image, adapt ratio if image is too wide
-    """
-    if image.width <= MAX_THUMB_WIDTH:
-        return image
-
-    height_to_width_ratio = 1 / ratio.value
-    new_height = int(MAX_THUMB_WIDTH * height_to_width_ratio)
-    return image.resize((MAX_THUMB_WIDTH, new_height))
 
 
 def _shrink_image(image: PIL.Image.Image) -> PIL.Image.Image:
