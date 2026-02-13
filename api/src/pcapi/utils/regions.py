@@ -5,7 +5,10 @@ from pcapi.utils.clean_accents import clean_accents
 
 NON_DIFFUSIBLE_TAG = "[ND]"
 
+MAYOTTE_DEPARTMENT_CODE = "976"
 NEW_CALEDONIA_DEPARTMENT_CODE = "988"
+SAINT_PIERRE_ET_MIQUELON_DEPARTMENT_CODE = "975"
+WALLIS_AND_FUTUNA_DEPARTMENT_CODE = "986"
 
 REGION_DEPARTMENT_CODES: dict[str, tuple[str, ...]] = {
     "Auvergne-Rhône-Alpes": ("01", "03", "07", "15", "26", "38", "42", "43", "63", "69", "73", "74"),
@@ -25,11 +28,11 @@ REGION_DEPARTMENT_CODES: dict[str, tuple[str, ...]] = {
     "Guyane": ("973",),
     "La Réunion": ("974",),
     "Martinique": ("972",),
-    "Mayotte": ("976",),
-    "Saint-Pierre-et-Miquelon": ("975",),
-    "Wallis et Futuna": ("986",),
+    "Mayotte": (MAYOTTE_DEPARTMENT_CODE,),
+    "Saint-Pierre-et-Miquelon": (SAINT_PIERRE_ET_MIQUELON_DEPARTMENT_CODE,),
+    "Wallis et Futuna": (WALLIS_AND_FUTUNA_DEPARTMENT_CODE,),
     "Polynésie Française": ("987",),
-    "Nouvelle-Calédonie": ("988",),
+    "Nouvelle-Calédonie": (NEW_CALEDONIA_DEPARTMENT_CODE,),
 }
 
 

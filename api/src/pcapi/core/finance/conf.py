@@ -2,6 +2,9 @@ import decimal
 
 import pcapi.core.offers.models as offers_models
 from pcapi.core.users import models as users_models
+from pcapi.utils.regions import MAYOTTE_DEPARTMENT_CODE
+from pcapi.utils.regions import SAINT_PIERRE_ET_MIQUELON_DEPARTMENT_CODE
+from pcapi.utils.regions import WALLIS_AND_FUTUNA_DEPARTMENT_CODE
 
 from . import models
 
@@ -42,15 +45,13 @@ GRANT_17_18_DIGITAL_CAP = decimal.Decimal(100)
 GRANT_17_18_PHYSICAL_CAP: decimal.Decimal | None = None
 GRANT_17_18_DIGITAL_CAP_V2 = decimal.Decimal(50)
 
-WALLIS_AND_FUTUNA_DEPARTMENT_CODE = "986"
-MAYOTTE_DEPARTMENT_CODE = "976"
-SAINT_PIERRE_ET_MIQUELON_DEPARTMENT_CODE = "975"
-
+DIGITAL_CAP_V1 = "v1"
+DIGITAL_CAP_V2 = "v2"
 
 SPECIFIC_DIGITAL_CAPS_BY_DEPARTMENT_CODE: dict[str, dict] = {
-    WALLIS_AND_FUTUNA_DEPARTMENT_CODE: {"v1": None, "v2": None},
-    MAYOTTE_DEPARTMENT_CODE: {"v1": decimal.Decimal(150), "v2": None},
-    SAINT_PIERRE_ET_MIQUELON_DEPARTMENT_CODE: {"v1": decimal.Decimal(200), "v2": None},
+    WALLIS_AND_FUTUNA_DEPARTMENT_CODE: {DIGITAL_CAP_V1: None, DIGITAL_CAP_V2: None},
+    MAYOTTE_DEPARTMENT_CODE: {DIGITAL_CAP_V1: decimal.Decimal(150), DIGITAL_CAP_V2: None},
+    SAINT_PIERRE_ET_MIQUELON_DEPARTMENT_CODE: {DIGITAL_CAP_V1: decimal.Decimal(200), DIGITAL_CAP_V2: None},
 }
 
 
