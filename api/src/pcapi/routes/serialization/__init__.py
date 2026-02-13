@@ -57,6 +57,7 @@ class HttpBodyModel(pydantic_v2.BaseModel):
         str_strip_whitespace=True,
         url_preserve_empty_path=True,
         extra="forbid",
+        serialize_by_alias=True,
     )
 
 

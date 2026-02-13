@@ -1,3 +1,4 @@
+import spectree
 from PIL import UnidentifiedImageError
 from flask import request
 from flask_login import current_user
@@ -507,16 +508,17 @@ def patch_collective_offer_template_publication(
 @private_api.route("/collective/offers-template", methods=["POST"])
 @atomic()
 @login_required
-@spectree_serialize(
-    response_model=collective_offers_serialize.CollectiveOfferResponseIdModel,
-    on_success_status=201,
-    api=blueprint.pro_private_schema,
+@blueprint.pro_private_schema.validate(
+    resp=spectree.Response(
+        HTTP_201=collective_offers_serialize.CollectiveOfferResponseIdModel,
+        HTTP_403=None,
+    ),
 )
 def create_collective_offer_template(
-    body: collective_offers_serialize.PostCollectiveOfferTemplateBodyModel,
-) -> collective_offers_serialize.CollectiveOfferResponseIdModel:
+    json: collective_offers_serialize.PostCollectiveOfferTemplateBodyModel,
+) -> tuple[collective_offers_serialize.CollectiveOfferResponseIdModel, int]:
     try:
-        offer = api_offer.create_collective_offer_template(offer_data=body, user=current_user)
+        offer = api_offer.create_collective_offer_template(offer_data=json, user=current_user)
 
     # venue / offerer errors
     except offerers_exceptions.CannotFindOffererForOfferId:
@@ -544,7 +546,7 @@ def create_collective_offer_template(
     except exceptions.CollectiveOfferContactRequestError as err:
         raise ApiErrors({f"contact[{err.fields}]": err.msg}, status_code=400)
 
-    return collective_offers_serialize.CollectiveOfferResponseIdModel(id=offer.id)
+    return collective_offers_serialize.CollectiveOfferResponseIdModel(id=offer.id), 201
 
 
 def _check_image(image_as_bytes: bytes) -> None:
