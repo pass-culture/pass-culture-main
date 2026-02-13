@@ -97,7 +97,7 @@ jobs:
           username: "oauth2accesstoken"
           password: "${{ steps.openid-auth.outputs.access_token }}"
       - name: "Setup database"
-        uses: addnab/docker-run-action@v3
+        uses: maus007/docker-run-action-fork@v1
         with:
           image: ${{ steps.compute-image-name.outputs.image_name }}
           shell: bash
@@ -109,7 +109,7 @@ jobs:
             alembic upgrade post@head
             flask install_data
       - name: "Mount a Volume with pcapi rights"
-        uses: addnab/docker-run-action@v3
+        uses: maus007/docker-run-action-fork@v1
         with:
           image: ${{ steps.compute-image-name.outputs.image_name }}
           shell: bash
@@ -119,7 +119,7 @@ jobs:
             chown -R pcapi:pcapi /tests
 
       - name: "Run pytest"
-        uses: addnab/docker-run-action@v3
+        uses: maus007/docker-run-action-fork@v1
         with:
           image: ${{ steps.compute-image-name.outputs.image_name }}
           shell: bash

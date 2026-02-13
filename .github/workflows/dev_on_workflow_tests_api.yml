@@ -69,15 +69,21 @@ jobs:
           username: "oauth2accesstoken"
           password: "${{ steps.openid-auth.outputs.access_token }}"
       - name: "Show installed Python packages"
-        uses: addnab/docker-run-action@v3
-        with:
-          image: ${{ steps.compute-image-name.outputs.image_name }}
-          run: pip freeze
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            --network "${{ job.container.network }}" \
+            --entrypoint=sh \
+            ${{ steps.compute-image-name.outputs.image_name }} \
+            -c 'pip freeze'
       - name: "Run mypy"
-        uses: addnab/docker-run-action@v3
-        with:
-          image: ${{ steps.compute-image-name.outputs.image_name }}
-          run: mypy src
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            --network "${{ job.container.network }}" \
+            --entrypoint=sh \
+            ${{ steps.compute-image-name.outputs.image_name }} \
+            -c 'mypy src'
 
   ruff-checks:
     name: "Ruff"
@@ -186,81 +192,81 @@ jobs:
           username: "oauth2accesstoken"
           password: "${{ steps.openid-auth.outputs.access_token }}"
       - name: "Check for alembic multiple heads"
-        uses: addnab/docker-run-action@v3
-        with:
-          image: ${{ steps.compute-image-name.outputs.image_name }}
-          shell: bash
-          run: |
-            LINE_COUNT=$(wc -l <<< "$(alembic heads)")
-            echo "Found "$LINE_COUNT" head(s)"
-            if [ ${LINE_COUNT} -ne 2 ]; then echo "There must be two heads";exit 1;fi
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            --network "${{ job.container.network }}" \
+            --entrypoint=bash \
+            ${{ steps.compute-image-name.outputs.image_name }} \
+            -c '
+              LINE_COUNT=$(wc -l <<< "$(alembic heads)")
+              echo "Found "$LINE_COUNT" head(s)"
+              if [ ${LINE_COUNT} -ne 2 ]; then echo "There must be two heads";exit 1;fi
+            '
       - name: "Check database and model are aligned"
-        uses: addnab/docker-run-action@v3
-        with:
-          image: ${{ steps.compute-image-name.outputs.image_name }}
-          shell: bash
-          options: -e RUN_ENV -e DATABASE_URL_TEST
-          run: |
-            set -e
-            flask install_postgres_extensions
-            alembic upgrade pre@head
-            alembic upgrade post@head
-            flask install_data
-            alembic check
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            --network "${{ job.container.network }}" \
+            --entrypoint=bash \
+            ${{ steps.compute-image-name.outputs.image_name }} \
+            -e RUN_ENV -e DATABASE_URL_TEST \
+            -c '
+              set -e
+              flask install_postgres_extensions
+              alembic upgrade pre@head
+              alembic upgrade post@head
+              flask install_data
+              alembic check
+            '
       - name: "Check that downgrade scripts are correctly written"
-        uses: addnab/docker-run-action@v3
-        with:
-          image: ${{ steps.compute-image-name.outputs.image_name }}
-          shell: bash
-          options: -e RUN_ENV -e DATABASE_URL_TEST
-          run: |
-            set -e
-            alembic downgrade post@f460dc2c9f93
-            alembic downgrade pre@f460dc2c9f93
-            alembic upgrade pre@head
-            alembic upgrade post@head
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            --network "${{ job.container.network }}" \
+            --entrypoint=bash \
+            -e RUN_ENV -e DATABASE_URL_TEST \
+            ${{ steps.compute-image-name.outputs.image_name }} \
+            -c '
+              set -e
+              alembic downgrade post@f460dc2c9f93
+              alembic downgrade pre@f460dc2c9f93
+              alembic upgrade pre@head
+              alembic upgrade post@head
+            '
       - name: "Lint migration upgrades"
-        uses: addnab/docker-run-action@v3
-        with:
-          image: ${{ steps.compute-image-name.outputs.image_name }}
-          shell: bash
-          options: -e RUN_ENV -e DATABASE_URL_TEST
-          run: |
-            set -uo pipefail
-            status_code=0
-            alembic upgrade ${{ steps.base_heads.outputs.pre }}:pre@head --sql |
-              sed '/squawk:ignore-next-statement/,/;$/d' |
-              squawk --config .squawk.toml ||
-              status_code=1
-            alembic upgrade ${{ steps.base_heads.outputs.post }}:post@head --sql |
-              sed '/squawk:ignore-next-statement/,/;$/d' |
-              squawk --config .squawk.toml ||
-              status_code=1
-            YELLOW='\033[0;33m'
-            RESET='\033[0m'
-            if [ ${status_code} -ne 0 ];then
-              echo -e "${YELLOW}Hint: An SQL statement can be ignored if preceded by \`-- squawk:ignore-next-statement\`.${RESET}" 
-              echo -e "${YELLOW}See https://github.com/pass-culture/pass-culture-main/blob/master/api/src/pcapi/alembic/CONTRIBUTING.md#lint${RESET}";
-            fi
-            exit $status_code
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            --network "${{ job.container.network }}" \
+            --entrypoint=bash \
+            -e RUN_ENV -e DATABASE_URL_TEST \
+            ${{ steps.compute-image-name.outputs.image_name }} \
+            -c '
+              set -uo pipefail
+              status_code=0
+              alembic upgrade ${{ steps.base_heads.outputs.pre }}:pre@head --sql | sed "/squawk:ignore-next-statement/,/;$/d" | squawk --config .squawk.toml || status_code=1
+              alembic upgrade ${{ steps.base_heads.outputs.post }}:post@head --sql | sed "/squawk:ignore-next-statement/,/;$/d" | squawk --config .squawk.toml || status_code=1
+              YELLOW="\033[0;33m"
+              RESET="\033[0m"
+              if [ ${status_code} -ne 0 ]; then echo -e "${YELLOW}Hint: An SQL statement can be ignored if preceded by \`-- squawk:ignore-next-statement\`.${RESET}"; echo -e "${YELLOW}See https://github.com/pass-culture/pass-culture-main/blob/master/api/src/pcapi/alembic/CONTRIBUTING.md#lint${RESET}"; fi
+              exit $status_code
+            '
       - name: "Lint migration downgrades"
-        uses: addnab/docker-run-action@v3
-        with:
-          image: ${{ steps.compute-image-name.outputs.image_name }}
-          shell: bash
-          options: -e RUN_ENV -e DATABASE_URL_TEST
-          run: |
-            set -uo pipefail
-            status_code=0
-            alembic downgrade pre@head:${{ steps.base_heads.outputs.pre }} --sql |
-              sed '/squawk:ignore-next-statement/,/;$/d' |
-              squawk --config .squawk.toml ||
-              status_code=1
-            alembic downgrade post@head:${{ steps.base_heads.outputs.post }} --sql |
-              sed '/squawk:ignore-next-statement/,/;$/d' |
-              squawk --config .squawk.toml ||
-              status_code=1
-            exit $status_code
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            --network "${{ job.container.network }}" \
+            --entrypoint=bash \
+            -e RUN_ENV -e DATABASE_URL_TEST \
+            ${{ steps.compute-image-name.outputs.image_name }} \
+            -c '
+              set -uo pipefail
+              status_code=0
+              alembic downgrade pre@head:${{ steps.base_heads.outputs.pre }} --sql | sed "/squawk:ignore-next-statement/,/;$/d" | squawk --config .squawk.toml || status_code=1
+              alembic downgrade post@head:${{ steps.base_heads.outputs.post }} --sql | sed "/squawk:ignore-next-statement/,/;$/d" | squawk --config .squawk.toml || status_code=1
+              exit $status_code
+            '
 
 
   restore-test-durations:
@@ -392,27 +398,33 @@ jobs:
           username: "oauth2accesstoken"
           password: "${{ steps.openid-auth.outputs.access_token }}"
       - name: "Setup database"
-        uses: addnab/docker-run-action@v3
-        with:
-          image: ${{ steps.compute-image-name.outputs.image_name }}
-          shell: bash
-          options: -e RUN_ENV -e DATABASE_URL_TEST
-          run: |
-            set -e
-            flask install_postgres_extensions
-            alembic upgrade pre@head
-            alembic upgrade post@head
-            flask install_data
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            --network "${{ job.container.network }}" \
+            --entrypoint=bash \
+            -e RUN_ENV -e DATABASE_URL_TEST \
+            ${{ steps.compute-image-name.outputs.image_name }} \
+            -c '
+              set -e
+              flask install_postgres_extensions
+              alembic upgrade pre@head
+              alembic upgrade post@head
+              flask install_data
+            '
 
       - name: "Mount a Volume with pcapi rights"
-        uses: addnab/docker-run-action@v3
-        with:
-          image: ${{ steps.compute-image-name.outputs.image_name }}
-          shell: bash
-          options: -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -v ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests -u 0
-          run: |
-            echo "Changing owner and group fort directory test"
-            chown -R pcapi:pcapi /tests
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            --network "${{ job.container.network }}" \
+            --entrypoint=bash \
+            -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -v ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests -u 0 \
+            ${{ steps.compute-image-name.outputs.image_name }} \
+            -c '
+              echo "Changing owner and group fort directory test"
+              chown -R pcapi:pcapi /tests
+            '
 
       # These two steps will be executed only when there IS a cache hit (exact match or not).
       # When a matrix job is retried, it will reuse the same artifact to execute the exact same split.
@@ -431,17 +443,20 @@ jobs:
         # https://github.com/jerry-git/pytest-split/blob/fb9af7e0122c18a96a7c01ca734c4ab01027f8d9/src/pytest_split/plugin.py#L68-L76
         # > Removes the test duration info for tests which are not present while running the suite with > '--store-durations'.
       - name: "Run pytest"
-        uses: addnab/docker-run-action@v3
-        with:
-          image: ${{ steps.compute-image-name.outputs.image_name }}
-          shell: bash
-          options: -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -e SQLALCHEMY_WARN_20 -v ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests
-          run: |
-            pytest ${{ matrix.pytest_args.collection }} \
-            --splits 4 --group ${{ matrix.group }} \
-            --store-durations --durations-path /tests/.test_durations --clean-durations \
-            --durations=10 --junitxml='/tests/junit.xml' \
-            -q --color=yes
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            --network "${{ job.container.network }}" \
+            --entrypoint=bash \
+            -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -e SQLALCHEMY_WARN_20 -v ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests \
+            ${{ steps.compute-image-name.outputs.image_name }} \
+            -c '
+              pytest ${{ matrix.pytest_args.collection }} \
+              --splits 4 --group ${{ matrix.group }} \
+              --store-durations --durations-path /tests/.test_durations --clean-durations \
+              --durations=10 --junitxml='/tests/junit.xml' \
+              -q --color=yes
+            '
 
       - name: Upload test durations
         if: github.run_attempt == 1
