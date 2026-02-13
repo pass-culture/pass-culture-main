@@ -209,7 +209,7 @@ yarn test:unit
 
 **Tests end-to-end :**
 
-Les fichiers de tests end-to-end sont tous rangés dans le sous-dossier `/pro/cypress`.
+Les fichiers de tests end-to-end sont tous rangés dans le sous-dossier `/pro/e2e`.
 
 Pour les lancer, on utilise la commande suivante :
 

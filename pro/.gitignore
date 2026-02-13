@@ -6,11 +6,9 @@
 # testing
 /coverage
 /testcafe_screenshots
-/cypress/downloads
-/cypress/screenshots
-/cypress/videos
 /playwright-report/
 /test-results/
+/blob-report/
 .vitest_cache
 coverage
 bundleStats.html

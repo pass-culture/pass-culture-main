@@ -59,7 +59,6 @@
       "!src/apiClient/v1",
       "!**/*.stories.tsx",
       "!docs-build",
-      "!cypress/downloads",
       "!bundleStats.html"
     ],
     "ignoreUnknown": true
@@ -251,7 +250,6 @@
         "!src/index.html",
         ".templatron/**/*.mjs",
         "config/**/*.ts",
-        "cypress/**/*.ts",
         "e2e/**/*.ts",
         "src/**/__mocks__/*.ts",
         "src/**/__specs__/*.ts",
