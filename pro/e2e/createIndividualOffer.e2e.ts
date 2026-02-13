@@ -223,7 +223,6 @@ test.describe('Create individual offers new flow', () => {
       page.getByText('Voir la liste des offres').click(),
     ])
 
-    expect(page.url().includes('/offers'))
     await expect(
       page.getByRole('cell', { name: 'Le Diner de Devs' }).first()
     ).toBeVisible()

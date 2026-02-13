@@ -13,7 +13,10 @@ import {
   fillCustomAddress,
   mockAddressSearch,
 } from './helpers/address'
-import { expectCollectiveOffersAreFound } from './helpers/assertions'
+import {
+  expectCollectiveOffersAreFound,
+  expectSuccessSnackbar,
+} from './helpers/assertions'
 import {
   isGetCollectiveOffersBookableResponse,
   isGetCollectiveOffersTemplateResponse,
@@ -280,7 +283,11 @@ test.describe('Create collective offers', () => {
       page.waitForResponse(isGetCollectiveOffersBookableResponse),
       page.getByText('Sauvegarder le brouillon et quitter').click(),
     ])
-    expect(page.getByText('Brouillon sauvegardé dans la liste des offres'))
+
+    await expectSuccessSnackbar(
+      page,
+      'Brouillon sauvegardé dans la liste des offres'
+    )
 
     await page.getByRole('button', { name: 'Filtrer' }).click()
     await page.getByRole('button', { name: 'Statut' }).click()
