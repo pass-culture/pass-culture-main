@@ -30,9 +30,6 @@ export const postCollectiveOfferImage = async ({
       const imageFile = new File([blob], '', { type: contentType ?? '' })
 
       await api.attachOfferImage(id, {
-        // TODO This TS error will be removed when spectree is updated to the latest
-        // version (dependant on Flask update) which will include files in the generated schema
-        // @ts-expect-error
         thumb: imageFile,
         credit: imageCredit ?? '',
         croppingRectHeight: 1,

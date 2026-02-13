@@ -2,7 +2,6 @@ import typing
 from datetime import date
 from datetime import datetime
 
-import flask
 import pydantic as pydantic_v2
 from pydantic.v1 import AnyHttpUrl
 from pydantic.v1 import ConstrainedStr
@@ -11,13 +10,13 @@ from pydantic.v1 import Field
 from pydantic.v1 import root_validator
 from pydantic.v1 import utils as pydantic_utils
 from pydantic.v1 import validator
+from spectree.models import BaseFile
 
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models
 from pcapi.core.educational import validation
 from pcapi.core.educational.constants import ALL_INTERVENTION_AREA
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offers import validation as offers_validation
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
@@ -33,7 +32,6 @@ from pcapi.serialization import utils
 from pcapi.serialization.exceptions import PydanticError
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
-from pcapi.utils.image_conversion import CropParams
 
 
 class ListCollectiveOffersQueryModel(HttpQueryParamsModel):
@@ -659,41 +657,16 @@ class PatchCollectiveOfferEducationalInstitution(HttpBodyModel):
     teacher_email: str | None = None
 
 
-class AttachImageFormModel(BaseModel):
+class AttachImageFormModel(HttpBodyModel):
+    # thumb comes from request.files, it is inserted in the model when validated by spectree
+    # but it is not present in the model received by the route itself
+    thumb: BaseFile | None = None
     credit: str
     cropping_rect_x: float
     cropping_rect_y: float
     cropping_rect_height: float
     cropping_rect_width: float
 
-    class Config:
-        alias_generator = to_camel
 
-    @property
-    def crop_params(self) -> CropParams:
-        return CropParams.build(
-            x_crop_percent=self.cropping_rect_x,
-            y_crop_percent=self.cropping_rect_y,
-            height_crop_percent=self.cropping_rect_height,
-            width_crop_percent=self.cropping_rect_width,
-        )
-
-    def get_image_as_bytes(self, request: flask.Request) -> bytes:
-        """
-        Get the image from the POSTed data (request)
-        Only the max size is checked at this stage, and possibly the content type header
-        """
-        if "thumb" in request.files:
-            blob = request.files["thumb"]
-            image_as_bytes = blob.read()
-            offers_validation.check_image_size(image_as_bytes)
-            return image_as_bytes
-
-        raise offers_validation.exceptions.MissingImage()
-
-
-class AttachImageResponseModel(BaseModel):
-    imageUrl: str
-
-    class Config:
-        orm_mode = True
+class AttachImageResponseModel(HttpBodyModel):
+    image_url: str
