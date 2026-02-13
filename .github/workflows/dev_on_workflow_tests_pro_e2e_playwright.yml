@@ -78,6 +78,11 @@ jobs:
     name: "Run Playwright E2E"
     runs-on: ubuntu-24.04
     needs: [install]
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex: [1, 2]
+        shardTotal: [2]
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -197,19 +202,78 @@ jobs:
           timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:3001)" != "200" ]]; do sleep 5; done' || false
 
       - name: "Playwright run"
-        run: yarn playwright test -c ./config/playwright.config.ts --project=chromium
+        run: yarn test:e2e:playwright:ci --reporter=blob --shard=${{ matrix.shardIndex }}/${{matrix.shardTotal }}
 
       - name: "Upload Playwright report"
         uses: actions/upload-artifact@v6
-        if: always()
+        if: ${{ !cancelled() }}
         with:
-          name: playwright-report-chromium
-          path: pro/playwright-report/
+          name: report-chromium-${{ matrix.shardIndex }}
+          path: pro/blob-report/
           retention-days: 30
 
       - name: "Show pcapi log when it fails"
         if: failure()
         run: docker logs pc-api
+
+  merge-reposrts:
+    if: ${{ !cancelled() }}
+    needs: [playwright-run]
+    name: "Merge playwright reports"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: "pro/package.json"
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@main
+
+      - name: "Cache the node_modules"
+        id: "yarn-modules-cache"
+        uses: pass-culture-github-actions/cache@v1.0.0
+        with:
+          compression-method: "gzip"
+          bucket: ${{ inputs.CACHE_BUCKET_NAME }}
+          path: |
+            **/node_modules
+          key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: "Install dependencies (3 attempts)"
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 2
+          max_attempts: 3
+          command: |
+            cd pro
+            yarn install --immutable
+
+      - name: Download blob reports from GitHub Actions Artifacts
+        uses: actions/download-artifact@v6
+        with:
+          path: pro/all-blob-reports
+          pattern: report-chromium-*
+          merge-multiple: true
+
+
+
+      - name: DEBUG
+        run: |
+          pwd
+          ls -la ./all-blob-reports
+
+      - name: Merge reports
+        run: npx playwright merge-reports --reporter html ./all-blob-reports
+
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v6
+        with:
+          name: html-report--attempt-${{ github.run_attempt }}
+          path: playwright-report
+          retention-days: 14
+
 
   notify-playwright-failure:
     name: "Notification of Playwright tests failure"
