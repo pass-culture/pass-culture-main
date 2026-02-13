@@ -50,7 +50,7 @@ class CreateThumbnailWithoutImageTest:
 class CreateThumbnailFromFileTest:
     def test_import_from_file(self, client, offer, offerer):
         client = client.with_session_auth(email="user@example.com")
-        thumb = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+        thumb = (IMAGES_DIR / "mouette_portrait_bigger.jpg").read_bytes()
         data = {
             "offerId": offer.id,
             "credit": "John Do",
