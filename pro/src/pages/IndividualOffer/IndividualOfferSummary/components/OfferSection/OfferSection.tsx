@@ -14,14 +14,14 @@ import { useMusicTypes } from '@/commons/hooks/useMusicTypes'
 import { getDelayToFrenchText } from '@/commons/utils/date'
 import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { Markdown } from '@/components/Markdown/Markdown'
+import { ARTISTIC_INFORMATION_FIELDS } from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/DetailsSubForm/DetailsSubForm'
+import { serializeOfferSectionData } from '@/pages/IndividualOfferSummary/commons/serializer'
 import {
   type Description,
   SummaryDescriptionList,
-} from '@/components/SummaryLayout/SummaryDescriptionList'
-import { SummarySection } from '@/components/SummaryLayout/SummarySection'
-import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
-import { ARTISTIC_INFORMATION_FIELDS } from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/DetailsSubForm/DetailsSubForm'
-import { serializeOfferSectionData } from '@/pages/IndividualOfferSummary/commons/serializer'
+} from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
+import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
+import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 
 interface OfferSummaryProps {
   offer: GetIndividualOfferWithAddressResponseModel

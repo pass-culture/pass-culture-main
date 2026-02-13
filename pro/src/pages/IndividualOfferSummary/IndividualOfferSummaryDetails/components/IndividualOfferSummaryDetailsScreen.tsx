@@ -12,20 +12,20 @@ import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySe
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { Markdown } from '@/components/Markdown/Markdown'
 import { OfferAppPreview } from '@/components/OfferAppPreview/OfferAppPreview'
-import { SummaryAside } from '@/components/SummaryLayout/SummaryAside'
-import { SummaryContent } from '@/components/SummaryLayout/SummaryContent'
-import {
-  type Description,
-  SummaryDescriptionList,
-} from '@/components/SummaryLayout/SummaryDescriptionList'
-import { SummaryLayout } from '@/components/SummaryLayout/SummaryLayout'
-import { SummarySection } from '@/components/SummaryLayout/SummarySection'
-import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
 import { Banner } from '@/design-system/Banner/Banner'
 import { ButtonVariant } from '@/design-system/Button/types'
 import phoneStrokeIcon from '@/icons/stroke-phone.svg'
 import { ARTISTIC_INFORMATION_FIELDS } from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/DetailsSubForm/DetailsSubForm'
 import { serializeOfferSectionData } from '@/pages/IndividualOfferSummary/commons/serializer'
+import { SummaryAside } from '@/ui-kit/SummaryLayout/SummaryAside'
+import { SummaryContent } from '@/ui-kit/SummaryLayout/SummaryContent'
+import {
+  type Description,
+  SummaryDescriptionList,
+} from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
+import { SummaryLayout } from '@/ui-kit/SummaryLayout/SummaryLayout'
+import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
+import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './IndividualOfferSummaryDetailsScreen.module.scss'

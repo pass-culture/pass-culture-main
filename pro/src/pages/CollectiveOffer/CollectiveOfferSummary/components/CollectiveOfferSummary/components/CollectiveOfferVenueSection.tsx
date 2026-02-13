@@ -1,6 +1,6 @@
 import type { GetCollectiveOfferVenueResponseModel } from '@/apiClient/v1'
-import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
-import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
+import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
+import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 
 interface CollectiveOfferSummaryProps {
   venue: GetCollectiveOfferVenueResponseModel

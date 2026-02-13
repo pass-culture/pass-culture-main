@@ -1,5 +1,11 @@
 import { UserPasswordForm } from '@/components/UserPasswordForm/UserPasswordForm'
-import { Panel } from '@/ui-kit/Panel/Panel'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
+import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
 
 import { Forms } from '../constants'
 
@@ -15,16 +21,27 @@ export const UserPassword = ({
   const onClickModify = () => setCurrentForm(Forms.USER_PASSWORD)
   const resetForm = () => setCurrentForm(null)
   return (
-    <Panel>
+    <SummarySection
+      title={'Mot de passe'}
+      editLink={
+        <Button
+          label="Modifier"
+          onClick={onClickModify}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          size={ButtonSize.SMALL}
+        />
+      }
+      shouldShowDivider={true}
+    >
       {showForm ? (
         <UserPasswordForm closeForm={resetForm} />
       ) : (
-        <Panel.Header
-          onClickModify={onClickModify}
-          subtitle="***************"
-          title="Mot de passe"
-        />
+        <>
+          <p>Mot de passe</p>
+          <p>***************</p>
+        </>
       )}
-    </Panel>
+    </SummarySection>
   )
 }

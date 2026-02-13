@@ -1,6 +1,6 @@
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { getFormattedAddress } from '@/commons/utils/getFormattedAddress'
-import { SummarySubSubSection } from '@/components/SummaryLayout/SummarySubSubSection'
+import { SummarySubSubSection } from '@/ui-kit/SummaryLayout/SummarySubSubSection'
 
 import styles from './OpeningHoursAndAddressReadOnly.module.scss'
 import { OpeningHoursReadOnly } from './OpeningHoursReadOnly'

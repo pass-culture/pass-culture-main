@@ -4,8 +4,8 @@ import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
-import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
 import strokeOfferIcon from '@/icons/stroke-offer.svg'
+import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './CollectiveOfferImagePreview.module.scss'

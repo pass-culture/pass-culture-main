@@ -4,9 +4,9 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 import { StocksCalendar } from '@/pages/IndividualOffer/IndividualOfferTimetable/components/StocksCalendar/StocksCalendar'
 import { getStockWarningText } from '@/pages/IndividualOfferSummary/commons/getStockWarningText'
+import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
 
 type StocksCalendarSummaryScreenProps = {
   offer: GetIndividualOfferWithAddressResponseModel

@@ -1,6 +1,12 @@
 import type { UserIdentityFormValues } from '@/components/UserIdentityForm/types'
 import { UserIdentityForm } from '@/components/UserIdentityForm/UserIdentityForm'
-import { Panel } from '@/ui-kit/Panel/Panel'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
+import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
 
 import { Forms } from '../constants'
 
@@ -18,16 +24,24 @@ export const UserIdentity = ({
   const onClickModify = () => setCurrentForm(Forms.USER_IDENTITY)
   const resetForm = () => setCurrentForm(null)
   return (
-    <Panel>
+    <SummarySection
+      title={'Prénom et nom'}
+      editLink={
+        <Button
+          label="Modifier"
+          onClick={onClickModify}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          size={ButtonSize.SMALL}
+        />
+      }
+      shouldShowDivider={true}
+    >
       {showForm ? (
         <UserIdentityForm closeForm={resetForm} initialValues={initialValues} />
       ) : (
-        <Panel.Header
-          subtitle={`${initialValues.firstName} ${initialValues.lastName}`}
-          title="Prénom et nom"
-          onClickModify={onClickModify}
-        />
+        <p>{`${initialValues.firstName} ${initialValues.lastName}`}</p>
       )}
-    </Panel>
+    </SummarySection>
   )
 }

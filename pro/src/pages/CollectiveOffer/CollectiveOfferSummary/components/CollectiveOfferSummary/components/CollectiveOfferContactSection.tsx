@@ -6,8 +6,8 @@ import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types
 import {
   type Description,
   SummaryDescriptionList,
-} from '@/components/SummaryLayout/SummaryDescriptionList'
-import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
+} from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
+import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 
 interface CollectiveOfferContactSectionProps {
   offer:

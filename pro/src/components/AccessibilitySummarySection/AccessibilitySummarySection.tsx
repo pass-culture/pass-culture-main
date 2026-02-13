@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react'
 
 import { AccessibilityEnum } from '@/commons/core/shared/types'
-import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
-import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
-import { SummarySubSubSection } from '@/components/SummaryLayout/SummarySubSubSection'
 import { AccessibilityLabel } from '@/ui-kit/AccessibilityLabel/AccessibilityLabel'
+import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
+import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
+import { SummarySubSubSection } from '@/ui-kit/SummaryLayout/SummarySubSubSection'
 
 import styles from './AccessibilitySummarySection.module.scss'
 

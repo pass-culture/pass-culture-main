@@ -16,7 +16,6 @@ import { validationSchema } from './validationSchema'
 
 export interface UserEmailFormProps {
   closeForm: () => void
-  getPendingEmailRequest: () => void
 }
 
 type UserEmailFormValues = {
@@ -26,7 +25,6 @@ type UserEmailFormValues = {
 
 export const UserEmailForm = ({
   closeForm,
-  getPendingEmailRequest,
 }: UserEmailFormProps): JSX.Element => {
   const { currentUser } = useCurrentUser()
 
@@ -52,8 +50,6 @@ export const UserEmailForm = ({
   const onSubmit = async (values: UserResetEmailBodyModel) => {
     try {
       await api.postUserEmail(values)
-
-      getPendingEmailRequest()
       closeForm()
     } catch (error) {
       if (isErrorAPIError(error)) {

@@ -1,6 +1,12 @@
 import type { UserPhoneBodyModel } from '@/apiClient/v1'
 import { UserPhoneForm } from '@/components/UserPhoneForm/UserPhoneForm'
-import { Panel } from '@/ui-kit/Panel/Panel'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
+import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
 
 import { Forms } from '../constants'
 
@@ -59,16 +65,24 @@ export const UserPhone = ({
   const onClickModify = () => setCurrentForm(Forms.USER_PHONE)
   const resetForm = () => setCurrentForm(null)
   return (
-    <Panel>
+    <SummarySection
+      title={'Téléphone'}
+      editLink={
+        <Button
+          label="Modifier"
+          onClick={onClickModify}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          size={ButtonSize.SMALL}
+        />
+      }
+      shouldShowDivider={true}
+    >
       {showForm ? (
         <UserPhoneForm closeForm={resetForm} initialValues={initialValues} />
       ) : (
-        <Panel.Header
-          subtitle={`${formatPhoneNumber(initialValues.phoneNumber)}`}
-          title="Téléphone"
-          onClickModify={onClickModify}
-        />
+        formatPhoneNumber(initialValues.phoneNumber)
       )}
-    </Panel>
+    </SummarySection>
   )
 }
