@@ -1402,9 +1402,12 @@ def apply_filter_on_beneficiary_tag(query: sa_orm.Query, tag_ids: list[int]) -> 
 
 
 def has_profile_expired(user: models.User) -> bool:
-    should_check_for_profile_expiration = (
-        models.UserRole.UNDERAGE_BENEFICIARY in user.roles or models.UserRole.BENEFICIARY in user.roles
-    )
+    deposit = user.deposit
+    if not deposit:
+        return False
+
+    is_beneficiary_with_credit = bool(deposit.amount)
+    should_check_for_profile_expiration = user.has_active_deposit and is_beneficiary_with_credit
     if not should_check_for_profile_expiration:
         return False
 

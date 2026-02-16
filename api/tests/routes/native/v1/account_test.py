@@ -547,6 +547,20 @@ class AccountTest:
         assert response.status_code == 200
         assert response.json["hasProfileExpired"] is False
 
+    def test_expired_deposit_beneficiary_profile_can_not_expire(self, client):
+        campaign_date = date_utils.get_naive_utc_now() + relativedelta(days=30)
+        users_factories.UserProfileRefreshCampaignFactory(campaignDate=campaign_date)
+        before_campaign_date = campaign_date - relativedelta(days=1)
+        user = users_factories.BeneficiaryFactory(
+            beneficiaryFraudChecks__dateCreated=before_campaign_date,
+            deposit__expirationDate=datetime.now(tz=None) - relativedelta(minutes=1),
+        )
+
+        response = client.with_token(user).get("/native/v1/me")
+
+        assert response.status_code == 200
+        assert response.json["hasProfileExpired"] is False
+
     def test_get_user_profile_bonification_status_is_eligible(self, client):
         user = users_factories.BeneficiaryFactory(age=18)
         response = client.with_token(user).get("/native/v1/me")
