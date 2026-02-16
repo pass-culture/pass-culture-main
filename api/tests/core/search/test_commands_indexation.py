@@ -156,7 +156,8 @@ def test_partially_index_venues(app):
 
 @pytest.mark.usefixtures("clean_database")
 def test_partially_index_venues_removes_non_eligible_venues(app):
-    future_not_indexable_venue = offerers_factories.VenueFactory(isOpenToPublic=True)
+    offerer = offerers_factories.OffererFactory.create(name="Le Royal - Cinéma d'essai")
+    future_not_indexable_venue = offerers_factories.VenueFactory(managingOfferer=offerer, isOpenToPublic=True)
     offers_factories.EventStockFactory(offer__venue=future_not_indexable_venue)
     indexable_venue1 = offerers_factories.VenueFactory(isOpenToPublic=True)
     offers_factories.EventStockFactory(offer__venue=indexable_venue1)
@@ -176,8 +177,8 @@ def test_partially_index_venues_removes_non_eligible_venues(app):
     assert set(search_testing.search_store["venues"].keys()) == expected_to_be_reindexed
 
     ### This is the actual test: the venue is no longer eligible for search ###
-    future_not_indexable_venue.isOpenToPublic = False
-    db.session.add(future_not_indexable_venue)
+    offerer.isActive = False
+    db.session.add(offerer)
     db.session.commit()
 
     expected_to_be_reindexed = {
