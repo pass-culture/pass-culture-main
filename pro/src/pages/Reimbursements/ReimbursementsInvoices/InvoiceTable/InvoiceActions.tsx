@@ -5,8 +5,6 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { downloadFile } from '@/commons/utils/downloadFile'
-import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullDownloadIcon from '@/icons/full-download.svg'
 import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
 import { DropdownItem } from '@/ui-kit/Dropdown/DropdownItem'
@@ -55,26 +53,14 @@ export function InvoiceActions({ invoice }: InvoiceActionsProps) {
     <Dropdown title="Téléchargement des justificatifs" triggerTooltip>
       <DropdownItem
         title="Télécharger le justificatif comptable (.pdf)"
+        icon={fullDownloadIcon}
         onSelect={() => downloadPDFFile(invoice.url)}
-      >
-        <Button
-          icon={fullDownloadIcon}
-          variant={ButtonVariant.TERTIARY}
-          color={ButtonColor.NEUTRAL}
-          label="Télécharger le justificatif comptable (.pdf)"
-        />
-      </DropdownItem>
+      />
       <DropdownItem
         title="Télécharger le détail des réservations (.csv)"
+        icon={fullDownloadIcon}
         onSelect={() => downloadCSVFile(invoice.reference)}
-      >
-        <Button
-          icon={fullDownloadIcon}
-          variant={ButtonVariant.TERTIARY}
-          color={ButtonColor.NEUTRAL}
-          label="Télécharger le détail des réservations (.csv)"
-        />
-      </DropdownItem>
+      />
     </Dropdown>
   )
 }

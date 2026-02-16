@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from 'react'
+import { useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -17,8 +18,6 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { getStoredFilterConfig } from '@/components/OffersTableSearch/utils'
-import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import penIcon from '@/icons/full-edit.svg'
 import fullStockIcon from '@/icons/full-stock.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
@@ -130,6 +129,8 @@ export const IndividualActionsCells = ({
     !isDigital &&
     isNotAProductWithoutImage
 
+  const navigate = useNavigate()
+
   return (
     <>
       <div className={styles['actions-column']}>
@@ -138,49 +139,38 @@ export const IndividualActionsCells = ({
           triggerTooltip
           dropdownTriggerRef={dropdownTriggerRef}
         >
-          <DropdownItem>
-            <Button
-              as="a"
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
-              to={editionOfferLink}
-              icon={penIcon}
-              label="Voir l’offre"
-            />
-          </DropdownItem>
+          <DropdownItem
+            onSelect={() => navigate(editionOfferLink)}
+            title={'Voir l’offre'}
+            icon={penIcon}
+          />
           {offer.status === OfferStatus.DRAFT ? (
-            <DropdownItem onSelect={() => setIsConfirmDialogDeleteDraftOpen}>
-              <Button
-                icon={fullTrashIcon}
-                variant={ButtonVariant.TERTIARY}
-                color={ButtonColor.NEUTRAL}
-                label="Supprimer l’offre"
-              />
-            </DropdownItem>
+            <DropdownItem
+              onSelect={() =>
+                setIsConfirmDialogDeleteDraftOpen(
+                  !isConfirmDialogDeleteDraftOpen
+                )
+              }
+              title="Supprimer l’offre"
+              icon={fullTrashIcon}
+            />
           ) : (
-            <DropdownItem>
-              <Button
-                as="a"
-                variant={ButtonVariant.TERTIARY}
-                color={ButtonColor.NEUTRAL}
-                to={editionStockLink}
-                icon={fullStockIcon}
-                label={offer.isEvent ? `Dates et capacités` : `Stocks`}
-              />
-            </DropdownItem>
+            <DropdownItem
+              onSelect={() => navigate(editionStockLink)}
+              title={offer.isEvent ? `Dates et capacités` : `Stocks`}
+              icon={fullStockIcon}
+            />
           )}
           {isHeadlineActionDisplayed && (
-            <DropdownItem>
-              <HeadlineOfferCell
-                offer={offer}
-                setIsConfirmReplacementDialogOpen={
-                  setIsConfirmDialogReplaceHeadlineOfferOpen
-                }
-                setIsOfferWithoutImageDialogOpen={
-                  setIsDialogForHeadlineOfferWithoutImageOpen
-                }
-              />
-            </DropdownItem>
+            <HeadlineOfferCell
+              offer={offer}
+              setIsConfirmReplacementDialogOpen={
+                setIsConfirmDialogReplaceHeadlineOfferOpen
+              }
+              setIsOfferWithoutImageDialogOpen={
+                setIsDialogForHeadlineOfferWithoutImageOpen
+              }
+            />
           )}
         </Dropdown>
       </div>

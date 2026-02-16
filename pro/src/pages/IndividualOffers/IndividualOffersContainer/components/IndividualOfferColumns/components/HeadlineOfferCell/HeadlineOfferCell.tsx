@@ -1,8 +1,7 @@
 import type { ListOffersOfferResponseModel } from '@/apiClient/v1'
 import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
-import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullBoostedIcon from '@/icons/full-boosted.svg'
+import { DropdownItem } from '@/ui-kit/Dropdown/DropdownItem'
 
 type HeadlineOfferCellProps = {
   offer: ListOffersOfferResponseModel
@@ -38,16 +37,14 @@ export function HeadlineOfferCell({
   }
 
   return (
-    <Button
-      variant={ButtonVariant.TERTIARY}
-      color={ButtonColor.NEUTRAL}
+    <DropdownItem
+      onSelect={onClick}
       icon={fullBoostedIcon}
-      label={
+      title={
         offer.id === headlineOffer?.id
           ? 'Ne plus mettre à la une'
           : 'Mettre à la une'
       }
-      onClick={onClick}
     />
   )
 }

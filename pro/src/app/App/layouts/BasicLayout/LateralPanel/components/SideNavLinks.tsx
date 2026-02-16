@@ -2,7 +2,7 @@
 
 import classnames from 'classnames'
 import { useEffect, useState } from 'react'
-import { useLocation } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -140,6 +140,8 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
 
   const [isOpen, setIsOpen] = useState(false)
 
+  const navigate = useNavigate()
+
   return (
     <div
       className={classnames({
@@ -204,30 +206,25 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 />
               }
             >
-              <DropdownItem>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  to={getIndividualOfferUrl({
-                    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-                    mode: OFFER_WIZARD_MODE.CREATION,
-                    isOnboarding: false,
-                  })}
-                  icon={strokePhoneIcon}
-                  label="Pour le grand public"
-                />
-              </DropdownItem>
-              <DropdownItem>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  to="/offre/creation"
-                  icon={strokeBagIcon}
-                  label="Pour les groupes scolaires"
-                />
-              </DropdownItem>
+              <DropdownItem
+                icon={strokePhoneIcon}
+                title="Pour le grand public"
+                onSelect={() => {
+                  navigate(
+                    getIndividualOfferUrl({
+                      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+                      mode: OFFER_WIZARD_MODE.CREATION,
+                      isOnboarding: false,
+                    })
+                  )
+                  setIsOpen(false)
+                }}
+              />
+              <DropdownItem
+                icon={strokeBagIcon}
+                title="Pour les groupes scolaires"
+                onSelect={() => navigate('/offre/creation')}
+              />
             </Dropdown>
           </div>
         </div>

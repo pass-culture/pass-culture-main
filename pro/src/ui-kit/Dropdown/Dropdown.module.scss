@@ -23,19 +23,17 @@
     outline: none;
     border-radius: var(--size-border-radius-s);
     background: var(--color-background-subtle);
-    color: var(--color-text-default);
+    color: var(--color-text-brand-primary-hover);
     cursor: pointer;
   }
 
   &-disabled {
-    opacity: 0.5;
+    color: var(--color-text-disabled);
     cursor: not-allowed;
   }
-}
 
-.menu-item-icon {
-  width: rem.torem(20px);
-  height: rem.torem(20px);
-  flex-shrink: 0;
-  margin-right: var(--size-spacing-s);
+  &-icon {
+    width: rem.torem(22px);
+    margin-right: var(--size-spacing-s);
+  }
 }
