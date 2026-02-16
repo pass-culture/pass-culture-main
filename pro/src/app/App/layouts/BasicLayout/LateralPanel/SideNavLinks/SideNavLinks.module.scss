@@ -1,0 +1,83 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_outline.scss" as outline;
+@use "styles/variables/_z-index.scss" as zIndex;
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* full sidebar height */
+  justify-content: space-between;
+}
+
+.footer {
+  padding: var(--size-spacing-s) 0;
+}
+
+.nav-section {
+  &-title {
+    flex: 1;
+    text-align: left;
+  }
+}
+
+.separator-line {
+  background-color: var(--separator-color-subtle);
+  margin: 0 rem.torem(16px);
+  height: rem.torem(1px);
+  margin-bottom: var(--size-spacing-l);
+}
+
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-right: rem.torem(1px) solid var(--color-border-subtle);
+
+  &-help {
+    justify-content: space-between;
+  }
+
+  &-item {
+    @include fonts.button;
+
+    padding: var(--size-spacing-s) var(--size-spacing-l);
+    display: flex;
+    gap: var(--size-spacing-s);
+    align-items: center;
+    width: 100%;
+    background-color: transparent;
+    border: none;
+
+    &:hover {
+      background-color: var(--color-background-subtle);
+    }
+
+    &:focus-visible {
+      @include outline.focus-outline(rem.torem(-8px));
+
+      border-radius: var(--size-border-radius-l);
+    }
+
+    &-active {
+      background-color: var(--color-background-subtle);
+      position: relative;
+
+      &::after {
+        content: "";
+        position: absolute;
+        width: rem.torem(4px);
+        height: 100%;
+        background-color: var(--color-border-brand-primary);
+        right: 0;
+      }
+    }
+
+    &-without-icon {
+      @include fonts.body;
+
+      padding-left: rem.torem(28px);
+    }
+  }
+}

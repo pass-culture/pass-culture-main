@@ -20,7 +20,7 @@ import logoPassCultureProIcon from '@/icons/logo-pass-culture-pro.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
-import { UserReviewDialog } from '../../BasicLayout/LateralPanel/components/UserReviewDialog/UserReviewDialog'
+import { UserReviewDialog } from '../../BasicLayout/LateralPanel/SideNavLinks/components/UserReviewDialog/UserReviewDialog'
 import { HeaderDropdown } from './components/HeaderDropdown/HeaderDropdown'
 import { HeaderHelpDropdown } from './components/HeaderHelpDropdown/HeaderHelpDropdown'
 import styles from './Header.module.scss'

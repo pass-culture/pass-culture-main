@@ -3,16 +3,16 @@ import { userEvent } from '@testing-library/user-event'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { AdminSideNavLinks } from './AdminSideNavLinks'
+import { AdminSideNavLinks } from './AdminSideNav'
 
-const renderAdminSideNavLinks = (props = {}) =>
+const renderAdminSideNav = (props = {}) =>
   renderWithProviders(
     <AdminSideNavLinks isLateralPanelOpen={true} {...props} />
   )
 
-describe('AdminSideNavLinks', () => {
+describe('AdminSideNav', () => {
   it('should toggle the data section on button click', async () => {
-    renderAdminSideNavLinks()
+    renderAdminSideNav()
     const button = screen.getByRole('button', { name: /Données d’activité/ })
     expect(screen.getByText('Individuel')).toBeInTheDocument()
     await userEvent.click(button)
@@ -21,7 +21,7 @@ describe('AdminSideNavLinks', () => {
     expect(screen.getByText('Individuel')).toBeInTheDocument()
   })
   it('should open the dropdown menu when Centre d’aide is clicked', async () => {
-    renderAdminSideNavLinks()
+    renderAdminSideNav()
     const helpButton = screen.getByRole('button', { name: /Centre d’aide/ })
     await userEvent.click(helpButton)
     expect(screen.getByText('Centre d’aide')).toBeInTheDocument()

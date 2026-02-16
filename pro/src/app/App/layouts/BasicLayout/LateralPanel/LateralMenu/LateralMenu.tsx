@@ -13,7 +13,6 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
-import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { selectSelectedPartnerPageId } from '@/commons/store/nav/selector'
 import { getSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenueId'
 import { Button } from '@/design-system/Button/Button'
@@ -36,21 +35,8 @@ import strokeTeacherIcon from '@/icons/stroke-teacher.svg'
 import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
 import { DropdownItem } from '@/ui-kit/Dropdown/DropdownItem'
 
-import { FeedbackDialogTriggerNavItem } from './FeedbackDialogTriggerNavItem'
-import { HelpDropdownNavItem } from './HelpDropdownNavItem'
-import { RenderNavItem } from './SideNavLink'
-import styles from './SideNavLinks.module.scss'
-
-export type NavGroup = 'main' | 'footer'
-export interface NavItem {
-  key?: string
-  group: NavGroup
-  type: string
-  title?: string
-  icon?: string
-  to?: string
-  children?: NavItem[]
-}
+import { type NavItem, SideNavLinks } from '../SideNavLinks/SideNavLinks'
+import styles from './LateralMenu.module.scss'
 
 interface SideNavLinksProps {
   isLateralPanelOpen: boolean
@@ -59,13 +45,14 @@ interface SideNavLinksProps {
 function generateNavItems(
   selectedOfferer?: GetOffererResponseModel | null,
   selectedPartnerPageVenueId?: string | number,
-  venueId?: string | number
+  venueId?: string | number,
+  isCaledonian?: boolean
 ): NavItem[] {
   const navItems: NavItem[] = []
-  const isCaledonian = useIsCaledonian()
 
   // ===== MAIN LINKS =====
   navItems.push({
+    key: 'home',
     type: 'link',
     group: 'main',
     title: 'Accueil',
@@ -75,13 +62,32 @@ function generateNavItems(
 
   // ===== Individuel Section =====
   const individuelChildren: NavItem[] = [
-    { type: 'link', group: 'main', title: 'Offres', to: '/offres' },
-    { type: 'link', group: 'main', title: 'Réservations', to: '/reservations' },
-    { type: 'link', group: 'main', title: 'Guichet', to: '/guichet' },
+    {
+      key: 'offers',
+      type: 'link',
+      group: 'main',
+      title: 'Offres',
+      to: '/offres',
+    },
+    {
+      key: 'reservation',
+      type: 'link',
+      group: 'main',
+      title: 'Réservations',
+      to: '/reservations',
+    },
+    {
+      key: 'ticket_office',
+      type: 'link',
+      group: 'main',
+      title: 'Guichet',
+      to: '/guichet',
+    },
   ]
 
   if (selectedOfferer && selectedPartnerPageVenueId) {
     individuelChildren.push({
+      key: 'page',
       type: 'link',
       group: 'main',
       title: 'Page sur l’application',
@@ -101,12 +107,14 @@ function generateNavItems(
   // ===== Collectif Section =====
   const collectifChildren: NavItem[] = [
     {
+      key: 'showcase_offers',
       type: 'link',
       group: 'main',
       title: 'Offres vitrines',
       to: '/offres/vitrines',
     },
     {
+      key: 'bookable_offers',
       type: 'link',
       group: 'main',
       title: 'Offres réservables',
@@ -116,6 +124,7 @@ function generateNavItems(
 
   if (selectedOfferer && venueId) {
     collectifChildren.push({
+      key: 'adage_page',
       type: 'link',
       group: 'main',
       title: 'Page dans ADAGE',
@@ -136,6 +145,7 @@ function generateNavItems(
 
   navItems.push(
     {
+      key: 'refunds',
       group: 'footer',
       type: 'link',
       title: 'Gestion financière',
@@ -143,6 +153,7 @@ function generateNavItems(
       icon: isCaledonian ? strokeFrancIcon : strokeEuroIcon,
     },
     {
+      key: 'collaborators',
       group: 'footer',
       type: 'link',
       title: 'Collaborateurs',
@@ -154,8 +165,9 @@ function generateNavItems(
   return navItems
 }
 
-export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
+export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+  const isCaledonian = useIsCaledonian()
 
   const selectedOfferer = useAppSelector(
     (state) => state.offerer.currentOfferer
@@ -189,7 +201,8 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const navItems = generateNavItems(
     selectedOfferer,
     selectedPartnerPageVenueId,
-    venueId
+    venueId,
+    isCaledonian
   )
 
   return (
@@ -229,8 +242,8 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 icon={fullLeftIcon}
                 to="/hub"
                 label={
-                  selectedVenue.publicName?.length > 20
-                    ? `${selectedVenue.publicName.substring(0, 19)}...`
+                  selectedVenue.publicName?.length > 19
+                    ? `${selectedVenue.publicName.substring(0, 18)}...`
                     : selectedVenue.publicName
                 }
                 fullWidth
@@ -274,72 +287,10 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
         </div>
       )}
 
-      <LateralMenu
+      <SideNavLinks
         navItems={navItems}
         withSwitchVenueFeature={withSwitchVenueFeature}
       />
-    </div>
-  )
-}
-
-export const LateralMenu = ({
-  navItems,
-  withSwitchVenueFeature,
-}: {
-  navItems: NavItem[]
-  withSwitchVenueFeature: boolean
-}) => {
-  const mainItems = navItems.filter((i) => i.group === 'main')
-  const footerItems = navItems.filter((i) => i.group === 'footer')
-
-  const isMobileScreen = useMediaQuery('(max-width: 64rem)')
-
-  return (
-    <div className={styles.sidebar}>
-      {/* SCROLLABLE CONTENT */}
-      <ul
-        className={classnames(
-          styles['nav-links-group'],
-          styles['nav-links-scroll']
-        )}
-      >
-        {mainItems.map((item) => (
-          <RenderNavItem key={item.title} item={item} />
-        ))}
-      </ul>
-
-      {/* FOOTER */}
-      <div className={styles.sidebarFooter}>
-        {footerItems && (
-          <div className={styles['nav-links-group']}>
-            <div
-              className={styles['nav-links-last-group-separator']}
-              aria-hidden="true"
-            >
-              <div className={styles['separator-line']} />
-            </div>
-
-            {withSwitchVenueFeature ? (
-              <ul className={styles['nav-links-footer']}>
-                <li>
-                  <FeedbackDialogTriggerNavItem />
-                </li>
-                <li>
-                  <HelpDropdownNavItem
-                    isMobileScreen={isMobileScreen ?? false}
-                  />
-                </li>
-              </ul>
-            ) : (
-              <ul>
-                {footerItems.map((item) => (
-                  <RenderNavItem key={item.title} item={item} />
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
-      </div>
     </div>
   )
 }

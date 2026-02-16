@@ -7,8 +7,8 @@ import strokeCollaboratorIcon from '@/icons/stroke-collaborator.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import strokeReportIcon from '@/icons/stroke-report.svg'
 
-import { LateralMenu } from './SideNavLinks'
-import styles from './SideNavLinks.module.scss'
+import { type NavItem, SideNavLinks } from '../SideNavLinks/SideNavLinks'
+import styles from './AdminSideNav.module.scss'
 
 interface AdminSideNavLinksProps {
   isLateralPanelOpen: boolean
@@ -17,8 +17,9 @@ interface AdminSideNavLinksProps {
 export const AdminSideNavLinks = ({
   isLateralPanelOpen,
 }: AdminSideNavLinksProps) => {
-  const navItems = [
+  const navItems: NavItem[] = [
     {
+      key: 'financial_management',
       group: 'main',
       type: 'link',
       icon: strokeRepaymentIcon,
@@ -26,18 +27,21 @@ export const AdminSideNavLinks = ({
       to: '/remboursements',
     },
     {
+      key: 'activity_data',
       type: 'section',
       group: 'main',
       icon: strokeReportIcon,
       title: 'Données d’activité',
       children: [
         {
+          key: 'individual_admin',
           type: 'link',
           group: 'main',
           title: 'Individuel',
           to: '/admin/individuel',
         },
         {
+          key: 'collective_admin',
           type: 'link',
           group: 'main',
           title: 'Collectif',
@@ -46,6 +50,7 @@ export const AdminSideNavLinks = ({
       ],
     },
     {
+      key: 'collaborators_admin',
       group: 'main',
       type: 'link',
       icon: strokeCollaboratorIcon,
@@ -60,7 +65,7 @@ export const AdminSideNavLinks = ({
         [styles['nav-links-open']]: isLateralPanelOpen,
       })}
     >
-      <div className={styles['back-to-partner-space-button']}>
+      <div className={styles['back-to-admin']}>
         <Button
           as="a"
           variant={ButtonVariant.SECONDARY}
@@ -74,7 +79,7 @@ export const AdminSideNavLinks = ({
 
       <div className={styles['nav-links-header']}>Espace Administration</div>
 
-      <LateralMenu navItems={navItems} withSwitchVenueFeature={true} />
+      <SideNavLinks navItems={navItems} withSwitchVenueFeature={true} />
     </nav>
   )
 }
