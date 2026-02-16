@@ -3,13 +3,14 @@ import pytest
 from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalYearFactory
+from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.testing import assert_num_queries
 from pcapi.utils.date import format_into_utc_date
 
 
-def expected_serialized_booking(booking) -> dict:
+def expected_serialized_booking(booking: CollectiveBooking) -> dict:
     formats = booking.collectiveStock.collectiveOffer.formats
     formats = [format.value for format in formats] if formats else None
     return {
@@ -17,6 +18,7 @@ def expected_serialized_booking(booking) -> dict:
         "UAICode": booking.educationalInstitution.institutionId,
         "status": booking.status.value,
         "cancellationReason": booking.cancellationReason.value if booking.cancellationReason else None,
+        "confirmationDate": format_into_utc_date(booking.confirmationDate),
         "confirmationLimitDate": format_into_utc_date(booking.confirmationLimitDate),
         "totalAmount": booking.collectiveStock.price,
         "startDatetime": format_into_utc_date(booking.collectiveStock.startDatetime),

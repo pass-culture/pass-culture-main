@@ -342,6 +342,7 @@ def get_paginated_collective_bookings_for_educational_year(
             models.CollectiveBooking.id,
             models.CollectiveBooking.collectiveStockId,
             models.CollectiveBooking.status,
+            models.CollectiveBooking.confirmationDate,
             models.CollectiveBooking.confirmationLimitDate,
             models.CollectiveBooking.cancellationReason,
             models.CollectiveBooking.dateCreated,
