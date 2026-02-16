@@ -192,6 +192,27 @@ class DepositSpecificCapsTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class DepositDigitalCapsV2Test:
+    def test_should_have_50_euros_digital_cap(self):
+        with time_machine.travel(pcapi_settings.DIGITAL_CAP_V2_DATETIME):
+            user = users_factories.BeneficiaryGrant18Factory()
+
+        specific_caps = user.deposit.specific_caps
+
+        assert specific_caps.DIGITAL_CAP == Decimal(50)
+
+    @pytest.mark.parametrize("dept_code", [986, 975, 976])
+    def test_should_not_have_digital_cap_for_excluded_departments(self, dept_code):
+        """
+        Covers Wallis and Futuna (986), Saint Pierre et Miquelon (975), and Mayotte (976)
+        """
+        with time_machine.travel(pcapi_settings.DIGITAL_CAP_V2_DATETIME):
+            user = users_factories.BeneficiaryGrant18Factory(departementCode=dept_code)
+
+        assert user.deposit.specific_caps.DIGITAL_CAP is None
+
+
+@pytest.mark.usefixtures("db_session")
 class BankAccountRulesTest:
     def test_we_cant_have_the_two_bank_account_with_same_dsapplicationid(self):
         factories.BankAccountFactory(dsApplicationId=42)
