@@ -100,7 +100,7 @@ class MoveCollectiveOfferSuccessTest:
         # TODO (prouzet, 2026-01-13) it should be a new OA when OffererAddress is an OFFER_LOCATION and linked to a single venueId.
         assert collective_offer.offererAddress == original_offer_oa
         assert collective_offer.offererAddress.addressId == source_venue.offererAddress.addressId
-        assert collective_offer.offererAddress.label == source_venue.common_name
+        assert collective_offer.offererAddress.label == source_venue.publicName
 
     def test_move_collective_offer_with_venue_OA_can_resuse_non_venue_OA(self):
         """
@@ -111,7 +111,7 @@ class MoveCollectiveOfferSuccessTest:
         source_venue = collective_offer.venue
         destination_OA = offerers_factories.OfferLocationFactory(
             offerer=source_venue.managingOfferer,
-            label=source_venue.common_name,
+            label=source_venue.publicName,
             address=source_venue.offererAddress.address,
             venueId=destination_venue.id,
         )

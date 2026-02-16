@@ -1673,7 +1673,7 @@ class GetOffererAddressesTest(GetEndpointHelper):
         assert rows[1]["Adresse"] == "5 Bd Poissonnière 75002 Paris"
         assert rows[1]["Localisation"] == "48.87055, 2.34765"
 
-    def test_offerer_addresses_linked_to_venues_should_display_common_name(self, authenticated_client, offerer):
+    def test_offerer_addresses_linked_to_venues_should_display_public_name(self, authenticated_client, offerer):
         venue = offerers_factories.VenueFactory(
             managingOfferer=offerer,
             offererAddress__address__street="3 Bd Poissonnière",
@@ -1696,8 +1696,8 @@ class GetOffererAddressesTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
 
-        assert venue.common_name in rows[0]["Intitulé"]
-        assert venue_2.common_name in rows[0]["Intitulé"]
+        assert venue.publicName in rows[0]["Intitulé"]
+        assert venue_2.publicName in rows[0]["Intitulé"]
         assert rows[0]["Adresse"] == "3 Bd Poissonnière 75002 Paris"
         assert rows[0]["Localisation"] == "48.87055, 2.34765"
 

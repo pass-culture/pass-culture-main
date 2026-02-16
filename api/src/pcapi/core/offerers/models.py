@@ -796,15 +796,6 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
             return current_bank_account_link.bankAccount
         return None
 
-    @hybrid_property
-    def common_name(self) -> str:
-        return self.publicName or self.name
-
-    @common_name.inplace.expression
-    @classmethod
-    def _common_name_expression(cls) -> sa_func.coalesce:
-        return sa_func.coalesce(sa.func.nullif(cls.publicName, ""), cls.name)
-
     @property
     def web_presence(self) -> str | None:
         return self.registration.webPresence if self.registration else None

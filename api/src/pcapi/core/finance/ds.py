@@ -250,7 +250,7 @@ class ImportBankAccountMixin:
 
         label = self.application_details.label
         if label is None:
-            label = venue.common_name if venue is not None else self.application_details.obfuscatedIban
+            label = venue.publicName if venue is not None else self.application_details.obfuscatedIban
             label = shorten(label, width=100, placeholder="...")
         bank_account.label = label
         bank_account.iban = self.application_details.iban

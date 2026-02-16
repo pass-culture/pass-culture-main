@@ -4805,7 +4805,7 @@ class MoveOfferTest:
         assert offer.offererAddress.addressId == offer.venue.offererAddress.addressId
         assert offer.offererAddress != new_venue.offererAddress
         initial_address_id = offer.offererAddress.addressId
-        initial_oa_label = offer.venue.common_name
+        initial_oa_label = offer.venue.publicName
         api.move_offer(offer, new_venue)
 
         db.session.refresh(offer)

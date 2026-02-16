@@ -305,7 +305,7 @@ def get_collective_offer_location_from_offer(offer: CollectiveOffer) -> Collecti
             is_venue_address = (
                 offer.offererAddress is not None
                 and offer.offererAddress.addressId == offer.venue.offererAddress.addressId
-                and offer.offererAddress.label == offer.venue.common_name
+                and offer.offererAddress.label == offer.venue.publicName
             )
             if is_venue_address:
                 return CollectiveOfferLocationAddressVenueModel(

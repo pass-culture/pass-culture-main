@@ -36,7 +36,7 @@ class TicketDisplayEnum(enum.Enum):
 class BookingVenueResponseV2GetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
         if key == "name":
-            return self._obj.common_name
+            return self._obj.publicName
         if key == "address":
             return BookingVenueAddressResponseV2(id=self._obj.offererAddress.address.id)
         if key == "timezone":

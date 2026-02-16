@@ -286,7 +286,7 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> sa_orm.Qu
 
     with_entities: tuple[typing.Any, ...] = (
         models.Booking.id.label("id"),
-        offerers_models.Venue.common_name.label("venueName"),
+        offerers_models.Venue.publicName.label("venueName"),
         offers_models.Offer.name.label("offerName"),
         offers_models.Stock.beginningDatetime.label("stockBeginningDatetime"),
         offers_models.Stock.offerId,
@@ -313,8 +313,9 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> sa_orm.Qu
         models.Booking.userId,
         Address.departmentCode.label("offerDepartmentCode"),
         VenueAddress.departmentCode.label("venueDepartmentCode"),
+        # TODO(OA): no more need to publicName here since the offer OA has a label
         sa.func.coalesce(
-            sa.func.nullif(offerers_models.OffererAddress.label, ""), offerers_models.Venue.common_name
+            sa.func.nullif(offerers_models.OffererAddress.label, ""), offerers_models.Venue.publicName
         ).label("locationName"),
         Address.street.label("locationStreet"),
         Address.postalCode.label("locationPostalCode"),
@@ -540,7 +541,7 @@ def _get_filtered_booking_report(
     VenueAddress = sa_orm.aliased(Address)
 
     with_entities: tuple[typing.Any, ...] = (
-        offerers_models.Venue.common_name.label("venueName"),
+        offerers_models.Venue.publicName.label("venueName"),
         offers_models.Offer.name.label("offerName"),
         offers_models.Stock.beginningDatetime.label("stockBeginningDatetime"),
         offers_models.Stock.offerId,
@@ -569,8 +570,9 @@ def _get_filtered_booking_report(
         models.Booking.userId,
         Address.departmentCode.label("offerDepartmentCode"),
         VenueAddress.departmentCode.label("venueDepartmentCode"),
+        # TODO(OA): no more need to publicName here since the offer OA has a label
         sa.func.coalesce(
-            sa.func.nullif(offerers_models.OffererAddress.label, ""), offerers_models.Venue.common_name
+            sa.func.nullif(offerers_models.OffererAddress.label, ""), offerers_models.Venue.publicName
         ).label("locationName"),
         Address.street.label("locationStreet"),
         Address.postalCode.label("locationPostalCode"),

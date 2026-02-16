@@ -181,7 +181,7 @@
         {{ badges.build_offer_offerer_fraud_badges(row.offerer_badges) }}
       {% endcall %}
     </td>
-    <td data-pc-sort-table-value="{{ offer.venue.common_name | lower }}">
+    <td data-pc-sort-table-value="{{ offer.venue.publicName | lower }}">
       {{ links.build_venue_name_to_details_link(offer.venue) }}
       {% call badges.badges_container() %}
         {{ badges.build_offer_venue_fraud_badges(row.venue_badges) }}

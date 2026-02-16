@@ -92,7 +92,7 @@ def get_booking_confirmation_to_beneficiary_email_data(
                 is_digital_booking_with_activation_code_and_no_expiration_date
             ),
             "CODE_EXPIRATION_DATE": code_expiration_date,
-            "VENUE_NAME": venue.common_name,
+            "VENUE_NAME": venue.publicName,
             "ALL_BUT_NOT_VIRTUAL_THING": offer.isEvent or (not offer.isEvent and not offer.hasUrl),
             "ALL_THINGS_NOT_VIRTUAL_THING": not offer.isEvent and not offer.hasUrl,
             "IS_EVENT": offer.isEvent,

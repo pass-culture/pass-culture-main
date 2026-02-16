@@ -27,7 +27,7 @@ def _extract_bookings_information_from_bookings_list(bookings: list[Booking]) ->
         bookings_info.append(
             {
                 "offer_name": booking.stock.offer.name,
-                "venue_name": booking.stock.offer.venue.common_name,
+                "venue_name": booking.stock.offer.venue.publicName,
                 "price": str(booking.stock.price) if booking.stock.price > 0 else "gratuit",
                 "formatted_price": format_price(booking.stock.price, booking.stock.offer.venue),
                 "user_name": booking.userName,

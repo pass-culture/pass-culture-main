@@ -298,7 +298,7 @@ def get_collective_offer_location_model(
             is_venue_location = True
         location = address_serialize.LocationResponseModel(
             **address_serialize.retrieve_address_info_from_oa(oa),
-            label=offer.venue.common_name if is_venue_location else oa.label,
+            label=offer.venue.publicName if is_venue_location else oa.label,
             isVenueLocation=is_venue_location,
         )
 

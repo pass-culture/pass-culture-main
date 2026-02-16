@@ -62,7 +62,7 @@ class LinkedVenue(HttpBodyModel):
     """A venue that is already linked to a bank account."""
 
     id: int
-    common_name: str
+    publicName: str = pydantic_v2.Field(alias="commonName")
 
 
 class ManagedVenue(HttpBodyModel):

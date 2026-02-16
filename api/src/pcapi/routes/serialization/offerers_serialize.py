@@ -113,7 +113,7 @@ class GetOffererResponseModel(BaseModel):
             .options(sa_orm.joinedload(offerers_models.Venue.collectiveDmsApplications))
             .options(sa_orm.joinedload(offerers_models.Venue.venueProviders))
             .options(sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo))
-            .order_by(offerers_models.Venue.common_name)
+            .order_by(offerers_models.Venue.publicName)
             .all()
         )
 
@@ -405,8 +405,8 @@ class GetOffererV2StatsResponseModel(BaseModel):
 class OffererAddressGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
         if key == "label" and not self._obj.label:
-            if self.get("common_name", default) is not None:
-                return self.get("common_name", default)
+            if self.get("publicName", default) is not None:
+                return self.get("publicName", default)
         return super().get(key, default)
 
 

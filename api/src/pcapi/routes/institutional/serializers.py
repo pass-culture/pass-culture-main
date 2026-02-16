@@ -1,5 +1,6 @@
 from typing import Any
 
+from pydantic.v1 import Field
 from pydantic.v1.class_validators import validator
 from pydantic.v1.utils import GetterDict
 
@@ -14,7 +15,7 @@ class OfferImageResponse(ConfiguredBaseModel):
 
 class OfferVenueResponse(ConfiguredBaseModel):
     id: int
-    common_name: str | None
+    publicName: str | None = Field(alias="commonName")
 
 
 class OfferStockResponse(ConfiguredBaseModel):

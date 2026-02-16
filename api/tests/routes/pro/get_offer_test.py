@@ -184,7 +184,7 @@ class Returns200Test:
             "thumbUrl": None,
             "url": None,
             "location": {
-                "label": venue.common_name,
+                "label": venue.publicName,
                 "id": venue.offererAddress.address.id,
                 "banId": venue.offererAddress.address.banId,
                 "departmentCode": venue.offererAddress.address.departmentCode,
@@ -360,7 +360,7 @@ class Returns200Test:
             assert response.status_code == 200
 
         assert response.json["location"] == {
-            "label": offer.venue.common_name,
+            "label": offer.venue.publicName,
             "id": offerer_address.address.id,
             "banId": offerer_address.address.banId,
             "departmentCode": offerer_address.address.departmentCode,

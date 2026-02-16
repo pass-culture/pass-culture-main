@@ -235,7 +235,7 @@ def get_offerer_bank_accounts_and_attached_venues(
             finance_serialize.ManagedVenue(
                 id=venue.id,
                 name=venue.name,
-                common_name=venue.common_name,
+                common_name=venue.publicName,
                 siret=venue.siret,
                 has_pricing_point=bool(venue.pricing_point_links),
                 bank_account_id=venue.bankAccountLinks[0].bankAccountId if venue.bankAccountLinks else None,

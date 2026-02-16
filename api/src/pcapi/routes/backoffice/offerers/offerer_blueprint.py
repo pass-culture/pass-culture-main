@@ -945,7 +945,7 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
                 providers_models.Provider.isActive,
             ),
         )
-        .order_by(offerers_models.Venue.common_name)
+        .order_by(offerers_models.Venue.publicName)
         .all()
     )
 
@@ -1061,7 +1061,7 @@ def create_venue(offerer_id: int) -> utils.BackofficeResponse:
     db.session.add(venue)
     offerers_api.link_venue_to_pricing_point(venue, attachment_venue.id)
 
-    flash(Markup("Le partenaire culturel <b>{name}</b> a été créé").format(name=venue.common_name), "success")
+    flash(Markup("Le partenaire culturel <b>{name}</b> a été créé").format(name=venue.publicName), "success")
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
 
 

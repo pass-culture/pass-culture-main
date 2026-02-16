@@ -28,7 +28,7 @@ def get_data_pending_booking_confirmation_limit_date_in_3_days(
         template=TransactionalEmail.EAC_PENDING_BOOKING_WITH_BOOKING_LIMIT_DATE_3_DAYS.value,
         params={
             "OFFER_NAME": offer.name,
-            "VENUE_NAME": offer.venue.common_name,
+            "VENUE_NAME": offer.venue.publicName,
             "EVENT_DATE": get_date_formatted_for_email(get_event_datetime(stock)),
             "USER_FIRSTNAME": booking.educationalRedactor.firstName,
             "USER_LASTNAME": booking.educationalRedactor.lastName,

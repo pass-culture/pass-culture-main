@@ -56,7 +56,7 @@ def get_booking_cancellation_by_beneficiary_to_pro_email_data(
             "QUANTITY": booking.quantity,
             "USER_EMAIL": booking.email,
             "USER_NAME": f"{booking.firstName} {booking.lastName}",
-            "VENUE_NAME": booking.stock.offer.venue.common_name,
+            "VENUE_NAME": booking.stock.offer.venue.publicName,
             "OFFER_ADDRESS": booking.stock.offer.fullAddress,
         },
         reply_to=models.EmailInfo(

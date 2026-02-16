@@ -238,7 +238,7 @@ class GetVenueResponseGetterDict(pydantic_v1.utils.GetterDict):
                 return None
             return address_serialize.LocationResponseModel(
                 **address_serialize.retrieve_address_info_from_oa(offerer_address),
-                label=venue.common_name,
+                label=venue.publicName,
                 isVenueLocation=True,
             )
 

@@ -509,14 +509,14 @@ class OfferLocationFactory(_LocationFactory):
 def get_offerer_address_with_label_from_venue(venue: models.Venue) -> models.OffererAddress | None:
     oa = (
         db.session.query(models.OffererAddress)
-        .filter_by(address=venue.offererAddress.address, offerer=venue.managingOfferer, label=venue.common_name)
+        .filter_by(address=venue.offererAddress.address, offerer=venue.managingOfferer, label=venue.publicName)
         .one_or_none()
     )
     if oa:
         return oa
 
     return OffererAddressFactory.create(
-        address=venue.offererAddress.address, offerer=venue.managingOfferer, label=venue.common_name
+        address=venue.offererAddress.address, offerer=venue.managingOfferer, label=venue.publicName
     )
 
 

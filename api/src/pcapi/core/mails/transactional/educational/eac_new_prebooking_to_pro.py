@@ -28,7 +28,7 @@ def get_eac_new_collective_prebooking_email_data(
         template=TransactionalEmail.EAC_NEW_PREBOOKING_TO_PRO.value,
         params={
             "OFFER_NAME": offer.name,
-            "VENUE_NAME": offer.venue.common_name,
+            "VENUE_NAME": offer.venue.publicName,
             "EVENT_DATE": get_date_formatted_for_email(get_event_datetime(stock)),
             "EVENT_HOUR": get_time_formatted_for_email(get_event_datetime(stock)),
             "QUANTITY": 1,

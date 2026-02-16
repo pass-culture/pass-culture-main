@@ -214,7 +214,7 @@
              data-bs-placement="top"
              data-bs-title="Voir le partenaire culturel"
              target="_top"
-             href="{{ url_for('backoffice_web.venue.get', venue_id=special_event.venueId) }}">{{ special_event.venueId }} - {{ special_event.venue.common_name }}</a>
+             href="{{ url_for('backoffice_web.venue.get', venue_id=special_event.venueId) }}">{{ special_event.venueId }} - {{ special_event.venue.publicName }}</a>
         {% else %}
           <br />
         {% endif %}
