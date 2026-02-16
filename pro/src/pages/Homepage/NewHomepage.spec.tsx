@@ -37,18 +37,18 @@ describe('NewHomepage', () => {
 
   describe('Tabs', () => {
     it.each`
-      scenario | allowedOnAdage | hasActiveIndividualOffer | hasCollectiveDMS | shouldDisplayTabs
-      ${1}     | ${true}        | ${true}                  | ${true}          | ${true}
-      ${2}     | ${true}        | ${true}                  | ${false}         | ${true}
-      ${3}     | ${false}       | ${true}                  | ${true}          | ${true}
-      ${4}     | ${false}       | ${true}                  | ${false}         | ${false}
-      ${5}     | ${false}       | ${false}                 | ${true}          | ${false}
-      ${6}     | ${true}        | ${false}                 | ${false}         | ${false}
+      scenario | allowedOnAdage | hasNonDraftOffers | hasCollectiveDMS | shouldDisplayTabs
+      ${1}     | ${true}        | ${true}           | ${true}          | ${true}
+      ${2}     | ${true}        | ${true}           | ${false}         | ${true}
+      ${3}     | ${false}       | ${true}           | ${true}          | ${true}
+      ${4}     | ${false}       | ${true}           | ${false}         | ${false}
+      ${5}     | ${false}       | ${false}          | ${true}          | ${false}
+      ${6}     | ${true}        | ${false}          | ${false}         | ${false}
     `(
       'should display tabs: $shouldDisplayTabs on scenario $scenario',
       ({
         allowedOnAdage,
-        hasActiveIndividualOffer,
+        hasNonDraftOffers,
         hasCollectiveDMS,
         shouldDisplayTabs,
       }) => {
@@ -58,7 +58,7 @@ describe('NewHomepage', () => {
               selectedVenue: {
                 ...defaultGetOffererVenueResponseModel,
                 allowedOnAdage,
-                hasActiveIndividualOffer,
+                hasNonDraftOffers,
                 collectiveDmsApplications: hasCollectiveDMS
                   ? [defaultDMSApplicationForEAC]
                   : undefined,
@@ -82,7 +82,7 @@ describe('NewHomepage', () => {
             selectedVenue: {
               ...defaultGetOffererVenueResponseModel,
               allowedOnAdage: true,
-              hasActiveIndividualOffer: true,
+              hasNonDraftOffers: true,
             },
           },
         },
@@ -99,7 +99,7 @@ describe('NewHomepage', () => {
             selectedVenue: {
               ...defaultGetOffererVenueResponseModel,
               allowedOnAdage: true,
-              hasActiveIndividualOffer: true,
+              hasNonDraftOffers: true,
             },
           },
         },
@@ -134,7 +134,7 @@ describe('NewHomepage', () => {
               selectedVenue: {
                 ...defaultGetOffererVenueResponseModel,
                 allowedOnAdage: true,
-                hasActiveIndividualOffer: true,
+                hasNonDraftOffers: true,
               },
             },
           },
@@ -175,7 +175,7 @@ describe('NewHomepage', () => {
                   ? {
                       ...defaultGetOffererVenueResponseModel,
                       allowedOnAdage: hasCollective,
-                      hasActiveIndividualOffer: hasIndividual,
+                      hasNonDraftOffers: hasIndividual,
                     }
                   : null,
               },
