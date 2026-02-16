@@ -50,6 +50,7 @@ class ImageRatio(enum.Enum):
 
     PORTRAIT = 2.0 / 3.0
     LANDSCAPE = 3.0 / 2.0
+    SQUARE = 1.0
 
 
 class ImageRatioError(Exception):
@@ -60,6 +61,7 @@ class ImageRatioError(Exception):
 
 
 MAX_THUMB_WIDTH = 750
+MINI_THUMB_WIDTH = 72
 CONVERSION_QUALITY = 90
 DO_NOT_CROP = CropParams()
 
@@ -115,6 +117,26 @@ def process_original_image(content: bytes, resize: bool = True) -> bytes:
     if resize:
         image = _shrink_image(image)
     return _post_process_image(image)
+
+
+def center_crop_image(
+    content: bytes,
+    ratio: ImageRatio,
+    max_width: int = MAX_THUMB_WIDTH,
+) -> bytes:
+    preprocessed_image = _pre_process_image(content)
+
+    crop_params = get_crop_params(preprocessed_image.width, preprocessed_image.height, ratio)
+    cropped_image = _crop_image(
+        crop_params.x_crop_percent,
+        crop_params.y_crop_percent,
+        crop_params.height_crop_percent,
+        crop_params.width_crop_percent,
+        preprocessed_image,
+    )
+    shrunk_image = _shrink_image(cropped_image, max_width)
+
+    return _post_process_image(shrunk_image)
 
 
 def _pre_process_image(content: bytes) -> PIL.Image.Image:
@@ -199,16 +221,16 @@ def _resize_image(image: PIL.Image.Image, ratio: ImageRatio) -> PIL.Image.Image:
     return image.resize((MAX_THUMB_WIDTH, new_height))
 
 
-def _shrink_image(image: PIL.Image.Image) -> PIL.Image.Image:
+def _shrink_image(image: PIL.Image.Image, max_width: int = MAX_THUMB_WIDTH) -> PIL.Image.Image:
     """
     Resize image, keep its original ratio
     """
-    if image.width <= MAX_THUMB_WIDTH:
+    if image.width <= max_width:
         return image
 
-    reduce_factor = MAX_THUMB_WIDTH / image.width
+    reduce_factor = max_width / image.width
     height = int(image.height * reduce_factor)
-    return image.resize((MAX_THUMB_WIDTH, height))
+    return image.resize((max_width, height))
 
 
 def _convert_to_jpeg(image: PIL.Image.Image) -> bytes:

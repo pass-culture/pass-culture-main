@@ -1,8 +1,11 @@
+import logging
 from dataclasses import dataclass
 
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 
+from pcapi import settings
+from pcapi.core import object_storage
 from pcapi.core.artist import exceptions as artist_exceptions
 from pcapi.core.artist import models
 from pcapi.core.artist.models import Artist
@@ -11,8 +14,15 @@ from pcapi.core.artist.models import ArtistType
 from pcapi.core.offers.models import ImageType
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import ProductMediation
+from pcapi.core.offers.validation import check_image
 from pcapi.models import db
 from pcapi.routes.serialization import artist_serialize
+from pcapi.utils.image_conversion import MINI_THUMB_WIDTH
+from pcapi.utils.image_conversion import ImageRatio
+from pcapi.utils.image_conversion import center_crop_image
+
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -109,3 +119,18 @@ def upsert_artist_offer_links(
         created_keys,
         deleted_keys,
     )
+
+
+def store_mini_thumb(image_as_bytes: bytes, mediation_uuid: str) -> None:
+    try:
+        check_image(image_as_bytes, min_height=None, min_width=None, max_size=None)
+        image_as_bytes = center_crop_image(image_as_bytes, ImageRatio.SQUARE, max_width=MINI_THUMB_WIDTH)
+        object_storage.store_public_object(
+            folder=settings.ARTIST_MINI_THUMBS_FOLDER_NAME,
+            object_id=mediation_uuid,
+            blob=image_as_bytes,
+            content_type="image/jpeg",
+        )
+        logger.info("Created mini thumb for mediation", extra={"mediation_uuid": mediation_uuid})
+    except Exception as e:
+        logger.warning("Failed to store mini thumb for mediation", extra={"mediation_uuid": mediation_uuid, "exc": e})
