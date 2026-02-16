@@ -1,5 +1,4 @@
 import logging
-import typing
 from datetime import date
 from datetime import datetime
 
@@ -46,13 +45,14 @@ def encode_jwt_payload_rs256(
     return jwt.encode(token_payload, key=private_key, algorithm=ALGORITHM_RS_256)
 
 
-def decode_jwt_token_rs256(jwt_token: str, public_key: str | bytes | None = None, **options: typing.Any) -> dict:
-    if (public_key is None and options.get("verify_signature") is not False) or (
-        public_key and "verify_signature" in options
-    ):
+def decode_jwt_token_rs256(
+    jwt_token: str, public_key: str | bytes | None = None, verify_signature: bool = True, require: list | None = None
+) -> dict:
+    if (not public_key and verify_signature) or (public_key and not verify_signature):
         raise RuntimeError(
             "You have to either provide the public_key to verify the signature or the use the `verify_signature` options set to False"
         )
+    options = jwt.types.Options({"verify_signature": verify_signature, "require": require or []})
     if public_key:
         return jwt.decode(jwt_token, key=public_key, algorithms=[ALGORITHM_RS_256], options=options)
     return jwt.decode(jwt_token, algorithms=[ALGORITHM_RS_256], options=options)
