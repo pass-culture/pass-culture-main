@@ -18,6 +18,7 @@ from pcapi.core.offerers import models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers import validation
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers import tasks as offers_tasks
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
@@ -208,7 +209,14 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
         on_commit(partial(update_all_venue_offers_accessibility_job.delay, venue.id, edited_accessibility))
 
     if body.bookingEmail:
-        on_commit(partial(update_all_venue_offers_email_job.delay, venue.id, body.bookingEmail))
+        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UPDATE_VENUE_OFFERS_EMAIL.is_active():
+            payload = offers_tasks.UpdateAllVenueOffersEmailPayload(
+                venue_id=venue.id,
+                email=body.bookingEmail,
+            )
+            on_commit(partial(offers_tasks.update_all_venue_offers_email_task.delay, payload.model_dump()))
+        else:
+            on_commit(partial(update_all_venue_offers_email_job.delay, venue.id, body.bookingEmail))
 
     return venues_serialize.GetVenueResponseModel.from_orm(venue)
 

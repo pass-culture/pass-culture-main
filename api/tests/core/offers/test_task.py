@@ -7,7 +7,9 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
 from pcapi.core.offers import schemas
+from pcapi.core.offers.tasks import UpdateAllVenueOffersEmailPayload
 from pcapi.core.offers.tasks import _update_offer_and_related_stock
+from pcapi.core.offers.tasks import update_all_venue_offers_email_task
 from pcapi.core.providers import factories as providers_factories
 from pcapi.models import db
 from pcapi.utils import date as utils_date
@@ -16,6 +18,25 @@ from pcapi.utils import date as utils_date
 NOW = datetime.datetime.now(datetime.UTC)
 ONE_DAY_AGO = NOW - datetime.timedelta(days=1)
 ONE_DAY_FROM_NOW = NOW + datetime.timedelta(days=1)
+
+
+@pytest.mark.usefixtures("db_session")
+def test_update_all_venue_offers_email_task():
+    venue = offerers_factories.VenueFactory(bookingEmail="old.venue@email.com")
+    offer1 = factories.OfferFactory(bookingEmail="old.offer@email.com", venue=venue)
+    offer1_id = offer1.id
+    offer2 = factories.OfferFactory(bookingEmail="old.offer@email.com", venue=venue)
+    offer2_id = offer2.id
+    new_email = "new.venue@email.com"
+
+    update_all_venue_offers_email_task.delay(
+        UpdateAllVenueOffersEmailPayload(venue_id=venue.id, email=new_email).model_dump()
+    )
+    offer1 = db.session.query(models.Offer).filter_by(id=offer1_id).one()
+    offer2 = db.session.query(models.Offer).filter_by(id=offer2_id).one()
+
+    assert offer1.bookingEmail == new_email
+    assert offer2.bookingEmail == new_email
 
 
 @pytest.mark.usefixtures("db_session")
