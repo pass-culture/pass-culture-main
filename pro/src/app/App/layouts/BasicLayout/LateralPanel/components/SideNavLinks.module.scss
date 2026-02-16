@@ -4,6 +4,22 @@
 @use "styles/mixins/_outline.scss" as outline;
 @use "styles/variables/_z-index.scss" as zIndex;
 
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* full sidebar height */
+  justify-content: space-between;
+}
+
+.sidebarContent {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.sidebarFooter {
+  padding: 12px 0;
+}
+
 .nav-section {
   &-title {
     flex: 1;
@@ -152,18 +168,18 @@
   color: var(--color-icon-default);
 }
 
-.help-dropdown-trigger {
-  display: flex;
-  align-items: center;
-  gap: var(--size-spacing-s);
-}
+// .help-dropdown-trigger {
+//   display: flex;
+//   align-items: center;
+//   gap: var(--size-spacing-s);
+// }
 
-.help-dropdown-content {
-  background-color: var(--color-background-default);
-  border-radius: var(--size-border-radius-m);
-  border: solid rem.torem(1px) var(--color-border-subtle);
-  padding: var(--size-spacing-s) var(--size-spacing-l);
-}
+// .help-dropdown-content {
+//   background-color: var(--color-background-default);
+//   border-radius: var(--size-border-radius-m);
+//   border: solid rem.torem(1px) var(--color-border-subtle);
+//   padding: var(--size-spacing-s) var(--size-spacing-l);
+// }
 
 .back-to-partner-space-button {
   text-align: center;

@@ -1,8 +1,8 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: SideNavLinks is used once per page. There cannot be id duplications. */
 
 import classnames from 'classnames'
-import { useEffect, useState } from 'react'
-import { Link, useLocation } from 'react-router'
+import { useState } from 'react'
+import { Link } from 'react-router'
 
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -10,18 +10,9 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
-import {
-  SIDE_NAV_MIN_HEIGHT_COLLAPSE_MEDIA_QUERY,
-  useMediaQuery,
-} from '@/commons/hooks/useMediaQuery'
-import { setOpenSection } from '@/commons/store/nav/reducer'
-import {
-  openSection,
-  selectSelectedPartnerPageId,
-} from '@/commons/store/nav/selector'
+import { selectSelectedPartnerPageId } from '@/commons/store/nav/selector'
 import { getSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenueId'
 import { Button } from '@/design-system/Button/Button'
 import {
@@ -43,46 +34,155 @@ import strokeTeacherIcon from '@/icons/stroke-teacher.svg'
 import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
 import { DropdownItem } from '@/ui-kit/Dropdown/DropdownItem'
 
-import { FeedbackDialogTriggerNavItem } from './FeedbackDialogTriggerNavItem'
-import { HelpDropdownNavItem } from './HelpDropdownNavItem'
-import { SideNavLink } from './SideNavLink'
+import { RenderNavItem } from './SideNavLink'
 import styles from './SideNavLinks.module.scss'
-import { SideNavToggleButton } from './SideNavToggleButton'
+
+export type NavGroup = 'main' | 'footer'
+
+interface BaseNavItem {
+  group: NavGroup
+}
+
+export interface NavLinkItem extends BaseNavItem {
+  type: 'link'
+  title: string
+  to: string
+  icon?: React.ReactNode
+  end?: boolean
+}
+
+export interface NavSectionItem extends BaseNavItem {
+  type: 'section'
+  title: string
+  icon?: React.ReactNode
+  key: string
+  children: NavItem[]
+}
+
+export interface NavCustomItem extends BaseNavItem {
+  type: 'custom'
+  component: React.ReactNode
+}
+
+export type NavItem = NavLinkItem | NavSectionItem | NavCustomItem
 
 interface SideNavLinksProps {
   isLateralPanelOpen: boolean
 }
 
-const INDIVIDUAL_LINKS = [
-  /offres$/,
-  /reservations$/,
-  /guichet$/,
-  /structures\/\d+\/lieux\/\d+\/page-partenaire/,
-]
-const COLLECTIVE_LINKS = [
-  /offres\/collectives$/,
-  /reservations\/collectives$/,
-  /structures\/\d+\/lieux\/\d+\/collectif/,
-]
+function generateNavItems(
+  selectedOfferer?: { id: string },
+  selectedPartnerPageVenueId?: string,
+  venueId?: string,
+  withSwitchVenueFeature?: boolean,
+  isCaledonian?: boolean
+): NavItem[] {
+  const navItems: NavItem[] = []
 
-const matches = (patterns: RegExp[], path: string) =>
-  patterns.some((rx) => rx.test(path))
+  // ===== MAIN LINKS =====
+  navItems.push({
+    type: 'link',
+    group: 'main',
+    title: 'Accueil',
+    to: '/accueil',
+    icon: strokeHomeIcon,
+  })
+
+  // ===== Individuel Section =====
+  const individuelChildren: NavItem[] = [
+    { type: 'link', group: 'main', title: 'Offres', to: '/offres' },
+    { type: 'link', group: 'main', title: 'Réservations', to: '/reservations' },
+    { type: 'link', group: 'main', title: 'Guichet', to: '/guichet' },
+  ]
+
+  if (selectedOfferer && selectedPartnerPageVenueId) {
+    individuelChildren.push({
+      type: 'link',
+      group: 'main',
+      title: 'Page sur l’application',
+      to: `/structures/${selectedOfferer.id}/lieux/${selectedPartnerPageVenueId}/page-partenaire`,
+    })
+  }
+
+  navItems.push({
+    type: 'section',
+    group: 'main',
+    title: 'Individuel',
+    icon: strokePhoneIcon,
+    key: 'individual',
+    children: individuelChildren,
+  })
+
+  // ===== Collectif Section =====
+  const collectifChildren: NavItem[] = [
+    {
+      type: 'link',
+      group: 'main',
+      title: 'Offres vitrines',
+      to: '/offres/vitrines',
+    },
+    {
+      type: 'link',
+      group: 'main',
+      title: 'Offres réservables',
+      to: '/offres/collectives',
+    },
+  ]
+
+  if (selectedOfferer && venueId) {
+    collectifChildren.push({
+      type: 'link',
+      group: 'main',
+      title: 'Page dans ADAGE',
+      to: `/structures/${selectedOfferer.id}/lieux/${venueId}/collectif`,
+    })
+  }
+
+  navItems.push({
+    type: 'section',
+    group: 'main',
+    title: 'Collectif',
+    icon: strokeTeacherIcon,
+    key: 'collective',
+    children: collectifChildren,
+  })
+
+  // ===== FOOTER =====
+  if (withSwitchVenueFeature) {
+    navItems.push(
+      { group: 'footer', type: 'custom', component: 'feedback' },
+      { group: 'footer', type: 'custom', component: 'help' }
+    )
+  } else {
+    navItems.push(
+      {
+        group: 'footer',
+        type: 'link',
+        title: 'Gestion financière',
+        to: '/remboursements',
+        icon: isCaledonian ? strokeFrancIcon : strokeEuroIcon,
+      },
+      {
+        group: 'footer',
+        type: 'link',
+        title: 'Collaborateurs',
+        to: '/collaborateurs',
+        icon: strokeCollaboratorIcon,
+      }
+    )
+  }
+
+  return navItems
+}
 
 export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
-  const location = useLocation()
-  const isMobileScreen = useMediaQuery('(max-width: 64rem)')
-
-  const dispatch = useAppDispatch()
-  const navOpenSection = useAppSelector(openSection)
   const selectedOfferer = useAppSelector(
     (state) => state.offerer.currentOfferer
   )
   const selectedVenue = useAppSelector((state) => state.user.selectedVenue)
-  const sideNavCollapseSize = useMediaQuery(
-    SIDE_NAV_MIN_HEIGHT_COLLAPSE_MEDIA_QUERY
-  )
+
   const isCaledonian = useIsCaledonian()
 
   const permanentVenues =
@@ -92,37 +192,6 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const venueId = withSwitchVenueFeature
     ? selectedVenue?.id
     : permanentVenues[0]?.id
-
-  // Keep: this makes the “resize → auto-collapse to matching section” work.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: We do not want the changes if the state changes
-  useEffect(() => {
-    if (!sideNavCollapseSize) {
-      return
-    }
-
-    const path = location.pathname
-    const openIndividual = matches(INDIVIDUAL_LINKS, path)
-    const openCollective = matches(COLLECTIVE_LINKS, path)
-
-    // Only dispatch if a change is actually needed
-    if (
-      openIndividual !== navOpenSection.individual ||
-      openCollective !== navOpenSection.collective
-    ) {
-      dispatch(
-        setOpenSection({
-          individual:
-            openIndividual === navOpenSection.individual
-              ? navOpenSection.individual
-              : openIndividual,
-          collective:
-            openCollective === navOpenSection.collective
-              ? navOpenSection.collective
-              : openCollective,
-        })
-      )
-    }
-  }, [sideNavCollapseSize, location.pathname, dispatch])
 
   const reduxStoredPartnerPageId = useAppSelector(selectSelectedPartnerPageId)
   const savedPartnerPageVenueId = getSavedPartnerPageVenueId(
@@ -139,6 +208,14 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     hasPartnerPageVenues.at(0)?.id
 
   const [isOpen, setIsOpen] = useState(false)
+
+  const navItems = generateNavItems(
+    selectedOfferer,
+    selectedPartnerPageVenueId,
+    venueId,
+    withSwitchVenueFeature,
+    isCaledonian
+  )
 
   return (
     <div
@@ -223,165 +300,48 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
         </div>
       )}
 
+      <Menu navItems={navItems} />
+    </div>
+  )
+}
+
+const Menu = ({ navItems }: { navItems: NavItem[] }) => {
+  const mainItems = navItems.filter((i) => i.group === 'main')
+  const footerItems = navItems.filter((i) => i.group === 'footer')
+
+  return (
+    <div className={styles.sidebar}>
+      {/* SCROLLABLE CONTENT */}
       <ul
         className={classnames(
           styles['nav-links-group'],
           styles['nav-links-scroll']
         )}
       >
-        <li>
-          <SideNavLink to="/accueil" icon={strokeHomeIcon}>
-            Accueil
-          </SideNavLink>
-        </li>
-
-        {/* INDIVIDUEL */}
-        <li>
-          <SideNavToggleButton
-            icon={strokePhoneIcon}
-            title="Individuel"
-            isExpanded={navOpenSection.individual}
-            onClick={() => {
-              const willOpen = !navOpenSection.individual
-
-              dispatch(
-                setOpenSection({
-                  individual: willOpen,
-                  collective:
-                    sideNavCollapseSize && willOpen
-                      ? false
-                      : navOpenSection.collective,
-                })
-              )
-            }}
-            ariaControls="individual-sublist"
-            id="individual-sublist-button"
-          />
-
-          {navOpenSection.individual && (
-            <ul
-              id="individual-sublist"
-              aria-labelledby="individual-sublist-button"
-            >
-              <li>
-                <SideNavLink to="/offres" end>
-                  Offres
-                </SideNavLink>
-              </li>
-              <li>
-                <SideNavLink to="/reservations" end>
-                  Réservations
-                </SideNavLink>
-              </li>
-              <li>
-                <SideNavLink to="/guichet">Guichet</SideNavLink>
-              </li>
-              {selectedOfferer && selectedPartnerPageVenueId && (
-                <li>
-                  <SideNavLink
-                    to={`/structures/${selectedOfferer.id}/lieux/${selectedPartnerPageVenueId}/page-partenaire`}
-                    end
-                  >
-                    Page sur l’application
-                  </SideNavLink>
-                </li>
-              )}
-            </ul>
-          )}
-        </li>
-
-        {/* COLLECTIF */}
-        <li>
-          <SideNavToggleButton
-            icon={strokeTeacherIcon}
-            title="Collectif"
-            isExpanded={navOpenSection.collective}
-            onClick={() => {
-              const willOpen = !navOpenSection.collective
-
-              dispatch(
-                setOpenSection({
-                  individual:
-                    sideNavCollapseSize && willOpen
-                      ? false
-                      : navOpenSection.individual,
-                  collective: willOpen,
-                })
-              )
-            }}
-            ariaControls="collective-sublist"
-            id="collective-sublist-button"
-          />
-
-          {navOpenSection.collective && (
-            <ul
-              id="collective-sublist"
-              aria-labelledby="collective-sublist-button"
-            >
-              <li>
-                <SideNavLink to="/offres/vitrines">Offres vitrines</SideNavLink>
-              </li>
-              <li>
-                <SideNavLink to="/offres/collectives">
-                  Offres réservables
-                </SideNavLink>
-              </li>
-
-              {selectedOfferer && venueId && (
-                <li>
-                  <SideNavLink
-                    to={`/structures/${selectedOfferer.id}/lieux/${venueId}/collectif`}
-                    end
-                  >
-                    Page dans ADAGE
-                  </SideNavLink>
-                </li>
-              )}
-            </ul>
-          )}
-        </li>
+        {mainItems.map((item, index) => (
+          <RenderNavItem key={index} item={item} />
+        ))}
       </ul>
 
-      {withSwitchVenueFeature ? (
-        <div className={styles['nav-links-group']}>
-          <div
-            className={styles['nav-links-last-group-separator']}
-            aria-hidden="true"
-          >
-            <div className={styles['separator-line']} />
-          </div>
-          <ul>
-            <li>
-              <FeedbackDialogTriggerNavItem />
-            </li>
-            <li>
-              <HelpDropdownNavItem isMobileScreen={isMobileScreen ?? false} />
-            </li>
-          </ul>
-        </div>
-      ) : (
-        <div className={styles['nav-links-group']}>
-          <div
-            className={styles['nav-links-last-group-separator']}
-            aria-hidden="true"
-          >
-            <div className={styles['separator-line']} />
-          </div>
-          <div>
-            <SideNavLink
-              to="/remboursements"
-              icon={isCaledonian ? strokeFrancIcon : strokeEuroIcon}
+      {/* FOOTER */}
+      <div className={styles.sidebarFooter}>
+        {footerItems && (
+          <div className={styles['nav-links-group']}>
+            <div
+              className={styles['nav-links-last-group-separator']}
+              aria-hidden="true"
             >
-              Gestion financière
-            </SideNavLink>
+              <div className={styles['separator-line']} />
+            </div>
+
+            <ul>
+              {footerItems.map((item, index) => (
+                <RenderNavItem key={index} item={item} />
+              ))}
+            </ul>
           </div>
-          <div>
-            <SideNavLink to="/collaborateurs" icon={strokeCollaboratorIcon}>
-              Collaborateurs
-            </SideNavLink>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }
