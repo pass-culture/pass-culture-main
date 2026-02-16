@@ -6,6 +6,7 @@ import {
   getDateToFrenchText,
   getDelayToFrenchText,
   getRangeToFrenchText,
+  mapMonthNumberToFrench,
   toDateStrippedOfTimezone,
   toISOStringWithoutMilliseconds,
 } from '../date'
@@ -147,5 +148,11 @@ describe('formatTimeForInput', () => {
 describe('getDateToFrenchText', () => {
   it('should not return a date when transforming an invalid date into French text', () => {
     expect(getDateToFrenchText('0024-01-15T23:59:59+00:09:21')).toEqual(null)
+  })
+})
+
+describe('mapMonthNumberToFrench', () => {
+  it('should return the month as french text', () => {
+    expect(mapMonthNumberToFrench(3)).toEqual('Mars')
   })
 })

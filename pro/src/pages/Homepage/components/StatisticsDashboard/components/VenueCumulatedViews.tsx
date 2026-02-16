@@ -9,26 +9,28 @@ import {
   TimeSeriesScale,
   Tooltip,
 } from 'chart.js'
-import { startOfMonth, subMonths } from 'date-fns'
 import { useId, useMemo, useRef } from 'react'
 import { Line } from 'react-chartjs-2'
 import 'chartjs-adapter-date-fns'
 
-import type { OffererViewsModel } from '@/apiClient/v1'
-import { getDateTimeToFrenchText } from '@/commons/utils/date'
+import type { VenueMonthlyViewModel } from '@/apiClient/v1'
+import { mapMonthNumberToFrench } from '@/commons/utils/date'
+import {
+  buildDatasets,
+  buildGraphOptions,
+  buildMonthlyViews,
+  computeGraphSteps,
+} from '@/pages/Homepage/components/StatisticsDashboard/statsUtils'
 
-import { buildGraphOptions, computeGraphSteps } from '../statsUtils'
 import styles from './CumulatedViews.module.scss'
 import { CumulatedViewsEmptyState } from './CumulatedViewsEmptyState'
 
-// TODO (cmoinier 2025-02-18) remove component after switch venue FF
-
-export interface CumulatedViewsProps {
-  dailyViews: OffererViewsModel[]
+export interface VenueCumulatedViewsProps {
+  monthlyViews: VenueMonthlyViewModel[]
   totalViewsLast30Days: number
 }
 
-type XYPoint = { x: string; y: number }
+type XYPoint = { x: Date; y: number }
 
 Chart.register(
   Filler,
@@ -40,83 +42,20 @@ Chart.register(
   Tooltip
 )
 
-export const CumulatedViews = ({
-  dailyViews,
+export const VenueCumulatedViews = ({
+  monthlyViews,
   totalViewsLast30Days,
-}: CumulatedViewsProps) => {
+}: VenueCumulatedViewsProps) => {
   const chartRef = useRef<ChartJS<'line', XYPoint[], unknown> | null>(null)
 
   const hasNoViews =
-    dailyViews.length < 2 ||
-    dailyViews.every((view) => view.numberOfViews === 0)
+    monthlyViews.length < 2 || monthlyViews.every((view) => view.views === 0)
 
-  const { recentViews, minViews, maxViews, firstMonth } = useMemo(() => {
-    const cutoff = startOfMonth(subMonths(new Date(), 5))
-    cutoff.setDate(16)
+  const { recentViews, minViews, maxViews } = useMemo(() => {
+    return buildMonthlyViews(monthlyViews)
+  }, [monthlyViews])
 
-    const filtered: { date: Date; views: number; rawDate: string }[] = []
-
-    let min = Infinity
-    let max = -Infinity
-
-    for (const view of dailyViews) {
-      const date = new Date(view.eventDate)
-      if (date >= cutoff) {
-        const views = view.numberOfViews
-
-        filtered.push({
-          date,
-          views,
-          rawDate: view.eventDate,
-        })
-
-        if (views < min) {
-          min = views
-        }
-        if (views > max) {
-          max = views
-        }
-      }
-    }
-
-    if (filtered.length === 0) {
-      return {
-        recentViews: [],
-        minViews: 0,
-        maxViews: 1000,
-        firstMonth: null,
-      }
-    }
-
-    return {
-      recentViews: filtered,
-      minViews: min,
-      maxViews: max,
-      firstMonth: getDateTimeToFrenchText(filtered[0].date, {
-        month: 'long',
-      }),
-    }
-  }, [dailyViews])
-
-  const data = useMemo(
-    () => ({
-      datasets: [
-        {
-          data: recentViews.map((v) => ({
-            x: v.rawDate,
-            y: v.views,
-          })),
-          pointStyle: false as const,
-          backgroundColor: 'rgba(97, 35, 223, 0.08)',
-          borderColor: 'rgba(97, 35, 223, 0)',
-          borderWidth: 0,
-          tension: 0.4,
-          fill: true,
-        },
-      ],
-    }),
-    [recentViews]
-  )
+  const data = useMemo(() => buildDatasets(recentViews), [recentViews])
 
   const chartId = useId()
   const stepSize = useMemo(
@@ -124,9 +63,10 @@ export const CumulatedViews = ({
     [minViews, maxViews]
   )
   const graphOptions = useMemo(
-    () => buildGraphOptions(stepSize, firstMonth),
-    [stepSize, firstMonth]
+    () => buildGraphOptions(stepSize, null),
+    [stepSize]
   )
+
   return (
     <div className={styles['cumulated-views']}>
       <div className={styles['header']}>
@@ -166,10 +106,10 @@ export const CumulatedViews = ({
                 </tr>
               </thead>
               <tbody>
-                {dailyViews.map((dailyView) => (
-                  <tr key={dailyView.eventDate}>
-                    <td>{dailyView.eventDate}</td>
-                    <td>{dailyView.numberOfViews}</td>
+                {monthlyViews.map((monthlyView) => (
+                  <tr key={monthlyView.month}>
+                    <td>{mapMonthNumberToFrench(monthlyView.month)}</td>
+                    <td>{monthlyView.views}</td>
                   </tr>
                 ))}
               </tbody>

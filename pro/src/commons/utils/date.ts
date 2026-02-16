@@ -221,3 +221,21 @@ export const OPENING_HOURS_DAYS: (keyof WeekdayOpeningHoursTimespans)[] = [
   'SATURDAY',
   'SUNDAY',
 ]
+
+export function mapMonthNumberToFrench(numero: number) {
+  const mois = [
+    'Janvier',
+    'Février',
+    'Mars',
+    'Avril',
+    'Mai',
+    'Juin',
+    'Juillet',
+    'Août',
+    'Septembre',
+    'Octobre',
+    'Novembre',
+    'Décembre',
+  ]
+  return mois[numero - 1]
+}

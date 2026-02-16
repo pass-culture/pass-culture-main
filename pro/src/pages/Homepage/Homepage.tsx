@@ -3,6 +3,7 @@ import { useMemo, useRef } from 'react'
 
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useOffererNamesQuery } from '@/commons/hooks/swr/useOffererNamesQuery'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { sortByLabel } from '@/commons/utils/strings'
@@ -22,6 +23,7 @@ import {
 import { Offerers } from './components/Offerers/Offerers'
 import { PublishedOfferStats } from './components/StatisticsDashboard/components/PublishedOfferStats'
 import { StatisticsDashboard } from './components/StatisticsDashboard/StatisticsDashboard'
+import { VenueStatisticsDashboard } from './components/StatisticsDashboard/VenueStatisticsDashboard'
 import { VenueOfferSteps } from './components/VenueOfferSteps/VenueOfferSteps'
 import styles from './Homepage.module.scss'
 
@@ -54,6 +56,8 @@ export const Homepage = (): JSX.Element => {
   const isNotReady = offererNamesQuery.isLoading || !offererNames
 
   const areHighlightsEnable = selectedOfferer?.canDisplayHighlights
+
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
   return (
     <BasicLayout mainHeading="Bienvenue sur votre espace partenaire">
@@ -88,7 +92,11 @@ export const Homepage = (): JSX.Element => {
                     areHighlightsEnable,
                 })}
               >
-                <StatisticsDashboard offerer={selectedOfferer} />
+                {withSwitchVenueFeature && selectedVenue ? (
+                  <VenueStatisticsDashboard venue={selectedVenue} />
+                ) : (
+                  <StatisticsDashboard offerer={selectedOfferer} />
+                )}
                 {areHighlightsEnable && <HighlightHome />}
               </div>
               <PublishedOfferStats
