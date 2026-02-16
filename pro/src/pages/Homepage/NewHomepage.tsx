@@ -22,7 +22,7 @@ export const NewHomepage = (): JSX.Element => {
   const selectedVenue: GetVenueResponseModel | null = useAppSelector(
     (state) => state.user.selectedVenue
   )
-  const hasIndividual = !!selectedVenue?.hasActiveIndividualOffer
+  const hasIndividual = !!selectedVenue?.hasNonDraftOffers
   const hasCollective =
     selectedVenue?.allowedOnAdage ||
     (selectedVenue?.collectiveDmsApplications || []).length > 0
