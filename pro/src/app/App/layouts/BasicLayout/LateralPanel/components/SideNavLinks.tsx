@@ -4,6 +4,7 @@ import classnames from 'classnames'
 import { useState } from 'react'
 import { Link } from 'react-router'
 
+import type { GetOffererResponseModel } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
@@ -12,6 +13,7 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
+import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { selectSelectedPartnerPageId } from '@/commons/store/nav/selector'
 import { getSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenueId'
 import { Button } from '@/design-system/Button/Button'
@@ -34,50 +36,33 @@ import strokeTeacherIcon from '@/icons/stroke-teacher.svg'
 import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
 import { DropdownItem } from '@/ui-kit/Dropdown/DropdownItem'
 
+import { FeedbackDialogTriggerNavItem } from './FeedbackDialogTriggerNavItem'
+import { HelpDropdownNavItem } from './HelpDropdownNavItem'
 import { RenderNavItem } from './SideNavLink'
 import styles from './SideNavLinks.module.scss'
 
 export type NavGroup = 'main' | 'footer'
-
-interface BaseNavItem {
+export interface NavItem {
+  key?: string
   group: NavGroup
+  type: string
+  title?: string
+  icon?: string
+  to?: string
+  children?: NavItem[]
 }
-
-export interface NavLinkItem extends BaseNavItem {
-  type: 'link'
-  title: string
-  to: string
-  icon?: React.ReactNode
-  end?: boolean
-}
-
-export interface NavSectionItem extends BaseNavItem {
-  type: 'section'
-  title: string
-  icon?: React.ReactNode
-  key: string
-  children: NavItem[]
-}
-
-export interface NavCustomItem extends BaseNavItem {
-  type: 'custom'
-  component: React.ReactNode
-}
-
-export type NavItem = NavLinkItem | NavSectionItem | NavCustomItem
 
 interface SideNavLinksProps {
   isLateralPanelOpen: boolean
 }
 
 function generateNavItems(
-  selectedOfferer?: { id: string },
-  selectedPartnerPageVenueId?: string,
-  venueId?: string,
-  withSwitchVenueFeature?: boolean,
-  isCaledonian?: boolean
+  selectedOfferer?: GetOffererResponseModel | null,
+  selectedPartnerPageVenueId?: string | number,
+  venueId?: string | number
 ): NavItem[] {
   const navItems: NavItem[] = []
+  const isCaledonian = useIsCaledonian()
 
   // ===== MAIN LINKS =====
   navItems.push({
@@ -148,29 +133,23 @@ function generateNavItems(
   })
 
   // ===== FOOTER =====
-  if (withSwitchVenueFeature) {
-    navItems.push(
-      { group: 'footer', type: 'custom', component: 'feedback' },
-      { group: 'footer', type: 'custom', component: 'help' }
-    )
-  } else {
-    navItems.push(
-      {
-        group: 'footer',
-        type: 'link',
-        title: 'Gestion financière',
-        to: '/remboursements',
-        icon: isCaledonian ? strokeFrancIcon : strokeEuroIcon,
-      },
-      {
-        group: 'footer',
-        type: 'link',
-        title: 'Collaborateurs',
-        to: '/collaborateurs',
-        icon: strokeCollaboratorIcon,
-      }
-    )
-  }
+
+  navItems.push(
+    {
+      group: 'footer',
+      type: 'link',
+      title: 'Gestion financière',
+      to: '/remboursements',
+      icon: isCaledonian ? strokeFrancIcon : strokeEuroIcon,
+    },
+    {
+      group: 'footer',
+      type: 'link',
+      title: 'Collaborateurs',
+      to: '/collaborateurs',
+      icon: strokeCollaboratorIcon,
+    }
+  )
 
   return navItems
 }
@@ -182,8 +161,6 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     (state) => state.offerer.currentOfferer
   )
   const selectedVenue = useAppSelector((state) => state.user.selectedVenue)
-
-  const isCaledonian = useIsCaledonian()
 
   const permanentVenues =
     selectedOfferer?.managedVenues?.filter((v) => v.isPermanent) ?? []
@@ -212,15 +189,12 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const navItems = generateNavItems(
     selectedOfferer,
     selectedPartnerPageVenueId,
-    venueId,
-    withSwitchVenueFeature,
-    isCaledonian
+    venueId
   )
 
   return (
     <div
-      className={classnames({
-        [styles['nav-links']]: true,
+      className={classnames(styles['nav-links'], {
         [styles['nav-links-with-padding-top']]: !withSwitchVenueFeature,
         [styles['nav-links-open']]: isLateralPanelOpen,
       })}
@@ -300,14 +274,25 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
         </div>
       )}
 
-      <Menu navItems={navItems} />
+      <LateralMenu
+        navItems={navItems}
+        withSwitchVenueFeature={withSwitchVenueFeature}
+      />
     </div>
   )
 }
 
-const Menu = ({ navItems }: { navItems: NavItem[] }) => {
+export const LateralMenu = ({
+  navItems,
+  withSwitchVenueFeature,
+}: {
+  navItems: NavItem[]
+  withSwitchVenueFeature: boolean
+}) => {
   const mainItems = navItems.filter((i) => i.group === 'main')
   const footerItems = navItems.filter((i) => i.group === 'footer')
+
+  const isMobileScreen = useMediaQuery('(max-width: 64rem)')
 
   return (
     <div className={styles.sidebar}>
@@ -318,8 +303,8 @@ const Menu = ({ navItems }: { navItems: NavItem[] }) => {
           styles['nav-links-scroll']
         )}
       >
-        {mainItems.map((item, index) => (
-          <RenderNavItem key={index} item={item} />
+        {mainItems.map((item) => (
+          <RenderNavItem key={item.title} item={item} />
         ))}
       </ul>
 
@@ -334,11 +319,24 @@ const Menu = ({ navItems }: { navItems: NavItem[] }) => {
               <div className={styles['separator-line']} />
             </div>
 
-            <ul>
-              {footerItems.map((item, index) => (
-                <RenderNavItem key={index} item={item} />
-              ))}
-            </ul>
+            {withSwitchVenueFeature ? (
+              <ul className={styles['nav-links-footer']}>
+                <li>
+                  <FeedbackDialogTriggerNavItem />
+                </li>
+                <li>
+                  <HelpDropdownNavItem
+                    isMobileScreen={isMobileScreen ?? false}
+                  />
+                </li>
+              </ul>
+            ) : (
+              <ul>
+                {footerItems.map((item) => (
+                  <RenderNavItem key={item.title} item={item} />
+                ))}
+              </ul>
+            )}
           </div>
         )}
       </div>
