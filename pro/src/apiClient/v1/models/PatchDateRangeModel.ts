@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type DateRangeModel = {
+export type PatchDateRangeModel = {
   end: string;
   start: string;
 };

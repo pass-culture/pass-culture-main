@@ -12,6 +12,7 @@ from pcapi.core.educational import testing as educational_testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
+from pcapi.routes.serialization.collective_offers_serialize import PatchCollectiveOfferTemplateBodyModel
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
@@ -84,6 +85,13 @@ def build_payload_context():
             "formats": [EacFormat.CONCERT.value],
         },
     )
+
+
+PATCH_NULLABLE_FIELDS = [
+    field.alias
+    for field_name, field in PatchCollectiveOfferTemplateBodyModel.model_fields.items()
+    if field_name not in PatchCollectiveOfferTemplateBodyModel.NON_NULLABLE_FIELDS
+]
 
 
 class Returns200Test:
@@ -298,17 +306,7 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "location": {
-                    "banId": oa.address.banId,
-                    "isVenueAddress": True,
-                    "isManualEdition": False,
-                    "inseeCode": oa.address.inseeCode,
-                    "city": oa.address.city,
-                    "latitude": oa.address.latitude,
-                    "longitude": oa.address.longitude,
-                    "postalCode": oa.address.postalCode,
-                    "street": oa.address.street,
-                },
+                "location": {"isVenueLocation": True},
             },
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -321,7 +319,7 @@ class Returns200Test:
 
         assert offer.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION
         assert offer.offererAddress.addressId == oa.addressId
-        assert offer.offererAddress.label == oa.label
+        assert offer.offererAddress.label == offer.venue.publicName
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
@@ -412,23 +410,12 @@ class Returns200Test:
 
         # we change offer.venue and set the location to the new venue address
         other_venue = offerers_factories.VenueFactory(managingOfferer=offer_ctx.venue.managingOfferer)
-        new_address = other_venue.offererAddress.address
         payload = {
             "venueId": other_venue.id,
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "location": {
-                    "banId": new_address.banId,
-                    "isVenueAddress": True,
-                    "isManualEdition": False,
-                    "inseeCode": new_address.inseeCode,
-                    "city": new_address.city,
-                    "latitude": new_address.latitude,
-                    "longitude": new_address.longitude,
-                    "postalCode": new_address.postalCode,
-                    "street": new_address.street,
-                },
+                "location": {"isVenueLocation": True},
             },
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -441,7 +428,7 @@ class Returns200Test:
         assert offer.venueId == other_venue.id
         assert offer.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION
         assert offer.offererAddress.addressId == other_venue.offererAddress.addressId
-        assert offer.offererAddress.label == other_venue.offererAddress.label
+        assert offer.offererAddress.label == other_venue.publicName
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
@@ -538,6 +525,20 @@ class Returns200Test:
         assert offer.nationalProgramId == new_program.id
         assert [domain.id for domain in offer.domains] == [new_domain.id]
 
+    @pytest.mark.parametrize("field", PATCH_NULLABLE_FIELDS)
+    def test_fields_nullable(self, client, field):
+        offer_ctx = build_offer_context()
+
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        payload = {field: None}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+
+        assert response.status_code == 200
+        assert getattr(offer_ctx.offer, field) == None
+
 
 class Returns400Test:
     def test_empty_name(self, client):
@@ -547,26 +548,11 @@ class Returns400Test:
         offer_id = offer_ctx.offer.id
 
         data = {"name": " "}
-
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"name": [""]}
-
-    def test_null_name(self, client):
-        offer_ctx = build_offer_context()
-
-        pro_client = build_pro_client(client, offer_ctx.user)
-        offer_id = offer_ctx.offer.id
-
-        data = {"name": None}
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
-
-        assert response.status_code == 400
-        assert response.json == {"name": [""]}
+        assert response.json == {"name": ["Cette chaîne de caractères doit avoir une taille minimum de 1 caractères"]}
 
     def test_empty_formats(self, client):
         offer_ctx = build_offer_context()
@@ -579,7 +565,7 @@ class Returns400Test:
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"formats": ["formats must have at least one value"]}
+        assert response.json == {"formats": ["Cette liste doit doit avoir une taille minimum de 1"]}
 
     def test_empty_educational_domains(self, client):
         offer_ctx = build_offer_context()
@@ -593,7 +579,7 @@ class Returns400Test:
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"domains": ["domains must have at least one value"]}
+        assert response.json == {"domains": ["Cette liste doit doit avoir une taille minimum de 1"]}
 
     def test_unknown_national_program(self, client):
         offer_ctx = build_offer_context()
@@ -706,7 +692,7 @@ class Returns400Test:
         db.session.flush()  # otherwise "Failed to add object to the flush context!" in teardown
 
         assert response.status_code == 400
-        assert response.json == {"__root__": ["error: url and form are both not null"]}
+        assert response.json == {"": ["contactUrl et contactForm ne peuvent pas être remplis en même temps"]}
 
     def test_booking_emails_invalid(self, client):
         offer_ctx = build_offer_context()
@@ -722,9 +708,21 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {
-            "bookingEmails.1": ["Le format d'email est incorrect."],
-            "bookingEmails.2": ["Le format d'email est incorrect."],
+            "bookingEmails.1": ["Saisissez un email valide"],
+            "bookingEmails.2": ["Saisissez un email valide"],
         }
+
+    def test_update_collective_offer_booking_emails_empty(self, client):
+        offer_ctx = build_offer_context()
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        data = {"bookingEmails": []}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers/{offer_id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"bookingEmails": ["Cette liste doit doit avoir une taille minimum de 1"]}
 
     def test_description_invalid(self, client):
         offer_ctx = build_offer_context()
@@ -739,7 +737,9 @@ class Returns400Test:
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 400
-        assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
+        assert response.json == {
+            "description": ["Cette chaîne de caractères doit avoir une taille maximum de 1500 caractères"]
+        }
 
     def test_patch_collective_offer_template_with_location_type_school_must_not_receive_location_comment(self, client):
         offer_ctx = build_offer_context()
@@ -758,7 +758,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {
-            "location.locationComment": ["locationComment is not allowed for the provided locationType"]
+            "location.locationComment": ["locationComment n'est pas autorisé pour cette valeur de locationType"]
         }
 
     def test_patch_collective_offer_template_with_location_type_address_must_not_receive_location_comment(self, client):
@@ -778,7 +778,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {
-            "location.locationComment": ["locationComment is not allowed for the provided locationType"]
+            "location.locationComment": ["locationComment n'est pas autorisé pour cette valeur de locationType"]
         }
 
     def test_patch_collective_offer_template_with_location_type_address_must_provide_address(self, client):
@@ -797,7 +797,7 @@ class Returns400Test:
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 400
-        assert response.json == {"location.location": ["address is required for the provided locationType"]}
+        assert response.json == {"location.location": ["location est requis pour cette valeur de locationType"]}
 
     def test_patch_collective_offer_template_with_location_type_school_must_provide_intervention_area(self, client):
         offer_ctx = build_offer_context()
@@ -805,7 +805,7 @@ class Returns400Test:
         offer_id = offer_ctx.offer.id
 
         payload = {
-            "interventionArea": None,
+            "interventionArea": [],
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": None,
@@ -816,7 +816,9 @@ class Returns400Test:
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 400
-        assert response.json == {"interventionArea": ["intervention_area is required and must not be empty"]}
+        assert response.json == {
+            "interventionArea": ["interventionArea ne peut pas être vide pour cette valeur de locationType"]
+        }
 
     def test_patch_collective_offer_template_with_location_type_school_must_provide_correct_intervention_area(
         self, client
@@ -837,7 +839,7 @@ class Returns400Test:
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 400
-        assert response.json == {"interventionArea": ["intervention_area must be a valid area"]}
+        assert response.json == {"interventionArea": ["interventionArea doit contenir des départements valides"]}
 
     def test_patch_collective_offer_with_location_type_address_must_not_provide_intervention_area(self, client):
         offer_ctx = build_offer_context()
@@ -856,7 +858,9 @@ class Returns400Test:
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 400
-        assert response.json == {"interventionArea": ["intervention_area must be empty"]}
+        assert response.json == {
+            "interventionArea": ["interventionArea doit être vide pour cette valeur de locationType"]
+        }
 
     @pytest.mark.parametrize(
         "location_type",
@@ -884,7 +888,21 @@ class Returns400Test:
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"location.location": ["address is not allowed for the provided locationType"]}
+        assert response.json == {"location.location": ["location n'est pas autorisé pour cette valeur de locationType"]}
+
+    @pytest.mark.parametrize("field", PatchCollectiveOfferTemplateBodyModel.NON_NULLABLE_FIELDS)
+    def test_null_name(self, client, field):
+        offer_ctx = build_offer_context()
+
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        data = {field: None}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {field: ["Ce champ ne peut pas être null"]}
 
 
 class InvalidDatesTest:
@@ -937,7 +955,7 @@ class InvalidDatesTest:
         response = self.send_request(pro_client, offer_id, dates)
 
         assert response.status_code == 400
-        assert "dates.__root__" in response.json
+        assert response.json == {"dates": ["La date de début doit être avant la date de fin"]}
 
     def test_missing_end(self, client):
         offer_ctx = build_offer_context()

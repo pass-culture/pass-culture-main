@@ -3,31 +3,31 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { CollectiveOfferLocationModel } from './CollectiveOfferLocationModel';
-import type { DateRangeModel } from './DateRangeModel';
 import type { EacFormat } from './EacFormat';
 import type { OfferContactFormEnum } from './OfferContactFormEnum';
+import type { PatchDateRangeModel } from './PatchDateRangeModel';
 import type { StudentLevels } from './StudentLevels';
 export type PatchCollectiveOfferTemplateBodyModel = {
-  audioDisabilityCompliant?: boolean | null;
-  bookingEmails?: Array<string> | null;
-  contactEmail?: string | null;
-  contactForm?: OfferContactFormEnum | null;
-  contactPhone?: string | null;
-  contactUrl?: string | null;
-  dates?: DateRangeModel | null;
-  description?: string | null;
-  domains?: Array<number> | null;
-  durationMinutes?: number | null;
-  formats?: Array<EacFormat> | null;
-  interventionArea?: Array<string> | null;
-  location?: CollectiveOfferLocationModel | null;
-  mentalDisabilityCompliant?: boolean | null;
-  motorDisabilityCompliant?: boolean | null;
-  name?: string | null;
-  nationalProgramId?: number | null;
-  priceDetail?: string | null;
-  students?: Array<StudentLevels> | null;
-  venueId?: number | null;
-  visualDisabilityCompliant?: boolean | null;
+  audioDisabilityCompliant?: (boolean | null);
+  bookingEmails?: (Array<string> | null);
+  contactEmail?: (string | null);
+  contactForm?: (OfferContactFormEnum | null);
+  contactPhone?: (string | null);
+  contactUrl?: (string | null);
+  dates?: (PatchDateRangeModel | null);
+  description?: (string | null);
+  domains?: (Array<number> | null);
+  durationMinutes?: (number | null);
+  formats?: (Array<EacFormat> | null);
+  interventionArea?: (Array<string> | null);
+  location?: (CollectiveOfferLocationModel | null);
+  mentalDisabilityCompliant?: (boolean | null);
+  motorDisabilityCompliant?: (boolean | null);
+  name?: (string | null);
+  nationalProgramId?: (number | null);
+  priceDetail?: (string | null);
+  students?: (Array<StudentLevels> | null);
+  venueId?: (number | null);
+  visualDisabilityCompliant?: (boolean | null);
 };
 

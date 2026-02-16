@@ -3,11 +3,11 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { CollectiveLocationType } from './CollectiveLocationType';
-import type { LocationBodyModel } from './LocationBodyModel';
-import type { LocationOnlyOnVenueBodyModel } from './LocationOnlyOnVenueBodyModel';
+import type { LocationBodyModelV2 } from './LocationBodyModelV2';
+import type { LocationOnlyOnVenueBodyModelV2 } from './LocationOnlyOnVenueBodyModelV2';
 export type CollectiveOfferLocationModel = {
-  location?: (LocationBodyModel | LocationOnlyOnVenueBodyModel) | null;
-  locationComment?: string | null;
+  location?: ((LocationBodyModelV2 | LocationOnlyOnVenueBodyModelV2) | null);
+  locationComment?: (string | null);
   locationType: CollectiveLocationType;
 };
 
