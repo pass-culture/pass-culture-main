@@ -133,6 +133,9 @@ class FeatureToggle(enum.Enum):
     )
     WIP_ASYNCHRONOUS_CELERY_SPECIAL_EVENT_TYPEFORM = "Activer le backend de tâches asynchrones Celery pour les tâches liées à la mise à jour des opérations spéciales"
     WIP_ASYNCHRONOUS_CELERY_UBBLE = "Active le backend de tâches asynchrones Celery pour les tâches liées à Ubble"
+    WIP_ASYNCHRONOUS_CELERY_UPDATE_VENUE_OFFERS_EMAIL = (
+        "Activer le backend de tâches asynchrones Celery pour les tâches liées à la mise à jour des emails des offres"
+    )
     WIP_ASYNCHRONOUS_CELERY_ZENDESK = "Activer le backend de tâches asynchrones Celery pour le webhook Zendesk Support"
     WIP_ASYNCHRONOUS_CELERY_ZENDESK_SELL = (
         "Activer le backend de tâches asynchrones Celery pour la synchronisation Zendesk Sell"
@@ -215,6 +218,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CINEMA_INTEGRATION,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_SPECIAL_EVENT_TYPEFORM,
+    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UPDATE_VENUE_OFFERS_EMAIL,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_ZENDESK,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_ZENDESK_SELL,
     FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS,
