@@ -20,10 +20,14 @@ export const mustHaveSelectedAdminOfferer = (
 export const mustNotBeOnboarded = (userPermissions: UserPermissions) =>
   userPermissions.isAuthenticated && !userPermissions.isOnboarded
 
-export const hasNewHomepage = () => {
+export const isNewHomepageEnabled = () => {
   const state = rootStore.getState()
   return (
-    isFeatureActive(state, 'WIP_SWITCH_VENUE') &&
-    isFeatureActive(state, 'WIP_ENABLE_NEW_PRO_HOME')
+    isSwitchVenueEnabled() && isFeatureActive(state, 'WIP_ENABLE_NEW_PRO_HOME')
   )
+}
+
+export const isSwitchVenueEnabled = () => {
+  const state = rootStore.getState()
+  return isFeatureActive(state, 'WIP_SWITCH_VENUE')
 }
