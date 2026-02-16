@@ -42,7 +42,9 @@ def get_or_set_correlation_id() -> str:
         return ""
     if flask.request:
         # Our Nginx upstream should have set an HTTP header.
-        return flask.request.headers.get("X-Request-Id", "")
+        print(flask.request.headers.get("traceparent", ""))
+        print(flask.request.headers.get("tracestate", ""))
+        print(flask.request.headers.get("X-Cloud-Trace-Context", ""))
     # XXX: the following block has not automated tests.
     try:
         return flask.g.correlation_id
