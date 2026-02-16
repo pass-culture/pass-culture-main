@@ -49,7 +49,6 @@ export { CollectiveOfferDisplayedStatus } from './models/CollectiveOfferDisplaye
 export type { CollectiveOfferHistory } from './models/CollectiveOfferHistory';
 export type { CollectiveOfferInstitutionModel } from './models/CollectiveOfferInstitutionModel';
 export type { CollectiveOfferLocationModel } from './models/CollectiveOfferLocationModel';
-export type { CollectiveOfferLocationModelV2 } from './models/CollectiveOfferLocationModelV2';
 export type { CollectiveOfferRedactorModel } from './models/CollectiveOfferRedactorModel';
 export type { CollectiveOfferResponseIdModel } from './models/CollectiveOfferResponseIdModel';
 export type { CollectiveOfferResponseModel } from './models/CollectiveOfferResponseModel';
@@ -68,7 +67,6 @@ export type { CreatePriceCategoryModel } from './models/CreatePriceCategoryModel
 export type { CreateThumbnailBodyModel } from './models/CreateThumbnailBodyModel';
 export type { CreateThumbnailResponseModel } from './models/CreateThumbnailResponseModel';
 export type { CropParams } from './models/CropParams';
-export type { DateRangeModel } from './models/DateRangeModel';
 export type { DatesModel } from './models/DatesModel';
 export type { DeleteOfferRequestBody } from './models/DeleteOfferRequestBody';
 export type { DeleteStockListBody } from './models/DeleteStockListBody';
@@ -213,6 +211,7 @@ export type { PatchCollectiveOfferArchiveBodyModel } from './models/PatchCollect
 export type { PatchCollectiveOfferBodyModel } from './models/PatchCollectiveOfferBodyModel';
 export type { PatchCollectiveOfferEducationalInstitution } from './models/PatchCollectiveOfferEducationalInstitution';
 export type { PatchCollectiveOfferTemplateBodyModel } from './models/PatchCollectiveOfferTemplateBodyModel';
+export type { PatchDateRangeModel } from './models/PatchDateRangeModel';
 export type { PatchOfferActiveStatusBodyModel } from './models/PatchOfferActiveStatusBodyModel';
 export type { PatchOfferBodyModel } from './models/PatchOfferBodyModel';
 export type { PatchOfferPublishBodyModel } from './models/PatchOfferPublishBodyModel';

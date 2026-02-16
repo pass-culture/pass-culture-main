@@ -210,4 +210,4 @@ def parse_args_as_list(args: typing.Any) -> list[typing.Any] | None:
 
 
 # use this validator for a query parameter that we need to parse as a list
-args_as_list_validator = pydantic_v2.BeforeValidator(parse_args_as_list)
+ArgsAsListBeforeValidator = pydantic_v2.BeforeValidator(parse_args_as_list)

@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { CollectiveOfferLocationModelV2 } from './CollectiveOfferLocationModelV2';
+import type { CollectiveOfferLocationModel } from './CollectiveOfferLocationModel';
 import type { EacFormat } from './EacFormat';
 import type { StudentLevels } from './StudentLevels';
 export type PostCollectiveOfferBodyModel = {
@@ -15,7 +15,7 @@ export type PostCollectiveOfferBodyModel = {
   durationMinutes?: (number | null);
   formats: Array<EacFormat>;
   interventionArea: (Array<string> | null);
-  location: CollectiveOfferLocationModelV2;
+  location: CollectiveOfferLocationModel;
   mentalDisabilityCompliant: boolean;
   motorDisabilityCompliant: boolean;
   name: string;

@@ -61,7 +61,7 @@ OFFERS_RECAP_LIMIT = 101
 
 
 def get_or_create_offerer_address_from_collective_offer_location(
-    location_body: "collective_offers_serialize.CollectiveOfferLocationModel | collective_offers_serialize.CollectiveOfferLocationModelV2 | None",
+    location_body: "collective_offers_serialize.CollectiveOfferLocationModel | None",
     venue: offerers_models.Venue,
 ) -> offerers_models.OffererAddress | None:
     if not location_body or not location_body.location:
@@ -151,7 +151,9 @@ def create_collective_offer_template(
 
     # check domains and national program
     educational_domains = get_educational_domains_from_ids(offer_data.domains)
-    validation.validate_national_program(national_program_id=offer_data.nationalProgramId, domains=educational_domains)
+    validation.validate_national_program(
+        national_program_id=offer_data.national_program_id, domains=educational_domains
+    )
 
     offerer_address = get_or_create_offerer_address_from_collective_offer_location(offer_data.location, venue)
 
@@ -160,7 +162,7 @@ def create_collective_offer_template(
         name=offer_data.name,
         description=offer_data.description,
         domains=educational_domains,
-        nationalProgramId=offer_data.nationalProgramId,
+        nationalProgramId=offer_data.national_program_id,
         durationMinutes=offer_data.duration_minutes,
         students=offer_data.students,
         contactEmail=offer_data.contact_email,
@@ -177,8 +179,8 @@ def create_collective_offer_template(
         bookingEmails=offer_data.booking_emails,
         formats=offer_data.formats,
         author=user,
-        locationType=offer_data.location.locationType if offer_data.location else None,
-        locationComment=offer_data.location.locationComment if offer_data.location else None,
+        locationType=offer_data.location.location_type if offer_data.location else None,
+        locationComment=offer_data.location.location_comment if offer_data.location else None,
         offererAddressId=offerer_address.id if offerer_address else None,
     )
 
@@ -213,7 +215,7 @@ def create_collective_offer(
 
     # check domains and national program
     educational_domains = get_educational_domains_from_ids(offer_data.domains)
-    national_program_id = offer_data.nationalProgramId
+    national_program_id = offer_data.national_program_id
     try:
         validation.validate_national_program(national_program_id=national_program_id, domains=educational_domains)
     except (exceptions.InactiveNationalProgram, exceptions.IllegalNationalProgram):
@@ -247,8 +249,8 @@ def create_collective_offer(
         bookingEmails=offer_data.booking_emails,
         formats=offer_data.formats,
         author=user,
-        locationType=offer_data.location.locationType if offer_data.location else None,
-        locationComment=offer_data.location.locationComment if offer_data.location else None,
+        locationType=offer_data.location.location_type if offer_data.location else None,
+        locationComment=offer_data.location.location_comment if offer_data.location else None,
         offererAddressId=offerer_address.id if offerer_address else None,
     )
 
@@ -1061,7 +1063,7 @@ def move_collective_offer_venue(
 
 
 def update_collective_offer(offer_id: int, body: "collective_offers_serialize.PatchCollectiveOfferBodyModel") -> None:
-    new_values = body.dict(exclude_unset=True)
+    new_values = body.model_dump(exclude_unset=True, by_alias=True)
 
     offer_to_update = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer_id).one()
 
@@ -1095,7 +1097,7 @@ def update_collective_offer(offer_id: int, body: "collective_offers_serialize.Pa
 def update_collective_offer_template(
     offer_id: int, body: "collective_offers_serialize.PatchCollectiveOfferTemplateBodyModel"
 ) -> None:
-    new_values = body.dict(exclude_unset=True)
+    new_values = body.model_dump(exclude_unset=True, by_alias=True)
 
     offer_to_update: models.CollectiveOfferTemplate = (
         db.session.query(models.CollectiveOfferTemplate).filter(models.CollectiveOfferTemplate.id == offer_id).one()
@@ -1172,8 +1174,8 @@ def _update_collective_offer(
         offerer_address = get_or_create_offerer_address_from_collective_offer_location(location_body, offer.venue)
 
         new_values["offererAddress"] = offerer_address
-        new_values["locationType"] = location_body.locationType
-        new_values["locationComment"] = location_body.locationComment
+        new_values["locationType"] = location_body.location_type
+        new_values["locationComment"] = location_body.location_comment
 
         new_values.pop("location", None)
 

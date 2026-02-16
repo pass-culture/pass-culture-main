@@ -16,6 +16,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
+from pcapi.routes.serialization.collective_offers_serialize import PatchCollectiveOfferBodyModel
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -42,6 +43,13 @@ def user_offerer_fixture(venue):
 @pytest.fixture(name="auth_client")
 def auth_client_fixture(client, user_offerer):
     return client.with_session_auth(user_offerer.user.email)
+
+
+PATCH_NULLABLE_FIELDS = [
+    field.alias
+    for field_name, field in PatchCollectiveOfferBodyModel.model_fields.items()
+    if field_name not in PatchCollectiveOfferBodyModel.NON_NULLABLE_FIELDS
+]
 
 
 class Returns200Test:
@@ -224,17 +232,7 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "location": {
-                    "banId": oa.address.banId,
-                    "isVenueAddress": True,
-                    "isManualEdition": False,
-                    "inseeCode": oa.address.inseeCode,
-                    "city": oa.address.city,
-                    "latitude": oa.address.latitude,
-                    "longitude": oa.address.longitude,
-                    "postalCode": oa.address.postalCode,
-                    "street": oa.address.street,
-                },
+                "location": {"isVenueLocation": True},
             },
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -245,7 +243,7 @@ class Returns200Test:
 
         assert offer.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION
         assert offer.offererAddress.addressId == oa.addressId
-        assert offer.offererAddress.label == oa.label
+        assert offer.offererAddress.label == offer.venue.publicName
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
@@ -328,23 +326,12 @@ class Returns200Test:
         other_venue = offerers_factories.VenueFactory(
             managingOfferer=offer.venue.managingOfferer, pricing_point=offer.venue
         )
-        new_address = other_venue.offererAddress.address
         data = {
             "venueId": other_venue.id,
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "location": {
-                    "banId": new_address.banId,
-                    "isVenueAddress": True,
-                    "isManualEdition": False,
-                    "inseeCode": new_address.inseeCode,
-                    "city": new_address.city,
-                    "latitude": new_address.latitude,
-                    "longitude": new_address.longitude,
-                    "postalCode": new_address.postalCode,
-                    "street": new_address.street,
-                },
+                "location": {"isVenueLocation": True},
             },
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -356,7 +343,7 @@ class Returns200Test:
         assert offer.venueId == other_venue.id
         assert offer.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION
         assert offer.offererAddress.addressId == other_venue.offererAddress.addressId
-        assert offer.offererAddress.label == other_venue.offererAddress.label
+        assert offer.offererAddress.label == other_venue.publicName
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
@@ -434,38 +421,40 @@ class Returns200Test:
         assert offer.nationalProgramId == new_program.id
         assert [domain.id for domain in offer.domains] == [new_domain.id]
 
+    @pytest.mark.parametrize("field", PATCH_NULLABLE_FIELDS)
+    def test_fields_nullable(self, auth_client, venue, field):
+        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue)
+
+        data = {field: None}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = auth_client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        assert getattr(offer, field) == None
+
 
 class Returns400Test:
     def test_patch_offer_with_empty_name(self, app, client):
-        # Given
         offer = educational_factories.CollectiveOfferFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
         data = {"name": " "}
 
-        # WHEN
         client = client.with_session_auth("user@example.com")
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
-        # Then
         assert response.status_code == 400
 
     def test_patch_offer_with_null_name(self, app, client):
-        # Given
         offer = educational_factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
 
-        # When
         data = {"name": None}
         response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
 
-        # Then
         assert response.status_code == 400
 
     def test_patch_offer_with_empty_formats(self, client):
@@ -478,47 +467,30 @@ class Returns400Test:
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"formats": ["formats must have at least one value"]}
+        assert response.json == {"formats": ["Cette liste doit doit avoir une taille minimum de 1"]}
 
     def test_patch_offer_with_empty_educational_domain(self, client):
-        # Given
         offer = educational_factories.CollectiveOfferFactory(
             educational_domains=None,
         )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-        data = {
-            "domains": [],
-        }
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+        data = {"domains": []}
 
-        # WHEN
         client = client.with_session_auth("user@example.com")
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
-        # Then
+
         assert response.status_code == 400
 
     def test_patch_offer_with_none_domain(self, app, client):
-        # Given
-        offer = educational_factories.CollectiveOfferFactory(
-            educational_domains=None,
-        )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-        data = {
-            "domains": None,
-        }
+        offer = educational_factories.CollectiveOfferFactory(educational_domains=None)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+        data = {"domains": None}
 
-        # WHEN
         client = client.with_session_auth("user@example.com")
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
-        # Then
         assert response.status_code == 400
 
     def test_patch_offer_with_none_description(self, client):
@@ -642,9 +614,21 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {
-            "bookingEmails.1": ["Le format d'email est incorrect."],
-            "bookingEmails.2": ["Le format d'email est incorrect."],
+            "bookingEmails.1": ["Saisissez un email valide"],
+            "bookingEmails.2": ["Saisissez un email valide"],
         }
+
+    def test_update_collective_offer_booking_emails_empty(self, client):
+        offer = educational_factories.CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {"bookingEmails": []}
+        client = client.with_session_auth("user@example.com")
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"bookingEmails": ["Cette liste doit doit avoir une taille minimum de 1"]}
 
     def test_patch_collective_offer_replacing_by_venue_with_no_pricing_point(self, auth_client, venue):
         offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue)
@@ -673,7 +657,9 @@ class Returns400Test:
             response = auth_client.patch(f"/collective/offers/{offer.id}", json={"description": "too_long" * 200})
 
         assert response.status_code == 400
-        assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
+        assert response.json == {
+            "description": ["Cette chaîne de caractères doit avoir une taille maximum de 1500 caractères"]
+        }
 
     def test_patch_collective_offer_with_location_type_school_must_not_receive_location_comment(
         self, auth_client, venue
@@ -692,7 +678,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {
-            "location.locationComment": ["locationComment is not allowed for the provided locationType"]
+            "location.locationComment": ["locationComment n'est pas autorisé pour cette valeur de locationType"]
         }
 
     def test_patch_collective_offer_with_location_type_address_must_not_receive_location_comment(
@@ -712,14 +698,14 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {
-            "location.locationComment": ["locationComment is not allowed for the provided locationType"]
+            "location.locationComment": ["locationComment n'est pas autorisé pour cette valeur de locationType"]
         }
 
     def test_patch_collective_offer_with_location_type_school_must_provide_intervention_area(self, auth_client, venue):
         offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue)
 
         payload = {
-            "interventionArea": None,
+            "interventionArea": [],
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": None,
@@ -730,7 +716,9 @@ class Returns400Test:
             response = auth_client.patch(f"/collective/offers/{offer.id}", json=payload)
 
         assert response.status_code == 400
-        assert response.json == {"interventionArea": ["intervention_area is required and must not be empty"]}
+        assert response.json == {
+            "interventionArea": ["interventionArea ne peut pas être vide pour cette valeur de locationType"]
+        }
 
     def test_patch_collective_offer_with_location_type_address_must_not_provide_intervention_area(
         self, auth_client, venue
@@ -749,7 +737,9 @@ class Returns400Test:
             response = auth_client.patch(f"/collective/offers/{offer.id}", json=payload)
 
         assert response.status_code == 400
-        assert response.json == {"interventionArea": ["intervention_area must be empty"]}
+        assert response.json == {
+            "interventionArea": ["interventionArea doit être vide pour cette valeur de locationType"]
+        }
 
     def test_patch_collective_offer_with_location_type_school_must_provide_correct_intervention_area(
         self, auth_client, venue
@@ -768,7 +758,7 @@ class Returns400Test:
             response = auth_client.patch(f"/collective/offers/{offer.id}", json=payload)
 
         assert response.status_code == 400
-        assert response.json == {"interventionArea": ["intervention_area must be a valid area"]}
+        assert response.json == {"interventionArea": ["interventionArea doit contenir des départements valides"]}
 
     def test_patch_collective_offer_with_location_type_address_must_provide_address(self, auth_client, venue):
         offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue)
@@ -785,7 +775,7 @@ class Returns400Test:
             response = auth_client.patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"location.location": ["address is required for the provided locationType"]}
+        assert response.json == {"location.location": ["location est requis pour cette valeur de locationType"]}
 
     def test_patch_collective_offer_with_change_location_type(self, auth_client, venue):
         offer = educational_factories.PublishedCollectiveOfferFactory(
@@ -804,7 +794,7 @@ class Returns400Test:
             response = auth_client.patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"location.location": ["address is required for the provided locationType"]}
+        assert response.json == {"location.location": ["location est requis pour cette valeur de locationType"]}
 
     @pytest.mark.parametrize(
         "location_type",
@@ -834,33 +824,30 @@ class Returns400Test:
             response = auth_client.patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"location.location": ["address is not allowed for the provided locationType"]}
+        assert response.json == {"location.location": ["location n'est pas autorisé pour cette valeur de locationType"]}
 
-    def test_location_none(self, auth_client, venue):
+    @pytest.mark.parametrize("field", PatchCollectiveOfferBodyModel.NON_NULLABLE_FIELDS)
+    def test_fields_not_null(self, auth_client, venue, field):
         offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue)
 
-        data = {"location": None}
+        data = {field: None}
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = auth_client.patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"location": ["location cannot be NULL."]}
+        assert response.json == {field: ["Ce champ ne peut pas être null"]}
 
 
-@pytest.mark.usefixtures("db_session")
 class Returns403Test:
     def when_user_is_not_attached_to_offerer(self, app, client):
-        # Given
         offer = educational_factories.CollectiveOfferFactory(name="Old name")
         offerers_factories.UserOffererFactory(user__email="user@example.com")
 
         data = {"name": "New name"}
-        # WHEN
         client = client.with_session_auth("user@example.com")
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
-        # Then
         assert response.status_code == 403
         assert response.json["global"] == [
             "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
@@ -868,23 +855,17 @@ class Returns403Test:
         assert db.session.get(models.CollectiveOffer, offer.id).name == "Old name"
 
     def test_patch_collective_offer_replacing_venue_with_different_offerer(self, client):
-        # Given
         offerer = offerers_factories.OffererFactory()
         offerer2 = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offerer,
-        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offerer)
         offer = educational_factories.CollectiveOfferFactory(venue__managingOfferer=offerer)
         venue2 = offerers_factories.VenueFactory(managingOfferer=offerer2)
         data = {"venueId": venue2.id}
 
-        # WHEN
         client = client.with_session_auth("user@example.com")
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
-        # Then
         assert response.status_code == 403
         assert response.json == {"venueId": "New venue needs to have the same offerer"}
 
@@ -975,55 +956,33 @@ class Returns403Test:
 
 class Returns404Test:
     def test_returns_404_if_offer_does_not_exist(self, app, client):
-        # given
         users_factories.UserFactory(email="user@example.com")
 
-        # when
         response = client.with_session_auth("user@example.com").patch("/collective/offers/ADFGA", json={})
 
-        # then
         assert response.status_code == 404
 
     def test_patch_offer_with_unknown_educational_domain(self, app, client):
-        # Given
-        offer = educational_factories.CollectiveOfferFactory(
-            educational_domains=None,
-        )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-        data = {
-            "domains": [0],
-        }
+        offer = educational_factories.CollectiveOfferFactory(educational_domains=None)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+        data = {"domains": [0]}
 
-        # WHEN
         client = client.with_session_auth("user@example.com")
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
-        # Then
         assert response.status_code == 404
         assert response.json["code"] == "EDUCATIONAL_DOMAIN_NOT_FOUND"
 
     def test_edit_collective_offer_with_offerer_unregister_in_adage(self, client):
-        # GIVEN
-
         offer = educational_factories.CollectiveOfferFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-        data = {
-            "contactEmail": "toto@example.com",
-        }
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+        data = {"contactEmail": "toto@example.com"}
 
-        # WHEN
         client = client.with_session_auth("user@example.com")
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH, return_value=False):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
-        # THEN
         assert response.status_code == 403
         assert response.json == {"Partner": "User not in Adage can't edit the offer"}
 
