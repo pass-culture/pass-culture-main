@@ -18,6 +18,7 @@ from flask import jsonify
 from flask import request
 from flask.logging import default_handler
 from flask_login import current_user
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from sqlalchemy.event import listens_for
 from werkzeug.middleware.profiler import ProfilerMiddleware
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -34,6 +35,7 @@ from pcapi.models import install_models
 from pcapi.scripts.install import install_commands
 from pcapi.utils import transaction_manager
 from pcapi.utils.json_encoder import EnumJSONEncoder
+from pcapi.utils.opentelemetry import setup_opentelemetry
 from pcapi.utils.sentry import init_sentry_sdk
 
 
@@ -64,8 +66,13 @@ install_logging()
 
 init_sentry_sdk()
 
+if settings.ENABLE_OPENTELEMETRY:
+    setup_opentelemetry()
+
 
 app = Flask(__name__, static_url_path="/static")
+
+FlaskInstrumentor().instrument_app(app)
 
 
 def setup_metrics(app_: Flask) -> None:

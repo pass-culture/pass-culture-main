@@ -117,6 +117,38 @@ def monkey_patch_logger_makeRecord() -> None:
     logging.Logger.makeRecord = makeRecord  # type: ignore[method-assign]
 
 
+def monkey_patch_logger_log() -> None:
+    def _log(  # type: ignore[no-untyped-def]
+        self,
+        level,
+        msg,
+        args,
+        exc_info=None,
+        extra=None,
+        stack_info=False,
+        stacklevel=1,
+        technical_message_id=None,
+    ):
+        # Inject `technical_message_id` into extra, so that we can pop it
+        # back in `JsonFormatter.format()` and have it at the root of
+        # the log.
+        extra = extra or {}
+        if technical_message_id:
+            extra["technical_message_id"] = technical_message_id
+        return self.__original_log(
+            level,
+            msg,
+            args,
+            exc_info=exc_info,
+            extra=extra,
+            stack_info=stack_info,
+            stacklevel=stacklevel,
+        )
+
+    logging.Logger.__original_log = logging.Logger._log  # type: ignore[attr-defined]
+    logging.Logger._log = _log  # type: ignore[method-assign]
+
+
 class JsonLogEncoder(json.JSONEncoder):
     def default(self, obj: typing.Any) -> str | float | list[str | float] | dict:
         if isinstance(obj, decimal.Decimal):
@@ -162,12 +194,13 @@ class JsonFormatter(logging.Formatter):
         }
         if impersonator_id:
             json_record["impersonator_id"] = impersonator_id
-        json_record.update({
-            # "asctime": "timestamp",
-            "logging.googleapis.com/trace": getattr(record, "otelTraceID", None),
-            "logging.googleapis.com/spanId": getattr(record, "otelSpanID", None),
-            "logging.googleapis.com/trace_sampled": getattr(record, "otelTraceSampled", None),
-        })
+        json_record.update(
+            {
+                "logging.googleapis.com/trace": getattr(record, "otelTraceID", None),
+                "logging.googleapis.com/spanId": getattr(record, "otelSpanID", None),
+                "logging.googleapis.com/trace_sampled": getattr(record, "otelTraceSampled", None),
+            }
+        )
         try:
             return json.dumps(json_record, cls=JsonLogEncoder)
         except TypeError:
@@ -221,6 +254,7 @@ def install_logging() -> None:
         return
 
     monkey_patch_logger_makeRecord()
+    monkey_patch_logger_log()
     if settings.LOG_PLAIN_TEXT:
         # JSON is hard to read, keep the default plain text logger.
         handler = logging.StreamHandler()
