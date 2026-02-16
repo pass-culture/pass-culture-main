@@ -2139,9 +2139,9 @@ class VenueOffersStatisticsModel:
 
 
 def get_venue_offers_statistics(venue_id: int) -> VenueOffersStatisticsModel:
-    monthly_views = clickhouse_queries.OfferConsultationCountQuery().execute({"venue_id": venue_id})
-    views_count = clickhouse_queries.VenueOffersMonthlyViewsQuery().execute({"venue_id": venue_id})
-    top_offers = clickhouse_queries.TopOffersByViewsQuery().execute({"venue_id": venue_id})
+    monthly_views = clickhouse_queries.OfferConsultationCountQuery().execute({"venue_id": str(venue_id)})
+    views_count = clickhouse_queries.VenueOffersMonthlyViewsQuery().execute({"venue_id": str(venue_id)})
+    top_offers = clickhouse_queries.TopOffersByViewsQuery().execute({"venue_id": str(venue_id)})
 
     return VenueOffersStatisticsModel(
         monthly_views=[MonthlyViewsModel(month=row.month, views=row.views) for row in monthly_views],
