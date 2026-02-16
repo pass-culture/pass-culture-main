@@ -740,7 +740,7 @@ class EditOfferVenueForm(FlaskForm):
 
     def set_venue_choices(self, venues: list[offerers_models.Venue]) -> None:
         self.venue.choices = [
-            (venue.id, f"{venue.common_name} ({venue.siret if venue.siret else 'Pas de SIRET'})") for venue in venues
+            (venue.id, f"{venue.publicName} ({venue.siret if venue.siret else 'Pas de SIRET'})") for venue in venues
         ]
 
 

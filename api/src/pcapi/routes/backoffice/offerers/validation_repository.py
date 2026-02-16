@@ -258,7 +258,7 @@ def list_offerers_to_be_validated(
                     "siret",
                     educational_models.CollectiveDmsApplication.siret,
                     "name",
-                    offerers_models.Venue.common_name,
+                    offerers_models.Venue.publicName,
                     "state",
                     educational_models.CollectiveDmsApplication.state,
                     "lastChangeDate",

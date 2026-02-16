@@ -43,7 +43,7 @@ def get_booking_cancellation_by_pro_to_beneficiary_email_data(
             "REJECTED": rejected_by_fraud_action,
             "USER_FIRST_NAME": booking.firstName,
             "USER_LAST_NAME": booking.lastName,
-            "VENUE_NAME": offer.venue.common_name,
+            "VENUE_NAME": offer.venue.publicName,
         },
     )
 

@@ -18,5 +18,5 @@ def get_data_offerer_activation_email(
 ) -> models.TransactionalEmailData:
     return models.TransactionalEmailData(
         template=TransactionalEmail.EAC_OFFERER_ACTIVATION_EMAIL.value,
-        params={"VENUE_NAME": venue.common_name},
+        params={"VENUE_NAME": venue.publicName},
     )

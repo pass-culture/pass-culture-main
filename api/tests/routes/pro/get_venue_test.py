@@ -227,7 +227,7 @@ class Returns200Test:
                 "latitude": float(venue.offererAddress.address.latitude),
                 "longitude": float(venue.offererAddress.address.longitude),
                 "banId": venue.offererAddress.address.banId,
-                "label": venue.common_name,
+                "label": venue.publicName,
                 "isManualEdition": venue.offererAddress.address.isManualEdition,
                 "isVenueLocation": True,
             },

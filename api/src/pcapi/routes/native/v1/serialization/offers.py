@@ -123,7 +123,7 @@ class OfferVenueResponseGetterDict(GetterDict):
         if key == "timezone":
             return venue.offererAddress.address.timezone
         if key == "name":
-            return venue.common_name
+            return venue.publicName
 
         return super().get(key, default)
 

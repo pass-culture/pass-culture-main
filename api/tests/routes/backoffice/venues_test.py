@@ -425,7 +425,7 @@ class GetVenueTest(GetEndpointHelper):
             assert response.status_code == 200
 
         response_text = html_parser.content_as_text(response.data)
-        assert venue.common_name in response_text
+        assert venue.publicName in response_text
         for field in ("Région", "Code postal", "Ville", "Coordonnées"):
             assert f"{field} :" not in response_text
 
@@ -957,7 +957,7 @@ class UpdateVenueTest(PostEndpointHelper):
         # check that email is sent when venue is set to permanent and has no image
         assert mails_testing.outbox[0]["To"] == venue.bookingEmail
         assert mails_testing.outbox[0]["template"] == TransactionalEmail.VENUE_NEEDS_PICTURE.value.__dict__
-        assert mails_testing.outbox[0]["params"]["VENUE_NAME"] == venue.common_name
+        assert mails_testing.outbox[0]["params"]["VENUE_NAME"] == venue.publicName
         assert mails_testing.outbox[0]["params"]["VENUE_FORM_URL"] == urls.build_pc_pro_venue_link(venue)
 
     def test_update_venue_location_with_offerer_address_not_manual(self, authenticated_client, offerer):
@@ -1101,7 +1101,7 @@ class UpdateVenueTest(PostEndpointHelper):
         # check that email is sent when venue is set to permanent and has no image
         assert mails_testing.outbox[0]["To"] == venue.bookingEmail
         assert mails_testing.outbox[0]["template"] == TransactionalEmail.VENUE_NEEDS_PICTURE.value.__dict__
-        assert mails_testing.outbox[0]["params"]["VENUE_NAME"] == venue.common_name
+        assert mails_testing.outbox[0]["params"]["VENUE_NAME"] == venue.publicName
         assert mails_testing.outbox[0]["params"]["VENUE_FORM_URL"] == urls.build_pc_pro_venue_link(venue)
 
     def test_updating_venue_manual_address_with_initial_ban_id(
@@ -2713,7 +2713,7 @@ class BatchEditVenuesTest(PostEndpointHelper):
             # check that email is sent when venue is set to permanent and has no image
             assert mails_testing.outbox[0]["To"] == venue.bookingEmail
             assert mails_testing.outbox[0]["template"] == TransactionalEmail.VENUE_NEEDS_PICTURE.value.__dict__
-            assert mails_testing.outbox[0]["params"]["VENUE_NAME"] == venue.common_name
+            assert mails_testing.outbox[0]["params"]["VENUE_NAME"] == venue.publicName
             assert mails_testing.outbox[0]["params"]["VENUE_FORM_URL"] == urls.build_pc_pro_venue_link(venue)
 
         mock_async_index_venue_ids.assert_called_once()

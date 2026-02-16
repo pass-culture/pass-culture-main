@@ -29,7 +29,7 @@ def get_eac_one_day_before_event_data(
         template=TransactionalEmail.EAC_ONE_DAY_BEFORE_EVENT.value,
         params={
             "OFFER_NAME": offer.name,
-            "VENUE_NAME": offer.venue.common_name,
+            "VENUE_NAME": offer.venue.publicName,
             "EVENT_HOUR": get_time_formatted_for_email(get_event_datetime(stock)),
             "QUANTITY": 1,
             "PRICE": str(stock.price) if stock.price > 0 else "Gratuit",

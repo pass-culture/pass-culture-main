@@ -24,7 +24,7 @@ def get_booking_cancellation_confirmation_by_pro_email_data(
         template=TransactionalEmail.BOOKING_CANCELLATION_CONFIRMATION_BY_PRO.value,
         params={
             "OFFER_NAME": offer.name,
-            "VENUE_NAME": offer.venue.common_name,
+            "VENUE_NAME": offer.venue.publicName,
             "PRICE": offer_price,
             "FORMATTED_PRICE": format_price(stock.price, offer.venue),
             "IS_EVENT": offer.isEvent,
@@ -51,7 +51,7 @@ def get_collective_booking_cancellation_confirmation_by_pro_email_data(
         template=TransactionalEmail.BOOKING_CANCELLATION_CONFIRMATION_BY_PRO.value,
         params={
             "OFFER_NAME": offer.name,
-            "VENUE_NAME": offer.venue.common_name,
+            "VENUE_NAME": offer.venue.publicName,
             "PRICE": offer_price,
             "FORMATTED_PRICE": format_price(stock.price, offer.venue),
             "IS_EVENT": True,

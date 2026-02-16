@@ -39,7 +39,7 @@ class VenueResponseGetterDict(pydantic_v1.utils.GetterDict):
                 return None
             return self._obj.accessibilityProvider.externalAccessibilityId
         if key == "name":
-            return self._obj.common_name
+            return self._obj.publicName
 
         if key == "venueTypeCode":
             return self._obj.venueTypeCode.name

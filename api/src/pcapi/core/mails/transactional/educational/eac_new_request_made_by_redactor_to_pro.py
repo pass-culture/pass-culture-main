@@ -25,7 +25,7 @@ def get_data_request_made_by_redactor_to_pro(
         template=TransactionalEmail.EAC_NEW_REQUEST_FOR_OFFER.value,
         params={
             "OFFER_NAME": request.collectiveOfferTemplate.name,
-            "VENUE_NAME": request.collectiveOfferTemplate.venue.common_name,
+            "VENUE_NAME": request.collectiveOfferTemplate.venue.publicName,
             "EVENT_DATE": get_date_formatted_for_email(request.requestedDate) if request.requestedDate else "",
             "NB_STUDENTS": request.totalStudents,
             "NB_TEACHERS": request.totalTeachers,

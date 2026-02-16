@@ -114,7 +114,7 @@ class VenueResponse(HttpBodyModel):
             is_permanent=venue.isPermanent,
             latitude=latitude,
             longitude=longitude,
-            name=venue.common_name,
+            name=venue.publicName,
             opening_hours=venue.opening_hours,
             postal_code=venue.offererAddress.address.postalCode,
             street=venue.offererAddress.address.street,

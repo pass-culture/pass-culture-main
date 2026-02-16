@@ -301,7 +301,7 @@ def get_venues(provider_id: int) -> utils.BackofficeResponse:
                 providers_models.VenueProvider.isActive, providers_models.VenueProvider.lastSyncDate
             ),
         )
-        .order_by(sa.func.lower(sa.func.unaccent(offerers_models.Venue.common_name)), offerers_models.Venue.id)
+        .order_by(sa.func.lower(sa.func.unaccent(offerers_models.Venue.publicName)), offerers_models.Venue.id)
         .all()
     )
 

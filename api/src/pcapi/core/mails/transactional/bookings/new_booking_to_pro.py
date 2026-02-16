@@ -98,7 +98,7 @@ def get_new_booking_to_pro_email_data(
             "USER_FIRSTNAME": booking.user.firstName,
             "USER_LASTNAME": booking.user.lastName,
             "USER_PHONENUMBER": booking.user.phoneNumber or "",
-            "VENUE_NAME": venue.common_name,
+            "VENUE_NAME": venue.publicName,
             "NEEDS_BANK_INFORMATION_REMINDER": venue.current_bank_account is None,
             "MUST_USE_TOKEN_FOR_PAYMENT": not (stock.price == 0 or booking.activationCode or is_booking_autovalidated),
             "WITHDRAWAL_PERIOD": (

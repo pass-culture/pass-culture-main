@@ -688,7 +688,7 @@ class GetOfferBookingsByStatusCSVTest:
         assert data_dict["Structure"] == venue.name
         assert data_dict["Nom de l’offre"] == offer.name
         offerer_address = booking.stock.offer.offererAddress
-        location = f"{offerer_address.label or venue.common_name} - {offerer_address.address.street} {offerer_address.address.postalCode} {offerer_address.address.city}"
+        location = f"{offerer_address.label or venue.publicName} - {offerer_address.address.street} {offerer_address.address.postalCode} {offerer_address.address.city}"
         assert data_dict["Localisation"] == location
         booking.venueDepartmentCode = booking.venue.offererAddress.address.departmentCode
         booking.offerDepartmentCode = booking.stock.offer.offererAddress.address.departmentCode

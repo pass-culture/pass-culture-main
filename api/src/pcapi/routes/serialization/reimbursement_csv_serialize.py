@@ -128,7 +128,7 @@ class ReimbursementDetails:
 
         # Venue info
         self.venue_name = payment_info.venue_name
-        self.venue_common_name = payment_info.venue_common_name
+        self.venue_public_name = payment_info.venue_public_name
         if not is_collective:
             self.address = _build_full_address(
                 getattr(payment_info, "address_street", None),
@@ -144,7 +144,7 @@ class ReimbursementDetails:
         self.venue_siret = payment_info.venue_siret
 
         if using_legacy_models:
-            self.bank_account_label = self.venue_common_name
+            self.bank_account_label = self.venue_public_name
         else:
             self.bank_account_label = payment_info.bank_account_label
         self.iban = payment_info.iban

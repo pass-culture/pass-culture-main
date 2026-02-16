@@ -170,7 +170,7 @@ def autocomplete_institutions() -> AutocompleteResponse:
 
 
 def _get_venue_choice_label(venue: offerers_models.Venue) -> str:
-    return f"{venue.id} - {venue.common_name} ({venue.identifier or 'Pas de SIRET'})"
+    return f"{venue.id} - {venue.publicName} ({venue.identifier or 'Pas de SIRET'})"
 
 
 def _get_venues_base_query() -> sa_orm.Query:
@@ -203,7 +203,7 @@ def prefill_venues_choices(autocomplete_field: fields.PCTomSelectField, only_wit
         venues = (
             _get_venues_base_query()
             .filter(offerers_models.Venue.id.in_(autocomplete_field.data))
-            .order_by(offerers_models.Venue.common_name)
+            .order_by(offerers_models.Venue.publicName)
         )
         if only_with_siret:
             venues = venues.filter(offerers_models.Venue.siret.is_not(None))

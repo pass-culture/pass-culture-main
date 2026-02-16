@@ -44,7 +44,7 @@ def send_finance_incident_emails(finance_incident: finance_models.FinanceInciden
                 template=template.value,
                 params={
                     "OFFER_NAME": offer.name,
-                    "VENUE_NAME": venue.common_name,
+                    "VENUE_NAME": venue.publicName,
                     "TOKEN_LIST": ", ".join(
                         [
                             booking_incident.booking.token
@@ -60,7 +60,7 @@ def send_finance_incident_emails(finance_incident: finance_models.FinanceInciden
                 template=template.value,
                 params={
                     "OFFER_NAME": offer.name,
-                    "VENUE_NAME": venue.common_name,
+                    "VENUE_NAME": venue.publicName,
                     "BOOKING_ID": ", ".join(
                         [
                             str(booking_incident.collectiveBookingId)
@@ -110,7 +110,7 @@ def send_commercial_gesture_email(finance_incident: finance_models.FinanceIncide
             template=TransactionalEmail.COMMERCIAL_GESTURE_REIMBURSEMENT.value,
             params={
                 "OFFER_NAME": offer.name,
-                "VENUE_NAME": venue.common_name,
+                "VENUE_NAME": venue.publicName,
                 "MONTANT_REMBOURSEMENT": amount,
                 "FORMATTED_MONTANT_REMBOURSEMENT": format_price(amount, venue),
                 "TOKEN_LIST": ", ".join(

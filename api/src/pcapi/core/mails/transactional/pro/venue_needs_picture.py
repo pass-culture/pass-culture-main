@@ -9,7 +9,7 @@ def get_permanent_venue_needs_picture_data(venue: offerer_models.Venue) -> model
     return models.TransactionalEmailData(
         template=TransactionalEmail.VENUE_NEEDS_PICTURE.value,
         params={
-            "VENUE_NAME": venue.common_name,
+            "VENUE_NAME": venue.publicName,
             "VENUE_FORM_URL": urls.build_pc_pro_venue_link(venue),
         },
     )
