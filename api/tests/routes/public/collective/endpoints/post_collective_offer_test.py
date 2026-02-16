@@ -302,7 +302,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
 
         assert offer.offererAddress != venue.offererAddress
         assert offer.offererAddress.type is None  # TODO: soon to be OFFER_LOCATION
-        assert offer.offererAddress.label == venue.common_name
+        assert offer.offererAddress.label == venue.publicName
         assert offer.offererAddress.address == venue.offererAddress.address
         assert offer.locationType == educational_models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None

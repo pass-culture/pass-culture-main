@@ -30,7 +30,7 @@ def get_eac_new_booking_to_pro_email_data(booking: CollectiveBooking) -> models.
         template=TransactionalEmail.EAC_NEW_BOOKING_TO_PRO.value,
         params={
             "OFFER_NAME": offer.name,
-            "VENUE_NAME": offer.venue.common_name,
+            "VENUE_NAME": offer.venue.publicName,
             "EVENT_DATE": get_date_formatted_for_email(get_event_datetime(stock)),
             "EVENT_HOUR": get_time_formatted_for_email(get_event_datetime(stock)),
             "QUANTITY": 1,  #  business rule: It must always be 1

@@ -19,7 +19,7 @@ def get_education_booking_cancellation_email_data(booking: CollectiveBooking) ->
         params={
             "OFFER_NAME": offer.name,
             "EDUCATIONAL_INSTITUTION_NAME": institution.name,
-            "VENUE_NAME": offer.venue.common_name,
+            "VENUE_NAME": offer.venue.publicName,
             "EVENT_DATE": get_date_formatted_for_email(get_event_datetime(stock)),
             "EVENT_HOUR": get_time_formatted_for_email(get_event_datetime(stock)),
             "REDACTOR_FIRSTNAME": redactor.firstName,

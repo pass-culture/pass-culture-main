@@ -20,7 +20,7 @@ def retrieve_data_for_offer_approval_email(
         params={
             "OFFER_NAME": offer.name,
             "PUBLICATION_DATE": publication_date,
-            "VENUE_NAME": offer.venue.common_name,
+            "VENUE_NAME": offer.venue.publicName,
             "PC_PRO_OFFER_LINK": build_pc_pro_offer_link(offer),
             "OFFER_ADDRESS": offer.fullAddress if isinstance(offer, Offer) else None,
         },
@@ -34,7 +34,7 @@ def retrieve_data_for_offer_rejection_email(
         template=TransactionalEmail.OFFER_REJECTION_TO_PRO.value,
         params={
             "OFFER_NAME": offer.name,
-            "VENUE_NAME": offer.venue.common_name,
+            "VENUE_NAME": offer.venue.publicName,
             "PC_PRO_OFFER_LINK": build_pc_pro_offer_link(offer),
             "IS_COLLECTIVE_OFFER": not isinstance(offer, Offer),
             "OFFER_ADDRESS": offer.fullAddress if isinstance(offer, Offer) else None,
@@ -47,7 +47,7 @@ def retrieve_data_for_pending_offer_rejection_email(
 ) -> models.TransactionalEmailData:
     params = {
         "OFFER_NAME": offer.name,
-        "VENUE_NAME": offer.venue.common_name,
+        "VENUE_NAME": offer.venue.publicName,
         "PC_PRO_OFFER_LINK": build_pc_pro_offer_link(offer),
         "IS_COLLECTIVE_OFFER": not isinstance(offer, Offer),
     }

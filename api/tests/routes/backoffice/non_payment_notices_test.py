@@ -534,7 +534,7 @@ class GetEditFormTest(GetEndpointHelper):
             ): f"{venue.managingOfferer.id} - {venue.managingOfferer.name} ({venue.managingOfferer.siren})"
         }
         assert html_parser.extract_tom_select_options(response.data, "venue", True) == {
-            str(venue.id): f"{venue.id} - {venue.common_name} ({venue.siret})"
+            str(venue.id): f"{venue.id} - {venue.publicName} ({venue.siret})"
         }
 
 

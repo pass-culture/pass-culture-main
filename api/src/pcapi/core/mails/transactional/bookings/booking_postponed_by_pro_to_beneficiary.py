@@ -41,6 +41,6 @@ def get_booking_postponed_by_pro_to_beneficiary_email_data(
             "FIRSTNAME": booking.firstName,
             "IS_EXTERNAL": booking.isExternal,
             "OFFER_NAME": offer.name,
-            "VENUE_NAME": offer.venue.common_name,
+            "VENUE_NAME": offer.venue.publicName,
         },
     )

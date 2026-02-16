@@ -88,7 +88,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
             "postalCode": offerer_address.address.postalCode,
             "street": offerer_address.address.street,
             "city": offerer_address.address.city,
-            "label": venue.common_name,
+            "label": venue.publicName,
             "isManualEdition": offerer_address.address.isManualEdition,
             "departmentCode": offerer_address.address.departmentCode,
             "isVenueLocation": True,

@@ -132,7 +132,7 @@ class OfferVenueResponse(HttpBodyModel):
             is_permanent=venue.isPermanent,
             is_open_to_public=venue.isOpenToPublic,
             offerer=OfferOffererResponse.model_validate(venue.managingOfferer),
-            name=venue.common_name,
+            name=venue.publicName,
             postal_code=venue.offererAddress.address.postalCode,
             public_name=venue.publicName,
             timezone=venue.offererAddress.address.timezone,

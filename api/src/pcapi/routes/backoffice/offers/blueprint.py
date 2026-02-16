@@ -1963,7 +1963,7 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
 
     flash(
         Markup("L'offre a été déplacée vers le partenaire culturel <b>{venue_name}</b>").format(
-            venue_name=destination_venue.common_name
+            venue_name=destination_venue.publicName
         ),
         "success",
     )

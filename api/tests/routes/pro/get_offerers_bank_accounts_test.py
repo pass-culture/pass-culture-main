@@ -95,12 +95,12 @@ class OfferersBankAccountTest:
 
         assert len(venues) == 2
         assert venues[0]["id"] == expected_venue.id
-        assert venues[0]["commonName"] == expected_venue.common_name
+        assert venues[0]["commonName"] == expected_venue.publicName
         assert venues[0]["siret"] == expected_venue.siret
         assert venues[0]["hasPricingPoint"] is True
         assert not venues[0]["bankAccountId"]
         assert venues[1]["id"] == expected_venue_without_siret.id
-        assert venues[1]["commonName"] == expected_venue_without_siret.common_name
+        assert venues[1]["commonName"] == expected_venue_without_siret.publicName
         assert venues[1]["hasPricingPoint"] is False
         assert not venues[1]["siret"]
         assert not venues[1]["bankAccountId"]
@@ -141,7 +141,7 @@ class OfferersBankAccountTest:
         assert len(bank_account["linkedVenues"]) == 1
         linked_venue = bank_account["linkedVenues"].pop()
         assert linked_venue["id"] == expected_venue.id
-        assert linked_venue["commonName"] == expected_venue.common_name
+        assert linked_venue["commonName"] == expected_venue.publicName
 
     @pytest.mark.usefixtures("db_session")
     def test_user_can_only_see_active_bank_accounts(self, client):

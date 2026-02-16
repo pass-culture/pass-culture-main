@@ -12,9 +12,19 @@ class OfferImageResponse(ConfiguredBaseModel):
     credit: str | None
 
 
+class OfferVenueGetterDict(GetterDict):
+    def get(self, key: str, default: Any = None) -> Any:
+        if key == "common_name":
+            return self._obj.publicName
+        return super().get(key, default)
+
+
 class OfferVenueResponse(ConfiguredBaseModel):
     id: int
     common_name: str | None
+
+    class Config:
+        getter_dict = OfferVenueGetterDict
 
 
 class OfferStockResponse(ConfiguredBaseModel):

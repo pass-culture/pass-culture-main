@@ -91,7 +91,7 @@ def _get_venues_data_for_rules(rules: list[offers_models.OfferValidationRule]) -
         .filter(offerers_models.Venue.id.in_(all_venue_ids))
         .all()
     )
-    venue_dict = {venue.id: f"{venue.common_name} ({venue.siret or 'Pas de SIRET'})" for venue in venues_from_rules}
+    venue_dict = {venue.id: f"{venue.publicName} ({venue.siret or 'Pas de SIRET'})" for venue in venues_from_rules}
     return venue_dict
 
 
@@ -306,7 +306,7 @@ def _get_venues_data_for_rule_history(rules_history: list[history_models.ActionH
         .filter(offerers_models.Venue.id.in_(all_venue_ids))
         .all()
     )
-    venue_dict = {venue.id: f"{venue.common_name} ({venue.siret or 'Pas de SIRET'})" for venue in venues_from_history}
+    venue_dict = {venue.id: f"{venue.publicName} ({venue.siret or 'Pas de SIRET'})" for venue in venues_from_history}
     return venue_dict
 
 

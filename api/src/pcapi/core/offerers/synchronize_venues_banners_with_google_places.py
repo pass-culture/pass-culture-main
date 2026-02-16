@@ -179,7 +179,7 @@ def synchronize_venues_banners_with_google_places(
                 street = venue.offererAddress.address.street
                 city = venue.offererAddress.address.city
                 postal_code = venue.offererAddress.address.postalCode
-                place_id = get_place_id(venue.common_name, street, city, postal_code)
+                place_id = get_place_id(venue.publicName, street, city, postal_code)
                 venue.googlePlacesInfo = offerers_models.GooglePlacesInfo(placeId=place_id)
 
             if venue.googlePlacesInfo.placeId is None:
@@ -192,7 +192,7 @@ def synchronize_venues_banners_with_google_places(
                 # https://developers.google.com/maps/documentation/places/web-service/place-id#id-errors
                 if exc.status == "NOT_FOUND":
                     place_id = get_place_id(
-                        venue.common_name,
+                        venue.publicName,
                         venue.offererAddress.address.street,
                         venue.offererAddress.address.city,
                         venue.offererAddress.address.postalCode,

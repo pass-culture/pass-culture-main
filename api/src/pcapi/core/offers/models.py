@@ -1384,7 +1384,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
             return None
         label = self.offererAddress.label
         if not label and self.offererAddress.addressId == self.venue.offererAddress.addressId:
-            label = self.venue.common_name
+            label = self.venue.publicName
         if not label:
             return self.offererAddress.address.fullAddress
         return f"{label} - {self.offererAddress.address.fullAddress}"

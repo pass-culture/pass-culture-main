@@ -943,7 +943,7 @@ def _extract_gdpr_booking_data(user: models.User) -> list[schemas.GdprBookingSer
                 amount=booking_data.amount,
                 status=booking_status.get(booking_data.status.name, booking_data.status.name),
                 name=booking_data.stock.offer.name,
-                venue=booking_data.venue.common_name,
+                venue=booking_data.venue.publicName,
                 offerer=offerer.name,
             )
         )

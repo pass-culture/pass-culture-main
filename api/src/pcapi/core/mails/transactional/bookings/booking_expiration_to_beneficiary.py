@@ -28,7 +28,7 @@ def _extract_bookings_information_from_bookings_list(bookings: list[Booking]) ->
         bookings_info.append(
             {
                 "offer_name": offer.name,
-                "venue_name": offer.venue.common_name,
+                "venue_name": offer.venue.publicName,
             }
         )
     return bookings_info

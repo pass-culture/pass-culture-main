@@ -860,7 +860,7 @@ def create_collective_booking_commercial_gesture(collective_booking_id: int) -> 
 def _initialize_additional_data(bookings: list[bookings_models.Booking]) -> dict:
     additional_data: dict[str, typing.Any] = {}
 
-    additional_data["Partenaire culturel"] = bookings[0].venue.common_name
+    additional_data["Partenaire culturel"] = bookings[0].venue.publicName
 
     if len(bookings) == 1:
         booking = bookings[0]

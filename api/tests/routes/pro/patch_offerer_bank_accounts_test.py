@@ -57,7 +57,7 @@ class OffererPatchBankAccountsTest:
         assert len(bank_account_response["linkedVenues"]) == 1
         linked_venue = bank_account_response["linkedVenues"].pop()
         assert linked_venue["id"] == venue.id
-        assert linked_venue["commonName"] == venue.common_name
+        assert linked_venue["commonName"] == venue.publicName
 
         db.session.refresh(bank_account)
 
@@ -299,15 +299,15 @@ class OffererPatchBankAccountsTest:
 
         expected_data = [
             {
-                "VENUE_NAME": first_venue.common_name,
+                "VENUE_NAME": first_venue.publicName,
                 "BANK_ACCOUNT_LABEL": bank_account.label,
             },
             {
-                "VENUE_NAME": second_venue.common_name,
+                "VENUE_NAME": second_venue.publicName,
                 "BANK_ACCOUNT_LABEL": bank_account.label,
             },
             {
-                "VENUE_NAME": third_venue.common_name,
+                "VENUE_NAME": third_venue.publicName,
                 "BANK_ACCOUNT_LABEL": bank_account.label,
             },
         ]
@@ -395,7 +395,7 @@ class OffererPatchBankAccountsTest:
             sorted(bank_account_response["linkedVenues"], key=lambda v: v["id"]), [third_venue, fourth_venue]
         ):
             assert linked_venue["id"] == venue.id
-            assert linked_venue["commonName"] == venue.common_name
+            assert linked_venue["commonName"] == venue.publicName
 
         db.session.refresh(bank_account)
 
@@ -506,7 +506,7 @@ class OffererPatchBankAccountsTest:
             [first_venue, second_venue, third_venue, fourth_venue],
         ):
             assert linked_venue["id"] == venue.id
-            assert linked_venue["commonName"] == venue.common_name
+            assert linked_venue["commonName"] == venue.publicName
 
         assert len(bank_account.venueLinks) == 4
 
@@ -585,7 +585,7 @@ class OffererPatchBankAccountsTest:
         assert len(bank_account_response["linkedVenues"]) == 1
         linked_venue = bank_account_response["linkedVenues"].pop()
         assert linked_venue["id"] == venue.id
-        assert linked_venue["commonName"] == venue.common_name
+        assert linked_venue["commonName"] == venue.publicName
 
         # Should not alter any other offerer data
         db.session.refresh(foreign_link)
@@ -636,7 +636,7 @@ class OffererPatchBankAccountsTest:
         assert len(response.json["bankAccounts"]) == 1
         bank_account_response = response.json["bankAccounts"].pop()
         assert bank_account_response["linkedVenues"] == [
-            {"commonName": venue_with_pp.common_name, "id": venue_with_pp_id}
+            {"commonName": venue_with_pp.publicName, "id": venue_with_pp_id}
         ]
 
     def test_user_cannot_link_venue_to_bank_account_if_not_right_status(self, db_session, client):

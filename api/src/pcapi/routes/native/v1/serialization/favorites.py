@@ -51,7 +51,7 @@ class FavoriteOfferResponse(BaseModel):
 
     @classmethod
     def from_orm(cls, offer: Offer) -> "FavoriteOfferResponse":
-        default_venue_name = offer.venue.managingOfferer.name if offer.isDigital else offer.venue.common_name
+        default_venue_name = offer.venue.managingOfferer.name if offer.isDigital else offer.venue.publicName
 
         if offer.offererAddress:
             address = offer.offererAddress.address

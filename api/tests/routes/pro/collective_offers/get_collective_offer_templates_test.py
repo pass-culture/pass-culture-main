@@ -89,7 +89,7 @@ class Returns200Test:
 
         [offer_json] = response.json
         assert offer_json["location"] == get_serialized_address(
-            offerer_address=offer.offererAddress, label=venue.common_name, is_venue_location=True
+            offerer_address=offer.offererAddress, label=venue.publicName, is_venue_location=True
         )
 
     def test_one_collective_offer_template_location_other_address(self, client):

@@ -79,7 +79,7 @@ class CreateVenueWithoutSIRETForm(FlaskForm):
     def __init__(self, offerer: offerers_models.Offerer, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
         self.attachement_venue.choices = [
-            (offerer_venue.id, f"{offerer_venue.siret} ({offerer_venue.common_name})")
+            (offerer_venue.id, f"{offerer_venue.siret} ({offerer_venue.publicName})")
             for offerer_venue in offerer.managedVenues
             if offerer_venue.siret
         ]

@@ -192,7 +192,7 @@ class GetTest:
             assert favorites[0]["offer"]["subcategoryId"] == "SEANCE_CINE"
             assert favorites[0]["offer"]["venueName"] == "Le Petit Rintintin"
 
-        def test_offer_venue_name_is_common_name_for_non_digital_offer(self, client):
+        def test_offer_venue_name_is_public_name_for_non_digital_offer(self, client):
             user = users_factories.UserFactory()
             offerer = offerers_factories.OffererFactory(name="Pathé Gaumont")
             venue = offerers_factories.VenueFactory(managingOfferer=offerer, publicName="Ciné Pathé")

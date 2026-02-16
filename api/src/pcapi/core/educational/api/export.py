@@ -22,7 +22,7 @@ class CollectiveOfferExportHeader(enum.Enum):
     offer_status = "Statut de l'offre"
     offer_location_type = "Type de localisation de l'offre"
     offer_location = "Localisation de l'offre"
-    venue_common_name = "Structure"
+    venue_public_name = "Structure"
     institution_name = "Etablissement"
     institution_postal_code = "Code postal de l'établissement"
     institution_uai = "UAI de l'établissement"
@@ -77,7 +77,7 @@ class CollectiveOfferExportData:
     offer_status: str
     offer_location_type: str
     offer_location: str
-    venue_common_name: str
+    venue_public_name: str
     institution_name: str | None = None
     institution_postal_code: str | None = None
     institution_uai: str | None = None
@@ -107,7 +107,7 @@ def _get_collective_offer_export_data(
         offer_status=format_collective_offer_displayed_status(collective_offer.displayedStatus).lower(),
         offer_location_type=FORMAT_LOCATION_TYPE[collective_offer.locationType],
         offer_location=_format_location(collective_offer),
-        venue_common_name=venue.common_name,
+        venue_public_name=venue.publicName,
     )
 
     if collective_offer.offererAddress is not None:

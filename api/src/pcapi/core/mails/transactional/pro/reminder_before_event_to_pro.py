@@ -13,7 +13,7 @@ def get_reminder_7_days_before_event_email_data(stock: Stock) -> models.Transact
         template=TransactionalEmail.REMINDER_7_DAYS_BEFORE_EVENT_TO_PRO.value,
         params={
             "OFFER_NAME": stock.offer.name,
-            "VENUE_NAME": stock.offer.venue.common_name,
+            "VENUE_NAME": stock.offer.venue.publicName,
             "EVENT_DATE": get_date_formatted_for_email(event_datetime),
             "EVENT_HOUR": get_time_formatted_for_email(event_datetime),
             "BOOKING_COUNT": stock.dnBookedQuantity,

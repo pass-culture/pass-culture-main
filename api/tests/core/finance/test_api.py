@@ -4197,43 +4197,6 @@ class PrepareInvoiceContextTest:
         assert start_period == datetime.date(2020, 3, 1)
         assert end_period == datetime.date(2020, 3, 15)
 
-    def test_common_name_is_not_empty_public_name(self):
-        offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
-        bank_account = factories.BankAccountFactory(offerer=offerer)
-        venue = offerers_factories.VenueFactory(
-            publicName="",
-            name="common name should not be empty",
-            siret="85331845900023",
-            bookingEmail="pro@example.com",
-            managingOfferer=offerer,
-            pricing_point="self",
-            bank_account=bank_account,
-        )
-
-        thing_offer = offers_factories.ThingOfferFactory(venue=venue)
-        stock = offers_factories.StockFactory(offer=thing_offer, price=30)
-
-        user = users_factories.RichBeneficiaryFactory()
-        finance_event = factories.UsedBookingFinanceEventFactory(
-            booking__stock=stock,
-            booking__user=user,
-        )
-        api.price_event(finance_event)
-        batch = api.generate_cashflows(cutoff=date_utils.get_naive_utc_now())
-        api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
-        cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
-        invoice = api._generate_invoice(
-            bank_account_id=bank_account.id,
-            cashflow_ids=cashflow_ids,
-        )
-        batch = db.session.get(models.CashflowBatch, batch.id)
-
-        context = api._prepare_invoice_context(invoice, batch)
-
-        reimbursements = list(context["reimbursements_by_venue"])
-        assert len(reimbursements) == 1
-        assert reimbursements[0]["venue_name"] == "common name should not be empty"
-
 
 @pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=False)
 class GenerateLegacyDebitNoteHtmlTest:

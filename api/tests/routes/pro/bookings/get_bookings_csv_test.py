@@ -38,11 +38,11 @@ class Returns200Test:
         rows = list(reader)
         assert len(rows) == 1
         for row in rows:
-            assert row["Structure"] == venue1.common_name
+            assert row["Structure"] == venue1.publicName
             assert row["Nom de l’offre"] == booking1.stock.offer.name
             assert (
                 row["Localisation"]
-                == f"{venue1.common_name} - {venue1.offererAddress.address.street} {venue1.offererAddress.address.postalCode} {venue1.offererAddress.address.city}"
+                == f"{venue1.publicName} - {venue1.offererAddress.address.street} {venue1.offererAddress.address.postalCode} {venue1.offererAddress.address.city}"
             )
 
 
