@@ -686,6 +686,7 @@ class IdentificationSessionTest:
         assert check
         assert response.json["identificationUrl"] == expected_url
 
+    @pytest.mark.settings(IS_CELERY_JOB_SYNCHRONOUS=0)
     @patch("pcapi.core.subscription.ubble.tasks.store_id_pictures_task.delay")
     def test_conflict_error_tries_to_resync(self, store_id_pictures_task_mock, client):
         user = users_factories.ProfileCompletedUserFactory(age=18)

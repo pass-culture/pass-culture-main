@@ -2385,6 +2385,7 @@ class BonusCreditRequestTest(PostEndpointHelper):
         "birth_city": ["84137"],
     }
 
+    @pytest.mark.settings(IS_CELERY_JOB_SYNCHRONOUS=0)
     def test_request_bonus_credit(self, authenticated_client):
         user = users_factories.BeneficiaryFactory()
         user_id = user.id

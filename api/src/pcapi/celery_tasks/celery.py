@@ -2,6 +2,8 @@ from celery import Celery
 from celery import Task
 from flask import Flask
 
+from pcapi import settings
+
 
 def celery_init_app(app: Flask) -> Celery:
     # Should be ok to only override the __call__ method
@@ -10,6 +12,11 @@ def celery_init_app(app: Flask) -> Celery:
         def __call__(self, *args: object, **kwargs: object) -> object:
             with app.app_context():
                 return self.run(*args, **kwargs)
+
+        def delay(self, *args: object, **kwargs: object) -> object:
+            if settings.IS_CELERY_JOB_SYNCHRONOUS:
+                return self.run(*args, **kwargs)
+            return super().delay(*args, **kwargs)
 
     celery_app = Celery(app.name, task_cls=FlaskTask)
     celery_app.config_from_object(app.config["CELERY"])
