@@ -94,8 +94,8 @@ from . import exceptions
 from . import models
 from . import repository as offerers_repository
 from . import schemas as offerers_schemas
+from . import tasks
 from . import validation
-from .tasks import CLOSED_OFFERER_TAG_NAME
 
 
 logger = logging.getLogger(__name__)
@@ -266,12 +266,22 @@ def update_venue(
         virustotal.request_url_scan(contact_data.website, skip_if_recent_scan=True)
 
     if new_open_to_public or (has_address_changed and venue.isOpenToPublic):
-        on_commit(
-            functools.partial(
-                match_acceslibre_job.delay,
-                venue.id,
+        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MATCH_ACCESLIBRE.is_active():
+            payload = tasks.MatchAcceslibrePayload(venue_id=venue.id)
+            on_commit(
+                functools.partial(
+                    tasks.match_acceslibre_task.delay,
+                    payload.model_dump(),
+                )
             )
-        )
+
+        else:
+            on_commit(
+                functools.partial(
+                    match_acceslibre_job.delay,
+                    venue.id,
+                )
+            )
 
     if not_open_to_public_anymore:
         delete_venue_accessibility_provider(venue)
@@ -1574,11 +1584,11 @@ def handle_closed_offerer(offerer: offerers_models.Offerer, closure_date: date |
     with transaction():
         logger.info("SIREN is no longer active", extra={"offerer_id": offerer.id, "siren": offerer.siren})
         # Offerer may have been tagged in the past, but not closed
-        if CLOSED_OFFERER_TAG_NAME not in (tag.name for tag in offerer.tags):
+        if offerers_constants.CLOSED_OFFERER_TAG_NAME not in (tag.name for tag in offerer.tags):
             # .one() raises an exception if the tag does not exist -- ensures that a potential issue is tracked
             tag = (
                 db.session.query(offerers_models.OffererTag)
-                .filter(offerers_models.OffererTag.name == CLOSED_OFFERER_TAG_NAME)
+                .filter(offerers_models.OffererTag.name == offerers_constants.CLOSED_OFFERER_TAG_NAME)
                 .one()
             )
             action_kwargs["modified_info"] = {"tags": {"new_info": tag.label}}

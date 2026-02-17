@@ -3,8 +3,10 @@ import logging
 import time
 
 import sqlalchemy.orm as sa_orm
+from pydantic import BaseModel as BaseModelV2
 
 from pcapi import settings
+from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.connectors import googledrive
 from pcapi.connectors.entreprise import api as entreprise_api
 from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
@@ -23,8 +25,6 @@ from pcapi.utils.urls import build_backoffice_offerer_link
 
 
 logger = logging.getLogger(__name__)
-
-CLOSED_OFFERER_TAG_NAME = "siren-caduc"
 
 
 class CheckOffererSirenRequest(BaseModel):
@@ -61,7 +61,7 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
 
     if siren_info.active:
         for tag in offerer.tags:
-            if tag.name == CLOSED_OFFERER_TAG_NAME:
+            if tag.name == offerers_constants.CLOSED_OFFERER_TAG_NAME:
                 db.session.query(offerers_models.OffererTagMapping).filter_by(
                     offererId=offerer.id, tagId=tag.id
                 ).delete(synchronize_session=False)
@@ -170,3 +170,14 @@ def _get_total_offers_count(offerer_id: int) -> int | str:
         return f"{offerers_repository.MAX_OFFERS_PER_OFFERER_FOR_COUNT}+"
 
     return offers_count
+
+
+class MatchAcceslibrePayload(BaseModelV2):
+    venue_id: int
+
+
+@celery_async_task(name="tasks.offerers.default.match_acceslibre", model=MatchAcceslibrePayload)
+def match_acceslibre_task(payload: MatchAcceslibrePayload) -> None:
+    venue = db.session.query(offerers_models.Venue).filter_by(id=payload.venue_id).one_or_none()
+    if venue:
+        offerers_api.match_acceslibre(venue)
