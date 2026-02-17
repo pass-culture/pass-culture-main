@@ -471,7 +471,7 @@ describe('OfferActionsCells', () => {
     )
 
     await userEvent.click(
-      screen.getByRole('button', {
+      screen.getByRole('menuitem', {
         name: 'Mettre en pause',
       })
     )
@@ -494,7 +494,7 @@ describe('OfferActionsCells', () => {
     )
 
     await userEvent.click(
-      screen.getByRole('button', {
+      screen.getByRole('menuitem', {
         name: 'Publier',
       })
     )
@@ -520,7 +520,7 @@ describe('OfferActionsCells', () => {
       screen.getByRole('button', { name: 'Voir les actions' })
     )
     await userEvent.click(
-      screen.getByRole('button', { name: 'Mettre en pause' })
+      screen.getByRole('menuitem', { name: 'Mettre en pause' })
     )
 
     expect(snackBarError).toHaveBeenCalledWith(
@@ -543,7 +543,7 @@ describe('OfferActionsCells', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Voir les actions' })
     )
-    await userEvent.click(screen.getByRole('button', { name: 'Publier' }))
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Publier' }))
 
     expect(snackBarError).toHaveBeenCalledWith(
       'Une erreur est survenue lors de l’activation de votre offre.'

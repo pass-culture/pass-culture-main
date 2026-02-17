@@ -2,7 +2,7 @@
 
 import classnames from 'classnames'
 import { useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router'
+import { Link, useLocation } from 'react-router'
 
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -140,8 +140,6 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
 
   const [isOpen, setIsOpen] = useState(false)
 
-  const navigate = useNavigate()
-
   return (
     <div
       className={classnames({
@@ -206,25 +204,20 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 />
               }
             >
-              <DropdownItem
-                icon={strokePhoneIcon}
-                title="Pour le grand public"
-                onSelect={() => {
-                  navigate(
-                    getIndividualOfferUrl({
-                      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-                      mode: OFFER_WIZARD_MODE.CREATION,
-                      isOnboarding: false,
-                    })
-                  )
-                  setIsOpen(false)
-                }}
-              />
-              <DropdownItem
-                icon={strokeBagIcon}
-                title="Pour les groupes scolaires"
-                onSelect={() => navigate('/offre/creation')}
-              />
+              <DropdownItem icon={strokePhoneIcon}>
+                <Link
+                  to={getIndividualOfferUrl({
+                    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+                    mode: OFFER_WIZARD_MODE.CREATION,
+                    isOnboarding: false,
+                  })}
+                >
+                  Pour le grand public
+                </Link>
+              </DropdownItem>
+              <DropdownItem icon={strokeBagIcon}>
+                <Link to="/offre/creation">Pour les groupes scolaires</Link>
+              </DropdownItem>
             </Dropdown>
           </div>
         </div>

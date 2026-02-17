@@ -8,10 +8,11 @@ import { pluralizeFr } from '@/commons/utils/pluralize'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
 import { Tag } from '@/design-system/Tag/Tag'
 import fullErrorIcon from '@/icons/full-error.svg'
-import styles from '@/pages/IndividualOffers/IndividualOffersContainer/components/IndividualOfferColumns/components/Cells.module.scss'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import { Thumb } from '@/ui-kit/Thumb/Thumb'
 import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
+
+import styles from './OfferNameCell.module.scss'
 
 export interface OfferNameCellProps {
   offer: ListOffersOfferResponseModel

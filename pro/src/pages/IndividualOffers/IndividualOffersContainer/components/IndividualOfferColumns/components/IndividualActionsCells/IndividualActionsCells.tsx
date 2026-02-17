@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react'
-import { useNavigate } from 'react-router'
+import { Link } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -30,9 +30,9 @@ import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
 import { DropdownItem } from '@/ui-kit/Dropdown/DropdownItem'
 
-import styles from './Cells.module.scss'
-import { HeadlineOfferCell } from './HeadlineOfferCell/HeadlineOfferCell'
-import { HeadlineOfferImageDialogs } from './HeadlineOfferImageDialogs'
+import { HeadlineOfferCell } from '../HeadlineOfferCell/HeadlineOfferCell'
+import { HeadlineOfferImageDialogs } from '../HeadlineOfferImageDialogs'
+import styles from './IndividualActionsCells.module.scss'
 
 interface IndividualActionsCellsProps {
   offer: ListOffersOfferResponseModel
@@ -129,8 +129,6 @@ export const IndividualActionsCells = ({
     !isDigital &&
     isNotAProductWithoutImage
 
-  const navigate = useNavigate()
-
   return (
     <>
       <div className={styles['actions-column']}>
@@ -139,11 +137,9 @@ export const IndividualActionsCells = ({
           triggerTooltip
           dropdownTriggerRef={dropdownTriggerRef}
         >
-          <DropdownItem
-            onSelect={() => navigate(editionOfferLink)}
-            title={'Voir l’offre'}
-            icon={penIcon}
-          />
+          <DropdownItem icon={penIcon}>
+            <Link to={editionOfferLink}>Voir l’offre</Link>
+          </DropdownItem>
           {offer.status === OfferStatus.DRAFT ? (
             <DropdownItem
               onSelect={() =>
@@ -155,11 +151,11 @@ export const IndividualActionsCells = ({
               icon={fullTrashIcon}
             />
           ) : (
-            <DropdownItem
-              onSelect={() => navigate(editionStockLink)}
-              title={offer.isEvent ? `Dates et capacités` : `Stocks`}
-              icon={fullStockIcon}
-            />
+            <DropdownItem icon={fullStockIcon}>
+              <Link to={editionStockLink}>
+                {offer.isEvent ? `Dates et capacités` : `Stocks`}
+              </Link>
+            </DropdownItem>
           )}
           {isHeadlineActionDisplayed && (
             <HeadlineOfferCell
