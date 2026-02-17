@@ -24,6 +24,7 @@ import pcapi.core.artist.api as artist_api
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
+import pcapi.core.bookings.tasks as bookings_tasks
 import pcapi.core.chronicles.models as chronicles_models
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.finance.conf as finance_conf
@@ -1157,12 +1158,23 @@ def _delete_stock(stock: models.Stock, author_id: int | None = None, user_connec
 
         transactional_mails.send_booking_cancellation_confirmation_by_pro_email(cancelled_bookings)
 
-        on_commit(
-            partial(
-                push_notification_job.send_cancel_booking_notification.delay,
-                [booking.id for booking in cancelled_bookings],
+        if feature.FeatureToggle.WIP_ASYNCHRONOUS_CELERY_SEND_TRANSACTIONAL_NOTIFICATION.is_active():
+            payload = bookings_tasks.SendCancelBookingNotificationPayload(
+                bookings_ids=[booking.id for booking in cancelled_bookings]
             )
-        )
+            on_commit(
+                partial(
+                    bookings_tasks.send_cancel_booking_notification.delay,
+                    payload.model_dump(),
+                )
+            )
+        else:
+            on_commit(
+                partial(
+                    push_notification_job.send_cancel_booking_notification.delay,
+                    [booking.id for booking in cancelled_bookings],
+                )
+            )
 
     # do not keep stocks without any booking: they have never been used,
     # there is no need to keep useless rows inside the database.

@@ -10,10 +10,12 @@ from pcapi.core.categories.app_search_tree import SEARCH_GROUPS
 from pcapi.core.categories.app_search_tree import SEARCH_NODES
 from pcapi.core.categories.models import GenreType
 from pcapi.core.offers import repository
+from pcapi.core.offers import tasks
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Product
 from pcapi.models import db
 from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.utils import first_or_404
 from pcapi.models.utils import get_or_404
@@ -140,7 +142,11 @@ def send_offer_link_by_push(offer_id: int) -> None:
     offer = get_or_404(Offer, offer_id)
     if offer.validation != OfferValidationStatus.APPROVED:
         raise ResourceNotFoundError()
-    push_notification_job.send_offer_link_by_push_job.delay(current_user.id, offer_id)
+    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_SEND_TRANSACTIONAL_NOTIFICATION.is_active():
+        payload = tasks.SendOfferLinkByPushPayload(user_id=current_user.id, offer_id=offer_id)
+        tasks.send_offer_link_by_push_task.delay(payload.model_dump())
+    else:
+        push_notification_job.send_offer_link_by_push_job.delay(current_user.id, offer_id)
 
 
 @blueprint.native_route("/subcategories/v2", methods=["GET"])

@@ -63,6 +63,7 @@ from . import constants
 from . import exceptions
 from . import models
 from . import repository
+from . import tasks
 from . import utils
 from . import validation
 
@@ -756,7 +757,11 @@ def cancel_booking_by_beneficiary(user: users_models.User, booking: models.Booki
 def cancel_booking_by_offerer(booking: models.Booking) -> None:
     validation.check_booking_can_be_cancelled(booking)
     _cancel_booking(booking, models.BookingCancellationReasons.OFFERER, raise_if_error=True)
-    push_notification_job.send_cancel_booking_notification.delay([booking.id])
+    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_SEND_TRANSACTIONAL_NOTIFICATION.is_active():
+        payload = tasks.SendCancelBookingNotificationPayload(bookings_ids=[booking.id])
+        tasks.send_cancel_booking_notification.delay(payload.model_dump())
+    else:
+        push_notification_job.send_cancel_booking_notification.delay([booking.id])
     transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
 
 

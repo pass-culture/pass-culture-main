@@ -1,0 +1,52 @@
+import logging
+
+from pydantic import BaseModel
+
+import pcapi.core.bookings.api as bookings_api
+import pcapi.core.offers.models as offers_models
+from pcapi.celery_tasks.tasks import celery_async_task
+from pcapi.models import db
+from pcapi.notifications.push import send_transactional_notification
+from pcapi.notifications.push.transactional_notifications import get_bookings_cancellation_notification_data
+from pcapi.notifications.push.transactional_notifications import get_today_stock_booking_notification_data
+
+
+logger = logging.getLogger(__name__)
+
+
+class SendCancelBookingNotificationPayload(BaseModel):
+    bookings_ids: list[int]
+
+
+@celery_async_task(
+    name="tasks.bookings.priority.send_cancel_booking_notification", model=SendCancelBookingNotificationPayload
+)
+def send_cancel_booking_notification(payload: SendCancelBookingNotificationPayload) -> None:
+    notification_data = get_bookings_cancellation_notification_data(payload.bookings_ids)
+    if notification_data:
+        send_transactional_notification(notification_data)
+
+
+class SendTodayStockNotificationPayload(BaseModel):
+    stock_id: int
+
+
+@celery_async_task(
+    name="tasks.bookings.priority.send_today_stock_notification", model=SendTodayStockNotificationPayload
+)
+def send_today_stock_notification(payload: SendTodayStockNotificationPayload) -> None:
+    """
+    Send a notification to all bookings linked to a stock.
+    """
+    offer = (
+        db.session.query(offers_models.Offer)
+        .join(offers_models.Offer.stocks)
+        .filter(offers_models.Stock.id == payload.stock_id)
+        .one()
+    )
+    bookings = bookings_api.get_individual_bookings_from_stock(payload.stock_id)
+
+    for booking in bookings:
+        notification_data = get_today_stock_booking_notification_data(booking, offer)
+        if notification_data:
+            send_transactional_notification(notification_data)
