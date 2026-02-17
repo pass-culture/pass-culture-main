@@ -20,6 +20,7 @@ from pcapi.core.providers import models
 from pcapi.core.providers.clients import cinema_client
 from pcapi.core.search import models as search_models
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils.date import get_naive_utc_now
 from pcapi.utils.transaction_manager import atomic
 
@@ -84,6 +85,9 @@ class CinemaETLProcessTemplate[APIClient: cinema_client.CinemaAPIClient | EMSSch
         :raise: `InactiveProvider`, `InactiveVenueProvider`
         """
         # Check provider and venue_provider are active
+        if not self.feature_flag.is_active():
+            self._log(logging.WARNING, "Init - Feature flag %s inactive" % self.feature_flag)
+            raise ETLStopProcessException()
         if not self.venue_provider.provider.isActive:
             self._log(logging.WARNING, "Init - Provider inactive")
             raise exceptions.InactiveProvider()
@@ -133,6 +137,10 @@ class CinemaETLProcessTemplate[APIClient: cinema_client.CinemaAPIClient | EMSSch
         self._post_load_provider_specific_hook(extract_result=result)
 
         self._log(logging.INFO, "ETL process ended successfully")
+
+    @property
+    def feature_flag(self) -> FeatureToggle:
+        raise NotImplementedError()
 
     def _extract(self) -> ExtractResult:
         """Step 1: Fetch data from provider API (to be implemented in inheriting class)"""
