@@ -11,17 +11,19 @@ export enum InfoPanelSize {
 type BaseProps = {
   title: string
   children: string | JSX.Element
+  surface: InfoPanelSurface.FLAT | InfoPanelSurface.ELEVATED
   size?: InfoPanelSize
 }
 
 type FlatProps = {
-  surface: InfoPanelSurface.FLAT
   icon: string
   iconAlt: string
+  stepNumber?: never
 }
 
 type ElevatedProps = {
-  surface: InfoPanelSurface.ELEVATED
+  icon?: never
+  iconAlt?: never
   stepNumber: number
 }
 
