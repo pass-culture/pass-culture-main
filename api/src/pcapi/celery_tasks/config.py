@@ -25,6 +25,7 @@ CELERY_BASE_SETTINGS: typing.Final = dict(
         "tasks.mails.priority.*": {"queue": CELERY_EXTERNAL_CALLS_PRIORITY_QUEUE_NAME},
         "tasks.ubble.default.*": {"queue": CELERY_EXTERNAL_CALLS_DEFAULT_QUEUE_NAME},
         "tasks.ubble.priority.*": {"queue": CELERY_EXTERNAL_CALLS_PRIORITY_QUEUE_NAME},
+        "tasks.offerers.default.*": {"queue": CELERY_EXTERNAL_CALLS_DEFAULT_QUEUE_NAME},
         "tasks.offers.default.*": {"queue": CELERY_INTERNAL_CALLS_DEFAULT_QUEUE_NAME},
         "tasks.offers.priority.*": {"queue": CELERY_INTERNAL_CALLS_PRIORITY_QUEUE_NAME},
         "tasks.providers.default.*": {"queue": CELERY_INTERNAL_CALLS_DEFAULT_QUEUE_NAME},

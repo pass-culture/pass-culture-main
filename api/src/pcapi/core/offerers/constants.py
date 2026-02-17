@@ -273,3 +273,4 @@ CODE_TO_CATEGORY_MAPPING = {
 }
 
 TOP_ACTEUR_TAG_NAME = "top-acteur"
+CLOSED_OFFERER_TAG_NAME = "siren-caduc"

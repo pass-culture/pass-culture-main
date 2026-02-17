@@ -7,6 +7,7 @@ import pcapi.celery_tasks.sendinblue  # noqa: F401
 import pcapi.core.educational.tasks  # noqa: F401
 import pcapi.core.external.zendesk.tasks  # noqa: F401
 import pcapi.core.external.zendesk_sell.tasks  # noqa: F401
+import pcapi.core.offerers.tasks  # noqa: F401
 import pcapi.core.offers.tasks  # noqa: F401
 import pcapi.core.operations.tasks  # noqa: F401
 import pcapi.core.providers.tasks  # noqa: F401
