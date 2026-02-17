@@ -95,3 +95,70 @@ def store_id_pictures_task(payload: ubble_schemas.StoreIdPicturePayload) -> None
         ubble_api.archive_ubble_user_id_pictures(payload.identification_id)
     except ubble_exceptions.UbbleDownloadedFileEmpty as exc:
         logger.warning("File to archive is empty", extra={"exc": exc})
+
+
+@celery_async_task(
+    name="tasks.ubble.default.recover_ubble_validation_data",
+    model=ubble_schemas.UpdateWorkflowPayload,
+    autoretry_for=(ubble_connector.UbbleRateLimitedError, ubble_connector.UbbleServerError),
+    max_per_time_window=settings.UBBLE_RATE_LIMIT,
+    time_window_size=settings.UBBLE_TIME_WINDOW_SIZE,
+)
+def recover_incomplete_ubble_verification_task(payload: ubble_schemas.UpdateWorkflowPayload) -> None:
+    with atomic():
+        fraud_check_stmt = sa.select(subscription_models.BeneficiaryFraudCheck).where(
+            subscription_models.BeneficiaryFraudCheck.id == payload.beneficiary_fraud_check_id
+        )
+        fraud_check = db.session.scalars(fraud_check_stmt).one()
+
+        ubble_api.recover_ubble_verification_data(fraud_check)
+
+    logger.info(
+        "Updated beneficiary fraud check %d of user %d",
+        fraud_check.id,
+        fraud_check.user.id,
+        extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId, "user_id": fraud_check.user.id},
+    )
+
+
+def recover_incomplete_ubble_verification() -> None:
+    """
+    Only recovers the first 180 fraud checks that have missing info like birth place or common name.
+    This function is meant to be called as often as needed by recovery workers.
+    """
+    page_size = 180
+    fraud_check_to_recover_stmt = (
+        sa.select(subscription_models.BeneficiaryFraudCheck)
+        .where(
+            subscription_models.BeneficiaryFraudCheck.status == subscription_models.FraudCheckStatus.OK,
+            subscription_models.BeneficiaryFraudCheck.type == subscription_models.FraudCheckType.UBBLE,
+            subscription_models.BeneficiaryFraudCheck.eligibilityType == users_models.EligibilityType.AGE17_18,
+            subscription_models.BeneficiaryFraudCheck.thirdPartyId.startswith("idv_"),
+            sa.or_(
+                subscription_models.BeneficiaryFraudCheck.resultContent["birth_place"].astext.is_(None),
+                subscription_models.BeneficiaryFraudCheck.resultContent["document_issuing_country"].astext.is_(None),
+                subscription_models.BeneficiaryFraudCheck.resultContent["nationality"].astext.is_(None),
+            ),
+        )
+        .order_by(subscription_models.BeneficiaryFraudCheck.id)
+        .limit(page_size)
+    )
+    incomplete_fraud_checks = db.session.scalars(fraud_check_to_recover_stmt).all()
+
+    if not incomplete_fraud_checks:
+        logger.info("No incomplete Ubble verifications left, recovery code can be deleted.")
+        return
+
+    for fraud_check in incomplete_fraud_checks:
+        payload = ubble_schemas.UpdateWorkflowPayload(beneficiary_fraud_check_id=fraud_check.id)
+        recover_incomplete_ubble_verification_task.delay(payload=payload.model_dump())
+
+    logger.info(
+        "Enqueued Ubble recovery from fraud check %d to fraud check %d",
+        incomplete_fraud_checks[0].id,
+        incomplete_fraud_checks[-1].id,
+        extra={
+            "starting_fraud_check_id": incomplete_fraud_checks[0].id,
+            "ending_fraud_check_id": incomplete_fraud_checks[-1].id,
+        },
+    )

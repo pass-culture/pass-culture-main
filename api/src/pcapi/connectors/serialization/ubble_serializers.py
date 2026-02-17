@@ -36,9 +36,12 @@ class UbbleDocument(pydantic_v1.BaseModel):
     first_names: str | None
     full_name: str
     last_name: str | None
+    last_name_at_birth: str | None
     birth_date: datetime.date | None
     birth_place: str | None
+    nationality: str | None
     document_type: str | None
+    document_issuing_country: str | None
     document_number: str | None
     gender: users_models.GenderEnum | None
     front_image_signed_url: str | None
@@ -95,14 +98,16 @@ def convert_identification_to_ubble_content(
 ) -> "ubble_schemas.UbbleContent":
     document = identification.document
     if not document:
-        first_name, last_name = None, None
+        first_name, last_name, last_name_at_birth = None, None, None
     else:
         first_name, last_name = _get_first_and_last_name(document)
+        last_name_at_birth = document.last_name_at_birth
 
     content = ubble_schemas.UbbleContent(
         applicant_id=identification.applicant_id,
         birth_date=getattr(document, "birth_date", None),
         birth_place=getattr(document, "birth_place", None),
+        document_issuing_country=getattr(document, "document_issuing_country", None),
         document_type=getattr(document, "document_type", None),
         external_applicant_id=identification.external_applicant_id,
         first_name=first_name,
@@ -111,6 +116,8 @@ def convert_identification_to_ubble_content(
         identification_id=identification.id,
         identification_url=identification.links.verification_url.href,
         last_name=last_name,
+        last_name_at_birth=last_name_at_birth,
+        nationality=getattr(document, "nationality", None),
         reason_codes=identification.fraud_reason_codes,
         registration_datetime=identification.created_on,
         signed_image_back_url=getattr(document, "back_image_signed_url", None),

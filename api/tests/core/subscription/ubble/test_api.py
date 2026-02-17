@@ -225,6 +225,9 @@ class UbbleWorkflowV2Test:
 
         assert fraud_check.status == subscription_models.FraudCheckStatus.OK
         assert fraud_check.resultContent.get("birth_place") is not None
+        assert fraud_check.resultContent.get("last_name_at_birth") is not None
+        assert fraud_check.resultContent.get("nationality") is not None
+        assert fraud_check.resultContent.get("document_issuing_country") is not None
         store_id_pictures_task_mock.assert_called_once()
 
     @patch("pcapi.core.subscription.ubble.tasks.store_id_pictures_task.delay")
@@ -604,6 +607,30 @@ IDENTIFICATION_STATE_PARAMETERS = [
         subscription_models.FraudCheckStatus.CANCELED,
     ),
 ]
+
+
+@pytest.mark.usefixtures("db_session")
+class IncompleteUbbleRecoveryTest:
+    def test_ubble_identification_recovery(self, requests_mock):
+        fraud_check = BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.UBBLE,
+            thirdPartyId="idv_qwerty1234",
+            status=subscription_models.FraudCheckStatus.OK,
+        )
+        requests_mock.get(
+            f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fraud_check.thirdPartyId}",
+            json=build_ubble_identification_v2_response(
+                birth_date=datetime.date.today() - relativedelta(years=18), created_on=datetime.datetime.today()
+            ),
+        )
+
+        ubble_subscription_api.recover_ubble_verification_data(fraud_check)
+
+        assert fraud_check.status == subscription_models.FraudCheckStatus.OK
+        assert fraud_check.resultContent.get("birth_place") is not None
+        assert fraud_check.resultContent.get("last_name_at_birth") is not None
+        assert fraud_check.resultContent.get("nationality") is not None
+        assert fraud_check.resultContent.get("document_issuing_country") is not None
 
 
 @pytest.mark.usefixtures("db_session")

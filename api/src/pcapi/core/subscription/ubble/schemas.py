@@ -71,6 +71,7 @@ class UbbleContent(subscription_schemas.IdentityCheckContent):
     birth_date: datetime.date | None = None
     birth_place: str | None = None
     comment: str | None = None
+    document_issuing_country: str | None = None
     document_type: str | None = None
     expiry_date_score: float | None = None
     external_applicant_id: str | None = None
@@ -80,7 +81,9 @@ class UbbleContent(subscription_schemas.IdentityCheckContent):
     identification_id: str | None = None
     identification_url: pydantic_v1.HttpUrl | None = None
     last_name: str | None = None
+    last_name_at_birth: str | None = None
     married_name: str | None = None
+    nationality: str | None = None
     ove_score: float | None = None
     processed_datetime: datetime.datetime | None = None
     reason_codes: list[subscription_models.FraudReasonCode] | None = None
