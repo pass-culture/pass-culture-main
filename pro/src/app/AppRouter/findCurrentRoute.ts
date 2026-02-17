@@ -7,6 +7,7 @@ import {
 } from '@/app/AppRouter/subroutesIndividualOfferWizardMap'
 import { routesSignupJourney } from '@/app/AppRouter/subroutesSignupJourneyMap'
 import { routesSignup } from '@/app/AppRouter/subroutesSignupMap'
+import { routesWelcomeCarousel } from '@/app/AppRouter/subroutesWelcomeCarousel'
 
 import { routesReimbursements } from './subroutesReimbursements'
 import type { CustomRouteObject } from './types'
@@ -22,6 +23,7 @@ export const findCurrentRoute = (
     ...routesSignup,
     ...routesSignupJourney,
     ...routesReimbursements,
+    ...routesWelcomeCarousel,
   ]
     // This reverse is here so that subroutes (e.g. /inscription/compte/confirmation)
     // are matched before their parents (e.g. /inscription/*)

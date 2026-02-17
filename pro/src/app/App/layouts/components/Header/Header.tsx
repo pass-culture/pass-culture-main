@@ -30,6 +30,7 @@ type HeaderProps = {
   onToggleLateralPanel?: (state: boolean) => void
   focusCloseButton?: () => void
   disableHomeLink?: boolean
+  isUnauthenticated?: boolean
   isAdminArea?: boolean
 }
 
@@ -40,6 +41,7 @@ export const Header = forwardRef(
       onToggleLateralPanel,
       focusCloseButton,
       disableHomeLink = false,
+      isUnauthenticated = false,
       isAdminArea = false,
     }: HeaderProps,
     openButtonRef: ForwardedRef<HTMLButtonElement>
@@ -99,52 +101,68 @@ export const Header = forwardRef(
             )}
           </div>
           <div className={styles['top-right-menu']}>
-            {!withSwitchVenueFeature && (
-              <div className={styles['top-right-menu-links']}>
-                <div className={styles['tablet-and-above']}>
-                  {isProFeedbackEnabled && (
-                    <UserReviewDialog
-                      dialogTrigger={
-                        <Button
-                          color={ButtonColor.NEUTRAL}
-                          icon={fullSmsIcon}
-                          label="Donner mon avis"
-                          size={ButtonSize.SMALL}
-                          variant={ButtonVariant.TERTIARY}
+            {!isUnauthenticated && (
+              <>
+                {!withSwitchVenueFeature && (
+                  <div className={styles['top-right-menu-links']}>
+                    <div className={styles['tablet-and-above']}>
+                      {isProFeedbackEnabled && (
+                        <UserReviewDialog
+                          dialogTrigger={
+                            <Button
+                              color={ButtonColor.NEUTRAL}
+                              icon={fullSmsIcon}
+                              label="Donner mon avis"
+                              size={ButtonSize.SMALL}
+                              variant={ButtonVariant.TERTIARY}
+                            />
+                          }
                         />
+                      )}
+                    </div>
+                    <div className={styles['tablet-and-above']}>
+                      <HeaderHelpDropdown />
+                    </div>
+                  </div>
+                )}
+                {withSwitchVenueFeature && (
+                  <div
+                    className={cn(
+                      styles['tablet-and-above'],
+                      styles['is-switch-venue']
+                    )}
+                  >
+                    <Button
+                      as="a"
+                      variant={ButtonVariant.SECONDARY}
+                      color={ButtonColor.BRAND}
+                      size={ButtonSize.SMALL}
+                      to={isAdminArea ? '/accueil' : '/remboursements'}
+                      iconPosition={IconPositionEnum.LEFT}
+                      icon={isAdminArea ? fullBackIcon : strokeRepaymentIcon}
+                      label={
+                        isAdminArea
+                          ? 'Revenir à l’Espace Partenaire'
+                          : 'Espace administration'
                       }
                     />
-                  )}
-                </div>
-                <div className={styles['tablet-and-above']}>
-                  <HeaderHelpDropdown />
-                </div>
-              </div>
-            )}
-            {withSwitchVenueFeature && (
-              <div
-                className={cn(
-                  styles['tablet-and-above'],
-                  styles['is-switch-venue']
+                  </div>
                 )}
-              >
-                <Button
-                  as="a"
-                  variant={ButtonVariant.SECONDARY}
-                  color={ButtonColor.BRAND}
-                  size={ButtonSize.SMALL}
-                  to={isAdminArea ? '/accueil' : '/remboursements'}
-                  iconPosition={IconPositionEnum.LEFT}
-                  icon={isAdminArea ? fullBackIcon : strokeRepaymentIcon}
-                  label={
-                    isAdminArea
-                      ? 'Revenir à l’Espace Partenaire'
-                      : 'Espace administration'
-                  }
-                />
-              </div>
+                <HeaderDropdown />
+              </>
             )}
-            <HeaderDropdown />
+            {isUnauthenticated && (
+              <Button
+                as="a"
+                to="https://aide.passculture.app/hc/fr"
+                opensInNewTab={true}
+                isExternal={true}
+                color={ButtonColor.NEUTRAL}
+                variant={ButtonVariant.SECONDARY}
+                label="Besoin d’aide ?"
+                size={ButtonSize.SMALL}
+              />
+            )}
           </div>
         </div>
       </header>

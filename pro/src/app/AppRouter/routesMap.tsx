@@ -3,6 +3,7 @@
 
 import { Navigate, type NavigateProps, useLocation } from 'react-router'
 
+import { routesWelcomeCarousel } from '@/app/AppRouter/subroutesWelcomeCarousel'
 import { withUserPermissions } from '@/commons/auth/withUserPermissions'
 import { noop } from '@/commons/utils/noop'
 import { parse } from '@/commons/utils/query-string'
@@ -528,6 +529,14 @@ export const routes: CustomRouteObject[] = [
     meta: {
       onboardingOnly: true,
     },
+  },
+  {
+    lazy: () => import('@/pages/WelcomeCarousel/WelcomeCarousel'),
+    loader: withUserPermissions(mustBeUnauthenticated),
+    path: '/bienvenue',
+    title: 'Bienvenue sur pass Culture Pro',
+    children: routesWelcomeCarousel,
+    meta: { public: true },
   },
   {
     lazy: () => import('@/pages/Errors/NotFound/NotFound'),
