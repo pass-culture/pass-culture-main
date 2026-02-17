@@ -396,6 +396,8 @@
                 "description": "A link Artist <> Product also bears a type\nAn artist can be an author or a musician for different products",
                 "enum": [
                     "author",
+                    "film_actor",
+                    "film_director",
                     "performer",
                     "stage_director"
                 ],

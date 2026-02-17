@@ -12,6 +12,8 @@ import avatarPlaceholder from './assets/avatar_placeholder.png'
 
 const ARTIST_TYPE_LABELS: Record<ArtistType, string> = {
   [ArtistType.AUTHOR]: 'Auteur',
+  [ArtistType.FILM_ACTOR]: 'Acteur',
+  [ArtistType.FILM_DIRECTOR]: 'Réalisateur',
   [ArtistType.PERFORMER]: 'Interprète',
   [ArtistType.STAGE_DIRECTOR]: 'Metteur en scène',
 }
