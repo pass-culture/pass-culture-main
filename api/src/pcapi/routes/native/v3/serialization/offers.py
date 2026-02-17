@@ -345,38 +345,7 @@ class OfferResponse(HttpBodyModel):
             visual_disability=offer.visualDisabilityCompliant,
         )
 
-        artists = []
-        if product:
-            artists = [
-                OfferArtist(
-                    id=artist_link.artist.id,
-                    image=artist_link.artist.thumbUrl,
-                    name=artist_link.artist.name,
-                    role=artist_link.artist_type if artist_link.artist_type else None,
-                )
-                for artist_link in product.artistLinks
-                if not artist_link.artist.is_blacklisted
-            ]
-        else:
-            for artist_link in offer.artistOfferLinks:
-                if artist_link.artist and not artist_link.artist.is_blacklisted:
-                    artists.append(
-                        OfferArtist(
-                            id=artist_link.artist_id,
-                            image=artist_link.artist.thumbUrl,
-                            name=artist_link.artist.name,
-                            role=artist_link.artist_type,
-                        )
-                    )
-                elif artist_link.custom_name:
-                    artists.append(
-                        OfferArtist(
-                            id=None,
-                            image=None,
-                            name=artist_link.custom_name,
-                            role=artist_link.artist_type,
-                        )
-                    )
+        artists = _serialize_offer_artists(offer)
 
         is_external_bookings_disabled = False
         if offer.lastProvider and offer.lastProvider.localClass in provider_constants.PROVIDER_LOCAL_CLASS_TO_FF:
@@ -462,3 +431,40 @@ class OfferResponse(HttpBodyModel):
             video=video,
             withdrawal_details=offer.withdrawalDetails,
         )
+
+
+def _serialize_offer_artists(offer: models.Offer) -> list[OfferArtist]:
+    if offer.product:
+        return [
+            OfferArtist(
+                id=artist_link.artist.id,
+                image=artist_link.artist.thumbUrl,
+                name=artist_link.artist.name,
+                role=artist_link.artist_type if artist_link.artist_type else None,
+            )
+            for artist_link in offer.product.artistLinks
+            if not artist_link.artist.is_blacklisted
+        ]
+
+    artists = []
+    for artist_link in offer.artistOfferLinks:
+        if artist_link.artist and not artist_link.artist.is_blacklisted:
+            artists.append(
+                OfferArtist(
+                    id=artist_link.artist_id,
+                    image=artist_link.artist.thumbUrl,
+                    name=artist_link.artist.name,
+                    role=artist_link.artist_type,
+                )
+            )
+        elif artist_link.custom_name:
+            artists.append(
+                OfferArtist(
+                    id=None,
+                    image=None,
+                    name=artist_link.custom_name,
+                    role=artist_link.artist_type,
+                )
+            )
+
+    return artists
