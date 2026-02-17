@@ -8,6 +8,8 @@
  */
 export enum ArtistType {
   AUTHOR = 'author',
+  FILM_ACTOR = 'film_actor',
+  FILM_DIRECTOR = 'film_director',
   PERFORMER = 'performer',
   STAGE_DIRECTOR = 'stage_director',
 }
