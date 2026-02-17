@@ -49,6 +49,7 @@ class ComplianceBackend(BaseBackend):
                 },
                 json=payload,
                 log_info=False,
+                timeout=55,
             )
 
         except requests.exceptions.RequestException as exc:
