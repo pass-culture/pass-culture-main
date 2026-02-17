@@ -12,6 +12,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+    &-icon .infopanel-icon {
+      color: var(--color-icon-brand-primary);
+    }
+
+    &-stepnumber {
+      border-radius: rem.torem(48px);
+      color: var(--color-text-brand-primary);
+    }
   }
 
   &-content-wrapper {
@@ -31,6 +40,16 @@
       &-stepnumber {
         @include fonts.body-accent-xs;
       }
+
+      &-icon {
+        width: rem.torem(48px);
+        height: rem.torem(48px);
+        border-radius: rem.torem(6px);
+
+        .infopanel-icon {
+          width: rem.torem(28px);
+        }
+      }
     }
 
     .infopanel-title {
@@ -49,6 +68,16 @@
 
       &-stepnumber {
         @include fonts.body-accent;
+      }
+
+      &-icon {
+        width: rem.torem(48px);
+        height: rem.torem(48px);
+        border-radius: rem.torem(6px);
+
+        .infopanel-icon {
+          width: rem.torem(28px);
+        }
       }
     }
 
@@ -72,17 +101,6 @@
   // ------------------------------
 
   &-flat {
-    .infopanel-left-wrapper-icon {
-      width: rem.torem(48px);
-      height: rem.torem(48px);
-      border-radius: rem.torem(6px);
-
-      .infopanel-icon {
-        width: rem.torem(28px);
-        color: var(--color-icon-brand-primary);
-      }
-    }
-
     .infopanel-content {
       color: var(--color-text-default);
     }
@@ -92,13 +110,6 @@
     border: rem.torem(1px) solid var(--color-border-subtle);
     padding: var(--size-spacing-l);
     border-radius: var(--size-border-radius-m);
-
-    .infopanel-left-wrapper {
-      &-stepnumber {
-        border-radius: rem.torem(48px);
-        color: var(--color-text-brand-primary);
-      }
-    }
 
     .infopanel-content {
       color: var(--color-text-subtle);

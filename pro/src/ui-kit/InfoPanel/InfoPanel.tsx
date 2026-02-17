@@ -2,10 +2,19 @@ import cn from 'classnames'
 
 import { SvgIcon } from '../SvgIcon/SvgIcon'
 import styles from './InfoPanel.module.scss'
-import { type InfoPanelProps, InfoPanelSize, InfoPanelSurface } from './types'
+import { type InfoPanelProps, InfoPanelSize } from './types'
 
-export const InfoPanel = (props: InfoPanelProps): JSX.Element => {
-  const { title, children, surface, size = InfoPanelSize.LARGE } = props
+export const InfoPanel = ({
+  title,
+  children,
+  surface,
+  size = InfoPanelSize.LARGE,
+  icon,
+  iconAlt,
+  stepNumber,
+}: InfoPanelProps): JSX.Element => {
+  const hasIcon = icon && iconAlt
+  const hasStepNumber = stepNumber !== undefined
 
   return (
     <section
@@ -15,30 +24,23 @@ export const InfoPanel = (props: InfoPanelProps): JSX.Element => {
         styles[`infopanel-${size}`]
       )}
     >
-      {surface === InfoPanelSurface.FLAT && (
-        <div
-          className={cn(
-            styles['infopanel-left-wrapper'],
-            styles['infopanel-left-wrapper-icon']
-          )}
-        >
+      <div
+        className={cn(styles['infopanel-left-wrapper'], {
+          [styles['infopanel-left-wrapper-icon']]: hasIcon,
+          [styles['infopanel-left-wrapper-stepnumber']]: hasStepNumber,
+        })}
+      >
+        {hasIcon && (
           <SvgIcon
-            src={props.icon}
-            alt={props.iconAlt}
+            src={icon}
+            alt={iconAlt}
             className={styles['infopanel-icon']}
           />
-        </div>
-      )}
-      {surface === InfoPanelSurface.ELEVATED && (
-        <div
-          className={cn(
-            styles['infopanel-left-wrapper'],
-            styles['infopanel-left-wrapper-stepnumber']
-          )}
-        >
-          {props.stepNumber}
-        </div>
-      )}
+        )}
+
+        {hasStepNumber && stepNumber}
+      </div>
+
       <div className={styles['infopanel-content-wrapper']}>
         <h3 className={styles['infopanel-title']}>{title}</h3>
         <p className={styles['infopanel-content']}>{children}</p>

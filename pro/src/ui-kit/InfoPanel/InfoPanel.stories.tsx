@@ -3,6 +3,8 @@ import React from 'react'
 import { withRouter } from 'storybook-addon-remix-react-router'
 
 import strokeUserProfile from '@/icons/stroke-user.svg'
+import strokeOffer from '@/icons/stroke-offer.svg'
+import strokeParty from '@/icons/stroke-party.svg'
 import { strokeIcons } from '@/ui-kit/Icons/iconsList'
 
 import { InfoPanel } from './InfoPanel'
@@ -23,8 +25,8 @@ const iconOptions = {
  * `InfoPanel` affiche une information contextuelle avec un titre et un texte descriptif.
  *
  * Il supporte deux variantes visuelles (surfaces) :
- * - **Flat** : affiche une icône à gauche sur un fond plat.
- * - **Elevated** : affiche un numéro d'étape dans une carte avec bordure.
+ * - **Flat** : affiche une icône ou un numéro d'étape à gauche sur un fond plat.
+ * - **Elevated** : affiche une icône ou un numéro d'étape dans une carte avec bordure.
  *
  * Chaque surface peut être rendue en deux tailles : `large` (par défaut) et `small`.
  */
@@ -42,7 +44,7 @@ const meta: Meta<typeof InfoPanel> = {
       control: 'select',
       options: Object.values(InfoPanelSurface),
       description:
-        'Variante visuelle. `flat` affiche une icône, `elevated` affiche un numéro d\'étape.',
+        'Variante visuelle. `flat` n\'a pas de bordure, `elevated` a une bordure.',
     },
     size: {
       control: 'select',
@@ -64,20 +66,19 @@ const meta: Meta<typeof InfoPanel> = {
     },
     stepNumber: {
       control: 'number',
-      description: "Numéro d'étape affiché dans l'indicateur gauche (elevated uniquement).",
-      if: { arg: 'surface', eq: 'elevated' },
+      description: "Numéro d'étape affiché à gauche.",
     },
     icon: {
       control: 'select',
       options: Object.keys(iconOptions),
       mapping: iconOptions,
-      description: "Source de l'icône SVG affichée dans l'indicateur gauche (flat uniquement).",
-      if: { arg: 'surface', eq: 'flat' },
+      description: "Source de l'icône SVG affichée à gauche (uniquement quand `stepNumber` est non-défini)",
+      if: { arg: 'stepNumber', exists: false },
     },
     iconAlt: {
       control: 'text',
-      description: "Texte alternatif accessible pour l'icône (flat uniquement).",
-      if: { arg: 'surface', eq: 'flat' },
+      description: "Texte alternatif accessible pour l'icône (uniquement quand `stepNumber` est non-défini)",
+      if: { arg: 'stepNumber', exists: false },
     },
   },
 }
@@ -230,37 +231,143 @@ export const ElevatedSizes: Story = {
 }
 
 /**
- * Plusieurs panneaux elevated utilisés comme liste d'étapes numérotées.
+ * Plusieurs panneaux (flat ou elevated) utilisés comme liste d'étapes numérotées.
  */
-export const ElevatedStepList: Story = {
+export const StepList: Story = {
   render: () => (
-    <div style={{ ...columnStyles, maxWidth: 600 }}>
-      <InfoPanel
-        title="Décrivez votre structure et votre activité culturelle - 5 minutes"
-        surface={InfoPanelSurface.ELEVATED}
-        size={InfoPanelSize.SMALL}
-        stepNumber={1}
-      >
-        Renseignez les informations administratives et les domaines dans lesquels vous intervenez
-      </InfoPanel>
-      <InfoPanel
-        title="Nos équipes valident votre dossier — 48 heures"
-        surface={InfoPanelSurface.ELEVATED}
-        size={InfoPanelSize.SMALL}
-        stepNumber={2}
-      >
-        Elles peuvent demander des documents complémentaires. Les offres
-        scolaires nécessitent aussi une validation des équipes externes
-        rattachées à Adage.
-      </InfoPanel>
-      <InfoPanel
-        title="Créez vos premières offres - 3 minutes"
-        surface={InfoPanelSurface.ELEVATED}
-        size={InfoPanelSize.SMALL}
-        stepNumber={3}
-      >
-        Créez vos offres sur pass Culture Pro puis diffusez-les sur l'application pour les jeunes ou sur Adage.
-      </InfoPanel>
+    <div style={rowStyles}>
+      <div style={columnStyles}>
+        <h4>Flat Small</h4>
+        <div style={{ ...columnStyles, gap: '32px' }}>
+          <InfoPanel
+            title="Décrivez votre structure et votre activité culturelle - 5 minutes"
+            surface={InfoPanelSurface.FLAT}
+            size={InfoPanelSize.SMALL}
+            stepNumber={1}
+          >
+            Renseignez les informations administratives et les domaines dans lesquels vous intervenez
+          </InfoPanel>
+          <InfoPanel
+            title="Nos équipes valident votre dossier — 48 heures"
+            surface={InfoPanelSurface.FLAT}
+            size={InfoPanelSize.SMALL}
+            stepNumber={2}
+          >
+            Elles peuvent demander des documents complémentaires. Les offres
+            scolaires nécessitent aussi une validation des équipes externes
+            rattachées à Adage.
+          </InfoPanel>
+          <InfoPanel
+            title="Créez vos premières offres - 3 minutes"
+            surface={InfoPanelSurface.FLAT}
+            size={InfoPanelSize.SMALL}
+            stepNumber={3}
+          >
+            Créez vos offres sur pass Culture Pro puis diffusez-les sur l'application pour les jeunes ou sur Adage.
+          </InfoPanel>
+        </div>
+      </div>
+      <div style={columnStyles}>
+        <h4>Elevated Small</h4>
+        <InfoPanel
+          title="Décrivez votre structure et votre activité culturelle - 5 minutes"
+          surface={InfoPanelSurface.ELEVATED}
+          size={InfoPanelSize.SMALL}
+          stepNumber={1}
+        >
+          Renseignez les informations administratives et les domaines dans lesquels vous intervenez
+        </InfoPanel>
+        <InfoPanel
+          title="Nos équipes valident votre dossier — 48 heures"
+          surface={InfoPanelSurface.ELEVATED}
+          size={InfoPanelSize.SMALL}
+          stepNumber={2}
+        >
+          Elles peuvent demander des documents complémentaires. Les offres
+          scolaires nécessitent aussi une validation des équipes externes
+          rattachées à Adage.
+        </InfoPanel>
+        <InfoPanel
+          title="Créez vos premières offres - 3 minutes"
+          surface={InfoPanelSurface.ELEVATED}
+          size={InfoPanelSize.SMALL}
+          stepNumber={3}
+        >
+          Créez vos offres sur pass Culture Pro puis diffusez-les sur l'application pour les jeunes ou sur Adage.
+        </InfoPanel>
+      </div>
+    </div>
+  ),
+}
+
+/**
+ * Plusieurs panneaux (flat ou elevated) utilisés avec des icônes.
+ */
+export const IconsList: Story = {
+  render: () => (
+    <div style={rowStyles}>
+      <div style={columnStyles}>
+        <h4>Flat Small</h4>
+        <div style={{ ...columnStyles, gap: '32px' }}>
+          <InfoPanel
+            title="4 millions de jeunes"
+            surface={InfoPanelSurface.FLAT}
+            size={InfoPanelSize.SMALL}
+            icon={strokeUserProfile}
+            iconAlt="Profil utilisateur"
+          >
+            Touchez une audience de 15-21 ans partout en France, activement à la recherche d'expériences culturelles
+          </InfoPanel>
+          <InfoPanel
+            title="Une inscription simple et rapide"
+            surface={InfoPanelSurface.FLAT}
+            size={InfoPanelSize.SMALL}
+            icon={strokeOffer}
+            iconAlt="Profil utilisateur"
+          >
+            Contrairement aux appels à projet lourds et complexes, l'inscription à pass Culture Pro est simple et guidée
+          </InfoPanel>
+          <InfoPanel
+            title="Publiez quand vous voulez"
+            surface={InfoPanelSurface.FLAT}
+            size={InfoPanelSize.SMALL}
+            icon={strokeParty}
+            iconAlt="Profil utilisateur"
+          >
+            Créez et modifiez vos offres, qu’elles soient gratuites ou payantes, à tout moment de l’année
+          </InfoPanel>
+        </div>
+      </div>
+      <div style={columnStyles}>
+        <h4>Elevated Small</h4>
+        <InfoPanel
+          title="4 millions de jeunes"
+          surface={InfoPanelSurface.ELEVATED}
+          size={InfoPanelSize.SMALL}
+          icon={strokeOffer}
+          iconAlt="Profil utilisateur"
+        >
+          Touchez une audience de 15-21 ans partout en France, activement à la recherche d'expériences culturelles
+        </InfoPanel>
+        <InfoPanel
+          title="Une inscription simple et rapide"
+          surface={InfoPanelSurface.ELEVATED}
+          size={InfoPanelSize.SMALL}
+          icon={strokeUserProfile}
+          iconAlt="Profil utilisateur"
+        >
+          Contrairement aux appels à projet lourds et complexes, l'inscription à pass Culture Pro est simple et guidée
+        </InfoPanel>
+        <InfoPanel
+          title="Publiez quand vous voulez"
+          surface={InfoPanelSurface.ELEVATED}
+          size={InfoPanelSize.SMALL}
+          icon={strokeParty}
+          iconAlt="Profil utilisateur"
+        >
+          Créez et modifiez vos offres, qu’elles soient gratuites ou payantes, à tout moment de l’année
+        </InfoPanel>
+      </div>
     </div>
   ),
 }
