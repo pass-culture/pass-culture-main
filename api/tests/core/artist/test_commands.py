@@ -7,22 +7,18 @@ from sqlalchemy import exc as sa_exc
 
 import pcapi.core.artist.models as artist_models
 import pcapi.core.offers.factories as offers_factories
-from pcapi.connectors.big_query.importer.artist import ArtistAliasImporter
 from pcapi.connectors.big_query.importer.artist import ArtistImporter
 from pcapi.connectors.big_query.importer.artist import ArtistProductLinkImporter
 from pcapi.connectors.big_query.importer.artist_score import ArtistScoresImporter
 from pcapi.connectors.big_query.importer.base import DeltaAction
 from pcapi.connectors.big_query.queries.artist import ArtistProductLinkModel
 from pcapi.connectors.big_query.queries.artist import ArtistScoresModel
-from pcapi.connectors.big_query.queries.artist import DeltaArtistAliasModel
 from pcapi.connectors.big_query.queries.artist import DeltaArtistModel
 from pcapi.connectors.big_query.queries.artist import DeltaArtistProductLinkModel
 from pcapi.core.artist import commands
-from pcapi.core.artist.factories import ArtistAliasFactory
 from pcapi.core.artist.factories import ArtistFactory
 from pcapi.core.artist.factories import ArtistProductLinkFactory
 from pcapi.core.artist.models import Artist
-from pcapi.core.artist.models import ArtistAlias
 from pcapi.core.artist.models import ArtistProductLink
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import ProductFactory
@@ -102,23 +98,6 @@ class ImportAllArtistsTest:
             assert product in albums_by_same_artist
 
         assert "Successfully imported 8 ArtistProductLink" in caplog.text
-
-    @patch("pcapi.connectors.big_query.queries.artist.ArtistAliasQuery.execute")
-    @patch("pcapi.connectors.big_query.queries.artist.ArtistQuery.execute")
-    def test_import_all_artist_aliases_creates_artist_aliases_creates_artist_aliases(
-        self,
-        get_all_artists_mock,
-        get_all_artist_aliases_mock,
-    ):
-        get_all_artist_aliases_mock.return_value = fixtures.big_query_artist_alias_fixture
-        get_all_artists_mock.return_value = fixtures.big_query_artist_fixture
-
-        ArtistImporter().import_all()
-        ArtistAliasImporter().import_all()
-
-        get_all_artist_aliases_mock.assert_called_once()
-        all_artist_aliases = db.session.query(ArtistAlias).all()
-        assert len(all_artist_aliases) == 4
 
     @patch("pcapi.connectors.big_query.queries.artist.ArtistProductLinkQuery.execute")
     @patch("pcapi.connectors.big_query.importer.base.BATCH_SIZE", 2)
@@ -217,61 +196,6 @@ class UpdateArtistsFromDeltaTest:
         )
         assert db.session.query(ArtistProductLink).filter_by(id=link_to_delete_id).first() is None
         assert db.session.query(ArtistProductLink).count() == 2
-
-    @patch("pcapi.connectors.big_query.queries.artist.ArtistAliasDeltaQuery.execute")
-    def test_updates_and_creates_artist_aliases(self, mock_alias_delta_query):
-        artist = ArtistFactory()
-        alias_name_to_delete = "Alias a supprimer"
-        offer_category_id = "LIVRE"
-        artist_type = artist_models.ArtistType.AUTHOR
-        alias_to_keep = ArtistAliasFactory(
-            artist_id=artist.id,
-            artist_alias_name=alias_name_to_delete,
-            offer_category_id="MUSIQUE_LIVE",
-            artist_type=artist_type,
-        )
-        alias_to_delete = ArtistAliasFactory(
-            artist_id=artist.id,
-            artist_alias_name=alias_name_to_delete,
-            offer_category_id=offer_category_id,
-            artist_type=artist_type,
-        )
-        alias_to_delete_id = alias_to_delete.id
-
-        new_alias = "Tout Nouvel Alias"
-        mock_alias_delta_query.return_value = [
-            DeltaArtistAliasModel(
-                artist_id=artist.id,
-                artist_alias_name=new_alias,
-                offer_category_id=offer_category_id,
-                artist_type=artist_type.value,
-                action=DeltaAction.ADD,
-            ),
-            DeltaArtistAliasModel(
-                artist_id=artist.id,
-                artist_alias_name=alias_name_to_delete,
-                offer_category_id=offer_category_id,
-                artist_type=artist_type.value,
-                action=DeltaAction.REMOVE,
-            ),
-        ]
-
-        ArtistAliasImporter().run_delta_update()
-
-        assert (
-            db.session.query(ArtistAlias)
-            .filter_by(
-                artist_id=artist.id,
-                artist_alias_name=new_alias,
-                offer_category_id=offer_category_id,
-                artist_type=artist_type,
-            )
-            .first()
-            is not None
-        )
-        assert db.session.query(ArtistAlias).filter_by(id=alias_to_keep.id).first() is not None
-        assert db.session.query(ArtistAlias).filter_by(id=alias_to_delete_id).first() is None
-        assert db.session.query(ArtistAlias).count() == 2
 
     @patch("pcapi.connectors.big_query.queries.artist.ArtistDeltaQuery.execute")
     def test_update_action_modifies_existing_artist(self, mock_artist_delta_query):
