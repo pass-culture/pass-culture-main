@@ -947,7 +947,8 @@ def list_llm_offers() -> utils.BackofficeResponse:
         is_form_empty = False
     except ExternalAPIException as e:
         flash(
-            f"Le chatbot a rencontré un problème{', veuillez reéssayer plus tard' if e.is_retryable else ''}", "warning"
+            f"La recherche sémantique a rencontré un problème{', veuillez reéssayer plus tard' if e.is_retryable else ''}",
+            "warning",
         )
         responses = None
 

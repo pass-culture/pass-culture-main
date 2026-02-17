@@ -26,12 +26,12 @@
     "llm-search-container",
     page=="llm"
     ),
-    ), "px-1 mb-4") }}
+    ), '33%', "mb-4") }}
     {{ build_advanced_filters_form(advanced_form, advanced_dst, "advanced-search") }}
     {{ build_advanced_filters_form(algolia_form, algolia_dst, "algolia-search") }}
     <div id="llm-search-container">
-      <span class="fw-bold">Décrivez ce que vous cherchez :</span>
-      <ol class="mb-4 ps-4">
+      <span class="fs-7">Décrivez ce que vous cherchez :</span>
+      <ol class="mb-4 ps-4 fs-7">
         <li>Écrivez votre requête.</li>
         <li>Vous pouvez l’affiner grâce aux filtres (prix, date, département, catégorie…).</li>
       </ol>
@@ -48,7 +48,7 @@
     "Remonte toutes les offres réservables sur l’app, en affichant une seule offre par produit. Si plusieurs acteurs proposent la même, une seule sera affichée.",
     "algolia-search", page=="algolia"
     ),
-    ), "px-1 mb-4") }}
+    ), "50%", " mb-4") }}
     {{ build_advanced_filters_form(advanced_form, advanced_dst, "advanced-search") }}
     {{ build_advanced_filters_form(algolia_form, algolia_dst, "algolia-search") }}
   {% endif %}

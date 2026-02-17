@@ -1,11 +1,14 @@
-{% macro display_selector(name, options, class) %}
-  <div class="pc-display-selector d-flex gap-4 {{ class }}"
+{% macro display_selector(name, options, width = '', class= '') %}
+  <div class="pc-display-selector d-flex {{ class }} gap-4"
        data-pc-input-name="{{ name }}"
        data-pc-save-state="true"
        data-pc-selected-classes="border border-primary"
        data-pc-ignore-if-query-args="true">
     {% for text, tooltip, value, checked in options %}
       <label class="form-check-label p-3 rounded d-flex {%+ if checked %} pc-display-selector-checked border border-primary {%+ else %} {% endif %}"
+             {%+ if width %}
+             style="width:{{ width }}"
+             {% endif +%}
              for="{{ name }}-{{ loop.index }}">
         <input class="form-check-input me-3"
                type="radio"
