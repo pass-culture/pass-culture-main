@@ -7,9 +7,11 @@ from datetime import timedelta
 
 import pcapi.core.offers.repository as offers_repository
 from pcapi import settings
+from pcapi.core.bookings import tasks as bookings_tasks
 from pcapi.core.bookings.exceptions import BookingIsExpired
 from pcapi.core.bookings.repository import get_soon_expiring_bookings
 from pcapi.core.offers.repository import find_today_event_stock_ids_metropolitan_france
+from pcapi.models.feature import FeatureToggle
 from pcapi.notifications.push.transactional_notifications import (
     get_soon_expiring_bookings_with_offers_notification_data,
 )
@@ -35,7 +37,11 @@ def send_today_events_notifications_metropolitan_france() -> None:
 
     for stock_id in stock_ids:
         try:
-            send_today_stock_notification.delay(stock_id)
+            if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_SEND_TRANSACTIONAL_NOTIFICATION.is_active():
+                payload = bookings_tasks.SendTodayStockNotificationPayload(stock_id=stock_id)
+                bookings_tasks.send_today_stock_notification.delay(payload.model_dump())
+            else:
+                send_today_stock_notification.delay(stock_id)
         except Exception:
             logger.exception("Could not send today stock notification", extra={"stock": stock_id})
 

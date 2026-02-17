@@ -22,6 +22,8 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.notifications.push import send_transactional_notification
+from pcapi.notifications.push.transactional_notifications import get_offer_notification_data
 from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_v1_serialization
 from pcapi.routes.public.individual_offers.v1 import utils as individual_offers_v1_utils
 from pcapi.routes.public.individual_offers.v1.serializers import products as products_serializers
@@ -482,3 +484,15 @@ def _create_or_update_ean_offers(
         reason=IndexationReason.OFFER_UPDATE,
         log_extra={"venue_id": venue_id, "source": "offers_public_api"},
     )
+
+
+class SendOfferLinkByPushPayload(BaseModelV2):
+    user_id: int
+    offer_id: int
+
+
+@celery_async_task(name="tasks.offers.priority.send_offer_link_by_push", model=SendOfferLinkByPushPayload)
+def send_offer_link_by_push_task(payload: SendOfferLinkByPushPayload) -> None:
+    offer = db.session.query(offers_models.Offer).filter_by(id=payload.offer_id).one()
+    notification_data = get_offer_notification_data(payload.user_id, offer)
+    send_transactional_notification(notification_data)
