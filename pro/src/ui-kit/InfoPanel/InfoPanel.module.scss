@@ -1,0 +1,107 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+
+.infopanel {
+  display: flex;
+  align-items: center;
+  gap: var(--size-spacing-l);
+
+  &-left-wrapper {
+    background-color: var(--color-background-info);
+    aspect-ratio: 1 / 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &-content-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  // ------------------------------
+  // Sizes
+  // ------------------------------
+
+  &-small {
+    .infopanel-left-wrapper {
+      width: rem.torem(32px);
+      height: rem.torem(32px);
+
+      &-stepnumber {
+        @include fonts.body-accent-xs;
+      }
+    }
+
+    .infopanel-title {
+      @include fonts.body-accent-s;
+    }
+
+    .infopanel-content {
+      @include fonts.body-xs;
+    }
+  }
+
+  &-large {
+    .infopanel-left-wrapper {
+      width: rem.torem(48px);
+      height: rem.torem(48px);
+
+      &-stepnumber {
+        @include fonts.body-accent;
+      }
+    }
+
+    .infopanel-content-wrapper {
+      gap: var(--size-spacing-xs);
+    }
+
+    .infopanel-title {
+      @include fonts.title3;
+
+      color: var(--color-text-default);
+    }
+
+    .infopanel-content {
+      @include fonts.body;
+    }
+  }
+
+  // ------------------------------
+  // Surfaces
+  // ------------------------------
+
+  &-flat {
+    .infopanel-left-wrapper-icon {
+      width: rem.torem(48px);
+      height: rem.torem(48px);
+      border-radius: rem.torem(6px);
+
+      .infopanel-icon {
+        width: rem.torem(28px);
+        color: var(--color-icon-brand-primary);
+      }
+    }
+
+    .infopanel-content {
+      color: var(--color-text-default);
+    }
+  }
+
+  &-elevated {
+    border: rem.torem(1px) solid var(--color-border-subtle);
+    padding: var(--size-spacing-l);
+    border-radius: var(--size-border-radius-m);
+
+    .infopanel-left-wrapper {
+      &-stepnumber {
+        border-radius: rem.torem(48px);
+        color: var(--color-text-brand-primary);
+      }
+    }
+
+    .infopanel-content {
+      color: var(--color-text-subtle);
+    }
+  }
+}
