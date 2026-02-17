@@ -350,7 +350,7 @@ class OfferResponse(HttpBodyModel):
             artists = [
                 OfferArtist(
                     id=artist_link.artist.id,
-                    image=artist_link.artist.image,
+                    image=artist_link.artist.thumbUrl,
                     name=artist_link.artist.name,
                     role=artist_link.artist_type if artist_link.artist_type else None,
                 )
@@ -360,9 +360,23 @@ class OfferResponse(HttpBodyModel):
         else:
             for artist_link in offer.artistOfferLinks:
                 if artist_link.artist and not artist_link.artist.is_blacklisted:
-                    artists.append(OfferArtist.model_validate(artist_link.artist))
+                    artists.append(
+                        OfferArtist(
+                            id=artist_link.artist_id,
+                            image=artist_link.artist.thumbUrl,
+                            name=artist_link.artist.name,
+                            role=artist_link.artist_type,
+                        )
+                    )
                 elif artist_link.custom_name:
-                    artists.append(OfferArtist(id=None, image=None, name=artist_link.custom_name))
+                    artists.append(
+                        OfferArtist(
+                            id=None,
+                            image=None,
+                            name=artist_link.custom_name,
+                            role=artist_link.artist_type,
+                        )
+                    )
 
         is_external_bookings_disabled = False
         if offer.lastProvider and offer.lastProvider.localClass in provider_constants.PROVIDER_LOCAL_CLASS_TO_FF:

@@ -780,9 +780,13 @@ class OffersV3Test:
 
     def test_get_offer_artists_without_product(self, client):
         offer = offers_factories.OfferFactory()
-        artists_factories.ArtistOfferLinkFactory(offer_id=offer.id, custom_name="Alex")
+        artists_factories.ArtistOfferLinkFactory(
+            offer_id=offer.id, custom_name="Alex", artist_type=ArtistType.PERFORMER
+        )
         artist_2 = artists_factories.ArtistFactory(name="Billy")
-        artists_factories.ArtistOfferLinkFactory(offer_id=offer.id, artist_id=artist_2.id)
+        artists_factories.ArtistOfferLinkFactory(
+            offer_id=offer.id, artist_id=artist_2.id, artist_type=ArtistType.AUTHOR
+        )
         artist_3 = artists_factories.ArtistFactory(name="Claude", is_blacklisted=True)
         artists_factories.ArtistOfferLinkFactory(offer_id=offer.id, artist_id=artist_3.id)
 
@@ -793,8 +797,8 @@ class OffersV3Test:
         assert response.status_code == 200
         assert sorted(response.json["artists"], key=lambda a: a["name"]) == sorted(
             [
-                {"id": None, "name": "Alex", "image": None, "role": None},
-                {"id": artist_2.id, "name": artist_2.name, "image": artist_2.image, "role": None},
+                {"id": None, "name": "Alex", "image": None, "role": "performer"},
+                {"id": artist_2.id, "name": "Billy", "image": artist_2.image, "role": "author"},
             ],
             key=lambda a: a["name"],
         )
