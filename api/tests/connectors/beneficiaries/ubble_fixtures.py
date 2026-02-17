@@ -56,7 +56,7 @@ UBBLE_IDENTIFICATION_V2_RESPONSE = {
             "document_expiry_date": "2035-03-25",
             "document_issue_date": "2025-03-26",
             "document_issue_place": "Paris",
-            "document_issuing_country": "FRA",
+            "document_issuing_country": "FR",
             "document_mrz": "P<FRASMITHJOHNDANIEL<<<<<<<<<<<<<<<<<<<<<<<<<<<<",
             "document_number": "A12345678",
             "document_type": "ID",
@@ -65,6 +65,8 @@ UBBLE_IDENTIFICATION_V2_RESPONSE = {
             "full_name": "Oriane Max BERTONE",
             "gender": "F",
             "last_name": "BERTONE",
+            "last_name_at_birth": "SMITH",
+            "nationality": "FR",
             "personal_number": "AB1234567890XY",
             "tax_identification_number": "TIN123456789",
         }

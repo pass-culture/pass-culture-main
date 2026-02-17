@@ -11,6 +11,7 @@ import pcapi.utils.cron as cron_decorators
 from pcapi import settings
 from pcapi.core.mails.transactional.users.ubble import reminder_emails
 from pcapi.core.subscription.bonus import tasks as bonus_tasks
+from pcapi.core.subscription.ubble import tasks as ubble_tasks
 from pcapi.core.subscription.ubble.api import recover_pending_ubble_applications
 from pcapi.core.subscription.ubble.archive_past_identification_pictures import archive_past_identification_pictures
 from pcapi.models import db
@@ -128,3 +129,8 @@ def ubble_archive_past_identifications_automation() -> None:
 @blueprint.cli.command("recover_started_quotient_familial_applications")
 def recover_started_quotient_familial_applications() -> None:
     bonus_tasks.recover_started_quotient_familial_application()
+
+
+@blueprint.cli.command("recover_incomplete_ubble_id_verification")
+def recover_incomplete_ubble_id_verification() -> None:
+    ubble_tasks.recover_incomplete_ubble_verification()

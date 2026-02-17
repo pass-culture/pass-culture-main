@@ -561,3 +561,8 @@ def _get_pending_fraud_checks_pages() -> typing.Generator[list[subscription_mode
 
         has_next_page = upper_fraud_check_page_id <= max_ubble_fraud_check_id
         last_fraud_check_id = upper_fraud_check_page_id
+
+
+def recover_ubble_verification_data(fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
+    content = _get_content(fraud_check.thirdPartyId)
+    _update_identity_fraud_check(fraud_check, content)

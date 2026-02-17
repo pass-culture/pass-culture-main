@@ -224,6 +224,21 @@ class BeneficiaryFraudCheck(PcObject, Model):
             "type",
             postgresql_where=sa.or_(status == FraudCheckStatus.STARTED, status == FraudCheckStatus.PENDING),
         ),
+        sa.Index(
+            "ix_beneficiary_fraud_check_incomplete_ubble",
+            "id",
+            postgresql_where=sa.and_(
+                status == FraudCheckStatus.OK,
+                type == FraudCheckType.UBBLE,
+                eligibilityType == users_models.EligibilityType.AGE17_18,
+                thirdPartyId.startswith("idv_"),
+                sa.or_(
+                    resultContent["birth_place"].astext.is_(None),
+                    resultContent["document_issuing_country"].astext.is_(None),
+                    resultContent["nationality"].astext.is_(None),
+                ),
+            ),
+        ),
     )
 
     def get_detailed_source(self) -> str:
