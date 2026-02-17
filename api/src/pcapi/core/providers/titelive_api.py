@@ -242,8 +242,8 @@ class TiteliveSearchTemplate[TiteliveWorkType: BaseTiteliveWork](abc.ABC):
 
                         image_bytes = titelive.download_titelive_image(new_thumbnail_url)
                         thumb_storage.create_thumb(
-                            product,
                             image_bytes,
+                            model_with_thumb=product,
                             keep_ratio=True,
                             object_id=image_id,
                         )

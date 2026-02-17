@@ -365,7 +365,7 @@ class HasImageMixin:
             object_storage.store_public_object(
                 folder=self.FOLDER,
                 object_id=self._get_image_storage_id(original=True),
-                blob=image_conversion.process_original_image(content=image, resize=False),
+                blob=image_conversion.process_original_image(content=image),
                 content_type="image/jpeg",
             )
 

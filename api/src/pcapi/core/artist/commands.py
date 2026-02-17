@@ -5,11 +5,13 @@ import click
 import sqlalchemy as sa
 
 import pcapi.core.artist.models as artist_models
+from pcapi import settings
 from pcapi.connectors.big_query.importer.artist import ArtistAliasImporter
 from pcapi.connectors.big_query.importer.artist import ArtistImporter
 from pcapi.connectors.big_query.importer.artist import ArtistProductLinkImporter
 from pcapi.connectors.big_query.importer.artist_score import ArtistScoresImporter
 from pcapi.connectors.big_query.importer.base import AbstractImporter
+from pcapi.core import object_storage
 from pcapi.core.artist import api as artist_api
 from pcapi.core.search import async_index_artist_ids
 from pcapi.core.search.models import IndexationReason
@@ -46,10 +48,20 @@ def compute_artists_most_relevant_image(batch_size: int = BATCH_SIZE) -> None:
         artists_batch = db.session.query(artist_models.Artist).filter(artist_models.Artist.id.in_(artist_id_batch))
         updated_artist_ids = []
         for artist in artists_batch:
-            most_relevant_image = artist_api.get_artist_image_url(artist)
+            most_relevant_image, product_mediation_uuid = artist_api.get_artist_image_url(artist)
             if most_relevant_image and most_relevant_image != artist.computed_image:
                 artist.computed_image = most_relevant_image
                 updated_artist_ids.append(artist.id)
+                if product_mediation_uuid:
+                    image_as_bytes = object_storage.get_public_object(
+                        settings.THUMBS_FOLDER_NAME, product_mediation_uuid
+                    )
+                    try:
+                        artist_api.store_mini_thumb(image_as_bytes[0], product_mediation_uuid)
+                    except Exception as e:
+                        logger.warning(
+                            "Failed to store mini thumb for mediation %s", product_mediation_uuid, extra={"exc": e}
+                        )
 
         if updated_artist_ids:
             db.session.commit()

@@ -115,26 +115,6 @@ def get_owner_photo(photos: list[PlacePhoto], owner_name: str) -> PlacePhoto | N
     return None
 
 
-def get_crop_params(photo: PlacePhoto, expected_ratio: image_conversion.ImageRatio) -> image_conversion.CropParams:
-    ratio = photo.width / photo.height
-
-    x_crop_percent = 0.0
-    y_crop_percent = 0.0
-    width_crop_percentage = 1.0
-    height_crop_percentage = 1.0
-    if ratio < expected_ratio.value:  # height is too big
-        new_height = photo.width / expected_ratio.value
-        height_crop_percentage = new_height / photo.height
-        y_crop_start = (photo.height - new_height) / 2
-        y_crop_percent = y_crop_start / photo.height
-    else:  # width is too big
-        new_width = photo.height * expected_ratio.value
-        width_crop_percentage = new_width / photo.width
-        x_crop_start = (photo.width - new_width) / 2
-        x_crop_percent = x_crop_start / photo.width
-    return image_conversion.CropParams(x_crop_percent, y_crop_percent, height_crop_percentage, width_crop_percentage)
-
-
 def save_photo_to_gcp(venue_id: int, photo: PlacePhoto, prefix: str) -> str:
     gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
     photos_result = gmaps.places_photo(
@@ -151,7 +131,9 @@ def save_photo_to_gcp(venue_id: int, photo: PlacePhoto, prefix: str) -> str:
         object_id,
         image_conversion.standardize_image(
             content=data,
-            crop_params=get_crop_params(photo, image_conversion.ImageRatio.LANDSCAPE),
+            crop_params=image_conversion.get_crop_params(
+                photo.width, photo.height, image_conversion.ImageRatio.LANDSCAPE
+            ),
             ratio=image_conversion.ImageRatio.LANDSCAPE,
         ),
         "image/jpeg",

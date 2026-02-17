@@ -1,8 +1,10 @@
+import logging
 from typing import Type
 
 from pcapi import settings
 from pcapi.connectors.big_query.importer.base import AbstractImporter
 from pcapi.connectors.big_query.queries import artist as bq_artist_queries
+from pcapi.core.artist import api as artist_api
 from pcapi.core.artist import models as artist_models
 from pcapi.core.artist.utils import get_artist_type
 from pcapi.core.artist.utils import sanitize_author_html
@@ -10,6 +12,16 @@ from pcapi.core.object_storage.backends.gcp import GCPBackend
 from pcapi.core.object_storage.backends.gcp import GCPData
 from pcapi.core.object_storage.backends.utils import copy_file_between_storage_backends
 from pcapi.models import db
+
+
+logger = logging.getLogger(__name__)
+
+
+def safe_store_mini_thumb(image_as_bytes: bytes, mediation_uuid: str) -> None:
+    try:
+        artist_api.store_mini_thumb(image_as_bytes, mediation_uuid)
+    except Exception as e:
+        logger.warning("Failed to store mini thumb for mediation %s", mediation_uuid, extra={"exc": e})
 
 
 class ArtistImporter(
@@ -44,6 +56,10 @@ class ArtistImporter(
                 destination_folder=settings.ARTIST_THUMBS_FOLDER_NAME,
                 file_id=model.mediation_uuid,
             )
+            image_as_bytes = self.gcp_data.get_public_object(
+                settings.DATA_ARTIST_THUMBS_FOLDER_NAME, model.mediation_uuid
+            )
+            safe_store_mini_thumb(image_as_bytes, mediation_uuid)
 
         return artist_models.Artist(
             id=model.id,
@@ -77,6 +93,10 @@ class ArtistImporter(
                 destination_folder=settings.ARTIST_THUMBS_FOLDER_NAME,
                 file_id=delta_model.mediation_uuid,
             )
+            image_as_bytes = self.gcp_data.get_public_object(
+                settings.DATA_ARTIST_THUMBS_FOLDER_NAME, delta_model.mediation_uuid
+            )
+            safe_store_mini_thumb(image_as_bytes, sqlalchemy_obj.mediation_uuid)
 
 
 class ArtistProductLinkImporter(

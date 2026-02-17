@@ -1,8 +1,13 @@
+import io
+import logging
 from dataclasses import dataclass
 
+import PIL.Image
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 
+from pcapi import settings
+from pcapi.connectors import thumb_storage
 from pcapi.core.artist import exceptions as artist_exceptions
 from pcapi.core.artist import models
 from pcapi.core.artist.models import Artist
@@ -13,6 +18,12 @@ from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import ProductMediation
 from pcapi.models import db
 from pcapi.routes.serialization import artist_serialize
+from pcapi.utils.image_conversion import MINI_THUMB_WIDTH
+from pcapi.utils.image_conversion import ImageRatio
+from pcapi.utils.image_conversion import get_crop_params
+
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -22,8 +33,9 @@ class ArtistOfferLinkKey:
     custom_name: str | None
 
 
-def get_artist_image_url(artist: Artist) -> str | None:
+def get_artist_image_url(artist: Artist) -> tuple[str | None, str | None]:
     image_url = artist.image
+    product_mediation_uuid = None
     if not image_url:
         most_popular_product_mediation: ProductMediation | None = (
             db.session.query(ProductMediation)
@@ -40,8 +52,9 @@ def get_artist_image_url(artist: Artist) -> str | None:
 
         if most_popular_product_mediation:
             image_url = most_popular_product_mediation.url
+            product_mediation_uuid = most_popular_product_mediation.uuid
 
-    return image_url
+    return image_url, product_mediation_uuid
 
 
 def create_artist_offer_link(offer_id: int, artist_offer_link: ArtistOfferLinkKey) -> None:
@@ -108,4 +121,17 @@ def upsert_artist_offer_links(
     return (
         created_keys,
         deleted_keys,
+    )
+
+
+def store_mini_thumb(image_as_bytes: bytes, mediation_uuid: str) -> None:
+    image = PIL.Image.open(io.BytesIO(image_as_bytes))
+    crop_params = get_crop_params(image.width, image.height, ImageRatio.SQUARE)
+    thumb_storage.create_thumb(
+        image_as_bytes,
+        ratio=ImageRatio.SQUARE,
+        crop_params=crop_params,
+        folder=settings.ARTIST_THUMBS_FOLDER_NAME,
+        object_id=f"{settings.ARTIST_MINI_THUMBS_FOLDER_SUFFIX}/{mediation_uuid}",
+        max_width=MINI_THUMB_WIDTH,
     )
