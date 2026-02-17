@@ -1,6 +1,7 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
 
+import { SvgIcon } from '../SvgIcon/SvgIcon'
 import styles from './Dropdown.module.scss'
 
 /**
@@ -20,11 +21,13 @@ type DropdownItemProps = DropdownMenu.DropdownMenuItemProps & {
   /**
    * The content to be displayed inside the dropdown item.
    */
-  children: React.ReactNode
+  children?: React.ReactNode
   /**
    * Indicates if the dropdown item is disabled.
    */
   disabled?: boolean
+
+  icon?: string
 }
 
 /**
@@ -51,6 +54,7 @@ export function DropdownItem({
   children,
   onSelect,
   disabled,
+  icon,
   ...radixDropdownItemProps
 }: DropdownItemProps): JSX.Element {
   return (
@@ -63,6 +67,8 @@ export function DropdownItem({
       {...(title ? { title } : {})}
       {...radixDropdownItemProps}
     >
+      {icon && <SvgIcon className={styles['menu-item-icon']} src={icon} />}
+      {title}
       {children}
     </DropdownMenu.Item>
   )

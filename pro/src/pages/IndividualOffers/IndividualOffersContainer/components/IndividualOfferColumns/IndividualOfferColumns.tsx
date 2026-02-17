@@ -12,7 +12,7 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import type { Column } from '@/ui-kit/Table/Table'
 
-import { IndividualActionsCells } from './components/IndividualActionsCells'
+import { IndividualActionsCells } from './components/IndividualActionsCells/IndividualActionsCells'
 import { OfferBookingCell } from './components/OfferBookingCell/OfferBookingCell'
 import { OfferNameCell } from './components/OfferNameCell/OfferNameCell'
 import { OfferStatusCell } from './components/OfferStatusCell/OfferStatusCell'

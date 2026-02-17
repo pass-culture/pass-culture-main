@@ -29,33 +29,6 @@
   }
 }
 
-.status-column {
-  &-content {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  }
-
-  &-headline-offer-star {
-    display: flex;
-    margin-left: var(--size-spacing-l);
-
-    &-icon {
-      color: var(--color-icon-brand-primary);
-      vertical-align: middle;
-    }
-  }
-
-  &-headline-offer-button {
-    border: none;
-    background: var(--color-background-default);
-  }
-}
-
-.actions-column {
-  place-self: center;
-}
-
 .isbn {
   @include fonts.body-accent-xs;
 

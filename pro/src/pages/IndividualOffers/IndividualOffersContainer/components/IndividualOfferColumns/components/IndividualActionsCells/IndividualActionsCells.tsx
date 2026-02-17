@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from 'react'
+import { Link } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -17,8 +18,6 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { getStoredFilterConfig } from '@/components/OffersTableSearch/utils'
-import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import penIcon from '@/icons/full-edit.svg'
 import fullStockIcon from '@/icons/full-stock.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
@@ -31,9 +30,9 @@ import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
 import { DropdownItem } from '@/ui-kit/Dropdown/DropdownItem'
 
-import styles from './Cells.module.scss'
-import { HeadlineOfferCell } from './HeadlineOfferCell/HeadlineOfferCell'
-import { HeadlineOfferImageDialogs } from './HeadlineOfferImageDialogs'
+import { HeadlineOfferCell } from '../HeadlineOfferCell/HeadlineOfferCell'
+import { HeadlineOfferImageDialogs } from '../HeadlineOfferImageDialogs'
+import styles from './IndividualActionsCells.module.scss'
 
 interface IndividualActionsCellsProps {
   offer: ListOffersOfferResponseModel
@@ -138,49 +137,36 @@ export const IndividualActionsCells = ({
           triggerTooltip
           dropdownTriggerRef={dropdownTriggerRef}
         >
-          <DropdownItem>
-            <Button
-              as="a"
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
-              to={editionOfferLink}
-              icon={penIcon}
-              label="Voir l’offre"
-            />
+          <DropdownItem icon={penIcon}>
+            <Link to={editionOfferLink}>Voir l’offre</Link>
           </DropdownItem>
           {offer.status === OfferStatus.DRAFT ? (
-            <DropdownItem onSelect={() => setIsConfirmDialogDeleteDraftOpen}>
-              <Button
-                icon={fullTrashIcon}
-                variant={ButtonVariant.TERTIARY}
-                color={ButtonColor.NEUTRAL}
-                label="Supprimer l’offre"
-              />
-            </DropdownItem>
+            <DropdownItem
+              onSelect={() =>
+                setIsConfirmDialogDeleteDraftOpen(
+                  !isConfirmDialogDeleteDraftOpen
+                )
+              }
+              title="Supprimer l’offre"
+              icon={fullTrashIcon}
+            />
           ) : (
-            <DropdownItem>
-              <Button
-                as="a"
-                variant={ButtonVariant.TERTIARY}
-                color={ButtonColor.NEUTRAL}
-                to={editionStockLink}
-                icon={fullStockIcon}
-                label={offer.isEvent ? `Dates et capacités` : `Stocks`}
-              />
+            <DropdownItem icon={fullStockIcon}>
+              <Link to={editionStockLink}>
+                {offer.isEvent ? `Dates et capacités` : `Stocks`}
+              </Link>
             </DropdownItem>
           )}
           {isHeadlineActionDisplayed && (
-            <DropdownItem>
-              <HeadlineOfferCell
-                offer={offer}
-                setIsConfirmReplacementDialogOpen={
-                  setIsConfirmDialogReplaceHeadlineOfferOpen
-                }
-                setIsOfferWithoutImageDialogOpen={
-                  setIsDialogForHeadlineOfferWithoutImageOpen
-                }
-              />
-            </DropdownItem>
+            <HeadlineOfferCell
+              offer={offer}
+              setIsConfirmReplacementDialogOpen={
+                setIsConfirmDialogReplaceHeadlineOfferOpen
+              }
+              setIsOfferWithoutImageDialogOpen={
+                setIsDialogForHeadlineOfferWithoutImageOpen
+              }
+            />
           )}
         </Dropdown>
       </div>

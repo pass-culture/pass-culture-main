@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
@@ -38,8 +37,6 @@ import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { CancelCollectiveBookingModal } from '@/components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
 import { ShareLinkDrawer } from '@/components/CollectiveOffer/ShareLinkDrawer/ShareLinkDrawer'
-import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullClearIcon from '@/icons/full-clear.svg'
 import fullCopyIcon from '@/icons/full-duplicate.svg'
 import fullPenIcon from '@/icons/full-edit.svg'
@@ -204,13 +201,15 @@ export const OfferActionsCell = ({
     }
   }
 
-  const handleEditOfferClick = () => {
+  const handleEditOfferClick = (to: string) => {
     logEvent(Events.CLICKED_EDIT_COLLECTIVE_OFFER, {
       from: location.pathname,
       offerId: offer.id,
       offerType: 'collective',
       status: offer.displayedStatus,
     })
+
+    return navigate(to)
   }
 
   const canDuplicateOffer = isActionAllowedOnCollectiveOffer(
@@ -296,52 +295,31 @@ export const OfferActionsCell = ({
         >
           {canDuplicateOffer && (
             <DropdownItem
-              className={styles['menu-item']}
+              title="Dupliquer"
+              icon={fullCopyIcon}
               onSelect={handleCreateOfferClick}
-            >
-              <Button
-                icon={fullCopyIcon}
-                variant={ButtonVariant.TERTIARY}
-                color={ButtonColor.NEUTRAL}
-                label="Dupliquer"
-              />
-            </DropdownItem>
+            />
           )}
           {canCreateBookableOffer && (
             <DropdownItem
-              className={styles['menu-item']}
+              title="Créer une offre réservable"
+              icon={fullPlusIcon}
               onSelect={handleCreateOfferClick}
-            >
-              <Button
-                icon={fullPlusIcon}
-                variant={ButtonVariant.TERTIARY}
-                color={ButtonColor.NEUTRAL}
-                label="Créer une offre réservable"
-              />
-            </DropdownItem>
+            />
           )}
           {canEditOffer && (
-            <DropdownItem>
-              <Button
-                as="a"
-                variant={ButtonVariant.TERTIARY}
-                color={ButtonColor.NEUTRAL}
-                to={editionOfferLink}
-                icon={fullPenIcon}
-                onClick={handleEditOfferClick}
-                label="Modifier"
-              />
-            </DropdownItem>
+            <DropdownItem
+              title="Modifier"
+              icon={fullPenIcon}
+              onSelect={() => handleEditOfferClick(editionOfferLink)}
+            />
           )}
           {canPublishOffer && (
-            <DropdownItem onSelect={hideOrPublishOffer}>
-              <Button
-                icon={strokeCheckIcon}
-                variant={ButtonVariant.TERTIARY}
-                color={ButtonColor.NEUTRAL}
-                label="Publier"
-              />
-            </DropdownItem>
+            <DropdownItem
+              title="Publier"
+              icon={strokeCheckIcon}
+              onSelect={hideOrPublishOffer}
+            />
           )}
           {!isCollectiveOfferBookable(offer) && canShareOffer && (
             <DropdownItem>
@@ -350,41 +328,24 @@ export const OfferActionsCell = ({
           )}
           {canHideOffer && (
             <DropdownItem
-              className={styles['menu-item']}
+              title="Mettre en pause"
+              icon={fullHideIcon}
               onSelect={hideOrPublishOffer}
-            >
-              <Button
-                icon={fullHideIcon}
-                variant={ButtonVariant.TERTIARY}
-                color={ButtonColor.NEUTRAL}
-                label="Mettre en pause"
-              />
-            </DropdownItem>
+            />
           )}
           {isBookingCancellable && (
             <DropdownItem
-              className={cn(styles['menu-item'])}
+              title="Annuler la réservation"
+              icon={fullClearIcon}
               onSelect={() => setIsCancelledBookingModalOpen(true)}
-            >
-              <Button
-                icon={fullClearIcon}
-                variant={ButtonVariant.TERTIARY}
-                color={ButtonColor.BRAND}
-                label="Annuler la réservation"
-              />
-            </DropdownItem>
+            />
           )}
           {canArchiveOffer && (
-            <DropdownItem onSelect={() => setIsArchivedModalOpen(true)} asChild>
-              <div className={styles['status-filter-label']}>
-                <Button
-                  icon={strokeThingIcon}
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  label="Archiver"
-                />
-              </div>
-            </DropdownItem>
+            <DropdownItem
+              title="Archiver"
+              icon={strokeThingIcon}
+              onSelect={() => setIsArchivedModalOpen(true)}
+            />
           )}
         </Dropdown>
       )}
