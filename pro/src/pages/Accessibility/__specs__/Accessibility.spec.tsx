@@ -8,8 +8,8 @@ import {
 
 import { AccessibilityMenu } from '../AccessibilityMenu'
 
-const renderAccessibilityMenu: RenderComponentFunction = () =>
-  renderWithProviders(<AccessibilityMenu />)
+const renderAccessibilityMenu: RenderComponentFunction = ({ options = {} }) =>
+  renderWithProviders(<AccessibilityMenu />, options)
 
 const mockNavigate = vi.fn()
 
@@ -26,11 +26,30 @@ describe('Statement of Accessibility page', () => {
 
     expect(screen.getByText('Informations d’accessibilité')).toBeInTheDocument()
   })
-  it('should display the back button and return to previous page on click', async () => {
-    renderAccessibilityMenu({})
+  it('should display the back button and return to home on click if logged in', async () => {
+    renderAccessibilityMenu({
+      options: {
+        storeOverrides: {
+          user: { currentUser: { id: 123 } },
+        },
+      },
+    })
 
     const retourBtn = screen.getByText('Retour')
     await userEvent.click(retourBtn)
-    expect(mockNavigate).toHaveBeenCalledTimes(1)
+    expect(mockNavigate).toHaveBeenCalledWith('/accueil')
+  })
+  it('should display the back button and return to connexion page on click if logged out', async () => {
+    renderAccessibilityMenu({
+      options: {
+        storeOverrides: {
+          user: { currentUser: null },
+        },
+      },
+    })
+
+    const retourBtn = screen.getByText('Retour')
+    await userEvent.click(retourBtn)
+    expect(mockNavigate).toHaveBeenCalledWith('/connexion')
   })
 })

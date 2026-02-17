@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -14,17 +15,12 @@ import { AccessibilityLayout } from './AccessibilityLayout'
 import styles from './AccessibilityMenu.module.scss'
 
 export function AccessibilityMenu() {
+  const user = useAppSelector(selectCurrentUser)
+  const isUserConnected = !!user
   const navigate = useNavigate()
-  const [previousPath, setPreviousPath] = useState('')
 
-  useEffect(() => {
-    if (!previousPath) {
-      setPreviousPath(globalThis.location.origin)
-    }
-  })
-
-  const navigateToPrevious = () => {
-    navigate(previousPath)
+  const backToDefault = () => {
+    isUserConnected ? navigate('/accueil') : navigate('/connexion')
   }
 
   return (
@@ -34,7 +30,7 @@ export function AccessibilityMenu() {
     >
       <div className={styles['page-content']}>
         <Button
-          onClick={() => navigateToPrevious()}
+          onClick={() => backToDefault()}
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
           icon={fullBackIcon}
