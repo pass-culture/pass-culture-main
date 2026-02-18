@@ -6,14 +6,12 @@
  * TODO (mdesquilbet-pass, 2026-02-16): clean tmp style
  *      (used to display tmp cards while waiting for real ones)
  */
-.container > * {
-  border: 2px solid rgb(96 139 168);
-  border-radius: 5px;
-  background-color: rgb(96 139 168 / 10%);
-  width: 100%;
-}
 
 .top > * {
+  border: 2px solid rgb(7 57 90);
+  border-radius: 5px;
+  background-color: rgb(96 139 168 / 30%);
+  width: 100%;
   height: 60px;
 }
 
