@@ -1,8 +1,10 @@
+import { addDays, isBefore } from 'date-fns'
 import { useId, useState } from 'react'
 
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { getToday } from '@/commons/utils/date'
 import {
   getPanelId,
   getTabId,
@@ -78,17 +80,57 @@ export const NewHomepage = (): JSX.Element => {
             Page d'accueil - part individuelle
           </span>
           <div className={styles['top']}>
-            <div>Banner indiv</div>
+            {!selectedVenue?.isValidated && (
+              <div>
+                Votre structure est en cours de traitement par les équipes du
+                pass Culture
+                <br />
+                <b>Banner Homologation</b>
+              </div>
+            )}
           </div>
           <div className={styles['main']}>
-            <div>Liste des offres indiv</div>
-            <div>Stats de consult</div>
-            <div>Edito</div>
+            <div>
+              Activités sur vos offres individuelles
+              <br />
+              <b>Module gestion offre indivs</b>
+            </div>
+            <div>
+              Evolution de consultation de vos offres
+              <br />
+              <b>Module statistiques</b>
+            </div>
+            <div>
+              Comment valoriser vos offres auprès du jeune public ?
+              <br />
+              <b>Module Edito</b>
+            </div>
           </div>
           <div className={styles['side']}>
-            <div>Page partenaire</div>
-            <div>Newsletter</div>
-            <div>Budget €€€</div>
+            {selectedVenue?.hasNonFreeOffers && (
+              <div>
+                Remboursement
+                <br />
+                <b>Module Budget</b>
+              </div>
+            )}
+            <div>
+              Votre page sur l’application
+              <br />
+              <b>Module page partenaire</b>
+            </div>
+            {isBefore(getToday(), addDays(selectedVenue?.dateCreated, 31)) && (
+              <div>
+                Participer à nos webinaires sur la part indivisuelle !
+                <br />
+                <b>Module Webinaires indiv</b>
+              </div>
+            )}
+            <div>
+              Suivez notre actualité !
+              <br />
+              <b>Module Newsletter</b>
+            </div>
           </div>
         </div>
       )}
