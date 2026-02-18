@@ -74,57 +74,6 @@ if __name__ == "__main__":
         for date_filter, number_of_days in zip(date_filter_options, number_of_days_options):
             db.session.execute(sa.text("SET SESSION statement_timeout = '600s'"))  # 10 minutes
 
-            offer_ids_query = db.session.query(models.Offer.id).filter(
-                models.Offer.venueId == venue_id,
-                models.Offer.publicationDatetime >= date_filter,
-            )
-
-            offer_ids_query_str = (
-                str(
-                    offer_ids_query.statement.compile(
-                        compile_kwargs={"literal_binds": True}, dialect=postgresql.dialect()
-                    )
-                )
-                + ";"
-            )
-
-            start = time.perf_counter()
-            rows = db.session.execute(sa.text("EXPLAIN (analyze, buffers) " + offer_ids_query_str)).fetchall()
-            result = "\n".join((str(r) for r in rows))
-            stop = time.perf_counter()
-
-            results.append(
-                {
-                    "venue_id": venue_id,
-                    "number_of_days": number_of_days,
-                    "run_number": 1,
-                    "time": f"{(stop - start):.6f}s",
-                    "offers_count": "",
-                    "query": offer_ids_query_str,
-                    "explain_analyze": result,
-                }
-            )
-
-            # second run to see the effect of postgres buffer
-            start = time.perf_counter()
-            rows = db.session.execute(sa.text("EXPLAIN (analyze, buffers) " + offer_ids_query_str)).fetchall()
-            result = "\n".join((str(r) for r in rows))
-            stop = time.perf_counter()
-
-            results.append(
-                {
-                    "venue_id": venue_id,
-                    "number_of_days": number_of_days,
-                    "run_number": 2,
-                    "time": f"{(stop - start):.6f}s",
-                    "offers_count": "",
-                    "query": offer_ids_query_str,
-                    "explain_analyze": result,
-                }
-            )
-
-            # query with join
-            count = offer_ids_query.count()
             offers_query = (
                 db.session.query(models.Offer)
                 .filter(
@@ -142,6 +91,7 @@ if __name__ == "__main__":
                 )
                 + ";"
             )
+
             start = time.perf_counter()
             rows = db.session.execute(sa.text("EXPLAIN (analyze, buffers) " + offers_query_str)).fetchall()
             result = "\n".join((str(r) for r in rows))
@@ -151,7 +101,27 @@ if __name__ == "__main__":
                 {
                     "venue_id": venue_id,
                     "number_of_days": number_of_days,
-                    "run_number": "",
+                    "run_number": 1,
+                    "time": f"{(stop - start):.6f}s",
+                    "offers_count": "",
+                    "query": offers_query_str,
+                    "explain_analyze": result,
+                }
+            )
+
+            # second run to see the effect of postgres buffer
+            start = time.perf_counter()
+            rows = db.session.execute(sa.text("EXPLAIN (analyze, buffers) " + offers_query_str)).fetchall()
+            result = "\n".join((str(r) for r in rows))
+            stop = time.perf_counter()
+
+            count = offers_query.count()
+
+            results.append(
+                {
+                    "venue_id": venue_id,
+                    "number_of_days": number_of_days,
+                    "run_number": 2,
                     "time": f"{(stop - start):.6f}s",
                     "offers_count": count,
                     "query": offers_query_str,
