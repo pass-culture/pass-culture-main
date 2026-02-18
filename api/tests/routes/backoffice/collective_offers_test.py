@@ -86,7 +86,7 @@ def collective_offers_fixture() -> tuple:
         collectiveOffer__institution=institution_1,
         collectiveOffer__formats=[EacFormat.ATELIER_DE_PRATIQUE],
         collectiveOffer__locationType=educational_models.CollectiveLocationType.ADDRESS,
-        collectiveOffer__offererAddress=offerers_factories.OffererAddressFactory(
+        collectiveOffer__offererAddress=offerers_factories.OfferLocationFactory(
             address__postalCode="47000", address__departmentCode="47"
         ),
         collectiveOffer__provider=providers_factories.ProviderFactory(name="Cinéma Provider"),
@@ -99,7 +99,7 @@ def collective_offers_fixture() -> tuple:
         collectiveOffer__name="A Very Specific Name",
         collectiveOffer__formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
         collectiveOffer__locationType=educational_models.CollectiveLocationType.ADDRESS,
-        collectiveOffer__offererAddress=offerers_factories.OffererAddressFactory(
+        collectiveOffer__offererAddress=offerers_factories.OfferLocationFactory(
             address__postalCode="97400", address__departmentCode="974"
         ),
         price=11,
@@ -117,7 +117,7 @@ def collective_offers_fixture() -> tuple:
         collectiveOffer__validation=offers_models.OfferValidationStatus.REJECTED,
         collectiveOffer__rejectionReason=educational_models.CollectiveOfferRejectionReason.WRONG_DATE,
         collectiveOffer__locationType=educational_models.CollectiveLocationType.ADDRESS,
-        collectiveOffer__offererAddress=offerers_factories.OffererAddressFactory(
+        collectiveOffer__offererAddress=offerers_factories.OfferLocationFactory(
             address__postalCode="74000", address__departmentCode="74"
         ),
         price=20,

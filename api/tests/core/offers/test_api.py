@@ -1315,7 +1315,7 @@ class CreateOfferTest:
         self,
     ):
         venue = offerers_factories.VenueFactory()
-        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
+        offerer_address = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer)
 
         body = offers_schemas.CreateOffer(
             name="A pretty good offer",
@@ -1334,7 +1334,7 @@ class CreateOfferTest:
 
     def test_create_offer_from_scratch(self, caplog):
         venue = offerers_factories.VenueFactory()
-        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
+        offerer_address = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer)
 
         body = offers_schemas.CreateOffer(
             name="A pretty good offer",
@@ -1528,7 +1528,7 @@ class CreateOfferTest:
     @mock.patch("pcapi.core.artist.api.create_artist_offer_link")
     def test_call_create_artist_offer_link_when_feature_flag_enabled(self, mock_create_link):
         venue = offerers_factories.VenueFactory()
-        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
+        offerer_address = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer)
         artist = artist_factories.ArtistFactory()
 
         body = offers_schemas.CreateOffer(
@@ -1584,7 +1584,7 @@ class CreateOfferTest:
     @mock.patch("pcapi.core.artist.api.create_artist_offer_link")
     def test_do_not_call_create_artist_offer_link_when_feature_flag_disabled(self, mock_create_link):
         venue = offerers_factories.VenueFactory()
-        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
+        offerer_address = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer)
         artist = artist_factories.ArtistFactory()
 
         body = offers_schemas.CreateOffer(
@@ -1612,7 +1612,7 @@ class CreateOfferTest:
     @mock.patch("pcapi.core.artist.api.create_artist_offer_link")
     def test_do_not_call_create_artist_offer_link_when_artist_offer_links_is_none(self, mock_create_link):
         venue = offerers_factories.VenueFactory()
-        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
+        offerer_address = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer)
 
         body = offers_schemas.CreateOffer(
             name="A pretty good offer",
@@ -1632,7 +1632,7 @@ class CreateOfferTest:
     @pytest.mark.features(WIP_OFFER_ARTISTS=True)
     def test_raise_error_when_artist_type_is_not_allowed(self):
         venue = offerers_factories.VenueFactory()
-        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
+        offerer_address = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer)
         artist = artist_factories.ArtistFactory()
 
         body = offers_schemas.CreateOffer(
@@ -1974,7 +1974,7 @@ class UpdateOfferTest:
             kwargs["siret"] = None
             kwargs["comment"] = "Digital venue"
         venue = offerers_factories.VenueFactory(**kwargs)
-        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
+        offerer_address = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer)
         offer = factories.OfferFactory(
             offererAddress=None,
             venue=venue,
@@ -1993,7 +1993,7 @@ class UpdateOfferTest:
 
     def test_update_venue(self):
         offerer = offerers_factories.OffererFactory()
-        offer_oa = offerers_factories.OffererAddressFactory(offerer=offerer)
+        offer_oa = offerers_factories.VenueLocationFactory(offerer=offerer)
         offer = factories.OfferFactory(offererAddress=offer_oa)
         offer_oa_id = offer.offererAddressId
         new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
@@ -2011,7 +2011,7 @@ class UpdateOfferTest:
         assert updated_offer.offererAddressId == offer_oa_id
 
     def test_update_offerer_address(self):
-        new_offerer_address = offerers_factories.OffererAddressFactory(
+        new_offerer_address = offerers_factories.OfferLocationFactory(
             address__latitude=50.63153,
             address__longitude=3.06089,
             address__postalCode="59000",
@@ -2029,7 +2029,7 @@ class UpdateOfferTest:
         assert updated_offer.offererAddressId == new_offerer_address.id
 
     def test_update_both_venue_and_offerer_address(self):
-        new_offerer_address = offerers_factories.OffererAddressFactory(
+        new_offerer_address = offerers_factories.VenueLocationFactory(
             address__latitude=50.63153,
             address__longitude=3.06089,
             address__postalCode="59000",
@@ -4837,16 +4837,18 @@ class MoveOfferTest:
         """Moving an offer that has a custom location from a venue to another venue
         should create a new oa with same address and label, but different venueid"""
         offerer = offerers_factories.OffererFactory()
-        offer_oa = offerers_factories.OffererAddressFactory(offerer=offerer, label="Custom location")
+        offer_oa = offerers_factories.OfferLocationFactory(offerer=offerer, label="Custom location")
         offer = factories.OfferFactory(venue__managingOfferer=offerer, offererAddress=offer_oa)
         new_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         assert new_venue.current_pricing_point is None
         assert offer.offererAddress != new_venue.offererAddress
+        initial_offerer_address_id = offer_oa.id
 
         api.move_offer(offer, new_venue)
 
         db.session.refresh(offer)
         assert offer.venue == new_venue
+        assert offer.offererAddressId != initial_offerer_address_id
         assert offer.offererAddress.addressId == offer_oa.addressId
         assert offer.offererAddress.venueId == new_venue.id
 

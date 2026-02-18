@@ -210,11 +210,11 @@ class GetOffererAddressesTest:
         offerer = offerers_factories.OffererFactory()
         venue_with_two_offers = offerers_factories.VenueFactory(managingOfferer=offerer)
         # Shouldn't appear in the results
-        offerers_factories.OffererAddressFactory(offerer=offerer)
+        offerers_factories.OfferLocationFactory(offerer=offerer)
         # Should appear in the results
-        offerer_address_with_one_offer = offerers_factories.OffererAddressFactory(offerer=offerer)
+        offerer_address_with_one_offer = offerers_factories.OfferLocationFactory(offerer=offerer)
         # Ensure that we don't return an OffererAddress for every associated offer
-        offerer_address_with_two_offers = offerers_factories.OffererAddressFactory(offerer=offerer)
+        offerer_address_with_two_offers = offerers_factories.OfferLocationFactory(offerer=offerer)
 
         offer_factory(venue__managingOfferer=offerer, offererAddress=offerer_address_with_one_offer)
         offer_factory(venue=venue_with_two_offers, offererAddress=offerer_address_with_two_offers)
@@ -229,8 +229,8 @@ class GetOffererAddressesTest:
     def test_get_offerer_addresses_offer_types(self):
         offerer = offerers_factories.OffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        oa = offerers_factories.OffererAddressFactory(offerer=offerer)
-        other_oa = offerers_factories.OffererAddressFactory(offerer=offerer)
+        oa = offerers_factories.OfferLocationFactory(offerer=offerer)
+        other_oa = offerers_factories.OfferLocationFactory(offerer=offerer)
 
         offers_factories.OfferFactory(venue=venue, offererAddress=oa)
         educational_factories.CollectiveOfferOnOtherAddressLocationFactory(venue=venue, offererAddress=other_oa)
@@ -243,6 +243,7 @@ class GetOffererAddressesTest:
         assert result.id == oa.id
 
     def test_get_offerer_addresses_do_not_return_venue_locations(self):
+        # TODO Bulle legacy?
         offerer = offerers_factories.OffererFactory()
         oa = offerers_factories.OffererAddressFactory(offerer=offerer)
         offer_oa = offerers_factories.OfferLocationFactory(offerer=offerer)
@@ -317,10 +318,10 @@ def test_sould_return_user_offerer_timezones():
     user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
     offerer = user_offerer.offerer
 
-    offerers_factories.OffererAddressFactory(offerer=offerer, address__timezone="Europe/Paris")
-    offerers_factories.OffererAddressFactory(offerer=offerer, address__timezone="Europe/Paris")
-    offerers_factories.OffererAddressFactory(offerer=offerer, address__timezone="America/Guadeloupe")
-    offerers_factories.OffererAddressFactory(offerer=offerer, address__timezone="Indian/Mayotte")
+    offerers_factories.VenueLocationFactory(offerer=offerer, address__timezone="Europe/Paris")
+    offerers_factories.VenueLocationFactory(offerer=offerer, address__timezone="Europe/Paris")
+    offerers_factories.VenueLocationFactory(offerer=offerer, address__timezone="America/Guadeloupe")
+    offerers_factories.VenueLocationFactory(offerer=offerer, address__timezone="Indian/Mayotte")
 
     # Venue with different timezone
     offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__timezone="America/Cayenne")

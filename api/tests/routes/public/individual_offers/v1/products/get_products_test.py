@@ -75,9 +75,9 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
 
     def test_should_return_offers_linked_to_address_id(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offerer_address_1 = offerers_factories.OffererAddressFactory(offerer=venue_provider.venue.managingOfferer)
-        offerer_address_2 = offerers_factories.OffererAddressFactory(offerer=venue_provider.venue.managingOfferer)
-        offerer_address_3 = offerers_factories.OffererAddressFactory(address=offerer_address_1.address)
+        offerer_address_1 = offerers_factories.OfferLocationFactory(offerer=venue_provider.venue.managingOfferer)
+        offerer_address_2 = offerers_factories.OfferLocationFactory(offerer=venue_provider.venue.managingOfferer)
+        offerer_address_3 = offerers_factories.OfferLocationFactory(address=offerer_address_1.address)
         offer1 = offers_factories.ThingOfferFactory(venue=venue_provider.venue, offererAddress=offerer_address_1)
         offers_factories.ThingOfferFactory(venue=venue_provider.venue, offererAddress=offerer_address_2)
         offers_factories.ThingOfferFactory(offererAddress=offerer_address_3)

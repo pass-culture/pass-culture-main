@@ -300,7 +300,7 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
             durationMinutes=300,
             priceDetail="Some detail aubout the price",
             locationType=educational_models.CollectiveLocationType.ADDRESS,
-            offererAddress=offerers_factories.OffererAddressFactory(),
+            offererAddress=offerers_factories.OfferLocationFactory(),
             bookingEmails=["booking1@example.com", "booking2@example.com"],
         )
         url = url_for(self.endpoint, collective_offer_template_id=collectiveOfferTemplate.id)

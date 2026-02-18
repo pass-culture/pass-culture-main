@@ -46,7 +46,7 @@ def test_serialize_offer():
     )
     macro_section = book_macro_section.macroSection.strip()
 
-    offer_offerer_address = offerers_factories.OffererAddressFactory(
+    offer_offerer_address = offerers_factories.OfferLocationFactory(
         address__departmentCode="86",
         address__postalCode="86140",
         address__city="Cernay",
@@ -688,7 +688,7 @@ def test_serialize_collective_offer_template_location_school():
 
 
 def test_serialize_collective_offer_template_location_address():
-    offerer_address = offerers_factories.OffererAddressFactory(address__latitude=45, address__longitude=3)
+    offerer_address = offerers_factories.OfferLocationFactory(address__latitude=45, address__longitude=3)
     collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
         locationType=educational_models.CollectiveLocationType.ADDRESS, offererAddress=offerer_address
     )

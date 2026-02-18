@@ -771,7 +771,7 @@ class GetFilteredCollectiveOffersTest:
         assert result.one() == offer_to_be_defined
 
     def test_filter_offerer_address(self, pro_user):
-        oa = offerers_factories.OffererAddressFactory()
+        oa = offerers_factories.OfferLocationFactory()
         offer = educational_factories.CollectiveOfferOnOtherAddressLocationFactory(
             offererAddress=oa, venue__managingOfferer=pro_user.UserOfferers[0].offerer
         )
