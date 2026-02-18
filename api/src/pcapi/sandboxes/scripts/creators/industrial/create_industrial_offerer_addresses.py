@@ -41,13 +41,13 @@ def create_industrial_offerer_addresses() -> None:
         banId="75118_8288_00120",
     )
     offerer_adresses = [
-        offerers_factories.OffererAddressFactory.create(
+        offerers_factories.OfferLocationFactory.create(
             label="Accor Arena", address=bercy_address, offerer=offerer_with_addresses
         ),
-        offerers_factories.OffererAddressFactory.create(
+        offerers_factories.OfferLocationFactory.create(
             label="Musée Grévin", address=grevin_address, offerer=offerer_with_addresses
         ),
-        offerers_factories.OffererAddressFactory.create(
+        offerers_factories.OfferLocationFactory.create(
             label="La cigale", address=lacigale_address, offerer=offerer_with_addresses
         ),
     ]
@@ -62,7 +62,7 @@ def create_industrial_offerer_addresses() -> None:
         )
 
     offerer_with_one_address = offerers_factories.OffererFactory.create(name="2 - Structure avec une adresse")
-    offerer_address_one = offerers_factories.OffererAddressFactory.create(
+    offerer_address_one = offerers_factories.OfferLocationFactory.create(
         label="Bercy Accor Arena", address=bercy_address, offerer=offerer_with_one_address
     )
     venue_with_one_address = offerers_factories.VenueFactory.create(

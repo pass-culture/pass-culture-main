@@ -347,9 +347,9 @@ def _get_location_from_public_model(
         case public_api_collective_offers_serialize.CollectiveOfferLocationAddressVenueModel():
             offerer_address = offerers_api.get_or_create_offer_location(
                 offerer_id=venue.managingOffererId,
+                venue_id=venue.id,
                 address_id=venue.offererAddress.addressId,
                 label=venue.publicName,
-                venue_id=venue.id,
             )
             location = CollectiveOfferLocation(
                 location_type=models.CollectiveLocationType.ADDRESS,
@@ -361,9 +361,9 @@ def _get_location_from_public_model(
             address = public_utils.get_address_or_raise_404(location_body.addressId)
             offerer_address = offerers_api.get_or_create_offer_location(
                 offerer_id=venue.managingOffererId,
+                venue_id=venue.id,
                 address_id=address.id,
                 label=location_body.addressLabel,
-                venue_id=venue.id,
             )
 
             location = CollectiveOfferLocation(
@@ -956,12 +956,12 @@ def create_new_location_if_offer_uses_origin_venue_location(
 ) -> None:
     # Use a different OA if the offer uses the venue's OA
     source_venue = collective_offer.venue
-    if collective_offer.offererAddress and collective_offer.offererAddress == source_venue.offererAddress:
+    if collective_offer.offererAddress:
         destination_oa = offerers_api.get_or_create_offer_location(
-            source_venue.managingOffererId,
-            source_venue.offererAddress.addressId,
-            source_venue.publicName,
-            source_venue.id,
+            offerer_id=source_venue.managingOffererId,
+            venue_id=destination_venue.id,
+            address_id=source_venue.offererAddress.addressId,
+            label=source_venue.publicName,
         )
         collective_offer.offererAddress = destination_oa
 

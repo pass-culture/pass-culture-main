@@ -623,19 +623,19 @@ class CollectiveOfferOnSchoolLocationFactory(PublishedCollectiveOfferFactory):
 class CollectiveOfferOnAddressVenueLocationFactory(PublishedCollectiveOfferFactory):
     locationType = models.CollectiveLocationType.ADDRESS
     offererAddress = factory.SubFactory(
-        offerers_factories.OffererAddressFactory,
+        offerers_factories.OfferLocationFactory,
         address=factory.SelfAttribute("..venue.offererAddress.address"),
         label=factory.SelfAttribute("..venue.publicName"),
-        venue=factory.SelfAttribute("..venue"),
+        # venue=factory.SelfAttribute("..venue"),
     )
 
 
 class CollectiveOfferOnOtherAddressLocationFactory(PublishedCollectiveOfferFactory):
     locationType = models.CollectiveLocationType.ADDRESS
     offererAddress = factory.SubFactory(
-        offerers_factories.OffererAddressFactory,
+        offerers_factories.OfferLocationFactory,
         offerer=factory.SelfAttribute("..venue.managingOfferer"),
-        venue=factory.SelfAttribute("..venue"),
+        # venue=factory.SelfAttribute("..venue"),
         address=factory.SubFactory(geography_factories.AddressFactory),
     )
 
@@ -654,19 +654,19 @@ class CollectiveOfferTemplateOnSchoolLocationFactory(CollectiveOfferTemplateFact
 class CollectiveOfferTemplateOnAddressVenueLocationFactory(CollectiveOfferTemplateFactory):
     locationType = models.CollectiveLocationType.ADDRESS
     offererAddress = factory.SubFactory(
-        offerers_factories.OffererAddressFactory,
+        offerers_factories.OfferLocationFactory,
         address=factory.SelfAttribute("..venue.offererAddress.address"),
         label=factory.SelfAttribute("..venue.publicName"),
-        venue=factory.SelfAttribute("..venue"),
+        # venueId=factory.SelfAttribute("..venue.id"),
     )
 
 
 class CollectiveOfferTemplateOnOtherAddressLocationFactory(CollectiveOfferTemplateFactory):
     locationType = models.CollectiveLocationType.ADDRESS
     offererAddress = factory.SubFactory(
-        offerers_factories.OffererAddressFactory,
+        offerers_factories.OfferLocationFactory,
         offerer=factory.SelfAttribute("..venue.managingOfferer"),
-        venue=factory.SelfAttribute("..venue"),
+        # venue=factory.SelfAttribute("..venue"),
         address=factory.SubFactory(geography_factories.AddressFactory),
     )
 

@@ -248,9 +248,9 @@ class OfferFactory(BaseFactory[models.Offer]):
             if venue:
                 kwargs["offererAddress"] = offerers_api.get_or_create_offer_location(
                     offerer_id=venue.managingOffererId,
+                    venue_id=venue.id,
                     address_id=venue.offererAddress.addressId,
                     label=venue.publicName,
-                    venue_id=venue.id,
                 )
 
         kwargs.pop("isActive", None)
