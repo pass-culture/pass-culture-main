@@ -4,7 +4,7 @@ import fullDownIcon from '@/icons/full-down.svg'
 import fullUpIcon from '@/icons/full-up.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
-import styles from './SideNavLinks.module.scss'
+import styles from '../SideNavLinks.module.scss'
 
 const NAV_ITEM_ICON_SIZE = '20'
 
@@ -33,7 +33,7 @@ export const SideNavToggleButton = ({
         styles['nav-links-item'],
         styles['nav-section-button']
       )}
-      aria-expanded={isExpanded}
+      aria-expanded={Boolean(isExpanded)}
       aria-controls={ariaControls}
       id={id}
     >

@@ -8,7 +8,7 @@ import fullRightIcon from '@/icons/full-right.svg'
 import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
-import styles from './SideNavLinks.module.scss'
+import styles from '../SideNavLinks.module.scss'
 
 interface HelpDropdownNavItemProps {
   isMobileScreen: boolean
