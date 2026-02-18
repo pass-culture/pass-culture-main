@@ -1648,13 +1648,13 @@ class GetOffererAddressesTest(GetEndpointHelper):
     expected_num_queries = 2
 
     def test_get_offerer_addresses(self, authenticated_client, offerer):
-        offerers_factories.OffererAddressFactory(
+        offerers_factories.OfferLocationFactory(
             offerer=offerer, label="Première adresse", address__street="3 Bd Poissonnière"
         )
-        offerers_factories.OffererAddressFactory(
+        offerers_factories.OfferLocationFactory(
             offerer=offerer, label="Deuxième adresse", address__street="5 Bd Poissonnière"
         )
-        offerers_factories.OffererAddressFactory()  # other offerer
+        offerers_factories.OfferLocationFactory()  # other offerer
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
@@ -1682,10 +1682,10 @@ class GetOffererAddressesTest(GetEndpointHelper):
             managingOfferer=offerer,
             offererAddress__address__street="3 Bd Poissonnière",
         )
-        offerers_factories.OffererAddressFactory(
+        offerers_factories.OfferLocationFactory(
             offerer=offerer, label="Autre localisation", address__street="5 Bd Poissonnière"
         )
-        offerers_factories.OffererAddressFactory()  # other offerer
+        offerers_factories.OfferLocationFactory()  # other offerer
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
 

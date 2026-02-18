@@ -5,6 +5,7 @@ import pytest
 from pcapi.core.educational import factories
 from pcapi.core.educational import models
 from pcapi.core.educational.testing import get_serialized_address
+from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import AUTHENTICATION_QUERIES
@@ -102,8 +103,16 @@ class Returns200Test:
     def test_one_collective_offer_location_other_address(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        offer = factories.CollectiveOfferOnOtherAddressLocationFactory(venue=venue)
+        oa = offerers_factories.OfferLocationFactory(
+            offerer=venue.managingOfferer, venue=venue, address=geography_factories.AddressFactory()
+        )
+        offer = factories.CollectiveOfferTemplateOnOtherAddressLocationFactory(
+            venue=venue,
+            offererAddress=oa,
+            # offerer=venue.managingOfferer,
+        )
 
+        # TODO bulle may be in get /collective/bookable-offers
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.expected_num_queries):
             response = client.get(URL)
@@ -280,7 +289,7 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
-        oa = offerers_factories.OffererAddressFactory()
+        oa = offerers_factories.OfferLocationFactory(venue=venue, offerer=venue.managingOfferer)
         offer_school = factories.CollectiveOfferOnSchoolLocationFactory(venue=venue)
         offer_address = factories.CollectiveOfferOnOtherAddressLocationFactory(venue=venue, offererAddress=oa)
         factories.CollectiveOfferOnOtherAddressLocationFactory(venue=venue)

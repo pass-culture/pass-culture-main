@@ -196,7 +196,7 @@ class GetCappedOffersForFiltersTest:
             managingOfferer=pro_attachment_to_offerer.offerer,
             offererAddress__address__postalCode="97300",
         )
-        cayenne_offerer_address = offerers_factories.OffererAddressFactory(
+        cayenne_offerer_address = offerers_factories.OfferLocationFactory(
             venue=venue_in_cayenne, address__timezone="America/Cayenne"
         )
         offer_in_cayenne = factories.OfferFactory(
@@ -210,7 +210,7 @@ class GetCappedOffersForFiltersTest:
             managingOfferer=pro_attachment_to_offerer.offerer,
             offererAddress__address__postalCode="97600",
         )
-        mayotte_offerer_address = offerers_factories.OffererAddressFactory(
+        mayotte_offerer_address = offerers_factories.OfferLocationFactory(
             venue=venue_in_mayotte, address__timezone="Indian/Mayotte"
         )
         offer_in_mayotte = factories.OfferFactory(
@@ -1118,12 +1118,12 @@ class IncomingEventStocksTest:
         address_paris = geography_factories.AddressFactory()
         address_overseas = geography_factories.AddressFactory(postalCode="97180", departmentCode="971")
 
-        offerer_address = offerers_factories.OffererAddressFactory(address=address_paris)
+        offerer_address = offerers_factories.OfferLocationFactory(address=address_paris)
         offer = factories.OfferFactory(offererAddress=offerer_address)
         self.stock_today = factories.EventStockFactory(beginningDatetime=today, offer=offer)
         bookings_factories.BookingFactory.create_batch(2, stock=self.stock_today)
 
-        overseas_offerer_address = offerers_factories.OffererAddressFactory(address=address_overseas)
+        overseas_offerer_address = offerers_factories.OfferLocationFactory(address=address_overseas)
         offer = factories.OfferFactory(
             venue__offererAddress__address__departmentCode="97",
             venue__offererAddress__address__postalCode="97180",

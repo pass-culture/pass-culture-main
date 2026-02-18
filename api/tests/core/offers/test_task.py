@@ -125,7 +125,7 @@ class UpdateOfferAndRelatedStockTest:
 
     def test_should_update_offer_address(self):
         provider_1 = providers_factories.PublicApiProviderFactory()
-        offerer_address = offerers_factories.OffererAddressFactory()
+        offerer_address = offerers_factories.OfferLocationFactory()
 
         stock = factories.ThingStockFactory(offer__lastProvider=provider_1)
         has_been_updated, updated_offer = tasks._update_offer_and_related_stock(

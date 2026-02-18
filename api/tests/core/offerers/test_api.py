@@ -3830,8 +3830,8 @@ class OffererAddressTest:
 
         oa_return = offerers_api.get_or_create_offer_location(
             offerer_id=venue.managingOfferer.id,
-            address_id=oa_1.address.id if same_address else other_address.id,
             venue_id=venue.id if same_venue else other_venue.id,
+            address_id=oa_1.address.id if same_address else other_address.id,
             label=oa_1.label if same_label else "somethingdifferent",
         )
         if same_label and same_address and same_venue:
@@ -3947,7 +3947,7 @@ class SendReminderEmailToIndividualOfferersTest:
 
 class CleanUnusedOffererAddressTest:
     def test_clean_unused_offerer_address(self, caplog):
-        offerers_factories.OffererAddressFactory()
+        offerers_factories.OfferLocationFactory()
         venue = offerers_factories.VenueFactory()
         oa1 = venue.offererAddress
         oa2, oa3, oa4, _ = offerers_factories.OfferLocationFactory.create_batch(

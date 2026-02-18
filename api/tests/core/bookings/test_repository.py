@@ -505,7 +505,7 @@ class FindByProUserTest:
         user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
         offerer = user_offerer.offerer
 
-        offerer_address_1 = offerers_factories.OffererAddressFactory(offerer=offerer)
+        offerer_address_1 = offerers_factories.OfferLocationFactory(offerer=offerer)
 
         booking_1 = bookings_factories.BookingFactory(
             stock__offer__venue__managingOfferer=offerer, stock__offer__offererAddress=offerer_address_1

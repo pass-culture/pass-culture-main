@@ -215,7 +215,7 @@ class Returns204Test:
 
     def test_update_all_offer_on_offerer_address(self, client):
         venue = offerers_factories.VenueFactory()
-        offerer_address = offerers_factories.OffererAddressFactory()
+        offerer_address = offerers_factories.OfferLocationFactory()
         offer1 = offers_factories.OfferFactory(offererAddress=offerer_address, isActive=False, venue=venue)
         offer2 = offers_factories.OfferFactory(isActive=False, venue=venue)
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=venue.managingOfferer)
