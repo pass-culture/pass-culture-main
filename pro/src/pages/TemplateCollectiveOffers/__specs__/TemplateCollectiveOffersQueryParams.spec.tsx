@@ -198,6 +198,9 @@ describe('route TemplateCollectiveOffers', () => {
         offersRecap
       )
       await renderOffers()
+
+      await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
+
       const firstTypeOption = screen.getByRole('option', {
         name: 'Concert',
       })
@@ -222,6 +225,8 @@ describe('route TemplateCollectiveOffers', () => {
       )
       await renderOffers()
 
+      await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
+
       await userEvent.click(
         screen.getByRole('button', {
           name: 'Statut',
@@ -244,6 +249,8 @@ describe('route TemplateCollectiveOffers', () => {
         offersRecap
       )
       await renderOffers()
+
+      await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
 
       await userEvent.click(
         screen.getByRole('button', {
@@ -277,6 +284,9 @@ describe('route TemplateCollectiveOffers', () => {
     it('should have locationType value in the url when user filters by localisation', async () => {
       setupAddresses()
       await renderOffers()
+
+      await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
+
       await userEvent.selectOptions(screen.getByLabelText('Localisation'), [
         await screen.findByRole('option', {
           name: 'En établissement scolaire',
@@ -292,6 +302,9 @@ describe('route TemplateCollectiveOffers', () => {
     it('should have offererAddressId value in the url when user filters by address', async () => {
       setupAddresses()
       await renderOffers()
+
+      await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
+
       const option = await screen.findByRole('option', {
         name: 'Label - 1 Rue de paris 75001 Paris',
       })
@@ -309,6 +322,9 @@ describe('route TemplateCollectiveOffers', () => {
     it('should remove locationType and offererAddressId from url when user selects "Toutes"', async () => {
       setupAddresses()
       await renderOffers()
+
+      await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
+
       await userEvent.selectOptions(screen.getByLabelText('Localisation'), [
         await screen.findByRole('option', { name: 'Toutes' }),
       ])
@@ -321,6 +337,9 @@ describe('route TemplateCollectiveOffers', () => {
     it('should have locationType value in the url when user filters by "À déterminer"', async () => {
       setupAddresses()
       await renderOffers()
+
+      await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
+
       const option = await screen.findByRole('option', {
         name: 'À déterminer',
       })

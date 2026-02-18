@@ -105,7 +105,7 @@ describe('filter bookings by bookings period', () => {
   })
 
   it('should filter with a combination of filters', async () => {
-    renderPreFilters(props)
+    renderPreFilters(props, ['WIP_SWITCH_VENUE'])
 
     const offerEventDateInput = screen.getByLabelText('Date de l’évènement')
     await userEvent.clear(offerEventDateInput)
@@ -143,7 +143,7 @@ describe('filter bookings by bookings period', () => {
   })
 
   it('should be able to filter by offererAddress', async () => {
-    renderPreFilters(props)
+    renderPreFilters(props, ['WIP_SWITCH_VENUE'])
 
     const offererAddressInput = screen.getByLabelText('Localisation')
     await userEvent.selectOptions(offererAddressInput, '21')
@@ -254,7 +254,7 @@ describe('filter bookings by bookings period', () => {
         screen.getByRole('button', { name: 'Où les télécharger ?' })
       ).toBeInTheDocument()
       expect(
-        screen.queryByRole('button', { name: 'Télécharger' })
+        screen.queryByRole('button', { name: 'Télécharger les réservations' })
       ).not.toBeInTheDocument()
     })
   })

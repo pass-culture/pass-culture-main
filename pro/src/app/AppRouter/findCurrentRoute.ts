@@ -9,26 +9,39 @@ import { routesSignupJourney } from '@/app/AppRouter/subroutesSignupJourneyMap'
 import { routesSignup } from '@/app/AppRouter/subroutesSignupMap'
 import { routesWelcomeCarousel } from '@/app/AppRouter/subroutesWelcomeCarousel'
 
-import { routesReimbursements } from './subroutesReimbursements'
-import type { CustomRouteObject } from './types'
+import { administrationRouteGroup } from './routes/administrationRouteGroup'
+import { partnerRouteGroup } from './routes/partnerRouteGroup'
+import { reimbursementsRouteGroup } from './routes/reimbursementsRouteGroup'
+import type { CustomRouteGroupChild, CustomRouteOrphan } from './types'
 
-// TODO (igabriele, 2025-12-17): Replace this very custom implementation with react-router official `matchRoutes`.
-export const findCurrentRoute = (
-  location: Location
-): CustomRouteObject | undefined =>
+/** @deprecated Use `useCurrentRoute()`. */
+export const findCurrentRoute = (location: Location) =>
   [
     ...routes,
     ...routesIndividualOfferWizard,
     ...routesOnboardingIndividualOfferWizard,
     ...routesSignup,
     ...routesSignupJourney,
-    ...routesReimbursements,
     ...routesWelcomeCarousel,
+
+    // Legacy compatibility (pre-`WIP_SWITCH_VENUE` FF)
+    ...administrationRouteGroup.children.map((routeGroupChild) => ({
+      ...routeGroupChild,
+      path: `${administrationRouteGroup.path}/${routeGroupChild.path}`,
+    })),
+    ...partnerRouteGroup.children.map((routeGroupChild) => ({
+      ...routeGroupChild,
+      path: `${partnerRouteGroup.path}/${routeGroupChild.path}`,
+    })),
+    ...reimbursementsRouteGroup.children.map((routeGroupChild) => ({
+      ...routeGroupChild,
+      path: `${reimbursementsRouteGroup.path}/${routeGroupChild.path}`,
+    })),
   ]
     // This reverse is here so that subroutes (e.g. /inscription/compte/confirmation)
     // are matched before their parents (e.g. /inscription/*)
     .reverse()
-    .find(
-      ({ path }: CustomRouteObject) =>
-        matchPath(path, location.pathname) !== null
-    )
+    .find(({ path }) => matchPath(path, location.pathname) !== null) as
+    | CustomRouteOrphan
+    | CustomRouteGroupChild
+    | undefined

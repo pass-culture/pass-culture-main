@@ -15,6 +15,7 @@ import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { OffersTableFilterBar } from '@/components/OffersTableFilterBar/OffersTableFilterBar'
 import { OffersTableSearch } from '@/components/OffersTableSearch/OffersTableSearch'
 import { formatAndOrderAddresses } from '@/repository/venuesService'
 import { MultiSelect } from '@/ui-kit/form/MultiSelect/MultiSelect'
@@ -25,11 +26,12 @@ import styles from '../CollectiveOffersScreen.module.scss'
 
 export interface CollectiveOffersSearchFiltersProps {
   hasFilters: boolean
-  applyFilters: (filters: CollectiveSearchFiltersParams) => void
+  applyFilters?: (filters: CollectiveSearchFiltersParams) => void
   offererId: string | undefined
   selectedFilters: CollectiveSearchFiltersParams
   setSelectedFilters: Dispatch<SetStateAction<CollectiveSearchFiltersParams>>
-  disableAllFilters: boolean
+  disableAllFilters?: boolean
+  isAdministrationSpace?: boolean
   resetFilters: () => void
   searchButtonRef?: React.RefObject<HTMLButtonElement | null>
 }
@@ -38,12 +40,13 @@ export const CollectiveOffersSearchFilters = ({
   hasFilters,
   applyFilters,
   selectedFilters,
+  isAdministrationSpace = false,
   setSelectedFilters,
   resetFilters,
   offererId,
-  disableAllFilters,
+  disableAllFilters = false,
   searchButtonRef,
-}: CollectiveOffersSearchFiltersProps): JSX.Element => {
+}: Readonly<CollectiveOffersSearchFiltersProps>): JSX.Element => {
   const offererAddressQuery = useOffererAddresses(
     GetOffererAddressesWithOffersOption.COLLECTIVE_OFFERS_ONLY
   )
@@ -104,7 +107,7 @@ export const CollectiveOffersSearchFilters = ({
       offererId: offererId?.toString() ?? '',
     }
 
-    applyFilters(newSearchFilters)
+    applyFilters?.(newSearchFilters)
   }
 
   const collectiveFilterStatus = [
@@ -154,10 +157,6 @@ export const CollectiveOffersSearchFilters = ({
     },
   ]
 
-  const onResetFilters = () => {
-    resetFilters()
-  }
-
   const handleLocationChange = (value: string) => {
     switch (value) {
       case CollectiveLocationType.TO_BE_DEFINED:
@@ -186,22 +185,8 @@ export const CollectiveOffersSearchFilters = ({
     }
   }
 
-  return (
-    <OffersTableSearch
-      type="collective"
-      onSubmit={requestFilteredOffers}
-      isDisabled={disableAllFilters}
-      hasActiveFilters={hasFilters}
-      nameInputProps={{
-        label: 'Nom de l’offre',
-        disabled: disableAllFilters,
-        onChange: (event) =>
-          updateSearchFilters({ name: event.currentTarget.value }),
-        value: selectedFilters.name,
-      }}
-      onResetFilters={onResetFilters}
-      searchButtonRef={searchButtonRef}
-    >
+  const children = (
+    <>
       <FormLayout.Row inline mdSpaceAfter>
         <div className={styles['filter-container']}>
           <MultiSelect
@@ -229,24 +214,28 @@ export const CollectiveOffersSearchFilters = ({
             }))}
           />
         </div>
-        <Select
-          className={styles['filter-container']}
-          defaultOption={ALL_OFFERER_ADDRESS_OPTION}
-          onChange={(event) => handleLocationChange(event.currentTarget.value)}
-          disabled={disableAllFilters}
-          name="location"
-          options={locationOptions}
-          value={
-            selectedFilters.offererAddressId !== undefined &&
-            selectedFilters.offererAddressId !== null
-              ? String(selectedFilters.offererAddressId)
-              : selectedFilters.locationType !== undefined &&
-                  selectedFilters.locationType !== null
-                ? String(selectedFilters.locationType)
-                : 'all'
-          }
-          label="Localisation"
-        />
+        {!isAdministrationSpace && (
+          <Select
+            className={styles['filter-container']}
+            defaultOption={ALL_OFFERER_ADDRESS_OPTION}
+            onChange={(event) =>
+              handleLocationChange(event.currentTarget.value)
+            }
+            disabled={disableAllFilters}
+            name="location"
+            options={locationOptions}
+            value={
+              selectedFilters.offererAddressId !== undefined &&
+              selectedFilters.offererAddressId !== null
+                ? String(selectedFilters.offererAddressId)
+                : selectedFilters.locationType !== undefined &&
+                    selectedFilters.locationType !== null
+                  ? String(selectedFilters.locationType)
+                  : 'all'
+            }
+            label="Localisation"
+          />
+        )}
         <Select
           className={styles['filter-container']}
           defaultOption={ALL_FORMATS_OPTION}
@@ -262,7 +251,6 @@ export const CollectiveOffersSearchFilters = ({
           label="Format"
         />
       </FormLayout.Row>
-
       <FormLayout.Row mdSpaceAfter>
         <PeriodSelector
           legend="Période de l’évènement"
@@ -273,6 +261,38 @@ export const CollectiveOffersSearchFilters = ({
           periodEndingDate={selectedFilters.periodEndingDate}
         />
       </FormLayout.Row>
+    </>
+  )
+
+  if (isAdministrationSpace) {
+    return (
+      <OffersTableFilterBar
+        isDisabled={disableAllFilters}
+        isInline
+        onReset={resetFilters}
+      >
+        {children}
+      </OffersTableFilterBar>
+    )
+  }
+
+  return (
+    <OffersTableSearch
+      type="collective"
+      onSubmit={requestFilteredOffers}
+      isDisabled={disableAllFilters}
+      hasActiveFilters={hasFilters}
+      nameInputProps={{
+        label: 'Nom de l’offre',
+        disabled: disableAllFilters,
+        onChange: (event) =>
+          updateSearchFilters({ name: event.currentTarget.value }),
+        value: selectedFilters.name,
+      }}
+      onResetFilters={resetFilters}
+      searchButtonRef={searchButtonRef}
+    >
+      {children}
     </OffersTableSearch>
   )
 }

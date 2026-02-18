@@ -2,20 +2,24 @@ import { useEffect } from 'react'
 import { useLocation } from 'react-router'
 
 import { findCurrentRoute } from '@/app/AppRouter/findCurrentRoute'
+import { useCurrentRoute } from '@/commons/hooks/useCurrentRoute'
 
 export const usePageTitle = () => {
   const location = useLocation()
+  const currentRoute = useCurrentRoute()
 
   useEffect(() => {
-    const currentRoute = findCurrentRoute(location)
+    const legacyCurrentRoute = findCurrentRoute(location)
 
-    document.title = currentRoute
-      ? `${currentRoute.title} - pass Culture Pro`
-      : 'pass Culture Pro'
+    const title = currentRoute.handle?.title ?? legacyCurrentRoute?.title
+
+    const metaTitle = [title ? `${title} - ` : '', 'pass Culture Pro'].join('')
+
+    document.title = metaTitle
 
     const pageTitleAnnouncer = document.getElementById('page-title-announcer')
-    if (pageTitleAnnouncer) {
-      pageTitleAnnouncer.textContent = currentRoute?.title || 'pass Culture Pro'
+    if (pageTitleAnnouncer && title) {
+      pageTitleAnnouncer.textContent = title
     }
-  }, [location])
+  }, [currentRoute.handle?.title, location])
 }

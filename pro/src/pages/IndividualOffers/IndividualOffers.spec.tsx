@@ -101,6 +101,8 @@ const renderIndividualOffers = async (
     }
   )
 
+  await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
+
   await waitFor(() => {
     expect(
       within(screen.getByLabelText('Localisation')).getAllByRole('option')

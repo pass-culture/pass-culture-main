@@ -103,6 +103,8 @@ describe('TemplateCollectiveOffers', () => {
         )
         await renderOffers()
 
+        await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
+
         await userEvent.click(
           screen.getByRole('button', {
             name: 'Statut',
@@ -170,6 +172,8 @@ describe('TemplateCollectiveOffers', () => {
       it('should load offers with selected period beginning date', async () => {
         await renderOffers()
 
+        await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
+
         await userEvent.type(
           screen.getByLabelText('Début de la période'),
           '2020-12-25'
@@ -193,6 +197,9 @@ describe('TemplateCollectiveOffers', () => {
 
       it('should load offers with selected period ending date', async () => {
         await renderOffers()
+
+        await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
+
         await userEvent.type(
           screen.getByLabelText('Fin de la période'),
           '2020-12-27'

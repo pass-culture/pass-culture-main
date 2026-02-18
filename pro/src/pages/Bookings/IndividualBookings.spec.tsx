@@ -21,6 +21,7 @@ import {
 } from '@/commons/utils/date'
 import {
   bookingRecapFactory,
+  defaultGetOffererVenueResponseModel,
   venueListItemFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
@@ -30,8 +31,28 @@ import {
 } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
+import { PartnerLayout } from '@/layouts/PartnerLayout/PartnerLayout'
 
 import { IndividualBookings } from './IndividualBookings'
+
+const individualBookingsRoutes = [
+  {
+    path: '/',
+    Component: PartnerLayout,
+    children: [
+      {
+        path: 'reservations',
+        element: (
+          <>
+            <IndividualBookings />
+            <SnackBarContainer />
+          </>
+        ),
+        handle: { title: 'Réservations individuelles' },
+      },
+    ],
+  },
+]
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -61,23 +82,20 @@ const NTH_ARGUMENT_GET_BOOKINGS = {
 
 const user = sharedCurrentUserFactory()
 
-const renderBookingsRecap = (
-  overrides: DeepPartial<RootState> = {
-    user: { currentUser: user },
-    offerer: currentOffererFactory(),
-  }
-) => {
-  return renderWithProviders(
-    <>
-      <IndividualBookings />
-      <SnackBarContainer />
-    </>,
-    {
-      initialRouterEntries: ['/reservations'],
-      user,
-      storeOverrides: overrides,
-    }
-  )
+const renderBookingsRecap = (overrides?: DeepPartial<RootState>) => {
+  return renderWithProviders(null, {
+    routes: individualBookingsRoutes,
+    initialRouterEntries: ['/reservations'],
+    user,
+    storeOverrides: {
+      user: {
+        currentUser: user,
+        selectedVenue: defaultGetOffererVenueResponseModel,
+      },
+      offerer: currentOffererFactory(),
+      ...overrides,
+    },
+  })
 }
 
 const waitForCompleteLoading = async () => {

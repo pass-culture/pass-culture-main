@@ -1,0 +1,7 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.subtitle {
+  @include fonts.title2;
+
+  margin-bottom: var(--size-spacing-xl);
+}

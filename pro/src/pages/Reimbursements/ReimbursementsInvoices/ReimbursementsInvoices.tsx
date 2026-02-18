@@ -24,7 +24,7 @@ import { InvoicesFilters } from './InvoicesFilters'
 import { InvoicesServerError } from './InvoicesServerError'
 import { InvoiceTable } from './InvoiceTable/InvoiceTable'
 
-export const ReimbursementsInvoices = (): JSX.Element => {
+const ReimbursementsInvoices = (): JSX.Element => {
   const [, setSearchParams] = useSearchParams()
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
@@ -150,3 +150,7 @@ export const ReimbursementsInvoices = (): JSX.Element => {
     </>
   )
 }
+
+// Lazy-loaded by react-router
+// ts-unused-exports:disable-next-line
+export const Component = ReimbursementsInvoices

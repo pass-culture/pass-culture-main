@@ -19,7 +19,7 @@ import {
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
-import { BankInformations } from '@/pages/Reimbursements/BankInformations/BankInformations'
+import { Component as BankInformations } from '@/pages/Reimbursements/BankInformations/BankInformations'
 
 const mockMutate = vi.fn()
 vi.mock('swr', async () => ({

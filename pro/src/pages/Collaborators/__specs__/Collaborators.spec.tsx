@@ -12,7 +12,8 @@ import {
 } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
-import { Collaborators } from '@/pages/Collaborators/Collaborators'
+
+import { Component as Collaborators } from '../Collaborators'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -23,7 +24,7 @@ vi.mock('@/apiClient/api', () => ({
 
 const mockLogEvent = vi.fn()
 
-const renderAttachmentInvitations = async () => {
+const renderCollaborators = async () => {
   renderWithProviders(
     <>
       <Collaborators />
@@ -43,7 +44,7 @@ const renderAttachmentInvitations = async () => {
   })
 }
 
-describe('AttachmentInvitations', () => {
+describe('Collaborators', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getOffererMembers').mockResolvedValueOnce({ members: [] })
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
@@ -52,7 +53,7 @@ describe('AttachmentInvitations', () => {
   })
 
   it('The user should see a button to display the invite form', async () => {
-    await renderAttachmentInvitations()
+    await renderCollaborators()
 
     expect(screen.getByText('Ajouter un collaborateur')).toBeInTheDocument()
     expect(
@@ -67,7 +68,7 @@ describe('AttachmentInvitations', () => {
   })
 
   it('should display the invite form on click', async () => {
-    await renderAttachmentInvitations()
+    await renderCollaborators()
 
     await userEvent.click(screen.getByText('Ajouter un collaborateur'))
 
@@ -82,7 +83,7 @@ describe('AttachmentInvitations', () => {
   })
 
   it('should display the form error on invalid email', async () => {
-    await renderAttachmentInvitations()
+    await renderCollaborators()
 
     await userEvent.click(screen.getByText('Ajouter un collaborateur'))
     await userEvent.type(screen.getByLabelText('Adresse email'), '123456')
@@ -93,7 +94,7 @@ describe('AttachmentInvitations', () => {
   })
 
   it('should display add the email on success and trigger buttons event', async () => {
-    await renderAttachmentInvitations()
+    await renderCollaborators()
 
     await userEvent.click(screen.getByText('Ajouter un collaborateur'))
 
@@ -121,7 +122,7 @@ describe('AttachmentInvitations', () => {
   })
 
   it('should display email error message if user is already invited', async () => {
-    await renderAttachmentInvitations()
+    await renderCollaborators()
 
     await userEvent.click(screen.getByText('Ajouter un collaborateur'))
 
@@ -150,7 +151,7 @@ describe('AttachmentInvitations', () => {
   })
 
   it('should display default error message if error with server', async () => {
-    await renderAttachmentInvitations()
+    await renderCollaborators()
 
     await userEvent.click(screen.getByText('Ajouter un collaborateur'))
 
@@ -191,7 +192,7 @@ describe('ViewAllList', () => {
       ],
     })
 
-    await renderAttachmentInvitations()
+    await renderCollaborators()
 
     await waitFor(() => {
       expect(screen.getByText('email1@gmail.com')).toBeInTheDocument()

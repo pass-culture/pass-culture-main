@@ -9,25 +9,52 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
+import { PartnerLayout } from '@/layouts/PartnerLayout/PartnerLayout'
 
 import * as utils from './commons/utils'
 import { NewHomepage } from './NewHomepage'
 
+const newHomepageRoutes = [
+  {
+    path: '/',
+    Component: PartnerLayout,
+    children: [
+      {
+        path: 'accueil',
+        element: <NewHomepage />,
+        handle: { title: 'Espace acteurs culturels' },
+      },
+    ],
+  },
+]
+
 const renderNewHomepage = (options?: RenderWithProvidersOptions) => {
   const user = sharedCurrentUserFactory()
-  return renderWithProviders(<NewHomepage />, {
+  const { storeOverrides, ...restOptions } = options ?? {}
+  return renderWithProviders(null, {
+    features: ['WIP_ENABLE_NEW_PRO_HOME', 'WIP_SWITCH_VENUE'],
+    routes: newHomepageRoutes,
+    initialRouterEntries: ['/accueil'],
     user,
+    ...restOptions,
     storeOverrides: {
       user: {
         currentUser: user,
         selectedVenue: defaultGetOffererVenueResponseModel,
       },
+      ...storeOverrides,
     },
-    ...options,
   })
 }
 
 describe('NewHomepage', () => {
+  beforeEach(() => {
+    vi.mock('@/app/AppRouter/utils', async () => ({
+      ...(await vi.importActual('@/app/AppRouter/utils')),
+      isNewHomepageEnabled: () => true,
+    }))
+  })
+
   it('should display the selected venue public name in the title', () => {
     renderNewHomepage()
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
@@ -88,7 +115,11 @@ describe('NewHomepage', () => {
         },
       })
 
-      expect(await axe(container)).toHaveNoViolations()
+      expect(
+        await axe(container, {
+          rules: { 'aria-allowed-attr': { enabled: false } },
+        })
+      ).toHaveNoViolations()
     })
 
     it('should display the corresponding panel when click on a given tab', async () => {

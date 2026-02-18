@@ -1,7 +1,6 @@
 import cn from 'classnames'
 import { useMemo, useRef } from 'react'
 
-import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useOffererNamesQuery } from '@/commons/hooks/swr/useOffererNamesQuery'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -28,6 +27,8 @@ import { VenueOfferSteps } from './components/VenueOfferSteps/VenueOfferSteps'
 import styles from './Homepage.module.scss'
 
 export const Homepage = (): JSX.Element => {
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+
   const profileRef = useRef<HTMLElement>(null)
   const offerersRef = useRef<HTMLElement>(null)
 
@@ -57,79 +58,74 @@ export const Homepage = (): JSX.Element => {
 
   const areHighlightsEnable = selectedOfferer?.canDisplayHighlights
 
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+  if (isNotReady) {
+    return <Spinner />
+  }
 
   return (
-    <BasicLayout mainHeading="Bienvenue sur votre espace partenaire">
-      {isNotReady ? (
-        <Spinner />
-      ) : (
-        <>
-          <CollectiveBudgetBanner />
-          <div className={styles['reimbursements-banners']}>
-            <AddBankAccountCallout
-              offerer={selectedOfferer}
-              venue={selectedVenue}
-            />
-            <LinkVenueCallout offerer={selectedOfferer} />
-            <BankAccountHasPendingCorrectionCallout
-              offerer={selectedOfferer}
-              venue={selectedVenue}
-            />
+    <>
+      <CollectiveBudgetBanner />
+      <div className={styles['reimbursements-banners']}>
+        <AddBankAccountCallout
+          offerer={selectedOfferer}
+          venue={selectedVenue}
+        />
+        <LinkVenueCallout offerer={selectedOfferer} />
+        <BankAccountHasPendingCorrectionCallout
+          offerer={selectedOfferer}
+          venue={selectedVenue}
+        />
+      </div>
+      {selectedOfferer && <OffererBanners offerer={selectedOfferer} />}
+
+      {selectedOfferer?.isValidated && selectedOfferer.isActive && (
+        <section className={styles.section}>
+          <div className={styles['header']}>
+            <h2 className={styles['title']}>
+              Présence sur l’application pass Culture
+            </h2>
           </div>
-          {selectedOfferer && <OffererBanners offerer={selectedOfferer} />}
-
-          {selectedOfferer?.isValidated && selectedOfferer.isActive && (
-            <section className={styles.section}>
-              <div className={styles['header']}>
-                <h2 className={styles['title']}>
-                  Présence sur l’application pass Culture
-                </h2>
-              </div>
-              <div
-                className={cn(styles['container-stats'], {
-                  [styles['container-stats-with-highlights']]:
-                    areHighlightsEnable,
-                })}
-              >
-                {withSwitchVenueFeature && selectedVenue ? (
-                  <VenueStatisticsDashboard venue={selectedVenue} />
-                ) : (
-                  <StatisticsDashboard offerer={selectedOfferer} />
-                )}
-                {areHighlightsEnable && <HighlightHome />}
-              </div>
-              <PublishedOfferStats
-                offerer={selectedOfferer}
-                className={styles['offer-stats']}
-              />
-            </section>
-          )}
-
-          <section className={styles.section} ref={offerersRef}>
-            <Offerers
-              selectedOfferer={selectedOfferer}
-              offererOptions={offererOptions}
-            />
-          </section>
-
-          {hasNoVenueVisible && selectedOfferer !== null && (
-            <section className={styles['step-section']}>
-              <VenueOfferSteps
-                hasVenue={!hasNoVenueVisible}
-                offerer={selectedOfferer}
-              />
-            </section>
-          )}
-
-          <section className={styles.section} ref={profileRef}>
-            <div className={styles.newsletter}>
-              <Newsletter />
-            </div>
-          </section>
-        </>
+          <div
+            className={cn(styles['container-stats'], {
+              [styles['container-stats-with-highlights']]: areHighlightsEnable,
+            })}
+          >
+            {withSwitchVenueFeature && selectedVenue ? (
+              <VenueStatisticsDashboard venue={selectedVenue} />
+            ) : (
+              <StatisticsDashboard offerer={selectedOfferer} />
+            )}
+            {areHighlightsEnable && <HighlightHome />}
+          </div>
+          <PublishedOfferStats
+            offerer={selectedOfferer}
+            className={styles['offer-stats']}
+          />
+        </section>
       )}
-    </BasicLayout>
+
+      <section className={styles.section} ref={offerersRef}>
+        <Offerers
+          selectedOfferer={selectedOfferer}
+          offererOptions={offererOptions}
+        />
+      </section>
+
+      {hasNoVenueVisible && selectedOfferer !== null && (
+        <section className={styles['step-section']}>
+          <VenueOfferSteps
+            hasVenue={!hasNoVenueVisible}
+            offerer={selectedOfferer}
+          />
+        </section>
+      )}
+
+      <section className={styles.section} ref={profileRef}>
+        <div className={styles.newsletter}>
+          <Newsletter />
+        </div>
+      </section>
+    </>
   )
 }
 

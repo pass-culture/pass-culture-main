@@ -25,7 +25,7 @@ type VenueFormValues = {
   selectedVenues: Option[]
 }
 
-export const Income = () => {
+const Income = () => {
   const firstYearFilterRef = useRef<HTMLButtonElement>(null)
   const [activeYear, setActiveYear] = useState<number>()
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
@@ -210,3 +210,7 @@ export const Income = () => {
     </>
   )
 }
+
+// Lazy-loaded by react-router
+// ts-unused-exports:disable-next-line
+export const Component = Income

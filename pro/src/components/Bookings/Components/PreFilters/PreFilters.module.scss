@@ -35,6 +35,21 @@
 
   &-filters {
     margin-bottom: rem.torem(36px);
+
+    &.single-row {
+      align-items: flex-end;
+      display: flex;
+      gap: var(--size-spacing-l);
+      flex-wrap: wrap;
+
+      > * {
+        display: contents;
+      }
+
+      @media (min-width: size.$laptop) {
+        flex-wrap: nowrap;
+      }
+    }
   }
 }
 

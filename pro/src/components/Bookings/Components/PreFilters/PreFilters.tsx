@@ -4,13 +4,14 @@ import { type SubmitEvent, useCallback, useState } from 'react'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { ALL_OFFERER_ADDRESS_OPTION } from '@/commons/core/Offers/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isDateValid } from '@/commons/utils/date'
-import { MultiDownloadButtonsModal } from '@/components/Bookings/Components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
+import { DownloadDropdown } from '@/components/DownloadDropdown/DownloadDropdown'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -32,9 +33,10 @@ export interface PreFiltersProps {
   applyNow: () => void
 
   hasResult: boolean
-  isFiltersDisabled: boolean
+  isFiltersDisabled?: boolean
   isTableLoading: boolean
   wereBookingsRequested: boolean
+  isAdministrationSpace?: boolean
   isLocalLoading: boolean
   resetPreFilters: () => void
   urlParams?: PreFiltersParams
@@ -49,7 +51,8 @@ export const PreFilters = ({
   isRefreshRequired,
   applyNow,
   hasResult,
-  isFiltersDisabled,
+  isAdministrationSpace = false,
+  isFiltersDisabled = false,
   isTableLoading,
   isLocalLoading,
   resetPreFilters,
@@ -59,18 +62,19 @@ export const PreFilters = ({
 
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
-  const [isDownloadingCSV, setIsDownloadingCSV] = useState(false)
+
+  const [isDownloading, setIsDownloading] = useState(false)
 
   const requestFilteredBookings = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
     applyNow()
   }
 
-  const downloadBookingsFilters = { ...selectedPreFilters, page: 1 }
+  const download = useCallback(
+    async (type: 'CSV' | 'XLS') => {
+      setIsDownloading(true)
 
-  const downloadBookingsCSV = useCallback(
-    async (filters: PreFiltersParams, type: 'CSV' | 'XLS') => {
-      setIsDownloadingCSV(true)
+      const filters = { ...selectedPreFilters, page: 1 }
 
       try {
         /* istanbul ignore next: DEBT to fix */
@@ -83,9 +87,9 @@ export const PreFilters = ({
         snackBar.error(GET_DATA_ERROR_MESSAGE)
       }
 
-      setIsDownloadingCSV(false)
+      setIsDownloading(false)
     },
-    [snackBar]
+    [selectedPreFilters, snackBar]
   )
 
   return (
@@ -97,20 +101,26 @@ export const PreFilters = ({
         })}
         onSubmit={requestFilteredBookings}
       >
-        <div className={styles['pre-filters-form-filters']}>
+        <div
+          className={classNames(styles['pre-filters-form-filters'], {
+            [styles['single-row']]: isAdministrationSpace,
+          })}
+        >
           <FormLayout.Row inline mdSpaceAfter>
-            <Select
-              className={styles['venue-filter']}
-              label="Localisation"
-              defaultOption={ALL_OFFERER_ADDRESS_OPTION}
-              onChange={(e) =>
-                updateSelectedFilters({ offererAddressId: e.target.value })
-              }
-              disabled={isFiltersDisabled}
-              name="address"
-              options={offererAddresses}
-              value={selectedPreFilters.offererAddressId}
-            />
+            {!isAdministrationSpace && (
+              <Select
+                className={styles['venue-filter']}
+                label="Localisation"
+                defaultOption={ALL_OFFERER_ADDRESS_OPTION}
+                onChange={(e) =>
+                  updateSelectedFilters({ offererAddressId: e.target.value })
+                }
+                disabled={isFiltersDisabled}
+                name="address"
+                options={offererAddresses}
+                value={selectedPreFilters.offererAddressId}
+              />
+            )}
 
             <DatePicker
               label="Date de l’évènement"
@@ -159,33 +169,54 @@ export const PreFilters = ({
           </FormLayout.Row>
         </div>
 
+        {isAdministrationSpace && (
+          <DownloadDropdown
+            isDisabled={isDownloading || isFiltersDisabled || isLocalLoading}
+            label="Télécharger les réservations"
+            logEventNames={{
+              onSelectCsv: Events.CLICKED_DOWNLOAD_BOOKINGS_CSV,
+              onSelectXls: Events.CLICKED_DOWNLOAD_BOOKINGS_XLS,
+              onToggle: Events.CLICKED_DOWNLOAD_BOOKINGS,
+            }}
+            onSelect={download}
+          />
+        )}
         <div className={styles['button-group']}>
           <div className={styles['button-group-buttons']}>
             {!withSwitchVenueFeature && (
-              <MultiDownloadButtonsModal
-                downloadFunction={(filters, type) =>
-                  downloadBookingsCSV(filters, type)
+              <DownloadDropdown
+                isDisabled={
+                  isDownloading || isFiltersDisabled || isLocalLoading
                 }
-                filters={downloadBookingsFilters}
-                isDownloading={isDownloadingCSV}
-                isFiltersDisabled={isFiltersDisabled}
-                isLocalLoading={isLocalLoading}
+                logEventNames={{
+                  onSelectCsv: Events.CLICKED_DOWNLOAD_BOOKINGS_CSV,
+                  onSelectXls: Events.CLICKED_DOWNLOAD_BOOKINGS_XLS,
+                  onToggle: Events.CLICKED_DOWNLOAD_BOOKINGS,
+                }}
+                onSelect={download}
+                title="Télécharger les réservations"
               />
             )}
-            {withSwitchVenueFeature && <MovedBookingDownloadWarningModal />}
+            {withSwitchVenueFeature && !isAdministrationSpace && (
+              <MovedBookingDownloadWarningModal />
+            )}
 
-            <Button
-              disabled={isTableLoading || isLocalLoading || isFiltersDisabled}
-              variant={ButtonVariant.SECONDARY}
-              onClick={() => {
-                applyNow()
-                logEvent('CLICKED_SHOW_BOOKINGS', { from: location.pathname })
-              }}
-              label="Afficher"
-            />
+            {!isAdministrationSpace && (
+              <Button
+                disabled={isTableLoading || isLocalLoading || isFiltersDisabled}
+                variant={ButtonVariant.SECONDARY}
+                onClick={() => {
+                  applyNow()
+                  logEvent('CLICKED_SHOW_BOOKINGS', { from: location.pathname })
+                }}
+                label="Afficher"
+              />
+            )}
           </div>
 
-          <span className={styles['button-group-separator']} />
+          {!isAdministrationSpace && (
+            <span className={styles['button-group-separator']} />
+          )}
         </div>
       </form>
 

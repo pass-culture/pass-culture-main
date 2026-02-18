@@ -13,14 +13,14 @@ import { SignupValidation } from '@/pages/Signup/SignUpValidation/SignUpValidati
 import { SignupConfirmation } from '@/pages/Signup/SignupConfirmation/SignupConfirmation'
 import { SignupContainer } from '@/pages/Signup/SignupContainer/SignupContainer'
 
-import type { CustomRouteObject } from './types'
+import type { CustomRouteGroupChild } from './types'
 
 const NavigateWithParams = ({ to, ...props }: NavigateProps) => {
   const params = useParams()
   return <Navigate {...props} to={generatePath(to as string, params)} />
 }
 
-export const routesSignup: CustomRouteObject[] = [
+export const routesSignup: CustomRouteGroupChild[] = [
   {
     element: <SignupContainer />,
     loader: noop,

@@ -2,10 +2,10 @@
 /* istanbul ignore file */
 import { withUserPermissions } from '@/commons/auth/withUserPermissions'
 
-import type { CustomRouteObject } from './types'
+import type { CustomRouteGroupChild } from './types'
 import { mustHaveSelectedVenue, mustNotBeOnboarded } from './utils'
 
-export const routesIndividualOfferWizard: CustomRouteObject[] = [
+export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
   {
     lazy: () =>
       import(
@@ -251,7 +251,7 @@ export const routesIndividualOfferWizard: CustomRouteObject[] = [
   },
 ]
 
-export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
+export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
   //  Description
   {
     lazy: () =>

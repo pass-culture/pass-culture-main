@@ -10,8 +10,23 @@ import {
 
 import { Reimbursements } from './Reimbursements'
 
+const reimbursementsRoutes = [
+  {
+    path: '/remboursements',
+    Component: Reimbursements,
+    children: [
+      {
+        index: true,
+        element: <div data-testid="reimbursements-outlet" />,
+        handle: { title: 'Gestion financière - justificatifs' },
+      },
+    ],
+  },
+]
+
 function renderReimbursements(options?: RenderWithProvidersOptions) {
   renderWithProviders(<Reimbursements />, {
+    routes: reimbursementsRoutes,
     user: sharedCurrentUserFactory(),
     initialRouterEntries: ['/remboursements'],
     storeOverrides: {
