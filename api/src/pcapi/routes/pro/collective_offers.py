@@ -61,7 +61,7 @@ def get_collective_offers(
     offers.sort(key=lambda offer: offer.get_sort_criterion(), reverse=True)
 
     return collective_offers_serialize.ListCollectiveOffersResponseModel(
-        __root__=[collective_offers_serialize.CollectiveOfferResponseModel.build(offer) for offer in offers]
+        [collective_offers_serialize.CollectiveOfferResponseModel.build(offer) for offer in offers]
     )
 
 
@@ -80,7 +80,7 @@ def get_collective_offer_templates(
     offers = repository.list_collective_offer_templates(filters=filters, offers_limit=api_offer.OFFERS_RECAP_LIMIT)
 
     return collective_offers_serialize.ListCollectiveOfferTemplatesResponseModel(
-        __root__=[collective_offers_serialize.CollectiveOfferTemplateResponseModel.build(offer) for offer in offers]
+        [collective_offers_serialize.CollectiveOfferTemplateResponseModel.build(offer) for offer in offers]
     )
 
 

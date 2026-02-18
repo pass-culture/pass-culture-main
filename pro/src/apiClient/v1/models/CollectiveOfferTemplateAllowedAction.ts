@@ -2,9 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-/**
- * An enumeration.
- */
 export enum CollectiveOfferTemplateAllowedAction {
   CAN_EDIT_DETAILS = 'CAN_EDIT_DETAILS',
   CAN_DUPLICATE = 'CAN_DUPLICATE',

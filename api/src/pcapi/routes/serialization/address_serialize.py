@@ -17,6 +17,38 @@ class LocationBodyModelV2(HttpBodyModel, offerers_schema.LocationModelV2):
     isVenueLocation: typing.Literal[False] = False
 
 
+class LocationResponseModelV2(HttpBodyModel):
+    id: int
+    label: str | None
+    isManualEdition: bool
+    isVenueLocation: bool
+    banId: str | None
+    inseeCode: str | None
+    postalCode: str
+    street: str | None
+    city: str
+    latitude: float
+    longitude: float
+    departmentCode: str | None
+
+    @classmethod
+    def build(cls, offerer_address: OffererAddress, label: str | None, is_venue_location: bool) -> typing.Self:
+        return cls(
+            id=offerer_address.addressId,
+            label=label,
+            isManualEdition=offerer_address.address.isManualEdition,
+            isVenueLocation=is_venue_location,
+            banId=offerer_address.address.banId,
+            inseeCode=offerer_address.address.inseeCode,
+            postalCode=offerer_address.address.postalCode,
+            street=offerer_address.address.street,
+            city=offerer_address.address.city,
+            latitude=offerer_address.address.latitude,
+            longitude=offerer_address.address.longitude,
+            departmentCode=offerer_address.address.departmentCode,
+        )
+
+
 # Legacy (pydantic V1)
 class LocationOnlyOnVenueBodyModel(BaseModel):
     isVenueLocation: bool

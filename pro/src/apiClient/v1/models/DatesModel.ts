@@ -2,9 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type CollectiveOfferStockResponseModel = {
-  bookingLimitDatetime: string;
-  numberOfTickets: number;
-  price: number;
+export type DatesModel = {
+  end: string;
+  start: string;
 };
 

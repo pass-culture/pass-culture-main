@@ -24,6 +24,7 @@ import {
   type GetCollectiveOfferVenueResponseModel,
   type GetVenueResponseModel,
   type ListOffersVenueResponseModel,
+  type ListOffersVenueResponseModelV2,
   StudentLevels,
   VenueTypeCode,
 } from '@/apiClient/v1'
@@ -45,7 +46,13 @@ export const collectiveOfferFactory = (
     id: currentId,
     displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
     name: `offer name ${offerId}`,
-    venue: listOffersVenueFactory(),
+    venue: listOffersVenueV2Factory(),
+    dates: {
+      start: new Date().toISOString(),
+      end: addDays(new Date(), 1).toISOString(),
+    },
+    educationalInstitution: null,
+    imageUrl: null,
     stock: {
       bookingLimitDatetime: add(Date.now(), { days: 1 }).toISOString(),
       numberOfTickets: 10,
@@ -70,11 +77,12 @@ export const collectiveOfferTemplateFactory = (
     id: currentId,
     displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
     name: `Offre vitrine ${currentId}`,
-    venue: listOffersVenueFactory(),
+    venue: listOffersVenueV2Factory(),
     dates: {
       start: new Date().toISOString(),
       end: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     },
+    imageUrl: null,
     allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
     location: {
       locationType: CollectiveLocationType.SCHOOL,
@@ -93,6 +101,18 @@ export const listOffersVenueFactory = (
   publicName: 'Nom public de la structure',
   offererName: 'offerer name',
   isVirtual: false,
+  ...customListOffersVenue,
+})
+
+const listOffersVenueV2Factory = (
+  customListOffersVenue: Partial<ListOffersVenueResponseModelV2> = {}
+): ListOffersVenueResponseModelV2 => ({
+  id: 1,
+  name: 'Nom de la structure',
+  publicName: 'Nom public de la structure',
+  offererName: 'offerer name',
+  isVirtual: false,
+  departementCode: '33',
   ...customListOffersVenue,
 })
 

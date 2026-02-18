@@ -1,5 +1,6 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { add } from 'date-fns'
 import * as router from 'react-router'
 import { beforeAll } from 'vitest'
 
@@ -34,7 +35,7 @@ const LABELS = {
 }
 
 const stock: CollectiveOfferStockResponseModel = {
-  bookingLimitDatetime: null,
+  bookingLimitDatetime: add(Date.now(), { days: 1 }).toISOString(),
   numberOfTickets: 100,
   price: 10,
 }
@@ -591,7 +592,7 @@ describe('CollectiveOffers', () => {
 
     let offersRecap: CollectiveOfferResponseModel[]
     const stock: CollectiveOfferStockResponseModel = {
-      bookingLimitDatetime: null,
+      bookingLimitDatetime: add(Date.now(), { days: 1 }).toISOString(),
       numberOfTickets: 100,
       price: 10,
     }
