@@ -1,7 +1,8 @@
+import { PASS_CULTURE_PREFIX } from './localStorageManager'
 import { storageAvailable } from './storageAvailable'
 
-export const SAVED_HOME_PAGE_VENUE_ID_KEYS = 'savedHomePageVenueIdKeys'
-export const SAVED_PARTNER_PAGE_VENUE_ID_KEYS = 'savedPartnerPageVenueIdKeys'
+export const SAVED_HOME_PAGE_VENUE_ID_KEYS = `${PASS_CULTURE_PREFIX}savedHomePageVenueIdKeys`
+export const SAVED_PARTNER_PAGE_VENUE_ID_KEYS = `${PASS_CULTURE_PREFIX}savedPartnerPageVenueIdKeys`
 
 type Context = 'homepage' | 'partnerPage'
 type OffererId = number | string | undefined | null

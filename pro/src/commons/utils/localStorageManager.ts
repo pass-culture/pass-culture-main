@@ -14,6 +14,8 @@ export enum LOCAL_STORAGE_KEY {
   SELECTED_OFFERER_ID = 'homepageSelectedOffererId',
 }
 
+export const PASS_CULTURE_PREFIX = 'PASS_CULTURE_'
+
 export const localStorageManager = {
   getItem: (key: LOCAL_STORAGE_KEY): string | null => {
     if (!storageAvailable('localStorage')) {
@@ -37,5 +39,17 @@ export const localStorageManager = {
     }
 
     localStorage.removeItem(key)
+  },
+
+  clearPassCultureKeys: (): void => {
+    if (!storageAvailable('localStorage')) {
+      return
+    }
+
+    Object.keys(localStorage)
+      .filter((key) => key.startsWith(PASS_CULTURE_PREFIX))
+      .forEach((key) => {
+        localStorage.removeItem(key)
+      })
   },
 }
