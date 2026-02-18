@@ -18,13 +18,12 @@ from pcapi.core.educational import validation
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import collective_history_serialize
+from pcapi.routes.serialization import educational_institutions
 from pcapi.routes.serialization import venues_serialize
-from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
 from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.routes.serialization.utils import raise_error_from_location
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
@@ -55,13 +54,10 @@ class ListCollectiveOffersQueryModel(HttpQueryParamsModel):
         return self
 
 
-class CollectiveOfferStockResponseModel(ConfiguredBaseModel):
-    bookingLimitDatetime: datetime | None
-    price: float | None
-    numberOfTickets: int | None
-
-    class Config:
-        orm_mode = True
+class CollectiveOfferStockResponseModel(HttpBodyModel):
+    bookingLimitDatetime: datetime
+    price: float
+    numberOfTickets: int
 
 
 class EducationalRedactorResponseModel(BaseModel):
@@ -82,99 +78,117 @@ class CollectiveOfferDatesModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
+class DatesModel(HttpBodyModel):
+    start: datetime
+    end: datetime
+
+
 class GetCollectiveOfferLocationModel(BaseModel):
     locationType: models.CollectiveLocationType
     locationComment: str | None
     location: address_serialize.LocationResponseModel | None
 
 
-def _serialize_venue(venue: offerers_models.Venue) -> venues_serialize.ListOffersVenueResponseModel:
-    department_code = venue.offererAddress.address.departmentCode
-
-    return venues_serialize.ListOffersVenueResponseModel(
-        id=venue.id,
-        isVirtual=venue.isVirtual,
-        name=venue.name,
-        offererName=venue.managingOfferer.name,
-        publicName=venue.publicName,
-        departementCode=department_code,
-    )
-
-
-class BaseCollectiveOfferResponseModel(ConfiguredBaseModel):
-    id: int
-    name: str
-    venue: venues_serialize.ListOffersVenueResponseModel
-    displayedStatus: models.CollectiveOfferDisplayedStatus
-    imageUrl: str | None
-    location: GetCollectiveOfferLocationModel
-    dates: CollectiveOfferDatesModel | None
-
-
-class CollectiveOfferResponseModel(BaseCollectiveOfferResponseModel):
-    allowedActions: list[models.CollectiveOfferAllowedAction]
-    stock: CollectiveOfferStockResponseModel | None
-    educationalInstitution: EducationalInstitutionResponseModel | None
+class GetCollectiveOfferLocationModelV2(HttpBodyModel):
+    locationType: models.CollectiveLocationType
+    locationComment: str | None
+    location: address_serialize.LocationResponseModelV2 | None
 
     @classmethod
-    def build(
-        cls: type["CollectiveOfferResponseModel"], offer: models.CollectiveOffer
-    ) -> "CollectiveOfferResponseModel":
+    def build(cls, offer: models.CollectiveOffer | models.CollectiveOfferTemplate) -> typing.Self:
+        location = None
+        oa = offer.offererAddress
+        venue = offer.venue
+
+        if oa is not None:
+            is_venue_location = venue.offererAddress.addressId == oa.addressId and (
+                oa.label is None or oa.label == venue.publicName
+            )
+
+            location = address_serialize.LocationResponseModelV2.build(
+                offerer_address=oa,
+                label=venue.common_name if is_venue_location else oa.label,
+                is_venue_location=is_venue_location,
+            )
+
+        return cls(locationType=offer.locationType, locationComment=offer.locationComment, location=location)
+
+
+class CollectiveOfferResponseModel(HttpBodyModel):
+    id: int
+    name: str
+    venue: venues_serialize.ListOffersVenueResponseModelV2
+    displayedStatus: models.CollectiveOfferDisplayedStatus
+    imageUrl: str | None
+    location: GetCollectiveOfferLocationModelV2
+    dates: DatesModel | None
+    # collective offer specific fields
+    allowedActions: list[models.CollectiveOfferAllowedAction]
+    stock: CollectiveOfferStockResponseModel | None
+    educationalInstitution: educational_institutions.EducationalInstitutionResponseModelV2 | None
+
+    @classmethod
+    def build(cls, offer: models.CollectiveOffer) -> typing.Self:
         stock = offer.collectiveStock
-        serialized_stock = CollectiveOfferStockResponseModel.from_orm(stock) if stock is not None else None
+        serialized_stock = CollectiveOfferStockResponseModel.model_validate(stock) if stock is not None else None
 
         start, end = offer.start, offer.end
         if start is not None and end is not None:
-            dates = CollectiveOfferDatesModel(start=start, end=end)
+            dates = DatesModel(start=start, end=end)
         else:
             dates = None
 
         return cls(
             id=offer.id,
             name=offer.name,
-            venue=_serialize_venue(offer.venue),
+            venue=venues_serialize.ListOffersVenueResponseModelV2.build(offer.venue),
             displayedStatus=offer.displayedStatus,
             allowedActions=offer.allowedActions,
             imageUrl=offer.imageUrl,
-            location=get_collective_offer_location_model(offer),
+            location=GetCollectiveOfferLocationModelV2.build(offer),
             stock=serialized_stock,
             educationalInstitution=offer.institution,
             dates=dates,
         )
 
 
-class ListCollectiveOffersResponseModel(ConfiguredBaseModel):
-    __root__: list[CollectiveOfferResponseModel]
+class ListCollectiveOffersResponseModel(pydantic_v2.RootModel):
+    root: list[CollectiveOfferResponseModel]
 
 
-class CollectiveOfferTemplateResponseModel(BaseCollectiveOfferResponseModel):
+class CollectiveOfferTemplateResponseModel(HttpBodyModel):
+    id: int
+    name: str
+    venue: venues_serialize.ListOffersVenueResponseModelV2
+    displayedStatus: models.CollectiveOfferDisplayedStatus
+    imageUrl: str | None
+    location: GetCollectiveOfferLocationModelV2
+    dates: DatesModel | None
+    # collective offer template specific fields
     allowedActions: list[models.CollectiveOfferTemplateAllowedAction]
-    dates: CollectiveOfferDatesModel | None
 
     @classmethod
-    def build(
-        cls: type["CollectiveOfferTemplateResponseModel"], offer: models.CollectiveOfferTemplate
-    ) -> "CollectiveOfferTemplateResponseModel":
+    def build(cls, offer: models.CollectiveOfferTemplate) -> "CollectiveOfferTemplateResponseModel":
         start, end = offer.start, offer.end
         if start is not None and end is not None:
-            dates = CollectiveOfferDatesModel(start=start, end=end)
+            dates = DatesModel(start=start, end=end)
         else:
             dates = None
 
         return cls(
             id=offer.id,
             name=offer.name,
-            venue=_serialize_venue(offer.venue),
+            venue=venues_serialize.ListOffersVenueResponseModelV2.build(offer.venue),
             displayedStatus=offer.displayedStatus,
             allowedActions=offer.allowedActions,
             imageUrl=offer.imageUrl,
             dates=dates,
-            location=get_collective_offer_location_model(offer),
+            location=GetCollectiveOfferLocationModelV2.build(offer),
         )
 
 
-class ListCollectiveOfferTemplatesResponseModel(ConfiguredBaseModel):
-    __root__: list[CollectiveOfferTemplateResponseModel]
+class ListCollectiveOfferTemplatesResponseModel(pydantic_v2.RootModel):
+    root: list[CollectiveOfferTemplateResponseModel]
 
 
 class OfferDomain(BaseModel):
@@ -394,7 +408,7 @@ class GetCollectiveOfferProviderResponseModel(BaseModel):
 class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     collectiveStock: GetCollectiveOfferCollectiveStockResponseModel | None
     lastBooking: GetCollectiveOfferBookingResponseModel | None = Field(alias="booking")
-    institution: EducationalInstitutionResponseModel | None
+    institution: educational_institutions.EducationalInstitutionResponseModel | None
     templateId: int | None
     teacher: EducationalRedactorResponseModel | None
     isPublicApi: bool

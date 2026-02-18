@@ -332,6 +332,8 @@ describe('CollectiveOffersScreen', () => {
       const offer = collectiveOfferFactory({
         stock: {
           bookingLimitDatetime: '2024-07-31T09:11:00Z',
+          numberOfTickets: 1,
+          price: 10,
         },
         displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
       })
@@ -352,6 +354,8 @@ describe('CollectiveOffersScreen', () => {
       const offer = collectiveOfferFactory({
         stock: {
           bookingLimitDatetime: '2024-07-31T09:11:00Z',
+          numberOfTickets: 1,
+          price: 10,
         },
         displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
       })
@@ -370,6 +374,8 @@ describe('CollectiveOffersScreen', () => {
       const offer = collectiveOfferFactory({
         stock: {
           bookingLimitDatetime: '2024-07-31T09:11:00Z',
+          numberOfTickets: 1,
+          price: 10,
         },
         displayedStatus: CollectiveOfferDisplayedStatus.BOOKED,
       })
@@ -384,9 +390,7 @@ describe('CollectiveOffersScreen', () => {
 
     it('should not render expiration row when offer has no booking limit', () => {
       const offer = collectiveOfferFactory({
-        stock: {
-          bookingLimitDatetime: null,
-        },
+        stock: null,
         displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
       })
 

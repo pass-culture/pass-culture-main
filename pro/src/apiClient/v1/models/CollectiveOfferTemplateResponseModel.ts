@@ -2,19 +2,19 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { CollectiveOfferDatesModel } from './CollectiveOfferDatesModel';
 import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferTemplateAllowedAction } from './CollectiveOfferTemplateAllowedAction';
-import type { GetCollectiveOfferLocationModel } from './GetCollectiveOfferLocationModel';
-import type { ListOffersVenueResponseModel } from './ListOffersVenueResponseModel';
+import type { DatesModel } from './DatesModel';
+import type { GetCollectiveOfferLocationModelV2 } from './GetCollectiveOfferLocationModelV2';
+import type { ListOffersVenueResponseModelV2 } from './ListOffersVenueResponseModelV2';
 export type CollectiveOfferTemplateResponseModel = {
   allowedActions: Array<CollectiveOfferTemplateAllowedAction>;
-  dates?: CollectiveOfferDatesModel | null;
+  dates: (DatesModel | null);
   displayedStatus: CollectiveOfferDisplayedStatus;
   id: number;
-  imageUrl?: string | null;
-  location: GetCollectiveOfferLocationModel;
+  imageUrl: (string | null);
+  location: GetCollectiveOfferLocationModelV2;
   name: string;
-  venue: ListOffersVenueResponseModel;
+  venue: ListOffersVenueResponseModelV2;
 };
 

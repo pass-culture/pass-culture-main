@@ -10,6 +10,7 @@ describe('PriceAndParticipantsCell', () => {
   it('should display price and number of participants when present', () => {
     const offer = collectiveOfferFactory({
       stock: {
+        bookingLimitDatetime: String(new Date()),
         numberOfTickets: 5,
         price: 10,
       },
@@ -22,11 +23,7 @@ describe('PriceAndParticipantsCell', () => {
   })
 
   it('should display dash when price or numberOfTickets are missing', () => {
-    const offer = collectiveOfferFactory({
-      stock: {
-        price: null,
-      },
-    })
+    const offer = collectiveOfferFactory({ stock: null })
     renderWithProviders(<PriceAndParticipantsCell offer={offer} />)
     expect(screen.getByText('-')).toBeInTheDocument()
   })

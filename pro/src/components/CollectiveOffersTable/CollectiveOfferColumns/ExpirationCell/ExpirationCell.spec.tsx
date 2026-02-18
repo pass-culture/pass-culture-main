@@ -1,8 +1,10 @@
 import { screen } from '@testing-library/react'
+import { add } from 'date-fns'
 
 import {
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferResponseModel,
+  type CollectiveOfferStockResponseModel,
 } from '@/apiClient/v1'
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -11,6 +13,11 @@ import { ExpirationCell } from './ExpirationCell'
 
 describe('ExpirationCell', () => {
   const offer: CollectiveOfferResponseModel = collectiveOfferFactory()
+  const stock: CollectiveOfferStockResponseModel = {
+    bookingLimitDatetime: add(Date.now(), { days: 1 }).toISOString(),
+    numberOfTickets: 10,
+    price: 10,
+  }
 
   function renderExpirationCell(offerParam = offer) {
     return renderWithProviders(<ExpirationCell offer={offerParam} />)
@@ -23,6 +30,7 @@ describe('ExpirationCell', () => {
     const offerExpiringIn10Days = {
       ...offer,
       stock: {
+        ...stock,
         bookingLimitDatetime: in10Days.toISOString(),
       },
     }
@@ -42,6 +50,7 @@ describe('ExpirationCell', () => {
     const offerExpiringIn5Days = {
       ...offer,
       stock: {
+        ...stock,
         bookingLimitDatetime: in5Days.toISOString(),
       },
     }
@@ -56,6 +65,7 @@ describe('ExpirationCell', () => {
     const offerExpiringToday = {
       ...offer,
       stock: {
+        ...stock,
         bookingLimitDatetime: today.toISOString(),
       },
     }
@@ -72,6 +82,7 @@ describe('ExpirationCell', () => {
       ...offer,
       displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
       stock: {
+        ...stock,
         bookingLimitDatetime: today.toISOString(),
       },
     }
@@ -90,6 +101,7 @@ describe('ExpirationCell', () => {
     renderExpirationCell({
       ...offer,
       stock: {
+        ...stock,
         bookingLimitDatetime: in10Days.toISOString(),
       },
     })
@@ -104,6 +116,7 @@ describe('ExpirationCell', () => {
       ...offer,
       displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
       stock: {
+        ...stock,
         bookingLimitDatetime: today.toISOString(),
       },
     }
@@ -122,6 +135,7 @@ describe('ExpirationCell', () => {
     const { container } = renderExpirationCell({
       ...offer,
       stock: {
+        ...stock,
         bookingLimitDatetime: soon.toISOString(),
       },
     })
@@ -136,6 +150,7 @@ describe('ExpirationCell', () => {
     renderExpirationCell({
       ...offer,
       stock: {
+        ...stock,
         bookingLimitDatetime: yesterday.toISOString(),
       },
     })

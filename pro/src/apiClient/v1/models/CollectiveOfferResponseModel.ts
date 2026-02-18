@@ -3,22 +3,22 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { CollectiveOfferAllowedAction } from './CollectiveOfferAllowedAction';
-import type { CollectiveOfferDatesModel } from './CollectiveOfferDatesModel';
 import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferStockResponseModel } from './CollectiveOfferStockResponseModel';
-import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
-import type { GetCollectiveOfferLocationModel } from './GetCollectiveOfferLocationModel';
-import type { ListOffersVenueResponseModel } from './ListOffersVenueResponseModel';
+import type { DatesModel } from './DatesModel';
+import type { EducationalInstitutionResponseModelV2 } from './EducationalInstitutionResponseModelV2';
+import type { GetCollectiveOfferLocationModelV2 } from './GetCollectiveOfferLocationModelV2';
+import type { ListOffersVenueResponseModelV2 } from './ListOffersVenueResponseModelV2';
 export type CollectiveOfferResponseModel = {
   allowedActions: Array<CollectiveOfferAllowedAction>;
-  dates?: CollectiveOfferDatesModel | null;
+  dates: (DatesModel | null);
   displayedStatus: CollectiveOfferDisplayedStatus;
-  educationalInstitution?: EducationalInstitutionResponseModel | null;
+  educationalInstitution: (EducationalInstitutionResponseModelV2 | null);
   id: number;
-  imageUrl?: string | null;
-  location: GetCollectiveOfferLocationModel;
+  imageUrl: (string | null);
+  location: GetCollectiveOfferLocationModelV2;
   name: string;
-  stock?: CollectiveOfferStockResponseModel | null;
-  venue: ListOffersVenueResponseModel;
+  stock: (CollectiveOfferStockResponseModel | null);
+  venue: ListOffersVenueResponseModelV2;
 };
 
