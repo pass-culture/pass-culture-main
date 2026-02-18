@@ -583,7 +583,6 @@ class Returns200Test:
 
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
 
-        print(response.json)
         # then
         assert response.status_code == 200
         venue = db.session.get(offerers_models.Venue, venue_id)
@@ -595,6 +594,7 @@ class Returns200Test:
         assert venue.motorDisabilityCompliant == None
         assert venue.visualDisabilityCompliant == None
 
+    @pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_UPDATE_VENUE_OFFERS_ACCESSIBILITY=False)
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_accessibility_job.delay")
     def test_edit_venue_accessibility_with_applied_on_all_offers(
         self, mocked_update_all_venue_offers_accessibility_job, client
@@ -630,6 +630,54 @@ class Returns200Test:
                 "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
                 "motorDisabilityCompliant": venue.motorDisabilityCompliant,
                 "visualDisabilityCompliant": venue.visualDisabilityCompliant,
+            },
+        )
+
+        assert len(venue.action_history) == 1
+        assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert venue.action_history[0].extraData["modified_info"] == {
+            "publicName": {"new_info": venue_data["publicName"], "old_info": "old name"},
+            "audioDisabilityCompliant": {"new_info": True, "old_info": False},
+        }
+
+    @pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_UPDATE_VENUE_OFFERS_ACCESSIBILITY=True)
+    @patch("pcapi.core.offers.tasks.update_all_venue_offers_accessibility_task.delay")
+    def test_edit_venue_accessibility_with_applied_on_all_offers_with_FF(
+        self, mocked_update_all_venue_offers_accessibility_task, client
+    ):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            name="old name",
+            managingOfferer=user_offerer.offerer,
+            contact=None,
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+
+        venue_data = populate_missing_data_from_venue(
+            {
+                "publicName": "new public name",
+                "audioDisabilityCompliant": True,
+                "isAccessibilityAppliedOnAllOffers": True,
+                "contact": None,
+            },
+            venue,
+        )
+
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+
+        assert response.status_code == 200
+        assert venue.audioDisabilityCompliant is True
+
+        mocked_update_all_venue_offers_accessibility_task.assert_called_once_with(
+            {
+                "venue_id": venue.id,
+                "accessibility": {
+                    "audioDisabilityCompliant": True,
+                    "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
+                    "motorDisabilityCompliant": venue.motorDisabilityCompliant,
+                    "visualDisabilityCompliant": venue.visualDisabilityCompliant,
+                },
             },
         )
 

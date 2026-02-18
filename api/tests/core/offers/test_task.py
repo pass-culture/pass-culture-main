@@ -3,13 +3,13 @@ import decimal
 
 import pytest
 
+from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
 from pcapi.core.offers import schemas
-from pcapi.core.offers.tasks import UpdateAllVenueOffersEmailPayload
-from pcapi.core.offers.tasks import _update_offer_and_related_stock
-from pcapi.core.offers.tasks import update_all_venue_offers_email_task
+from pcapi.core.offers import tasks
 from pcapi.core.providers import factories as providers_factories
 from pcapi.models import db
 from pcapi.utils import date as utils_date
@@ -29,14 +29,67 @@ def test_update_all_venue_offers_email_task():
     offer2_id = offer2.id
     new_email = "new.venue@email.com"
 
-    update_all_venue_offers_email_task.delay(
-        UpdateAllVenueOffersEmailPayload(venue_id=venue.id, email=new_email).model_dump()
+    tasks.update_all_venue_offers_email_task.delay(
+        tasks.UpdateAllVenueOffersEmailPayload(venue_id=venue.id, email=new_email).model_dump()
     )
     offer1 = db.session.query(models.Offer).filter_by(id=offer1_id).one()
     offer2 = db.session.query(models.Offer).filter_by(id=offer2_id).one()
 
     assert offer1.bookingEmail == new_email
     assert offer2.bookingEmail == new_email
+
+
+@pytest.mark.usefixtures("db_session")
+def test_update_all_venue_offers_accessibility_task() -> None:
+    venue = offerers_factories.VenueFactory(bookingEmail="old.venue@email.com")
+    offer1 = factories.OfferFactory(venue=venue)
+    offer1_id = offer1.id
+    offer2 = factories.OfferFactory(venue=venue)
+    offer2_id = offer2.id
+
+    collective_offer = educational_factories.CollectiveOfferFactory(venue=venue, audioDisabilityCompliant=False)
+    collective_offer_id = collective_offer.id
+    collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+        venue=venue, audioDisabilityCompliant=False
+    )
+    collective_offer_template_id = collective_offer_template.id
+    new_accessibility = {
+        "audioDisabilityCompliant": True,
+        "mentalDisabilityCompliant": False,
+        "motorDisabilityCompliant": True,
+        "visualDisabilityCompliant": False,
+    }
+
+    tasks.update_all_venue_offers_accessibility_task(
+        tasks.UpdateAllVenueOffersAccessibilityPayload(venue_id=venue.id, accessibility=new_accessibility).model_dump()
+    )
+
+    offer1 = db.session.query(models.Offer).filter_by(id=offer1_id).one()
+    offer2 = db.session.query(models.Offer).filter_by(id=offer2_id).one()
+    collective_offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=collective_offer_id).one()
+    collective_offer_template = (
+        db.session.query(educational_models.CollectiveOfferTemplate).filter_by(id=collective_offer_template_id).one()
+    )
+
+    assert offer1.audioDisabilityCompliant == new_accessibility["audioDisabilityCompliant"]
+    assert offer1.mentalDisabilityCompliant == new_accessibility["mentalDisabilityCompliant"]
+    assert offer1.motorDisabilityCompliant == new_accessibility["motorDisabilityCompliant"]
+    assert offer1.visualDisabilityCompliant == new_accessibility["visualDisabilityCompliant"]
+
+    assert offer2.audioDisabilityCompliant == new_accessibility["audioDisabilityCompliant"]
+    assert offer2.mentalDisabilityCompliant == new_accessibility["mentalDisabilityCompliant"]
+    assert offer2.motorDisabilityCompliant == new_accessibility["motorDisabilityCompliant"]
+    assert offer2.visualDisabilityCompliant == new_accessibility["visualDisabilityCompliant"]
+
+    assert collective_offer.audioDisabilityCompliant == new_accessibility["audioDisabilityCompliant"]
+    assert collective_offer.mentalDisabilityCompliant == new_accessibility["mentalDisabilityCompliant"]
+    assert collective_offer.motorDisabilityCompliant == new_accessibility["motorDisabilityCompliant"]
+    assert collective_offer.visualDisabilityCompliant == new_accessibility["visualDisabilityCompliant"]
+
+    assert collective_offer_template.audioDisabilityCompliant == new_accessibility["audioDisabilityCompliant"]
+    assert collective_offer_template.mentalDisabilityCompliant == new_accessibility["mentalDisabilityCompliant"]
+    assert collective_offer_template.motorDisabilityCompliant == new_accessibility["motorDisabilityCompliant"]
+    assert collective_offer_template.visualDisabilityCompliant == new_accessibility["visualDisabilityCompliant"]
 
 
 @pytest.mark.usefixtures("db_session")
@@ -61,7 +114,7 @@ class UpdateOfferAndRelatedStockTest:
         provider_1 = providers_factories.PublicApiProviderFactory()
         provider_2 = providers_factories.PublicApiProviderFactory()
         stock = factories.ThingStockFactory(offer__lastProvider=provider_1)
-        has_been_updated, updated_offer = _update_offer_and_related_stock(
+        has_been_updated, updated_offer = tasks._update_offer_and_related_stock(
             stock.offer,
             self._get_serialized_stock_dict(stock),
             provider=provider_2,
@@ -75,7 +128,7 @@ class UpdateOfferAndRelatedStockTest:
         offerer_address = offerers_factories.OffererAddressFactory()
 
         stock = factories.ThingStockFactory(offer__lastProvider=provider_1)
-        has_been_updated, updated_offer = _update_offer_and_related_stock(
+        has_been_updated, updated_offer = tasks._update_offer_and_related_stock(
             stock.offer,
             self._get_serialized_stock_dict(stock),
             provider=provider_1,
@@ -105,7 +158,7 @@ class UpdateOfferAndRelatedStockTest:
             offer__lastProvider=provider_1,
             offer__publicationDatetime=initial_publication_datetime,
         )
-        _, updated_offer = _update_offer_and_related_stock(
+        _, updated_offer = tasks._update_offer_and_related_stock(
             stock.offer,
             self._get_serialized_stock_dict(stock, {"publication_datetime": input_publication_datetime}),
             provider=provider_1,
@@ -134,7 +187,7 @@ class UpdateOfferAndRelatedStockTest:
             offer__lastProvider=provider_1,
             offer__bookingAllowedDatetime=initial_booking_allowed_datetime,
         )
-        _, updated_offer = _update_offer_and_related_stock(
+        _, updated_offer = tasks._update_offer_and_related_stock(
             stock.offer,
             self._get_serialized_stock_dict(stock, {"booking_allowed_datetime": input_booking_allowed_datetime}),
             provider=provider_1,
@@ -145,7 +198,7 @@ class UpdateOfferAndRelatedStockTest:
     def test_should_create_stock(self):
         provider_1 = providers_factories.PublicApiProviderFactory()
         offer = factories.OfferFactory(lastProvider=provider_1)
-        has_been_updated, update_offer = _update_offer_and_related_stock(
+        has_been_updated, update_offer = tasks._update_offer_and_related_stock(
             offer,
             {
                 "quantity": 10,
@@ -167,7 +220,7 @@ class UpdateOfferAndRelatedStockTest:
     def test_should_update_stock_price(self):
         provider_1 = providers_factories.PublicApiProviderFactory()
         stock = factories.ThingStockFactory(offer__lastProvider=provider_1)
-        has_been_updated, _ = _update_offer_and_related_stock(
+        has_been_updated, _ = tasks._update_offer_and_related_stock(
             stock.offer,
             self._get_serialized_stock_dict(stock, {"price": 550}),
             provider=provider_1,
@@ -183,7 +236,7 @@ class UpdateOfferAndRelatedStockTest:
     def test_should_update_stock_quantity(self, quantity, expected_quantity):
         provider_1 = providers_factories.PublicApiProviderFactory()
         stock = factories.ThingStockFactory(quantity=20, dnBookedQuantity=5, offer__lastProvider=provider_1)
-        has_been_updated, _ = _update_offer_and_related_stock(
+        has_been_updated, _ = tasks._update_offer_and_related_stock(
             stock.offer,
             self._get_serialized_stock_dict(stock, {"quantity": quantity}),
             provider=provider_1,
@@ -195,7 +248,7 @@ class UpdateOfferAndRelatedStockTest:
     def test_should_update_stock_quantity_from_unlimited_to_0(self):
         provider_1 = providers_factories.PublicApiProviderFactory()
         stock = factories.ThingStockFactory(quantity=None, dnBookedQuantity=5, offer__lastProvider=provider_1)
-        has_been_updated, _ = _update_offer_and_related_stock(
+        has_been_updated, _ = tasks._update_offer_and_related_stock(
             stock.offer,
             self._get_serialized_stock_dict(stock, {"quantity": 0}),
             provider=provider_1,
@@ -208,7 +261,7 @@ class UpdateOfferAndRelatedStockTest:
         provider_1 = providers_factories.PublicApiProviderFactory()
         new_booking_limit_datetime = utils_date.get_naive_utc_now() + datetime.timedelta(days=1)
         stock = factories.ThingStockFactory(offer__lastProvider=provider_1)
-        has_been_updated, _ = _update_offer_and_related_stock(
+        has_been_updated, _ = tasks._update_offer_and_related_stock(
             stock.offer,
             self._get_serialized_stock_dict(stock, {"booking_limit_datetime": new_booking_limit_datetime}),
             provider=provider_1,
@@ -220,7 +273,7 @@ class UpdateOfferAndRelatedStockTest:
     def test_should_not_update(self):
         provider_1 = providers_factories.PublicApiProviderFactory()
         stock = factories.ThingStockFactory(offer__lastProvider=provider_1)
-        has_been_updated, _ = _update_offer_and_related_stock(
+        has_been_updated, _ = tasks._update_offer_and_related_stock(
             stock.offer,
             self._get_serialized_stock_dict(stock),
             provider=provider_1,
