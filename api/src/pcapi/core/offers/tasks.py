@@ -7,6 +7,8 @@ from pydantic import BaseModel as BaseModelV2
 from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.core import search
 from pcapi.core.categories import subcategories
+from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
@@ -94,6 +96,31 @@ class UpdateAllVenueOffersEmailPayload(BaseModelV2):
 def update_all_venue_offers_email_task(payload: UpdateAllVenueOffersEmailPayload) -> None:
     query = db.session.query(offers_models.Offer).filter_by(venueId=payload.venue_id)
     offers_api.batch_update_offers(query, {"bookingEmail": payload.email})
+
+
+class UpdateAllVenueOffersAccessibilityPayload(BaseModelV2):
+    venue_id: int
+    accessibility: dict[str, bool]
+
+
+@celery_async_task(
+    name="tasks.batch_updates.default.update_all_venue_offers_accessibility",
+    model=UpdateAllVenueOffersAccessibilityPayload,
+)
+def update_all_venue_offers_accessibility_task(payload: UpdateAllVenueOffersAccessibilityPayload) -> None:
+    offer_query = db.session.query(offers_models.Offer).filter(offers_models.Offer.venueId == payload.venue_id)
+    collective_offer_query = db.session.query(educational_models.CollectiveOffer).filter(
+        educational_models.CollectiveOffer.venueId == payload.venue_id
+    )
+    collective_offer_template_query = db.session.query(educational_models.CollectiveOfferTemplate).filter(
+        educational_models.CollectiveOfferTemplate.venueId == payload.venue_id
+    )
+
+    offers_api.batch_update_offers(offer_query, payload.accessibility)
+    educational_api_offer.batch_update_collective_offers(collective_offer_query, payload.accessibility)
+    educational_api_offer.batch_update_collective_offers_template(
+        collective_offer_template_query, payload.accessibility
+    )
 
 
 # Batch upsert ean offers task
