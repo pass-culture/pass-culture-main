@@ -80,7 +80,7 @@ if __name__ == "__main__":
                     models.Offer.venueId == venue_id,
                     models.Offer.publicationDatetime >= date_filter,
                 )
-                # .order_by(models.Offer.publicationDatetime.desc())
+                .order_by(models.Offer.publicationDatetime.desc())
                 .options(sa_orm.joinedload(models.Offer.stocks))
                 .limit(100)
             )
