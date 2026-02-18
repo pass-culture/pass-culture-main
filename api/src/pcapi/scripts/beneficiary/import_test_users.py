@@ -206,7 +206,10 @@ def _create_pro_user(row: dict) -> User:
         is_manual_edition=False,
     )
     offerers_api.get_or_create_offer_location(
-        offerer.id, second_address.id, label="Palais des Festivals", venue_id=venue.id
+        offerer_id=offerer.id,
+        venue_id=venue.id,
+        address_id=second_address.id,
+        label="Palais des Festivals",
     )
 
     if row["Type"] in ("externe:bug-bounty", "interne:test"):

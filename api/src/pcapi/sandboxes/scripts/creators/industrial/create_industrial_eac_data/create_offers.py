@@ -91,7 +91,7 @@ def _get_or_create_offerer_address(
         else geography_factories.AddressFactory
     )
     address = factory(street=location_option["street"])
-    offerer_address = offerers_factories.OffererAddressFactory.create(
+    offerer_address = offerers_factories.OfferLocationFactory.create(
         label=oa_label, address=address, offerer=managing_offerer
     )
     return offerer_address
