@@ -9,18 +9,22 @@ import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
+import { Panel } from '@/ui-kit/Panel/Panel'
 import { Timeline, TimelineStepType } from '@/ui-kit/Timeline/Timeline'
 
+import { CollectiveAdageStatus } from './CollectiveAdageStatus'
 import styles from './CollectiveDmsTimeline.module.scss'
 
 export const CollectiveDmsTimeline = ({
   collectiveDmsApplication,
   hasAdageId,
   adageInscriptionDate,
+  isHomepage,
 }: {
   collectiveDmsApplication: DMSApplicationForEAC
   hasAdageId: boolean
-  hasAdageIdForMoreThan30Days: boolean
+  adageInscriptionDate?: string | null
+  isHomepage?: boolean
 }) => {
   const collectiveDmsApplicationLink = `https://demarche.numerique.gouv.fr/dossiers/${collectiveDmsApplication.application}/messagerie`
   const collectiveDmsContactSupport =
@@ -250,7 +254,7 @@ export const CollectiveDmsTimeline = ({
   const refusedByDms = (
     <Banner
       variant={BannerVariants.ERROR}
-      title="Votre demande de référencement a été refusée"
+      title="Votre demande de référencement a été refusée pour la part collective"
       actions={[
         {
           href: collectiveDmsApplicationLink,
@@ -272,7 +276,7 @@ export const CollectiveDmsTimeline = ({
           type: 'link',
         },
       ]}
-      description="Votre demande de référencement a été refusée le {processingDate} par la commission régionale de référencement qui rassemble des représentants du rectorat et de la DRAC de votre territoire. Nous vous invitons à consulter votre messagerie sur Démarche Numérique afin d’en savoir plus sur les raisons de ce refus."
+      description={`Votre demande de référencement a été refusée le ${processingDate} par la commission régionale de référencement qui rassemble des représentants du rectorat et de la DRAC de votre territoire. Nous vous invitons à consulter votre messagerie sur Démarche Numérique afin d’en savoir plus sur les raisons de ce refus.`}
     />
   )
 
@@ -303,6 +307,24 @@ export const CollectiveDmsTimeline = ({
       description="Nous vous invitons à consulter votre messagerie sur Démarche Numérique afin d’en savoir plus."
     />
   )
+
+  const successDmsHomepage = (
+    <div className={styles['banner']}>
+      <Banner
+        variant={BannerVariants.SUCCESS}
+        title="Votre dossier a été validé et vous pouvez dès à présent commencer votre activité avec le pass Culture"
+      />
+    </div>
+  )
+
+  const showSuccessBanner =
+    isHomepage &&
+    collectiveDmsApplication.processingDate &&
+    isBefore(
+      new Date(),
+      addDays(new Date(collectiveDmsApplication.processingDate), 30)
+    )
+
   if (
     hasAdageId &&
     collectiveDmsApplication.state !== DMSApplicationstatus.ACCEPTE
@@ -313,50 +335,63 @@ export const CollectiveDmsTimeline = ({
   switch (collectiveDmsApplication.state) {
     case DMSApplicationstatus.EN_CONSTRUCTION:
       return (
-        <Timeline
-          steps={[
-            confirmationSubmittedStep,
-            confirmationWaitingNextStep,
-            disabledInstructionStep,
-            disabledDoneStep,
-            disabledAcceptedAdageStep,
-          ]}
-        />
+        <TimelineWrapper isHomepage={isHomepage}>
+          <Timeline
+            steps={[
+              confirmationSubmittedStep,
+              confirmationWaitingNextStep,
+              disabledInstructionStep,
+              disabledDoneStep,
+              disabledAcceptedAdageStep,
+            ]}
+          />
+        </TimelineWrapper>
       )
     case DMSApplicationstatus.EN_INSTRUCTION:
       return (
-        <Timeline
-          steps={[
-            successSubmittedStep,
-            waitingInstructionStep,
-            disabledDoneStep,
-            disabledAcceptedAdageStep,
-          ]}
-        />
-      )
-    case DMSApplicationstatus.ACCEPTE:
-      if (!hasAdageId) {
-        return (
+        <TimelineWrapper isHomepage={isHomepage}>
           <Timeline
             steps={[
               successSubmittedStep,
-              successInstructionStep,
-              successDoneReferencement,
-              waitingAdageStep,
+              waitingInstructionStep,
+              disabledDoneStep,
+              disabledAcceptedAdageStep,
             ]}
           />
+        </TimelineWrapper>
+      )
+    case DMSApplicationstatus.ACCEPTE:
+      if (isHomepage) {
+        return showSuccessBanner ? successDmsHomepage : undefined
+      }
+      if (!hasAdageId) {
+        return (
+          <>
+            {showSuccessBanner && successDmsHomepage}
+            <Timeline
+              steps={[
+                successSubmittedStep,
+                successInstructionStep,
+                successDoneReferencement,
+                waitingAdageStep,
+              ]}
+            />
+          </>
         )
       }
       if (!hasAdageIdForMoreThan30Days) {
         return (
-          <Timeline
-            steps={[
-              successSubmittedStep,
-              successInstructionStep,
-              successDoneReferencement,
-              successAdageStep,
-            ]}
-          />
+          <>
+            {showSuccessBanner && successDmsHomepage}
+            <Timeline
+              steps={[
+                successSubmittedStep,
+                successInstructionStep,
+                successDoneReferencement,
+                successAdageStep,
+              ]}
+            />
+          </>
         )
       }
 
@@ -365,8 +400,30 @@ export const CollectiveDmsTimeline = ({
       return refusedByDms
     case DMSApplicationstatus.SANS_SUITE:
       return droppedByDms
+
     /* istanbul ignore next: we dont want to test this case in unit test */
     default:
       assertOrFrontendError(false, 'Invalid dms status.')
   }
+}
+
+const TimelineWrapper = ({
+  children,
+  isHomepage,
+}: {
+  children: React.ReactNode
+  isHomepage?: boolean
+}) => {
+  if (isHomepage) {
+    return (
+      <Panel>
+        <h2 className={styles['panel-title']}>
+          État d’avancement de votre dossier
+        </h2>
+        <CollectiveAdageStatus />
+        {children}
+      </Panel>
+    )
+  }
+  return <>{children}</>
 }
