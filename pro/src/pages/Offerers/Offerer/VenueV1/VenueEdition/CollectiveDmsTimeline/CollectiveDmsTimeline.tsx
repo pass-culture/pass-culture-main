@@ -1,3 +1,5 @@
+import { addDays, isBefore } from 'date-fns'
+
 import { type DMSApplicationForEAC, DMSApplicationstatus } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -14,17 +16,21 @@ import styles from './CollectiveDmsTimeline.module.scss'
 export const CollectiveDmsTimeline = ({
   collectiveDmsApplication,
   hasAdageId,
-  hasAdageIdForMoreThan30Days,
   adageInscriptionDate,
 }: {
   collectiveDmsApplication: DMSApplicationForEAC
   hasAdageId: boolean
   hasAdageIdForMoreThan30Days: boolean
-  adageInscriptionDate?: string | null
 }) => {
   const collectiveDmsApplicationLink = `https://demarche.numerique.gouv.fr/dossiers/${collectiveDmsApplication.application}/messagerie`
   const collectiveDmsContactSupport =
     'https://aide.passculture.app/hc/fr/articles/8491401511708'
+
+  const hasAdageIdForMoreThan30Days = Boolean(
+    hasAdageId &&
+      adageInscriptionDate &&
+      isBefore(new Date(adageInscriptionDate), addDays(new Date(), -30))
+  )
 
   const buildDate =
     collectiveDmsApplication.buildDate &&

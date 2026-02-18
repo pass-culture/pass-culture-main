@@ -17,7 +17,6 @@ const mockLogEvent = vi.fn()
 interface CollectiveDmsTimelineProps {
   collectiveDmsApplication: DMSApplicationForEAC
   hasAdageId?: boolean
-  hasAdageIdForMoreThan30Days?: boolean
   adageInscriptionDate?: string | null
   offererId?: number
 }
@@ -26,7 +25,6 @@ const renderCollectiveDmsTimeline = (
   {
     collectiveDmsApplication,
     hasAdageId = false,
-    hasAdageIdForMoreThan30Days = false,
     adageInscriptionDate = null,
   }: CollectiveDmsTimelineProps,
   options?: RenderWithProvidersOptions
@@ -35,7 +33,6 @@ const renderCollectiveDmsTimeline = (
     <CollectiveDmsTimeline
       collectiveDmsApplication={collectiveDmsApplication}
       hasAdageId={hasAdageId}
-      hasAdageIdForMoreThan30Days={hasAdageIdForMoreThan30Days}
       adageInscriptionDate={adageInscriptionDate}
     />,
     options
@@ -45,7 +42,7 @@ const renderCollectiveDmsTimeline = (
 interface TestCaseProps {
   collectiveDmsApplication: DMSApplicationForEAC
   hasAdageId?: boolean
-  hasAdageIdForMoreThan30Days?: boolean
+  adageInscriptionDate?: string
   expectedLabel: string
 }
 
@@ -93,7 +90,8 @@ describe('CollectiveDmsTimeline', () => {
         ...defaultDMSApplicationForEAC,
         state: DMSApplicationstatus.REFUSE,
       },
-      expectedLabel: 'Votre demande de référencement a été refusée',
+      expectedLabel:
+        'Votre demande de référencement a été refusée pour la part collective',
     },
     {
       collectiveDmsApplication: {
@@ -106,13 +104,13 @@ describe('CollectiveDmsTimeline', () => {
   it.each(testCases)('should render %s status', ({
     collectiveDmsApplication,
     hasAdageId,
-    hasAdageIdForMoreThan30Days,
+    adageInscriptionDate,
     expectedLabel,
   }) => {
     renderCollectiveDmsTimeline({
       collectiveDmsApplication,
       hasAdageId,
-      hasAdageIdForMoreThan30Days,
+      adageInscriptionDate,
     })
     expect(screen.getByText(expectedLabel)).toBeInTheDocument()
   })
@@ -164,13 +162,12 @@ describe('CollectiveDmsTimeline', () => {
     renderCollectiveDmsTimeline({
       collectiveDmsApplication: collectiveDmsApplication,
       hasAdageId: true,
-      hasAdageIdForMoreThan30Days: false,
-      adageInscriptionDate: '2025-03-28T15:08:33Z',
+      adageInscriptionDate: '2070-03-28T15:08:33Z',
     })
 
     expect(screen.getByText(/23 mars 2023/)).toBeInTheDocument()
     expect(screen.getByText(/24 mars 2025/)).toBeInTheDocument()
     expect(screen.getByText(/27 mars 2025/)).toBeInTheDocument()
-    expect(screen.getByText(/28 mars 2025/)).toBeInTheDocument()
+    expect(screen.getByText(/28 mars 2070/)).toBeInTheDocument()
   })
 })
