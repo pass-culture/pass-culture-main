@@ -19,6 +19,7 @@ interface CollectiveDmsTimelineProps {
   hasAdageId?: boolean
   adageInscriptionDate?: string | null
   offererId?: number
+  isHomepage?: boolean
 }
 
 const renderCollectiveDmsTimeline = (
@@ -26,6 +27,7 @@ const renderCollectiveDmsTimeline = (
     collectiveDmsApplication,
     hasAdageId = false,
     adageInscriptionDate = null,
+    isHomepage = false,
   }: CollectiveDmsTimelineProps,
   options?: RenderWithProvidersOptions
 ) => {
@@ -34,6 +36,7 @@ const renderCollectiveDmsTimeline = (
       collectiveDmsApplication={collectiveDmsApplication}
       hasAdageId={hasAdageId}
       adageInscriptionDate={adageInscriptionDate}
+      isHomepage={isHomepage}
     />,
     options
   )
@@ -169,5 +172,53 @@ describe('CollectiveDmsTimeline', () => {
     expect(screen.getByText(/24 mars 2025/)).toBeInTheDocument()
     expect(screen.getByText(/27 mars 2025/)).toBeInTheDocument()
     expect(screen.getByText(/28 mars 2070/)).toBeInTheDocument()
+  })
+
+  it('should display the timeline when rendered on homepage', () => {
+    renderCollectiveDmsTimeline({
+      collectiveDmsApplication: {
+        ...defaultDMSApplicationForEAC,
+        state: DMSApplicationstatus.EN_INSTRUCTION,
+      },
+      isHomepage: true,
+    })
+
+    expect(
+      screen.getByText(/État d’avancement de votre dossier/)
+    ).toBeInTheDocument()
+  })
+
+  it('should not render anything when venue has adageId but DMS application is not accepted', () => {
+    renderCollectiveDmsTimeline({
+      collectiveDmsApplication: {
+        ...defaultDMSApplicationForEAC,
+        state: DMSApplicationstatus.EN_INSTRUCTION,
+      },
+      hasAdageId: true,
+      isHomepage: true,
+    })
+
+    expect(
+      screen.queryByText(
+        /Votre dossier a été validé et vous pouvez dès à présent commencer votre activité avec le pass Culture/
+      )
+    ).not.toBeInTheDocument()
+  })
+
+  it('should display success banner when accepted on homepage and processing date is less than 30 days ago', () => {
+    renderCollectiveDmsTimeline({
+      collectiveDmsApplication: {
+        ...defaultDMSApplicationForEAC,
+        state: DMSApplicationstatus.ACCEPTE,
+        processingDate: '2070-04-22T15:08:33Z',
+      },
+      isHomepage: true,
+    })
+
+    expect(
+      screen.getByText(
+        /Votre dossier a été validé et vous pouvez dès à présent commencer votre activité avec le pass Culture/
+      )
+    ).toBeInTheDocument()
   })
 })

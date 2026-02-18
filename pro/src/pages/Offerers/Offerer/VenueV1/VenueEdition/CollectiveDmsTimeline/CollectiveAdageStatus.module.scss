@@ -1,0 +1,30 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+
+.container {
+  margin-bottom: var(--size-spacing-xl);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--size-spacing-s);
+  margin-bottom: var(--size-spacing-s);
+  flex-wrap: wrap;
+}
+
+.label {
+  @include fonts.body;
+
+  color: var(--color-text-subtle);
+}
+
+.link-container {
+  margin-bottom: var(--size-spacing-s);
+}
+
+.link-button-wrapper {
+  svg {
+    margin-right: var(--size-spacing-xs);
+  }
+}

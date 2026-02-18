@@ -6,6 +6,7 @@ import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { getToday } from '@/commons/utils/date'
+import { getLastCollectiveDmsApplication } from '@/commons/utils/getLastCollectiveDmsApplication'
 import {
   getPanelId,
   getTabId,
@@ -13,6 +14,7 @@ import {
 } from '@/ui-kit/Tabs/TabItems/TabItems'
 import { Tabs } from '@/ui-kit/Tabs/Tabs'
 
+import { CollectiveDmsTimeline } from '../Offerers/Offerer/VenueV1/VenueEdition/CollectiveDmsTimeline/CollectiveDmsTimeline'
 import {
   getInitialTab,
   onNewTabSelected,
@@ -28,6 +30,10 @@ export const NewHomepage = (): JSX.Element => {
   const hasCollective =
     selectedVenue.allowedOnAdage ||
     (selectedVenue.collectiveDmsApplications || []).length > 0
+
+  const collectiveDmsApplication = getLastCollectiveDmsApplication(
+    selectedVenue?.collectiveDmsApplications ?? []
+  )
 
   const [selectedTab, setSelectedTab] = useState(
     getInitialTab(selectedVenue.id, hasIndividual, hasCollective)
@@ -161,16 +167,14 @@ export const NewHomepage = (): JSX.Element => {
             Page d'accueil - part collective
           </span>
           <div className={styles['top']}>
-            <div>Banner collective</div>
-          </div>
-          <div className={styles['main']}>
-            <div>Liste des offres collectives vitrines</div>
-            <div>Empty state des offres réservables</div>
-          </div>
-          <div className={styles['side']}>
-            <div>Page partenaire</div>
-            <div>Newsletter</div>
-            <div>Budget €€€</div>
+            {collectiveDmsApplication && (
+              <CollectiveDmsTimeline
+                collectiveDmsApplication={collectiveDmsApplication}
+                hasAdageId={Boolean(selectedVenue?.hasAdageId)}
+                adageInscriptionDate={selectedVenue?.adageInscriptionDate}
+                isHomepage
+              />
+            )}
           </div>
         </div>
       )}
