@@ -14,7 +14,6 @@ from pcapi.core.subscription.ubble import fraud_check_api as ubble_fraud_api
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.subscription.ubble import tasks as ubble_tasks
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.feature import FeatureToggle
 from pcapi.routes.apis import public_api
 from pcapi.routes.external import authentication
 from pcapi.serialization.decorator import spectree_serialize
@@ -81,19 +80,7 @@ def ubble_v2_webhook_update_application_status(
         logger.warning("Ubble v2 fraud check already has finished status", extra=log_extra_data)
         return ubble_serializers.WebhookDummyReponse()
 
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UBBLE.is_active():
-        ubble_tasks.update_ubble_workflow_if_needed(fraud_check, status)
-    else:
-        try:
-            ubble_subscription_api.update_ubble_workflow_with_status(fraud_check, status)
-        except requests_utils.ExternalAPIException as exc:
-            logger.warning(
-                "External API error when updating ubble v2 workflow", extra=log_extra_data | {"exception": exc}
-            )
-            raise ApiErrors({"msg": "an error occured while fetching data"}, status_code=500)
-        except Exception as exc:
-            logger.exception("Could not update Ubble workflow", extra=log_extra_data | {"exception": exc})
-            raise ApiErrors({"msg": "an error occured during ubble v2 workflow update"}, status_code=500)
+    ubble_tasks.update_ubble_workflow_if_needed(fraud_check, status)
 
     return ubble_serializers.WebhookDummyReponse()
 

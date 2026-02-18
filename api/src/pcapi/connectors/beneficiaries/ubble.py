@@ -18,7 +18,6 @@ from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import models as users_models
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils import requests
 from pcapi.utils.rate_limit import RateLimitedError as RedisRateLimitedError
 from pcapi.utils.rate_limit import rate_limit
@@ -100,9 +99,6 @@ def log_and_handle_ubble_response(
 
 def ubble_rate_limit[**P, T](func: typing.Callable[P, T]) -> typing.Callable[P, T]:
     def wrapper(*args: P.args, **kwds: P.kwargs) -> T:
-        if not FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UBBLE.is_active():
-            return func(*args, **kwds)
-
         try:
             with rate_limit(
                 key="connectors:ubble",
@@ -294,9 +290,7 @@ def download_ubble_picture(http_url: pydantic_networks.HttpUrl) -> tuple[str | N
             "Ubble picture-download: request has expired",
             extra={"url": str(http_url), "status_code": response.status_code},
         )
-        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UBBLE.is_active():
-            raise UbbleAssetExpiredError("Asset has expired. It needs to be refetched before archiving.")
-        raise requests.ExternalAPIException(is_retryable=False)
+        raise UbbleAssetExpiredError("Asset has expired. It needs to be refetched before archiving.")
 
     if response.status_code != 200:
         logger.error(

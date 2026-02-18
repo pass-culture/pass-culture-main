@@ -30,10 +30,9 @@ from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingExcep
 from pcapi.core.subscription.exceptions import IncompatibleFraudCheckStatus
 from pcapi.core.subscription.ubble import fraud_check_api as ubble_fraud_api
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
+from pcapi.core.subscription.ubble import tasks as ubble_tasks
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
-from pcapi.tasks import ubble_tasks
 from pcapi.utils import requests as requests_utils
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import is_managed_transaction
@@ -63,31 +62,6 @@ CONCLUSIVE_STATUSES = [
     ubble_schemas.UbbleIdentificationStatus.DECLINED,
     ubble_schemas.UbbleIdentificationStatus.PROCESSED,
 ]
-
-
-def update_ubble_workflow_with_status(
-    fraud_check: subscription_models.BeneficiaryFraudCheck, status: ubble_schemas.UbbleIdentificationStatus
-) -> None:
-    """
-    Checks if a Ubble network call is needed according to the status returned by the Ubble webhook.
-
-    Ubble's rate limit of 200 requests/minute can be easily reached during peak hours through
-    the native app causing an influx of webhook notifications, plus recovery scripts.
-    """
-    if status in PENDING_STATUSES:
-        fraud_check.status = subscription_models.FraudCheckStatus.PENDING
-        fraud_check.updatedAt = datetime.datetime.now(datetime.timezone.utc)
-        return
-
-    if status in CANCELED_STATUSES:
-        fraud_check.status = subscription_models.FraudCheckStatus.CANCELED
-        fraud_check.updatedAt = datetime.datetime.now(datetime.timezone.utc)
-        return
-
-    if status not in CONCLUSIVE_STATUSES:
-        return
-
-    update_ubble_workflow(fraud_check)
 
 
 def update_ubble_workflow(fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
@@ -128,12 +102,8 @@ def update_ubble_workflow(fraud_check: subscription_models.BeneficiaryFraudCheck
         handle_validation_errors(user, fraud_check)
         return
 
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UBBLE.is_active():
-        celery_payload = ubble_schemas.StoreIdPicturePayload(identification_id=fraud_check.thirdPartyId)
-        on_commit(partial(celery_tasks.store_id_pictures_task.delay, celery_payload.model_dump()))
-    else:
-        payload = ubble_tasks.StoreIdPictureRequest(identification_id=fraud_check.thirdPartyId)
-        on_commit(partial(ubble_tasks.store_id_pictures_task.delay, payload))
+    celery_payload = ubble_schemas.StoreIdPicturePayload(identification_id=fraud_check.thirdPartyId)
+    on_commit(partial(celery_tasks.store_id_pictures_task.delay, celery_payload.model_dump()))
 
     try:
         is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user=user)
@@ -407,12 +377,9 @@ def archive_ubble_user_id_pictures(identification_id: str) -> None:
             f"Fraud check status {fraud_check.status} is incompatible with pictures archives for identification_id {identification_id}"
         )
 
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UBBLE.is_active():
-        ubble_content = fraud_check.source_data()
-        if not isinstance(ubble_content, ubble_schemas.UbbleContent):
-            raise ValueError(f"UbbleContent was expected while {type(ubble_content)} was given")
-    else:
-        ubble_content = _get_content(fraud_check.thirdPartyId)
+    ubble_content = fraud_check.source_data()
+    if not isinstance(ubble_content, ubble_schemas.UbbleContent):
+        raise ValueError(f"UbbleContent was expected while {type(ubble_content)} was given")
 
     exception_during_process = None
     if ubble_content.signed_image_front_url:
@@ -496,58 +463,27 @@ def recover_pending_ubble_applications(dry_run: bool = True) -> None:
     Sometimes the ubble webhook does not reach our API. This is a problem because the application is still pending.
     We want to be able to retrieve the processed applications and update the status of the application anyway.
     """
-    from pcapi.core.subscription.ubble import tasks as ubble_tasks
 
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UBBLE.is_active():
-        started_fraud_checks = 0
-        pending_fraud_checks = 0
+    started_fraud_checks = 0
+    pending_fraud_checks = 0
 
-        stale_ubble_fraud_check_ids = _get_stale_fraud_checks_id_and_status(ubble_tasks.UBBLE_TASK_RATE_LIMIT)
-        for fraud_check_id, fraud_check_status in stale_ubble_fraud_check_ids:
-            ubble_tasks.update_ubble_workflow_task.delay(
-                payload=ubble_schemas.UpdateWorkflowPayload(beneficiary_fraud_check_id=fraud_check_id).model_dump()
-            )
-
-            if fraud_check_status == subscription_models.FraudCheckStatus.STARTED:
-                started_fraud_checks += 1
-            if fraud_check_status == subscription_models.FraudCheckStatus.PENDING:
-                pending_fraud_checks += 1
-
-        logger.warning(
-            "Found %d stale ubble application with %d currently started and %d currently pending",
-            len(stale_ubble_fraud_check_ids),
-            started_fraud_checks,
-            pending_fraud_checks,
+    stale_ubble_fraud_check_ids = _get_stale_fraud_checks_id_and_status(ubble_tasks.UBBLE_TASK_RATE_LIMIT)
+    for fraud_check_id, fraud_check_status in stale_ubble_fraud_check_ids:
+        ubble_tasks.update_ubble_workflow_task.delay(
+            payload=ubble_schemas.UpdateWorkflowPayload(beneficiary_fraud_check_id=fraud_check_id).model_dump()
         )
-        return
 
-    pending_ubble_application_counter = 0
-    for pending_ubble_fraud_check_ids in _get_pending_fraud_checks_pages():
-        pending_ubble_application_counter += len(pending_ubble_fraud_check_ids)
-        for fraud_check in pending_ubble_fraud_check_ids:
-            try:
-                with atomic():
-                    update_ubble_workflow(fraud_check)
-            except Exception as exc:
-                logger.error(
-                    "Error while updating pending ubble application",
-                    extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId, "exc": str(exc)},
-                )
-                continue
-            db.session.refresh(fraud_check)
-            if fraud_check.status == subscription_models.FraudCheckStatus.PENDING:
-                logger.error(
-                    "Pending ubble application still pending after 12 hours. This is a problem on the Ubble side.",
-                    extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId},
-                )
+        if fraud_check_status == subscription_models.FraudCheckStatus.STARTED:
+            started_fraud_checks += 1
+        if fraud_check_status == subscription_models.FraudCheckStatus.PENDING:
+            pending_fraud_checks += 1
 
-    if pending_ubble_application_counter > 0:
-        logger.warning(
-            "Found %d pending ubble application older than 12 hours and tried to update them.",
-            pending_ubble_application_counter,
-        )
-    else:
-        logger.info("No pending ubble application found older than 12 hours. This is good.")
+    logger.warning(
+        "Found %d stale ubble application with %d currently started and %d currently pending",
+        len(stale_ubble_fraud_check_ids),
+        started_fraud_checks,
+        pending_fraud_checks,
+    )
 
 
 def _get_stale_fraud_checks_id_and_status(
