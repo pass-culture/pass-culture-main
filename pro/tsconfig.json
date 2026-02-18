@@ -33,7 +33,7 @@
     "target": "es6",
     "types": ["node", "vite/client", "vitest/globals"]
   },
-  "include": ["./src/**/*.ts", "./src/**/*.tsx"],
+  "include": ["./src/**/*.ts", "./src/**/*.tsx", "./typings/**/*.d.ts"],
   "exclude": [
     "node_modules",
     "__mocks__/**",

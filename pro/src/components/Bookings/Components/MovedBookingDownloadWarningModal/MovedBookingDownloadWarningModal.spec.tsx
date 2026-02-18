@@ -78,7 +78,10 @@ describe('MovedBookingDownloadWarningModal', () => {
     const link = screen.getByRole('link', {
       name: 'Aller sur la nouvelle page de téléchargement',
     })
-    expect(link).toHaveAttribute('href', '/remboursements')
+    expect(link).toHaveAttribute(
+      'href',
+      '/administration/donnees-activite/individuel'
+    )
   })
 
   it('should close dialog when clicking the link button', async () => {

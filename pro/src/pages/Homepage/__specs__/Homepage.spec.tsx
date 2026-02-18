@@ -16,8 +16,23 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
+import { PartnerLayout } from '@/layouts/PartnerLayout/PartnerLayout'
 
 import { Homepage } from '../Homepage'
+
+const homepageRoutes = [
+  {
+    path: '/',
+    Component: PartnerLayout,
+    children: [
+      {
+        path: 'accueil',
+        element: <Homepage />,
+        handle: { title: 'Espace acteurs culturels' },
+      },
+    ],
+  },
+]
 
 vi.mock('@firebase/remote-config', () => ({
   getValue: () => ({ asString: () => 'GE' }),
@@ -70,15 +85,20 @@ const baseOfferers: GetOffererResponseModel[] = [
 
 const renderHomePage = (options?: RenderWithProvidersOptions) => {
   const user = sharedCurrentUserFactory()
-  renderWithProviders(<Homepage />, {
+  const { storeOverrides, ...restOptions } = options ?? {}
+  renderWithProviders(null, {
+    routes: homepageRoutes,
+    initialRouterEntries: ['/accueil'],
     user,
+    ...restOptions,
     storeOverrides: {
       user: {
         currentUser: user,
+        selectedVenue: defaultGetOffererVenueResponseModel,
       },
       offerer: { currentOfferer: baseOfferers[0] },
+      ...storeOverrides,
     },
-    ...options,
   })
 }
 

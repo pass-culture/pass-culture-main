@@ -3,7 +3,11 @@
 import { render } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { Provider } from 'react-redux'
-import { createMemoryRouter, RouterProvider } from 'react-router'
+import {
+  createMemoryRouter,
+  type RouteObject,
+  RouterProvider,
+} from 'react-router'
 import { SWRConfig } from 'swr'
 
 import type {
@@ -42,23 +46,17 @@ export type RenderWithProvidersOptions = {
   initialRouterEntries?: string[]
   features?: string[]
   user?: SharedCurrentUserResponseModel | null
+  routes?: RouteObject[]
 }
 const createRouterFromOverrides = (
   component: ReactNode,
   overrides?: RenderWithProvidersOptions,
   initialPath: string = '*'
 ) =>
-  createMemoryRouter([{ path: initialPath, element: component }], {
-    initialEntries: overrides?.initialRouterEntries,
-    future: {
-      //v7_relativeSplatPath: true,
-      //v7_startTransition: true,
-      //v7_fetcherPersist: true,
-      //v7_normalizeFormMethod: true,
-      //v7_partialHydration: true,
-      //v7_skipActionErrorRevalidation: true,
-    },
-  })
+  createMemoryRouter(
+    overrides?.routes ?? [{ path: initialPath, element: component }],
+    { initialEntries: overrides?.initialRouterEntries }
+  )
 
 export const renderWithProviders = (
   component: ReactNode,

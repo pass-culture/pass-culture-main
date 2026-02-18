@@ -9,10 +9,10 @@ import { Offerer } from '@/components/SignupJourneyForm/Offerer/Offerer'
 import { Offerers as SignupJourneyOfferers } from '@/components/SignupJourneyForm/Offerers/Offerers'
 import { Validation } from '@/components/SignupJourneyForm/Validation/Validation'
 
-import type { CustomRouteObject } from './types'
+import type { CustomRouteGroupChild } from './types'
 import { mustBeAuthenticated } from './utils'
 
-export const routesSignupJourney: CustomRouteObject[] = [
+export const routesSignupJourney: CustomRouteGroupChild[] = [
   {
     element: <Offerer />,
     loader: withUserPermissions(mustBeAuthenticated),

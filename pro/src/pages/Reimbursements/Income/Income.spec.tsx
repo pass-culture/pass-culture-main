@@ -19,7 +19,7 @@ import {
 } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { Income } from './Income'
+import { Component as Income } from './Income'
 import { IncomeResultsBox } from './IncomeResultsBox/IncomeResultsBox'
 import { isCollectiveAndIndividualRevenue, isCollectiveRevenue } from './utils'
 

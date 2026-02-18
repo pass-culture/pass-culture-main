@@ -289,6 +289,8 @@ describe('TemplateCollectiveOffersScreen', () => {
       offers: [collectiveOfferTemplateFactory()],
     })
 
+    await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
+
     const formatSelect = screen.getByRole('combobox', { name: 'Format' })
 
     await userEvent.selectOptions(

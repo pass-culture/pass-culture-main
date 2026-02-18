@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
@@ -20,7 +19,7 @@ import { getStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 
 import { CollectiveOffersScreen } from './components/CollectiveOffersScreen/CollectiveOffersScreen'
 
-export const CollectiveOffers = (): JSX.Element => {
+export const CollectiveOffers = () => {
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
   const urlSearchFilters = useQueryCollectiveSearchFilters()
@@ -82,17 +81,15 @@ export const CollectiveOffers = (): JSX.Element => {
   )
 
   return (
-    <BasicLayout mainHeading={'Offres réservables'}>
-      <CollectiveOffersScreen
-        currentPageNumber={currentPageNumber}
-        initialSearchFilters={apiFilters}
-        isLoading={offersQuery.isLoading}
-        offererId={selectedOffererId.toString()}
-        offers={offersQuery.data}
-        redirectWithUrlFilters={redirectWithUrlFilters}
-        urlSearchFilters={urlSearchFilters}
-      />
-    </BasicLayout>
+    <CollectiveOffersScreen
+      currentPageNumber={currentPageNumber}
+      initialSearchFilters={apiFilters}
+      isLoading={offersQuery.isLoading}
+      offererId={selectedOffererId.toString()}
+      offers={offersQuery.data}
+      redirectWithUrlFilters={redirectWithUrlFilters}
+      urlSearchFilters={urlSearchFilters}
+    />
   )
 }
 

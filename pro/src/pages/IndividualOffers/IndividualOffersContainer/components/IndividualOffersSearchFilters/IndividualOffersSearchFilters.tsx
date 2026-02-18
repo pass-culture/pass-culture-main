@@ -50,7 +50,7 @@ export const IndividualOffersSearchFilters = ({
   offererAddresses,
   categories,
   searchButtonRef,
-}: IndividualOffersSearchFiltersProps): JSX.Element => {
+}: Readonly<IndividualOffersSearchFiltersProps>) => {
   const updateSearchFilters = (
     patch: Partial<IndividualSearchFiltersParams>
   ) => {

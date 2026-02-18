@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
@@ -58,6 +59,8 @@ describe('CollectiveOffersSearchFilters', () => {
   it('should display location filter', async () => {
     vi.mocked(useActiveFeature).mockReturnValue(true)
     renderCollectiveOffersSearchFilters({ ...baseProps })
+
+    await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
 
     expect(await screen.findByLabelText('Localisation')).toBeInTheDocument()
     expect(

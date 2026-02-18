@@ -1,8 +1,7 @@
 import { useEffect } from 'react'
-import { useLocation } from 'react-router'
 
-import { findCurrentRoute } from '@/app/AppRouter/findCurrentRoute'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { useCurrentRoute } from '@/commons/hooks/useCurrentRoute'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 
 const EXCLUDED_ROUTES: Set<string> = new Set(['/hub'])
@@ -11,28 +10,22 @@ const EXCLUDED_ROUTES: Set<string> = new Set(['/hub'])
  * @deprecated Replaced by `useFocusOnMounted`.
  */
 export const useFocus = (): void => {
-  const location = useLocation()
-
-  const currentRoute = findCurrentRoute(location)
-  const isErrorPage = currentRoute?.isErrorPage
-  const isExcludedRoute =
-    currentRoute?.path && EXCLUDED_ROUTES.has(currentRoute.path)
-
+  const currentRoute = useCurrentRoute()
   const currentUser = useAppSelector(selectCurrentUser)
+
   const isConnected = !!currentUser
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: `location.pathname` must be included to trigger a re-focus on path change.
   useEffect(() => {
     // TODO (igabriele, 2025-12-17): This useEffect is a complex pattern to maintain, it will likely be replaced by a focus handling done within each page to clarify responsability.
     // In the meantime, we gradually exclude pages that migrated to `useFocusOnMounted`:
-    if (isExcludedRoute) {
+    if (EXCLUDED_ROUTES.has(currentRoute.pathname)) {
       return
     }
 
     /* istanbul ignore next : E2E tested */
     document.getElementById('content-wrapper')?.scrollTo(0, 0)
 
-    if (isErrorPage) {
+    if (currentRoute.handle?.isErrorPage) {
       const errorReturnLink = document.getElementById('error-return-link')
       if (errorReturnLink) {
         errorReturnLink.focus()
@@ -75,5 +68,5 @@ export const useFocus = (): void => {
     }
 
     // If none of above is called, focus will be document.activeElement = body.
-  }, [isConnected, isErrorPage, isExcludedRoute, location.pathname])
+  }, [currentRoute.handle?.isErrorPage, currentRoute.pathname, isConnected])
 }

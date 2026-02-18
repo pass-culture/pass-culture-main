@@ -3,10 +3,10 @@
 
 import { withUserPermissions } from '@/commons/auth/withUserPermissions'
 
-import type { CustomRouteObject } from './types'
+import type { CustomRouteGroupChild } from './types'
 import { mustBeUnauthenticated } from './utils'
 
-export const routesWelcomeCarousel: CustomRouteObject[] = [
+export const routesWelcomeCarousel: CustomRouteGroupChild[] = [
   {
     lazy: () => import('@/pages/WelcomeCarousel/WelcomeStepHub/WelcomeStepHub'),
     loader: withUserPermissions(mustBeUnauthenticated),

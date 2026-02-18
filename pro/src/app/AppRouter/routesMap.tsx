@@ -8,14 +8,16 @@ import { withUserPermissions } from '@/commons/auth/withUserPermissions'
 import { noop } from '@/commons/utils/noop'
 import { parse } from '@/commons/utils/query-string'
 
+import { administrationRouteGroup } from './routes/administrationRouteGroup'
+import { partnerRouteGroup } from './routes/partnerRouteGroup'
+import { reimbursementsRouteGroup } from './routes/reimbursementsRouteGroup'
 import {
   routesIndividualOfferWizard,
   routesOnboardingIndividualOfferWizard,
 } from './subroutesIndividualOfferWizardMap'
-import { routesReimbursements } from './subroutesReimbursements'
 import { routesSignupJourney } from './subroutesSignupJourneyMap'
 import { routesSignup } from './subroutesSignupMap'
-import type { CustomRouteObject } from './types'
+import type { CustomRouteTree } from './types'
 import {
   isNewHomepageEnabled,
   isSwitchVenueEnabled,
@@ -32,7 +34,15 @@ const NavigateToNewPasswordReset = ({ to, ...props }: NavigateProps) => {
   return <Navigate {...props} to={`${to}/${token}`} />
 }
 
-export const routes: CustomRouteObject[] = [
+export const routes: CustomRouteTree = [
+  {
+    // This route is always forbidden in order to let `withUserPermissions`
+    // automatically redirect to the right start path depending on the current user permissions
+    path: '/',
+    loader: withUserPermissions(() => false),
+    element: null,
+  },
+
   {
     element: <Navigate to="/bienvenue" />,
     loader: withUserPermissions(mustBeUnauthenticated),
@@ -53,6 +63,10 @@ export const routes: CustomRouteObject[] = [
       public: true,
     },
   },
+
+  administrationRouteGroup,
+  partnerRouteGroup,
+  reimbursementsRouteGroup,
   {
     lazy: () => import('@/pages/Hub/Hub'),
     loader: withUserPermissions(mustBeAuthenticated),
@@ -63,7 +77,6 @@ export const routes: CustomRouteObject[] = [
     path: '/adage-iframe/*',
     loader: withUserPermissions(mustBeUnauthenticated),
     meta: { public: true },
-    title: 'ADAGE',
     children: [
       {
         path: '*',
@@ -98,7 +111,9 @@ export const routes: CustomRouteObject[] = [
     path: '/erreur/indisponible',
     title: 'Page indisponible',
     meta: { public: true, canBeLoggedIn: true },
-    isErrorPage: true,
+    handle: {
+      isErrorPage: true,
+    },
   },
   {
     lazy: () =>
@@ -114,12 +129,6 @@ export const routes: CustomRouteObject[] = [
     loader: withUserPermissions(mustHaveSelectedVenue),
     path: '/guichet',
     title: 'Guichet',
-  },
-  {
-    lazy: () => import('@/pages/Bookings/IndividualBookings'),
-    loader: withUserPermissions(mustHaveSelectedVenue),
-    path: '/reservations',
-    title: 'Réservations individuelles',
   },
   {
     lazy: () => import('@/pages/SignIn/SignIn'),
@@ -151,7 +160,6 @@ export const routes: CustomRouteObject[] = [
     lazy: () => import('@/pages/VenueEdition/VenueEdition'),
     loader: withUserPermissions(mustHaveSelectedVenue),
     path: '/structures/:offererId/lieux/:venueId/page-partenaire',
-    title: 'Gérer ma page sur l’application',
     children: [
       {
         lazy: () => import('@/pages/VenueEdition/VenueEdition'),
@@ -165,7 +173,6 @@ export const routes: CustomRouteObject[] = [
     lazy: () => import('@/pages/VenueEdition/VenueEdition'),
     loader: withUserPermissions(mustHaveSelectedVenue),
     path: '/structures/:offererId/lieux/:venueId/collectif',
-    title: 'Gérer ma page sur ADAGE',
     children: [
       {
         lazy: () => import('@/pages/VenueEdition/VenueEdition'),
@@ -179,7 +186,6 @@ export const routes: CustomRouteObject[] = [
     lazy: () => import('@/pages/VenueEdition/VenueEdition'),
     loader: withUserPermissions(mustHaveSelectedVenue),
     path: '/structures/:offererId/lieux/:venueId',
-    title: 'Gérer ma page adresse',
     children: [
       {
         lazy: () => import('@/pages/VenueEdition/VenueEdition'),
@@ -221,12 +227,6 @@ export const routes: CustomRouteObject[] = [
     loader: withUserPermissions(mustHaveSelectedVenue),
     path: '/offres',
     title: 'Offres individuelles',
-  },
-  {
-    lazy: () => import('@/pages/CollectiveOffers/CollectiveOffers'),
-    loader: withUserPermissions(mustHaveSelectedVenue),
-    path: '/offres/collectives',
-    title: 'Offres collectives',
   },
   {
     lazy: () =>
@@ -453,13 +453,6 @@ export const routes: CustomRouteObject[] = [
     },
   },
   {
-    lazy: () => import('@/pages/Reimbursements/Reimbursements'),
-    loader: withUserPermissions(mustHaveSelectedAdminOfferer),
-    path: '/remboursements',
-    title: 'Gestion financière',
-    children: routesReimbursements,
-  },
-  {
     lazy: () => import('@/pages/User/UserProfile'),
     loader: withUserPermissions(mustBeAuthenticated),
     path: '/profil',
@@ -561,7 +554,9 @@ export const routes: CustomRouteObject[] = [
     loader: noop,
     path: '/404',
     title: 'Erreur 404 - Page indisponible',
-    isErrorPage: true,
+    handle: {
+      isErrorPage: true,
+    },
   },
   {
     lazy: () => import('@/pages/NonAttached/NonAttached'),

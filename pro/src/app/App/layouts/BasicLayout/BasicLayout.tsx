@@ -57,15 +57,6 @@ export const BasicLayout = ({
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const navPanel = useRef<HTMLDivElement>(null)
 
-  const mainHeadingWrapper = (
-    <MainHeading
-      className={styles['main-heading']}
-      mainHeading={mainHeading}
-      mainSubHeading={mainSubHeading}
-      shouldDisplayBackToNavLink={!isFullPage}
-    />
-  )
-
   return (
     <div className={styles.layout}>
       <SkipLinks />
@@ -107,7 +98,13 @@ export const BasicLayout = ({
                   isFullPage ? styles['content-no-side-panel'] : styles.content
                 }
               >
-                {mainHeadingWrapper}
+                <MainHeading
+                  className={styles['main-heading']}
+                  mainHeading={mainHeading}
+                  mainSubHeading={mainSubHeading}
+                  shouldDisplayBackToNavLink={!isFullPage}
+                />
+
                 {children}
               </div>
             </main>

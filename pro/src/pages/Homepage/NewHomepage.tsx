@@ -2,7 +2,6 @@ import { addDays, isBefore } from 'date-fns'
 import { useId, useState } from 'react'
 
 import type { GetVenueResponseModel } from '@/apiClient/v1'
-import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { getToday } from '@/commons/utils/date'
@@ -64,7 +63,7 @@ export const NewHomepage = (): JSX.Element => {
   )
 
   return (
-    <BasicLayout mainHeading={`Votre espace ${selectedVenue.publicName}`}>
+    <>
       {hasIndividual && hasCollective && (
         <Tabs
           type="tabs"
@@ -174,7 +173,7 @@ export const NewHomepage = (): JSX.Element => {
           </div>
         </div>
       )}
-    </BasicLayout>
+    </>
   )
 }
 

@@ -70,7 +70,7 @@ export const CollectiveOffersScreen = ({
   redirectWithUrlFilters,
   urlSearchFilters,
   offers,
-}: CollectiveOffersScreenProps): JSX.Element => {
+}: Readonly<CollectiveOffersScreenProps>) => {
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('collective')

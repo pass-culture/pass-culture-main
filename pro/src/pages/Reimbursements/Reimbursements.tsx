@@ -10,7 +10,8 @@ import {
 import { OffererSelect } from '@/components/OffererSelect/OffererSelect'
 import { ReimbursementsTabs } from '@/components/ReimbursementsTabs/ReimbursementsTabs'
 
-export const Reimbursements = (): JSX.Element => {
+// TODO (igabriele, 2026-02-10): Merge that within `<AdministrationLayout />` once `WIP_SWITCH_VENUE` FF is enabled and removed.
+export const Reimbursements = () => {
   const selectedOfferer = useAppSelector(ensureCurrentOfferer)
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
   const offererNames = useAppSelector(ensureOffererNames)
@@ -28,7 +29,3 @@ export const Reimbursements = (): JSX.Element => {
     </BasicLayout>
   )
 }
-
-// Lazy-loaded by react-router
-// ts-unused-exports:disable-next-line
-export const Component = Reimbursements

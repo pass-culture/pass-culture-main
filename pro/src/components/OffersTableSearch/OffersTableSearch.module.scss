@@ -11,19 +11,12 @@
     align-items: flex-end;
     flex-flow: row nowrap;
     gap: var(--size-spacing-l);
+    margin-bottom: var(--size-spacing-l);
   }
 
   &-input-wrapper {
     width: rem.torem(500px);
     max-width: 100%;
-  }
-
-  &-filters {
-    margin-top: var(--size-spacing-l);
-
-    &-collapsed {
-      display: none;
-    }
   }
 
   &-separator {

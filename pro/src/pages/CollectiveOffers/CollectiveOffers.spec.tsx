@@ -27,8 +27,23 @@ import {
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { PartnerLayout } from '@/layouts/PartnerLayout/PartnerLayout'
 
 import { CollectiveOffers } from './CollectiveOffers'
+
+const collectiveOffersRoutes = [
+  {
+    path: '/',
+    Component: PartnerLayout,
+    children: [
+      {
+        path: 'offres/collectives',
+        element: <CollectiveOffers />,
+        handle: { title: 'Offres collectives' },
+      },
+    ],
+  },
+]
 
 const LABELS = {
   nameSearchInput: /Nom de l’offre/,
@@ -71,10 +86,11 @@ const renderOffers = (
 ) => {
   const route = computeCollectiveOffersUrl(filters)
   const user = sharedCurrentUserFactory()
-  renderWithProviders(<CollectiveOffers />, {
-    user,
+  renderWithProviders(null, {
+    routes: collectiveOffersRoutes,
     initialRouterEntries: [route],
     features,
+    user,
     storeOverrides: {
       user: {
         currentUser: user,
@@ -125,6 +141,8 @@ describe('CollectiveOffers', () => {
       it('should filter offers given status filter when clicking on "Appliquer"', async () => {
         renderOffers()
 
+        await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
+
         await userEvent.click(
           screen.getByRole('button', {
             name: 'Statut',
@@ -155,6 +173,8 @@ describe('CollectiveOffers', () => {
 
       it('should filter offers given multiple status filter when clicking on "Appliquer"', async () => {
         renderOffers()
+
+        await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
 
         await userEvent.click(
           screen.getByRole('button', {
@@ -196,6 +216,8 @@ describe('CollectiveOffers', () => {
           .mockResolvedValueOnce([])
         renderOffers()
 
+        await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
+
         await userEvent.click(
           screen.getByRole('button', {
             name: 'Statut',
@@ -228,6 +250,8 @@ describe('CollectiveOffers', () => {
     describe('location type filters', () => {
       it('should send locationType ADDRESS and offererAddressId when an address is selected', async () => {
         renderOffers()
+
+        await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
 
         const localisationSelect = await screen.findByLabelText('Localisation')
 
@@ -263,6 +287,7 @@ describe('CollectiveOffers', () => {
 
       it('should send locationType TO_BE_DEFINED and offererAddressId null when "À déterminer" is selected', async () => {
         renderOffers()
+        await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
         const localisationSelect = await screen.findByLabelText('Localisation')
         await userEvent.selectOptions(
           localisationSelect,
@@ -286,6 +311,7 @@ describe('CollectiveOffers', () => {
 
       it('should send locationType SCHOOL and offererAddressId null when "En établissement scolaire" is selected', async () => {
         renderOffers()
+        await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
         const localisationSelect = await screen.findByLabelText('Localisation')
         await userEvent.selectOptions(
           localisationSelect,
@@ -309,6 +335,7 @@ describe('CollectiveOffers', () => {
 
       it('should send locationType and offererAddressId null when "all" is selected', async () => {
         renderOffers()
+        await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
         const localisationSelect = await screen.findByLabelText('Localisation')
         await userEvent.selectOptions(localisationSelect, 'all')
         await userEvent.click(screen.getByText('Rechercher'))
@@ -357,6 +384,8 @@ describe('CollectiveOffers', () => {
       it('should load offers with selected period beginning date', async () => {
         renderOffers()
 
+        await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
+
         await userEvent.type(
           screen.getByLabelText('Début de la période'),
           '2020-12-25'
@@ -380,6 +409,7 @@ describe('CollectiveOffers', () => {
 
       it('should load offers with selected period ending date', async () => {
         renderOffers()
+        await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
         await userEvent.type(
           screen.getByLabelText('Fin de la période'),
           '2020-12-27'
@@ -542,6 +572,7 @@ describe('CollectiveOffers', () => {
         format: EacFormat.ATELIER_DE_PRATIQUE,
       })
 
+      await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
       await userEvent.click(screen.getByText('Réinitialiser les filtres'))
       await waitFor(() => {
         expect(api.getCollectiveOffers).toHaveBeenCalledTimes(2)
@@ -680,6 +711,7 @@ describe('CollectiveOffers', () => {
         // Given
         vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
         renderOffers()
+        await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
         const firstTypeOption = screen.getByRole('option', {
           name: 'Concert',
         })
@@ -701,6 +733,8 @@ describe('CollectiveOffers', () => {
       it('should have the status in the url value when user filters by status', async () => {
         vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
         renderOffers()
+
+        await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
 
         await userEvent.click(
           screen.getByRole('button', {
@@ -725,6 +759,8 @@ describe('CollectiveOffers', () => {
       it('should have the status in the url value when user filters by multiple statuses', async () => {
         vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
         renderOffers()
+
+        await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
 
         await userEvent.click(
           screen.getByRole('button', {

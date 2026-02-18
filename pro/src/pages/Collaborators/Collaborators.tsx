@@ -33,7 +33,8 @@ type UserEmailFormValues = {
   email: string
 }
 
-export const Collaborators = (): JSX.Element | null => {
+// TODO (igabriele, 2026-02-10): Merge that within `<AdministrationLayout />` once `WIP_SWITCH_VENUE` FF is enabled and removed.
+const Collaborators = () => {
   const currentOffererId = useAppSelector(
     (state) => state.offerer.currentOfferer
   )?.id

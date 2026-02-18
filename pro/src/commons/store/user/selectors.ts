@@ -5,6 +5,15 @@ import type { RootState } from '@/commons/store/store'
 
 export const selectCurrentUser = (state: RootState) => state.user.currentUser
 
+export const ensureSelectedAdminOfferer = (state: RootState) => {
+  assertOrFrontendError(
+    state.user.selectedAdminOfferer,
+    '`state.user.selectedAdminOfferer` is null.'
+  )
+
+  return state.user.selectedAdminOfferer
+}
+
 export const ensureSelectedVenue = (state: RootState) => {
   assertOrFrontendError(
     state.user.selectedVenue,

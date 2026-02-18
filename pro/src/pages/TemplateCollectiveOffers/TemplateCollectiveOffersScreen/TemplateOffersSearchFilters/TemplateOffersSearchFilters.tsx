@@ -243,7 +243,6 @@ export const TemplateOffersSearchFilters = ({
           value={selectedFilters.format}
         />
       </FormLayout.Row>
-
       <FormLayout.Row mdSpaceAfter>
         <PeriodSelector
           legend="Période de l’évènement"

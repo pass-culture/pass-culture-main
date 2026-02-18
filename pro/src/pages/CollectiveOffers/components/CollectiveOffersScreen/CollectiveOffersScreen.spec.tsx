@@ -87,6 +87,10 @@ describe('CollectiveOffersScreen', () => {
     }))
   })
 
+  afterEach(() => {
+    window.sessionStorage.clear()
+  })
+
   it('should render as much offers as returned by the api', () => {
     const firstOffer = collectiveOfferFactory()
     const secondOffer = collectiveOfferFactory()
@@ -157,8 +161,10 @@ describe('CollectiveOffersScreen', () => {
     expect(await screen.findByText('100+ offres')).toBeInTheDocument()
   })
 
-  it('should display event period filter with no default option', () => {
+  it('should display event period filter with no default option', async () => {
     renderOffers(props)
+
+    await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
 
     const eventPeriodSelect = screen.queryAllByLabelText(/période/)
     expect(eventPeriodSelect).toHaveLength(2)
@@ -166,6 +172,8 @@ describe('CollectiveOffersScreen', () => {
 
   it('should display status checkboxes on press status filter', async () => {
     renderOffers(props)
+
+    await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -266,6 +274,8 @@ describe('CollectiveOffersScreen', () => {
       ...props,
       offers: [collectiveOfferFactory()],
     })
+
+    await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
 
     const formatSelect = screen.getByRole('combobox', { name: 'Format' })
 

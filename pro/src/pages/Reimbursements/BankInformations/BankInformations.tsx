@@ -25,7 +25,7 @@ import { AddBankInformationsDialog } from './AddBankInformationsDialog/AddBankIn
 import styles from './BankInformations.module.scss'
 import { LinkVenuesDialog } from './LinkVenuesDialog/LinkVenuesDialog'
 
-export const BankInformations = (): JSX.Element => {
+const BankInformations = (): JSX.Element => {
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   const location = useLocation()
@@ -195,3 +195,7 @@ export const BankInformations = (): JSX.Element => {
     </div>
   )
 }
+
+// Lazy-loaded by react-router
+// ts-unused-exports:disable-next-line
+export const Component = BankInformations

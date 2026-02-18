@@ -1,0 +1,16 @@
+@use "styles/mixins/_size.scss" as size;
+
+.box-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-spacing-l);
+  margin-bottom: var(--size-spacing-xs);
+
+  > * {
+    display: contents;
+  }
+
+  @media (min-width: size.$laptop) {
+    flex-wrap: nowrap;
+  }
+}

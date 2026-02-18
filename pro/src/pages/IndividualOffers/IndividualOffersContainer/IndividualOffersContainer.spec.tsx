@@ -111,6 +111,7 @@ describe('IndividualOffersScreen', () => {
   const snackBarSuccess = vi.fn()
   beforeEach(async () => {
     vi.resetAllMocks()
+    window.sessionStorage.clear()
     offersRecap = [listOffersOfferFactory()]
 
     props = {
@@ -223,6 +224,8 @@ describe('IndividualOffersScreen', () => {
 
     renderOffers(props)
 
+    await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
+
     const searchAndChecked = async (
       params: Partial<IndividualSearchFiltersParams>
     ) => {
@@ -322,7 +325,7 @@ describe('IndividualOffersScreen', () => {
     redirectWithSelectedFiltersSpy.mockRestore()
   })
 
-  it('should render offerer address filter with default option selected and given venues as options', () => {
+  it('should render offerer address filter with default option selected and given venues as options', async () => {
     const expectedSelectOptions = [
       {
         id: [ALL_OFFERER_ADDRESS_OPTION.value],
@@ -340,6 +343,8 @@ describe('IndividualOffersScreen', () => {
 
     renderOffers(props)
 
+    await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
+
     const addressSelect = screen.getByLabelText('Localisation')
     expect(addressSelect).not.toBeDisabled()
 
@@ -347,7 +352,7 @@ describe('IndividualOffersScreen', () => {
     expect(addressOptions.length).toBe(expectedSelectOptions.length)
   })
 
-  it('should render creation mode filter with given creation mode selected', () => {
+  it('should render creation mode filter with given creation mode selected', async () => {
     renderOffers({
       ...props,
       initialSearchFilters: {
@@ -356,11 +361,16 @@ describe('IndividualOffersScreen', () => {
       },
     })
 
+    await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
+
     expect(screen.getByDisplayValue('Synchronisé')).toBeInTheDocument()
   })
 
   it('should allow user to select manual creation mode filter', async () => {
     renderOffers(props)
+
+    await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
+
     const creationModeSelect = screen.getByLabelText('Mode de création')
 
     await userEvent.selectOptions(creationModeSelect, 'Manuel')
@@ -370,6 +380,9 @@ describe('IndividualOffersScreen', () => {
 
   it('should allow user to select imported creation mode filter', async () => {
     renderOffers(props)
+
+    await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
+
     const creationModeSelect = screen.getByRole('combobox', {
       name: 'Mode de création',
     })
@@ -379,15 +392,19 @@ describe('IndividualOffersScreen', () => {
     expect(screen.getByDisplayValue('Synchronisé')).toBeInTheDocument()
   })
 
-  it('should display event period filter with no default option', () => {
+  it('should display event period filter with no default option', async () => {
     renderOffers(props)
+
+    await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
 
     const eventPeriodSelect = screen.queryAllByLabelText(/période/)
     expect(eventPeriodSelect).toHaveLength(2)
   })
 
-  it('should not display status filters modal', () => {
+  it('should not display status filters modal', async () => {
     renderOffers(props)
+
+    await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
 
     expect(
       screen.getByRole('combobox', {
@@ -409,6 +426,9 @@ describe('IndividualOffersScreen', () => {
 
   it('should hide status filters when clicking outside the modal', async () => {
     renderOffers(props)
+
+    await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
+
     await userEvent.click(
       screen.getByRole('combobox', {
         name: 'Statut',

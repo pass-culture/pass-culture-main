@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import { type SubmitEventHandler, useId, useState } from 'react'
 
 import {
@@ -7,11 +6,10 @@ import {
   useStoredFilterConfig,
 } from '@/components/OffersTableSearch/utils'
 import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { SearchInput } from '@/design-system/SearchInput/SearchInput'
-import fullRefreshIcon from '@/icons/full-refresh.svg'
 import { ButtonFilter } from '@/ui-kit/ButtonFilter/ButtonFilter'
 
+import { OffersTableFilterBar } from '../OffersTableFilterBar/OffersTableFilterBar'
 import styles from './OffersTableSearch.module.scss'
 
 export type OffersTableSearchProps = {
@@ -41,18 +39,18 @@ export const OffersTableSearch = ({
   searchButtonRef,
 }: OffersTableSearchProps) => {
   const { onFiltersToggle } = useStoredFilterConfig(type)
-  const [filtersVisibility, setFiltersVisibility] = useState(
+  const [isExpanded, setIsExpanded] = useState(
     getStoredFilterConfig(type).filtersVisibility
   )
 
   const toggleFiltersVisibility = () => {
-    const newFiltersVisibility = !filtersVisibility
+    const willBeExpanded = !isExpanded
 
-    onFiltersToggle(newFiltersVisibility)
-    setFiltersVisibility(newFiltersVisibility)
+    onFiltersToggle(willBeExpanded)
+    setIsExpanded(willBeExpanded)
   }
 
-  const searchId = useId()
+  const collapseableFilterBarId = useId()
 
   return (
     <form onSubmit={onSubmit} className={styles['offers-table-search']}>
@@ -69,10 +67,10 @@ export const OffersTableSearch = ({
         <ButtonFilter
           className={styles['offers-table-search-toggle-button']}
           isActive={hasActiveFilters}
-          isOpen={filtersVisibility}
+          isOpen={isExpanded}
           onClick={toggleFiltersVisibility}
-          aria-controls={`offers-filter-${searchId}`}
-          aria-expanded={filtersVisibility}
+          aria-controls={collapseableFilterBarId}
+          aria-expanded={isExpanded}
         >
           Filtrer
           {hasActiveFilters && (
@@ -81,26 +79,15 @@ export const OffersTableSearch = ({
           )}
         </ButtonFilter>
       </div>
-      <div
-        id={`offers-filter-${searchId}`}
-        data-testid="offers-filter"
-        className={cn(styles['offers-table-search-filters'], {
-          [styles['offers-table-search-filters-collapsed']]: !filtersVisibility,
-        })}
+      <OffersTableFilterBar
+        id={collapseableFilterBarId}
+        isDisabled={!hasActiveFilters}
+        isHidden={!isExpanded}
+        onReset={onResetFilters}
       >
         {children}
-        <div className={styles['offers-table-search-reset-wrapper']}>
-          <Button
-            type="button"
-            icon={fullRefreshIcon}
-            disabled={!hasActiveFilters}
-            onClick={onResetFilters}
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
-            label="Réinitialiser les filtres"
-          />
-        </div>
-      </div>
+      </OffersTableFilterBar>
+
       <div className={styles['offers-table-search-separator-wrapper']}>
         <div className={styles['offers-table-search-separator-element']} />
         <Button

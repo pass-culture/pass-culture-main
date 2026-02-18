@@ -45,7 +45,7 @@ export const MovedBookingDownloadWarningModal = () => {
             as="a"
             label="Aller sur la nouvelle page de téléchargement"
             onClick={() => setIsOpened(false)}
-            to="/remboursements"
+            to="/administration/donnees-activite/individuel"
             variant={ButtonVariant.PRIMARY}
           />
         </div>

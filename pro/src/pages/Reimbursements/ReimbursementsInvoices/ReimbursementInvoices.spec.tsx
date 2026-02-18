@@ -21,7 +21,7 @@ import {
 } from '@/commons/utils/renderWithProviders'
 
 import { MAX_ITEMS_DOWNLOAD } from './InvoiceTable/InvoiceDownloadActionsButton'
-import { ReimbursementsInvoices } from './ReimbursementsInvoices'
+import { Component as ReimbursementsInvoices } from './ReimbursementsInvoices'
 
 const mockLogEvent = vi.fn()
 

@@ -20,6 +20,7 @@ describe('AdminSideNav', () => {
     await userEvent.click(button)
     expect(screen.getByText('Individuel')).toBeInTheDocument()
   })
+
   it('should open the dropdown menu when Centre d’aide is clicked', async () => {
     renderAdminSideNav()
     const helpButton = screen.getByRole('button', { name: /Centre d’aide/ })

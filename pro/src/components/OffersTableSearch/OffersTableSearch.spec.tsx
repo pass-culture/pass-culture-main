@@ -68,11 +68,15 @@ describe('OffersTableSearch', () => {
     expect(mockedOnChange).toHaveBeenCalledTimes(newText.length)
   })
 
-  it('should always display a reset button', async () => {
+  it('should display a reset button when filters are expanded and call onResetFilters when clicked', async () => {
     const mockedOnResetFilters = vi.fn()
     renderOffersTableSearch({
       onResetFilters: mockedOnResetFilters,
     })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: LABELS.filterToggleButton })
+    )
 
     const resetButton = screen.getByRole('button', { name: LABELS.resetButton })
     expect(resetButton).toBeInTheDocument()
@@ -93,11 +97,7 @@ describe('OffersTableSearch', () => {
   it('should hide filters passed as children and the reset button by default', () => {
     renderOffersTableSearch()
 
-    // Filters are hidden by default.
-    // There is a better way to do this, but .isVisible() does not seem to work.
-    const filtersWrapper = screen.getByTestId('offers-filter')
-    expect(filtersWrapper).toBeInTheDocument()
-    expect(filtersWrapper).toHaveClass('offers-table-search-filters-collapsed')
+    expect(screen.getByTestId('offers-filter')).not.toBeVisible()
   })
 
   it('should display filters passed as children and make reset button visible when toggled', async () => {
@@ -107,11 +107,6 @@ describe('OffersTableSearch', () => {
       screen.getByRole('button', { name: LABELS.filterToggleButton })
     )
 
-    // Filters are now made visible.
-    // There is a better way to do this, but .isVisible() does not seem to work.
-    const filtersWrapper = screen.getByTestId('offers-filter')
-    expect(filtersWrapper).not.toHaveClass(
-      'offers-table-search-filters-collapsed'
-    )
+    expect(screen.getByTestId('offers-filter')).toBeVisible()
   })
 })
