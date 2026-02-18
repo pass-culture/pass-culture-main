@@ -47,5 +47,29 @@ describe('localStorageManager', () => {
 
     localStorageManager.removeItem(key)
     expect(localStorage.getItem(key)).toBe('seed')
+
+    localStorageManager.clearPassCultureKeys()
+    expect(localStorage.getItem('PASS_CULTURE_SELECTED_VENUE_ID')).toBe('seed')
+  })
+
+  it('should remove only keys prefixed with PASS_CULTURE_ when calling clearPassCultureKeys', () => {
+    vi.spyOn(storageAvailableModule, 'storageAvailable').mockReturnValue(true)
+
+    localStorage.setItem('PASS_CULTURE_SELECTED_VENUE_ID', 'venue-1')
+    localStorage.setItem(
+      'PASS_CULTURE_LAST_VISITED_HOMEPAGE_TABS',
+      'tab-collective'
+    )
+    localStorage.setItem('homepageSelectedOffererId', '42')
+    localStorage.setItem('someOtherKey', 'value')
+
+    localStorageManager.clearPassCultureKeys()
+
+    expect(localStorage.getItem('PASS_CULTURE_SELECTED_VENUE_ID')).toBeNull()
+    expect(
+      localStorage.getItem('PASS_CULTURE_LAST_VISITED_HOMEPAGE_TABS')
+    ).toBeNull()
+    expect(localStorage.getItem('homepageSelectedOffererId')).toBe('42')
+    expect(localStorage.getItem('someOtherKey')).toBe('value')
   })
 })

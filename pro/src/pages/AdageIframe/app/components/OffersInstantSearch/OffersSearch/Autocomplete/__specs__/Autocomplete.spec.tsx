@@ -407,7 +407,7 @@ describe('Autocomplete', () => {
 
       await waitFor(() => {
         expect(setItemSpy).toHaveBeenCalledWith(
-          'AUTOCOMPLETE_RECENT_SEARCHES:RECENT_SEARCH',
+          'PASS_CULTURE_AUTOCOMPLETE_RECENT_SEARCHES:RECENT_SEARCH',
           expect.stringContaining('Mock Venue 1')
         )
       })

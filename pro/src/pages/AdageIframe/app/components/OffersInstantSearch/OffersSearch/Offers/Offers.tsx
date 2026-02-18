@@ -23,6 +23,7 @@ import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { setSearchView } from '@/commons/store/adageFilter/reducer'
 import { adageSearchViewSelector } from '@/commons/store/adageFilter/selectors'
 import { LOGS_DATA } from '@/commons/utils/config'
+import { PASS_CULTURE_PREFIX } from '@/commons/utils/localStorageManager'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { AccessibleScrollContainer } from '@/components/AccessibleScrollContainer/AccessibleScrollContainer'
 import {
@@ -257,7 +258,7 @@ export const Offers = ({
                   description={
                     "Pour certaines offres, le pass Culture peut prendre en charge certains coûts accessoires nécessaires à la réalisation d'activités d'éducation artistique et culturelle menées en classe ou hors les murs. Cela peut inclure par exemple les frais de transport d’un intervenant ou le matériel consommable d’un atelier artistique. Cette prise en charge doit bien sûr faire l’objet d’un accord entre vous et le partenaire qui porte le projet. Il n’est en revanche pas possible d'acheter des livres ou des équipements pérennes avec les crédits pass Culture ou de financer le transport des élèves."
                   }
-                  localStorageKey={'DIFFUSE_HELP_ADAGE_SEEN'}
+                  localStorageKey={`${PASS_CULTURE_PREFIX}DIFFUSE_HELP_ADAGE_SEEN`}
                   img={
                     <ShadowTipsHelpIcon
                       className={styles['highlight-banner-icon']}
@@ -274,7 +275,7 @@ export const Offers = ({
                     description={
                       "Du 23 juin au 10 août 2025, le pass Culture propose aux jeunes de 15 à 21 ans de participer au concours d'été de danse en filmant une chorégraphie dans la thématique des “soulèvements”. Des sélections de spectacles, livres, médias et vidéos d’artistes chorégraphes et danseurs seront diffusées sur l'application pour nourrir la créativité des jeunes."
                     }
-                    localStorageKey={'TFD_2025_ADAGE_SEEN'}
+                    localStorageKey={`${PASS_CULTURE_PREFIX}TFD_2025_ADAGE_SEEN`}
                     img={
                       <img
                         src={TFD2025}

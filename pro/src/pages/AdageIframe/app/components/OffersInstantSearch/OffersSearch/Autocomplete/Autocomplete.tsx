@@ -31,6 +31,7 @@ import {
   ALGOLIA_COLLECTIVE_OFFERS_INDEX,
   ALGOLIA_COLLECTIVE_OFFERS_SUGGESTIONS_INDEX,
 } from '@/commons/utils/config'
+import { PASS_CULTURE_PREFIX } from '@/commons/utils/localStorageManager'
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -67,8 +68,7 @@ const ALGOLIA_NUMBER_RECENT_SEARCHES = 5
 const ALGOLIA_NUMBER_VENUES_SUGGESTIONS = 6
 const DEFAULT_GEO_RADIUS = 30000000 // 30 000 km ensure that we get all the results
 const ALGOLIA_NUMBER_QUERY_SUGGESTIONS = 5
-const AUTOCOMPLETE_LOCAL_STORAGE_KEY =
-  'AUTOCOMPLETE_RECENT_SEARCHES:RECENT_SEARCH'
+const AUTOCOMPLETE_LOCAL_STORAGE_KEY = `${PASS_CULTURE_PREFIX}AUTOCOMPLETE_RECENT_SEARCHES:RECENT_SEARCH`
 
 const addSuggestionToHistory = (suggestion: string) => {
   const currentHistory = localStorage.getItem(AUTOCOMPLETE_LOCAL_STORAGE_KEY)

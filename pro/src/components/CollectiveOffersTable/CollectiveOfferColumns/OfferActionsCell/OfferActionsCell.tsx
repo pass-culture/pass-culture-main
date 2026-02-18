@@ -33,6 +33,7 @@ import {
   isActionAllowedOnCollectiveOffer,
   isCollectiveOfferEditable,
 } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
+import { PASS_CULTURE_PREFIX } from '@/commons/utils/localStorageManager'
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { CancelCollectiveBookingModal } from '@/components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
@@ -55,7 +56,7 @@ export interface OfferActionsCellProps {
   urlSearchFilters: Partial<CollectiveSearchFiltersParams>
 }
 
-const LOCAL_STORAGE_HAS_SEEN_MODAL_KEY = 'DUPLICATE_OFFER_MODAL_SEEN'
+const LOCAL_STORAGE_HAS_SEEN_MODAL_KEY = `${PASS_CULTURE_PREFIX}DUPLICATE_OFFER_MODAL_SEEN`
 
 export const OfferActionsCell = ({
   offer,
