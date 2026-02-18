@@ -29,7 +29,7 @@ class AdageCollectiveOffer(schemas.AdageBaseResponseModel):
     endDatetime: datetime
     contact: AdageCollectiveOfferContact
     description: str | None
-    durationMinutes: float | None
+    durationMinutes: int | None
     id: int
     name: str
     numberOfTickets: int
