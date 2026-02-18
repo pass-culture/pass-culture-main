@@ -2750,6 +2750,7 @@
                 "type": "object"
             },
             "GetRemindersResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "reminders": {
                         "items": {
@@ -5470,6 +5471,7 @@
                 "type": "object"
             },
             "PostReminderRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "offerId": {
                         "title": "Offerid",
@@ -5733,6 +5735,7 @@
                 "type": "object"
             },
             "ReminderOfferResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "id": {
                         "title": "Id",
@@ -5746,6 +5749,7 @@
                 "type": "object"
             },
             "ReminderResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "id": {
                         "title": "Id",

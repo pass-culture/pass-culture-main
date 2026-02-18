@@ -25,7 +25,8 @@ logger = logging.getLogger(__name__)
 def get_reminders() -> serialization.GetRemindersResponse:
     reminders = reminders_api.get_reminders(current_user)
     reminders_response = [
-        serialization.ReminderResponse(id=reminder.id, offer=reminder.offer) for reminder in reminders
+        serialization.ReminderResponse(id=reminder.id, offer=serialization.ReminderOfferResponse(id=reminder.offer.id))
+        for reminder in reminders
     ]
 
     return serialization.GetRemindersResponse(reminders=reminders_response)
@@ -46,7 +47,9 @@ def post_reminder(body: serialization.PostReminderRequest) -> serialization.Remi
     if not reminder:
         reminder = reminders_api.create_offer_reminder(current_user, offer)
 
-    return serialization.ReminderResponse(id=reminder.id, offer=reminder.offer)
+    return serialization.ReminderResponse(
+        id=reminder.id, offer=serialization.ReminderOfferResponse(id=reminder.offer.id)
+    )
 
 
 @blueprint.native_route("/me/reminders/<int:reminder_id>", methods=["DELETE"])

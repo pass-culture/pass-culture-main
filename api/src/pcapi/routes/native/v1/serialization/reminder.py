@@ -1,18 +1,18 @@
-from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.routes.serialization import HttpBodyModel
 
 
-class PostReminderRequest(ConfiguredBaseModel):
+class PostReminderRequest(HttpBodyModel):
     offer_id: int
 
 
-class ReminderOfferResponse(ConfiguredBaseModel):
+class ReminderOfferResponse(HttpBodyModel):
     id: int
 
 
-class ReminderResponse(ConfiguredBaseModel):
+class ReminderResponse(HttpBodyModel):
     id: int
     offer: ReminderOfferResponse
 
 
-class GetRemindersResponse(ConfiguredBaseModel):
+class GetRemindersResponse(HttpBodyModel):
     reminders: list[ReminderResponse]
