@@ -71,7 +71,7 @@ describe('<Venues />', () => {
       screen.queryByRole('link', {
         name: 'Suivre ma demande de référencement ADAGE',
       })
-    ).not.toBeInTheDocument()
+    ).toBeFalsy()
   })
 
   it('should display API tag if venue has at least one provider', async () => {
@@ -85,7 +85,8 @@ describe('<Venues />', () => {
 
     renderVenue(props)
 
-    await screen.findByText('API')
+    const apiTag = await screen.findByText('API')
+    expect(apiTag).toBeInTheDocument()
   })
 
   it('should reset open state when venue offer steps visibility changes', () => {

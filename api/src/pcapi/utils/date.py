@@ -3,6 +3,7 @@ from datetime import datetime
 from datetime import time
 from datetime import timedelta
 from datetime import timezone as tz
+from typing import overload
 from zoneinfo import ZoneInfo
 
 import pytz
@@ -280,3 +281,43 @@ def get_naive_utc_now() -> datetime:
 
 def get_naive_utc_from_iso_str(iso_str: str) -> datetime:
     return datetime.fromisoformat(iso_str).astimezone(tz.utc).replace(tzinfo=None)
+
+
+@overload
+def convert_date_period_to_utc_datetime_period(
+    date_period: tuple[date, date],
+    timezone: str,
+) -> tuple[datetime, datetime]: ...
+
+
+@overload
+def convert_date_period_to_utc_datetime_period(
+    date_period: tuple[None, date],
+    timezone: str,
+) -> tuple[None, datetime]: ...
+
+
+@overload
+def convert_date_period_to_utc_datetime_period(
+    date_period: tuple[date, None],
+    timezone: str,
+) -> tuple[datetime, None]: ...
+
+
+def convert_date_period_to_utc_datetime_period(
+    date_period: tuple[date | None, date | None],
+    timezone: str,
+) -> tuple[datetime | None, datetime | None]:
+    start_date, end_date = date_period
+
+    # if dates aren't chronologically ordered
+    if start_date and end_date and start_date > end_date:
+        end_date, start_date = start_date, end_date
+
+    start_datetime, end_datetime = None, None
+    if start_date:
+        start_datetime = datetime.combine(start_date, time.min, tzinfo=ZoneInfo(timezone)).astimezone(pytz.utc)
+    if end_date:
+        end_datetime = datetime.combine(end_date, time.max, tzinfo=ZoneInfo(timezone)).astimezone(pytz.utc)
+
+    return (start_datetime, end_datetime)

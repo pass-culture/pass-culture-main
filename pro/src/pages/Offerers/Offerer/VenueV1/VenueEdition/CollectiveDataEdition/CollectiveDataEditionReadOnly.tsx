@@ -1,8 +1,9 @@
 import type { GetVenueResponseModel } from '@/apiClient/v1'
-import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
-import { SummarySection } from '@/components/SummaryLayout/SummarySection'
-import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
+import { getActivityLabel } from '@/commons/mappings/mappings'
 import { getInterventionAreaLabels } from '@/pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/utils/getInterventionAreaLabels'
+import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
+import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
+import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 
 interface CollectiveDataEditionReadOnlyProps {
   venue: GetVenueResponseModel
@@ -38,6 +39,14 @@ export const CollectiveDataEditionReadOnly = ({
       <SummarySubSection title="Informations de la structure">
         <SummaryDescriptionList
           descriptions={[
+            ...(venue.activity
+              ? [
+                  {
+                    title: 'Activité',
+                    text: getActivityLabel(venue.activity),
+                  },
+                ]
+              : []),
             {
               title: 'Domaine artistique et culturel',
               text:

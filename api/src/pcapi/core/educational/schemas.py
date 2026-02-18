@@ -159,6 +159,7 @@ class EducationalBookingPerYearResponse(AdageBaseResponseModel):
     UAICode: str
     status: models.CollectiveBookingStatus | CollectiveBookingRefused
     cancellationReason: models.CollectiveBookingCancellationReasons | None
+    confirmationDate: datetime.datetime | None
     confirmationLimitDate: datetime.datetime
     totalAmount: decimal.Decimal
     startDatetime: datetime.datetime

@@ -2,6 +2,7 @@ import datetime
 import decimal
 import typing
 
+import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
 from pydantic.v1.utils import GetterDict
 
@@ -12,15 +13,42 @@ from pcapi.core.videos import api as videos_api
 from pcapi.core.videos import exceptions as videos_exceptions
 from pcapi.routes import serialization
 from pcapi.routes.public.documentation_constants.fields import fields
+from pcapi.routes.public.documentation_constants.fields_v2 import fields_v2
 from pcapi.routes.public.individual_offers.v1 import base_serialization
 from pcapi.routes.public.individual_offers.v1 import serialization as v1_serialization
 from pcapi.routes.public.serialization.utils import StrEnum
 from pcapi.serialization import utils as serialization_utils
 
 
-EventCategoryEnum = StrEnum(  # type: ignore[call-overload]
-    "EventCategoryEnum", {subcategory_id: subcategory_id for subcategory_id in subcategories.EVENT_SUBCATEGORIES}
-)
+class EventCategoryEnum(StrEnum):
+    ACTIVATION_EVENT = "ACTIVATION_EVENT"
+    ATELIER_PRATIQUE_ART = "ATELIER_PRATIQUE_ART"
+    CINE_PLEIN_AIR = "CINE_PLEIN_AIR"
+    CONCERT = "CONCERT"
+    CONCOURS = "CONCOURS"
+    CONFERENCE = "CONFERENCE"
+    DECOUVERTE_METIERS = "DECOUVERTE_METIERS"
+    EVENEMENT_CINE = "EVENEMENT_CINE"
+    EVENEMENT_JEU = "EVENEMENT_JEU"
+    EVENEMENT_MUSIQUE = "EVENEMENT_MUSIQUE"
+    EVENEMENT_PATRIMOINE = "EVENEMENT_PATRIMOINE"
+    FESTIVAL_ART_VISUEL = "FESTIVAL_ART_VISUEL"
+    FESTIVAL_CINE = "FESTIVAL_CINE"
+    FESTIVAL_LIVRE = "FESTIVAL_LIVRE"
+    FESTIVAL_MUSIQUE = "FESTIVAL_MUSIQUE"
+    FESTIVAL_SPECTACLE = "FESTIVAL_SPECTACLE"
+    LIVESTREAM_EVENEMENT = "LIVESTREAM_EVENEMENT"
+    LIVESTREAM_MUSIQUE = "LIVESTREAM_MUSIQUE"
+    LIVESTREAM_PRATIQUE_ARTISTIQUE = "LIVESTREAM_PRATIQUE_ARTISTIQUE"
+    RENCONTRE_EN_LIGNE = "RENCONTRE_EN_LIGNE"
+    RENCONTRE_JEU = "RENCONTRE_JEU"
+    RENCONTRE = "RENCONTRE"
+    SALON = "SALON"
+    SEANCE_CINE = "SEANCE_CINE"
+    SEANCE_ESSAI_PRATIQUE_ART = "SEANCE_ESSAI_PRATIQUE_ART"
+    SPECTACLE_REPRESENTATION = "SPECTACLE_REPRESENTATION"
+    VISITE_GUIDEE = "VISITE_GUIDEE"
+    VISITE = "VISITE"
 
 
 class DecimalPriceGetterDict(GetterDict):
@@ -324,20 +352,11 @@ class PriceCategoryEdition(serialization.ConfiguredBaseModel):
         extra = "forbid"
 
 
-class EventCategoryResponse(serialization.ConfiguredBaseModel):
-    id: EventCategoryEnum  # type: ignore[valid-type]
-    conditional_fields: dict[str, bool] = fields.EVENT_CONDITIONAL_FIELDS
-
-    @classmethod
-    def build_category(cls, subcategory: subcategories.Subcategory) -> "EventCategoryResponse":
-        return cls(
-            id=subcategory.id,
-            conditional_fields={
-                field: condition.is_required_in_external_form
-                for field, condition in subcategory.conditional_fields.items()
-            },
-        )
+class EventCategoryResponse(serialization.HttpBodyModel):
+    id: EventCategoryEnum = fields_v2.EVENT_CATEGORY_ID
+    conditional_fields: dict[str, bool] = fields_v2.EVENT_CONDITIONAL_FIELDS
+    label: str = fields_v2.EVENT_CATEGORY_LABEL
 
 
-class GetEventCategoriesResponse(serialization.ConfiguredBaseModel):
-    __root__: list[EventCategoryResponse]
+class GetEventCategoriesResponse(pydantic_v2.RootModel):
+    root: list[EventCategoryResponse]

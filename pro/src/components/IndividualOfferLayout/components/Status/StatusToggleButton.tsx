@@ -11,11 +11,11 @@ import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { formatDateTimeParts, isDateValid } from '@/commons/utils/date'
-import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullHideIcon from '@/icons/full-hide.svg'
 import strokeCheckIcon from '@/icons/stroke-check.svg'
+import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 export interface StatusToggleButtonProps {
   offer: GetIndividualOfferResponseModel

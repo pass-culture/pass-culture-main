@@ -1,7 +1,12 @@
 import type { UserPhoneBodyModel } from '@/apiClient/v1'
 import { UserPhoneForm } from '@/components/UserPhoneForm/UserPhoneForm'
-import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
-import { BoxRounded } from '@/ui-kit/BoxRounded/BoxRounded'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
+import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
 
 import { Forms } from '../constants'
 
@@ -60,17 +65,24 @@ export const UserPhone = ({
   const onClickModify = () => setCurrentForm(Forms.USER_PHONE)
   const resetForm = () => setCurrentForm(null)
   return (
-    <BoxFormLayout>
-      <BoxRounded onClickModify={!showForm ? onClickModify : undefined}>
-        {showForm ? (
-          <UserPhoneForm closeForm={resetForm} initialValues={initialValues} />
-        ) : (
-          <BoxFormLayout.Header
-            subtitle={`${formatPhoneNumber(initialValues.phoneNumber)}`}
-            title="Téléphone"
-          />
-        )}
-      </BoxRounded>
-    </BoxFormLayout>
+    <SummarySection
+      title={'Téléphone'}
+      editLink={
+        <Button
+          label="Modifier"
+          onClick={onClickModify}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          size={ButtonSize.SMALL}
+        />
+      }
+      shouldShowDivider={true}
+    >
+      {showForm ? (
+        <UserPhoneForm closeForm={resetForm} initialValues={initialValues} />
+      ) : (
+        formatPhoneNumber(initialValues.phoneNumber)
+      )}
+    </SummarySection>
   )
 }

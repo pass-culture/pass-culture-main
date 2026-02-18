@@ -10,7 +10,7 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { isDateValid } from '@/commons/utils/date'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { Button } from '@/design-system/Button/Button'
-import { ButtonVariant } from '@/design-system/Button/types'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
 import fullValidateIcon from '@/icons/full-validate.svg'
 import fullWaitIcon from '@/icons/full-wait.svg'
@@ -69,6 +69,8 @@ export const IndividualOfferConfirmationScreen = ({
           <DisplayOfferInAppLink
             id={offer.id}
             icon={fullLinkIcon}
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.BRAND}
             label="Visualiser l’offre dans l’application"
           />
         </div>

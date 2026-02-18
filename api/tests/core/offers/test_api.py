@@ -1540,14 +1540,14 @@ class CreateOfferTest:
             visualDisabilityCompliant=True,
             artistOfferLinks=[
                 {
-                    "artist_id": artist.id,
-                    "artist_type": artist_models.ArtistType.AUTHOR,
-                    "custom_name": None,
+                    "artistId": artist.id,
+                    "artistType": artist_models.ArtistType.AUTHOR,
+                    "artistName": artist.name,
                 },
                 {
-                    "artist_id": artist.id,
-                    "artist_type": artist_models.ArtistType.STAGE_DIRECTOR,
-                    "custom_name": "John Doe",
+                    "artistId": None,
+                    "artistType": artist_models.ArtistType.STAGE_DIRECTOR,
+                    "artistName": "John Doe",
                 },
             ],
         )
@@ -1555,12 +1555,28 @@ class CreateOfferTest:
         offer = api.create_offer(body, venue=venue, offerer_address=offerer_address)
 
         assert offer.id is not None
+
         mock_create_link.assert_called()
 
         assert len(mock_create_link.call_args_list) == 2
 
-        expected_first_call = mock.call(offer.id, body.artist_offer_links[0])
-        expected_second_call = mock.call(offer.id, body.artist_offer_links[1])
+        expected_first_call = mock.call(
+            offer.id,
+            ArtistOfferLinkKey(
+                artist_type=artist_models.ArtistType.AUTHOR,
+                artist_id=artist.id,
+                custom_name=None,
+            ),
+        )
+
+        expected_second_call = mock.call(
+            offer.id,
+            ArtistOfferLinkKey(
+                artist_type=artist_models.ArtistType.STAGE_DIRECTOR,
+                artist_id=None,
+                custom_name="John Doe",
+            ),
+        )
 
         mock_create_link.assert_has_calls([expected_first_call, expected_second_call], any_order=True)
 
@@ -1580,9 +1596,9 @@ class CreateOfferTest:
             visualDisabilityCompliant=True,
             artistOfferLinks=[
                 {
-                    "artist_id": artist.id,
-                    "artist_type": artist_models.ArtistType.AUTHOR,
-                    "custom_name": None,
+                    "artistId": artist.id,
+                    "artistType": artist_models.ArtistType.AUTHOR,
+                    "artistName": artist.name,
                 },
             ],
         )
@@ -1628,9 +1644,9 @@ class CreateOfferTest:
             visualDisabilityCompliant=True,
             artistOfferLinks=[
                 {
-                    "artist_id": artist.id,
-                    "artist_type": artist_models.ArtistType.PERFORMER,
-                    "custom_name": None,
+                    "artistId": artist.id,
+                    "artistType": artist_models.ArtistType.PERFORMER,
+                    "artistName": artist.name,
                 },
             ],
         )
@@ -2093,7 +2109,7 @@ class UpdateOfferTest:
             {
                 "artistId": "any-id",
                 "artistType": artist_models.ArtistType.AUTHOR,
-                "customName": None,
+                "artistName": "any-name",
             }
         ]
         body = offers_schemas.UpdateOffer(artistOfferLinks=artist_offer_links)
@@ -2121,7 +2137,7 @@ class UpdateOfferTest:
             {
                 "artistId": "any-id",
                 "artistType": artist_models.ArtistType.AUTHOR,
-                "customName": None,
+                "artistName": "any-name",
             }
         ]
         body = offers_schemas.UpdateOffer(artistOfferLinks=artist_offer_links)
@@ -2131,7 +2147,7 @@ class UpdateOfferTest:
         mock_upsert_artist_offer_links.assert_called_once_with(
             [
                 artist_serialize.ArtistOfferLinkBodyModel(
-                    artistId="any-id", artistType=artist_models.ArtistType.AUTHOR, customName=None
+                    artist_id="any-id", artist_type=artist_models.ArtistType.AUTHOR, artist_name="any-name"
                 )
             ],
             offer,
@@ -2145,7 +2161,7 @@ class UpdateOfferTest:
             {
                 "artistId": "any-id",
                 "artistType": artist_models.ArtistType.PERFORMER,
-                "customName": None,
+                "artistName": "any-name",
             }
         ]
         body = offers_schemas.UpdateOffer(artistOfferLinks=artist_offer_links)
@@ -2169,7 +2185,7 @@ class UpdateOfferTest:
             {
                 "artistId": "any-id",
                 "artistType": artist_models.ArtistType.AUTHOR,
-                "customName": None,
+                "artistName": "any-name",
             }
         ]
         body = offers_schemas.UpdateOffer(artistOfferLinks=artist_offer_links)
@@ -2204,7 +2220,7 @@ class UpdateOfferTest:
             {
                 "artistId": "artist-id",
                 "artistType": artist_models.ArtistType.AUTHOR,
-                "customName": None,
+                "artistName": "any-name",
             }
         ]
         body = offers_schemas.UpdateOffer(artistOfferLinks=artist_offer_links)
@@ -4913,6 +4929,10 @@ class MoveOfferTest:
             offer = factories.OfferFactory(venue=venue)
             stock = factories.StockFactory(offer=offer, quantity=2)
             bookings_factories.CancelledBookingFactory(stock=stock)
+        if state == bookings_models.BookingStatus.PENDING_REIMBURSEMENT:
+            offer = factories.OfferFactory(venue=venue)
+            stock = factories.StockFactory(offer=offer, quantity=2)
+            bookings_factories.PendingReimbursementBookingFactory(stock=stock)
         if state == bookings_models.BookingStatus.REIMBURSED:
             offer = factories.OfferFactory(venue=venue)
             stock = factories.StockFactory(offer=offer, quantity=2)
@@ -4937,6 +4957,7 @@ class MoveOfferTest:
             bookings_models.BookingStatus.CONFIRMED,
             bookings_models.BookingStatus.CANCELLED,
             bookings_models.BookingStatus.USED,
+            bookings_models.BookingStatus.PENDING_REIMBURSEMENT,
             bookings_models.BookingStatus.REIMBURSED,
         ],
     )
@@ -4954,6 +4975,7 @@ class MoveOfferTest:
             bookings_models.BookingStatus.CONFIRMED,
             bookings_models.BookingStatus.CANCELLED,
             bookings_models.BookingStatus.USED,
+            bookings_models.BookingStatus.PENDING_REIMBURSEMENT,
             bookings_models.BookingStatus.REIMBURSED,
         ):
             assert db.session.query(bookings_models.Booking).count() == 1
@@ -5078,7 +5100,6 @@ class DeleteOffersRelatedObjectsTest:
         factories.StockFactory.create_batch(2, offer=offer)
         users_factories.FavoriteFactory(offer=offer)
         factories.MediationFactory.create_batch(2, offer=offer)
-        factories.OfferReportFactory(offer=offer)
         criteria_factories.OfferCriterionFactory(offerId=offer.id, criterionId=criteria_factories.CriterionFactory().id)
 
         return offer
@@ -5091,7 +5112,6 @@ class DeleteOffersRelatedObjectsTest:
             assert db.session.query(models.Stock).filter_by(offerId=offer_id).count() == 0
             assert db.session.query(users_models.Favorite).filter_by(offerId=offer_id).count() == 0
             assert db.session.query(models.Mediation).filter_by(offerId=offer_id).count() == 0
-            assert db.session.query(models.OfferReport).filter_by(offerId=offer_id).count() == 0
 
     def assert_offer_related_objects_have_not_been_deleted(self, offer_ids):
         db.session.commit()
@@ -5102,7 +5122,6 @@ class DeleteOffersRelatedObjectsTest:
             assert db.session.query(users_models.Favorite).filter_by(offerId=offer_id).count() > 0
             assert db.session.query(criteria_models.OfferCriterion).filter_by(offerId=offer_id).count() > 0
             assert db.session.query(models.Mediation).filter_by(offerId=offer_id).count() > 0
-            assert db.session.query(models.OfferReport).filter_by(offerId=offer_id).count() > 0
 
 
 def assert_offers_have_been_completely_cleaned(offer_ids):
@@ -5123,7 +5142,6 @@ def assert_offers_have_been_completely_cleaned(offer_ids):
         assert db.session.query(chronicles_models.OfferChronicle).filter_by(offerId=offer_id).count() == 0
         assert db.session.query(models.OfferCompliance).filter_by(offerId=offer_id).count() == 0
         assert db.session.query(criteria_models.OfferCriterion).filter_by(offerId=offer_id).count() == 0
-        assert db.session.query(models.OfferReport).filter_by(offerId=offer_id).count() == 0
         assert db.session.query(models.PriceCategory).filter_by(offerId=offer_id).count() == 0
         assert db.session.query(reactions_models.Reaction).filter_by(offerId=offer_id).count() == 0
         assert db.session.query(models.Stock).filter_by(offerId=offer_id).count() == 0
@@ -5245,7 +5263,6 @@ class DeleteUnbookableUnusedOldOffersTest:
 
         factories.StockFactory.create_batch(2, offer=offer, isSoftDeleted=True)
         users_factories.FavoriteFactory(offer=offer)
-        factories.OfferReportFactory(offer=offer)
 
         api.delete_unbookable_unbooked_old_offers(max_id=offer.id * 2)
         assert_offers_have_been_completely_cleaned([offer_id])

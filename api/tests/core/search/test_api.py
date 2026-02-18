@@ -276,7 +276,7 @@ class ReindexOfferIdsTest:
         assert search_testing.search_store["offers"] == {}
         search.reindex_offer_ids([offer.id])
         assert offer.id in search_testing.search_store["offers"]
-        assert search_testing.search_store["offers"][offer.id]["offer"]["last30DaysBookings"] == 6
+        assert search_testing.search_store["offers"][offer.id]["offer"]["last30DaysBookings"] == 8
         assert (
             search_testing.search_store["offers"][offer.id]["offer"]["last30DaysBookingsRange"]
             == serialization.Last30DaysBookingsRange.MEDIUM.value

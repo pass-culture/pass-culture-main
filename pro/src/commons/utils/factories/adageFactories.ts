@@ -7,7 +7,7 @@ import {
   type CollectiveOfferResponseModel,
   type CollectiveOfferTemplateResponseModel,
   EacFormat,
-  type EducationalInstitutionWithBudgetResponseModel,
+  type EducationalInstitutionBudgetResponseModel,
 } from '@/apiClient/adage'
 import { StudentLevels } from '@/apiClient/v1'
 
@@ -21,8 +21,6 @@ export const defaultCollectiveTemplateOffer: CollectiveOfferTemplateResponseMode
     domains: [],
     id: 1,
     interventionArea: [],
-    isExpired: false,
-    isSoldOut: false,
     isFavorite: false,
     isTemplate: true,
     name: 'Mon offre vitrine',
@@ -89,8 +87,6 @@ export const defaultCollectiveOffer: CollectiveOfferResponseModel = {
       name: 'Le Petit Rintintin Management',
     },
   },
-  isSoldOut: false,
-  isExpired: false,
   visualDisabilityCompliant: true,
   mentalDisabilityCompliant: true,
   audioDisabilityCompliant: true,
@@ -120,15 +116,9 @@ export const defaultAdageUser: AuthenticatedResponse = {
   canPrebook: true,
 }
 
-export const defaultEducationalInstitution: EducationalInstitutionWithBudgetResponseModel =
+export const defaultEducationalInstitution: EducationalInstitutionBudgetResponseModel =
   {
     budget: 1000,
-    city: 'Paris',
-    id: 1,
-    institutionType: 'COLLEGE',
-    name: 'Mon établissement',
-    phoneNumber: '0123456789',
-    postalCode: '75000',
   }
 
 export const defaultUseStatsReturn = {

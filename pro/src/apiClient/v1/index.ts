@@ -49,6 +49,7 @@ export { CollectiveOfferDisplayedStatus } from './models/CollectiveOfferDisplaye
 export type { CollectiveOfferHistory } from './models/CollectiveOfferHistory';
 export type { CollectiveOfferInstitutionModel } from './models/CollectiveOfferInstitutionModel';
 export type { CollectiveOfferLocationModel } from './models/CollectiveOfferLocationModel';
+export type { CollectiveOfferLocationModelV2 } from './models/CollectiveOfferLocationModelV2';
 export type { CollectiveOfferRedactorModel } from './models/CollectiveOfferRedactorModel';
 export type { CollectiveOfferResponseIdModel } from './models/CollectiveOfferResponseIdModel';
 export type { CollectiveOfferResponseModel } from './models/CollectiveOfferResponseModel';
@@ -68,7 +69,6 @@ export type { CreateThumbnailBodyModel } from './models/CreateThumbnailBodyModel
 export type { CreateThumbnailResponseModel } from './models/CreateThumbnailResponseModel';
 export type { CropParams } from './models/CropParams';
 export type { DateRangeModel } from './models/DateRangeModel';
-export type { DateRangeOnCreateModel } from './models/DateRangeOnCreateModel';
 export type { DeleteOfferRequestBody } from './models/DeleteOfferRequestBody';
 export type { DeleteStockListBody } from './models/DeleteStockListBody';
 export { DisplayableActivity } from './models/DisplayableActivity';
@@ -144,10 +144,10 @@ export type { GetVenueDomainResponseModel } from './models/GetVenueDomainRespons
 export type { GetVenueListLiteResponseModel } from './models/GetVenueListLiteResponseModel';
 export type { GetVenueListResponseModel } from './models/GetVenueListResponseModel';
 export type { GetVenueManagingOffererResponseModel } from './models/GetVenueManagingOffererResponseModel';
-export type { GetVenueOffersStatsModel } from './models/GetVenueOffersStatsModel';
 export type { GetVenuePricingPointResponseModel } from './models/GetVenuePricingPointResponseModel';
 export type { GetVenueResponseModel } from './models/GetVenueResponseModel';
 export type { GetVenuesOfOffererFromSiretResponseModel } from './models/GetVenuesOfOffererFromSiretResponseModel';
+export type { GetVenueStatsResponseModel } from './models/GetVenueStatsResponseModel';
 export type { HasInvoiceQueryModel } from './models/HasInvoiceQueryModel';
 export type { HasInvoiceResponseModel } from './models/HasInvoiceResponseModel';
 export type { HeadlineOfferCreationBodyModel } from './models/HeadlineOfferCreationBodyModel';
@@ -179,8 +179,10 @@ export type { ListOffersVenueResponseModel } from './models/ListOffersVenueRespo
 export type { ListProviderResponse } from './models/ListProviderResponse';
 export type { ListVenueProviderResponse } from './models/ListVenueProviderResponse';
 export type { LocationBodyModel } from './models/LocationBodyModel';
+export type { LocationBodyModelV2 } from './models/LocationBodyModelV2';
 export type { LocationModel } from './models/LocationModel';
 export type { LocationOnlyOnVenueBodyModel } from './models/LocationOnlyOnVenueBodyModel';
+export type { LocationOnlyOnVenueBodyModelV2 } from './models/LocationOnlyOnVenueBodyModelV2';
 export type { LocationResponseModel } from './models/LocationResponseModel';
 export type { LoginUserBodyModel } from './models/LoginUserBodyModel';
 export type { ManagedVenue } from './models/ManagedVenue';
@@ -213,6 +215,7 @@ export type { PatchOfferPublishBodyModel } from './models/PatchOfferPublishBodyM
 export { PhoneValidationStatusType } from './models/PhoneValidationStatusType';
 export type { PostCollectiveOfferBodyModel } from './models/PostCollectiveOfferBodyModel';
 export type { PostCollectiveOfferTemplateBodyModel } from './models/PostCollectiveOfferTemplateBodyModel';
+export type { PostDateRangeModel } from './models/PostDateRangeModel';
 export type { PostOfferBodyModel } from './models/PostOfferBodyModel';
 export type { PostOffererResponseModel } from './models/PostOffererResponseModel';
 export type { PostVenueProviderBody } from './models/PostVenueProviderBody';
@@ -242,7 +245,6 @@ export type { SubmitReviewRequestModel } from './models/SubmitReviewRequestModel
 export { Target } from './models/Target';
 export type { ThingStocksBulkUpsertBodyModel } from './models/ThingStocksBulkUpsertBodyModel';
 export type { ThingStockUpsertBodyModel } from './models/ThingStockUpsertBodyModel';
-export type { TopOffersByConsultationModel } from './models/TopOffersByConsultationModel';
 export type { TopOffersResponseData } from './models/TopOffersResponseData';
 export type { TotalRevenue } from './models/TotalRevenue';
 export type { UserEmailValidationResponseModel } from './models/UserEmailValidationResponseModel';
@@ -261,10 +263,12 @@ export type { VenueLabelResponseModel } from './models/VenueLabelResponseModel';
 export type { VenueListItemLiteResponseModel } from './models/VenueListItemLiteResponseModel';
 export type { VenueListItemResponseModel } from './models/VenueListItemResponseModel';
 export type { VenueListQueryModel } from './models/VenueListQueryModel';
+export type { VenueMonthlyViewModel } from './models/VenueMonthlyViewModel';
 export type { VenueOfOffererFromSiretResponseModel } from './models/VenueOfOffererFromSiretResponseModel';
 export type { VenueProviderResponse } from './models/VenueProviderResponse';
 export type { VenuesEducationalStatusesResponseModel } from './models/VenuesEducationalStatusesResponseModel';
 export type { VenuesEducationalStatusResponseModel } from './models/VenuesEducationalStatusResponseModel';
+export type { VenueStatsDataModel } from './models/VenueStatsDataModel';
 export { VenueTypeCode } from './models/VenueTypeCode';
 export type { VenueTypeResponseModel } from './models/VenueTypeResponseModel';
 export type { VideoData } from './models/VideoData';

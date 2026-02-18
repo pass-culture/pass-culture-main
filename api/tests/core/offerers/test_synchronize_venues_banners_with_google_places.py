@@ -8,7 +8,6 @@ import time_machine
 from pcapi.core.offerers import synchronize_venues_banners_with_google_places
 from pcapi.core.offerers.factories import GooglePlacesInfoFactory
 from pcapi.core.offerers.factories import VenueFactory
-from pcapi.utils.image_conversion import ImageRatio
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -28,44 +27,6 @@ def test_all_venue_banners_with_google_places_are_fetched(frequency):
     assert (venues * frequency).sort(key=lambda venue: venue.id) == venues_to_synchronize.sort(
         key=lambda venue: venue.id
     )
-
-
-def test_get_crop_params():
-    photo = synchronize_venues_banners_with_google_places.PlacePhoto(
-        height=200, width=400, photo_reference="photo_reference", html_attributions=[]
-    )
-    crop_params = synchronize_venues_banners_with_google_places.get_crop_params(photo, ImageRatio.LANDSCAPE)
-    assert crop_params.y_crop_percent == 0
-    assert crop_params.x_crop_percent == 0.125
-    assert crop_params.height_crop_percent == 1
-    assert crop_params.width_crop_percent == 0.75
-
-    photo = synchronize_venues_banners_with_google_places.PlacePhoto(
-        height=1000, width=300, photo_reference="photo_reference", html_attributions=[]
-    )
-    crop_params = synchronize_venues_banners_with_google_places.get_crop_params(photo, ImageRatio.LANDSCAPE)
-    assert crop_params.y_crop_percent == 0.4
-    assert crop_params.x_crop_percent == 0
-    assert crop_params.height_crop_percent == 0.2
-    assert crop_params.width_crop_percent == 1
-
-    photo = synchronize_venues_banners_with_google_places.PlacePhoto(
-        height=400, width=200, photo_reference="photo_reference", html_attributions=[]
-    )
-    crop_params = synchronize_venues_banners_with_google_places.get_crop_params(photo, ImageRatio.PORTRAIT)
-    assert crop_params.y_crop_percent == 0.125
-    assert crop_params.x_crop_percent == 0
-    assert crop_params.height_crop_percent == 0.75
-    assert crop_params.width_crop_percent == 1
-
-    photo = synchronize_venues_banners_with_google_places.PlacePhoto(
-        height=300, width=1000, photo_reference="photo_reference", html_attributions=[]
-    )
-    crop_params = synchronize_venues_banners_with_google_places.get_crop_params(photo, ImageRatio.PORTRAIT)
-    assert crop_params.y_crop_percent == 0
-    assert crop_params.x_crop_percent == 0.4
-    assert crop_params.height_crop_percent == 1
-    assert crop_params.width_crop_percent == 0.2
 
 
 class SynchronizeVenuesBannersWithGooglePlacesTest:

@@ -180,7 +180,7 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__departmentCode="75")
-        oa = offerers_factories.OffererAddressFactory(address__departmentCode=dp)
+        oa = offerers_factories.OffererAddressFactory(venue=venue, address__departmentCode=dp)
 
         offer = offers_factories.ThingOfferFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id, venue=venue, offererAddress=oa
@@ -203,7 +203,7 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__departmentCode="75")
-        oa = offerers_factories.OffererAddressFactory(address__departmentCode=dp)
+        oa = offerers_factories.OffererAddressFactory(venue=venue, address__departmentCode=dp)
 
         offer = offers_factories.ThingOfferFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id, venue=venue, offererAddress=oa

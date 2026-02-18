@@ -61,6 +61,16 @@ class PatchKeepBookingByTokenTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 204
         assert booking.status is BookingStatus.CONFIRMED
 
+    def test_should_raise_403_when_booking_is_being_refunded(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        _, booking = self.setup_base_resource(venue=venue_provider.venue, status=BookingStatus.PENDING_REIMBURSEMENT)
+
+        response = self.make_request(plain_api_key, {"token": booking.token})
+
+        assert response.status_code == 403
+        assert response.json == {"payment": "This booking has been reimbursed"}
+        assert booking.status is BookingStatus.PENDING_REIMBURSEMENT
+
     def test_should_raise_403_when_booking_is_refunded(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         _, booking = self.setup_base_resource(venue=venue_provider.venue, status=BookingStatus.REIMBURSED)

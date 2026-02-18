@@ -1,7 +1,5 @@
 import logging
 
-from flask_jwt_extended import get_jwt_identity
-from flask_jwt_extended import jwt_required
 from flask_login import current_user
 
 import pcapi.core.token as token_utils
@@ -16,12 +14,14 @@ from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import User
 from pcapi.core.users.password_utils import check_password_strength
 from pcapi.core.users.repository import find_user_by_email
+from pcapi.core.users.sessions import create_user_jwt_tokens
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.native.security import authenticated_and_active_user_required
+from pcapi.routes.native.security import authenticated_with_refresh_token
 from pcapi.routes.native.v1.serialization.authentication import ChangePasswordRequest
 from pcapi.routes.native.v1.serialization.authentication import RequestPasswordResetRequest
 from pcapi.routes.native.v1.serialization.authentication import ResetPasswordRequest
@@ -31,7 +31,6 @@ from pcapi.routes.native.v1.serialization.authentication import ValidateEmailRes
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.repository import transaction
 from pcapi.utils.transaction_manager import atomic
-from pcapi.workers import apps_flyer_job
 
 from .. import blueprint
 from .serialization import authentication
@@ -69,23 +68,27 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     users_api.save_device_info_and_notify_user(user, body.device_info)
 
     users_api.update_last_connection_date(user)
+    tokens = create_user_jwt_tokens(
+        user=user,
+        device_info=body.device_info,
+    )
     return authentication.SigninResponse(
-        access_token=users_api.create_user_access_token(user),
-        refresh_token=users_api.create_user_refresh_token(user, body.device_info),
+        access_token=tokens.access,
+        refresh_token=tokens.refresh,
         account_state=user.account_state,
     )
 
 
 @blueprint.native_route("/refresh_access_token", methods=["POST"])
-@jwt_required(refresh=True)
+@authenticated_with_refresh_token
 @spectree_serialize(response_model=authentication.RefreshResponse, api=blueprint.api, on_error_statuses=[401])
 def refresh() -> authentication.RefreshResponse:
-    email = get_jwt_identity()
-    user = find_user_by_email(email)
-    if not user:
-        raise ApiErrors({"email": "unknown"}, status_code=401)
-    users_api.update_last_connection_date(user)
-    return authentication.RefreshResponse(access_token=users_api.create_user_access_token(user))
+    users_api.update_last_connection_date(current_user)
+    tokens = create_user_jwt_tokens(
+        user=current_user,
+        device_info=None,
+    )
+    return authentication.RefreshResponse(access_token=tokens.access)
 
 
 @blueprint.native_route("/request_password_reset", methods=["POST"])
@@ -117,9 +120,13 @@ def request_password_reset(body: RequestPasswordResetRequest) -> None:
 @atomic()
 def reset_password(body: ResetPasswordRequest) -> ResetPasswordResponse:
     user = users_api.reset_password_with_token(body.new_password, body.reset_password_token)
+    tokens = create_user_jwt_tokens(
+        user=user,
+        device_info=body.device_info,
+    )
     return ResetPasswordResponse(
-        access_token=users_api.create_user_access_token(user),
-        refresh_token=users_api.create_user_refresh_token(user, body.device_info),
+        access_token=tokens.access,
+        refresh_token=tokens.refresh,
     )
 
 
@@ -166,9 +173,6 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
     db.session.commit()
     external_attributes_api.update_external_user(user)
 
-    if user.externalIds and "apps_flyer" in user.externalIds:
-        apps_flyer_job.log_user_registration_event_job.delay(user.id)
-
     try:
         dms_subscription_api.try_dms_orphan_adoption(user)
     except Exception:
@@ -176,9 +180,13 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
             "An unexpected error occurred while trying to link dms orphan to user", extra={"user_id": user.id}
         )
 
+    tokens = create_user_jwt_tokens(
+        user=user,
+        device_info=body.device_info,
+    )
     response = ValidateEmailResponse(
-        access_token=users_api.create_user_access_token(user),
-        refresh_token=users_api.create_user_refresh_token(user, body.device_info),
+        access_token=tokens.access,
+        refresh_token=tokens.refresh,
     )
 
     return response
@@ -294,8 +302,12 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
         },
         technical_message_id="users.login.sso.google",
     )
+    tokens = create_user_jwt_tokens(
+        user=user,
+        device_info=body.device_info,
+    )
     return authentication.SigninResponse(
-        access_token=users_api.create_user_access_token(user),
-        refresh_token=users_api.create_user_refresh_token(user, body.device_info),
+        access_token=tokens.access,
+        refresh_token=tokens.refresh,
         account_state=user.account_state,
     )

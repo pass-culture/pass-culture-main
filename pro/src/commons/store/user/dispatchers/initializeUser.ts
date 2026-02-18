@@ -3,6 +3,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 import { api } from '@/apiClient/api'
 import type { SharedCurrentUserResponseModel } from '@/apiClient/v1'
 import { updateOffererNames } from '@/commons/store/offerer/reducer'
+import { setSelectedAdminOffererById } from '@/commons/store/user/dispatchers/setSelectedAdminOffererById'
 import {
   setVenues,
   updateUser,
@@ -11,8 +12,9 @@ import {
 
 import { isFeatureActive } from '../../features/selectors'
 import type { AppThunkApiConfig } from '../../store'
+import { getInitialAdminOffererId } from '../utils/getInitialAdminOffererId'
 import { getInitialOffererIdAndVenueId } from '../utils/getInitialOffererIdAndVenueId'
-import { getInitialSelectedVenueId } from '../utils/getInitialSelectedVenueId'
+import { getInitialPartnerVenueId } from '../utils/getInitialPartnerVenueId'
 import { logout } from './logout'
 import { setSelectedOffererById } from './setSelectedOffererById'
 import { setSelectedVenueById } from './setSelectedVenueById'
@@ -26,9 +28,11 @@ export const initializeUser = createAsyncThunk<
     const withSwitchVenueFeature = isFeatureActive(
       getState(),
       'WIP_SWITCH_VENUE'
+    ) /// TODO (igabriele, 2025-10-28): Simplify this Backend route and its core method once `WIP_SWITCH_VENUE` FF is enabled and removed (no need for query params anymore).
+    const offererNamesResponse = await api.listOfferersNames(
+      null,
+      withSwitchVenueFeature ? true : null
     )
-
-    const offererNamesResponse = await api.listOfferersNames()
     const venuesResponse = await api.getVenues(null, true) // only active venues
 
     dispatch(updateOffererNames(offererNamesResponse.offerersNames))
@@ -37,25 +41,50 @@ export const initializeUser = createAsyncThunk<
 
     const { initialOffererId, initialVenueId } = withSwitchVenueFeature
       ? {
-          // TODO (igabriele, 2026-01-08): will be handled in another PR.
+          // TODO (igabriele, 2025-10-28): Delete this prop once `WIP_SWITCH_VENUE` FF is enabled and removed.
           initialOffererId: null,
-          initialVenueId: getInitialSelectedVenueId(venuesResponse.venues),
+          initialVenueId: getInitialPartnerVenueId(venuesResponse.venues),
         }
       : getInitialOffererIdAndVenueId(
           offererNamesResponse.offerersNames,
           venuesResponse.venues
         )
 
-    if (initialVenueId) {
-      await dispatch(setSelectedVenueById(initialVenueId))
+    // Initialize the Partner Space selected venue if any
+    const { selectedVenue } = initialVenueId
+      ? await dispatch(
+          setSelectedVenueById({
+            nextSelectedVenueId: initialVenueId,
+            // If the user has a `selectedAdminOffererId` in the Local Storage
+            // that doesn't match the computed initial Venue parent Offerer ID,
+            // we don't want to override it to keep it consistent with their last session.
+            shouldSkipSelectedAdminOffererUpdate: withSwitchVenueFeature,
+          })
+        ).unwrap()
+      : {
+          selectedVenue: null,
+        }
 
-      return
-    }
     if (withSwitchVenueFeature) {
+      const initialAdminOffererId = getInitialAdminOffererId({
+        selectedVenue,
+        offererNames: offererNamesResponse.offerersNames,
+      })
+
+      // Initialize the Administration Space selected offerer if any
+      if (initialAdminOffererId) {
+        await dispatch(setSelectedAdminOffererById(initialAdminOffererId))
+      }
+
       return
     }
 
-    // TODO (igabriele, 2025-10-28): Delete this section once `WIP_SWITCH_VENUE` is enabled in production.
+    // TODO (igabriele, 2025-10-28): Delete this block once `WIP_SWITCH_VENUE` FF is enabled and removed.
+    if (initialVenueId) {
+      return
+    }
+
+    // TODO (igabriele, 2025-10-28): Delete this block once `WIP_SWITCH_VENUE` FF is enabled and removed.
     if (initialOffererId) {
       await dispatch(
         setSelectedOffererById({
@@ -66,6 +95,7 @@ export const initializeUser = createAsyncThunk<
       return
     }
 
+    // TODO (igabriele, 2025-10-28): Delete this statement once `WIP_SWITCH_VENUE` FF is enabled and removed.
     dispatch(updateUserAccess('no-offerer'))
   } catch (_err: unknown) {
     await logout()

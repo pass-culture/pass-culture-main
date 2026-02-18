@@ -10,7 +10,6 @@ import sqlalchemy.event
 import sqlalchemy.orm
 
 from pcapi import settings
-from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.feature import Feature
 
@@ -184,18 +183,3 @@ class FeaturesContext:
         if values_to_reset:
             db.session.commit()
         object.__setattr__(self, "_modified_values", {})
-
-
-@contextlib.contextmanager
-def assert_model_count_delta(
-    model: Model,
-    delta: int,
-) -> collections.abc.Generator[None, None, None]:
-    start_count = db.session.query(model).count()
-    expected_count = start_count + delta
-
-    yield
-
-    end_count = db.session.query(model).count()
-    if end_count != expected_count:
-        pytest.fail(f"Got {end_count} {model.__class__.__name__} instead of {expected_count}")

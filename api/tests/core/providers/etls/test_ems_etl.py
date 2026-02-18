@@ -267,6 +267,7 @@ class EMSExtractTransformLoadProcessTest:
         assert offer_1.withdrawalDetails == venue_provider.venue.withdrawalDetails
         assert offer_1.dateModifiedAtLastProvider == datetime.datetime(2023, 6, 12, 12, 41, 30, tzinfo=datetime.UTC)
         assert offer_1.publicationDatetime == datetime.datetime(2023, 6, 12, 12, 41, 30, tzinfo=datetime.UTC)
+        assert offer_1.lastProviderId == venue_provider.providerId
 
         assert offer_1.product
         assert offer_1.product.name == "Spider-Man : Across the Spider-Verse"
@@ -293,6 +294,7 @@ class EMSExtractTransformLoadProcessTest:
         assert offer_1_stock_1.price == decimal.Decimal("7.15")
         assert offer_1_stock_1.priceCategory.price == decimal.Decimal("7.15")
         assert offer_1_stock_1.priceCategory.label == "Tarif pass Culture 7.15€"
+        assert offer_1_stock_1.lastProviderId == venue_provider.providerId
 
         offer_1_stock_2 = offer_1_stocks[1]
         assert offer_1_stock_2.idAtProviders == f"SHJRH%{venue_id}%EMS#999700079244"
@@ -304,6 +306,7 @@ class EMSExtractTransformLoadProcessTest:
         assert offer_1_stock_2.price == decimal.Decimal("7.15")
         assert offer_1_stock_2.priceCategory.price == decimal.Decimal("7.15")
         assert offer_1_stock_2.priceCategory.label == "Tarif pass Culture 7.15€"
+        assert offer_1_stock_2.lastProviderId == venue_provider.providerId
 
         assert offer_2
         assert offer_2.idAtProvider == f"FGMSE%{venue_id}%EMS"
@@ -312,6 +315,7 @@ class EMSExtractTransformLoadProcessTest:
         assert offer_2.withdrawalDetails == venue_provider.venue.withdrawalDetails
         assert offer_2.dateModifiedAtLastProvider == datetime.datetime(2023, 6, 12, 12, 41, 30, tzinfo=datetime.UTC)
         assert offer_2.publicationDatetime == datetime.datetime(2023, 6, 12, 12, 41, 30, tzinfo=datetime.UTC)
+        assert offer_2.lastProviderId == venue_provider.providerId
 
         assert offer_2.product
         assert offer_2.product.name == "Transformers : Rise of the Beasts"
@@ -336,6 +340,7 @@ class EMSExtractTransformLoadProcessTest:
         assert offer_2_stock_1.price == decimal.Decimal("5.15")
         assert offer_2_stock_1.priceCategory.price == decimal.Decimal("5.15")
         assert offer_2_stock_1.priceCategory.label == "Tarif pass Culture 5.15€"
+        assert offer_2_stock_1.lastProviderId == venue_provider.providerId
 
         async_index_offer_ids_mock.assert_called_once_with(
             set([offer_1.id, offer_2.id]),

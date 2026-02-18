@@ -156,7 +156,6 @@ END_TO_END_TESTS_EMAIL_ADDRESS = os.environ.get("END_TO_END_TESTS_EMAIL_ADDRESS"
 # EMAIL_BACKEND="pcapi.core.mails.backends.logger.LoggerBackend"
 EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND")
 
-REPORT_OFFER_EMAIL_ADDRESS = secrets_utils.get("REPORT_OFFER_EMAIL_ADDRESS", "")
 SUPPORT_EMAIL_ADDRESS = os.environ.get("SUPPORT_EMAIL_ADDRESS", "")
 SUPPORT_PRO_EMAIL_ADDRESS = os.environ.get("SUPPORT_PRO_EMAIL_ADDRESS", "")
 WHITELISTED_EMAIL_RECIPIENTS = utils.parse_str_to_list(os.environ.get("WHITELISTED_EMAIL_RECIPIENTS"))
@@ -391,6 +390,7 @@ DATA_TITELIVE_THUMBS_FOLDER_NAME = os.environ.get("DATA_TITELIVE_THUMBS_FOLDER_N
 
 # ARTISTS THUMBS
 ARTIST_THUMBS_FOLDER_NAME = os.environ.get("ARTIST_THUMBS_FOLDER_NAME", "thumbs/artist")
+ARTIST_MINI_THUMBS_FOLDER_NAME = os.environ.get("ARTIST_MINI_THUMBS_FOLDER_NAME", "thumbs/artist/72x72")
 DATA_ARTIST_THUMBS_FOLDER_NAME = os.environ.get("DATA_ARTIST_THUMBS_FOLDER_NAME", "artist/images")
 
 # GOOGLE
@@ -422,7 +422,6 @@ GCP_BATCH_CUSTOM_DATA_ANDROID_QUEUE_NAME = os.environ.get("GCP_BATCH_CUSTOM_DATA
 GCP_BATCH_CUSTOM_DATA_IOS_QUEUE_NAME = os.environ.get("GCP_BATCH_CUSTOM_DATA_IOS_QUEUE_NAME", "")
 GCP_CHECK_OFFERER_SIREN_QUEUE_NAME = os.environ.get("GCP_CHECK_OFFERER_SIREN_QUEUE_NAME", "")
 GCP_SYNCHRONIZE_VENUE_PROVIDERS_QUEUE_NAME = os.environ.get("GCP_SYNCHRONIZE_VENUE_PROVIDERS_QUEUE_NAME", "")
-GCP_UBBLE_ARCHIVE_ID_PICTURES_QUEUE_NAME = os.environ.get("GCP_UBBLE_ARCHIVE_ID_PICTURES_QUEUE_NAME", "")
 GCP_ZENDESK_ATTRIBUTES_QUEUE_NAME = os.environ.get("GCP_ZENDESK_ATTRIBUTES_QUEUE_NAME", "")
 GCP_ZENDESK_SELL_QUEUE_NAME = os.environ.get("GCP_ZENDESK_SELL_QUEUE_NAME", "")
 
@@ -467,11 +466,6 @@ DEBUG_ACTIVATED = bool(int(os.environ.get("DEBUG_ACTIVATED", "0")))
 
 # PHONE NUMBERS
 BLACKLISTED_SMS_RECIPIENTS = set(secrets_utils.get("BLACKLISTED_SMS_RECIPIENTS", "").splitlines())
-
-# APPSFLYER
-APPS_FLYER_ANDROID_ID = os.environ.get("APPS_FLYER_ANDROID_ID", "app.passculture.webapp")
-APPS_FLYER_IOS_ID = os.environ.get("APPS_FLYER_IOS_ID", "id1557887412")
-APPS_FLYER_API_KEY = secrets_utils.get("APPS_FLYER_API_KEY", "")
 
 # SEARCH
 SEARCH_BACKEND = os.environ.get("SEARCH_BACKEND")
@@ -544,7 +538,7 @@ ZENDESK_API_TOKEN = secrets_utils.get("ZENDESK_API_TOKEN")
 
 # ZENDESK SELL
 ZENDESK_SELL_BACKEND = os.environ.get(
-    "ZENDESK_SELL_BACKEND", "pcapi.core.external.zendesk_sell_backends.zendesk_sell.ZendeskSellBackend"
+    "ZENDESK_SELL_BACKEND", "pcapi.core.external.zendesk_sell.backends.zendesk_sell.ZendeskSellBackend"
 )
 ZENDESK_SELL_API_KEY = secrets_utils.get("ZENDESK_SELL_API_KEY")
 ZENDESK_SELL_API_URL = os.environ.get("ZENDESK_SELL_API_URL", "https://api.getbase.com")
@@ -626,6 +620,7 @@ ENABLE_PERMISSIVE_NAME_VALIDATION = bool(int(os.environ.get("ENABLE_PERMISSIVE_N
 # API COMPLIANCE
 COMPLIANCE_API_CLIENT_ID = secrets_utils.get("COMPLIANCE_API_CLIENT_ID")
 COMPLIANCE_API_SERVICE_ACCOUNT = os.environ.get("COMPLIANCE_API_SERVICE_ACCOUNT", "")
+COMPLIANCE_DOMAIN = os.environ.get("COMPLIANCE_DOMAIN", "https://compliance.passculture.team")
 COMPLIANCE_BACKEND = os.environ.get(
     "COMPLIANCE_BACKEND", "pcapi.core.external.compliance_backends.compliance.ComplianceBackend"
 )
@@ -730,3 +725,7 @@ CELERY_WORKER_ENABLE_METRICS = bool(int(os.environ.get("CELERY_WORKER_ENABLE_MET
 CELERY_TASK_RETRY_BACKOFF_MAX = int(os.environ.get("CELERY_TASK_RETRY_BACKOFF_MAX", 60 * 2))
 CELERY_TASK_MAX_RETRIES = int(os.environ.get("CELERY_TASK_MAX_RETRIES", 7))
 PROMETHEUS_MULTIPROC_DIR = str(os.environ.get("PROMETHEUS_MULTIPROC_DIR", ""))
+
+
+# DIGITAL CAP
+DIGITAL_CAP_V2_DATETIME = datetime.fromisoformat(os.environ.get("DIGITAL_CAP_V2_DATETIME", "2026-03-01"))

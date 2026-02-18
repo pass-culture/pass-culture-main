@@ -5,6 +5,30 @@ import { axe } from 'vitest-axe'
 
 import { type Column, Table, TableVariant } from './Table'
 
+vi.mock('@/design-system/Pagination/Pagination', () => ({
+  Pagination: ({
+    currentPage,
+    pageCount,
+    onPageClick,
+  }: {
+    currentPage: number
+    pageCount: number
+    onPageClick: (page: number) => void
+  }) => (
+    <nav aria-label="pagination">
+      <div data-testid="pagination-props">
+        {currentPage}/{pageCount}
+      </div>
+      <button type="button" onClick={() => onPageClick(1)}>
+        page 1
+      </button>
+      <button type="button" onClick={() => onPageClick(2)}>
+        page 2
+      </button>
+    </nav>
+  ),
+}))
+
 interface RowType {
   id: number
   name: string
@@ -287,5 +311,42 @@ describe('<Table />', () => {
     )
 
     expect(container.querySelector('table')).toHaveClass('table-collapse')
+  })
+
+  it('does not render pagination when pagination prop is not provided', () => {
+    renderTable({ pagination: undefined })
+    expect(
+      screen.queryByRole('navigation', { name: /pagination/i })
+    ).not.toBeInTheDocument()
+  })
+
+  it('renders pagination when pagination prop is provided and forwards currentPage/pageCount', () => {
+    renderTable({
+      pagination: {
+        currentPage: 2,
+        pageCount: 5,
+        onPageClick: vi.fn(),
+      },
+    })
+
+    expect(
+      screen.getByRole('navigation', { name: /pagination/i })
+    ).toBeInTheDocument()
+    expect(screen.getByTestId('pagination-props')).toHaveTextContent('2/5')
+  })
+
+  it('calls onPageClick when a page is clicked', async () => {
+    const onPageClick = vi.fn()
+
+    renderTable({
+      pagination: {
+        currentPage: 1,
+        pageCount: 3,
+        onPageClick,
+      },
+    })
+
+    await userEvent.click(screen.getByRole('button', { name: /page 2/i }))
+    expect(onPageClick).toHaveBeenCalledWith(2)
   })
 })

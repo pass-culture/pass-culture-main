@@ -7,30 +7,3 @@
   gap: var(--size-spacing-xs);
   place-self: center;
 }
-
-.menu {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  align-items: flex-start;
-
-  &-item {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;
-    padding: var(--size-spacing-s);
-
-    &:focus-visible {
-      @include outline.focus-outline;
-
-      border-radius: var(--size-border-radius-s);
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      background: var(--color-background-subtle);
-      cursor: pointer;
-    }
-  }
-}

@@ -53,8 +53,8 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import booking as educational_booking_api
 from pcapi.core.educational.api import dms as dms_api
-from pcapi.core.external import zendesk_sell
 from pcapi.core.external.attributes import api as external_attributes_api
+from pcapi.core.external.zendesk_sell import api as zendesk_sell_api
 from pcapi.core.geography import constants as geography_constants
 from pcapi.core.geography import models as geography_models
 from pcapi.core.geography import utils as geography_utils
@@ -260,7 +260,7 @@ def update_venue(
         external_attributes_api.update_external_pro(old_booking_email)
         external_attributes_api.update_external_pro(venue.bookingEmail)
 
-    zendesk_sell.update_venue(venue)
+    zendesk_sell_api.update_venue(venue)
 
     if contact_data and contact_data.website:
         virustotal.request_url_scan(contact_data.website, skip_if_recent_scan=True)
@@ -369,6 +369,10 @@ def update_venue_collective_data(
 
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
 
+    if "activity" in modifications:
+        validation.check_activity_according_to_open_to_public(modifications["activity"], venue.isOpenToPublic)
+        venue.activity = modifications["activity"]
+
     if collective_domains_in_attrs:
         venue.collectiveDomains = educational_repository.get_educational_domains_from_ids(collectiveDomains or [])
 
@@ -386,7 +390,7 @@ def update_venue_collective_data(
     db.session.add(venue)
     db.session.flush()
 
-    zendesk_sell.update_venue(venue)
+    zendesk_sell_api.update_venue(venue)
 
     return venue
 
@@ -494,7 +498,7 @@ def create_venue(
 
     on_commit(functools.partial(search.async_index_venue_ids, [venue.id], reason=IndexationReason.VENUE_CREATION))
     external_attributes_api.update_external_pro(venue.bookingEmail)
-    zendesk_sell.create_venue(venue)
+    zendesk_sell_api.create_venue(venue)
 
     return venue
 
@@ -697,9 +701,6 @@ def _delete_objects_linked_to_venue(venue_id: int) -> dict:
         db.session.query(offers_models.Mediation).filter(offers_models.Mediation.offerId.in_(offers_id_chunk)).delete(
             synchronize_session=False
         )
-        db.session.query(offers_models.OfferReport).filter(
-            offers_models.OfferReport.offerId.in_(offers_id_chunk)
-        ).delete(synchronize_session=False)
     db.session.query(offers_models.Offer).filter(offers_models.Offer.venueId == venue_id).delete(
         synchronize_session=False
     )
@@ -1085,7 +1086,7 @@ def create_offerer(
         )
 
     external_attributes_api.update_external_pro(user.email)
-    zendesk_sell.create_offerer(offerer)
+    zendesk_sell_api.create_offerer(offerer)
 
     return user_offerer
 
@@ -2117,31 +2118,35 @@ def get_venues_stats(venue_ids: typing.Iterable[int]) -> dict[str, int | float |
     return stats
 
 
-@dataclasses.dataclass
-class OfferConsultationModel:
+@dataclasses.dataclass(frozen=True)
+class OfferViewsModel:
     offer_id: str
-    consultation_count: int
+    views: int
+    rank: int
+
+
+@dataclasses.dataclass
+class MonthlyViewsModel:
+    month: int
+    views: int
 
 
 @dataclasses.dataclass
 class VenueOffersStatisticsModel:
-    offers_consultation_count: int
-    top_offers_by_consultation: list[OfferConsultationModel]
+    monthly_views: list[MonthlyViewsModel]
+    total_views_last_30_days: int
+    top_offers: list[OfferViewsModel]
 
 
 def get_venue_offers_statistics(venue_id: int) -> VenueOffersStatisticsModel:
-    offers_consultation_count = clickhouse_queries.OfferConsultationCountQuery().execute({"venue_id": venue_id})
-    top_offers_by_consultation = clickhouse_queries.TopOffersByConsultationQuery().execute({"venue_id": venue_id})
+    monthly_views = clickhouse_queries.OfferConsultationCountQuery().execute({"venue_id": str(venue_id)})
+    views_count = clickhouse_queries.VenueOffersMonthlyViewsQuery().execute({"venue_id": str(venue_id)})
+    top_offers = clickhouse_queries.TopOffersByViewsQuery().execute({"venue_id": str(venue_id)})
 
     return VenueOffersStatisticsModel(
-        offers_consultation_count=offers_consultation_count[0].total_views_6_months if offers_consultation_count else 0,
-        top_offers_by_consultation=[
-            OfferConsultationModel(
-                offer_id=offer.offer_id,
-                consultation_count=offer.total_views_last_30_days,
-            )
-            for offer in top_offers_by_consultation
-        ],
+        monthly_views=[MonthlyViewsModel(month=row.month, views=row.views) for row in monthly_views],
+        total_views_last_30_days=views_count[0].total if len(views_count) > 0 else 0,
+        top_offers=[OfferViewsModel(offer_id=row.id, views=row.views, rank=row.rank) for row in top_offers],
     )
 
 
@@ -2327,7 +2332,7 @@ def _update_external_offerer(offerer: models.Offerer, *, index_with_reason: Inde
     for email in offerers_repository.get_emails_by_offerer(offerer):
         external_attributes_api.update_external_pro(email)
 
-    zendesk_sell.update_offerer(offerer)
+    zendesk_sell_api.update_offerer(offerer)
 
     if not index_with_reason:
         return
@@ -2498,7 +2503,7 @@ def invite_member(offerer: models.Offerer, email: str, current_user: users_model
             extra={"offerer": offerer.id, "invited_user": existing_user.id, "invited_by": current_user.id},
         )
         external_attributes_api.update_external_pro(existing_user.email)
-        zendesk_sell.create_offerer(offerer)
+        zendesk_sell_api.create_offerer(offerer)
     else:  # User not exists or exists with not validated email yet
         offerer_invitation = models.OffererInvitation(
             offerer=offerer, email=email, user=current_user, status=models.InvitationStatus.PENDING
@@ -2594,7 +2599,7 @@ def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
         else:
             db.session.commit()
         external_attributes_api.update_external_pro(user.email)
-        zendesk_sell.create_offerer(user_offerer.offerer)
+        zendesk_sell_api.create_offerer(user_offerer.offerer)
         logger.info(
             "UserOfferer created from invitation",
             extra={"offerer": user_offerer.offerer, "invitedUserId": user.id, "inviterUserId": inviter_user.id},
@@ -3103,7 +3108,7 @@ def get_or_create_offer_location(offerer_id: int, address_id: int, label: str | 
     if not offerer_address:
         offerer_address = models.OffererAddress(offererId=offerer_id, addressId=address_id, label=label)
         db.session.add(offerer_address)
-        db.session.flush()
+        db.session.flush([offerer_address])
 
     return offerer_address
 

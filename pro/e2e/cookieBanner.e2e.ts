@@ -6,7 +6,7 @@ import {
 } from '@playwright/test'
 
 import { loginAndNavigate } from './helpers/auth'
-import { BASE_API_URL, createRegularProUser } from './helpers/sandbox'
+import { BASE_API_URL, createRegularOnboardedProUser } from './helpers/sandbox'
 
 async function clearBrowserStateAndReload(page: Page): Promise<void> {
   await page.context().clearCookies()
@@ -14,8 +14,7 @@ async function clearBrowserStateAndReload(page: Page): Promise<void> {
     localStorage.clear()
     sessionStorage.clear()
   })
-  await page.reload()
-  await page.waitForLoadState('domcontentloaded')
+  await page.reload({ waitUntil: 'networkidle' })
 }
 
 test.describe('Cookie banner', () => {
@@ -221,7 +220,7 @@ test.describe('Cookie banner', () => {
         baseURL: BASE_API_URL,
       })
 
-      const userData = await createRegularProUser(requestContext)
+      const userData = await createRegularOnboardedProUser(requestContext)
       await requestContext.dispose()
 
       await loginAndNavigate(
@@ -254,7 +253,7 @@ test.describe('Cookie banner', () => {
       const newUserData = await playwrightRequest
         .newContext({ baseURL: BASE_API_URL })
         .then(async (ctx) => {
-          const data = await createRegularProUser(ctx)
+          const data = await createRegularOnboardedProUser(ctx)
           await ctx.dispose()
           return data
         })

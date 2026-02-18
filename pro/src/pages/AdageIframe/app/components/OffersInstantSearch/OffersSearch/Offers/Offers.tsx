@@ -52,7 +52,6 @@ import { AdageOfferListCard } from './AdageOfferListCard/AdageOfferListCard'
 import TFD2025 from './assets/TFD2025.svg'
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
 import styles from './Offers.module.scss'
-import { offerIsBookable } from './utils/offerIsBookable'
 
 export interface OffersProps {
   displayStats?: boolean
@@ -117,10 +116,7 @@ export const Offers = ({
     .map((hit) =>
       fetchedOffers.find((offerTmp) => `T-${offerTmp.id}` === hit.objectID)
     )
-    .filter(
-      (offer): offer is CollectiveOfferTemplateResponseModel =>
-        !!offer && offerIsBookable(offer)
-    )
+    .filter((offer) => !!offer)
 
   useEffect(() => {
     if (isMobileScreen !== undefined) {

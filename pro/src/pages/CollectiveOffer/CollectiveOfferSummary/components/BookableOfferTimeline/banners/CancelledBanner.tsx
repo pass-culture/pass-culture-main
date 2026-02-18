@@ -44,6 +44,7 @@ export const CancelledBanner = ({
         return 'L’établissement scolaire a annulé la réservation.'
       case CollectiveBookingCancellationReasons.EXPIRED:
       case undefined:
+      case null:
         return 'La date d’évènement de votre offre est dépassée. Votre offre a automatiquement été annulée. Vous pouvez créer une nouvelle offre à partir de celle-ci.'
       case CollectiveBookingCancellationReasons.OFFERER:
       case CollectiveBookingCancellationReasons.PUBLIC_API:
@@ -60,7 +61,6 @@ export const CancelledBanner = ({
       case CollectiveBookingCancellationReasons.BACKOFFICE_OFFERER_BUSINESS_CLOSED:
       case CollectiveBookingCancellationReasons.OFFERER_CONNECT_AS:
       case CollectiveBookingCancellationReasons.OFFERER_CLOSED:
-      case null:
         return 'Le pass Culture a annulé votre offre. Vous avez été notifié par mail de la raison de votre annulation. Vous pouvez la dupliquer si vous souhaitez la publier à nouveau.'
     }
   }, [reason])

@@ -42,20 +42,28 @@ if (!isAdageIframe) {
       r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv
       tmpl.content.appendChild(r)
       a.appendChild(tmpl)
-    })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=')
+    })(
+      globalThis,
+      globalThis.document,
+      'https://static.hotjar.com/c/hotjar-',
+      '.js?sv='
+    )
   }
   // We do the same thing for orejime scripts
   ;((d, v, prefix) => {
     const head = d.getElementsByTagName('head')[0]
     const script = d.createElement('script')
     script.src = `${prefix}${v}/dist/orejime-standard-fr.js`
+    script.addEventListener('load', () => {
+      globalThis.dispatchEvent(new Event('orejime-script-loaded'))
+    })
     head.appendChild(script)
     const link = d.createElement('link')
     link.rel = 'stylesheet'
     link.href = `${prefix}${v}/dist/orejime-standard.css`
     link.crossOrigin = 'anonymous'
     head.appendChild(link)
-  })(document, '3.1.0', 'https://cdn.jsdelivr.net/npm/orejime@')
+  })(globalThis.document, '3.1.0', 'https://cdn.jsdelivr.net/npm/orejime@')
 }
 
 // Start app
@@ -75,7 +83,7 @@ unregister()
 
 // Reloads page when a dynamic import fails (when we release a new version)
 // https://vitejs.dev/guide/build#load-error-handling
-window.addEventListener('vite:preloadError', (event) => {
+globalThis.addEventListener('vite:preloadError', (event) => {
   event.preventDefault()
-  window.location.reload()
+  globalThis.location.reload()
 })

@@ -13,6 +13,7 @@ import pytest
 import time_machine
 from dateutil.relativedelta import relativedelta
 from flask_jwt_extended.utils import create_access_token
+from flask_jwt_extended.utils import create_refresh_token
 
 import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
@@ -711,8 +712,6 @@ class AccountCreationTest:
             "notifications": True,
             "token": "gnagna",
             "marketingEmailSubscription": True,
-            "appsFlyerUserId": "apps_flyer_user_id",
-            "appsFlyerPlatform": "iOS",
             "firebasePseudoId": "firebase_pseudo_id",
         }
 
@@ -733,10 +732,7 @@ class AccountCreationTest:
         assert user.get_notification_subscriptions().marketing_email
         assert user.isEmailValidated is False
         assert user.checkPassword(data["password"])
-        assert user.externalIds == {
-            "apps_flyer": {"user": "apps_flyer_user_id", "platform": "IOS"},
-            "firebase_pseudo_id": "firebase_pseudo_id",
-        }
+        assert user.externalIds == {"firebase_pseudo_id": "firebase_pseudo_id"}
 
         mocked_check_recaptcha_token_is_valid.assert_called()
         assert len(mails_testing.outbox) == 1
@@ -934,8 +930,6 @@ class AccountCreationWithSSOTest:
                 "notifications": True,
                 "token": "recaptcha token",
                 "marketingEmailSubscription": True,
-                "appsFlyerUserId": "apps_flyer_user_id",
-                "appsFlyerPlatform": "iOS",
                 "firebasePseudoId": "firebase_pseudo_id",
             },
         )
@@ -951,10 +945,7 @@ class AccountCreationWithSSOTest:
         assert user.get_notification_subscriptions().marketing_email
         assert user.isEmailValidated
         assert user.password is None
-        assert user.externalIds == {
-            "apps_flyer": {"user": "apps_flyer_user_id", "platform": "IOS"},
-            "firebase_pseudo_id": "firebase_pseudo_id",
-        }
+        assert user.externalIds == {"firebase_pseudo_id": "firebase_pseudo_id"}
 
         mocked_check_recaptcha_token_is_valid.assert_called()
         assert len(mails_testing.outbox) == 0  # no email verification
@@ -2186,7 +2177,6 @@ class AccountSecurityTest:
         """
         assert db.session.query(users_models.User).first() is None
         data = {
-            "appsFlyerPlatform": "web",
             "birthdate": "2004-01-01",
             "email": "patrick@example.com",
             "marketingEmailSubscription": True,
@@ -2566,3 +2556,67 @@ class AnonymizeUserTest:
         assert response.json["code"] == "ALREADY_HAS_PENDING_ANONYMIZATION"
         assert user.isActive
         assert not mails_testing.outbox
+
+
+class RefrestTest:
+    def test_with_refresh_token(self, client):
+        user = users_factories.BeneficiaryFactory()
+        token = create_refresh_token(identity=user.email, expires_delta=timedelta(seconds=30))
+
+        response = client.with_explicit_token(token).post("/native/v1/refresh_access_token", json={})
+
+        assert response.status_code == 200
+        assert response.json.get("accessToken")
+
+    def test_user_is_inactive(self, client):
+        user = users_factories.BeneficiaryFactory(isActive=False)
+        token = create_refresh_token(identity=user.email, expires_delta=timedelta(seconds=30))
+
+        response = client.with_explicit_token(token).post("/native/v1/refresh_access_token", json={})
+
+        assert response.status_code == 200
+        assert response.json.get("accessToken")
+
+    def test_user_does_not_exists(self, client):
+        token = create_refresh_token(identity="invalid_email@example.com", expires_delta=timedelta(seconds=30))
+
+        response = client.with_explicit_token(token).post("/native/v1/refresh_access_token", json={})
+
+        assert response.status_code == 403
+
+    def test_with_access_token(self, client):
+        user = users_factories.BeneficiaryFactory()
+        token = create_access_token(
+            identity=user.email,
+            expires_delta=timedelta(seconds=30),
+            additional_claims={"user_claims": {"user_id": user.id}},
+        )
+
+        response = client.with_explicit_token(token).post("/native/v1/refresh_access_token", json={})
+
+        assert response.status_code == 401
+        assert response.json == {}
+
+    def test_with_no_token(self, client):
+        response = client.without_token().post("/native/v1/refresh_access_token", json={})
+
+        assert response.status_code == 401
+        assert response.json == {}
+
+    def test_with_invalid_token(self, client):
+        user = users_factories.BeneficiaryFactory()
+        token = create_refresh_token(identity=user.email, expires_delta=timedelta(seconds=30))[:-4]
+
+        response = client.with_explicit_token(token).post("/native/v1/refresh_access_token", json={})
+
+        assert response.status_code == 401
+        assert response.json == {}
+
+    def test_with_expired_token(self, client):
+        user = users_factories.BeneficiaryFactory()
+        token = create_refresh_token(identity=user.email, expires_delta=timedelta(seconds=-30))
+
+        response = client.with_explicit_token(token).post("/native/v1/refresh_access_token", json={})
+
+        assert response.status_code == 401
+        assert response.json == {}

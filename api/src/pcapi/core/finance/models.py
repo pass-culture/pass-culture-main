@@ -121,10 +121,18 @@ class Deposit(PcObject, Model):
 
         if self.type == DepositType.GRANT_17_18:
             physical_cap = conf.GRANT_17_18_PHYSICAL_CAP
-            digital_cap = conf.GRANT_17_18_DIGITAL_CAP
 
-        if self.user.departementCode in conf.SPECIFIC_DIGITAL_CAPS_BY_DEPARTMENT_CODE:
-            digital_cap = conf.SPECIFIC_DIGITAL_CAPS_BY_DEPARTMENT_CODE[self.user.departementCode]
+            if self.dateCreated >= settings.DIGITAL_CAP_V2_DATETIME:
+                digital_cap = conf.GRANT_17_18_DIGITAL_CAP_V2
+            else:
+                digital_cap = conf.GRANT_17_18_DIGITAL_CAP
+
+        dept_config = conf.SPECIFIC_DIGITAL_CAPS_BY_DEPARTMENT_CODE.get(self.user.departementCode or "")
+        if dept_config:
+            digital_cap_version = (
+                conf.DIGITAL_CAP_V2 if self.dateCreated >= settings.DIGITAL_CAP_V2_DATETIME else conf.DIGITAL_CAP_V1
+            )
+            digital_cap = dept_config.get(digital_cap_version)
 
         return conf.SpecificCaps(digital_cap=digital_cap, physical_cap=physical_cap)
 
@@ -245,10 +253,6 @@ class PricingLogReason(enum.Enum):
     CHANGE_DATE = "change date"
     GENERATE_CASHFLOW = "generate cashflow"
     GENERATE_INVOICE = "generate invoice"
-
-
-class Frequency(enum.Enum):
-    EVERY_TWO_WEEKS = "every two weeks"
 
 
 class CashflowStatus(enum.Enum):
@@ -664,7 +668,7 @@ class ReimbursementRule:
 
     def apply(
         self,
-        booking: "bookings_models.Booking",
+        booking: "bookings_models.Booking | educational_models.CollectiveBooking",
         custom_total_amount: int | None = None,
     ) -> int:
         base = custom_total_amount or utils.to_cents(booking.total_amount)
@@ -775,9 +779,11 @@ class CustomReimbursementRule(PcObject, ReimbursementRule, Model):
 
     def apply(
         self,
-        booking: "bookings_models.Booking",
+        booking: "bookings_models.Booking | educational_models.CollectiveBooking",
         custom_total_amount: int | None = None,
     ) -> int:
+        booking = typing.cast("bookings_models.Booking", booking)
+
         if self.amount is not None:
             return booking.quantity * self.amount
         return super().apply(booking, custom_total_amount)
@@ -949,7 +955,6 @@ class InvoiceStatus(enum.Enum):
     PENDING = "pending"
     PENDING_PAYMENT = "pending_payment"
     PAID = "paid"
-    REJECTED = "rejected"
 
 
 @dataclasses.dataclass

@@ -22,11 +22,8 @@ export type CollectiveOfferResponseModel = {
   educationalPriceDetail?: string | null;
   formats: Array<EacFormat>;
   id: number;
-  imageCredit?: string | null;
   imageUrl?: string | null;
   interventionArea: Array<string>;
-  isExpired: boolean;
-  isSoldOut: boolean;
   isTemplate: boolean;
   location?: GetCollectiveOfferLocationModel | null;
   mentalDisabilityCompliant?: boolean | null;

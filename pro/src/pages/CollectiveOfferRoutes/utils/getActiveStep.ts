@@ -7,8 +7,8 @@ export const getActiveStep = (
     return CollectiveOfferStep.STOCKS
   }
 
-  if (locationPathname.includes('visibilite')) {
-    return CollectiveOfferStep.VISIBILITY
+  if (locationPathname.includes('etablissement')) {
+    return CollectiveOfferStep.INSTITUTION
   }
 
   if (locationPathname.includes('recapitulatif')) {

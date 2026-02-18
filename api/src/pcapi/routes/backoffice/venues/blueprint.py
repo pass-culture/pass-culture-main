@@ -26,6 +26,7 @@ from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import siret_api
 from pcapi.core.geography import models as geography_models
+from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.history.api import add_action
 from pcapi.core.mails import transactional as transactional_mails
@@ -37,9 +38,12 @@ from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import api as providers_api
 from pcapi.core.providers import models as providers_models
+from pcapi.core.providers import tasks as providers_tasks
 from pcapi.core.search.models import IndexationReason
+from pcapi.local_providers.provider_manager import new_etl_integration_can_be_enabled
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.utils import get_or_404
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
@@ -57,6 +61,7 @@ from pcapi.utils.siren import is_valid_siret
 from pcapi.utils.string import to_camelcase
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from pcapi.utils.transaction_manager import on_commit
+from pcapi.workers.venue_provider_job import venue_provider_job
 
 from . import forms
 
@@ -333,6 +338,7 @@ def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVi
         edit_venue_form=edit_venue_form,
         delete_form=delete_form,
         fraud_form=fraud_form,
+        comment_form=forms.CommentForm(),
         active_tab=request.args.get("active_tab", "history"),
         connect_as=connect_as,
         zendesk_sell_synchronisation_form=(
@@ -343,6 +349,9 @@ def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVi
             else None
         ),
         get_region_name_from_postal_code=regions_utils.get_region_name_from_postal_code,
+        # TODO (tcoudray-pass, 04/02/26): Remove when we get rid of old local providers integrations
+        # See https://passculture.atlassian.net/browse/PC-40117
+        new_etl_integration_can_be_enabled=new_etl_integration_can_be_enabled,
     )
 
 
@@ -539,6 +548,43 @@ def toggle_venue_provider_is_active(venue_id: int, provider_id: int) -> utils.Ba
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
 
+# TODO (tcoudray-pass, 04/02/26): Remove when we get rid of old local providers integrations
+# See https://passculture.atlassian.net/browse/PC-40117
+@venue_blueprint.route("/<int:venue_id>/provider/<int:provider_id>/cinema-integration", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
+def toggle_new_cinema_integration_is_enabled(venue_id: int, provider_id: int) -> utils.BackofficeResponse:
+    venue_provider = _fetch_venue_provider(venue_id, provider_id)
+    venue_provider.isNewEtlIntegrationEnabled = not venue_provider.isNewEtlIntegrationEnabled
+    db.session.flush()
+
+    flash(
+        Markup("La nouvelle intégration cinéma a été {verb}.").format(
+            verb="activée" if venue_provider.isNewEtlIntegrationEnabled else "désactivée"
+        ),
+        "success",
+    )
+
+    return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
+
+
+@venue_blueprint.route("/<int:venue_id>/provider/<int:provider_id>/synchronize-cinema", methods=["POST"])
+@utils.permission_required_in(
+    [perm_models.Permissions.ADVANCED_PRO_SUPPORT, perm_models.Permissions.MANAGE_TECH_PARTNERS]
+)
+def add_cinema_sessions_synchronize_task(venue_id: int, provider_id: int) -> utils.BackofficeResponse:
+    venue_provider = _fetch_venue_provider(venue_id, provider_id)
+
+    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CINEMA_INTEGRATION.is_active():
+        payload = providers_tasks.CinemaSynchronisationTaskPayload(venue_provider_id=venue_provider.id)
+        providers_tasks.synchronize_cinema_sessions_task.delay(payload.model_dump())
+    else:
+        venue_provider_job.delay(venue_provider.id)
+
+    flash(Markup("La tâche de synchronisation a été ajoutée"), "success")
+
+    return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
+
+
 @venue_blueprint.route("/<int:venue_id>/provider/<int:provider_id>/delete", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def delete_venue_provider(venue_id: int, provider_id: int) -> utils.BackofficeResponse:
@@ -560,6 +606,11 @@ def get_venue_with_history(venue_id: int) -> offerers_models.Venue:
     if not utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
         history_filter = sa.and_(
             history_filter, history_models.ActionHistory.actionType != history_models.ActionType.FRAUD_INFO_MODIFIED
+        )
+    if not utils.has_current_user_permission(perm_models.Permissions.READ_PRO_REIMBURSEMENT_SUSPENSION):
+        history_filter = sa.and_(
+            history_filter,
+            history_models.ActionHistory.actionType != history_models.ActionType.VENUE_REIMBURSEMENT_SUSPENDED,
         )
 
     venue = (
@@ -1370,3 +1421,46 @@ def remove_siret(venue_id: int) -> utils.BackofficeResponse:
             "HX-Redirect": url_for("backoffice_web.venue.get", venue_id=venue_id),
         },
     )
+
+
+def _suspend_venue_reimbursement(venue_id: int, suspend: bool) -> utils.BackofficeResponse:
+    venue = get_or_404(offerers_models.Venue, venue_id)
+
+    form = forms.CommentForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        mark_transaction_as_invalid()
+
+    if venue.isReimbursementSuspended != suspend:
+        history_api.add_action(
+            history_models.ActionType.VENUE_REIMBURSEMENT_SUSPENDED,
+            author=current_user,
+            venue=venue,
+            comment=form.comment.data,
+            modified_info={
+                "isReimbursementSuspended": {"old_info": venue.isReimbursementSuspended, "new_info": suspend}
+            },
+        )
+        venue.isReimbursementSuspended = suspend
+        db.session.flush()
+
+        flash(
+            Markup("Les remboursements vers le partenaire culturel <strong>{name}</strong> ont été {verb}.").format(
+                name=venue.common_name, verb="gelés" if suspend else "rétablis"
+            ),
+            "success",
+        )
+
+    return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
+
+
+@venue_blueprint.route("/<int:venue_id>/suspend-reimbursement", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION)
+def suspend_reimbursement(venue_id: int) -> utils.BackofficeResponse:
+    return _suspend_venue_reimbursement(venue_id, True)
+
+
+@venue_blueprint.route("/<int:venue_id>/unsuspend-reimbursement", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION)
+def unsuspend_reimbursement(venue_id: int) -> utils.BackofficeResponse:
+    return _suspend_venue_reimbursement(venue_id, False)

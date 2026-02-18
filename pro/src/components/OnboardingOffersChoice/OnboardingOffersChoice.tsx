@@ -2,10 +2,10 @@ import { useState } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { OnboardingDidacticEvents } from '@/commons/core/FirebaseEvents/constants'
-import { Dialog } from '@/components/Dialog/Dialog'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import { Card } from '@/ui-kit/Card/Card'
+import { Dialog } from '@/ui-kit/Dialog/Dialog'
 
 import collective from './assets/collective.jpeg'
 import individuelle from './assets/individuelle.jpeg'

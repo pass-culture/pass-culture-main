@@ -3,10 +3,12 @@ from zoneinfo import ZoneInfo
 
 import dateutil
 import pytest
+import pytz
 
 from pcapi.utils.date import CUSTOM_TIMEZONES
 from pcapi.utils.date import METROPOLE_TIMEZONE
 from pcapi.utils.date import FrenchParserInfo
+from pcapi.utils.date import convert_date_period_to_utc_datetime_period
 from pcapi.utils.date import default_timezone_to_local_datetime
 from pcapi.utils.date import format_time_in_second_to_human_readable
 from pcapi.utils.date import get_date_formatted_for_email
@@ -189,3 +191,29 @@ class FormatDatetimeFromUtcTimezoneToLocalTimezoneTest:
 
         # Then
         assert result == datetime.datetime(2022, 6, 24, 12, 0, tzinfo=ZoneInfo(METROPOLE_TIMEZONE))
+
+
+@pytest.mark.parametrize(
+    "date_period, timezone, expected_result",
+    [
+        (
+            [datetime.date(2024, 12, 11), datetime.date(2024, 12, 12)],
+            "Europe/Paris",
+            (
+                datetime.datetime(2024, 12, 10, 23, 0, 0, tzinfo=pytz.utc),
+                datetime.datetime(2024, 12, 12, 22, 59, 59, 999999, tzinfo=pytz.utc),
+            ),
+        ),
+        (  # dates not ordered
+            [datetime.date(2024, 12, 25), datetime.date(2024, 12, 4)],
+            "Europe/Paris",
+            (
+                datetime.datetime(2024, 12, 3, 23, 0, 0, tzinfo=pytz.utc),
+                datetime.datetime(2024, 12, 25, 22, 59, 59, 999999, tzinfo=pytz.utc),
+            ),
+        ),
+    ],
+)
+def test_convert_date_period_to_utc_datetime_period(date_period, timezone, expected_result):
+    result = convert_date_period_to_utc_datetime_period(date_period, timezone)
+    assert result == expected_result

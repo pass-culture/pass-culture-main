@@ -2,6 +2,7 @@
 {% import "components/forms.html" as forms with context %}
 {% import "components/clipboard.html" as clipboard %}
 {% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
+{% from "components/table.html" import sortable_column %}
 {% macro collective_booking_form(collective_booking, dest, div_id, modale_id, title, form) %}
   <div class="modal modal-lg fade {{ div_id }}"
        tabindex="-1"
@@ -52,8 +53,12 @@
   <th>Montant</th>
   <th>Statut</th>
   <th>Évènement comptable</th>
-  <th>Date de réservation</th>
-  <th>Date de l'évènement</th>
+  {% call sortable_column(True, comparator="float") %}
+    Date de réservation
+  {% endcall %}
+  {% call sortable_column(True, comparator="float") %}
+    Date de l'évènement
+  {% endcall %}
   <th>Entité juridique</th>
   <th>Partenaire culturel</th>
 {% endblock table_header %}

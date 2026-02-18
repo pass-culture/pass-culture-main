@@ -1,5 +1,5 @@
-import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import strokePassIcon from '@/icons/stroke-pass.svg'
+import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 interface PrebookingModalProps {
   closeModal: () => void

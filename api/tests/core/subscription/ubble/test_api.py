@@ -12,11 +12,11 @@ from dateutil.relativedelta import relativedelta
 import pcapi.notifications.push.testing as push_testing
 from pcapi import settings
 from pcapi.connectors.beneficiaries import ubble
-from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
+from pcapi.core.subscription.exceptions import IncompatibleFraudCheckStatus
 from pcapi.core.subscription.factories import BeneficiaryFraudCheckFactory
 from pcapi.core.subscription.factories import ProfileCompletionFraudCheckFactory
 from pcapi.core.subscription.factories import UbbleContentFactory

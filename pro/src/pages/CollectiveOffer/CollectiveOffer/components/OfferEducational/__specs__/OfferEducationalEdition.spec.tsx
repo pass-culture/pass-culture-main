@@ -6,7 +6,7 @@ import {
   getCollectiveOfferFactory,
   getCollectiveOfferVenueFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
-import { venueListItemFactory } from '@/commons/utils/factories/individualApiFactories'
+import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
@@ -24,7 +24,7 @@ describe('screens | OfferEducational: edition', () => {
 
   beforeEach(() => {
     vi.spyOn(api, 'getVenues').mockResolvedValue({
-      venues: [venueListItemFactory()],
+      venues: [makeVenueListItem({ id: 1 })],
     })
 
     props = defaultEditionProps
@@ -46,7 +46,13 @@ describe('screens | OfferEducational: edition', () => {
       }),
       mode: Mode.READ_ONLY,
     }
-    renderWithProviders(<OfferEducational {...props} />)
+    renderWithProviders(<OfferEducational {...props} />, {
+      storeOverrides: {
+        user: {
+          selectedVenue: makeVenueListItem({ id: 1 }),
+        },
+      },
+    })
     await screen.findByLabelText(/Structure/)
 
     const inputs = [

@@ -2,6 +2,7 @@ from unittest.mock import Mock
 
 from flask import Blueprint
 from spectree import SecurityScheme
+from spectree import SecuritySchemeData
 from spectree import Tag
 
 from pcapi.serialization.decorator import feature_flag_required
@@ -15,7 +16,9 @@ AUTH_KEY = "API_KEY"
 
 SECURITY_SCHEME = SecurityScheme(
     name=AUTH_KEY,
-    data={"type": "http", "scheme": "bearer", "description": "Api key issued by passculture"},  # type: ignore[arg-type]
+    data=SecuritySchemeData.parse_obj(
+        {"type": "http", "scheme": "bearer", "description": "Api key issued by passculture"}
+    ),
 )
 
 api_schema = ExtendedSpecTree(

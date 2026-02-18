@@ -2,9 +2,11 @@ from datetime import timedelta
 
 import pytest
 import sqlalchemy.exc
+import time_machine
 
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi import settings
 from pcapi.core.bookings import api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories
@@ -214,7 +216,8 @@ class CheckExpenseLimitsDepositVersion2Test:
         validation.check_expenses_limits(beneficiary, 10, offer)  # should not raise
 
     def test_digital_limit(self):
-        beneficiary = self._get_beneficiary()
+        with time_machine.travel(settings.DIGITAL_CAP_V2_DATETIME - timedelta(minutes=1)):
+            beneficiary = users_factories.BeneficiaryFactory()
         offer = offers_factories.DigitalOfferFactory(subcategoryId=subcategories.VOD.id)
         factories.BookingFactory(
             user=beneficiary,
@@ -252,6 +255,64 @@ class CheckExpenseLimitsDepositVersion2Test:
         assert error.value.errors["insufficientFunds"] == [
             "Le solde de votre pass est insuffisant pour réserver cette offre."
         ]
+
+
+@pytest.mark.usefixtures("db_session")
+class CheckExpenseLimitsDepositVersion3Test:
+    def test_user_can_book_offer_within_digital_limit_V2(self):
+        with time_machine.travel(settings.DIGITAL_CAP_V2_DATETIME):
+            beneficiary = users_factories.BeneficiaryFactory()
+        offer = offers_factories.DigitalOfferFactory(subcategoryId=subcategories.VOD.id)
+        factories.BookingFactory(
+            user=beneficiary,
+            stock__price=49,
+            stock__offer=offer,
+        )
+
+        validation.check_expenses_limits(beneficiary, 1, offer)
+
+    def test_user_cannot_book_offer_above_digital_limit_V2(self):
+        with time_machine.travel(settings.DIGITAL_CAP_V2_DATETIME):
+            beneficiary = users_factories.BeneficiaryFactory()
+        offer = offers_factories.DigitalOfferFactory()
+        factories.BookingFactory(
+            user=beneficiary,
+            stock__price=50,
+            stock__offer=offer,
+        )
+
+        with pytest.raises(exceptions.DigitalExpenseLimitHasBeenReached):
+            validation.check_expenses_limits(beneficiary, 1, offer)
+
+    def test_digital_cap_does_not_apply(self):
+        with time_machine.travel(settings.DIGITAL_CAP_V2_DATETIME):
+            beneficiary = users_factories.BeneficiaryFactory()
+        digital_offer = offers_factories.DigitalOfferFactory()
+        offer = offers_factories.OfferFactory()
+        factories.BookingFactory(
+            user=beneficiary,
+            stock__price=50,
+            stock__offer=digital_offer,
+        )
+
+        validation.check_expenses_limits(beneficiary, 1, offer)
+
+    @pytest.mark.parametrize("dept_code", [986, 975, 976])
+    def test_digital_cap_does_not_apply_for_excluded_departments(self, dept_code):
+        """
+        Covers Wallis and Futuna (986), Saint Pierre et Miquelon (975), and Mayotte (976)
+        """
+        with time_machine.travel(settings.DIGITAL_CAP_V2_DATETIME):
+            beneficiary = users_factories.BeneficiaryFactory(departementCode=dept_code)
+
+        digital_offer = offers_factories.DigitalOfferFactory()
+        factories.BookingFactory(
+            user=beneficiary,
+            stock__price=50,
+            stock__offer=digital_offer,
+        )
+
+        validation.check_expenses_limits(beneficiary, 1, digital_offer)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -362,6 +423,11 @@ class CheckIsUsableTest:
     def should_raise_if_cancelled(self):
         booking = factories.CancelledBookingFactory()
         with pytest.raises(exceptions.BookingIsAlreadyCancelled):
+            validation.check_is_usable(booking)
+
+    def should_raises_forbidden_error_if_pending_reimbursement(self):
+        booking = factories.PendingReimbursementBookingFactory()
+        with pytest.raises(exceptions.BookingIsAlreadyRefunded):
             validation.check_is_usable(booking)
 
     def should_raises_forbidden_error_if_reimbursed(self):
@@ -481,6 +547,11 @@ class CheckCanBeMarkAsUnusedTest:
     def test_should_raise_resource_gone_error_if_cancelled(self):
         booking = factories.CancelledBookingFactory()
         with pytest.raises(exceptions.BookingIsAlreadyCancelled):
+            validation.check_can_be_mark_as_unused(booking)
+
+    def test_should_raise_resource_gone_error_if_pending_reimbursement(self):
+        booking = factories.PendingReimbursementBookingFactory()
+        with pytest.raises(exceptions.BookingIsAlreadyRefunded):
             validation.check_can_be_mark_as_unused(booking)
 
     def test_should_raise_resource_gone_error_if_reimbursed(self):

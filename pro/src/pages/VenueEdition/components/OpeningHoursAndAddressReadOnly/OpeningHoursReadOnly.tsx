@@ -1,7 +1,7 @@
 import type { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
 import { mapDayToFrench, OPENING_HOURS_DAYS } from '@/commons/utils/date'
-import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
 import { areOpeningHoursEmpty } from '@/pages/IndividualOffer/IndividualOfferTimetable/commons/areOpeningHoursEmpty'
+import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
 
 import { OpeningHoursReadOnlyHours } from './OpeningHoursReadOnlyHours/OpeningHoursReadOnlyHours'
 

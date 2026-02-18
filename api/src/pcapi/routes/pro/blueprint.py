@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask_cors import CORS
 from spectree import SecurityScheme
+from spectree import SecuritySchemeData
 
 from pcapi import settings
 from pcapi.serialization.spec_tree import ExtendedSpecTree
@@ -22,7 +23,7 @@ COOKIE_AUTH_NAME = "SessionAuth"
 SECURITY_SCHEMES = [
     SecurityScheme(
         name=COOKIE_AUTH_NAME,
-        data={"type": "apiKey", "in": "cookie", "name": "session"},  # type: ignore[arg-type]
+        data=SecuritySchemeData.parse_obj({"type": "apiKey", "in": "cookie", "name": "session"}),
     ),
 ]
 

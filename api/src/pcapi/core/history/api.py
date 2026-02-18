@@ -98,7 +98,7 @@ class ObjectUpdateSnapshot:
         self.snapshot = UpdateSnapshot()
         self.obj = obj
         self.author = author
-        self.add_action_target = {obj.__class__.__tablename__: obj}
+        self.add_action_target: dict[str, typing.Any] = {obj.__class__.__tablename__: obj}
 
     def set(self, field_name: str, old: typing.Any, new: typing.Any) -> "ObjectUpdateSnapshot":
         """

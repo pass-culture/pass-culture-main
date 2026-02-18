@@ -13,6 +13,7 @@
   <label class="label-element-form"
          data-original-name="{{ field.name }}"
          for="{{ textarea_field_id }}">{{ field.label.text }}</label>
+  {% if field.can_be_cleared %}<i class="bi bi-x-lg pc-clear-input position-absolute top-0 end-0 pe-3 py-3"></i>{% endif %}
   {% if not field.flags.readonly %}
     <div class="d-flex align-items-center text-muted pt-1">
       <small>

@@ -6,12 +6,12 @@ import type { CollectiveOfferInstitutionModel } from './CollectiveOfferInstituti
 import type { CollectiveOfferRedactorModel } from './CollectiveOfferRedactorModel';
 export type GetCollectiveOfferRequestResponseModel = {
   comment: string;
-  dateCreated?: string | null;
+  dateCreated: string;
   institution: CollectiveOfferInstitutionModel;
-  phoneNumber?: string | null;
+  phoneNumber: (string | null);
   redactor: CollectiveOfferRedactorModel;
-  requestedDate?: string | null;
-  totalStudents?: number | null;
-  totalTeachers?: number | null;
+  requestedDate: (string | null);
+  totalStudents: (number | null);
+  totalTeachers: (number | null);
 };
 

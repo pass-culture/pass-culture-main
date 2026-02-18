@@ -487,6 +487,7 @@ class CDSExtractTransformLoadProcessTest:
         assert offer_1.withdrawalDetails == venue_provider.venue.withdrawalDetails
         assert offer_1.dateModifiedAtLastProvider == datetime.datetime(2022, 2, 12, 12, 41, 30, tzinfo=datetime.UTC)
         assert offer_1.publicationDatetime == datetime.datetime(2022, 2, 12, 12, 41, 30, tzinfo=datetime.UTC)
+        assert offer_1.lastProviderId == venue_provider.providerId
 
         assert offer_1.product
         assert offer_1.product.name == "Test movie #1"
@@ -502,6 +503,7 @@ class CDSExtractTransformLoadProcessTest:
         assert offer_2.withdrawalDetails == venue_provider.venue.withdrawalDetails
         assert offer_2.dateModifiedAtLastProvider == datetime.datetime(2022, 2, 12, 12, 41, 30, tzinfo=datetime.UTC)
         assert offer_2.publicationDatetime == datetime.datetime(2022, 2, 12, 12, 41, 30, tzinfo=datetime.UTC)
+        assert offer_2.lastProviderId == venue_provider.providerId
 
         assert offer_2.product
         assert offer_2.product.name == "Test movie #2"
@@ -524,6 +526,7 @@ class CDSExtractTransformLoadProcessTest:
         assert offer_1_stock_1.price == decimal.Decimal("5.0")
         assert offer_1_stock_1.priceCategory.price == decimal.Decimal("5.0")
         assert offer_1_stock_1.priceCategory.label == "Tarif pass Culture"
+        assert offer_1_stock_1.lastProviderId == venue_provider.providerId
 
         offer_1_stock_2 = offer_1_stocks[1]
         assert offer_1_stock_2.idAtProviders == f"1%{venue_id}%CDS#2"
@@ -535,6 +538,7 @@ class CDSExtractTransformLoadProcessTest:
         assert offer_1_stock_2.price == decimal.Decimal("5.0")
         assert offer_1_stock_2.priceCategory.price == decimal.Decimal("5.0")
         assert offer_1_stock_2.priceCategory.label == "Tarif pass Culture"
+        assert offer_1_stock_2.lastProviderId == venue_provider.providerId
 
         assert len(offer_2.activeStocks) == 1
         offer_2_stock_1 = offer_2.activeStocks[0]
@@ -547,6 +551,7 @@ class CDSExtractTransformLoadProcessTest:
         assert offer_2_stock_1.price == decimal.Decimal("5.0")
         assert offer_2_stock_1.priceCategory.price == decimal.Decimal("5.0")
         assert offer_2_stock_1.priceCategory.label == "Tarif pass Culture"
+        assert offer_2_stock_1.lastProviderId == venue_provider.providerId
 
         async_index_offer_ids_mock.assert_called_once_with(
             set([offer_1.id, offer_2.id]),

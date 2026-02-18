@@ -65,8 +65,6 @@ class CollectiveOfferTest:
         assert response.json == {
             "description": "offer description",
             "id": offer.id,
-            "isExpired": False,
-            "isSoldOut": False,
             "name": "offer name",
             "stock": {
                 "startDatetime": "2021-05-15T00:00:00Z",
@@ -129,7 +127,6 @@ class CollectiveOfferTest:
                 "postalCode": institution.postalCode,
             },
             "interventionArea": ["93", "94", "95"],
-            "imageCredit": None,
             "imageUrl": None,
             "teacher": {
                 "email": offer.teacher.email,

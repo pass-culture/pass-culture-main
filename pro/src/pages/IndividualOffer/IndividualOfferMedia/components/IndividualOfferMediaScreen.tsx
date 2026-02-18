@@ -25,7 +25,7 @@ import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { VideoUploader } from '@/components/VideoUploader/VideoUploader'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
-import { useIndividualOfferImageUpload } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
+import { useIndividualOfferImageUpload } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/useIndividualOfferImageUpload'
 import { Divider } from '@/ui-kit/Divider/Divider'
 
 import { buildInitialValues } from '../commons/buildInitialValues'

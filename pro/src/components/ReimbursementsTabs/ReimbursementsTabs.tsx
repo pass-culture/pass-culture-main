@@ -1,11 +1,9 @@
 import type { GetOffererResponseModel } from '@/apiClient/v1'
 import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import fullErrorIcon from '@/icons/full-error.svg'
-import {
-  type NavLinkItem,
-  NavLinkItems,
-} from '@/ui-kit/NavLinkItems/NavLinkItems'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
+import type { NavLinkItem } from '@/ui-kit/Tabs/NavLinkItems/NavLinkItems'
+import { Tabs } from '@/ui-kit/Tabs/Tabs'
 
 import {
   STEP_ID_BANK_INFORMATIONS,
@@ -63,15 +61,16 @@ export const ReimbursementsTabs = ({
     return steps
   }
 
-  const tabs: NavLinkItem[] = getSteps().map(({ id, label, url }) => ({
+  const tabs: NavLinkItem<string>[] = getSteps().map(({ id, label, url }) => ({
     key: id,
     label,
     url,
   }))
 
   return (
-    <NavLinkItems
-      links={tabs}
+    <Tabs
+      type="links"
+      items={tabs}
       selectedKey={activeStep}
       navLabel="Sous menu - gestion financière"
     />

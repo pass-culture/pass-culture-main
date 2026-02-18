@@ -1008,6 +1008,9 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
         )
         .filter(offerers_models.VenueBankAccountLink.timespan.contains(batch.cutoff))
         .join(models.BankAccount, models.BankAccount.id == offerers_models.VenueBankAccountLink.bankAccountId)
+        .join(offerers_models.Venue, offerers_models.Venue.id == models.Pricing.venueId)
+        .execution_options(include_deleted=True)  # also join with soft deleted venues
+        .filter(offerers_models.Venue.isReimbursementSuspended.is_(False))
         .outerjoin(models.CashflowPricing)
         .group_by(
             models.BankAccount.id,
@@ -1794,8 +1797,8 @@ def _mark_free_pricings_as_invoiced() -> None:
             """
             ),
             {
-                "cancelled": bookings_models.BookingStatus.CANCELLED.value,
-                "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
+                "cancelled": educational_models.CollectiveBookingStatus.CANCELLED.value,
+                "reimbursed": educational_models.CollectiveBookingStatus.REIMBURSED.value,
                 "pricing_ids": tuple(pricing_ids),
                 "reimbursement_date": date_utils.get_naive_utc_now(),
             },
@@ -2474,18 +2477,23 @@ def _store_invoice_pdf(invoice_storage_id: str, invoice_html: str) -> None:
         )
 
 
-def validate_invoice(invoice_id: int) -> None:
+def validate_invoices(invoice_ids: list[int]) -> None:
     # Invoice.status: PENDING_PAYMENT -> PAID
-    db.session.query(models.Invoice).filter(models.Invoice.id == invoice_id).update(
+    db.session.query(models.Invoice).filter(models.Invoice.id.in_(invoice_ids)).update(
         {"status": models.InvoiceStatus.PAID},
         synchronize_session=False,
     )
 
-    invoice_cashflow = (
-        db.session.query(models.InvoiceCashflow).filter(models.InvoiceCashflow.invoiceId == invoice_id).all()
+    cashflow_ids = (
+        db.session.query(models.Cashflow)
+        .join(models.Cashflow.invoices)
+        .filter(
+            models.Invoice.id.in_(invoice_ids),
+        )
+        .with_entities(models.Cashflow.id)
+        .all()
     )
-    # There should only be one cashflow
-    cashflow_id = invoice_cashflow[0].cashflowId
+    cashflow_ids = [c[0] for c in cashflow_ids]
 
     # Cashflow.status: PENDING_ACCEPTANCE -> ACCEPTED
     with log_elapsed(logger, "Updating status of cashflows"):
@@ -2494,11 +2502,11 @@ def validate_invoice(invoice_id: int) -> None:
                 """
                 UPDATE cashflow
                 SET status = :accepted
-                WHERE id = :cashflow_id
+                WHERE id IN :cashflow_ids
                 """
             ),
             params={
-                "cashflow_id": cashflow_id,
+                "cashflow_ids": tuple(cashflow_ids),
                 "accepted": models.CashflowStatus.ACCEPTED.value,
             },
         )
@@ -2515,7 +2523,7 @@ def validate_invoice(invoice_id: int) -> None:
                   FROM cashflow_pricing
                   WHERE
                     cashflow_pricing."pricingId" = pricing.id
-                    AND cashflow_pricing."cashflowId" = :cashflow_id
+                    AND cashflow_pricing."cashflowId" IN :cashflow_ids
                   RETURNING id AS pricing_id
                 )
                 INSERT INTO pricing_log
@@ -2527,7 +2535,7 @@ def validate_invoice(invoice_id: int) -> None:
                 "processed": models.PricingStatus.PROCESSED.value,
                 "invoiced": models.PricingStatus.INVOICED.value,
                 "log_reason": models.PricingLogReason.GENERATE_INVOICE.value,
-                "cashflow_id": cashflow_id,
+                "cashflow_ids": tuple(cashflow_ids),
             },
         )
 
@@ -2537,7 +2545,7 @@ def validate_invoice(invoice_id: int) -> None:
             db.session.query(models.Pricing)
             .join(models.Pricing.cashflows)
             .filter(
-                models.Cashflow.id == cashflow_id,
+                models.Cashflow.id.in_(cashflow_ids),
             )
             .with_entities(models.Pricing.bookingId)
             .all()
@@ -2583,13 +2591,13 @@ def validate_invoice(invoice_id: int) -> None:
             WHERE
                 collective_booking.id = pricing."collectiveBookingId"
             AND pricing.id = cashflow_pricing."pricingId"
-            AND cashflow_pricing."cashflowId" = :cashflow_id
+            AND cashflow_pricing."cashflowId" IN :cashflow_ids
             """
             ),
             {
-                "cancelled": bookings_models.BookingStatus.CANCELLED.value,
-                "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
-                "cashflow_id": cashflow_id,
+                "cancelled": educational_models.CollectiveBookingStatus.CANCELLED.value,
+                "reimbursed": educational_models.CollectiveBookingStatus.REIMBURSED.value,
+                "cashflow_ids": tuple(cashflow_ids),
                 "reimbursement_date": date_utils.get_naive_utc_now(),
             },
         )
@@ -2612,13 +2620,13 @@ def validate_invoice(invoice_id: int) -> None:
             AND booking_finance_incident.id = finance_event."bookingFinanceIncidentId"
             AND finance_event.id = pricing."eventId"
             AND pricing.id = cashflow_pricing."pricingId"
-            AND cashflow_pricing."cashflowId" = :cashflow_id
+            AND cashflow_pricing."cashflowId" IN :cashflow_ids
             """
             ),
             {
                 "cancelled": models.IncidentStatus.CANCELLED.name,
                 "invoiced": models.IncidentStatus.INVOICED.name,
-                "cashflow_id": cashflow_id,
+                "cashflow_ids": tuple(cashflow_ids),
             },
         )
 

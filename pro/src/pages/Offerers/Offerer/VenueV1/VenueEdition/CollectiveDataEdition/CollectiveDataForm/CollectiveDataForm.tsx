@@ -4,7 +4,12 @@ import { useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
-import { type GetVenueResponseModel, StudentLevels } from '@/apiClient/v1'
+import {
+  type ActivityNotOpenToPublic,
+  type ActivityOpenToPublic,
+  type GetVenueResponseModel,
+  StudentLevels,
+} from '@/apiClient/v1'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   DEFAULT_MARSEILLE_STUDENTS,
@@ -13,7 +18,11 @@ import {
 import { offerInterventionOptions } from '@/commons/core/shared/interventionOptions'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { getActivities } from '@/commons/mappings/mappings'
+import { setSelectedVenue } from '@/commons/store/user/reducer'
+import { buildSelectOptions } from '@/commons/utils/buildSelectOptions'
 import { selectInterventionAreas } from '@/commons/utils/selectInterventionAreas'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Button } from '@/design-system/Button/Button'
@@ -49,10 +58,13 @@ export const CollectiveDataForm = ({
   const snackBar = useSnackBar()
   const navigate = useNavigate()
   const { mutate } = useSWRConfig()
+  const dispatch = useAppDispatch()
 
   const initialValues = extractInitialValuesFromVenue(venue)
 
   const isMarseilleEnabled = useActiveFeature('ENABLE_MARSEILLE')
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+
   const studentOptions = isMarseilleEnabled
     ? studentLevels
     : studentLevels.filter(
@@ -75,15 +87,22 @@ export const CollectiveDataForm = ({
 
   const onSubmit = async (values: CollectiveDataFormValues): Promise<void> => {
     try {
-      await api.editVenueCollectiveData(venue.id, {
+      const updatedVenue = await api.editVenueCollectiveData(venue.id, {
         ...values,
+        activity: values.activity as
+          | ActivityOpenToPublic
+          | ActivityNotOpenToPublic,
         collectiveDomains: values.collectiveDomains?.map(Number),
         venueEducationalStatusId: values.collectiveLegalStatus
           ? Number(values.collectiveLegalStatus)
           : null,
       })
 
-      await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
+      if (withSwitchVenueFeature) {
+        dispatch(setSelectedVenue(updatedVenue))
+      } else {
+        await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
+      }
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
@@ -149,6 +168,32 @@ export const CollectiveDataForm = ({
             </FormLayout.SubSection>
 
             <FormLayout.SubSection title="Informations de la structure">
+              <FormLayout.Row mdSpaceAfter>
+                <Select
+                  {...register('activity')}
+                  options={[
+                    ...(venue.activity === null // `activity` may be null if the venue wasn't yet open to public. In that case, we provide a default value so the field isn't rendered "blank"
+                      ? [
+                          {
+                            value: '',
+                            label: 'Sélectionnez votre activité principale',
+                          },
+                        ]
+                      : []),
+                    ...buildSelectOptions(
+                      getActivities(
+                        venue.isOpenToPublic
+                          ? 'OPEN_TO_PUBLIC'
+                          : 'NOT_OPEN_TO_PUBLIC'
+                      )
+                    ),
+                  ]}
+                  label="Activité principale"
+                  disabled={venue.isVirtual}
+                  error={errors.activity?.message}
+                  required
+                />
+              </FormLayout.Row>
               <FormLayout.Row>
                 <MultiSelect
                   name="collectiveDomains"

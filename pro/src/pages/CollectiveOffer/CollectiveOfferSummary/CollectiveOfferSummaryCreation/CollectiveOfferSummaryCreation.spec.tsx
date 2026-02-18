@@ -97,7 +97,7 @@ describe('CollectiveOfferSummaryCreation', () => {
 
     const previousStepLink = await screen.findByRole('link', { name: 'Retour' })
     expect(previousStepLink.getAttribute('href')).toBe(
-      '/offre/1/collectif/visibilite?requete=1'
+      '/offre/1/collectif/etablissement?requete=1'
     )
   })
 

@@ -33,7 +33,6 @@ import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/C
 import { CollectiveOffersDownloadDrawer } from '@/components/CollectiveOffersTable/CollectiveOffersDownloadDrawer/CollectiveOffersDownloadDrawer'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import { Banner } from '@/design-system/Banner/Banner'
-import { Pagination } from '@/design-system/Pagination/Pagination'
 import strokeNoBooking from '@/icons/stroke-no-booking.svg'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
@@ -234,6 +233,14 @@ export const CollectiveOffersScreen = ({
               subtitle: '',
             },
           }}
+          pagination={{
+            currentPage: page,
+            pageCount: pageCount,
+            onPageClick: (page) => {
+              applyUrlFiltersAndRedirect({ ...urlSearchFilters, page })
+              scrollToContentWrapper()
+            },
+          }}
           getFullRowContent={(offer: CollectiveOfferResponseModel) => {
             const hasExpirationRow =
               isCollectiveOfferBookable(offer) &&
@@ -243,18 +250,6 @@ export const CollectiveOffersScreen = ({
           }}
         />
       </AccessibleScrollContainer>
-      {hasOffers && (
-        <div className={styles['offers-pagination']}>
-          <Pagination
-            currentPage={page}
-            pageCount={pageCount}
-            onPageClick={(page) => {
-              applyUrlFiltersAndRedirect({ ...urlSearchFilters, page })
-              scrollToContentWrapper()
-            }}
-          />
-        </div>
-      )}
       <output>
         {selectedOfferIds.size > 0 && (
           <CollectiveOffersActionsBar

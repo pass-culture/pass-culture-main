@@ -8,9 +8,7 @@ import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { PasswordInput } from '@/design-system/PasswordInput/PasswordInput'
-import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
 
-import styles from '../UserPhoneForm/UserForm.module.scss'
 import { validationSchema } from './validationSchema'
 
 export interface UserPasswordFormProps {
@@ -95,45 +93,43 @@ export const UserPasswordForm = ({
   }
 
   return (
-    <BoxFormLayout.Fields>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <FormLayout>
-          <div className={styles['text-input']}>
-            <PasswordInput
-              {...register('oldPassword')}
-              value={watch('oldPassword')}
-              error={errors.oldPassword?.message}
-              label="Mot de passe actuel"
-              required
-              requiredIndicator="explicit"
-            />
-          </div>
-          <div className={styles['text-input']}>
-            <PasswordInput
-              {...register('newPassword', {
-                onChange: () => trigger('newPassword'),
-              })}
-              value={watch('newPassword')}
-              error={errors.newPassword?.message}
-              label="Nouveau mot de passe"
-              required
-              requiredIndicator="explicit"
-              displayValidation
-            />
-          </div>
-          <div className={styles['text-input']}>
-            <PasswordInput
-              {...register('newConfirmationPassword')}
-              value={watch('newConfirmationPassword')}
-              error={errors.newConfirmationPassword?.message}
-              label="Confirmez votre nouveau mot de passe"
-              required
-              requiredIndicator="explicit"
-            />
-          </div>
-        </FormLayout>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <FormLayout mediumWidthForm>
+        <FormLayout.Row mdSpaceAfter>
+          <PasswordInput
+            {...register('oldPassword')}
+            value={watch('oldPassword')}
+            error={errors.oldPassword?.message}
+            label="Mot de passe actuel"
+            required
+            requiredIndicator="explicit"
+          />
+        </FormLayout.Row>
+        <FormLayout.Row mdSpaceAfter>
+          <PasswordInput
+            {...register('newPassword', {
+              onChange: () => trigger('newPassword'),
+            })}
+            value={watch('newPassword')}
+            error={errors.newPassword?.message}
+            label="Nouveau mot de passe"
+            required
+            requiredIndicator="explicit"
+            displayValidation
+          />
+        </FormLayout.Row>
+        <FormLayout.Row mdSpaceAfter>
+          <PasswordInput
+            {...register('newConfirmationPassword')}
+            value={watch('newConfirmationPassword')}
+            error={errors.newConfirmationPassword?.message}
+            label="Confirmez votre nouveau mot de passe"
+            required
+            requiredIndicator="explicit"
+          />
+        </FormLayout.Row>
 
-        <div className={styles['buttons-field']}>
+        <FormLayout.Row inline>
           <Button
             onClick={onCancel}
             variant={ButtonVariant.SECONDARY}
@@ -141,8 +137,8 @@ export const UserPasswordForm = ({
             label="Annuler"
           />
           <Button type="submit" isLoading={isSubmitting} label="Enregistrer" />
-        </div>
-      </form>
-    </BoxFormLayout.Fields>
+        </FormLayout.Row>
+      </FormLayout>
+    </form>
   )
 }

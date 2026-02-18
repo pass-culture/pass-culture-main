@@ -13,7 +13,7 @@ from flask_login import current_user
 from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 
-from pcapi.core.external import zendesk_sell
+from pcapi.core.external.zendesk_sell import api as zendesk_sell_api
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
@@ -169,7 +169,7 @@ def create_provider() -> utils.BackofficeResponse:
         )
 
     if is_offerer_new:
-        zendesk_sell.create_offerer(offerer)
+        zendesk_sell_api.create_offerer(offerer)
 
     form = empty_forms.EmptyGetForm()
     return render_template(

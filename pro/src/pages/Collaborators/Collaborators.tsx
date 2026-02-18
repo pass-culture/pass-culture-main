@@ -14,8 +14,9 @@ import { OffererLinkEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { ensureOffererNames } from '@/commons/store/offerer/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { OffererSelect } from '@/components/OffererSelect/OffererSelect'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
@@ -33,14 +34,23 @@ type UserEmailFormValues = {
 }
 
 export const Collaborators = (): JSX.Element | null => {
-  const offererId = useAppSelector(selectCurrentOffererId)
+  const currentOffererId = useAppSelector(
+    (state) => state.offerer.currentOfferer
+  )?.id
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const [displayAllMembers, setDisplayAllMembers] = useState(false)
-
   const [showInvitationForm, setShowInvitationForm] = useState(false)
+
+  const adminSelectedOfferer = useAppSelector(
+    (store) => store.user.selectedAdminOfferer
+  )
+  const offererNames = useAppSelector(ensureOffererNames)
+  const offererId = withSwitchVenueFeature
+    ? adminSelectedOfferer?.id
+    : currentOffererId
 
   const { data } = useSWR(
     [GET_MEMBERS_QUERY_KEY, offererId],
@@ -101,61 +111,65 @@ export const Collaborators = (): JSX.Element | null => {
       mainHeading="Collaborateurs"
       isAdminArea={withSwitchVenueFeature}
     >
+      {withSwitchVenueFeature && offererNames && offererNames.length > 1 && (
+        <OffererSelect />
+      )}
       <section className={styles['section']}>
         <h2 className={styles['main-list-title']}>Liste des collaborateurs</h2>
 
         {members.length > 0 && (
           <div className={styles['members-container']}>
-            <div className={styles['members-inner']}>
-              <table className={styles['members-list']}>
-                <thead>
-                  <tr className={styles['members-list-tr']}>
-                    <th scope="col" className={styles['members-list-th']}>
-                      Email
-                    </th>
-                    <th scope="col" className={styles['members-list-th']}>
-                      Statut
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {members.map(
-                    ({ email, status }, index) =>
-                      !(
-                        !displayAllMembers && index > MAX_COLLABORATORS - 1
-                      ) && (
-                        <tr key={email} className={styles['members-list-tr']}>
-                          <td
-                            className={classNames(
-                              styles['member-email'],
-                              styles['members-list-td']
-                            )}
-                          >
-                            {email}
-                          </td>
-                          <td
-                            className={classNames(
-                              styles['member-status'],
-                              styles['members-list-td']
-                            )}
-                          >
-                            {status === OffererMemberStatus.VALIDATED
-                              ? 'Validé'
-                              : 'En attente'}
-                          </td>
-                        </tr>
-                      )
-                  )}
-                </tbody>
-              </table>
-            </div>
+            <table
+              className={classNames(styles['members-list'], {
+                [styles['members-list--withMarginBottom']]:
+                  members.length > MAX_COLLABORATORS,
+              })}
+            >
+              <thead>
+                <tr className={styles['members-list-tr']}>
+                  <th scope="col" className={styles['members-list-th']}>
+                    Email
+                  </th>
+                  <th scope="col" className={styles['members-list-th']}>
+                    Statut
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {members.map(
+                  ({ email, status }, index) =>
+                    !(!displayAllMembers && index > MAX_COLLABORATORS - 1) && (
+                      <tr key={email} className={styles['members-list-tr']}>
+                        <td
+                          className={classNames(
+                            styles['member-email'],
+                            styles['members-list-td']
+                          )}
+                        >
+                          {email}
+                        </td>
+                        <td
+                          className={classNames(
+                            styles['member-status'],
+                            styles['members-list-td']
+                          )}
+                        >
+                          {status === OffererMemberStatus.VALIDATED
+                            ? 'Validé'
+                            : 'En attente'}
+                        </td>
+                      </tr>
+                    )
+                )}
+              </tbody>
+            </table>
+
             {members.length > MAX_COLLABORATORS && (
               <Button
                 onClick={() => setDisplayAllMembers(!displayAllMembers)}
                 variant={ButtonVariant.TERTIARY}
                 color={ButtonColor.NEUTRAL}
                 icon={displayAllMembers ? fullUpIcon : fullDownIcon}
-                className={styles['display-all-members-button']}
                 label={
                   displayAllMembers
                     ? 'Voir moins de collaborateurs'

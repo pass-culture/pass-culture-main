@@ -2,9 +2,14 @@ import logging
 import typing
 from functools import wraps
 
-from flask import g
+import flask
+import sentry_sdk
 from flask_login import current_user
+from flask_login import login_user
 
+from pcapi.core.users import models as users_models
+from pcapi.core.users import sessions as user_session_manager
+from pcapi.models import db
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import UnauthorizedError
 from pcapi.routes.native.blueprint import JWT_AUTH
@@ -35,12 +40,40 @@ def authenticated_maybe_inactive_user_required(route_function: RouteFunc) -> Rou
     @wraps(route_function)
     def retrieve_authenticated_user(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
         if current_user.is_anonymous:
-            if not getattr(g, "jwt_data", None):
+            if not getattr(flask.g, "jwt_data", None):
                 raise UnauthorizedError("Invalid token")
-            _raise_forbidden(g.jwt_data.sub)
+            _raise_forbidden(flask.g.jwt_data.sub)
         return route_function(*args, **kwargs)
 
     return retrieve_authenticated_user
+
+
+def authenticated_with_refresh_token(route_function: RouteFunc) -> RouteDecorator:
+    @wraps(route_function)
+    def _authenticated_with_refresh_token(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
+        user_session_manager.load_jwt(
+            request=flask.request,
+            jwt_type=user_session_manager.JwtType.REFRESH,
+        )
+
+        if not hasattr(flask.g, "jwt_data"):
+            raise UnauthorizedError("Invalid token")
+
+        user = db.session.query(users_models.User).filter(users_models.User.email == flask.g.jwt_data.sub).one_or_none()
+        if user:
+            login_user(
+                user,
+                force=True,  # also accept users where isActive=False as needed for some features.
+            )
+            # the user is set in sentry in before_request, way before we do the
+            # token auth so it needs to be also set here.
+            sentry_sdk.set_user({"id": user.id})
+        else:
+            _raise_forbidden(flask.g.jwt_data.sub)
+
+        return route_function(*args, **kwargs)
+
+    return _authenticated_with_refresh_token
 
 
 def _raise_forbidden(user_email: str) -> None:

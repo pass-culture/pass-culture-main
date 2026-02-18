@@ -743,7 +743,7 @@ describe('PriceTableForm', () => {
       screen.queryByRole('button', {
         name: LABELS.buttons.activationTooltip,
       })
-    ).not.toBeInTheDocument()
+    ).toBeFalsy()
   })
 
   it('should not display remove/reset button for event offer in EDITION mode', () => {
@@ -761,7 +761,7 @@ describe('PriceTableForm', () => {
       screen.queryByRole('button', {
         name: LABELS.buttons.resetEntry,
       })
-    ).not.toBeInTheDocument()
+    ).toBeFalsy()
   })
 
   it('should log an event when the limit date is updated', async () => {

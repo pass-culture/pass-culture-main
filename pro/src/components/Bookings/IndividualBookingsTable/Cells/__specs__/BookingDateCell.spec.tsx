@@ -8,7 +8,7 @@ const renderDateCell = (props: BookingDateCellProps) =>
 describe('BookingDateCell', () => {
   it('should display the date and the time', () => {
     const props = {
-      bookingDateTimeIsoString: '2020-04-03T12:00:00+04:00',
+      bookingDateTime: '2020-04-03T12:00:00+04:00',
     }
 
     renderDateCell(props)

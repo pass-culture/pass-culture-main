@@ -5,16 +5,14 @@ import re
 
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.models as finance_models
-import pcapi.core.fraud.utils as fraud_utils
 import pcapi.core.mails.transactional as transaction_mails
 from pcapi import settings
-from pcapi.core.fraud import exceptions as fraud_exceptions
-from pcapi.core.fraud.utils import matching
 from pcapi.core.mails.transactional.users import fraud_emails
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import schemas as subscription_schemas
+from pcapi.core.subscription import utils as subscription_utils
 from pcapi.core.subscription.dms import schemas as dms_schemas
 from pcapi.core.subscription.educonnect import schemas as educonnect_schemas
 from pcapi.core.subscription.ubble import fraud_check_api as ubble_api
@@ -35,22 +33,22 @@ logger = logging.getLogger(__name__)
 FRAUD_RESULT_REASON_SEPARATOR = ";"
 
 
-class FraudCheckError(fraud_exceptions.FraudException):
+class FraudCheckError(subscription_exceptions.FraudException):
     pass
 
 
-class EligibilityError(fraud_exceptions.FraudException):
+class EligibilityError(subscription_exceptions.FraudException):
     pass
 
 
-class DuplicateIdPieceNumber(fraud_exceptions.FraudException):
+class DuplicateIdPieceNumber(subscription_exceptions.FraudException):
     def __init__(self, id_piece_number: str, duplicate_user_id: int) -> None:
         self.id_piece_number = id_piece_number
         self.duplicate_user_id = duplicate_user_id
         super().__init__()
 
 
-class DuplicateIneHash(fraud_exceptions.FraudException):
+class DuplicateIneHash(subscription_exceptions.FraudException):
     def __init__(self, ine_hash: str, duplicate_user_id: int) -> None:
         self.ine_hash = ine_hash
         self.duplicate_user_id = duplicate_user_id
@@ -219,23 +217,27 @@ def find_duplicate_beneficiary(
 ) -> users_models.User | None:
     base_query = db.session.query(users_models.User).filter(
         (users_models.User.validatedBirthDate == birth_date)
-        & matching(users_models.User.firstName, first_name)
+        & subscription_utils.matching(users_models.User.firstName, first_name)
         & (users_models.User.is_beneficiary)
         & (users_models.User.id != excluded_user_id)
     )
 
-    duplicate_last_name_vs_last_name = base_query.filter(matching(users_models.User.lastName, last_name)).first()
+    duplicate_last_name_vs_last_name = base_query.filter(
+        subscription_utils.matching(users_models.User.lastName, last_name)
+    ).first()
 
     if duplicate_last_name_vs_last_name:
         return duplicate_last_name_vs_last_name
 
-    duplicate_last_name_vs_married_name = base_query.filter(matching(users_models.User.married_name, last_name)).first()
+    duplicate_last_name_vs_married_name = base_query.filter(
+        subscription_utils.matching(users_models.User.married_name, last_name)
+    ).first()
 
     if duplicate_last_name_vs_married_name:
         return duplicate_last_name_vs_married_name
 
     if married_name:
-        return base_query.filter(matching(users_models.User.lastName, married_name)).first()
+        return base_query.filter(subscription_utils.matching(users_models.User.lastName, married_name)).first()
 
     return None
 
@@ -321,7 +323,7 @@ def is_subscription_name_valid(name: str | None) -> bool:
         return False
     stripped_name = name.strip()
     try:
-        fraud_utils.validate_name(stripped_name)
+        subscription_utils.validate_name(stripped_name)
     except ValueError:
         return False
 
@@ -681,7 +683,7 @@ def validate_beneficiary(
     if not FeatureToggle.BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS.is_active():
         raise DisabledFeatureError("Cannot validate beneficiary because the feature is disabled")
 
-    review = subscription_models.BeneficiaryFraudReview(
+    beneficiary_review = subscription_models.BeneficiaryFraudReview(
         user=user,
         author=reviewer,
         reason=reason,
@@ -691,14 +693,14 @@ def validate_beneficiary(
         ),  # needed condition to keep flask admin review behavior
     )
 
-    if review.review is not None:
-        handler = REVIEW_HANDLERS.get(subscription_models.FraudReviewStatus(review.review))
+    if beneficiary_review.review is not None:
+        handler = REVIEW_HANDLERS.get(subscription_models.FraudReviewStatus(beneficiary_review.review))
         if handler:
-            handler(user, review, None if user.eligibility is None else reviewed_eligibility)
+            handler(user, beneficiary_review, None if user.eligibility is None else reviewed_eligibility)
 
-    db.session.add(review)
+    db.session.add(beneficiary_review)
     db.session.flush()
-    return review
+    return beneficiary_review
 
 
 def _check_id_piece_number_unicity(user: users_models.User, id_piece_number: str | None) -> None:

@@ -55,8 +55,6 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
     return {
         "description": offer.description,
         "id": offer.id,
-        "isExpired": False,
-        "isSoldOut": False,
         "name": offer.name,
         "venue": {
             "adageId": offer.venue.adageId,
@@ -105,7 +103,6 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
         "educationalPriceDetail": offer.priceDetail,
         "domains": [{"id": domain.id, "name": domain.name} for domain in offer.domains],
         "imageUrl": offer.imageUrl,
-        "imageCredit": offer.imageCredit,
         "nationalProgram": {"id": national_program.id, "name": national_program.name} if national_program else None,
         "isFavorite": is_favorite,
         "dates": {

@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import { axe } from 'vitest-axe'
 
@@ -111,11 +111,8 @@ describe('CheckboxGroup', () => {
         disabled: true,
       })
       const checkboxes = screen.getAllByRole('checkbox')
-      checkboxes.forEach(async (cb) => {
-        const label = cb.closest('label') // Because the aria-invalid is on the parent label, not the checkbox input
-        await waitFor(() => {
-          expect(label).toHaveAttribute('aria-invalid', 'true')
-        })
+      checkboxes.forEach((cb) => {
+        expect(cb).toHaveAttribute('aria-invalid', 'true')
       })
     })
   })

@@ -20,6 +20,7 @@ from pcapi import settings
 from pcapi.core import object_storage
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.categories.models import EacFormat
+from pcapi.core.educational import constants
 from pcapi.core.educational import exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
@@ -34,12 +35,6 @@ from pcapi.utils.siren import SIREN_LENGTH
 
 
 logger = logging.getLogger(__name__)
-
-BIG_NUMBER_FOR_SORTING_OFFERS = 9999
-
-MAX_COLLECTIVE_NAME_LENGTH: typing.Final = 110
-MAX_COLLECTIVE_DESCRIPTION_LENGTH: typing.Final = 1500
-
 
 if typing.TYPE_CHECKING:
     from pcapi.core.offerers.models import Offerer
@@ -65,7 +60,7 @@ class StudentLevels(enum.Enum):
     CAP1 = "CAP - 1re année"
 
     @classmethod
-    def primary_levels(cls) -> set:
+    def primary_levels(cls) -> "set[StudentLevels]":
         return {
             cls.ECOLES_MARSEILLE_MATERNELLE,
             cls.ECOLES_MARSEILLE_CP_CE1_CE2,
@@ -115,6 +110,7 @@ class CollectiveBookingStatus(enum.Enum):
     CONFIRMED = "CONFIRMED"
     USED = "USED"
     CANCELLED = "CANCELLED"
+    PENDING_REIMBURSEMENT = "PENDING_REIMBURSEMENT"
     REIMBURSED = "REIMBURSED"
 
 
@@ -612,37 +608,30 @@ class CollectiveOffer(
         "NationalProgram", foreign_keys=[nationalProgramId], back_populates="collectiveOffers"
     )
 
-    @sa_orm.declared_attr.directive
-    def __table_args__(cls) -> tuple:
-        parent_args: list = []
-        # Retrieves indexes from parent mixins defined in __table_args__
-        for base_class in cls.__mro__:
-            try:
-                parent_args += super(base_class, cls).__table_args__
-            except (AttributeError, TypeError):
-                pass
-
-        parent_args += [
-            sa.CheckConstraint(
-                f"length(description) <= {MAX_COLLECTIVE_DESCRIPTION_LENGTH}",
-                name="collective_offer_description_constraint",
-            ),
-            sa.CheckConstraint(
-                '"locationComment" IS NULL OR length("locationComment") <= 200',
-                name="collective_offer_location_comment_constraint",
-            ),
-            sa.CheckConstraint(
-                '("locationType" = \'ADDRESS\' AND "offererAddressId" IS NOT NULL) OR ("locationType" != \'ADDRESS\' AND "offererAddressId" IS NULL)',
-                name="collective_offer_location_type_and_address_constraint",
-            ),
-            sa.CheckConstraint(
-                '"locationType" = \'TO_BE_DEFINED\' OR "locationComment" IS NULL',
-                name="collective_offer_location_type_and_comment_constraint",
-            ),
-            sa.Index("ix_collective_offer_locationType_offererAddressId", "locationType", "offererAddressId"),
-        ]
-
-        return tuple(parent_args)
+    __table_args__ = (
+        sa.Index(
+            "idx_collective_offer_lastValidationAuthorUserId",
+            "lastValidationAuthorUserId",
+            postgresql_where='"lastValidationAuthorUserId IS NOT NULL"',
+        ),
+        sa.CheckConstraint(
+            f"length(description) <= {constants.MAX_COLLECTIVE_DESCRIPTION_LENGTH}",
+            name="collective_offer_description_constraint",
+        ),
+        sa.CheckConstraint(
+            '"locationComment" IS NULL OR length("locationComment") <= 200',
+            name="collective_offer_location_comment_constraint",
+        ),
+        sa.CheckConstraint(
+            '("locationType" = \'ADDRESS\' AND "offererAddressId" IS NOT NULL) OR ("locationType" != \'ADDRESS\' AND "offererAddressId" IS NULL)',
+            name="collective_offer_location_type_and_address_constraint",
+        ),
+        sa.CheckConstraint(
+            '"locationType" = \'TO_BE_DEFINED\' OR "locationComment" IS NULL',
+            name="collective_offer_location_type_and_comment_constraint",
+        ),
+        sa.Index("ix_collective_offer_locationType_offererAddressId", "locationType", "offererAddressId"),
+    )
 
     @property
     def isPublicApi(self) -> bool:
@@ -747,7 +736,7 @@ class CollectiveOffer(
         ):
             date_limit_score = days_until_booking_limit
         else:
-            date_limit_score = BIG_NUMBER_FOR_SORTING_OFFERS
+            date_limit_score = constants.BIG_NUMBER_FOR_SORTING_OFFERS
 
         return not self.isArchived, -date_limit_score, self.dateCreated
 
@@ -802,7 +791,9 @@ class CollectiveOffer(
                             status = CollectiveOfferDisplayedStatus.PUBLISHED
 
                     case CollectiveBookingStatus.PENDING:
-                        if has_booking_limit_passed:
+                        if has_started:
+                            status = CollectiveOfferDisplayedStatus.CANCELLED
+                        elif has_booking_limit_passed:
                             status = CollectiveOfferDisplayedStatus.EXPIRED
                         else:
                             status = CollectiveOfferDisplayedStatus.PREBOOKED
@@ -1058,53 +1049,47 @@ class CollectiveOfferTemplate(
 
     dateArchived: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
-    @sa_orm.declared_attr.directive
-    def __table_args__(cls) -> tuple:
-        parent_args: list = []
-        # Retrieves indexes from parent mixins defined in __table_args__
-        for base_class in cls.__mro__:
-            try:
-                parent_args += super(base_class, cls).__table_args__
-            except (AttributeError, TypeError):
-                pass
-        parent_args += [
-            sa.Index("ix_collective_offer_template_locationType_offererAddressId", "locationType", "offererAddressId"),
-            sa.UniqueConstraint("dateRange", "id", name="collective_offer_template_unique_daterange"),
-            sa.CheckConstraint(
-                '"dateRange" is NULL OR ('
-                'NOT isempty("dateRange") '
-                'AND lower("dateRange") is NOT NULL '
-                'AND upper("dateRange") IS NOT NULL '
-                'AND lower("dateRange")::date >= "dateCreated"::date)',
-                name="template_dates_non_empty_daterange",
-            ),
-            sa.CheckConstraint(
-                '("contactEmail" is not null) or ("contactPhone" is not null) or ("contactUrl" is not null) or ("contactForm" is not null)',
-                name="collective_offer_tmpl_contact_request_form_data_constraint",
-            ),
-            sa.CheckConstraint(
-                '("contactUrl" IS NULL OR "contactForm" IS NULL)',
-                name="collective_offer_tmpl_contact_form_switch_constraint",
-            ),
-            sa.CheckConstraint(
-                f"length(description) <= {MAX_COLLECTIVE_DESCRIPTION_LENGTH}",
-                name="collective_offer_tmpl_description_constraint",
-            ),
-            sa.CheckConstraint(
-                '"locationComment" IS NULL OR length("locationComment") <= 200',
-                name="collective_offer_tmpl_location_comment_constraint",
-            ),
-            sa.CheckConstraint(
-                '("locationType" = \'ADDRESS\' AND "offererAddressId" IS NOT NULL) OR ("locationType" != \'ADDRESS\' AND "offererAddressId" IS NULL)',
-                name="collective_offer_template_location_type_and_address_constraint",
-            ),
-            sa.CheckConstraint(
-                '"locationType" = \'TO_BE_DEFINED\' OR "locationComment" IS NULL',
-                name="collective_offer_template_location_type_and_comment_constraint",
-            ),
-        ]
-
-        return tuple(parent_args)
+    __table_args__ = (
+        sa.Index(
+            "idx_collective_offer_template_lastValidationAuthorUserId",
+            "lastValidationAuthorUserId",
+            postgresql_where='"lastValidationAuthorUserId IS NOT NULL"',
+        ),
+        sa.Index("ix_collective_offer_template_locationType_offererAddressId", "locationType", "offererAddressId"),
+        sa.UniqueConstraint("dateRange", "id", name="collective_offer_template_unique_daterange"),
+        sa.CheckConstraint(
+            '"dateRange" is NULL OR ('
+            'NOT isempty("dateRange") '
+            'AND lower("dateRange") is NOT NULL '
+            'AND upper("dateRange") IS NOT NULL '
+            'AND lower("dateRange")::date >= "dateCreated"::date)',
+            name="template_dates_non_empty_daterange",
+        ),
+        sa.CheckConstraint(
+            '("contactEmail" is not null) or ("contactPhone" is not null) or ("contactUrl" is not null) or ("contactForm" is not null)',
+            name="collective_offer_tmpl_contact_request_form_data_constraint",
+        ),
+        sa.CheckConstraint(
+            '("contactUrl" IS NULL OR "contactForm" IS NULL)',
+            name="collective_offer_tmpl_contact_form_switch_constraint",
+        ),
+        sa.CheckConstraint(
+            f"length(description) <= {constants.MAX_COLLECTIVE_DESCRIPTION_LENGTH}",
+            name="collective_offer_tmpl_description_constraint",
+        ),
+        sa.CheckConstraint(
+            '"locationComment" IS NULL OR length("locationComment") <= 200',
+            name="collective_offer_tmpl_location_comment_constraint",
+        ),
+        sa.CheckConstraint(
+            '("locationType" = \'ADDRESS\' AND "offererAddressId" IS NOT NULL) OR ("locationType" != \'ADDRESS\' AND "offererAddressId" IS NULL)',
+            name="collective_offer_template_location_type_and_address_constraint",
+        ),
+        sa.CheckConstraint(
+            '"locationType" = \'TO_BE_DEFINED\' OR "locationComment" IS NULL',
+            name="collective_offer_template_location_type_and_comment_constraint",
+        ),
+    )
 
     @hybrid_property
     def displayedStatus(self) -> CollectiveOfferDisplayedStatus:
@@ -1663,7 +1648,7 @@ class CollectiveBooking(PcObject, models.Model):
     ) -> None:
         if self.status is CollectiveBookingStatus.CANCELLED:
             raise exceptions.CollectiveBookingAlreadyCancelled()
-        if self.status is CollectiveBookingStatus.REIMBURSED and not cancel_even_if_reimbursed:
+        if self.is_pending_reimbursement_or_reimbursed and not cancel_even_if_reimbursed:
             raise exceptions.CollectiveBookingIsAlreadyUsed
         if self.status is CollectiveBookingStatus.USED and not cancel_even_if_used:
             raise exceptions.CollectiveBookingIsAlreadyUsed
@@ -1708,21 +1693,31 @@ class CollectiveBooking(PcObject, models.Model):
 
     @hybrid_property
     def is_used_or_reimbursed(self) -> bool:
-        return self.status in [CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED]
+        return self.status in [
+            CollectiveBookingStatus.USED,
+            CollectiveBookingStatus.PENDING_REIMBURSEMENT,
+            CollectiveBookingStatus.REIMBURSED,
+        ]
 
     @is_used_or_reimbursed.inplace.expression
     @classmethod
     def _is_used_or_reimbursed_expression(cls) -> sa.ColumnElement[bool]:
-        return cls.status.in_([CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED])
+        return cls.status.in_(
+            [
+                CollectiveBookingStatus.USED,
+                CollectiveBookingStatus.PENDING_REIMBURSEMENT,
+                CollectiveBookingStatus.REIMBURSED,
+            ]
+        )
 
     @hybrid_property
-    def isReimbursed(self) -> bool:
-        return self.status == CollectiveBookingStatus.REIMBURSED
+    def is_pending_reimbursement_or_reimbursed(self) -> bool:
+        return self.status in [CollectiveBookingStatus.PENDING_REIMBURSEMENT, CollectiveBookingStatus.REIMBURSED]
 
-    @isReimbursed.inplace.expression
+    @is_pending_reimbursement_or_reimbursed.inplace.expression
     @classmethod
-    def _isReimbursedExpression(cls) -> sa.ColumnElement[bool]:
-        return cls.status == CollectiveBookingStatus.REIMBURSED
+    def _is_pending_reimbursement_or_reimbursed_expression(cls) -> sa.ColumnElement[bool]:
+        return cls.status.in_([CollectiveBookingStatus.PENDING_REIMBURSEMENT, CollectiveBookingStatus.REIMBURSED])
 
     @hybrid_property
     def isCancelled(self) -> bool:
@@ -1763,6 +1758,7 @@ class CollectiveBooking(PcObject, models.Model):
     def is_cancellable_from_offerer(self) -> bool:
         return self.status not in (
             CollectiveBookingStatus.USED,
+            CollectiveBookingStatus.PENDING_REIMBURSEMENT,
             CollectiveBookingStatus.REIMBURSED,
             CollectiveBookingStatus.CANCELLED,
         )
@@ -2032,10 +2028,6 @@ class CollectiveOfferRequest(PcObject, models.Model):
     @classmethod
     def _phoneNumberExpression(cls) -> sa_orm.InstrumentedAttribute[str | None]:
         return cls._phoneNumber
-
-    @property
-    def email(self) -> str:
-        return self.educationalRedactor.email
 
 
 class NationalProgram(PcObject, models.Model):

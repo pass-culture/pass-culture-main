@@ -8,7 +8,6 @@ import fakeredis
 import pytest
 import time_machine
 from dateutil.relativedelta import relativedelta
-from flask_jwt_extended.utils import decode_token
 
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.subscription.dms.schemas as dms_schemas
@@ -520,94 +519,6 @@ class CreateBeneficiaryTest:
         assert user.has_active_deposit
         assert user.deposit.amount == 30
 
-    def test_apps_flyer_called_for_underage_beneficiary(self, requests_mock):
-        apps_flyer_data = {
-            "apps_flyer": {"user": "some-user-id", "platform": "ANDROID"},
-            "firebase_pseudo_id": "firebase_pseudo_id",
-        }
-        user = users_factories.UserFactory(
-            externalIds=apps_flyer_data, validatedBirthDate=datetime.date.today() - relativedelta(years=16, months=4)
-        )
-        fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=subscription_models.FraudCheckType.UBBLE,
-            status=subscription_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.UNDERAGE,
-        )
-        posted = requests_mock.post("https://api2.appsflyer.com/inappevent/app.passculture.webapp")
-        user = subscription_api.activate_beneficiary_for_eligibility(
-            user, fraud_check.get_detailed_source(), users_models.EligibilityType.UNDERAGE
-        )
-
-        first_request, second_request, third_request = posted.request_history
-        assert first_request.json() == {
-            "appsflyer_id": "some-user-id",
-            "eventName": "af_complete_beneficiary",
-            "eventValue": {
-                "af_user_id": str(user.id),
-                "af_firebase_pseudo_id": "firebase_pseudo_id",
-                "type": "GRANT_15_17",
-            },
-        }
-        assert second_request.json() == {
-            "appsflyer_id": "some-user-id",
-            "eventName": "af_complete_beneficiary_underage",
-            "eventValue": {
-                "af_user_id": str(user.id),
-                "af_firebase_pseudo_id": "firebase_pseudo_id",
-                "type": "GRANT_15_17",
-            },
-        }
-        assert third_request.json() == {
-            "appsflyer_id": "some-user-id",
-            "eventName": "af_complete_beneficiary_16",
-            "eventValue": {
-                "af_user_id": str(user.id),
-                "af_firebase_pseudo_id": "firebase_pseudo_id",
-                "type": "GRANT_15_17",
-            },
-        }
-
-        assert user.has_underage_beneficiary_role
-        assert len(user.deposits) == 1
-
-    def test_apps_flyer_called_for_eighteen_beneficiary(self, requests_mock):
-        apps_flyer_data = {
-            "apps_flyer": {"user": "some-user-id", "platform": "ANDROID"},
-            "firebase_pseudo_id": "firebase_pseudo_id",
-        }
-        user = users_factories.UserFactory(externalIds=apps_flyer_data)
-        fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=subscription_models.FraudCheckType.UBBLE, status=subscription_models.FraudCheckStatus.OK
-        )
-        posted = requests_mock.post("https://api2.appsflyer.com/inappevent/app.passculture.webapp")
-        user = subscription_api.activate_beneficiary_for_eligibility(
-            user, fraud_check.get_detailed_source(), users_models.EligibilityType.AGE18
-        )
-
-        first_request, second_request = posted.request_history
-        assert first_request.json() == {
-            "appsflyer_id": "some-user-id",
-            "eventName": "af_complete_beneficiary",
-            "eventValue": {
-                "af_user_id": str(user.id),
-                "af_firebase_pseudo_id": "firebase_pseudo_id",
-                "type": "GRANT_18",
-            },
-        }
-        assert second_request.json() == {
-            "appsflyer_id": "some-user-id",
-            "eventName": "af_complete_beneficiary_18",
-            "eventValue": {
-                "af_user_id": str(user.id),
-                "af_firebase_pseudo_id": "firebase_pseudo_id",
-                "type": "GRANT_18",
-            },
-        }
-
-        assert user.has_beneficiary_role
-        assert len(user.deposits) == 1
-
     def test_external_users_updated(self):
         user = users_factories.UserFactory(roles=[])
         fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
@@ -821,8 +732,42 @@ class DomainsCreditTest:
             physical=None,
         )
 
+    def test_get_domains_credit_grant_17_18_digital_cap_v1(self):
+        with time_machine.travel(settings.DIGITAL_CAP_V2_DATETIME - relativedelta(minutes=1)):
+            user = users_factories.BeneficiaryFactory()
+
+        # booking in physical domain
+        bookings_factories.BookingFactory(
+            user=user,
+            amount=50,
+            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
+        )
+
+        assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
+            all=users_models.Credit(initial=Decimal(150), remaining=Decimal(100)),
+            digital=users_models.Credit(initial=Decimal(100), remaining=Decimal(100)),
+            physical=None,
+        )
+
+    def test_get_domains_credit_grant_17_18_digital_cap_v2(self):
+        with time_machine.travel(settings.DIGITAL_CAP_V2_DATETIME + relativedelta(minutes=1)):
+            user = users_factories.BeneficiaryFactory()
+
+        # booking in physical domain
+        bookings_factories.BookingFactory(
+            user=user,
+            amount=50,
+            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
+        )
+        assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
+            all=users_models.Credit(initial=Decimal(150), remaining=Decimal(100)),
+            digital=users_models.Credit(initial=Decimal(50), remaining=Decimal(50)),
+            physical=None,
+        )
+
     def test_get_domains_credit_deposit_expired(self):
-        user = users_factories.BeneficiaryFactory()
+        with time_machine.travel(settings.DIGITAL_CAP_V2_DATETIME):
+            user = users_factories.BeneficiaryFactory()
         deposit_expiration_date = user.deposit.expirationDate
         deposit_initial_amount = user.deposit.amount
         bookings_factories.BookingFactory(
@@ -834,7 +779,7 @@ class DomainsCreditTest:
         with time_machine.travel(deposit_expiration_date):
             assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
                 all=users_models.Credit(initial=Decimal(deposit_initial_amount), remaining=Decimal(0)),
-                digital=users_models.Credit(initial=Decimal(100), remaining=Decimal(0)),
+                digital=users_models.Credit(initial=Decimal(50), remaining=Decimal(0)),
                 physical=None,
             )
 
@@ -922,7 +867,7 @@ class DomainsCreditTest:
         invoice = finance_api._generate_invoice(
             bank_account_id=bank_account.id, cashflow_ids=[c.id for c in batch.cashflows]
         )
-        finance_api.validate_invoice(invoice.id)
+        finance_api.validate_invoices([invoice.id])
 
         # Create the finance incidents and validate them
         #  - For booking2 → cancelled totally
@@ -1042,7 +987,7 @@ class DomainsCreditTest:
         invoice = finance_api._generate_invoice(
             bank_account_id=bank_account.id, cashflow_ids=[c.id for c in batch.cashflows]
         )
-        finance_api.validate_invoice(invoice.id)
+        finance_api.validate_invoices([invoice.id])
 
         # Create the finance incidents and validate them
         #  - For booking2 → cancelled totally
@@ -1140,7 +1085,7 @@ class DomainsCreditTest:
         invoice = finance_api._generate_invoice(
             bank_account_id=bank_account.id, cashflow_ids=[c.id for c in batch.cashflows]
         )
-        finance_api.validate_invoice(invoice.id)
+        finance_api.validate_invoices([invoice.id])
 
         # Create the finance incidents and validate them
         #  - For booking2 → cancelled totally
@@ -1235,7 +1180,7 @@ class DomainsCreditTest:
         invoice = finance_api._generate_invoice(
             bank_account_id=bank_account.id, cashflow_ids=[c.id for c in batch.cashflows]
         )
-        finance_api.validate_invoice(invoice.id)
+        finance_api.validate_invoices([invoice.id])
 
         # Create the finance incidents and validate them
         #  - For booking2 → cancelled totally
@@ -1924,50 +1869,6 @@ class DeleteOldLoginDeviceHistoryTest:
         users_api.delete_old_login_device_history()
 
         assert db.session.query(users_models.LoginDeviceHistory).count() == 1
-
-
-class RefreshAccessTokenTest:
-    def should_create_access_token_with_default_lifetime_when_no_device_info(self):
-        user = users_factories.UserFactory()
-
-        refresh_token = users_api.create_user_refresh_token(user=user, device_info=None)
-        decoded_refresh_token = decode_token(refresh_token)
-
-        token_issue_date = decoded_refresh_token["iat"]
-        token_expiration_date = decoded_refresh_token["exp"]
-        refresh_token_lifetime = token_expiration_date - token_issue_date
-
-        assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXPIRES
-
-    def should_create_access_token_with_default_lifetime_when_device_is_not_a_trusted_device(self):
-        user = users_factories.UserFactory()
-        users_factories.TrustedDeviceFactory(user=user)
-        other_device = account_serialization.TrustedDevice(deviceId="other-device-id", os="iOS", source="iPhone 13")
-
-        refresh_token = users_api.create_user_refresh_token(user=user, device_info=other_device)
-        decoded_refresh_token = decode_token(refresh_token)
-
-        token_issue_date = decoded_refresh_token["iat"]
-        token_expiration_date = decoded_refresh_token["exp"]
-        refresh_token_lifetime = token_expiration_date - token_issue_date
-
-        assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXPIRES
-
-    def should_create_access_token_with_extended_lifetime_when_device_is_a_trusted_device(self):
-        user = users_factories.UserFactory()
-        trusted_device = users_factories.TrustedDeviceFactory(user=user)
-        device_info = account_serialization.TrustedDevice(
-            deviceId=trusted_device.deviceId, os="iOS", source="iPhone 13"
-        )
-
-        refresh_token = users_api.create_user_refresh_token(user=user, device_info=device_info)
-        decoded_refresh_token = decode_token(refresh_token)
-
-        token_issue_date = decoded_refresh_token["iat"]
-        token_expiration_date = decoded_refresh_token["exp"]
-        refresh_token_lifetime = token_expiration_date - token_issue_date
-
-        assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXTENDED_EXPIRES
 
 
 class NotifyUserBeforeDeletionUponSuspensionTest:

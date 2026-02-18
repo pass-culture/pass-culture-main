@@ -1,4 +1,5 @@
 import { screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import {
   currentOffererFactory,
@@ -21,6 +22,15 @@ const renderSitemap = (options: RenderWithProvidersOptions = {}) => {
     },
   })
 }
+
+const mockNavigate = vi.fn()
+
+vi.mock('react-router', async () => {
+  return {
+    ...(await vi.importActual('react-router')),
+    useNavigate: () => mockNavigate,
+  }
+})
 
 describe('Sitemap', () => {
   it('should render the sitemap heading', () => {
@@ -128,5 +138,15 @@ describe('Sitemap', () => {
 
     expect(element).toBeInTheDocument()
     expect(element).toHaveAttribute('href', '/remboursements/revenus')
+  })
+
+  it('should display the back button and return to previous page on click', async () => {
+    renderSitemap()
+
+    const retourBtn = screen.getByRole('button', {
+      name: 'Retour',
+    })
+    await userEvent.click(retourBtn)
+    expect(mockNavigate).toHaveBeenCalledWith(-1)
   })
 })

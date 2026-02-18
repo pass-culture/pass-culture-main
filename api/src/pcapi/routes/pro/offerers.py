@@ -1,4 +1,5 @@
 import logging
+import typing
 
 import sqlalchemy.orm as sa_orm
 from flask_login import current_user
@@ -8,8 +9,11 @@ import pcapi.core.educational.exceptions as educational_exceptions
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.repository as finance_repository
+import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.exceptions as offerers_exceptions
 import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offers.api as offers_api
+import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.repository as offers_repository
 from pcapi import settings
 from pcapi.connectors.api_recaptcha import ReCaptchaException
@@ -27,9 +31,11 @@ from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import finance_serialize
 from pcapi.routes.serialization import headline_offer_serialize
 from pcapi.routes.serialization import offerers_serialize
+from pcapi.routes.serialization import public_information_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import requests
 from pcapi.utils.rest import check_user_has_access_to_offerer
+from pcapi.utils.rest import check_user_has_access_to_venues
 from pcapi.utils.transaction_manager import atomic
 
 from . import blueprint
@@ -149,9 +155,13 @@ def get_offerer_members(offerer_id: int) -> offerers_serialize.GetOffererMembers
 @private_api.route("/offerers", methods=["POST"])
 @login_required
 @spectree_serialize(
-    on_success_status=201, response_model=offerers_serialize.PostOffererResponseModel, api=blueprint.pro_private_schema
+    on_success_status=201,
+    response_model=public_information_serialize.PostOffererResponseModel,
+    api=blueprint.pro_private_schema,
 )
-def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers_serialize.PostOffererResponseModel:
+def create_offerer(
+    body: offerers_serialize.CreateOffererQueryModel,
+) -> public_information_serialize.PostOffererResponseModel:
     siren_info = api_entreprise.get_siren_open_data(body.siren)
     if not siren_info.active:
         raise ApiErrors(errors={"siren": ["SIREN is no longer active"]})
@@ -168,18 +178,20 @@ def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers
         user_offerer = api.create_offerer(current_user, body, insee_data=siren_info)
     except offerers_exceptions.NotACollectivity:
         raise ApiErrors(errors={"user_offerer": ["Le rattachement est permis seulement pour les collectivités"]})
-    return offerers_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)
+    return public_information_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)
 
 
 @private_api.route("/offerers/new", methods=["POST"])
 @atomic()
 @login_required
 @spectree_serialize(
-    on_success_status=201, response_model=offerers_serialize.PostOffererResponseModel, api=blueprint.pro_private_schema
+    on_success_status=201,
+    response_model=public_information_serialize.PostOffererResponseModel,
+    api=blueprint.pro_private_schema,
 )
 def save_new_onboarding_data(
     body: offerers_serialize.SaveNewOnboardingDataQueryModel,
-) -> offerers_serialize.PostOffererResponseModel:
+) -> public_information_serialize.PostOffererResponseModel:
     try:
         check_web_recaptcha_token(
             body.token,
@@ -197,7 +209,7 @@ def save_new_onboarding_data(
         raise ApiErrors({"siret": "SIRET doesn't belong to a collectivity"})
     except offerers_exceptions.publicNameRequiredException:
         raise ApiErrors({"publicName": "Veuillez renseigner un nom public pour votre structure."})
-    return offerers_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)
+    return public_information_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)
 
 
 @private_api.route("/offerers/<int:offerer_id>/bank-accounts", methods=["GET"])
@@ -288,25 +300,78 @@ def get_offerer_stats(offerer_id: int) -> offerers_serialize.GetOffererStatsResp
     )
 
 
+def get_offers_with_headlines_and_mediations(
+    ids: typing.Collection[int],
+) -> typing.Collection[offers_models.Offer]:
+    return (
+        db.session.query(offers_models.Offer)
+        .filter(offers_models.Offer.id.in_(ids))
+        .options(
+            sa_orm.selectinload(offers_models.Offer.mediations),
+            sa_orm.joinedload(offers_models.Offer.product).selectinload(offers_models.Product.productMediations),
+            sa_orm.selectinload(offers_models.Offer.headlineOffers),
+        )
+        .distinct()
+        .all()
+    )
+
+
+def _map_top_offers_to_existing_offers(
+    top_offers: typing.Collection[offerers_api.OfferViewsModel],
+) -> dict[offerers_api.OfferViewsModel, offers_models.Offer]:
+    offers = get_offers_with_headlines_and_mediations([int(o.offer_id) for o in top_offers])
+    offers_mapping = {offer.id: offer for offer in offers}
+
+    top_offers_to_offers_mapping = {top_offer: offers_mapping.get(int(top_offer.offer_id)) for top_offer in top_offers}
+
+    return {top_offer: offer for top_offer, offer in top_offers_to_offers_mapping.items() if offer is not None}
+
+
+def _is_headline_offer(offer: offers_models.Offer) -> bool:
+    return len([ho for ho in offer.headlineOffers if ho.isActive]) > 0
+
+
 @private_api.route("/venues/<int:venue_id>/offers-statistics", methods=["GET"])
 @login_required
 @spectree_serialize(
     on_success_status=200,
     api=blueprint.pro_private_schema,
-    response_model=offerers_serialize.GetVenueOffersStatsModel,
+    response_model=offerers_serialize.GetVenueStatsResponseModel,
 )
-def get_venue_offers_stats(venue_id: int) -> offerers_serialize.GetVenueOffersStatsModel:
+def get_venue_offers_stats(venue_id: int) -> offerers_serialize.GetVenueStatsResponseModel:
+    venue = get_or_404(offerers_models.Venue, venue_id)
+    check_user_has_access_to_venues(current_user, [venue.id])
+
     stats = api.get_venue_offers_statistics(venue_id)
 
-    return offerers_serialize.GetVenueOffersStatsModel(
-        venueId=venue_id,
-        totalViews6Months=stats.offers_consultation_count,
-        topOffersByConsultation=[
-            offerers_serialize.TopOffersByConsultationModel(
-                offerId=offer.offer_id, totalViewsLast30Days=offer.consultation_count
-            )
-            for offer in stats.top_offers_by_consultation
-        ],
+    # top offers come from ClickHouse but need extra data from Postgres
+    # offers for serialization.
+    offers_mapping = _map_top_offers_to_existing_offers(stats.top_offers)
+
+    # filter top offer without a known offer, just in case.
+    # -> a missing offer is very (very) unlikely but it can happen
+    top_offers = [to for to in stats.top_offers if to in offers_mapping]
+    top_offers = sorted(top_offers, key=lambda o: o.rank)
+
+    return offerers_serialize.GetVenueStatsResponseModel(
+        venue_id=venue_id,
+        json_data=offerers_serialize.VenueStatsDataModel(
+            total_views_last_30_days=stats.total_views_last_30_days,
+            top_offers=[
+                offerers_serialize.TopOffersResponseData(
+                    offerId=offers_mapping[top_offer].id,
+                    numberOfViews=top_offer.views,
+                    offerName=offers_mapping[top_offer].name,
+                    image=offers_api.build_offer_image(offers_mapping[top_offer]),
+                    isHeadlineOffer=_is_headline_offer(offers_mapping[top_offer]),
+                )
+                for top_offer in top_offers
+            ],
+            monthly_views=[
+                offerers_serialize.VenueMonthlyViewModel(month=row.month, views=row.views)
+                for row in stats.monthly_views
+            ],
+        ),
     )
 
 

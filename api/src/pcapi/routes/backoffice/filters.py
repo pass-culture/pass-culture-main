@@ -107,6 +107,7 @@ ACTION_TYPE_TO_STRING = {
     history_models.ActionType.SYNC_VENUE_TO_PROVIDER: "Synchronisation du partenaire culturel avec un partenaire technique",
     history_models.ActionType.VENUE_REGULARIZATION: "Régularisation des partenaires culturels",
     history_models.ActionType.VENUE_SOFT_DELETED: "Suppression réversible",
+    history_models.ActionType.VENUE_REIMBURSEMENT_SUSPENDED: "Blocage des remboursements",
     # Actions related to an offerer and/or a venue:
     history_models.ActionType.NON_PAYMENT_NOTICE_CREATED: "Saisie d'un avis d'impayé",
     # Permissions role changes:
@@ -1424,6 +1425,8 @@ def format_modified_info_name(info_name: str) -> str:
             return "Date"
         case "activity":
             return "Activité principale"
+        case "isReimbursementSuspended":
+            return "Remboursements gelés"
 
     if day := match_opening_hours(info_name):
         return f"Horaires du {day}"
@@ -2034,6 +2037,20 @@ def product_mediation_link(uuid: str) -> str | None:
     return mediation.url
 
 
+def format_last_validation_action_name(status: offer_mixin.OfferValidationStatus, prefix: str = "Date") -> str:
+    match status:
+        case offer_mixin.OfferValidationStatus.APPROVED:
+            return f"{prefix} de la dernière validation"
+        case offer_mixin.OfferValidationStatus.DRAFT:
+            return f"{prefix} de la derniere mise en brouillon"
+        case offer_mixin.OfferValidationStatus.PENDING:
+            return f"{prefix} de la dernière annulation de validation"
+        case offer_mixin.OfferValidationStatus.REJECTED:
+            return f"{prefix} du dernier rejet"
+        case _:
+            return status.value
+
+
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
@@ -2142,6 +2159,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_notice_status"] = format_notice_status
     app.jinja_env.filters["format_special_event_response_status"] = format_special_event_response_status
     app.jinja_env.filters["format_venue_provider_count"] = format_venue_provider_count
+    app.jinja_env.filters["format_last_validation_action_name"] = format_last_validation_action_name
     app.jinja_env.filters["build_pro_link"] = build_pro_link
     app.jinja_env.filters["offer_type"] = get_offer_type
     app.jinja_env.filters["nl2br"] = nl2br

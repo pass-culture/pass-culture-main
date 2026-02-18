@@ -18,6 +18,7 @@ from pcapi.core.offerers import models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers import validation
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers import tasks as offers_tasks
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
@@ -208,7 +209,14 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
         on_commit(partial(update_all_venue_offers_accessibility_job.delay, venue.id, edited_accessibility))
 
     if body.bookingEmail:
-        on_commit(partial(update_all_venue_offers_email_job.delay, venue.id, body.bookingEmail))
+        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UPDATE_VENUE_OFFERS_EMAIL.is_active():
+            payload = offers_tasks.UpdateAllVenueOffersEmailPayload(
+                venue_id=venue.id,
+                email=body.bookingEmail,
+            )
+            on_commit(partial(offers_tasks.update_all_venue_offers_email_task.delay, payload.model_dump()))
+        else:
+            on_commit(partial(update_all_venue_offers_email_job.delay, venue.id, body.bookingEmail))
 
     return venues_serialize.GetVenueResponseModel.from_orm(venue)
 
@@ -298,24 +306,6 @@ def delete_venue_banner(venue_id: int) -> None:
 def get_venues_educational_statuses() -> venues_serialize.VenuesEducationalStatusesResponseModel:
     statuses = offerers_api.get_venues_educational_statuses()
     return venues_serialize.VenuesEducationalStatusesResponseModel(statuses=statuses)  # type: ignore[arg-type]
-
-
-@private_api.route("/venues/siret/<siret>", methods=["GET"])
-@login_required
-@atomic()
-@spectree_serialize(
-    response_model=venues_serialize.GetVenuesOfOffererFromSiretResponseModel, api=blueprint.pro_private_schema
-)
-def get_venues_of_offerer_from_siret(siret: str) -> venues_serialize.GetVenuesOfOffererFromSiretResponseModel:
-    offerer, db_venues = offerers_repository.find_venues_of_offerer_from_siret(siret)
-    venue_with_siret = next((v for v in db_venues if v.siret == siret), None)
-    if venue_with_siret:
-        db_venues.insert(0, db_venues.pop(db_venues.index(venue_with_siret)))
-    return venues_serialize.GetVenuesOfOffererFromSiretResponseModel(
-        offererSiren=offerer.siren if offerer else None,
-        offererName=offerer.name if offerer else None,
-        venues=[venues_serialize.VenueOfOffererFromSiretResponseModel.from_orm(venue) for venue in db_venues],
-    )
 
 
 @private_api.route("/venue/<int:venue_id>/offers-statistics", methods=["GET"])

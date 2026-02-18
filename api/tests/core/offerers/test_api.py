@@ -473,19 +473,6 @@ class DeleteVenueTest:
         assert db.session.query(offers_models.Offer).count() == 1
         assert db.session.query(offers_models.Mediation).count() == 1
 
-    def test_delete_venue_should_remove_reports_of_managed_offers(self):
-        venue = offerers_factories.VenueFactory()
-        venue_to_delete = offerers_factories.VenueFactory()
-        offers_factories.OfferReportFactory(offer__venue=venue_to_delete)
-        offers_factories.OfferReportFactory(offer__venue=venue)
-        offerers_factories.VenueFactory(managingOfferer=venue_to_delete.managingOfferer)  # remaining venue
-
-        offerers_api.delete_venue(venue_to_delete.id)
-
-        assert db.session.query(offerers_models.Venue).count() == 2
-        assert db.session.query(offers_models.Offer).count() == 1
-        assert db.session.query(offers_models.OfferReport).count() == 1
-
     def test_delete_venue_should_remove_favorites_of_managed_offers(self):
         venue = offerers_factories.VenueFactory()
         venue_to_delete = offerers_factories.VenueFactory()
@@ -1952,6 +1939,9 @@ class CloseOffererTest:
             stock=offers_factories.ThingStockFactory(offer__venue=venue),
             cancellationReason=bookings_models.BookingCancellationReasons.BENEFICIARY,
         )
+        pending_reimbursement_booking = bookings_factories.PendingReimbursementBookingFactory(
+            stock=offers_factories.ThingStockFactory(offer__venue=venue)
+        )
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(
             stock=offers_factories.ThingStockFactory(offer__venue=venue)
         )
@@ -1970,6 +1960,7 @@ class CloseOffererTest:
         assert used_booking.status == bookings_models.BookingStatus.USED
         assert canceled_booking.status == bookings_models.BookingStatus.CANCELLED
         assert canceled_booking.cancellationReason == bookings_models.BookingCancellationReasons.BENEFICIARY
+        assert pending_reimbursement_booking.status == bookings_models.BookingStatus.PENDING_REIMBURSEMENT
         assert reimbursed_booking.status == bookings_models.BookingStatus.REIMBURSED
         assert other_booking.status == bookings_models.BookingStatus.CONFIRMED
 
@@ -2004,6 +1995,9 @@ class CloseOffererTest:
             stock=offers_factories.EventStockFactory(offer__venue=venue),
             cancellationReason=bookings_models.BookingCancellationReasons.BENEFICIARY,
         )
+        pending_reimbursement_booking = bookings_factories.PendingReimbursementBookingFactory(
+            stock=offers_factories.EventStockFactory(offer__venue=venue)
+        )
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(
             stock=offers_factories.EventStockFactory(offer__venue=venue)
         )
@@ -2024,6 +2018,7 @@ class CloseOffererTest:
         assert used_booking.status == bookings_models.BookingStatus.USED
         assert canceled_booking.status == bookings_models.BookingStatus.CANCELLED
         assert canceled_booking.cancellationReason == bookings_models.BookingCancellationReasons.BENEFICIARY
+        assert pending_reimbursement_booking.status == bookings_models.BookingStatus.PENDING_REIMBURSEMENT
         assert reimbursed_booking.status == bookings_models.BookingStatus.REIMBURSED
         assert other_booking.status == bookings_models.BookingStatus.CONFIRMED
 
@@ -2061,6 +2056,9 @@ class CloseOffererTest:
             collectiveStock__endDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=6),
         )
         used_booking = educational_factories.UsedCollectiveBookingFactory(collectiveStock__collectiveOffer__venue=venue)
+        pending_reimbursement_booking = educational_factories.PendingReimbursementCollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue=venue
+        )
         reimbursed_booking = educational_factories.ReimbursedCollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue=venue
         )
@@ -2091,6 +2089,7 @@ class CloseOffererTest:
             canceled_booking.cancellationReason
             == educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER
         )
+        assert pending_reimbursement_booking.status == educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT
         assert reimbursed_booking.status == educational_models.CollectiveBookingStatus.REIMBURSED
         assert other_booking.status == educational_models.CollectiveBookingStatus.PENDING
 
@@ -2580,6 +2579,9 @@ class GetOffererTotalRevenueTest:
             stock__price=11.5,
             dateUsed=date_utils.get_naive_utc_now() - datetime.timedelta(days=400),
         )
+        bookings_factories.PendingReimbursementBookingFactory(
+            stock__offer__venue__managingOfferer=offerer, stock__price=15
+        )
         bookings_factories.ReimbursedBookingFactory(
             stock__offer__venue__managingOfferer=offerer, stock__price=12, quantity=2
         )
@@ -2607,12 +2609,12 @@ class GetOffererTotalRevenueTest:
     def test_revenue_all_years(self):
         offerer = self._create_data()
         total_revenue = offerers_api.get_offerer_total_revenue(offerer.id)
-        assert float(total_revenue) == 10.0 + 11.50 + 12 * 2 + 1333 + 1444 + 1555
+        assert float(total_revenue) == 10.0 + 11.50 + 15 + 12 * 2 + 1333 + 1444 + 1555
 
     def test_revenue_only_current_year(self):
         offerer = self._create_data()
         total_revenue = offerers_api.get_offerer_total_revenue(offerer.id, only_current_year=True)
-        assert float(total_revenue) == 10.0 + 12 * 2 + 1333 + 1444
+        assert float(total_revenue) == 10.0 + 15 + 12 * 2 + 1333 + 1444
 
 
 class CountOfferersByValidationStatusTest:

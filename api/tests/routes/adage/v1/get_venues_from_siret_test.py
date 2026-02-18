@@ -125,7 +125,7 @@ class Returns200Test:
                     "network": None,
                     "statusId": None,
                     "label": {
-                        "name": venue.venueLabel.name,
+                        "name": venue.venueLabel.label,
                         "id": venue.venueLabel.id,
                     },
                     "siren": "12345",

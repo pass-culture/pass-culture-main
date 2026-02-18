@@ -1,7 +1,12 @@
 import type { UserIdentityFormValues } from '@/components/UserIdentityForm/types'
 import { UserIdentityForm } from '@/components/UserIdentityForm/UserIdentityForm'
-import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
-import { BoxRounded } from '@/ui-kit/BoxRounded/BoxRounded'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
+import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
 
 import { Forms } from '../constants'
 
@@ -19,20 +24,24 @@ export const UserIdentity = ({
   const onClickModify = () => setCurrentForm(Forms.USER_IDENTITY)
   const resetForm = () => setCurrentForm(null)
   return (
-    <BoxFormLayout>
-      <BoxRounded onClickModify={!showForm ? onClickModify : undefined}>
-        {showForm ? (
-          <UserIdentityForm
-            closeForm={resetForm}
-            initialValues={initialValues}
-          />
-        ) : (
-          <BoxFormLayout.Header
-            subtitle={`${initialValues.firstName} ${initialValues.lastName}`}
-            title="Prénom et nom"
-          />
-        )}
-      </BoxRounded>
-    </BoxFormLayout>
+    <SummarySection
+      title={'Prénom et nom'}
+      editLink={
+        <Button
+          label="Modifier"
+          onClick={onClickModify}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          size={ButtonSize.SMALL}
+        />
+      }
+      shouldShowDivider={true}
+    >
+      {showForm ? (
+        <UserIdentityForm closeForm={resetForm} initialValues={initialValues} />
+      ) : (
+        <p>{`${initialValues.firstName} ${initialValues.lastName}`}</p>
+      )}
+    </SummarySection>
   )
 }

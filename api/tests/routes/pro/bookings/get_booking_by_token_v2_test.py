@@ -146,6 +146,24 @@ class Returns403Test:
             == f"Vous pourrez valider cette contremarque à partir du {cancellation_limit_date}, une fois le délai d’annulation passé."
         )
 
+    def test_when_booking_is_being_refunded(self, client):
+        booking = bookings_factories.PendingReimbursementBookingFactory()
+        pro = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=booking.offerer)
+
+        url = f"/bookings/token/{booking.token}"
+        num_queries = 1  # select user_session + user
+        num_queries += 1  # Select booking
+        num_queries += 1  # check user has rights on offerer
+        num_queries += 1  # rollback atomic
+        num_queries += 1  # rollback atomic
+        client = client.with_session_auth(pro.email)
+        with testing.assert_num_queries(num_queries):
+            response = client.get(url)
+            assert response.status_code == 403
+
+        assert response.json["payment"] == ["Cette réservation a été remboursée"]
+
     def test_when_booking_is_refunded(self, client):
         booking = bookings_factories.ReimbursedBookingFactory()
         pro = users_factories.ProFactory()

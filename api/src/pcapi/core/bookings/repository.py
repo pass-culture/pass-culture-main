@@ -17,11 +17,13 @@ from xlsxwriter.worksheet import Worksheet
 
 from pcapi.core.bookings import constants
 from pcapi.core.bookings import models
+from pcapi.core.bookings import schemas
 from pcapi.core.bookings import utils
 from pcapi.core.categories import subcategories
 from pcapi.core.finance.models import BookingFinanceIncident
 from pcapi.core.geography.models import Address
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import User
@@ -397,21 +399,6 @@ def get_export(
     return _serialize_csv_report(bookings_query)
 
 
-def get_pro_user_timezones(user: User) -> set[str]:
-    # Timezones based on offerer addresses (includes venues locations)
-    query = (
-        db.session.query(Address)
-        .with_entities(Address.timezone)
-        .join(offerers_models.OffererAddress, offerers_models.OffererAddress.addressId == Address.id)
-        .join(offerers_models.Offerer, offerers_models.OffererAddress.offererId == offerers_models.Offerer.id)
-        .join(offerers_models.UserOfferer, offerers_models.UserOfferer.offererId == offerers_models.Offerer.id)
-        .filter(offerers_models.UserOfferer.userId == user.id)
-        .distinct()
-    )
-
-    return {row[0] for row in query}
-
-
 def field_to_venue_timezone(
     field: sa_orm.InstrumentedAttribute, column: sa_orm.Mapped[typing.Any] | sa.sql.functions.Function
 ) -> sa.Cast[date]:
@@ -433,7 +420,7 @@ def _get_filtered_bookings_query(
     offer_id: int | None = None,
     offerer_address_id: int | None = None,
     extra_joins: tuple[tuple[typing.Any, ...], ...] = (),
-) -> sa_orm.Query:
+) -> sa_orm.Query[models.Booking]:
     VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
     VenueAddress = sa_orm.aliased(Address)
     bookings_query = (
@@ -464,9 +451,9 @@ def _get_filtered_bookings_query(
     if period:
         date_column_to_filter_on = BOOKING_DATE_STATUS_MAPPING[status_filter or models.BookingStatusFilter.BOOKED]
 
-        datetime_period_by_timezones = _convert_date_period_to_datetime_period_for_timezones(
+        datetime_period_by_timezones = offerers_repository.convert_date_period_to_datetime_period_for_timezones(
             period,
-            pro_user,
+            pro_user.id,
             offer_id=offer_id,
             offerer_address_id=offerer_address_id,
         )
@@ -505,84 +492,6 @@ def _get_filtered_bookings_query(
     if offerer_address_id:
         bookings_query = bookings_query.filter(offerers_models.OffererAddress.id == offerer_address_id)
     return bookings_query
-
-
-def _get_offerer_address_timezone(offerer_address_id: int) -> str:
-    return (
-        db.session.query(Address)
-        .with_entities(Address.timezone)
-        .join(offerers_models.OffererAddress, offerers_models.OffererAddress.addressId == Address.id)
-        .filter(offerers_models.OffererAddress.id == offerer_address_id)
-        .scalar()
-    )
-
-
-def _get_offer_timezone(offer_id: int) -> str:
-    """
-    Retrieve the timezone associated with an offer.
-
-    The function determines the timezone for the specified offer based on the following priority:
-    1. If an address is directly linked to the offer, return its timezone.
-    2. If no address is linked to the offer, return the timezone of the address linked to the offer's venue.
-    3. If no address is linked to the venue (e.g., for virtual venues), return the venue's timezone.
-
-    Note:
-        - This behavior accounts for digital offers that are linked to virtual venues,
-          which do not have associated offerer addresses. Once virtual venues are removed
-          from the system, this fallback logic (step 3) should be simplified.
-
-    Args:
-        offer_id (int): The ID of the offer whose timezone is to be retrieved.
-
-    Returns:
-        str: The timezone associated with the offer.
-    """
-    VenueAddress = sa_orm.aliased(Address)
-    VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
-    return (
-        db.session.query(offers_models.Offer)
-        .with_entities(sa.func.coalesce(Address.timezone, VenueAddress.timezone))
-        .join(offers_models.Offer.venue)
-        .outerjoin(offers_models.Offer.offererAddress)
-        .outerjoin(offerers_models.OffererAddress.address)
-        .join(VenueOffererAddress, offerers_models.Venue.offererAddress)
-        .join(VenueAddress, VenueOffererAddress.address)
-        .filter(offers_models.Offer.id == offer_id)
-        .scalar()
-    )
-
-
-def _convert_date_period_to_datetime_period_for_timezones(
-    period: tuple[date, date],
-    pro_user: User,
-    *,
-    offer_id: int | None = None,
-    offerer_address_id: int | None = None,
-) -> dict[str, tuple[datetime, datetime]]:
-    """
-    Convert a date period to a UTC datetime period based on relevant timezones.
-
-    The function determines the timezone(s) to use for the conversion based on the input parameters:
-    1. If `offerer_address_id` is provided, fetch the timezone of the corresponding address.
-    2. If `offer_id` is provided, fetch the timezone of the corresponding offer.
-    3. Otherwise, fetch all the timezones linked to the `pro_user`.
-
-    The conversion process transforms the given `period` (a date range) into a datetime range in UTC.
-    The function returns a dictionary where:
-        - Keys are the timezones.
-        - Values are the corresponding UTC datetime ranges for the `period`.
-    """
-    if offerer_address_id:
-        timezone = _get_offerer_address_timezone(offerer_address_id)
-        return {timezone: utils.convert_date_period_to_utc_datetime_period(period, timezone)}
-
-    if offer_id:
-        timezone = _get_offer_timezone(offer_id)
-        return {timezone: utils.convert_date_period_to_utc_datetime_period(period, timezone)}
-
-    timezones = get_pro_user_timezones(pro_user)
-
-    return {timezone: utils.convert_date_period_to_utc_datetime_period(period, timezone) for timezone in timezones}
 
 
 def _get_filtered_bookings_count(
@@ -771,7 +680,7 @@ def _get_booking_status(status: models.BookingStatus, is_confirmed: bool) -> str
     return BOOKING_STATUS_LABELS[status]
 
 
-def get_booking_price(booking: models.Booking) -> Decimal:
+def get_booking_price(booking: schemas.ExportBookingsQueryResult) -> Decimal:
     """
     Retourne le prix de la réservation, converti en CFP si le bénéficiaire est calédonien.
     """
@@ -785,6 +694,8 @@ def _write_bookings_to_csv(query: sa_orm.Query) -> str:
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(booking_export_header())
     for booking in query.yield_per(1000):
+        booking = typing.cast(schemas.ExportBookingsQueryResult, booking)
+
         if booking.quantity == DUO_QUANTITY:
             _write_csv_row(writer, booking, "DUO 1")
             _write_csv_row(writer, booking, "DUO 2")
@@ -794,7 +705,7 @@ def _write_bookings_to_csv(query: sa_orm.Query) -> str:
     return output.getvalue()
 
 
-def _write_csv_row(csv_writer: typing.Any, booking: models.Booking, booking_duo_column: str) -> None:
+def _write_csv_row(csv_writer: typing.Any, booking: schemas.ExportBookingsQueryResult, booking_duo_column: str) -> None:
     booking_price = get_booking_price(booking)
     row: tuple[typing.Any, ...] = (
         booking.venueName,
@@ -843,6 +754,8 @@ def _write_bookings_to_excel(query: sa_orm.Query) -> bytes:
 
     row = 1
     for booking in query.yield_per(1000):
+        booking = typing.cast(schemas.ExportBookingsQueryResult, booking)
+
         if booking.quantity == DUO_QUANTITY:
             _write_excel_row(
                 worksheet,
@@ -873,7 +786,7 @@ def _write_bookings_to_excel(query: sa_orm.Query) -> bytes:
 
 
 def _write_excel_row(
-    worksheet: Worksheet, row: int, booking: models.Booking, currency_format: Format, duo_column: str
+    worksheet: Worksheet, row: int, booking: schemas.ExportBookingsQueryResult, currency_format: Format, duo_column: str
 ) -> None:
     booking_price = get_booking_price(booking)
     worksheet.write(row, 0, booking.venueName)
@@ -916,6 +829,8 @@ def _serialize_csv_report(query: sa_orm.Query) -> str:
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(booking_export_header())
     for booking in query.yield_per(1000):
+        booking = typing.cast(schemas.ExportBookingsQueryResult, booking)
+
         booking_price = get_booking_price(booking)
         row: tuple[typing.Any, ...] = (
             booking.venueName,
@@ -967,6 +882,8 @@ def _serialize_excel_report(query: sa_orm.Query) -> bytes:
     row = 1
     data: tuple[typing.Any, ...]
     for booking in query.yield_per(1000):
+        booking = typing.cast(schemas.ExportBookingsQueryResult, booking)
+
         booking_price = get_booking_price(booking)
         if hasattr(booking, "is_caledonian") and booking.is_caledonian:
             currency_format = currency_format_cfp
@@ -1116,6 +1033,7 @@ def get_booking_token(
         not event_beginning_datetime
         and booking_status
         not in [
+            models.BookingStatus.PENDING_REIMBURSEMENT,
             models.BookingStatus.REIMBURSED,
             models.BookingStatus.CANCELLED,
             models.BookingStatus.USED,

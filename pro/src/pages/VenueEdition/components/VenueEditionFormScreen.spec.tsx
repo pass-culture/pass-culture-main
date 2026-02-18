@@ -640,7 +640,7 @@ describe('VenueEditionFormScreen', () => {
 
         ;[
           'Société de production, tourneur ou label',
-          'Plateforme de streaming musique ou vidéo',
+          'Presse ou média',
           'Cinéma itinérant',
         ].forEach((label) => {
           expect(

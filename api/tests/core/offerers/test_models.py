@@ -112,7 +112,7 @@ class VenueIsEligibleForSearchTest:
         [
             (True, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True),
             (True, False, offerers_schemas.VenueTypeCode.BOOKSTORE, False),
-            (False, True, offerers_schemas.VenueTypeCode.BOOKSTORE, False),
+            (False, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True),
             (False, False, offerers_schemas.VenueTypeCode.BOOKSTORE, False),
         ],
     )
@@ -131,9 +131,9 @@ class VenueIsEligibleForSearchTest:
             (True, True, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, True),
             (True, True, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, False, False),
             (True, False, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, True),
-            (False, True, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, False),
+            (False, True, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, True),
             (False, True, ValidationStatus.VALIDATED, False, offerers_schemas.VenueTypeCode.BOOKSTORE, True, False),
-            (False, False, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, False),
+            (False, False, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, True),
             (False, False, ValidationStatus.VALIDATED, False, offerers_schemas.VenueTypeCode.BOOKSTORE, True, False),
             (True, True, ValidationStatus.NEW, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, False),
             (True, True, ValidationStatus.CLOSED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, False),

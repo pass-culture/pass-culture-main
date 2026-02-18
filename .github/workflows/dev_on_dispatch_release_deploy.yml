@@ -125,8 +125,8 @@ jobs:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
-  deploy-integration-new-infra:
-    name: "Deploy on integration environnement (new infra)"
+  deploy-integration:
+    name: "Deploy on integration environment"
     needs: 
       - version
     if: github.event.inputs.target_environment == 'production'
@@ -153,31 +153,8 @@ jobs:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
-  deploy-integration:
-    name: "Deploy on integration environnement"
-    needs: 
-      - version
-      - deploy-integration-new-infra
-    if: github.event.inputs.target_environment == 'production'
-    uses: ./.github/workflows/dev_on_workflow_deploy.yml
-    with:
-      environment: integration
-      app_version: ${{ needs.version.outputs.APP_VERSION }}
-      cluster_scope: metier
-      cluster_environment: ehp
-      workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
-      apply_algolia_config: true
-      deploy_api: true
-      deploy_pro: true
-      doc-api-entrypoint: "api/documentation"
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
-      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
-
-  deploy-prod-new-infra:
-    name: "Deploy on production environnement"
+  deploy-production:
+    name: "Deploy on production environment"
     needs: 
       - version
     if: github.event.inputs.target_environment == 'production'
@@ -204,32 +181,10 @@ jobs:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
-
-  deploy-prod:
-    name: "Deploy on production environnement"
-    needs: 
-      - version
-      - deploy-prod-new-infra
-    if: github.event.inputs.target_environment == 'production'
-    uses: ./.github/workflows/dev_on_workflow_deploy.yml
-    with:
-      environment: ${{ github.event.inputs.target_environment }}
-      app_version: ${{ needs.version.outputs.APP_VERSION }}
-      cluster_scope: metier
-      cluster_environment: prod
-      workload_identity_provider_secret_name: gcp_metier_prod_workload_identity_provider
-      apply_algolia_config: true
-      deploy_api: true
-      deploy_pro: true
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
-      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
-
   publish-github-prerelease:
     runs-on: ubuntu-22.04
-    needs: deploy-prod
+    needs:
+      - deploy-production
     if: github.event.inputs.target_environment == 'production'
     steps:
       - uses: actions/checkout@v6
@@ -244,7 +199,10 @@ jobs:
 
   end-slack-success-notification:
     name: "Send workflow success notification"
-    needs: [version, deploy-prod, deploy-ehp]
+    needs:
+      - version
+      - deploy-production
+      - deploy-ehp
     if: always() && !failure() && !cancelled()
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
@@ -257,7 +215,10 @@ jobs:
 
   end-slack-failure-notification:
     name: "Send workflow failure notification"
-    needs: [version, deploy-prod, deploy-ehp]
+    needs:
+      - version
+      - deploy-production
+      - deploy-ehp
     if: always() && (failure() || cancelled())
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:

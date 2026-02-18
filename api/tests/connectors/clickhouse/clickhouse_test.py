@@ -26,23 +26,23 @@ class GetYearlyAggregatedOffererRevenueTest:
 
 class GetTopOffersByConsultationTest:
     def test_get_top_offers_by_consultation(self):
-        results = clickhouse_queries.TopOffersByConsultationQuery().execute({"venue_id": 1})
+        results = clickhouse_queries.TopOffersByViewsQuery().execute({"venue_id": 1})
 
         assert len(results) == 3
 
         first_offer = results[0]
-        assert first_offer.offer_id == "offer_1"
-        assert first_offer.total_views_last_30_days == 150
+        assert first_offer.id == "1"
+        assert first_offer.views == 150
         assert first_offer.rank == 1
 
         second_offer = results[1]
-        assert second_offer.offer_id == "offer_2"
-        assert second_offer.total_views_last_30_days == 120
+        assert second_offer.id == "2"
+        assert second_offer.views == 120
         assert second_offer.rank == 2
 
         third_offer = results[2]
-        assert third_offer.offer_id == "offer_3"
-        assert third_offer.total_views_last_30_days == 100
+        assert third_offer.id == "3"
+        assert third_offer.views == 100
         assert third_offer.rank == 3
 
 
@@ -51,4 +51,5 @@ class GetOfferConsultationCountTest:
         results = clickhouse_queries.OfferConsultationCountQuery().execute({"venue_id": 1})
 
         assert len(results) == 1
-        assert results[0].total_views_6_months == 3456
+        assert results[0].month == 1
+        assert results[0].views == 3456

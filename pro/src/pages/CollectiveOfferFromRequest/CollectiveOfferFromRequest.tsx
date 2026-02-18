@@ -16,10 +16,10 @@ import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { getDateToFrenchText } from '@/commons/utils/date'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
-import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
-import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 import { Button } from '@/design-system/Button/Button'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
+import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
+import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
 
 import styles from './CollectiveOfferFromRequest.module.scss'
 

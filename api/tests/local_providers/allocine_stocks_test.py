@@ -227,7 +227,10 @@ class UpdateObjectsTest:
         # Then
         existing_offer = db.session.query(offers_models.Offer).one()
         assert existing_offer.durationMinutes == 21
-        assert existing_offer.offererAddress == venue.offererAddress
+        assert existing_offer.offererAddress != venue.offererAddress
+        assert existing_offer.offererAddress.address == venue.offererAddress.address
+        assert existing_offer.offererAddress.label == venue.publicName
+        assert existing_offer.offererAddress.type != "VENUE_LOCATION"
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
@@ -257,7 +260,10 @@ class UpdateObjectsTest:
         created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.durationMinutes == 21
         assert created_offer.name == "Ceux de chez nous"
-        assert created_offer.offererAddress == venue.offererAddress
+        assert created_offer.offererAddress != venue.offererAddress
+        assert created_offer.offererAddress.address == venue.offererAddress.address
+        assert created_offer.offererAddress.label == venue.publicName
+        assert created_offer.offererAddress.type != "VENUE_LOCATION"
 
     @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
     @patch("pcapi.local_providers.allocine.allocine_stocks.AllocineStocks.get_object_thumb")

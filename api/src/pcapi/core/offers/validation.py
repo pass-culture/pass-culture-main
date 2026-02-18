@@ -368,8 +368,8 @@ def check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields: se
         raise errors
 
 
-def check_image_size(image_as_bytes: bytes, max_size: int = MAX_THUMBNAIL_SIZE) -> None:
-    if len(image_as_bytes) > max_size:
+def check_image_size(image_as_bytes: bytes, max_size: int | None = MAX_THUMBNAIL_SIZE) -> None:
+    if max_size is not None and len(image_as_bytes) > max_size:
         raise exceptions.FileSizeExceeded(max_size=max_size)
 
 
@@ -381,7 +381,7 @@ def check_image(
     min_height: int | None = MIN_THUMBNAIL_HEIGHT,
     max_width: int | None = None,
     max_height: int | None = None,
-    max_size: int = MAX_THUMBNAIL_SIZE,
+    max_size: int | None = MAX_THUMBNAIL_SIZE,
 ) -> None:
     check_image_size(image_as_bytes, max_size)
     try:
@@ -589,6 +589,7 @@ def check_booking_limit_datetime(
         return []
 
     if stock:
+        offer: educational_models.CollectiveOffer | models.Offer
         if isinstance(stock, educational_models.CollectiveStock):
             offer = stock.collectiveOffer
         else:

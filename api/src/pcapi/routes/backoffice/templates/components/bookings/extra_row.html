@@ -69,7 +69,7 @@
           </div>
         </div>
         <div class="col-6">
-          {% if booking.isReimbursed %}
+          {% if booking.is_pending_reimbursement_or_reimbursed %}
             <div class="card shadow-sm p-3">
               <ul>
                 <li>Total payé par l'utilisateur : {{ booking.total_amount | format_amount(target=target) }}</li>

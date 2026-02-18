@@ -11,7 +11,6 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
-import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import {
   ModalImageUpsertOrEdit,
   type OnImageUploadArgs,
@@ -19,6 +18,7 @@ import {
 import { getStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import strokeVisualArtIcon from '@/icons/stroke-visual-art.svg'
 import { computeIndividualApiFilters } from '@/pages/IndividualOffers/utils/computeIndividualApiFilters'
+import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 type HeadlineOfferImageDialogsProps = {
   isFirstDialogOpen: boolean

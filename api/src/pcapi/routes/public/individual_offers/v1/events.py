@@ -786,11 +786,17 @@ def get_event_categories() -> events_serializers.GetEventCategoriesResponse:
 
     Return all the categories available, with their conditional fields, and whether they are required.
     """
-    # Individual offers API only relies on subcategories, not categories.
-    # To make it simpler for the provider using this API, we only expose subcategories and call them categories.
-    event_categories_response = [
-        events_serializers.EventCategoryResponse.build_category(subcategory)
-        for subcategory in subcategories.EVENT_SUBCATEGORIES.values()
-        if subcategory.is_selectable
-    ]
-    return events_serializers.GetEventCategoriesResponse(__root__=event_categories_response)
+    event_categories_response = []
+    for subcategory in subcategories.EVENT_SUBCATEGORIES.values():
+        if subcategory.is_selectable:
+            event_categories_response.append(
+                events_serializers.EventCategoryResponse(
+                    id=subcategory.id,
+                    conditional_fields={
+                        field: condition.is_required_in_external_form
+                        for field, condition in subcategory.conditional_fields.items()
+                    },
+                    label=subcategory.pro_label,
+                )
+            )
+    return events_serializers.GetEventCategoriesResponse(root=event_categories_response)

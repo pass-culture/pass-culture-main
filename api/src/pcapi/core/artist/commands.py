@@ -5,7 +5,6 @@ import click
 import sqlalchemy as sa
 
 import pcapi.core.artist.models as artist_models
-from pcapi.connectors.big_query.importer.artist import ArtistAliasImporter
 from pcapi.connectors.big_query.importer.artist import ArtistImporter
 from pcapi.connectors.big_query.importer.artist import ArtistProductLinkImporter
 from pcapi.connectors.big_query.importer.artist_score import ArtistScoresImporter
@@ -25,7 +24,6 @@ BATCH_SIZE = 1000
 ARTIST_IMPORTERS: list[AbstractImporter] = [
     ArtistImporter(),
     ArtistProductLinkImporter(),
-    ArtistAliasImporter(),
 ]
 
 

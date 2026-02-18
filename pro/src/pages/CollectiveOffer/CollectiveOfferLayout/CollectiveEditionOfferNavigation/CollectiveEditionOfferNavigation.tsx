@@ -36,10 +36,8 @@ import fullArchiveIcon from '@/icons/full-archive.svg'
 import fullCopyIcon from '@/icons/full-duplicate.svg'
 import fullPlusIcon from '@/icons/full-plus.svg'
 import fullShowIcon from '@/icons/full-show.svg'
-import {
-  type NavLinkItem,
-  NavLinkItems,
-} from '@/ui-kit/NavLinkItems/NavLinkItems'
+import type { NavLinkItem } from '@/ui-kit/Tabs/NavLinkItems/NavLinkItems'
+import { Tabs } from '@/ui-kit/Tabs/Tabs'
 
 import { CollectiveOfferStep } from '../CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
 import styles from './CollectiveEditionOfferNavigation.module.scss'
@@ -150,7 +148,7 @@ export const CollectiveEditionOfferNavigation = ({
       CollectiveOfferTemplateAllowedAction.CAN_SHARE
     )
 
-  const tabs: NavLinkItem[] = [
+  const tabs: NavLinkItem<string>[] = [
     {
       key: CollectiveOfferStep.DETAILS,
       label: 'Détails de l’offre',
@@ -162,9 +160,9 @@ export const CollectiveEditionOfferNavigation = ({
       url: `/offre/${offerId}/collectif/stocks/edition`,
     },
     {
-      key: CollectiveOfferStep.VISIBILITY,
+      key: CollectiveOfferStep.INSTITUTION,
       label: 'Établissement et enseignant',
-      url: `/offre/${offerId}/collectif/visibilite/edition`,
+      url: `/offre/${offerId}/collectif/etablissement/edition`,
     },
   ]
 
@@ -245,15 +243,16 @@ export const CollectiveEditionOfferNavigation = ({
         )}
       </div>
       {canEditOffer && (
-        <NavLinkItems
-          links={tabs}
+        <Tabs
+          type="links"
+          items={tabs}
           selectedKey={activeStep}
           navLabel="Sous menu - offre collective"
           className={cn(styles['tabs'], {
             [styles['tabs-active']]: [
               CollectiveOfferStep.DETAILS,
               CollectiveOfferStep.STOCKS,
-              CollectiveOfferStep.VISIBILITY,
+              CollectiveOfferStep.INSTITUTION,
             ].includes(activeStep),
           })}
         />

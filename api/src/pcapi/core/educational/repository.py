@@ -25,44 +25,53 @@ from pcapi.utils import date as date_utils
 from pcapi.utils.clean_accents import clean_accents
 
 
-def find_bookings_starting_in_x_days(number_of_days: int) -> list[models.CollectiveBooking]:
-    target_day = date_utils.get_naive_utc_now() + timedelta(days=number_of_days)
+def _get_collective_booking_joinedload() -> list[sa_orm.strategy_options._AbstractLoad]:
+    return [
+        sa_orm.joinedload(models.CollectiveBooking.collectiveStock)
+        .joinedload(models.CollectiveStock.collectiveOffer)
+        .joinedload(models.CollectiveOffer.venue),
+        sa_orm.joinedload(models.CollectiveBooking.educationalRedactor),
+        sa_orm.joinedload(models.CollectiveBooking.educationalInstitution),
+    ]
+
+
+def get_bookings_ended_yesterday() -> list[models.CollectiveBooking]:
+    target_day = date_utils.get_naive_utc_now() - timedelta(days=1)
     start = datetime.combine(target_day, time.min)
     end = datetime.combine(target_day, time.max)
-    return find_bookings_in_interval(start, end, models.CollectiveStock.startDatetime)
 
-
-def find_bookings_ending_in_x_days(number_of_days: int) -> list[models.CollectiveBooking]:
-    target_day = date_utils.get_naive_utc_now() + timedelta(days=number_of_days)
-    start = datetime.combine(target_day, time.min)
-    end = datetime.combine(target_day, time.max)
-    return find_bookings_in_interval(start, end, models.CollectiveStock.endDatetime)
-
-
-def find_bookings_in_interval(
-    start: datetime, end: datetime, dateColumn: sa.Column | sa_orm.Mapped[datetime]
-) -> list[models.CollectiveBooking]:
-    query = db.session.query(models.CollectiveBooking).join(
-        models.CollectiveStock, models.CollectiveBooking.collectiveStock
-    )
-    query = query.filter(
-        dateColumn.between(start, end),
-        models.CollectiveBooking.status != models.CollectiveBookingStatus.CANCELLED,
-    )
-    query = query.options(sa_orm.joinedload(models.CollectiveBooking.collectiveStock, innerjoin=True))
-    query = query.options(
-        sa_orm.joinedload(models.CollectiveBooking.collectiveStock, innerjoin=True).joinedload(
-            models.CollectiveStock.collectiveOffer, innerjoin=True
+    bookings_query = (
+        db.session.query(models.CollectiveBooking)
+        .join(models.CollectiveBooking.collectiveStock)
+        .filter(
+            models.CollectiveStock.endDatetime.between(start, end),
+            # if the event has ended and the booking is still PENDING, it means the auto-cancel job has not run yet
+            # but the offer is already cancelled due to start date passed
+            models.CollectiveBooking.status != models.CollectiveBookingStatus.CANCELLED,
+            models.CollectiveBooking.status != models.CollectiveBookingStatus.PENDING,
         )
+        .options(*_get_collective_booking_joinedload())
     )
-    query = query.options(
-        sa_orm.joinedload(models.CollectiveBooking.collectiveStock, innerjoin=True)
-        .joinedload(models.CollectiveStock.collectiveOffer, innerjoin=True)
-        .joinedload(models.CollectiveOffer.venue, innerjoin=True)
+
+    return bookings_query.all()
+
+
+def get_bookings_starting_tomorrow() -> list[models.CollectiveBooking]:
+    target_day = date_utils.get_naive_utc_now() + timedelta(days=1)
+    start = datetime.combine(target_day, time.min)
+    end = datetime.combine(target_day, time.max)
+
+    bookings_query = (
+        db.session.query(models.CollectiveBooking)
+        .join(models.CollectiveBooking.collectiveStock)
+        .filter(
+            models.CollectiveStock.startDatetime.between(start, end),
+            models.CollectiveBooking.status != models.CollectiveBookingStatus.CANCELLED,
+        )
+        .options(*_get_collective_booking_joinedload())
     )
-    query = query.options(sa_orm.joinedload(models.CollectiveBooking.educationalRedactor, innerjoin=True))
-    query = query.options(sa_orm.joinedload(models.CollectiveBooking.educationalInstitution, innerjoin=True))
-    return query.distinct().all()
+
+    return bookings_query.all()
 
 
 def get_and_lock_educational_deposit(
@@ -333,6 +342,7 @@ def get_paginated_collective_bookings_for_educational_year(
             models.CollectiveBooking.id,
             models.CollectiveBooking.collectiveStockId,
             models.CollectiveBooking.status,
+            models.CollectiveBooking.confirmationDate,
             models.CollectiveBooking.confirmationLimitDate,
             models.CollectiveBooking.cancellationReason,
             models.CollectiveBooking.dateCreated,
@@ -809,11 +819,14 @@ def filter_collective_offers_by_statuses(
             ),
         )
 
-        # Cancelled due to no booking when the event has started
+        # Cancelled due to no booking OR booking not confirmed when the event has started
         on_booking_status_filter.append(
             sa.and_(
                 *approved_and_active_filters,
-                models.CollectiveBooking.status == None,
+                sa.or_(
+                    models.CollectiveBooking.status == None,
+                    models.CollectiveBooking.status == models.CollectiveBookingStatus.PENDING,
+                ),
                 models.CollectiveStock.hasStartDatetimePassed == True,
             ),
         )
@@ -890,8 +903,8 @@ def list_public_collective_offers(
     required_id: int,
     displayedStatus: models.CollectiveOfferDisplayedStatus | None = None,
     venue_id: int | None = None,
-    period_beginning_date: str | None = None,
-    period_ending_date: str | None = None,
+    period_beginning_date: datetime | None = None,
+    period_ending_date: datetime | None = None,
     ids: list[int] | None = None,
     limit: int = 500,
 ) -> list[models.CollectiveOffer]:

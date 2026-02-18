@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
@@ -10,6 +11,7 @@ import {
   managedVenueFactory,
   userOffererFactory,
 } from '@/commons/utils/factories/userOfferersFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import type { MandatoryCollectiveOfferFromParamsProps } from '../../components/OfferEducational/useCollectiveOfferFromParams'
@@ -31,7 +33,11 @@ const renderCollectiveOfferEdition = (
   renderWithProviders(<CollectiveOfferEdition {...props} />, {
     initialRouterEntries: [path],
     storeOverrides: {
-      user: { currentUser: sharedCurrentUserFactory() },
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedVenue: makeGetVenueResponseModel({ id: props.offer.venue.id }),
+        venues: [makeVenueListItem({ id: props.offer.venue.id })],
+      },
       offerer: currentOffererFactory({
         currentOfferer: { id: 10 },
       }),

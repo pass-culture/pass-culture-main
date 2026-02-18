@@ -10,6 +10,9 @@
     {% if has_fraudulent_booking and has_permission("READ_FRAUDULENT_BOOKING_INFO") %}
       {{ build_fraudulent_booking_badge(has_fraudulent_booking, "Réservations frauduleuses") }}
     {% endif %}
+    {% if venue.isReimbursementSuspended and has_permission("READ_PRO_REIMBURSEMENT_SUSPENSION") %}
+      {{ "Remboursements gelés" | format_badge('danger', 'exclamation-triangle') }}
+    {% endif %}
   {% endcall %}
 {% endmacro %}
 {% macro build_offerer_badges(offerer, has_fraudulent_booking) %}

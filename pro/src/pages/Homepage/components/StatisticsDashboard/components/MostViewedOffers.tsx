@@ -8,31 +8,19 @@ import { Thumb } from '@/ui-kit/Thumb/Thumb'
 import styles from './MostViewedOffers.module.scss'
 
 export interface MostViewedOffersProps {
-  last30daysViews: number
   topOffers: TopOffersResponseData[]
 }
 
-export const MostViewedOffers = ({
-  last30daysViews,
-  topOffers,
-}: MostViewedOffersProps) => {
+export const MostViewedOffers = ({ topOffers }: MostViewedOffersProps) => {
   return (
     <div className={styles['container']}>
       <div>
-        <h3 className={styles['block-title']}>
-          Vos offres ont été vues
-          <br />
-          {last30daysViews.toLocaleString('fr-FR')} fois
-        </h3>
-        <span>ces 30 derniers jours</span>
+        <h3 className={styles['block-title']}>Top offres</h3>
       </div>
 
-      <div className={styles['caption']}>Offres les plus consultées</div>
-
       <ol className={styles['top-offers']}>
-        {topOffers.map((topOffer, index) => (
+        {topOffers.map((topOffer) => (
           <li key={topOffer.offerId} className={styles['top-offer']}>
-            <div className={styles['top-offer-rank']}>#{index + 1}</div>
             <Thumb
               url={topOffer.image?.url}
               className={cn(styles['top-offer-thumbnail'], {
@@ -48,9 +36,11 @@ export const MostViewedOffers = ({
               )}
               <span className={styles['top-offer-title']}>
                 {topOffer.offerName}
+              </span>{' '}
+              <span className={styles['top-offer-views']}>
+                {topOffer.numberOfViews.toLocaleString('fr-FR')}{' '}
+                {pluralizeFr(topOffer.numberOfViews, 'vue', 'vues')}
               </span>
-              <br /> {topOffer.numberOfViews.toLocaleString('fr-FR')}{' '}
-              {pluralizeFr(topOffer.numberOfViews, 'vue', 'vues')}
             </div>
           </li>
         ))}

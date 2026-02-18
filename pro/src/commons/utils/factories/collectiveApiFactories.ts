@@ -291,10 +291,16 @@ export const defaultGetVenue: GetVenueResponseModel = {
   allowedOnAdage: true,
   hasNonFreeOffers: true,
   canDisplayHighlights: true,
+  hasNonDraftOffers: true,
 }
 
 export const defaultGetCollectiveOfferRequest: GetCollectiveOfferRequestResponseModel =
   {
+    dateCreated: new Date().toISOString(),
+    phoneNumber: null,
+    requestedDate: null,
+    totalStudents: null,
+    totalTeachers: null,
     comment: 'comment',
     institution: {
       city: 'Paris',

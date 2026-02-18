@@ -6,7 +6,6 @@ import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import waitFullIcon from '@/icons/full-wait.svg'
-import styles from '@/pages/IndividualOffers/IndividualOffersContainer/components/IndividualOfferColumns/components/Cells.module.scss'
 
 export type OfferBookingCellProps = {
   offer: ListOffersOfferResponseModel
@@ -28,7 +27,7 @@ export const OfferBookingCell = ({ offer }: OfferBookingCellProps) => {
       : null
 
   return (
-    <div className={styles['bookings-column']}>
+    <div>
       {bookableDate ? (
         <span style={{ whiteSpace: 'nowrap' }}>
           <Tag

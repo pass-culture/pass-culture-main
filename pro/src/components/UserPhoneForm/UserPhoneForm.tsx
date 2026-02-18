@@ -12,10 +12,8 @@ import { updateUser } from '@/commons/store/user/reducer'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
-import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 
-import styles from './UserForm.module.scss'
 import { validationSchema } from './validationSchema'
 
 export interface UserPhoneFormProps {
@@ -75,35 +73,33 @@ export const UserPhoneForm = ({
   }
 
   return (
-    <BoxFormLayout.Fields>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <FormLayout>
-          <FormLayout.Row>
-            <PhoneNumberInput
-              label="Téléphone"
-              {...register('phoneNumber', {
-                onBlur(event) {
-                  // This is because entries like "+33600110011invalid" are considered valid by libphonenumber-js,
-                  // We need to explicitely extract "+33600110011" that is in the .number property
-                  try {
-                    const phoneNumber = parseAndValidateFrenchPhoneNumber(
-                      event.target.value
-                    ).number
-                    setValue('phoneNumber', phoneNumber)
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                  } catch (_e) {
-                    // phone is considered invalid by the lib, so we does nothing here and let yup indicates the error
-                  }
-                },
-              })}
-              required
-              error={errors.phoneNumber?.message}
-              requiredIndicator="explicit"
-            />
-          </FormLayout.Row>
-        </FormLayout>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <FormLayout mediumWidthForm>
+        <FormLayout.Row mdSpaceAfter>
+          <PhoneNumberInput
+            label="Téléphone"
+            {...register('phoneNumber', {
+              onBlur(event) {
+                // This is because entries like "+33600110011invalid" are considered valid by libphonenumber-js,
+                // We need to explicitely extract "+33600110011" that is in the .number property
+                try {
+                  const phoneNumber = parseAndValidateFrenchPhoneNumber(
+                    event.target.value
+                  ).number
+                  setValue('phoneNumber', phoneNumber)
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                } catch (_e) {
+                  // phone is considered invalid by the lib, so we does nothing here and let yup indicates the error
+                }
+              },
+            })}
+            required
+            error={errors.phoneNumber?.message}
+            requiredIndicator="explicit"
+          />
+        </FormLayout.Row>
 
-        <div className={styles['buttons-field']}>
+        <FormLayout.Row inline>
           <Button
             onClick={onCancel}
             variant={ButtonVariant.SECONDARY}
@@ -111,8 +107,8 @@ export const UserPhoneForm = ({
             label="Annuler"
           />
           <Button type="submit" isLoading={isSubmitting} label="Enregistrer" />
-        </div>
-      </form>
-    </BoxFormLayout.Fields>
+        </FormLayout.Row>
+      </FormLayout>
+    </form>
   )
 }

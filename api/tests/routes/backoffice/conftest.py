@@ -84,6 +84,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO,
         perm_models.Permissions.CLOSE_OFFERER,
         perm_models.Permissions.READ_NON_PAYMENT_NOTICES,
+        perm_models.Permissions.READ_PRO_REIMBURSEMENT_SUSPENSION,
     ],
     "support_pro_n2": [
         perm_models.Permissions.MOVE_SIRET,
@@ -104,11 +105,14 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_INCIDENTS,
         perm_models.Permissions.READ_TECH_PARTNERS,
         perm_models.Permissions.MANAGE_TECH_PARTNERS,
+        perm_models.Permissions.READ_PRO_REIMBURSEMENT_SUSPENSION,
     ],
     "fraude_conformite": [
         perm_models.Permissions.PRO_FRAUD_ACTIONS,
         perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO,
         perm_models.Permissions.MANAGE_FRAUDULENT_BOOKING_INFO,
+        perm_models.Permissions.READ_PRO_REIMBURSEMENT_SUSPENSION,
+        perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION,
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.READ_PRO_ENTITY,
         perm_models.Permissions.READ_PRO_ENTREPRISE_INFO,
@@ -133,17 +137,22 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_BOOKINGS,
         perm_models.Permissions.READ_BOOKINGS,
         perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO,
-        perm_models.Permissions.MANAGE_FRAUDULENT_BOOKING_INFO,
     ],
     "daf": [
         perm_models.Permissions.READ_REIMBURSEMENT_RULES,
         perm_models.Permissions.READ_INCIDENTS,
         perm_models.Permissions.CREATE_INCIDENTS,
         perm_models.Permissions.MANAGE_INCIDENTS,
+        perm_models.Permissions.READ_PRO_ENTITY,
+        perm_models.Permissions.READ_PRO_REIMBURSEMENT_SUSPENSION,
     ],
     "responsable_daf": [
         perm_models.Permissions.READ_REIMBURSEMENT_RULES,
         perm_models.Permissions.CREATE_REIMBURSEMENT_RULES,
+    ],
+    "data": [
+        perm_models.Permissions.READ_OFFERS,
+        perm_models.Permissions.MANAGE_ARTISTS,
     ],
     "partenaire_technique": [
         perm_models.Permissions.READ_TECH_PARTNERS,
@@ -229,6 +238,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_BOOKINGS,
         perm_models.Permissions.READ_OFFERS,
         perm_models.Permissions.MANAGE_OFFERS,
+        perm_models.Permissions.MANAGE_ARTISTS,
         perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS,
         perm_models.Permissions.VALIDATE_OFFERER,
         perm_models.Permissions.READ_TAGS,
@@ -250,6 +260,8 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES,
         perm_models.Permissions.READ_USER_PROFILE_REFRESH_CAMPAIGN,
         perm_models.Permissions.MANAGE_USER_PROFILE_REFRESH_CAMPAIGN,
+        perm_models.Permissions.READ_PRO_REIMBURSEMENT_SUSPENSION,
+        perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION,
     ],
     "dpo": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,

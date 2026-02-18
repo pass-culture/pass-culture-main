@@ -22,6 +22,8 @@
   .options-item {
     display: flex;
     padding: rem.torem(11.2px) rem.torem(16px);
+    gap: rem.torem(8px);
+    align-items: center;
     cursor: pointer;
   }
 
@@ -33,4 +35,12 @@
       padding: rem.torem(9.2px) rem.torem(14px);
     }
   }
+}
+
+.options-img {
+  width: rem.torem(36px);
+  height: rem.torem(36px);
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
 }

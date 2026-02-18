@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleError } from '@/commons/errors/handleError'
@@ -17,14 +18,26 @@ import {
 import type { AppThunkApiConfig } from '../../store'
 import { setSelectedVenue, type UserAccess, updateUserAccess } from '../reducer'
 import { logout } from './logout'
+import { setSelectedAdminOffererById } from './setSelectedAdminOffererById'
 
+// TODO (igabriele, 2026-02-04): Rename that to `setSelectedPartnerVenueById`.
 export const setSelectedVenueById = createAsyncThunk<
-  UserAccess | null,
-  number,
+  {
+    selectedVenue: GetVenueResponseModel | null
+    // TODO (igabriele, 2026-02-04): Delete this prop once `WIP_SWITCH_VENUE` FF is enabled and removed.
+    newUserAccess: UserAccess | null
+  },
+  {
+    nextSelectedVenueId: number
+    shouldSkipSelectedAdminOffererUpdate?: boolean
+  },
   AppThunkApiConfig
 >(
   'user/setSelectedVenueById',
-  async (nextSelectedVenueId, { dispatch, getState }) => {
+  async (
+    { nextSelectedVenueId, shouldSkipSelectedAdminOffererUpdate = false },
+    { dispatch, getState }
+  ) => {
     try {
       const state = getState()
 
@@ -32,7 +45,10 @@ export const setSelectedVenueById = createAsyncThunk<
       assertOrFrontendError(offererNames, '`offererNames` is null.')
       const previousSelectedVenue = state.user.selectedVenue
       if (nextSelectedVenueId === previousSelectedVenue?.id) {
-        return state.user.access
+        return {
+          selectedVenue: previousSelectedVenue,
+          newUserAccess: state.user.access,
+        }
       }
 
       const nextSelectedVenue = await api.getVenue(nextSelectedVenueId)
@@ -47,12 +63,17 @@ export const setSelectedVenueById = createAsyncThunk<
         '`nextSelectedOffererName` is undefined.'
       )
 
+      // TODO (igabriele, 2026-02-04): Delete those 2 statements once `WIP_SWITCH_VENUE` FF is enabled and removed.
       const nextUserAccess: UserAccess = nextSelectedOfferer.isOnboarded
         ? 'full'
         : 'no-onboarding'
       dispatch(updateUserAccess(nextUserAccess))
+
       dispatch(updateCurrentOfferer(nextSelectedOfferer))
-      // TODO (igabriele, 2025-10-28): Handle that case properly before the end of `WIP_SWITCH_VENUE`.
+      if (!shouldSkipSelectedAdminOffererUpdate) {
+        await dispatch(setSelectedAdminOffererById(nextSelectedOfferer))
+      }
+      // TODO (igabriele, 2026-02-04): Delete this statement once `WIP_SWITCH_VENUE` FF is enabled and removed.
       dispatch(setCurrentOffererName(nextSelectedOffererName))
       dispatch(setSelectedVenue(nextSelectedVenue))
 
@@ -65,7 +86,10 @@ export const setSelectedVenueById = createAsyncThunk<
         String(nextSelectedVenue.id)
       )
 
-      return nextUserAccess
+      return {
+        selectedVenue: nextSelectedVenue,
+        newUserAccess: nextUserAccess,
+      }
     } catch (err) {
       handleError(
         err,
@@ -76,7 +100,10 @@ export const setSelectedVenueById = createAsyncThunk<
         logout()
       }
 
-      return null
+      return {
+        selectedVenue: null,
+        newUserAccess: null,
+      }
     }
   }
 )

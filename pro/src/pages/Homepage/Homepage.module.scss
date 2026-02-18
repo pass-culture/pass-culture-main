@@ -37,10 +37,16 @@
   @include fonts.title2;
 }
 
-.container-stats-highlight {
-  display: flex;
-  gap: var(--size-spacing-l);
-  flex: 1;
-  flex-wrap: wrap;
-  align-items: stretch;
+.container-stats {
+  margin-bottom: var(--size-spacing-xxl);
+
+  &-with-highlights {
+    display: grid;
+    gap: var(--size-spacing-l);
+    grid-template-columns: 3fr 310px;
+  }
+
+  @media (max-width: size.$laptop) {
+    grid-template-columns: 1fr;
+  }
 }

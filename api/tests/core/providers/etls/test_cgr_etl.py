@@ -228,6 +228,7 @@ class CGRExtractTransformLoadProcessTest:
         assert offer_1.withdrawalDetails == venue_provider.venue.withdrawalDetails
         assert offer_1.dateModifiedAtLastProvider == datetime.datetime(2022, 12, 12, 12, 41, 30, tzinfo=datetime.UTC)
         assert offer_1.publicationDatetime == datetime.datetime(2022, 12, 12, 12, 41, 30, tzinfo=datetime.UTC)
+        assert offer_1.lastProviderId == venue_provider.providerId
 
         assert offer_1.product
         assert offer_1.product.name == "Venom"
@@ -250,6 +251,7 @@ class CGRExtractTransformLoadProcessTest:
         assert offer_1_stock_1.price == decimal.Decimal("6.9")
         assert offer_1_stock_1.priceCategory.price == decimal.Decimal("6.9")
         assert offer_1_stock_1.priceCategory.label == "Tarif Standard ICE"
+        assert offer_1_stock_1.lastProviderId == venue_provider.providerId
 
         async_index_offer_ids_mock.assert_called_once_with(
             set([offer_1.id]),

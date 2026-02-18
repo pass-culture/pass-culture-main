@@ -25,7 +25,7 @@ describe('LinkVenueCallout', () => {
     ).not.toBeInTheDocument()
     expect(
       screen.queryByRole('link', {
-        name: 'Gérer le rattachement de mes lieux',
+        name: 'Gérer le rattachement de ma structure',
       })
     ).not.toBeInTheDocument()
   })
@@ -69,9 +69,7 @@ describe('LinkVenueCallout', () => {
       renderWithProviders(<LinkVenueCallout {...props} />)
 
       expect(
-        screen.getByText(
-          /Dernière étape pour recevoir vos remboursements : reliez votre structure à un compte bancaire./
-        )
+        screen.getByText(/Rattachement bancaire requis/)
       ).toBeInTheDocument()
       expect(
         screen.getByRole('link', {
@@ -94,9 +92,7 @@ describe('LinkVenueCallout', () => {
       ).toBeInTheDocument()
 
       expect(
-        screen.getByText(
-          /Dernière étape pour recevoir vos remboursements : reliez votre structure à un compte bancaire./
-        )
+        screen.getByText(/Rattachement bancaire requis/)
       ).toBeInTheDocument()
     })
 
@@ -112,9 +108,7 @@ describe('LinkVenueCallout', () => {
       renderWithProviders(<LinkVenueCallout {...props} />)
 
       expect(
-        screen.getByText(
-          /Dernière étape pour recevoir vos remboursements : reliez vos structures à un compte bancaire./
-        )
+        screen.getByText(/Rattachement bancaire requis/)
       ).toBeInTheDocument()
     })
 

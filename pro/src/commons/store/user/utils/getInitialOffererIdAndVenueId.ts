@@ -7,7 +7,7 @@ import {
   localStorageManager,
 } from '@/commons/utils/localStorageManager'
 
-// TODO (igabriele, 2026-01-08): Delete this util once `WIP_SWITCH_VENUE` is enabled in production.
+// TODO (igabriele, 2026-01-08): Delete this util once `WIP_SWITCH_VENUE` FF is enabled and removed.
 export const getInitialOffererIdAndVenueId = (
   offerersNames: GetOffererNameResponseModel[],
   venues: VenueListItemResponseModel[]

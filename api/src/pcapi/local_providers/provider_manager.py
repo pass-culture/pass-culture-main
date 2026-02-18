@@ -6,6 +6,9 @@ from urllib3 import exceptions as urllib3_exceptions
 import pcapi.connectors.ems as ems_connectors
 from pcapi.core.providers import models as provider_models
 from pcapi.core.providers import repository as providers_repository
+from pcapi.core.providers.etls.boost_etl import BoostExtractTransformLoadProcess
+from pcapi.core.providers.etls.cds_etl import CDSExtractTransformLoadProcess
+from pcapi.core.providers.etls.cgr_etl import CGRExtractTransformLoadProcess
 from pcapi.local_providers.allocine.allocine_stocks import AllocineStocks
 from pcapi.local_providers.cinema_providers.boost.boost_stocks import BoostStocks
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
@@ -14,6 +17,7 @@ from pcapi.local_providers.cinema_providers.ems.ems_stocks import EMSStocks
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.models import db
 from pcapi.utils import cron
+from pcapi.utils import logging as logging_utils
 from pcapi.utils import requests
 from pcapi.utils.repository import transaction
 
@@ -25,6 +29,17 @@ _NAME_TO_LOCAL_PROVIDER_CLASS: dict[str, Type[LocalProvider]] = {
     "BoostStocks": BoostStocks,
     "CDSStocks": CDSStocks,
     "CGRStocks": CGRStocks,
+}
+
+_LOCAL_CLASS_NAME_TO_ETL_CLASS: dict[
+    str,
+    Type[BoostExtractTransformLoadProcess]
+    | Type[CDSExtractTransformLoadProcess]
+    | Type[CGRExtractTransformLoadProcess],
+] = {
+    "BoostStocks": BoostExtractTransformLoadProcess,
+    "CDSStocks": CDSExtractTransformLoadProcess,
+    "CGRStocks": CGRExtractTransformLoadProcess,
 }
 
 
@@ -54,10 +69,25 @@ def synchronize_venue_providers(venue_providers: list[provider_models.VenueProvi
             logger.exception("Unexpected error while synchronizing venue provider", extra=log_data)
 
 
+def new_etl_integration_can_be_enabled(venue_provider: provider_models.VenueProvider) -> bool:
+    return venue_provider.provider.localClass in _LOCAL_CLASS_NAME_TO_ETL_CLASS
+
+
 def synchronize_venue_provider(venue_provider: provider_models.VenueProvider, limit: int | None = None) -> None:
     assert venue_provider.provider.localClass in _NAME_TO_LOCAL_PROVIDER_CLASS.keys(), (
         f"Only {', '.join(_NAME_TO_LOCAL_PROVIDER_CLASS.keys())} should reach this code"
     )
+    # new integration
+    if (
+        venue_provider.isNewEtlIntegrationEnabled
+        and venue_provider.provider.localClass in _LOCAL_CLASS_NAME_TO_ETL_CLASS
+    ):
+        execute_cinema_etl_process(venue_provider)
+        return
+
+    # old integration
+    # TODO (tcoudray-pass, 04/02/26): Remove once we get rid of local provider classes
+    # See https://passculture.atlassian.net/browse/PC-40117
     provider_class = _NAME_TO_LOCAL_PROVIDER_CLASS[venue_provider.provider.localClass]
     logger.info(
         "Starting synchronization of venue_provider=%s with provider=%s",
@@ -71,6 +101,16 @@ def synchronize_venue_provider(venue_provider: provider_models.VenueProvider, li
         venue_provider.id,
         venue_provider.provider.localClass,
     )
+
+
+def execute_cinema_etl_process(venue_provider: provider_models.VenueProvider, *, debug: bool = False) -> None:
+    logging_level = logging.DEBUG if debug else logging.INFO
+    pcapi_logger = logging.getLogger("pcapi")
+
+    with logging_utils.logging_at_level(pcapi_logger, logging_level):
+        assert venue_provider.provider.localClass  # to make mypy happy
+        ETLProcess = _LOCAL_CLASS_NAME_TO_ETL_CLASS[venue_provider.provider.localClass]
+        ETLProcess(venue_provider).execute()
 
 
 def synchronize_ems_venue_providers(from_last_version: bool = False) -> None:

@@ -12,7 +12,6 @@ import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext import mutable as sa_mutable
-from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
@@ -250,7 +249,9 @@ class Product(PcObject, Model, HasThumbMixin):
         "Artist", back_populates="products", secondary="artist_product_link"
     )
 
-    artistLinks: sa_orm.Mapped[list["ArtistProductLink"]] = sa_orm.relationship("ArtistProductLink")
+    artistLinks: sa_orm.Mapped[list["ArtistProductLink"]] = sa_orm.relationship(
+        "ArtistProductLink", back_populates="product", viewonly=True
+    )
     offers: sa_orm.Mapped[list["Offer"]] = sa_orm.relationship(
         "Offer", back_populates="product", order_by="Offer.id", foreign_keys="Offer.productId"
     )
@@ -882,6 +883,9 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     product: sa_orm.Mapped["Product | None"] = sa_orm.relationship(
         Product, foreign_keys=[productId], back_populates="offers"
     )
+    quality: sa_orm.Mapped["OfferQuality | None"] = sa_orm.relationship(
+        "OfferQuality", foreign_keys="OfferQuality.offerId", back_populates="offer", uselist=False
+    )
     rankingWeight: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.Integer, nullable=True)
     subcategoryId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, index=True)
     url: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(255), nullable=True)
@@ -932,9 +936,6 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     mediations: sa_orm.Mapped[list["Mediation"]] = sa_orm.relationship(
         "Mediation", foreign_keys="Mediation.offerId", back_populates="offer"
     )
-    reports: sa_orm.Mapped[list["OfferReport"]] = sa_orm.relationship(
-        "OfferReport", foreign_keys="OfferReport.offerId", back_populates="offer"
-    )
     stocks: sa_orm.Mapped[list["Stock"]] = sa_orm.relationship(
         "Stock", foreign_keys="Stock.offerId", back_populates="offer"
     )
@@ -952,42 +953,32 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     chroniclesCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
     likesCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
 
-    @declared_attr.directive
-    def __table_args__(cls) -> tuple:
-        parent_args: list = []
-
-        # Retrieves indexes from parent mixins defined in __table_args__
-        for base_class in cls.__mro__:
-            try:
-                parent_args += super(base_class, cls).__table_args__
-            except (AttributeError, TypeError):
-                pass
-
-        parent_args += [
-            sa.UniqueConstraint("idAtProvider", "venueId", name="unique_idAtProvider_venueId"),
-            sa.CheckConstraint("ean ~ '^\\d{13}$'", name="check_ean_validity"),
-            sa.Index("idx_offer_trgm_name", "name", postgresql_using="gin"),
-            sa.Index("offer_idAtProvider", "idAtProvider"),
-            sa.Index("offer_visa_idx", cls._extraData["visa"].astext),  # type: ignore [index, union-attr]
-            sa.Index("offer_authorId_idx", "authorId", postgresql_using="btree"),
-            sa.Index("ix_offer_lastProviderId", "lastProviderId", postgresql_where='"lastProviderId" IS NOT NULL'),
-            sa.Index(
-                "ix_offer_publicationDatetime",
-                "publicationDatetime",
-                postgresql_where='"publicationDatetime" IS NOT NULL',
-            ),
-            sa.Index(
-                "ix_offer_bookingAllowedDatetime",
-                "bookingAllowedDatetime",
-                postgresql_where='"bookingAllowedDatetime" IS NOT NULL',
-            ),
-            sa.Index(
-                "ix_offer_offererAddressId", "offererAddressId", postgresql_where='"offererAddressId" IS NOT NULL'
-            ),
-            sa.Index("ix_offer_venueId_subcategoryId", "venueId", "subcategoryId"),
-        ]
-
-        return tuple(parent_args)
+    __table_args__ = (
+        sa.Index(
+            "idx_offer_lastValidationAuthorUserId",
+            "lastValidationAuthorUserId",
+            postgresql_where='"lastValidationAuthorUserId IS NOT NULL"',
+        ),
+        sa.UniqueConstraint("idAtProvider", "venueId", name="unique_idAtProvider_venueId"),
+        sa.CheckConstraint("ean ~ '^\\d{13}$'", name="check_ean_validity"),
+        sa.Index("idx_offer_trgm_name", "name", postgresql_using="gin"),
+        sa.Index("offer_idAtProvider", "idAtProvider"),
+        sa.Index("offer_visa_idx", _extraData["visa"].astext),
+        sa.Index("offer_authorId_idx", "authorId", postgresql_using="btree"),
+        sa.Index("ix_offer_lastProviderId", "lastProviderId", postgresql_where='"lastProviderId" IS NOT NULL'),
+        sa.Index(
+            "ix_offer_publicationDatetime",
+            "publicationDatetime",
+            postgresql_where='"publicationDatetime" IS NOT NULL',
+        ),
+        sa.Index(
+            "ix_offer_bookingAllowedDatetime",
+            "bookingAllowedDatetime",
+            postgresql_where='"bookingAllowedDatetime" IS NOT NULL',
+        ),
+        sa.Index("ix_offer_offererAddressId", "offererAddressId", postgresql_where='"offererAddressId" IS NOT NULL'),
+        sa.Index("ix_offer_venueId_subcategoryId", "venueId", "subcategoryId"),
+    )
 
     @property
     def extraData(self) -> OfferExtraData | None:
@@ -1674,95 +1665,6 @@ class OfferPriceLimitationRule(PcObject, Model):
     rate: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(sa.Numeric(5, 4), nullable=False)
 
 
-@dataclass
-class ReasonMeta:
-    description: str
-    title: str
-
-
-class Reason(enum.Enum):
-    """
-    Describe possible reason codes to used when reporting an offer.
-
-    The whole meta part is only consumed by the api client, it has no meaning
-    inside the whole API code.
-
-    Note: when adding a new enum symbol, do not forget to update the meta method.
-    """
-
-    IMPROPER = "IMPROPER"
-    PRICE_TOO_HIGH = "PRICE_TOO_HIGH"
-    INAPPROPRIATE = "INAPPROPRIATE"
-    OTHER = "OTHER"
-
-    @staticmethod
-    def get_meta(value: str) -> ReasonMeta:
-        return Reason.get_full_meta()[value]
-
-    @staticmethod
-    def get_full_meta() -> dict[str, ReasonMeta]:
-        return {
-            "IMPROPER": ReasonMeta(
-                title="La description est non conforme",
-                description="La date ne correspond pas, mauvaise description...",
-            ),
-            "PRICE_TOO_HIGH": ReasonMeta(title="Le tarif est trop élevé", description="comparé à l'offre publique"),
-            "INAPPROPRIATE": ReasonMeta(
-                title="Le contenu est inapproprié", description="violence, incitation à la haine, nudité..."
-            ),
-            "OTHER": ReasonMeta(title="Autre", description=""),
-        }
-
-
-# if the reason is != OTHER, there should be no customReasonContent,
-# and if reason = OTHER, the customReasonContent cannot be NULL or "".
-OFFER_REPORT_CUSTOM_REASONS_CONSTRAINT = """
-(offer_report."customReasonContent" IS NULL AND offer_report.reason != 'OTHER')
-OR (
-    (offer_report."customReasonContent" IS NOT NULL OR trim(both ' ' from offer_report."customReasonContent") = '')
-    AND offer_report.reason = 'OTHER'
-)
-"""
-
-
-class OfferReport(PcObject, Model):
-    __tablename__ = "offer_report"
-
-    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False
-    )
-    user: sa_orm.Mapped["User"] = sa_orm.relationship("User", foreign_keys=[userId], back_populates="reported_offers")
-    offerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False
-    )
-    offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", foreign_keys=[offerId], back_populates="reports")
-    reason: sa_orm.Mapped[Reason] = sa_orm.mapped_column(
-        sa.Enum(Reason, create_constraint=False), nullable=False, index=True
-    )
-    reportedAt: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, server_default=sa.func.now()
-    )
-    # If the reason code is OTHER, save the user's custom reason
-    customReasonContent: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
-
-    __table_args__ = (
-        sa.UniqueConstraint(
-            "userId",
-            "offerId",
-            name="unique_offer_per_user",
-        ),
-        sa.CheckConstraint(
-            OFFER_REPORT_CUSTOM_REASONS_CONSTRAINT,
-            name="custom_reason_null_only_if_reason_is_other",
-        ),
-    )
-
-    def __str__(self) -> str:
-        return (
-            f"{self.__class__.__name__}#{self.id} userId={self.userId}, offerId={self.offerId}, when={self.reportedAt}"
-        )
-
-
 class BookMacroSection(PcObject, Model):
     __tablename__ = "book_macro_section"
 
@@ -1879,3 +1781,16 @@ class OfferCompliance(PcObject, Model):
         db_utils.MagicEnum(ComplianceValidationStatusPrediction), nullable=True
     )
     validation_status_prediction_reason: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+
+
+class OfferQuality(PcObject, Model):
+    __tablename__ = "offer_quality"
+
+    offerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=False, unique=True
+    )
+    offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", foreign_keys=[offerId], back_populates="quality")
+    completionScore: sa_orm.Mapped[float] = sa_orm.mapped_column(sa.Float, nullable=False)
+    updatedAt: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now(), onupdate=sa.func.now()
+    )

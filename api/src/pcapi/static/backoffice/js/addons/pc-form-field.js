@@ -67,6 +67,9 @@ class PcFormField extends PcAddOn {
     configuration.all_available_fields.forEach((fieldTermination) => {
       const fieldName = `${baseName}-${fieldTermination}`
       const $field = $formField.querySelector(`.${fieldName}`)
+      if (!$field){
+        console.error(`${fieldName} not found`)
+      }
       $field.classList.add('d-none')
     })
     // hide operator fields

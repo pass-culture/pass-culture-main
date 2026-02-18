@@ -79,15 +79,6 @@ class GetOffererVenueResponseModel(BaseModel):
         getter_dict = GetOffererVenueResponseModelGetterDict
 
 
-class PostOffererResponseModel(BaseModel):
-    name: str
-    id: int
-    siren: str
-
-    class Config:
-        orm_mode = True
-
-
 # GetOffererResponseModel includes sensitive information and can be returned only if authenticated user has a validated
 # access to the offerer. During subscription process, use PostOffererResponseModel
 class GetOffererResponseModel(BaseModel):
@@ -324,6 +315,9 @@ class TopOffersResponseData(offerers_models.TopOffersData):
     image: offers_models.OfferImage | None
     isHeadlineOffer: bool
 
+    class Config:
+        alias_generator = to_camel
+
 
 class OffererStatsDataModel(BaseModel):
     totalViewsLast30Days: int
@@ -370,6 +364,30 @@ class GetOffererStatsResponseModel(BaseModel):
         )
 
 
+class VenueMonthlyViewModel(BaseModel):
+    month: int
+    views: int
+
+
+class VenueStatsDataModel(BaseModel):
+    total_views_last_30_days: int
+    top_offers: list[TopOffersResponseData]
+    monthly_views: list[VenueMonthlyViewModel]
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
+
+class GetVenueStatsResponseModel(BaseModel):
+    venue_id: int
+    json_data: VenueStatsDataModel
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
+
 class LinkVenueToBankAccountBodyModel(BaseModel):
     venues_ids: set[int]
 
@@ -386,7 +404,7 @@ class GetOffererV2StatsResponseModel(BaseModel):
 
 class OffererAddressGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "label":
+        if key == "label" and not self._obj.label:
             if self.get("common_name", default) is not None:
                 return self.get("common_name", default)
         return super().get(key, default)

@@ -21,7 +21,6 @@ import { pluralizeFr } from '@/commons/utils/pluralize'
 import { AccessibleScrollContainer } from '@/components/AccessibleScrollContainer/AccessibleScrollContainer'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import { Banner } from '@/design-system/Banner/Banner'
-import { Pagination } from '@/design-system/Pagination/Pagination'
 import strokeNoBooking from '@/icons/stroke-no-booking.svg'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
@@ -209,19 +208,16 @@ export const IndividualOffersContainer = ({
               subtitle: '',
             },
           }}
-        />
-      </AccessibleScrollContainer>
-
-      <div className={styles['offers-table-pagination']}>
-        <Pagination
-          currentPage={currentPageNumber}
-          pageCount={pageCount}
-          onPageClick={(page) => {
-            applySelectedFiltersAndRedirect({ ...selectedFilters, page })
-            scrollToContentWrapper()
+          pagination={{
+            currentPage: currentPageNumber,
+            pageCount: pageCount,
+            onPageClick: (page) => {
+              applySelectedFiltersAndRedirect({ ...selectedFilters, page })
+              scrollToContentWrapper()
+            },
           }}
         />
-      </div>
+      </AccessibleScrollContainer>
 
       <output>
         {selectedOfferIds.size > 0 && (

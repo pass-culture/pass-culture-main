@@ -449,17 +449,6 @@ class CollectiveOfferDisplayedStatusTest:
 
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.PREBOOKED
 
-    def test_get_displayed_status_for_offer_when_in_between_startDatetime_endDatetime(self):
-        offer = factories.CollectiveOfferFactory()
-        yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
-        futur = date_utils.get_naive_utc_now() + datetime.timedelta(days=2)
-        stock = factories.CollectiveStockFactory(
-            collectiveOffer=offer, startDatetime=yesterday, endDatetime=futur, bookingLimitDatetime=futur
-        )
-        _booking = factories.UsedCollectiveBookingFactory(collectiveStock=stock)
-
-        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED
-
     def test_get_displayed_status_for_offer_with_cancelled_booking(self):
         yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
 
@@ -472,6 +461,12 @@ class CollectiveOfferDisplayedStatusTest:
 
         assert offer.lastBooking.status == CollectiveBookingStatus.REIMBURSED
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.REIMBURSED
+
+    def test_get_displayed_status_for_offer_with_pending_booking_start_date_passed(self):
+        offer = factories.PrebookedStartPassedCollectiveOfferFactory()
+
+        assert offer.lastBooking.status == CollectiveBookingStatus.PENDING
+        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.CANCELLED
 
 
 class CollectiveOfferTemplateDisplayedStatusTest:

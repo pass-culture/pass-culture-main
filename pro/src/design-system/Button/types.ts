@@ -84,6 +84,8 @@ interface ButtonBaseProps {
   iconPosition?: IconPositionEnum
   /**
    * The class name of the icon
+   *
+   * @deprecated We shouldn't inject any custom style in a DS component.
    */
   iconClassName?: string
 }
@@ -104,7 +106,10 @@ type ButtonAsButtonProps = ButtonBaseProps & {
   opensInNewTab?: never
   isExternal?: never
   isSectionLink?: never
-} & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'disabled'>
+} & Omit<
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
+    'className' | 'disabled' | 'style'
+  >
 
 /**
  * ******************* Link props *******************
@@ -116,7 +121,10 @@ type ButtonAsLinkProps = ButtonBaseProps & {
   opensInNewTab?: boolean
   isExternal?: boolean
   isSectionLink?: boolean
-} & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>
+} & Omit<
+    React.AnchorHTMLAttributes<HTMLAnchorElement>,
+    'className' | 'href' | 'style'
+  >
 
 export type ButtonTypeAttribute =
   React.ButtonHTMLAttributes<HTMLButtonElement>['type']

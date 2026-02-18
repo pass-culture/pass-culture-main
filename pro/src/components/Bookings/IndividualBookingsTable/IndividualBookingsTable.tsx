@@ -6,13 +6,11 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useAccessibleScroll } from '@/commons/hooks/useAccessibleScroll'
 import { usePagination } from '@/commons/hooks/usePagination'
 import { AccessibleScrollContainer } from '@/components/AccessibleScrollContainer/AccessibleScrollContainer'
-import { Pagination } from '@/design-system/Pagination/Pagination'
 import strokeNoBookingIcon from '@/icons/stroke-no-booking.svg'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
 import type { BookingsFilters } from '../Components/types'
 import { useBookingsTableColumnsByIndex } from './ColumnsIndividualBooking'
-import styles from './IndividualBookingsTable.module.scss'
 
 const BOOKINGS_PER_PAGE = 20
 interface IndividualBookingsTableProps {
@@ -70,40 +68,36 @@ export const IndividualBookingsTable = ({
   })
 
   return (
-    <>
-      <AccessibleScrollContainer
-        containerRef={contentWrapperRef}
-        liveMessage={`Page ${page} sur ${pageCount}`}
-      >
-        <Table
-          columns={columns}
-          data={currentPageItems}
-          isLoading={isLoading}
-          variant={TableVariant.COLLAPSE}
-          noResult={{
-            message: 'Aucune réservation trouvée pour votre recherche',
-            subtitle:
-              'Vous pouvez modifier vos filtres et lancer une nouvelle recherche ou',
-            resetMessage: 'Afficher toutes les réservations',
-            onFilterReset: resetFilters,
-          }}
-          noData={{
-            hasNoData: hasNoBooking,
-            message: {
-              icon: strokeNoBookingIcon,
-              title: 'Vous n’avez aucune réservation pour le moment',
-              subtitle: '',
-            },
-          }}
-          getFullRowContent={getFullRowContentIndividual}
-        />
-      </AccessibleScrollContainer>
-      <div className={styles['table-pagination']}>
-        <Pagination
-          currentPage={page}
-          pageCount={pageCount}
-          onPageClick={(newPage) => {
+    <AccessibleScrollContainer
+      containerRef={contentWrapperRef}
+      liveMessage={`Page ${page} sur ${pageCount}`}
+    >
+      <Table
+        columns={columns}
+        data={currentPageItems}
+        isLoading={isLoading}
+        variant={TableVariant.COLLAPSE}
+        noResult={{
+          message: 'Aucune réservation trouvée pour votre recherche',
+          subtitle:
+            'Vous pouvez modifier vos filtres et lancer une nouvelle recherche ou',
+          resetMessage: 'Afficher toutes les réservations',
+          onFilterReset: resetFilters,
+        }}
+        noData={{
+          hasNoData: hasNoBooking,
+          message: {
+            icon: strokeNoBookingIcon,
+            title: 'Vous n’avez aucune réservation pour le moment',
+            subtitle: '',
+          },
+        }}
+        pagination={{
+          currentPage: page,
+          pageCount: pageCount,
+          onPageClick: (newPage) => {
             const currentPage = page
+
             setPage(newPage)
             scrollToContentWrapper()
 
@@ -116,9 +110,10 @@ export const IndividualBookingsTable = ({
                 from: location.pathname,
               })
             }
-          }}
-        />
-      </div>
-    </>
+          },
+        }}
+        getFullRowContent={getFullRowContentIndividual}
+      />
+    </AccessibleScrollContainer>
   )
 }

@@ -161,8 +161,8 @@ Note : La valeur constante, ou non-volatile d'après le jargon PostgreSQL, est e
 
 ```python
 op.alter_column(
-    'offer_report',
-    'reportedAt',
+    'offer',
+    'dateCreated',
     existing_type=postgresql.TIMESTAMP(),
     server_default=sa.text('now()'),
 )

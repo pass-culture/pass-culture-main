@@ -26,7 +26,7 @@ export const CollectiveOfferSummaryCreation = ({
 
   const backRedirectionUrl = offer.isTemplate
     ? `/offre/collectif/vitrine/${offer.id}/creation`
-    : `/offre/${offer.id}/collectif/visibilite${
+    : `/offre/${offer.id}/collectif/etablissement${
         requestId ? `?requete=${requestId}` : ''
       }`
 
@@ -44,7 +44,7 @@ export const CollectiveOfferSummaryCreation = ({
             offer.isTemplate ? '/vitrine' : ''
           }/${offer.id}/creation`}
           stockEditLink={`/offre/${offer.id}/collectif/stocks`}
-          visibilityEditLink={`/offre/${offer.id}/collectif/visibilite`}
+          institutionEditLink={`/offre/${offer.id}/collectif/etablissement`}
         />
         <ActionsBarSticky>
           <ActionsBarSticky.Left>

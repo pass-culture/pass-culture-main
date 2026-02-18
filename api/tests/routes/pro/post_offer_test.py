@@ -306,12 +306,12 @@ class CreateThingsTest(CreateOfferBase):
                 {
                     "artistId": artist.id,
                     "artistType": "performer",
-                    "customName": None,
+                    "artistName": artist.name,
                 },
                 {
                     "artistId": None,
                     "artistType": "author",
-                    "customName": "Custom Artist Name",
+                    "artistName": "Custom Artist Name",
                 },
             ],
         }
@@ -340,7 +340,7 @@ class CreateThingsTest(CreateOfferBase):
                 {
                     "artistId": artist.id,
                     "artistType": "performer",
-                    "customName": None,
+                    "artistName": artist.name,
                 },
             ],
         }
@@ -772,12 +772,12 @@ class Returns200Test:
                 {
                     "artistId": artist.id,
                     "artistType": "performer",
-                    "customName": None,
+                    "artistName": artist.name,
                 },
                 {
                     "artistId": None,
                     "artistType": "author",
-                    "customName": "Custom Artist Name",
+                    "artistName": "Custom Artist Name",
                 },
             ],
         }
@@ -810,7 +810,7 @@ class Returns200Test:
                 {
                     "artistId": artist.id,
                     "artistType": "performer",
-                    "customName": None,
+                    "artistName": artist.name,
                 },
             ],
         }

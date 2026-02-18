@@ -5,25 +5,27 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useMusicTypes } from '@/commons/hooks/useMusicTypes'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { Markdown } from '@/components/Markdown/Markdown'
 import { OfferAppPreview } from '@/components/OfferAppPreview/OfferAppPreview'
-import { SummaryAside } from '@/components/SummaryLayout/SummaryAside'
-import { SummaryContent } from '@/components/SummaryLayout/SummaryContent'
-import {
-  type Description,
-  SummaryDescriptionList,
-} from '@/components/SummaryLayout/SummaryDescriptionList'
-import { SummaryLayout } from '@/components/SummaryLayout/SummaryLayout'
-import { SummarySection } from '@/components/SummaryLayout/SummarySection'
-import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
 import { Banner } from '@/design-system/Banner/Banner'
 import { ButtonVariant } from '@/design-system/Button/types'
 import phoneStrokeIcon from '@/icons/stroke-phone.svg'
+import { ARTISTIC_INFORMATION_FIELDS } from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/DetailsSubForm/DetailsSubForm'
 import { serializeOfferSectionData } from '@/pages/IndividualOfferSummary/commons/serializer'
+import { SummaryAside } from '@/ui-kit/SummaryLayout/SummaryAside'
+import { SummaryContent } from '@/ui-kit/SummaryLayout/SummaryContent'
+import {
+  type Description,
+  SummaryDescriptionList,
+} from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
+import { SummaryLayout } from '@/ui-kit/SummaryLayout/SummaryLayout'
+import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
+import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './IndividualOfferSummaryDetailsScreen.module.scss'
@@ -37,12 +39,14 @@ export function IndividualOfferSummaryDetailsScreen({
 }: Readonly<IndividualOfferSummaryDetailsScreenProps>) {
   const mode = useOfferWizardMode()
   const { categories, subCategories } = useIndividualOfferContext()
+  const areArtistsEnabled = useActiveFeature('WIP_OFFER_ARTISTS')
 
   const { musicTypes } = useMusicTypes()
   const offerData = serializeOfferSectionData(
     offer,
     categories,
     subCategories,
+    areArtistsEnabled,
     musicTypes
   )
 
@@ -98,7 +102,10 @@ export function IndividualOfferSummaryDetailsScreen({
     })
   }
   if (conditionalFields.includes('author')) {
-    artisticInfoDescriptions.push({ title: 'Auteur', text: offerData.author })
+    artisticInfoDescriptions.push({
+      title: 'Auteur',
+      text: offerData.author,
+    })
   }
   if (conditionalFields.includes('visa')) {
     artisticInfoDescriptions.push({
@@ -130,19 +137,7 @@ export function IndividualOfferSummaryDetailsScreen({
     })
   }
 
-  const artisticInformationsFields = [
-    'speaker',
-    'author',
-    'visa',
-    'stageDirector',
-    'performer',
-    'ean',
-    'durationMinutes',
-    'showType',
-    'gtl_id',
-  ]
-
-  const displayArtisticInformations = artisticInformationsFields.some(
+  const displayArtisticInformations = ARTISTIC_INFORMATION_FIELDS.some(
     (field) => conditionalFields.includes(field) || subcategory?.isEvent
   )
 

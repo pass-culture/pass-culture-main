@@ -133,8 +133,5 @@ dev_env_file
 # licenses
 licenses.html
 
-# Reports from Tyrion (https://github.com/theodo/tyrion)
-tyrion_report.html
-
 # backoffice
 !**/backoffice/**/dist

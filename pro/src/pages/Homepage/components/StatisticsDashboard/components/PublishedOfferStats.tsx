@@ -6,13 +6,13 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFERER_V2_STATS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
-import { Card } from '@/components/Card/Card'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
 import fullShowIcon from '@/icons/full-show.svg'
 import strokePhoneIcon from '@/icons/stroke-phone.svg'
 import strokeTeacherIcon from '@/icons/stroke-teacher.svg'
+import { Panel } from '@/ui-kit/Panel/Panel'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { LoadingSkeleton } from './LoadingSkeleton'
@@ -73,7 +73,7 @@ export const PublishedOfferStats = ({
   const pendingOfferWording = 'en instruction'
 
   return (
-    <Card className={className}>
+    <Panel>
       <h3 className={styles['title']}>Vos offres publiées</h3>
 
       <div className={styles['container']}>
@@ -150,6 +150,6 @@ export const PublishedOfferStats = ({
             </div>
           </div>
         )}
-    </Card>
+    </Panel>
   )
 }

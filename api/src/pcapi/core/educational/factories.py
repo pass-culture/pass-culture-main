@@ -172,18 +172,6 @@ class CollectiveOfferTemplateFactory(BaseFactory[models.CollectiveOfferTemplate]
                 domains.append(domain)
             self.domains = domains
 
-    @factory.post_generation
-    def template(
-        self, create: bool, extracted: models.CollectiveOfferTemplate, **kwargs: dict
-    ) -> models.CollectiveOfferTemplate | None:
-        if not create:
-            return None
-        template = extracted
-        if not template:
-            return None
-        self.venue = template.venue
-        return CollectiveOfferTemplateFactory.create()
-
 
 class CollectiveStockFactory(BaseFactory[models.CollectiveStock]):
     class Meta:
@@ -357,6 +345,10 @@ class UsedCollectiveBookingFactory(CollectiveBookingFactory):
     dateCreated = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=20))
     confirmationLimitDate = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=12))
     confirmationDate = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=6))
+
+
+class PendingReimbursementCollectiveBookingFactory(UsedCollectiveBookingFactory):
+    status = models.CollectiveBookingStatus.PENDING_REIMBURSEMENT
 
 
 class ReimbursedCollectiveBookingFactory(UsedCollectiveBookingFactory):
@@ -534,6 +526,14 @@ class PrebookedCollectiveOfferFactory(CollectiveOfferBaseFactory):
         PendingCollectiveBookingFactory.create(collectiveStock=stock)
 
 
+class PrebookedStartPassedCollectiveOfferFactory(CollectiveOfferBaseFactory):
+    @factory.post_generation
+    def create_prebooked_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
+        yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
+        stock = CollectiveStockFactory.create(startDatetime=yesterday, collectiveOffer=self)
+        PendingCollectiveBookingFactory.create(collectiveStock=stock)
+
+
 class CancelledWithoutBookingCollectiveOfferFactory(CollectiveOfferBaseFactory):
     @factory.post_generation
     def create_cancelled_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
@@ -591,6 +591,14 @@ class EndedCollectiveOfferFactory(CollectiveOfferBaseFactory):
         yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=3)
         stock = CollectiveStockFactory.create(startDatetime=yesterday, collectiveOffer=self)
         UsedCollectiveBookingFactory.create(collectiveStock=stock)
+
+
+class PendingReimbursementCollectiveOfferFactory(CollectiveOfferBaseFactory):
+    @factory.post_generation
+    def create_reimbursed_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
+        yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
+        stock = CollectiveStockFactory.create(startDatetime=yesterday, collectiveOffer=self)
+        PendingReimbursementCollectiveBookingFactory.create(collectiveStock=stock)
 
 
 class ReimbursedCollectiveOfferFactory(CollectiveOfferBaseFactory):
@@ -739,6 +747,8 @@ def create_collective_booking_by_status(
             return UsedCollectiveBookingFactory.create(**kwargs)
         case models.CollectiveBookingStatus.CANCELLED:
             return CancelledCollectiveBookingFactory.create(**kwargs)
+        case models.CollectiveBookingStatus.PENDING_REIMBURSEMENT:
+            return PendingReimbursementCollectiveBookingFactory.create(**kwargs)
         case models.CollectiveBookingStatus.REIMBURSED:
             return ReimbursedCollectiveBookingFactory.create(**kwargs)
 

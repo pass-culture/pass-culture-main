@@ -8,6 +8,7 @@ import pcapi.core.offerers.repository as offerers_repository
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
 import pcapi.utils.cron as cron_decorators
+from pcapi.connectors.big_query.importer.offer_quality import OfferQualityImporter
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.models.feature import FeatureToggle
@@ -132,3 +133,11 @@ def send_email_reminder_offer_creation_j10_to_pro() -> None:
                     "venue.id": venue_id,
                 },
             )
+
+
+@blueprint.cli.command("update_offer_quality_scores")
+@click.option("--batch-size", type=int, default=1000, help="Batch size for updates.")
+@click.option("--start-from-id", type=int, default=0, help="Start updating from this offer ID.")
+def update_offer_quality_scores(batch_size: int, start_from_id: int) -> None:
+    importer = OfferQualityImporter()
+    importer.run_offer_quality_update(batch_size=batch_size, start_from_id=start_from_id)

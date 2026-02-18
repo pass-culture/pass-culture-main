@@ -43,6 +43,7 @@ describe('setSelectedVenueById', () => {
     user: {
       access: null,
       currentUser: null,
+      selectedAdminOfferer: null,
       selectedVenue: makeGetVenueResponseModel({
         id: 201,
         managingOffererId: 200,
@@ -65,7 +66,9 @@ describe('setSelectedVenueById', () => {
   it('should early-return when selecting the same venue', async () => {
     const store = configureTestStore(storeDataBase)
 
-    await store.dispatch(setSelectedVenueById(201)).unwrap()
+    await store
+      .dispatch(setSelectedVenueById({ nextSelectedVenueId: 201 }))
+      .unwrap()
 
     expect(api.getOfferer).not.toHaveBeenCalled()
     expect(api.getVenue).not.toHaveBeenCalled()
@@ -91,7 +94,9 @@ describe('setSelectedVenueById', () => {
 
     const store = configureTestStore(storeDataBase)
 
-    await store.dispatch(setSelectedVenueById(101)).unwrap()
+    await store
+      .dispatch(setSelectedVenueById({ nextSelectedVenueId: 101 }))
+      .unwrap()
 
     expect(api.getVenue).toHaveBeenCalledTimes(1)
     expect(api.getOfferer).toHaveBeenCalledTimes(1)
@@ -118,7 +123,9 @@ describe('setSelectedVenueById', () => {
 
     const store = configureTestStore(storeDataBase)
 
-    await store.dispatch(setSelectedVenueById(101)).unwrap()
+    await store
+      .dispatch(setSelectedVenueById({ nextSelectedVenueId: 101 }))
+      .unwrap()
 
     expect(api.getVenue).toHaveBeenCalledTimes(1)
     expect(api.getOfferer).toHaveBeenCalledTimes(1)
@@ -146,7 +153,9 @@ describe('setSelectedVenueById', () => {
       },
     })
 
-    await store.dispatch(setSelectedVenueById(101)).unwrap()
+    await store
+      .dispatch(setSelectedVenueById({ nextSelectedVenueId: 101 }))
+      .unwrap()
 
     expect(console.error).toHaveBeenCalledWith(expect.any(FrontendError))
     expect(handleErrorSpy).toHaveBeenCalledExactlyOnceWith(
@@ -188,6 +197,7 @@ describe('setSelectedVenueById', () => {
       user: {
         access: null,
         currentUser: null,
+        selectedAdminOfferer: null,
         selectedVenue: makeGetVenueResponseModel({
           id: 201,
           managingOffererId: 200,
@@ -199,7 +209,9 @@ describe('setSelectedVenueById', () => {
       },
     })
 
-    await store.dispatch(setSelectedVenueById(101)).unwrap()
+    await store
+      .dispatch(setSelectedVenueById({ nextSelectedVenueId: 101 }))
+      .unwrap()
 
     expect(console.error).toHaveBeenCalledExactlyOnceWith(
       expect.any(FrontendError)
@@ -225,7 +237,9 @@ describe('setSelectedVenueById', () => {
 
     const store = configureTestStore(storeDataBase)
 
-    await store.dispatch(setSelectedVenueById(101)).unwrap()
+    await store
+      .dispatch(setSelectedVenueById({ nextSelectedVenueId: 101 }))
+      .unwrap()
 
     expect(handleErrorSpy).toHaveBeenCalledExactlyOnceWith(
       expect.any(Error),

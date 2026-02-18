@@ -1,12 +1,9 @@
 import classnames from 'classnames'
 import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
-import { GET_VENUES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { noop } from '@/commons/utils/noop'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { useIncome } from '@/pages/Reimbursements/Income/useIncome'
@@ -31,29 +28,32 @@ type VenueFormValues = {
 export const Income = () => {
   const firstYearFilterRef = useRef<HTMLButtonElement>(null)
   const [activeYear, setActiveYear] = useState<number>()
-  const selectedOffererId = useAppSelector(selectCurrentOffererId)
-
-  const {
-    data: venuesData,
-    isLoading: areVenuesLoading,
-    error: venuesApiError,
-  } = useSWR([GET_VENUES_QUERY_KEY, selectedOffererId], () =>
-    api.getVenues(true, null, selectedOffererId)
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+  const selectedOffererId = useAppSelector(
+    (state) => state.offerer.currentOfferer
+  )?.id
+  const venues = useAppSelector((state) => state.user.venues)
+  const adminSelectedOfferer = useAppSelector(
+    (state) => state.user.selectedAdminOfferer
   )
 
-  const venueValues = formatAndOrderVenues(venuesData?.venues ?? []).map(
-    (venue) => ({
-      id: String(venue.value),
-      label: venue.label,
-    })
-  )
+  const offererId = withSwitchVenueFeature
+    ? adminSelectedOfferer?.id
+    : selectedOffererId
+
+  const venueValues = formatAndOrderVenues(
+    (venues ?? []).filter((venue) => venue.managingOffererId === offererId)
+  ).map((venue) => ({
+    id: String(venue.value),
+    label: venue.label,
+  }))
 
   const {
     register,
     watch,
     setValue,
     setError,
-    reset,
+    clearErrors,
     formState: { errors },
   } = useForm<VenueFormValues>({
     values: {
@@ -73,7 +73,7 @@ export const Income = () => {
         message: 'Vous devez sélectionner au moins un partenaire',
       })
     } else {
-      reset()
+      clearErrors('selectedVenues')
     }
 
     const debounced = setTimeout(() => {
@@ -106,14 +106,6 @@ export const Income = () => {
       firstYearFilterRef.current.focus()
     }
   }, [hasSingleVenue, incomeDataReady])
-
-  if (areVenuesLoading) {
-    return <Spinner testId="venues-spinner" />
-  }
-
-  if (venuesApiError) {
-    return <IncomeError />
-  }
 
   return (
     <>

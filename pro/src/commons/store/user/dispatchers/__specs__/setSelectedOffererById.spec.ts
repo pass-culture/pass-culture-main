@@ -72,6 +72,7 @@ describe('setSelectedOffererById', () => {
       user: {
         currentUser: null,
         access: null,
+        selectedAdminOfferer: null,
         selectedVenue: selectedVenueBase,
         venues: venuesBase,
       },
@@ -120,6 +121,7 @@ describe('setSelectedOffererById', () => {
       user: {
         access: null,
         currentUser: null,
+        selectedAdminOfferer: null,
         selectedVenue: null,
         venues: [],
       },
@@ -179,6 +181,7 @@ describe('setSelectedOffererById', () => {
       user: {
         access: null,
         currentUser: null,
+        selectedAdminOfferer: null,
         selectedVenue: selectedVenueBase,
         venues: venuesBase,
       },
@@ -228,6 +231,7 @@ describe('setSelectedOffererById', () => {
       user: {
         access: null,
         currentUser: null,
+        selectedAdminOfferer: null,
         selectedVenue: selectedVenueBase,
         venues: venuesBase,
       },
@@ -275,6 +279,7 @@ describe('setSelectedOffererById', () => {
       user: {
         access: null,
         currentUser: null,
+        selectedAdminOfferer: null,
         selectedVenue: selectedVenueBase,
         venues: venuesBase,
       },
@@ -322,6 +327,7 @@ describe('setSelectedOffererById', () => {
       user: {
         access: null,
         currentUser: null,
+        selectedAdminOfferer: null,
         selectedVenue: selectedVenueBase,
         venues: venuesBase,
       },

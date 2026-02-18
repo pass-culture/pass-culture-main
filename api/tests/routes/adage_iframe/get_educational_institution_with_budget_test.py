@@ -27,13 +27,7 @@ class EducationalInstitutionTest:
         response = test_client.get(url_for(self.endpoint))
 
         assert response.status_code == 200
-        assert response.json["id"] == institution.id
-        assert response.json["name"] == institution.name
-        assert response.json["institutionType"] == "COLLEGE"
-        assert response.json["postalCode"] == "75000"
-        assert response.json["city"] == "PARIS"
-        assert response.json["phoneNumber"] == "0600000000"
-        assert response.json["budget"] == deposit.amount
+        assert response.json == {"budget": deposit.amount}
 
     @time_machine.travel("2023-12-15 16:00:00")
     def test_current_deposit_is_used(self, client):
@@ -53,7 +47,7 @@ class EducationalInstitutionTest:
         response = test_client.get(url_for(self.endpoint))
 
         assert response.status_code == 200
-        assert response.json["budget"] == 3000
+        assert response.json == {"budget": 3000}
 
     @time_machine.travel("2023-12-15 16:00:00")
     def test_remaining_budget(self, client):
@@ -71,7 +65,7 @@ class EducationalInstitutionTest:
         response = test_client.get(url_for(self.endpoint))
 
         assert response.status_code == 200
-        assert response.json["budget"] == deposit.amount - used_booking.collectiveStock.price
+        assert response.json == {"budget": deposit.amount - used_booking.collectiveStock.price}
 
     @time_machine.travel("2023-12-15 16:00:00")
     def test_remaining_budget_first_period(self, client):
@@ -98,7 +92,7 @@ class EducationalInstitutionTest:
         response = test_client.get(url_for(self.endpoint))
 
         assert response.status_code == 200
-        assert response.json["budget"] == 1000 - used_booking.collectiveStock.price
+        assert response.json == {"budget": 1000 - used_booking.collectiveStock.price}
 
     @time_machine.travel("2024-05-15 16:00:00")
     def test_remaining_budget_second_period(self, client):
@@ -129,7 +123,7 @@ class EducationalInstitutionTest:
         response = test_client.get(url_for(self.endpoint))
 
         assert response.status_code == 200
-        assert response.json["budget"] == 2000 - used_booking.collectiveStock.price
+        assert response.json == {"budget": 2000 - used_booking.collectiveStock.price}
 
 
 def _build_educational_year(delta: relativedelta | None = None):

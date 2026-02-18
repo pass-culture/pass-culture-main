@@ -1,11 +1,11 @@
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from '@/commons/core/Offers/constants'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
-import { SummaryContent } from '@/components/SummaryLayout/SummaryContent'
-import { SummaryLayout } from '@/components/SummaryLayout/SummaryLayout'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { MediaSection } from '@/pages/IndividualOfferSummary/components/MediaSection/MediaSection'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
+import { SummaryContent } from '@/ui-kit/SummaryLayout/SummaryContent'
+import { SummaryLayout } from '@/ui-kit/SummaryLayout/SummaryLayout'
 
 const IndividualOfferSummaryMedia = (): JSX.Element | null => {
   const { offer } = useIndividualOfferContext()

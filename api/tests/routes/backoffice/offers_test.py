@@ -39,6 +39,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice.filters import format_date
+from pcapi.tasks.serialization import compliance_tasks
 from pcapi.utils import date as date_utils
 from pcapi.utils.regions import get_department_code_from_city_code
 
@@ -1705,11 +1706,11 @@ class EditOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_edit.id}")
-        assert len(cells) == 25
+        assert len(cells) == 26
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Rejeter l'offre Mettre l'offre en pause Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer_to_edit.id)  # ID
@@ -1731,12 +1732,13 @@ class EditOfferTest(PostEndpointHelper):
         assert cells[next(i)] == "22"  # Pondération
         assert cells[next(i)] == "• Validée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
-        assert cells[next(i)] == ""  # Dérnière validation
+        assert cells[next(i)] == ""  # Dernière validation
         assert cells[next(i)] == offer_to_edit.offererAddress.address.departmentCode  # Département
         assert cells[next(i)] == offer_to_edit.venue.managingOfferer.name  # Entité juridique
         assert cells[next(i)] == offer_to_edit.venue.name  # Partenaire culturel
         assert cells[next(i)] == "Voir toutes les offres"  # Offres du partenaire culturel
         assert cells[next(i)] == ""  # Partenaire technique
+        assert cells[next(i)] == "-"  # Pertinence
 
 
 class GetEditOfferFormTest(GetEndpointHelper):
@@ -2135,6 +2137,146 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
         assert rows[0]["ID"] == str(offer_to_display.id)
 
 
+class ListLlmOffersTest(GetEndpointHelper):
+    endpoint = "backoffice_web.offer.list_llm_offers"
+    needed_permission = perm_models.Permissions.READ_OFFERS
+
+    # - fetch session + user (1 query)
+    expected_num_queries_with_no_result = 1
+    # - fetch offers with joinedload including extra data (1 query)
+    # - fetch addresses (2 x selectinload: 2 queries)
+    expected_num_queries_with_results = expected_num_queries_with_no_result + 3
+
+    def test_list_offers_by_query_with_filters(self, authenticated_client):
+        offer_to_display = offers_factories.OfferFactory(name="display")
+        offers_factories.OfferFactory(name="hide")
+
+        query_args = {
+            "llm_search": "plouf",
+            "search-0-search_field": "CATEGORY",
+            "search-0-operator": "IN",
+            "search-0-category": "CARTE_JEUNES",
+            "search-1-search_field": "CREATION_DATE",
+            "search-1-operator": "EQUALS",
+            "search-1-date": "2026-01-08",
+            "search-2-search_field": "EVENT_DATE",
+            "search-2-operator": "EQUALS",
+            "search-2-date": "2026-01-16",
+            "search-3-search_field": "DEPARTMENT",
+            "search-3-operator": "IN",
+            "search-3-department": "03",
+            "search-4-search_field": "PRICE",
+            "search-4-operator": "EQUALS",
+            "search-4-price": "125.12",
+            "search-5-search_field": "SUBCATEGORY",
+            "search-5-operator": "IN",
+            "search-5-subcategory": "ABO_JEU_VIDEO",
+            "limit": 100,
+        }
+
+        search_query = compliance_tasks.SearchOffersRequest(
+            query=query_args["llm_search"],
+            filters=[
+                {
+                    "column": "offer_category_id",
+                    "operator": "in",
+                    "value": [query_args["search-0-category"]],
+                },
+                {
+                    "column": "offer_creation_date",
+                    "operator": "=",
+                    "value": query_args["search-1-date"],
+                },
+                {
+                    "column": "stock_beginning_date",
+                    "operator": "=",
+                    "value": query_args["search-2-date"],
+                },
+                {
+                    "column": "venue_departement_code",
+                    "operator": "in",
+                    "value": [query_args["search-3-department"]],
+                },
+                {
+                    "column": "last_stock_price",
+                    "operator": "=",
+                    "value": float(query_args["search-4-price"]),
+                },
+                {
+                    "column": "offer_subcategory_id",
+                    "operator": "in",
+                    "value": [query_args["search-5-subcategory"]],
+                },
+            ],
+        )
+        api_response = compliance_tasks.SearchOffersResponse(
+            results=[
+                compliance_tasks.SearchOfferResponse(
+                    offer_id=offer_to_display.id,
+                    pertinence="Some witty comment from llm",
+                ),
+            ],
+        )
+
+        with patch(
+            "pcapi.core.external.compliance_backends.test.TestBackend.search_offers", return_value=api_response
+        ) as llm_mock:
+            with assert_num_queries(self.expected_num_queries_with_results):
+                response = authenticated_client.get(url_for(self.endpoint, **query_args))
+                assert response.status_code == 200
+            llm_mock.assert_called_once_with(payload=search_query)
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(offer_to_display.id)
+        assert rows[0]["Pertinence"] == api_response.results[0].pertinence
+
+    def test_list_offers_by_query_with_empty_answer(self, authenticated_client):
+        offers_factories.OfferFactory(name="hide")
+
+        query_args = {"llm_search": "plouf", "limit": 100}
+
+        search_query = compliance_tasks.SearchOffersRequest(
+            query=query_args["llm_search"],
+            filters=[],
+        )
+        api_response = compliance_tasks.SearchOffersResponse(
+            results=[],
+        )
+
+        with patch(
+            "pcapi.core.external.compliance_backends.test.TestBackend.search_offers", return_value=api_response
+        ) as llm_mock:
+            with assert_num_queries(self.expected_num_queries_with_no_result):
+                response = authenticated_client.get(url_for(self.endpoint, **query_args))
+                assert response.status_code == 200
+            llm_mock.assert_called_once_with(payload=search_query)
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 0
+
+    def test_list_offers_by_query_with_no_answer(self, authenticated_client):
+        offers_factories.OfferFactory(name="hide")
+
+        query_args = {"llm_search": "plouf", "limit": 100}
+
+        search_query = compliance_tasks.SearchOffersRequest(
+            query=query_args["llm_search"],
+            filters=[],
+        )
+
+        with patch(
+            "pcapi.core.external.compliance_backends.test.TestBackend.search_offers", return_value=None
+        ) as llm_mock:
+            with assert_num_queries(self.expected_num_queries_with_no_result):
+                response = authenticated_client.get(url_for(self.endpoint, **query_args))
+                assert response.status_code == 200
+            llm_mock.assert_called_once_with(payload=search_query)
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 0
+
+
 class ValidateOfferTest(PostEndpointHelper):
     endpoint = "backoffice_web.offer.validate_offer"
     endpoint_kwargs = {"offer_id": 1}
@@ -2171,11 +2313,11 @@ class ValidateOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_validate.id}")
-        assert len(cells) == 25
+        assert len(cells) == 26
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Rejeter l'offre Mettre l'offre en pause Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer_to_validate.id)  # ID
@@ -2194,12 +2336,13 @@ class ValidateOfferTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Pondération
         assert cells[next(i)] == "• Validée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
-        assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Dérnière validation
+        assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Dernière validation
         assert cells[next(i)] == offer_to_validate.offererAddress.address.departmentCode  # Département
         assert cells[next(i)] == offer_to_validate.venue.managingOfferer.name  # Entité juridique
         assert cells[next(i)] == offer_to_validate.venue.name  # Partenaire culturel
         assert cells[next(i)] == "Voir toutes les offres"  # Offres du partenaire culturel
         assert cells[next(i)] == ""  # Partenaire technique
+        assert cells[next(i)] == "-"  # Pertinence
 
         db.session.refresh(offer_to_validate)
         assert offer_to_validate.isActive is True
@@ -2218,6 +2361,78 @@ class ValidateOfferTest(PostEndpointHelper):
         assert offer_to_validate.lastValidationType == OfferValidationType.MANUAL
         assert offer_to_validate.lastValidationPrice is None
         assert offer_to_validate.validation == offers_models.OfferValidationStatus.APPROVED
+
+
+class PendingOfferTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offer.pending_offer"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_pending_offer(self, legit_user, authenticated_client):
+        offer_to_validate = offers_factories.OfferFactory()
+        offers_factories.StockFactory(offer=offer_to_validate, price=1.01)
+
+        response = self.post_to_endpoint(authenticated_client, offer_id=offer_to_validate.id)
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_web.offer.list_offers")
+        assert response.location == expected_url
+
+        db.session.refresh(offer_to_validate)
+        assert offer_to_validate.isActive is True
+        assert offer_to_validate.validation == offers_models.OfferValidationStatus.PENDING
+        assert offer_to_validate.lastValidationType == OfferValidationType.MANUAL
+        assert offer_to_validate.lastValidationDate.date() == datetime.date.today()
+        assert offer_to_validate.lastValidationPrice == None
+
+    def test_pending_offer_using_htmx(self, legit_user, authenticated_client):
+        offer_to_validate = offers_factories.OfferFactory()
+        offers_factories.StockFactory(offer=offer_to_validate, price=10.1)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer_to_validate.id,
+            headers={"hx-request": "true"},
+        )
+        assert response.status_code == 200
+        # ensure that the row is rendered
+        cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_validate.id}")
+        assert len(cells) == 26
+        i = count()
+        assert cells[next(i)] == ""  # Checkbox
+        assert cells[next(i)] == (  # Actions
+            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Taguer / Pondérer"
+        )
+        assert cells[next(i)] == ""  # Image
+        assert cells[next(i)] == str(offer_to_validate.id)  # ID
+        assert cells[next(i)] == offer_to_validate.name  # Nom de l'offre
+        assert cells[next(i)] == ""  # EAN / Allociné ID
+        assert cells[next(i)] == offer_to_validate.category.pro_label  # Catégorie
+        assert cells[next(i)] == offer_to_validate.subcategory.pro_label  # Sous-catégorie
+        assert cells[next(i)] == ""  # Règles de conformité
+        assert cells[next(i)] == ""  # Score data
+        assert cells[next(i)] == ""  # Predicition du validation_status (data)
+        assert cells[next(i)] == "10,10 €"  # Tarif
+        assert cells[next(i)] == ""  # Tag
+        assert cells[next(i)] == ""  # Date(s) de l'évènement
+        assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
+        assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == ""  # Pondération
+        assert cells[next(i)] == "• En attente"  # État
+        assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
+        assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Dernière validation
+        assert cells[next(i)] == offer_to_validate.offererAddress.address.departmentCode  # Département
+        assert cells[next(i)] == offer_to_validate.venue.managingOfferer.name  # Entité juridique
+        assert cells[next(i)] == offer_to_validate.venue.name  # Partenaire culturel
+        assert cells[next(i)] == "Voir toutes les offres"  # Offres du partenaire culturel
+        assert cells[next(i)] == ""  # Partenaire technique
+        assert cells[next(i)] == "-"  # Pertinence
+
+        db.session.refresh(offer_to_validate)
+        assert offer_to_validate.validation == offers_models.OfferValidationStatus.PENDING
+        assert offer_to_validate.lastValidationType == OfferValidationType.MANUAL
+        assert offer_to_validate.lastValidationDate.date() == datetime.date.today()
+        assert offer_to_validate.lastValidationPrice == None
 
 
 class GetValidateOfferFormTest(GetEndpointHelper):
@@ -2287,11 +2502,11 @@ class RejectOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_reject.id}")
-        assert len(cells) == 25
+        assert len(cells) == 26
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Rejeter l'offre Publier l'offre Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Publier l'offre Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer_to_reject.id)  # ID
@@ -2310,12 +2525,13 @@ class RejectOfferTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Pondération
         assert cells[next(i)] == "• Rejetée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
-        assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Dérnière validation
+        assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Dernière validation
         assert cells[next(i)] == offer_to_reject.offererAddress.address.departmentCode  # Département
         assert cells[next(i)] == offer_to_reject.venue.managingOfferer.name  # Entité juridique
         assert cells[next(i)] == offer_to_reject.venue.name  # Partenaire culturel
         assert cells[next(i)] == "Voir toutes les offres"  # Offres du partenaire culturel
         assert cells[next(i)] == ""  # Partenaire technique
+        assert cells[next(i)] == "-"  # Pertinence
 
         assert offer_to_reject.isActive is False
         assert offer_to_reject.validation == offers_models.OfferValidationStatus.REJECTED
@@ -2415,6 +2631,41 @@ class BatchOfferValidateTest(PostEndpointHelper):
             assert email_data["To"] == expected_recipient
             assert email_data["template"] == dataclasses.asdict(TransactionalEmail.OFFER_APPROVAL_TO_PRO.value)
             assert email_data["params"]["VENUE_NAME"] == venue.name
+
+
+class BatchOfferPendingTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offer.batch_pending_offers"
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_batch_pending_offers(self, legit_user, authenticated_client):
+        offers = offers_factories.OfferFactory.create_batch(3)
+
+        for offer in offers:
+            offers_factories.StockFactory(offer=offer, price=10.1)
+        parameter_ids = ",".join(str(offer.id) for offer in offers)
+
+        expected_queries = 1  # user + session
+        expected_queries += 1  # update offers
+        expected_queries += 1  # select offerer
+        expected_queries += 1  # select offerer_address
+        expected_queries += 1  # select venue
+        response = self.post_to_endpoint(
+            authenticated_client, form={"object_ids": parameter_ids}, expected_num_queries=expected_queries
+        )
+
+        assert response.status_code == 200
+
+        for offer in offers:
+            db.session.refresh(offer)
+
+            # ensure rows are rendered
+            html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer.id}")
+
+            assert offer.lastValidationDate.strftime("%d/%m/%Y") == datetime.date.today().strftime("%d/%m/%Y")
+            assert offer.lastValidationType is OfferValidationType.MANUAL
+            assert offer.validation is offers_models.OfferValidationStatus.PENDING
+            assert offer.lastValidationAuthor == legit_user
+            assert offer.lastValidationPrice is None
 
 
 class BatchOfferRejectTest(PostEndpointHelper):
@@ -3583,11 +3834,11 @@ class ActivateOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_activate.id}")
-        assert len(cells) == 25
+        assert len(cells) == 26
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Rejeter l'offre Mettre l'offre en pause Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer_to_activate.id)  # ID
@@ -3606,12 +3857,13 @@ class ActivateOfferTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Pondération
         assert cells[next(i)] == "• Validée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
-        assert cells[next(i)] == ""  # Dérnière validation
+        assert cells[next(i)] == ""  # Dernière validation
         assert cells[next(i)] == offer_to_activate.offererAddress.address.departmentCode  # Département
         assert cells[next(i)] == offer_to_activate.venue.managingOfferer.name  # Entité juridique
         assert cells[next(i)] == offer_to_activate.venue.name  # Partenaire culturel
         assert cells[next(i)] == "Voir toutes les offres"  # Offres du partenaire culturel
         assert cells[next(i)] == ""  # Partenaire technique
+        assert cells[next(i)] == "-"  # Pertinence
 
         db.session.refresh(offer_to_activate)
         assert offer_to_activate.isActive is True
@@ -3675,11 +3927,11 @@ class DeactivateOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_deactivate.id}")
-        assert len(cells) == 25
+        assert len(cells) == 26
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Rejeter l'offre Publier l'offre Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Publier l'offre Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer_to_deactivate.id)  # ID
@@ -3698,12 +3950,13 @@ class DeactivateOfferTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Pondération
         assert cells[next(i)] == "• Validée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
-        assert cells[next(i)] == ""  # Dérnière validation
+        assert cells[next(i)] == ""  # Dernière validation
         assert cells[next(i)] == offer_to_deactivate.offererAddress.address.departmentCode  # Département
         assert cells[next(i)] == offer_to_deactivate.venue.managingOfferer.name  # Entité juridique
         assert cells[next(i)] == offer_to_deactivate.venue.name  # Partenaire culturel
         assert cells[next(i)] == "Voir toutes les offres"  # Offres du partenaire culturel
         assert cells[next(i)] == ""  # Partenaire technique
+        assert cells[next(i)] == "-"  # Pertinence
 
         db.session.refresh(offer_to_deactivate)
         assert offer_to_deactivate.isActive is False
@@ -4084,8 +4337,8 @@ class GetOfferDetailsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         descriptions = html_parser.extract_descriptions(response.data)
-        assert descriptions["Utilisateur de la dernière validation"] == legit_user.full_name
-        assert descriptions["Date de la dernière validation"] == format_date(validation_date, "%d/%m/%Y à %Hh%M")
+        assert descriptions["Utilisateur du dernier rejet"] == legit_user.full_name
+        assert descriptions["Date du dernier rejet"] == format_date(validation_date, "%d/%m/%Y à %Hh%M")
 
     def test_get_offer_details_overseas(self, legit_user, authenticated_client):
         offerer_address = offerers_factories.OffererAddressFactory(

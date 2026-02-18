@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
@@ -31,7 +32,11 @@ const renderCollectiveOfferCreation = (
   renderWithProviders(<CollectiveOfferCreation {...props} />, {
     initialRouterEntries: [path],
     storeOverrides: {
-      user: { currentUser: sharedCurrentUserFactory() },
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedVenue: managedVenueFactory({ id: props.offer?.venue?.id ?? 1 }),
+        venues: [makeVenueListItem({ id: props.offer?.venue?.id ?? 1 })],
+      },
       offerer: currentOffererFactory({
         currentOfferer: { id: 10 },
       }),

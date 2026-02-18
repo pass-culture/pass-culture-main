@@ -5,6 +5,7 @@ import { format } from 'date-fns-tz'
 import type { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
 
 const FORMAT_ISO = "yyyy-MM-dd'T'HH:mm:ssX"
+const FORMAT_OPTIONS = { locale: fr }
 export const FORMAT_ISO_DATE_ONLY = 'yyyy-MM-dd'
 export const FORMAT_DD_MM_YYYY_HH_mm = 'dd/MM/yyyy HH:mm'
 export const FORMAT_DD_MM_YYYY = 'dd/MM/yyyy'
@@ -93,7 +94,7 @@ export const getDateToFrenchText = (dateIsoString: string) => {
     return null
   }
   const noTimeZoneDate = toDateStrippedOfTimezone(dateIsoString)
-  return format(noTimeZoneDate, FORMAT_DD_MMMM_YYYY, { locale: fr })
+  return format(noTimeZoneDate, FORMAT_DD_MMMM_YYYY, FORMAT_OPTIONS)
 }
 
 export function getDateTimeToFrenchText(
@@ -220,10 +221,3 @@ export const OPENING_HOURS_DAYS: (keyof WeekdayOpeningHoursTimespans)[] = [
   'SATURDAY',
   'SUNDAY',
 ]
-
-export function formatDate(
-  date: string,
-  date_format: string = FORMAT_DD_MM_YYYY
-): string {
-  return format(new Date(date), date_format, { locale: fr })
-}

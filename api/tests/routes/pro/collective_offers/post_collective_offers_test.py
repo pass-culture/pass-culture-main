@@ -175,7 +175,7 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
-        assert "students" in response.json
+        assert response.json == {"students": ["Ce niveau ('ECOLES_MARSEILLE_MATERNELLE') n'est pas encore autorisé"]}
 
     @pytest.mark.parametrize("status", educational_testing.STATUSES_ALLOWING_CREATE_BOOKABLE_OFFER)
     def test_create_collective_offer_with_allowed_collective_offer_template(self, client, status):
@@ -205,17 +205,7 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "location": {
-                    "banId": oa.address.banId,
-                    "isVenueLocation": True,
-                    "isManualEdition": False,
-                    "inseeCode": oa.address.inseeCode,
-                    "city": oa.address.city,
-                    "latitude": oa.address.latitude,
-                    "longitude": oa.address.longitude,
-                    "postalCode": oa.address.postalCode,
-                    "street": oa.address.street,
-                },
+                "location": {"isVenueLocation": True},
             },
         }
 
@@ -404,8 +394,8 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {
-            "bookingEmails.1": ["Le format d'email est incorrect."],
-            "bookingEmails.2": ["Le format d'email est incorrect."],
+            "bookingEmails.1": ["Saisissez un email valide"],
+            "bookingEmails.2": ["Saisissez un email valide"],
         }
         assert db.session.query(models.CollectiveOffer).count() == 0
 
@@ -418,7 +408,7 @@ class Returns400Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"bookingEmails": ["Un email doit etre renseigné."]}
+        assert response.json == {"bookingEmails": ["Cette liste doit doit avoir une taille minimum de 1"]}
         assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_create_collective_offer_empty_contact_email(self, client):
@@ -430,7 +420,7 @@ class Returns400Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"contactEmail": ["Le format d'email est incorrect."]}
+        assert response.json == {"contactEmail": ["Saisissez un email valide"]}
         assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_create_collective_offer_invalid_contact_email(self, client):
@@ -442,7 +432,7 @@ class Returns400Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"contactEmail": ["Le format d'email est incorrect."]}
+        assert response.json == {"contactEmail": ["Saisissez un email valide"]}
         assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_create_collective_offer_no_formats(self, client):
@@ -454,7 +444,7 @@ class Returns400Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"formats": ["formats must have at least one value"]}
+        assert response.json == {"formats": ["Cette liste doit doit avoir une taille minimum de 1"]}
         assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_create_collective_offer_no_domains(self, client):
@@ -466,7 +456,7 @@ class Returns400Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"domains": ["domains must have at least one value"]}
+        assert response.json == {"domains": ["Cette liste doit doit avoir une taille minimum de 1"]}
         assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_create_collective_offer_description_invalid(self, client):
@@ -478,7 +468,9 @@ class Returns400Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
+        assert response.json == {
+            "description": ["Cette chaîne de caractères doit avoir une taille maximum de 1500 caractères"]
+        }
         assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_create_collective_offer_must_receive_location(self, client):
@@ -490,7 +482,7 @@ class Returns400Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"location": ["Ce champ ne peut pas être nul"]}
+        assert response.json == {"location": ["Format incorrect"]}
         assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_create_collective_offer_with_location_type_school_must_not_receive_location_comment(self, client):
@@ -511,7 +503,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {
-            "location.locationComment": ["locationComment is not allowed for the provided locationType"]
+            "location.locationComment": ["locationComment n'est pas autorisé pour cette valeur de locationType"]
         }
         assert db.session.query(models.CollectiveOffer).count() == 0
 
@@ -533,7 +525,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {
-            "location.locationComment": ["locationComment is not allowed for the provided locationType"]
+            "location.locationComment": ["locationComment n'est pas autorisé pour cette valeur de locationType"]
         }
         assert db.session.query(models.CollectiveOffer).count() == 0
 
@@ -555,7 +547,9 @@ class Returns400Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"interventionArea": ["intervention_area is required and must not be empty"]}
+        assert response.json == {
+            "interventionArea": ["interventionArea ne peut pas être vide pour cette valeur de locationType"]
+        }
         assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_create_collective_offer_with_location_type_school_must_provide_correct_intervention_area(self, client):
@@ -576,7 +570,7 @@ class Returns400Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"interventionArea": ["intervention_area must be a valid area"]}
+        assert response.json == {"interventionArea": ["interventionArea doit contenir des départements valides"]}
         assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_create_collective_offer_with_location_type_address_must_provide_address(self, client):
@@ -596,7 +590,7 @@ class Returns400Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"location.location": ["address is required for the provided locationType"]}
+        assert response.json == {"location.location": ["location est requis pour cette valeur de locationType"]}
         assert db.session.query(models.CollectiveOffer).count() == 0
 
     @pytest.mark.parametrize(
@@ -623,7 +617,34 @@ class Returns400Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"location.location": ["address is not allowed for the provided locationType"]}
+        assert response.json == {"location.location": ["location n'est pas autorisé pour cette valeur de locationType"]}
+        assert db.session.query(models.CollectiveOffer).count() == 0
+
+    @pytest.mark.parametrize(
+        "field_name,field_value,error_message",
+        (
+            ("latitude", 91, "Saisissez un nombre inférieur à 90"),
+            ("latitude", -91, "Saisissez un nombre supérieur à -90"),
+            ("longitude", 181, "Saisissez un nombre inférieur à 180"),
+            ("longitude", -181, "Saisissez un nombre supérieur à -180"),
+        ),
+    )
+    def test_location_coordinates(self, client, field_name, field_value, error_message):
+        venue = offerers_factories.VenueFactory()
+        user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+
+        data = {
+            **base_offer_payload(venue=venue),
+            "location": {
+                "locationType": models.CollectiveLocationType.ADDRESS.value,
+                "locationComment": None,
+                "location": {**educational_testing.ADDRESS_DICT, field_name: field_value},
+            },
+        }
+        response = client.with_session_auth(user_offerer.user.email).post("/collective/offers", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {f"location.location.0.{field_name}": [error_message]}
         assert db.session.query(models.CollectiveOffer).count() == 0
 
 

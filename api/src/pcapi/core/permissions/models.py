@@ -36,6 +36,8 @@ class Permissions(enum.Enum):
     BENEFICIARY_MANUAL_REVIEW = "effectuer une revue manuelle d'obtention de crédit"
     MANAGE_FRAUDULENT_BOOKING_INFO = "marquer les réservations comme frauduleuses ou non frauduleuses"
     READ_FRAUDULENT_BOOKING_INFO = "visualiser les informations sur les réservations frauduleuses"
+    MANAGE_PRO_REIMBURSEMENT_SUSPENSION = "bloquer ou réactiver les remboursements d'un acteur culturel"
+    READ_PRO_REIMBURSEMENT_SUSPENSION = "visualiser les informations sur le blocage des remboursements"
     READ_BENEFICIARY_BONUS_CREDIT = "visualiser les détails des demandes de bonification"
     REQUEST_BENEFICIARY_BONUS_CREDIT = "demander la bonification pour un bénéficiaire"
 
@@ -69,8 +71,9 @@ class Permissions(enum.Enum):
     MANAGE_BOOKINGS = "gérer les réservations"
     READ_BOOKINGS = "visualiser les réservations"
 
-    READ_OFFERS = "visualiser les offres"
+    READ_OFFERS = "visualiser les offres, produits, artistes"
     MANAGE_OFFERS = "gérer les offres"
+    MANAGE_ARTISTS = "gérer les artistes"
     MULTIPLE_OFFERS_ACTIONS = "opérations sur plusieurs offres"
 
     VALIDATE_OFFERER = "gérer la validation des entités juridiques et des rattachements"
@@ -190,6 +193,7 @@ class Roles(enum.Enum):
     CONNECT_AS_PRO = "connect_as_pro"
     DAF = "daf"
     DAF_MANAGEMENT = "responsable_daf"
+    DATA = "data"
     DPO = "dpo"
     FRAUDE_CONFORMITE = "fraude_conformite"
     FRAUDE_JEUNES = "fraude_jeunes"

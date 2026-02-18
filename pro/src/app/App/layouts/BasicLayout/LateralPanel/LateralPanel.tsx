@@ -4,14 +4,18 @@ import { useEffect } from 'react'
 
 import { noop } from '@/commons/utils/noop'
 import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import {
+  ButtonColor,
+  ButtonVariant,
+  IconPositionEnum,
+} from '@/design-system/Button/types'
 import logoPassCultureProIcon from '@/icons/logo-pass-culture-pro.svg'
 import strokeCloseIcon from '@/icons/stroke-close.svg'
+import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
-import { AdminSideNavLinks } from './components/AdminSideNavLinks'
-import { HubPageNavigation } from './components/HubPageNavigation'
-import { SideNavLinks } from './components/SideNavLinks'
+import { AdminSideNavLinks } from './AdminSideNav/AdminSideNav'
+import { LateralMenu } from './LateralMenu/LateralMenu'
 import styles from './LateralPanel.module.scss'
 
 interface LateralPanelProps {
@@ -109,10 +113,22 @@ export const LateralPanel = ({
           </div>
         )}
 
-        {isHubPage && <HubPageNavigation isLateralPanelOpen={isOpen} />}
+        {isHubPage && (
+          <div className={styles['back-to-admin']}>
+            <Button
+              as="a"
+              variant={ButtonVariant.SECONDARY}
+              to="/remboursements"
+              iconPosition={IconPositionEnum.LEFT}
+              icon={strokeRepaymentIcon}
+              label="Espace Administration"
+              fullWidth
+            />
+          </div>
+        )}
         {!isHubPage && (
           <>
-            {!isAdminArea && <SideNavLinks isLateralPanelOpen={isOpen} />}
+            {!isAdminArea && <LateralMenu isLateralPanelOpen={isOpen} />}
             {isAdminArea && <AdminSideNavLinks isLateralPanelOpen={isOpen} />}
           </>
         )}

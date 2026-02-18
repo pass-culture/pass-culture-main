@@ -1,11 +1,13 @@
 import copy
 import datetime
 import decimal
+from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
 import requests_mock
 import sentry_sdk
+from dateutil.relativedelta import relativedelta
 
 import pcapi.connectors.api_particulier as api_particulier
 import pcapi.core.finance.models as finance_models
@@ -128,6 +130,26 @@ class GetQuotientFamilialTest:
             recredit.recreditType for recredit in user.deposit.recredits
         ]
         assert user.recreditAmountToShow == decimal.Decimal("50")
+
+    @patch("pcapi.connectors.api_particulier.get_quotient_familial")
+    def test_get_quotient_familial_calls(self, mocked_get_quotient_familial):
+        custodian = subscription_factories.QuotientFamilialCustodianFactory()
+        fraud_check = subscription_factories.BonusFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.STARTED,
+            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
+                custodian=custodian
+            ).model_dump(),
+        )
+        birth_date = fraud_check.user.validatedBirthDate
+        mocked_get_quotient_familial.return_value = bonus_fixtures.QF_DESERIALIZED_RESPONSE
+
+        bonus_api.apply_for_quotient_familial_bonus(fraud_check)
+
+        assert len(mocked_get_quotient_familial.mock_calls) == 12
+        mocked_get_quotient_familial.assert_has_calls(
+            [call(custodian, birth_date + relativedelta(years=17, months=offset)) for offset in range(12)],
+            any_order=True,
+        )
 
     def test_custodian_not_found(self):
         user = users_factories.BeneficiaryFactory()
@@ -284,6 +306,20 @@ class GetQuotientFamilialTest:
             "recipient": "[REDACTED]",
             "sexeEtatCivil": "[REDACTED]",
         }
+
+    def test_touch_fraud_check_despite_error(self):
+        twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)
+        bonus_fraud_check = subscription_factories.BonusFraudCheckFactory.create(
+            status=subscription_models.FraudCheckStatus.STARTED, updatedAt=twelve_hours_ago
+        )
+
+        with requests_mock.Mocker() as mock:
+            mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, status_code=422)
+
+            with pytest.raises(api_particulier.ParticulierApiQueryError):
+                bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
+
+        assert bonus_fraud_check.updatedAt > twelve_hours_ago
 
 
 def _build_user_from_fixture(quotient_familial_json_response: dict) -> users_models.User:

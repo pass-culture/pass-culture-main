@@ -79,7 +79,25 @@ class Returns403Test:
         offer_db = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer_db.institution == institution1
 
-    def test_change_institution_on_uneditable_offer_booking_reimbused(self, client: Any) -> None:
+    def test_change_institution_on_uneditable_offer_booking_pending_reimbursement(self, client: Any) -> None:
+        institution1 = factories.EducationalInstitutionFactory()
+        booking = factories.CollectiveBookingFactory(
+            collectiveStock__collectiveOffer__institution=institution1,
+            status=models.CollectiveBookingStatus.PENDING_REIMBURSEMENT,
+        )
+        offer = booking.collectiveStock.collectiveOffer
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
+        institution2 = factories.EducationalInstitutionFactory()
+
+        client = client.with_session_auth("pro@example.com")
+        data = {"educationalInstitutionId": institution2.id}
+        response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
+
+        assert response.status_code == 403
+        offer_db = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
+        assert offer_db.institution == institution1
+
+    def test_change_institution_on_uneditable_offer_booking_reimbursed(self, client: Any) -> None:
         institution1 = factories.EducationalInstitutionFactory()
         booking = factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__institution=institution1, status=models.CollectiveBookingStatus.REIMBURSED
@@ -184,7 +202,7 @@ class Returns400Test:
         response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"educationalInstitutionId": ["Ce champ ne peut pas être nul"]}
+        assert response.json == {"educationalInstitutionId": ["Saisissez un entier valide"]}
 
     def test_institution_id_missing(self, client):
         offer = factories.DraftCollectiveOfferFactory()

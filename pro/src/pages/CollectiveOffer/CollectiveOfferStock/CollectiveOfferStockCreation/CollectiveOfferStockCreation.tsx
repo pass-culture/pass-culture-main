@@ -102,7 +102,7 @@ export const CollectiveOfferStockCreation = ({
       }
 
       await mutate<GetCollectiveOfferResponseModel>(
-        [GET_COLLECTIVE_OFFER_QUERY_KEY],
+        [GET_COLLECTIVE_OFFER_QUERY_KEY, Number(offer.id)],
         {
           ...offer,
           collectiveStock: {
@@ -119,7 +119,7 @@ export const CollectiveOfferStockCreation = ({
       )}/collectif`
 
       if (!isTemplate) {
-        url = `${url}/visibilite${requestId ? `?requete=${requestId}` : ''}`
+        url = `${url}/etablissement${requestId ? `?requete=${requestId}` : ''}`
       } else {
         url = `${url}/creation/recapitulatif`
       }

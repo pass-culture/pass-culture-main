@@ -62,7 +62,30 @@ describe('bookings offer cell', () => {
     const props: BookingOfferCellProps = {
       booking: bookingRecapFactory({
         stock: bookingRecapStockFactory({
-          eventBeginningDatetime: '2020-05-12T11:03:28.564687+04:00',
+          eventBeginningDatetime: '2026-03-12T11:25:00Z',
+          offerId: offerId,
+          offerName: 'La danse des chats',
+          offerIsEducational: false,
+          offerEan: null,
+        }),
+      }),
+    }
+
+    renderOfferCell(props)
+
+    expect(screen.getByText('12/03/2026 11:25')).toBeInTheDocument()
+    const offer_name = screen.getByText('La danse des chats')
+    const offer_name_link = offer_name.closest('a')
+    expect(offer_name_link?.href).toContain(`offre/individuelle/${offerId}`)
+  })
+
+  it('should render event beginning date according to user timezone', () => {
+    vi.stubEnv('TZ', 'Europe/Paris')
+
+    const props: BookingOfferCellProps = {
+      booking: bookingRecapFactory({
+        stock: bookingRecapStockFactory({
+          eventBeginningDatetime: '2026-03-12T11:25:00Z',
           offerId: offerId,
           offerName: 'La danse des poireaux',
           offerIsEducational: false,
@@ -73,10 +96,7 @@ describe('bookings offer cell', () => {
 
     renderOfferCell(props)
 
-    expect(screen.getByText('12/05/2020 11:03')).toBeInTheDocument()
-    const offer_name = screen.getByText('La danse des poireaux')
-    const offer_name_link = offer_name.closest('a')
-    expect(offer_name_link?.href).toContain(`offre/individuelle/${offerId}`)
+    expect(screen.getByText('12/03/2026 12:25')).toBeInTheDocument()
   })
 
   it('should render tarif informations for individual bookings', () => {

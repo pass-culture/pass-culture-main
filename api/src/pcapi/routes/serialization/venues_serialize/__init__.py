@@ -295,6 +295,9 @@ class GetVenueResponseGetterDict(pydantic_v1.utils.GetterDict):
         if key == "canDisplayHighlights":
             return venue.can_display_highlights
 
+        if key == "hasNonDraftOffers":
+            return venue.has_non_draft_offers
+
         return super().get(key, default)
 
 
@@ -346,6 +349,7 @@ class GetVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     hasNonFreeOffers: bool
     hasPartnerPage: bool
     canDisplayHighlights: bool
+    hasNonDraftOffers: bool
 
     class Config:
         orm_mode = True
@@ -462,6 +466,7 @@ class EditVenueCollectiveDataBodyModel(BaseModel):
     collectiveAccessInformation: str | None
     collectivePhone: str | None
     collectiveEmail: str | None
+    activity: offerers_models.ActivityOpenToPublic | offerers_models.ActivityNotOpenToPublic | None
 
     _validate_collectiveDescription = string_length_validator("collectiveDescription", length=500)
     _validate_collectiveWebsite = string_length_validator("collectiveWebsite", length=150)
@@ -606,23 +611,6 @@ class VenuesEducationalStatusResponseModel(BaseModel):
 
 class VenuesEducationalStatusesResponseModel(BaseModel):
     statuses: list[VenuesEducationalStatusResponseModel]
-
-
-class VenueOfOffererFromSiretResponseModel(BaseModel):
-    id: int
-    name: str
-    publicName: str
-    siret: str | None
-    isPermanent: bool
-
-    class Config:
-        orm_mode = True
-
-
-class GetVenuesOfOffererFromSiretResponseModel(BaseModel):
-    offererName: str | None
-    offererSiren: str | None
-    venues: list[VenueOfOffererFromSiretResponseModel]
 
 
 class GetOffersStatsResponseModel(HttpBodyModel):

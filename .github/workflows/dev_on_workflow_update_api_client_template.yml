@@ -81,7 +81,7 @@ jobs:
           PCAPI_GID: 1000
       - uses: KengoTODA/actions-setup-docker-compose@v1
         with:
-          version: '2.23.3'
+          version: '2.40.3'
       - name: "Run API"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: docker-compose -f docker-compose-backend.yml up postgres redis -d

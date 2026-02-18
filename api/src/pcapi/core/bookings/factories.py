@@ -106,6 +106,11 @@ class CancelledBookingFactory(BookingFactory):
     cancellationReason = models.BookingCancellationReasons.BENEFICIARY
 
 
+class PendingReimbursementBookingFactory(BookingFactory):
+    status = models.BookingStatus.PENDING_REIMBURSEMENT
+    dateUsed = factory.LazyFunction(date_utils.get_naive_utc_now)
+
+
 class ReimbursedBookingFactory(BookingFactory):
     status = models.BookingStatus.REIMBURSED
     dateUsed = factory.LazyFunction(date_utils.get_naive_utc_now)

@@ -1110,6 +1110,7 @@
                     "CONFIRMED",
                     "USED",
                     "CANCELLED",
+                    "PENDING_REIMBURSEMENT",
                     "REIMBURSED"
                 ],
                 "title": "BookingStatus",
@@ -1692,6 +1693,7 @@
                     "CONFIRMED",
                     "USED",
                     "CANCELLED",
+                    "PENDING_REIMBURSEMENT",
                     "REIMBURSED"
                 ],
                 "title": "CollectiveBookingStatus"
@@ -2462,7 +2464,6 @@
                 "title": "EacFormat"
             },
             "EventCategoryEnum": {
-                "description": "An enumeration.",
                 "enum": [
                     "ACTIVATION_EVENT",
                     "ATELIER_PRATIQUE_ART",
@@ -2497,6 +2498,7 @@
                 "type": "string"
             },
             "EventCategoryResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "conditionalFields": {
                         "additionalProperties": {
@@ -2507,12 +2509,21 @@
                         "type": "object"
                     },
                     "id": {
-                        "$ref": "#/components/schemas/EventCategoryEnum"
+                        "$ref": "#/components/schemas/EventCategoryEnum",
+                        "description": "Category id",
+                        "example": "CONCERT"
+                    },
+                    "label": {
+                        "description": "Category label",
+                        "example": "Concert",
+                        "title": "Label",
+                        "type": "string"
                     }
                 },
                 "required": [
                     "id",
-                    "conditionalFields"
+                    "conditionalFields",
+                    "label"
                 ],
                 "title": "EventCategoryResponse",
                 "type": "object"
@@ -5413,6 +5424,7 @@
                     "periodBeginningDate": {
                         "description": "Period beginning date. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                         "example": "2024-03-03T13:00:00+02:00",
+                        "format": "date-time",
                         "nullable": true,
                         "title": "Periodbeginningdate",
                         "type": "string"
@@ -5420,6 +5432,7 @@
                     "periodEndingDate": {
                         "description": "Period ending date. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                         "example": "2024-05-10T15:00:00+02:00",
+                        "format": "date-time",
                         "nullable": true,
                         "title": "Periodendingdate",
                         "type": "string"
@@ -12901,6 +12914,7 @@
                         "schema": {
                             "description": "Period beginning date. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                             "example": "2024-03-03T13:00:00+02:00",
+                            "format": "date-time",
                             "nullable": true,
                             "title": "Periodbeginningdate",
                             "type": "string"
@@ -12914,6 +12928,7 @@
                         "schema": {
                             "description": "Period ending date. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                             "example": "2024-05-10T15:00:00+02:00",
+                            "format": "date-time",
                             "nullable": true,
                             "title": "Periodendingdate",
                             "type": "string"

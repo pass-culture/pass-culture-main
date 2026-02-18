@@ -8,7 +8,7 @@ import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.connectors import acceslibre as acceslibre_connector
-from pcapi.core.external.zendesk_sell_backends import testing as zendesk_testing
+from pcapi.core.external.zendesk_sell.backends import testing as zendesk_testing
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.search.models import IndexationReason
@@ -1070,9 +1070,9 @@ class Returns200Test:
             (True, "CINEMA", offerers_models.VenueTypeCode.MOVIE, offerers_models.Activity.CINEMA),
             (
                 False,
-                "STREAMING_PLATFORM",
+                "RADIO_OR_MUSIC_STREAMING",
                 offerers_models.VenueTypeCode.DIGITAL,
-                offerers_models.Activity.STREAMING_PLATFORM,
+                offerers_models.Activity.RADIO_OR_MUSIC_STREAMING,
             ),
             (True, "FESTIVAL", offerers_models.VenueTypeCode.FESTIVAL, offerers_models.Activity.FESTIVAL),
             (False, "FESTIVAL", offerers_models.VenueTypeCode.FESTIVAL, offerers_models.Activity.FESTIVAL),
@@ -1300,6 +1300,27 @@ class Returns400Test:
         # then
         assert response.status_code == 400
         assert response.json == {"activity": ["Activité non reconnue."]}
+
+    def test_update_with_too_long_website(self, client) -> None:
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__lastConnectionDate=date_utils.get_naive_utc_now(),
+        )
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            venueTypeCode=offerers_models.VenueTypeCode.GAMES,
+            activity=offerers_models.Activity.GAMES_CENTRE,
+            isOpenToPublic=True,
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+
+        venue_data = populate_missing_data_from_venue(
+            {"contact": {"website": "https://example.com" + "/test" * 50}}, venue
+        )
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+
+        assert response.status_code == 400
+        assert response.json == {"contact.website": ["ensure this value has at most 256 characters"]}
 
 
 @pytest.mark.parametrize(

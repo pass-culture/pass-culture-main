@@ -16,8 +16,6 @@ import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 from flask import current_app
-from psycopg2.errorcodes import CHECK_VIOLATION
-from psycopg2.errorcodes import UNIQUE_VIOLATION
 from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import insert
 from werkzeug.exceptions import BadRequest
@@ -135,7 +133,7 @@ def build_new_offer_from_product(
 ) -> models.Offer:
     if offerer_address_id is None:
         offerer_address_id = offerers_api.get_or_create_offer_location(
-            venue.managingOffererId, venue.offererAddress.addressId, venue.common_name
+            venue.managingOffererId, venue.offererAddress.addressId, venue.publicName
         ).id
 
     return models.Offer(
@@ -259,7 +257,7 @@ def create_offer(
     offerer_address = offerer_address or offerers_api.get_or_create_offer_location(
         offerer_id=venue.managingOffererId,
         address_id=venue.offererAddress.addressId,
-        label=venue.common_name,
+        label=venue.publicName,
     )
 
     if body.subcategory_id in subcategories.ONLINE_SUBCATEGORIES:  # i.e. it is a digital offer
@@ -281,8 +279,9 @@ def create_offer(
     if feature.FeatureToggle.WIP_OFFER_ARTISTS.is_active() and artist_offer_links is not None:
         validation.check_artist_offer_links(artist_offer_links, subcategory)
 
-        for link_data in artist_offer_links:
-            artist_api.create_artist_offer_link(offer.id, link_data)
+        for artist_offer_link in artist_offer_links:
+            link_key = artist_api.get_artist_offer_link_key(artist_offer_link)
+            artist_api.create_artist_offer_link(offer.id, link_key)
 
     # This log is used for analytics purposes.
     # If you need to make a 'breaking change' of this log, please contact the data team.
@@ -305,7 +304,7 @@ def get_or_create_offerer_address_from_address_body(
     if isinstance(address_body, offerers_schemas.LocationOnlyOnVenueModel):
         # Use the same address as the venue, but offer must not be linked to a VENUE_LOCATION
         return offerers_api.get_or_create_offer_location(
-            venue.managingOffererId, venue.offererAddress.addressId, label=venue.common_name
+            venue.managingOffererId, venue.offererAddress.addressId, label=venue.publicName
         )
 
     return offerers_api.get_offer_location_from_address(venue.managingOffererId, address_body)
@@ -1074,7 +1073,7 @@ def publish_offer(
 
 
 def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | None) -> None:
-    venue_already_has_validated_offer = offers_repository.venue_already_has_validated_offer(offer)
+    venue_already_has_validated_offer = offers_repository.venue_already_has_validated_offer(offer.venueId)
 
     offer.validation = set_offer_status_based_on_fraud_criteria(offer)
 
@@ -1104,9 +1103,9 @@ def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | No
         offer.isActive = is_neither_pending_nor_rejected
 
     if (
-        offer.validation == models.OfferValidationStatus.APPROVED
+        isinstance(offer, models.Offer)
+        and offer.validation == models.OfferValidationStatus.APPROVED
         and not venue_already_has_validated_offer
-        and isinstance(offer, models.Offer)
     ):
         transactional_mails.send_first_venue_approved_offer_email_to_pro(offer)
 
@@ -1495,6 +1494,9 @@ def _resolve_subrule_attribute(obj: object, attribute: str) -> typing.Any:
 
 def resolve_offer_validation_sub_rule(sub_rule: models.OfferValidationSubRule, offer: AnyOffer) -> bool:
     if sub_rule.model:
+        object_to_compare: (
+            AnyOffer | educational_models.CollectiveStock | offerers_models.Venue | offerers_models.Offerer
+        )
         if sub_rule.model.value in OFFER_LIKE_MODELS and type(offer).__name__ == sub_rule.model.value:
             object_to_compare = offer
         elif sub_rule.model.value == "CollectiveStock" and isinstance(offer, educational_models.CollectiveOffer):
@@ -1590,49 +1592,6 @@ def unindex_expired_offers(process_all_expired: bool = False) -> None:
         logger.info("[ALGOLIA] Found %d expired offers to unindex", len(offer_ids))
         search.unindex_offer_ids(offer_ids)
         page += 1
-
-
-def report_offer(
-    user: users_models.User, offer: models.Offer, reason: models.Reason, custom_reason: str | None
-) -> None:
-    try:
-        # transaction() handles the commit/rollback operations
-        #
-        # UNIQUE_VIOLATION, CHECK_VIOLATION and STRING_DATA_RIGHT_TRUNCATION
-        # errors are specific ones:
-        # either the user tried to report the same error twice, which is not
-        # allowed, or the client sent a invalid report (eg. OTHER without
-        # custom reason / custom reason too long).
-        #
-        # Other errors are unexpected and are therefore re-raised as is.
-        with transaction():
-            report = models.OfferReport(user=user, offer=offer, reason=reason, customReasonContent=custom_reason)
-            db.session.add(report)
-    except sa_exc.IntegrityError as error:
-        pgcode = getattr(error.orig, "pgcode", None)
-        if pgcode == UNIQUE_VIOLATION:
-            raise exceptions.OfferAlreadyReportedError() from error
-        if pgcode == CHECK_VIOLATION:
-            raise exceptions.ReportMalformed() from error
-        raise
-
-    transactional_mails.send_email_reported_offer_by_user(user, offer, reason, custom_reason)
-
-
-def _should_try_to_update_offer_stock_quantity(offer: models.Offer) -> bool:
-    # The offer is to update only if it is a cinema offer, and if the venue has a cinema provider
-    if offer.subcategory.id != subcategories.SEANCE_CINE.id:
-        return False
-
-    if not offer.lastProviderId:  # Manual offer
-        return False
-
-    offer_venue_providers = offer.venue.venueProviders
-    for venue_provider in offer_venue_providers:
-        if venue_provider.isFromCinemaProvider:
-            return True
-
-    return False
 
 
 def create_or_update_product_mediations(product: models.Product, images: TiteliveImage | None) -> None:
@@ -1982,7 +1941,7 @@ def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venu
         db.session.query(bookings_models.Booking)
         .with_entities(bookings_models.Booking.id)
         .join(bookings_models.Booking.stock)
-        .filter(models.Stock.offerId == offer.id, bookings_models.Booking.isReimbursed)
+        .filter(models.Stock.offerId == offer.id, bookings_models.Booking.is_pending_reimbursement_or_reimbursed)
         .count()
     )
     if count_reimbursed_bookings > 0:
@@ -2061,7 +2020,7 @@ def move_offer(
         # Use a different OA if the offer uses the venue's OA
         if offer.offererAddress and offer.offererAddress == original_venue.offererAddress:
             destination_oa = offerers_api.get_or_create_offer_location(
-                original_venue.managingOffererId, original_venue.offererAddress.addressId, original_venue.common_name
+                original_venue.managingOffererId, original_venue.offererAddress.addressId, original_venue.publicName
             )
             db.session.add(destination_oa)
             offer.offererAddress = destination_oa
@@ -2148,15 +2107,14 @@ def move_event_offer(
             offer.offererAddress = offerers_api.get_or_create_offer_location(
                 offerer_id=destination_venue.managingOffererId,
                 address_id=destination_venue.offererAddress.addressId,
-                label=destination_venue.common_name,
+                label=destination_venue.publicName,
             )
         else:
             # Use a different OA if the offer uses the venue OA
             if offer.offererAddress and offer.offererAddress == offer.venue.offererAddress:
                 destination_oa = offerers_api.get_or_create_offer_location(
-                    offer.venue.managingOffererId, offer.venue.offererAddress.addressId, offer.venue.common_name
+                    offer.venue.managingOffererId, offer.venue.offererAddress.addressId, offer.venue.publicName
                 )
-                db.session.add(destination_oa)
                 offer.offererAddress = destination_oa
         offer.venue = destination_venue
         db.session.add(offer)
@@ -2166,7 +2124,7 @@ def move_event_offer(
             db.session.add(price_category)
 
         for booking in bookings:
-            assert not booking.isReimbursed
+            assert not booking.is_pending_reimbursement_or_reimbursed
             booking.venueId = destination_venue.id
 
             # when offer has priced bookings, pricing point for destination venue must be the same as pricing point
@@ -2479,7 +2437,6 @@ def delete_offers_related_objects(offer_ids: typing.Collection[int]) -> None:
         models.Stock,
         users_models.Favorite,
         models.Mediation,
-        models.OfferReport,
         finance_models.CustomReimbursementRule,
     ]
 
@@ -2870,3 +2827,30 @@ def replace_offer_price_categories(
     db.session.flush()
 
     return offer
+
+
+def get_offer_mediation_url(offer: models.Offer) -> tuple[str | None, str | None]:
+    """Fetch the most recent mediation url from the offer or its product
+
+    Try to fetch the most recent mediation from the offer's product first. If
+    nothing is found, search from the offer's mediations.
+    """
+    product = offer.product
+
+    if product:
+        product_mediations = sorted(product.productMediations, key=lambda m: m.id, reverse=True)
+        if product_mediations:
+            return product_mediations[0].url, None
+
+    mediations = sorted(offer.mediations, key=lambda m: m.id, reverse=True)
+    if mediations:
+        return mediations[0].thumbUrl, mediations[0].credit
+
+    return None, None
+
+
+def build_offer_image(offer: models.Offer) -> models.OfferImage | None:
+    url, credit = get_offer_mediation_url(offer)
+    if not url:
+        return None
+    return models.OfferImage(url=url, credit=credit)

@@ -1,6 +1,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
 import type {
+  GetOffererResponseModel,
   GetVenueResponseModel,
   SharedCurrentUserResponseModel,
   VenueListItemResponseModel,
@@ -10,8 +11,10 @@ export type UserAccess = 'no-offerer' | 'no-onboarding' | 'unattached' | 'full'
 
 type UserState = {
   currentUser: null | SharedCurrentUserResponseModel
-  // TODO (igabriele, 2025-10-28): Move that into a `permission(s)` or `role(s)` prop attached to each venue provided by the backend (in `get_venues` route`) before `WIP_SWITCH_VENUE is enabled in production.
+  // TODO (igabriele, 2025-02-04): Delete this prop once `WIP_SWITCH_VENUE` FF is enabled and removed.
   access: null | UserAccess
+  selectedAdminOfferer: GetOffererResponseModel | null
+  // TODO (igabriele, 2026-02-04): Rename that to `selectedPartnerVenue`.
   selectedVenue: GetVenueResponseModel | null
   venues: VenueListItemResponseModel[] | null
 }
@@ -19,6 +22,7 @@ type UserState = {
 export const initialState: UserState = {
   currentUser: null,
   access: null,
+  selectedAdminOfferer: null,
   selectedVenue: null,
   venues: null,
 }
@@ -36,6 +40,13 @@ const userSlice = createSlice({
 
     updateUserAccess: (state, action: PayloadAction<null | UserAccess>) => {
       state.access = action.payload
+    },
+
+    setSelectedAdminOfferer(
+      state: UserState,
+      action: PayloadAction<GetOffererResponseModel | null>
+    ) {
+      state.selectedAdminOfferer = action.payload
     },
 
     setSelectedVenue(
@@ -56,5 +67,10 @@ const userSlice = createSlice({
 
 export const userReducer = userSlice.reducer
 
-export const { updateUser, updateUserAccess, setSelectedVenue, setVenues } =
-  userSlice.actions
+export const {
+  updateUser,
+  updateUserAccess,
+  setSelectedAdminOfferer,
+  setSelectedVenue,
+  setVenues,
+} = userSlice.actions

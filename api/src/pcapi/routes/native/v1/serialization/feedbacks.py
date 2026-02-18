@@ -1,10 +1,9 @@
-from pcapi.core.offerers.schemas import RequiredStrippedString
-from pcapi.routes.serialization import ConfiguredBaseModel
+from typing import Annotated
+
+from pydantic import Field
+
+from pcapi.routes.serialization import HttpBodyModel
 
 
-class Feedback(RequiredStrippedString):
-    max_length = 800
-
-
-class PostFeedbackBody(ConfiguredBaseModel):
-    feedback: Feedback
+class PostFeedbackBody(HttpBodyModel):
+    feedback: Annotated[str, Field(min_length=1, max_length=800, strip_whitespace=True)]

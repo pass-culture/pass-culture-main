@@ -188,15 +188,7 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "location": {
-                    "isVenueLocation": True,
-                    "isManualEdition": False,
-                    "city": oa.address.city,
-                    "latitude": oa.address.latitude,
-                    "longitude": oa.address.longitude,
-                    "postalCode": oa.address.postalCode,
-                    "street": oa.address.street,
-                },
+                "location": {"isVenueLocation": True},
             },
         }
 
@@ -263,18 +255,7 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "location": {
-                    "banId": venue.offererAddress.address.banId,
-                    "isVenueLocation": True,
-                    "isManualEdition": venue.offererAddress.address.isManualEdition,
-                    "inseeCode": venue.offererAddress.address.inseeCode,
-                    "city": venue.offererAddress.address.city,
-                    "label": "My address",
-                    "latitude": str(venue.offererAddress.address.latitude),
-                    "longitude": str(venue.offererAddress.address.longitude),
-                    "postalCode": venue.offererAddress.address.postalCode,
-                    "street": venue.offererAddress.address.street,
-                },
+                "location": {"isVenueLocation": True},
             },
         }
 
@@ -311,6 +292,16 @@ class Returns200Test:
         assert offer.locationType == models.CollectiveLocationType.TO_BE_DEFINED
         assert offer.locationComment == "Right here"
 
+    def test_contact_url(self, pro_client, payload):
+        data = {**payload, "contactUrl": "http://www.test.fr"}
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 201
+        offer = db.session.query(models.CollectiveOfferTemplate).filter_by(id=response.json["id"]).one()
+        assert offer.contactUrl == "http://www.test.fr"
+
 
 class Returns403Test:
     def test_random_user(self, client, payload):
@@ -340,7 +331,7 @@ class Returns400Test:
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"formats": ["formats must have at least one value"]}
+        assert response.json == {"formats": ["Cette liste doit doit avoir une taille minimum de 1"]}
         assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_empty_domains(self, pro_client, payload):
@@ -350,7 +341,7 @@ class Returns400Test:
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"domains": ["domains must have at least one value"]}
+        assert response.json == {"domains": ["Cette liste doit doit avoir une taille minimum de 1"]}
 
         assert db.session.query(models.CollectiveOfferTemplate).count() == 0
 
@@ -361,7 +352,9 @@ class Returns400Test:
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"priceDetail": ["ensure this value has at most 1000 characters"]}
+        assert response.json == {
+            "priceDetail": ["Cette chaîne de caractères doit avoir une taille maximum de 1000 caractères"]
+        }
 
         assert db.session.query(models.CollectiveOfferTemplate).count() == 0
 
@@ -402,8 +395,8 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {
-            "bookingEmails.1": ["Le format d'email est incorrect."],
-            "bookingEmails.2": ["Le format d'email est incorrect."],
+            "bookingEmails.1": ["Saisissez un email valide"],
+            "bookingEmails.2": ["Saisissez un email valide"],
         }
 
     def test_description_invalid(self, pro_client, payload):
@@ -412,7 +405,9 @@ class Returns400Test:
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
+        assert response.json == {
+            "description": ["Cette chaîne de caractères doit avoir une taille maximum de 1500 caractères"]
+        }
 
     def test_national_program_inactive(self, pro_client, payload, domains):
         national_program = educational_factories.NationalProgramFactory(isActive=False)
@@ -441,7 +436,7 @@ class Returns400Test:
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"location": ["Ce champ ne peut pas être nul"]}
+        assert response.json == {"location": ["Format incorrect"]}
         assert db.session.query(models.CollectiveOfferTemplate).count() == 0
 
     def test_create_collective_offer_template_with_location_type_school_must_not_receive_location_comment(
@@ -461,7 +456,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {
-            "location.locationComment": ["locationComment is not allowed for the provided locationType"]
+            "location.locationComment": ["locationComment n'est pas autorisé pour cette valeur de locationType"]
         }
         assert db.session.query(models.CollectiveOfferTemplate).count() == 0
 
@@ -482,7 +477,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {
-            "location.locationComment": ["locationComment is not allowed for the provided locationType"]
+            "location.locationComment": ["locationComment n'est pas autorisé pour cette valeur de locationType"]
         }
         assert db.session.query(models.CollectiveOfferTemplate).count() == 0
 
@@ -503,7 +498,9 @@ class Returns400Test:
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"interventionArea": ["intervention_area is required and must not be empty"]}
+        assert response.json == {
+            "interventionArea": ["interventionArea ne peut pas être vide pour cette valeur de locationType"]
+        }
         assert db.session.query(models.CollectiveOfferTemplate).count() == 0
 
     def test_create_collective_offer_template_with_location_type_school_must_provide_correct_intervention_area(
@@ -523,7 +520,7 @@ class Returns400Test:
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"interventionArea": ["intervention_area must be a valid area"]}
+        assert response.json == {"interventionArea": ["interventionArea doit contenir des départements valides"]}
         assert db.session.query(models.CollectiveOfferTemplate).count() == 0
 
     def test_create_collective_offer_template_with_location_type_address_must_provide_address(
@@ -542,7 +539,7 @@ class Returns400Test:
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"location.location": ["address is required for the provided locationType"]}
+        assert response.json == {"location.location": ["location est requis pour cette valeur de locationType"]}
         assert db.session.query(models.CollectiveOfferTemplate).count() == 0
 
     @pytest.mark.parametrize(
@@ -571,7 +568,7 @@ class Returns400Test:
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"location.location": ["address is not allowed for the provided locationType"]}
+        assert response.json == {"location.location": ["location n'est pas autorisé pour cette valeur de locationType"]}
         assert db.session.query(models.CollectiveOfferTemplate).count() == 0
 
 
@@ -579,12 +576,12 @@ class InvalidDatesTest:
     def test_missing_start(self, pro_client, payload, template_end):
         response = self.send_request(pro_client, payload, {"end": template_end.isoformat()})
         assert response.status_code == 400
-        assert "dates.start" in response.json
+        assert response.json == {"dates.start": ["Ce champ est obligatoire"]}
 
     def test_start_is_null(self, pro_client, payload, template_end):
         response = self.send_request(pro_client, payload, {"start": None, "end": template_end.isoformat()})
         assert response.status_code == 400
-        assert "dates.start" in response.json
+        assert response.json == {"dates.start": ["Format de date invalide"]}
 
     def test_start_is_in_the_past(self, pro_client, payload, template_end):
         one_week_ago = date_utils.get_naive_utc_now() - timedelta(days=7)
@@ -592,23 +589,23 @@ class InvalidDatesTest:
 
         response = self.send_request(pro_client, payload, dates_extra)
         assert response.status_code == 400
-        assert "dates.start" in response.json
+        assert response.json == {"dates.start": ["La date de début ne peut pas être dans le passé"]}
 
     def test_start_is_after_end(self, pro_client, payload, template_end):
         dates_extra = {"start": (template_end + timedelta(days=1)).isoformat(), "end": template_end.isoformat()}
         response = self.send_request(pro_client, payload, dates_extra)
         assert response.status_code == 400
-        assert "dates.__root__" in response.json
+        assert response.json == {"dates": ["La date de début doit être avant la date de fin"]}
 
     def test_missing_end(self, pro_client, payload, template_start):
         response = self.send_request(pro_client, payload, {"start": template_start.isoformat()})
         assert response.status_code == 400
-        assert "dates.end" in response.json
+        assert response.json == {"dates.end": ["Ce champ est obligatoire"]}
 
     def test_end_is_null(self, pro_client, payload, template_start):
         response = self.send_request(pro_client, payload, {"start": template_start.isoformat(), "end": None})
         assert response.status_code == 400
-        assert "dates.end" in response.json
+        assert response.json == {"dates.end": ["Format de date invalide"]}
 
     def send_request(self, pro_client, payload, dates_extra):
         data = {**payload, "dates": {**dates_extra}}

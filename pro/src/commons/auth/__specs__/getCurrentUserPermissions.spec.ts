@@ -1,6 +1,7 @@
 import * as storeModule from '@/commons/store/store'
 import { configureTestStore } from '@/commons/store/testUtils'
 import type { UserAccess } from '@/commons/store/user/reducer'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 
@@ -13,6 +14,7 @@ describe('getCurrentUserPermissions', () => {
         user: {
           access: null,
           currentUser: null,
+          selectedAdminOfferer: null,
           selectedVenue: null,
           venues: null,
         },
@@ -22,6 +24,7 @@ describe('getCurrentUserPermissions', () => {
       const result = getCurrentUserPermissions()
 
       expect(result).toEqual({
+        hasSelectedAdminOfferer: false,
         hasSelectedVenue: false,
         isAuthenticated: false,
         isOnboarded: false,
@@ -36,6 +39,7 @@ describe('getCurrentUserPermissions', () => {
         user: {
           access: null,
           currentUser: sharedCurrentUserFactory(),
+          selectedAdminOfferer: null,
           selectedVenue: null,
           venues: null,
         },
@@ -53,6 +57,7 @@ describe('getCurrentUserPermissions', () => {
           user: {
             access: null,
             currentUser: sharedCurrentUserFactory(),
+            selectedAdminOfferer: null,
             selectedVenue: null,
             venues: null,
           },
@@ -67,12 +72,35 @@ describe('getCurrentUserPermissions', () => {
       })
     })
 
+    describe('with selected admin offerer', () => {
+      it('should return hasSelectedAdminOfferer as true', () => {
+        const store = configureTestStore({
+          user: {
+            access: null,
+            currentUser: sharedCurrentUserFactory(),
+            selectedAdminOfferer: {
+              ...defaultGetOffererResponseModel,
+              id: 100,
+            },
+            selectedVenue: null,
+            venues: null,
+          },
+        })
+        vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
+
+        const result = getCurrentUserPermissions()
+
+        expect(result.hasSelectedAdminOfferer).toBe(true)
+      })
+    })
+
     describe('with selected venue', () => {
       it('should return hasSelectedVenue as true', () => {
         const store = configureTestStore({
           user: {
             access: null,
             currentUser: sharedCurrentUserFactory(),
+            selectedAdminOfferer: null,
             selectedVenue: makeGetVenueResponseModel({ id: 1 }),
             venues: null,
           },
@@ -90,6 +118,7 @@ describe('getCurrentUserPermissions', () => {
             user: {
               access: 'unattached' as UserAccess,
               currentUser: sharedCurrentUserFactory(),
+              selectedAdminOfferer: null,
               selectedVenue: makeGetVenueResponseModel({ id: 1 }),
               venues: null,
             },
@@ -109,6 +138,7 @@ describe('getCurrentUserPermissions', () => {
             user: {
               access: 'no-onboarding' as UserAccess,
               currentUser: sharedCurrentUserFactory(),
+              selectedAdminOfferer: null,
               selectedVenue: makeGetVenueResponseModel({ id: 1 }),
               venues: null,
             },
@@ -128,6 +158,7 @@ describe('getCurrentUserPermissions', () => {
             user: {
               access: 'full' as UserAccess,
               currentUser: sharedCurrentUserFactory(),
+              selectedAdminOfferer: null,
               selectedVenue: makeGetVenueResponseModel({ id: 1 }),
               venues: null,
             },
@@ -137,6 +168,7 @@ describe('getCurrentUserPermissions', () => {
           const result = getCurrentUserPermissions()
 
           expect(result).toEqual({
+            hasSelectedAdminOfferer: false,
             hasSelectedVenue: true,
             isAuthenticated: true,
             isOnboarded: true,

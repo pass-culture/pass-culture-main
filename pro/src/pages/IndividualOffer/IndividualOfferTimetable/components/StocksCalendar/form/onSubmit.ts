@@ -89,9 +89,9 @@ export const onSubmit = async (
 const getYearMonthDay = (date: string) => {
   const [year, month, day] = date.split('-')
   return {
-    year: parseInt(year, 10),
-    month: parseInt(month, 10) - 1,
-    day: parseInt(day, 10),
+    year: Number.parseInt(year, 10),
+    month: Number.parseInt(month, 10) - 1,
+    day: Number.parseInt(day, 10),
   }
 }
 
@@ -223,7 +223,7 @@ const generateStocksForDates = (
 
             return {
               priceCategoryId: quantityPerPriceCategory.priceCategory
-                ? parseInt(quantityPerPriceCategory.priceCategory, 10)
+                ? Number.parseInt(quantityPerPriceCategory.priceCategory, 10)
                 : 0,
               quantity: quantityPerPriceCategory.quantity || null,
               beginningDatetime,

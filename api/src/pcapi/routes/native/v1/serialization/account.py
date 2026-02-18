@@ -48,8 +48,6 @@ class BaseAccountRequest(ConfiguredBaseModel):
     birthdate: datetime.date
     marketing_email_subscription: bool | None = False
     token: str
-    apps_flyer_user_id: str | None = None
-    apps_flyer_platform: str | None = None
     firebase_pseudo_id: str | None = None
     trusted_device: TrustedDevice | None = None
 

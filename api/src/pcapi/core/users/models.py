@@ -56,7 +56,6 @@ if typing.TYPE_CHECKING:
     from pcapi.core.offerers.models import UserOfferer
     from pcapi.core.offers.models import Mediation
     from pcapi.core.offers.models import Offer
-    from pcapi.core.offers.models import OfferReport
     from pcapi.core.permissions.models import BackOfficeUserProfile
     from pcapi.core.reactions.models import Reaction
     from pcapi.core.reminders.models import OfferReminder
@@ -282,9 +281,6 @@ class User(PcObject, Model, DeactivableMixin):
     )
     postalCode: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(5), nullable=True)
     recreditAmountToShow: sa_orm.Mapped[Decimal | None] = sa_orm.mapped_column(sa.Numeric(10, 2), nullable=True)
-    reported_offers: sa_orm.Mapped[list["OfferReport"]] = sa_orm.relationship(
-        "OfferReport", foreign_keys="OfferReport.userId", back_populates="user"
-    )
     roles: sa_orm.Mapped[list[UserRole]] = sa_orm.mapped_column(
         MutableList.as_mutable(postgresql.ARRAY(sa.Enum(UserRole, native_enum=False, create_constraint=False))),
         nullable=False,

@@ -70,7 +70,7 @@ describe('OfferPublicationEdition', () => {
       screen.getByText(
         'Une erreur est survenue lors de la modification de l’offre'
       )
-    )
+    ).toBeInTheDocument()
   })
 
   it('should format the payload to patch the offer', () => {

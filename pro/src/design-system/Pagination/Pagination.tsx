@@ -9,7 +9,7 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import styles from './Pagination.module.scss'
 import { generateNearestPages } from './utils'
 
-type PaginationProps = {
+export type PaginationProps = {
   className?: string
   /**
    * The current page number.

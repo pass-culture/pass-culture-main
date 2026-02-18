@@ -9,17 +9,19 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useMusicTypes } from '@/commons/hooks/useMusicTypes'
 import { getDelayToFrenchText } from '@/commons/utils/date'
 import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { Markdown } from '@/components/Markdown/Markdown'
+import { ARTISTIC_INFORMATION_FIELDS } from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/DetailsSubForm/DetailsSubForm'
+import { serializeOfferSectionData } from '@/pages/IndividualOfferSummary/commons/serializer'
 import {
   type Description,
   SummaryDescriptionList,
-} from '@/components/SummaryLayout/SummaryDescriptionList'
-import { SummarySection } from '@/components/SummaryLayout/SummarySection'
-import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
-import { serializeOfferSectionData } from '@/pages/IndividualOfferSummary/commons/serializer'
+} from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
+import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
+import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 
 interface OfferSummaryProps {
   offer: GetIndividualOfferWithAddressResponseModel
@@ -33,6 +35,7 @@ export const OfferSection = ({
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const { categories, subCategories } = useIndividualOfferContext()
+  const areArtistsEnabled = useActiveFeature('WIP_OFFER_ARTISTS')
 
   const { musicTypes } = useMusicTypes()
 
@@ -40,6 +43,7 @@ export const OfferSection = ({
     offer,
     categories,
     subCategories,
+    areArtistsEnabled,
     musicTypes
   )
 
@@ -99,7 +103,10 @@ export const OfferSection = ({
     })
   }
   if (conditionalFields.includes('author')) {
-    artisticInfoDescriptions.push({ title: 'Auteur', text: offerData.author })
+    artisticInfoDescriptions.push({
+      title: 'Auteur',
+      text: offerData.author,
+    })
   }
   if (conditionalFields.includes('visa')) {
     artisticInfoDescriptions.push({
@@ -160,18 +167,8 @@ export const OfferSection = ({
     })
   }
 
-  const artisticInformationsFields = [
-    'speaker',
-    'author',
-    'visa',
-    'stageDirector',
-    'performer',
-    'ean',
-    'durationMinutes',
-  ]
-
-  const displayArtisticInformations = artisticInformationsFields.some((field) =>
-    conditionalFields.includes(field)
+  const displayArtisticInformations = ARTISTIC_INFORMATION_FIELDS.some(
+    (field) => conditionalFields.includes(field)
   )
 
   return (

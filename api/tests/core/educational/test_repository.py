@@ -241,6 +241,20 @@ class FilterCollectiveOfferByStatusesTest:
         # The HIDDEN filter is not relevant for a models.CollectiveOffer, it is only used for CollectiveOfferTemplate
         assert filtered_query.count() == 0
 
+    def test_cancelled_offer_with_pending_booking_start_date_passed(self):
+        published_offer = educational_factories.PublishedCollectiveOfferFactory()
+        cancelled_offer = educational_factories.PrebookedStartPassedCollectiveOfferFactory()
+
+        filtered_query = educational_repository.filter_collective_offers_by_statuses(
+            db.session.query(models.CollectiveOffer), [models.CollectiveOfferDisplayedStatus.CANCELLED]
+        )
+        assert filtered_query.one().id == cancelled_offer.id
+
+        filtered_query = educational_repository.filter_collective_offers_by_statuses(
+            db.session.query(models.CollectiveOffer), [models.CollectiveOfferDisplayedStatus.PUBLISHED]
+        )
+        assert filtered_query.one().id == published_offer.id
+
     @pytest.mark.parametrize("status", ALL_STATUS_WITHOUT_INACTIVE)
     def test_filter_each_statuses(self, status):
         offer = educational_factories.create_collective_offer_by_status(status)

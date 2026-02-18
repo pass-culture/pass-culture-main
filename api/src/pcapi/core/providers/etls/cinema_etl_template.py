@@ -10,6 +10,7 @@ import pcapi.core.finance.api as finance_api
 from pcapi.connectors.ems import EMSScheduleConnector
 from pcapi.core import search
 from pcapi.core.categories import subcategories
+from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
@@ -215,12 +216,18 @@ class CinemaETLProcessTemplate[APIClient: cinema_client.CinemaAPIClient | EMSSch
             )
 
         # fill generic information
-        offer.offererAddress = self.venue_provider.venue.offererAddress
+        destination_oa = offerers_api.get_or_create_offer_location(
+            self.venue_provider.venue.managingOffererId,
+            self.venue_provider.venue.offererAddress.addressId,
+            self.venue_provider.venue.publicName,
+        )
+        offer.offererAddress = destination_oa
         offer.bookingEmail = self.venue_provider.venue.bookingEmail
         offer.withdrawalDetails = self.venue_provider.venue.withdrawalDetails
         offer.subcategoryId = subcategories.SEANCE_CINE.id
         offer.publicationDatetime = offer.publicationDatetime or get_naive_utc_now()
         offer.dateModifiedAtLastProvider = get_naive_utc_now()
+        offer.lastProviderId = self.venue_provider.providerId
 
         # fill product information
         offer.product = product
@@ -280,6 +287,7 @@ class CinemaETLProcessTemplate[APIClient: cinema_client.CinemaAPIClient | EMSSch
             stock.features = stock_data["features"]
             stock.price = stock_data["price"]
             stock.dateModifiedAtLastProvider = get_naive_utc_now()
+            stock.lastProviderId = self.venue_provider.providerId
 
             label_price_key = f"{stock_data['price_label']}-{stock_data['price']}"
 

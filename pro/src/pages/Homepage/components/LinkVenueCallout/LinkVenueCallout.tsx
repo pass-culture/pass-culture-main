@@ -3,6 +3,7 @@ import { useLocation } from 'react-router'
 import type { GetOffererResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 
@@ -16,10 +17,12 @@ export interface LinkVenueCalloutProps {
 export const LinkVenueCallout = ({
   offerer,
 }: LinkVenueCalloutProps): JSX.Element | null => {
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
   const { logEvent } = useAnalytics()
   const location = useLocation()
 
   const displayCallout =
+    !withSwitchVenueFeature &&
     offerer?.hasValidBankAccount &&
     offerer.venuesWithNonFreeOffersWithoutBankAccounts.length > 0
 

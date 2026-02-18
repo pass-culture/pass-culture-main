@@ -41,6 +41,22 @@ class CancelCollectiveBookingTest:
         assert booking.status == educational_models.CollectiveBookingStatus.CANCELLED
         assert finance_event.status == finance_models.FinanceEventStatus.CANCELLED
 
+    def test_cannot_cancel_already_pending_reimbursement(self):
+        finance_event = finance_factories.UsedCollectiveBookingFinanceEventFactory(
+            status=finance_models.FinanceEventStatus.PRICED,
+            collectiveBooking__status=educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT,
+            collectiveBooking__collectiveStock__collectiveOffer__venue__pricing_point="self",
+        )
+        booking = finance_event.collectiveBooking
+
+        with pytest.raises(educational_exceptions.BookingIsAlreadyRefunded):
+            educational_booking_api.cancel_collective_booking(
+                booking,
+                educational_models.CollectiveBookingCancellationReasons.OFFERER,
+            )
+        assert booking.status == educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT
+        assert finance_event.status == finance_models.FinanceEventStatus.PRICED
+
     def test_cannot_cancel_already_reimbursed(self):
         finance_event = finance_factories.UsedCollectiveBookingFinanceEventFactory(
             status=finance_models.FinanceEventStatus.PRICED,

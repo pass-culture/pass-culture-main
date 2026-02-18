@@ -4,10 +4,13 @@ import typing
 from decimal import Decimal
 from decimal import InvalidOperation
 
+import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
+from pydantic import BaseModel as BaseModelV2
 from pydantic.v1 import validator
 
 from pcapi.routes.serialization import BaseModel
+from pcapi.serialization.exceptions import PydanticError
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import phone_number as phone_number_utils
 
@@ -19,6 +22,43 @@ SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
 SocialMedias = dict[SocialMedia, pydantic_v1.HttpUrl]
 
 
+def format_coordinate(value: typing.Any) -> Decimal:
+    if not isinstance(value, (int, str, float, Decimal)):
+        raise PydanticError("Format incorrect")
+
+    try:
+        decimal_value = Decimal(value).quantize(Decimal("1.00000"))
+    except InvalidOperation:
+        raise PydanticError("Format incorrect")
+
+    return decimal_value
+
+
+CoordinateField = typing.Annotated[Decimal, pydantic_v2.BeforeValidator(format_coordinate)]
+
+
+class LocationModelV2(BaseModelV2):
+    isManualEdition: bool = False
+    isVenueLocation: bool = False
+    banId: str | None = None
+    city: str = pydantic_v2.Field(min_length=1, max_length=200)
+    inseeCode: str | None = pydantic_v2.Field(min_length=5, max_length=5, default=None)
+    label: str | None = None
+    latitude: CoordinateField = pydantic_v2.Field(gt=-MAX_LATITUDE, lt=MAX_LATITUDE)
+    longitude: CoordinateField = pydantic_v2.Field(gt=-MAX_LONGITUDE, lt=MAX_LONGITUDE)
+    postalCode: str = pydantic_v2.Field(min_length=5, max_length=5)
+    street: str = pydantic_v2.Field(min_length=1, max_length=200)
+
+    @pydantic_v2.field_validator("city")
+    @classmethod
+    def title_city_when_manually_edited(cls, city: str, info: pydantic_v2.ValidationInfo) -> str:
+        if info.data.get("isManualEdition") is True:
+            return city.title()
+
+        return city
+
+
+# Legacy (pydantic V1)
 class RequiredStrippedString(pydantic_v1.ConstrainedStr):
     strip_whitespace = True
     min_length = 1
@@ -33,7 +73,7 @@ class VenueContactModel(BaseModel):
         extra = pydantic_v1.Extra.forbid
 
     email: pydantic_v1.EmailStr | None
-    website: str | None
+    website: str | None = pydantic_v1.Field(max_length=256)
     phone_number: str | None
     social_medias: SocialMedias | None
 

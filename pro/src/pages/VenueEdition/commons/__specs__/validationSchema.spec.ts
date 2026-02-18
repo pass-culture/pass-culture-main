@@ -112,7 +112,7 @@ describe('VenueEditionForm validationSchema', () => {
       formValues: {
         ...defaultValues,
         isOpenToPublic: 'false',
-        activity: 'PRESS',
+        activity: 'PRESS_OR_MEDIA',
         openingHours: {
           MONDAY: null,
         },
@@ -145,7 +145,7 @@ describe('VenueEditionForm validationSchema', () => {
     const errors = await getYupValidationSchemaErrors(getValidationSchema(), {
       ...defaultValues,
       isOpenToPublic: 'false',
-      activity: 'PRESS',
+      activity: 'PRESS_OR_MEDIA',
       culturalDomains: null,
     })
 
@@ -158,7 +158,7 @@ describe('VenueEditionForm validationSchema', () => {
     const errors = await getYupValidationSchemaErrors(getValidationSchema(), {
       ...defaultValues,
       isOpenToPublic: 'false',
-      activity: 'PRESS',
+      activity: 'PRESS_OR_MEDIA',
       culturalDomains: [],
     })
 

@@ -26,6 +26,9 @@ class ArtistType(enum.Enum):
     PERFORMER = "performer"
     STAGE_DIRECTOR = "stage_director"
 
+    def __str__(self) -> str:
+        return self.value
+
 
 class ArtistOfferLink(PcObject, Model):
     __tablename__ = "artist_offer_link"
@@ -73,10 +76,11 @@ class ArtistProductLink(PcObject, Model):
     artist_id: sa_orm.Mapped[str] = sa_orm.mapped_column(
         sa.Text, sa.ForeignKey("artist.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    artist: sa_orm.Mapped["Artist"] = sa_orm.relationship("Artist", foreign_keys=[artist_id])
+    artist: sa_orm.Mapped["Artist"] = sa_orm.relationship("Artist", foreign_keys=[artist_id], viewonly=True)
     product_id: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), nullable=False, index=True
     )
+    product: sa_orm.Mapped["Product"] = sa_orm.relationship("Product", back_populates="artistLinks", viewonly=True)
     artist_type: sa_orm.Mapped[ArtistType | None] = sa_orm.mapped_column(MagicEnum(ArtistType), nullable=True)
     date_created: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now()

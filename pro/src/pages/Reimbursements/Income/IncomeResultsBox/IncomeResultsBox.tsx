@@ -4,13 +4,14 @@ import type {
   IndividualRevenue,
   TotalRevenue,
 } from '@/apiClient/v1'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import {
   convertEuroToPacificFranc,
   formatPacificFranc,
 } from '@/commons/utils/convertEuroToPacificFranc'
 import fullHelpIcon from '@/icons/full-help.svg'
-import { BoxRounded } from '@/ui-kit/BoxRounded/BoxRounded'
+import { Panel } from '@/ui-kit/Panel/Panel'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
 
@@ -61,7 +62,8 @@ type IncomeResultsBoxProps = {
 }
 
 export const IncomeResultsBox = ({ type, income }: IncomeResultsBoxProps) => {
-  const isCaledonian = useIsCaledonian()
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+  const isCaledonian = useIsCaledonian(withSwitchVenueFeature)
 
   const totalLabel =
     type === 'revenue'
@@ -79,7 +81,7 @@ export const IncomeResultsBox = ({ type, income }: IncomeResultsBoxProps) => {
       : income.individual
 
   return (
-    <BoxRounded>
+    <Panel>
       <div className={styles['income-results-box']}>
         <IncomeResultsSubBox
           title={totalLabel}
@@ -103,6 +105,6 @@ export const IncomeResultsBox = ({ type, income }: IncomeResultsBoxProps) => {
           </>
         )}
       </div>
-    </BoxRounded>
+    </Panel>
   )
 }

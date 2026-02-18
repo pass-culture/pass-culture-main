@@ -1,9 +1,9 @@
 import { useState } from 'react'
 
-import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
+import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 import styles from './UpdateWarningDialog.module.scss'
 

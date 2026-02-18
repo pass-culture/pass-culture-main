@@ -34,11 +34,13 @@ describe('InterventionAreaMultiSelect', () => {
   it('should render correctly', () => {
     renderInterventionAreaMultiSelect({ interventionArea: ['75', '44'] })
 
-    expect(screen.getByText('sélectionnez des départements *'))
-    expect(screen.getByText('2'))
-    expect(screen.getByText('Département(s)'))
-    expect(screen.getByText('44 - Loire-Atlantique'))
-    expect(screen.getByText('75 - Paris'))
+    expect(
+      screen.getByText('sélectionnez des départements *')
+    ).toBeInTheDocument()
+    expect(screen.getByText('2')).toBeInTheDocument()
+    expect(screen.getByText('Département(s)')).toBeInTheDocument()
+    expect(screen.getByText('44 - Loire-Atlantique')).toBeInTheDocument()
+    expect(screen.getByText('75 - Paris')).toBeInTheDocument()
   })
 
   it('should check all mainland departments when checking mainland', async () => {

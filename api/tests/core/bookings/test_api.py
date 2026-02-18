@@ -1132,30 +1132,6 @@ class BookOfferTest:
             assert db.session.query(Booking).count() == 0
             assert str(exc.value) == "DISABLE_CGR_EXTERNAL_BOOKINGS is active"
 
-    @patch("pcapi.core.bookings.api.apps_flyer_job.log_user_booked_offer_event_job.delay")
-    def test_apps_flyer_called_when_booking_offer(self, mocked_apps_flyer_job):
-        apps_flyer_data = {
-            "apps_flyer": {"user": "some-user-id", "platform": "ANDROID"},
-            "firebase_pseudo_id": "firebase_pseudo_id",
-        }
-        beneficiary = users_factories.BeneficiaryFactory(externalIds=apps_flyer_data)
-        stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5)
-
-        booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
-
-        mocked_apps_flyer_job.assert_called_once_with(booking.id)
-
-    def test_apps_flyer_not_called_when_booking_offer_without_apps_flyer_id(self):
-        beneficiary = users_factories.BeneficiaryFactory(externalIds={})
-        stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5)
-
-        with patch(
-            "pcapi.core.bookings.api.apps_flyer_job.log_user_booked_offer_event_job.delay"
-        ) as mocked_apps_flyer_job:
-            api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
-
-            mocked_apps_flyer_job.assert_not_called()
-
 
 @pytest.mark.usefixtures("db_session")
 class CancelByBeneficiaryTest:
@@ -1704,6 +1680,11 @@ class MarkAsUsedTest:
         with pytest.raises(exceptions.BookingIsAlreadyCancelled):
             api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
         assert booking.status is not BookingStatus.USED
+
+    def test_raise_if_pending_reimbursement(self):
+        booking = bookings_factories.PendingReimbursementBookingFactory()
+        with pytest.raises(exceptions.BookingIsAlreadyRefunded):
+            api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
 
     def test_raise_if_already_reimbursed(self):
         booking = bookings_factories.ReimbursedBookingFactory()

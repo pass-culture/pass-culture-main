@@ -108,6 +108,14 @@ class CreateNonPaymentNoticeForm(FlaskForm):
             validators.NumberRange(min=0, message="Doit contenir un nombre positif"),
         ],
     )
+    fees = fields.PCDecimalField(
+        "Montant des frais (inclus dans le montant total)",
+        use_locale=True,
+        validators=[
+            validators.Optional(),
+            validators.NumberRange(min=0, message="Doit contenir un nombre positif"),
+        ],
+    )
 
     reference = fields.PCStringField("Référence")
     emitter_name = fields.PCStringField("Nom de l'émetteur")
@@ -191,7 +199,7 @@ class CloseForm(FlaskForm):
     )
     batch = fields.PCTomSelectField(
         "N° de virement",
-        multiple=False,
+        multiple=True,
         choices=[],
         validate_choice=False,
         endpoint="backoffice_web.autocomplete_cashflow_batches",

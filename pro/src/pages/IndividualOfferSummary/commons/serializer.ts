@@ -1,11 +1,43 @@
-import type {
-  CategoryResponseModel,
-  GetIndividualOfferResponseModel,
-  GetIndividualOfferWithAddressResponseModel,
-  GetMusicTypesResponse,
-  SubcategoryResponseModel,
+import {
+  ArtistType,
+  type CategoryResponseModel,
+  type GetIndividualOfferResponseModel,
+  type GetIndividualOfferWithAddressResponseModel,
+  type GetMusicTypesResponse,
+  type SubcategoryResponseModel,
 } from '@/apiClient/v1'
 import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
+import { isOfferProductBased } from '@/commons/core/Offers/utils/typology'
+
+function stringifyArtist(
+  artistOfferLinks: GetIndividualOfferWithAddressResponseModel['artistOfferLinks'],
+  filter: ArtistType
+) {
+  if (artistOfferLinks.length < 1) {
+    return
+  }
+
+  return artistOfferLinks
+    .filter((a) => a.artistType === filter)
+    .map((a) => a.artistName)
+    .join(', ')
+}
+
+export function serializeArtist(
+  offer: GetIndividualOfferResponseModel,
+  { areArtistsEnabled = false },
+  artistExtraData: string,
+  defaultValue: string,
+  artistType: ArtistType
+) {
+  const isProductBased = isOfferProductBased(offer)
+
+  if (areArtistsEnabled && !isProductBased) {
+    return stringifyArtist(offer.artistOfferLinks, artistType) ?? defaultValue
+  } else {
+    return artistExtraData ?? defaultValue
+  }
+}
 
 const getMusicData = (
   offer: GetIndividualOfferResponseModel,
@@ -29,6 +61,7 @@ const getMusicData = (
 
 const serializerOfferSubCategoryFields = (
   offer: GetIndividualOfferResponseModel,
+  areArtistsEnabled: boolean,
   subCategory?: SubcategoryResponseModel,
   musicTypes?: GetMusicTypesResponse
 ): {
@@ -62,10 +95,10 @@ const serializerOfferSubCategoryFields = (
     }
   }
   const showType = showOptionsTree.find(
-    (item) => item.code === parseInt(offer.extraData?.showType, 10)
+    (item) => item.code === Number.parseInt(offer.extraData?.showType, 10)
   )
   const showSubType = showType?.children.find(
-    (item) => item.code === parseInt(offer.extraData?.showSubType, 10)
+    (item) => item.code === Number.parseInt(offer.extraData?.showSubType, 10)
   )
 
   const { musicTypeName, musicSubTypeName, gtl_id } = getMusicData(
@@ -77,9 +110,20 @@ const serializerOfferSubCategoryFields = (
   const defaultValue = (fieldName: string) =>
     subCategory.conditionalFields.includes(fieldName) ? ' - ' : ''
   return {
-    author: offer.extraData?.author || defaultValue('author'),
-    stageDirector:
-      offer.extraData?.stageDirector || defaultValue('stageDirector'),
+    author: serializeArtist(
+      offer,
+      { areArtistsEnabled },
+      offer.extraData?.author,
+      defaultValue('author'),
+      ArtistType.AUTHOR
+    ),
+    stageDirector: serializeArtist(
+      offer,
+      { areArtistsEnabled },
+      offer.extraData?.stageDirector,
+      defaultValue('stageDirector'),
+      ArtistType.STAGE_DIRECTOR
+    ),
     musicTypeName: musicTypeName || defaultValue('musicType'),
     musicSubTypeName: musicSubTypeName || defaultValue('musicSubType'),
     gtl_id: gtl_id,
@@ -87,7 +131,13 @@ const serializerOfferSubCategoryFields = (
     showSubTypeName: showSubType?.label || defaultValue('showSubType'),
     speaker: offer.extraData?.speaker || defaultValue('speaker'),
     visa: offer.extraData?.visa || defaultValue('visa'),
-    performer: offer.extraData?.performer || defaultValue('performer'),
+    performer: serializeArtist(
+      offer,
+      { areArtistsEnabled },
+      offer.extraData?.performer,
+      defaultValue('performer'),
+      ArtistType.PERFORMER
+    ),
     ean: offer.extraData?.ean || defaultValue('ean'),
     durationMinutes:
       offer.durationMinutes?.toString() || defaultValue('durationMinutes'),
@@ -98,6 +148,7 @@ export const serializeOfferSectionData = (
   offer: GetIndividualOfferWithAddressResponseModel,
   categories: CategoryResponseModel[],
   subCategories: SubcategoryResponseModel[],
+  areArtistsEnabled: boolean,
   musicTypes?: GetMusicTypesResponse
 ) => {
   const offerSubCategory = subCategories.find(
@@ -126,9 +177,11 @@ export const serializeOfferSectionData = (
     isProductBased: !!offer.productId,
     isDuo: offer.isDuo,
     url: offer.url,
+    artistOfferLinks: offer.artistOfferLinks,
   }
   const subCategoryData = serializerOfferSubCategoryFields(
     offer,
+    areArtistsEnabled,
     offerSubCategory,
     musicTypes
   )

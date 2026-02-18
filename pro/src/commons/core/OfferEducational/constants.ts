@@ -1,5 +1,5 @@
 import { CollectiveLocationType } from '@/apiClient/v1'
-import type { VisibilityFormValues } from '@/pages/CollectiveOfferVisibility/commons/validationSchema'
+import type { InstitutionFormValues } from '@/pages/CollectiveOfferInstitution/commons/validationSchema'
 
 import type {
   OfferEducationalFormValues,
@@ -80,10 +80,10 @@ export const DEFAULT_EAC_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {
   priceDetail: '',
 }
 
-export const DEFAULT_VISIBILITY_FORM_VALUES: VisibilityFormValues = {
-  visibility: 'one',
+export const DEFAULT_INSTITUTION_FORM_VALUES: InstitutionFormValues = {
   institution: '',
-  teacher: undefined,
+  teacherEmail: undefined,
+  teacherName: undefined,
 }
 
 export const MAX_DESCRIPTION_LENGTH = 1500

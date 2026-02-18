@@ -1149,7 +1149,7 @@ class CheckArtistOfferLinksTest:
             artist_serialize.ArtistOfferLinkBodyModel(
                 artist_id="any-id",
                 artist_type=artist_models.ArtistType.AUTHOR,
-                custom_name=None,
+                artist_name="any-name",
             )
         ]
         validation.check_artist_offer_links(artist_offer_links, subcategories.SEANCE_CINE)
@@ -1159,7 +1159,7 @@ class CheckArtistOfferLinksTest:
             artist_serialize.ArtistOfferLinkBodyModel(
                 artist_id="any-id",
                 artist_type=artist_models.ArtistType.PERFORMER,
-                custom_name=None,
+                artist_name="any-name",
             )
         ]
         with pytest.raises(ApiErrors) as exc:

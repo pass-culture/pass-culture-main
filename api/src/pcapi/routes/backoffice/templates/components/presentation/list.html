@@ -43,6 +43,8 @@
     {% if pagination %}
       <div class="w-100 d-flex justify-content-center">{% include "components/search/pagination.html" %}</div>
     {% endif %}
+  {% else %}
+    {{ empty }}
   {% endif %}
   <div>
     <div data-table-multiselect-menu-for="{{ table_name }}"

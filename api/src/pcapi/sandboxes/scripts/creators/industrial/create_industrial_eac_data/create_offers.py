@@ -574,6 +574,14 @@ def create_collective_offers_with_different_displayed_status(
             "endDatetime": in_two_weeks,
             "bookingFactory": educational_factories.PendingCollectiveBookingFactory,
         },
+        # booking was not confirmed and start has passed, auto-cancel job has not ran yet
+        # note that the booking will be auto-cancelled by the next job
+        "Babylone": {
+            "bookingLimitDatetime": yesterday,
+            "startDatetime": yesterday,
+            "endDatetime": yesterday,
+            "bookingFactory": educational_factories.PendingCollectiveBookingFactory,
+        },
         # with a cancelled booking due to expiration
         "Budapest": {
             "bookingLimitDatetime": two_weeks_ago,
@@ -1147,7 +1155,7 @@ def create_complete_collective_offers_with_template() -> None:
 
     assert offerer_address  # helps mypy
 
-    template = educational_factories.CollectiveOfferTemplateFactory(
+    template = educational_factories.CollectiveOfferTemplateFactory.create(
         name="a full offer with a full template",
         educational_domains=domains,
         venue=offerer_address.offerer.managedVenues[0],
@@ -1159,7 +1167,7 @@ def create_complete_collective_offers_with_template() -> None:
         priceDetail="Some details on the price and why it's so expensive",
     )
     add_image_to_offer(template, "collective_offer_1.png")
-    collective_offer = educational_factories.CollectiveOfferFactory(
+    collective_offer = educational_factories.CollectiveOfferFactory.create(
         name="a full offer with a full template",
         institution=institution,
         educational_domains=domains,

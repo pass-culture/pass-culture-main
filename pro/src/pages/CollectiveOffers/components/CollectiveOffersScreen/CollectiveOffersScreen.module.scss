@@ -1,9 +1,5 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.offers-pagination {
-  margin-top: var(--size-spacing-xxl);
-}
-
 .filter-container {
   width: 100%;
 }
@@ -24,10 +20,6 @@
 
       margin-right: var(--size-spacing-l);
     }
-  }
-
-  &-pagination {
-    margin-top: var(--size-spacing-xxl);
   }
 }
 

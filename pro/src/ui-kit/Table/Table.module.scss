@@ -13,6 +13,10 @@
   width: 100%;
   border-collapse: separate;
   border-spacing: 0 rem.torem(24px);
+
+  &-pagination {
+    margin-top: var(--size-spacing-xxl);
+  }
 }
 
 .table-separate {
@@ -126,7 +130,6 @@
   .table-row {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--size-spacing-s);
     margin-top: var(--size-spacing-s);
     background: var(--color-background-default, #fff);
     border: 1px solid var(--color-border-subtle);
@@ -155,8 +158,6 @@
 
     > * {
       justify-self: end;
-      text-align: right;
-      min-width: 0;
     }
 
     [data-actions],

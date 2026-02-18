@@ -8,7 +8,7 @@
 // =============================================================================
 
 @mixin button-border($color) {
-  box-shadow: 0 0 0 1px $color;
+  border: 1px solid $color;
 }
 
 @mixin hover-state {
@@ -35,12 +35,17 @@
   display: inline-flex;
   justify-content: center;
   outline: none;
+  border: none;
   box-shadow: none;
   color: #fff;
   cursor: pointer;
   transition: all 0.15s ease-in-out;
-  border: none;
   width: fit-content;
+
+  .btn-icon {
+    flex-shrink: 0;
+    width: rem.torem(22px);
+  }
 
   &.btn-default {
     border-radius: var(--size-border-radius-m);
@@ -50,16 +55,14 @@
     @include button-border(var(--color-border-brand-primary));
 
     .btn-label {
-      @include fonts.body-accent;
-
-      line-height: rem.torem(24px);
+      @include fonts.button;
     }
 
     &.btn-icon-only {
-      padding: var(--size-spacing-m);
+      padding: var(--size-spacing-s);
 
       &.btn-tertiary {
-        padding: var(--size-spacing-m);
+        padding: var(--size-spacing-s);
       }
     }
   }
@@ -70,9 +73,11 @@
     padding: var(--size-spacing-s) var(--size-spacing-m);
 
     .btn-label {
-      @include fonts.body-accent-xs;
+      @include fonts.button-s;
+    }
 
-      line-height: rem.torem(16px);
+    .btn-icon {
+      width: rem.torem(14px);
     }
 
     &.btn-icon-only {
@@ -107,10 +112,6 @@
 
         @include button-border(var(--color-background-brand-primary-hover));
       }
-
-      @include disabled-state {
-        opacity: 0.4;
-      }
     }
 
     &.btn-secondary {
@@ -132,22 +133,11 @@
           color: var(--color-icon-brand-primary-hover);
         }
       }
-
-      @include disabled-state {
-        background-color: var(--color-background-disabled);
-        color: var(--color-text-disabled);
-
-        @include button-border(var(--color-border-disabled));
-
-        .btn-icon {
-          color: var(--color-icon-disabled);
-        }
-      }
     }
 
     &.btn-tertiary {
       background-color: transparent;
-      box-shadow: none;
+      border: none;
       color: var(--color-text-brand-primary);
       padding: 0;
 
@@ -157,6 +147,20 @@
 
       @include disabled-state {
         color: var(--color-text-disabled);
+      }
+    }
+
+    &.btn-primary,
+    &.btn-secondary {
+      @include disabled-state {
+        background-color: var(--color-background-disabled);
+        color: var(--color-text-disabled);
+
+        @include button-border(var(--color-border-disabled));
+
+        .btn-icon {
+          color: var(--color-icon-disabled);
+        }
       }
     }
   }
@@ -212,7 +216,7 @@
 
     &.btn-tertiary {
       background-color: transparent;
-      box-shadow: none;
+      border: none;
       color: var(--color-text-default);
       padding: 0;
 

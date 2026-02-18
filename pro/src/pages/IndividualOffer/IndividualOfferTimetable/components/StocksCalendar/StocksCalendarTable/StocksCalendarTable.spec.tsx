@@ -41,6 +41,7 @@ function renderStocksCalendarTable(
       onUpdateFilters={vi.fn()}
       hasNoStocks={false}
       isLoading={false}
+      pagination={{ pageCount: 1, currentPage: 1, onPageClick: vi.fn() }}
     />
   )
 }

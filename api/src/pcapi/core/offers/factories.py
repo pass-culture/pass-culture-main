@@ -10,7 +10,6 @@ from factory.faker import faker
 import pcapi.core.artist.models as artist_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.models as offers_models
-import pcapi.core.users.factories as users_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import music
 from pcapi.core.categories.genres import show
@@ -181,7 +180,7 @@ class OfferFactory(BaseFactory[models.Offer]):
 
     venue = factory.SubFactory(offerers_factories.VenueFactory)
     subcategoryId = factory.LazyAttribute(
-        lambda o: (o.product.subcategoryId if hasattr(o, "product") else subcategories.SUPPORT_PHYSIQUE_FILM.id)
+        lambda o: o.product.subcategoryId if hasattr(o, "product") else subcategories.SUPPORT_PHYSIQUE_FILM.id
     )
     name = factory.LazyAttributeSequence(
         lambda o, n: o.product.name if hasattr(o, "product") and o.product else f"Offer {n}"
@@ -250,7 +249,7 @@ class OfferFactory(BaseFactory[models.Offer]):
                 kwargs["offererAddress"] = offerers_api.get_or_create_offer_location(
                     offerer_id=venue.managingOffererId,
                     address_id=venue.offererAddress.addressId,
-                    label=venue.common_name,
+                    label=venue.publicName,
                 )
 
         kwargs.pop("isActive", None)
@@ -286,19 +285,19 @@ def _check_offer_kwargs(product: models.Product, kwargs: dict[str, typing.Any]) 
 
 class EventOfferFactory(OfferFactory):
     subcategoryId = factory.LazyAttribute(
-        lambda o: (o.product.subcategoryId if hasattr(o, "product") else subcategories.SEANCE_CINE.id)
+        lambda o: o.product.subcategoryId if hasattr(o, "product") else subcategories.SEANCE_CINE.id
     )
 
 
 class ThingOfferFactory(OfferFactory):
     subcategoryId = factory.LazyAttribute(
-        lambda o: (o.product.subcategoryId if hasattr(o, "product") else subcategories.CARTE_CINE_ILLIMITE.id)
+        lambda o: o.product.subcategoryId if hasattr(o, "product") else subcategories.CARTE_CINE_ILLIMITE.id
     )
 
 
 class DigitalOfferFactory(OfferFactory):
     subcategoryId = factory.LazyAttribute(
-        lambda o: (o.product.subcategoryId if hasattr(o, "product") else subcategories.VOD.id)
+        lambda o: o.product.subcategoryId if hasattr(o, "product") else subcategories.VOD.id
     )
     url = factory.Sequence("http://example.com/offer/{}".format)
     venue = factory.SubFactory(offerers_factories.VenueFactory)
@@ -456,15 +455,6 @@ class MediationFactory(BaseFactory):
     thumbCount = 1
 
 
-class OfferReportFactory(BaseFactory):
-    class Meta:
-        model = models.OfferReport
-
-    user = factory.SubFactory(users_factories.UserFactory)
-    offer = factory.SubFactory(OfferFactory)
-    reason = "INAPPROPRIATE"
-
-
 class OfferValidationRuleFactory(BaseFactory):
     class Meta:
         model = models.OfferValidationRule
@@ -498,3 +488,11 @@ class OfferComplianceFactory(BaseFactory):
     offer = factory.SubFactory(OfferFactory)
     compliance_score = 12
     compliance_reasons = ["stock_price", "offer_description"]
+
+
+class OfferQualityFactory(BaseFactory):
+    class Meta:
+        model = models.OfferQuality
+
+    offer = factory.SubFactory(OfferFactory)
+    completionScore = 5.0

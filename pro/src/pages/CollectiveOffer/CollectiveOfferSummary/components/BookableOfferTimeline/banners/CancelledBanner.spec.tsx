@@ -86,6 +86,13 @@ describe('CancelledBanner', () => {
     expect(screen.getByText(cancelledByExpiredMessage)).toBeInTheDocument()
   })
 
+  it('should display the correct message when reason is null', () => {
+    renderWithProviders(
+      <CancelledBanner offerId={2} reason={null} canDuplicate />
+    )
+    expect(screen.getByText(cancelledByExpiredMessage)).toBeInTheDocument()
+  })
+
   it('should log event on press Dupliquer', async () => {
     renderWithProviders(<CancelledBanner offerId={2} canDuplicate />)
 

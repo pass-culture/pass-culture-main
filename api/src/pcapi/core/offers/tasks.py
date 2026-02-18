@@ -82,6 +82,20 @@ def update_venue_offers_active_status_task(payload: UpdateVenueOffersActiveStatu
     offers_api.batch_update_offers(query, activate=payload.is_active)
 
 
+class UpdateAllVenueOffersEmailPayload(BaseModelV2):
+    venue_id: int
+    email: str
+
+
+@celery_async_task(
+    name="tasks.batch_updates.default.update_all_venue_offers_email",
+    model=UpdateAllVenueOffersEmailPayload,
+)
+def update_all_venue_offers_email_task(payload: UpdateAllVenueOffersEmailPayload) -> None:
+    query = db.session.query(offers_models.Offer).filter_by(venueId=payload.venue_id)
+    offers_api.batch_update_offers(query, {"bookingEmail": payload.email})
+
+
 # Batch upsert ean offers task
 
 

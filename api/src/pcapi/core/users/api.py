@@ -11,8 +11,6 @@ import sqlalchemy.orm as sa_orm
 from dateutil.relativedelta import relativedelta
 from flask import current_app as app
 from flask import request
-from flask_jwt_extended import create_access_token
-from flask_jwt_extended import create_refresh_token
 
 import pcapi.core.bookings.exceptions as bookings_exceptions
 import pcapi.core.bookings.models as bookings_models
@@ -119,8 +117,6 @@ def create_account(
     send_activation_mail: bool = True,
     remote_updates: bool = True,
     phone_number: str | None = None,
-    apps_flyer_user_id: str | None = None,
-    apps_flyer_platform: str | None = None,
     firebase_pseudo_id: str | None = None,
     sso_provider: str | None = None,
     sso_user_id: str | None = None,
@@ -148,9 +144,6 @@ def create_account(
 
     if user.externalIds is None:
         user.externalIds = {}
-
-    if apps_flyer_user_id and apps_flyer_platform:
-        user.externalIds["apps_flyer"] = {"user": apps_flyer_user_id, "platform": apps_flyer_platform.upper()}
 
     if firebase_pseudo_id:
         user.externalIds["firebase_pseudo_id"] = firebase_pseudo_id
@@ -894,19 +887,6 @@ def update_last_connection_date(user: models.User) -> None:
 
     if should_update_sendinblue_last_connection_date:
         external_attributes_api.update_external_user(user, skip_batch=True)
-
-
-def create_user_access_token(user: models.User) -> str:
-    return create_access_token(identity=user.email, additional_claims={"user_claims": {"user_id": user.id}})
-
-
-def create_user_refresh_token(user: models.User, device_info: "account_serialization.TrustedDevice | None") -> str:
-    if is_login_device_a_trusted_device(device_info, user):
-        duration = datetime.timedelta(seconds=settings.JWT_REFRESH_TOKEN_EXTENDED_EXPIRES)
-    else:
-        duration = datetime.timedelta(seconds=settings.JWT_REFRESH_TOKEN_EXPIRES)
-
-    return create_refresh_token(identity=user.email, expires_delta=duration)
 
 
 def create_oauth_state_token() -> str:

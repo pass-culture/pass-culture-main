@@ -3,6 +3,10 @@ import React, { useMemo, useState } from 'react'
 
 import { SortingMode, useColumnSorting } from '@/commons/hooks/useColumnSorting'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
+import {
+  Pagination,
+  type PaginationProps,
+} from '@/design-system/Pagination/Pagination'
 import { Skeleton } from '@/ui-kit/Skeleton/Skeleton'
 
 import { SortColumn } from './SortColumn/SortColumn'
@@ -61,6 +65,7 @@ interface TableProps<T extends { id: string | number }> {
   isRowSelectable?: (row: T) => boolean
   noResult: NoResultProps
   noData: EmptyStateProps
+  pagination?: PaginationProps
 }
 
 function getValue<T>(
@@ -102,6 +107,7 @@ export function Table<
   onSelectionChange,
   getFullRowContent,
   isRowSelectable,
+  pagination,
 }: TableProps<T>) {
   const fullScope = allData ?? data
 
@@ -359,6 +365,15 @@ export function Table<
           })}
         </tbody>
       </table>
+      {pagination && (
+        <div className={styles['table-pagination']}>
+          <Pagination
+            currentPage={pagination.currentPage}
+            pageCount={pagination.pageCount}
+            onPageClick={pagination.onPageClick}
+          />
+        </div>
+      )}
     </div>
   )
 }

@@ -43,7 +43,9 @@ describe('VideoUploader', () => {
       screen.getByRole('button', { name: 'Supprimer' })
     ).toBeInTheDocument()
 
-    expect(screen.getByRole('img', { name: 'Prévisualisation de l’image' }))
+    expect(
+      screen.getByRole('img', { name: 'Prévisualisation de l’image' })
+    ).toBeInTheDocument()
     expect(screen.getByText('Ma super vidéo')).toBeInTheDocument()
     expect(screen.getByText('3 min')).toBeInTheDocument()
   })

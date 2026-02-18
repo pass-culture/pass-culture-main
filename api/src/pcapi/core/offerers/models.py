@@ -211,11 +211,16 @@ class Activity(enum.Enum):
     # TODO (lmaubert 2025-10): Remove 'OTHER' when not necessary anymore (temporary value to measure the adequacy of the new list of main activities)
     OTHER = "OTHER"
     PERFORMANCE_HALL = "PERFORMANCE_HALL"
+    # TODO (lmaubert 2026-02): Remove 'PRESS', replaced by 'PRESS_OR_MEDIA'
     PRESS = "PRESS"
+    PRESS_OR_MEDIA = "PRESS_OR_MEDIA"
     PRODUCTION_OR_PROMOTION_COMPANY = "PRODUCTION_OR_PROMOTION_COMPANY"
+    RADIO_OR_MUSIC_STREAMING = "RADIO_OR_MUSIC_STREAMING"
     RECORD_STORE = "RECORD_STORE"
     SCIENCE_CENTRE = "SCIENCE_CENTRE"
+    # TODO (lmaubert 2026-02): Remove 'STREAMING_PLATFORM', split into two different activities
     STREAMING_PLATFORM = "STREAMING_PLATFORM"
+    TELEVISION_OR_VIDEO_STREAMING = "TELEVISION_OR_VIDEO_STREAMING"
     TOURIST_INFORMATION_CENTRE = "TOURIST_INFORMATION_CENTRE"
     TRAVELLING_CINEMA = "TRAVELLING_CINEMA"
 
@@ -263,9 +268,10 @@ ActivityNotOpenToPublic: enum.EnumType = enum.Enum(  # type: ignore[misc]
             "CULTURAL_MEDIATION",
             "FESTIVAL",
             "OTHER",
-            "PRESS",
+            "PRESS_OR_MEDIA",
             "PRODUCTION_OR_PROMOTION_COMPANY",
-            "STREAMING_PLATFORM",
+            "RADIO_OR_MUSIC_STREAMING",
+            "TELEVISION_OR_VIDEO_STREAMING",
             "TRAVELLING_CINEMA",
         )
     },
@@ -335,7 +341,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     venueLabelId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("venue_label.id"), nullable=True
     )
-    venueLabel: sa_orm.Mapped["VenueLabel"] = sa_orm.relationship("VenueLabel", foreign_keys=[venueLabelId])
+    venueLabel: sa_orm.Mapped["VenueLabel | None"] = sa_orm.relationship("VenueLabel", foreign_keys=[venueLabelId])
 
     dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
@@ -482,6 +488,10 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         "OffererConfidenceRule", foreign_keys="OffererConfidenceRule.venueId", back_populates="venue", uselist=False
     )
 
+    isReimbursementSuspended: sa_orm.Mapped[bool] = sa_orm.mapped_column(
+        sa.Boolean, nullable=False, server_default=expression.false(), default=False
+    )
+
     _has_partner_page: sa_orm.Mapped[bool] = sa_orm.query_expression()
 
     activity: sa_orm.Mapped[Activity | None] = sa_orm.mapped_column(
@@ -624,10 +634,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     @property
     def is_eligible_for_search(self) -> bool:
         return (
-            bool(self.isOpenToPublic)
-            and self.managingOfferer.isActive
-            and self.managingOfferer.isValidated
-            and bool(self.hasAtLeastOneBookableOffer)
+            self.managingOfferer.isActive and self.managingOfferer.isValidated and bool(self.hasAtLeastOneBookableOffer)
         )
 
     @property
@@ -856,7 +863,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     @property
     def is_caledonian(self) -> bool:
-        return siren_utils.is_ridet(self.siret) or (
+        return siren_utils.is_ridet(self.siret) or bool(
             self.offererAddress and self.offererAddress.address.departmentCode == NEW_CALEDONIA_DEPARTMENT_CODE
         )
 
@@ -866,12 +873,12 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     @hybrid_property
     def has_partner_page(self) -> bool:
-        from pcapi.core.offers.models import Offer
+        import pcapi.core.offers.models as offers_models
 
         return db.session.query(
             sa.select(1)
-            .select_from(Offer)
-            .join(Venue, Offer.venueId == Venue.id)
+            .select_from(offers_models.Offer)
+            .join(Venue, offers_models.Offer.venueId == Venue.id)
             .join(Offerer, Offerer.id == Venue.managingOffererId)
             .where(
                 Offerer.isActive.is_(True),
@@ -886,13 +893,13 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     @has_partner_page.inplace.expression
     @classmethod
     def _has_partner_page_expression(cls) -> Exists:
-        from pcapi.core.offers.models import Offer
+        import pcapi.core.offers.models as offers_models
 
         AliasedVenue = sa_orm.aliased(Venue)
         return (
             sa.select(1)
-            .select_from(Offer)
-            .join(AliasedVenue, Offer.venueId == AliasedVenue.id)
+            .select_from(offers_models.Offer)
+            .join(AliasedVenue, offers_models.Offer.venueId == AliasedVenue.id)
             .join(Offerer, Offerer.id == AliasedVenue.managingOffererId)
             .where(
                 Offerer.isActive.is_(True),
@@ -915,6 +922,22 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
                 sa.and_(
                     offers_models.Offer.venueId == self.id,
                     offers_models.Offer.isEvent,
+                )
+            )
+            .exists()
+        ).scalar()
+
+    @property
+    def has_non_draft_offers(self) -> bool:
+        import pcapi.core.offers.models as offers_models
+
+        return db.session.query(
+            sa.select(1)
+            .select_from(offers_models.Offer)
+            .where(
+                sa.and_(
+                    offers_models.Offer.venueId == self.id,
+                    offers_models.Offer.validation != offers_models.OfferValidationStatus.DRAFT,
                 )
             )
             .exists()
@@ -1682,16 +1705,32 @@ class NoticeStatusMotivation(enum.Enum):
     NO_LINKED_BANK_ACCOUNT = "NO_LINKED_BANK_ACCOUNT"
 
 
+class NonPaymentNoticeBatchAssociation(PcObject, Model):
+    """Many-to-many association table"""
+
+    __tablename__ = "non_payment_notice_batch_association"
+
+    noticeId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("non_payment_notice.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    batchId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("cashflow_batch.id"), index=True, nullable=False
+    )
+
+    __table_args__ = (
+        sa.UniqueConstraint(
+            "noticeId",
+            "batchId",
+            name="unique_non_payment_notice_batch_association",
+        ),
+    )
+
+
 class NonPaymentNotice(PcObject, Model):
     __tablename__ = "non_payment_notice"
 
     amount: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(sa.Numeric(10, 2), nullable=False)
-    batchId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("cashflow_batch.id"), nullable=True, index=True
-    )
-    batch: sa_orm.Mapped["finance_models.CashflowBatch | None"] = sa_orm.relationship(
-        "CashflowBatch", foreign_keys=[batchId]
-    )
+    fees: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(sa.Numeric(10, 2), nullable=True)
     dateReceived: sa_orm.Mapped[date] = sa_orm.mapped_column(
         sa.Date, nullable=False, server_default=sa.func.current_date()
     )
@@ -1719,6 +1758,9 @@ class NonPaymentNotice(PcObject, Model):
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="SET NULL"), nullable=True, index=True
     )
     offerer: sa_orm.Mapped["Offerer | None"] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
+    batches: sa_orm.Mapped[list["finance_models.CashflowBatch"]] = sa_orm.relationship(
+        secondary=NonPaymentNoticeBatchAssociation.__tablename__
+    )
 
 
 class NoticeRecipientType(enum.Enum):

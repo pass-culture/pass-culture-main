@@ -4,7 +4,7 @@
 /* eslint-disable */
 export type CollectiveOfferRedactorModel = {
   email: string;
-  firstName?: string | null;
-  lastName?: string | null;
+  firstName: (string | null);
+  lastName: (string | null);
 };
 

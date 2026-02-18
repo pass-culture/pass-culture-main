@@ -69,6 +69,10 @@
   &-tr:not(:last-child) &-td {
     padding-bottom: var(--size-spacing-m);
   }
+
+  &--withMarginBottom {
+    margin-bottom: rem.torem(20px);
+  }
 }
 
 .member-email {
@@ -77,8 +81,4 @@
 
 .member-status {
   white-space: nowrap;
-}
-
-.display-all-members-button {
-  margin-top: rem.torem(20px);
 }

@@ -1,5 +1,6 @@
 import hashlib
 import logging
+import typing
 from datetime import datetime
 from datetime import timedelta
 
@@ -9,7 +10,6 @@ from psycopg2.extras import DateTimeRange
 
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
-from pcapi.core.educational.constants import COLLECTIVE_OFFER_DISPLAYED_STATUS_LABELS
 from pcapi.core.users.utils import ALGORITHM_RS_256
 from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
@@ -17,6 +17,21 @@ from pcapi.utils import requests
 
 
 logger = logging.getLogger(__name__)
+
+COLLECTIVE_OFFER_DISPLAYED_STATUS_LABELS: typing.Final = {
+    models.CollectiveOfferDisplayedStatus.PUBLISHED: "Publiée",
+    models.CollectiveOfferDisplayedStatus.UNDER_REVIEW: "En instruction",
+    models.CollectiveOfferDisplayedStatus.REJECTED: "Non conforme",
+    models.CollectiveOfferDisplayedStatus.PREBOOKED: "Préréservée",
+    models.CollectiveOfferDisplayedStatus.BOOKED: "Réservée",
+    models.CollectiveOfferDisplayedStatus.HIDDEN: "En pause",
+    models.CollectiveOfferDisplayedStatus.EXPIRED: "Expirée",
+    models.CollectiveOfferDisplayedStatus.ENDED: "Terminée",
+    models.CollectiveOfferDisplayedStatus.CANCELLED: "Annulée",
+    models.CollectiveOfferDisplayedStatus.REIMBURSED: "Remboursée",
+    models.CollectiveOfferDisplayedStatus.ARCHIVED: "Archivée",
+    models.CollectiveOfferDisplayedStatus.DRAFT: "Brouillon",
+}
 
 
 def compute_educational_booking_cancellation_limit_date(

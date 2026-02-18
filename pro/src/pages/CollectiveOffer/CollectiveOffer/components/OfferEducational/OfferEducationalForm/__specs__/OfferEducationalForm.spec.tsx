@@ -12,10 +12,12 @@ import {
   type OfferEducationalFormValues,
 } from '@/commons/core/OfferEducational/types'
 import { getCollectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
 } from '@/commons/utils/factories/userOfferersFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import {
   type RenderWithProvidersOptions,
@@ -114,9 +116,15 @@ describe('OfferEducationalForm', () => {
       isTemplate: true,
     })
 
-    expect(await screen.findByRole('checkbox', { name: 'Par email' }))
-    expect(await screen.findByRole('checkbox', { name: 'Par téléphone' }))
-    expect(await screen.findByRole('checkbox', { name: 'Via un formulaire' }))
+    expect(
+      await screen.findByRole('checkbox', { name: 'Par email' })
+    ).toBeInTheDocument()
+    expect(
+      await screen.findByRole('checkbox', { name: 'Par téléphone' })
+    ).toBeInTheDocument()
+    expect(
+      await screen.findByRole('checkbox', { name: 'Via un formulaire' })
+    ).toBeInTheDocument()
   })
 
   it('should have no custom contact checked initially', async () => {
@@ -197,6 +205,54 @@ describe('OfferEducationalForm', () => {
     expect(mockLogEvent).toHaveBeenCalledWith(Events.DRAG_OR_SELECTED_IMAGE, {
       imageType: UploaderModeEnum.OFFER_COLLECTIVE,
       imageCreationStage: 'add image',
+    })
+  })
+
+  describe('with WIP_SWITCH_VENUE feature flag', () => {
+    const venueA = managedVenueFactory({ id: 10, name: 'Venue A' })
+    const venueB = managedVenueFactory({ id: 20, name: 'Venue B' })
+
+    const switchVenueProps: OfferEducationalFormProps = {
+      ...defaultProps,
+      userOfferer: userOffererFactory({
+        managedVenues: [venueA, venueB],
+      }),
+    }
+
+    const switchVenueOptions: RenderWithProvidersOptions = {
+      features: ['WIP_SWITCH_VENUE'],
+      storeOverrides: {
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedVenue: makeGetVenueResponseModel({ id: 10 }),
+        },
+      },
+    }
+
+    it('should not display the venue selector section even with multiple venues', async () => {
+      renderOfferEducationalForm(switchVenueProps, switchVenueOptions, {
+        venueId: '10',
+      })
+
+      await waitFor(() => {
+        expect(
+          screen.queryByRole('heading', {
+            name: /Qui propose l'offre/,
+          })
+        ).not.toBeInTheDocument()
+      })
+    })
+
+    it('should still render the form when venueId is set from Redux', async () => {
+      renderOfferEducationalForm(switchVenueProps, switchVenueOptions, {
+        venueId: '10',
+      })
+
+      expect(
+        await screen.findByRole('heading', {
+          name: /Dites-nous en plus sur votre offre culturelle/,
+        })
+      ).toBeInTheDocument()
     })
   })
 })

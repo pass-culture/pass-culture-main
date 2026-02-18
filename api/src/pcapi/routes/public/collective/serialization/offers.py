@@ -26,8 +26,8 @@ from pcapi.utils import email as email_utils
 class ListCollectiveOffersQueryModel(BaseModel):
     offerStatus: CollectiveOfferDisplayedStatus | None = fields.COLLECTIVE_OFFER_OFFER_STATUS
     venue_id: int | None = fields.VENUE_ID
-    period_beginning_date: str | None = fields.PERIOD_BEGINNING_DATE
-    period_ending_date: str | None = fields.PERIOD_ENDING_DATE
+    period_beginning_date: datetime | None = fields.PERIOD_BEGINNING_DATE
+    period_ending_date: datetime | None = fields.PERIOD_ENDING_DATE
 
     class Config:
         alias_generator = to_camel

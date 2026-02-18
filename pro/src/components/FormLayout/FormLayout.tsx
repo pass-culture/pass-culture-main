@@ -13,6 +13,7 @@ export interface FormLayoutProps {
   className?: string
   fullWidthActions?: boolean
   mediumWidthActions?: boolean
+  mediumWidthForm?: boolean
 }
 
 export const FormLayout = ({
@@ -20,12 +21,14 @@ export const FormLayout = ({
   className,
   fullWidthActions = false,
   mediumWidthActions = false,
+  mediumWidthForm = false,
 }: FormLayoutProps): JSX.Element => (
   <div
     className={cn(
       style['form-layout'],
       { [style['full-width-actions']]: fullWidthActions },
       { [style['medium-width-actions']]: mediumWidthActions },
+      { [style['medium-width-form']]: mediumWidthForm },
       className
     )}
   >

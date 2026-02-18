@@ -45,12 +45,13 @@ export const UserProfile = ({
         label="Retour"
       />
       <BannerRGS />
-      <div>
+      <div className={styles['profil-form-container']}>
         <UserIdentity
           setCurrentForm={(value: Forms | null) => setCurrentForm(value)}
           initialValues={userIdentityInitialValues}
           showForm={currentForm === Forms.USER_IDENTITY}
         />
+
         <UserPhone
           setCurrentForm={(value: Forms | null) => setCurrentForm(value)}
           initialValues={userPhoneInitialValues}

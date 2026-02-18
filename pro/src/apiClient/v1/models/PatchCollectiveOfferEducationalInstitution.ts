@@ -4,6 +4,6 @@
 /* eslint-disable */
 export type PatchCollectiveOfferEducationalInstitution = {
   educationalInstitutionId: number;
-  teacherEmail?: string | null;
+  teacherEmail?: (string | null);
 };
 

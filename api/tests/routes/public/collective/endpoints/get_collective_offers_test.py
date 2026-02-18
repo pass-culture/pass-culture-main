@@ -1,11 +1,14 @@
+import datetime
+
 import pytest
 
 from pcapi.core import testing
-from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import factories
 from pcapi.core.educational import models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as provider_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.utils.date import get_naive_utc_now
 
 from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
 
@@ -23,10 +26,10 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
-        stock1 = educational_factories.CollectiveStockFactory(collectiveOffer__provider=venue_provider.provider)
+        stock1 = factories.CollectiveStockFactory(collectiveOffer__provider=venue_provider.provider)
         offer1 = stock1.collectiveOffer
 
-        offer2 = educational_factories.CollectiveBookingFactory(
+        offer2 = factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__provider=venue_provider.provider
         ).collectiveStock.collectiveOffer
         booking2 = offer2.collectiveStock.collectiveBookings[0]
@@ -85,11 +88,11 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
         venue_provider = provider_factories.VenueProviderFactory()
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
-        offer = educational_factories.create_collective_offer_by_status(status=status, provider=venue_provider.provider)
+        offer = factories.create_collective_offer_by_status(status=status, provider=venue_provider.provider)
 
         # add an offer with another status that will not be present in the result
         other_status = next((s for s in models.CollectiveOfferDisplayedStatus if s != status))
-        educational_factories.create_collective_offer_by_status(status=other_status, provider=venue_provider.provider)
+        factories.create_collective_offer_by_status(status=other_status, provider=venue_provider.provider)
 
         with testing.assert_num_queries(self.num_queries):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
@@ -105,10 +108,10 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
         venue_provider = provider_factories.VenueProviderFactory()
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
-        offer = educational_factories.create_collective_offer_by_status(
+        offer = factories.create_collective_offer_by_status(
             status=models.CollectiveOfferDisplayedStatus.ARCHIVED, provider=venue_provider.provider
         )
-        educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+        factories.CollectiveStockFactory(collectiveOffer=offer)
 
         with testing.assert_num_queries(self.num_queries):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
@@ -132,15 +135,64 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
 
         assert not response.json
 
+    def test_filter_date(self):
+        plain_api_key, provider = self.setup_provider()
+        venue_provider = provider_factories.VenueProviderFactory(provider=provider)
+
+        now = get_naive_utc_now()
+        stock = factories.CollectiveStockFactory(collectiveOffer__provider=venue_provider.provider, startDatetime=now)
+
+        # beginning filter after event start
+        query_date = now + datetime.timedelta(days=1)
+        with testing.assert_num_queries(self.num_queries):
+            response = self.make_request(
+                plain_api_key=plain_api_key, query_params={"periodBeginningDate": query_date.isoformat()}
+            )
+
+        assert response.status_code == 200
+        assert response.json == []
+
+        # ending filter before event start
+        query_date = now - datetime.timedelta(days=1)
+        with testing.assert_num_queries(self.num_queries):
+            response = self.make_request(
+                plain_api_key=plain_api_key, query_params={"periodEndingDate": query_date.isoformat()}
+            )
+
+        assert response.status_code == 200
+        assert response.json == []
+
+        # beginning filter before event start
+        query_date = now - datetime.timedelta(days=1)
+        with testing.assert_num_queries(self.num_queries):
+            response = self.make_request(
+                plain_api_key=plain_api_key, query_params={"periodBeginningDate": query_date.isoformat()}
+            )
+
+        assert response.status_code == 200
+        [offer] = response.json
+        assert offer["id"] == stock.collectiveOfferId
+
+        # ending filter after event start
+        query_date = now + datetime.timedelta(days=1)
+        with testing.assert_num_queries(self.num_queries):
+            response = self.make_request(
+                plain_api_key=plain_api_key, query_params={"periodEndingDate": query_date.isoformat()}
+            )
+
+        assert response.status_code == 200
+        [offer] = response.json
+        assert offer["id"] == stock.collectiveOfferId
+
     def test_offer_without_stock(self, client):
         venue_provider = provider_factories.VenueProviderFactory()
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-        stock = educational_factories.CollectiveStockFactory(collectiveOffer__provider=venue_provider.provider)
+        stock = factories.CollectiveStockFactory(collectiveOffer__provider=venue_provider.provider)
         offer = stock.collectiveOffer
 
         # this offer without stock will not appear in the result
-        educational_factories.CollectiveOfferFactory(provider=venue_provider.provider)
+        factories.CollectiveOfferFactory(provider=venue_provider.provider)
 
         client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
         with testing.assert_num_queries(self.num_queries):
@@ -163,11 +215,11 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
-        stock1 = educational_factories.CollectiveStockFactory(collectiveOffer__provider=venue_provider.provider)
+        stock1 = factories.CollectiveStockFactory(collectiveOffer__provider=venue_provider.provider)
         offer1 = stock1.collectiveOffer
 
         venue_provider2 = provider_factories.VenueProviderFactory()
-        educational_factories.CollectiveStockFactory(collectiveOffer__provider=venue_provider2.provider)
+        factories.CollectiveStockFactory(collectiveOffer__provider=venue_provider2.provider)
 
         client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
         with testing.assert_num_queries(self.num_queries):
@@ -190,9 +242,9 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
-        stock1 = educational_factories.CollectiveStockFactory(collectiveOffer__provider=venue_provider.provider)
+        stock1 = factories.CollectiveStockFactory(collectiveOffer__provider=venue_provider.provider)
         offer1 = stock1.collectiveOffer
-        educational_factories.CollectiveStockFactory(
+        factories.CollectiveStockFactory(
             collectiveOffer__provider=venue_provider.provider,
             collectiveOffer__validation=OfferValidationStatus.DRAFT,
         )
@@ -219,9 +271,37 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
         venue_provider = provider_factories.VenueProviderFactory()
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
-        offer_id = educational_factories.CollectiveStockFactory().collectiveOffer.id
+        offer_id = factories.CollectiveStockFactory().collectiveOffer.id
 
         api_client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
         with testing.assert_num_queries(self.num_queries + 2):  # double rollback
             response = api_client.get(f"/v2/collective/offers/{offer_id}")
             assert response.status_code == 403
+
+    @pytest.mark.parametrize(
+        "query_params,expected_json",
+        (
+            (
+                {"offerStatus": "BLOUP"},
+                {
+                    "offerStatus": [
+                        "value is not a valid enumeration member; permitted: "
+                        "'PUBLISHED', 'UNDER_REVIEW', 'REJECTED', 'PREBOOKED', "
+                        "'BOOKED', 'HIDDEN', 'EXPIRED', 'ENDED', 'CANCELLED', "
+                        "'REIMBURSED', 'ARCHIVED', 'DRAFT'"
+                    ]
+                },
+            ),
+            ({"venueId": "BLOUP"}, {"venueId": ["value is not a valid integer"]}),
+            ({"periodBeginningDate": "BLOUP"}, {"periodBeginningDate": ["invalid datetime format"]}),
+            ({"periodEndingDate": "2024-05 -10T15:00:00+02:00"}, {"periodEndingDate": ["invalid datetime format"]}),
+        ),
+    )
+    def test_invalid_query_params(self, query_params, expected_json):
+        plain_api_key, _ = self.setup_provider()
+
+        with testing.assert_num_queries(3):  # provider + double rollback
+            response = self.make_request(plain_api_key=plain_api_key, query_params=query_params)
+
+        assert response.status_code == 400
+        assert response.json == expected_json

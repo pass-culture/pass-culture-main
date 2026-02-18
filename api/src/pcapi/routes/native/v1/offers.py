@@ -12,7 +12,6 @@ from pcapi.core.categories.models import GenreType
 from pcapi.core.offers import repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Product
-from pcapi.core.offers.models import Reason
 from pcapi.models import db
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -42,7 +41,9 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
 
 
 @blueprint.native_route("/offer/<int:offer_id>", version="v2", methods=["GET"])
-@spectree_serialize(response_model=serializers.OfferResponseV2, api=blueprint.api, on_error_statuses=[404])
+@spectree_serialize(
+    response_model=serializers.OfferResponseV2, api=blueprint.api, on_error_statuses=[404], deprecated=True
+)
 @atomic()
 def get_offer_v2(offer_id: int) -> serializers.OfferResponseV2:
     query = repository.get_offers_details([int(offer_id)])
@@ -99,13 +100,6 @@ def get_movie_screenings_by_venue(
     )
 
     return serializers.VenueMovieCalendarResponse.from_offers(offers, query.from_datetime, query.to_datetime)
-
-
-@blueprint.native_route("/offer/report/reasons", methods=["GET"])
-@spectree_serialize(api=blueprint.api, response_model=serializers.OfferReportReasons)
-@authenticated_and_active_user_required
-def report_offer_reasons() -> serializers.OfferReportReasons:
-    return serializers.OfferReportReasons(reasons=Reason.get_full_meta())
 
 
 @blueprint.native_route("/offer/<int:offer_id>/chronicles", methods=["GET"])

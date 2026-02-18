@@ -32,6 +32,10 @@ $info-box-margin-left: rem.torem(24px);
     }
   }
 
+  &.medium-width-form {
+    max-width: rem.torem(400px);
+  }
+
   &-section {
     margin-bottom: var(--size-spacing-xxl);
     min-width: auto;

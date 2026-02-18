@@ -127,8 +127,8 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
                     synchronize_session=False,
                 )
                 # TODO We validate whether cegid succeeds in doing the payment or not for now.
-                # Later, validate_invoice will only be called in case of success
-                finance_api.validate_invoice(invoice_id)
+                # Later, validate_invoices will only be called in case of success
+                finance_api.validate_invoices([invoice_id])
                 db.session.commit()
                 time_to_sleep = finance_backend.get_time_to_sleep_between_two_sync_requests()
                 time.sleep(time_to_sleep)

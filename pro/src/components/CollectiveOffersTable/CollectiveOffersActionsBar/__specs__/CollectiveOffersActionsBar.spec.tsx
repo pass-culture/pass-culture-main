@@ -223,7 +223,7 @@ describe('ActionsBar', () => {
 
     expect(
       screen.getByText('Une erreur est survenue lors de l’archivage de l’offre')
-    )
+    ).toBeInTheDocument()
   })
 
   it('should only make one call if the ids all come from template offer', async () => {

@@ -8,10 +8,11 @@ from pydantic.v1 import root_validator
 from pydantic.v1.class_validators import validator
 
 from pcapi.core.categories.models import EacFormat
-from pcapi.core.educational import models as educational_models
+from pcapi.core.educational import models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.native.v1.serialization import common_models
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.routes.shared import validation
@@ -119,11 +120,9 @@ class EducationalRedactorResponseModel(BaseModel):
 class CollectiveOfferBaseReponseModel(BaseModel, common_models.AccessibilityComplianceMixin):
     id: int
     description: str | None
-    isExpired: bool
-    isSoldOut: bool
     name: str
     venue: OfferVenueResponse
-    students: list[educational_models.StudentLevels]
+    students: list[models.StudentLevels]
     location: collective_offers_serialize.GetCollectiveOfferLocationModel | None
     contactEmail: str | None
     contactPhone: str | None
@@ -131,7 +130,6 @@ class CollectiveOfferBaseReponseModel(BaseModel, common_models.AccessibilityComp
     educationalPriceDetail: str | None
     domains: typing.Sequence[OfferDomain]
     interventionArea: list[str]
-    imageCredit: str | None
     imageUrl: str | None
     nationalProgram: NationalProgramModel | None
     formats: typing.Sequence[EacFormat]
@@ -153,13 +151,11 @@ class CollectiveOfferResponseModel(CollectiveOfferBaseReponseModel):
 
     @classmethod
     def build(
-        cls: "type[CollectiveOfferResponseModel]", offer: educational_models.CollectiveOffer
+        cls: "type[CollectiveOfferResponseModel]", offer: models.CollectiveOffer
     ) -> "CollectiveOfferResponseModel":
         return cls(
             id=offer.id,
             description=offer.description,
-            isExpired=offer.hasBookingLimitDatetimesPassed,
-            isSoldOut=offer.collectiveStock.isSoldOut,
             name=offer.name,
             stock=offer.collectiveStock,
             venue=offer.venue,
@@ -172,7 +168,6 @@ class CollectiveOfferResponseModel(CollectiveOfferBaseReponseModel):
             domains=offer.domains,
             educationalInstitution=offer.institution,
             interventionArea=offer.interventionArea,
-            imageCredit=offer.imageCredit,
             imageUrl=offer.imageUrl,
             teacher=offer.teacher,
             nationalProgram=offer.nationalProgram,
@@ -196,12 +191,12 @@ class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
     isFavorite: bool | None
     dates: collective_offers_serialize.CollectiveOfferDatesModel | None
     contactUrl: str | None
-    contactForm: educational_models.OfferContactFormEnum | None
+    contactForm: models.OfferContactFormEnum | None
 
     @classmethod
     def build(
         cls: "type[CollectiveOfferTemplateResponseModel]",
-        offer: educational_models.CollectiveOfferTemplate,
+        offer: models.CollectiveOfferTemplate,
         is_favorite: bool,
     ) -> "CollectiveOfferTemplateResponseModel":
         if offer.start and offer.end:
@@ -212,8 +207,6 @@ class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
         return cls(
             id=offer.id,
             description=offer.description,
-            isExpired=False,
-            isSoldOut=False,
             name=offer.name,
             venue=offer.venue,
             students=offer.students,
@@ -222,7 +215,6 @@ class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
             educationalPriceDetail=offer.priceDetail,
             domains=offer.domains,
             interventionArea=offer.interventionArea,
-            imageCredit=offer.imageCredit,
             imageUrl=offer.imageUrl,
             nationalProgram=offer.nationalProgram,
             isFavorite=is_favorite,
@@ -247,19 +239,8 @@ class ListCollectiveOfferTemplateResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
-class CollectiveRequestResponseModel(BaseModel):
+class CollectiveRequestResponseModel(HttpBodyModel):
     id: int
-    email: str
-    phone_number: str | None
-    requested_date: date | None
-    total_students: int | None
-    total_teachers: int | None
-    comment: str
-
-    class Config:
-        alias_generator = to_camel
-        orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
 
 
 class PostCollectiveRequestBodyModel(BaseModel):

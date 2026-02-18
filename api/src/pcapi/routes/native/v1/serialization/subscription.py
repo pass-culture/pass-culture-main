@@ -3,9 +3,9 @@ import datetime
 from pydantic.v1 import fields
 from pydantic.v1 import validator
 
-import pcapi.core.fraud.utils as fraud_utils
 from pcapi.core.subscription import profile_options
 from pcapi.core.subscription import schemas as subscription_schemas
+from pcapi.core.subscription import utils as subscription_utils
 from pcapi.core.users import models as users_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
@@ -121,17 +121,17 @@ class ProfileUpdateRequest(BaseModel):
 
     @validator("first_name", "last_name")
     def string_must_contain_latin_characters(cls, v: str) -> str:
-        fraud_utils.validate_name(v)
+        subscription_utils.validate_name(v)
         return v
 
     @validator("city")
     def city_must_be_valid(cls, v: str) -> str:
-        fraud_utils.validate_city(v)
+        subscription_utils.validate_city(v)
         return v
 
     @validator("address")
     def address_must_be_valid(cls, v: str) -> str:
-        fraud_utils.validate_address(v)
+        subscription_utils.validate_address(v)
         return v
 
 
