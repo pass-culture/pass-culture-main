@@ -1982,6 +1982,8 @@ def format_chronicle_club_type(club_type: chronicles_models.ChronicleClubType) -
             return "Musique - albums"
         case chronicles_models.ChronicleClubType.CONCERT_CLUB:
             return "Musique - concerts"
+        case chronicles_models.ChronicleClubType.SCENE_CLUB:
+            return "Scène"
         case _:
             return club_type.value
 

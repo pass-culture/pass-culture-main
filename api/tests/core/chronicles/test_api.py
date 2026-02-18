@@ -160,6 +160,7 @@ class SaveBookChroniclesTest:
                 models.ChronicleClubType.CONCERT_CLUB,
                 models.ChronicleProductIdentifierType.OFFER_ID,
             ),
+            (constants.SceneClub, models.ChronicleClubType.SCENE_CLUB, models.ChronicleProductIdentifierType.OFFER_ID),
         ],
     )
     def test_save_chronicle_full(self, club_constants, club_type, product_identifier_type):
@@ -253,6 +254,7 @@ class SaveBookChroniclesTest:
                 models.ChronicleClubType.CONCERT_CLUB,
                 models.ChronicleProductIdentifierType.OFFER_ID,
             ),
+            (constants.SceneClub, models.ChronicleClubType.SCENE_CLUB, models.ChronicleProductIdentifierType.OFFER_ID),
         ],
     )
     def test_save_chronicle_empty(self, club_constants, club_type, product_identifier_type):

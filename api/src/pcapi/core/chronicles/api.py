@@ -61,6 +61,13 @@ def import_concert_club_chronicles() -> None:
         save_concert_club_chronicle(form)
 
 
+def import_scene_club_chronicles() -> None:
+    form_id = constants.SCENE_CLUB_FORM_ID
+    get_last_chronicle_date = partial(_get_last_chronicle_date, models.ChronicleClubType.SCENE_CLUB)
+    for form in typeform.get_responses_generator(get_last_chronicle_date, form_id):
+        save_scene_club_chronicle(form)
+
+
 def _get_last_chronicle_date(club_type: models.ChronicleClubType) -> datetime | None:
     return (
         db.session.query(models.Chronicle.dateCreated)
@@ -361,6 +368,15 @@ def save_concert_club_chronicle(form: typeform.TypeformResponse) -> None:
         form=form,
         club_constants=constants.ConcertClub,
         club_type=models.ChronicleClubType.CONCERT_CLUB,
+        product_identifier_type=models.ChronicleProductIdentifierType.OFFER_ID,
+    )
+
+
+def save_scene_club_chronicle(form: typeform.TypeformResponse) -> None:
+    save_chronicle(
+        form=form,
+        club_constants=constants.SceneClub,
+        club_type=models.ChronicleClubType.SCENE_CLUB,
         product_identifier_type=models.ChronicleProductIdentifierType.OFFER_ID,
     )
 

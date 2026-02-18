@@ -73,6 +73,7 @@ class ChronicleClubType(enum.Enum):
     BOOK_CLUB = "BOOK"
     ALBUM_CLUB = "ALBUM"
     CONCERT_CLUB = "CONCERT"
+    SCENE_CLUB = "SCENE"
 
 
 class Chronicle(PcObject, Model, DeactivableMixin):
