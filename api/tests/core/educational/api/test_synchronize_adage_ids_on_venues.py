@@ -50,7 +50,7 @@ BASE_DATA = {
 @pytest.mark.settings(
     ADAGE_API_URL="https://adage-api-url",
     ADAGE_API_KEY="adage-api-key",
-    ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
+    ADAGE_BACKEND="pcapi.core.educational.adage.backends.adage.AdageHttpClient",
 )
 def test_synchronize_adage_ids_on_venues(db_session):
     venue1 = offerers_factories.VenueFactory()
@@ -155,7 +155,7 @@ def test_synchronize_adage_ids_on_venues(db_session):
 @pytest.mark.settings(
     ADAGE_API_URL="https://adage-api-url",
     ADAGE_API_KEY="adage-api-key",
-    ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
+    ADAGE_BACKEND="pcapi.core.educational.adage.backends.adage.AdageHttpClient",
 )
 def test_synchronize_adage_ids_on_venues_with_unknown_venue(db_session):
     """Test the synchronization is not blocked (no error) if the adage
@@ -203,7 +203,7 @@ def test_synchronize_adage_ids_on_venues_with_unknown_venue(db_session):
 @pytest.mark.settings(
     ADAGE_API_URL="https://adage-api-url",
     ADAGE_API_KEY="adage-api-key",
-    ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
+    ADAGE_BACKEND="pcapi.core.educational.adage.backends.adage.AdageHttpClient",
 )
 def test_synchronize_adage_ids_on_venues_with_venue_id_missing(db_session, caplog):
     """Test the synchronization is not blocked (no error) if the adage
@@ -247,7 +247,7 @@ def test_synchronize_adage_ids_on_venues_with_venue_id_missing(db_session, caplo
 @pytest.mark.settings(
     ADAGE_API_URL="https://adage-api-url",
     ADAGE_API_KEY="adage-api-key",
-    ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
+    ADAGE_BACKEND="pcapi.core.educational.adage.backends.adage.AdageHttpClient",
 )
 def test_synchronize_adage_ids_on_offerers(db_session):
     # venue1's offerer should be allowed because its venue siret matches the venue1_data
@@ -349,7 +349,7 @@ def test_synchronize_adage_ids_on_offerers(db_session):
 @pytest.mark.settings(
     ADAGE_API_URL="https://adage-api-url",
     ADAGE_API_KEY="adage-api-key",
-    ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
+    ADAGE_BACKEND="pcapi.core.educational.adage.backends.adage.AdageHttpClient",
 )
 def test_synchronize_adage_ids_on_offerers_for_tricky_case(db_session):
     # Let's say we have a venue that has a SIRET and is synchronized with Adage
@@ -401,7 +401,7 @@ def test_synchronize_adage_ids_on_offerers_soft_deleted_venue(db_session, initia
 @pytest.mark.settings(
     ADAGE_API_URL="https://adage-api-url",
     ADAGE_API_KEY="adage-api-key",
-    ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
+    ADAGE_BACKEND="pcapi.core.educational.adage.backends.adage.AdageHttpClient",
 )
 @patch("pcapi.core.educational.api.adage.send_eac_offerer_activation_email")
 def test_synchronize_adage_ids_on_venues_with_date_filter(mock_send_eac_email, db_session):
@@ -427,7 +427,7 @@ def test_synchronize_adage_ids_on_venues_with_date_filter(mock_send_eac_email, d
             json=[venue1_data, venue2_data],
         )
 
-        from pcapi.core.educational.adage_backends.adage import AdageHttpClient
+        from pcapi.core.educational.adage.backends.adage import AdageHttpClient
 
         orig_get_cultural_partners = AdageHttpClient().get_cultural_partners
         rows = orig_get_cultural_partners()

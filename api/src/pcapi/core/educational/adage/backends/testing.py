@@ -3,12 +3,12 @@ import decimal
 
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import schemas
-from pcapi.core.educational.adage_backends.base import AdageClient
-from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
-from pcapi.core.educational.adage_backends.serialize import AdageCollectiveRequest
-from pcapi.core.educational.adage_backends.serialize import AdageEducationalInstitution
+from pcapi.core.educational.adage.backends.base import AdageClient
+from pcapi.core.educational.adage.serialize import AdageCollectiveOffer
+from pcapi.core.educational.adage.serialize import AdageCollectiveRequest
+from pcapi.core.educational.adage.serialize import AdageEducationalInstitution
 
-from .. import testing
+from ... import testing
 
 
 class AdageSpyClient(AdageClient):

@@ -2,7 +2,7 @@ import datetime
 
 from pcapi import settings
 from pcapi.core.educational import schemas
-from pcapi.core.educational.adage_backends import serialize
+from pcapi.core.educational.adage import serialize
 
 
 class AdageClient:

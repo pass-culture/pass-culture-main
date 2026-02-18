@@ -3,7 +3,7 @@ from typing import Iterable
 
 from pcapi.core.educational import models
 from pcapi.core.educational import schemas
-from pcapi.core.educational.adage_backends import serialize as adage_serialize
+from pcapi.core.educational.adage import serialize as adage_serialize
 from pcapi.core.offers.utils import offer_app_link
 
 

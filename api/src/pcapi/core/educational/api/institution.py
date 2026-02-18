@@ -10,12 +10,12 @@ from decimal import Decimal
 from sqlalchemy import orm as sa_orm
 
 from pcapi.connectors.big_query.queries import InstitutionRuralLevelQuery
-from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational import repository
 from pcapi.core.educational import utils
-from pcapi.core.educational.adage_backends.serialize import AdageEducationalInstitution
+from pcapi.core.educational.adage import api as adage_client
+from pcapi.core.educational.adage.serialize import AdageEducationalInstitution
 from pcapi.core.educational.constants import INSTITUTION_TYPES
 from pcapi.models import db
 from pcapi.utils import date as date_utils

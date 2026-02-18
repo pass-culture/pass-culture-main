@@ -1765,7 +1765,7 @@ def delete_venue_banner(venue: models.Venue) -> None:
 
 
 def can_offerer_create_educational_offer(offerer_id: int) -> bool:
-    import pcapi.core.educational.adage_backends as adage_client
+    import pcapi.core.educational.adage.api as adage_client
 
     if settings.CAN_COLLECTIVE_OFFERER_IGNORE_ADAGE:
         return True

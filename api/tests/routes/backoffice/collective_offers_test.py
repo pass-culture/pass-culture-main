@@ -1132,7 +1132,7 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
 
     @pytest.mark.settings(
         ADAGE_API_URL="https://adage_base_url",
-        ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
+        ADAGE_BACKEND="pcapi.core.educational.adage.backends.adage.AdageHttpClient",
     )
     @pytest.mark.usefixtures("clean_database")
     def test_validate_collective_offer_with_institution_invalid_email_validated(
@@ -1174,7 +1174,7 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
 
     @pytest.mark.settings(
         ADAGE_API_URL="https://adage_base_url",
-        ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
+        ADAGE_BACKEND="pcapi.core.educational.adage.backends.adage.AdageHttpClient",
     )
     @pytest.mark.usefixtures("clean_database")
     def test_validate_collective_offer_with_institution_500_validated(
@@ -1216,7 +1216,7 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
 
     @pytest.mark.settings(
         ADAGE_API_URL="https://adage_base_url",
-        ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
+        ADAGE_BACKEND="pcapi.core.educational.adage.backends.adage.AdageHttpClient",
     )
     @pytest.mark.usefixtures("clean_database")
     def test_validate_collective_offer_adage_timeout_validated(
@@ -1454,7 +1454,7 @@ class BatchCollectiveOffersValidateTest(PostEndpointHelper):
             collectiveOffer__institution=institution,
         )
         collective_offer = collective_stock.collectiveOffer
-        patched_function = "pcapi.core.educational.adage_backends.notify_institution_association"
+        patched_function = "pcapi.core.educational.adage.api.notify_institution_association"
         adage_exception = educational_exceptions.AdageException(
             message="An error occured on adage side",
             status_code=400,

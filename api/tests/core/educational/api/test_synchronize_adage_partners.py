@@ -93,7 +93,7 @@ class SynchronizeAdagePartnersTest:
         partners = [partner_1, partner_2, partner_4, partner_5, partner_6, partner_7, partner_8]
         with (
             patch("pcapi.core.educational.api.adage.send_eac_offerer_activation_email") as mock_activation_mail,
-            patch("pcapi.core.educational.adage_backends.get_adage_offerer") as mock_get_adage_offerer,
+            patch("pcapi.core.educational.adage.api.get_adage_offerer") as mock_get_adage_offerer,
         ):
             mock_get_adage_offerer.return_value = []
             adage.synchronize_adage_partners(partners, apply=True)
@@ -175,7 +175,7 @@ class SynchronizeAdagePartnersTest:
         partners = [partner_1]
         with (
             patch("pcapi.core.educational.api.adage.send_eac_offerer_activation_email") as mock_activation_mail,
-            patch("pcapi.core.educational.adage_backends.get_adage_offerer") as mock_get_adage_offerer,
+            patch("pcapi.core.educational.adage.api.get_adage_offerer") as mock_get_adage_offerer,
         ):
             mock_get_adage_offerer.return_value = []
             adage.synchronize_adage_partners(partners, apply=False)
@@ -234,7 +234,7 @@ class SynchronizeAdagePartnersTest:
 
         with (
             patch("pcapi.core.educational.api.adage.send_eac_offerer_activation_email") as mock_activation_mail,
-            patch("pcapi.core.educational.adage_backends.get_adage_offerer") as mock_get_adage_offerer,
+            patch("pcapi.core.educational.adage.api.get_adage_offerer") as mock_get_adage_offerer,
         ):
             mock_get_adage_offerer.side_effect = get_adage_offerer
             adage.synchronize_adage_partners(partners, apply=True)

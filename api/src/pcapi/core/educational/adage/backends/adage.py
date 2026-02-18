@@ -8,8 +8,8 @@ from pydantic.v1 import parse_obj_as
 from pcapi import settings
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import schemas
-from pcapi.core.educational.adage_backends import serialize
-from pcapi.core.educational.adage_backends.base import AdageClient
+from pcapi.core.educational.adage import serialize
+from pcapi.core.educational.adage.backends.base import AdageClient
 from pcapi.utils import requests
 
 
