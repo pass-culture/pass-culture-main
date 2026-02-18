@@ -132,7 +132,6 @@ class FeatureToggle(enum.Enum):
         "Activer le backend de tâches asynchrones Celery pour les tâches liées à l'envoi de mails"
     )
     WIP_ASYNCHRONOUS_CELERY_SPECIAL_EVENT_TYPEFORM = "Activer le backend de tâches asynchrones Celery pour les tâches liées à la mise à jour des opérations spéciales"
-    WIP_ASYNCHRONOUS_CELERY_UBBLE = "Active le backend de tâches asynchrones Celery pour les tâches liées à Ubble"
     WIP_ASYNCHRONOUS_CELERY_UPDATE_VENUE_OFFERS_EMAIL = (
         "Activer le backend de tâches asynchrones Celery pour les tâches liées à la mise à jour des emails des offres"
     )
