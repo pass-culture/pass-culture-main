@@ -4,16 +4,26 @@ import typing
 from pcapi import settings
 from pcapi.core.educational import schemas
 from pcapi.core.educational.adage import serialize
-from pcapi.utils.module_loading import import_string
+from pcapi.core.educational.adage.backends.adage import AdageHttpClient
+from pcapi.core.educational.adage.backends.logger import AdageLoggerClient
+from pcapi.core.educational.adage.backends.testing import AdageSpyClient
 
 
-if typing.TYPE_CHECKING:
-    from pcapi.core.educational.adage.backends.base import AdageClient
+type Client = AdageHttpClient | AdageLoggerClient | AdageSpyClient
+
+BACKEND_BY_KEY: typing.Final[dict[str, type[Client]]] = {
+    "AdageHttpClient": AdageHttpClient,
+    "AdageLoggerClient": AdageLoggerClient,
+    "AdageSpyClient": AdageSpyClient,
+    # TODO(jcicurel-pass): we keep these imports for now until we have updated the ADAGE_BACKEND setting in each environment
+    "pcapi.core.educational.adage_backends.adage.AdageHttpClient": AdageHttpClient,
+    "pcapi.core.educational.adage_backends.logger.AdageLoggerClient": AdageLoggerClient,
+    "pcapi.core.educational.adage_backends.testing.AdageSpyClient": AdageSpyClient,
+}
 
 
-def _get_backend() -> "AdageClient":
-    backend_class = import_string(settings.ADAGE_BACKEND)
-    return backend_class()
+def _get_backend() -> Client:
+    return BACKEND_BY_KEY[settings.ADAGE_BACKEND]()
 
 
 def notify_prebooking(data: schemas.EducationalBookingResponse) -> None:
