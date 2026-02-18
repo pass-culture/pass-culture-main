@@ -1,4 +1,3 @@
-import { addDays, isBefore } from 'date-fns'
 import { useLocation, useParams } from 'react-router'
 import useSWR from 'swr'
 
@@ -63,12 +62,6 @@ export const CollectiveDataEdition = ({
     return <Spinner className={styles.spinner} />
   }
 
-  const hasAdageIdForMoreThan30Days = Boolean(
-    venue.hasAdageId &&
-      venue.adageInscriptionDate &&
-      isBefore(new Date(venue.adageInscriptionDate), addDays(new Date(), -30))
-  )
-
   const showCollectiveDataForm = Boolean(
     venue.hasAdageId && canCreateCollectiveOffer
   )
@@ -98,7 +91,6 @@ export const CollectiveDataEdition = ({
           <CollectiveDmsTimeline
             collectiveDmsApplication={collectiveDmsApplication}
             hasAdageId={venue.hasAdageId}
-            hasAdageIdForMoreThan30Days={hasAdageIdForMoreThan30Days}
             adageInscriptionDate={venue.adageInscriptionDate}
           />
         </div>
