@@ -8,17 +8,22 @@
   border: 2px solid var(--color-border-brand-primary);
   border-radius: var(--size-border-radius-m);
   width: 100%;
-  padding: rem.torem(1px) rem.torem(108px) rem.torem(1px) var(--size-spacing-m);
+  padding: var(--size-spacing-m);
+
+  @media (min-width: size.$tablet) {
+    padding: rem.torem(1px) rem.torem(108px) rem.torem(1px)
+      var(--size-spacing-m);
+  }
 
   .newsletter-img {
     position: absolute;
     right: rem.torem(16px);
     top: rem.torem(1px);
     height: 100%;
-    display: none;
+    visibility: hidden;
 
     @media (min-width: size.$tablet) {
-      display: inline;
+      visibility: visible;
     }
   }
 }
