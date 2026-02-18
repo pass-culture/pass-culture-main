@@ -4043,8 +4043,8 @@ class GetOfferDetailsTest(GetEndpointHelper):
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # session + offer with joined data
-    expected_num_queries = 2
+    # session + offer with joined data + stocks (selectinload) + criteria (selectinload)
+    expected_num_queries = 4
 
     def test_get_detail_offer(self, authenticated_client):
         offer = offers_factories.OfferFactory(

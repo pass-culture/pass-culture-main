@@ -1571,7 +1571,7 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
                 .joinedload(VenueOffererAddress.address.of_type(VenueAddress))
                 .load_only(VenueAddress.departmentCode),
             ),
-            sa_orm.joinedload(offers_models.Offer.stocks)
+            sa_orm.selectinload(offers_models.Offer.stocks)  # avoid cartesian product which causes OOM
             .joinedload(offers_models.Stock.priceCategory)
             .load_only(offers_models.PriceCategory.price)
             .joinedload(offers_models.PriceCategory.priceCategoryLabel)
@@ -1579,7 +1579,7 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
             sa_orm.joinedload(offers_models.Offer.lastValidationAuthor).load_only(
                 users_models.User.firstName, users_models.User.lastName
             ),
-            sa_orm.joinedload(offers_models.Offer.criteria),
+            sa_orm.selectinload(offers_models.Offer.criteria),  # avoid cartesian product which causes OOM
             sa_orm.joinedload(offers_models.Offer.flaggingValidationRules),
             sa_orm.joinedload(offers_models.Offer.mediations),
             sa_orm.joinedload(offers_models.Offer.product).joinedload(offers_models.Product.productMediations),
