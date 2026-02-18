@@ -150,7 +150,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         num_queries += 1  # fetch collective offer for serialization
 
         with assert_num_queries(num_queries):
-            with patch("pcapi.core.educational.adage_backends.get_adage_offerer") as mock:
+            with patch("pcapi.core.educational.adage.api.get_adage_offerer") as mock:
                 mock.return_value = ["anything", "it does not matter"]
                 response = public_client.post("/v2/collective/offers/", json=payload)
 
@@ -192,7 +192,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     ):
         payload["location"] = {"type": "SCHOOL"}
 
-        with patch("pcapi.core.educational.adage_backends.get_adage_offerer") as mock:
+        with patch("pcapi.core.educational.adage.api.get_adage_offerer") as mock:
             mock.return_value = ["anything", "it does not matter"]
             response = public_client.post("/v2/collective/offers/", json=payload)
 
@@ -655,7 +655,7 @@ class CollectiveOffersPublicPostOfferMinimalTest:
         for key in minimal_payload:
             payload = {k: v for k, v in minimal_payload.items() if k != key}
 
-            with patch("pcapi.core.educational.adage_backends.get_adage_offerer") as mock:
+            with patch("pcapi.core.educational.adage.api.get_adage_offerer") as mock:
                 mock.return_value = ["anything", "it does not matter"]
                 response = public_client.post("/v2/collective/offers/", json=payload)
 
@@ -663,7 +663,7 @@ class CollectiveOffersPublicPostOfferMinimalTest:
             assert key in response.json or "__root__" in response.json
 
     def assert_expected_offer_is_created(self, public_client, payload):
-        with patch("pcapi.core.educational.adage_backends.get_adage_offerer") as mock:
+        with patch("pcapi.core.educational.adage.api.get_adage_offerer") as mock:
             mock.return_value = ["anything", "it does not matter"]
             response = public_client.post("/v2/collective/offers/", json=payload)
 

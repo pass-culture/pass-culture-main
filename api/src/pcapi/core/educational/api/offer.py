@@ -9,15 +9,15 @@ import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.core import search
-from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational import repository
 from pcapi.core.educational import schemas
 from pcapi.core.educational import utils
 from pcapi.core.educational import validation
-from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
-from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer_request
+from pcapi.core.educational.adage import api as adage_client
+from pcapi.core.educational.adage.serialize import serialize_collective_offer
+from pcapi.core.educational.adage.serialize import serialize_collective_offer_request
 from pcapi.core.educational.api import adage as api_adage
 from pcapi.core.educational.api import shared as api_shared
 from pcapi.core.educational.serialization import collective_booking as collective_booking_serialize

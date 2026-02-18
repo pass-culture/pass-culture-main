@@ -7,13 +7,13 @@ import sqlalchemy.orm as sa_orm
 from pydantic.v1.error_wrappers import ValidationError
 
 from pcapi import settings
-from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational import repository
 from pcapi.core.educational import schemas
 from pcapi.core.educational import utils
 from pcapi.core.educational import validation
+from pcapi.core.educational.adage import api as adage_client
 from pcapi.core.educational.serialization import collective_booking as collective_booking_serialize
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models

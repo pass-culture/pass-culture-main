@@ -4,8 +4,8 @@ import logging
 
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import schemas
-from pcapi.core.educational.adage_backends import serialize
-from pcapi.core.educational.adage_backends.base import AdageClient
+from pcapi.core.educational.adage import serialize
+from pcapi.core.educational.adage.backends.base import AdageClient
 
 
 logger = logging.getLogger(__name__)

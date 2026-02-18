@@ -15,11 +15,11 @@ from markupsafe import escape
 from werkzeug.datastructures import MultiDict
 from werkzeug.exceptions import NotFound
 
-from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
-from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
+from pcapi.core.educational.adage import api as adage_client
+from pcapi.core.educational.adage.serialize import serialize_collective_offer
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import models as finance_models
