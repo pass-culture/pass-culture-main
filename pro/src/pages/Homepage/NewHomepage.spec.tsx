@@ -195,4 +195,210 @@ describe('NewHomepage', () => {
       )
     })
   })
+
+  describe('individual panel', () => {
+    /**
+     * TODO (mdesquilbet-pass, 2026-02-18): replace text content assertions
+     * by mocking components - when all modules are created
+     */
+    describe('homologation banner', () => {
+      it('should not be displayed if the venue is validated', () => {
+        renderNewHomepage({
+          storeOverrides: {
+            user: {
+              selectedVenue: {
+                ...defaultGetOffererVenueResponseModel,
+                hasNonDraftOffers: true,
+                isValidated: true,
+              },
+            },
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /indiv/ })
+        ).not.toHaveTextContent(
+          /Votre structure est en cours de traitement par les équipes du pass Culture/
+        )
+      })
+
+      it('should be displayed if the venue is not validated', () => {
+        renderNewHomepage({
+          storeOverrides: {
+            user: {
+              selectedVenue: {
+                ...defaultGetOffererVenueResponseModel,
+                hasNonDraftOffers: true,
+                isValidated: false,
+              },
+            },
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /indiv/ })
+        ).toHaveTextContent(
+          /Votre structure est en cours de traitement par les équipes du pass Culture/
+        )
+      })
+    })
+
+    describe('budget module', () => {
+      it('should be displayed if the venue has non free offers', () => {
+        renderNewHomepage({
+          storeOverrides: {
+            user: {
+              selectedVenue: {
+                ...defaultGetOffererVenueResponseModel,
+                hasNonDraftOffers: true,
+                hasNonFreeOffers: true,
+              },
+            },
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /indiv/ })
+        ).toHaveTextContent(/Remboursement/)
+      })
+
+      it("should not be displayed if the venue doesn't have non free offers", () => {
+        renderNewHomepage({
+          storeOverrides: {
+            user: {
+              selectedVenue: {
+                ...defaultGetOffererVenueResponseModel,
+                hasNonDraftOffers: true,
+                hasNonFreeOffers: false,
+              },
+            },
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /indiv/ })
+        ).not.toHaveTextContent(/Remboursement/)
+      })
+    })
+
+    describe('webinar module', () => {
+      beforeEach(() => {
+        vi.useFakeTimers()
+      })
+
+      afterEach(() => {
+        vi.useRealTimers()
+      })
+
+      it('should be displayed before the 30st day of venue creation', () => {
+        const dateCreated = '2026-02-16T12:31:53.443732Z'
+        const today = new Date(dateCreated)
+        today.setDate(today.getDate() + 12)
+        vi.setSystemTime(today)
+        renderNewHomepage({
+          storeOverrides: {
+            user: {
+              selectedVenue: {
+                ...defaultGetOffererVenueResponseModel,
+                dateCreated,
+                hasNonDraftOffers: true,
+              },
+            },
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /indiv/ })
+        ).toHaveTextContent(
+          /Participer à nos webinaires sur la part indivisuelle !/
+        )
+      })
+
+      it('should not be displayed after the 30st day of venue creation', () => {
+        const dateCreated = '2026-02-16T12:31:53.443732Z'
+        const today = new Date(dateCreated)
+        today.setDate(today.getDate() + 40)
+        vi.setSystemTime(today)
+        renderNewHomepage({
+          storeOverrides: {
+            user: {
+              selectedVenue: {
+                ...defaultGetOffererVenueResponseModel,
+                dateCreated,
+                hasNonDraftOffers: true,
+              },
+            },
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /indiv/ })
+        ).not.toHaveTextContent(
+          /Participer à nos webinaires sur la part indivisuelle !/
+        )
+      })
+
+      it('should be displayed on the 30st day of venue creation', () => {
+        const dateCreated = '2026-02-16T12:31:53.443732Z'
+        const today = new Date(dateCreated)
+        today.setDate(today.getDate() + 30)
+        vi.setSystemTime(today)
+        renderNewHomepage({
+          storeOverrides: {
+            user: {
+              selectedVenue: {
+                ...defaultGetOffererVenueResponseModel,
+                dateCreated,
+                hasNonDraftOffers: true,
+              },
+            },
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /indiv/ })
+        ).toHaveTextContent(
+          /Participer à nos webinaires sur la part indivisuelle !/
+        )
+      })
+    })
+
+    it('should always have the mendatory modules', () => {
+      renderNewHomepage({
+        storeOverrides: {
+          user: {
+            selectedVenue: {
+              ...defaultGetOffererVenueResponseModel,
+              hasNonDraftOffers: true,
+            },
+          },
+        },
+      })
+
+      // Partner page
+      expect(
+        screen.getByRole('tabpanel', { description: /indiv/ })
+      ).toHaveTextContent(/Votre page sur l’application/)
+
+      // Newsletter
+      expect(
+        screen.getByRole('tabpanel', { description: /indiv/ })
+      ).toHaveTextContent(/Suivez notre actualité/)
+
+      // Edito
+      expect(
+        screen.getByRole('tabpanel', { description: /indiv/ })
+      ).toHaveTextContent(/Comment valoriser vos offres auprès du jeune public/)
+
+      // Stats
+      expect(
+        screen.getByRole('tabpanel', { description: /indiv/ })
+      ).toHaveTextContent(/Evolution de consultation de vos offres/)
+
+      // Offres
+      expect(
+        screen.getByRole('tabpanel', { description: /indiv/ })
+      ).toHaveTextContent(/Activités sur vos offres individuelles/)
+    })
+  })
 })
