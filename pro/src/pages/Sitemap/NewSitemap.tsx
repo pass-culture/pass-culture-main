@@ -137,30 +137,37 @@ export const NewSitemap = () => {
     },
   ]
   const renderSitemapItems = (items: SitemapLink[]) => {
-    return items.filter((item) => !item.hidden).map((link) => (
-      <li key={link.path ?? link.title} className={styles['sitemap-list-item']}>
-        {link.path ? (
-          <Link
-            to={link.path}
-            className={
-              link.children.length > 0
-                ? styles['sitemap-section-link']
-                : styles['sitemap-link']
-            }
-          >
-            {link.title}
-          </Link>
-        ) : (
-          <span className={styles['sitemap-list-subtitle']}>{link.title}</span>
-        )}
+    return items
+      .filter((item) => !item.hidden)
+      .map((link) => (
+        <li
+          key={link.path ?? link.title}
+          className={styles['sitemap-list-item']}
+        >
+          {link.path ? (
+            <Link
+              to={link.path}
+              className={
+                link.children.length > 0
+                  ? styles['sitemap-section-link']
+                  : styles['sitemap-link']
+              }
+            >
+              {link.title}
+            </Link>
+          ) : (
+            <span className={styles['sitemap-list-subtitle']}>
+              {link.title}
+            </span>
+          )}
 
-        {link.children.length > 0 && (
-          <ul className={styles['sitemap-sub-list']}>
-            {renderSitemapItems(link.children)}
-          </ul>
-        )}
-      </li>
-    ))
+          {link.children.length > 0 && (
+            <ul className={styles['sitemap-sub-list']}>
+              {renderSitemapItems(link.children)}
+            </ul>
+          )}
+        </li>
+      ))
   }
 
   return (
