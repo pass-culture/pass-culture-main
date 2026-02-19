@@ -3,6 +3,7 @@ import datetime
 import decimal
 import os
 import re
+from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
@@ -2385,7 +2386,9 @@ class BonusCreditRequestTest(PostEndpointHelper):
         "birth_city": ["84137"],
     }
 
-    def test_request_bonus_credit(self, authenticated_client):
+    @pytest.mark.usefixtures("celery_with_context")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
+    def test_request_bonus_credit(self, mock_task: MagicMock, authenticated_client):
         user = users_factories.BeneficiaryFactory()
         user_id = user.id
 
@@ -2402,6 +2405,7 @@ class BonusCreditRequestTest(PostEndpointHelper):
         )
         assert response.status_code == 303
 
+        mock_task.assert_called_once()
         qf_fraud_checks = users_api.get_qf_bonus_credit_fraud_checks(user)
         assert len(qf_fraud_checks) == 1
         qf_fraud_check = qf_fraud_checks[0]

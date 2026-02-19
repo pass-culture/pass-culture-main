@@ -1,4 +1,5 @@
 import datetime
+from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
@@ -686,8 +687,9 @@ class IdentificationSessionTest:
         assert check
         assert response.json["identificationUrl"] == expected_url
 
+    @pytest.mark.usefixtures("celery_with_context")
     @patch("pcapi.core.subscription.ubble.tasks.store_id_pictures_task.delay")
-    def test_conflict_error_tries_to_resync(self, store_id_pictures_task_mock, client):
+    def test_conflict_error_tries_to_resync(self, store_id_pictures_task_mock: MagicMock, client):
         user = users_factories.ProfileCompletedUserFactory(age=18)
         ubble_identification_id = "idv_qwerty1234"
         fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
@@ -721,6 +723,7 @@ class IdentificationSessionTest:
 
         assert response.status_code == 500, response.json
         assert response.json["code"] == "IDCHECK_SERVICE_ERROR", response.json
+        store_id_pictures_task_mock.assert_called_once()
 
         fraud_check = db.session.scalar(
             sa.select(subscription_models.BeneficiaryFraudCheck).where(

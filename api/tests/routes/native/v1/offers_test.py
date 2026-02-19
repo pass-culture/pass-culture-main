@@ -2250,7 +2250,10 @@ class SendOfferLinkNotificationWithFFTest:
         user = users_factories.UserFactory()
         client = client.with_token(user)
 
-        with assert_no_duplicated_queries():
+        num_queries = 1  # select user
+        num_queries += 1  # select offer in route
+        num_queries += 1  # select offer in task
+        with assert_num_queries(3):
             response = client.post(f"/native/v1/send_offer_link_by_push/{offer_id}")
             assert response.status_code == 204
 
