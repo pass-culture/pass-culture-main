@@ -76,7 +76,7 @@
     "@axe-core/playwright": "4.11.1",
     "@biomejs/biome": "2.3.14",
     "@hookform/devtools": "4.4.0",
-    "@playwright/test": "1.58.1",
+    "@playwright/test": "1.58.2",
     "@storybook/addon-a11y": "9.1.17",
     "@storybook/addon-docs": "9.1.17",
     "@storybook/react-vite": "9.1.17",
