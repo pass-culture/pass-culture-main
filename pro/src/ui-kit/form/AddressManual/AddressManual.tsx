@@ -1,7 +1,7 @@
 import { useFormContext } from 'react-hook-form'
 
 import type { AddressFormValues } from '@/commons/core/shared/types'
-import { getCoordsType, parseDms } from '@/commons/utils/coords'
+import { checkCoords, getCoordsType, parseDms } from '@/commons/utils/coords'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { TextInput } from '@/design-system/TextInput/TextInput'
@@ -89,7 +89,7 @@ export const AddressManual = ({
         />
       </FormLayout.Row>
 
-      {coords && (
+      {coords && checkCoords(coords) && (
         <div className={styles['callout']}>
           <Banner
             title="Vérification de localisation"
