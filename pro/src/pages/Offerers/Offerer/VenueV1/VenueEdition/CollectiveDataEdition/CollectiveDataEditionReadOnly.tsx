@@ -1,5 +1,6 @@
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { getActivityLabel } from '@/commons/mappings/mappings'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { getInterventionAreaLabels } from '@/pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/utils/getInterventionAreaLabels'
 import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
@@ -48,7 +49,11 @@ export const CollectiveDataEditionReadOnly = ({
                 ]
               : []),
             {
-              title: 'Domaine artistique et culturel',
+              title: pluralizeFr(
+                venue.collectiveDomains.length,
+                'Domaine artistique et culturel',
+                'Domaines artistiques et culturels'
+              ),
               text:
                 venue.collectiveDomains.length > 0
                   ? venue.collectiveDomains
@@ -57,8 +62,12 @@ export const CollectiveDataEditionReadOnly = ({
                   : 'Non renseigné',
             },
             {
-              title: 'Zone de mobilité',
-              text: venue.collectiveInterventionArea
+              title: pluralizeFr(
+                venue.collectiveInterventionArea?.length ?? 0,
+                'Zone de mobilité',
+                'Zones de mobilité'
+              ),
+              text: venue.collectiveInterventionArea?.length
                 ? getInterventionAreaLabels(venue.collectiveInterventionArea)
                 : 'Non renseignée',
             },

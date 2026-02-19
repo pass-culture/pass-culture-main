@@ -108,7 +108,34 @@ describe('<CollectiveDataEditionReadOnly />', () => {
     )
   })
 
+  it('should display collective domains in plural if there are multiple domains', () => {
+    const venue = makeGetVenueResponseModel({
+      id: 1,
+      collectiveDomains: [
+        { id: 1, name: 'Arts visuels' },
+        { id: 2, name: 'Danse' },
+      ],
+    })
+
+    renderWithProviders(<CollectiveDataEditionReadOnly venue={venue} />)
+
+    expect(
+      screen.getByText(/Domaines artistiques et culturels/)
+    ).toBeInTheDocument()
+  })
+
   it('should display collective intervention area', () => {
+    const venue = makeGetVenueResponseModel({
+      id: 1,
+      collectiveInterventionArea: ['75'],
+    })
+
+    renderWithProviders(<CollectiveDataEditionReadOnly venue={venue} />)
+
+    expect(screen.getByText(/Zone de mobilité/i)).toBeInTheDocument()
+  })
+
+  it('should display collective intervention area in plural if there are multiple areas', () => {
     const venue = makeGetVenueResponseModel({
       id: 1,
       collectiveInterventionArea: ['75', '92'],
@@ -116,7 +143,7 @@ describe('<CollectiveDataEditionReadOnly />', () => {
 
     renderWithProviders(<CollectiveDataEditionReadOnly venue={venue} />)
 
-    expect(screen.getByText(/Zone de mobilité/i)).toBeInTheDocument()
+    expect(screen.getByText(/Zones de mobilité/)).toBeInTheDocument()
   })
 
   it('should display collective legal status', () => {
