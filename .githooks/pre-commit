@@ -59,8 +59,7 @@ if [[ ! -z "$STAGED_FILES" ]]; then
   if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",test," ]]; then
     echo "Running Tests"
     # The following command will run tests related to the vite root (`src`)
-    # In bash ${string//substring/replacement} replace all occurrences of a string
-    yarn test:unit:hook ${STAGED_FILES//src\//}
+    yarn test:unit:hook $STAGED_FILES
     VITEST_EXIT_CODE=$?
 
     # check vitest exit code
