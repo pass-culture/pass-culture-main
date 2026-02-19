@@ -1,24 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
-import { describe, it, vi } from 'vitest'
+import { describe, it } from 'vitest'
 import { axe } from 'vitest-axe'
 
 import { AddressManual } from './AddressManual'
-
-// Mock utils used inside component
-vi.mock('@/commons/utils/coords', () => ({
-  getCoordsType: (input: string) => (input.includes('°') ? 'DMS' : 'DD'),
-  parseDms: (dms: string) => {
-    if (dms === `48°51'12.0"N`) {
-      return 48.85333
-    }
-    if (dms === `2°20'56.3"E`) {
-      return 2.34897
-    }
-    return 0
-  },
-}))
 
 function renderAddressManual({
   coords = '',
@@ -81,7 +67,7 @@ describe('AddressManual', () => {
   })
 
   it('should render Callout and ButtonLink when coords is provided', () => {
-    const coords = '48.8566%2C2.3522'
+    const coords = '48.8566,2.3522'
 
     renderAddressManual({ coords })
 
@@ -98,6 +84,18 @@ describe('AddressManual', () => {
     expect(callout).toHaveTextContent(
       'Contrôlez la précision de vos coordonnées GPS.'
     )
+  })
+
+  it('should not render Callout and ButtonLink when coords are not valid', () => {
+    const coords = 'toto tata'
+
+    renderAddressManual({ coords })
+
+    expect(
+      screen.queryByRole('link', {
+        name: /Contrôlez la précision de vos coordonnées GPS./,
+      })
+    ).not.toBeInTheDocument()
   })
 
   it('should not render anything when coords is undefined', () => {
