@@ -1,28 +1,28 @@
-import { API_URL } from '@/commons/utils/config'
+import { client as adageClient } from './adage/client.gen'
+import * as adageSdk from './adage/sdk.gen'
+import { ApiError } from './compat'
+import { client as v1Client } from './v1/client.gen'
+import * as v1Sdk from './v1/sdk.gen'
 
-import { AppClientAdage } from './adage/AppClientAdage'
-import { AppClient, type OpenAPIConfig } from './v1'
-
-const params = new URLSearchParams(window.location.search)
-const token = params.get('token')
-
-const config: OpenAPIConfig = {
-  BASE: API_URL,
-  VERSION: '1',
-  WITH_CREDENTIALS: true,
-  CREDENTIALS: 'include',
+function createApiErrorInterceptor() {
+  return async (
+    error: unknown,
+    response: Response | undefined,
+    request: Request
+  ) =>
+    new ApiError(
+      request.url,
+      response?.status ?? 0,
+      response?.statusText ?? '',
+      error
+    )
 }
 
-const configAdage: OpenAPIConfig = {
-  BASE: API_URL,
-  VERSION: '1',
-  WITH_CREDENTIALS: false,
-  CREDENTIALS: 'omit',
-  TOKEN: token ?? '',
-}
+v1Client.interceptors.error.use(createApiErrorInterceptor())
+adageClient.interceptors.error.use(createApiErrorInterceptor())
 
-export const api = new AppClient(config).default
-export const apiAdage = new AppClientAdage(configAdage).default
+export const api = v1Sdk
+export const apiAdage = adageSdk
 
 export {
   getDataFromAddress,
