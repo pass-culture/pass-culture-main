@@ -105,7 +105,7 @@ export const WelcomeCarousel = (): JSX.Element => {
                 {!nextStepUrl && (
                   <Button
                     as="a"
-                    to="/inscription"
+                    to="/inscription/compte/creation"
                     variant={ButtonVariant.PRIMARY}
                     label="Démarrer l’inscription"
                   />
