@@ -2025,11 +2025,12 @@ def move_offer(
     db.session.flush()
     with transaction():
         if offer.offererAddress:
+            # The offer gets a new location since it has a new venueId, even if it was not at the same address that the old venue
             destination_oa = offerers_api.get_or_create_offer_location(
-                offerer_id=original_venue.offererId,
+                offerer_id=original_venue.managingOffererId,
                 venue_id=destination_venue.id,
-                address_id=original_venue.offererAddress.addressId,
-                label=original_venue.publicName,
+                address_id=offer.offererAddress.addressId,
+                label=offer.offererAddress.label,
             )
             db.session.add(destination_oa)
             offer.offererAddress = destination_oa
@@ -2124,8 +2125,8 @@ def move_event_offer(
                 destination_oa = offerers_api.get_or_create_offer_location(
                     offerer_id=offer.venue.managingOffererId,
                     venue_id=destination_venue.id,
-                    address_id=offer.venue.offererAddress.addressId,
-                    label=offer.venue.publicName,
+                    address_id=offer.offererAddress.addressId,
+                    label=offer.offererAddress.label,
                 )
                 offer.offererAddress = destination_oa
         offer.venue = destination_venue

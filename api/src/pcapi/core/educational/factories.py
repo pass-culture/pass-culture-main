@@ -12,6 +12,7 @@ from pcapi.core.educational import models
 from pcapi.core.educational import utils
 from pcapi.core.factories import BaseFactory
 from pcapi.core.geography import factories as geography_factories
+from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -96,6 +97,20 @@ class CollectiveOfferFactory(BaseFactory[models.CollectiveOffer]):
                 stock_date_created = date_utils.get_naive_utc_now() - datetime.timedelta(days=3)
                 kwargs["lastValidationDate"] = stock_date_created + datetime.timedelta(minutes=10)
 
+        if (
+            "offererAddress" not in kwargs
+            and "offererAddressId" not in kwargs
+            and kwargs.get("locationType") == models.CollectiveLocationType.ADDRESS
+        ):
+            venue = kwargs.get("venue")
+            db.session.flush()  # Flush is needed otherwise venue.offererAddress will be empty.
+            if venue:
+                kwargs["offererAddress"] = offerers_api.get_or_create_offer_location(
+                    offerer_id=venue.managingOffererId,
+                    venue_id=venue.id,
+                    address_id=venue.offererAddress.addressId,
+                    label=venue.publicName,
+                )
         return super()._create(model_class, *args, **kwargs)
 
     @factory.post_generation
@@ -626,7 +641,6 @@ class CollectiveOfferOnAddressVenueLocationFactory(PublishedCollectiveOfferFacto
         offerers_factories.OfferLocationFactory,
         address=factory.SelfAttribute("..venue.offererAddress.address"),
         label=factory.SelfAttribute("..venue.publicName"),
-        # venue=factory.SelfAttribute("..venue"),
     )
 
 
@@ -635,7 +649,6 @@ class CollectiveOfferOnOtherAddressLocationFactory(PublishedCollectiveOfferFacto
     offererAddress = factory.SubFactory(
         offerers_factories.OfferLocationFactory,
         offerer=factory.SelfAttribute("..venue.managingOfferer"),
-        # venue=factory.SelfAttribute("..venue"),
         address=factory.SubFactory(geography_factories.AddressFactory),
     )
 
@@ -657,7 +670,7 @@ class CollectiveOfferTemplateOnAddressVenueLocationFactory(CollectiveOfferTempla
         offerers_factories.OfferLocationFactory,
         address=factory.SelfAttribute("..venue.offererAddress.address"),
         label=factory.SelfAttribute("..venue.publicName"),
-        # venueId=factory.SelfAttribute("..venue.id"),
+        venueId=factory.SelfAttribute("..venue.id"),
     )
 
 
@@ -666,7 +679,6 @@ class CollectiveOfferTemplateOnOtherAddressLocationFactory(CollectiveOfferTempla
     offererAddress = factory.SubFactory(
         offerers_factories.OfferLocationFactory,
         offerer=factory.SelfAttribute("..venue.managingOfferer"),
-        # venue=factory.SelfAttribute("..venue"),
         address=factory.SubFactory(geography_factories.AddressFactory),
     )
 
