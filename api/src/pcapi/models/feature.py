@@ -143,7 +143,6 @@ class FeatureToggle(enum.Enum):
     WIP_ASYNCHRONOUS_CELERY_SEND_TRANSACTIONAL_NOTIFICATION = (
         "Activer le backend de tâches asynchrones Celery pour les tâches liées à l'envoi de notification Batch"
     )
-    WIP_ASYNCHRONOUS_CELERY_SPECIAL_EVENT_TYPEFORM = "Activer le backend de tâches asynchrones Celery pour les tâches liées à la mise à jour des opérations spéciales"
     WIP_ASYNCHRONOUS_CELERY_UPDATE_VENUE_OFFERS_ACCESSIBILITY = "Activer le backend de tâches asynchrones Celery pour les tâches liées à la mise à jour des infos d'accessibilité des offres"
     WIP_ASYNCHRONOUS_CELERY_UPDATE_VENUE_OFFERS_EMAIL = (
         "Activer le backend de tâches asynchrones Celery pour les tâches liées à la mise à jour des emails des offres"
@@ -233,7 +232,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MATCH_ACCESLIBRE,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_SEND_TRANSACTIONAL_NOTIFICATION,
-    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_SPECIAL_EVENT_TYPEFORM,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UPDATE_VENUE_OFFERS_ACCESSIBILITY,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UPDATE_VENUE_OFFERS_EMAIL,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_ZENDESK,
