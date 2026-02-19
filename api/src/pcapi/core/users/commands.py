@@ -286,4 +286,17 @@ def delete_expired_sessions() -> None:
 
     db.session.query(users_models.UserSession).filter(
         users_models.UserSession.expirationDatetime < sa.func.now()
-    ).delete()
+    ).delete(synchronize_session=False)
+
+
+@blueprint.cli.command("delete_expired_jwt")
+@cron_decorators.log_cron
+@atomic()
+def delete_expired_jwt() -> None:
+    import sqlalchemy as sa
+
+    from pcapi.core.users import models as users_models
+
+    db.session.query(users_models.NativeUserSession).filter(
+        users_models.NativeUserSession.expirationDatetime < sa.func.now()
+    ).delete(synchronize_session=False)

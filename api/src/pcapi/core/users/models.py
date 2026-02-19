@@ -1503,3 +1503,19 @@ class UserProfileRefreshCampaign(PcObject, Model):
         order_by=ACTION_HISTORY_ORDER_BY,
         passive_deletes=True,
     )
+
+
+class NativeUserSession(PcObject, Model):
+    """Each line represent an active session in the native app."""
+
+    __tablename__ = "native_user_session"
+
+    creationDatetime: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
+    )
+    expirationDatetime: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, index=True)
+    refreshToken: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, unique=True, nullable=False)
+    accessToken: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, unique=True, nullable=False)
+    # no fk  here to avoid useless lock on both tables. A corrupted userId is not a problem here
+    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, nullable=False, index=True)
+    deviceId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, index=True)
