@@ -34,7 +34,8 @@ export type SelectAutocompleteProps = {
   label: string | JSX.Element
   /** List of available options */
   options: SelectOption[]
-
+  /** Placeholder for the options thumbnails*/
+  thumbPlaceholder?: string
   /** Helper text displayed below the input */
   description?: string
   /** Disables the input and prevents interaction */
@@ -71,6 +72,7 @@ export const SelectAutocomplete = forwardRef(
       requiredIndicator = 'symbol',
       label,
       options,
+      thumbPlaceholder,
       description,
       error,
       onChange = () => noop,
@@ -324,6 +326,7 @@ export const SelectAutocomplete = forwardRef(
                 listRef={listRef}
                 hoveredOptionIndex={hoveredOptionIndex}
                 selectOption={selectOption}
+                thumbPlaceholder={thumbPlaceholder}
               />
             )}
           </div>
