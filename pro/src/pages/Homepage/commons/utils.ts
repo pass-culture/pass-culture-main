@@ -11,16 +11,11 @@ export const TABS = {
 export type TabKey = (typeof TABS)[keyof typeof TABS]
 
 export const getInitialTab = (
-  venueId: number | null,
+  venueId: number,
   hasIndividual: boolean,
   hasCollective: boolean
 ): TabKey => {
   let initialTab: TabKey = TABS.INDIVIDUAL
-
-  if (venueId === null) {
-    return initialTab
-  }
-
   // Last 2 cases ensure that we never display the wrong panel
   // if the venue only does one part of pass culture
   // (so it does not see tabs)
@@ -47,18 +42,15 @@ export const getInitialTab = (
 
 export const onNewTabSelected = (
   newSelectedTab: TabKey,
-  venueId: number | null
+  venueId: number
 ): void => {
-  if (venueId !== null) {
-    const lastTabsByVenue = JSON.parse(
-      localStorageManager.getItem(
-        LOCAL_STORAGE_KEY.LAST_VISITED_HOMEPAGE_TABS
-      ) ?? '{}'
-    )
-    lastTabsByVenue[venueId] = newSelectedTab
-    localStorageManager.setItem(
-      LOCAL_STORAGE_KEY.LAST_VISITED_HOMEPAGE_TABS,
-      JSON.stringify(lastTabsByVenue)
-    )
-  }
+  const lastTabsByVenue = JSON.parse(
+    localStorageManager.getItem(LOCAL_STORAGE_KEY.LAST_VISITED_HOMEPAGE_TABS) ??
+      '{}'
+  )
+  lastTabsByVenue[venueId] = newSelectedTab
+  localStorageManager.setItem(
+    LOCAL_STORAGE_KEY.LAST_VISITED_HOMEPAGE_TABS,
+    JSON.stringify(lastTabsByVenue)
+  )
 }

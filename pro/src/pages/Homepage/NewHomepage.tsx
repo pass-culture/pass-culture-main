@@ -4,6 +4,7 @@ import { useId, useState } from 'react'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { getToday } from '@/commons/utils/date'
 import {
   getPanelId,
@@ -21,16 +22,15 @@ import {
 import styles from './NewHomepage.module.scss'
 
 export const NewHomepage = (): JSX.Element => {
-  const selectedVenue: GetVenueResponseModel | null = useAppSelector(
-    (state) => state.user.selectedVenue
-  )
-  const hasIndividual = !!selectedVenue?.hasNonDraftOffers
+  const selectedVenue: GetVenueResponseModel =
+    useAppSelector(ensureSelectedVenue)
+  const hasIndividual = !!selectedVenue.hasNonDraftOffers
   const hasCollective =
-    selectedVenue?.allowedOnAdage ||
-    (selectedVenue?.collectiveDmsApplications || []).length > 0
+    selectedVenue.allowedOnAdage ||
+    (selectedVenue.collectiveDmsApplications || []).length > 0
 
   const [selectedTab, setSelectedTab] = useState(
-    getInitialTab(selectedVenue?.id ?? null, hasIndividual, hasCollective)
+    getInitialTab(selectedVenue.id, hasIndividual, hasCollective)
   )
   const individualId = useId()
   const collectiveId = useId()
@@ -50,11 +50,11 @@ export const NewHomepage = (): JSX.Element => {
 
   const handleTabChange = (newSelectedTab: TabKey) => {
     setSelectedTab(newSelectedTab)
-    onNewTabSelected(newSelectedTab, selectedVenue?.id ?? null)
+    onNewTabSelected(newSelectedTab, selectedVenue.id)
   }
 
   return (
-    <BasicLayout mainHeading={`Votre espace ${selectedVenue?.publicName}`}>
+    <BasicLayout mainHeading={`Votre espace ${selectedVenue.publicName}`}>
       {hasIndividual && hasCollective && (
         <Tabs
           type="tabs"
@@ -80,7 +80,7 @@ export const NewHomepage = (): JSX.Element => {
             Page d'accueil - part individuelle
           </span>
           <div className={styles['top']}>
-            {!selectedVenue?.isValidated && (
+            {!selectedVenue.isValidated && (
               <div>
                 Votre structure est en cours de traitement par les équipes du
                 pass Culture
@@ -107,7 +107,7 @@ export const NewHomepage = (): JSX.Element => {
             </div>
           </div>
           <div className={styles['side']}>
-            {selectedVenue?.hasNonFreeOffers && (
+            {selectedVenue.hasNonFreeOffers && (
               <div>
                 Remboursement
                 <br />
@@ -119,7 +119,7 @@ export const NewHomepage = (): JSX.Element => {
               <br />
               <b>Module page partenaire</b>
             </div>
-            {isBefore(getToday(), addDays(selectedVenue?.dateCreated, 31)) && (
+            {isBefore(getToday(), addDays(selectedVenue.dateCreated, 31)) && (
               <div>
                 Participer à nos webinaires sur la part indivisuelle !
                 <br />

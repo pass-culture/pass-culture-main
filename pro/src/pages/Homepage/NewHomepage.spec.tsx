@@ -145,8 +145,6 @@ describe('NewHomepage', () => {
           screen.getByRole('tabpanel', { description: /part individuelle/ })
         ).toBeVisible()
 
-        // It's not the Homepage component's role to save the first computed value
-        // it's done in getInitialTab function
         expect(utils.onNewTabSelected).not.toHaveBeenCalled()
 
         await user.click(screen.getByRole('tab', { name: /Collectif/ }))
@@ -157,33 +155,30 @@ describe('NewHomepage', () => {
       })
 
       it.each`
-        scenario             | venue    | hasIndividual | hasCollective | initialTab
-        ${'only collective'} | ${true}  | ${false}      | ${true}       | ${'tab-collective'}
-        ${'only individual'} | ${true}  | ${true}       | ${false}      | ${'tab-individual'}
-        ${'nothing'}         | ${true}  | ${false}      | ${false}      | ${'tab-individual'}
-        ${'no venue '}       | ${false} | ${false}      | ${false}      | ${'tab-individual'}
+        scenario             | hasIndividual | hasCollective | initialTab
+        ${'only collective'} | ${false}      | ${true}       | ${'tab-collective'}
+        ${'only individual'} | ${true}       | ${false}      | ${'tab-individual'}
+        ${'nothing'}         | ${false}      | ${false}      | ${'tab-individual'}
       `(
         'when other scenarii > should handle the $scenario case.',
-        ({ venue, hasIndividual, hasCollective, initialTab }) => {
+        ({ hasIndividual, hasCollective, initialTab }) => {
           vi.spyOn(utils, 'getInitialTab').mockReturnValue(initialTab)
           vi.spyOn(utils, 'onNewTabSelected')
 
           renderNewHomepage({
             storeOverrides: {
               user: {
-                selectedVenue: venue
-                  ? {
-                      ...defaultGetOffererVenueResponseModel,
-                      allowedOnAdage: hasCollective,
-                      hasNonDraftOffers: hasIndividual,
-                    }
-                  : null,
+                selectedVenue: {
+                  ...defaultGetOffererVenueResponseModel,
+                  allowedOnAdage: hasCollective,
+                  hasNonDraftOffers: hasIndividual,
+                },
               },
             },
           })
 
           expect(utils.getInitialTab).toHaveBeenCalledExactlyOnceWith(
-            venue ? defaultGetOffererVenueResponseModel.id : null,
+            defaultGetOffererVenueResponseModel.id,
             hasIndividual,
             hasCollective
           )
