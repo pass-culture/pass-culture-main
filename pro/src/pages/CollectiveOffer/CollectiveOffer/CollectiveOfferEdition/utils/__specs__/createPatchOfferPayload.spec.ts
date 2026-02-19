@@ -185,6 +185,7 @@ describe('createPatchOfferPayload', () => {
             isManualEdition: false,
             banId: '',
             coords: '',
+            inseeCode: undefined,
           },
         },
       })
@@ -231,6 +232,7 @@ describe('createPatchOfferPayload', () => {
             isManualEdition: false,
             banId: '',
             coords: '',
+            inseeCode: undefined,
           },
         },
       })

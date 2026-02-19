@@ -97,6 +97,7 @@ const offerLocationSerializer = (
           longitude: offer.longitude ?? '',
           city: offer.city ?? '',
           coords: offer.coords ?? '',
+          inseeCode: offer.inseeCode,
         },
       },
     }
