@@ -2,7 +2,6 @@ import type React from 'react'
 import { createContext, useContext, useState } from 'react'
 
 import type { Target } from '@/apiClient/v1'
-import type { Address } from '@/commons/core/shared/types'
 import { noop } from '@/commons/utils/noop'
 import type { ActivityFormValues } from '@/components/SignupJourneyForm/Activity/ActivityForm'
 import type { OffererAuthenticationFormValues } from '@/components/SignupJourneyForm/Authentication/OffererAuthenticationForm'
@@ -12,6 +11,7 @@ import {
 } from '@/components/SignupJourneyForm/Offerer/constants'
 
 import { DEFAULT_ACTIVITY_VALUES } from './constants'
+import type { Address } from './types'
 
 export interface Offerer
   extends Omit<

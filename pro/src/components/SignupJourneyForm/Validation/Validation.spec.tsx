@@ -9,8 +9,8 @@ import {
   SignupJourneyContext,
   type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import type { Address } from '@/commons/context/SignupJourneyContext/types'
 import { RECAPTCHA_ERROR } from '@/commons/core/shared/constants'
-import type { Address } from '@/commons/core/shared/types'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { noop } from '@/commons/utils/noop'
 import * as utils from '@/commons/utils/recaptcha'
