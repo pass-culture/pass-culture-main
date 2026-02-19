@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import { useLocation } from 'react-router'
 
 import {
@@ -9,8 +8,9 @@ import {
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import { pluralizeFr } from '@/commons/utils/pluralize'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { ButtonVariant } from '@/design-system/Button/types'
 import fullErrorIcon from '@/icons/full-error.svg'
 import fullLinkIcon from '@/icons/full-link.svg'
 import fullWaitIcon from '@/icons/full-wait.svg'
@@ -35,12 +35,35 @@ export const ReimbursementBankAccount = ({
   hasWarning = false,
   updateButtonRef,
 }: ReimbursementBankAccountProps): JSX.Element => {
-  const hasLinkedVenues = bankAccount.linkedVenues.length > 0
   const { logEvent } = useAnalytics()
   const location = useLocation()
   const venuesNotLinkedToBankAccount = managedVenues.filter(
     (venue) => !venue.bankAccountId
   ).length
+
+  const linkedCount = bankAccount.linkedVenues.length
+  const hasManagedVenues = managedVenues.length > 0
+  const hasLinkedVenues = linkedCount > 0
+  const showWarningIcon = hasWarning && hasManagedVenues
+
+  const showNoLinkedMessage = !hasLinkedVenues
+  const showPartialWarning = hasLinkedVenues && venuesNotLinkedToBankAccount > 0
+
+  const handleUpdateClick = () => {
+    onUpdateButtonClick?.(bankAccount.id)
+    logEvent(BankAccountEvents.CLICKED_CHANGE_VENUE_TO_BANK_ACCOUNT, {
+      from: location.pathname,
+      offererId,
+    })
+  }
+
+  const handleAttachClick = () => {
+    logEvent(BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT, {
+      from: location.pathname,
+      offererId,
+    })
+    onUpdateButtonClick?.(bankAccount.id)
+  }
 
   return (
     <div className={styles['bank-account']}>
@@ -55,60 +78,51 @@ export const ReimbursementBankAccount = ({
       {bankAccount.status === BankAccountApplicationStatus.EN_CONSTRUCTION ||
       bankAccount.status === BankAccountApplicationStatus.EN_INSTRUCTION ||
       bankAccount.status === BankAccountApplicationStatus.A_CORRIGER ? (
-        <div
-          className={cn(styles['pending-account'], {
-            [styles['needs-correction']]:
-              bankAccount.status === BankAccountApplicationStatus.A_CORRIGER,
-          })}
-        >
-          <SvgIcon
-            src={
+        <div className={styles['linked-venues-section']}>
+          <Banner
+            title={
+              'Statut du dossier : ' +
+              `${
+                bankAccount.status === BankAccountApplicationStatus.A_CORRIGER
+                  ? 'informations manquantes'
+                  : 'en cours de validation'
+              }`
+            }
+            icon={
               bankAccount.status === BankAccountApplicationStatus.A_CORRIGER
                 ? fullErrorIcon
                 : fullWaitIcon
             }
-            alt={''}
-            width="48"
-            className={cn(styles['status-icon'], {
-              [styles['error-icon']]:
-                bankAccount.status === BankAccountApplicationStatus.A_CORRIGER,
-            })}
-          />
-          <div>
-            Statut du dossier :{' '}
-            <span className={styles['account-status']}>
-              {bankAccount.status === BankAccountApplicationStatus.A_CORRIGER
-                ? 'informations manquantes'
-                : 'en cours de validation'}
-            </span>
-          </div>
-          <Button
-            as="a"
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
-            to={
+            variant={
               bankAccount.status === BankAccountApplicationStatus.A_CORRIGER
-                ? `https://demarche.numerique.gouv.fr/dossiers/${bankAccount.dsApplicationId}`
-                : `https://demarche.numerique.gouv.fr/dossiers/${bankAccount.dsApplicationId}/messagerie`
+                ? BannerVariants.ERROR
+                : BannerVariants.DEFAULT
             }
-            isExternal
-            aria-label="Nouvelle fenêtre"
-            opensInNewTab
-            onClick={() => {
-              logEvent(
-                BankAccountEvents.CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP,
-                {
-                  from: location.pathname,
-                  offererId: offererId,
-                }
-              )
-            }}
-            icon={fullLinkIcon}
-            label={
-              bankAccount.status === BankAccountApplicationStatus.A_CORRIGER
-                ? 'Compléter le dossier'
-                : 'Voir le dossier'
-            }
+            actions={[
+              {
+                href:
+                  bankAccount.status === BankAccountApplicationStatus.A_CORRIGER
+                    ? `https://demarche.numerique.gouv.fr/dossiers/${bankAccount.dsApplicationId}`
+                    : `https://demarche.numerique.gouv.fr/dossiers/${bankAccount.dsApplicationId}/messagerie`,
+                label:
+                  bankAccount.status === BankAccountApplicationStatus.A_CORRIGER
+                    ? 'Compléter le dossier'
+                    : 'Voir le dossier',
+                isExternal: true,
+                type: 'link',
+                icon: fullLinkIcon,
+                iconAlt: 'Nouvelle fenêtre',
+                onClick: () => {
+                  logEvent(
+                    BankAccountEvents.CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP,
+                    {
+                      from: location.pathname,
+                      offererId: offererId,
+                    }
+                  )
+                },
+              },
+            ]}
           />
         </div>
       ) : (
@@ -118,12 +132,12 @@ export const ReimbursementBankAccount = ({
         >
           <div className={styles['linked-venues-section-title']}>
             {pluralizeFr(
-              bankAccount.linkedVenues.length,
+              linkedCount,
               'Structure rattachée',
               'Structures rattachées'
             )}{' '}
             à ce compte bancaire
-            {hasWarning && managedVenues.length > 0 && (
+            {showWarningIcon && (
               <SvgIcon
                 src={fullErrorIcon}
                 alt="Une action est requise"
@@ -132,59 +146,47 @@ export const ReimbursementBankAccount = ({
               />
             )}
           </div>
-          {managedVenues.length > 0 && (
+
+          {!hasManagedVenues && null}
+
+          {hasManagedVenues && (
             <div className={styles['linked-venues-content']}>
-              {!hasLinkedVenues && (
+              {showNoLinkedMessage && (
                 <div className={styles['issue-text']}>
-                  Aucune structure n’est rattachée à ce compte bancaire
-                  {'. '}
+                  Aucune structure n’est rattachée à ce compte bancaire.
                   {venuesNotLinkedToBankAccount === 0 &&
-                    'Désélectionnez une structure déjà rattachée et rattachez-la à ce compte bancaire.'}
+                    ' Désélectionnez une structure déjà rattachée et rattachez-la à ce compte bancaire.'}
                 </div>
               )}
-              {hasLinkedVenues && venuesNotLinkedToBankAccount > 0 && (
+
+              {showPartialWarning && (
                 <div className={styles['issue-text']}>
                   Certaines de vos structures ne sont pas rattachées.
                 </div>
               )}
+
               {hasLinkedVenues && (
                 <>
                   <div className={styles['linked-venues']}>
-                    {bankAccount.linkedVenues.map((venue) => (
-                      <div className={styles['linked-venue']} key={venue.id}>
-                        {venue.commonName}
+                    {bankAccount.linkedVenues.map(({ id, commonName }) => (
+                      <div className={styles['linked-venue']} key={id}>
+                        {commonName}
                       </div>
                     ))}
                   </div>
+
                   <Button
                     variant={ButtonVariant.SECONDARY}
-                    onClick={() => {
-                      onUpdateButtonClick?.(bankAccount.id)
-                      logEvent(
-                        BankAccountEvents.CLICKED_CHANGE_VENUE_TO_BANK_ACCOUNT,
-                        {
-                          from: location.pathname,
-                          offererId,
-                        }
-                      )
-                    }}
+                    onClick={handleUpdateClick}
                     ref={updateButtonRef}
                     label="Modifier"
                   />
                 </>
               )}
+
               {!hasLinkedVenues && venuesNotLinkedToBankAccount > 0 && (
                 <Button
-                  onClick={() => {
-                    logEvent(
-                      BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT,
-                      {
-                        from: location.pathname,
-                        offererId,
-                      }
-                    )
-                    onUpdateButtonClick?.(bankAccount.id)
-                  }}
+                  onClick={handleAttachClick}
                   ref={updateButtonRef}
                   label="Rattacher une structure"
                 />

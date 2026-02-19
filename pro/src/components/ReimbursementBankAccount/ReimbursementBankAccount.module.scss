@@ -23,7 +23,6 @@
 .informations-section {
   border-bottom: rem.torem(1px) solid var(--color-border-subtle);
   padding-bottom: var(--size-spacing-xl);
-  margin-bottom: var(--size-spacing-l);
 
   @media (min-width: size.$tablet) {
     border-bottom: none;
@@ -82,30 +81,5 @@
     background-color: var(--color-background-subtle);
     border-radius: var(--size-border-radius-m);
     padding: var(--size-spacing-m) var(--size-spacing-l);
-  }
-}
-
-.pending-account {
-  display: flex;
-  flex-direction: column;
-  gap: var(--size-spacing-l);
-  padding: var(--size-spacing-l);
-  margin-left: var(--size-spacing-xl);
-  border-radius: var(--size-border-radius-m);
-  background-color: var(--color-background-subtle);
-  color: var(color-black);
-  text-align: center;
-
-  .status-icon {
-    margin: auto;
-    color: var(--color-icon-subtle);
-
-    &.error-icon {
-      color: var(--color-icon-error);
-    }
-  }
-
-  &.needs-correction {
-    background: var(--color-background-error);
   }
 }
