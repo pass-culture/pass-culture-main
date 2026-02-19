@@ -799,6 +799,51 @@ describe('VenueEditionFormScreen', () => {
       } as SWRResponse)
     })
 
+    it('should display "Non renseigné" in cultural domains summary if there are no domains', () => {
+      renderForm(
+        {
+          ...baseVenue,
+          description: 'A description',
+          contact: {
+            email: 'email@example.com',
+            phoneNumber: '0612345678',
+            website: 'http://example.com',
+          },
+          collectiveDomains: [],
+        },
+        { initialRouterEntries: ['/'] }
+      )
+      expect(screen.queryByText(/Non renseigné/)).toBeInTheDocument()
+    })
+
+    it('should display singular label when there is one domain', () => {
+      renderForm(
+        {
+          ...baseVenue,
+          collectiveDomains: [{ id: 1, name: 'domaine 1' }],
+        },
+        { initialRouterEntries: ['/'] }
+      )
+
+      expect(screen.getByText(/Domaine d’activité/)).toBeInTheDocument()
+    })
+
+    it('should display plural label when there are multiple domains', () => {
+      renderForm(
+        {
+          ...baseVenue,
+          collectiveDomains: [
+            { id: 1, name: 'domaine 1' },
+            { id: 2, name: 'domaine 2' },
+            { id: 3, name: 'domaine 3' },
+          ],
+        },
+        { initialRouterEntries: ['/'] }
+      )
+
+      expect(screen.getByText(/Domaines d’activité/)).toBeInTheDocument()
+    })
+
     it('should display about activity at top with the FF enabled', () => {
       renderForm(
         {
@@ -821,7 +866,7 @@ describe('VenueEditionFormScreen', () => {
       const h3Titles = screen.getAllByRole('heading', { level: 3 })
       expect(h3Titles).toHaveLength(3)
       expect(h3Titles[1].textContent).toEqual('À propos de votre activité')
-      expect(screen.getByText(/Domaine\(s\) d’activité/)).toBeInTheDocument()
+      expect(screen.getByText(/Domaines d’activité/)).toBeInTheDocument()
       expect(screen.getByText(/domaine 1, domaine III/)).toBeInTheDocument()
     })
 

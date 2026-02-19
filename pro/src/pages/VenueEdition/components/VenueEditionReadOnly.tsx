@@ -1,8 +1,11 @@
+import { useMemo } from 'react'
+
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { getActivityLabel } from '@/commons/mappings/mappings'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
 import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
@@ -18,22 +21,12 @@ interface VenueEditionReadOnlyProps {
 export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
   const { data } = useEducationalDomains()
 
-  const aboutSectionDescription = [
-    {
-      title: 'Description',
-      text: venue.description ?? 'Non renseignée',
-    },
-    ...(venue.activity
-      ? [
-          {
-            title: 'Activité',
-            text: getActivityLabel(venue.activity),
-          },
-        ]
-      : []),
-  ]
-  if (data.length > 0) {
-    const venueDomains = venue.collectiveDomains.map((domain) => {
+  const mapVenueDomains = useMemo(() => {
+    if (data.length === 0) {
+      return null
+    }
+
+    const domains = venue.collectiveDomains.map((domain) => {
       const apiValue = data.find(
         (educationalDomain) => educationalDomain.id === domain.id
       )
@@ -41,14 +34,11 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
         apiValue,
         `CulturalDomain with name ${domain.name} not found`
       )
-
       return apiValue.name
     })
-    aboutSectionDescription.push({
-      title: 'Domaine(s) d’activité',
-      text: venueDomains?.join(', ') || 'Non renseignés',
-    })
-  }
+
+    return domains.length > 0 ? domains : ['Non renseigné']
+  }, [data, venue.collectiveDomains])
 
   return (
     <SummarySection
@@ -79,7 +69,34 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
         title="À propos de votre activité"
         shouldShowDivider={false}
       >
-        <SummaryDescriptionList descriptions={aboutSectionDescription} />
+        <SummaryDescriptionList
+          descriptions={[
+            ...(venue.activity
+              ? [
+                  {
+                    title: 'Activité',
+                    text: getActivityLabel(venue.activity),
+                  },
+                ]
+              : []),
+            ...(mapVenueDomains
+              ? [
+                  {
+                    title: pluralizeFr(
+                      mapVenueDomains.length,
+                      'Domaine d’activité',
+                      'Domaines d’activité'
+                    ),
+                    text: mapVenueDomains.join(', '),
+                  },
+                ]
+              : []),
+            {
+              title: 'Description',
+              text: venue.description ?? 'Non renseignée',
+            },
+          ]}
+        />
       </SummarySubSection>
       <SummarySubSection
         title="Informations de contact"
