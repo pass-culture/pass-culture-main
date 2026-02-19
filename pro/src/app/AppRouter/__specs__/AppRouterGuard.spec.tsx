@@ -13,7 +13,7 @@ vi.mock('react-router', async () => ({
 
 const renderGuard = (
   access?: UserAccess | null,
-  initialRoute: string = '/',
+  initialRoute: string = '/accueil',
   user = sharedCurrentUserFactory()
 ) =>
   renderWithProviders(
@@ -44,7 +44,7 @@ describe('AppRouterGuard', () => {
   it('should redirect to login if not logged in on a private page', () => {
     renderGuard()
 
-    expect(screen.getByText('/connexion')).toBeInTheDocument()
+    expect(screen.getByText('/connexion?de=%2Faccueil')).toBeInTheDocument()
   })
 
   it('should redirect to logged page if user access public page', () => {
