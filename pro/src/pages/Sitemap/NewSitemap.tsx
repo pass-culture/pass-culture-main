@@ -137,8 +137,7 @@ export const NewSitemap = () => {
     },
   ]
   const renderSitemapItems = (items: SitemapLink[]) => {
-    const visibleLinks = items.filter((item) => !item.hidden)
-    return visibleLinks.map((link) => (
+    return items.filter((item) => !item.hidden).map((link) => (
       <li key={link.path ?? link.title} className={styles['sitemap-list-item']}>
         {link.path ? (
           <Link
