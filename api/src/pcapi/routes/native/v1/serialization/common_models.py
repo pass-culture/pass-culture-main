@@ -1,11 +1,6 @@
 from decimal import Decimal
 
-
-# fmt: off
-# isort: off
-from pydantic.v1 import BaseModel as PydanticBaseModel
-# isort: on
-# fmt: on
+import pydantic.v1 as pydantic_v1
 
 from pcapi.routes.serialization import BaseModel
 
@@ -15,14 +10,16 @@ class Coordinates(BaseModel):
     longitude: Decimal | None
 
 
-class AccessibilityComplianceMixin(PydanticBaseModel):
+# /!\ Deprecated !, shoult not be migrated
+class AccessibilityComplianceMixin(pydantic_v1.BaseModel):
     audioDisabilityCompliant: bool | None
     mentalDisabilityCompliant: bool | None
     motorDisabilityCompliant: bool | None
     visualDisabilityCompliant: bool | None
 
 
-class AccessibilityComplianceStrictMixin(PydanticBaseModel):
+# /!\ Deprecated !, shoult not be migrated
+class AccessibilityComplianceStrictMixin(pydantic_v1.BaseModel):
     audioDisabilityCompliant: bool
     mentalDisabilityCompliant: bool
     motorDisabilityCompliant: bool

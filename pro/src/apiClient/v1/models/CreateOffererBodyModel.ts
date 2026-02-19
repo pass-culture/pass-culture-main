@@ -2,15 +2,15 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type CreateOffererQueryModel = {
+export type CreateOffererBodyModel = {
   city: string;
-  inseeCode?: string | null;
-  latitude?: number | null;
-  longitude?: number | null;
+  inseeCode?: (string | null);
+  latitude?: (number | null);
+  longitude?: (number | null);
   name: string;
-  phoneNumber?: string | null;
+  phoneNumber?: (string | null);
   postalCode: string;
   siren: string;
-  street?: string | null;
+  street?: (string | null);
 };
 

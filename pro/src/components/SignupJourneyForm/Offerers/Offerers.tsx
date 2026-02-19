@@ -5,7 +5,7 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
-import type { CreateOffererQueryModel } from '@/apiClient/v1'
+import type { CreateOffererBodyModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_VENUES_OF_OFFERER_FROM_SIRET_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
@@ -105,7 +105,7 @@ export const Offerers = (): JSX.Element => {
      the user would have been redirected */
     try {
       // TODO (igabriele, 202-10-20): Must be further DRYed via a proper decicaded dispatcher (see `Offerer.tsx`).
-      const request: CreateOffererQueryModel = {
+      const request: CreateOffererBodyModel = {
         city: offerer.city,
         name: venuesOfOfferer?.offererName ?? '',
         postalCode: offerer.postalCode,
