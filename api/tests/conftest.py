@@ -30,6 +30,7 @@ from flask import g
 from flask.testing import FlaskClient
 from flask_jwt_extended.utils import create_access_token
 from requests.auth import _basic_auth_str  # noqa: TID251
+from sqlalchemy import orm as sa_orm
 
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.mails.testing as mails_testing
@@ -79,6 +80,13 @@ def pytest_configure(config):
         TestClient.WITH_DOC = True
 
 
+def _init_celery(app: Flask):
+    celery_config = {**CELERY_BASE_SETTINGS, "task_always_eager": True}
+    app.config.from_mapping(CELERY=celery_config)
+
+    celery_init_app(app, task_with_app_context=False)
+
+
 def build_backoffice_app():
     from flask_login import FlaskLoginClient
 
@@ -89,6 +97,8 @@ def build_backoffice_app():
     # Some tests fail without this. It's probably because of
     # pytest_flask_sqlalchemy.
     app.teardown_request_funcs[None].remove(remove_db_session)
+
+    _init_celery(app)
 
     with app.app_context():
         app.test_client_class = FlaskLoginClient
@@ -132,12 +142,7 @@ def build_main_app():
     def clean_g_between_requests(exc: BaseException | None = None) -> None:
         g.pop("_login_user", default=None)
 
-    celery_config = {**CELERY_BASE_SETTINGS, "task_always_eager": True}
-    app.config.from_mapping(
-        CELERY=celery_config,
-    )
-
-    celery_init_app(app)
+    _init_celery(app)
 
     with app.app_context():
         app.config["TESTING"] = True
@@ -160,6 +165,17 @@ def app_fixture(pytestconfig):
         yield from build_backoffice_app()
     else:
         yield from build_main_app()
+
+
+@pytest.fixture(name="celery_with_context")
+def celery_with_context(app):
+    celery_init_app(app, task_with_app_context=True)
+
+    try:
+        yield
+    finally:
+        # set task_with_app_context back to the value used by default in build_backoffice_app / build_main_app
+        celery_init_app(app, task_with_app_context=False)
 
 
 @pytest.fixture(autouse=True)
@@ -722,7 +738,7 @@ def db_session(_db, mocker, request, app):
 
         # build a non-scoped session to inject our connection (if we try to use the scoped session
         # it will reuse the old session and not use our custom connexion)
-        factory = sa.orm.sessionmaker(
+        factory = sa_orm.sessionmaker(
             class_=TestSession,
             query_cls=flask_sqlalchemy.query.Query,
         )
