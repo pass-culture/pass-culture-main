@@ -67,7 +67,7 @@ export const orejimeConfig = {
     banner: {
       title: 'Respect de votre vie privée',
       description:
-        'Nous utilisons des cookies et traceurs afin d’analyser l’utilisation de la plateforme et vous proposer la meilleure expérience possible. Vous pouvez accepter ou refuser l’activation de leur suivi. À tout moment, vous pouvez consulter et modifier vos choix à partir de la page « Gérer les cookies » dans la rubrique « Aide et support ».',
+        'Nous utilisons des cookies et traceurs afin d’analyser l’utilisation de la plateforme et vous proposer la meilleure expérience possible. Vous pouvez accepter ou refuser l’activation de leur suivi. À tout moment, vous pouvez consulter et modifier vos choix en cliquant sur « Gestion des cookies » en bas de page.',
       accept: 'Tout accepter',
       acceptTitle: 'Tout accepter',
       decline: 'Tout refuser',
@@ -78,7 +78,7 @@ export const orejimeConfig = {
     modal: {
       title: 'Gestion des cookies',
       description:
-        'Un cookie est un fichier texte déposé sur votre appareil lors de votre visite sur la plateforme. Nous utilisons les données collectées par ces cookies et traceurs afin de vous proposer la meilleure expérience possible. Vous pouvez accepter ou refuser l’activation de leur suivi. Votre choix est conservé pendant 6 mois. Les cookies mentionnés ci-dessous sont ceux pour lesquels votre consentement est requis. À tout moment, vous pouvez consulter et modifier vos préférences à partir de la page « Gérer les cookies » dans la rubrique « Aide et support ». Pour en savoir plus, notamment sur les cookies dits "essentiels", merci de consulter notre {privacyPolicy}.',
+        'Un cookie est un fichier texte déposé sur votre appareil lors de votre visite sur la plateforme. Nous utilisons les données collectées par ces cookies et traceurs afin de vous proposer la meilleure expérience possible. Vous pouvez accepter ou refuser l’activation de leur suivi. Votre choix est conservé pendant 6 mois. Les cookies mentionnés ci-dessous sont ceux pour lesquels votre consentement est requis. À tout moment, vous pouvez consulter et modifier vos choix en cliquant sur « Gestion des cookies » en bas de page. Pour en savoir plus, notamment sur les cookies dits "essentiels", merci de consulter notre {privacyPolicy}.',
       save: 'Enregistrer mes choix',
     },
     acceptTitle: 'Tout accepter',

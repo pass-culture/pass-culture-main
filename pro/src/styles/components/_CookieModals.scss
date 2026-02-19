@@ -171,9 +171,13 @@ $action-gap: var(--size-spacing-m);
       @include fonts.body;
 
       a {
-        @include fonts.body;
+        @include fonts.body-accent;
 
         color: var(--color-text-default);
+
+        &:hover {
+          color: var(--color-text-brand-primary-hover);
+        }
       }
     }
 
