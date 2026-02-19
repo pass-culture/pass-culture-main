@@ -488,13 +488,18 @@ class Returns200Test:
             assert response.status_code == 200
         assert len(response.json["artistOfferLinks"]) == 3
 
-        # to avoid flakiness
-        assert {"artistId": artist.id, "artistName": artist.name, "artistType": "performer"} in response.json[
-            "artistOfferLinks"
-        ]
-        assert {
+        assert response.json["artistOfferLinks"][0] == {
+            "artistId": artist.id,
+            "artistName": artist.name,
+            "artistType": "performer",
+        }
+        assert response.json["artistOfferLinks"][1] == {
             "artistId": another_artist.id,
             "artistName": another_artist.name,
             "artistType": "performer",
-        } in response.json["artistOfferLinks"]
-        assert {"artistId": None, "artistName": "Simone", "artistType": "author"} in response.json["artistOfferLinks"]
+        }
+        assert response.json["artistOfferLinks"][2] == {
+            "artistId": None,
+            "artistName": "Simone",
+            "artistType": "author",
+        }

@@ -325,10 +325,16 @@ class CreateThingsTest(CreateOfferBase):
         shared_response_json_checks(offer, response.json)
         shared_offer_checks(offer, payload)
 
-        assert response.json["artistOfferLinks"] == [
-            {"artistId": artist.id, "artistName": artist.name, "artistType": "performer"},
-            {"artistId": None, "artistName": "Custom Artist Name", "artistType": "author"},
-        ]
+        assert response.json["artistOfferLinks"][0] == {
+            "artistId": artist.id,
+            "artistName": artist.name,
+            "artistType": "performer",
+        }
+        assert response.json["artistOfferLinks"][1] == {
+            "artistId": None,
+            "artistName": "Custom Artist Name",
+            "artistType": "author",
+        }
 
     @pytest.mark.features(WIP_OFFER_ARTISTS=False)
     def test_create_offer_with_artist_links_when_feature_flag_disabled(self, auth_client, venue):
@@ -786,10 +792,16 @@ class Returns200Test:
         assert response.status_code == 201
 
         assert "artistOfferLinks" in response.json
-        assert response.json["artistOfferLinks"] == [
-            {"artistId": artist.id, "artistName": artist.name, "artistType": "performer"},
-            {"artistId": None, "artistName": "Custom Artist Name", "artistType": "author"},
-        ]
+        assert response.json["artistOfferLinks"][0] == {
+            "artistId": artist.id,
+            "artistName": artist.name,
+            "artistType": "performer",
+        }
+        assert response.json["artistOfferLinks"][1] == {
+            "artistId": None,
+            "artistName": "Custom Artist Name",
+            "artistType": "author",
+        }
 
     @pytest.mark.features(WIP_OFFER_ARTISTS=False)
     def test_create_offer_with_artist_links_when_feature_flag_disabled(self, client):
