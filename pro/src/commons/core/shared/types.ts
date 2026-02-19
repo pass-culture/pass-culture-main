@@ -21,18 +21,6 @@ export interface AccessibilityFormValues {
   none: boolean
 }
 
-// TODO (igabriele, 2025-08-25): Only used by SignupJouneyForm, move it there.
-export interface Address {
-  city: string
-  latitude: number | null
-  longitude: number | null
-  postalCode: string
-  street: string
-  banId: string | null
-  manuallySetAddress?: boolean
-  inseeCode: string | null
-}
-
 export interface AddressFormValues {
   'search-addressAutocomplete': string | null
   addressAutocomplete: string | null

@@ -1,7 +1,7 @@
 import { useFormContext } from 'react-hook-form'
 
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
-import type { Address } from '@/commons/core/shared/types'
+import type { Address } from '@/commons/context/SignupJourneyContext/types'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OpenToPublicToggle } from '@/components/OpenToPublicToggle/OpenToPublicToggle'
