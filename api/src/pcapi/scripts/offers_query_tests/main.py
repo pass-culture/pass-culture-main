@@ -115,15 +115,13 @@ if __name__ == "__main__":
             result = "\n".join((str(r) for r in rows))
             stop = time.perf_counter()
 
-            count = offers_query.count()
-
             results.append(
                 {
                     "venue_id": venue_id,
                     "number_of_days": number_of_days,
                     "run_number": 2,
                     "time": f"{(stop - start):.6f}s",
-                    "offers_count": count,
+                    "offers_count": "",
                     "query": offers_query_str,
                     "explain_analyze": result,
                 }
@@ -134,6 +132,15 @@ if __name__ == "__main__":
             start = time.perf_counter()
             offers = sorted(offers, key=_offer_score, reverse=True)
             stop = time.perf_counter()
+
+            count = (
+                db.session.query(models.Offer)
+                .filter(
+                    models.Offer.venueId == venue_id,
+                    models.Offer.publicationDatetime >= date_filter,
+                )
+                .count()
+            )
 
             results.append(
                 {
