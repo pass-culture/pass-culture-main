@@ -17,7 +17,8 @@ import { routesSignupJourney } from './subroutesSignupJourneyMap'
 import { routesSignup } from './subroutesSignupMap'
 import type { CustomRouteObject } from './types'
 import {
-  hasNewHomepage,
+  isNewHomepageEnabled,
+  isSwitchVenueEnabled,
   mustBeAuthenticated,
   mustBeUnauthenticated,
   mustHaveSelectedAdminOfferer,
@@ -87,7 +88,7 @@ export const routes: CustomRouteObject[] = [
   },
   {
     lazy: () =>
-      hasNewHomepage()
+      isNewHomepageEnabled()
         ? import('@/pages/Homepage/NewHomepage')
         : import('@/pages/Homepage/Homepage'),
     loader: withUserPermissions(mustHaveSelectedVenue),
@@ -461,7 +462,10 @@ export const routes: CustomRouteObject[] = [
     children: routesSignupJourney,
   },
   {
-    lazy: () => import('@/pages/Sitemap/Sitemap'),
+    lazy: () =>
+      isSwitchVenueEnabled()
+        ? import('@/pages/Sitemap/NewSitemap')
+        : import('@/pages/Sitemap/Sitemap'),
     loader: withUserPermissions(mustBeAuthenticated),
     path: '/plan-du-site',
     title: 'Plan du site',

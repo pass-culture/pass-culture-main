@@ -4,7 +4,8 @@ import * as storeModule from '@/commons/store/store'
 import { configureTestStore } from '@/commons/store/testUtils'
 
 import {
-  hasNewHomepage,
+  isNewHomepageEnabled,
+  isSwitchVenueEnabled,
   mustBeAuthenticated,
   mustBeUnauthenticated,
   mustHaveSelectedAdminOfferer,
@@ -172,7 +173,28 @@ describe('utils', () => {
         },
       })
       vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
-      expect(hasNewHomepage()).toBe(expectedRes)
+      expect(isNewHomepageEnabled()).toBe(expectedRes)
+    })
+  })
+  describe('isSwitchVenueEnabled', () => {
+    it.each([
+      [false, undefined],
+      [true, ['WIP_SWITCH_VENUE']],
+    ])('should return %s with features=%j', (expectedRes, features) => {
+      const store = configureTestStore({
+        features: {
+          list: (features ?? []).map(
+            (feature, index): FeatureResponseModel => ({
+              id: index,
+              isActive: true,
+              name: feature,
+            })
+          ),
+          lastLoaded: 0,
+        },
+      })
+      vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
+      expect(isSwitchVenueEnabled()).toBe(expectedRes)
     })
   })
 })
