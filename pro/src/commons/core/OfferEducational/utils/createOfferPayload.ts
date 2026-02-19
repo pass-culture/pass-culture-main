@@ -68,6 +68,7 @@ const getCommonOfferPayload = (
             latitude: offer.latitude ?? '',
             longitude: offer.longitude ?? '',
             city: offer.city ?? '',
+            inseeCode: offer.inseeCode,
           }
 
       return {

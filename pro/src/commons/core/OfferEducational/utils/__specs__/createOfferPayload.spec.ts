@@ -146,6 +146,40 @@ describe('createOfferPayload', () => {
     )
   })
 
+  it('should create a template offer payload with specific location information', () => {
+    const offerPayload = createCollectiveOfferTemplatePayload({
+      ...offer,
+      location: {
+        ...offer.location,
+        location: {
+          ...offer.location.location,
+          label: 'théâtre',
+          isVenueLocation: false,
+        },
+      },
+    })
+
+    expect(offerPayload).toEqual(
+      expect.objectContaining({
+        location: {
+          locationType: CollectiveLocationType.ADDRESS,
+          location: {
+            banId: '',
+            city: 'Paris',
+            inseeCode: undefined,
+            isManualEdition: false,
+            isVenueLocation: false,
+            label: 'théâtre',
+            latitude: '3',
+            longitude: '2',
+            postalCode: '75018',
+            street: 'rue de la paix',
+          },
+        },
+      })
+    )
+  })
+
   it('should create a template offer payload with location infos when locationType is SCHOOL', () => {
     const offerPayload = createCollectiveOfferTemplatePayload({
       ...offer,
