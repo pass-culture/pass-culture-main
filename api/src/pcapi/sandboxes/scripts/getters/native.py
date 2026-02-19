@@ -1,4 +1,5 @@
 import datetime
+import decimal
 
 import sqlalchemy as sa
 
@@ -7,6 +8,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 from pcapi.models import db
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.utils import date as date_utils
@@ -41,6 +43,69 @@ def create_offerer() -> offerers_models.Offerer:
     offerer = offerers_factories.OffererFactory.build(siren=new_siren)
     db.session.add(offerer)
     return offerer
+
+
+def _get_price_category_label(venue: offerers_models.Venue) -> offers_models.PriceCategoryLabel:
+    labels = (
+        db.session.query(offers_models.PriceCategoryLabel)
+        .filter(offers_models.PriceCategoryLabel.venueId == venue.id)
+        .filter(offers_models.PriceCategoryLabel.label == "Tarif unique")
+        .all()
+    )
+    return labels[0] if len(labels) > 0 else offers_factories.PriceCategoryLabelFactory(venue=venue)
+
+
+def _create_cinema_offer(venue: offerers_models.Venue) -> offers_models.Offer:
+    product = offers_factories.ProductFactory.create(
+        subcategoryId=subcategories.SEANCE_CINE.id,
+        description=OFFER_DESCRIPTION,
+        name="Yoroï",
+        durationMinutes=102,
+    )
+    db.session.add(product)
+    offer = offers_factories.OfferFactory.build(
+        name="Offre cinéma - Audit Access42",
+        description=OFFER_DESCRIPTION,
+        venue=venue,
+        subcategoryId=subcategories.SEANCE_CINE.id,
+        publicationDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
+        product=product,
+    )
+    db.session.add(offer)
+    mediation = offers_factories.MediationFactory.build(offer=offer, credit="Michèlle photo")
+    db.session.add(mediation)
+    offer_metadata = offers_factories.OfferMetaDataFactory.build(
+        videoUrl="https://www.youtube.com/watch?v=bX2Oz6l1Z2s",
+        videoDuration=204,
+        videoExternalId="bX2Oz6l1Z2s",
+        videoThumbnailUrl="https://i.ytimg.com/vi/bX2Oz6l1Z2s/maxresdefault.jpg",
+        videoTitle="Interview ciné : Yoroï avec Orelsan et Clara Choï",
+        offer=offer,
+    )
+    db.session.add(offer_metadata)
+    price_category_label = _get_price_category_label(venue)
+    price_category = offers_factories.PriceCategoryFactory(
+        offer=offer, priceCategoryLabel=price_category_label, price=decimal.Decimal("5.70")
+    )
+
+    for daydelta in range(0, 20, 4):
+        day = datetime.date.today() + datetime.timedelta(days=daydelta)
+        for hour in (11, 17, 21):
+            beginning_datetime = datetime.datetime.combine(day, datetime.time(hour=hour))
+            is_full = hour == 17
+            quantity = daydelta * hour + 1 if not is_full else 0
+            stock = offers_factories.StockFactory.build(
+                offer=offer,
+                price=decimal.Decimal("5.70"),
+                beginningDatetime=beginning_datetime,
+                bookingLimitDatetime=beginning_datetime - datetime.timedelta(minutes=30),
+                quantity=quantity,
+                features=["VF"],
+                priceCategory=price_category,
+            )
+            db.session.add(stock)
+    db.session.add(offer)
+    return offer
 
 
 @log_func_duration
@@ -115,27 +180,7 @@ def create_accessibility_offers() -> dict:
     )
     db.session.add_all([opening_hours1, opening_hours2, opening_hours3, opening_hours4, opening_hours5])
 
-    offer1 = offers_factories.OfferFactory.build(
-        name="Offre cinéma - Audit Access42",
-        description=OFFER_DESCRIPTION,
-        venue=venue,
-        subcategoryId=subcategories.SEANCE_CINE.id,
-        publicationDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
-    )
-    db.session.add(offer1)
-    mediation1 = offers_factories.MediationFactory.build(offer=offer1, credit="Michèlle photo")
-    db.session.add(mediation1)
-    offer_metadata = offers_factories.OfferMetaDataFactory.build(
-        videoUrl="https://www.youtube.com/watch?v=e_04ZrNroTo",
-        videoDuration=229,
-        videoExternalId="e_04ZrNroTo",
-        videoThumbnailUrl="https://i.ytimg.com/vi/e_04ZrNroTo/hqdefault.jpg",
-        videoTitle="Wheels on the Bus | @CoComelon Nursery Rhymes & Kids Songs",
-        offer=offer1,
-    )
-    db.session.add(offer_metadata)
-    stock1 = offers_factories.StockFactory.build(offer=offer1)
-    db.session.add(stock1)
+    offer1 = _create_cinema_offer(venue)
 
     offer2 = offers_factories.OfferFactory.build(
         venue=venue,
