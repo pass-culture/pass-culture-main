@@ -4188,6 +4188,9 @@ files = [
     {file = "psycopg-3.2.10.tar.gz", hash = "sha256:0bce99269d16ed18401683a8569b2c5abd94f72f8364856d56c0389bcd50972a"},
 ]
 
+[package.dependencies]
+tzdata = {version = "*", markers = "sys_platform == \"win32\""}
+
 [package.extras]
 binary = ["psycopg-binary (==3.2.10) ; implementation_name != \"pypy\""]
 c = ["psycopg-c (==3.2.10) ; implementation_name != \"pypy\""]
@@ -4770,20 +4773,20 @@ diagrams = ["jinja2", "railroad-diagrams"]
 
 [[package]]
 name = "pypdf"
-version = "6.6.2"
+version = "6.7.0"
 description = "A pure-python PDF library capable of splitting, merging, cropping, and transforming PDF files"
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "pypdf-6.6.2-py3-none-any.whl", hash = "sha256:44c0c9811cfb3b83b28f1c3d054531d5b8b81abaedee0d8cb403650d023832ba"},
-    {file = "pypdf-6.6.2.tar.gz", hash = "sha256:0a3ea3b3303982333404e22d8f75d7b3144f9cf4b2970b96856391a516f9f016"},
+    {file = "pypdf-6.7.0-py3-none-any.whl", hash = "sha256:62e85036d50839cbdf45b8067c2c1a1b925517514d7cba4cbe8755a6c2829bc9"},
+    {file = "pypdf-6.7.0.tar.gz", hash = "sha256:eb95e244d9f434e6cfd157272283339ef586e593be64ee699c620f756d5c3f7e"},
 ]
 
 [package.extras]
 crypto = ["cryptography"]
 cryptodome = ["PyCryptodome"]
-dev = ["black", "flit", "pip-tools", "pre-commit", "pytest-cov", "pytest-socket", "pytest-timeout", "pytest-xdist", "wheel"]
+dev = ["flit", "pip-tools", "pre-commit", "pytest-cov", "pytest-socket", "pytest-timeout", "pytest-xdist", "wheel"]
 docs = ["myst_parser", "sphinx", "sphinx_rtd_theme"]
 full = ["Pillow (>=8.0.0)", "cryptography"]
 image = ["Pillow (>=8.0.0)"]
@@ -6609,7 +6612,7 @@ files = [
     {file = "tzdata-2025.2-py2.py3-none-any.whl", hash = "sha256:1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8"},
     {file = "tzdata-2025.2.tar.gz", hash = "sha256:b60a638fcc0daffadf82fe0f57e53d06bdec2f36c4df66280ae79bce6bd6f2b9"},
 ]
-markers = {dev = "platform_system == \"Windows\""}
+markers = {dev = "platform_system == \"Windows\" or sys_platform == \"win32\""}
 
 [[package]]
 name = "tzlocal"
@@ -7335,4 +7338,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "d5b8c8c3bff373ac15c64abaeef49f641bfdc0a56fb045b6b47f3c6a67a83001"
+content-hash = "ea60cf77d9d8596e060e96919b7581b59ad30d46bdf73e93b123e5a84120af55"
