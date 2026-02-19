@@ -53,6 +53,16 @@ export const NewHomepage = (): JSX.Element => {
     onNewTabSelected(newSelectedTab, selectedVenue.id)
   }
 
+  // Shared modules display conditions
+  const shouldDisplayHomologationBanner: boolean = !selectedVenue.isValidated
+  const shouldDisplayBudgetCard: boolean = selectedVenue.hasNonFreeOffers
+
+  // Individual modules display conditions
+  const shouldDisplayWebinarCard: boolean = isBefore(
+    getToday(),
+    addDays(selectedVenue.dateCreated, 31)
+  )
+
   return (
     <BasicLayout mainHeading={`Votre espace ${selectedVenue.publicName}`}>
       {hasIndividual && hasCollective && (
@@ -80,7 +90,7 @@ export const NewHomepage = (): JSX.Element => {
             Page d'accueil - part individuelle
           </span>
           <div className={styles['top']}>
-            {!selectedVenue.isValidated && (
+            {shouldDisplayHomologationBanner && (
               <div>
                 Votre structure est en cours de traitement par les équipes du
                 pass Culture
@@ -107,7 +117,7 @@ export const NewHomepage = (): JSX.Element => {
             </div>
           </div>
           <div className={styles['side']}>
-            {selectedVenue.hasNonFreeOffers && (
+            {shouldDisplayBudgetCard && (
               <div>
                 Remboursement
                 <br />
@@ -119,9 +129,9 @@ export const NewHomepage = (): JSX.Element => {
               <br />
               <b>Module page partenaire</b>
             </div>
-            {isBefore(getToday(), addDays(selectedVenue.dateCreated, 31)) && (
+            {shouldDisplayWebinarCard && (
               <div>
-                Participer à nos webinaires sur la part indivisuelle !
+                Participer à nos webinaires sur la part individuelle !
                 <br />
                 <b>Module Webinaires indiv</b>
               </div>
