@@ -13,13 +13,13 @@ class RetrieveSpecialEventFromTypeformPayload(BaseModelV2):
     name="tasks.operations.default.retrieve_special_event_from_typeform",
     model=RetrieveSpecialEventFromTypeformPayload,
 )
-def retrieve_special_event_from_typeform_task(event_id: int) -> None:
+def retrieve_special_event_from_typeform_task(payload: RetrieveSpecialEventFromTypeformPayload) -> None:
     from pcapi.core.operations.api import retrieve_special_event_from_typeform
 
     event = (
         db.session.query(operations_models.SpecialEvent)
         .filter(
-            operations_models.SpecialEvent.id == event_id,
+            operations_models.SpecialEvent.id == payload.event_id,
         )
         .one_or_none()
     )
