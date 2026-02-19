@@ -3098,13 +3098,9 @@ def get_or_create_address(location_data: LocationData, is_manual_edition: bool =
 
 
 def get_or_create_offer_location(
-    # offerer_id: int,
-    # address_id: int,
-    # label: str | None = None,
-    # venue_id: int | None = None,
     offerer_id: int,
-    venue_id: int,
     address_id: int,
+    venue_id: int | None = None,
     label: str | None = None,
 ) -> models.OffererAddress:
     offerer_address: models.OffererAddress | None = (
@@ -3187,7 +3183,7 @@ def create_offerer_address_from_address_api(address: offerers_schemas.LocationMo
 
 
 def get_offer_location_from_address(
-    offerer_id: int, address: offerers_schemas.LocationModel, venue_id: int | None = None
+    offerer_id: int, address: offerers_schemas.LocationModel, venue_id: int
 ) -> offerers_models.OffererAddress:
     assert offerer_id
     if not address.label:
