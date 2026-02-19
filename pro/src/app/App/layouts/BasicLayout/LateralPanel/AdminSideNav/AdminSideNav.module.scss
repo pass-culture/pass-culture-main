@@ -23,5 +23,10 @@
 }
 
 .back-to-admin {
+  display: block;
   margin: var(--size-spacing-l) var(--size-spacing-l) 0;
+
+  @media (min-width: size.$tablet) {
+    display: none;
+  }
 }
