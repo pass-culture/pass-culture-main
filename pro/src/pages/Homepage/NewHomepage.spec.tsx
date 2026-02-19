@@ -285,55 +285,7 @@ describe('NewHomepage', () => {
         vi.useRealTimers()
       })
 
-      it('should be displayed before the 30st day of venue creation', () => {
-        const dateCreated = '2026-02-16T12:31:53.443732Z'
-        const today = new Date(dateCreated)
-        today.setDate(today.getDate() + 12)
-        vi.setSystemTime(today)
-        renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                dateCreated,
-                hasNonDraftOffers: true,
-              },
-            },
-          },
-        })
-
-        expect(
-          screen.getByRole('tabpanel', { description: /indiv/ })
-        ).toHaveTextContent(
-          /Participer à nos webinaires sur la part indivisuelle !/
-        )
-      })
-
-      it('should not be displayed after the 30st day of venue creation', () => {
-        const dateCreated = '2026-02-16T12:31:53.443732Z'
-        const today = new Date(dateCreated)
-        today.setDate(today.getDate() + 40)
-        vi.setSystemTime(today)
-        renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                dateCreated,
-                hasNonDraftOffers: true,
-              },
-            },
-          },
-        })
-
-        expect(
-          screen.getByRole('tabpanel', { description: /indiv/ })
-        ).not.toHaveTextContent(
-          /Participer à nos webinaires sur la part indivisuelle !/
-        )
-      })
-
-      it('should be displayed on the 30st day of venue creation', () => {
+      it('should be displayed until the 30th day of venue creation', () => {
         const dateCreated = '2026-02-16T12:31:53.443732Z'
         const today = new Date(dateCreated)
         today.setDate(today.getDate() + 30)
@@ -353,6 +305,30 @@ describe('NewHomepage', () => {
         expect(
           screen.getByRole('tabpanel', { description: /indiv/ })
         ).toHaveTextContent(
+          /Participer à nos webinaires sur la part individuelle !/
+        )
+      })
+
+      it('should not be displayed after the 30th day of venue creation', () => {
+        const dateCreated = '2026-02-16T12:31:53.443732Z'
+        const today = new Date(dateCreated)
+        today.setDate(today.getDate() + 40)
+        vi.setSystemTime(today)
+        renderNewHomepage({
+          storeOverrides: {
+            user: {
+              selectedVenue: {
+                ...defaultGetOffererVenueResponseModel,
+                dateCreated,
+                hasNonDraftOffers: true,
+              },
+            },
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /indiv/ })
+        ).not.toHaveTextContent(
           /Participer à nos webinaires sur la part indivisuelle !/
         )
       })
