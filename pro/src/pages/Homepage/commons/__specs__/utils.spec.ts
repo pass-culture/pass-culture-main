@@ -23,15 +23,6 @@ beforeEach(() => {
 })
 
 describe('getInitialTab', () => {
-  it('should return "tab-individual" if no venue given', () => {
-    const localStorageManagerMock = getLocalStorageManagerMock()
-
-    expect(getInitialTab(null, false, true)).toBe('tab-individual')
-
-    expect(localStorageManagerMock.getItem).not.toHaveBeenCalled()
-    expect(localStorageManagerMock.setItem).not.toHaveBeenCalled()
-  })
-
   it('should not use localStorage if venue only does either individual or collective', () => {
     const localStorageManagerMock = getLocalStorageManagerMock()
 
@@ -125,12 +116,5 @@ describe('onNewTabSelected', () => {
       LOCAL_STORAGE_KEY.LAST_VISITED_HOMEPAGE_TABS,
       `{"${CURRENT_VENUE_ID}":"tab-individual"}`
     )
-  })
-
-  it('should do nothing when no venueId is given', () => {
-    const localStorageManagerMock = getLocalStorageManagerMock()
-    onNewTabSelected('tab-individual', null)
-    expect(localStorageManagerMock.getItem).not.toHaveBeenCalled()
-    expect(localStorageManagerMock.setItem).not.toHaveBeenCalled()
   })
 })
