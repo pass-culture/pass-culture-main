@@ -7,6 +7,7 @@ from sqlalchemy import exc as sa_exc
 
 import pcapi.core.artist.models as artist_models
 import pcapi.core.offers.factories as offers_factories
+from pcapi import settings
 from pcapi.connectors.big_query.importer.artist import ArtistImporter
 from pcapi.connectors.big_query.importer.artist import ArtistProductLinkImporter
 from pcapi.connectors.big_query.importer.artist_score import ArtistScoresImporter
@@ -33,36 +34,53 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class ImportAllArtistsTest:
+    @patch("pcapi.connectors.big_query.importer.artist.GCPBackend.get_public_object")
+    @patch("pcapi.connectors.big_query.importer.artist.artist_api.store_mini_thumb")
+    @patch("pcapi.connectors.big_query.importer.artist.copy_file_between_storage_backends")
     @patch("pcapi.connectors.big_query.queries.artist.ArtistQuery.execute")
     def test_import_all_artists_creates_artists(
         self,
         get_all_artists_mock,
+        mock_copy_file,
+        _mock_store_mini_thumb,
+        _mock_get_public_object,
     ):
         get_all_artists_mock.return_value = fixtures.big_query_artist_fixture
+        mock_copy_file.side_effect = lambda file_id, **kwargs: file_id
 
         ArtistImporter().import_all()
 
         get_all_artists_mock.assert_called_once()
         all_artists = db.session.query(Artist).all()
-        assert len(all_artists) == 2
+        assert len(all_artists) == 3
 
+    @patch("pcapi.connectors.big_query.importer.artist.GCPBackend.get_public_object")
+    @patch("pcapi.connectors.big_query.importer.artist.artist_api.store_mini_thumb")
+    @patch("pcapi.connectors.big_query.importer.artist.copy_file_between_storage_backends")
     @patch("pcapi.connectors.big_query.queries.artist.ArtistQuery.execute")
-    def test_import_all_artists_creates_artists_is_idempotent(self, get_all_artists_mock):
+    def test_import_all_artists_creates_artists_is_idempotent(
+        self,
+        get_all_artists_mock,
+        mock_copy_file,
+        _mock_store_mini_thumb,
+        _mock_get_public_object,
+    ):
         get_all_artists_mock.return_value = fixtures.big_query_artist_fixture
+        mock_copy_file.side_effect = lambda file_id, **kwargs: file_id
 
         ArtistImporter().import_all()
 
         get_all_artists_mock.assert_called_once()
 
         all_artists = db.session.query(Artist).all()
-        assert len(all_artists) == 2
+        assert len(all_artists) == 3
 
         get_all_artists_mock.reset_mock()
         ArtistImporter().import_all()
 
         get_all_artists_mock.assert_called_once()
         all_artists = db.session.query(Artist).all()
-        assert len(all_artists) == 2
+        assert len(all_artists) == 3
 
     @patch("pcapi.connectors.big_query.queries.artist.ArtistProductLinkQuery.execute")
     def test_import_all_artist_product_links_creates_product_links(self, get_all_artists_product_links_mock, caplog):
@@ -119,11 +137,38 @@ class ImportAllArtistsTest:
         assert 'Key (product_id)=(999999999) is not present in table "product"' in caplog.text
         assert db.session.query(ArtistProductLink).count() == 1
 
+    @patch("pcapi.connectors.big_query.importer.artist.GCPBackend.get_public_object")
+    @patch("pcapi.connectors.big_query.importer.artist.artist_api.store_mini_thumb")
+    @patch("pcapi.connectors.big_query.importer.artist.copy_file_between_storage_backends")
+    @patch("pcapi.connectors.big_query.queries.artist.ArtistQuery.execute")
+    def test_import_all_creates_mini_thumbs_from_mediation_uuid(
+        self,
+        get_all_artists_mock,
+        mock_copy_file,
+        mock_store_mini_thumb,
+        mock_get_public_object,
+    ):
+        get_all_artists_mock.return_value = fixtures.big_query_artist_fixture
+        mock_copy_file.side_effect = lambda file_id, **kwargs: file_id
+        mock_get_public_object.return_value = b"fake_gcp_image_bytes"
+
+        ArtistImporter().import_all()
+
+        assert mock_get_public_object.call_count == 1
+        mock_get_public_object.assert_called_once_with(settings.ARTIST_THUMBS_FOLDER_NAME, "any-uuid")
+
+        assert mock_store_mini_thumb.call_count == 1
+        mock_store_mini_thumb.assert_called_once_with(b"fake_gcp_image_bytes", "any-uuid")
+
 
 class UpdateArtistsFromDeltaTest:
+    @patch("pcapi.connectors.big_query.importer.artist.GCPBackend.get_public_object")
+    @patch("pcapi.connectors.big_query.importer.artist.artist_api.store_mini_thumb")
     @patch("pcapi.connectors.big_query.importer.artist.copy_file_between_storage_backends")
     @patch("pcapi.connectors.big_query.queries.artist.ArtistDeltaQuery.execute")
-    def test_updates_and_creates_artists(self, mock_artist_delta_query, mock_copy_file):
+    def test_updates_and_creates_artists(
+        self, mock_artist_delta_query, mock_copy_file, mock_store_mini_thumb, mock_get_public_object
+    ):
         artist_to_delete_id = str(uuid.uuid4())
         artist_to_delete = ArtistFactory(id=artist_to_delete_id, mediation_uuid="old-uuid")
         new_artist_id = str(uuid.uuid4())
@@ -141,6 +186,7 @@ class UpdateArtistsFromDeltaTest:
             DeltaArtistModel(id=artist_to_delete.id, action=DeltaAction.REMOVE, name="Artist to Delete"),
         ]
         mock_copy_file.side_effect = lambda file_id, **kwargs: file_id
+        mock_get_public_object.return_value = b"fake_image_bytes"
 
         ArtistImporter().run_delta_update()
 
@@ -155,6 +201,7 @@ class UpdateArtistsFromDeltaTest:
         assert new_artist.wikipedia_url == "Wikipedia du nouvel artiste"
         assert new_artist.wikidata_id == "Q123456"
         assert new_artist.mediation_uuid == "new-uuid"
+        mock_store_mini_thumb.assert_called_once_with(b"fake_image_bytes", "new-uuid")
 
     @patch("pcapi.connectors.big_query.queries.artist.ArtistProductLinkDeltaQuery.execute")
     def test_updates_and_creates_artist_product_links(self, mock_link_delta_query):
@@ -281,39 +328,6 @@ class ComputeArtistsMostRelevantImageTest:
         assert artist.computed_image is None
         assert artist.image == "http://example.com"
         mock_async_index_artist.assert_not_called()
-
-
-class UpdateArtistFromDeltaTest:
-    @patch("pcapi.connectors.big_query.importer.artist.copy_file_between_storage_backends")
-    @patch("pcapi.connectors.big_query.queries.artist.ArtistDeltaQuery.execute")
-    def test_update_action_modifies_existing_artist(self, mock_artist_delta_query, mock_copy_file):
-        artist_to_update = ArtistFactory(name="Richard Paul Astley", description="chanteur")
-        mediation_uuid = str(uuid.uuid4())
-        mock_artist_delta_query.return_value = [
-            DeltaArtistModel(
-                id=artist_to_update.id,
-                name="Rick Astley",
-                description="Chanteur britannique",
-                wikidata_id="Q219237",
-                wikipedia_url="https://fr.wikipedia.org/wiki/Rick_Astley",
-                biography="Rick Astley est un chanteur britannique né le 6 février 1966 à Newton-le-Willows...",
-                mediation_uuid=mediation_uuid,
-                action=DeltaAction.UPDATE,
-            ),
-        ]
-        mock_copy_file.side_effect = lambda file_id, **kwargs: file_id
-
-        ArtistImporter().run_delta_update()
-
-        assert artist_to_update.name == "Rick Astley"
-        assert artist_to_update.description == "Chanteur britannique"
-        assert artist_to_update.wikidata_id == "Q219237"
-        assert artist_to_update.wikipedia_url == "https://fr.wikipedia.org/wiki/Rick_Astley"
-        assert (
-            artist_to_update.biography
-            == "Rick Astley est un chanteur britannique né le 6 février 1966 à Newton-le-Willows..."
-        )
-        assert artist_to_update.mediation_uuid == mediation_uuid
 
 
 class UpdateArtistScoresTest:
