@@ -153,7 +153,7 @@ jobs:
       method: update
       message-ts: ${{ needs.beginning-slack-notification.outputs.posted_message_ts }}
       color: "#A30002"  # red
-      message: ":github-failure: Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|tag> de la version `v${{ needs.prepare-variables.outputs.releaseNumber }}` a rencontré un problème"
+      message: ":github-failure: Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|tag> de la version `v${{ needs.prepare-variables.outputs.releaseNumber }}` a rencontré un problème cc <!subteam^${{vars.SLACK_SHERIF_BACK_ID}}> <!subteam^${{vars.SLACK_SHERIF_INFRA_ID}}>"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
