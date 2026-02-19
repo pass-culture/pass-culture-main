@@ -17,7 +17,10 @@ export interface CustomRouteObject extends NonIndexRouteObject {
   element?: JSX.Element
   /** @deprecated Replaced by `loader: withUserPermissions(...)`. */
   meta?: CustomRouteMeta
+  /** FF necessary to access the route */
   featureName?: string
+  /** FF that disables the route */
+  disabledWithFeatureName?: string
   children?: CustomRouteObject[]
   isErrorPage?: boolean
 }

@@ -17,9 +17,16 @@ export const AppRouter = (): JSX.Element => {
   const activeFeatures = useAppSelector(selectActiveFeatures)
   const withSwitchVenueFeature = activeFeatures.includes('WIP_SWITCH_VENUE')
 
-  const activeRoutes = routes.filter(
-    (route) => !route.featureName || activeFeatures.includes(route.featureName)
-  )
+  const activeRoutes = routes
+    .filter(
+      (route) =>
+        !route.disabledWithFeatureName ||
+        !activeFeatures.includes(route.disabledWithFeatureName)
+    )
+    .filter(
+      (route) =>
+        !route.featureName || activeFeatures.includes(route.featureName)
+    )
   const activeRedirections = redirectedRoutes.filter(
     (route) => !route.featureName || activeFeatures.includes(route.featureName)
   )
