@@ -41,85 +41,86 @@ OFFERER_LOCATIONS = [
 ]
 
 
-def build_offerers_and_venues() -> dict[str, offerers_models.Offerer]:
-    def build(
-        name: str, locations: list[Location], siren: str, siret: str, with_bank_account: bool = True
-    ) -> offerers_models.Offerer:
-        # check if sandbox has already run
-        if (
-            existing_offerer := db.session.query(offerers_models.Offerer)
-            .filter(offerers_models.Offerer.siren == siren)
-            .one_or_none()
-        ):
-            return existing_offerer
+def build_user(email: str) -> users_models.User:
+    found_user = db.session.query(users_models.User).filter_by(email=email).one_or_none()
+    if found_user:
+        return found_user
+    else:
+        return users_factories.ProFactory.create(lastName="SWITCH-VENUE", firstName="Retention", email=email)
 
-        offerer = offerers_factories.OffererFactory.create(name=name, siren=siren)
+
+def link_user_and_offerer(user: users_models.User, offerer: offerers_models.Offerer) -> None:
+    if db.session.query(offerers_models.UserOfferer).filter_by(userId=user.id, offererId=offerer.id).one_or_none():
+        return None
+    offerers_factories.UserOffererFactory.create(offerer=offerer, user=user)
+
+
+def build_offerer_and_venues_and_bank_account(
+    name: str, locations: list[Location], siren: str, siret: str, with_bank_account: bool = True
+) -> offerers_models.Offerer:
+    # check if sandbox has already run
+    if (
+        existing_offerer := db.session.query(offerers_models.Offerer)
+        .filter(offerers_models.Offerer.siren == siren)
+        .one_or_none()
+    ):
+        return existing_offerer
+
+    offerer = offerers_factories.OffererFactory.create(name=name, siren=siren)
+
+    if with_bank_account:
+        bank_account = finance_factories.BankAccountFactory.create(
+            offerer=offerer, dsApplicationId=9000000 + offerer.id
+        )
+
+    for idx, location in enumerate(locations):
+        venue = offerers_factories.VenueFactory.create(
+            managingOfferer=offerer,
+            bookingEmail=f"switch.venue.{siret}@email.com",
+            comment="Salle de cinéma",
+            name=offerer.name + ", une librairie",
+            siret=siret[:-1] + str(idx),
+            venueTypeCode=offerers_schemas.VenueTypeCode.LIBRARY,
+            offererAddress__address__street=location.address.upper(),
+            offererAddress__address__city=location.city,
+            offererAddress__address__postalCode=location.postalCode,
+        )
 
         if with_bank_account:
-            bank_account = finance_factories.BankAccountFactory.create(
-                offerer=offerer, dsApplicationId=9000000 + offerer.id
-            )
+            offerers_factories.VenueBankAccountLinkFactory.create(venue=venue, bankAccount=bank_account)
 
-        for idx, location in enumerate(locations):
-            venue = offerers_factories.VenueFactory.create(
-                managingOfferer=offerer,
-                bookingEmail=f"switch.venue.{siret}@email.com",
-                comment="Salle de cinéma",
-                name=offerer.name + ", une librairie",
-                siret=siret[:-1] + str(idx),
-                venueTypeCode=offerers_schemas.VenueTypeCode.LIBRARY,
-                offererAddress__address__street=location.address.upper(),
-                offererAddress__address__city=location.city,
-                offererAddress__address__postalCode=location.postalCode,
-            )
+    return offerer
 
-            if with_bank_account:
-                offerers_factories.VenueBankAccountLinkFactory.create(venue=venue, bankAccount=bank_account)
 
-        return offerer
-
-    offerers = {}
-
+def save_sandbox() -> None:
     name = "Une structure, un lieu"
     locations = OFFERER_LOCATIONS[0:1]
     siren = "333333000"
     siret = "33333333333000"
-    offerers[name] = build(name, locations, siren, siret)
+    offerer = build_offerer_and_venues_and_bank_account(name, locations, siren, siret)
+    user = build_user("one.offerer.one.venue@retention.com")
+    link_user_and_offerer(user, offerer)
 
     name = "Une structure, deux lieux"
     locations = OFFERER_LOCATIONS[1:3]
     siren = "444444000"
     siret = "44444444444000"
-    offerers[name] = build(name, locations, siren, siret)
+    offerer = build_offerer_and_venues_and_bank_account(name, locations, siren, siret)
+    user = build_user("one.offerer.two.venues@retention.com")
+    link_user_and_offerer(user, offerer)
 
     name = "Une structure, deux lieux, de nouveau"
     locations = OFFERER_LOCATIONS[3:5]
     siren = "555555000"
     siret = "55555555555000"
-    offerers[name] = build(name, locations, siren, siret)
+    offerer = build_offerer_and_venues_and_bank_account(name, locations, siren, siret)
+    user = build_user("one.offerer.two.venues.2@retention.com")
+    link_user_and_offerer(user, offerer)
 
     name = "Une structure, deux lieux, sans compte bancaire"
     locations = OFFERER_LOCATIONS[5:7]
     siren = "666666000"
     siret = "66666666666000"
-    offerers[name] = build(name, locations, siren, siret, with_bank_account=False)
-
-    return offerers
-
-
-def build_user() -> users_models.User:
-    found_user = db.session.query(users_models.User).filter_by(email="retention@example.com").one_or_none()
-    if found_user:
-        return found_user
-    else:
-        return users_factories.ProFactory.create(lastName="PRO", firstName="Retention", email="retention@example.com")
-
-
-def save_sandbox() -> None:
-    offerers = build_offerers_and_venues()
-    user = build_user()
-
-    for offerer in offerers.values():
-        if db.session.query(offerers_models.UserOfferer).filter_by(userId=user.id, offererId=offerer.id).one_or_none():
-            continue
-        offerers_factories.UserOffererFactory.create(offerer=offerer, user=user)
+    offerer = build_offerer_and_venues_and_bank_account(name, locations, siren, siret, with_bank_account=False)
+    user = build_user("one.offerer.two.venues.no.bank.accounts@retention.com")
+    link_user_and_offerer(user, offerer)
