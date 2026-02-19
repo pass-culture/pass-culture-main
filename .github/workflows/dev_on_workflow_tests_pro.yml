@@ -133,7 +133,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download allure reports
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           path: pro/allure-results
           pattern: allure-results-pro-unit-*
@@ -202,7 +202,7 @@ jobs:
             yarn install --immutable
 
       - name: Download blob reports from GitHub Actions Artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           path: pro/.vitest-reports
           pattern: blob-report-*
@@ -212,7 +212,7 @@ jobs:
         run: npx vitest --merge-reports
 
       - name: Download coverage reports from GitHub Actions Artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           path: pro/coverage
           pattern: coverage-report-*
