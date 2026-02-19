@@ -98,7 +98,7 @@
     "allure-js-commons": "3.4.5",
     "allure-vitest": "3.4.5",
     "axe-core": "4.11.1",
-    "jsdom": "27.4.0",
+    "jsdom": "28.0.0",
     "mustache": "4.2.0",
     "node-fetch": "3.3.2",
     "openapi-typescript-codegen": "0.29.0",
