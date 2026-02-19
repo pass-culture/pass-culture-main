@@ -176,7 +176,7 @@ class JsonFormatter(logging.Formatter):
         # been created by our `Logger.makeRecord()` defined above.
         # It should not happen, but let's be defensive.
         extra = getattr(record, "extra", {})
-        tech_msg_id = getattr(record, "technical_message_id", "")
+        tech_msg_id = getattr(record, "technical_message_id", "")  # TODO(xordoquy): is it used at all ?
 
         # We need to be able to deactivate current_user accession
         # in case we are logging inside the current_user context itself.
@@ -184,7 +184,6 @@ class JsonFormatter(logging.Formatter):
         impersonator_id = get_logged_impersonator_id() if user_id else None
 
         json_record = {
-            "logging.googleapis.com/trace": get_or_set_correlation_id(),
             "module": record.name,
             "severity": record.levelname,
             "user_id": user_id,
@@ -195,6 +194,13 @@ class JsonFormatter(logging.Formatter):
         }
         if impersonator_id:
             json_record["impersonator_id"] = impersonator_id
+        json_record.update(
+            {
+                "logging.googleapis.com/trace": getattr(record, "otelTraceID", None),
+                "logging.googleapis.com/spanId": getattr(record, "otelSpanID", None),
+                "logging.googleapis.com/trace_sampled": getattr(record, "otelTraceSampled", None),
+            }
+        )
         try:
             return json.dumps(json_record, cls=JsonLogEncoder)
         except TypeError:
