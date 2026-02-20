@@ -88,10 +88,10 @@ jobs:
           git config --global user.name "PassCulture-SA"
           cd ./rendered-manifests
           # Look for deployments older than 24 hours by looking at pcapi-pr namespaces created prior that delay
-          pullrequests_ids=$(kubectl get ns -o go-template --template '{{range .items}}{{.metadata.name}} {{.metadata.creationTimestamp}}{{"\n"}}{{end}}' | awk '{if ($1 ~ "pcapi-pr") print $0}' | awk '$2 <= "'$(date -d'now-24 hours' -Ins --utc | sed 's/+0000/Z/')'" { print $1 }' | cut -d "-" -f3)
+          pullrequests_ids="$(kubectl get ns -o go-template --template '{{range .items}}{{.metadata.name}} {{.metadata.creationTimestamp}}{{"\n"}}{{end}}' | awk '{if ($1 ~ "pcapi-pr") print $0}' | awk '$2 <= "'$(date -d'now-24 hours' -Ins --utc | sed 's/+0000/Z/')'" { print $1 }' | cut -d "-" -f3)"
 
           files_modified=false
-          for id in $pullrequests_ids; do
+          for id in "$pullrequests_ids"; do
             [[ -d "testing-pr-$id" ]] && { git rm -r testing-pr-$id; files_modified=true; } || echo "path testing-pr-$id does not exist"
             [[ -d "postgresql-pr-$id" ]] && { git rm -r postgresql-pr-$id; files_modified=true; } || echo "path postgresql-pr-$id does not exist"
             [[ -d "redis-pr-$id" ]] && { git rm -r redis-pr-$id; files_modified=true; } || echo "path redis-pr-$id does not exist"
@@ -105,16 +105,20 @@ jobs:
           #Set active project for DNS entry deletion
           gcloud config set project passculture-metier-ehp
 
-          for id in $pullrequests_ids; do
+          for id in "$pullrequests_ids"; do
             while true; do
-              kubectl get application -n argocd | grep $id && sleep 5 || echo "application with id $id is deleted, continuing"; break
+              kubectl get application -n argocd | grep "$id" && sleep 5 || echo "application with id $id is deleted, continuing"; break
             done
             # Check for PR namespace and delete it
-            kubectl get ns pcapi-pr-$id
-            [[ $? -eq 0 ]] && kubectl delete ns pcapi-pr-$id || echo "namespace pcapi-pr-$id does not exist"
+            if kubectl get ns "pcapi-pr-$id"
+            then
+              kubectl delete ns pcapi-pr-$id
+            else
+              echo "namespace pcapi-pr-$id does not exist"
+            fi
             # Delete DNS entry
-            gcloud dns record-sets delete backend-$id.testing.passculture.team. --type=A --zone=testing-passculture-team || echo "record A backend-$id.testing.passculture.team does not exist"
-            gcloud dns record-sets delete backoffice-$id.testing.passculture.team. --type=A --zone=testing-passculture-team || echo "record A backoffice-$id.testing.passculture.team does not exist"
-            gcloud dns record-sets delete a-backend-$id.testing.passculture.team. --type=TXT --zone=testing-passculture-team || echo "record TXT backend-$id.testing.passculture.team does not exist"
-            gcloud dns record-sets delete a-backoffice-$id.testing.passculture.team. --type=TXT --zone=testing-passculture-team || echo "record TXT backoffice-$id.testing.passculture.team does not exist"
+            gcloud dns record-sets delete "backend-$id.testing.passculture.team."" --type=A --zone=testing-passculture-team || echo "record A backend-$id.testing.passculture.team does not exist"
+            gcloud dns record-sets delete "backoffice-$id.testing.passculture.team." --type=A --zone=testing-passculture-team || echo "record A backoffice-$id.testing.passculture.team does not exist"
+            gcloud dns record-sets delete "a-backend-$id.testing.passculture.team." --type=TXT --zone=testing-passculture-team || echo "record TXT backend-$id.testing.passculture.team does not exist"
+            gcloud dns record-sets delete "a-backoffice-$id.testing.passculture.team." --type=TXT --zone=testing-passculture-team || echo "record TXT backoffice-$id.testing.passculture.team does not exist"
           done
