@@ -1,4 +1,7 @@
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import type {
+  GetVenueResponseModel,
+  LocationResponseModelV2,
+} from '@/apiClient/v1'
 import { getFormattedAddress } from '@/commons/utils/getFormattedAddress'
 import { SummarySubSubSection } from '@/ui-kit/SummaryLayout/SummarySubSubSection'
 
@@ -7,7 +10,7 @@ import { OpeningHoursReadOnly } from './OpeningHoursReadOnly'
 
 type OpeningHoursAndAddressReadOnlyProps = {
   openingHours: GetVenueResponseModel['openingHours']
-  address?: GetVenueResponseModel['location']
+  address: LocationResponseModelV2
 }
 
 export function OpeningHoursAndAddressReadOnly({

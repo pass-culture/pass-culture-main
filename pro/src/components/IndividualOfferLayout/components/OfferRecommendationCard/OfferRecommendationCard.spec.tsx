@@ -5,7 +5,7 @@ import { expect, vi } from 'vitest'
 import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
-import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
@@ -22,7 +22,7 @@ function renderOfferRecommendationCard() {
     {
       storeOverrides: {
         user: {
-          selectedPartnerVenue: makeVenueListItem({ id: 2 }),
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
         },
       },
     }

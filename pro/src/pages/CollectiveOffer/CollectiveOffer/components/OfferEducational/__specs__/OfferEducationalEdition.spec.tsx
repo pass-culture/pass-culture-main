@@ -11,6 +11,7 @@ import {
   managedVenueFactory,
   userOffererFactory,
 } from '@/commons/utils/factories/userOfferersFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { defaultEditionProps } from '../__tests-utils__/defaultProps'
@@ -49,7 +50,7 @@ describe('screens | OfferEducational: edition', () => {
     renderWithProviders(<OfferEducational {...props} />, {
       storeOverrides: {
         user: {
-          selectedPartnerVenue: makeVenueListItem({ id: 1 }),
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
         },
       },
     })

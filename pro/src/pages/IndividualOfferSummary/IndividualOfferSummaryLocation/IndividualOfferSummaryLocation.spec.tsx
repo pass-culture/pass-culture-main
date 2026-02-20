@@ -12,9 +12,9 @@ import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividua
 import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
-  makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderComponentFunction,
   type RenderWithProvidersOptions,
@@ -49,7 +49,7 @@ const renderIndividualOfferSummaryLocation: RenderComponentFunction<
     storeOverrides: {
       user: {
         currentUser: sharedCurrentUserFactory(),
-        selectedPartnerVenue: makeVenueListItem({ id: 2 }),
+        selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
       },
     },
     ...params.options,

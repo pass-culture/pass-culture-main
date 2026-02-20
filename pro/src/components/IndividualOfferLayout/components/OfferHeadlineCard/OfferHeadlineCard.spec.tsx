@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 
 import * as HeadlineOfferContext from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
-import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { OfferHeadlineCard } from './OfferHeadlineCard'
@@ -48,7 +48,7 @@ function renderOfferHeadlineCard({
     {
       storeOverrides: {
         user: {
-          selectedPartnerVenue: makeVenueListItem({ id: 2 }),
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
         },
       },
     }
