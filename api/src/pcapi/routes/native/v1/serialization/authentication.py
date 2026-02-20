@@ -1,3 +1,5 @@
+from enum import Enum
+
 from pcapi.core.users.models import AccountState
 from pcapi.routes.native.v1.serialization.account import TrustedDevice
 from pcapi.routes.serialization import ConfiguredBaseModel
@@ -14,6 +16,11 @@ class SigninResponse(ConfiguredBaseModel):
     refresh_token: str
     access_token: str
     account_state: AccountState
+
+
+class SSOProvider(Enum):
+    APPLE = "apple"
+    GOOGLE = "google"
 
 
 class RefreshResponse(ConfiguredBaseModel):
@@ -55,7 +62,7 @@ class OauthStateResponse(ConfiguredBaseModel):
     oauth_state_token: str
 
 
-class GoogleSigninRequest(ConfiguredBaseModel):
+class OAuthSigninRequest(ConfiguredBaseModel):
     authorization_code: str
     oauth_state_token: str
     device_info: TrustedDevice | None = None

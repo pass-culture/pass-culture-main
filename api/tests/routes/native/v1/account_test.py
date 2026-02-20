@@ -23,7 +23,6 @@ import pcapi.core.subscription.models as subscription_models
 import pcapi.core.subscription.schemas as subscription_schemas
 import pcapi.core.users.constants as users_constants
 from pcapi import settings
-from pcapi.connectors.google_oauth import GoogleUser
 from pcapi.core import token as token_utils
 from pcapi.core.achievements import models as achievements_models
 from pcapi.core.achievements.factories import AchievementFactory
@@ -39,6 +38,7 @@ from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.core.users import schemas as users_schemas
 from pcapi.core.users import testing as users_testing
 from pcapi.core.users import young_status
 from pcapi.core.users.api import create_phone_validation_token
@@ -912,7 +912,18 @@ class AccountCreationEmailExistsTest:
 
 
 class AccountCreationWithSSOTest:
-    google_user = GoogleUser(sub="google_user_identifier", email="docteur.cuesta@passculture.app", email_verified=True)
+    google_user = users_schemas.SSOUser(
+        sub="google_user_identifier", email="docteur.cuesta@passculture.app", email_verified=True
+    )
+
+    def test_fails_if_unknown_provider(self, client):
+        response = client.post(
+            "/native/v1/oauth/unknown/account",
+            json={"accountCreationToken": "fake.token", "birthdate": "2000-01-01", "token": "gnagna"},
+        )
+
+        assert response.status_code == 400
+        assert response.json["code"] == "SSO_PROVIDER_INVALID"
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_account_creation_and_login(self, mocked_check_recaptcha_token_is_valid, client):

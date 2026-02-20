@@ -2937,77 +2937,6 @@
                 "title": "GetRemindersResponse",
                 "type": "object"
             },
-            "GoogleAccountRequest": {
-                "properties": {
-                    "accountCreationToken": {
-                        "title": "Accountcreationtoken",
-                        "type": "string"
-                    },
-                    "birthdate": {
-                        "format": "date",
-                        "title": "Birthdate",
-                        "type": "string"
-                    },
-                    "firebasePseudoId": {
-                        "nullable": true,
-                        "title": "Firebasepseudoid",
-                        "type": "string"
-                    },
-                    "marketingEmailSubscription": {
-                        "default": false,
-                        "nullable": true,
-                        "title": "Marketingemailsubscription",
-                        "type": "boolean"
-                    },
-                    "token": {
-                        "title": "Token",
-                        "type": "string"
-                    },
-                    "trustedDevice": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/TrustedDevice"
-                            }
-                        ],
-                        "nullable": true,
-                        "title": "TrustedDevice"
-                    }
-                },
-                "required": [
-                    "birthdate",
-                    "token",
-                    "accountCreationToken"
-                ],
-                "title": "GoogleAccountRequest",
-                "type": "object"
-            },
-            "GoogleSigninRequest": {
-                "properties": {
-                    "authorizationCode": {
-                        "title": "Authorizationcode",
-                        "type": "string"
-                    },
-                    "deviceInfo": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/TrustedDevice"
-                            }
-                        ],
-                        "nullable": true,
-                        "title": "TrustedDevice"
-                    },
-                    "oauthStateToken": {
-                        "title": "Oauthstatetoken",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "authorizationCode",
-                    "oauthStateToken"
-                ],
-                "title": "GoogleSigninRequest",
-                "type": "object"
-            },
             "GtlLabels": {
                 "additionalProperties": false,
                 "properties": {
@@ -3534,6 +3463,33 @@
                     "marketingPush"
                 ],
                 "title": "NotificationSubscriptions",
+                "type": "object"
+            },
+            "OAuthSigninRequest": {
+                "properties": {
+                    "authorizationCode": {
+                        "title": "Authorizationcode",
+                        "type": "string"
+                    },
+                    "deviceInfo": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/TrustedDevice"
+                            }
+                        ],
+                        "nullable": true,
+                        "title": "TrustedDevice"
+                    },
+                    "oauthStateToken": {
+                        "title": "Oauthstatetoken",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "authorizationCode",
+                    "oauthStateToken"
+                ],
+                "title": "OAuthSigninRequest",
                 "type": "object"
             },
             "OauthStateResponse": {
@@ -6043,6 +5999,50 @@
                     "refreshToken"
                 ],
                 "title": "ResetPasswordResponse",
+                "type": "object"
+            },
+            "SSOAccountRequest": {
+                "properties": {
+                    "accountCreationToken": {
+                        "title": "Accountcreationtoken",
+                        "type": "string"
+                    },
+                    "birthdate": {
+                        "format": "date",
+                        "title": "Birthdate",
+                        "type": "string"
+                    },
+                    "firebasePseudoId": {
+                        "nullable": true,
+                        "title": "Firebasepseudoid",
+                        "type": "string"
+                    },
+                    "marketingEmailSubscription": {
+                        "default": false,
+                        "nullable": true,
+                        "title": "Marketingemailsubscription",
+                        "type": "boolean"
+                    },
+                    "token": {
+                        "title": "Token",
+                        "type": "string"
+                    },
+                    "trustedDevice": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/TrustedDevice"
+                            }
+                        ],
+                        "nullable": true,
+                        "title": "TrustedDevice"
+                    }
+                },
+                "required": [
+                    "birthdate",
+                    "token",
+                    "accountCreationToken"
+                ],
+                "title": "SSOAccountRequest",
                 "type": "object"
             },
             "SchoolTypesIdEnum": {
@@ -9307,16 +9307,60 @@
                 "tags": []
             }
         },
-        "/native/v1/oauth/google/account": {
+        "/native/v1/oauth/state": {
+            "get": {
+                "description": "",
+                "operationId": "get__native_v1_oauth_state",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OauthStateResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "summary": "google_oauth_state <GET>",
+                "tags": []
+            }
+        },
+        "/native/v1/oauth/{sso_provider}/account": {
             "post": {
                 "description": "",
-                "operationId": "post__native_v1_oauth_google_account",
-                "parameters": [],
+                "operationId": "post__native_v1_oauth_{sso_provider}_account",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "sso_provider",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/GoogleAccountRequest"
+                                "$ref": "#/components/schemas/SSOAccountRequest"
                             }
                         }
                     },
@@ -9350,20 +9394,30 @@
                         "description": "Unprocessable Content"
                     }
                 },
-                "summary": "create_account_with_google_sso <POST>",
+                "summary": "create_account_with_sso <POST>",
                 "tags": []
             }
         },
-        "/native/v1/oauth/google/authorize": {
+        "/native/v1/oauth/{sso_provider}/authorize": {
             "post": {
                 "description": "",
-                "operationId": "post__native_v1_oauth_google_authorize",
-                "parameters": [],
+                "operationId": "post__native_v1_oauth_{sso_provider}_authorize",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "sso_provider",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/GoogleSigninRequest"
+                                "$ref": "#/components/schemas/OAuthSigninRequest"
                             }
                         }
                     },
@@ -9400,41 +9454,7 @@
                         "description": "Unprocessable Content"
                     }
                 },
-                "summary": "google_auth <POST>",
-                "tags": []
-            }
-        },
-        "/native/v1/oauth/state": {
-            "get": {
-                "description": "",
-                "operationId": "get__native_v1_oauth_state",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/OauthStateResponse"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Content"
-                    }
-                },
-                "summary": "google_oauth_state <GET>",
+                "summary": "sso_authorize <POST>",
                 "tags": []
             }
         },

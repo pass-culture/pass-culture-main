@@ -1,6 +1,7 @@
 import datetime
 import re
 import typing
+from enum import Enum
 
 import email_validator
 import pydantic.v1 as pydantic_v1
@@ -75,8 +76,13 @@ class AccountRequest(BaseAccountRequest):
             raise ValueError(email) from e
 
 
-class GoogleAccountRequest(BaseAccountRequest):
+class SSOAccountRequest(BaseAccountRequest):
     account_creation_token: str
+
+
+class SSOProvider(Enum):
+    APPLE = "apple"
+    GOOGLE = "google"
 
 
 class NotificationSubscriptions(ConfiguredBaseModel):
