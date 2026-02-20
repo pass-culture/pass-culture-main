@@ -3,11 +3,15 @@ import logging
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories
+from pcapi.core.educational.constants import ALL_INTERVENTION_AREA
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
+from pcapi.core.educational.factories import PublishedCollectiveOfferFactory
+from pcapi.core.educational.models import EducationalDomain
 from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventStockFactory
+from pcapi.models import db
 from pcapi.utils import date as date_utils
 
 
@@ -25,6 +29,8 @@ def create_tiny_venue() -> None:
         name="Petit lieu",
         managingOfferer=user_offerer.offerer,
         adageId="123546",
+        collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        collectiveEmail="email@exemple.com",
     )
     offer_event = EventOfferFactory.create(
         name="Conférence gesticulée",
@@ -37,8 +43,17 @@ def create_tiny_venue() -> None:
         beginningDatetime=date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(days=20),
     )
     BookingFactory.create(quantity=1, stock=stock)
+
+    domain = db.session.query(EducationalDomain).first()
     CollectiveOfferTemplateFactory.create(
         name="Conférence gesticulée",
         venue=venue,
+        bookingEmails=[email],
+        domains=[domain],
+    )
+    PublishedCollectiveOfferFactory(
+        name="Ma petite offre réservable",
+        venue=venue,
+        domains=[domain],
     )
     logger.info("end create tiny venue with 1 booked offers")
