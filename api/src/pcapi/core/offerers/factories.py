@@ -468,56 +468,27 @@ class OffererAddressFactory(BaseFactory[models.OffererAddress]):
         cls, model_class: type[models.OffererAddress], *args: typing.Any, **kwargs: typing.Any
     ) -> models.OffererAddress:
         offerer = kwargs.get("offerer")
-        if venue := kwargs.get("venue"):
-            if offerer:
-                if offerer != venue.managingOfferer:
-                    raise ValueError("venue must be consistent with offerer")
-            else:
-                kwargs["offerer"] = venue.managingOfferer
-        elif not offerer:
-            kwargs["offerer"] = OffererFactory()
+        venue = kwargs.get("venue")
+        if not venue and not offerer:
+            kwargs["venue"] = VenueFactory.create()
+            kwargs["offerer"] = kwargs["venue"].managingOfferer
+        elif offerer and not venue:
+            kwargs["venue"] = VenueFactory.create(managingOfferer=offerer)
+        elif venue and offerer:
+            if offerer != venue.managingOfferer:
+                raise ValueError("venue must be consistent with offerer")
+        elif venue and not offerer:
+            kwargs["offerer"] = kwargs["venue"].managingOfferer
         return super()._create(model_class, *args, **kwargs)
 
 
-class _LocationFactory(OffererAddressFactory):
-    # TODO (prouzet, 2025-11-13) CLEAN_OA When venueId is mandatory, type always set and Venue.offererAddressId removed,
-    # this could be simplified and Venue created in OffererAddressFactory._create without reference to self.
-    @factory.post_generation
-    def venue(self, create: bool, extracted: models.Venue | None, **kwargs: typing.Any) -> models.Venue | None:
-        if not create:
-            return None
-        if extracted:
-            self.venue = extracted
-            if self.offerer != extracted.managingOfferer:  # type: ignore[attr-defined]
-                raise ValueError("venue must be consistent with offerer")
-        else:
-            self.venue = VenueFactory.create(managingOfferer=self.offerer, offererAddress=self)  # type: ignore[attr-defined]
-            db.session.add(self)
-            db.session.flush()
-        return self.venue
-
-
-class VenueLocationFactory(_LocationFactory):
+class VenueLocationFactory(OffererAddressFactory):
     type = models.LocationType.VENUE_LOCATION
     label = None
 
 
-class OfferLocationFactory(_LocationFactory):
+class OfferLocationFactory(OffererAddressFactory):
     type = models.LocationType.OFFER_LOCATION
-
-
-def get_offerer_address_with_label_from_venue(venue: models.Venue) -> models.OffererAddress | None:
-    oa = (
-        db.session.query(models.OffererAddress)
-        .filter_by(address=venue.offererAddress.address, offerer=venue.managingOfferer, label=venue.publicName)
-        .one_or_none()
-    )
-    if oa:
-        return oa
-
-    return OffererAddressFactory.create(
-        address=venue.offererAddress.address, offerer=venue.managingOfferer, label=venue.publicName
-    )
 
 
 class OffererConfidenceRuleFactory(BaseFactory[models.OffererConfidenceRule]):

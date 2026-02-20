@@ -1991,25 +1991,6 @@ class UpdateOfferTest:
             offer = db.session.query(models.Offer).one()
             assert offer.offererAddress == offerer_address
 
-    def test_update_venue(self):
-        offerer = offerers_factories.OffererFactory()
-        offer_oa = offerers_factories.VenueLocationFactory(offerer=offerer)
-        offer = factories.OfferFactory(offererAddress=offer_oa)
-        offer_oa_id = offer.offererAddressId
-        new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
-        venue_oa_id = new_venue.offererAddress.id
-        body = offers_schemas.UpdateOffer()
-        assert offer_oa_id != venue_oa_id
-
-        updated_offer = api.update_offer(offer, body, venue=new_venue)
-
-        db.session.commit()
-        db.session.refresh(updated_offer)
-
-        assert updated_offer
-        assert updated_offer.venueId == new_venue.id
-        assert updated_offer.offererAddressId == offer_oa_id
-
     def test_update_offerer_address(self):
         new_offerer_address = offerers_factories.OfferLocationFactory(
             address__latitude=50.63153,
@@ -2029,14 +2010,16 @@ class UpdateOfferTest:
         assert updated_offer.offererAddressId == new_offerer_address.id
 
     def test_update_both_venue_and_offerer_address(self):
-        new_offerer_address = offerers_factories.VenueLocationFactory(
+        offer = factories.OfferFactory()
+        new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
+        new_offerer_address = offerers_factories.OfferLocationFactory(
             address__latitude=50.63153,
             address__longitude=3.06089,
             address__postalCode="59000",
             address__city="Lille",
+            venue=new_venue,
+            offerer=new_venue.managingOfferer,
         )
-        offer = factories.OfferFactory()
-        new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
         body = offers_schemas.UpdateOffer()
 
         updated_offer = api.update_offer(offer, body, venue=new_venue, offerer_address=new_offerer_address)

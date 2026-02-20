@@ -45,8 +45,11 @@ class CollectiveOfferTest:
             3,
             startDatetime=START_DATE,
             collectiveOffer__institution=institution,
+            collectiveOffer__venue=venue,
             collectiveOffer__locationType=models.CollectiveLocationType.ADDRESS,
-            collectiveOffer__offererAddress=offerers_factories.get_offerer_address_with_label_from_venue(venue),
+            collectiveOffer__offererAddress=offerers_factories.OfferLocationFactory(
+                address=venue.offererAddress.address, venue=venue, label=venue.publicName
+            ),
         )
         # this archived offer should not appear in the result
         stocks[2].collectiveOffer.dateArchived = date_utils.get_naive_utc_now() - timedelta(days=1)
@@ -56,8 +59,9 @@ class CollectiveOfferTest:
         stock_with_cancelled_booking = educational_factories.CollectiveStockFactory(
             startDatetime=START_DATE,
             collectiveOffer__institution=institution,
+            collectiveOffer__venue=venue,
             collectiveOffer__locationType=models.CollectiveLocationType.ADDRESS,
-            collectiveOffer__offererAddress=offerers_factories.get_offerer_address_with_label_from_venue(venue),
+            collectiveOffer__offererAddress=stocks[0].collectiveOffer.offererAddress,
         )
         educational_factories.CancelledCollectiveBookingFactory(collectiveStock=stock_with_cancelled_booking)
 

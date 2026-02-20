@@ -466,27 +466,19 @@ class OffererConfidenceRuleTest:
 
 
 class OffererAddressTest:
-    def test_unique_constraint_on_legacy_offerer_address_raises(self):
-        offerer_address = factories.OffererAddressFactory()
+    def test_unique_constraint(self):
+        offerer_address = factories.OfferLocationFactory()
 
         with pytest.raises(IntegrityError):
-            factories.OffererAddressFactory(
+            factories.OfferLocationFactory(
                 offerer=offerer_address.offerer,
+                venue=offerer_address.venue,
                 address=offerer_address.address,
                 label=offerer_address.label,
             )
 
-    def test_unique_constraint_on_legacy_offerer_address_does_not_raise_when_label_is_null(self):
-        offerer_address = factories.OffererAddressFactory(label=None)
-
-        factories.OffererAddressFactory(
-            offerer=offerer_address.offerer,
-            address=offerer_address.address,
-            label=None,
-        )
-
     def test_unique_constraint_on_offerer_address_raises_when_label_is_null(self):
-        offerer_address = factories.VenueLocationFactory(label=None)
+        offerer_address = factories.VenueFactory(offererAddress__label=None).offererAddress
 
         with pytest.raises(IntegrityError):
             factories.VenueLocationFactory(
@@ -497,7 +489,7 @@ class OffererAddressTest:
             )
 
     def test_unique_constraint_on_offerer_address_raises_when_label_is_filled(self):
-        offerer_address = factories.VenueLocationFactory()
+        offerer_address = factories.VenueFactory(offererAddress__label="label").offererAddress
 
         with pytest.raises(IntegrityError):
             factories.VenueLocationFactory(
@@ -508,7 +500,7 @@ class OffererAddressTest:
             )
 
     def test_unique_constraint_on_offerer_address_validates(self):
-        offerer_address = factories.VenueLocationFactory()
+        offerer_address = factories.VenueFactory(offererAddress__label="label").offererAddress
 
         factories.OffererAddressFactory(
             offerer=offerer_address.offerer,
@@ -525,12 +517,13 @@ class OffererAddressTest:
         )
 
     def test_unique_venue_location_per_venue_id(self):
-        offerer_address = factories.VenueLocationFactory()
+        offerer_address = factories.VenueFactory().offererAddress
 
         with pytest.raises(IntegrityError):
             factories.VenueLocationFactory(
                 offerer=offerer_address.offerer,
                 venue=offerer_address.venue,
+                address=offerer_address.address,
             )
 
 
