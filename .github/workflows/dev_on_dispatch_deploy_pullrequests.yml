@@ -404,7 +404,7 @@ jobs:
           done
           kubectl wait --for=condition=complete --timeout=1800s -n "pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}" "jobs/pullrequest-db-init-sandbox-${DATE}"
           end="$(date +%s.%N)"
-          duration="$(date -d@$(bc <<< "$end - $start") -u +%H:%M:%S)"
+          duration="$(date -d@"$(bc <<< "$end - $start")" -u +%H:%M:%S)"
           {
             echo "### :rocket: Run sandbox summary"
             echo "| Command                                                              | Duration  |"
