@@ -36,7 +36,7 @@ jobs:
         id: "find-hotfix-tag-number"
         run: |
           GITHUB_REF="${{ github.ref }}"
-          MAJOR_NUMBER=("${GITHUB_REF//refs\/heads\/maint\/v/ }")
+          MAJOR_NUMBER="${GITHUB_REF//refs\/heads\/maint\/v/ }"
           CURRENT_PATCH_NUMBER="$(git tag -l "v${MAJOR_NUMBER}.0.*" | sort -V | tail -n 1 | cut -d. -f3)"
           NEXT_PATCH_NUMBER="$((CURRENT_PATCH_NUMBER + 1))"
           echo "hotfixTagNumber=${MAJOR_NUMBER}.0.${NEXT_PATCH_NUMBER}" | tee -a "$GITHUB_OUTPUT"

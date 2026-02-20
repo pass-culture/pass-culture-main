@@ -1,6 +1,6 @@
 name: "0 [on_dispatch/CD] Deploy release or hotfix"
 
-run-name: "Deploy ${{ github.ref }} to ${{ github.event.inputs.target_environment }} by @${{ github.actor }}"
+run-name: "Deploy ${{ github.ref }} to ${{ inputs.target_environment }} by @${{ github.actor }}"
 
 on:
   workflow_dispatch:
@@ -23,8 +23,8 @@ jobs:
     steps:
       - name: "Check workflow ref"
         run: |
-          echo "Deploying to ${{ github.event.inputs.target_environment }} from ref: ${{ github.ref }}"
-          if ! [[ ${{ github.ref }} == refs\/tags\/v* ]]; then
+          echo "Deploying to ${{ inputs.target_environment }} from ref: ${{ github.ref }}"
+          if ! [[ ${{ github.ref }} =~ ^refs\/tags\/v*$ ]]; then
             echo "This workflow can only be triggered from a tag (starting with a 'v')"
             exit 1
           fi
@@ -36,7 +36,7 @@ jobs:
     with:
       channel: ${{ vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID }}
       color: "#D4AD3B" # yellow
-      message: ":github-pending: Un <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `${{ github.ref_name }}` a été demandé sur `${{ github.event.inputs.target_environment }}`"
+      message: ":github-pending: Un <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `${{ github.ref_name }}` a été demandé sur `${{ inputs.target_environment }}`"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -45,27 +45,29 @@ jobs:
     name: "Environment short name"
     needs: check-workflow-ref
     # `deploy` is an artificial environment with protection rules, which allows a single required review instead of many
-    environment: ${{ fromJSON('["deploy", "testing"]')[github.event.inputs.target_environment == 'testing'] }}
+    environment: ${{ fromJSON('["deploy", "testing"]')[inputs.target_environment == 'testing'] }}
     runs-on: ubuntu-22.04
     outputs:
       ENVIRONMENT_SHORT_NAME: ${{ steps.environment-short-name.outputs.ENVIRONMENT_SHORT_NAME }}
     steps:
       - name: "Retrieve environment short name"
         id: "environment-short-name"
+        env:
+          TARGET_ENVIRONMENT: ${{ inputs.target_environment }}
         run: |
-          if [ "${{ github.event.inputs.target_environment }}" == "staging" ]; then
-            echo "ENVIRONMENT_SHORT_NAME=stg" | tee -a $GITHUB_OUTPUT
-          elif [ "${{ github.event.inputs.target_environment }}" == "production" ]; then
-            echo "ENVIRONMENT_SHORT_NAME=prd" | tee -a $GITHUB_OUTPUT
+          if [ "$TARGET_ENVIRONMENT" == "staging" ]; then
+            echo "ENVIRONMENT_SHORT_NAME=stg" | tee -a "$GITHUB_OUTPUT"
+          elif [ "$TARGET_ENVIRONMENT" == "production" ]; then
+            echo "ENVIRONMENT_SHORT_NAME=prd" | tee -a "$GITHUB_OUTPUT"
           else
-            echo "ENVIRONMENT_SHORT_NAME=tst" | tee -a $GITHUB_OUTPUT
+            echo "ENVIRONMENT_SHORT_NAME=tst" | tee -a "$GITHUB_OUTPUT"
           fi
 
   version:
     name: "Version"
     needs: check-workflow-ref
     # `deploy` is an artificial environment with protection rules, which allows a single required review instead of many
-    environment: ${{ fromJSON('["deploy", "testing"]')[github.event.inputs.target_environment == 'testing'] }}
+    environment: ${{ fromJSON('["deploy", "testing"]')[inputs.target_environment == 'testing'] }}
     runs-on: ubuntu-22.04
     outputs:
       APP_VERSION: ${{ steps.app-version.outputs.APP_VERSION }}
@@ -77,7 +79,7 @@ jobs:
           fetch-depth: 0
       - name: "Get app version"
         id: "app-version"
-        run: echo APP_VERSION="$(cat ./api/version.txt)" | tee -a $GITHUB_OUTPUT
+        run: echo APP_VERSION="$(cat ./api/version.txt)" | tee -a "$GITHUB_OUTPUT"
 
   deployment-confirmed:
     name: "Update message with deployment confirmation"
@@ -88,7 +90,7 @@ jobs:
       method: update
       message-ts: ${{ needs.ask-for-review-on-slack.outputs.posted_message_ts }}
       color: "#28A745" # green
-      message: ":rocket: Un <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `${{ github.ref_name }}` a été approuvé sur `${{ github.event.inputs.target_environment }}`"
+      message: ":rocket: Un <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `${{ github.ref_name }}` a été approuvé sur `${{ inputs.target_environment }}`"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -100,10 +102,10 @@ jobs:
     needs:
       - version
       - environment-short-name
-    if: github.event.inputs.target_environment != 'production'
+    if: inputs.target_environment != 'production'
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
-      environment: ${{ github.event.inputs.target_environment }}
+      environment: ${{ inputs.target_environment }}
       environment_short_name: ${{ needs.environment-short-name.outputs.ENVIRONMENT_SHORT_NAME }}
       app_version: ${{ needs.version.outputs.APP_VERSION }}
       workflow_cluster_name: gke-infra-prd-eu9
@@ -129,7 +131,7 @@ jobs:
     name: "Deploy on integration environment"
     needs: 
       - version
-    if: github.event.inputs.target_environment == 'production'
+    if: inputs.target_environment == 'production'
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: integration 
@@ -157,10 +159,10 @@ jobs:
     name: "Deploy on production environment"
     needs: 
       - version
-    if: github.event.inputs.target_environment == 'production'
+    if: inputs.target_environment == 'production'
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
-      environment: ${{ github.event.inputs.target_environment }}
+      environment: ${{ inputs.target_environment }}
       environment_short_name: prd
       app_version: ${{ needs.version.outputs.APP_VERSION }}
       workflow_cluster_name: gke-infra-prd-eu9
@@ -185,7 +187,7 @@ jobs:
     runs-on: ubuntu-22.04
     needs:
       - deploy-production
-    if: github.event.inputs.target_environment == 'production'
+    if: inputs.target_environment == 'production'
     steps:
       - uses: actions/checkout@v6
       - name: "Publish Github prerelease"
@@ -208,7 +210,7 @@ jobs:
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       color: "#28A745" # green
-      message: ":github-success: La version `v${{ needs.version.outputs.APP_VERSION }}` a été <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|déployée> sur `${{ github.event.inputs.target_environment }}`"
+      message: ":github-success: La version `v${{ needs.version.outputs.APP_VERSION }}` a été <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|déployée> sur `${{ inputs.target_environment }}`"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -224,7 +226,7 @@ jobs:
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       color: "#A30002" # red
-      message: ":github-failure:Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|déploiement> de la version `v${{ needs.version.outputs.APP_VERSION }}` a échoué sur `${{ github.event.inputs.target_environment }}`"
+      message: ":github-failure:Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|déploiement> de la version `v${{ needs.version.outputs.APP_VERSION }}` a échoué sur `${{ inputs.target_environment }}`"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
