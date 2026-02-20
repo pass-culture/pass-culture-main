@@ -92,9 +92,7 @@ def get_venue_by_id_for_adage_iframe(
     return venue, relative
 
 
-def synchronize_adage_partners(
-    adage_partners: list[schemas.AdageCulturalPartner], apply: bool = False
-) -> tuple[set[str], set[str]]:
+def synchronize_adage_partners(adage_partners: list[schemas.AdageCulturalPartner], apply: bool = False) -> None:
     from pcapi.core.external.attributes.api import update_external_pro
 
     adage_id_by_venue_id: dict[int, str] = {}
@@ -250,16 +248,15 @@ def synchronize_adage_partners(
         extra={"sirens_to_deactivate": sirens_to_deactivate},
     )
 
+    # TODO(jcicurel-pass): once we have finished migrating to this new sync logic we can set synchronize_session=False
     db.session.query(offerers_models.Offerer).filter(offerers_models.Offerer.siren.in_(sirens_to_activate)).update(
-        {offerers_models.Offerer.allowedOnAdage: True}, synchronize_session=False
+        {offerers_models.Offerer.allowedOnAdage: True}
     )
     db.session.query(offerers_models.Offerer).filter(offerers_models.Offerer.siren.in_(sirens_to_deactivate)).update(
-        {offerers_models.Offerer.allowedOnAdage: False}, synchronize_session=False
+        {offerers_models.Offerer.allowedOnAdage: False}
     )
 
     db.session.flush()
-
-    return sirens_to_activate, sirens_to_deactivate
 
 
 def _add_venue_adage_id(venue: offerers_models.Venue, adage_id: str) -> None:

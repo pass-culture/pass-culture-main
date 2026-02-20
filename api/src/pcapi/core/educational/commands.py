@@ -167,26 +167,25 @@ def synchronize_adage_cultural_partners(apply: bool = False) -> None:
         },
     )
 
-    activated_offerers, deactivated_offerers = adage_api.synchronize_adage_partners(
-        adage_partners=adage_cultural_partners.partners, apply=apply
-    )
+    adage_api.synchronize_adage_partners(adage_partners=adage_cultural_partners.partners, apply=apply)
 
-    # for now we rollback the session and set the result in redis, so that we can compare with the current sync logic
-    # (synchronize_venues_from_adage_cultural_partners + synchronize_offerers_from_adage_cultural_partners)
-    db.session.rollback()
+    # for now set in redis the list of active offerers so that we can compare with the current sync logic, and rollback the session
+    # current sync is (synchronize_venues_from_adage_cultural_partners + synchronize_offerers_from_adage_cultural_partners)
+
+    active_offerer_sirens = db.session.query(offerers_models.Offerer.siren).filter(
+        models.Offerer.allowedOnAdage.is_(True)
+    )
+    sirens = ",".join(siren for (siren,) in active_offerer_sirens)
 
     redis_client = current_app.redis_client
     expiration = 60 * 60 * 12  # 12h
     redis_client.set(
-        "synchronize_adage_cultural_partners:activated_offerers",
-        ",".join(activated_offerers),
+        "synchronize_adage_cultural_partners:active_offerer_sirens",
+        sirens,
         ex=expiration,
     )
-    redis_client.set(
-        "synchronize_adage_cultural_partners:deactivated_offerers",
-        ",".join(deactivated_offerers),
-        ex=expiration,
-    )
+
+    db.session.rollback()
 
 
 @blueprint.cli.command("synchronize_venues_from_adage_cultural_partners")
@@ -217,42 +216,30 @@ def synchronize_offerers_from_adage_cultural_partners(with_timestamp: bool = Fal
         adage_api.synchronize_adage_ids_on_offerers(adage_cultural_partners.partners)
 
     # compare the current Offerer allowedOnAdage status with the result of synchronize_adage_cultural_partners stored in redis
-    redis_client = current_app.redis_client
-    activated_sirens_value = redis_client.get("synchronize_adage_cultural_partners:activated_offerers")
-    deactivated_sirens_value = redis_client.get("synchronize_adage_cultural_partners:deactivated_offerers")
+    active_offerer_sirens = db.session.query(offerers_models.Offerer.siren).filter(
+        models.Offerer.allowedOnAdage.is_(True)
+    )
+    sirens_current_sync = {siren for (siren,) in active_offerer_sirens}
 
-    if activated_sirens_value is None or deactivated_sirens_value is None:
+    redis_client = current_app.redis_client
+    active_offerer_sirens_new_sync = redis_client.get("synchronize_adage_cultural_partners:active_offerer_sirens")
+
+    if active_offerer_sirens_new_sync is None:
         logger.warning("Could not get synchronize_adage_cultural_partners result for compare")
         return
 
-    activated_sirens = activated_sirens_value.split(",")
-    deactivated_sirens = deactivated_sirens_value.split(",")
+    sirens_new_sync: set[str] = set(active_offerer_sirens_new_sync.split(","))
 
-    failed_activated_offerers = (
-        db.session.query(offerers_models.Offerer)
-        .filter(
-            offerers_models.Offerer.siren.in_(activated_sirens),
-            offerers_models.Offerer.allowedOnAdage == False,
-        )
-        .all()
-    )
-    failed_deactivated_offerers = (
-        db.session.query(offerers_models.Offerer)
-        .filter(
-            offerers_models.Offerer.siren.in_(deactivated_sirens),
-            offerers_models.Offerer.allowedOnAdage == True,
-        )
-        .all()
-    )
-
-    if failed_activated_offerers or failed_deactivated_offerers:
+    if sirens_new_sync != sirens_current_sync:
         logger.error(
             "Adage partners sync - Failed to sync",
             extra={
-                "failed_activated_offerers": [o.id for o in failed_activated_offerers],
-                "failed_deactivated_offerers": [o.id for o in failed_deactivated_offerers],
+                "new_sync_minus_current": sirens_new_sync - sirens_current_sync,
+                "current_sync_minus_new": sirens_current_sync - sirens_new_sync,
             },
         )
+    else:
+        logger.info("Adage partners sync - offerer status is consistant")
 
 
 @blueprint.cli.command("eac_notify_pro_one_day_before")
