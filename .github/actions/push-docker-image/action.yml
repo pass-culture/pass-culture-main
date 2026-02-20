@@ -12,7 +12,6 @@ inputs:
   tag_latest:
     description: Tag also image as latest
     required: false
-    type: boolean
     default: false
 
   registry:
