@@ -1603,32 +1603,12 @@ class OffererAddress(PcObject, Model):
         # so several partial indexes are created temporarily to ensure integrity during transition.
         sa.Index(
             "ix_unique_offerer_address_per_label",
-            "offererId",
+            "venueId",
+            "type",
             "addressId",
             "label",
-            postgresql_where=sa.and_(type.is_(None), venueId.is_(None)),
-            unique=True,
-        ),
-        # After label
-        sa.Index(
-            "ix_wip_unique_offerer_address_when_label_is_null",
             "offererId",
-            "addressId",
-            "type",
-            "venueId",
             unique=True,
-            postgresql_where=sa.and_(label.is_(None), venueId.is_not(None)),
-            postgresql_nulls_not_distinct=True,
-        ),
-        sa.Index(
-            "ix_wip_unique_offerer_address_when_label_is_not_null",
-            "offererId",
-            "addressId",
-            "label",
-            "type",
-            "venueId",
-            unique=True,
-            postgresql_where=label.is_not(None),
             postgresql_nulls_not_distinct=True,
         ),
         sa.Index(
