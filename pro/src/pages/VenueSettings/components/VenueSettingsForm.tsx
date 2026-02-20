@@ -7,6 +7,7 @@ import type {
   GetVenueResponseModel,
   VenueProviderResponse,
 } from '@/apiClient/v1'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
@@ -44,6 +45,8 @@ export const VenueSettingsForm = ({
   venue,
   formContext,
 }: VenueSettingsFormProps) => {
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+
   const {
     register,
     setValue,
@@ -162,11 +165,14 @@ export const VenueSettingsForm = ({
           </FormLayout.Row>
         </FormLayout.Section>
 
-        <ReimbursementFields
-          offerer={offerer}
-          scrollToSection={Boolean(location.state) || Boolean(location.hash)}
-          venue={venue}
-        />
+        {(!withSwitchVenueFeature ||
+          (withSwitchVenueFeature && venue.pricingPoint?.id)) && (
+          <ReimbursementFields
+            offerer={offerer}
+            scrollToSection={Boolean(location.state) || Boolean(location.hash)}
+            venue={venue}
+          />
+        )}
       </FormLayout>
       <VenueFormActionBar venue={venue} isSubmitting={isSubmitting} />
       <RouteLeavingGuardIndividualOffer

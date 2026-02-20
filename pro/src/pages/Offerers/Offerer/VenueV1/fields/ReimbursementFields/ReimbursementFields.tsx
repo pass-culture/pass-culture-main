@@ -20,7 +20,6 @@ export const ReimbursementFields = ({
   scrollToSection,
   venue,
 }: ReimbursementFieldsProps) => {
-  const offererHaveVenueWithSiret = offerer.hasAvailablePricingPoints
   const reimbursementSection = useId()
 
   const scrollToReimbursementSection = useCallback(
@@ -37,7 +36,7 @@ export const ReimbursementFields = ({
   return (
     <div ref={scrollToReimbursementSection} id={reimbursementSection}>
       <FormLayout.Section title="Barème de remboursement">
-        {!venue.siret && !offererHaveVenueWithSiret ? (
+        {!venue.siret && !offerer.hasAvailablePricingPoints ? (
           <Banner
             title="Structure SIRET nécessaire"
             actions={[

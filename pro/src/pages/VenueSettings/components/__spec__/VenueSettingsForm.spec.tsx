@@ -11,6 +11,7 @@ import {
   defaultVenueProvider,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -91,20 +92,15 @@ const renderVenueSettingsForm = async (
   props?: Partial<VenueSettingsFormProps>,
   options?: RenderWithProvidersOptions
 ) => {
+  const formContext = props?.formContext ?? defaultFormContext
+  const venue = props?.venue ?? defaultGetVenue
+
   const Wrapper = () => {
-    const formContext = {
-      ...defaultFormContext,
-      ...(props?.formContext || {}),
-    }
     const form = useForm({
       context: formContext,
-      defaultValues: toFormValues({
-        venue: {
-          ...defaultVenue,
-          ...(props?.venue || {}),
-        },
-      }),
+      defaultValues: toFormValues({ venue }),
     })
+
     return (
       <FormProvider {...form}>
         <form
@@ -116,7 +112,7 @@ const renderVenueSettingsForm = async (
           <VenueSettingsForm
             offerer={defaultOfferer}
             venueProviders={venueProviders}
-            venue={defaultGetVenue}
+            venue={venue}
             formContext={formContext}
           />
         </form>
@@ -124,11 +120,10 @@ const renderVenueSettingsForm = async (
     )
   }
 
-  options = {
+  renderWithProviders(<Wrapper />, {
+    ...options,
     user: sharedCurrentUserFactory(),
-  }
-
-  renderWithProviders(<Wrapper />, options)
+  })
 
   await waitFor(() => {
     screen.getByText('Informations administratives')
@@ -242,5 +237,48 @@ describe('VenueSettingsForm', () => {
       "Les retraits sont autorisés jusqu'à 24 heures avant l'événement."
     )
     expect(emailField).toHaveValue('contact@lieuexemple.com')
+  })
+
+  describe('with WIP_SWITCH_VENUE feature flag', () => {
+    const options: RenderWithProvidersOptions = {
+      features: ['WIP_SWITCH_VENUE'],
+    }
+
+    it('should not display reimbursement field when there is no pricing point', () => {
+      renderVenueSettingsForm(
+        {
+          venue: makeGetVenueResponseModel({ id: 1 }),
+        },
+        options
+      )
+
+      const reimbursementFieldsetTitle = screen.queryByRole('heading', {
+        name: /Barème de remboursement/,
+      })
+
+      expect(reimbursementFieldsetTitle).not.toBeInTheDocument()
+    })
+
+    it('should display reimbursement field when there is a pricing point', () => {
+      renderVenueSettingsForm(
+        {
+          venue: makeGetVenueResponseModel({
+            id: 1,
+            pricingPoint: {
+              id: 1,
+              siret: '12345678901234',
+              venueName: 'Structure 1',
+            },
+          }),
+        },
+        options
+      )
+
+      const reimbursementFieldsetTitle = screen.queryByRole('heading', {
+        name: /Barème de remboursement/,
+      })
+
+      expect(reimbursementFieldsetTitle).toBeVisible()
+    })
   })
 })
