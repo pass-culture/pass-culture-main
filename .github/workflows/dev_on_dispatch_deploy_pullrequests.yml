@@ -359,7 +359,7 @@ jobs:
 
           echo "=== exec: flask install_postgres_extensions"
           DATE="$(date +"%Y-%m-%d-%H-%M-%S")"
-          export $DATE
+          export "$DATE"
           start="$(date +%s.%N)"
           envsubst < .github/workflows/templates/pullrequest-db-init.yaml | kubectl -n "pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}" apply -f -
           while true;
