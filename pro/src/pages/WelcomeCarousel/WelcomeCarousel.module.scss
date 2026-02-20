@@ -42,10 +42,14 @@ $connect-as-header-height: rem.torem(52px);
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  justify-content: space-between;
+  justify-content: flex-start;
   min-height: 0;
   padding: 0;
   width: 100%;
+
+  @media screen and (min-width: size.$tablet) {
+    justify-content: center;
+  }
 }
 
 .content {
