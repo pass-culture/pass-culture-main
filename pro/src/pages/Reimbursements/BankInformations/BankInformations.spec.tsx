@@ -1,6 +1,5 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as router from 'react-router'
 import { expect } from 'vitest'
 
 import { api } from '@/apiClient/api'
@@ -21,8 +20,6 @@ import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactori
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 import { BankInformations } from '@/pages/Reimbursements/BankInformations/BankInformations'
-
-import type { ReimbursementsContextProps } from '../../Reimbursements'
 
 const mockMutate = vi.fn()
 vi.mock('swr', async () => ({
@@ -47,20 +44,6 @@ const defaultBankAccountResponseModel: BankAccountResponseModel = {
   obfuscatedIban: 'XXXX-123',
   status: BankAccountApplicationStatus.ACCEPTE,
 }
-
-const contextData: ReimbursementsContextProps = {
-  selectedOfferer: {
-    ...defaultGetOffererResponseModel,
-    name: 'toto',
-    id: 1,
-  },
-}
-
-vi.mock('react-router', async () => ({
-  ...(await vi.importActual('react-router')),
-  path: '/remboursements/informations-bancaires',
-  useOutletContext: () => contextData,
-}))
 
 function renderBankInformations({
   hasValidBankAccount = false,
@@ -192,7 +175,7 @@ describe('BankInformations page', () => {
   })
 
   it('should display the bank account section even without context', async () => {
-    vi.spyOn(router, 'useOutletContext').mockReturnValue(undefined)
+    //  vi.spyOn(router, 'useOutletContext').mockReturnValue(undefined)
 
     renderBankInformations()
 
@@ -205,14 +188,6 @@ describe('BankInformations page', () => {
 
   it('should display not validated bank account message', async () => {
     renderBankInformations()
-
-    vi.spyOn(router, 'useOutletContext').mockReturnValue({
-      selectedOfferer: {
-        ...defaultGetOffererResponseModel,
-        hasValidBankAccount: false,
-        hasPendingBankAccount: false,
-      },
-    })
 
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 

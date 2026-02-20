@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import { useRef, useState } from 'react'
-import { useLocation, useOutletContext } from 'react-router'
+import { useLocation } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -14,14 +14,13 @@ import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { ReimbursementBankAccount } from '@/components/ReimbursementBankAccount/ReimbursementBankAccount'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import fullMoreIcon from '@/icons/full-more.svg'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
-import type { ReimbursementsContextProps } from '../Reimbursements'
 import { AddBankInformationsDialog } from './AddBankInformationsDialog/AddBankInformationsDialog'
 import styles from './BankInformations.module.scss'
 import { LinkVenuesDialog } from './LinkVenuesDialog/LinkVenuesDialog'
@@ -32,14 +31,14 @@ export const BankInformations = (): JSX.Element => {
   const location = useLocation()
   const { mutate } = useSWRConfig()
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-  const selectedOffererId = useAppSelector(selectCurrentOffererId)
+  const selectedOfferer = useAppSelector(ensureCurrentOfferer)
   const adminSelectedOfferer = useAppSelector(
     (store) => store.user.selectedAdminOfferer
   )
 
   const offererId = withSwitchVenueFeature
     ? adminSelectedOfferer?.id
-    : selectedOffererId
+    : selectedOfferer?.id
 
   const [showAddBankInformationsDialog, setShowAddBankInformationsDialog] =
     useState(false)
@@ -47,10 +46,6 @@ export const BankInformations = (): JSX.Element => {
   const addBankAccountButtonRef = useRef<HTMLButtonElement>(null)
   const editBankAccountDialogTriggerRef = useRef<HTMLButtonElement>(null)
 
-  const {
-    selectedOfferer = null,
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  }: ReimbursementsContextProps = useOutletContext() ?? {}
   const [selectedBankAccount, setSelectedBankAccount] =
     useState<BankAccountResponseModel | null>(null)
 
@@ -130,9 +125,8 @@ export const BankInformations = (): JSX.Element => {
       <Button
         icon={fullMoreIcon}
         variant={
-          /* istanbul ignore next : graphic changes */ selectedOfferer &&
-          (selectedOfferer.hasPendingBankAccount ||
-            selectedOfferer.hasValidBankAccount)
+          selectedOfferer.hasPendingBankAccount ||
+          selectedOfferer.hasValidBankAccount
             ? ButtonVariant.SECONDARY
             : ButtonVariant.PRIMARY
         }
@@ -169,10 +163,8 @@ export const BankInformations = (): JSX.Element => {
                 }}
                 managedVenues={selectedOffererBankAccounts.managedVenues}
                 hasWarning={
-                  (selectedOfferer &&
-                    selectedOfferer.venuesWithNonFreeOffersWithoutBankAccounts
-                      .length > 0) ??
-                  false
+                  selectedOfferer.venuesWithNonFreeOffersWithoutBankAccounts
+                    .length > 0
                 }
                 updateButtonRef={editBankAccountDialogTriggerRef}
               />
@@ -188,7 +180,7 @@ export const BankInformations = (): JSX.Element => {
         isDialogOpen={showAddBankInformationsDialog}
         dialogTriggerRef={addBankAccountButtonRef}
       />
-      {selectedBankAccount !== null && selectedOfferer !== null && (
+      {selectedBankAccount !== null && (
         <LinkVenuesDialog
           offererId={selectedOfferer.id}
           selectedBankAccount={selectedBankAccount}

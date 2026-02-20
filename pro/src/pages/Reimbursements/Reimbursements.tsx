@@ -5,20 +5,18 @@ import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import {
+  ensureCurrentOfferer,
   ensureOffererNames,
-  selectCurrentOfferer,
 } from '@/commons/store/offerer/selectors'
 import { OffererSelect } from '@/components/OffererSelect/OffererSelect'
 import { ReimbursementsTabs } from '@/components/ReimbursementsTabs/ReimbursementsTabs'
-
-import styles from './Reimbursement.module.scss'
 
 export type ReimbursementsContextProps = {
   selectedOfferer: GetOffererResponseModel | null
 }
 
 export const Reimbursements = (): JSX.Element => {
-  const selectedOfferer = useAppSelector(selectCurrentOfferer)
+  const selectedOfferer = useAppSelector(ensureCurrentOfferer)
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
   const offererNames = useAppSelector(ensureOffererNames)
 
@@ -30,12 +28,8 @@ export const Reimbursements = (): JSX.Element => {
       {withSwitchVenueFeature && offererNames && offererNames.length > 1 && (
         <OffererSelect />
       )}
-      <div className={styles['reimbursements-container']}>
-        <div>
-          <ReimbursementsTabs selectedOfferer={selectedOfferer} />
-          <Outlet context={{ selectedOfferer }} />
-        </div>
-      </div>
+      <ReimbursementsTabs selectedOfferer={selectedOfferer} />
+      <Outlet />
     </BasicLayout>
   )
 }
