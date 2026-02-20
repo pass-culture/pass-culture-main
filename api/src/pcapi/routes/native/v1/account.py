@@ -1,6 +1,7 @@
 import logging
 
 import flask
+import pydantic
 import pydantic.v1 as pydantic_v1
 import sqlalchemy.orm as sa_orm
 from flask import current_app as app
@@ -10,7 +11,6 @@ import pcapi.core.bookings.exceptions as bookings_exceptions
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.users.models as users_models
 from pcapi.connectors import api_recaptcha
-from pcapi.connectors import google_oauth
 from pcapi.core import token as token_utils
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.mails.transactional.users.pre_anonymize_beneficiary import send_beneficiary_pre_anonymization_email
@@ -26,6 +26,7 @@ from pcapi.core.users import email as email_api
 from pcapi.core.users import exceptions
 from pcapi.core.users import gdpr_api
 from pcapi.core.users import password_utils
+from pcapi.core.users import schemas as users_schemas
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.core.users.sessions import create_user_jwt_tokens
 from pcapi.models import api_errors
@@ -212,10 +213,13 @@ def create_account(body: serializers.AccountRequest) -> None:
         raise api_errors.ApiErrors({"dateOfBirth": "The birthdate is invalid"})
 
 
-@blueprint.native_route("/oauth/google/account", methods=["POST"])
+@blueprint.native_route("/oauth/<string:sso_provider>/account", methods=["POST"])
 @spectree_serialize(response_model=auth_serializers.SigninResponse, api=blueprint.api, on_error_statuses=[400])
 @atomic()
-def create_account_with_google_sso(body: serializers.GoogleAccountRequest) -> auth_serializers.SigninResponse:
+def create_account_with_sso(sso_provider: str, body: serializers.SSOAccountRequest) -> auth_serializers.SigninResponse:
+    if sso_provider not in auth_serializers.SSOProvider:
+        raise api_errors.ApiErrors({"code": "SSO_PROVIDER_INVALID", "general": "Le fournisseur SSO est invalide"})
+
     if FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active():
         try:
             api_recaptcha.check_native_app_recaptcha_token(body.token)
@@ -226,8 +230,6 @@ def create_account_with_google_sso(body: serializers.GoogleAccountRequest) -> au
         account_creation_token = token_utils.UUIDToken.load_and_check(
             body.account_creation_token, token_utils.TokenType.ACCOUNT_CREATION
         )
-        google_user = google_oauth.GoogleUser.model_validate(account_creation_token.data)
-        account_creation_token.expire()
     except exceptions.ExpiredToken as e:
         raise api_errors.ApiErrors(
             {
@@ -243,15 +245,28 @@ def create_account_with_google_sso(body: serializers.GoogleAccountRequest) -> au
             }
         ) from e
 
-    if not google_user.email_verified:
+    try:
+        sso_user = users_schemas.SSOUser.model_validate(account_creation_token.data)
+    except pydantic.ValidationError as e:
+        logger.error("Error loading account creation token data", extra={"error": str(e)})
+        raise api_errors.ApiErrors({"error": "Internal error"})
+
+    account_creation_token.expire()
+
+    if not sso_user.email_verified:
         raise api_errors.ApiErrors({"code": "EMAIL_NOT_VALIDATED", "general": ["L'email n'a pas été validé."]})
+
+    if not sso_user.email:
+        raise api_errors.ApiErrors(
+            {"code": "EMAIL_MISSING", "general": ["L'email n'a pas pu être récupéré auprès du fournisseur SSO."]}
+        )
 
     try:
         created_user = api.create_account(
-            email=google_user.email,
+            email=sso_user.email,
             password=None,
-            sso_provider="google",
-            sso_user_id=google_user.sub,
+            sso_provider=sso_provider,
+            sso_user_id=sso_user.sub,
             birthdate=body.birthdate,
             marketing_email_subscription=bool(body.marketing_email_subscription),
             is_email_validated=True,
@@ -262,7 +277,7 @@ def create_account_with_google_sso(body: serializers.GoogleAccountRequest) -> au
             api.save_trusted_device(device_info=body.trusted_device, user=created_user)
 
     except exceptions.UserAlreadyExistsException:
-        raise api_errors.ApiErrors({"email": [f"Un compte existe déjà pour l'adresse mail Google {google_user.email}"]})
+        raise api_errors.ApiErrors({"email": [f"Un compte existe déjà pour l'adresse mail {sso_user.email}"]})
 
     except exceptions.UnderAgeUserException:
         raise api_errors.ApiErrors({"dateOfBirth": "The birthdate is invalid"})

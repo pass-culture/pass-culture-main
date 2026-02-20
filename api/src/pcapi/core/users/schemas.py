@@ -142,3 +142,10 @@ class GdprDataContainer(GdprSerializer):
     generationDate: datetime
     internal: GdprInternal
     external: GdprExternal
+
+
+class SSOUser(pydantic_v2.BaseModel):
+    sub: str
+    email: str | None = None
+    email_verified: bool | None = None
+    is_private_email: bool | None = None

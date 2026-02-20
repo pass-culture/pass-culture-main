@@ -4,6 +4,7 @@ from flask_login import current_user
 
 import pcapi.core.token as token_utils
 from pcapi.connectors import api_recaptcha
+from pcapi.connectors import apple_oauth
 from pcapi.connectors import google_oauth
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.subscription.dms import api as dms_subscription_api
@@ -199,14 +200,17 @@ def google_oauth_state() -> authentication.OauthStateResponse:
     return authentication.OauthStateResponse(oauth_state_token=encoded_oauth_state_token)
 
 
-@blueprint.native_route("/oauth/google/authorize", methods=["POST"])
+@blueprint.native_route("/oauth/<string:sso_provider>/authorize", methods=["POST"])
 @spectree_serialize(
     response_model=authentication.SigninResponse,
     on_success_status=200,
     on_error_statuses=[400, 401],
     api=blueprint.api,
 )
-def google_auth(body: authentication.GoogleSigninRequest) -> authentication.SigninResponse:
+def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) -> authentication.SigninResponse:
+    if sso_provider not in authentication.SSOProvider:
+        raise api_errors.ApiErrors({"error": "Unknown SSO provider"})
+
     try:
         oauth_state_token = token_utils.UUIDToken.load_and_check(
             body.oauth_state_token, token_utils.TokenType.OAUTH_STATE
@@ -221,12 +225,29 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
         ) from e
     oauth_state_token.expire()
 
-    google_user = google_oauth.get_google_user(body.authorization_code)
-    if not google_user.email_verified:
+    if sso_provider == "apple":
+        try:
+            sso_user = apple_oauth.get_apple_user(body.authorization_code)
+        except apple_oauth.AppleSignInException:
+            raise ApiErrors({"code": "SSO_ERROR", "general": "L'authentification a échoué"}, status_code=401)
+    elif sso_provider == "google":
+        sso_user = google_oauth.get_google_user(body.authorization_code)
+
+    if not sso_user.email_verified:
         raise ApiErrors({"code": "SSO_EMAIL_NOT_VALIDATED", "general": ["L'email n'a pas été validé."]})
 
-    email = google_user.email
-    user = users_repo.find_user_by_email(email)
+    if not sso_user.email:
+        raise api_errors.ApiErrors(
+            {"code": "EMAIL_MISSING", "general": ["L'email n'a pas pu être récupéré auprès du fournisseur SSO."]}
+        )
+
+    email = sso_user.email
+    sso_user_id = sso_user.sub
+    single_sign_on = users_repo.get_single_sign_on(sso_provider, sso_user_id)
+    if not single_sign_on:
+        user = users_repo.find_user_by_email(email)
+    else:
+        user = single_sign_on.user
 
     if not user:
         logger.info(
@@ -234,7 +255,7 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
             extra={"sso_provider": "google", "avoid_current_user": True},
             technical_message_id="users.login.sso.google",
         )
-        encoded_account_creation_token = users_api.create_account_creation_token(google_user)
+        encoded_account_creation_token = users_api.create_account_creation_token(sso_user)
         # the frontends (web, ios & android app) will handle this error and redirect to the account creation form
         raise ApiErrors(
             {
@@ -252,7 +273,7 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
     if user.account_state == user_models.AccountState.ANONYMIZED:
         raise ApiErrors({"code": "SSO_ACCOUNT_ANONYMIZED", "general": ["Le compte a été anonymisé"]})
 
-    sso_user_id = google_user.sub
+    sso_user_id = sso_user.sub
     with transaction():
         if not user.isEmailValidated:
             # An account registered with a password and with its email not validated is a symptom
@@ -265,7 +286,7 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
         user_google_ssos = [sso for sso in user.single_sign_ons if sso.ssoProvider == "google"]
         if user_google_ssos:
             current_google_sso = user_google_ssos[0]
-            current_google_sso.ssoUserId = google_user.sub
+            current_google_sso.ssoUserId = sso_user.sub
         else:
             current_google_sso = users_repo.create_single_sign_on(user, "google", sso_user_id)
             db.session.add(current_google_sso)
@@ -278,10 +299,7 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
         extra={"sso_provider": "google", "avoid_current_user": True},
         technical_message_id="users.login.sso.google",
     )
-    tokens = create_user_jwt_tokens(
-        user=user,
-        device_info=body.device_info,
-    )
+    tokens = create_user_jwt_tokens(user=user, device_info=body.device_info)
     return authentication.SigninResponse(
         access_token=tokens.access,
         refresh_token=tokens.refresh,

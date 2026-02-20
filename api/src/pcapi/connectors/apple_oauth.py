@@ -4,28 +4,21 @@ import typing
 
 import jwt
 from jwt import PyJWKClient
-from pydantic import BaseModel
 from urllib3 import exceptions as urllib3_exceptions
 
 from pcapi import settings
+from pcapi.core.users import schemas as users_schemas
 from pcapi.utils import requests
 
 
 logger = logging.getLogger(__name__)
 
 
-class AppleUser(BaseModel):
-    sub: str
-    email: str | None = None
-    email_verified: bool | None = None
-    is_private_email: bool | None = None
-
-
 class AppleSignInException(Exception):
     pass
 
 
-def get_apple_user(authorization_code: str) -> AppleUser:
+def get_apple_user(authorization_code: str) -> users_schemas.SSOUser:
     client_secret = _generate_client_secret()
 
     try:
@@ -46,6 +39,8 @@ def get_apple_user(authorization_code: str) -> AppleUser:
             id_token,
             signing_key.key,
             algorithms=["RS256"],
+            audience=settings.APPLE_CLIENT_ID,
+            issuer=settings.APPLE_ISSUER_URL,
             options=jwt.types.Options(verify_signature=True),
         )
     except jwt.PyJWTError as e:
@@ -96,7 +91,7 @@ def _fetch_identity_token(client_secret: str, authorization_code: str) -> str:
     return response.json()["id_token"]
 
 
-def _parse_identity_token(payload: dict[str, typing.Any]) -> AppleUser:
+def _parse_identity_token(payload: dict[str, typing.Any]) -> users_schemas.SSOUser:
     # Doc on id_token content: https://developer.apple.com/documentation/signinwithapplejs/authorizationi/id_token
     is_private_email = payload.get("is_private_email")
     if isinstance(is_private_email, str):
@@ -106,7 +101,7 @@ def _parse_identity_token(payload: dict[str, typing.Any]) -> AppleUser:
     if isinstance(email_verified, str):
         email_verified = email_verified.lower() == "true"
 
-    return AppleUser(
+    return users_schemas.SSOUser(
         sub=payload["sub"],
         email=payload.get("email"),
         email_verified=email_verified,

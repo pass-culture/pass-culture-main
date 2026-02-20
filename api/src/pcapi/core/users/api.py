@@ -44,6 +44,7 @@ from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.users import constants
 from pcapi.core.users import exceptions
 from pcapi.core.users import models
+from pcapi.core.users import schemas as users_schemas
 from pcapi.core.users import sessions
 from pcapi.core.users.email.update import check_email_address_does_not_exist
 from pcapi.core.users.password_utils import check_password_strength
@@ -59,7 +60,6 @@ from pcapi.utils.requests import ExternalAPIException
 
 
 if typing.TYPE_CHECKING:
-    from pcapi.connectors import google_oauth
     from pcapi.routes.native.v1.serialization import account as account_serialization
 
 
@@ -897,7 +897,7 @@ def create_oauth_state_token() -> str:
     return token.encoded_token
 
 
-def create_account_creation_token(google_user: "google_oauth.GoogleUser") -> str:
+def create_account_creation_token(google_user: users_schemas.SSOUser) -> str:
     token = token_utils.UUIDToken.create(
         token_utils.TokenType.ACCOUNT_CREATION,
         constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME,
