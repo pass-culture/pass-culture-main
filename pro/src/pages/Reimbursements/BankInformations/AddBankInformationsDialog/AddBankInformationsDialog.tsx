@@ -13,7 +13,7 @@ interface ReimbursmentPointDialogProps {
   closeDialog: () => void
   offererId?: number
   isDialogOpen: boolean
-  dialogTriggerRef?: React.RefObject<HTMLButtonElement>
+  dialogTriggerRef?: React.RefObject<HTMLButtonElement | null>
 }
 
 export const AddBankInformationsDialog = ({

@@ -30,7 +30,6 @@ describe('useAccessibleScroll', () => {
       getBoundingClientRect: vi.fn(() => createMockRect(180)),
     } as unknown as HTMLDivElement
 
-    // @ts-expect-error: Refs normally attached on components, but we need here to attach it to the mocked content element for the test
     result.current.contentWrapperRef.current = contentElement
     result.current.scrollToContentWrapper()
 
@@ -84,8 +83,6 @@ describe('useAccessibleScroll', () => {
       getBoundingClientRect: vi.fn(() => createMockRect(180)),
     } as unknown as HTMLDivElement
 
-    // Attach mocked content element to the hook ref
-    // @ts-expect-error: Refs normally attached on components, but we need here to attach it to the mocked content element for the test
     result.current.contentWrapperRef.current = contentElement
     result.current.scrollToContentWrapper()
 

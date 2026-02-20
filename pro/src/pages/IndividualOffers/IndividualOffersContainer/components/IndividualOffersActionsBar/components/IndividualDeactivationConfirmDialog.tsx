@@ -13,7 +13,7 @@ export interface DeactivationConfirmDialogProps {
   onCancel: (status: boolean) => void
   onConfirm: () => void
   isDialogOpen: boolean
-  refToFocusOnClose?: React.RefObject<HTMLButtonElement>
+  refToFocusOnClose?: React.RefObject<HTMLButtonElement | null>
 }
 
 export const IndividualDeactivationConfirmDialog = ({

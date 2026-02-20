@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import styles from './AccessibleScrollContainer.module.scss'
 
 type AccessibleScrollContainerProps = {
-  containerRef: React.RefObject<HTMLDivElement>
+  containerRef: React.RefObject<HTMLDivElement | null>
   liveMessage: string
   children: React.ReactNode
   className?: string

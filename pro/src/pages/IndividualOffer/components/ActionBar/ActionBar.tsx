@@ -26,7 +26,7 @@ export interface ActionBarProps {
   publicationMode?: 'later' | 'now'
   step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS
   dirtyForm?: boolean
-  saveEditionChangesButtonRef?: React.RefObject<HTMLButtonElement>
+  saveEditionChangesButtonRef?: React.RefObject<HTMLButtonElement | null>
   isEvent?: boolean
 }
 

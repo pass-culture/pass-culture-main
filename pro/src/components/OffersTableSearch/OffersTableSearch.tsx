@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useId, useState } from 'react'
+import { type SubmitEventHandler, useId, useState } from 'react'
 
 import {
   type FilterConfigType,
@@ -16,7 +16,7 @@ import styles from './OffersTableSearch.module.scss'
 
 export type OffersTableSearchProps = {
   type: FilterConfigType
-  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void
+  onSubmit: SubmitEventHandler<HTMLFormElement>
   isDisabled: boolean
   hasActiveFilters: boolean
   nameInputProps: {
@@ -27,7 +27,7 @@ export type OffersTableSearchProps = {
   }
   onResetFilters: () => void
   children: React.ReactNode
-  searchButtonRef?: React.RefObject<HTMLButtonElement>
+  searchButtonRef?: React.RefObject<HTMLButtonElement | null>
 }
 
 export const OffersTableSearch = ({

@@ -56,7 +56,7 @@ export interface DialogBuilderProps {
    * Ref of the element to focus on when the dialog is closed.
    * If refToFocusOnClose.current is null, the trigger element will be focused as a fallback.
    */
-  refToFocusOnClose?: React.RefObject<HTMLElement>
+  refToFocusOnClose?: React.RefObject<HTMLElement | null>
 }
 
 /**

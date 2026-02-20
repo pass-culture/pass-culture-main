@@ -33,7 +33,7 @@ export interface RequestFormDialogProps {
   contactUrl: string
   isPreview: boolean
   onConfirmDialog: () => void
-  dialogTriggerRef?: React.RefObject<HTMLButtonElement>
+  dialogTriggerRef?: React.RefObject<HTMLButtonElement | null>
 }
 
 export const RequestFormDialog = ({

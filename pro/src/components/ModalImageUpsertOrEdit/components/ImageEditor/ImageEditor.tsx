@@ -40,7 +40,7 @@ interface ImageEditorProps extends ImageEditorConfig {
   children?: never
   onChangeDone?: () => void
   onImagePainted?: () => void
-  onImageError?: (ev: Event) => void
+  onImageError?: () => void
 }
 
 export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
@@ -157,7 +157,12 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
           scale={scale}
           width={responsiveCanvasWidth}
           height={responsiveCanvasHeight}
-          border={[responsiveCropBorderWidth, responsiveCropBorderHeight]}
+          border={
+            [
+              responsiveCropBorderWidth,
+              responsiveCropBorderHeight,
+            ] as unknown as number
+          }
           aria-label="Editeur d'image"
         />
         <label className={style['image-editor-label']} htmlFor="scale">

@@ -9,7 +9,7 @@ interface OfferEducationalModalProps {
   onValidate(): void
   isFromOffer?: boolean
   isDialogOpen: boolean
-  refToFocusOnClose?: React.RefObject<HTMLButtonElement>
+  refToFocusOnClose?: React.RefObject<HTMLButtonElement | null>
 }
 
 export const CancelCollectiveBookingModal = ({

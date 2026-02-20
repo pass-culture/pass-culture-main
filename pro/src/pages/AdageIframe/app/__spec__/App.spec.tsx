@@ -201,7 +201,7 @@ describe('app', () => {
           aroundLatLng: '48.856614, 2.3522219',
           aroundRadius: DEFAULT_GEO_RADIUS,
         }),
-        {}
+        undefined
       )
     })
   })

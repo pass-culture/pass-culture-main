@@ -19,7 +19,7 @@ type NewOffererPlaylistProps = {
     venueId,
     index,
   }: VenuePlaylistTracker) => void
-  observableRef?: React.RefObject<HTMLDivElement>
+  observableRef?: React.RefObject<HTMLDivElement | null>
 }
 
 export const NewOffererPlaylist = ({

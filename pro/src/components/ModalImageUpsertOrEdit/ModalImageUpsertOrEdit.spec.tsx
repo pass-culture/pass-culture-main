@@ -222,7 +222,7 @@ describe('ModalImageUpsertOrEdit', () => {
         })
         await waitForRender()
         expect(
-          screen.getByText(/Image non conforme aux recommandations/)
+          await screen.findByText(/Image non conforme aux recommandations/)
         ).toBeInTheDocument()
       })
     })

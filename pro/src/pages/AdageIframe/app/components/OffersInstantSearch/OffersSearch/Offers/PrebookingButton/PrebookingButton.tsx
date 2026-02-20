@@ -29,7 +29,7 @@ export interface PrebookingButtonProps {
   institutionOfferCount?: number
   setOfferPrebooked?: (value: boolean) => void
   shouldDisablePrebookButton: boolean
-  refToFocusOnOfferPrebooked?: React.RefObject<HTMLElement>
+  refToFocusOnOfferPrebooked?: React.RefObject<HTMLElement | null>
 }
 
 export const PrebookingButton = ({

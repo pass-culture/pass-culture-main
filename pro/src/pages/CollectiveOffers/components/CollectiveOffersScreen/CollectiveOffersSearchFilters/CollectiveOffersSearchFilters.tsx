@@ -1,4 +1,4 @@
-import type { Dispatch, FormEvent, SetStateAction } from 'react'
+import type { Dispatch, SetStateAction, SubmitEvent } from 'react'
 
 import {
   CollectiveLocationType,
@@ -31,7 +31,7 @@ export interface CollectiveOffersSearchFiltersProps {
   setSelectedFilters: Dispatch<SetStateAction<CollectiveSearchFiltersParams>>
   disableAllFilters: boolean
   resetFilters: () => void
-  searchButtonRef?: React.RefObject<HTMLButtonElement>
+  searchButtonRef?: React.RefObject<HTMLButtonElement | null>
 }
 
 export const CollectiveOffersSearchFilters = ({
@@ -97,7 +97,7 @@ export const CollectiveOffersSearchFilters = ({
     updateSearchFilters({ periodEndingDate: dateToFilter })
   }
 
-  const requestFilteredOffers = (event: FormEvent) => {
+  const requestFilteredOffers = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
     const newSearchFilters = {
       ...selectedFilters,

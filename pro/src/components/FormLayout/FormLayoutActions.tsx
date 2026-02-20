@@ -3,15 +3,14 @@ import React from 'react'
 
 import style from './FormLayout.module.scss'
 
+type ActionElement = React.ReactElement<{ className?: string }>
+
 interface FormLayoutActionsProps {
-  children: React.ReactElement[] | React.ReactElement
+  children: ActionElement[] | ActionElement
   className?: string
 }
 
-const addActionClass = (
-  element: React.ReactElement,
-  index?: number
-): JSX.Element =>
+const addActionClass = (element: ActionElement, index?: number): JSX.Element =>
   React.cloneElement(element, {
     ...element.props,
     key: index,

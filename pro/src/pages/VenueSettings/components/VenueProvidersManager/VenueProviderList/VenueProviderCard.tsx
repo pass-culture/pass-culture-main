@@ -19,7 +19,7 @@ export interface VenueProviderCardProps {
   venue: GetVenueResponseModel
   venueDepartmentCode?: string | null
   offererId: number
-  selectSoftwareButtonRef: React.RefObject<HTMLButtonElement>
+  selectSoftwareButtonRef: React.RefObject<HTMLButtonElement | null>
 }
 
 export const VenueProviderCard = ({

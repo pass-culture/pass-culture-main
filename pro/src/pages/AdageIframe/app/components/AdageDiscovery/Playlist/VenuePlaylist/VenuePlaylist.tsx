@@ -19,7 +19,7 @@ type VenuePlaylistProps = {
     venueId,
     index,
   }: VenuePlaylistTracker) => void
-  observableRef?: React.RefObject<HTMLDivElement>
+  observableRef?: React.RefObject<HTMLDivElement | null>
 }
 
 function getPlaylistTitle(distanceMax: number) {
