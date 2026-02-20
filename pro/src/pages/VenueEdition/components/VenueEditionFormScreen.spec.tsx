@@ -7,7 +7,11 @@ import createFetchMock from 'vitest-fetch-mock'
 
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
 import { api } from '@/apiClient/api'
-import { ApiError, type GetVenueResponseModel } from '@/apiClient/v1'
+import {
+  ApiError,
+  DisplayableActivity,
+  type GetVenueResponseModel,
+} from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import * as useEducationalDomains from '@/commons/hooks/swr/useEducationalDomains'
@@ -248,6 +252,57 @@ describe('VenueEditionFormScreen', () => {
       expect(
         screen.getByText('Modalités d’accessibilité via acceslibre')
       ).toBeInTheDocument()
+    })
+
+    it('should not display domain section when educational domains data is empty', () => {
+      vi.spyOn(useEducationalDomains, 'useEducationalDomains').mockReturnValue({
+        isLoading: false,
+        data: [],
+      } as SWRResponse)
+
+      renderForm(
+        {
+          ...baseVenue,
+          collectiveDomains: [],
+        },
+        { initialRouterEntries: ['/'] }
+      )
+
+      expect(screen.queryByText(/Domaine d’activité/)).not.toBeInTheDocument()
+      expect(screen.queryByText(/Domaines d’activité/)).not.toBeInTheDocument()
+      expect(screen.queryByText(/Activité/)).not.toBeInTheDocument()
+    })
+
+    it('should display activity label when venue has an activity', () => {
+      renderForm(
+        {
+          ...baseVenue,
+          activity: DisplayableActivity.BOOKSTORE,
+        },
+        { initialRouterEntries: ['/'] }
+      )
+
+      expect(screen.getByText(/Activité :/)).toBeInTheDocument()
+      expect(screen.getByText('Librairie')).toBeInTheDocument()
+    })
+
+    it('should display both activity and domains when both are set', () => {
+      renderForm(
+        {
+          ...baseVenue,
+          activity: DisplayableActivity.CINEMA,
+          collectiveDomains: [
+            { id: 1, name: 'domaine 1' },
+            { id: 2, name: 'domaine b' },
+          ],
+        },
+        { initialRouterEntries: ['/'] }
+      )
+
+      expect(screen.getByText(/Activité :/)).toBeInTheDocument()
+      expect(screen.getByText('Cinéma')).toBeInTheDocument()
+      expect(screen.getByText(/Domaines d’activité/)).toBeInTheDocument()
+      expect(screen.getByText('domaine 1, domaine b')).toBeInTheDocument()
     })
 
     it('should always display an "Accueil du public"', () => {
