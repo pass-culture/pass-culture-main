@@ -1,6 +1,5 @@
 import { Outlet } from 'react-router'
 
-import type { GetOffererResponseModel } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -10,10 +9,6 @@ import {
 } from '@/commons/store/offerer/selectors'
 import { OffererSelect } from '@/components/OffererSelect/OffererSelect'
 import { ReimbursementsTabs } from '@/components/ReimbursementsTabs/ReimbursementsTabs'
-
-export type ReimbursementsContextProps = {
-  selectedOfferer: GetOffererResponseModel | null
-}
 
 export const Reimbursements = (): JSX.Element => {
   const selectedOfferer = useAppSelector(ensureCurrentOfferer)

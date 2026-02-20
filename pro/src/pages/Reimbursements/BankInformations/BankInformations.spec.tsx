@@ -175,8 +175,6 @@ describe('BankInformations page', () => {
   })
 
   it('should display the bank account section even without context', async () => {
-    //  vi.spyOn(router, 'useOutletContext').mockReturnValue(undefined)
-
     renderBankInformations()
 
     expect(

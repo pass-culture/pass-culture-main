@@ -10,14 +10,6 @@ import {
 
 import { Reimbursements } from './Reimbursements'
 
-// const contextData: ReimbursementsContextProps = {
-//   selectedOfferer: defaultGetOffererResponseModel,
-// }
-// vi.mock('react-router', async () => ({
-//   ...(await vi.importActual('react-router')),
-//   useOutletContext: () => contextData,
-// }))
-
 function renderReimbursements(options?: RenderWithProvidersOptions) {
   renderWithProviders(<Reimbursements />, {
     user: sharedCurrentUserFactory(),

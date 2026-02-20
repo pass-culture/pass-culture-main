@@ -53,6 +53,7 @@ export const RedirectDialog = ({
           to={to}
           data-testid="redirect-dialog-link"
           isExternal={isExternal}
+          opensInNewTab={isExternal}
           variant={ButtonVariant.PRIMARY}
           onClick={onRedirect}
           icon={withRedirectLinkIcon ? fullLinkIcon : undefined}
