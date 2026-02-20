@@ -13,6 +13,7 @@ from pcapi import settings
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 from . import _common
 
@@ -142,3 +143,9 @@ def create_user_jwt_tokens(
 
     access_token = create_access_token(identity=user.email, additional_claims={"user_claims": {"user_id": user.id}})
     return TokensContainer(access=access_token, refresh=refresh_token)
+
+
+def delete_expired_jwt() -> None:
+    db.session.query(users_models.NativeUserSession).filter(
+        users_models.NativeUserSession.expirationDatetime < date_utils.get_naive_utc_now()
+    ).delete(synchronize_session=False)

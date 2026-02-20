@@ -1,11 +1,15 @@
+from datetime import timedelta
+
 import flask
 import pytest
 from flask_jwt_extended.utils import decode_token
 
 from pcapi import settings
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 from pcapi.core.users.sessions import _native
 from pcapi.core.users.sessions import create_user_jwt_tokens
+from pcapi.models import db
 from pcapi.routes.native.v1.serialization import account as account_serialization
 from pcapi.utils.date import get_naive_utc_now
 
@@ -97,3 +101,15 @@ class CreateUsetJwtTokensTestTest:
         assert access_token_lifetime == settings.JWT_ACCESS_TOKEN_EXPIRES
         assert decoded_access_token["sub"] == user.email
         assert decoded_access_token["user_claims"]["user_id"] == user.id
+
+
+class DeleteExpiredJwtTest:
+    def test_delete_expired_jwt(self):
+        user = users_factories.BaseUserFactory()
+        valid_session = users_factories.NativeUserSessionFactory(user=user)
+        users_factories.NativeUserSessionFactory(user=user, expirationDatetime=get_naive_utc_now() - timedelta(days=1))
+
+        _native.delete_expired_jwt()
+
+        assert db.session.query(users_models.NativeUserSession).count() == 1
+        assert db.session.query(users_models.NativeUserSession.id).scalar() == valid_session.id

@@ -17,6 +17,7 @@ from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.mails.transactional.users import online_event_reminder
 from pcapi.core.users import ds as users_ds
 from pcapi.core.users import gdpr_api
+from pcapi.core.users import sessions
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.notifications import push
@@ -279,24 +280,11 @@ def _send_notification_favorites_not_booked() -> None:
 @cron_decorators.log_cron
 @atomic()
 def delete_expired_sessions() -> None:
-    # TODO (rpa 10/12/2025):  move this code to users/session.py and clean imports
-    import sqlalchemy as sa
-
-    from pcapi.core.users import models as users_models
-
-    db.session.query(users_models.UserSession).filter(
-        users_models.UserSession.expirationDatetime < sa.func.now()
-    ).delete(synchronize_session=False)
+    sessions.delete_expired_sessions()
 
 
 @blueprint.cli.command("delete_expired_jwt")
 @cron_decorators.log_cron
 @atomic()
 def delete_expired_jwt() -> None:
-    import sqlalchemy as sa
-
-    from pcapi.core.users import models as users_models
-
-    db.session.query(users_models.NativeUserSession).filter(
-        users_models.NativeUserSession.expirationDatetime < sa.func.now()
-    ).delete(synchronize_session=False)
+    sessions.delete_expired_jwt()

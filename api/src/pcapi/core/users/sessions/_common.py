@@ -97,3 +97,9 @@ def get_user_from_session(
         query = query.options(*options)
 
     return query.one_or_none()
+
+
+def delete_expired_sessions() -> None:
+    db.session.query(users_models.UserSession).filter(
+        users_models.UserSession.expirationDatetime < date_utils.get_naive_utc_now()
+    ).delete(synchronize_session=False)
