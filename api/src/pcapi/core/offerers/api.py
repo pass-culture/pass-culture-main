@@ -3105,8 +3105,9 @@ def get_or_create_offer_location(
 ) -> models.OffererAddress:
     offerer_address: models.OffererAddress | None = (
         db.session.query(models.OffererAddress)
+        .join(models.OffererAddress.venue)
         .filter(
-            models.OffererAddress.offererId == offerer_id,
+            models.Venue.managingOffererId == offerer_id,
             models.OffererAddress.venueId == venue_id,
             models.OffererAddress.label == label,
             models.OffererAddress.addressId == address_id,
@@ -3138,8 +3139,9 @@ def get_or_create_offer_location(
 def get_offerer_address(offerer_id: int, address_id: int, label: str | None = None) -> models.OffererAddress | None:
     return (
         db.session.query(models.OffererAddress)
+        .join(models.OffererAddress.venue)
         .filter(
-            models.OffererAddress.offererId == offerer_id,
+            models.Venue.managingOffererId == offerer_id,
             models.OffererAddress.label == label,
             models.OffererAddress.addressId == address_id,
         )

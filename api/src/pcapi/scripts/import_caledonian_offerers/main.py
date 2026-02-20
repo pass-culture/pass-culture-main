@@ -226,8 +226,9 @@ def create_offerer_and_venue(data: dict, counters: ImportCounters, comment: str)
 
         offerer_address = (
             db.session.query(offerers_models.OffererAddress)
+            .join(offerers_models.OffererAddress.venue)
             .filter(
-                offerers_models.OffererAddress.offererId == offerer.id,
+                offerers_models.Venue.managingOffererId == offerer.id,
                 offerers_models.OffererAddress.addressId == address.id,
                 offerers_models.OffererAddress.label.is_(None),
             )
