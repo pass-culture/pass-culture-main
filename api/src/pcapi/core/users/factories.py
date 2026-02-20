@@ -1017,6 +1017,30 @@ class UserSessionFactory(BaseFactory):
         return super()._create(model_class, *args, **kwargs)
 
 
+class NativeUserSessionFactory(BaseFactory):
+    class Meta:
+        model = models.NativeUserSession
+
+    accessToken = factory.LazyFunction(lambda: str(uuid.uuid4()))
+    refreshToken = factory.LazyFunction(lambda: str(uuid.uuid4()))
+    expirationDatetime = factory.LazyFunction(lambda: datetime.now() + timedelta(days=1))
+    deviceId = factory.LazyFunction(lambda: str(uuid.uuid4()))
+
+    @classmethod
+    def _create(
+        cls,
+        model_class: type[models.UserSession],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.UserSession:
+        try:
+            user = kwargs.pop("user")
+        except KeyError:
+            raise ValueError('NativeUserSessionFactory requires a "user" argument.')
+        kwargs["userId"] = user.id
+        return super()._create(model_class, *args, **kwargs)
+
+
 class FavoriteFactory(BaseFactory):
     class Meta:
         model = models.Favorite
