@@ -1241,7 +1241,7 @@ class CreateMediationV2Test:
         # Given
         user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory()
-        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+        image_as_bytes = (IMAGES_DIR / "mouette_portrait_bigger.jpg").read_bytes()
 
         # When
         api.create_mediation(user, offer, "©Photographe", image_as_bytes)
@@ -1264,7 +1264,7 @@ class CreateMediationV2Test:
         # Given
         user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory()
-        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+        image_as_bytes = (IMAGES_DIR / "mouette_portrait_bigger.jpg").read_bytes()
         existing_number_of_files = len(os.listdir(self.THUMBS_DIR))
 
         mediation_1 = api.create_mediation(user, offer, "©Photographe", image_as_bytes)
@@ -1296,7 +1296,7 @@ class CreateMediationV2Test:
     def test_rollback_if_exception(self, mock_store_public_object, clear_tests_assets_bucket):
         user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory()
-        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+        image_as_bytes = (IMAGES_DIR / "mouette_portrait_bigger.jpg").read_bytes()
         existing_number_of_files = len(os.listdir(self.THUMBS_DIR))
 
         # When

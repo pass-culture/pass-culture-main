@@ -28,7 +28,7 @@ class PostProductImageTest(PublicAPIVenueEndpointHelper):
     default_path_params = {"offer_id": 123435}
 
     def _get_valid_form(self) -> dict:
-        thumb = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+        thumb = (IMAGES_DIR / "mouette_portrait_bigger.jpg").read_bytes()
         return {"file": (BytesIO(thumb), "image.jpg"), "credit": "John Do"}
 
     @staticmethod
