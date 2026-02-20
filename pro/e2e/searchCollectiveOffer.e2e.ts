@@ -197,13 +197,7 @@ test.describe('Search collective offers', () => {
     await panelScrollable.getByLabel('Brouillon').click()
     await page.getByRole('heading', { name: 'Offres réservables' }).click()
 
-    let responsePromise = page.waitForResponse(
-      (response) =>
-        response.url().includes('/collective/bookable-offers') &&
-        response.request().method() === 'GET'
-    )
     await page.getByText('Rechercher').click()
-    await responsePromise
 
     await expectCollectiveOffersAreFound(page, [
       BOOKABLE_OFFERS_COLUMNS,
@@ -231,13 +225,7 @@ test.describe('Search collective offers', () => {
 
     await page.getByLabel('Nom de l’offre').clear()
 
-    responsePromise = page.waitForResponse(
-      (response) =>
-        response.url().includes('/collective/bookable-offers') &&
-        response.request().method() === 'GET'
-    )
     await page.getByText('Rechercher').click()
-    await responsePromise
 
     const rows = page.locator('tbody').locator('tr[data-testid="table-row"]')
     await expect(rows).toHaveCount(5)
