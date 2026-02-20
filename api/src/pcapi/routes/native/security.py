@@ -40,9 +40,9 @@ def authenticated_maybe_inactive_user_required(route_function: RouteFunc) -> Rou
     @wraps(route_function)
     def retrieve_authenticated_user(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
         if current_user.is_anonymous:
-            if not getattr(flask.g, "jwt_data", None):
+            if not hasattr(flask.g, "jwt"):
                 raise UnauthorizedError("Invalid token")
-            _raise_forbidden(flask.g.jwt_data.sub)
+            _raise_forbidden(flask.g.jwt.data.sub)
         return route_function(*args, **kwargs)
 
     return retrieve_authenticated_user
@@ -56,10 +56,10 @@ def authenticated_with_refresh_token(route_function: RouteFunc) -> RouteDecorato
             jwt_type=user_session_manager.JwtType.REFRESH,
         )
 
-        if not hasattr(flask.g, "jwt_data"):
+        if not hasattr(flask.g, "jwt"):
             raise UnauthorizedError("Invalid token")
 
-        user = db.session.query(users_models.User).filter(users_models.User.email == flask.g.jwt_data.sub).one_or_none()
+        user = db.session.query(users_models.User).filter(users_models.User.email == flask.g.jwt.data.sub).one_or_none()
         if user:
             login_user(
                 user,
@@ -69,7 +69,7 @@ def authenticated_with_refresh_token(route_function: RouteFunc) -> RouteDecorato
             # token auth so it needs to be also set here.
             sentry_sdk.set_user({"id": user.id})
         else:
-            _raise_forbidden(flask.g.jwt_data.sub)
+            _raise_forbidden(flask.g.jwt.data.sub)
 
         return route_function(*args, **kwargs)
 

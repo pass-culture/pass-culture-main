@@ -4,9 +4,10 @@ from flask_jwt_extended.utils import decode_token
 
 from pcapi import settings
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users.sessions import _native
 from pcapi.core.users.sessions import create_user_jwt_tokens
-from pcapi.core.users.sessions._native import JwtData
 from pcapi.routes.native.v1.serialization import account as account_serialization
+from pcapi.utils.date import get_naive_utc_now
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -59,17 +60,19 @@ class CreateUsetJwtTokensTestTest:
         user = users_factories.UserFactory()
 
         refresh_token = "some secret jwt token"
-        flask.g.raw_jwt = refresh_token
-        flask.g.jwt_data = JwtData(
-            fresh=False,
-            iat=123456789,
-            jti="123-456-789-secret",
-            type="refresh",
-            sub="user@example.com",
-            nbf=123456789,
-            csrf="123-456-789-secret",
-            exp=123456789,
-            user_claims=None,
+        flask.g.jwt = _native.JwtContainer(
+            raw=refresh_token,
+            data=_native.JwtData(
+                fresh=False,
+                iat=get_naive_utc_now(),
+                jti="123-456-789-secret",
+                type=_native.JwtType.REFRESH,
+                sub="user@example.com",
+                nbf=get_naive_utc_now(),
+                csrf="123-456-789-secret",
+                exp=get_naive_utc_now(),
+                user_claims=None,
+            ),
         )
         tokens = create_user_jwt_tokens(user=user, device_info=None)
 
