@@ -117,7 +117,7 @@ jobs:
               echo "namespace pcapi-pr-$id does not exist"
             fi
             # Delete DNS entry
-            gcloud dns record-sets delete "backend-$id.testing.passculture.team."" --type=A --zone=testing-passculture-team || echo "record A backend-$id.testing.passculture.team does not exist"
+            gcloud dns record-sets delete "backend-$id.testing.passculture.team." --type=A --zone=testing-passculture-team || echo "record A backend-$id.testing.passculture.team does not exist"
             gcloud dns record-sets delete "backoffice-$id.testing.passculture.team." --type=A --zone=testing-passculture-team || echo "record A backoffice-$id.testing.passculture.team does not exist"
             gcloud dns record-sets delete "a-backend-$id.testing.passculture.team." --type=TXT --zone=testing-passculture-team || echo "record TXT backend-$id.testing.passculture.team does not exist"
             gcloud dns record-sets delete "a-backoffice-$id.testing.passculture.team." --type=TXT --zone=testing-passculture-team || echo "record TXT backoffice-$id.testing.passculture.team does not exist"
