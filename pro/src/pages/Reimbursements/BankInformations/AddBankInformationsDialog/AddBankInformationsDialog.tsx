@@ -6,12 +6,8 @@ import {
   DS_BANK_ACCOUNT_PROCEDURE_ID,
   DS_NEW_CALEDONIA_BANK_ACCOUNT_PROCEDURE_ID,
 } from '@/commons/utils/config'
-import { Button } from '@/design-system/Button/Button'
-import fullLinkIcon from '@/icons/full-link.svg'
 import strokeLinkIcon from '@/icons/stroke-link.svg'
-import { Dialog } from '@/ui-kit/Dialog/Dialog'
-
-import styles from './AddBankInformationsDialog.module.scss'
+import { RedirectDialog } from '@/ui-kit/RedirectDialog/RedirectDialog'
 
 interface ReimbursmentPointDialogProps {
   closeDialog: () => void
@@ -31,33 +27,29 @@ export const AddBankInformationsDialog = ({
   const isCaledonian = useIsCaledonian(withSwitchVenueFeature)
 
   return (
-    <Dialog
+    <RedirectDialog
       title="Vous allez être redirigé vers le site demarche.numerique.gouv.fr"
-      explanation="Démarche Numérique est une plateforme sécurisée de démarches administratives en ligne qui permet de déposer votre dossier de compte bancaire."
       icon={strokeLinkIcon}
       onCancel={closeDialog}
       open={isDialogOpen}
       refToFocusOnClose={dialogTriggerRef}
+      redirectText={'Continuer sur demarche.numerique.gouv.fr'}
+      to={
+        isCaledonian
+          ? DS_NEW_CALEDONIA_BANK_ACCOUNT_PROCEDURE_ID
+          : DS_BANK_ACCOUNT_PROCEDURE_ID
+      }
+      isExternal={true}
+      onRedirect={() => {
+        logEvent(BankAccountEvents.CLICKED_CONTINUE_TO_DS, {
+          offererId,
+        })
+      }}
+      cancelText={'Annuler'}
     >
-      <div className={styles['link-button']}>
-        <Button
-          as="a"
-          to={
-            isCaledonian
-              ? DS_NEW_CALEDONIA_BANK_ACCOUNT_PROCEDURE_ID
-              : DS_BANK_ACCOUNT_PROCEDURE_ID
-          }
-          isExternal
-          opensInNewTab
-          icon={fullLinkIcon}
-          onClick={() => {
-            logEvent(BankAccountEvents.CLICKED_CONTINUE_TO_DS, {
-              offererId,
-            })
-          }}
-          label="Continuer sur demarche.numerique.gouv.fr"
-        />
-      </div>
-    </Dialog>
+      Démarche Numérique est une plateforme sécurisée de démarches
+      administratives en ligne qui permet de déposer votre dossier de compte
+      bancaire.
+    </RedirectDialog>
   )
 }

@@ -4,32 +4,23 @@
 
 .bank-account {
   display: grid;
-  padding: var(--size-spacing-l) rem.torem(24px);
-  grid-template-columns: 1fr;
-  grid-template-rows: repeat(2);
-  border: rem.torem(1px) solid var(--color-border-subtle);
-  border-radius: var(--size-border-radius-m);
+  gap: var(--size-spacing-l);
+
+  &-divider {
+    border-bottom: rem.torem(1px) solid var(--color-border-subtle);
+  }
 
   @media (min-width: size.$tablet) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
+    grid-template-columns: 1fr 0 1fr;
+    gap: var(--size-spacing-xl);
 
-.informations-section,
-.linked-venues-section {
-  padding: var(--size-spacing-s) 0;
+    &-divider {
+      border-right: rem.torem(1px) solid var(--color-border-subtle);
+    }
+  }
 }
 
 .informations-section {
-  border-bottom: rem.torem(1px) solid var(--color-border-subtle);
-  padding-bottom: var(--size-spacing-xl);
-  margin-bottom: var(--size-spacing-l);
-
-  @media (min-width: size.$tablet) {
-    border-bottom: none;
-    border-right: rem.torem(1px) solid var(--color-border-subtle);
-  }
-
   &-title {
     @include fonts.title4;
 
@@ -44,13 +35,6 @@
 }
 
 .linked-venues-section {
-  display: flex;
-  flex-direction: column;
-
-  @media (min-width: size.$tablet) {
-    margin-left: var(--size-spacing-xl);
-  }
-
   &-title {
     @include fonts.body-accent;
 
@@ -82,30 +66,5 @@
     background-color: var(--color-background-subtle);
     border-radius: var(--size-border-radius-m);
     padding: var(--size-spacing-m) var(--size-spacing-l);
-  }
-}
-
-.pending-account {
-  display: flex;
-  flex-direction: column;
-  gap: var(--size-spacing-l);
-  padding: var(--size-spacing-l);
-  margin-left: var(--size-spacing-xl);
-  border-radius: var(--size-border-radius-m);
-  background-color: var(--color-background-subtle);
-  color: var(color-black);
-  text-align: center;
-
-  .status-icon {
-    margin: auto;
-    color: var(--color-icon-subtle);
-
-    &.error-icon {
-      color: var(--color-icon-error);
-    }
-  }
-
-  &.needs-correction {
-    background: var(--color-background-error);
   }
 }

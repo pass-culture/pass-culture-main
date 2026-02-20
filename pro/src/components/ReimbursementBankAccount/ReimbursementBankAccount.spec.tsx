@@ -15,7 +15,7 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import { ReimbursementBankAccount } from '../ReimbursementBankAccount'
+import { ReimbursementBankAccount } from './ReimbursementBankAccount'
 
 const mockLogEvent = vi.fn()
 const mockUpdateButtonClick = vi.fn()
@@ -269,7 +269,7 @@ describe('ReimbursementBankAccount', () => {
         managedVenues
       )
       await userEvent.click(
-        screen.getByRole('link', { name: 'Nouvelle fenêtre' })
+        screen.getByRole('link', { name: /Nouvelle fenêtre/ })
       )
       expect(mockLogEvent).toHaveBeenCalledWith(
         BankAccountEvents.CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP,

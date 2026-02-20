@@ -1,42 +1,29 @@
 import { screen, waitFor } from '@testing-library/react'
-import { Route, Routes } from 'react-router'
 
 import { api } from '@/apiClient/api'
-import { routesReimbursements } from '@/app/AppRouter/subroutesReimbursements'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import {
-  Reimbursements,
-  type ReimbursementsContextProps,
-} from '../Reimbursements'
+import { Reimbursements } from './Reimbursements'
 
-const contextData: ReimbursementsContextProps = {
-  selectedOfferer: defaultGetOffererResponseModel,
-}
-vi.mock('react-router', async () => ({
-  ...(await vi.importActual('react-router')),
-  useOutletContext: () => contextData,
-}))
-
-const renderReimbursements = (options?: RenderWithProvidersOptions) => {
-  renderWithProviders(
-    <Routes>
-      <Route path="/remboursements" element={<Reimbursements />}>
-        {routesReimbursements.map((route) => (
-          <Route key={route.path} path={route.path} element={route.element} />
-        ))}
-      </Route>
-      <Route path="/accueil" element={<>Home Page</>} />
-    </Routes>,
-    {
-      initialRouterEntries: ['/remboursements'],
-      ...options,
-    }
-  )
+function renderReimbursements(options?: RenderWithProvidersOptions) {
+  renderWithProviders(<Reimbursements />, {
+    user: sharedCurrentUserFactory(),
+    initialRouterEntries: ['/remboursements'],
+    storeOverrides: {
+      user: { currentUser: sharedCurrentUserFactory() },
+      offerer: {
+        currentOfferer: {
+          ...defaultGetOffererResponseModel,
+        },
+      },
+    },
+    ...options,
+  })
 }
 
 describe('Reimbursement page', () => {

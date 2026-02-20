@@ -1,36 +1,12 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.information {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--size-spacing-s);
-  margin-top: var(--size-spacing-l);
-  margin-bottom: var(--size-spacing-xl);
-}
-
-.information-link-button {
-  width: fit-content;
-}
-
-.add-bank-account-button,
-.spinner,
-.select-offerer-section {
-  margin-top: var(--size-spacing-xxl);
-}
-
-.select-offerer-input {
-  width: rem.torem(433px);
-
-  &-label {
-    margin-bottom: var(--size-spacing-s);
-    width: rem.torem(433px);
-  }
-}
-
-.bank-accounts {
+.bank-information {
   display: flex;
   flex-direction: column;
-  gap: var(--size-spacing-l);
-  margin-top: var(--size-spacing-xl);
+  gap: var(--size-spacing-xl);
+
+  &-panels {
+    gap: var(--size-spacing-l);
+  }
 }
