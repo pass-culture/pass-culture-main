@@ -20,10 +20,12 @@ jobs:
   check-workflow-ref:
     name: "Check workflow ref"
     runs-on: ubuntu-22.04
+    env:
+      TARGET_ENVIRONMENT: ${{ inputs.target_environment }}
     steps:
       - name: "Check workflow ref"
         run: |
-          echo "Deploying to ${{ inputs.target_environment }} from ref: ${{ github.ref }}"
+          echo "Deploying to $TARGET_ENVIRONMENT from ref: ${{ github.ref }}"
           if ! [[ ${{ github.ref }} =~ ^refs\/tags\/v*$ ]]; then
             echo "This workflow can only be triggered from a tag (starting with a 'v')"
             exit 1
@@ -45,7 +47,7 @@ jobs:
     name: "Environment short name"
     needs: check-workflow-ref
     # `deploy` is an artificial environment with protection rules, which allows a single required review instead of many
-    environment: ${{ fromJSON('["deploy", "testing"]')[inputs.target_environment == 'testing'] }}
+    environment: ${{ fromJSON('["deploy", "testing"]')[inputs.target_environment == 'testing' && 1 || 0] }}
     runs-on: ubuntu-22.04
     outputs:
       ENVIRONMENT_SHORT_NAME: ${{ steps.environment-short-name.outputs.ENVIRONMENT_SHORT_NAME }}
