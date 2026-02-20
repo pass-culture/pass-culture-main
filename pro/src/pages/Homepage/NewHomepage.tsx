@@ -7,13 +7,16 @@ import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { getToday } from '@/commons/utils/date'
 import { getLastCollectiveDmsApplication } from '@/commons/utils/getLastCollectiveDmsApplication'
 import {
+  CollectiveDmsTimeline,
+  CollectiveDmsTimelineVariant,
+} from '@/components/CollectiveDmsTimeline/CollectiveDmsTimeline'
+import {
   getPanelId,
   getTabId,
   type TabItem,
 } from '@/ui-kit/Tabs/TabItems/TabItems'
 import { Tabs } from '@/ui-kit/Tabs/Tabs'
 
-import { CollectiveDmsTimeline } from '../Offerers/Offerer/VenueV1/VenueEdition/CollectiveDmsTimeline/CollectiveDmsTimeline'
 import {
   getInitialTab,
   onNewTabSelected,
@@ -25,17 +28,17 @@ import styles from './NewHomepage.module.scss'
 export const NewHomepage = (): JSX.Element => {
   const selectedVenue: GetVenueResponseModel =
     useAppSelector(ensureSelectedVenue)
-  const hasIndividual = !!selectedVenue.hasNonDraftOffers
-  const hasCollective =
-    selectedVenue.allowedOnAdage ||
-    (selectedVenue.collectiveDmsApplications || []).length > 0
 
   const collectiveDmsApplication = getLastCollectiveDmsApplication(
     selectedVenue?.collectiveDmsApplications ?? []
   )
 
+  const hasIndividual = !!selectedVenue.hasNonDraftOffers
+  const hasCollective =
+    selectedVenue?.allowedOnAdage || collectiveDmsApplication
+
   const [selectedTab, setSelectedTab] = useState(
-    getInitialTab(selectedVenue.id, hasIndividual, hasCollective)
+    getInitialTab(selectedVenue.id, hasIndividual, !!hasCollective)
   )
   const individualId = useId()
   const collectiveId = useId()
@@ -171,7 +174,7 @@ export const NewHomepage = (): JSX.Element => {
                 collectiveDmsApplication={collectiveDmsApplication}
                 hasAdageId={Boolean(selectedVenue?.hasAdageId)}
                 adageInscriptionDate={selectedVenue?.adageInscriptionDate}
-                isHomepage
+                variant={CollectiveDmsTimelineVariant.LITE}
               />
             )}
           </div>

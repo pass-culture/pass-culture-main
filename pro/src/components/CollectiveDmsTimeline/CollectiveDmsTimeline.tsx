@@ -9,22 +9,26 @@ import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
-import { Panel } from '@/ui-kit/Panel/Panel'
 import { Timeline, TimelineStepType } from '@/ui-kit/Timeline/Timeline'
 
-import { CollectiveAdageStatus } from './CollectiveAdageStatus'
 import styles from './CollectiveDmsTimeline.module.scss'
+import { OngoingDmsApplicationWrapper } from './OngoingDmsApplicationWrapper'
+
+export enum CollectiveDmsTimelineVariant {
+  DEFAULT = 'DEFAULT',
+  LITE = 'LITE',
+}
 
 export const CollectiveDmsTimeline = ({
   collectiveDmsApplication,
   hasAdageId,
   adageInscriptionDate,
-  isHomepage,
+  variant = CollectiveDmsTimelineVariant.DEFAULT,
 }: {
   collectiveDmsApplication: DMSApplicationForEAC
   hasAdageId: boolean
   adageInscriptionDate?: string | null
-  isHomepage?: boolean
+  variant?: CollectiveDmsTimelineVariant
 }) => {
   const collectiveDmsApplicationLink = `https://demarche.numerique.gouv.fr/dossiers/${collectiveDmsApplication.application}/messagerie`
   const collectiveDmsContactSupport =
@@ -98,6 +102,7 @@ export const CollectiveDmsTimeline = ({
           as="a"
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
+          icon={fullLinkIcon}
           to={collectiveDmsApplicationLink}
           isExternal
           onClick={() =>
@@ -109,6 +114,7 @@ export const CollectiveDmsTimeline = ({
           as="a"
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
+          icon={fullLinkIcon}
           to={collectiveDmsContactSupport}
           isExternal
           label="Contacter les services des ministères de l’Éducation nationale et de la Culture"
@@ -137,6 +143,7 @@ export const CollectiveDmsTimeline = ({
           as="a"
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
+          icon={fullLinkIcon}
           to={collectiveDmsApplicationLink}
           isExternal
           onClick={() => logClickOnDmsLink(DMSApplicationstatus.EN_INSTRUCTION)}
@@ -178,6 +185,7 @@ export const CollectiveDmsTimeline = ({
           as="a"
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
+          icon={fullLinkIcon}
           to={collectiveDmsApplicationLink}
           isExternal
           onClick={() => logClickOnDmsLink(DMSApplicationstatus.ACCEPTE)}
@@ -308,7 +316,7 @@ export const CollectiveDmsTimeline = ({
     />
   )
 
-  const successDmsHomepage = (
+  const successDMSBanner = (
     <div className={styles['banner']}>
       <Banner
         variant={BannerVariants.SUCCESS}
@@ -317,8 +325,8 @@ export const CollectiveDmsTimeline = ({
     </div>
   )
 
-  const showSuccessBanner =
-    isHomepage &&
+  const shouldShowSuccessDMSBanner =
+    variant === CollectiveDmsTimelineVariant.LITE &&
     collectiveDmsApplication.processingDate &&
     isBefore(
       new Date(),
@@ -335,7 +343,7 @@ export const CollectiveDmsTimeline = ({
   switch (collectiveDmsApplication.state) {
     case DMSApplicationstatus.EN_CONSTRUCTION:
       return (
-        <TimelineWrapper isHomepage={isHomepage}>
+        <OngoingDmsApplicationWrapper variant={variant}>
           <Timeline
             steps={[
               confirmationSubmittedStep,
@@ -345,11 +353,11 @@ export const CollectiveDmsTimeline = ({
               disabledAcceptedAdageStep,
             ]}
           />
-        </TimelineWrapper>
+        </OngoingDmsApplicationWrapper>
       )
     case DMSApplicationstatus.EN_INSTRUCTION:
       return (
-        <TimelineWrapper isHomepage={isHomepage}>
+        <OngoingDmsApplicationWrapper variant={variant}>
           <Timeline
             steps={[
               successSubmittedStep,
@@ -358,16 +366,16 @@ export const CollectiveDmsTimeline = ({
               disabledAcceptedAdageStep,
             ]}
           />
-        </TimelineWrapper>
+        </OngoingDmsApplicationWrapper>
       )
     case DMSApplicationstatus.ACCEPTE:
-      if (isHomepage) {
-        return showSuccessBanner ? successDmsHomepage : undefined
-      }
       if (!hasAdageId) {
+        if (variant === CollectiveDmsTimelineVariant.LITE) {
+          return shouldShowSuccessDMSBanner && successDMSBanner
+        }
         return (
           <>
-            {showSuccessBanner && successDmsHomepage}
+            {shouldShowSuccessDMSBanner && successDMSBanner}
             <Timeline
               steps={[
                 successSubmittedStep,
@@ -380,9 +388,12 @@ export const CollectiveDmsTimeline = ({
         )
       }
       if (!hasAdageIdForMoreThan30Days) {
+        if (variant === CollectiveDmsTimelineVariant.LITE) {
+          return shouldShowSuccessDMSBanner && successDMSBanner
+        }
         return (
           <>
-            {showSuccessBanner && successDmsHomepage}
+            {shouldShowSuccessDMSBanner && successDMSBanner}
             <Timeline
               steps={[
                 successSubmittedStep,
@@ -405,25 +416,4 @@ export const CollectiveDmsTimeline = ({
     default:
       assertOrFrontendError(false, 'Invalid dms status.')
   }
-}
-
-const TimelineWrapper = ({
-  children,
-  isHomepage,
-}: {
-  children: React.ReactNode
-  isHomepage?: boolean
-}) => {
-  if (isHomepage) {
-    return (
-      <Panel>
-        <h2 className={styles['panel-title']}>
-          État d’avancement de votre dossier
-        </h2>
-        <CollectiveAdageStatus />
-        {children}
-      </Panel>
-    )
-  }
-  return <>{children}</>
 }
