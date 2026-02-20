@@ -15,7 +15,10 @@ import {
   makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
-import { makeGetVenueManagingOffererResponseModel } from '@/commons/utils/factories/venueFactories'
+import {
+  makeGetVenueManagingOffererResponseModel,
+  makeGetVenueResponseModel,
+} from '@/commons/utils/factories/venueFactories'
 import {
   type RenderComponentFunction,
   type RenderWithProvidersOptions,
@@ -67,7 +70,7 @@ const renderIndividualOfferDescription: RenderComponentFunction<
     storeOverrides: {
       user: {
         currentUser: user,
-        selectedPartnerVenue: makeVenueListItem({ id: 2 }),
+        selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
       },
     },
     ...params.options,
@@ -159,7 +162,7 @@ describe('<IndividualOfferDescription />', () => {
     const options = {
       storeOverrides: {
         user: {
-          selectedPartnerVenue: makeVenueListItem({ id: 2 }),
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
         },
       },
       offerer: {

@@ -2,8 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export enum SimplifiedBankAccountStatus {
-  PENDING = 'pending',
-  VALID = 'valid',
-  PENDING_CORRECTIONS = 'pending_corrections',
-}
+export type MotorDisabilityModelV2 = {
+  entrance?: string;
+  exterior?: string;
+  facilities?: string;
+  parking?: string;
+};
+

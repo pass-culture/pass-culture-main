@@ -76,6 +76,9 @@ const renderPhysicalLocationSubform: RenderComponentFunction<
           latitude: 48.8566,
           longitude: 2.3522,
           isVenueLocation: false,
+          banId: null,
+          departmentCode: '75',
+          inseeCode: '75',
         },
       })
 

@@ -10,7 +10,7 @@ import {
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
-import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 
 import { api } from 'apiClient/api'
 import { HeadlineOffer } from './HeadlineOffer'
@@ -44,7 +44,7 @@ describe('HeadlineOffer', () => {
         storeOverrides: {
           user: {
             currentUser: user,
-            selectedPartnerVenue: makeVenueListItem({ id: 2 }),
+            selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
           },
           offerer: currentOffererFactory(),
         },

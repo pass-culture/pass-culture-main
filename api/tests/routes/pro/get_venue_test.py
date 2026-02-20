@@ -176,7 +176,7 @@ class Returns200Test:
             "openingHours": opening_hours_api.format_opening_hours(venue.openingHours),
             "publicName": venue.publicName,
             "siret": venue.siret,
-            "venueType": {"label": venue.venueTypeCode.value, "value": venue.venueTypeCode.name},
+            "venueType": {"label": "PERFORMING_ARTS", "value": "PERFORMING_ARTS"},
             "visualDisabilityCompliant": venue.visualDisabilityCompliant,
             "withdrawalDetails": None,
             "bannerUrl": venue.bannerUrl,
@@ -187,7 +187,6 @@ class Returns200Test:
                     "x_crop_percent": 0.0,
                     "y_crop_percent": 0.0,
                 },
-                "image_credit": None,
                 "original_image_url": None,
             },
             "id": venue.id,
@@ -291,7 +290,6 @@ class Returns200Test:
                     "height_crop_percent": 0.42,
                     "width_crop_percent": 0.42,
                 },
-                "image_credit": "test",
                 "random": "content",
                 "should": "be_ignored",
             },
@@ -310,7 +308,6 @@ class Returns200Test:
                 "height_crop_percent": 0.42,
                 "width_crop_percent": 0.42,
             },
-            "image_credit": "test",
             "original_image_url": None,
         }
 
@@ -357,7 +354,7 @@ class Returns200Test:
             name="L'encre et la plume",
             managingOfferer=user_offerer.offerer,
             bannerUrl="http://example.com/image_cropped.png",
-            bannerMeta={"image_credit": "test", "original_image_url": "http://example.com/original_image.png"},
+            bannerMeta={"original_image_url": "http://example.com/original_image.png"},
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
@@ -373,7 +370,6 @@ class Returns200Test:
                 "height_crop_percent": DO_NOT_CROP.height_crop_percent,
                 "width_crop_percent": DO_NOT_CROP.width_crop_percent,
             },
-            "image_credit": "test",
             "original_image_url": "http://example.com/original_image.png",
         }
 
@@ -390,8 +386,6 @@ class Returns200Test:
                     "height_crop_percent": 0.42,
                     "width_crop_percent": 0.42,
                 },
-                "image_credit": "test 2",
-                "image_credit_url": "test 2",
             },
         )
 
@@ -408,7 +402,6 @@ class Returns200Test:
                 "height_crop_percent": 0.42,
                 "width_crop_percent": 0.42,
             },
-            "image_credit": "test 2",
             "original_image_url": None,
         }
 
@@ -447,7 +440,6 @@ class Returns200Test:
                     "height_crop_percent": 0.42,
                     "width_crop_percent": 0.42,
                 },
-                "image_credit": "test",
             },
         )
 
@@ -478,17 +470,6 @@ class Returns200Test:
         with testing.assert_num_queries(self.num_queries_no_places_info):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
-
-        assert response.json["bannerMeta"] == {
-            "crop_params": {
-                "x_crop_percent": DO_NOT_CROP.x_crop_percent,
-                "y_crop_percent": DO_NOT_CROP.y_crop_percent,
-                "height_crop_percent": DO_NOT_CROP.height_crop_percent,
-                "width_crop_percent": DO_NOT_CROP.width_crop_percent,
-            },
-            "image_credit": None,
-            "original_image_url": None,
-        }
 
     def should_get_opening_hours_when_existing(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")

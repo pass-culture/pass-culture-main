@@ -31,6 +31,8 @@ class BannerMetaModelV2(HttpBodyModel):
     )
 
 
+# TODO(jbaudet - 02/2026): deprecated, use BannerMetaModelV2 instead.
+# Same model, same data... using pydantic v2.
 class BannerMetaModel(BaseModel):
     image_credit: offerers_schemas.VenueImageCredit | None = None
     original_image_url: str | None = None

@@ -4,6 +4,7 @@ import {
   OfferStatus,
   SubcategoryIdEnum,
   type VenueListItemResponseModel,
+  VenueTypeCode,
 } from '@/apiClient/v1'
 import type { DisplayableActivity } from '@/apiClient/v1/new'
 import {
@@ -583,7 +584,11 @@ describe('getFormReadOnlyFields', () => {
           lastProvider: { name: 'provider' },
         }),
         false,
-        makeVenueListItem({ id: 1, activity: 'MUSEUM' as DisplayableActivity })
+        makeVenueListItem({
+          id: 1,
+          activity: 'MUSEUM' as DisplayableActivity,
+          venueTypeCode: 'MUSEUM' as VenueTypeCode,
+        })
       )
     ).toStrictEqual(expectedValues)
   })

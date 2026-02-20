@@ -24,6 +24,8 @@ class DMSApplicationstatus(enum.Enum):
 
 
 # TODO bdalbianco 23/03/2026 delete when getvenueresponsemodel is migrated
+# NOTE(jbaudet - 02/2026): deprecated. Please use
+# DMSApplicationForEACv2 instead (pydantic v2 migration)
 class DMSApplicationForEAC(BaseModel):
     venueId: int
     state: DMSApplicationstatus

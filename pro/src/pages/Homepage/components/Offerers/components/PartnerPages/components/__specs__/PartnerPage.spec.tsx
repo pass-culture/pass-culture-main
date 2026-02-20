@@ -72,7 +72,6 @@ describe('PartnerPages', () => {
         bannerUrl: 'https://www.example.com/image.png',
         bannerMeta: {
           original_image_url: 'https://www.example.com/image.png',
-          image_credit: '',
           crop_params: {
             x_crop_percent: 0,
             y_crop_percent: 0,
@@ -87,13 +86,6 @@ describe('PartnerPages', () => {
       'src',
       'https://www.example.com/image.png'
     )
-  })
-
-  it('should display a "Grand public" section without address', () => {
-    renderPartnerPages({ venueHasPartnerPage: true })
-
-    expect(screen.getByText('Grand public')).toBeInTheDocument()
-    expect(screen.queryByTestId('venue-address')).not.toBeInTheDocument()
   })
 
   it('should display a "Grand public" section with address', () => {

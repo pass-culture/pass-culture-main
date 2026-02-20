@@ -52,8 +52,6 @@ class Returns201Test:
 
         original_banner_url_timestamp = 1602720001
         assert response.json["bannerMeta"] == {
-            # TODO bdalbianco 23/03/2026 delete image credit when model is migrated
-            "image_credit": "Perceval",
             "original_image_url": str(url_prefix / f"{humanize(venue.id)}_{original_banner_url_timestamp}"),
             "crop_params": {
                 "x_crop_percent": 0.0,

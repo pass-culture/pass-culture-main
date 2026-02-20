@@ -1,8 +1,8 @@
 import { screen, waitFor } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 
-import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { OfferType } from './OfferType'
@@ -23,7 +23,7 @@ const renderOfferTypes = (initialRoute = '/', allowedOnAdage = false) => {
       storeOverrides: {
         user: {
           currentUser: sharedCurrentUserFactory(),
-          selectedPartnerVenue: makeVenueListItem({ id: 2 }),
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
         },
         offerer: { currentOfferer: { allowedOnAdage } },
       },
