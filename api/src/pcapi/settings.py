@@ -455,6 +455,16 @@ GOOGLE_CLIENT_SECRET = secrets_utils.get("GOOGLE_CLIENT_SECRET")
 # JOBS
 IS_JOB_SYNCHRONOUS = bool(int(os.environ.get("IS_JOB_SYNCHRONOUS", 0)))
 
+
+# Native app Apple SSO
+APPLE_TEAM_ID = secrets_utils.get("APPLE_TEAM_ID", "")
+APPLE_KEYS_URL = os.environ.get("APPLE_ISSUER_URL", "https://appleid.apple.com/auth/keys")
+APPLE_ISSUER_URL = os.environ.get("APPLE_ISSUER_URL", "https://appleid.apple.com")
+APPLE_TOKEN_ENDPOINT = os.environ.get("APPLE_TOKEN_ENDPOINT", "https://appleid.apple.com/auth/token")
+APPLE_KEY_ID = secrets_utils.get("APPLE_KEY_ID", "")
+APPLE_CLIENT_ID = secrets_utils.get("APPLE_CLIENT_ID", "")
+APPLE_PRIVATE_KEY = secrets_utils.get("APPLE_PRIVATE_KEY", "")
+
 # Native app Google SSO
 NATIVE_APP_GOOGLE_CLIENT_ID = secrets_utils.get("NATIVE_APP_GOOGLE_CLIENT_ID")
 NATIVE_APP_GOOGLE_CLIENT_SECRET = secrets_utils.get("NATIVE_APP_GOOGLE_CLIENT_SECRET")
