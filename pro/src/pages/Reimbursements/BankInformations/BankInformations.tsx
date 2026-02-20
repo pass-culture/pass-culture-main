@@ -22,7 +22,7 @@ import fullMoreIcon from '@/icons/full-more.svg'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import type { ReimbursementsContextProps } from '../Reimbursements'
-import { AddBankInformationsDialog } from './AddBankInformationsDialog'
+import { AddBankInformationsDialog } from './AddBankInformationsDialog/AddBankInformationsDialog'
 import styles from './BankInformations.module.scss'
 import { LinkVenuesDialog } from './LinkVenuesDialog/LinkVenuesDialog'
 
@@ -113,14 +113,17 @@ export const BankInformations = (): JSX.Element => {
       <div>
         {selectedOfferer?.hasValidBankAccount ||
         selectedOfferer?.hasPendingBankAccount ? (
-          <>
+          <p>
             Vous pouvez ajouter plusieurs comptes bancaires afin de percevoir
             les remboursements de vos offres. Chaque compte bancaire fera
             l’objet d’un remboursement et d’un justificatif de remboursement
             distincts.
-          </>
+          </p>
         ) : (
-          'Ajoutez au moins un compte bancaire pour percevoir vos remboursements.'
+          <p>
+            Ajoutez au moins un compte bancaire pour percevoir vos
+            remboursements.
+          </p>
         )}
       </div>
 

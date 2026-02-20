@@ -6,7 +6,7 @@ import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import * as useIsCaledonian from '@/commons/hooks/useIsCaledonian'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { AddBankInformationsDialog } from '../AddBankInformationsDialog'
+import { AddBankInformationsDialog } from './AddBankInformationsDialog'
 
 const mockLogEvent = vi.fn()
 
