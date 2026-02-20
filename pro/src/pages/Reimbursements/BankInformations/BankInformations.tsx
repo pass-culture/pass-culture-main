@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import { useRef, useState } from 'react'
 import { useLocation, useOutletContext } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
@@ -108,25 +109,49 @@ export const BankInformations = (): JSX.Element => {
   const selectedOffererBankAccounts = bankAccountVenuesQuery.data
 
   return (
-    <>
-      <div className={styles['information']}>
-        {!selectedOfferer?.hasValidBankAccount &&
-          !selectedOfferer?.hasPendingBankAccount &&
-          'Ajoutez au moins un compte bancaire pour percevoir vos remboursements.'}
-
-        {(selectedOfferer?.hasValidBankAccount ||
-          selectedOfferer?.hasPendingBankAccount) && (
+    <div className={styles['bank-information']}>
+      <div>
+        {selectedOfferer?.hasValidBankAccount ||
+        selectedOfferer?.hasPendingBankAccount ? (
           <>
             Vous pouvez ajouter plusieurs comptes bancaires afin de percevoir
             les remboursements de vos offres. Chaque compte bancaire fera
             l’objet d’un remboursement et d’un justificatif de remboursement
-            distincts. <br />
+            distincts.
           </>
+        ) : (
+          'Ajoutez au moins un compte bancaire pour percevoir vos remboursements.'
         )}
       </div>
+
+      <Button
+        icon={fullMoreIcon}
+        variant={
+          /* istanbul ignore next : graphic changes */ selectedOfferer &&
+          (selectedOfferer.hasPendingBankAccount ||
+            selectedOfferer.hasValidBankAccount)
+            ? ButtonVariant.SECONDARY
+            : ButtonVariant.PRIMARY
+        }
+        onClick={() => {
+          setShowAddBankInformationsDialog(true)
+          logEvent(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT, {
+            from: location.pathname,
+            offererId: selectedOfferer?.id,
+          })
+        }}
+        ref={addBankAccountButtonRef}
+        label="Ajouter un compte bancaire"
+      />
+
       {selectedOffererBankAccounts &&
         selectedOffererBankAccounts.bankAccounts.length > 0 && (
-          <div className={styles['bank-accounts']}>
+          <div
+            className={classNames(
+              styles['bank-information'],
+              styles['bank-information-panels']
+            )}
+          >
             {selectedOffererBankAccounts.bankAccounts.map((bankAccount) => (
               <ReimbursementBankAccount
                 bankAccount={bankAccount}
@@ -151,27 +176,6 @@ export const BankInformations = (): JSX.Element => {
             ))}
           </div>
         )}
-      <div className={styles['add-bank-account-button']}>
-        <Button
-          icon={fullMoreIcon}
-          variant={
-            /* istanbul ignore next : graphic changes */ selectedOfferer &&
-            (selectedOfferer.hasPendingBankAccount ||
-              selectedOfferer.hasValidBankAccount)
-              ? ButtonVariant.SECONDARY
-              : ButtonVariant.PRIMARY
-          }
-          onClick={() => {
-            setShowAddBankInformationsDialog(true)
-            logEvent(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT, {
-              from: location.pathname,
-              offererId: selectedOfferer?.id,
-            })
-          }}
-          ref={addBankAccountButtonRef}
-          label="Ajouter un compte bancaire"
-        />
-      </div>
 
       <AddBankInformationsDialog
         closeDialog={() => {
@@ -193,6 +197,6 @@ export const BankInformations = (): JSX.Element => {
           closeDialog={closeDialog}
         />
       )}
-    </>
+    </div>
   )
 }

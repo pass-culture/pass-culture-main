@@ -14,6 +14,7 @@ import { ButtonVariant } from '@/design-system/Button/types'
 import fullErrorIcon from '@/icons/full-error.svg'
 import fullLinkIcon from '@/icons/full-link.svg'
 import fullWaitIcon from '@/icons/full-wait.svg'
+import { Panel } from '@/ui-kit/Panel/Panel'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './ReimbursementBankAccount.module.scss'
@@ -66,19 +67,22 @@ export const ReimbursementBankAccount = ({
   }
 
   return (
-    <div className={styles['bank-account']}>
-      <div className={styles['informations-section']}>
-        <div className={styles['informations-section-title']}>
-          {bankAccount.label}
+    <Panel>
+      <div className={styles['bank-account']}>
+        <div>
+          <div className={styles['informations-section-title']}>
+            {bankAccount.label}
+          </div>
+          <div className={styles['informations-section-content']}>
+            IBAN : **** {bankAccount.obfuscatedIban.slice(-4)}
+          </div>
         </div>
-        <div className={styles['informations-section-content']}>
-          IBAN : **** {bankAccount.obfuscatedIban.slice(-4)}
-        </div>
-      </div>
-      {bankAccount.status === BankAccountApplicationStatus.EN_CONSTRUCTION ||
-      bankAccount.status === BankAccountApplicationStatus.EN_INSTRUCTION ||
-      bankAccount.status === BankAccountApplicationStatus.A_CORRIGER ? (
-        <div className={styles['linked-venues-section']}>
+
+        <div className={styles['bank-account-divider']}></div>
+
+        {bankAccount.status === BankAccountApplicationStatus.EN_CONSTRUCTION ||
+        bankAccount.status === BankAccountApplicationStatus.EN_INSTRUCTION ||
+        bankAccount.status === BankAccountApplicationStatus.A_CORRIGER ? (
           <Banner
             title={
               'Statut du dossier : ' +
@@ -124,77 +128,77 @@ export const ReimbursementBankAccount = ({
               },
             ]}
           />
-        </div>
-      ) : (
-        <div
-          className={styles['linked-venues-section']}
-          data-testid="reimbursement-bank-account-linked-venues"
-        >
-          <div className={styles['linked-venues-section-title']}>
-            {pluralizeFr(
-              linkedCount,
-              'Structure rattachée',
-              'Structures rattachées'
-            )}{' '}
-            à ce compte bancaire
-            {showWarningIcon && (
-              <SvgIcon
-                src={fullErrorIcon}
-                alt="Une action est requise"
-                width="20"
-                className={styles['error-icon']}
-              />
-            )}
-          </div>
-
-          {!hasManagedVenues && null}
-
-          {hasManagedVenues && (
-            <div className={styles['linked-venues-content']}>
-              {showNoLinkedMessage && (
-                <div className={styles['issue-text']}>
-                  Aucune structure n’est rattachée à ce compte bancaire.
-                  {venuesNotLinkedToBankAccount === 0 &&
-                    ' Désélectionnez une structure déjà rattachée et rattachez-la à ce compte bancaire.'}
-                </div>
-              )}
-
-              {showPartialWarning && (
-                <div className={styles['issue-text']}>
-                  Certaines de vos structures ne sont pas rattachées.
-                </div>
-              )}
-
-              {hasLinkedVenues && (
-                <>
-                  <div className={styles['linked-venues']}>
-                    {bankAccount.linkedVenues.map(({ id, commonName }) => (
-                      <div className={styles['linked-venue']} key={id}>
-                        {commonName}
-                      </div>
-                    ))}
-                  </div>
-
-                  <Button
-                    variant={ButtonVariant.SECONDARY}
-                    onClick={handleUpdateClick}
-                    ref={updateButtonRef}
-                    label="Modifier"
-                  />
-                </>
-              )}
-
-              {!hasLinkedVenues && venuesNotLinkedToBankAccount > 0 && (
-                <Button
-                  onClick={handleAttachClick}
-                  ref={updateButtonRef}
-                  label="Rattacher une structure"
+        ) : (
+          <div
+            className={styles['linked-venues-section']}
+            data-testid="reimbursement-bank-account-linked-venues"
+          >
+            <div className={styles['linked-venues-section-title']}>
+              {pluralizeFr(
+                linkedCount,
+                'Structure rattachée',
+                'Structures rattachées'
+              )}{' '}
+              à ce compte bancaire
+              {showWarningIcon && (
+                <SvgIcon
+                  src={fullErrorIcon}
+                  alt="Une action est requise"
+                  width="20"
+                  className={styles['error-icon']}
                 />
               )}
             </div>
-          )}
-        </div>
-      )}
-    </div>
+
+            {!hasManagedVenues && null}
+
+            {hasManagedVenues && (
+              <div className={styles['linked-venues-content']}>
+                {showNoLinkedMessage && (
+                  <div className={styles['issue-text']}>
+                    Aucune structure n’est rattachée à ce compte bancaire.
+                    {venuesNotLinkedToBankAccount === 0 &&
+                      ' Désélectionnez une structure déjà rattachée et rattachez-la à ce compte bancaire.'}
+                  </div>
+                )}
+
+                {showPartialWarning && (
+                  <div className={styles['issue-text']}>
+                    Certaines de vos structures ne sont pas rattachées.
+                  </div>
+                )}
+
+                {hasLinkedVenues && (
+                  <>
+                    <div className={styles['linked-venues']}>
+                      {bankAccount.linkedVenues.map(({ id, commonName }) => (
+                        <div className={styles['linked-venue']} key={id}>
+                          {commonName}
+                        </div>
+                      ))}
+                    </div>
+
+                    <Button
+                      variant={ButtonVariant.SECONDARY}
+                      onClick={handleUpdateClick}
+                      ref={updateButtonRef}
+                      label="Modifier"
+                    />
+                  </>
+                )}
+
+                {!hasLinkedVenues && venuesNotLinkedToBankAccount > 0 && (
+                  <Button
+                    onClick={handleAttachClick}
+                    ref={updateButtonRef}
+                    label="Rattacher une structure"
+                  />
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </Panel>
   )
 }
