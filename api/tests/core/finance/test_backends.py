@@ -1505,6 +1505,7 @@ class CegidFinanceBackendTest:
                     "Amount": {"value": -982.8},
                     "APInvoice_RefNbr": {"value": "0038380"},
                     "APInvoiceDocType": {"value": "Bill"},
+                    "CreatedDateTime": {"value": iso_now},
                     "Date": {"value": iso_now},
                     "DescLot": {"value": "VIR123 Label"},
                     "EstAnnule": {"value": True},
@@ -1528,6 +1529,7 @@ class CegidFinanceBackendTest:
                     "Amount": {"value": 982.8},
                     "APInvoice_RefNbr": {"value": "0038380"},
                     "APInvoiceDocType": {"value": "Bill"},
+                    "CreatedDateTime": {"value": iso_now},
                     "Date": {"value": iso_now},
                     "DescLot": {"value": "VIR123 Label"},
                     "EstAnnule": {"value": False},
@@ -1551,6 +1553,7 @@ class CegidFinanceBackendTest:
                     "Amount": {"value": 982.8},
                     "APInvoice_RefNbr": {"value": "0038380"},
                     "APInvoiceDocType": {"value": "Bill"},
+                    "CreatedDateTime": {"value": iso_now},
                     "Date": {"value": iso_now},
                     "DescLot": {},
                     "EstAnnule": {"value": False},
@@ -1591,6 +1594,7 @@ class CegidFinanceBackendTest:
                 settlement_batch_name="VIR123",
                 settlement_batch_label="VIR123 Label",
                 settlement_date=now.date(),
+                settlement_creation_date=now,
                 amount=-98280,
             )
             in settlements_payload
@@ -1604,6 +1608,7 @@ class CegidFinanceBackendTest:
                 settlement_batch_name=None,
                 settlement_batch_label=None,
                 settlement_date=now.date(),
+                settlement_creation_date=now,
                 amount=98280,
             )
             in settlements_payload

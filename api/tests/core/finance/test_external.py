@@ -132,7 +132,8 @@ class ExternalFinanceTest:
                 settlement_type=SettlementType.VOIDED_PAYMENT,
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
-                settlement_date=now.date(),
+                settlement_date=date_utils.get_naive_utc_now().date(),
+                settlement_creation_date=date_utils.get_naive_utc_now(),
                 amount=-98280,
             ),
             SettlementPayload(
@@ -142,7 +143,8 @@ class ExternalFinanceTest:
                 settlement_type=SettlementType.PAYMENT,
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
-                settlement_date=now.date(),
+                settlement_date=date_utils.get_naive_utc_now().date(),
+                settlement_creation_date=date_utils.get_naive_utc_now(),
                 amount=98280,
             ),
             SettlementPayload(
@@ -152,7 +154,8 @@ class ExternalFinanceTest:
                 settlement_type=SettlementType.PAYMENT,
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
-                settlement_date=now.date(),
+                settlement_date=date_utils.get_naive_utc_now().date(),
+                settlement_creation_date=date_utils.get_naive_utc_now(),
                 amount=98280,
             ),
             SettlementPayload(
@@ -162,7 +165,8 @@ class ExternalFinanceTest:
                 settlement_type=SettlementType.PAYMENT,
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
-                settlement_date=now.date(),
+                settlement_date=date_utils.get_naive_utc_now().date(),
+                settlement_creation_date=date_utils.get_naive_utc_now(),
                 amount=45000,
             ),
             SettlementPayload(
@@ -172,7 +176,8 @@ class ExternalFinanceTest:
                 settlement_type=SettlementType.PAYMENT,
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
-                settlement_date=now.date(),
+                settlement_date=date_utils.get_naive_utc_now().date(),
+                settlement_creation_date=date_utils.get_naive_utc_now(),
                 amount=45000,
             ),
             SettlementPayload(
@@ -182,7 +187,8 @@ class ExternalFinanceTest:
                 settlement_type=SettlementType.VOIDED_PAYMENT,
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
-                settlement_date=now.date(),
+                settlement_date=date_utils.get_naive_utc_now().date(),
+                settlement_creation_date=date_utils.get_naive_utc_now(),
                 amount=-30000,
             ),
         ]
@@ -208,6 +214,7 @@ class ExternalFinanceTest:
         )
         assert first_settlement.invoices == [invoice]
         assert first_settlement.settlementDate == datetime.date.today()
+        assert first_settlement.creationDate.timestamp() == pytest.approx(now.timestamp(), rel=1)
         assert first_settlement.dateImported.timestamp() == pytest.approx(now.timestamp(), rel=1)
         assert first_settlement.dateRejected.timestamp() == pytest.approx(now.timestamp(), rel=1)
         assert first_settlement.amount == 98280
@@ -224,6 +231,7 @@ class ExternalFinanceTest:
         )
         assert second_settlement.invoices == [invoice]
         assert second_settlement.settlementDate == datetime.date.today()
+        assert second_settlement.creationDate.timestamp() == pytest.approx(now.timestamp(), rel=1)
         assert second_settlement.dateImported.timestamp() == pytest.approx(now.timestamp(), rel=1)
         assert second_settlement.dateRejected == None
         assert second_settlement.amount == 98280
@@ -240,6 +248,7 @@ class ExternalFinanceTest:
         )
         assert set(other_settlement.invoices) == {other_invoice, another_invoice}
         assert other_settlement.settlementDate == datetime.date.today()
+        assert other_settlement.creationDate.timestamp() == pytest.approx(now.timestamp(), rel=1)
         assert other_settlement.dateImported.timestamp() == pytest.approx(now.timestamp(), rel=1)
         assert other_settlement.dateRejected == None
         assert other_settlement.amount == 45000
@@ -264,6 +273,7 @@ class ExternalFinanceTest:
                 settlement_batch_name=settlement_batch.name,
                 settlement_batch_label=settlement_batch.label,
                 settlement_date=now.date(),
+                settlement_creation_date=now,
                 amount=30000,
             )
         ]
@@ -295,6 +305,7 @@ class ExternalFinanceTest:
                 settlement_batch_name=settlement_batch.name,
                 settlement_batch_label=settlement_batch.label,
                 settlement_date=now.date(),
+                settlement_creation_date=now,
                 amount=30000,
             )
         ]
@@ -326,6 +337,7 @@ class ExternalFinanceTest:
                 settlement_batch_name=None,
                 settlement_batch_label=None,
                 settlement_date=now.date(),
+                settlement_creation_date=now,
                 amount=30000,
             )
         ]
@@ -358,6 +370,7 @@ class ExternalFinanceTest:
                 settlement_batch_name=settlement_batch.name,
                 settlement_batch_label=settlement_batch.label,
                 settlement_date=now.date(),
+                settlement_creation_date=now,
                 amount=-30000,
             )
         ]

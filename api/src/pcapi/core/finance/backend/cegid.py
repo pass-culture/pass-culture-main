@@ -357,6 +357,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
                 settlement_batch_name=settlement_data["RefLot"]["value"] if settlement_data["RefLot"] else None,
                 settlement_batch_label=settlement_data["DescLot"]["value"] if settlement_data["DescLot"] else None,
                 settlement_date=datetime.date.fromisoformat(settlement_data["Date"]["value"].split("T")[0]),
+                settlement_creation_date=datetime.datetime.fromisoformat(settlement_data["CreatedDateTime"]["value"]),
                 amount=int(float(settlement_data["Amount"]["value"]) * 100),
             )
             for settlement_data in response_json["PaymentStatusDetails"]

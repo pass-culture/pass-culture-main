@@ -264,6 +264,7 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
             else:
                 settlement = finance_models.Settlement(
                     settlementDate=payload.settlement_date,
+                    creationDate=payload.settlement_creation_date,
                     externalSettlementId=payload.external_settlement_id,
                     bankAccountId=payload.bank_account_id,
                     amount=payload.amount,
