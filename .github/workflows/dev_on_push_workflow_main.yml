@@ -117,7 +117,7 @@ jobs:
 
   prepare-cache-master: # on "master" branch only
     name: "Reset cache on master on dependency update"
-    needs: [build-pcapi-tests]
+    needs: [build-pcapi-tests, pcapi-init-job]
     uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
     if: github.ref == 'refs/heads/master'
     with:
