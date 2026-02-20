@@ -294,6 +294,7 @@ jobs:
                break
             else
                sleep 5
+            fi
           done
           while true; do
             if kubectl get application -n argocd | grep "redis-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}"
@@ -301,6 +302,7 @@ jobs:
                break
             else
                sleep 5
+            fi
           done
           while true; do
             if kubectl get application -n argocd | grep "testing-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}"
@@ -308,6 +310,7 @@ jobs:
                break
             else
                sleep 5
+            fi
           done
           {
             echo "### :rocket: Applications Argocd"
