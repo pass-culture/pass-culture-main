@@ -197,16 +197,16 @@ class CollectiveOffersGetEducationalInstitutionTest(PublicAPIEndpointBaseHelper)
     def test_max_limit_educational_institutions(self):
         plain_api_key, _ = self.setup_provider()
 
-        educational_factories.EducationalInstitutionFactory.create_batch(25)
+        educational_factories.EducationalInstitutionFactory.create_batch(55)
 
         with testing.assert_num_queries(self.num_queries):
-            response = self.make_request(plain_api_key, query_params={"limit": 23})
+            response = self.make_request(plain_api_key, query_params={"limit": 53})
             assert response.status_code == 200
 
-        assert len(response.json) == 20
+        assert len(response.json) == 50
 
         with testing.assert_num_queries(self.num_queries):
             response = self.make_request(plain_api_key)
             assert response.status_code == 200
 
-        assert len(response.json) == 20
+        assert len(response.json) == 50

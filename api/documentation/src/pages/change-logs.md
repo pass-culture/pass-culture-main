@@ -13,6 +13,10 @@ You will have two dates at your disposal :
 - a `bookingAllowedDatetime` that indicates the date and time when the offer becomes bookable in the beneficiary application. If not set, the offer will be bookable as soon as it is published.
   :::
 
+## February 2026
+
+- In the [**Get Educational Institutions endpoint**](/rest-api#tag/Collective-Offer-Attributes/operation/ListEducationalInstitutions), the maximum (and default) value for the `limit` query parameter is now 50.
+
 ## January 2026
 
 - You can now filter bookings either by `offerId` or `venueId` (endpoint: [**Get Bookings**](/rest-api#tag/Bookings/operation/GetBookings))

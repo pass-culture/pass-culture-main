@@ -1,4 +1,4 @@
-from pcapi.core.educational.api.institution import search_educational_institution
+from pcapi.core.educational import repository
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.collective.serialization import institutions as institutions_serialization
@@ -36,7 +36,7 @@ def list_educational_institutions(
     Get Educational Institutions
     """
 
-    institutions = search_educational_institution(
+    institutions = repository.search_educational_institution(
         name=query.name,
         city=query.city,
         postal_code=query.postal_code,
