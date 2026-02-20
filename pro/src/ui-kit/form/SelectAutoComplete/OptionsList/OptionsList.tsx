@@ -9,6 +9,7 @@ export interface OptionsListProps {
   className?: string
   fieldName: string
   filteredOptions: SelectOption[]
+  thumbPlaceholder?: string
   setHoveredOptionIndex: (value: number | null) => void
   listRef: Ref<HTMLUListElement>
   hoveredOptionIndex: number | null
@@ -19,6 +20,7 @@ export const OptionsList = ({
   className,
   fieldName,
   filteredOptions,
+  thumbPlaceholder,
   setHoveredOptionIndex,
   listRef,
   hoveredOptionIndex,
@@ -59,12 +61,18 @@ export const OptionsList = ({
             tabIndex={-1}
           >
             <span className={styles['options-item']}>
-              {option.thumbUrl && (
+              {(option.thumbUrl || thumbPlaceholder) && (
                 <img
                   className={styles['options-img']}
                   alt=""
-                  src={option.thumbUrl}
+                  src={option.thumbUrl || thumbPlaceholder}
                   aria-hidden={true}
+                  onError={(e) => {
+                    // if the thumbUrl fails to load, use the thumbPlaceholder
+                    if (thumbPlaceholder) {
+                      e.currentTarget.src = thumbPlaceholder
+                    }
+                  }}
                 />
               )}
               <span>{option.label}</span>

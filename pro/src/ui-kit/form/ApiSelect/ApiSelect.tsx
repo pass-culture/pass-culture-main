@@ -35,6 +35,7 @@ export type ApiSelectProps<T extends ApiOption> = {
   onSearch?(searchText: string): void
   searchApi: (searchText: string) => Promise<T[]>
   value?: string
+  thumbPlaceholder?: string
 }
 
 export const ApiSelect = forwardRef(function ApiSelect<T extends ApiOption>(
@@ -51,6 +52,7 @@ export const ApiSelect = forwardRef(function ApiSelect<T extends ApiOption>(
     onSearch,
     searchApi,
     value,
+    thumbPlaceholder,
   }: ApiSelectProps<T>,
   ref: Ref<HTMLInputElement>
 ) {
@@ -101,6 +103,7 @@ export const ApiSelect = forwardRef(function ApiSelect<T extends ApiOption>(
       name={name}
       label={label}
       options={options}
+      thumbPlaceholder={thumbPlaceholder}
       description={description}
       onSearch={(searchText) => {
         debouncedOnSearch(searchText)

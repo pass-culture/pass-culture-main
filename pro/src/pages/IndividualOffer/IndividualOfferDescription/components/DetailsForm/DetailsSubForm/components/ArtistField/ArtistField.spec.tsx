@@ -78,6 +78,7 @@ describe('ArtistField', () => {
     expect(props.minSearchLength).toBe(2)
     expect(props.disabled).toBe(false)
     expect(props.required).toBe(false)
+    expect(props.thumbPlaceholder).toBeDefined()
   })
 
   it('should not render ApiSelect', () => {

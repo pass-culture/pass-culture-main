@@ -89,4 +89,44 @@ describe('<OptionsList />', () => {
       label: 'Hautes-Alpes',
     })
   })
+
+  it('should render option thumbnails when thumbPlaceholder is provided', () => {
+    renderOptionsList({
+      ...DEFAULT_PROPS,
+      thumbPlaceholder: '/placeholder.png',
+    })
+
+    const imgs = screen.getAllByRole('presentation', { hidden: true })
+    expect(imgs).toHaveLength(15)
+    expect(imgs[0]).toHaveAttribute('src', '/placeholder.png')
+  })
+
+  it('should use thumbUrl when provided', () => {
+    const optionsWithThumbUrl = [
+      { value: '01', label: 'Ain', thumbUrl: 'https://example.com/ain.jpg' },
+    ]
+    renderOptionsList({
+      ...DEFAULT_PROPS,
+      filteredOptions: optionsWithThumbUrl,
+      thumbPlaceholder: '/placeholder.png',
+    })
+
+    const img = screen.getByRole('presentation', { hidden: true })
+    expect(img).toHaveAttribute('src', 'https://example.com/ain.jpg')
+  })
+
+  it('should use thumbPlaceholder when thumbUrl fails to load', () => {
+    const optionsWithThumbUrl = [
+      { value: '01', label: 'Ain', thumbUrl: 'https://example.com/ain.jpg' },
+    ]
+    renderOptionsList({
+      ...DEFAULT_PROPS,
+      filteredOptions: optionsWithThumbUrl,
+      thumbPlaceholder: '/placeholder.png',
+    })
+
+    const img = screen.getByRole('presentation', { hidden: true })
+    img.dispatchEvent(new Event('error'))
+    expect(img).toHaveAttribute('src', '/placeholder.png')
+  })
 })

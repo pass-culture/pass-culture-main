@@ -85,13 +85,14 @@ export function ArtistField({
                   ...artist,
                   value: artist.id,
                   label: artist.name,
-                  thumbUrl: artist.thumbUrl ?? avatarPlaceholder,
+                  thumbUrl: artist.thumbUrl,
                 }))
               }}
               error={errors?.artistOfferLinks?.[index]?.artistName?.message}
               minSearchLength={2}
               disabled={readOnly}
               required={false}
+              thumbPlaceholder={avatarPlaceholder}
               ref={ref}
             />
           </div>
