@@ -18,8 +18,15 @@ from pcapi.utils import phone_number as phone_number_utils
 MAX_LONGITUDE = 180
 MAX_LATITUDE = 90
 
+
+# NOTE(jbaudet - 02/2026): deprecated. Please use SocialMedia[s]V2 if
+# you can. These two can be removed once they are not used anymore.
 SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
 SocialMedias = dict[SocialMedia, pydantic_v1.HttpUrl]
+
+
+SocialMediaV2 = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
+SocialMediasV2 = dict[SocialMediaV2, pydantic_v2.HttpUrl]
 
 
 def format_coordinate(value: typing.Any) -> Decimal:
@@ -64,6 +71,10 @@ class RequiredStrippedString(pydantic_v1.ConstrainedStr):
     min_length = 1
 
 
+# NOTE(jbaudet - 02/2026): deprecated -> pydantic v2 migration ongoing
+# check VenueContactModelV2 below.
+# It has not been removed yet because it is used by another model used
+# by others models...
 class VenueContactModel(BaseModel):
     class Config:
         alias_generator = to_camel
@@ -93,6 +104,43 @@ class VenueContactModel(BaseModel):
         if website is None or re.match(pattern, website, re.IGNORECASE):
             return website
         raise ValueError(f"url du site web invalide: {website}")
+
+
+def validate_phone_number(phone_number: str | None) -> str | None:
+    if not phone_number:
+        return None
+
+    try:
+        return phone_number_utils.ParsedPhoneNumber(phone_number).phone_number
+    except Exception:
+        raise ValueError(f"numéro de téléphone invalide: {phone_number}")
+
+
+def validate_website_url(website: str | None) -> str | None:
+    if not website:
+        return None
+
+    pattern = r"^(?:http(s)?:\/\/)?[\w.-\.-\.@]+(?:\.[\w\.-\.@]+)+[\w\-\._~:\/?#[\]@%!\$&'\(\)\*\+,;=.]+$"
+    if website is None or re.match(pattern, website, re.IGNORECASE):
+        return website
+    raise ValueError(f"url du site web invalide: {website}")
+
+
+class VenueContactModelV2(BaseModelV2):
+    email: pydantic_v2.EmailStr | None
+    website: typing.Annotated[
+        str | None, pydantic_v2.Field(max_length=256), pydantic_v2.AfterValidator(validate_website_url)
+    ]
+    phone_number: typing.Annotated[str | None, pydantic_v2.AfterValidator(validate_phone_number)]
+    social_medias: SocialMediasV2 | None
+
+    model_config = pydantic_v2.ConfigDict(
+        alias_generator=to_camel,
+        validate_by_name=True,
+        validate_by_alias=True,
+        str_strip_whitespace=True,
+        extra="forbid",
+    )
 
 
 class VenueImageCredit(RequiredStrippedString):

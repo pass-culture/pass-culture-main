@@ -3,9 +3,15 @@ import typing
 from datetime import datetime
 from decimal import Decimal
 from io import BytesIO
+from typing import Annotated
 
+import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
 from PIL import Image
+from pydantic import AfterValidator
+from pydantic import BeforeValidator
+from pydantic import Field
+from pydantic import PlainSerializer
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
@@ -24,10 +30,12 @@ from pcapi.core.offers.validation import ACCEPTED_THUMBNAIL_FORMATS
 from pcapi.core.opening_hours import api as opening_hours_api
 from pcapi.core.opening_hours import schemas as opening_hours_schemas
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
+from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixinV2
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization.venue_types_serialize import VenueTypeResponseModel
+from pcapi.routes.serialization.venue_types_serialize import VenueTypeResponseModelV2
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.serialization.utils import string_length_validator
 from pcapi.serialization.utils import string_to_boolean_field
@@ -48,6 +56,8 @@ class DMSApplicationstatus(enum.Enum):
     INSTRUCTING = "en_instruction"
 
 
+# NOTE(jbaudet - 02/2026): deprecated. Please use
+# DMSApplicationForEACV2 instead (pydantic v2 migration)
 class DMSApplicationForEAC(BaseModel):
     venueId: int
     state: DMSApplicationstatus
@@ -71,6 +81,38 @@ class DMSApplicationForEAC(BaseModel):
     ) -> "DMSApplicationForEAC":
         collective_dms_application.venueId = venue_id
         return super().from_orm(collective_dms_application)
+
+
+class DMSApplicationForEACV2(pydantic_v2.BaseModel):
+    venueId: int
+    state: DMSApplicationstatus
+    procedure: int
+    application: int
+    lastChangeDate: Annotated[datetime, PlainSerializer(format_into_utc_date)]
+    depositDate: Annotated[datetime, PlainSerializer(format_into_utc_date)]
+    expirationDate: Annotated[datetime, PlainSerializer(format_into_utc_date)] | None
+    buildDate: Annotated[datetime, PlainSerializer(format_into_utc_date)] | None
+    instructionDate: Annotated[datetime, PlainSerializer(format_into_utc_date)] | None
+    processingDate: Annotated[datetime, PlainSerializer(format_into_utc_date)] | None
+    userDeletionDate: Annotated[datetime, PlainSerializer(format_into_utc_date)] | None
+
+    @classmethod
+    def build(
+        cls, application: educational_models.CollectiveDmsApplication, venue: offerers_models.Venue
+    ) -> "DMSApplicationForEACV2":
+        return cls(
+            venueId=venue.id,
+            state=application.state,
+            procedure=application.procedure,
+            application=application.application,
+            lastChangeDate=application.lastChangeDate,
+            depositDate=application.depositDate,
+            expirationDate=application.expirationDate,
+            processingDate=application.processingDate,
+            userDeletionDate=application.userDeletionDate,
+            buildDate=application.buildDate,
+            instructionDate=application.instructionDate,
+        )
 
 
 class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
@@ -111,17 +153,15 @@ class VenueResponseModel(BaseModel):
         arbitrary_types_allowed = True
 
 
-class GetVenueManagingOffererResponseModel(BaseModel):
+class GetVenueManagingOffererResponseModel(pydantic_v2.BaseModel):
     id: int
     isValidated: bool
     name: str
     siren: str
 
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
 
-
+# TODO(jbaudet - 02/2026): deprecated, use BannerMetaModelV2 instead.
+# Same model, same data... using pydantic v2.
 class BannerMetaModel(BaseModel):
     image_credit: offerers_schemas.VenueImageCredit | None = None
     original_image_url: str | None = None
@@ -138,20 +178,42 @@ class BannerMetaModel(BaseModel):
         return raw_crop_params
 
 
-class GetVenuePricingPointResponseModel(BaseModel):
+# NOTE(jbaudet - 02/2026): please remove this pydantic model
+# once the original CropParams has been migrated to pydantic v2
+# (it's a dataclass, but... it uses a field that is a confloat
+# from pydantic v1).
+class CropParamsV2(pydantic_v2.BaseModel):
+    x_crop_percent: float = Field(0.0, ge=0.0, le=1.0)
+    y_crop_percent: float = Field(0.0, ge=0.0, le=1.0)
+    height_crop_percent: float = Field(1.0, ge=0.0, le=1.0)
+    width_crop_percent: float = Field(1.0, ge=0.0, le=1.0)
+
+
+ImageCreditConstraint = pydantic_v2.types.StringConstraints(strip_whitespace=True, max_length=255, min_length=1)
+
+
+class BannerMetaModelV2(pydantic_v2.BaseModel):
+    image_credit: Annotated[str, ImageCreditConstraint] | None = None
+    original_image_url: str | None = None
+    crop_params: CropParamsV2 = CropParamsV2()
+
+    @pydantic_v2.model_validator(mode="before")
+    @classmethod
+    def parse_crop_params(cls, data: dict) -> dict:
+        crop_params = data.get("crop_params")
+        if not crop_params:
+            data["crop_params"] = CropParamsV2()
+        return data
+
+
+class GetVenuePricingPointResponseModel(pydantic_v2.BaseModel):
     id: int
     siret: str
     venueName: str
 
-    class Config:
-        orm_mode = True
 
-    @classmethod
-    def from_orm(cls, venue: offerers_models.Venue) -> "GetVenuePricingPointResponseModel":
-        venue.venueName = venue.publicName
-        return super().from_orm(venue)
-
-
+# NOTE(jbaudet - 02/2026): deprecated. Please use
+# GetVenueDomainResponseModelV2 instead.
 class GetVenueDomainResponseModel(BaseModel):
     id: int
     name: str
@@ -160,12 +222,24 @@ class GetVenueDomainResponseModel(BaseModel):
         orm_mode = True
 
 
+class GetVenueDomainResponseModelV2(pydantic_v2.BaseModel):
+    id: int
+    name: str
+
+
+# NOTE(jbaudet - 02/2026): deprecated. Please use
+# LegalStatusResponseModelV2 instead.
 class LegalStatusResponseModel(BaseModel):
     id: int
     name: str
 
     class Config:
         orm_mode = True
+
+
+class LegalStatusResponseModelV2(pydantic_v2.BaseModel):
+    id: int
+    name: str
 
 
 class SimplifiedBankAccountStatus(enum.Enum):
@@ -301,13 +375,13 @@ class GetVenueResponseGetterDict(pydantic_v1.utils.GetterDict):
         return super().get(key, default)
 
 
-class GetVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
+class GetVenueResponseModel(HttpBodyModel, AccessibilityComplianceMixinV2):
     isVirtual: bool
     name: str
     bannerUrl: str | None
-    contact: offerers_schemas.VenueContactModel | None
-    description: offerers_schemas.VenueDescription | None
-    externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
+    contact: offerers_schemas.VenueContactModelV2 | None
+    description: Annotated[str, pydantic_v2.types.StringConstraints(strip_whitespace=True, max_length=1_000)]
+    externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModelV2 | None
     externalAccessibilityUrl: str | None
     externalAccessibilityId: str | None
     isOpenToPublic: bool
@@ -315,33 +389,34 @@ class GetVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     publicName: str
     withdrawalDetails: str | None
     activity: offerers_models.DisplayableActivity | None
-    dateCreated: datetime
+    dateCreated: Annotated[datetime, PlainSerializer(format_into_utc_date)]
     id: int
-    bannerMeta: BannerMetaModel | None
+    bannerMeta: BannerMetaModelV2 | None
     bookingEmail: str | None
     comment: str | None
     managingOfferer: GetVenueManagingOffererResponseModel
+    # pricingPoint: use venue.publicName
     pricingPoint: GetVenuePricingPointResponseModel | None
     siret: str | None
-    venueType: VenueTypeResponseModel
+    venueType: VenueTypeResponseModelV2
     collectiveDescription: str | None
     collectiveStudents: list[educational_models.StudentLevels] | None
     collectiveWebsite: str | None
-    collectiveDomains: list[GetVenueDomainResponseModel]
+    collectiveDomains: list[GetVenueDomainResponseModelV2]
     collectiveInterventionArea: list[str] | None
-    collectiveLegalStatus: LegalStatusResponseModel | None
+    collectiveLegalStatus: LegalStatusResponseModelV2 | None
     collectiveNetwork: list[str] | None
     collectiveAccessInformation: str | None
     collectivePhone: str | None
     collectiveEmail: str | None
-    collectiveDmsApplications: list[DMSApplicationForEAC]
+    collectiveDmsApplications: list[DMSApplicationForEACV2]
     hasAdageId: bool
-    adageInscriptionDate: datetime | None
+    adageInscriptionDate: Annotated[datetime, PlainSerializer(format_into_utc_date)] | None
     hasOffers: bool
-    location: address_serialize.LocationResponseModel | None
+    location: address_serialize.LocationResponseModelV2 | None
     hasActiveIndividualOffer: bool
     isCaledonian: bool
-    openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None
+    openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespansV2 | None
     isActive: bool
     isValidated: bool
     allowedOnAdage: bool
@@ -351,26 +426,224 @@ class GetVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     canDisplayHighlights: bool
     hasNonDraftOffers: bool
 
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
-        getter_dict = GetVenueResponseGetterDict
-
-    @validator("bannerMeta")
+    @pydantic_v2.model_validator(mode="before")
     @classmethod
-    def validate_banner_meta(cls, meta: BannerMetaModel | None, values: dict) -> BannerMetaModel | None:
+    def validate_banner_meta(cls, values: dict) -> dict:
         """
         Old venues might have a banner url without banner meta, or an
         incomplete banner meta.
         """
         # do not get a default banner meta object if there is no banner
         if not values["bannerUrl"]:
+            return values
+
+        if not values.get("bannerMeta"):
+            values["bannerMeta"] = BannerMetaModel()
+
+        return values
+
+    @classmethod
+    def build_contact(cls, venue: offerers_models.Venue) -> offerers_schemas.VenueContactModelV2 | None:
+        if not venue.contact:
             return None
+        return offerers_schemas.VenueContactModelV2(
+            email=venue.contact.email,
+            website=venue.contact.website,
+            phone_number=venue.contact.phone_number,
+            social_medias=venue.contact.social_medias,
+        )
 
-        if not meta:
-            return BannerMetaModel()
+    @classmethod
+    def build_banner_meta(cls, venue: offerers_models.Venue) -> BannerMetaModelV2 | None:
+        banner_meta = None
+        if venue.bannerUrl:
+            if venue.bannerMeta:
+                banner_meta = BannerMetaModelV2(
+                    image_credit=venue.bannerMeta.get("image_credit"),
+                    original_image_url=venue.bannerMeta.get("original_image_url"),
+                    crop_params=venue.bannerMeta.get("crop_params"),
+                )
+            else:
+                banner_meta = BannerMetaModelV2()
 
-        return meta
+        return banner_meta
+
+    @classmethod
+    def build_offerer(cls, venue: offerers_models.Venue) -> GetVenueManagingOffererResponseModel:
+        return GetVenueManagingOffererResponseModel(
+            id=venue.managingOffererId,
+            isValidated=venue.managingOfferer.isValidated,
+            name=venue.managingOfferer.name,
+            siren=venue.managingOfferer.siren,
+        )
+
+    @classmethod
+    def build_external_accessibility(cls, venue: offerers_models.Venue) -> tuple:
+        if not venue.accessibilityProvider:
+            external_accessibility_data = None
+            external_accessibility_url = None
+            external_accessibility_id = None
+        else:
+            accessibility_infos = venue.accessibilityProvider.externalAccessibilityData
+            external_accessibility_data = (
+                acceslibre_serializers.ExternalAccessibilityDataModelV2.from_accessibility_infos(accessibility_infos)
+            )
+
+            external_accessibility_url = venue.accessibilityProvider.externalAccessibilityUrl
+            external_accessibility_id = venue.accessibilityProvider.externalAccessibilityId
+
+        return external_accessibility_data, external_accessibility_url, external_accessibility_id
+
+    @classmethod
+    def build_pricing_point(cls, venue: offerers_models.Venue) -> GetVenuePricingPointResponseModel | None:
+        pricing_point = None
+        now = date_utils.get_naive_utc_now()
+        for pricing_link in venue.pricing_point_links:
+            if pricing_link.timespan.lower <= now and (
+                not pricing_link.timespan.upper or pricing_link.timespan.upper > now
+            ):
+                pricing_point = GetVenuePricingPointResponseModel(
+                    id=pricing_link.pricingPoint.id,
+                    siret=pricing_link.pricingPoint.siret,
+                    venueName=pricing_link.pricingPoint.publicName,
+                )
+        return pricing_point
+
+    @classmethod
+    def build_location(cls, venue: offerers_models.Venue) -> address_serialize.LocationResponseModelV2 | None:
+        offerer_address = venue.offererAddress
+        if not offerer_address:
+            return None
+        else:
+            return address_serialize.LocationResponseModelV2.build(
+                offerer_address,
+                label=venue.publicName,
+                is_venue_location=True,
+            )
+
+    @classmethod
+    def build_collective_dms_applications(cls, venue: offerers_models.Venue) -> list[DMSApplicationForEACV2]:
+        return [
+            DMSApplicationForEACV2.build(collective_ds_application, venue)
+            for collective_ds_application in venue.collectiveDmsApplications
+        ]
+
+    @classmethod
+    def build_opening_hours(cls, venue: offerers_models.Venue) -> dict:
+        raw_opening_hours = venue.openingHours
+        if isinstance(raw_opening_hours, list):
+            opening_hours = opening_hours_api.format_opening_hours(raw_opening_hours)
+        else:
+            opening_hours = typing.cast(opening_hours_schemas.WeekdayOpeningHoursTimespans | None, raw_opening_hours)
+
+        # TODO(jbaudet - 02/2026): remove this cast when
+        # WeekdayOpeningHoursTimespans has been migrated to pydantic v2.
+        # Both models accept the same inputs but in terms of types they
+        # are different. This is why casting the data that could come
+        # from format_opening_hours (which returns a v1 model) is
+        # needed.
+        return opening_hours.dict()
+
+    @classmethod
+    def build_venue_type(cls, venue: offerers_models.Venue) -> VenueTypeResponseModelV2:
+        venue_type_value = venue.venueTypeCode
+        venue_type_label = venue_type_value.value if venue_type_value else ""
+        return VenueTypeResponseModelV2(value=venue_type_value.name if venue_type_value else "", label=venue_type_label)
+
+    @classmethod
+    def build_activity(cls, venue: offerers_models.Venue) -> offerers_models.DisplayableActivity | None:
+        if not venue.activity or venue.activity == offerers_models.Activity.NOT_ASSIGNED:
+            return None
+        else:
+            return offerers_models.DisplayableActivity[venue.activity.name]
+
+    @classmethod
+    def build_collective_domains(cls, venue: offerers_models.Venue) -> list[GetVenueDomainResponseModelV2]:
+        return [GetVenueDomainResponseModelV2(id=domain.id, name=domain.name) for domain in venue.collectiveDomains]
+
+    @classmethod
+    def build_collective_legal_status(cls, venue: offerers_models.Venue) -> LegalStatusResponseModelV2 | None:
+        if not venue.venueEducationalStatus:
+            return None
+        return LegalStatusResponseModelV2(
+            id=venue.venueEducationalStatus.id,
+            name=venue.venueEducationalStatus.name,
+        )
+
+    @classmethod
+    def build(cls, venue: offerers_models.Venue) -> "GetVenueResponseModel":
+        contact = cls.build_contact(venue)
+        banner_meta = cls.build_banner_meta(venue)
+        offerer = cls.build_offerer(venue)
+        external_accessibility_data, external_accessibility_url, external_accessibility_id = (
+            cls.build_external_accessibility(venue)
+        )
+        pricing_point = cls.build_pricing_point(venue)
+        location = cls.build_location(venue)
+        collective_dms_applications = cls.build_collective_dms_applications(venue)
+        opening_hours = cls.build_opening_hours(venue)
+        venue_type = cls.build_venue_type(venue)
+        activity = cls.build_activity(venue)
+        collective_domains = cls.build_collective_domains(venue)
+        collective_legal_status = cls.build_collective_legal_status(venue)
+
+        return cls(
+            audioDisabilityCompliant=venue.audioDisabilityCompliant,
+            motorDisabilityCompliant=venue.motorDisabilityCompliant,
+            mentalDisabilityCompliant=venue.mentalDisabilityCompliant,
+            visualDisabilityCompliant=venue.visualDisabilityCompliant,
+            isVirtual=venue.isVirtual,
+            name=venue.name,
+            bannerUrl=venue.bannerUrl,
+            contact=contact,
+            description=venue.description,
+            externalAccessibilityData=external_accessibility_data,
+            externalAccessibilityUrl=external_accessibility_url,
+            externalAccessibilityId=external_accessibility_id,
+            collectiveLegalStatus=collective_legal_status,
+            hasAdageId=bool(venue.adageId),
+            pricingPoint=pricing_point,
+            location=location,
+            collectiveDmsApplications=collective_dms_applications,
+            isCaledonian=venue.is_caledonian,
+            openingHours=opening_hours,
+            venueType=venue_type,
+            isActive=venue.managingOfferer.isActive,
+            isValidated=venue.managingOfferer.isValidated,
+            allowedOnAdage=venue.managingOfferer.allowedOnAdage,
+            bankAccountStatus=parse_venue_bank_account_status(venue),
+            # return venue.id in venues_have_non_free_offers([venue.id])
+            # FIXME(jbaudet 13/11/2025): use venues_have_non_free_offers once
+            # it has been fixed
+            hasNonFreeOffers=True,
+            hasPartnerPage=venue.has_partner_page,
+            activity=activity,
+            canDisplayHighlights=venue.can_display_highlights,
+            hasNonDraftOffers=venue.has_non_draft_offers,
+            isOpenToPublic=venue.isOpenToPublic,
+            isPermanent=venue.isPermanent,
+            publicName=venue.publicName,
+            withdrawalDetails=venue.withdrawalDetails,
+            dateCreated=venue.dateCreated,
+            id=venue.id,
+            bannerMeta=banner_meta,
+            bookingEmail=venue.bookingEmail,
+            comment=venue.comment,
+            managingOfferer=offerer,
+            siret=venue.siret,
+            collectiveDescription=venue.collectiveDescription,
+            collectiveStudents=venue.collectiveStudents,
+            collectiveWebsite=venue.collectiveWebsite,
+            collectiveDomains=collective_domains,
+            collectiveInterventionArea=venue.collectiveInterventionArea,
+            collectiveNetwork=venue.collectiveNetwork,
+            collectiveAccessInformation=venue.collectiveAccessInformation,
+            collectivePhone=venue.collectivePhone,
+            collectiveEmail=venue.collectiveEmail,
+            adageInscriptionDate=venue.adageInscriptionDate,
+            hasOffers=venue.hasOffers,
+            hasActiveIndividualOffer=venue.hasActiveIndividualOffer,
+        )
 
 
 class GetCollectiveVenueResponseModel(BaseModel):

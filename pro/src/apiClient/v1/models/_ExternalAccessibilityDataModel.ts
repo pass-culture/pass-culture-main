@@ -6,7 +6,7 @@ import type { AudioDisabilityModel } from './AudioDisabilityModel';
 import type { MentalDisabilityModel } from './MentalDisabilityModel';
 import type { MotorDisabilityModel } from './MotorDisabilityModel';
 import type { VisualDisabilityModel } from './VisualDisabilityModel';
-export type ExternalAccessibilityDataModel = {
+export type _ExternalAccessibilityDataModel = {
   audioDisability?: AudioDisabilityModel;
   isAccessibleAudioDisability?: boolean;
   isAccessibleMentalDisability?: boolean;

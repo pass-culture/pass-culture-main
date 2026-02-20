@@ -1,5 +1,9 @@
 import datetime
+from typing import Annotated
 
+import pydantic as pydantic_v2
+from pydantic import BeforeValidator
+from pydantic import StringConstraints
 from pydantic.v1 import ConstrainedList
 from pydantic.v1 import ConstrainedStr
 from pydantic.v1 import validator
@@ -76,6 +80,8 @@ def validate_timespans(timespans: OpeningHoursTimespans | None) -> OpeningHoursT
     return timespans
 
 
+# NOTE(jbaudet - 02/2026): depreacted. Please use
+# WeekdayOpeningHoursTimespans instead (pydantic v2 migration)
 class WeekdayOpeningHoursTimespans(BaseModel):
     MONDAY: OpeningHoursTimespans | None
     TUESDAY: OpeningHoursTimespans | None
@@ -95,3 +101,47 @@ class WeekdayOpeningHoursTimespans(BaseModel):
 
     class Config:
         extra = "forbid"
+
+
+HourV2 = Annotated[
+    str, StringConstraints(pattern=r"^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$", strip_whitespace=True, strict=True)
+]
+
+
+def validate_opening_hours(opening_hours: list[HourV2]) -> list[HourV2]:
+    has_unique_items = len(set(opening_hours)) == len(opening_hours)
+    has_two_items_exactly = len(opening_hours) == 2
+    if not (has_unique_items and has_two_items_exactly):
+        raise ValueError("Invalid opening hours")
+    return opening_hours
+
+
+OpeningHoursV2 = Annotated[list[HourV2], BeforeValidator(validate_opening_hours)]
+
+
+def validate_opening_hours_timespan(timespan: list[OpeningHoursV2]) -> list[OpeningHoursV2]:
+    timespan_length = len(timespan)
+    hashable_timespans = set(tuple(hours) for hours in timespan)
+
+    has_unique_items = len(hashable_timespans) == timespan_length
+    has_one_or_two_items = timespan_length >= 1 and timespan_length <= 2
+
+    if not (has_unique_items and has_one_or_two_items):
+        raise ValueError("Invalid opening hours timespan")
+
+    return timespan
+
+
+OpeningHoursTimespansV2 = Annotated[list[OpeningHoursV2], BeforeValidator(validate_opening_hours_timespan)]
+
+
+class WeekdayOpeningHoursTimespansV2(pydantic_v2.BaseModel):
+    MONDAY: OpeningHoursTimespansV2 | None
+    TUESDAY: OpeningHoursTimespansV2 | None
+    WEDNESDAY: OpeningHoursTimespansV2 | None
+    THURSDAY: OpeningHoursTimespansV2 | None
+    FRIDAY: OpeningHoursTimespansV2 | None
+    SATURDAY: OpeningHoursTimespansV2 | None
+    SUNDAY: OpeningHoursTimespansV2 | None
+
+    model_config = pydantic_v2.ConfigDict(extra="forbid")
