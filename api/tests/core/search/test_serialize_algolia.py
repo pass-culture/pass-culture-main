@@ -632,62 +632,6 @@ def test_serialize_future_offer():
     assert serialized["offer"]["bookingAllowedDatetime"] == booking_allowed_dt.timestamp()
 
 
-def test_serialize_collective_offer_template_other_venue_location():
-    domain1 = educational_factories.EducationalDomainFactory(name="Danse")
-    domain2 = educational_factories.EducationalDomainFactory(name="Architecture")
-
-    other_venue = offerers_factories.VenueFactory(
-        offererAddress__address__latitude=45, offererAddress__address__longitude=3
-    )
-
-    collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
-        dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
-        name="Titre formidable",
-        description="description formidable",
-        students=[educational_models.StudentLevels.CAP1, educational_models.StudentLevels.CAP2],
-        venue__offererAddress__address__postalCode="86140",
-        venue__offererAddress__address__departmentCode="86",
-        venue__offererAddress__address__latitude=44,
-        venue__offererAddress__address__longitude=2,
-        venue__name="La Moyenne Librairie SA",
-        venue__publicName="La Moyenne Librairie",
-        venue__managingOfferer__name="Les Librairies Associées",
-        venue__adageId="123456",
-        educational_domains=[domain1, domain2],
-        interventionArea=None,
-        locationType=educational_models.CollectiveLocationType.ADDRESS,
-        offererAddress=offerers_factories.get_offerer_address_with_label_from_venue(other_venue),
-    )
-
-    serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
-    assert serialized == {
-        "objectID": f"T-{collective_offer_template.id}",
-        "offer": {
-            "dateCreated": 1641031200.0,
-            "name": "Titre formidable",
-            "students": ["CAP - 1re année", "CAP - 2e année"],
-            "domains": [domain1.id, domain2.id],
-            "interventionArea": [],
-            "locationType": educational_models.CollectiveLocationType.ADDRESS.value,
-            "description": collective_offer_template.description,
-        },
-        "offerer": {
-            "name": "Les Librairies Associées",
-        },
-        "venue": {
-            "academy": "Poitiers",
-            "departmentCode": "86",
-            "id": collective_offer_template.venue.id,
-            "name": "La Moyenne Librairie SA",
-            "publicName": "La Moyenne Librairie",
-            "adageId": collective_offer_template.venue.adageId,
-        },
-        "_geoloc": {"lat": 45, "lng": 3},
-        "isTemplate": True,
-        "formats": [format.value for format in collective_offer_template.formats],
-    }
-
-
 def test_serialize_collective_offer_template_location_school():
     collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
         venue__offererAddress__address__latitude=45,
@@ -746,7 +690,11 @@ def test_serialize_collective_offer_template_legacy():
         educational_domains=[domain1, domain2],
         interventionArea=None,
         locationType=educational_models.CollectiveLocationType.ADDRESS,
-        offererAddress=offerers_factories.get_offerer_address_with_label_from_venue(venue),
+        offererAddress=offerers_factories.OfferLocationFactory(
+            address=venue.offererAddress.address,
+            label=venue.publicName,
+            venue=venue,
+        ),
     )
 
     serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)

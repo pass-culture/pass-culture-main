@@ -22,13 +22,8 @@ class VenueFactoryTest:
 
 
 class OffererAddressFactoryTest:
-    def test_legacy_offerer_address_factory(self):
-        offerer_address = factories.OffererAddressFactory()
-        assert offerer_address.type is None
-        assert offerer_address.venue is None
-
     def test_venue_location_factory(self):
-        venue_location = factories.VenueLocationFactory()
+        venue_location = factories.VenueFactory().offererAddress
         assert venue_location.type == models.LocationType.VENUE_LOCATION
         assert venue_location.venue.managingOfferer == venue_location.offerer
         assert venue_location.venue.offererAddress == venue_location

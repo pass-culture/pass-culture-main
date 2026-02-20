@@ -128,7 +128,7 @@ class CollectiveOfferTemplateTest:
             priceDetail="détail du prix",
             students=[StudentLevels.GENERAL2],
             locationType=educational_models.CollectiveLocationType.ADDRESS,
-            offererAddress=offerers_factories.get_offerer_address_with_label_from_venue(venue),
+            offererAddress=offerers_factories.OfferLocationFactory(venue=venue, label=venue.publicName),
             nationalProgramId=educational_factories.NationalProgramFactory().id,
         )
 
@@ -274,7 +274,9 @@ class GetCollectiveOfferTemplatesTest:
         for venue in venues:
             offer = educational_factories.CollectiveOfferTemplateFactory(
                 locationType=educational_models.CollectiveLocationType.ADDRESS,
-                offererAddress=offerers_factories.get_offerer_address_with_label_from_venue(venue),
+                offererAddress=offerers_factories.OfferLocationFactory(
+                    address=venue.offererAddress.address, offerer=venue.managingOfferer, label=venue.publicName
+                ),
             )
 
             offers.append(offer)
@@ -356,8 +358,9 @@ class GetCollectiveOfferTemplatesTest:
         venue = offerers_factories.VenueFactory()
 
         offer = educational_factories.CollectiveOfferTemplateFactory(
+            venue=venue,
             locationType=educational_models.CollectiveLocationType.ADDRESS,
-            offererAddress=offerers_factories.get_offerer_address_with_label_from_venue(venue),
+            offererAddress=offerers_factories.OfferLocationFactory(address=venue.offererAddress.address, venue=venue),
         )
 
         url = url_for(self.endpoint, ids=offer.id)
@@ -374,7 +377,9 @@ class GetCollectiveOfferTemplatesTest:
             venue=venue,
             locationType=educational_models.CollectiveLocationType.ADDRESS,
             locationComment=None,
-            offererAddressId=venue.offererAddress.id,
+            offererAddress=offerers_factories.OfferLocationFactory(
+                address=venue.offererAddress.address, venue=venue, label=venue.publicName
+            ),
             interventionArea=None,
         )
 
