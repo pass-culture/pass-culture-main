@@ -1,6 +1,7 @@
 import enum
 import typing
 from dataclasses import dataclass
+from datetime import datetime
 from datetime import timedelta
 
 import flask
@@ -21,7 +22,7 @@ if typing.TYPE_CHECKING:
 
 
 @dataclass(frozen=True, slots=True)
-class JwtContainer:
+class TokensContainer:
     access: str
     refresh: str
 
@@ -34,14 +35,20 @@ class JwtType(enum.StrEnum):
 @dataclass(frozen=True, slots=True)
 class JwtData:
     fresh: bool
-    iat: int
+    iat: datetime
     jti: str
-    type: str
+    type: JwtType
     sub: str
-    nbf: int
+    nbf: datetime
     csrf: str
-    exp: int
+    exp: datetime
     user_claims: dict | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class JwtContainer:
+    data: JwtData
+    raw: str
 
 
 class SessionManager(_common.AbstractSessionManager):
@@ -56,63 +63,76 @@ class SessionManager(_common.AbstractSessionManager):
 
     @staticmethod
     def request_loader(request: flask.Request) -> users_models.User | None:
-        jwt_data = load_jwt(request, jwt_type=JwtType.ACCESS)
+        jwt = load_jwt(request, jwt_type=JwtType.ACCESS)
 
-        if jwt_data is None:
+        if jwt is None:
             # invalid token
             return None
 
-        if jwt_data.user_claims is None:
+        if jwt.data.user_claims is None:
             # refresh token
             return None
 
         return (
             db.session.query(users_models.User)
-            .filter(users_models.User.id == jwt_data.user_claims["user_id"])
+            .filter(users_models.User.id == jwt.data.user_claims["user_id"])
             .one_or_none()
         )
 
 
-def load_jwt(request: flask.Request, *, jwt_type: JwtType) -> JwtData | None:
-    _clean_previously_loaded_token()
+def load_jwt(request: flask.Request, *, jwt_type: JwtType) -> JwtContainer | None:
+    _delete_jwt_container()
     try:
-        result = verify_jwt_in_request(optional=False, verify_type=True, refresh=(jwt_type == JwtType.REFRESH))
+        results = verify_jwt_in_request(optional=False, verify_type=True, refresh=(jwt_type == JwtType.REFRESH))
     except Exception:
         # if any problem is detected the authentication is invalid
         return None
 
-    if not result:
+    if not results:
         # helps mypy. This should not be possible
         return None
 
-    jwt_data = JwtData(**result[1])
-
-    flask.g.jwt_data = jwt_data
-    flask.g.raw_jwt = request.headers.get("Authorization", " ").split(" ")[1]
-
-    return jwt_data
-
-
-def _clean_previously_loaded_token() -> None:
-    if hasattr(flask.g, "jwt_data"):
-        del flask.g.jwt_data
-    if hasattr(flask.g, "raw_jwt"):
-        del flask.g.raw_jwt
+    return save_jwt_container(results, request)
 
 
 def _is_used_jwt_refresh() -> bool:
-    return (
-        hasattr(flask.g, "jwt_data") and hasattr(flask.g, "raw_jwt") and flask.g.jwt_data.type == JwtType.REFRESH.value
+    return hasattr(flask.g, "jwt") and flask.g.jwt.data.type == JwtType.REFRESH
+
+
+def save_jwt_container(data: tuple[dict, dict], request: flask.Request) -> JwtContainer:
+    raw = request.headers.get("Authorization", " ").split(" ")[1]
+
+    unsigned_data, signed_data = data
+
+    flask.g.jwt = JwtContainer(
+        raw=raw,
+        data=JwtData(
+            fresh=signed_data["fresh"],
+            iat=datetime.fromtimestamp(signed_data["iat"]),
+            jti=signed_data["jti"],
+            type=JwtType(signed_data["type"].lower()),
+            sub=signed_data["sub"],
+            nbf=datetime.fromtimestamp(signed_data["nbf"]),
+            csrf=signed_data["csrf"],
+            exp=datetime.fromtimestamp(signed_data["exp"]),
+            user_claims=signed_data.get("user_claims", None),
+        ),
     )
+    return flask.g.jwt
+
+
+def _delete_jwt_container() -> None:
+    if hasattr(flask.g, "jwt"):
+        del flask.g.jwt
 
 
 def create_user_jwt_tokens(
     user: users_models.User,
     device_info: "account_serialization.TrustedDevice | None" = None,
-) -> JwtContainer:
+) -> TokensContainer:
     if _is_used_jwt_refresh():
         # TODO regenerate a refresh token when renewing the access token
-        refresh_token = flask.g.raw_jwt
+        refresh_token = flask.g.jwt.raw
     else:
         if users_api.is_login_device_a_trusted_device(device_info, user):
             duration = timedelta(seconds=settings.JWT_REFRESH_TOKEN_EXTENDED_EXPIRES)
@@ -121,4 +141,4 @@ def create_user_jwt_tokens(
         refresh_token = create_refresh_token(identity=user.email, expires_delta=duration)
 
     access_token = create_access_token(identity=user.email, additional_claims={"user_claims": {"user_id": user.id}})
-    return JwtContainer(access=access_token, refresh=refresh_token)
+    return TokensContainer(access=access_token, refresh=refresh_token)

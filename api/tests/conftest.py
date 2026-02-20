@@ -240,7 +240,7 @@ def client_fixture(app: Flask):
     # trouble during tests (backoffice only, api routes do not have the
     # the csrf protection enabled during tests)
     g.pop("csrf_token", default=None)
-    g.pop("jwt_data", default=None)
+    g.pop("jwt", default=None)
     return TestClient(app.test_client())
 
 
