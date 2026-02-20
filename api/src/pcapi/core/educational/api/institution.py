@@ -31,27 +31,6 @@ def get_educational_institution_department_code(institution: models.EducationalI
     return department_code
 
 
-def search_educational_institution(
-    *,
-    educational_institution_id: int | None,
-    name: str | None,
-    institution_type: str | None,
-    city: str | None,
-    postal_code: str | None,
-    limit: int,
-    uai: str | None,
-) -> list[models.EducationalInstitution]:
-    return repository.search_educational_institution(
-        educational_institution_id=educational_institution_id,
-        name=name,
-        city=city,
-        postal_code=postal_code,
-        institution_type=institution_type,
-        limit=limit,
-        uai=uai,
-    )
-
-
 class ImportDepositPeriodOption(enum.Enum):
     # period = full educational year
     EDUCATIONAL_YEAR_FULL = "EDUCATIONAL_YEAR_FULL"

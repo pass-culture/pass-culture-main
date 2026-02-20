@@ -8,7 +8,7 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 
 
-MAX_LIMIT_EDUCATIONAL_INSTITUTION = 20
+MAX_LIMIT_EDUCATIONAL_INSTITUTION = 50
 
 
 class CollectiveOffersEducationalInstitutionResponseModel(BaseModel):
