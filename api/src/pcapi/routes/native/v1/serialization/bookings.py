@@ -1,12 +1,13 @@
 import datetime
-from typing import Any
 from typing import List
 
 import pydantic as pydantic_v2
-from pydantic import model_validator
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
+from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.routes.serialization import HttpBodyModel
@@ -44,19 +45,16 @@ class BookingVenueResponse(HttpBodyModel):
     banner_url: str | None = None
     is_open_to_public: bool
 
-    @model_validator(mode="before")
     @classmethod
-    def map_venue_attributes(cls, data: Any) -> Any:
-        if not isinstance(data, dict):
-            return {
-                "id": data.id,
-                "name": data.publicName,
-                "public_name": data.publicName,
-                "timezone": data.offererAddress.address.timezone if data.offererAddress else None,
-                "banner_url": data.bannerUrl,
-                "is_open_to_public": data.isOpenToPublic,
-            }
-        return data
+    def build(cls, venue: Venue) -> "BookingVenueResponse":
+        return cls(
+            id=venue.id,
+            name=venue.publicName,
+            public_name=venue.publicName,
+            timezone=venue.offererAddress.address.timezone if venue.offererAddress else None,
+            banner_url=venue.bannerUrl,
+            is_open_to_public=venue.isOpenToPublic,
+        )
 
 
 class BookingOfferExtraData(HttpBodyModel):
@@ -89,7 +87,7 @@ class BookingOfferResponse(HttpBodyModel):
     withdrawal_delay: int | None = None
 
     @classmethod
-    def build(cls, offer: Any) -> "BookingOfferResponse":
+    def build(cls, offer: Offer) -> "BookingOfferResponse":
         address_response = None
         offerer_address = offer.offererAddress or (offer.venue.offererAddress if offer.venue else None)
 
@@ -119,7 +117,7 @@ class BookingOfferResponse(HttpBodyModel):
             is_permanent=offer.isPermanent,
             subcategory_id=offer.subcategoryId,
             url=offer.url,
-            venue=BookingVenueResponse.model_validate(offer.venue),
+            venue=BookingVenueResponse.build(offer.venue),
             withdrawal_details=offer.withdrawalDetails,
             withdrawal_type=offer.withdrawalType,
             withdrawal_delay=offer.withdrawalDelay,
@@ -135,7 +133,7 @@ class BookingStockResponse(HttpBodyModel):
     price_category_label: str | None = None
 
     @classmethod
-    def build(cls, stock: Any) -> "BookingStockResponse":
+    def build(cls, stock: Stock) -> "BookingStockResponse":
         price_category = getattr(stock, "priceCategory", None)
         return cls(
             id=stock.id,
@@ -214,5 +212,4 @@ class BookingsResponse(HttpBodyModel):
 
     model_config = pydantic_v2.ConfigDict(
         alias_generator=None,
-        populate_by_name=True,
     )

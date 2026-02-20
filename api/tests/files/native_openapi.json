@@ -1772,28 +1772,28 @@
             "BookingsResponse": {
                 "additionalProperties": false,
                 "properties": {
-                    "endedBookings": {
+                    "ended_bookings": {
                         "items": {
                             "$ref": "#/components/schemas/BookingReponse"
                         },
-                        "title": "Endedbookings",
+                        "title": "Ended Bookings",
                         "type": "array"
                     },
                     "hasBookingsAfter18": {
                         "title": "Hasbookingsafter18",
                         "type": "boolean"
                     },
-                    "ongoingBookings": {
+                    "ongoing_bookings": {
                         "items": {
                             "$ref": "#/components/schemas/BookingReponse"
                         },
-                        "title": "Ongoingbookings",
+                        "title": "Ongoing Bookings",
                         "type": "array"
                     }
                 },
                 "required": [
-                    "endedBookings",
-                    "ongoingBookings",
+                    "ended_bookings",
+                    "ongoing_bookings",
                     "hasBookingsAfter18"
                 ],
                 "title": "BookingsResponse",
