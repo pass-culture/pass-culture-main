@@ -10,7 +10,10 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import { CollectiveDmsTimeline } from './CollectiveDmsTimeline'
+import {
+  CollectiveDmsTimeline,
+  CollectiveDmsTimelineVariant,
+} from './CollectiveDmsTimeline'
 
 const mockLogEvent = vi.fn()
 
@@ -19,7 +22,7 @@ interface CollectiveDmsTimelineProps {
   hasAdageId?: boolean
   adageInscriptionDate?: string | null
   offererId?: number
-  isHomepage?: boolean
+  variant?: CollectiveDmsTimelineVariant
 }
 
 const renderCollectiveDmsTimeline = (
@@ -27,7 +30,7 @@ const renderCollectiveDmsTimeline = (
     collectiveDmsApplication,
     hasAdageId = false,
     adageInscriptionDate = null,
-    isHomepage = false,
+    variant = CollectiveDmsTimelineVariant.DEFAULT,
   }: CollectiveDmsTimelineProps,
   options?: RenderWithProvidersOptions
 ) => {
@@ -36,7 +39,7 @@ const renderCollectiveDmsTimeline = (
       collectiveDmsApplication={collectiveDmsApplication}
       hasAdageId={hasAdageId}
       adageInscriptionDate={adageInscriptionDate}
-      isHomepage={isHomepage}
+      variant={variant}
     />,
     options
   )
@@ -115,7 +118,7 @@ describe('CollectiveDmsTimeline', () => {
       hasAdageId,
       adageInscriptionDate,
     })
-    expect(screen.getByText(expectedLabel)).toBeInTheDocument()
+    expect(screen.getByText(expectedLabel)).toBeVisible()
   })
 
   const dmsStates = [
@@ -168,57 +171,76 @@ describe('CollectiveDmsTimeline', () => {
       adageInscriptionDate: '2070-03-28T15:08:33Z',
     })
 
-    expect(screen.getByText(/23 mars 2023/)).toBeInTheDocument()
-    expect(screen.getByText(/24 mars 2025/)).toBeInTheDocument()
-    expect(screen.getByText(/27 mars 2025/)).toBeInTheDocument()
-    expect(screen.getByText(/28 mars 2070/)).toBeInTheDocument()
+    expect(screen.getByText(/23 mars 2023/)).toBeVisible()
+    expect(screen.getByText(/24 mars 2025/)).toBeVisible()
+    expect(screen.getByText(/27 mars 2025/)).toBeVisible()
+    expect(screen.getByText(/28 mars 2070/)).toBeVisible()
   })
 
-  it('should display the timeline when rendered on homepage', () => {
-    renderCollectiveDmsTimeline({
-      collectiveDmsApplication: {
-        ...defaultDMSApplicationForEAC,
-        state: DMSApplicationstatus.EN_INSTRUCTION,
-      },
-      isHomepage: true,
-    })
+  describe('when rendered as lite variant', () => {
+    it('should display the timeline inside a panel', () => {
+      renderCollectiveDmsTimeline({
+        collectiveDmsApplication: {
+          ...defaultDMSApplicationForEAC,
+          state: DMSApplicationstatus.EN_INSTRUCTION,
+        },
+        variant: CollectiveDmsTimelineVariant.LITE,
+      })
 
-    expect(
-      screen.getByText(/État d’avancement de votre dossier/)
-    ).toBeInTheDocument()
-  })
-
-  it('should not render anything when venue has adageId but DMS application is not accepted', () => {
-    renderCollectiveDmsTimeline({
-      collectiveDmsApplication: {
-        ...defaultDMSApplicationForEAC,
-        state: DMSApplicationstatus.EN_INSTRUCTION,
-      },
-      hasAdageId: true,
-      isHomepage: true,
-    })
-
-    expect(
-      screen.queryByText(
-        /Votre dossier a été validé et vous pouvez dès à présent commencer votre activité avec le pass Culture/
+      expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
+        /État d’avancement de votre dossier/
       )
-    ).not.toBeInTheDocument()
-  })
-
-  it('should display success banner when accepted on homepage and processing date is less than 30 days ago', () => {
-    renderCollectiveDmsTimeline({
-      collectiveDmsApplication: {
-        ...defaultDMSApplicationForEAC,
-        state: DMSApplicationstatus.ACCEPTE,
-        processingDate: '2070-04-22T15:08:33Z',
-      },
-      isHomepage: true,
     })
 
-    expect(
-      screen.getByText(
-        /Votre dossier a été validé et vous pouvez dès à présent commencer votre activité avec le pass Culture/
-      )
-    ).toBeInTheDocument()
+    it('should not render anything when venue has adageId but DMS application is not accepted', () => {
+      renderCollectiveDmsTimeline({
+        collectiveDmsApplication: {
+          ...defaultDMSApplicationForEAC,
+          state: DMSApplicationstatus.EN_INSTRUCTION,
+        },
+        hasAdageId: true,
+        variant: CollectiveDmsTimelineVariant.LITE,
+      })
+
+      expect(
+        screen.queryByText(
+          /Votre dossier a été validé et vous pouvez dès à présent commencer votre activité avec le pass Culture/
+        )
+      ).not.toBeInTheDocument()
+    })
+
+    it('should display success banner when accepted and processing date is less than 30 days ago', () => {
+      renderCollectiveDmsTimeline({
+        collectiveDmsApplication: {
+          ...defaultDMSApplicationForEAC,
+          state: DMSApplicationstatus.ACCEPTE,
+          processingDate: '2070-04-22T15:08:33Z',
+        },
+        variant: CollectiveDmsTimelineVariant.LITE,
+      })
+
+      expect(
+        screen.getByText(
+          /Votre dossier a été validé et vous pouvez dès à présent commencer votre activité avec le pass Culture/
+        )
+      ).toBeVisible()
+    })
+
+    it('should not display success banner when accepted and processing date is more than 30 days ago', () => {
+      renderCollectiveDmsTimeline({
+        collectiveDmsApplication: {
+          ...defaultDMSApplicationForEAC,
+          state: DMSApplicationstatus.ACCEPTE,
+          processingDate: '2020-01-01T00:00:00Z',
+        },
+        variant: CollectiveDmsTimelineVariant.LITE,
+      })
+
+      expect(
+        screen.queryByText(
+          /Votre dossier a été validé et vous pouvez dès à présent commencer votre activité avec le pass Culture/
+        )
+      ).not.toBeInTheDocument()
+    })
   })
 })

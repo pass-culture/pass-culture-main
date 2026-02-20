@@ -3,9 +3,9 @@ import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullInfoIcon from '@/icons/full-info.svg'
 
-import styles from './CollectiveAdageStatus.module.scss'
+import styles from './CollectiveAdagePendingStatus.module.scss'
 
-export const CollectiveAdageStatus = () => {
+export const CollectiveAdagePendingStatus = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>

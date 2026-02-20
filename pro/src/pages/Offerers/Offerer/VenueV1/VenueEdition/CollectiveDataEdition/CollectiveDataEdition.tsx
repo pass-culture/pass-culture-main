@@ -7,12 +7,12 @@ import { GET_EDUCATIONAL_STATUSES_QUERY_KEY } from '@/commons/config/swrQueryKey
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { getLastCollectiveDmsApplication } from '@/commons/utils/getLastCollectiveDmsApplication'
+import { CollectiveDmsTimeline } from '@/components/CollectiveDmsTimeline/CollectiveDmsTimeline'
 import { Banner } from '@/design-system/Banner/Banner'
 import { PartnerPageCollectiveSection } from '@/pages/Homepage/components/Offerers/components/PartnerPages/components/PartnerPageCollectiveSection'
 import type { Option } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
-import { CollectiveDmsTimeline } from '../CollectiveDmsTimeline/CollectiveDmsTimeline'
 import styles from './CollectiveDataEdition.module.scss'
 import { CollectiveDataEditionReadOnly } from './CollectiveDataEditionReadOnly'
 import { CollectiveDataForm } from './CollectiveDataForm/CollectiveDataForm'
