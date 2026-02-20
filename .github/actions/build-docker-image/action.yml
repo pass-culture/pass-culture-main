@@ -19,7 +19,6 @@ inputs:
   artifact_path:
     description: Paths to include in the artifact upload
     required: false
-    type: string
     default: |
       ./
       !./pro/scripts/generator'
