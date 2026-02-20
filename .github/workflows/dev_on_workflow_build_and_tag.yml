@@ -89,25 +89,28 @@ jobs:
       - name: Add version to api
         env:
           GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+          TAG_NUMBER: ${{ inputs.tag_number }}
         working-directory: api
         run: |
-          echo "${{ inputs.tag_number }}" > version.txt
+          echo "$TAG_NUMBER" > version.txt
           git add version.txt
 
       - name: Add version to pro
         env:
           GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+          TAG_NUMBER: ${{ inputs.tag_number }}
         working-directory: pro
         run: |
-          yarn version --new-version "${{ inputs.tag_number }}"
+          yarn version --new-version "$TAG_NUMBER"
           git add package.json
 
       - name: Add version to image-resizing
         env:
           GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+          TAG_NUMBER: ${{ inputs.tag_number }}
         working-directory: app-engine/image-resizing
         run: |
-          echo "${{ inputs.tag_number }}" > version.txt
+          echo "$TAG_NUMBER" > version.txt
           git add version.txt
 
       - name: Configure git author
@@ -128,8 +131,9 @@ jobs:
       - name: Push tag to base ref
         env:
           GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+          BASE_REF: ${{ inputs.base_ref }}
         if: ${{ inputs.base_ref_is_a_branch }}
-        run: git push origin "${{ inputs.base_ref }}"
+        run: git push origin "$BASE_REF"
 
       - name: Create Github prerelease
         continue-on-error: true
@@ -138,7 +142,7 @@ jobs:
         # generate notes vs the latest release
         # beware of the order of the args !
         run: |
-          latest_release=$(gh release list --json name,isLatest --jq '.[] | select(.isLatest)|.name')
+          latest_release="$(gh release list --json name,isLatest --jq '.[] | select(.isLatest)|.name')"
           gh release create "$TAG_NAME" \
           --title "$TAG_NAME" \
           --verify-tag \
