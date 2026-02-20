@@ -424,4 +424,4 @@ jobs:
             echo "| [Pro] url                            |  ${{ needs.deploy-pro-on-firebase-preview-env.outputs.pro_url }} |"
             echo "| [Back] url                           |  https://backend-${{ needs.deploy-preview-env-init.outputs.resource_label }}.testing.passculture.team/ |"
             echo "| [BO] url                             |  https://backoffice-${{ needs.deploy-preview-env-init.outputs.resource_label }}.testing.passculture.team/ |"
-          } >> $GITHUB_STEP_SUMMARY
+          } >> "$GITHUB_STEP_SUMMARY"
