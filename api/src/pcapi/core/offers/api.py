@@ -51,8 +51,8 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import music
 from pcapi.core.educational import models as educational_models
-from pcapi.core.external import compliance
 from pcapi.core.external.attributes.api import update_external_pro
+from pcapi.core.external.compliance import api
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import api as offerers_api
@@ -1563,10 +1563,10 @@ def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferVal
         status = models.OfferValidationStatus.PENDING
         offer.flaggingValidationRules = flagging_rules
         if isinstance(offer, models.Offer):
-            compliance.update_offer_compliance_score(offer, is_primary=True)
+            api.update_offer_compliance_score(offer, is_primary=True)
     else:
         if isinstance(offer, models.Offer):
-            compliance.update_offer_compliance_score(offer, is_primary=False)
+            api.update_offer_compliance_score(offer, is_primary=False)
 
     logger.info("Computed offer validation", extra={"offer": offer.id, "status": status.value})
     return status
