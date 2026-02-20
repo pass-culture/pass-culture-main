@@ -2,8 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type VenueTypeResponseModel = {
-  label: string;
-  value: string;
+export type AudioDisabilityModelV2 = {
+  deafAndHardOfHearing?: Array<string>;
 };
 

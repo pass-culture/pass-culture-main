@@ -2,8 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type VisualDisabilityModel = {
-  audioDescription?: Array<string>;
-  soundBeacon?: string;
+export type MentalDisabilityModelV2 = {
+  trainedPersonnel?: string;
 };
 

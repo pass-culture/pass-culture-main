@@ -2,7 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type AudioDisabilityModel = {
-  deafAndHardOfHearing?: Array<string>;
+export type MotorDisabilityModelV2 = {
+  entrance?: string;
+  exterior?: string;
+  facilities?: string;
+  parking?: string;
 };
 

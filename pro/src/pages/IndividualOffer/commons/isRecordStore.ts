@@ -1,9 +1,9 @@
-import type { VenueTypeCode } from '@/apiClient/v1'
+import type { VenueTypeCodeKey } from '@/apiClient/v1'
 
 export const isRecordStore = (
-  venues: { venueTypeCode: VenueTypeCode }[]
+  venues: { venueTypeCode: VenueTypeCodeKey }[]
 ): boolean => {
   return venues.some(
-    (venue) => venue.venueTypeCode === ('RECORD_STORE' as VenueTypeCode)
+    (venue) => venue.venueTypeCode === ('RECORD_STORE' as VenueTypeCodeKey)
   )
 }

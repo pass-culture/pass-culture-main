@@ -52,7 +52,6 @@ class Returns201Test:
 
         original_banner_url_timestamp = 1602720001
         assert response.json["bannerMeta"] == {
-            "image_credit": "none",
             "original_image_url": str(url_prefix / f"{humanize(venue.id)}_{original_banner_url_timestamp}"),
             "crop_params": {
                 "x_crop_percent": 0.0,

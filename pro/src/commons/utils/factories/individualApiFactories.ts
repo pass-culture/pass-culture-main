@@ -16,6 +16,7 @@ import {
   type GetOfferStockResponseModel,
   type GetOfferVenueResponseModel,
   type GetStocksResponseModel,
+  type GetVenueResponseModel,
   type ListOffersOfferResponseModel,
   type ListOffersStockResponseModel,
   type ManagedVenue,
@@ -26,6 +27,7 @@ import {
   type VenueListItemResponseModel,
   type VenueProviderResponse,
   VenueTypeCode,
+  type VenueTypeCodeKey,
 } from '@/apiClient/v1'
 import type { IndividualOfferContextValues } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
@@ -250,27 +252,32 @@ export const venueListItemFactory = (
   // Auto-generated `VenueTypeCode` enum is completely wrong:
   // real keys are those declared in api/src/pcapi/core/offerers/schemas.py
   const venueTypeCode =
-    customVenueListItem.venueTypeCode ?? ('OTHER' as VenueTypeCode)
+    customVenueListItem.venueTypeCode ?? ('OTHER' as VenueTypeCodeKey)
 
   return {
     id,
     audioDisabilityCompliant: true,
     bankAccountStatus: null,
+    bookingEmail: null,
     hasCreatedOffer: true,
     hasNonFreeOffers: true,
+    externalAccessibilityData: null,
     isActive: true,
     isCaledonian: false,
     isPermanent: true,
     isValidated: true,
     isVirtual: false,
+    location: null,
     managingOffererId: offererId,
     mentalDisabilityCompliant: true,
     motorDisabilityCompliant: true,
     name: `Nom de la structure ${id}`,
     offererName,
     publicName: `Nom public de la structure ${id}`,
+    siret: null,
     venueTypeCode,
     visualDisabilityCompliant: true,
+    withdrawalDetails: null,
     ...customVenueListItem,
   }
 }
@@ -283,11 +290,14 @@ export const makeVenueListItem = <
   const offererName = override.offererName ?? `Entité ${offererId}`
   // Auto-generated `VenueTypeCode` enum is completely wrong:
   // real keys are those declared in api/src/pcapi/core/offerers/schemas.py
-  const venueTypeCode = override.venueTypeCode ?? ('OTHER' as VenueTypeCode)
+  const venueTypeCode = override.venueTypeCode ?? ('OTHER' as VenueTypeCodeKey)
 
   const fake: VenueListItemResponseModel = {
     id: override.id,
     audioDisabilityCompliant: false,
+    bankAccountStatus: null,
+    bookingEmail: `booking.${override.id}@email.com`,
+    externalAccessibilityData: null,
     hasCreatedOffer: false,
     hasNonFreeOffers: false,
     isActive: false,
@@ -295,14 +305,17 @@ export const makeVenueListItem = <
     isPermanent: false,
     isValidated: false,
     isVirtual: false,
+    location: null,
     managingOffererId: offererId,
     mentalDisabilityCompliant: false,
     motorDisabilityCompliant: false,
     name: `Nom de la structure ${override.id}`,
     offererName,
     publicName: `Nom public de la structure ${override.id}`,
+    siret: null,
     venueTypeCode,
     visualDisabilityCompliant: false,
+    withdrawalDetails: null,
   }
 
   return {
@@ -423,6 +436,82 @@ export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
     bannerMeta: null,
     hasPartnerPage: true,
   }
+
+export const defaultGetVenueResponseModel: GetVenueResponseModel = {
+  audioDisabilityCompliant: false,
+  mentalDisabilityCompliant: true,
+  motorDisabilityCompliant: true,
+  visualDisabilityCompliant: true,
+  isVirtual: false,
+  name: 'my venue',
+  bannerUrl: null,
+  contact: {
+    email: 'contact@venue.com',
+    website: 'https://my.website.com',
+    phoneNumber: '+33102030405',
+    socialMedias: {
+      instagram: 'https://instagram.com/@venue',
+    },
+  },
+  description: 'desc',
+  externalAccessibilityData: null,
+  externalAccessibilityUrl: null,
+  externalAccessibilityId: null,
+  isOpenToPublic: false,
+  isPermanent: false,
+  publicName: 'Venue',
+  withdrawalDetails: null,
+  activity: null,
+  dateCreated: '2026-03-16T23:10:47.874496Z',
+  id: 878,
+  bannerMeta: null,
+  bookingEmail: 'venue877@example.net',
+  comment: 'No SIRET',
+  managingOfferer: {
+    id: 878,
+    isValidated: true,
+    name: 'Venue Entreprise',
+    siren: '123456789',
+  },
+  pricingPoint: null,
+  siret: null,
+  venueType: {
+    value: 'OTHER',
+    label: 'Autre',
+  },
+  collectiveDescription: null,
+  collectiveStudents: [],
+  collectiveWebsite: null,
+  collectiveDomains: [
+    {
+      id: 1,
+      name: 'Architecture',
+    },
+  ],
+  collectiveInterventionArea: null,
+  collectiveLegalStatus: null,
+  collectiveNetwork: null,
+  collectiveAccessInformation: null,
+  collectivePhone: null,
+  collectiveEmail: null,
+  collectiveDmsApplications: [],
+  hasAdageId: false,
+  adageInscriptionDate: null,
+  hasOffers: true,
+  location: null,
+  hasActiveIndividualOffer: true,
+  isCaledonian: false,
+  openingHours: null,
+  isActive: true,
+  isValidated: true,
+  allowedOnAdage: true,
+  bankAccountStatus: null,
+  hasNonFreeOffers: true,
+  hasPartnerPage: false,
+  canDisplayHighlights: true,
+  hasNonDraftOffers: true,
+  volunteeringUrl: null,
+}
 
 export const defaultGetBookingResponse: GetBookingResponse = {
   bookingId: 'test_booking_id',

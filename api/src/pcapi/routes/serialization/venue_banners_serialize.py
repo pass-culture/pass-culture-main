@@ -1,6 +1,7 @@
 import typing
 from io import BytesIO
 
+import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
 from PIL import Image
 from pydantic.v1 import root_validator
@@ -11,10 +12,14 @@ from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
 from pcapi.core.offers.validation import ACCEPTED_THUMBNAIL_FORMATS
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.utils.image_conversion import CropParam
 from pcapi.utils.image_conversion import CropParams
+from pcapi.utils.image_conversion import CropParamsV2
 
 
+# TODO(jbaudet - 02/2026): deprecated, use BannerMetaModelV2 instead.
+# Same model, same data... using pydantic v2.
 class BannerMetaModel(BaseModel):
     image_credit: offerers_schemas.VenueImageCredit | None = None
     original_image_url: str | None = None
@@ -29,6 +34,21 @@ class BannerMetaModel(BaseModel):
         if not raw_crop_params:
             return CropParams()
         return raw_crop_params
+
+
+ImageCreditConstraint = pydantic_v2.types.StringConstraints(strip_whitespace=True, max_length=255, min_length=1)
+
+
+DEFAULT_CROP_PARAMS = CropParamsV2()
+
+
+class BannerMetaModelV2(HttpBodyModel):
+    original_image_url: str | None = None  # TODO: move to HttpUrl ?
+    crop_params: CropParamsV2 = DEFAULT_CROP_PARAMS
+
+    model_config = pydantic_v2.ConfigDict(
+        alias_generator=None,
+    )
 
 
 class VenueBannerContentModel(BaseModel):
