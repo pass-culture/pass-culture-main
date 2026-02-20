@@ -17,6 +17,7 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
 from pcapi.core.criteria import factories as criteria_factories
+from pcapi.core.external.compliance import serialization
 from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
@@ -39,7 +40,6 @@ from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice.filters import format_date
-from pcapi.tasks.serialization import compliance_tasks
 from pcapi.utils import date as date_utils
 from pcapi.utils.regions import get_department_code_from_city_code
 
@@ -2174,7 +2174,7 @@ class ListLlmOffersTest(GetEndpointHelper):
             "limit": 100,
         }
 
-        search_query = compliance_tasks.SearchOffersRequest(
+        search_query = serialization.SearchOffersRequest(
             query=query_args["llm_search"],
             filters=[
                 {
@@ -2209,9 +2209,9 @@ class ListLlmOffersTest(GetEndpointHelper):
                 },
             ],
         )
-        api_response = compliance_tasks.SearchOffersResponse(
+        api_response = serialization.SearchOffersResponse(
             results=[
-                compliance_tasks.SearchOfferResponse(
+                serialization.SearchOfferResponse(
                     offer_id=offer_to_display.id,
                     pertinence="Some witty comment from llm",
                 ),
@@ -2219,12 +2219,12 @@ class ListLlmOffersTest(GetEndpointHelper):
         )
 
         with patch(
-            "pcapi.core.external.compliance_backends.test.TestBackend.search_offers", return_value=api_response
+            "pcapi.core.external.compliance.backends.test.TestBackend.search_offers", return_value=api_response
         ) as llm_mock:
             with assert_num_queries(self.expected_num_queries_with_results):
                 response = authenticated_client.get(url_for(self.endpoint, **query_args))
                 assert response.status_code == 200
-            llm_mock.assert_called_once_with(payload=search_query)
+            llm_mock.assert_called_once_with(search_query)
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
@@ -2236,21 +2236,21 @@ class ListLlmOffersTest(GetEndpointHelper):
 
         query_args = {"llm_search": "plouf", "limit": 100}
 
-        search_query = compliance_tasks.SearchOffersRequest(
+        search_query = serialization.SearchOffersRequest(
             query=query_args["llm_search"],
             filters=[],
         )
-        api_response = compliance_tasks.SearchOffersResponse(
+        api_response = serialization.SearchOffersResponse(
             results=[],
         )
 
         with patch(
-            "pcapi.core.external.compliance_backends.test.TestBackend.search_offers", return_value=api_response
+            "pcapi.core.external.compliance.backends.test.TestBackend.search_offers", return_value=api_response
         ) as llm_mock:
             with assert_num_queries(self.expected_num_queries_with_no_result):
                 response = authenticated_client.get(url_for(self.endpoint, **query_args))
                 assert response.status_code == 200
-            llm_mock.assert_called_once_with(payload=search_query)
+            llm_mock.assert_called_once_with(search_query)
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 0
@@ -2260,18 +2260,18 @@ class ListLlmOffersTest(GetEndpointHelper):
 
         query_args = {"llm_search": "plouf", "limit": 100}
 
-        search_query = compliance_tasks.SearchOffersRequest(
+        search_query = serialization.SearchOffersRequest(
             query=query_args["llm_search"],
             filters=[],
         )
 
         with patch(
-            "pcapi.core.external.compliance_backends.test.TestBackend.search_offers", return_value=None
+            "pcapi.core.external.compliance.backends.test.TestBackend.search_offers", return_value=None
         ) as llm_mock:
             with assert_num_queries(self.expected_num_queries_with_no_result):
                 response = authenticated_client.get(url_for(self.endpoint, **query_args))
                 assert response.status_code == 200
-            llm_mock.assert_called_once_with(payload=search_query)
+            llm_mock.assert_called_once_with(search_query)
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 0

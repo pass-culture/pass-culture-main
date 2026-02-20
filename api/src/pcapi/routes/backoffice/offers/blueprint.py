@@ -30,7 +30,8 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as booking_repository
 from pcapi.core.categories import subcategories
 from pcapi.core.criteria import models as criteria_models
-from pcapi.core.external.compliance_backends import compliance_backend
+from pcapi.core.external.compliance.api import search_offers
+from pcapi.core.external.compliance.serialization import SearchOffersRequest
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
@@ -54,7 +55,6 @@ from pcapi.routes.backoffice.filters import format_amount
 from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
-from pcapi.tasks.serialization.compliance_tasks import SearchOffersRequest
 from pcapi.utils import date as date_utils
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import string as string_utils
@@ -941,9 +941,7 @@ def list_llm_offers() -> utils.BackofficeResponse:
         flash(escape(warning), "warning")
 
     try:
-        responses = compliance_backend.search_offers(
-            payload=SearchOffersRequest(query=form.llm_search.data, filters=filters)
-        )
+        responses = search_offers(payload=SearchOffersRequest(query=form.llm_search.data, filters=filters))
         is_form_empty = False
     except ExternalAPIException as e:
         flash(

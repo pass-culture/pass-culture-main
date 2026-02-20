@@ -2,8 +2,8 @@ import logging
 
 from pcapi import settings
 from pcapi.core.auth import api as auth_api
-from pcapi.core.external.compliance_backends.base import BaseBackend
-from pcapi.tasks.serialization import compliance_tasks
+from pcapi.core.external.compliance import serialization
+from pcapi.core.external.compliance.backends.base import BaseBackend
 from pcapi.utils import requests
 
 
@@ -12,26 +12,28 @@ logger = logging.getLogger(__name__)
 
 class ComplianceBackend(BaseBackend):
     def get_score_from_compliance_api(
-        self, payload: compliance_tasks.GetComplianceScoreRequest
-    ) -> compliance_tasks.CompliancePredictionOutput | None:
+        self, payload: serialization.GetComplianceScoreRequest | serialization.UpdateOfferComplianceScorePayload
+    ) -> serialization.CompliancePredictionOutput | None:
+        if isinstance(payload, serialization.GetComplianceScoreRequest):
+            payload_dict = payload.to_dict()
+        else:
+            payload_dict = payload.model_dump()
         data = self._post(
             route="/latest/model/compliance/scoring",
-            payload=payload.to_dict(),
+            payload=payload_dict,
         )
         if data:
-            return compliance_tasks.CompliancePredictionOutput.parse_obj(data)
+            return serialization.CompliancePredictionOutput.model_validate(data)
 
         return None
 
-    def search_offers(
-        self, payload: compliance_tasks.SearchOffersRequest
-    ) -> compliance_tasks.SearchOffersResponse | None:
+    def search_offers(self, payload: serialization.SearchOffersRequest) -> serialization.SearchOffersResponse | None:
         data = self._post(
             route="/latest/search_edito/search",
-            payload=payload.dict(),
+            payload=payload.model_dump(),
         )
         if data:
-            return compliance_tasks.SearchOffersResponse.parse_obj(data)
+            return serialization.SearchOffersResponse.model_validate(data)
 
         return None
 

@@ -128,6 +128,9 @@ class FeatureToggle(enum.Enum):
     WIP_ASYNCHRONOUS_CELERY_CINEMA_INTEGRATION = (
         "Activer le backend de tâches asynchrones Celery pour les tâches liées aux intégrations cinéma"
     )
+    WIP_ASYNCHRONOUS_CELERY_COMPLIANCE = (
+        "Activer le backend de tâches asynchrones Celery pour la synchronisation à l'API Compliance"
+    )
     WIP_ASYNCHRONOUS_CELERY_MAILS = (
         "Activer le backend de tâches asynchrones Celery pour les tâches liées à l'envoi de mails"
     )
@@ -216,6 +219,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CINEMA_INTEGRATION,
+    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_COMPLIANCE,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_SPECIAL_EVENT_TYPEFORM,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UPDATE_VENUE_OFFERS_ACCESSIBILITY,
