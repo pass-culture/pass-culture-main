@@ -16,7 +16,7 @@ import styles from './StatisticsDashboard.module.scss'
 interface StatisticsDashboardProps {
   offerer: GetOffererResponseModel
 }
-
+// TODO (cmoinier 2025-02-18) remove component after switch venue FF
 export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
   const { isLoading, data: stats } = useSWR(
     [GET_OFFERER_STATS_QUERY_KEY, offerer.id],
