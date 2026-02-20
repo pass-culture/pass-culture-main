@@ -93,8 +93,8 @@ export const SelectAutocomplete = forwardRef(
       null
     ) // Represents the index of the hovered option while using keyboard (for a11y), useful for the "aria-activedescendant" attribute
 
-    const optionsLabelByValue = useRef<Map<string, string>>() // Hashtables for the options (ex: "05" -> "Hautes-Alpes")
-    const optionsValueByLabel = useRef<Map<string, string>>() // Inverted hashtables for the labels (ex: "Hautes-Alpes" -> "05")
+    const optionsLabelByValue = useRef<Map<string, string>>(undefined) // Hashtables for the options (ex: "05" -> "Hautes-Alpes")
+    const optionsValueByLabel = useRef<Map<string, string>>(undefined) // Inverted hashtables for the labels (ex: "Hautes-Alpes" -> "05")
     const containerRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLInputElement>(null) // Ref for "searchField"
     const listRef = useRef<HTMLUListElement>(null) // Ref for <ul> dropdown

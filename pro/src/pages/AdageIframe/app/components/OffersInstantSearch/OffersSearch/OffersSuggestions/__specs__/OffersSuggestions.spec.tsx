@@ -119,7 +119,7 @@ describe('OffersSuggestions', () => {
       expect.objectContaining({
         aroundRadius: 5000,
       }),
-      {}
+      undefined
     )
     expect(
       screen.getByText(
@@ -162,7 +162,7 @@ describe('OffersSuggestions', () => {
         ]),
         aroundRadius: 100000,
       }),
-      {}
+      undefined
     )
     expect(Configure).toHaveBeenCalledTimes(2)
     expect(
@@ -189,7 +189,7 @@ describe('OffersSuggestions', () => {
         aroundRadius: 30_000_000,
         facetFilters: [],
       }),
-      {}
+      undefined
     )
     expect(
       screen.getByText(
@@ -215,7 +215,7 @@ describe('OffersSuggestions', () => {
         aroundRadius: 30_000_000,
         facetFilters: [],
       }),
-      {}
+      undefined
     )
     expect(
       screen.getByText(
@@ -241,7 +241,7 @@ describe('OffersSuggestions', () => {
         aroundRadius: 30_000_000,
         facetFilters: [],
       }),
-      {}
+      undefined
     )
     expect(
       screen.getByText('Découvrez des offres qui relèvent d’autres formats')

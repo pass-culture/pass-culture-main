@@ -7,7 +7,7 @@ interface DeleteConfirmDialogProps {
   nbSelectedOffers: number
   onConfirm: () => void
   isDialogOpen: boolean
-  refToFocusOnClose?: React.RefObject<HTMLButtonElement>
+  refToFocusOnClose?: React.RefObject<HTMLButtonElement | null>
 }
 
 export const DeleteConfirmDialog = ({

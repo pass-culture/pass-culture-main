@@ -1,4 +1,4 @@
-import type { ChangeEvent, Dispatch, FormEvent, SetStateAction } from 'react'
+import type { ChangeEvent, Dispatch, SetStateAction, SubmitEvent } from 'react'
 
 import { OfferStatus } from '@/apiClient/v1'
 import {
@@ -25,7 +25,7 @@ interface IndividualOffersSearchFiltersProps {
   resetFilters: () => void
   offererAddresses: SelectOption[]
   categories?: SelectOption[]
-  searchButtonRef?: React.RefObject<HTMLButtonElement>
+  searchButtonRef?: React.RefObject<HTMLButtonElement | null>
 }
 
 const individualFilterStatus = [
@@ -81,7 +81,7 @@ export const IndividualOffersSearchFilters = ({
       updateSearchFilters({ [key]: val !== '' ? val : fallback })
     }
 
-  const requestFilteredOffers = (event: FormEvent) => {
+  const requestFilteredOffers = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
     applyFilters(selectedFilters)
   }

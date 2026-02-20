@@ -16,7 +16,7 @@ type CarouselProps = {
   onLastCarouselElementVisible?: () => void
   loading?: boolean
   className?: string
-  observableRef?: React.RefObject<HTMLDivElement> //  Reference for the  IntersectionObserver API
+  observableRef?: React.RefObject<HTMLDivElement | null> //  Reference for the  IntersectionObserver API
 }
 
 export function Carousel({

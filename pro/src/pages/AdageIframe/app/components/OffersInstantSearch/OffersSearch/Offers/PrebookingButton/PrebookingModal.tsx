@@ -6,7 +6,7 @@ interface PrebookingModalProps {
   preBookCurrentStock: () => Promise<void>
   isPreview?: boolean
   isDialogOpen: boolean
-  refToFocusOnClose?: React.RefObject<HTMLElement>
+  refToFocusOnClose?: React.RefObject<HTMLElement | null>
 }
 
 export const PrebookingModal = ({

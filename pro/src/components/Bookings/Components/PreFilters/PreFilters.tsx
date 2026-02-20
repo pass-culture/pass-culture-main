@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import { type FormEvent, useCallback, useState } from 'react'
+import { type SubmitEvent, useCallback, useState } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
@@ -61,7 +61,7 @@ export const PreFilters = ({
   const { logEvent } = useAnalytics()
   const [isDownloadingCSV, setIsDownloadingCSV] = useState(false)
 
-  const requestFilteredBookings = (event: FormEvent<HTMLFormElement>) => {
+  const requestFilteredBookings = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
     applyNow()
   }

@@ -44,7 +44,7 @@ const mockVenue = {
 
 const renderVenueProviderForm = (
   provider: ProviderResponse = mockProvider,
-  selectSoftwareButtonRef?: React.RefObject<HTMLButtonElement>
+  selectSoftwareButtonRef?: React.RefObject<HTMLButtonElement | null>
 ) => {
   const afterSubmit = vi.fn().mockResolvedValue(undefined)
 
@@ -76,7 +76,7 @@ describe('VenueProviderForm', () => {
       const focusSpy = vi.spyOn(button, 'focus')
       const selectSoftwareButtonRef = {
         current: button,
-      } as React.RefObject<HTMLButtonElement>
+      } as React.RefObject<HTMLButtonElement | null>
 
       vi.spyOn(api, 'createVenueProvider').mockResolvedValue(
         defaultVenueProvider
@@ -151,7 +151,7 @@ describe('VenueProviderForm', () => {
       const focusSpy = vi.spyOn(button, 'focus')
       const selectSoftwareButtonRef = {
         current: button,
-      } as React.RefObject<HTMLButtonElement>
+      } as React.RefObject<HTMLButtonElement | null>
 
       const error = new ApiError(
         {} as ApiRequestOptions,

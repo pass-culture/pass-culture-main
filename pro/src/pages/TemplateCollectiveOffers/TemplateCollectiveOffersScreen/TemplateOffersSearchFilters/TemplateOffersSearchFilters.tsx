@@ -1,4 +1,4 @@
-import type { Dispatch, FormEvent, SetStateAction } from 'react'
+import type { ChangeEvent, Dispatch, SetStateAction, SubmitEvent } from 'react'
 
 import {
   CollectiveLocationType,
@@ -104,11 +104,11 @@ export const TemplateOffersSearchFilters = ({
     }))
   }
 
-  const storeNameOrIsbnSearchValue = (event: FormEvent<HTMLInputElement>) => {
+  const storeNameOrIsbnSearchValue = (event: ChangeEvent<HTMLInputElement>) => {
     updateSearchFilters({ name: event.currentTarget.value })
   }
 
-  const storeSelectedFormat = (event: FormEvent<HTMLSelectElement>) => {
+  const storeSelectedFormat = (event: ChangeEvent<HTMLSelectElement>) => {
     updateSearchFilters({
       format: event.currentTarget.value as EacFormat | 'all',
     })
@@ -130,7 +130,7 @@ export const TemplateOffersSearchFilters = ({
     updateSearchFilters({ periodEndingDate: dateToFilter })
   }
 
-  const requestFilteredOffers = (event: FormEvent) => {
+  const requestFilteredOffers = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
     const newSearchFilters = {
       ...selectedFilters,

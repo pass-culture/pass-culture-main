@@ -19,7 +19,7 @@ type ClassroomPlaylistProps = {
     offerId,
     index,
   }: OfferPlaylistTracker) => void
-  observableRef?: React.RefObject<HTMLDivElement>
+  observableRef?: React.RefObject<HTMLDivElement | null>
 }
 
 export const ClassroomPlaylist = ({

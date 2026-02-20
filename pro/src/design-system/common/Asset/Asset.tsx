@@ -52,9 +52,12 @@ export function Asset({
   }
 
   if (variant === 'image') {
+    // https://gtmetrix.com/avoid-empty-src-or-href.html
+    const sanitizedSrc = src?.trim() || undefined
+
     return (
       <div className={classNames(styles['image'], styles[size], className)}>
-        <img src={src} alt="" className={styles['img']} />
+        <img src={sanitizedSrc} alt="" className={styles['img']} />
       </div>
     )
   }

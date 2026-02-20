@@ -34,7 +34,7 @@ export type DropdownProps = {
   /** Styling */
   contentClassName?: string
 
-  dropdownTriggerRef?: React.RefObject<HTMLButtonElement>
+  dropdownTriggerRef?: React.RefObject<HTMLButtonElement | null>
 
   triggerTooltip?: boolean
 }

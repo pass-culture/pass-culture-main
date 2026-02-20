@@ -14,7 +14,7 @@ import { DeleteVenueProviderDialog } from './DeleteVenueProviderDialog'
 interface DeleteVenueProviderButtonProps {
   venueProviderId: number
   venue: GetVenueResponseModel
-  selectSoftwareButtonRef: React.RefObject<HTMLButtonElement>
+  selectSoftwareButtonRef: React.RefObject<HTMLButtonElement | null>
 }
 
 export const DeleteVenueProviderButton = ({

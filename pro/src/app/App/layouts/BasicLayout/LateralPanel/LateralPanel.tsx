@@ -19,12 +19,12 @@ import { LateralMenu } from './LateralMenu/LateralMenu'
 import styles from './LateralPanel.module.scss'
 
 interface LateralPanelProps {
-  closeButtonRef: React.RefObject<HTMLButtonElement>
+  closeButtonRef: React.RefObject<HTMLButtonElement | null>
   isAdminArea?: boolean
   isHubPage?: boolean
   isOpen: boolean
-  navPanel: React.RefObject<HTMLDivElement>
-  openButtonRef: React.RefObject<HTMLButtonElement>
+  navPanel: React.RefObject<HTMLDivElement | null>
+  openButtonRef: React.RefObject<HTMLButtonElement | null>
   onToggle: (value: boolean) => void
 }
 

@@ -27,7 +27,9 @@ interface OfferEducationalModalProps<T extends Offer> {
   hasMultipleOffers?: boolean
   selectedOffers?: T[]
   isDialogOpen: boolean
-  refToFocusOnClose?: React.RefObject<HTMLButtonElement | HTMLAnchorElement>
+  refToFocusOnClose?: React.RefObject<
+    HTMLButtonElement | HTMLAnchorElement | null
+  >
 }
 
 export const ArchiveConfirmationModal = <T extends Offer>({

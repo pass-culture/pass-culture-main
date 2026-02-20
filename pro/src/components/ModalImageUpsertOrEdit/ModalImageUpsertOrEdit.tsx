@@ -2,7 +2,8 @@ import * as Dialog from '@radix-ui/react-dialog'
 import cn from 'classnames'
 import { useEffect, useRef, useState } from 'react'
 import type AvatarEditor from 'react-avatar-editor'
-import type { CroppedRect } from 'react-avatar-editor'
+
+type CroppedRect = { x: number; y: number; width: number; height: number }
 
 import { getFileFromURL } from '@/apiClient/helpers'
 import { useAnalytics } from '@/app/App/analytics/firebase'
@@ -229,11 +230,7 @@ export const ModalImageUpsertOrEdit = ({
 
   const handleImageChange = (
     callback?:
-      | ((
-          credit: string | null,
-          url: string,
-          cropping: AvatarEditor.CroppedRect
-        ) => void)
+      | ((credit: string | null, url: string, cropping: CroppedRect) => void)
       | undefined
   ) => {
     try {

@@ -14,7 +14,7 @@ export const DuplicateOfferDialog = ({
   onCancel: () => void
   onConfirm: (shouldNotDisplayModalAgain: boolean) => void
   isDialogOpen: boolean
-  refToFocusOnClose?: React.RefObject<HTMLButtonElement>
+  refToFocusOnClose?: React.RefObject<HTMLButtonElement | null>
 }) => {
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false)
 

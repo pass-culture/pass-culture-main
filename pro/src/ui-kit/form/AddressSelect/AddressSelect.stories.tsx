@@ -131,7 +131,6 @@ export const withLimitOf15Suggestions: StoryObj<typeof AddressSelect> = {
       if (ref) {
         ref.defaultValue = '8 Rue'
       }
-      return ref
     },
   },
 }

@@ -264,7 +264,6 @@ describe('SelectAutocomplete', () => {
             if (ref) {
               ref.defaultValue = '02'
             }
-            return ref
           },
         }}
       />

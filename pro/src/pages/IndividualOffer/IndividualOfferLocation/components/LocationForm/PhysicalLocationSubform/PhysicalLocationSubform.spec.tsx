@@ -138,20 +138,11 @@ describe('<PhysicalLocationSubform />', () => {
   })
 
   it('should switch to other address fields when selecting other address', async () => {
-    //  Catch an error that only seems to appear in tests:
-    // `Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?`
-    // This may be related to `AddressSelect` implementation.
-    const consoleErrorSpy = vi
-      .spyOn(console, 'error')
-      .mockImplementation(vi.fn())
-
     renderPhysicalLocationSubform({})
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À une autre adresse' })
     )
-
-    expect(consoleErrorSpy).toHaveBeenCalledOnce()
 
     expect(
       screen.getByLabelText(/Intitulé de la localisation/i)

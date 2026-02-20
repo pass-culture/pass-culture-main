@@ -17,14 +17,17 @@ export function SafeImage({
   testId,
   placeholder,
 }: SafeImageProps) {
+  // https://gtmetrix.com/avoid-empty-src-or-href.html
+  const sanitizedSrc = src.trim() || undefined
+
   const [error, setError] = useState(false)
-  const previousSrc = usePrevious(src)
+  const previousSanitizedSrc = usePrevious(sanitizedSrc)
 
   useEffect(() => {
-    if (src !== previousSrc) {
+    if (sanitizedSrc !== previousSanitizedSrc) {
       setError(false)
     }
-  }, [src, previousSrc])
+  }, [sanitizedSrc, previousSanitizedSrc])
 
   if (error) {
     return placeholder
@@ -33,7 +36,7 @@ export function SafeImage({
   return (
     <img
       className={className}
-      src={src}
+      src={sanitizedSrc}
       alt={alt}
       onError={() => setError(true)}
       data-testid={testId}
