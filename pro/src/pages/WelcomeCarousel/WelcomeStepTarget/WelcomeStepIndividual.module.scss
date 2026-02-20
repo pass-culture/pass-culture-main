@@ -1,0 +1,49 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.ways-list {
+  margin-top: var(--size-spacing-l);
+  margin-bottom: var(--size-spacing-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-spacing-l);
+}
+
+.way-item {
+  @include fonts.title4;
+
+  > em {
+    @include fonts.title4;
+
+    z-index: 0;
+    position: relative;
+    color: var(--color-text-inverted);
+    white-space: nowrap;
+
+    &::before {
+      content: "";
+      display: block;
+      position: absolute;
+      inset: rem.torem(-2px);
+      z-index: -1;
+      background-color: var(--color-background-brand-primary);
+    }
+
+    &.rotation-clockwise::before {
+      transform: rotate(0.75deg);
+    }
+
+    &.rotation-clockwise-inverted::before {
+      transform: rotate(-0.75deg);
+    }
+
+    @media screen and (min-width: size.$tablet) {
+      @include fonts.title3;
+    }
+  }
+
+  @media screen and (min-width: size.$tablet) {
+    @include fonts.title3;
+  }
+}

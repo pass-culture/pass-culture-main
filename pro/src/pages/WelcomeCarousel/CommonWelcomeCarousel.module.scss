@@ -4,6 +4,7 @@
 .title {
   @include fonts.title1;
 
+  margin-bottom: var(--size-spacing-s);
   text-align: center;
 }
 
@@ -23,13 +24,14 @@
   display: flex;
   max-width: 640px;
   flex-flow: column-reverse wrap;
+  margin-top: var(--size-spacing-xxl);
 
   @media screen and (min-width: size.$tablet) {
     flex-flow: row wrap;
   }
 
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: space-between;
   gap: var(--size-spacing-l);
 
   & > * {
