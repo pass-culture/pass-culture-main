@@ -52,7 +52,7 @@ jobs:
       - name: "Set resources label name"
         id: "set_resource_label"
         run: |
-          BRANCH_NAME=${{ github.ref_name }}
+          BRANCH_NAME="${{ github.ref_name }}""
           BRANCH_SHA1=$(echo -n "${BRANCH_NAME}" | sha1sum | awk '{print $1}' | cut -c1-7)
           echo "resource_label=$BRANCH_SHA1" >> $GITHUB_OUTPUT
           if [ "${{ inputs.front-only }}" == "true" ]; then
