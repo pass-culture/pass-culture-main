@@ -212,10 +212,10 @@ jobs:
         id: generate-pcapi-secrets-list
         run: |
           # Retrieve pcapi secrets list from source code
-          PCAPI_SECRETS=$(grep "secrets_utils.get(" api/src/pcapi/settings.py | sed -n 's/.*secrets_utils.get("\([^"]*\)".*/\1/p' | grep -Ev '^(GOOGLE_CLIENT_ID|GOOGLE_CLIENT_SECRET|DATABASE_URL)$')
+          PCAPI_SECRETS="$(grep "secrets_utils.get(" api/src/pcapi/settings.py | sed -n 's/.*secrets_utils.get("\([^"]*\)".*/\1/p' | grep -Ev '^(GOOGLE_CLIENT_ID|GOOGLE_CLIENT_SECRET|DATABASE_URL)$')"
           echo "$PCAPI_SECRETS"
           # Sort list
-          PCAPI_SECRETS=$(echo "$PCAPI_SECRETS" | xargs -n1 | sort | xargs)
+          PCAPI_SECRETS="$(echo "$PCAPI_SECRETS" | xargs -n1 | sort | xargs)"
           #Transform list into helm readable parameter list (pattern: --set secrets={item1,item2,item3})
           PCAPI_SECRETS="secrets={$(echo $PCAPI_SECRETS | sed -r 's/ /,/g')}"
           echo "PCAPI_SECRETS=$PCAPI_SECRETS" >> "$GITHUB_OUTPUT"
