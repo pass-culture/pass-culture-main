@@ -118,7 +118,7 @@ jobs:
             echo "| [pro] content changed                | ${{ steps.check-pro-changes.outputs.any_modified }} |"
             echo "| [dependencies] content changed       | ${{ steps.check-dependencies-changes.outputs.any_modified }} |"
             echo "| [github] content changed             | ${{ steps.check-github-changes.outputs.any_modified }} |"
-          } >> $GITHUB_STEP_SUMMARY
+          } >> "$GITHUB_STEP_SUMMARY"
 
   build-pcapi-tests:
     name: "[pcapi-tests] build docker image."

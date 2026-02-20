@@ -20,8 +20,6 @@ jobs:
       algolia-config-changed: ${{ steps.check-algolia-config-changes.outputs.any_modified }}
       push-tags: ${{ steps.pcapi-tags.outputs.push-tags }}
       checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
-      checksum-tag-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
-      checksum-console-tag-exists: ${{ steps.check-console-checksum-tag.outputs.tag-exists }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -69,13 +67,13 @@ jobs:
         id: pcapi-tags
         run: |
           DOCKER_IMAGE="${{ env.docker_registry }}/pcapi"
-          API_CHECKSUM=`tar --sort=name --owner=0 --group=0 --mtime='UTC 2019-01-01' -cf - api | sha1sum | awk '{ print $1 }'`
+          API_CHECKSUM="$(tar --sort=name --owner=0 --group=0 --mtime='UTC 2019-01-01' -cf - api | sha1sum | awk '{ print $1 }')"
           PUSH_TAGS="push-tags=$DOCKER_IMAGE:${{ github.sha }},$DOCKER_IMAGE:$API_CHECKSUM,$DOCKER_IMAGE:latest"
           API_TAG="checksum-tag=$API_CHECKSUM"
           echo "PUSH_TAGS=$PUSH_TAGS"
           echo "API_TAG=$API_TAG"
-          echo $PUSH_TAGS >> "$GITHUB_OUTPUT"
-          echo $API_TAG >> "$GITHUB_OUTPUT"
+          echo "$PUSH_TAGS" >> "$GITHUB_OUTPUT"
+          echo "$API_TAG" >> "$GITHUB_OUTPUT"
       - name: "Summary"
         run: |
           echo "[api] folder changed : ${{ steps.check-api-changes.outputs.any_modified }}"
