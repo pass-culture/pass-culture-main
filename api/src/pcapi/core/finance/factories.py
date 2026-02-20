@@ -294,6 +294,7 @@ class SettlementFactory(BaseFactory[models.Settlement]):
         model = models.Settlement
 
     settlementDate = factory.LazyFunction(date_utils.get_naive_utc_now)
+    creationDate = factory.LazyFunction(date_utils.get_naive_utc_now)
     externalSettlementId = "0101234"
     bankAccount = factory.SubFactory(BankAccountFactory)
     amount = 10000

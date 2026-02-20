@@ -1022,6 +1022,7 @@ class Settlement(PcObject, Model):
     __tablename__ = "settlement"
 
     settlementDate: sa_orm.Mapped[datetime.date] = sa_orm.mapped_column(sa.Date, nullable=False)
+    creationDate: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
     dateImported: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now()
     )
