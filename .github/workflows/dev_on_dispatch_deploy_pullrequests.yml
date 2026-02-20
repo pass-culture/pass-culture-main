@@ -54,11 +54,11 @@ jobs:
         run: |
           BRANCH_NAME="${{ github.ref_name }}"
           BRANCH_SHA1=$(echo -n "${BRANCH_NAME}" | sha1sum | awk '{print $1}' | cut -c1-7)
-          echo "resource_label=$BRANCH_SHA1" >> $GITHUB_OUTPUT
+          echo "resource_label=$BRANCH_SHA1" >> "$GITHUB_OUTPUT"
           if [ "${{ inputs.front-only }}" == "true" ]; then
-            echo "testing_label=" >> $GITHUB_OUTPUT
+            echo "testing_label=" >> "$GITHUB_OUTPUT"
           else
-            echo "testing_label=$BRANCH_SHA1" >> $GITHUB_OUTPUT
+            echo "testing_label=$BRANCH_SHA1" >> "$GITHUB_OUTPUT"
           fi
       - name: "Define pcapi image tags."
         id: pcapi-tags
