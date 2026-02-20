@@ -289,16 +289,25 @@ jobs:
         run: |
           set +e
           while true; do
-            kubectl get application -n argocd | grep postgresql-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}
-            [[ $? -eq 0 ]] && break || sleep 5
+            if kubectl get application -n argocd | grep "postgresql-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}"
+            then
+               break
+            else
+               sleep 5
           done
           while true; do
-            kubectl get application -n argocd | grep redis-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}
-            [[ $? -eq 0 ]] && break || sleep 5
+            if kubectl get application -n argocd | grep "redis-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}"
+            then
+               break
+            else
+               sleep 5
           done
           while true; do
-            kubectl get application -n argocd | grep testing-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}
-            [[ $? -eq 0 ]] && break || sleep 5
+            if kubectl get application -n argocd | grep "testing-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}"
+            then
+               break
+            else
+               sleep 5
           done
           {
             echo "### :rocket: Applications Argocd"
