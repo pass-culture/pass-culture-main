@@ -91,7 +91,7 @@ jobs:
           pullrequests_ids=$(kubectl get ns -o go-template --template '{{range .items}}{{.metadata.name}} {{.metadata.creationTimestamp}}{{"\n"}}{{end}}' | awk '{if ($1 ~ "pcapi-pr") print $0}' | awk '$2 <= "'"$(date -d'now-24 hours' -Ins --utc | sed 's/+0000/Z/')"'" { print $1 }' | cut -d "-" -f3)
 
           files_modified=false
-          for id in "$pullrequests_ids"; do
+          for id in $pullrequests_ids; do
             [[ -d "testing-pr-$id" ]] && { git rm -r "testing-pr-$id"; files_modified=true; } || echo "path testing-pr-$id does not exist"
             [[ -d "postgresql-pr-$id" ]] && { git rm -r "postgresql-pr-$id"; files_modified=true; } || echo "path postgresql-pr-$id does not exist"
             [[ -d "redis-pr-$id" ]] && { git rm -r "redis-pr-$id"; files_modified=true; } || echo "path redis-pr-$id does not exist"
@@ -105,14 +105,14 @@ jobs:
           #Set active project for DNS entry deletion
           gcloud config set project passculture-metier-ehp
 
-          for id in "$pullrequests_ids"; do
+          for id in $pullrequests_ids; do
             while true; do
               kubectl get application -n argocd | grep "$id" && sleep 5 || echo "application with id $id is deleted, continuing"; break
             done
             # Check for PR namespace and delete it
             if kubectl get ns "pcapi-pr-$id"
             then
-              kubectl delete ns pcapi-pr-$id
+              kubectl delete ns "pcapi-pr-$id"
             else
               echo "namespace pcapi-pr-$id does not exist"
             fi
