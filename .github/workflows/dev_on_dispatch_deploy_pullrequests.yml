@@ -355,19 +355,19 @@ jobs:
           export ENVIRONMENT="pullrequest"
           IMAGE="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi"
           export IMAGE="${IMAGE}:${VERSION}"
-          export PRID=${{ needs.deploy-preview-env-init.outputs.resource_label }}
+          export PRID="${{ needs.deploy-preview-env-init.outputs.resource_label }}"
 
           echo "=== exec: flask install_postgres_extensions"
-          export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
-          start=$(date +%s.%N)
-          envsubst < .github/workflows/templates/pullrequest-db-init.yaml | kubectl -n pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }} apply -f -
+          export DATE="$(date +"%Y-%m-%d-%H-%M-%S")"
+          start="$(date +%s.%N)"
+          envsubst < .github/workflows/templates/pullrequest-db-init.yaml | kubectl -n "pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}" apply -f -
           while true;
           do
-            kubectl logs -n pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }} -f "jobs/pullrequest-db-init-${DATE}" && break
+            kubectl logs -n "pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}" -f "jobs/pullrequest-db-init-${DATE}" && break
           done
-          kubectl wait --for=condition=complete --timeout=300s -n pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }} "jobs/pullrequest-db-init-${DATE}"
-          end=$(date +%s.%N)
-          duration=$(date -d@$(bc <<< "$end - $start") -u +%H:%M:%S)
+          kubectl wait --for=condition=complete --timeout=300s -n "pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}" "jobs/pullrequest-db-init-${DATE}"
+          end="$(date +%s.%N)"
+          duration="$(date -d@$(bc <<< "$end - $start") -u +%H:%M:%S)"
           {
             echo "### :rocket: Init local database summary"
             echo "| Command                              | Duration |"
@@ -390,27 +390,27 @@ jobs:
           export ENVIRONMENT="pullrequest"
           IMAGE="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi"
           export IMAGE="${IMAGE}:${VERSION}"
-          export PRID=${{ needs.deploy-preview-env-init.outputs.resource_label }}
+          export PRID="${{ needs.deploy-preview-env-init.outputs.resource_label }}"
 
           echo "=== exec: flask sandbox -n ${{ inputs.sandbox }} ${{ inputs.sandbox-args }}"
-          export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
+          export DATE="$(date +"%Y-%m-%d-%H-%M-%S")"
           export SANDBOX_NAME='${{ inputs.sandbox }}'
           export SANDBOX_ARGS='${{ inputs.sandbox-args }}'
-          start=$(date +%s.%N)
-          envsubst < .github/workflows/templates/pullrequest-db-init-sandbox.yaml | kubectl -n pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }} apply -f -
+          start="$(date +%s.%N)"
+          envsubst < .github/workflows/templates/pullrequest-db-init-sandbox.yaml | kubectl -n "pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}" apply -f -
           while true;
           do
-          kubectl logs -n pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }} -f jobs/pullrequest-db-init-sandbox-${DATE} && break
+          kubectl logs -n "pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}" -f "jobs/pullrequest-db-init-sandbox-${DATE}" && break
           done
-          kubectl wait --for=condition=complete --timeout=1800s -n pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }} jobs/pullrequest-db-init-sandbox-${DATE}
-          end=$(date +%s.%N)
-          duration=`date -d@$(bc <<< "$end - $start") -u +%H:%M:%S`
+          kubectl wait --for=condition=complete --timeout=1800s -n "pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}" "jobs/pullrequest-db-init-sandbox-${DATE}"
+          end="$(date +%s.%N)"
+          duration="$(date -d@$(bc <<< "$end - $start") -u +%H:%M:%S)"
           {
             echo "### :rocket: Run sandbox summary"
             echo "| Command                                                              | Duration  |"
             echo "| -------------------------------------------------------------------- | --------- |"
             echo "| flask sandbox -n ${{ inputs.sandbox }} ${{ inputs.sandbox-args }}    | $duration |"
-          } >> $GITHUB_STEP_SUMMARY
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: "Publish Summary"
         run: |
