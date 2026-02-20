@@ -209,17 +209,9 @@ yarn test:unit
 
 **Tests end-to-end :**
 
-Les fichiers de tests end-to-end sont tous rangés dans le sous-dossier `/pro/e2e`.
+Nous utilisons **Playwright** pour Les tests E2E. Ils sont disponibles dans le sous-dossier `/pro/e2e`.
 
-Pour les lancer, on utilise la commande suivante :
-
-```bash
-yarn test:e2e
-```
-
-> [!CAUTION]
->
-> Cette commande supprime les données "sandbox" de la base locale. Une fois les tests e2e terminés, il faudra relancer le script `pc sandbox -n industrial` pour remettre à zéro votre base de données locale.
+Plus d'informations sur les tests E2E [ici](./e2e/README.md)
 
 ## Storybook
 
