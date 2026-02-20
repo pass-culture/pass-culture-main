@@ -78,7 +78,7 @@ def get_venue(venue_id: int) -> venues_serialize.GetVenueResponseModel:
         flask.abort(404)
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
-    return venues_serialize.GetVenueResponseModel.from_orm(venue)
+    return venues_serialize.GetVenueResponseModel.build(venue)
 
 
 @private_api.route("/venues", methods=["GET"])
@@ -229,7 +229,7 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
         else:
             on_commit(partial(update_all_venue_offers_email_job.delay, venue.id, body.bookingEmail))
 
-    return venues_serialize.GetVenueResponseModel.from_orm(venue)
+    return venues_serialize.GetVenueResponseModel.build(venue)
 
 
 @private_api.route("/venues/<int:venue_id>/collective-data", methods=["PATCH"])
@@ -246,7 +246,7 @@ def edit_venue_collective_data(
     update_venue_attrs = body.dict(exclude_unset=True)
     venue = offerers_api.update_venue_collective_data(venue, **update_venue_attrs)
 
-    return venues_serialize.GetVenueResponseModel.from_orm(venue)
+    return venues_serialize.GetVenueResponseModel.build(venue)
 
 
 @private_api.route("/venues/<int:venue_id>/pricing-point", methods=["POST"])
@@ -292,7 +292,7 @@ def upsert_venue_banner(venue_id: int) -> venues_serialize.GetVenueResponseModel
         crop_params=venue_banner.crop_params,
     )
 
-    return venues_serialize.GetVenueResponseModel.from_orm(venue)
+    return venues_serialize.GetVenueResponseModel.build(venue)
 
 
 @private_api.route("/venues/<int:venue_id>/banner", methods=["DELETE"])

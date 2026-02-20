@@ -2,15 +2,15 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { ExternalAccessibilityDataModel } from './ExternalAccessibilityDataModel';
-import type { LocationResponseModel } from './LocationResponseModel';
+import type { _ExternalAccessibilityDataModel } from './_ExternalAccessibilityDataModel';
+import type { LocationResponseModelV2 } from './LocationResponseModelV2';
 import type { SimplifiedBankAccountStatus } from './SimplifiedBankAccountStatus';
-import type { VenueTypeCode } from './VenueTypeCode';
+import type { VenueTypeCodeKey } from './VenueTypeCodeKey';
 export type VenueListItemResponseModel = {
-  audioDisabilityCompliant?: boolean | null;
-  bankAccountStatus?: SimplifiedBankAccountStatus | null;
-  bookingEmail?: string | null;
-  externalAccessibilityData?: ExternalAccessibilityDataModel | null;
+  audioDisabilityCompliant: (boolean | null);
+  bankAccountStatus: (SimplifiedBankAccountStatus | null);
+  bookingEmail: (string | null);
+  externalAccessibilityData: (_ExternalAccessibilityDataModel | null);
   hasCreatedOffer: boolean;
   hasNonFreeOffers: boolean;
   id: number;
@@ -19,16 +19,16 @@ export type VenueListItemResponseModel = {
   isPermanent: boolean;
   isValidated: boolean;
   isVirtual: boolean;
-  location?: LocationResponseModel | null;
+  location: (LocationResponseModelV2 | null);
   managingOffererId: number;
-  mentalDisabilityCompliant?: boolean | null;
-  motorDisabilityCompliant?: boolean | null;
+  mentalDisabilityCompliant: (boolean | null);
+  motorDisabilityCompliant: (boolean | null);
   name: string;
   offererName: string;
   publicName: string;
-  siret?: string | null;
-  venueTypeCode: VenueTypeCode;
-  visualDisabilityCompliant?: boolean | null;
-  withdrawalDetails?: string | null;
+  siret: (string | null);
+  venueTypeCode: VenueTypeCodeKey;
+  visualDisabilityCompliant: (boolean | null);
+  withdrawalDetails: (string | null);
 };
 

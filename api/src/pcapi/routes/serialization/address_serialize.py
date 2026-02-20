@@ -70,6 +70,9 @@ class LocationBodyModel(offerers_schema.LocationModel):
         raise ValueError("isVenueLocation must be false when providing a full address")
 
 
+# TODO(jbaudet - 02/2026): deprecated. Please consider the awesome,
+# magnificent, extraordinary, marvelous... LocationResponseModelV2!
+# Same stuff, using pydantic v2! Mind blowing.
 class LocationResponseModel(BaseModel):
     id: int
     label: str | None = None
