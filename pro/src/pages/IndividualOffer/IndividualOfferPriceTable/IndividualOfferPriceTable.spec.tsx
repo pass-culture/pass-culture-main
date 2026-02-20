@@ -22,7 +22,7 @@ vi.mock('@/apiClient/api', () => ({
 
 import { api } from '@/apiClient/api'
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
-import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   MOCKED_CATEGORIES,
   MOCKED_SUBCATEGORIES,
@@ -63,7 +63,7 @@ const renderIndividualOfferPriceTable: RenderComponentFunction<
     storeOverrides: {
       user: {
         currentUser: user,
-        selectedPartnerVenue: makeVenueListItem({ id: 2 }),
+        selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
       },
     },
     ...params.options,

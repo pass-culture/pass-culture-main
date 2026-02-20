@@ -12,14 +12,12 @@ import {
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
-import {
-  getIndividualOfferFactory,
-  makeVenueListItem,
-} from '@/commons/utils/factories/individualApiFactories'
+import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderComponentFunction,
   type RenderWithProvidersOptions,
@@ -79,7 +77,7 @@ const renderIndividualOfferLayout: RenderComponentFunction<
     storeOverrides: {
       user: {
         currentUser: user,
-        selectedPartnerVenue: makeVenueListItem({ id: 2 }),
+        selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
       },
       offerer: currentOffererFactory({}),
     },

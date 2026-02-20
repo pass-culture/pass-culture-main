@@ -4,10 +4,8 @@ import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
-import {
-  individualOfferContextValuesFactory,
-  makeVenueListItem,
-} from '@/commons/utils/factories/individualApiFactories'
+import { individualOfferContextValuesFactory } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { Component as IndividualOfferSummaryPracticalInfos } from './IndividualOfferSummaryPracticalInfos'
@@ -24,7 +22,7 @@ const renderIndividualOfferSummaryPracticalInfos = (
     {
       storeOverrides: {
         user: {
-          selectedPartnerVenue: makeVenueListItem({ id: 2 }),
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
         },
       },
     }

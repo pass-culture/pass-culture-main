@@ -5,7 +5,7 @@ import { axe } from 'vitest-axe'
 import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
-import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { HighlightHome } from './HighlightHome'
@@ -19,7 +19,7 @@ describe('HighlightHome', () => {
     const { container } = renderWithProviders(<HighlightHome />, {
       storeOverrides: {
         user: {
-          selectedPartnerVenue: makeVenueListItem({ id: 2 }),
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
         },
       },
     })
@@ -47,7 +47,7 @@ describe('HighlightHome', () => {
     renderWithProviders(<HighlightHome />, {
       storeOverrides: {
         user: {
-          selectedPartnerVenue: makeVenueListItem({ id: 2 }),
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
         },
       },
     })

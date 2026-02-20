@@ -15,9 +15,9 @@ import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
   getOffererNameFactory,
-  makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { OfferTypeScreen } from './OfferType'
@@ -67,7 +67,7 @@ const renderOfferTypes = (
       storeOverrides: {
         user: {
           currentUser: sharedCurrentUserFactory(),
-          selectedPartnerVenue: makeVenueListItem({ id: 2 }),
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
         },
         offerer: {
           currentOfferer: {

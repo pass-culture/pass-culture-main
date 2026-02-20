@@ -187,6 +187,16 @@ export type AudioDisabilityModel = {
 };
 
 /**
+ * AudioDisabilityModelV2
+ */
+export type AudioDisabilityModelV2 = {
+    /**
+     * Deafandhardofhearing
+     */
+    deafAndHardOfHearing?: Array<string>;
+};
+
+/**
  * BankAccountApplicationStatus
  */
 export enum BankAccountApplicationStatus {
@@ -249,6 +259,17 @@ export type BannerMetaModel = {
      * Original Image Url
      */
     original_image_url?: string;
+};
+
+/**
+ * BannerMetaModelV2
+ */
+export type BannerMetaModelV2 = {
+    crop_params?: CropParamsV2;
+    /**
+     * Original Image Url
+     */
+    original_image_url?: string | null;
 };
 
 /**
@@ -1082,6 +1103,28 @@ export type CropParams = {
 };
 
 /**
+ * CropParamsV2
+ */
+export type CropParamsV2 = {
+    /**
+     * Height Crop Percent
+     */
+    height_crop_percent?: number;
+    /**
+     * Width Crop Percent
+     */
+    width_crop_percent?: number;
+    /**
+     * X Crop Percent
+     */
+    x_crop_percent?: number;
+    /**
+     * Y Crop Percent
+     */
+    y_crop_percent?: number;
+};
+
+/**
  * DMSApplicationForEAC
  */
 export type DMSApplicationForEAC = {
@@ -1122,6 +1165,53 @@ export type DMSApplicationForEAC = {
      * Userdeletiondate
      */
     userDeletionDate?: string;
+    /**
+     * Venueid
+     */
+    venueId: number;
+};
+
+/**
+ * DMSApplicationForEACv2
+ */
+export type DMSApplicationForEACv2 = {
+    /**
+     * Application
+     */
+    application: number;
+    /**
+     * Builddate
+     */
+    buildDate: string | null;
+    /**
+     * Depositdate
+     */
+    depositDate: string;
+    /**
+     * Expirationdate
+     */
+    expirationDate: string | null;
+    /**
+     * Instructiondate
+     */
+    instructionDate: string | null;
+    /**
+     * Lastchangedate
+     */
+    lastChangeDate: string;
+    /**
+     * Procedure
+     */
+    procedure: number;
+    /**
+     * Processingdate
+     */
+    processingDate: string | null;
+    state: DMSApplicationstatus;
+    /**
+     * Userdeletiondate
+     */
+    userDeletionDate: string | null;
     /**
      * Venueid
      */
@@ -1696,6 +1786,32 @@ export type ExternalAccessibilityDataModel = {
      * Visualdisability
      */
     visualDisability?: VisualDisabilityModel;
+};
+
+/**
+ * ExternalAccessibilityDataModelV2
+ */
+export type ExternalAccessibilityDataModelV2 = {
+    audioDisability?: AudioDisabilityModelV2;
+    /**
+     * Isaccessibleaudiodisability
+     */
+    isAccessibleAudioDisability?: boolean;
+    /**
+     * Isaccessiblementaldisability
+     */
+    isAccessibleMentalDisability?: boolean;
+    /**
+     * Isaccessiblemotordisability
+     */
+    isAccessibleMotorDisability?: boolean;
+    /**
+     * Isaccessiblevisualdisability
+     */
+    isAccessibleVisualDisability?: boolean;
+    mentalDisability?: MentalDisabilityModelV2;
+    motorDisability?: MotorDisabilityModelV2;
+    visualDisability?: VisualDisabilityModelV2;
 };
 
 /**
@@ -3301,9 +3417,9 @@ export enum GetVenueAddressesWithOffersOption {
 }
 
 /**
- * GetVenueDomainResponseModel
+ * GetVenueDomainResponseModelv2
  */
-export type GetVenueDomainResponseModel = {
+export type GetVenueDomainResponseModelv2 = {
     /**
      * Id
      */
@@ -3382,11 +3498,11 @@ export type GetVenuePricingPointResponseModel = {
  * GetVenueResponseModel
  */
 export type GetVenueResponseModel = {
-    activity?: DisplayableActivity;
+    activity?: DisplayableActivity | null;
     /**
      * Adageinscriptiondate
      */
-    adageInscriptionDate?: string;
+    adageInscriptionDate?: string | null;
     /**
      * Allowedonadage
      */
@@ -3394,20 +3510,17 @@ export type GetVenueResponseModel = {
     /**
      * Audiodisabilitycompliant
      */
-    audioDisabilityCompliant?: boolean;
-    bankAccountStatus?: SimplifiedBankAccountStatus;
-    /**
-     * BannerMetaModel
-     */
-    bannerMeta?: BannerMetaModel;
+    audioDisabilityCompliant?: boolean | null;
+    bankAccountStatus?: SimplifiedBankAccountStatus | null;
+    bannerMeta?: BannerMetaModelV2 | null;
     /**
      * Bannerurl
      */
-    bannerUrl?: string;
+    bannerUrl?: string | null;
     /**
      * Bookingemail
      */
-    bookingEmail?: string;
+    bookingEmail?: string | null;
     /**
      * Candisplayhighlights
      */
@@ -3415,52 +3528,49 @@ export type GetVenueResponseModel = {
     /**
      * Collectiveaccessinformation
      */
-    collectiveAccessInformation?: string;
+    collectiveAccessInformation?: string | null;
     /**
      * Collectivedescription
      */
-    collectiveDescription?: string;
+    collectiveDescription?: string | null;
     /**
      * Collectivedmsapplications
      */
-    collectiveDmsApplications: Array<DMSApplicationForEAC>;
+    collectiveDmsApplications: Array<DMSApplicationForEACv2>;
     /**
      * Collectivedomains
      */
-    collectiveDomains: Array<GetVenueDomainResponseModel>;
+    collectiveDomains: Array<GetVenueDomainResponseModelv2>;
     /**
      * Collectiveemail
      */
-    collectiveEmail?: string;
+    collectiveEmail?: string | null;
     /**
      * Collectiveinterventionarea
      */
-    collectiveInterventionArea?: Array<string>;
-    /**
-     * LegalStatusResponseModel
-     */
-    collectiveLegalStatus?: LegalStatusResponseModel;
+    collectiveInterventionArea?: Array<string> | null;
+    collectiveLegalStatus?: LegalStatusResponseModelv2 | null;
     /**
      * Collectivenetwork
      */
-    collectiveNetwork?: Array<string>;
+    collectiveNetwork?: Array<string> | null;
     /**
      * Collectivephone
      */
-    collectivePhone?: string;
-    collectiveStudents?: Array<StudentLevels>;
+    collectivePhone?: string | null;
+    /**
+     * Collectivestudents
+     */
+    collectiveStudents?: Array<StudentLevels> | null;
     /**
      * Collectivewebsite
      */
-    collectiveWebsite?: string;
+    collectiveWebsite?: string | null;
     /**
      * Comment
      */
-    comment?: string;
-    /**
-     * VenueContactModel
-     */
-    contact?: VenueContactModel;
+    comment?: string | null;
+    contact?: VenueContactModelV2 | null;
     /**
      * Datecreated
      */
@@ -3468,19 +3578,16 @@ export type GetVenueResponseModel = {
     /**
      * Description
      */
-    description?: string;
-    /**
-     * ExternalAccessibilityDataModel
-     */
-    externalAccessibilityData?: ExternalAccessibilityDataModel;
+    description: string | null;
+    externalAccessibilityData?: ExternalAccessibilityDataModelV2 | null;
     /**
      * Externalaccessibilityid
      */
-    externalAccessibilityId?: string;
+    externalAccessibilityId?: string | null;
     /**
      * Externalaccessibilityurl
      */
-    externalAccessibilityUrl?: string;
+    externalAccessibilityUrl?: string | null;
     /**
      * Hasactiveindividualoffer
      */
@@ -3524,7 +3631,7 @@ export type GetVenueResponseModel = {
     /**
      * Ispermanent
      */
-    isPermanent?: boolean;
+    isPermanent?: boolean | null;
     /**
      * Isvalidated
      */
@@ -3533,31 +3640,22 @@ export type GetVenueResponseModel = {
      * Isvirtual
      */
     isVirtual: boolean;
-    /**
-     * LocationResponseModel
-     */
-    location?: LocationResponseModel;
+    location: LocationResponseModelV2;
     managingOfferer: GetVenueManagingOffererResponseModel;
     /**
      * Mentaldisabilitycompliant
      */
-    mentalDisabilityCompliant?: boolean;
+    mentalDisabilityCompliant?: boolean | null;
     /**
      * Motordisabilitycompliant
      */
-    motorDisabilityCompliant?: boolean;
+    motorDisabilityCompliant?: boolean | null;
     /**
      * Name
      */
     name: string;
-    /**
-     * WeekdayOpeningHoursTimespans
-     */
-    openingHours?: WeekdayOpeningHoursTimespans;
-    /**
-     * GetVenuePricingPointResponseModel
-     */
-    pricingPoint?: GetVenuePricingPointResponseModel;
+    openingHours?: WeekdayOpeningHoursTimespansV2 | null;
+    pricingPoint?: GetVenuePricingPointResponseModel | null;
     /**
      * Publicname
      */
@@ -3565,20 +3663,20 @@ export type GetVenueResponseModel = {
     /**
      * Siret
      */
-    siret?: string;
-    venueType: VenueTypeResponseModel;
+    siret?: string | null;
+    venueType: VenueTypeResponseModelV2;
     /**
      * Visualdisabilitycompliant
      */
-    visualDisabilityCompliant?: boolean;
+    visualDisabilityCompliant?: boolean | null;
     /**
      * Volunteeringurl
      */
-    volunteeringUrl: string;
+    volunteeringUrl: string | null;
     /**
      * Withdrawaldetails
      */
-    withdrawalDetails?: string;
+    withdrawalDetails?: string | null;
 };
 
 /**
@@ -3797,9 +3895,9 @@ export type InvoiceResponseV2Model = {
 };
 
 /**
- * LegalStatusResponseModel
+ * LegalStatusResponseModelv2
  */
-export type LegalStatusResponseModel = {
+export type LegalStatusResponseModelv2 = {
     /**
      * Id
      */
@@ -4564,6 +4662,16 @@ export type MentalDisabilityModel = {
 };
 
 /**
+ * MentalDisabilityModelV2
+ */
+export type MentalDisabilityModelV2 = {
+    /**
+     * Trainedpersonnel
+     */
+    trainedPersonnel?: string;
+};
+
+/**
  * MinimalPostOfferBodyModel
  */
 export type MinimalPostOfferBodyModel = {
@@ -4619,6 +4727,28 @@ export type MinimalPostOfferBodyModel = {
  * MotorDisabilityModel
  */
 export type MotorDisabilityModel = {
+    /**
+     * Entrance
+     */
+    entrance?: string;
+    /**
+     * Exterior
+     */
+    exterior?: string;
+    /**
+     * Facilities
+     */
+    facilities?: string;
+    /**
+     * Parking
+     */
+    parking?: string;
+};
+
+/**
+ * MotorDisabilityModelV2
+ */
+export type MotorDisabilityModelV2 = {
     /**
      * Entrance
      */
@@ -5995,8 +6125,6 @@ export type ShortHighlightResponseModel = {
 
 /**
  * SimplifiedBankAccountStatus
- *
- * An enumeration.
  */
 export enum SimplifiedBankAccountStatus {
     PENDING = 'pending',
@@ -6572,6 +6700,30 @@ export type VenueContactModel = {
 };
 
 /**
+ * VenueContactModelV2
+ */
+export type VenueContactModelV2 = {
+    /**
+     * Email
+     */
+    email?: string | null;
+    /**
+     * Phonenumber
+     */
+    phoneNumber?: string | null;
+    /**
+     * Socialmedias
+     */
+    socialMedias?: {
+        [key: string]: string;
+    } | null;
+    /**
+     * Website
+     */
+    website: string | null;
+};
+
+/**
  * VenueLabelListResponseModel
  */
 export type VenueLabelListResponseModel = Array<VenueLabelResponseModel>;
@@ -6854,9 +7006,9 @@ export enum VenueTypeCode {
 }
 
 /**
- * VenueTypeResponseModel
+ * VenueTypeResponseModelV2
  */
-export type VenueTypeResponseModel = {
+export type VenueTypeResponseModelV2 = {
     /**
      * Label
      */
@@ -6942,6 +7094,20 @@ export type VisualDisabilityModel = {
 };
 
 /**
+ * VisualDisabilityModelV2
+ */
+export type VisualDisabilityModelV2 = {
+    /**
+     * Audiodescription
+     */
+    audioDescription?: Array<string>;
+    /**
+     * Soundbeacon
+     */
+    soundBeacon?: string;
+};
+
+/**
  * WeekdayOpeningHoursTimespans
  */
 export type WeekdayOpeningHoursTimespans = {
@@ -6994,6 +7160,40 @@ export type WeekdayOpeningHoursTimespans = {
         string,
         string
     ]>;
+};
+
+/**
+ * WeekdayOpeningHoursTimespansV2
+ */
+export type WeekdayOpeningHoursTimespansV2 = {
+    /**
+     * Friday
+     */
+    FRIDAY: Array<Array<string>> | null;
+    /**
+     * Monday
+     */
+    MONDAY: Array<Array<string>> | null;
+    /**
+     * Saturday
+     */
+    SATURDAY: Array<Array<string>> | null;
+    /**
+     * Sunday
+     */
+    SUNDAY: Array<Array<string>> | null;
+    /**
+     * Thursday
+     */
+    THURSDAY: Array<Array<string>> | null;
+    /**
+     * Tuesday
+     */
+    TUESDAY: Array<Array<string>> | null;
+    /**
+     * Wednesday
+     */
+    WEDNESDAY: Array<Array<string>> | null;
 };
 
 /**

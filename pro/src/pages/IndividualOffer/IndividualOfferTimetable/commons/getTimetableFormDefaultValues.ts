@@ -1,4 +1,7 @@
-import type { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
+import type {
+  WeekdayOpeningHoursTimespans,
+  WeekdayOpeningHoursTimespansV2,
+} from '@/apiClient/v1'
 
 import { areOpeningHoursEmpty } from './areOpeningHoursEmpty'
 import { getTimetableDefaultOpeningHours } from './getTimetableDefaultOpeningHours'
@@ -10,7 +13,7 @@ export function getTimetableFormDefaultValues({
   isOhoFFEnabled,
 }: {
   openingHours?: WeekdayOpeningHoursTimespans | null
-  venueOpeningHours?: WeekdayOpeningHoursTimespans | null
+  venueOpeningHours?: WeekdayOpeningHoursTimespansV2 | null
   isOhoFFEnabled: boolean
 }) {
   const prefilledOpeningHours = getTimetableDefaultOpeningHours({

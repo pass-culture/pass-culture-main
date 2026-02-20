@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 
-import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { IndividualOfferWizard } from '@/pages/IndividualOfferWizard/IndividualOfferWizard'
 
@@ -21,7 +21,7 @@ const renderOffer = (initialRoute = '/') => {
       initialRouterEntries: [initialRoute],
       storeOverrides: {
         user: {
-          selectedPartnerVenue: makeVenueListItem({ id: 2 }),
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
         },
       },
     }
