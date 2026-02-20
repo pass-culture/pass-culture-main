@@ -384,6 +384,9 @@ jobs:
 
       - name: "Run sandbox"
         if: inputs.sandbox != 'empty'
+        env:
+          SANDBOX: ${{ inputs.sandbox }}
+          SANDBOX_ARGS: ${{ inputs.sandbox-args }}
         run: |
           set -e
           VERSION="${{ github.sha }}"
@@ -392,10 +395,10 @@ jobs:
           export IMAGE="${IMAGE}:${VERSION}"
           export PRID="${{ needs.deploy-preview-env-init.outputs.resource_label }}"
 
-          echo "=== exec: flask sandbox -n ${{ inputs.sandbox }} ${{ inputs.sandbox-args }}"
-          export DATE="$(date +"%Y-%m-%d-%H-%M-%S")"
-          export SANDBOX_NAME='${{ inputs.sandbox }}'
-          export SANDBOX_ARGS='${{ inputs.sandbox-args }}'
+          echo "=== exec: flask sandbox -n $SANDBOX $SANDBOX_ARGS"
+          DATE="$(date +"%Y-%m-%d-%H-%M-%S")"
+          export SANDBOX_NAME="$SANDBOX"
+          export SANDBOX_ARGS="$SANDBOX_ARGS"
           start="$(date +%s.%N)"
           envsubst < .github/workflows/templates/pullrequest-db-init-sandbox.yaml | kubectl -n "pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}" apply -f -
           while true;
@@ -409,7 +412,7 @@ jobs:
             echo "### :rocket: Run sandbox summary"
             echo "| Command                                                              | Duration  |"
             echo "| -------------------------------------------------------------------- | --------- |"
-            echo "| flask sandbox -n ${{ inputs.sandbox }} ${{ inputs.sandbox-args }}    | $duration |"
+            echo "| flask sandbox -n $SANDBOX $SANBOX_ARGS   | $duration |"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: "Publish Summary"
