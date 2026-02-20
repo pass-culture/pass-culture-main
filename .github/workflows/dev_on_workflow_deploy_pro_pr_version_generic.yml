@@ -90,15 +90,16 @@ jobs:
           command: |
             cd pro
             yarn install --immutable
-      - run: yarn build:${{ inputs.ENV }}
+      - run: yarn build:"$ENV"
         env:
           # By default NodeJS processes are limited to 512MB of memory
           # This is not enough for the build process when compiling sourcemaps
           # Increases the limit so that the build doesnt fail
           NODE_OPTIONS: --max_old_space_size=4096
+          ENV: ${{ inputs.ENV }}
       - if: inputs.ENV != 'testing'
         run: |
-          cat package.json | grep -E '"version": "[0-9]+.[0-9]+.[0-9]+"' | grep -Eo '[0-9]+.[0-9]+.[0-9]+' > build/version.txt
+          grep -E '"version": "[0-9]+.[0-9]+.[0-9]+"' package.json | grep -Eo '[0-9]+.[0-9]+.[0-9]+' > build/version.txt
       - name: "Create SaaS Sentry release"
         if: ${{ inputs.PUSH_RELEASE_TO_SENTRY }}
         uses: getsentry/action-release@v3
@@ -128,4 +129,4 @@ jobs:
             echo "| Results                              | Value |"
             echo "| ------------------------------------ | ----- |"
             echo "| [pro] preview url                    |  ${{ steps.firebase-deploy.outputs.details_url }} |"
-          } >> $GITHUB_STEP_SUMMARY
+          } >> "$GITHUB_STEP_SUMMARY"
