@@ -5,7 +5,6 @@ import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
-import fullLinkIcon from '@/icons/full-link.svg'
 import { Thumb } from '@/ui-kit/Thumb/Thumb'
 
 import styles from './HeadlineOffer.module.scss'
@@ -31,7 +30,6 @@ export function HeadlineOffer() {
           as="a"
           variant={ButtonVariant.SECONDARY}
           color={ButtonColor.NEUTRAL}
-          icon={fullLinkIcon}
           to={venuePreviewLink}
           isExternal
           opensInNewTab

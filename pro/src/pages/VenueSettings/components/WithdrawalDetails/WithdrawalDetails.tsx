@@ -3,7 +3,6 @@ import { useFormContext } from 'react-hook-form'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonSize, ButtonVariant } from '@/design-system/Button/types'
-import fullLinkIcon from '@/icons/full-link.svg'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
@@ -27,7 +26,6 @@ export const WithdrawalDetails = () => {
             </span>
             <Button
               as="a"
-              icon={fullLinkIcon}
               variant={ButtonVariant.TERTIARY}
               size={ButtonSize.SMALL}
               label="En savoir plus"

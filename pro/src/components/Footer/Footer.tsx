@@ -9,7 +9,6 @@ import {
   ButtonSize,
   ButtonVariant,
 } from '@/design-system/Button/types'
-import fullLinkIcon from '@/icons/full-link.svg'
 
 import styles from './Footer.module.scss'
 
@@ -43,7 +42,6 @@ export const Footer = ({ layout }: FooterProps) => {
             to="https://pass.culture.fr/cgu-professionnels/"
             isExternal
             opensInNewTab
-            icon={fullLinkIcon}
             label="CGU professionnels"
           />
         </li>
@@ -56,7 +54,6 @@ export const Footer = ({ layout }: FooterProps) => {
             to="https://pass.culture.fr/donnees-personnelles/"
             isExternal
             opensInNewTab
-            icon={fullLinkIcon}
             label="Charte des Données Personnelles"
           />
         </li>

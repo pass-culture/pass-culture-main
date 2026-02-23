@@ -1,7 +1,6 @@
 import type React from 'react'
 
 import { Button } from '@/design-system/Button/Button'
-import fullDownloadIcon from '@/icons/full-download.svg'
 import { BaseFileInput } from '@/ui-kit/form/shared/BaseFileInput/BaseFileInput'
 
 import styles from './ActivationCodeFormDialog.module.scss'
@@ -50,7 +49,6 @@ export const AddActivationCodeForm = ({
           to="/csvtemplates/CodesActivations-Gabarit.csv"
           // type="text/csv" // TODO: jclery-pass: Refactor <Button as="a"> polymorphic component to accept "string | undefined"
           opensInNewTab
-          icon={fullDownloadIcon}
           label="Gabarit CSV(.csv, 50 ko)"
         />
       </div>

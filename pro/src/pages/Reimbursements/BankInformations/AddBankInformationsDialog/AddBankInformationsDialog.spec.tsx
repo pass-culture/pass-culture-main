@@ -81,7 +81,7 @@ describe('AddBankInformationsDialog', () => {
     )
 
     const link = screen.getByRole('link', {
-      name: 'Continuer sur demarche.numerique.gouv.fr',
+      name: /Continuer sur demarche.numerique.gouv.fr/,
     })
 
     expect(link).toHaveAttribute('href', 'https://ds-nouvelle-caledonie.fr')
@@ -98,7 +98,7 @@ describe('AddBankInformationsDialog', () => {
       />
     )
     const link = screen.getByRole('link', {
-      name: 'Continuer sur demarche.numerique.gouv.fr',
+      name: /Continuer sur demarche.numerique.gouv.fr/,
     })
 
     expect(link).toHaveAttribute('href', 'https://ds.fr')

@@ -5,8 +5,6 @@ import { getLastCollectiveDmsApplication } from '@/commons/utils/getLastCollecti
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
-import fullInfoIcon from '@/icons/full-info.svg'
-import fullLinkIcon from '@/icons/full-link.svg'
 import fullNextIcon from '@/icons/full-next.svg'
 
 import styles from './PartnerPage.module.scss'
@@ -78,7 +76,6 @@ export function PartnerPageCollectiveSection({
             as="a"
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
-            icon={fullLinkIcon}
             to="https://demarche.numerique.gouv.fr/commencer/demande-de-referencement-sur-adage"
             isExternal
             opensInNewTab
@@ -92,7 +89,6 @@ export function PartnerPageCollectiveSection({
             as="a"
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
-            icon={fullInfoIcon}
             to="https://aide.passculture.app/hc/fr/categories/4410482280977--Acteurs-Culturels-Tout-savoir-sur-le-pass-Culture-collectif-%C3%A0-destination-des-groupes-scolaires"
             isExternal
             opensInNewTab
@@ -139,7 +135,6 @@ export function PartnerPageCollectiveSection({
           as="a"
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
-          icon={fullInfoIcon}
           to="https://aide.passculture.app/hc/fr/categories/4410482280977--Acteurs-Culturels-Tout-savoir-sur-le-pass-Culture-collectif-%C3%A0-destination-des-groupes-scolaires"
           isExternal
           opensInNewTab

@@ -4,7 +4,6 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import fullLinkIcon from '@/icons/full-link.svg'
 
 import styles from './FormContactTemplateCustomForm.module.scss'
 
@@ -38,7 +37,6 @@ export const FormContactTemplateCustomForm = ({
                   isExternal
                   to="https://aide.passculture.app/hc/fr/articles/12957173606940--Acteurs-Culturels-Comment-paramétrer-les-options-de-contact-pour-les-enseignants-dans-le-cadre-d-une-offre-vitrine"
                   opensInNewTab
-                  icon={fullLinkIcon}
                   label="FAQ : À quoi ressemble le formulaire standard ?"
                 />
               </div>

@@ -1,6 +1,7 @@
 import classNames from 'classnames'
 import { forwardRef } from 'react'
 
+import fullLinkIcon from '@/icons/full-link.svg'
 import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
 
 import styles from './Button.module.scss'
@@ -77,10 +78,10 @@ export const Button = forwardRef<
       opensInNewTab
     )
 
-    const iconElement = icon && !isLoading && (
+    const iconElement = (icon || opensInNewTab) && !isLoading && (
       <Icon
-        icon={icon}
-        iconAlt={iconAlt}
+        icon={icon || fullLinkIcon}
+        iconAlt={iconAlt ?? (opensInNewTab ? 'Nouvelle fenêtre' : '')}
         className={styles['btn-icon']}
         iconClassName={iconClassName}
       />

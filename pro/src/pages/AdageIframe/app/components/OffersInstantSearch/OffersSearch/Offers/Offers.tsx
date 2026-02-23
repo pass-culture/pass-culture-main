@@ -34,7 +34,6 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import fullGoTopIcon from '@/icons/full-go-top.svg'
 import fullGridIcon from '@/icons/full-grid.svg'
-import fullLinkIcon from '@/icons/full-link.svg'
 import fullListIcon from '@/icons/full-list.svg'
 import { useAdageUser } from '@/pages/AdageIframe/app/hooks/useAdageUser'
 import { isCollectiveOfferTemplate } from '@/pages/AdageIframe/app/types'
@@ -290,7 +289,6 @@ export const Offers = ({
                         to="https://passculture.docsend.com/view/nn7q3isav3dmhue2/d/pkhf9bba2ft4myz8"
                         isExternal
                         opensInNewTab
-                        icon={fullLinkIcon}
                         onClick={() => logOpenHighlightBanner('TFD-2025')}
                         label="en savoir plus"
                       />

@@ -6,7 +6,6 @@ import { copyTextToClipboard } from '@/commons/utils/copyTextToClipboard'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullDuplicateIcon from '@/icons/full-duplicate.svg'
-import fullLinkIcon from '@/icons/full-link.svg'
 import fullNextIcon from '@/icons/full-next.svg'
 
 import styles from './PartnerPage.module.scss'
@@ -66,7 +65,6 @@ export function PartnerPageIndividualSection({
           as="a"
           variant={ButtonVariant.SECONDARY}
           color={ButtonColor.NEUTRAL}
-          icon={fullLinkIcon}
           to={venuePreviewLink}
           isExternal
           opensInNewTab

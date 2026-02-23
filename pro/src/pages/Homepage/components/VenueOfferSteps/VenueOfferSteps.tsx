@@ -16,7 +16,6 @@ import {
   ButtonVariant,
   IconPositionEnum,
 } from '@/design-system/Button/types'
-import fullInfoIcon from '@/icons/full-info.svg'
 import fullNextIcon from '@/icons/full-next.svg'
 import { Panel } from '@/ui-kit/Panel/Panel'
 
@@ -110,7 +109,6 @@ export const VenueOfferSteps = ({
                     to="https://aide.passculture.app/hc/fr/articles/4411992075281--Acteurs-Culturels-Comment-cr%C3%A9er-un-lieu-"
                     isExternal
                     opensInNewTab
-                    icon={fullInfoIcon}
                     onClick={() => {
                       logEvent(Events.CLICKED_NO_VENUE, {
                         from: location.pathname,

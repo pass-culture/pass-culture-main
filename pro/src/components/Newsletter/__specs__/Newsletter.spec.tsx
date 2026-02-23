@@ -10,7 +10,7 @@ describe('Newsletter', () => {
   it('should render review dialog when clicking on the review button', () => {
     renderNewsletter()
     const newsletterLink = screen.getByRole('link', {
-      name: 'Inscrivez-vous à notre newsletter pour recevoir les actualités du pass Culture',
+      name: /Inscrivez-vous à notre newsletter pour recevoir les actualités du pass Culture/,
     })
     expect(newsletterLink).toHaveAttribute(
       'href',

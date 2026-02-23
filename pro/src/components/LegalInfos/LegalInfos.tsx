@@ -37,7 +37,6 @@ export const LegalInfos = ({ className }: LegalInfoProps): JSX.Element => {
                 variant={ButtonVariant.TERTIARY}
                 color={ButtonColor.NEUTRAL}
                 size={ButtonSize.SMALL}
-                icon={fullLinkIcon}
                 opensInNewTab
                 isExternal
                 onClick={() =>
@@ -54,7 +53,6 @@ export const LegalInfos = ({ className }: LegalInfoProps): JSX.Element => {
               Culture, vous pouvez consulter la{' '}
               <Button
                 as="a"
-                icon={fullLinkIcon}
                 variant={ButtonVariant.TERTIARY}
                 color={ButtonColor.NEUTRAL}
                 size={ButtonSize.SMALL}

@@ -17,7 +17,6 @@ import { MarkdownInfoBox } from '@/components/MarkdownInfoBox/MarkdownInfoBox'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonSize, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import fullLinkIcon from '@/icons/full-link.svg'
 import { MultiSelect, type Option } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
@@ -217,7 +216,6 @@ export const FormOfferType = ({
                   </span>
                   <Button
                     as="a"
-                    icon={fullLinkIcon}
                     variant={ButtonVariant.TERTIARY}
                     size={ButtonSize.SMALL}
                     label="Voir des exemples d’offres vitrines"
