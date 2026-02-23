@@ -29,12 +29,6 @@ jobs:
       - run: |
           echo "These labels are added to the PR: ${{ steps.label-pr.outputs.all-labels }}"
 
-  actionlint:
-    name: "Run actionlint"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: ./.github/workflows/dev_on_workflow_actionlint.yml
-
   pcapi-init-job:
     name: "Init job"
     runs-on: ubuntu-latest
@@ -51,6 +45,8 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-tags: false
+      - name: "Run actionlint"
+        uses: ./.github/workflows/dev_on_workflow_actionlint.yml
       - name: "Check api folder changes"
         id: check-api-changes
         uses: tj-actions/changed-files@v47
