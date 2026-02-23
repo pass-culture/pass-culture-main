@@ -201,11 +201,6 @@ class OffererCanNotHaveHeadlineOffer(Exception):
         super().__init__("headlineOffer", "This offerer can not have headline offers")
 
 
-class VirtualOfferCanNotBeHeadline(Exception):
-    def __init__(self) -> None:
-        super().__init__("headlineOffer", "Digital offers can not be set to the headline")
-
-
 class VenueHasAlreadyAnActiveHeadlineOffer(Exception):
     def __init__(self) -> None:
         super().__init__("headlineOffer", "This venue has already an active headline offer")

@@ -51,10 +51,6 @@ def upsert_headline_offer(
                 ]
             },
         )
-    except exceptions.VirtualOfferCanNotBeHeadline:
-        raise api_errors.ApiErrors(
-            errors={"global": ["Une offre virtuelle ne peut pas être mise à la une"]},
-        )
     except exceptions.OfferHasAlreadyAnActiveHeadlineOffer:
         raise api_errors.ApiErrors(
             errors={"global": ["Cette offre est déjà mise à la une"]},
