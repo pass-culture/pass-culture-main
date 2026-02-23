@@ -4,6 +4,7 @@
     "dbaeumer.vscode-eslint",
     "vitest.explorer",
     "stylelint.vscode-stylelint",
-    "biomejs.biome"
+    "biomejs.biome",
+    "phoenisx.cssvar"
   ]
 }
