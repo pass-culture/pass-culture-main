@@ -32,6 +32,11 @@
 
   align-items: center;
   justify-content: space-between;
+
+  &-single {
+    justify-content: center;
+  }
+
   gap: var(--size-spacing-l);
 
   & > * {
