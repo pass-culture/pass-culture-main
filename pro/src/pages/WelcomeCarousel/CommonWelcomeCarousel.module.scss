@@ -1,0 +1,52 @@
+@use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.title {
+  @include fonts.title1;
+
+  text-align: center;
+}
+
+.subtitle {
+  color: var(--color-text-subtle);
+  text-align: center;
+
+  @include fonts.body;
+}
+
+.container {
+  margin: var(--size-spacing-xxl) auto;
+}
+
+.actionbar-container {
+  width: 100%;
+  display: flex;
+  max-width: 640px;
+  flex-flow: column-reverse wrap;
+
+  @media screen and (min-width: size.$tablet) {
+    flex-flow: row wrap;
+  }
+
+  align-items: center;
+  justify-content: space-evenly;
+  gap: var(--size-spacing-l);
+
+  & > * {
+    width: 100%;
+
+    @media screen and (min-width: size.$tablet) {
+      width: auto;
+    }
+  }
+
+  &-stepper {
+    order: 1;
+    margin-bottom: var(--size-spacing-l);
+
+    @media screen and (min-width: size.$tablet) {
+      margin-bottom: initial;
+      order: initial;
+    }
+  }
+}
