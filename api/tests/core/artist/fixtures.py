@@ -23,12 +23,6 @@ raw_artists_data = [
         "wikidata_image_license": "CC BY-SA 4.0",
         "wikidata_image_license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
     },
-    {
-        "artist_id": uuid.uuid4().hex,
-        "artist_name": "Artist With Mediation",
-        "artist_description": "Artist with mediation UUID instead of image URL.",
-        "mediation_uuid": "any-uuid",
-    },
 ]
 
 
@@ -37,11 +31,10 @@ big_query_artist_fixture = [
         id=raw_artist["artist_id"],
         name=raw_artist["artist_name"],
         description=raw_artist["artist_description"],
-        image=raw_artist.get("wikidata_image_file_url"),
-        image_author=raw_artist.get("wikidata_image_author"),
-        image_license=raw_artist.get("wikidata_image_license"),
-        image_license_url=raw_artist.get("wikidata_image_license_url"),
-        mediation_uuid=raw_artist.get("mediation_uuid"),
+        image=raw_artist["wikidata_image_file_url"],
+        image_author=raw_artist["wikidata_image_author"],
+        image_license=raw_artist["wikidata_image_license"],
+        image_license_url=raw_artist["wikidata_image_license_url"],
     )
     for raw_artist in raw_artists_data
 ]
