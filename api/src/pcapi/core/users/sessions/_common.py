@@ -103,3 +103,11 @@ def delete_expired_sessions() -> None:
     db.session.query(users_models.UserSession).filter(
         users_models.UserSession.expirationDatetime < date_utils.get_naive_utc_now()
     ).delete(synchronize_session=False)
+
+
+def disconnect_user_session(user_id: int, session_uuid: UUID | None = None) -> int:
+    query = db.session.query(users_models.UserSession).filter(users_models.UserSession.userId == user_id)
+    if session_uuid:
+        query = query.filter(users_models.UserSession.uuid == session_uuid)
+
+    return query.delete(synchronize_session=False)

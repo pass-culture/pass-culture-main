@@ -623,6 +623,15 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
         .distinct()
     )
 
+    session_count_subquery = (
+        db.session.query(sa.func.count(users_models.UserSession.id))
+        .filter(
+            users_models.UserSession.userId == users_models.User.id,
+            users_models.UserSession.expirationDatetime > date_utils.get_naive_utc_now(),
+        )
+        .correlate(users_models.User)
+    )
+
     options = sa_orm.joinedload(offerers_models.OffererInvitation.user).load_only(
         users_models.User.id,
         users_models.User.firstName,
@@ -643,6 +652,7 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
             users_models.User.roles,
             offerers_models.UserOfferer,
             offerers_models.OffererInvitation,
+            session_count_subquery.label("sessions_count"),
         )
         .select_from(users_models.User)
         .outerjoin(
@@ -716,6 +726,7 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
             "OffererInvitation": user_invited,
             "isActive": False,
             "roles": [],
+            "sessions_count": 0,
         }
         for user_invited in users_invited
     ]

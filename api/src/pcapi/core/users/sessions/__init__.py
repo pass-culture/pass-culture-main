@@ -5,6 +5,7 @@ in this file
 
 from ._backoffice import install_login as install_backoffice_login
 from ._common import delete_expired_sessions
+from ._common import disconnect_user_session
 from ._native import JwtType
 from ._native import create_user_jwt_tokens
 from ._native import delete_expired_jwt
@@ -20,4 +21,5 @@ __all__ = [
     "create_user_jwt_tokens",
     "delete_expired_jwt",
     "delete_expired_sessions",
+    "disconnect_user_session",
 ]

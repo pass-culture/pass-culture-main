@@ -18,7 +18,7 @@
                 {% if not user.isActive %}{{ user.isActive | format_state | format_badge("danger") }}{% endif %}
                 {{ build_pro_user_status_badge(user) }}
               </div>
-              <div class="d-flex row-reverse justify-content-end flex-grow-1">
+              <div class="d-flex row-reverse justify-content-end flex-grow-1 gap-2">
                 {% if has_permission("MANAGE_PRO_ENTITY") %}
                   {% set edit_pro_user_information_label_id = random_hash() %}
                   {{ build_modal_form("edit-pro-user", dst, form, "Modifier les informations", "Modification des informations de " + user.firstName | empty_string_if_null + " " + user.lastName | empty_string_if_null | upper, "Enregistrer") }}
@@ -30,6 +30,10 @@
                 {% endif %}
                 {% if has_permission("MANAGE_PRO_ENTITY") and can_be_deleted %}
                   {{ build_modal_form("delete-pro-user", delete_dst, delete_form, "Supprimer le compte", "Supprimer le compte", "Supprimer le compte", "Pour confirmer la suppression du compte merci de saisir son adresse email") }}
+                {% endif %}
+                {% if  has_permission("MANAGE_PRO_ENTITY") and can_be_disconnected %}
+                  {% set disconnect_text = sessions_count | pluralize("La session active de "~ user.full_name ~" sera déconnectée.", "Les "~ sessions_count ~" sessions actives de "~ user.full_name ~" seront déconnectées.") %}
+                  {{ build_modal_form("delete-pro-user", disconnect_dst, disconnect_form, "Déconnecter les sessions", "Déconnecter " + user.full_name, "Déconnecter", disconnect_text) }}
                 {% endif %}
                 {% if user.isActive %}
                   <div class="mx-3 pt-2 pc-brevo-logo-link">
@@ -53,6 +57,9 @@
                 </p>
                 <p class="mb-1">
                   <span class="fw-bold">Tél :</span> {{ user.phoneNumber | empty_string_if_null }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Nombre de sessions actives :</span> {{ sessions_count }}
                 </p>
               </div>
             </div>

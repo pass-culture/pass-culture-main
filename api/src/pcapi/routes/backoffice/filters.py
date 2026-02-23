@@ -85,6 +85,7 @@ ACTION_TYPE_TO_STRING = {
     history_models.ActionType.USER_ACCOUNT_UPDATE_INSTRUCTED: "Instruction d'une demande de modifications",
     history_models.ActionType.USER_EXTRACT_DATA: "Génération d'un extrait des données du compte",
     history_models.ActionType.CONNECT_AS_USER: "Connexion d'un admin",
+    history_models.ActionType.USER_DISCONNECTED: "Déconnexion de l'utilisateur",
     history_models.ActionType.USER_PASSWORD_INVALIDATED: "Invalidation du mot de passe de l'utilisateur",
     # Fraud and compliance actions:
     history_models.ActionType.BLACKLIST_DOMAIN_NAME: "Blacklist d'un nom de domaine",
