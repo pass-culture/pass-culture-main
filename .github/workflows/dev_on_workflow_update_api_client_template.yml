@@ -44,9 +44,9 @@ jobs:
         id: "evaluate-variables"
         run: |
           if ${{ (!inputs.TRIGGER_ONLY_ON_API_CHANGE && !inputs.TRIGGER_ONLY_ON_DEPENDENCY_CHANGE) || (inputs.TRIGGER_ONLY_ON_API_CHANGE && inputs.api-changed == 'true') || (inputs.TRIGGER_ONLY_ON_DEPENDENCY_CHANGE && inputs.dependencies-changed == 'true') }}; then
-            echo "should-run-cache=true" | tee -a $GITHUB_OUTPUT
+            echo "should-run-cache=true" | tee -a "$GITHUB_OUTPUT"
           else
-            echo "should-run-cache=false" | tee -a $GITHUB_OUTPUT
+            echo "should-run-cache=false" | tee -a "$GITHUB_OUTPUT"
           fi
         shell: bash
       - uses: actions/setup-node@v6
