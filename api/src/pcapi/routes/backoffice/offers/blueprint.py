@@ -952,7 +952,10 @@ def list_llm_offers() -> utils.BackofficeResponse:
         )
         responses = None
 
-    offers_pertinence = {o.offer_id: o.pertinence for o in responses.results} if responses else {}
+    offers_pertinence: dict[int, str] = {}
+    if responses:
+        for result in responses.results[: (form.limit.data + 1)]:
+            offers_pertinence[result.offer_id] = result.pertinence
 
     offers = []
     if offers_pertinence:
