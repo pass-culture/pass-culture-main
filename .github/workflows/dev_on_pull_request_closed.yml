@@ -20,7 +20,7 @@ jobs:
         with:
           node-version-file: "pro/package.json"
 
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@9a5f036470496551365fe9c26afbd4febe20a8cb
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@f4db7db202ff3cddc97fcbf08c3821ebc78b10fb
 
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v3"
