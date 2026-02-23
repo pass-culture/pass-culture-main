@@ -70,7 +70,7 @@ def create_offer_by_booking_state(venue, state):
 class MoveCollectiveOfferSuccessTest:
     def test_move_collective_offer_with_its_own_OA(self):
         """
-        Ensure the collective offer with its own OA gets a new Oa with same address but new venueId.
+        Ensure the collective offer with its own OA keeps it once moved.
         """
         collective_offer = educational_factories.CollectiveOfferOnOtherAddressLocationFactory()
         destination_venue = offerers_factories.VenueFactory(managingOfferer=collective_offer.venue.managingOfferer)
@@ -81,9 +81,7 @@ class MoveCollectiveOfferSuccessTest:
         collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
 
         db.session.refresh(collective_offer)
-        assert collective_offer.offererAddressId != offer_OA_id
-        assert collective_offer.offererAddress.addressId == source_venue.offererAddress.addressId
-        assert collective_offer.offererAddress.venueId == destination_venue.id
+        assert collective_offer.offererAddressId == offer_OA_id
 
     def test_move_collective_offer_with_venue_OA_gets_a_new_OA(self):
         """
@@ -98,10 +96,11 @@ class MoveCollectiveOfferSuccessTest:
         collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
 
         db.session.refresh(collective_offer)
-        assert collective_offer.offererAddress != original_offer_oa
+        # Same address, different OA, label is venue's common name
+        # TODO (prouzet, 2026-01-13) it should be a new OA when OffererAddress is an OFFER_LOCATION and linked to a single venueId.
+        assert collective_offer.offererAddress == original_offer_oa
         assert collective_offer.offererAddress.addressId == source_venue.offererAddress.addressId
         assert collective_offer.offererAddress.label == source_venue.publicName
-        assert collective_offer.offererAddress.venueId == destination_venue.id
 
     def test_move_collective_offer_with_venue_OA_can_resuse_non_venue_OA(self):
         """
@@ -114,7 +113,7 @@ class MoveCollectiveOfferSuccessTest:
             offerer=source_venue.managingOfferer,
             label=source_venue.publicName,
             address=source_venue.offererAddress.address,
-            venue=destination_venue,
+            venueId=destination_venue.id,
         )
         original_oa = collective_offer.offererAddress
         assert original_oa != source_venue.offererAddress
@@ -123,7 +122,8 @@ class MoveCollectiveOfferSuccessTest:
         collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
 
         db.session.refresh(collective_offer)
-        assert collective_offer.offererAddress == destination_OA
+        # TODO (prouzet, 2026-01-13) it should be destination_OA when OffererAddress is an OFFER_LOCATION and linked to a single venueId.
+        assert collective_offer.offererAddress == original_oa
 
     def test_move_collective_offer_without_pricing_points(self):
         """

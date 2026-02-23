@@ -199,6 +199,7 @@ class CollectiveOfferTemplateTest:
             offererAddress=offerers_factories.OfferLocationFactory(
                 address=venue.offererAddress.address, offerer=venue.managingOfferer, label=venue.publicName
             ),
+            # offererAddressId=venue.offererAddress.id,
             interventionArea=None,
         )
 

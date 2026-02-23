@@ -197,7 +197,7 @@ class GetCappedOffersForFiltersTest:
             offererAddress__address__postalCode="97300",
         )
         cayenne_offerer_address = offerers_factories.OfferLocationFactory(
-            offerer=venue_in_cayenne.managingOfferer, venue=venue_in_cayenne, address__timezone="America/Cayenne"
+            venue=venue_in_cayenne, address__timezone="America/Cayenne"
         )
         offer_in_cayenne = factories.OfferFactory(
             venue=venue_in_cayenne,
@@ -211,7 +211,7 @@ class GetCappedOffersForFiltersTest:
             offererAddress__address__postalCode="97600",
         )
         mayotte_offerer_address = offerers_factories.OfferLocationFactory(
-            offerer=venue_in_mayotte.managingOfferer, venue=venue_in_mayotte, address__timezone="Indian/Mayotte"
+            venue=venue_in_mayotte, address__timezone="Indian/Mayotte"
         )
         offer_in_mayotte = factories.OfferFactory(
             venue=venue_in_mayotte,

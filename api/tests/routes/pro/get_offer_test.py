@@ -314,8 +314,9 @@ class Returns200Test:
     def test_return_offer_offerer_address(self, offer_oa_label, client):
         """If offer has an offererAddress, it should be used"""
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        offer_offerer_address = offerers_factories.OfferLocationFactory(offerer=user_offerer.offerer, venue=venue)
+        offer_offerer_address = offerers_factories.OfferLocationFactory(
+            offerer=user_offerer.offerer,
+        )
         offer = offers_factories.ThingOfferFactory(
             venue__managingOfferer=user_offerer.offerer,
             offererAddress=offer_offerer_address,

@@ -3038,9 +3038,7 @@ class EditOfferVenueTest(PostEndpointHelper):
         self, mocked_async_index_offer_ids, authenticated_client, venues_in_same_offerer
     ):
         source_venue, destination_venue, _, _ = venues_in_same_offerer
-        offerer_address = offerers_factories.OfferLocationFactory(
-            offerer=source_venue.managingOfferer, venue=source_venue
-        )
+        offerer_address = offerers_factories.OfferLocationFactory(offerer=source_venue.managingOfferer)
         offer = offers_factories.EventOfferFactory(venue=source_venue, offererAddress=offerer_address)
 
         response = self.post_to_endpoint(
@@ -3062,6 +3060,7 @@ class EditOfferVenueTest(PostEndpointHelper):
 
         assert offer.offererAddress != offerer_address
         assert offerer_address.venueId == source_venue.id
+        assert offer.offererAddress.addressId == offerer_address.addressId
 
 
 class GetOfferStockEditFormTest(GetEndpointHelper):

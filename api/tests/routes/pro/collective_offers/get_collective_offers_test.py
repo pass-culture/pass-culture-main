@@ -106,12 +106,13 @@ class Returns200Test:
         oa = offerers_factories.OfferLocationFactory(
             offerer=venue.managingOfferer, venue=venue, address=geography_factories.AddressFactory()
         )
-        offer = factories.CollectiveOfferFactory(
+        offer = factories.CollectiveOfferTemplateOnOtherAddressLocationFactory(
             venue=venue,
             offererAddress=oa,
-            locationType=models.CollectiveLocationType.ADDRESS,
+            # offerer=venue.managingOfferer,
         )
 
+        # TODO bulle may be in get /collective/bookable-offers
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.expected_num_queries):
             response = client.get(URL)
@@ -288,15 +289,10 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
-        oa = offerers_factories.OfferLocationFactory()
+        oa = offerers_factories.OfferLocationFactory(venue=venue, offerer=venue.managingOfferer)
         offer_school = factories.CollectiveOfferOnSchoolLocationFactory(venue=venue)
         offer_address = factories.CollectiveOfferOnOtherAddressLocationFactory(venue=venue, offererAddress=oa)
-        factories.CollectiveOfferOnOtherAddressLocationFactory(
-            venue=venue,
-            offererAddress=offerers_factories.OfferLocationFactory(
-                address=geography_factories.AddressFactory(street="3 rue des moutons")
-            ),
-        )
+        factories.CollectiveOfferOnOtherAddressLocationFactory(venue=venue)
         offer_to_be_defined = factories.CollectiveOfferOnToBeDefinedLocationFactory(venue=venue)
 
         client = client.with_session_auth(email=user_offerer.user.email)

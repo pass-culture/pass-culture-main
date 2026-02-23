@@ -34,7 +34,6 @@ class Return200Test:
         )
         offerer_address_2 = offerers_factories.OfferLocationFactory(
             offerer=offerer,
-            venue=venue,
             label="2eme adresse",
             address__street="20 Avenue de Ségur",
             address__postalCode="75007",
@@ -43,7 +42,6 @@ class Return200Test:
         )
         offerer_address_3 = offerers_factories.OfferLocationFactory(
             offerer=offerer,
-            venue=venue,
             label="3eme adresse",
             address__street="3 rue des moutons",
             address__postalCode="75008",
@@ -164,11 +162,9 @@ class Return200Test:
         user_offerer = offerers_factories.UserOffererFactory()
         pro = user_offerer.user
         offerer = user_offerer.offerer
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offerer_address_1 = offerers_factories.OfferLocationFactory(
             offerer=offerer,
-            venue=venue,
             label="1ere adresse",
             address__street="1 boulevard Poissonnière",
             address__postalCode="75002",
@@ -176,7 +172,6 @@ class Return200Test:
         )
         offerer_address_2 = offerers_factories.OfferLocationFactory(
             offerer=offerer,
-            venue=venue,
             label="2eme adresse",
             address__street="20 Avenue de Ségur",
             address__postalCode="75007",
@@ -185,7 +180,6 @@ class Return200Test:
         )
         offerer_address_3 = offerers_factories.OfferLocationFactory(
             offerer=offerer,
-            venue=venue,
             label="3eme adresse",
             address__street="1 rue de la Paix",
             address__postalCode="75008",

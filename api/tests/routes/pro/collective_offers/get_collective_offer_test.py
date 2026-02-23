@@ -133,6 +133,7 @@ class Returns200Test:
             venue=venue,
             locationType=educational_models.CollectiveLocationType.ADDRESS,
             locationComment=None,
+            # offererAddressId=venue.offererAddress.id,
             interventionArea=None,
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
