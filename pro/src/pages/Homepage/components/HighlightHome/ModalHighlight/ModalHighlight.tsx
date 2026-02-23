@@ -11,7 +11,6 @@ import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Tag } from '@/design-system/Tag/Tag'
-import fullLinkIcon from '@/icons/full-link.svg'
 import { AccessibleDate } from '@/ui-kit/AccessibleDate/AccessibleDate'
 import {
   DialogBuilder,
@@ -99,7 +98,6 @@ export const ModalHighlight = ({
           as="a"
           to="https://aide.passculture.app/hc/fr/articles/20587966046748--Acteurs-Culturels-Comment-et-pourquoi-proposer-des-offres-dans-le-cadre-des-temps-forts-et-zooms-th%C3%A9matiques"
           isExternal
-          icon={fullLinkIcon}
           opensInNewTab
           onClick={() =>
             logEvent(HighlightEvents.HAS_CLICKED_MORE_INFO_HIGHLIGHT)
@@ -112,7 +110,6 @@ export const ModalHighlight = ({
           as="a"
           to="https://passcultureapp.notion.site/1cfad4e0ff9880288df4c80eebfe3ca0?v=1cfad4e0ff9880f3bbfd000c6f5023f3"
           isExternal
-          icon={fullLinkIcon}
           opensInNewTab
           onClick={() =>
             logEvent(HighlightEvents.HAS_CLICKED_CALENDAR_HIGHLIGHT)

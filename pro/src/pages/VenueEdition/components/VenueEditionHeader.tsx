@@ -25,7 +25,6 @@ import {
   ButtonSize,
   ButtonVariant,
 } from '@/design-system/Button/types'
-import fullLinkIcon from '@/icons/full-link.svg'
 import fullParametersIcon from '@/icons/full-parameters.svg'
 
 import styles from './VenueEditionHeader.module.scss'
@@ -157,7 +156,6 @@ export const VenueEditionHeader = ({
               variant={ButtonVariant.SECONDARY}
               color={ButtonColor.NEUTRAL}
               size={ButtonSize.SMALL}
-              icon={fullLinkIcon}
               to={`${WEBAPP_URL}/lieu/${venue.id}`}
               isExternal
               opensInNewTab

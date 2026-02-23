@@ -6,7 +6,6 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { SynchronizationEvents } from '@/commons/core/FirebaseEvents/constants'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
-import fullLinkIcon from '@/icons/full-link.svg'
 import strokeConnectIcon from '@/icons/stroke-connect.svg'
 import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
@@ -112,7 +111,6 @@ export const StocksProviderForm = ({
         </p>
         <Button
           as="a"
-          icon={fullLinkIcon}
           isExternal
           to="https://aide.passculture.app/hc/fr/articles/10616916478236"
           opensInNewTab

@@ -377,7 +377,7 @@ describe('Button', () => {
         opensInNewTab: true,
       })
 
-      const link = screen.getByRole('link', { name: 'New Tab Link' })
+      const link = screen.getByRole('link', { name: /New Tab Link/ })
       expect(link).toHaveAttribute('target', '_blank')
     })
 

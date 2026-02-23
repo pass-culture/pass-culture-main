@@ -5,7 +5,6 @@ import { apiAdage } from '@/apiClient/api'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
-import fullLinkIcon from '@/icons/full-link.svg'
 import strokeCloseIcon from '@/icons/stroke-close.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
@@ -81,7 +80,6 @@ export const SurveySatisfaction = ({
             to="https://passculture.qualtrics.com/jfe/form/SV_8w5mdHmrxly9bcW"
             isExternal
             opensInNewTab
-            icon={fullLinkIcon}
             onClick={logOpenSatisfactionSurvey}
             label="Je donne mon avis"
           />

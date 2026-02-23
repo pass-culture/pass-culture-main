@@ -1,6 +1,5 @@
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
-import fullLinkIcon from '@/icons/full-link.svg'
 import strokeBookingHoldIcon from '@/icons/stroke-booking-hold.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
@@ -35,7 +34,6 @@ export const CumulatedViewsEmptyState = () => {
         opensInNewTab
         variant={ButtonVariant.TERTIARY}
         color={ButtonColor.NEUTRAL}
-        icon={fullLinkIcon}
         label="Bonnes pratiques de création d'offres"
       />
     </div>

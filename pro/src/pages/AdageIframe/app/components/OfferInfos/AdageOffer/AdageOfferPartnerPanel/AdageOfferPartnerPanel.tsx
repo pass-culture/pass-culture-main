@@ -6,7 +6,6 @@ import { getHumanizeRelativeDistance } from '@/commons/utils/getDistance'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
-import fullLinkIcon from '@/icons/full-link.svg'
 import strokeInstitutionIcon from '@/icons/stroke-institution.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
@@ -80,7 +79,6 @@ export function AdageOfferPartnerPanel({
               opensInNewTab
               variant={ButtonVariant.TERTIARY}
               color={ButtonColor.NEUTRAL}
-              icon={fullLinkIcon}
               label="Voir la page partenaire"
             />
           )}

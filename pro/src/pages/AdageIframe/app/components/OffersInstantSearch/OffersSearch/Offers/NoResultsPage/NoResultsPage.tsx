@@ -1,7 +1,6 @@
 import type { VenueResponse } from '@/apiClient/adage'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
-import fullLinkIcon from '@/icons/full-link.svg'
 
 import styles from './NoResultsPage.module.scss'
 
@@ -43,7 +42,6 @@ export const NoResultsPage = ({
           opensInNewTab
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
-          icon={fullLinkIcon}
           label="Voir la fiche du partenaire"
         />
       )}

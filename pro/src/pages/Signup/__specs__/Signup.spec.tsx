@@ -59,7 +59,7 @@ describe('src | components | pages | Signup', () => {
     ).toHaveAttribute('href', 'https://pass.culture.fr/cgu-professionnels/')
 
     expect(
-      screen.getByRole('link', { name: 'Charte des Données Personnelles' })
+      screen.getByRole('link', { name: /Charte des Données Personnelles/ })
     ).toHaveAttribute('href', 'https://pass.culture.fr/donnees-personnelles/')
   })
 
