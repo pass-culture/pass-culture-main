@@ -95,7 +95,6 @@ def post_event_offer(body: events_serializers.EventOfferCreation) -> events_seri
                 offerer_id=venue.managingOffererId,
                 address_id=address.id,
                 label=body.location.address_label,
-                venue_id=venue.id,
             )
         else:
             offerer_address = offers_api.get_or_create_offerer_address_from_address_body(

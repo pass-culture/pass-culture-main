@@ -155,7 +155,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert created_offer.description is None
         assert created_offer.status == offer_mixin.OfferStatus.SOLD_OUT
 
-        assert created_offer.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
+        assert created_offer.offererAddress.type is None  # TODO: soon to be OFFER_LOCATION
         assert created_offer.offererAddressId != created_offer.venue.offererAddress.id
         assert created_offer.offererAddress.addressId == created_offer.venue.offererAddress.addressId
         assert created_offer.offererAddress.label == created_offer.venue.publicName
@@ -264,7 +264,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert created_offer.externalTicketOfficeUrl == "https://maposaic.com"
         assert created_offer.status == offer_mixin.OfferStatus.ACTIVE
         assert created_offer.withdrawalDetails == "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2"
-        assert created_offer.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
+        assert created_offer.offererAddress.type is None  # TODO: soon to be OFFER_LOCATION
         assert created_offer.offererAddress.addressId == venue_provider.venue.offererAddress.addressId
         assert created_offer.offererAddress.label == venue_provider.venue.publicName
 
@@ -461,7 +461,6 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         offerer_address = offerers_factories.OffererAddressFactory(
             address=address,
             offerer=venue_provider.venue.managingOfferer,
-            venue=venue_provider.venue,
             label="My beautiful address no one knows about",
         )
         payload["location"] = {

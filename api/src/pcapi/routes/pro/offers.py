@@ -289,11 +289,11 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
     )
     offerer_address = (
         offerers_api.get_offer_location_from_address(
-            venue.managingOffererId, offerers_schemas.LocationModel(**body.address.dict()), venue.id
+            venue.managingOffererId, offerers_schemas.LocationModel(**body.address.dict())
         )
         if body.address
         else offerers_api.get_or_create_offer_location(
-            venue.managingOffererId, venue.offererAddress.addressId, venue.publicName, venue.id
+            venue.managingOffererId, venue.offererAddress.addressId, venue.publicName
         )
     )
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
@@ -487,6 +487,7 @@ def patch_offer(
         if "ean" in body_extra_data:
             updates["ean"] = body_extra_data.pop("ean")
         updates["extraData"] = body_extra_data
+
     offers_api.update_offer(offer, offers_schemas.UpdateOffer(**updates), is_from_private_api=True)
     db.session.flush()
     offer = offers_repository.get_offer_by_id(

@@ -765,7 +765,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         db.session.refresh(collective_offer)
         assert collective_offer.locationType == educational_models.CollectiveLocationType.ADDRESS
         assert collective_offer.locationComment is None
-        assert collective_offer.offererAddress.type == offerers_models.LocationType.OFFER_LOCATION
+        assert collective_offer.offererAddress.type is None  # TODO: soon to be OFFER_LOCATION
         assert collective_offer.offererAddressId != venue.offererAddress.id
         assert collective_offer.offererAddress.addressId == venue.offererAddress.addressId
         assert collective_offer.offererAddress.label == venue.publicName

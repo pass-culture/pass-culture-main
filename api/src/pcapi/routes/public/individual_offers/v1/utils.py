@@ -270,7 +270,6 @@ def extract_venue_and_offerer_address_from_location(
             offerer_id=venue.managingOffererId,
             address_id=address.id,
             label=location.address_label,
-            venue_id=venue.id,
         )
     else:
         offerer_address = offers_api.get_or_create_offerer_address_from_address_body(

@@ -3097,17 +3097,11 @@ def get_or_create_address(location_data: LocationData, is_manual_edition: bool =
     return address
 
 
-def get_or_create_offer_location(
-    offerer_id: int,
-    address_id: int,
-    label: str | None = None,
-    venue_id: int | None = None,
-) -> models.OffererAddress:
+def get_or_create_offer_location(offerer_id: int, address_id: int, label: str | None = None) -> models.OffererAddress:
     offerer_address: models.OffererAddress | None = (
         db.session.query(models.OffererAddress)
         .filter(
             models.OffererAddress.offererId == offerer_id,
-            models.OffererAddress.venueId == venue_id,
             models.OffererAddress.label == label,
             models.OffererAddress.addressId == address_id,
             # TODO (prouzet, 2025-11-13) CLEAN_OA When data is migrated, only filter on OFFER_LOCATION
@@ -3122,13 +3116,7 @@ def get_or_create_offer_location(
     )
 
     if not offerer_address:
-        offerer_address = models.OffererAddress(
-            offererId=offerer_id,
-            addressId=address_id,
-            label=label,
-            type=models.LocationType.OFFER_LOCATION,
-            venueId=venue_id,
-        )
+        offerer_address = models.OffererAddress(offererId=offerer_id, addressId=address_id, label=label)
         db.session.add(offerer_address)
         db.session.flush([offerer_address])
 
@@ -3183,7 +3171,7 @@ def create_offerer_address_from_address_api(address: offerers_schemas.LocationMo
 
 
 def get_offer_location_from_address(
-    offerer_id: int, address: offerers_schemas.LocationModel, venue_id: int | None = None
+    offerer_id: int, address: offerers_schemas.LocationModel
 ) -> offerers_models.OffererAddress:
     assert offerer_id
     if not address.label:
@@ -3193,7 +3181,6 @@ def get_offer_location_from_address(
         offerer_id,
         address_from_api.id,
         label=address.label,
-        venue_id=venue_id,
     )
 
 
