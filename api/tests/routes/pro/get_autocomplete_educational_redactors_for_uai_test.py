@@ -9,8 +9,9 @@ VALID_UAI = "0470009E"
 expected_num_queries = 1  # session + user
 expected_num_queries_error = expected_num_queries + 1  # rollback
 
+pytestmark = pytest.mark.usefixtures("db_session")
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns200Test:
     def test_get_one_redactor(self, client):
         user = users_factories.UserFactory()
@@ -23,7 +24,6 @@ class Returns200Test:
         response_json = response.json
         assert response_json == [
             {
-                "gender": "Mme.",
                 "name": "SKLODOWSKA",
                 "surname": "MARIA",
                 "email": "maria.sklodowska@example.com",
@@ -41,13 +41,11 @@ class Returns200Test:
         response_json = response.json
         assert response_json == [
             {
-                "gender": "M.",
                 "name": "POINTCARE",
                 "surname": "HENRI",
                 "email": "henri.pointcare@example.com",
             },
             {
-                "gender": "M.",
                 "name": "HENMAR",
                 "surname": "CONFUSION",
                 "email": "confusion.raymar@example.com",
@@ -65,7 +63,6 @@ class Returns200Test:
         response_json = response.json
         assert response_json == [
             {
-                "gender": "M.",
                 "name": "POINTCARE",
                 "surname": "HENRI",
                 "email": "henri.pointcare@example.com",
@@ -83,7 +80,6 @@ class Returns200Test:
         response_json = response.json
         assert response_json == [
             {
-                "gender": "M.",
                 "name": "POINTCARE",
                 "surname": "HENRI",
                 "email": "henri.pointcare@example.com",
@@ -102,7 +98,6 @@ class Returns200Test:
         assert response_json == []
 
 
-@pytest.mark.usefixtures("db_session")
 class Returns404Test:
     def test_uai_not_found(self, client):
         user = users_factories.UserFactory()
@@ -113,7 +108,6 @@ class Returns404Test:
             assert response.status_code == 404
 
 
-@pytest.mark.usefixtures("db_session")
 class Returns400Test:
     def test_uai_too_short(self, client):
         user = users_factories.UserFactory()
@@ -132,7 +126,6 @@ class Returns400Test:
             assert response.status_code == 400
 
 
-@pytest.mark.usefixtures("db_session")
 class Returns401Test:
     def test_user_not_logged_in(self, client):
         with assert_num_queries(0):

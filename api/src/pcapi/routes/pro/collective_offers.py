@@ -725,11 +725,10 @@ def get_autocomplete_educational_redactors_for_uai(
         raise ApiErrors({"UAI": ["UAI non trouvé."]}, status_code=404)
 
     return educational_redactors.EducationalRedactors(
-        __root__=[
+        [
             educational_redactors.EducationalRedactor(
                 name=redactor["nom"],
                 surname=redactor["prenom"],
-                gender=redactor.get("civilite"),
                 email=redactor["mail"],
             )
             for redactor in redactors
