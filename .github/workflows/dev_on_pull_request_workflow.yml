@@ -29,6 +29,12 @@ jobs:
       - run: |
           echo "These labels are added to the PR: ${{ steps.label-pr.outputs.all-labels }}"
 
+  actionlint:
+    name: "Run actionlint"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
+
   pcapi-init-job:
     name: "Init job"
     runs-on: ubuntu-latest
