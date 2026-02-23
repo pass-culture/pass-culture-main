@@ -331,6 +331,7 @@ jobs:
           path: /tests/.test_durations
 
   pytest:
+    needs: restore-test-durations
     name: "Pytest ${{ matrix.pytest_args.description }} : ${{ matrix.group }}/4"
     env:
       RUN_ENV: tests
@@ -450,14 +451,12 @@ jobs:
       # These two steps will be executed only when there IS a cache hit (exact match or not).
       # When a matrix job is retried, it will reuse the same artifact to execute the exact same split.
       - name: Download test durations
-        needs: [restore-test-durations]
         if: needs.restore-test-durations.outputs.restored == 'true'
         uses: actions/download-artifact@v6
         with:
           name: test-durations-before
 
       - name: Use cached test durations
-        needs: [restore-test-durations]
         if: needs.restore-test-durations.outputs.restored == 'true'
         run: mv .test_durations "${{ runner.workspace }}/pass-culture-main/api/tests/.test_durations"
 
