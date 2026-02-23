@@ -293,10 +293,7 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
         )
         if body.address
         else offerers_api.get_or_create_offer_location(
-            offerer_id=venue.managingOffererId,
-            venue_id=venue.id,
-            address_id=venue.offererAddress.addressId,
-            label=venue.publicName,
+            venue.managingOffererId, venue.offererAddress.addressId, venue.publicName, venue.id
         )
     )
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)

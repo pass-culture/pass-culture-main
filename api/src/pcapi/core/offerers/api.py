@@ -3098,14 +3098,10 @@ def get_or_create_address(location_data: LocationData, is_manual_edition: bool =
 
 
 def get_or_create_offer_location(
-    # offerer_id: int,
-    # address_id: int,
-    # label: str | None = None,
-    # venue_id: int | None = None,
     offerer_id: int,
-    venue_id: int,
     address_id: int,
     label: str | None = None,
+    venue_id: int | None = None,
 ) -> models.OffererAddress:
     offerer_address: models.OffererAddress | None = (
         db.session.query(models.OffererAddress)
@@ -3194,10 +3190,10 @@ def get_offer_location_from_address(
         address.label = None
     address_from_api = create_offerer_address_from_address_api(address)
     return get_or_create_offer_location(
-        offerer_id=offerer_id,
-        venue_id=venue_id,
-        address_id=address_from_api.id,
+        offerer_id,
+        address_from_api.id,
         label=address.label,
+        venue_id=venue_id,
     )
 
 

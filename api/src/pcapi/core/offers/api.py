@@ -133,10 +133,7 @@ def build_new_offer_from_product(
 ) -> models.Offer:
     if offerer_address_id is None:
         offerer_address_id = offerers_api.get_or_create_offer_location(
-            offerer_id=venue.managingOffererId,
-            venue_id=venue.id,
-            address_id=venue.offererAddress.addressId,
-            label=venue.publicName,
+            venue.managingOffererId, venue.offererAddress.addressId, venue.publicName, venue_id=venue.id
         ).id
 
     return models.Offer(
@@ -259,9 +256,9 @@ def create_offer(
 
     offerer_address = offerer_address or offerers_api.get_or_create_offer_location(
         offerer_id=venue.managingOffererId,
-        venue_id=venue.id,
         address_id=venue.offererAddress.addressId,
         label=venue.publicName,
+        venue_id=venue.id,
     )
 
     if body.subcategory_id in subcategories.ONLINE_SUBCATEGORIES:  # i.e. it is a digital offer
@@ -308,10 +305,7 @@ def get_or_create_offerer_address_from_address_body(
     if isinstance(address_body, offerers_schemas.LocationOnlyOnVenueModel):
         # Use the same address as the venue, but offer must not be linked to a VENUE_LOCATION
         return offerers_api.get_or_create_offer_location(
-            offerer_id=venue.managingOffererId,
-            venue_id=venue.id,
-            address_id=venue.offererAddress.addressId,
-            label=venue.publicName,
+            venue.managingOffererId, venue.offererAddress.addressId, label=venue.publicName, venue_id=venue.id
         )
 
     return offerers_api.get_offer_location_from_address(venue.managingOffererId, address_body, venue_id=venue.id)
@@ -2026,10 +2020,10 @@ def move_offer(
     with transaction():
         if offer.offererAddress:
             destination_oa = offerers_api.get_or_create_offer_location(
-                offerer_id=original_venue.offererId,
-                venue_id=destination_venue.id,
-                address_id=original_venue.offererAddress.addressId,
-                label=original_venue.publicName,
+                offer.offererAddress.offererId,
+                offer.offererAddress.addressId,
+                offer.offererAddress.label,
+                destination_venue.id,
             )
             db.session.add(destination_oa)
             offer.offererAddress = destination_oa
@@ -2115,17 +2109,17 @@ def move_event_offer(
         if move_offer_address:
             offer.offererAddress = offerers_api.get_or_create_offer_location(
                 offerer_id=destination_venue.managingOffererId,
-                venue_id=destination_venue.id,
                 address_id=destination_venue.offererAddress.addressId,
                 label=destination_venue.publicName,
+                venue_id=destination_venue.id,
             )
         else:
             if offer.offererAddress:
                 destination_oa = offerers_api.get_or_create_offer_location(
-                    offerer_id=offer.venue.managingOffererId,
-                    venue_id=destination_venue.id,
-                    address_id=offer.venue.offererAddress.addressId,
-                    label=offer.venue.publicName,
+                    offer.offererAddress.offererId,
+                    offer.offererAddress.addressId,
+                    offer.offererAddress.label,
+                    destination_venue.id,
                 )
                 offer.offererAddress = destination_oa
         offer.venue = destination_venue

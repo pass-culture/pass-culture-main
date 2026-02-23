@@ -380,9 +380,9 @@ def _create_or_update_ean_offers(
         if address_id:
             offerer_address = offerers_api.get_or_create_offer_location(
                 offerer_id=venue.managingOffererId,
-                venue_id=venue.id,
                 address_id=address_id,
                 label=address_label,
+                venue_id=venue.id,
             )
         else:
             offerer_address = offers_api.get_or_create_offerer_address_from_address_body(
