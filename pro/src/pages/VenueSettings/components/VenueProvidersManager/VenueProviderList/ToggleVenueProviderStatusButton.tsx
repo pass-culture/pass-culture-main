@@ -4,6 +4,7 @@ import { useSWRConfig } from 'swr'
 import { api } from '@/apiClient/api'
 import type {
   GetVenueResponseModel,
+  PutVenueProviderBody,
   VenueProviderResponse,
 } from '@/apiClient/v1'
 import { GET_VENUE_PROVIDERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
@@ -31,13 +32,10 @@ export const ToggleVenueProviderStatusButton = ({
 
   const updateVenueProviderStatus = async () => {
     setIsLoading(true)
-    const payload = {
-      ...venueProvider,
-      isActive: !venueProvider.isActive,
-    }
+    const payload: PutVenueProviderBody = { isActive: !venueProvider.isActive }
 
     try {
-      await api.updateVenueProvider(venue.id, payload)
+      await api.updateVenueProvider(venueProvider.id, payload)
       await mutate([GET_VENUE_PROVIDERS_QUERY_KEY, venue.id])
     } catch {
       snackBar.error('Une erreur est survenue. Merci de réessayer plus tard')

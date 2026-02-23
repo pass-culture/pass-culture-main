@@ -116,10 +116,12 @@ describe('ToggleVenueProviderStatusButton', () => {
       })
 
       // Verify that the payload is correct
-      expect(api.updateVenueProvider).toHaveBeenCalledWith(1, {
-        ...mockVenueProvider,
-        isActive: false, // Inversé car isActive était true
-      })
+      expect(api.updateVenueProvider).toHaveBeenCalledWith(
+        mockVenueProvider.id,
+        {
+          isActive: false, // Inversé car isActive était true
+        }
+      )
 
       // Verify that mutate has been called
       await waitFor(() => {
@@ -165,10 +167,12 @@ describe('ToggleVenueProviderStatusButton', () => {
       })
 
       // Verify that the payload is correct (isActive is inverted)
-      expect(api.updateVenueProvider).toHaveBeenCalledWith(1, {
-        ...inactiveVenueProvider,
-        isActive: true, // Inversé car isActive était false
-      })
+      expect(api.updateVenueProvider).toHaveBeenCalledWith(
+        mockVenueProvider.id,
+        {
+          isActive: true, // Inversé car isActive était false
+        }
+      )
 
       // Verify that mutate has been called
       await waitFor(() => {
