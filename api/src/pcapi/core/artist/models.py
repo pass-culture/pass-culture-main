@@ -6,6 +6,7 @@ from datetime import datetime
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
+from pcapi import settings
 from pcapi.core.offers.models import Offer
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
@@ -97,6 +98,7 @@ class Artist(Model):
     )
     app_search_score = sa_orm.mapped_column(sa.Float, nullable=False, server_default="0.0", default=0.0)
     biography: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    # URL of the most popular product image linked to the artist, used as a fallback when image is NULL
     computed_image: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     date_created: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now()
@@ -108,6 +110,7 @@ class Artist(Model):
     id: sa_orm.Mapped[str] = sa_orm.mapped_column(
         sa.Text, primary_key=True, nullable=False, default=lambda _: str(uuid.uuid4())
     )
+    # DEPRECATED: Wikimedia URL of the artist image (replaced by mediation_uuid)
     image: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     image_author: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     image_license: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
@@ -116,6 +119,7 @@ class Artist(Model):
         sa.Boolean, nullable=False, server_default=sa.false(), default=False
     )
     is_eligible_for_search: sa_orm.Mapped["bool"] = sa_orm.query_expression()
+    # identifier of the artist image stored in object storage
     mediation_uuid: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, index=True)
     products: sa_orm.Mapped[list["Product"]] = sa_orm.relationship(
@@ -144,6 +148,12 @@ class Artist(Model):
     @property
     def thumbUrl(self) -> str | None:
         return self.image or self.computed_image
+
+    @property
+    def mediationUrl(self) -> str | None:
+        if self.mediation_uuid:
+            return f"{settings.GCP_BUCKET_NAME}/{settings.ARTIST_THUMBS_FOLDER_NAME}/{self.mediation_uuid}"
+        return None
 
 
 class ArtistAlias(PcObject, Model):

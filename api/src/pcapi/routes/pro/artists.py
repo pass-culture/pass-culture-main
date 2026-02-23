@@ -27,7 +27,11 @@ def get_artists(query: artist_serialize.ArtistQueryModel) -> artist_serialize.Ar
     if not FeatureToggle.WIP_OFFER_ARTISTS.is_active():
         raise api_errors.ApiErrors(errors={"global": "service not available"}, status_code=503)
     artists = [
-        artist_serialize.ArtistResponseModel.model_validate(artist)
+        artist_serialize.ArtistResponseModel(
+            id=artist.id,
+            name=artist.name,
+            thumbUrl=artist.mediationUrl,
+        )
         for artist in artist_repository.get_filtered_artists_for_search(query.search)
     ]
     return artist_serialize.ArtistsResponseModel(artists)
