@@ -10,6 +10,8 @@ exec gunicorn \
     --workers $GUNICORN_WORKERS \
     --threads $GUNICORN_THREADS \
     --timeout $GUNICORN_TIMEOUT \
+    --graceful-timeout $GUNICORN_GRACEFUL_TIMEOUT \
+    --keep-alive $GUNICORN_KEEP_ALIVE \
     --log-level $GUNICORN_LOG_LEVEL \
     --config gunicorn.conf.py \
     ${GUNICORN_FLASK_APP:-pcapi.app:app}
