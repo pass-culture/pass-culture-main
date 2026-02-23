@@ -32,7 +32,7 @@ on:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
     outputs:
-      pro_url: 
+      pro_url:
         description: "The pro (firebase) preview URL"
         value: ${{ jobs.deploy_on_firebase.outputs.pro_url }}
 
@@ -53,6 +53,8 @@ jobs:
           ref: ${{ inputs.REF }}
       - uses: actions/setup-node@v6
         with:
+          cache: yarn
+          cache-dependency-path: "**/yarn.lock"
           node-version-file: "pro/package.json"
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@9a5f036470496551365fe9c26afbd4febe20a8cb
       - name: "OpenID Connect Authentication"

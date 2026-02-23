@@ -1,13 +1,15 @@
-
 title = "pass Culture gitleaks configuration"
 
 [extend]
 useDefault = true
 
-[allowlist]
+[[allowlists]]
 description = "ignore lines containing gitleaks:ignore"
 regexTarget = "line"
 regexes = '''gitleaks:ignore'''
+[[allowlists]]
+description = "ignore yarn releases"
+paths = ['''pro/\.yarn/releases/yarn-\d+\.\d+\.\d+\.cjs''']
 
 [[rules]]
 id = "discord-bot-token"
