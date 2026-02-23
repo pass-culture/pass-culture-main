@@ -239,30 +239,6 @@ class Returns400Test:
         mocked_async_index_offer_ids.assert_not_called()
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_virtual_offer_can_not_be_headline(self, mocked_async_index_offer_ids, client):
-        pro_user = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
-        venue = offerers_factories.VenueFactory(isPermanent=True, managingOfferer=offerer)
-        offer = offers_factories.DigitalOfferFactory(venue=venue)
-        offers_factories.StockFactory(offer=offer)
-        offers_factories.MediationFactory(offer=offer)
-
-        data = {
-            "offerId": offer.id,
-        }
-        client = client.with_session_auth(pro_user.email)
-        response = client.post("/offers/upsert_headline", json=data)
-
-        assert response.status_code == 400
-        assert response.json["global"] == ["Une offre virtuelle ne peut pas être mise à la une"]
-
-        assert not offer.is_headline_offer
-        assert db.session.query(offers_models.HeadlineOffer).count() == 0
-
-        mocked_async_index_offer_ids.assert_not_called()
-
-    @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_offer_without_image_can_not_be_headline(self, mocked_async_index_offer_ids, client):
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()

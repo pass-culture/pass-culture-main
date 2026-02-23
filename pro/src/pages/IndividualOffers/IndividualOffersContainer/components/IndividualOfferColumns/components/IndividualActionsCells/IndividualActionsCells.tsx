@@ -115,7 +115,6 @@ export const IndividualActionsCells = ({
   }
 
   const isActive = offer.status === OfferStatus.ACTIVE
-  const isDigital = offer.isDigital
   const isProduct = !!offer.productId
   const hasImage = !!offer.thumbUrl
   // If an offer without an image is product-based, it cannot become
@@ -124,10 +123,7 @@ export const IndividualActionsCells = ({
   const isNotAProductWithoutImage = !isProduct || hasImage
 
   const isHeadlineActionDisplayed =
-    isHeadlineOfferAllowedForOfferer &&
-    isActive &&
-    !isDigital &&
-    isNotAProductWithoutImage
+    isHeadlineOfferAllowedForOfferer && isActive && isNotAProductWithoutImage
 
   return (
     <>

@@ -908,11 +908,6 @@ def check_offer_is_eligible_to_be_headline(offer: models.Offer) -> None:
         raise exceptions.InactiveOfferCanNotBeHeadline()
     if not offer.images:
         raise exceptions.OfferWithoutImageCanNotBeHeadline()
-    # FIXME: ogeber 03.01.2025 - when venue regularisation is done, this
-    # validation can be removed and virtual offers can be made headline
-    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
-    if subcategory.is_online_only:
-        raise exceptions.VirtualOfferCanNotBeHeadline()
 
 
 def check_offer_name_length_is_valid(offer_name: str) -> None:
