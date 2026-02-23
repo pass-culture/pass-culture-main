@@ -6,11 +6,16 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { api } from '@/apiClient/api'
 import { type ArtistOfferLinkResponseModel, ArtistType } from '@/apiClient/v1'
+import { resizeImageURL } from '@/commons/utils/resizeImageURL'
 
 import { ArtistField } from './ArtistField'
 
 vi.mock('@/apiClient/api', () => ({
   api: { getArtists: vi.fn() },
+}))
+
+vi.mock('@/commons/utils/resizeImageURL', () => ({
+  resizeImageURL: vi.fn((args) => `resized-${args.imageURL}`),
 }))
 
 const apiSelectSpy = vi.fn()
@@ -136,6 +141,19 @@ describe('ArtistField', () => {
       expect.objectContaining({ value: '1', label: 'Alice' }),
       expect.objectContaining({ value: '2', label: 'Bob' }),
     ])
+  })
+
+  it('searchApi should call image resize function for artist thumbnails', async () => {
+    renderArtistField()
+    const props = apiSelectSpy.mock.calls[0][0]
+
+    await props.searchApi('Al')
+
+    expect(resizeImageURL).toHaveBeenCalledTimes(2)
+    expect(resizeImageURL).toHaveBeenCalledWith({
+      imageURL: 'any-url',
+      width: 36,
+    })
   })
 
   it('onSearch should update form value with search text', async () => {
