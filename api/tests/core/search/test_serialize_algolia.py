@@ -427,7 +427,7 @@ def test_serialize_offer_temporarily_headline():
     assert serialized["offer"]["isHeadlineUntil"] == 1735776000
 
 
-def test_serialize_offer_artists():
+def test_serialize_offer_product_artists():
     artist = artists_factories.ArtistFactory()
     product = offers_factories.ProductFactory()
     offer = offers_factories.OfferFactory(product=product)
@@ -437,6 +437,20 @@ def test_serialize_offer_artists():
 
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized["artists"] == [{"id": artist.id, "name": artist.name, "image": artist.thumbUrl}]
+
+
+def test_serialize_offer_artists():
+    offer = offers_factories.OfferFactory()
+    artist_1 = artists_factories.ArtistFactory(name="Alex")
+    artists_factories.ArtistOfferLinkFactory(offer_id=offer.id, artist_id=artist_1.id)
+    artist_2 = artists_factories.ArtistFactory(name="Billy", is_blacklisted=True)
+    artists_factories.ArtistOfferLinkFactory(offer_id=offer.id, artist_id=artist_2.id)
+    artists_factories.ArtistOfferLinkFactory(offer_id=offer.id, custom_name="Claude")
+
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
+    assert sorted(serialized["artists"], key=lambda a: a["name"]) == [
+        {"id": artist_1.id, "name": "Alex", "image": artist_1.image}
+    ]
 
 
 def test_exclude_blacklisted_artists():
