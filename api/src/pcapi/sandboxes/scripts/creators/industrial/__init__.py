@@ -42,12 +42,6 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_mediations im
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_non_payment_notices import (
     create_industrial_non_payment_notices,
 )
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_price_limitation_rules import (
-    create_industrial_offer_price_limitation_rules,
-)
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_validation_rules import (
-    create_industrial_offer_validation_rules,
-)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_addresses import (
     create_industrial_offerer_addresses,
 )
@@ -106,7 +100,11 @@ def save_industrial_sandbox() -> None:
     pro_users_by_name = create_industrial_pro_users(offerers_by_name)
     app_users_by_name = create_industrial_app_users()
 
-    users_by_name = dict(dict(admin_users_by_name, **pro_users_by_name), **app_users_by_name)
+    users_by_name = {
+        **(admin_users_by_name or {}),
+        **(pro_users_by_name or {}),
+        **(app_users_by_name or {}),
+    }
 
     venues_by_name = create_industrial_venues(offerers_by_name)
 
@@ -116,7 +114,10 @@ def save_industrial_sandbox() -> None:
 
     create_industrial_draft_offers(offerers_by_name)
 
-    offers_by_name = dict(event_offers_by_name, **thing_offers_by_name)
+    offers_by_name = {
+        **(event_offers_by_name or {}),
+        **(thing_offers_by_name or {}),
+    }
 
     event_occurrences_by_name = create_industrial_event_occurrences(event_offers_by_name)
 

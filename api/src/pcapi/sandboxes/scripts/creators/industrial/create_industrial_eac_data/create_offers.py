@@ -1062,6 +1062,7 @@ def create_booking_base_list(
             )
 
 
+@log_func_duration
 def create_national_programs_and_domains() -> tuple[
     list[educational_models.NationalProgram], list[educational_models.EducationalDomain]
 ]:

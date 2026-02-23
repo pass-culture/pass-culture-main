@@ -20,12 +20,17 @@ def save_sandbox(
     with_clean: bool = True,
     with_clean_bucket: bool = False,
     with_index_all_offers: bool = True,
-    steps_to_skip: typing.Iterable[str] | None = None,
+    steps_to_skip: typing.Sequence[str] | None = None,
+    steps_to_run: typing.Sequence[str] | None = None,
 ) -> None:
+    if steps_to_skip and steps_to_run:
+        raise ValueError("Only one of steps_to_skip or steps_to_run should be provided")
+
     if with_clean:
         logger.info("Cleaning database")
         clean_all_database(reset_ids=True)
         logger.info("All databases cleaned")
+
     if with_clean_bucket:
         clean_industrial_mediations_bucket()
 
@@ -33,12 +38,14 @@ def save_sandbox(
         script_name = f"sandbox_{sandbox_name}"
         sandbox_module = getattr(scripts, script_name)
 
-        with helpers.skip_steps(steps=steps_to_skip):
+        with helpers.select_steps(steps_to_skip=steps_to_skip, steps_to_run=steps_to_run):
             sandbox_module.save_sandbox()
 
     logger.info("Sandbox %s saved", name)
+
     if with_index_all_offers:
         _index_all_offers()
+
     _index_all_venues()
     _index_all_artists()
 
