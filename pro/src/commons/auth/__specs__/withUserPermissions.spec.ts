@@ -4,6 +4,7 @@ import * as reactRouter from 'react-router'
 import * as storeModule from '@/commons/store/store'
 import { configureTestStore } from '@/commons/store/testUtils'
 import type { UserAccess } from '@/commons/store/user/reducer'
+import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 
@@ -21,8 +22,9 @@ vi.mock('react-router', async () => {
 const setupStore = (options: {
   access?: UserAccess | null
   hasUser?: boolean
-  hasVenue?: boolean
+  hasVenueSelected?: boolean
   isFeatureActive?: boolean
+  hasVenue?: boolean
 }) => {
   const store = configureTestStore({
     features: {
@@ -34,10 +36,18 @@ const setupStore = (options: {
       access: options.access ?? null,
       currentUser: options.hasUser ? sharedCurrentUserFactory() : null,
       selectedAdminOfferer: null,
-      selectedVenue: options.hasVenue
+      selectedVenue: options.hasVenueSelected
         ? makeGetVenueResponseModel({ id: 1 })
         : null,
-      venues: null,
+      venues: options.hasVenue
+        ? [
+            makeVenueListItem({
+              id: 3,
+              managingOffererId: 1,
+              name: 'Digital Venue A1',
+            }),
+          ]
+        : null,
     },
   })
   vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
@@ -87,8 +97,9 @@ describe('withUserPermissions', () => {
         setupStore({
           isFeatureActive: true,
           hasUser: true,
-          hasVenue: true,
+          hasVenueSelected: true,
           access: 'full',
+          hasVenue: true,
         })
         const mockLoader = vi.fn(() => 'loader result')
         const permissionCheck = (_: UserPermissions) => true
@@ -105,8 +116,9 @@ describe('withUserPermissions', () => {
         setupStore({
           isFeatureActive: true,
           hasUser: true,
-          hasVenue: true,
+          hasVenueSelected: true,
           access: 'full',
+          hasVenue: true,
         })
         const permissionCheck = (_: UserPermissions) => true
         const args = createMockLoaderArgs('http://localhost/some-page')
@@ -131,7 +143,12 @@ describe('withUserPermissions', () => {
       })
 
       it('should redirect to /hub when authenticated but no venue selected', () => {
-        setupStore({ isFeatureActive: true, hasUser: true, hasVenue: false })
+        setupStore({
+          isFeatureActive: true,
+          hasUser: true,
+          hasVenueSelected: false,
+          hasVenue: true,
+        })
         const permissionCheck = (_: UserPermissions) => false
         const args = createMockLoaderArgs('http://localhost/some-page')
 
@@ -145,8 +162,9 @@ describe('withUserPermissions', () => {
         setupStore({
           isFeatureActive: true,
           hasUser: true,
-          hasVenue: true,
+          hasVenueSelected: true,
           access: 'unattached',
+          hasVenue: true,
         })
         const permissionCheck = (_: UserPermissions) => false
         const args = createMockLoaderArgs('http://localhost/some-page')
@@ -163,8 +181,9 @@ describe('withUserPermissions', () => {
         setupStore({
           isFeatureActive: true,
           hasUser: true,
-          hasVenue: true,
+          hasVenueSelected: true,
           access: 'no-onboarding',
+          hasVenue: true,
         })
         const permissionCheck = (_: UserPermissions) => false
         const args = createMockLoaderArgs('http://localhost/some-page')
@@ -179,8 +198,9 @@ describe('withUserPermissions', () => {
         setupStore({
           isFeatureActive: true,
           hasUser: true,
-          hasVenue: true,
+          hasVenueSelected: true,
           access: 'full',
+          hasVenue: true,
         })
         const permissionCheck = (_: UserPermissions) => false
         const args = createMockLoaderArgs('http://localhost/some-page')
@@ -189,6 +209,23 @@ describe('withUserPermissions', () => {
         guardedLoader(args)
 
         expect(reactRouter.redirect).toHaveBeenCalledWith('/accueil')
+      })
+      it('should redirect to inscription/structure/recherche when user has no venues', () => {
+        setupStore({
+          isFeatureActive: true,
+          hasUser: true,
+          hasVenue: false,
+          access: 'full',
+        })
+        const permissionCheck = (_: UserPermissions) => false
+        const args = createMockLoaderArgs('http://localhost/some-page')
+
+        const guardedLoader = withUserPermissions(permissionCheck)
+        guardedLoader(args)
+
+        expect(reactRouter.redirect).toHaveBeenCalledWith(
+          'inscription/structure/recherche'
+        )
       })
     })
   })
