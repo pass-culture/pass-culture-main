@@ -1,0 +1,9 @@
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-spacing-l);
+}
+
+.helplink {
+  margin: var(--size-spacing-xxl) 0;
+}
