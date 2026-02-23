@@ -49,7 +49,7 @@ jobs:
       - name: Build vite application
         env:
           ENV: ${{ inputs.ENV }}
-        run: yarn build:$ENV
+        run: yarn run "build:$ENV"
 
       - name: Save build folder
         uses: actions/upload-artifact@v6
