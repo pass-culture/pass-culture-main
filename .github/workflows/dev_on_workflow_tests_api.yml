@@ -393,7 +393,7 @@ jobs:
           IMAGE: ${{ inputs.image }}
           TAG: ${{ inputs.tag }}
         run: |
-          docker load --input "${{ runner.temp }}/$IMAGE-$TAG.tar"
+          docker load --input "${{ runner.temp }}/$IMAGE-${{ inputs.tag }}.tar"
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v3"
         with:
