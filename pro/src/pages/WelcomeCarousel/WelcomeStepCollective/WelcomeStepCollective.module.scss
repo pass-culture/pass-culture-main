@@ -1,0 +1,9 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-spacing-l);
+}
+
+.footer {
+  margin-top: var(--size-spacing-l);
+}
