@@ -596,6 +596,17 @@ def get_base_query_for_offer_indexation() -> sa_orm.Query:
                 )
             )
         )
+        .options(
+            sa_orm.joinedload(offers_models.Offer.artistOfferLinks)
+            .joinedload(artist_models.ArtistOfferLink.artist)
+            .load_only(
+                artist_models.Artist.id,
+                artist_models.Artist.name,
+                artist_models.Artist.image,
+                artist_models.Artist.is_blacklisted,
+                artist_models.Artist.computed_image,
+            )
+        )
     )
 
 

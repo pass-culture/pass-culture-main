@@ -141,19 +141,6 @@ class AlgoliaSerializationMixin:
             if _is_artist_valid(artist):
                 extra_data_artists.append(artist)
 
-        artists = (
-            [
-                {
-                    "id": artist.id,
-                    "image": artist.thumbUrl,
-                    "name": artist.name,
-                }
-                for artist in offer.product.artists
-                if not artist.is_blacklisted
-            ]
-            if offer.product and offer.product.artists
-            else None
-        )
         release_date = None
         if extra_data.get("releaseDate"):
             try:
@@ -341,7 +328,7 @@ class AlgoliaSerializationMixin:
             if headline_offer.timespan.upper:
                 object_to_index["offer"]["isHeadlineUntil"] = headline_offer.timespan.upper.timestamp()
 
-        if artists:
+        if artists := _serialize_artists_for_offer(offer):
             object_to_index["artists"] = artists
 
         for section in ("offer", "offerer", "venue"):
@@ -463,3 +450,26 @@ def _is_artist_valid(artist: str) -> bool:
     return (
         bool(artist) and "," not in artist and ";" not in artist and artist.lower() not in ("collectif", "collectifs")
     )
+
+
+def _serialize_artists_for_offer(offer: offers_models.Offer) -> list[dict[str, str | None]]:
+    if offer.product:
+        return [
+            {
+                "id": artist.id,
+                "image": artist.thumbUrl,
+                "name": artist.name,
+            }
+            for artist in offer.product.artists
+            if not artist.is_blacklisted
+        ]
+
+    return [
+        {
+            "id": artist_link.artist.id,
+            "image": artist_link.artist.thumbUrl,
+            "name": artist_link.artist.name,
+        }
+        for artist_link in offer.artistOfferLinks
+        if artist_link.artist and not artist_link.artist.is_blacklisted
+    ]
