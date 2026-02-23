@@ -127,7 +127,7 @@ runs:
 
     - name: Get the image digest
       id: get_digest
-      run: echo "digest=${{ inputs.registry }}/${{ inputs.project_id }}/${{ inputs.repository }}/$(docker inspect --format='{{index .RepoDigests 0}}' ${{ steps.compute_image_name.outputs.source_image_name }})" | tee -a $GITHUB_OUTPUT
+      run: echo "digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ steps.compute_image_name.outputs.source_image_name }})" | tee -a $GITHUB_OUTPUT
       shell: bash
 
     - name: Sign image with a kms key
