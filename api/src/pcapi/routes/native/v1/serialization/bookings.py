@@ -1,5 +1,4 @@
 import datetime
-from typing import List
 
 import pydantic as pydantic_v2
 
@@ -51,7 +50,7 @@ class BookingVenueResponse(HttpBodyModel):
             id=venue.id,
             name=venue.publicName,
             public_name=venue.publicName,
-            timezone=venue.offererAddress.address.timezone if venue.offererAddress else None,
+            timezone=venue.offererAddress.address.timezone,
             banner_url=venue.bannerUrl,
             is_open_to_public=venue.isOpenToPublic,
         )
@@ -89,7 +88,7 @@ class BookingOfferResponse(HttpBodyModel):
     @classmethod
     def build(cls, offer: Offer) -> "BookingOfferResponse":
         address_response = None
-        offerer_address = offer.offererAddress or (offer.venue.offererAddress if offer.venue else None)
+        offerer_address = offer.offererAddress or offer.venue.offererAddress
 
         if offerer_address:
             addr = offerer_address.address
@@ -127,7 +126,7 @@ class BookingOfferResponse(HttpBodyModel):
 class BookingStockResponse(HttpBodyModel):
     id: int
     beginning_datetime: datetime.datetime | None = None
-    features: List[str]
+    features: list[str]
     offer: BookingOfferResponse
     price: int
     price_category_label: str | None = None
@@ -206,8 +205,8 @@ class BookingReponse(HttpBodyModel):
 
 
 class BookingsResponse(HttpBodyModel):
-    ended_bookings: List[BookingReponse]
-    ongoing_bookings: List[BookingReponse]
+    ended_bookings: list[BookingReponse]
+    ongoing_bookings: list[BookingReponse]
     hasBookingsAfter18: bool
 
     model_config = pydantic_v2.ConfigDict(
