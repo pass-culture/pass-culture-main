@@ -148,3 +148,8 @@ export enum HighlightEvents {
   HAS_CLICKED_EDIT_HIGHLIGHT = 'hasClickedEditHighlight',
   HAS_VALIDATED_HIGHLIGHT = 'hasValidatedHighlight',
 }
+
+export enum WelcomeCarouselEvents {
+  HAS_CLICKED_USER_TYPE = 'hasClickedUserType',
+  HAS_CLICKED_ADAGE_LINK = 'hasClickedAdageLink',
+}

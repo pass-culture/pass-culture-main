@@ -1,3 +1,5 @@
+import cn from 'classnames'
+
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 
@@ -16,7 +18,12 @@ const WelcomeStepNextSteps = (): JSX.Element => {
         quasi. Distinctio dolores in inventore maxime nemo porro repudiandae
         saepe velit!
       </div>
-      <div className={commonStyles[`actionbar-container`]}>
+      <div
+        className={cn(
+          commonStyles[`actionbar-container`],
+          commonStyles[`actionbar-container-single`]
+        )}
+      >
         <Button
           as="a"
           to="/inscription/compte/creation"
