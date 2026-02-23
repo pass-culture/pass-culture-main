@@ -207,6 +207,7 @@ jobs:
 
       - name: "Wait for front-end to listen"
         run: |
+          # shellcheck disable=SC2016
           timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:3001)" != "200" ]]; do sleep 5; done' || false
 
       - name: "Playwright run"
