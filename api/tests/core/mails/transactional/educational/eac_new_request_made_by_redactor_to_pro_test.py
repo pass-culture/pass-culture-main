@@ -20,7 +20,7 @@ class SendEacNewBookingEmailToProTest:
     @time_machine.travel("2019-11-26")
     @patch("pcapi.core.mails.transactional.educational.eac_new_request_made_by_redactor_to_pro.mails")
     def test_new_request_made_by_redactor_for_pro(self, mails: Any) -> None:
-        oa = offerers_factories.OfferLocationFactory(label="Nice location")
+        oa = offerers_factories.OffererAddressFactory(label="Nice location")
         request = educational_factories.CollectiveOfferRequestFactory(
             collectiveOfferTemplate__bookingEmails=["pouet@example.com", "plouf@example.com"],
             collectiveOfferTemplate__locationType=CollectiveLocationType.ADDRESS,

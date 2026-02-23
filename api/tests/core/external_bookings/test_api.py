@@ -411,7 +411,7 @@ class BookEventTicketTest:
         )
 
         # one with address
-        offerer_address = offerers_factories.OfferLocationFactory()
+        offerer_address = offerers_factories.OffererAddressFactory()
         offer_with_address = offers_factories.EventOfferFactory(
             withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
             lastProviderId=provider.id,

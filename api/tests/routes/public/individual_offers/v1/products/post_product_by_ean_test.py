@@ -862,7 +862,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
     def test_valid_ean_with_missing_stock_price_returns_an_error(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offerer_address = offerers_factories.OfferLocationFactory(offerer=venue_provider.venue.managingOfferer)
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue_provider.venue.managingOfferer)
         ean, _ = self._get_base_product()
 
         payload = {
@@ -880,7 +880,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
     def test_valid_ean_with_null_stock_price_returns_an_error(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offerer_address = offerers_factories.OfferLocationFactory(offerer=venue_provider.venue.managingOfferer)
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue_provider.venue.managingOfferer)
         ean, _ = self._get_base_product()
 
         payload = {
@@ -898,7 +898,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
     def test_valid_ean_and_free_stock_is_created(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offerer_address = offerers_factories.OfferLocationFactory(offerer=venue_provider.venue.managingOfferer)
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue_provider.venue.managingOfferer)
         ean, _ = self._get_base_product()
 
         payload = {
@@ -920,7 +920,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
     def test_valid_ean_and_free_stock_is_updated(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offerer_address = offerers_factories.OfferLocationFactory(offerer=venue_provider.venue.managingOfferer)
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue_provider.venue.managingOfferer)
 
         ean, product = self._get_base_product()
 

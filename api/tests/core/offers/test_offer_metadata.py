@@ -237,7 +237,9 @@ class OfferMetadataTest:
                 latitude="47",
                 longitude="-1",
             )
-            offer_address = offerers_factories.OfferLocationFactory(address=address, label="Le grand poney qui respire")
+            offer_address = offerers_factories.OffererAddressFactory(
+                address=address, label="Le grand poney qui respire"
+            )
             offer = offers_factories.EventOfferFactory(venue=venue, offererAddress=offer_address)
 
             metadata = get_metadata_from_offer(offer)

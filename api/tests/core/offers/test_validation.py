@@ -856,7 +856,7 @@ class CheckBookingLimitDatetimeTest:
         [offers_factories.OfferFactory, offers_factories.EventOfferFactory, offers_factories.DigitalOfferFactory],
     )
     def test_check_booking_limit_datetime_should_not_raise_with_timezone(self, offer_factory):
-        oa = offerers_factories.OfferLocationFactory(address__departmentCode="974")
+        oa = offerers_factories.OffererAddressFactory(address__departmentCode="974")
         offer = offer_factory(offererAddress=oa)
         stock = offers_factories.StockFactory(offer=offer)
 
@@ -879,7 +879,7 @@ class CheckBookingLimitDatetimeTest:
     )
     def test_check_booking_limit_datetime_priorisation_order(self, time_zone_expected):
         oa = (
-            offerers_factories.OfferLocationFactory(address__departmentCode="974", address__inseeCode="97410")
+            offerers_factories.OffererAddressFactory(address__departmentCode="974", address__inseeCode="97410")
             if time_zone_expected == ZoneInfo("Indian/Reunion")
             else None
         )

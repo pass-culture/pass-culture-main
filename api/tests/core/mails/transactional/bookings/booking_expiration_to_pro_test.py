@@ -43,7 +43,7 @@ class SendExpiredBookingsRecapEmailToOffererTest:
         self, has_offerer_address
     ):
         offerer = offerers_factories.OffererFactory()
-        oa = offerers_factories.OfferLocationFactory(offerer=offerer)
+        oa = offerers_factories.OffererAddressFactory(offerer=offerer)
         expired_today_dvd_booking = bookings_factories.BookingFactory(
             stock__offer__name="Intouchables",
             stock__offer__bookingEmail="offerer.booking@example.com",

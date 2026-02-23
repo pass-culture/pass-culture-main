@@ -337,7 +337,7 @@ class GetTest:
         def test_uses_offerer_address_if_available(self, client):
             # Given
             user = users_factories.UserFactory()
-            offerer_address = offerers_factories.OfferLocationFactory()
+            offerer_address = offerers_factories.OffererAddressFactory()
             offer = offers_factories.OfferFactory(offererAddress=offerer_address)
             client.with_token(user)
             # When

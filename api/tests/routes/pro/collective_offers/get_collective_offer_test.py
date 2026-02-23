@@ -133,7 +133,7 @@ class Returns200Test:
             venue=venue,
             locationType=educational_models.CollectiveLocationType.ADDRESS,
             locationComment=None,
-            # offererAddressId=venue.offererAddress.id,
+            offererAddressId=venue.offererAddress.id,
             interventionArea=None,
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
@@ -176,7 +176,7 @@ class Returns200Test:
 
     def test_location_address(self, client):
         venue = offerers_factories.VenueFactory()
-        oa = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer, venue=venue)
+        oa = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
         offer = educational_factories.CollectiveOfferFactory(
             locationType=educational_models.CollectiveLocationType.ADDRESS,
             locationComment=None,

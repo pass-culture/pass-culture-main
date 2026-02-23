@@ -6,7 +6,6 @@ from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import factories
 from pcapi.core.educational import models
 from pcapi.core.educational.testing import get_serialized_address
-from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import AUTHENTICATION_QUERIES
 from pcapi.core.testing import assert_num_queries
@@ -96,10 +95,7 @@ class Returns200Test:
     def test_one_collective_offer_template_location_other_address(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        oa = offerers_factories.OfferLocationFactory(
-            offerer=venue.managingOfferer, venue=venue, address=geography_factories.AddressFactory()
-        )
-        offer = factories.CollectiveOfferTemplateOnOtherAddressLocationFactory(venue=venue, offererAddress=oa)
+        offer = factories.CollectiveOfferTemplateOnOtherAddressLocationFactory(venue=venue)
 
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.expected_num_queries):
@@ -308,15 +304,10 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
-        oa = offerers_factories.OfferLocationFactory()
+        oa = offerers_factories.OffererAddressFactory()
         offer_school = factories.CollectiveOfferTemplateOnSchoolLocationFactory(venue=venue)
         offer_address = factories.CollectiveOfferTemplateOnOtherAddressLocationFactory(venue=venue, offererAddress=oa)
-        factories.CollectiveOfferTemplateOnOtherAddressLocationFactory(
-            venue=venue,
-            offererAddress=offerers_factories.OfferLocationFactory(
-                address=geography_factories.AddressFactory(street="3 rue des moutons")
-            ),
-        )
+        factories.CollectiveOfferTemplateOnOtherAddressLocationFactory(venue=venue)
         offer_to_be_defined = factories.CollectiveOfferTemplateOnToBeDefinedLocationFactory(venue=venue)
 
         client = client.with_session_auth(email=user_offerer.user.email)

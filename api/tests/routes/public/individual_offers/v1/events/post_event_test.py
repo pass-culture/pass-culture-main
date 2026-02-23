@@ -539,7 +539,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
         payload = self._get_base_payload(venue_provider.venueId)
         address = geography_factories.AddressFactory()
-        offerer_address = offerers_factories.OfferLocationFactory(
+        offerer_address = offerers_factories.OffererAddressFactory(
             address=address,
             offerer=venue_provider.venue.managingOfferer,
             venue=venue_provider.venue,

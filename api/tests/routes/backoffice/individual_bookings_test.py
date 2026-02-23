@@ -640,7 +640,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
             dateCreated=datetime.datetime.combine(datetime.date.today(), datetime.time.min),
             stock=offers_factories.EventStockFactory(
                 beginningDatetime=datetime.datetime(2035, 12, 31, 20, 30),
-                offer__offererAddress=offerers_factories.OfferLocationFactory(
+                offer__offererAddress=offerers_factories.OffererAddressFactory(
                     address=geography_factories.CaledonianAddressFactory()
                 ),
             ),

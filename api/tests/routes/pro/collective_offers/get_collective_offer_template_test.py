@@ -3,7 +3,6 @@ import pytest
 from pcapi.core import testing
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
-from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
@@ -74,10 +73,9 @@ class Returns200Test:
     def test_location_address_venue(self, client):
         venue = offerers_factories.VenueFactory()
         # Venue has its location, the offer has another one but they should appear as venue location
-        oa = offerers_factories.OfferLocationFactory(
-            offerer=venue.managingOfferer, venue=venue, address=venue.offererAddress.address, label=venue.publicName
+        oa = offerers_factories.OffererAddressFactory(
+            offerer=venue.managingOfferer, address=venue.offererAddress.address, label=venue.publicName
         )
-
         offer = educational_factories.CollectiveOfferTemplateFactory(
             venue=venue,
             locationType=educational_models.CollectiveLocationType.ADDRESS,
@@ -156,9 +154,7 @@ class Returns200Test:
 
     def test_location_address(self, client):
         venue = offerers_factories.VenueFactory()
-        oa = offerers_factories.OfferLocationFactory(
-            offerer=venue.managingOfferer, venue=venue, address=geography_factories.AddressFactory()
-        )
+        oa = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
         offer = educational_factories.CollectiveOfferTemplateFactory(
             locationType=educational_models.CollectiveLocationType.ADDRESS,
             locationComment=None,
@@ -185,8 +181,8 @@ class Returns200Test:
 
     def test_location_same_address_different_label(self, client):
         venue = offerers_factories.VenueFactory()
-        oa = offerers_factories.OfferLocationFactory(
-            offerer=venue.managingOfferer, venue=venue, address=venue.offererAddress.address, label="Different label"
+        oa = offerers_factories.OffererAddressFactory(
+            offerer=venue.managingOfferer, address=venue.offererAddress.address
         )
         offer = educational_factories.CollectiveOfferTemplateFactory(
             locationType=educational_models.CollectiveLocationType.ADDRESS,

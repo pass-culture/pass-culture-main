@@ -180,7 +180,7 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__departmentCode="75")
-        oa = offerers_factories.OfferLocationFactory(venue=venue, address__departmentCode=dp)
+        oa = offerers_factories.OffererAddressFactory(venue=venue, address__departmentCode=dp)
 
         offer = offers_factories.ThingOfferFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id, venue=venue, offererAddress=oa
@@ -203,7 +203,7 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__departmentCode="75")
-        oa = offerers_factories.OfferLocationFactory(venue=venue, address__departmentCode=dp)
+        oa = offerers_factories.OffererAddressFactory(venue=venue, address__departmentCode=dp)
 
         offer = offers_factories.ThingOfferFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id, venue=venue, offererAddress=oa
@@ -278,7 +278,7 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
-        offerer_address1 = offerers_factories.OfferLocationFactory(
+        offerer_address1 = offerers_factories.OffererAddressFactory(
             label="Accor Arena",
             offerer=offerer,
             address__street="8 Boulevard de Bercy",
@@ -534,7 +534,7 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offerer_address1 = offerers_factories.OfferLocationFactory(
+        offerer_address1 = offerers_factories.OffererAddressFactory(
             label="Accor Arena",
             offerer=offerer,
             address__street="8 Boulevard de Bercy",
@@ -556,7 +556,7 @@ class Returns200Test:
             publicationDatetime=datetime.datetime(2022, 11, 21, 13, 19),
         )
 
-        offerer_address2 = offerers_factories.OfferLocationFactory(
+        offerer_address2 = offerers_factories.OffererAddressFactory(
             label="La Cigale",
             offerer=offerer,
             address__street="120 Boulevard Marguerite de Rochechouart",
@@ -677,7 +677,7 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offerer_address1 = offerers_factories.OfferLocationFactory(
+        offerer_address1 = offerers_factories.OffererAddressFactory(
             label="Accor Arena",
             offerer=offerer,
             address__street="8 Boulevard de Bercy",

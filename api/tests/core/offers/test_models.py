@@ -753,7 +753,7 @@ class OfferfullAddressTest:
         ],
     )
     def test_full_address(self, label, street, expected_full_address):
-        oa = offerers_factories.OfferLocationFactory(
+        oa = offerers_factories.OffererAddressFactory(
             label=label,
             address__street=street,
             address__postalCode="75000",

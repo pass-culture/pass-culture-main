@@ -64,7 +64,7 @@ def criteria_fixture() -> list:
 def offers_fixture(criteria) -> tuple:
     offer_with_unlimited_stock = offers_factories.OfferFactory(
         criteria=[criteria[0]],
-        offererAddress=offerers_factories.OfferLocationFactory(
+        offererAddress=offerers_factories.OffererAddressFactory(
             address__postalCode="47000", address__departmentCode="47"
         ),
         subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
@@ -79,7 +79,7 @@ def offers_fixture(criteria) -> tuple:
     offer_with_limited_stock = offers_factories.EventOfferFactory(
         name="A Very Specific Name",
         lastValidationDate=datetime.date(2022, 2, 22),
-        offererAddress=offerers_factories.OfferLocationFactory(
+        offererAddress=offerers_factories.OffererAddressFactory(
             address__postalCode="97400", address__departmentCode="974"
         ),
         subcategoryId=subcategories.FESTIVAL_LIVRE.id,
@@ -91,7 +91,7 @@ def offers_fixture(criteria) -> tuple:
         criteria=[criteria[0], criteria[1]],
         dateCreated=datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=2),
         validation=offers_models.OfferValidationStatus.REJECTED,
-        offererAddress=offerers_factories.OfferLocationFactory(
+        offererAddress=offerers_factories.OffererAddressFactory(
             address__postalCode="74000", address__departmentCode="74"
         ),
         subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -99,7 +99,7 @@ def offers_fixture(criteria) -> tuple:
     )
     offer_with_a_lot_of_types = offers_factories.OfferFactory(
         criteria=[criteria[3]],
-        offererAddress=offerers_factories.OfferLocationFactory(
+        offererAddress=offerers_factories.OffererAddressFactory(
             address__postalCode="10000", address__departmentCode="10"
         ),
         subcategoryId=subcategories.JEU_EN_LIGNE.id,
@@ -829,7 +829,7 @@ class ListOffersTest(GetEndpointHelper):
 
     def test_list_offers_by_address(self, authenticated_client, offers):
         for offer in offers[:3]:
-            offer.offererAddress = offerers_factories.OfferLocationFactory(offerer=offer.venue.managingOfferer)
+            offer.offererAddress = offerers_factories.OffererAddressFactory(offerer=offer.venue.managingOfferer)
             db.session.add(offer)
         db.session.flush()
 
@@ -1469,7 +1469,7 @@ class ListOffersTest(GetEndpointHelper):
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.FESTIVAL_CINE.id,
             venue=venue,
-            offererAddress=offerers_factories.OfferLocationFactory(
+            offererAddress=offerers_factories.OffererAddressFactory(
                 offerer=venue.managingOfferer,
                 address__postalCode=postal_code,
                 address__departmentCode=get_department_code_from_city_code(postal_code),
@@ -3034,11 +3034,11 @@ class EditOfferVenueTest(PostEndpointHelper):
         )
 
     @patch("pcapi.core.search.async_index_offer_ids")
-    def test_should_create_new_offerer_address(
+    def test_should_keep_event_offerer_address(
         self, mocked_async_index_offer_ids, authenticated_client, venues_in_same_offerer
     ):
         source_venue, destination_venue, _, _ = venues_in_same_offerer
-        offerer_address = offerers_factories.OfferLocationFactory(offerer=source_venue.managingOfferer)
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=source_venue.managingOfferer)
         offer = offers_factories.EventOfferFactory(venue=source_venue, offererAddress=offerer_address)
 
         response = self.post_to_endpoint(
@@ -3057,10 +3057,6 @@ class EditOfferVenueTest(PostEndpointHelper):
         assert offer.venueId == destination_venue.id
         assert offer.offererAddress.addressId == offerer_address.addressId
         assert offer.offererAddress.venueId == destination_venue.id
-
-        assert offer.offererAddress != offerer_address
-        assert offerer_address.venueId == source_venue.id
-        assert offer.offererAddress.addressId == offerer_address.addressId
 
 
 class GetOfferStockEditFormTest(GetEndpointHelper):
@@ -4346,7 +4342,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert descriptions["Date du dernier rejet"] == format_date(validation_date, "%d/%m/%Y à %Hh%M")
 
     def test_get_offer_details_overseas(self, legit_user, authenticated_client):
-        offerer_address = offerers_factories.OfferLocationFactory(
+        offerer_address = offerers_factories.OffererAddressFactory(
             address=geography_factories.AddressFactory(
                 postalCode="97200", departmentCode="972", timezone="America/Martinique"
             )
@@ -4624,7 +4620,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             inseeCode="75107",
             banId="75107_4803_00001_v",
         )
-        offerer_adress = offerers_factories.OfferLocationFactory(label="Champ de Mars", address=address)
+        offerer_adress = offerers_factories.OffererAddressFactory(label="Champ de Mars", address=address)
         offer = offers_factories.OfferFactory(
             offererAddressId=offerer_adress.id, venue__managingOfferer=offerer_adress.offerer
         )

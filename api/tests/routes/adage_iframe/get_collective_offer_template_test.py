@@ -196,10 +196,7 @@ class CollectiveOfferTemplateTest:
             venue=venue,
             locationType=educational_models.CollectiveLocationType.ADDRESS,
             locationComment=None,
-            offererAddress=offerers_factories.OfferLocationFactory(
-                address=venue.offererAddress.address, offerer=venue.managingOfferer, label=venue.publicName
-            ),
-            # offererAddressId=venue.offererAddress.id,
+            offererAddressId=venue.offererAddress.id,
             interventionArea=None,
         )
 
@@ -413,7 +410,7 @@ class GetCollectiveOfferTemplatesTest:
 
     def test_location_address(self, eac_client, redactor):
         venue = offerers_factories.VenueFactory()
-        oa = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer)
+        oa = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
         offer = educational_factories.CollectiveOfferTemplateFactory(
             locationType=educational_models.CollectiveLocationType.ADDRESS,
             locationComment=None,

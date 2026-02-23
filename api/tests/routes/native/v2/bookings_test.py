@@ -345,7 +345,7 @@ class GetBookingsTest:
         address_on_offer = AddressFactory()
         venue = offerers_factories.VenueFactory(offererAddress__address=address_on_venue)
         offer = offers_factories.OfferFactory(
-            venue=venue, offererAddress=offerers_factories.OfferLocationFactory(address=address_on_offer)
+            venue=venue, offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer)
         )
         booking_factories.BookingFactory(stock__offer=offer, user=user)
 
@@ -423,7 +423,7 @@ class GetBookingsListTest:
 
         offer = offers_factories.OfferFactory(
             venue=venue1,
-            offererAddress=offerers_factories.OfferLocationFactory(address=address_on_offer),
+            offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
             withdrawalType=offer_models.WithdrawalTypeEnum.ON_SITE,
             withdrawalDelay=60 * 30,
         )
@@ -528,7 +528,7 @@ class GetBookingsListTest:
                 name="fnac",
                 offererAddress__address__timezone=paris_timezone,
             ),
-            offererAddress=offerers_factories.OfferLocationFactory(address=address_on_offer),
+            offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
             withdrawalType=offer_models.WithdrawalTypeEnum.ON_SITE,
             withdrawalDelay=60 * 30,
         )
@@ -547,7 +547,7 @@ class GetBookingsListTest:
                 name="fnac",
                 offererAddress__address__timezone=paris_timezone,
             ),
-            stock__offer__offererAddress=offerers_factories.OfferLocationFactory(address=address_on_offer),
+            stock__offer__offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
             displayAsEnded=True,
             dateUsed=booking_start_date,
             stock__offer__subcategoryId=subcategories.ABO_LIVRE_NUMERIQUE.id,
@@ -659,7 +659,7 @@ class GetBookingsListTest:
                 name="fnac",
                 offererAddress__address__timezone=paris_timezone,
             ),
-            offererAddress=offerers_factories.OfferLocationFactory(address=address_on_offer),
+            offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
             withdrawalType=offer_models.WithdrawalTypeEnum.ON_SITE,
             withdrawalDelay=60 * 30,
         )
@@ -679,7 +679,7 @@ class GetBookingsListTest:
                 name="fnac",
                 offererAddress__address__timezone=paris_timezone,
             ),
-            stock__offer__offererAddress=offerers_factories.OfferLocationFactory(address=address_on_offer),
+            stock__offer__offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
             displayAsEnded=False,
             dateUsed=dateUsed,
             stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
@@ -769,7 +769,7 @@ class GetBookingsListTest:
                 name="fnac",
                 offererAddress__address__timezone=paris_timezone,
             ),
-            stock__offer__offererAddress=offerers_factories.OfferLocationFactory(address=address_on_offer),
+            stock__offer__offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
             displayAsEnded=True,
             stock__offer__subcategoryId=subcategories.TELECHARGEMENT_MUSIQUE.id,
             stock__offer__withdrawalType=offer_models.WithdrawalTypeEnum.ON_SITE,
@@ -848,7 +848,7 @@ class GetBookingsListTest:
                 name="fnac",
                 offererAddress__address__timezone=paris_timezone,
             ),
-            stock__offer__offererAddress=offerers_factories.OfferLocationFactory(address=address_on_offer),
+            stock__offer__offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
             displayAsEnded=True,
             stock__offer__subcategoryId=subcategories.ABO_MEDIATHEQUE.id,
             stock__offer__withdrawalType=offer_models.WithdrawalTypeEnum.ON_SITE,
