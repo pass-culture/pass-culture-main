@@ -7,8 +7,8 @@ Il faudra aussi lancer pcapi, et vérifier qu'il n'y ait pas d'erreurs lors de l
 
 ## Installation
 
-```
-npm install # Si vous ne l'avez pas encore fait
+```sh
+yarn install # Si vous ne l'avez pas encore fait
 yarn playwright install # pour installer les browsers que playwright utilise
 ```
 
@@ -16,11 +16,10 @@ yarn playwright install # pour installer les browsers que playwright utilise
 
 Les tests e2e sont lancés via les commandes:
 
-```
+```sh
 yarn test:e2e # pour le mode headed
 yarn test:e2e:ci # pour le mode headless
 yarn test:e2e:debug # pour faciliter le debug via les outils de playwright
-
 ```
 
 Par défaut, les résultats sont dans le dossier `pro/test-results`.
@@ -49,5 +48,3 @@ e2e/
 ### PCAPI remonte des erreurs liés à des librairies.
 
 Il faudra mettre à jour les dépendances côté api (Voir [la documentation](../../api/README.md#1-installation-des-dépendances)), puis redémarrer pcapi.
-
-

@@ -18,6 +18,8 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
+          cache: yarn
+          cache-dependency-path: "**/yarn.lock"
           node-version-file: "pro/package.json"
 
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@9a5f036470496551365fe9c26afbd4febe20a8cb
@@ -54,7 +56,7 @@ jobs:
         working-directory: pro
         run: |
           channel="${{ steps.pro-channel-name.outputs.channel-name }}"
-          firebase projects:list 
+          firebase projects:list
           firebase use testing
           if firebase hosting:channel:list | grep "$channel"; then
             echo "should_delete=true" >> $GITHUB_OUTPUT
