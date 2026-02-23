@@ -177,3 +177,18 @@ updates:
           - "patch"
         exclude-patterns:
           - "pass-culture/common-workflows*"
+
+  # App Engine
+  - package-ecosystem: 'pip'
+    directories:
+      - 'app-engine/image-resizing'
+    schedule:
+      # Sync with a new sherif week, starting on Thursday morning
+      interval: 'weekly'
+      day: "thursday"
+      time: '07:00'
+      timezone: "Europe/Paris"
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
+      semver-major-days: 14
