@@ -13,6 +13,8 @@ from werkzeug.exceptions import NotFound
 from pcapi.core import mails as mails_api
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import models as finance_models
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
 from pcapi.core.history import repository as history_repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
@@ -21,6 +23,7 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users.email import update as email_update
+from pcapi.core.users.sessions import disconnect_user_session
 from pcapi.models import beneficiary_import as beneficiary_import_models
 from pcapi.models import beneficiary_import_status as beneficiary_import_status_models
 from pcapi.models import db
@@ -31,6 +34,7 @@ from pcapi.routes.backoffice.pro_users import forms as pro_users_forms
 from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.tasks.batch_tasks import DeleteBatchUserAttributesRequest
 from pcapi.tasks.batch_tasks import delete_user_attributes_task
+from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from pcapi.utils.transaction_manager import on_commit
@@ -90,6 +94,7 @@ def get(user_id: int) -> utils.BackofficeResponse:
         empty_form=empty_forms.EmptyForm(),
         **user_forms.get_toggle_suspension_args(user, suspension_type=user_forms.SuspensionUserType.PRO),
         **_get_delete_kwargs(user),
+        **_get_disconnect_kwargs(user_id),
     )
 
 
@@ -299,3 +304,51 @@ def _get_delete_kwargs(user: users_models.User) -> dict:
         "delete_form": pro_users_forms.DeleteProUser(),
     }
     return kwargs
+
+
+def _get_disconnect_kwargs(user_id: int) -> dict:
+    sessions_count = (
+        db.session.query(users_models.UserSession)
+        .filter(
+            users_models.UserSession.userId == user_id,
+            users_models.UserSession.expirationDatetime > date_utils.get_naive_utc_now(),
+        )
+        .count()
+    )
+    return {
+        "can_be_disconnected": sessions_count > 0,
+        "disconnect_dst": url_for("backoffice_web.pro_user.disconnect_pro_user", user_id=user_id),
+        "disconnect_form": pro_users_forms.DisconnectProUserForm(),
+        "sessions_count": sessions_count,
+    }
+
+
+@pro_user_blueprint.route("/disconnect", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def disconnect_pro_user(user_id: int) -> utils.BackofficeResponse:
+    form = pro_users_forms.DisconnectProUserForm()
+
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash("Le formulaire n'est pas valide", "warning")
+        return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
+
+    user = users_api.get_pro_account_base_query(user_id).one_or_none()
+    if not user:
+        mark_transaction_as_invalid()
+        flash("Cet utilisateur n'a pas de compte pro ou n'existe pas", "warning")
+        redirect(url_for("backoffice_web.pro.search_pro"), code=303)
+
+    count = disconnect_user_session(user_id=user_id)
+
+    if count:
+        history_api.add_action(
+            action_type=history_models.ActionType.USER_DISCONNECTED,
+            author=current_user,
+            user=user,
+            comment=form.comment.data,
+        )
+        flash(f"Les {count} sessions ont été déconnectées" if count > 1 else "La session a été déconnectée", "success")
+    else:
+        flash("Aucune session n'a été trouvée pour être déconnectée", "warning")
+    return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)

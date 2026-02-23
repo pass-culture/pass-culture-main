@@ -1,4 +1,4 @@
-from flask_wtf import FlaskForm
+from wtforms import validators
 
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils
@@ -19,5 +19,15 @@ class DeleteProUser(utils.PCForm):
     email = fields.PCEmailField("Email")
 
 
-class CommentForm(FlaskForm):
+class CommentForm(utils.PCForm):
     comment = fields.PCCommentField("Commentaire interne pour le compte pro")
+
+
+class DisconnectProUserForm(utils.PCForm):
+    comment = fields.PCCommentField(
+        "Commentaire facultatif à propos de la déconnexion",
+        validators=[
+            validators.Optional(""),
+            validators.Length(min=1, max=1024, message="doit contenir entre %(min)d et %(max)d caractères"),
+        ],
+    )

@@ -1314,9 +1314,12 @@ class GetOffererUsersTest(GetEndpointHelper):
         uo1 = offerers_factories.UserOffererFactory(
             offerer=offerer, user=users_factories.ProFactory(firstName=None, lastName=None)
         )
+        users_factories.UserSessionFactory(user=uo1.user)
+        users_factories.UserSessionFactory(user=uo1.user)
         uo2 = offerers_factories.UserOffererFactory(
             offerer=offerer, user=users_factories.ProFactory(firstName="Jean", lastName="Bon")
         )
+        users_factories.UserSessionFactory(user=uo2.user)
         uo3 = offerers_factories.NewUserOffererFactory(offerer=offerer)
         uo4 = offerers_factories.UserOffererFactory(
             offerer=offerer, user=users_factories.ProFactory(firstName="Hang", lastName="Man", isActive=False)
@@ -1336,24 +1339,28 @@ class GetOffererUsersTest(GetEndpointHelper):
         assert rows[0]["Statut"] == "Validé"
         assert rows[0]["Prénom / Nom"] == uo1.user.full_name
         assert rows[0]["Email"] == uo1.user.email
+        assert rows[0]["Sessions actives"] == "2"
         assert rows[0]["Invitation"] == ""
 
         assert rows[1]["ID"] == str(uo2.user.id)
         assert rows[1]["Statut"] == "Validé"
         assert rows[1]["Prénom / Nom"] == uo2.user.full_name
         assert rows[1]["Email"] == uo2.user.email
+        assert rows[1]["Sessions actives"] == "1"
         assert rows[1]["Invitation"] == ""
 
         assert rows[2]["ID"] == str(uo3.user.id)
         assert rows[2]["Statut"] == "Nouveau"
         assert rows[2]["Prénom / Nom"] == uo3.user.full_name
         assert rows[2]["Email"] == uo3.user.email
+        assert rows[2]["Sessions actives"] == "0"
         assert rows[2]["Invitation"] == ""
 
         assert rows[3]["ID"] == str(uo4.user.id)
         assert rows[3]["Statut"] == "Validé Suspendu"
         assert rows[3]["Prénom / Nom"] == uo4.user.full_name
         assert rows[3]["Email"] == uo4.user.email
+        assert rows[3]["Sessions actives"] == "0"
         assert rows[3]["Invitation"] == ""
 
     @pytest.mark.parametrize(

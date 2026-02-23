@@ -39,8 +39,8 @@ class GetProUserTest(GetEndpointHelper):
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # session + pro user data
-    expected_num_queries = 2
+    # session + pro user data + count active sessions
+    expected_num_queries = 3
 
     class EmailValidationButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
@@ -126,6 +126,23 @@ class GetProUserTest(GetEndpointHelper):
             user = offerers_factories.UserOffererFactory(user__isActive=False).user
             return url_for("backoffice_web.pro_user.get", user_id=user.id)
 
+    class DisconnectButtonTest(button_helpers.ButtonHelper):
+        needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+        button_label = "Déconnecter les sessions"
+
+        @property
+        def path(self):
+            user = offerers_factories.UserOffererFactory(user__isActive=False).user
+            users_factories.UserSessionFactory(user=user)
+            return url_for("backoffice_web.pro_user.get", user_id=user.id)
+
+        def test_disconnect_button_absent_when_user_is_not_connected(self, authenticated_client):
+            user = offerers_factories.UserOffererFactory().user
+
+            response = authenticated_client.get(url_for("backoffice_web.pro_user.get", user_id=user.id))
+
+            assert "Déconnecter les sessions" not in response.text
+
     def test_get_pro_user(self, authenticated_client):
         user = offerers_factories.UserOffererFactory(user__phoneNumber="+33638656565", user__postalCode="29000").user
         url = url_for(self.endpoint, user_id=user.id)
@@ -155,7 +172,7 @@ class GetProUserTest(GetEndpointHelper):
         user = users_factories.BeneficiaryFactory()
         url = url_for(self.endpoint, user_id=user.id)
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries - 1):  # no session check if no user
             response = authenticated_client.get(url)
             assert response.status_code == 303
 
@@ -693,3 +710,59 @@ class DeleteProUserTest(PostEndpointHelper):
             .userId
             is None
         )
+
+
+class DisconnectProUserTest(PostEndpointHelper):
+    endpoint = "backoffice_web.pro_user.disconnect_pro_user"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+    def test_disconnect_user(self, authenticated_client):
+        old_session_count = db.session.query(users_models.UserSession).count()
+        user = offerers_factories.UserOffererFactory(user__isActive=False).user
+        users_factories.UserSessionFactory(user=user)
+        user_id = user.id
+
+        db.session.flush()
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user_id)
+
+        assert response.status_code == 303
+        assert db.session.query(users_models.UserSession).count() == old_session_count
+
+        action_history = (
+            db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.id.desc()).first()
+        )
+        assert action_history.userId == user_id
+        assert action_history.actionType == history_models.ActionType.USER_DISCONNECTED
+
+    def test_disconnect_user_with_comment(self, authenticated_client, legit_user):
+        old_session_count = db.session.query(users_models.UserSession).count()
+        user = offerers_factories.UserOffererFactory(user__isActive=False).user
+        users_factories.UserSessionFactory(user=user)
+        user_id = user.id
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user_id, form={"comment": "because"})
+
+        assert response.status_code == 303
+        assert db.session.query(users_models.UserSession).count() == old_session_count
+
+        action_history = (
+            db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.id.desc()).first()
+        )
+        assert action_history.userId == user_id
+        assert action_history.actionType == history_models.ActionType.USER_DISCONNECTED
+        assert action_history.comment == "because"
+        assert action_history.authorUser == legit_user
+
+    def test_no_sessions(self, authenticated_client):
+        old_session_count = db.session.query(users_models.UserSession).count()
+        user = offerers_factories.UserOffererFactory(user__isActive=False).user
+        user_id = user.id
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user_id)
+
+        assert response.status_code == 303
+        assert db.session.query(users_models.UserSession).count() == old_session_count
+
+        assert db.session.query(history_models.ActionHistory).count() == 0

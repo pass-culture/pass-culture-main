@@ -16,6 +16,7 @@
       <th scope="col">Statut</th>
       <th scope="col">Prénom / Nom</th>
       <th scope="col">Email</th>
+      <th scope="col">Sessions actives</th>
       <th scope="col">Invitation</th>
       {% if has_permission("CONNECT_AS_PRO") %}<th scope="col">Connect as</th>{% endif %}
     </tr>
@@ -98,6 +99,7 @@
         <td class="fw-bolder">
           {{ row.email | empty_string_if_null }}<span class="ms-1">{{ clipboard.copy_to_clipboard(row.email, "Copier l'email du compte") }}</span>
         </td>
+        <td class="fw-bolder">{{ row.sessions_count }}</td>
         <td class="fw-bolder">
           {% set offerer_invitation = row.OffererInvitation %}
           {% if offerer_invitation %}

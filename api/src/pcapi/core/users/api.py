@@ -44,6 +44,7 @@ from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.users import constants
 from pcapi.core.users import exceptions
 from pcapi.core.users import models
+from pcapi.core.users import sessions
 from pcapi.core.users.email.update import check_email_address_does_not_exist
 from pcapi.core.users.password_utils import check_password_strength
 from pcapi.core.users.password_utils import random_password
@@ -410,8 +411,7 @@ def suspend_account(
             **(action_extra_data or {}),
         )
 
-        for session in db.session.query(models.UserSession).filter_by(userId=user.id):
-            db.session.delete(session)
+        sessions.disconnect_user_session(user_id=user.id)
 
         if user.backoffice_profile:
             user.backoffice_profile.roles = []
