@@ -1,9 +1,7 @@
-name: "Run actionlint"
+name: "[on_workflow] Run actionlint"
 
 on:
-    push:
-        branches:
-            - actionlint
+  workflow_call:
 
 permissions: write-all
 
@@ -11,7 +9,7 @@ jobs:
   actionlint:
     runs-on: ubuntu-24.04
     steps:
-      - name: setup
+      - name: Checkout
         uses: actions/checkout@v6
 
       - uses: pass-culture/common-workflows/actions/actionlint-check@f4db7db202ff3cddc97fcbf08c3821ebc78b10fb

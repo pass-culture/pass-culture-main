@@ -33,7 +33,7 @@ jobs:
     name: "Run actionlint"
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
+      - uses: ./.github/workflows/dev_on_workflow_actionlint.yml
 
   pcapi-init-job:
     name: "Init job"
