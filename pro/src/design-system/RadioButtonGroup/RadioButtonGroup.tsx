@@ -115,7 +115,6 @@ export const RadioButtonGroup = ({
             key={optionProps.value}
           >
             <RadioButton
-              {...optionProps}
               name={name}
               variant={variant}
               sizing={sizing}
@@ -124,6 +123,7 @@ export const RadioButtonGroup = ({
               onChange={onChange}
               onBlur={onBlur}
               asset={asset}
+              {...optionProps}
               {...(onChange && {
                 checked: checkedOption === optionProps.value,
               })}
