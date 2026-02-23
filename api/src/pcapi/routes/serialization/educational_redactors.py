@@ -1,30 +1,25 @@
-from typing import TYPE_CHECKING
+import typing
 
-import pydantic.v1 as pydantic_v1
+import pydantic as pydantic_v2
+from pydantic.types import StringConstraints
 
-from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import to_camel
-
-
-class EducationalRedactorQueryModel(BaseModel):
-    if TYPE_CHECKING:
-        uai: str
-        candidate: str
-    else:
-        uai: pydantic_v1.constr(strip_whitespace=True, min_length=3)
-        candidate: pydantic_v1.constr(strip_whitespace=True, min_length=3)
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+from pcapi.routes.serialization import HttpBodyModel
+from pcapi.routes.serialization import HttpQueryParamsModel
 
 
-class EducationalRedactor(BaseModel):
+Constraints = StringConstraints(min_length=3, strip_whitespace=True)
+
+
+class EducationalRedactorQueryModel(HttpQueryParamsModel):
+    uai: typing.Annotated[str, Constraints]
+    candidate: typing.Annotated[str, Constraints]
+
+
+class EducationalRedactor(HttpBodyModel):
     name: str
     surname: str
-    gender: str | None
     email: str
 
 
-class EducationalRedactors(BaseModel):
-    __root__: list[EducationalRedactor]
+class EducationalRedactors(pydantic_v2.RootModel):
+    root: list[EducationalRedactor]

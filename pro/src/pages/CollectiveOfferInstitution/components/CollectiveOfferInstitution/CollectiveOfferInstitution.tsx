@@ -74,9 +74,8 @@ interface InstitutionOption extends SelectOption {
 }
 
 interface TeacherOption extends SelectOption {
-  surname?: string | null
+  surname: string | null
   name: string
-  gender?: string | null
   email: string
 }
 
@@ -317,17 +316,11 @@ export const CollectiveOfferInstitutionScreen = ({
       )
       setTeachersOptions(
         payload.map(
-          ({
-            name,
-            surname,
-            gender,
-            email,
-          }: EducationalRedactor): TeacherOption => ({
+          ({ name, surname, email }: EducationalRedactor): TeacherOption => ({
             label: `${surname} ${name}`.trim(),
             value: email,
             surname,
             name,
-            gender,
             email,
           })
         )

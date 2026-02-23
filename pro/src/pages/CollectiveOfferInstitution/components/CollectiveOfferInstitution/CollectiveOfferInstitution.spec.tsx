@@ -222,7 +222,6 @@ describe('CollectiveOfferInstitution', () => {
       .mockResolvedValueOnce([
         {
           email: 'compte.test@education.gouv.fr',
-          gender: 'Mr.',
           name: 'REDA',
           surname: 'KHTEUR',
         },
@@ -336,7 +335,6 @@ describe('CollectiveOfferInstitution', () => {
       .mockResolvedValueOnce([
         {
           email: 'compte.test@education.gouv.fr',
-          gender: 'Mr.',
           name: 'REDA',
           surname: 'KHTEUR',
         },
@@ -370,7 +368,6 @@ describe('CollectiveOfferInstitution', () => {
       .mockResolvedValueOnce([
         {
           email: 'compte.test@education.gouv.fr',
-          gender: 'Mr.',
           name: 'REDA',
           surname: 'KHTEUR',
         },
@@ -444,7 +441,6 @@ describe('CollectiveOfferInstitution', () => {
         .mockResolvedValueOnce([
           {
             email: 'compte.test@education.gouv.fr',
-            gender: 'Mr.',
             name: 'REDA',
             surname: 'KHTEUR',
           },
@@ -632,7 +628,6 @@ describe('CollectiveOfferInstitution', () => {
     ).mockResolvedValueOnce([
       {
         email: 'compte.test@education.gouv.fr',
-        gender: 'Mr.',
         name: 'REDA',
         surname: 'KHTEUR',
       },
@@ -709,7 +704,6 @@ describe('CollectiveOfferInstitution', () => {
         .mockResolvedValueOnce([
           {
             email: 'compte.test@education.gouv.fr',
-            gender: 'Mr.',
             name: 'REDA',
             surname: 'KHTEUR',
           },
