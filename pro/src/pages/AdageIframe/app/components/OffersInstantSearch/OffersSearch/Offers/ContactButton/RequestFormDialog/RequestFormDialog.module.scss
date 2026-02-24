@@ -49,11 +49,11 @@
       margin-left: var(--size-spacing-l);
       margin-top: var(--size-spacing-l);
 
-      li {
+      &-item {
         padding: 0 0 var(--size-spacing-s) var(--size-spacing-s);
       }
 
-      li::marker {
+      &-item::marker {
         font-size: rem.torem(8px);
       }
     }
@@ -61,6 +61,14 @@
     &-text {
       &-value {
         color: var(--color-text-brand-primary);
+      }
+
+      &-mail {
+        @include fonts.body-accent;
+
+        &:hover {
+          text-decoration: underline;
+        }
       }
 
       &-contact {
@@ -92,12 +100,4 @@
   margin: var(--size-spacing-l) 0 0 0;
   background-image: none;
   background-color: var(--separator-color-subtle);
-}
-
-a[href^="mailto:"] {
-  font-family: var(--font-semi-bold-family);
-
-  &:hover {
-    text-decoration: underline;
-  }
 }

@@ -1,5 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Dialog from '@radix-ui/react-dialog'
+import classNames from 'classnames'
 import { useForm } from 'react-hook-form'
 
 import { AdageFrontRoles } from '@/apiClient/adage'
@@ -170,11 +171,14 @@ export const RequestFormDialog = ({
       <span>Il vous propose de le faire :</span>
       <ul className={styles['form-description-list']}>
         {contactEmail && (
-          <li>
+          <li className={styles['form-description-list-item']}>
             par mail :{' '}
             <a
               href={`mailto:${contactEmail}`}
-              className={styles['form-description-text-value']}
+              className={classNames(
+                styles['form-description-text-value'],
+                styles['form-description-text-mail']
+              )}
               target="_blank"
               rel="noreferrer"
             >
@@ -183,7 +187,7 @@ export const RequestFormDialog = ({
           </li>
         )}
         {contactPhone && (
-          <li>
+          <li className={styles['form-description-list-item']}>
             par téléphone :{' '}
             <span className={styles['form-description-text-value']}>
               {contactPhone}
@@ -191,7 +195,7 @@ export const RequestFormDialog = ({
           </li>
         )}
         {isCustomForm && (
-          <li>
+          <li className={styles['form-description-list-item']}>
             <div className={styles['form-description-link']}>
               <i>via</i> son formulaire :
               <div className={styles['form-description-link-text']}>
@@ -212,7 +216,7 @@ export const RequestFormDialog = ({
 
         {isDefaultForm &&
           (userRole === AdageFrontRoles.REDACTOR || isPreview) && (
-            <li>
+            <li className={styles['form-description-list-item']}>
               en renseignant{' '}
               <span className={styles['form-description-text-value']}>
                 le formulaire ci-dessous

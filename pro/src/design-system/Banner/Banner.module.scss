@@ -88,27 +88,6 @@
   gap: var(--size-spacing-s);
 }
 
-.link {
-  @include fonts.body-accent-xs;
-
-  display: flex;
-  align-items: center;
-
-  svg {
-    height: rem.torem(16px);
-    width: rem.torem(16px);
-  }
-
-  &-large {
-    @include fonts.button;
-
-    svg {
-      height: rem.torem(20px);
-      width: rem.torem(20px);
-    }
-  }
-}
-
 .close-button {
   height: fit-content;
   border: none;
@@ -121,11 +100,6 @@
     @include outline.focus-outline(rem.torem(4px));
 
     border-radius: var(--size-border-radius-s);
-  }
-
-  svg {
-    width: rem.torem(24px);
-    height: rem.torem(24px);
   }
 }
 

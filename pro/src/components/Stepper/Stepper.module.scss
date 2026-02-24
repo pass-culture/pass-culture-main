@@ -101,11 +101,9 @@ $number-size: rem.torem(30px);
 
       .label {
         .inner {
-          span {
-            @include outline.focus-outline(rem.torem(4px));
+          @include outline.focus-outline(rem.torem(4px));
 
-            border-radius: var(--size-border-radius-s);
-          }
+          border-radius: var(--size-border-radius-s);
         }
       }
     }

@@ -22,9 +22,13 @@ export const AddActivationCodeForm = ({
     <>
       {errorMessage ? (
         <div className={styles['activation-codes-errors']}>
-          <p>Une erreur s’est produite lors de l’import de votre fichier.</p>
-          <p>{errorMessage}</p>
-          <p>Veuillez réessayer.</p>
+          <p className={styles['activation-codes-errors-p']}>
+            Une erreur s’est produite lors de l’import de votre fichier.
+          </p>
+          <p className={styles['activation-codes-errors-p']}>{errorMessage}</p>
+          <p className={styles['activation-codes-errors-p']}>
+            Veuillez réessayer.
+          </p>
         </div>
       ) : (
         <ActivationCodesUploadInformationDescription />

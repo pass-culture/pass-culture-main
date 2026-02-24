@@ -80,12 +80,7 @@ export const Banner = ({
             {actions.length > 0 && (
               <ul className={styles['actions-list']}>
                 {actions.map((a) => (
-                  <li
-                    key={a.label}
-                    className={cx(styles.link, {
-                      [styles['link-large']]: size === 'large',
-                    })}
-                  >
+                  <li key={a.label}>
                     {a.type === 'link' ? (
                       <Button
                         as="a"
@@ -135,7 +130,7 @@ export const Banner = ({
               onClick={onClose}
               aria-label="Fermer la bannière d’information"
             >
-              <SvgIcon src={closeIcon} width="16" />
+              <SvgIcon src={closeIcon} width="24" />
             </button>
           )}
         </div>
