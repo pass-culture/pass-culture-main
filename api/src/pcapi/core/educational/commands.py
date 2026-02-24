@@ -173,7 +173,7 @@ def synchronize_adage_cultural_partners(apply: bool = False) -> None:
     # current sync is (synchronize_venues_from_adage_cultural_partners + synchronize_offerers_from_adage_cultural_partners)
 
     active_offerer_sirens = db.session.query(offerers_models.Offerer.siren).filter(
-        models.Offerer.allowedOnAdage.is_(True)
+        offerers_models.Offerer.allowedOnAdage.is_(True)
     )
     sirens = ",".join(siren for (siren,) in active_offerer_sirens)
 
@@ -217,7 +217,7 @@ def synchronize_offerers_from_adage_cultural_partners(with_timestamp: bool = Fal
 
     # compare the current Offerer allowedOnAdage status with the result of synchronize_adage_cultural_partners stored in redis
     active_offerer_sirens = db.session.query(offerers_models.Offerer.siren).filter(
-        models.Offerer.allowedOnAdage.is_(True)
+        offerers_models.Offerer.allowedOnAdage.is_(True)
     )
     sirens_current_sync = {siren for (siren,) in active_offerer_sirens}
 
