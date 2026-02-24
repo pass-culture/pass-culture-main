@@ -16,12 +16,6 @@
     gap: var(--size-spacing-s);
     align-items: unset;
   }
-
-  span {
-    height: rem.torem(24px);
-    padding: rem.torem(0) rem.torem(8px);
-    justify-content: center;
-  }
 }
 
 .header-description {
