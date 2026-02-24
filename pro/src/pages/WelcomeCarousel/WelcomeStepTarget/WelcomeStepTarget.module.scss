@@ -13,7 +13,7 @@
 .way-item {
   @include fonts.title4;
 
-  > em {
+  .emphasis {
     @include fonts.title4;
 
     z-index: 0;
