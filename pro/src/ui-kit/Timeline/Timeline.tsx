@@ -58,7 +58,7 @@ const getIconComponent = (type: TimelineStepType) => {
         <SvgIcon
           src={fullValidateIcon}
           alt="Étape en succès"
-          className={cn(styles.icon, styles['icon-success'])}
+          className={styles['icon-success']}
         />
       )
     case TimelineStepType.ERROR:
@@ -66,7 +66,7 @@ const getIconComponent = (type: TimelineStepType) => {
         <SvgIcon
           src={fullClearIcon}
           alt="Étape en erreur"
-          className={cn(styles.icon, styles['icon-error'])}
+          className={styles['icon-error']}
         />
       )
     case TimelineStepType.WAITING:
@@ -74,7 +74,7 @@ const getIconComponent = (type: TimelineStepType) => {
         <SvgIcon
           src={fullEllipseIcon}
           alt="Étape en attente"
-          className={cn(styles.icon, styles['icon-waiting'])}
+          className={styles['icon-waiting']}
         />
       )
     case TimelineStepType.DISABLED:
@@ -82,7 +82,7 @@ const getIconComponent = (type: TimelineStepType) => {
         <SvgIcon
           src={fullEllipseIcon}
           alt="Étape non disponible"
-          className={cn(styles.icon, styles['icon-disabled'])}
+          className={styles['icon-disabled']}
         />
       )
     case TimelineStepType.CANCELLED:
@@ -90,14 +90,14 @@ const getIconComponent = (type: TimelineStepType) => {
         <SvgIcon
           src={fullClearIcon}
           alt="Étape annulée"
-          className={cn(styles.icon, styles['icon-error'])}
+          className={styles['icon-error']}
         />
       )
     case TimelineStepType.REFUSED:
       return (
         <SvgIcon
           src={strokeWrongIcon}
-          className={cn(styles.icon, styles['icon-wrong'])}
+          className={styles['icon-wrong']}
           alt="Étape refusée"
         />
       )
