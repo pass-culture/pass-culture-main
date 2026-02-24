@@ -124,7 +124,7 @@ export const UserReviewDialog = ({
               className={styles['dialog-form']}
               onSubmit={form.handleSubmit((values) => onSubmitReview(values))}
             >
-              <div className={styles['dialog-form-content']}>
+              <div>
                 <ScrollToFirstHookFormErrorAfterSubmit />
                 <IconRadioGroup
                   name="userSatisfaction"
@@ -136,23 +136,25 @@ export const UserReviewDialog = ({
                   value={form.watch('userSatisfaction')}
                   onChange={(e) => form.setValue('userSatisfaction', e)}
                 />
-
-                <TextArea
-                  name="userComment"
-                  value={form.watch('userComment')}
-                  onChange={(e) => form.setValue('userComment', e.target.value)}
-                  label={
-                    <>
-                      Pourriez-vous préciser ? Nous lisons tous les
-                      commentaires. <span aria-hidden="true">🙂</span>
-                    </>
-                  }
-                  maxLength={500}
-                  requiredIndicator="explicit"
-                  required
-                  error={textareaError}
-                  className={styles['text-area-container']}
-                />
+                <div className={styles['text-area-container']}>
+                  <TextArea
+                    name="userComment"
+                    value={form.watch('userComment')}
+                    onChange={(e) =>
+                      form.setValue('userComment', e.target.value)
+                    }
+                    label={
+                      <>
+                        Pourriez-vous préciser ? Nous lisons tous les
+                        commentaires. <span aria-hidden="true">🙂</span>
+                      </>
+                    }
+                    maxLength={500}
+                    requiredIndicator="explicit"
+                    required
+                    error={textareaError}
+                  />
+                </div>
               </div>
 
               <DialogBuilder.Footer>
