@@ -51,7 +51,7 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
         .all()
     )
 
-    logger.info("check_active_offerers will check %s offerers in cloud tasks today", len(offerers))
+    logger.info("check_active_offerers will check %s offerers in celery tasks today", len(offerers))
 
     for offerer in offerers:
         payload = offerers_tasks.CheckOffererSirenRequest(
@@ -59,7 +59,7 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
             close_or_tag_when_inactive=not dry_run,
             must_fill_in_codir_report=codir_report_is_enabled,
         )
-        offerers_tasks.check_offerer_siren_task(payload)
+        offerers_tasks.check_offerer_siren_task.delay(payload.model_dump())
 
 
 @blueprint.cli.command("check_closed_offerers")
