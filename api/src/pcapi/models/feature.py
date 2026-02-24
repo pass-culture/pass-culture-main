@@ -83,7 +83,6 @@ class FeatureToggle(enum.Enum):
         "Active le Questionnaire des pratiques initiales natif (non TypeForm) sur l'app native et décli web"
     )
     ENABLE_OFFERS_AUTO_CLEANUP = "Active la suppression automatique des offres obsolètes"
-    ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"
     ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
     ENABLE_SPECIAL_EVENTS_SYNC = "Activer la synchronisation des réponses aux opérations spéciales"
     ENABLE_UBBLE = "Active la vérification d'identité par Ubble"
@@ -217,7 +216,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
     FeatureToggle.ENABLE_MOVIE_FESTIVAL_RATE,
     FeatureToggle.ENABLE_OFFERS_AUTO_CLEANUP,
-    FeatureToggle.ENABLE_PHONE_VALIDATION,
     FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,
     FeatureToggle.ENABLE_VIRUSTOTAL,
     FeatureToggle.ENABLE_ZENDESK_SELL_CREATION,

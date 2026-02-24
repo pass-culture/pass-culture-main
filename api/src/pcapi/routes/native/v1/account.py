@@ -1,10 +1,8 @@
 import logging
 
-import flask
 import pydantic
 import pydantic.v1 as pydantic_v1
 import sqlalchemy.orm as sa_orm
-from flask import current_app as app
 from flask_login import current_user
 
 import pcapi.core.bookings.exceptions as bookings_exceptions
@@ -12,14 +10,10 @@ import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.users.models as users_models
 from pcapi.connectors import api_recaptcha
 from pcapi.core import token as token_utils
-from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.mails.transactional.users.pre_anonymize_beneficiary import send_beneficiary_pre_anonymization_email
-from pcapi.core.subscription import api as subscription_api
-from pcapi.core.subscription import fraud_check_api
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.phone_validation import api as phone_validation_api
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
-from pcapi.core.subscription.phone_validation import sending_limit
 from pcapi.core.users import api
 from pcapi.core.users import constants
 from pcapi.core.users import email as email_api
@@ -345,108 +339,6 @@ def email_validation_remaining_resends(email: str) -> serializers.EmailValidatio
 
     return serializers.EmailValidationRemainingResendsResponse(
         remainingResends=remaining_resends, counterResetDatetime=expiration_time
-    )
-
-
-def _log_phone_validation_code_failure(phone_number: str, code: str) -> None:
-    logger.warning("Failed to send phone validation code", extra={"number": phone_number, "code": code})
-
-
-@blueprint.native_route("/send_phone_validation_code", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_success_status=204)
-@authenticated_and_active_user_required
-def send_phone_validation_code(body: serializers.SendPhoneValidationRequest) -> None:
-    try:
-        phone_validation_api.send_phone_validation_code(current_user, body.phoneNumber)
-
-    except phone_validation_exceptions.SMSSendingLimitReached:
-        error = {"code": "TOO_MANY_SMS_SENT", "message": "Nombre de tentatives maximal dépassé"}
-        _log_phone_validation_code_failure(body.phoneNumber, error["code"])
-        raise api_errors.ApiErrors(error, status_code=400)
-
-    except phone_validation_exceptions.UserPhoneNumberAlreadyValidated:
-        error = {"code": "PHONE_NUMBER_ALREADY_VALIDATED", "message": "Le numéro de téléphone est déjà validé"}
-        _log_phone_validation_code_failure(body.phoneNumber, error["code"])
-        raise api_errors.ApiErrors(error, status_code=400)
-
-    except phone_validation_exceptions.InvalidCountryCode:
-        error = {"code": "INVALID_COUNTRY_CODE", "message": "L'indicatif téléphonique n'est pas accepté"}
-        _log_phone_validation_code_failure(body.phoneNumber, error["code"])
-        raise api_errors.ApiErrors(error, status_code=400)
-
-    except phone_validation_exceptions.InvalidPhoneNumber:
-        error = {"code": "INVALID_PHONE_NUMBER", "message": "Le numéro de téléphone est invalide"}
-        _log_phone_validation_code_failure(body.phoneNumber, error["code"])
-        raise api_errors.ApiErrors(error, status_code=400)
-
-    except phone_validation_exceptions.PhoneAlreadyExists:
-        error = {
-            "code": "PHONE_ALREADY_EXISTS",
-            "message": "Un compte est déjà associé à ce numéro. Renseigne un autre numéro ou connecte-toi au compte existant.",
-        }
-        _log_phone_validation_code_failure(body.phoneNumber, error["code"])
-        raise api_errors.ApiErrors(error, status_code=400)
-
-    except phone_validation_exceptions.PhoneVerificationException:
-        error = {"code": "CODE_SENDING_FAILURE", "message": "L'envoi du code a échoué"}
-        _log_phone_validation_code_failure(body.phoneNumber, error["code"])
-        raise api_errors.ApiErrors(
-            {"message": "L'envoi du code a échoué", "code": "CODE_SENDING_FAILURE"}, status_code=400
-        )
-
-
-@blueprint.native_route("/validate_phone_number", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_success_status=204, raw_response=True)
-@authenticated_and_active_user_required
-@atomic()
-def validate_phone_number(body: serializers.ValidatePhoneNumberRequest) -> flask.Response:
-    try:
-        phone_validation_api.validate_phone_number(current_user, body.code)
-    except phone_validation_exceptions.PhoneValidationAttemptsLimitReached:
-        raise api_errors.ApiErrors(
-            {"message": "Le nombre de tentatives maximal est dépassé", "code": "TOO_MANY_VALIDATION_ATTEMPTS"},
-            status_code=400,
-        )
-    except phone_validation_exceptions.NotValidCode as error:
-        if error.remaining_attempts == 0:
-            # when failing the phone validation, we store a new fraud check that should not be rolled back by atomic
-            # to avoid rolling back, we manually return a raw 400 response instead of raising an ApiError
-            fraud_check_api.handle_phone_validation_attempts_limit_reached(current_user, error.attempts)
-            return flask.make_response(
-                {"message": "Le nombre de tentatives maximal est dépassé", "code": "TOO_MANY_VALIDATION_ATTEMPTS"},
-                400,
-            )
-        raise api_errors.ApiErrors(
-            {
-                "message": f"Le code est invalide. Saisis le dernier code reçu par SMS. Il te reste {error.remaining_attempts} tentative{'s' if error.remaining_attempts and error.remaining_attempts > 1 else ''}.",
-                "code": "INVALID_VALIDATION_CODE",
-            },
-            status_code=400,
-        )
-    except phone_validation_exceptions.InvalidPhoneNumber:
-        raise api_errors.ApiErrors(
-            {"message": "Le numéro de téléphone est invalide", "code": "INVALID_PHONE_NUMBER"}, status_code=400
-        )
-    except phone_validation_exceptions.PhoneVerificationException:
-        raise api_errors.ApiErrors(
-            {"message": "L'envoi du code a échoué", "code": "CODE_SENDING_FAILURE"}, status_code=400
-        )
-
-    is_activated = subscription_api.activate_beneficiary_if_no_missing_step(current_user)
-    if not is_activated:
-        external_attributes_api.update_external_user(current_user)
-
-    return flask.make_response("", 204)
-
-
-@blueprint.native_route("/phone_validation/remaining_attempts", methods=["GET"])
-@spectree_serialize(api=blueprint.api, response_model=serializers.PhoneValidationRemainingAttemptsRequest)
-@authenticated_and_active_user_required
-def phone_validation_remaining_attempts() -> serializers.PhoneValidationRemainingAttemptsRequest:
-    remaining_attempts = sending_limit.get_remaining_sms_sending_attempts(app.redis_client, current_user)
-    expiration_time = sending_limit.get_attempt_limitation_expiration_time(app.redis_client, current_user)
-    return serializers.PhoneValidationRemainingAttemptsRequest(
-        remainingAttempts=remaining_attempts, counterResetDatetime=expiration_time
     )
 
 
