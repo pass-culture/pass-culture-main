@@ -186,7 +186,7 @@ export function StocksCalendarTable({
         }
 
         return (
-          <div className={styles['tbody-td-actions']}>
+          <div className={styles['table-actions']}>
             {canEditStock && (
               <Button
                 variant={ButtonVariant.SECONDARY}
@@ -223,7 +223,7 @@ export function StocksCalendarTable({
   }
 
   return (
-    <div className={styles['container']}>
+    <>
       {/* The dialog must be outside of the table rows, otherwise radix created a dialog root for each line */}
       <DialogBuilder
         title="Modifier la date"
@@ -307,6 +307,6 @@ export function StocksCalendarTable({
           </>
         ) : null}
       </ConfirmDialog>
-    </div>
+    </>
   )
 }
