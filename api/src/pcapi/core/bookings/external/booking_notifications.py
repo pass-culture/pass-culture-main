@@ -73,7 +73,11 @@ def send_today_events_notifications_overseas(utc_mean_offset: int, departments: 
 
     for stock_id in stock_ids:
         try:
-            send_today_stock_notification.delay(stock_id)
+            if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_SEND_TRANSACTIONAL_NOTIFICATION.is_active():
+                payload = bookings_tasks.SendTodayStockNotificationPayload(stock_id=stock_id)
+                bookings_tasks.send_today_stock_notification.delay(payload.model_dump())
+            else:
+                send_today_stock_notification.delay(stock_id)
         except Exception:
             logger.exception("Could not send today stock notification", extra={"stock": stock_id})
 

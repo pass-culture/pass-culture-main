@@ -1554,6 +1554,108 @@ class CancelByOffererTest:
         assert "Confirmation de votre annulation de réservation " in mails_testing.outbox[1]["subject"]
 
 
+@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_SEND_TRANSACTIONAL_NOTIFICATION=True)
+@pytest.mark.usefixtures("db_session")
+class CancelByOffererWithFFTest:
+    def test_cancel(self):
+        booking = bookings_factories.BookingFactory()
+        booking_id = booking.id
+
+        api.cancel_booking_by_offerer(booking)
+
+        # cancellation can trigger more than one request to Batch
+        assert len(push_testing.requests) >= 1
+
+        booking = db.session.query(models.Booking).filter_by(id=booking_id).one()
+        assert booking.status is BookingStatus.CANCELLED
+        assert booking.cancellationReason == BookingCancellationReasons.OFFERER
+
+        cancel_notification_request = next(
+            req for req in push_testing.requests if req.get("group_id") == "Cancel_booking"
+        )
+        assert cancel_notification_request == {
+            "group_id": "Cancel_booking",
+            "message": {
+                "body": f"""Ta commande "{booking.stock.offer.name}" a été annulée par l\'offreur.""",
+                "title": "Commande annulée",
+            },
+            "user_ids": [booking.userId],
+            "can_be_asynchronously_retried": False,
+        }
+
+    def test_raise_if_already_cancelled(self):
+        booking = bookings_factories.CancelledBookingFactory(cancellationReason=BookingCancellationReasons.BENEFICIARY)
+        with pytest.raises(exceptions.BookingIsAlreadyCancelled):
+            api.cancel_booking_by_offerer(booking)
+        assert booking.status is BookingStatus.CANCELLED
+        assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY  # unchanged
+
+        assert not push_testing.requests
+
+    def test_raise_if_already_used(self):
+        booking = bookings_factories.UsedBookingFactory()
+        with pytest.raises(exceptions.BookingIsAlreadyUsed):
+            api.cancel_booking_by_offerer(booking)
+        assert booking.status is BookingStatus.USED
+        assert not booking.cancellationReason
+
+        assert not push_testing.requests
+
+    def test_cancel_all_bookings_from_stock(self):
+        stock = offers_factories.StockFactory(dnBookedQuantity=1)
+        booking_1 = bookings_factories.BookingFactory(stock=stock)
+        booking_2 = bookings_factories.BookingFactory(stock=stock)
+        used_booking = bookings_factories.UsedBookingFactory(stock=stock)
+        cancelled_booking = bookings_factories.CancelledBookingFactory(stock=stock)
+
+        api.cancel_bookings_from_stock_by_offerer(stock)
+
+        # cancellation can trigger more than one request to Batch
+        assert len(push_testing.requests) >= 1
+
+        assert db.session.query(models.Booking).filter().count() == 4
+        assert db.session.query(models.Booking).filter(models.Booking.status == BookingStatus.CANCELLED).count() == 3
+        assert db.session.query(models.Booking).filter(models.Booking.is_used_or_reimbursed.is_(True)).count() == 1
+        assert booking_1.status is BookingStatus.CANCELLED
+        assert booking_1.cancellationReason == BookingCancellationReasons.OFFERER
+        assert booking_2.status is BookingStatus.CANCELLED
+        assert booking_2.cancellationReason == BookingCancellationReasons.OFFERER
+        assert used_booking.status is not BookingStatus.CANCELLED
+        assert not used_booking.cancellationReason
+        assert cancelled_booking.status is BookingStatus.CANCELLED
+        assert cancelled_booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
+
+    @patch("pcapi.core.bookings.api.external_bookings_api.cancel_event_ticket")
+    def test_cancel_all_bookings_from_stock_dont_call_external_api(self, mock_cancel_event_ticket):
+        public_api_provider = providers_factories.PublicApiProviderFactory()
+        event_offer = offers_factories.EventOfferFactory(lastProvider=public_api_provider)
+        stock = offers_factories.StockFactory(dnBookedQuantity=1, offer=event_offer)
+        booking = bookings_factories.BookingFactory(stock=stock, status=models.BookingStatus.USED)
+        bookings_factories.ExternalBookingFactory(bookingId=booking.id)
+
+        api.cancel_bookings_from_stock_by_offerer(stock)
+
+        # cancellation can trigger more than one request to Batch
+        assert len(push_testing.requests) >= 1
+
+        mock_cancel_event_ticket.assert_not_called()
+
+    def test_send_email_when_cancelled_by_offerer(self):
+        booking = bookings_factories.BookingFactory(stock__offer__bookingEmail="test@sent")
+        booking_id = booking.id
+
+        api.cancel_booking_by_offerer(booking)
+
+        booking = db.session.query(models.Booking).filter_by(id=booking_id).one()
+        assert len(mails_testing.outbox) == 2
+        assert mails_testing.outbox[0]["To"] == booking.email
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
+            TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value
+        )
+        assert mails_testing.outbox[1]["To"] == "test@sent"
+        assert "Confirmation de votre annulation de réservation " in mails_testing.outbox[1]["subject"]
+
+
 @pytest.mark.usefixtures("db_session")
 class CancelForFraudTest:
     def test_cancel(self):
