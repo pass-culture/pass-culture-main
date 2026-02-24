@@ -85,7 +85,7 @@
   margin-top: var(--size-spacing-s);
   display: flex;
   flex-direction: column;
-  gap: var(--size-spacing-s);
+  gap: var(--size-spacing-xs);
 }
 
 .close-button {
@@ -95,6 +95,10 @@
   cursor: pointer;
   display: inline-flex;
   justify-content: center;
+
+  &-icon {
+    width: rem.torem(24px);
+  }
 
   &:focus-within {
     @include outline.focus-outline(rem.torem(4px));
