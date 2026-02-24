@@ -13,18 +13,6 @@
   flex-wrap: wrap;
 }
 
-.dms-container {
-  margin-bottom: var(--size-spacing-l);
-}
-
-.step-button-width {
-  max-width: rem.torem(577px);
-}
-
-.step-button-with-info {
-  min-width: rem.torem(577px);
-}
-
 .step-button-info {
   & > svg,
   &-text {
@@ -38,18 +26,4 @@
   margin-bottom: var(--size-spacing-s);
 
   @include fonts.title3;
-}
-
-.inside-partner-block {
-  &.card-wrapper {
-    border: none;
-    padding: 0;
-    gap: var(--size-spacing-s);
-  }
-
-  .card-title {
-    margin-bottom: 0;
-
-    @include fonts.title4;
-  }
 }
