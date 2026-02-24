@@ -75,7 +75,7 @@ class ComplianceBackend(BaseBackend):
         if api_response.status_code == 422:
             error_data = {"status_code": api_response.status_code}
             try:
-                error_data += api_response.json()
+                error_data |= api_response.json()
             except requests.exceptions.JSONDecodeError:  # docs says response should be a json, but let's be careful
                 pass
 
@@ -87,7 +87,7 @@ class ComplianceBackend(BaseBackend):
 
         error_data = {"status_code": api_response.status_code}
         try:
-            error_data += api_response.json()
+            error_data |= api_response.json()
         except requests.exceptions.JSONDecodeError:
             pass
         logger.exception(
