@@ -4,6 +4,7 @@ on:
   pull_request:
     branches-ignore:
       - docs
+      - fseguin/PC-40140-better-migration-notifications
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
