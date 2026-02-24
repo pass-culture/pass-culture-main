@@ -1,18 +1,19 @@
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
+import { Panel } from '@/ui-kit/Panel/Panel'
 
 import styles from './SoftDeletedOffererWarning.module.scss'
 
 export const SoftDeletedOffererWarning = (): JSX.Element => {
   return (
-    <div className={styles['soft-deleted-offerer-warning']}>
-      <div className={styles['soft-deleted-offerer-warning-inner']}>
-        <p>
+    <Panel>
+      <div>
+        <p className={styles['soft-deleted-offerer-warning']}>
           Votre structure a été désactivée. Pour plus d’informations sur la
           désactivation veuillez contacter notre support.
         </p>
 
-        <div className="actions-container">
+        <div className={styles['soft-deleted-offerer-warning-actions']}>
           <Button
             as="a"
             variant={ButtonVariant.PRIMARY}
@@ -29,6 +30,6 @@ export const SoftDeletedOffererWarning = (): JSX.Element => {
           />
         </div>
       </div>
-    </div>
+    </Panel>
   )
 }
