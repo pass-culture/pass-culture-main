@@ -241,11 +241,7 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 color={ButtonColor.NEUTRAL}
                 icon={fullLeftIcon}
                 to="/hub"
-                label={
-                  selectedVenue.publicName?.length > 19
-                    ? `${selectedVenue.publicName.substring(0, 18)}...`
-                    : selectedVenue.publicName
-                }
+                label={selectedVenue.publicName}
                 fullWidth
                 fullHeight
               />

@@ -48,7 +48,7 @@
   }
 
   &-switch-venue-button {
-    height: rem.torem(64px);
+    min-height: rem.torem(64px);
     margin: var(--size-spacing-l);
   }
 }
