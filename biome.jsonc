@@ -1,19 +1,46 @@
-// We have to add a root config for Biome in order to use its IDE plugin when opening the monorepo from the root.
-// https://biomejs.dev/guides/big-projects/#monorepo
 {
 	"$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
 	"root": true,
-	"files": {
-		"includes": ["pro/**", "biome.jsonc"],
-		"ignoreUnknown": true
-	},
-	"assist": {
-		"enabled": false
-	},
+	"files": { "ignoreUnknown": true, "includes": ["pro/**", "biome.jsonc"] },
 	"formatter": {
-		"enabled": true
+		"enabled": true,
+		"formatWithErrors": false,
+		"indentStyle": "space",
+		"indentWidth": 2,
+		"lineEnding": "lf",
+		"lineWidth": 80,
+		"attributePosition": "auto",
+		"bracketSameLine": false,
+		"bracketSpacing": true,
+		"expand": "auto",
+		"useEditorconfig": true,
+		"includes": ["**", "!**/*", "**/*/", "**/*.scss"]
 	},
-	"linter": {
-		"enabled": false
-	}
+	"linter": { "enabled": false },
+	"javascript": {
+		"formatter": {
+			"jsxQuoteStyle": "double",
+			"quoteProperties": "asNeeded",
+			"trailingCommas": "es5",
+			"semicolons": "asNeeded",
+			"arrowParentheses": "always",
+			"bracketSameLine": false,
+			"quoteStyle": "single",
+			"attributePosition": "auto",
+			"bracketSpacing": true
+		}
+	},
+	"html": {
+		"formatter": {
+			"indentScriptAndStyle": false,
+			"selfCloseVoidElements": "always"
+		}
+	},
+	"overrides": [
+		{
+			"includes": ["**/*.css", "**/*.scss"],
+			"javascript": { "formatter": { "quoteStyle": "double" } }
+		}
+	],
+	"assist": { "enabled": false }
 }
