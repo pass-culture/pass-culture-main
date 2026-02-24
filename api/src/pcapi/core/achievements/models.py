@@ -50,4 +50,6 @@ class Achievement(PcObject, Model):
     # For when the user has seen the achievement success modal in the native app:
     seenDate: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
+    foo: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+
     __table_args__ = (sa.UniqueConstraint("userId", "name", name="user_achievement_unique"),)
