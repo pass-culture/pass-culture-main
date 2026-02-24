@@ -12,28 +12,8 @@
   }
 }
 
-.educational-form .educational-form-adress-banner {
-  margin-top: var(--size-spacing-s);
-}
-
-.educational-form-adress-banner {
-  padding: var(--size-spacing-l);
-  background: var(--color-background-subtle);
-  border-radius: var(--size-border-radius-m);
-  overflow-wrap: anywhere;
-}
-
-.price-details textarea {
-  min-height: rem.torem(72px);
-  height: rem.torem(72px);
-}
-
 .banner-space {
   margin-bottom: var(--size-spacing-l);
-}
-
-.duration-input {
-  width: rem.torem(127px);
 }
 
 .description-info-boxes {
@@ -51,14 +31,6 @@
 .description,
 .price-detail {
   margin-bottom: var(--size-spacing-l);
-}
-
-.event-other-address {
-  margin-top: var(--size-spacing-l);
-}
-
-.school-departments {
-  @include fonts.body;
 }
 
 .specific-address {
