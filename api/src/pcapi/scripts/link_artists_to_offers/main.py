@@ -19,7 +19,7 @@ import logging
 import os
 import typing
 
-import sqlalchemy as sa
+import sqlalchemy.dialects.postgresql as sa_psql
 from sqlalchemy import exc as sa_exc
 
 from pcapi.app import app
@@ -37,10 +37,6 @@ CUSTOM_NAME_HEADER = "custom_name"
 ARTIST_ID_HEADER = "artist_id"
 
 
-class BatchFailure(Exception):
-    pass
-
-
 def read_csv_file(filename: str) -> typing.Iterator[dict[str, str]]:
     namespace_dir = os.path.dirname(os.path.abspath(__file__))
     with open(f"{namespace_dir}/{filename}.csv", "r", encoding="utf-8") as csv_file:
@@ -56,25 +52,30 @@ def create_offer_artist_link(offer_id: int, row: dict) -> dict | None:
     artist_type = row[ARTIST_TYPE_HEADER]
     custom_name = str(row[CUSTOM_NAME_HEADER])
     artist_id = str(row[ARTIST_ID_HEADER])
+    if artist_type not in artist_models.ArtistType:
+        logger.warning(f"Artist Type {artist_type} is not a valid enum value")
+        pass
 
     if artist_id:
         return {
             "offer_id": offer_id,
             "artist_type": artist_type,
             "artist_id": artist_id,
+            "custom_name": None,
         }
     elif custom_name:
         return {
             "offer_id": offer_id,
             "artist_type": artist_type,
             "custom_name": custom_name,
+            "artist_id": None,
         }
 
     logger.warning(f"Ligne ignorée : pas d'artist_id ni de custom_name pour offer_id {offer_id}")
     return None
 
 
-def process_batch(batch_rows: tuple, not_dry: bool) -> None:
+def process_batch(batch_rows: tuple, commit: bool) -> None:
     batch_offer_ids = {int(row[OFFER_ID_HEADER]) for row in batch_rows if int(row[OFFER_ID_HEADER])}
 
     existing_offer_ids = {
@@ -92,36 +93,30 @@ def process_batch(batch_rows: tuple, not_dry: bool) -> None:
         offer_id = int(row[(OFFER_ID_HEADER)])
 
         if offer_id not in existing_offer_ids:
-            logger.error(f"Offer ID {offer_id} introuvable ou liée à un produit")
+            logger.warning(f"Offer ID {offer_id} introuvable ou liée à un produit")
             continue
-
-        try:
-            link = create_offer_artist_link(offer_id, row)
-            if link:
-                links_to_add.append(link)
-        except Exception as e:
-            logger.error(f"Erreur lors de la création du artist_offer_link pour l'offre {offer_id}: {e}")
+        if link := create_offer_artist_link(offer_id, row):
+            links_to_add.append(link)
 
     if links_to_add:
         try:
-            db.session.execute(sa.insert(artist_models.ArtistOfferLink), links_to_add)
-            if not_dry:
+            db.session.execute(
+                sa_psql.insert(artist_models.ArtistOfferLink).values(links_to_add).on_conflict_do_nothing()
+            )
+            if commit:
                 db.session.commit()
                 logger.info(f"Batch terminé avec succès, ajout de {len(links_to_add)} artist_offer_links")
             else:
                 db.session.flush()
                 db.session.rollback()
-        except sa_exc.IntegrityError:
-            db.session.rollback()
-            raise BatchFailure("Erreur d'intégrité lors de la création d'artist_offer_links pour ce batch")
         except sa_exc.SQLAlchemyError as e:
             db.session.rollback()
-            raise BatchFailure(f"Erreur lors du flush/commit du batch: {e}")
+            logger.info(f"Erreur lors du flush/commit du batch: {e}")
 
     db.session.expunge_all()
 
 
-def main(not_dry: bool, filename: str, start_from_batch: int = 1) -> None:
+def main(commit: bool, filename: str, start_from_batch: int = 1) -> None:
     rows = read_csv_file(filename)
 
     for batch_idx, batch_rows in enumerate(itertools.batched(rows, BATCH_SIZE), start=1):
@@ -129,9 +124,9 @@ def main(not_dry: bool, filename: str, start_from_batch: int = 1) -> None:
             continue
 
         logger.info(f"Traitement du batch {batch_idx}")
-        process_batch(batch_rows, not_dry)
+        process_batch(batch_rows, commit)
 
-    if not not_dry:
+    if not commit:
         db.session.rollback()
         logger.info("Dry run terminé, rollback des données")
     else:
@@ -142,9 +137,9 @@ if __name__ == "__main__":
     app.app_context().push()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--not-dry", action="store_true")
+    parser.add_argument("--commit", action="store_true")
     parser.add_argument("--start-from-batch", type=int, default=1)
     args = parser.parse_args()
     filename = "artist_update"
 
-    main(not_dry=args.not_dry, start_from_batch=args.start_from_batch, filename=filename)
+    main(commit=args.commit, start_from_batch=args.start_from_batch, filename=filename)
