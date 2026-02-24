@@ -18,8 +18,6 @@ from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models import db
-from pcapi.routes.serialization import BaseModel
-from pcapi.tasks.decorator import task
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.urls import build_backoffice_offerer_link
 
@@ -27,13 +25,18 @@ from pcapi.utils.urls import build_backoffice_offerer_link
 logger = logging.getLogger(__name__)
 
 
-class CheckOffererSirenRequest(BaseModel):
+class CheckOffererSirenRequest(BaseModelV2):
     siren: str
     close_or_tag_when_inactive: bool
     must_fill_in_codir_report: bool = False
 
 
-@task(settings.GCP_CHECK_OFFERER_SIREN_QUEUE_NAME, "/offerers/check_offerer", task_request_timeout=3 * 60)
+@celery_async_task(
+    name="tasks.offerers.default.check_offerer",
+    model=CheckOffererSirenRequest,
+    max_per_time_window=settings.CHECK_OFFERER_RATE_LIMIT_THRESHOLD,
+    time_window_size=settings.CHECK_OFFERER_RATE_LIMIT_TIME_WINDOW_SECONDS,
+)
 def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
     if not siren_utils.is_valid_siren(payload.siren):
         logger.error("Invalid SIREN format in the database", extra={"siren": payload.siren})

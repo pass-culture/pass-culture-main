@@ -8,9 +8,8 @@ from pcapi import settings
 from pcapi.connectors.entreprise.models import SirenInfo
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import tasks as offerers_tasks
 from pcapi.models import db
-from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_KEY
-from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_VALUE
 from pcapi.utils import siren as siren_utils
 
 
@@ -28,13 +27,12 @@ class CheckOffererTest:
     def test_active_offerer(self, mock_append_to_spreadsheet, mock_sleep, client, siren_caduc_tag):
         offerer = offerers_factories.OffererFactory()
 
-        response = client.post(
-            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
-            json={"siren": offerer.siren, "close_or_tag_when_inactive": True, "must_fill_in_codir_report": False},
-            headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
+        offerers_tasks.check_offerer_siren_task.run(
+            offerers_tasks.CheckOffererSirenRequest(
+                siren=offerer.siren, close_or_tag_when_inactive=True, must_fill_in_codir_report=False
+            )
         )
 
-        assert response.status_code == 204
         assert not offerer.tags
 
         mock_append_to_spreadsheet.assert_not_called()
@@ -67,13 +65,12 @@ class CheckOffererTest:
                 closure_date=closure_date,
             ),
         ):
-            response = client.post(
-                f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
-                json={"siren": offerer.siren, "close_or_tag_when_inactive": True, "fill_in_codir_report": False},
-                headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
+            offerers_tasks.check_offerer_siren_task.run(
+                offerers_tasks.CheckOffererSirenRequest(
+                    siren=offerer.siren, close_or_tag_when_inactive=True, must_fill_in_codir_report=False
+                )
             )
 
-        assert response.status_code == 204
         assert not offerer.tags
         mock_append_to_spreadsheet.assert_not_called()
         mock_close_offerer.assert_not_called()
@@ -86,13 +83,12 @@ class CheckOffererTest:
     ):
         offerer = offerers_factories.OffererFactory(siren="900150004")
 
-        response = client.post(
-            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
-            json={"siren": offerer.siren, "close_or_tag_when_inactive": True, "must_fill_in_codir_report": True},
-            headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
+        offerers_tasks.check_offerer_siren_task.run(
+            offerers_tasks.CheckOffererSirenRequest(
+                siren=offerer.siren, close_or_tag_when_inactive=True, must_fill_in_codir_report=True
+            )
         )
 
-        assert response.status_code == 204
         assert not offerer.tags
 
         mock_search_file.assert_called_once()
@@ -123,13 +119,12 @@ class CheckOffererTest:
     ):
         offerer = offerers_factories.OffererFactory(siren="010500007")  # See TestingBackend for SIREN digits
 
-        response = client.post(
-            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
-            json={"siren": offerer.siren, "close_or_tag_when_inactive": True, "must_fill_in_codir_report": True},
-            headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
+        offerers_tasks.check_offerer_siren_task.run(
+            offerers_tasks.CheckOffererSirenRequest(
+                siren=offerer.siren, close_or_tag_when_inactive=True, must_fill_in_codir_report=True
+            )
         )
 
-        assert response.status_code == 204
         assert not offerer.tags
 
         mock_search_file.assert_called_once()
@@ -169,13 +164,11 @@ class CheckOffererTest:
         offerer = offerers_factories.OffererFactory(tags=[siren_caduc_tag])
         offerers_factories.UserOffererFactory(offerer=offerer)
 
-        response = client.post(
-            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
-            json={"siren": offerer.siren, "close_or_tag_when_inactive": True, "fill_in_codir_report": True},
-            headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
+        offerers_tasks.check_offerer_siren_task.run(
+            offerers_tasks.CheckOffererSirenRequest(
+                siren=offerer.siren, close_or_tag_when_inactive=True, must_fill_in_codir_report=True
+            )
         )
-
-        assert response.status_code == 204
 
         action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
@@ -193,13 +186,12 @@ class CheckOffererTest:
     ):
         offerer = offerers_factories.PendingOffererFactory()
 
-        response = client.post(
-            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
-            json={"siren": offerer.siren, "close_or_tag_when_inactive": True, "fill_in_codir_report": True},
-            headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
+        offerers_tasks.check_offerer_siren_task.run(
+            offerers_tasks.CheckOffererSirenRequest(
+                siren=offerer.siren, close_or_tag_when_inactive=True, must_fill_in_codir_report=True
+            )
         )
 
-        assert response.status_code == 204
         assert offerer.isWaitingForValidation
         assert not offerer.tags
 
@@ -230,13 +222,12 @@ class CheckOffererTest:
                 closure_date=closure_date,
             ),
         ):
-            response = client.post(
-                f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
-                json={"siren": offerer.siren, "close_or_tag_when_inactive": True, "must_fill_in_codir_report": False},
-                headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
+            offerers_tasks.check_offerer_siren_task.run(
+                offerers_tasks.CheckOffererSirenRequest(
+                    siren=offerer.siren, close_or_tag_when_inactive=True, must_fill_in_codir_report=False
+                )
             )
 
-        assert response.status_code == 204
         mock_handle_closed_offerer.assert_called_once_with(
             offerer,
             closure_date=datetime.date(2025, 1, 16),
@@ -264,13 +255,12 @@ class CheckOffererTest:
                 closure_date=closure_date,
             ),
         ):
-            response = client.post(
-                f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
-                json={"siren": offerer.siren, "close_or_tag_when_inactive": False, "must_fill_in_codir_report": False},
-                headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
+            offerers_tasks.check_offerer_siren_task.run(
+                offerers_tasks.CheckOffererSirenRequest(
+                    siren=offerer.siren, close_or_tag_when_inactive=False, must_fill_in_codir_report=False
+                )
             )
 
-        assert response.status_code == 204
         assert not offerer.tags
         mock_handle_closed_offerer.assert_not_called()
 
@@ -280,13 +270,12 @@ class CheckOffererTest:
         # Using TestingBackend: SIREN filled with zeros throws UnknownEntityException
         offerer = offerers_factories.OffererFactory(siren="000000000")
 
-        response = client.post(
-            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
-            json={"siren": offerer.siren, "close_or_tag_when_inactive": True, "fill_in_codir_report": False},
-            headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
+        offerers_tasks.check_offerer_siren_task.run(
+            offerers_tasks.CheckOffererSirenRequest(
+                siren=offerer.siren, close_or_tag_when_inactive=True, must_fill_in_codir_report=False
+            )
         )
 
-        assert response.status_code == 204
         assert not offerer.tags
 
         mock_append_to_spreadsheet.assert_not_called()
@@ -295,11 +284,10 @@ class CheckOffererTest:
         # Using TestingBackend: SIREN filled with zeros throws UnknownEntityException
         offerer = offerers_factories.OffererFactory(siren="123456789")
 
-        response = client.post(
-            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
-            json={"siren": offerer.siren, "close_or_tag_when_inactive": False, "fill_in_codir_report": False},
-            headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
+        offerers_tasks.check_offerer_siren_task.run(
+            offerers_tasks.CheckOffererSirenRequest(
+                siren=offerer.siren, close_or_tag_when_inactive=False, must_fill_in_codir_report=False
+            )
         )
 
-        assert response.status_code == 204
         assert caplog.records[0].message == "Invalid SIREN format in the database"
