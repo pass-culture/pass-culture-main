@@ -145,7 +145,6 @@ export const VenueEdition = (): JSX.Element | null => {
               selectedKey={
                 context === 'collective' ? 'collective' : 'individual'
               }
-              className={styles['tabs']}
             />
           )}
 

@@ -153,7 +153,7 @@ export const ReimbursementBankAccount = ({
             {!hasManagedVenues && null}
 
             {hasManagedVenues && (
-              <div className={styles['linked-venues-content']}>
+              <div>
                 {showNoLinkedMessage && (
                   <div className={styles['issue-text']}>
                     Aucune structure n’est rattachée à ce compte bancaire.

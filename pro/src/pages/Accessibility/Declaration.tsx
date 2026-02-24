@@ -262,7 +262,7 @@ export const Declaration = () => {
             </tr>
           </thead>
           <tbody>
-            <tr className={styles['tr']}>
+            <tr>
               <td className={styles['td']}>Connexion</td>
               <td className={styles['td']}>
                 <Button

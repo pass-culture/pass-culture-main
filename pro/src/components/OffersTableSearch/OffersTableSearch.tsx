@@ -65,7 +65,6 @@ export const OffersTableSearch = ({
           />
         </div>
         <ButtonFilter
-          className={styles['offers-table-search-toggle-button']}
           isActive={hasActiveFilters}
           isOpen={isExpanded}
           onClick={toggleFiltersVisibility}

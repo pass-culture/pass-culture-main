@@ -92,12 +92,10 @@ export const CollectiveDmsTimeline = ({
         <div className={styles['timeline-step-title']}>
           Votre dossier est en attente d’instruction
         </div>
-        <div>
-          <div className={styles['timeline-step-description']}>
-            Votre dossier doit être instruit par la commission régionale du
-            territoire dans lequel se situe votre siège social.
-          </div>
-        </div>
+        <p>
+          Votre dossier doit être instruit par la commission régionale du
+          territoire dans lequel se situe votre siège social.
+        </p>
         <Button
           as="a"
           variant={ButtonVariant.TERTIARY}
@@ -133,11 +131,11 @@ export const CollectiveDmsTimeline = ({
         <div>
           {instructionDate}
           <br />
-          <div className={styles['timeline-step-description']}>
+          <p>
             Votre dossier est en cours d’instruction par la commission de
             référencement de votre territoire. Si votre dossier concerne un
             établissement public, il est traité par le ministère de la Culture.
-          </div>
+          </p>
         </div>
         <Button
           as="a"
@@ -175,11 +173,11 @@ export const CollectiveDmsTimeline = ({
         <div>
           {processingDate}
           <br />
-          <div className={styles['timeline-step-description']}>
+          <p>
             Votre structure doit encore être référencée dans ADAGE par les
             équipes du ministère de l’Éducation nationale. Vous recevrez un mail
             lorsque votre référencement sera effectif.
-          </div>
+          </p>
         </div>
         <Button
           as="a"
@@ -219,12 +217,12 @@ export const CollectiveDmsTimeline = ({
         <div className={styles['timeline-step-title']}>
           Votre structure est en cours d’ajout dans ADAGE
         </div>
-        <div className={styles['timeline-step-description']}>
+        <p>
           Une fois votre structure ajoutée dans ADAGE par le ministère de
           l’Éducation nationale, vous pourrez renseigner vos informations à
           destination des enseignants et créer des offres à destination des
           scolaires.
-        </div>
+        </p>
       </>
     ),
   }

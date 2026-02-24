@@ -40,7 +40,7 @@ export const PeriodSelector = ({
         {legend ?? 'Période'}
       </legend>
       <div className={cn(styles['period-filter-inputs'], className)}>
-        <div className={styles['period-filter-begin-picker']}>
+        <div>
           <label
             htmlFor={`field-date-begin-${ariaId}`}
             className={styles['visually-hidden']}
@@ -60,7 +60,7 @@ export const PeriodSelector = ({
           />
         </div>
 
-        <div className={styles['period-filter-end-picker']}>
+        <div>
           <label
             htmlFor={`field-date-end-${ariaId}`}
             className={styles['visually-hidden']}

@@ -13,12 +13,6 @@
     @include fonts.body-accent;
   }
 
-  &-step-title-passed {
-    @include fonts.body-accent;
-
-    color: var(--color-text-subtle);
-  }
-
   &-step-title-disabled {
     @include fonts.body-accent;
 
@@ -33,22 +27,6 @@
 
     &-text {
       margin-bottom: var(--size-spacing-l);
-    }
-
-    &-accent {
-      @include fonts.body-accent;
-    }
-  }
-
-  &-added-in-adage {
-    display: flex;
-    align-items: center;
-    margin-bottom: var(--size-spacing-xxl);
-    gap: rem.torem(10px);
-
-    &-icon {
-      color: var(--color-icon-success);
-      width: rem.torem(20px);
     }
   }
 

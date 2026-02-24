@@ -72,7 +72,7 @@ export const ConfirmDialog = ({
       hideIcon={hideIcon}
       explanation={children}
       trigger={trigger}
-      extraClassNames={`${extraClassNames} ${styles['confirm-dialog-explanation']}`}
+      extraClassNames={extraClassNames}
       open={open}
       refToFocusOnClose={refToFocusOnClose}
     >

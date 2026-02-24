@@ -108,9 +108,7 @@ export const Hub = () => {
         </div>
       }
       {filteredVenues.length === 0 && (
-        <div className={styles['no-results']}>
-          Aucune structure ne correspond à votre recherche "{query}".
-        </div>
+        <div>Aucune structure ne correspond à votre recherche "{query}".</div>
       )}
       <div className={styles['venue-list']}>
         {filteredVenues.map((venue) => (

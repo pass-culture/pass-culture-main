@@ -133,19 +133,17 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                 setSearchedOfferName(form.watch('searchQuery'))
               })}
             >
-              <div className={styles['search-input']}>
-                <SearchInput
-                  label="Rechercher l’offre vitrine à dupliquer"
-                  {...form.register('searchQuery')}
-                  extension={
-                    <Button
-                      type="submit"
-                      disabled={isLoading}
-                      label="Rechercher"
-                    />
-                  }
-                />
-              </div>
+              <SearchInput
+                label="Rechercher l’offre vitrine à dupliquer"
+                {...form.register('searchQuery')}
+                extension={
+                  <Button
+                    type="submit"
+                    disabled={isLoading}
+                    label="Rechercher"
+                  />
+                }
+              />
             </form>
 
             {isLoading ? (
