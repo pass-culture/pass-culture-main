@@ -3,10 +3,6 @@
 
 .offer-preview-app-link {
   text-align: center;
-
-  & > a {
-    width: 100%;
-  }
 }
 
 .offer-creation-preview-title {
@@ -23,26 +19,6 @@
   .title {
     @include fonts.title4;
   }
-}
-
-.offer-creation-preview-actions {
-  flex: 1;
-  margin-top: rem.torem(64px);
-
-  button,
-  a {
-    flex: 1;
-    margin-left: var(--size-spacing-xl);
-    text-align: center;
-
-    &:first-child {
-      margin-left: 0;
-    }
-  }
-}
-
-.offer-preview-banner {
-  margin-bottom: var(--size-spacing-l);
 }
 
 .offer-preview-banners {

@@ -215,13 +215,11 @@ export const IndividualOfferSummaryScreen = ({
 
             <OfferAppPreview offer={offer} />
 
-            <div className={styles['offer-preview-app-link']}>
-              <DisplayOfferInAppLink
-                id={offer.id}
-                variant={ButtonVariant.SECONDARY}
-                label="Visualiser dans l’app"
-              />
-            </div>
+            <DisplayOfferInAppLink
+              id={offer.id}
+              variant={ButtonVariant.SECONDARY}
+              label="Visualiser dans l’app"
+            />
           </SummaryAside>
         </SummaryLayout>
 
