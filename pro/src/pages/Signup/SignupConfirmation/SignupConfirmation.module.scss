@@ -1,28 +1,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .signup-confirmation {
-  &-icon {
-    margin-bottom: var(--size-spacing-m);
-  }
+  @include fonts.body;
 
-  &-body {
-    @include fonts.body;
-
-    margin-bottom: var(--size-spacing-xl);
-  }
-}
-
-.content {
-  display: flex;
-  align-items: center;
-
-  .confirmation-text {
-    @include fonts.title4;
-
-    margin-bottom: var(--size-spacing-xl);
-  }
-
-  .banner-text-gap {
-    margin-top: var(--size-spacing-xl);
-  }
+  margin-bottom: var(--size-spacing-xl);
 }
