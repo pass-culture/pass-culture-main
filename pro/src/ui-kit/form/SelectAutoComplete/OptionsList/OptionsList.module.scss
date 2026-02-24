@@ -37,10 +37,26 @@
   }
 }
 
-.options-img {
+.options-img-wrapper {
+  position: relative;
   width: rem.torem(36px);
   height: rem.torem(36px);
+  flex-shrink: 0;
+}
+
+.options-img {
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  flex-shrink: 0;
+
+  &-hidden {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+  }
+
+  &-visible {
+    opacity: 1;
+  }
 }
