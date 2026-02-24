@@ -1,94 +1,76 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 
-.dialog-container {
-  align-items: flex-start;
-  text-align: left;
-  max-width: rem.torem(576px);
-}
-
 .contact-callout,
 .contact-readonly {
   margin-bottom: var(--size-spacing-l);
 }
 
-.form {
-  &-container {
-    width: 100%;
+.form-description {
+  @include fonts.body;
+
+  display: flex;
+  flex-direction: column;
+  margin-top: var(--size-spacing-xxl);
+  width: 100%;
+
+  &-value {
+    color: var(--color-text-brand-primary);
   }
 
-  &-description {
-    @include fonts.body;
+  &-mail {
+    @include fonts.body-accent;
 
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &-contact {
+    @include fonts.body-accent;
+
+    display: block;
+    margin-top: var(--size-spacing-l);
+    color: var(--color-text-brand-primary);
+  }
+
+  &-link {
     display: flex;
-    flex-direction: column;
-    margin-top: var(--size-spacing-xxl);
-    width: 100%;
-
-    &-link {
-      display: flex;
-      align-items: center;
-      white-space: break-spaces;
-
-      &-text {
-        gap: var(--size-spacing-s);
-        align-items: center;
-      }
-
-      &-site {
-        display: block;
-        margin-top: var(--size-spacing-xxl);
-        margin-bottom: var(--size-spacing-l);
-      }
-    }
-
-    &-list {
-      display: flex;
-      flex-direction: column;
-      list-style: disc;
-      margin-left: var(--size-spacing-l);
-      margin-top: var(--size-spacing-l);
-
-      &-item {
-        padding: 0 0 var(--size-spacing-s) var(--size-spacing-s);
-      }
-
-      &-item::marker {
-        font-size: rem.torem(8px);
-      }
-    }
+    align-items: center;
+    white-space: break-spaces;
 
     &-text {
-      &-value {
-        color: var(--color-text-brand-primary);
-      }
+      gap: var(--size-spacing-s);
+      align-items: center;
+    }
 
-      &-mail {
-        @include fonts.body-accent;
-
-        &:hover {
-          text-decoration: underline;
-        }
-      }
-
-      &-contact {
-        @include fonts.body-accent;
-
-        display: block;
-        margin-top: var(--size-spacing-l);
-        color: var(--color-text-brand-primary);
-      }
+    &-site {
+      display: block;
+      margin-top: var(--size-spacing-xxl);
+      margin-bottom: var(--size-spacing-l);
     }
   }
 
-  &-icon {
-    margin-left: var(--size-spacing-s);
-  }
+  &-list {
+    display: flex;
+    flex-direction: column;
+    list-style: disc;
+    margin-left: var(--size-spacing-l);
+    margin-top: var(--size-spacing-l);
 
-  &-mandatory {
-    margin-top: var(--size-spacing-xxl);
-    margin-bottom: var(--size-spacing-l);
+    &-item {
+      padding: 0 0 var(--size-spacing-s) var(--size-spacing-s);
+    }
+
+    &-item::marker {
+      font-size: rem.torem(8px);
+    }
   }
+}
+
+.form-mandatory {
+  margin-top: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-l);
 }
 
 .buttons-container {
