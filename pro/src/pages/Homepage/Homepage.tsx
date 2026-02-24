@@ -6,7 +6,6 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { sortByLabel } from '@/commons/utils/strings'
-import { CollectiveBudgetBanner } from '@/components/CollectiveBudgetInformation/CollectiveBudgetBanner'
 import { Newsletter } from '@/components/Newsletter/Newsletter'
 import { AddBankAccountCallout } from '@/pages/Homepage/components/AddBankAccountCallout/AddBankAccountCallout'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
@@ -64,7 +63,6 @@ export const Homepage = (): JSX.Element => {
 
   return (
     <>
-      <CollectiveBudgetBanner />
       <div className={styles['reimbursements-banners']}>
         <AddBankAccountCallout
           offerer={selectedOfferer}
