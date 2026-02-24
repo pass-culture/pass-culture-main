@@ -5,6 +5,9 @@ import os
 import pathlib
 import uuid
 
+from click.testing import Result
+from flask import Flask
+
 from pcapi.core.offerers import factories as offerers_factories
 
 
@@ -27,7 +30,7 @@ def gen_offerer_tags():
     return tags
 
 
-def run_command(app, command_name, *args, raise_on_error=False):
+def run_command(app: Flask, command_name: str, *args, raise_on_error: bool = False) -> Result:
     runner = app.test_cli_runner()
     args = (command_name, *args)
     run = runner.invoke(args=args)
