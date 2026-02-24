@@ -1,12 +1,14 @@
+import cn from 'classnames'
+
 import { BubbleStepper } from '@/components/BubbleStepper/BubbleStepper'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 
 import commonStyles from '../CommonWelcomeCarousel.module.scss'
-import styles from './WelcomeStepIndividual.module.scss'
+import styles from './WelcomeStepTarget.module.scss'
 
-const WelcomeStepIndividual = (): JSX.Element => {
+const WelcomeStepTarget = (): JSX.Element => {
   return (
     <>
       <h1 className={commonStyles['title']}>
@@ -21,15 +23,28 @@ const WelcomeStepIndividual = (): JSX.Element => {
         <ol className={styles['ways-list']}>
           <li className={styles['way-item']}>
             1) Via{' '}
-            <em className={styles['rotation-clockwise-inverted']}>
+            <em
+              className={cn(
+                styles['emphasis'],
+                styles['rotation-clockwise-inverted']
+              )}
+            >
               l’application
             </em>{' '}
             pass Culture dédiée aux{' '}
-            <em className={styles['rotation-clockwise']}>jeunes</em>
+            <em
+              className={cn(styles['emphasis'], styles['rotation-clockwise'])}
+            >
+              jeunes
+            </em>
           </li>
           <li className={styles['way-item']}>
             2) Via ADAGE pour les{' '}
-            <em className={styles['rotation-clockwise']}>groupes scolaires</em>
+            <em
+              className={cn(styles['emphasis'], styles['rotation-clockwise'])}
+            >
+              groupes scolaires
+            </em>
           </li>
         </ol>
 
@@ -64,4 +79,4 @@ const WelcomeStepIndividual = (): JSX.Element => {
 
 // Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
-export const Component = WelcomeStepIndividual
+export const Component = WelcomeStepTarget

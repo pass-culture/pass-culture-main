@@ -16,7 +16,7 @@ export const routesWelcomeCarousel: CustomRouteGroupChild[] = [
   },
   {
     lazy: () =>
-      import('@/pages/WelcomeCarousel/WelcomeStepTarget/WelcomeStepIndividual'),
+      import('@/pages/WelcomeCarousel/WelcomeStepTarget/WelcomeStepTarget'),
     loader: withUserPermissions(mustBeUnauthenticated),
     path: '/bienvenue/publics',
     title: 'Deux manières de vous faire connaître',
