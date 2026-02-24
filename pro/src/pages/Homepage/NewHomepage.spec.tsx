@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { DMSApplicationstatus } from '@/apiClient/v1/models/DMSApplicationstatus'
 import { defaultDMSApplicationForEAC } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererVenueResponseModel } from '@/commons/utils/factories/individualApiFactories'
@@ -29,7 +30,10 @@ const newHomepageRoutes = [
   },
 ]
 
-const renderNewHomepage = (options?: RenderWithProvidersOptions) => {
+const renderNewHomepage = (
+  venueOverrides?: Partial<GetVenueResponseModel>,
+  options?: RenderWithProvidersOptions
+) => {
   const user = sharedCurrentUserFactory()
   const { storeOverrides, ...restOptions } = options ?? {}
   return renderWithProviders(null, {
@@ -41,7 +45,10 @@ const renderNewHomepage = (options?: RenderWithProvidersOptions) => {
     storeOverrides: {
       user: {
         currentUser: user,
-        selectedVenue: defaultGetOffererVenueResponseModel,
+        selectedVenue: {
+          ...defaultGetOffererVenueResponseModel,
+          ...venueOverrides,
+        },
       },
       ...storeOverrides,
     },
@@ -81,18 +88,12 @@ describe('NewHomepage', () => {
         shouldDisplayTabs,
       }) => {
         renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                allowedOnAdage,
-                hasNonDraftOffers,
-                collectiveDmsApplications: hasCollectiveDMS
-                  ? [defaultDMSApplicationForEAC]
-                  : undefined,
-              },
-            },
-          },
+          ...defaultGetOffererVenueResponseModel,
+          allowedOnAdage,
+          hasNonDraftOffers,
+          collectiveDmsApplications: hasCollectiveDMS
+            ? [defaultDMSApplicationForEAC]
+            : undefined,
         })
 
         if (shouldDisplayTabs) {
@@ -105,15 +106,9 @@ describe('NewHomepage', () => {
 
     it('should render without accessibility violation', async () => {
       const { container } = renderNewHomepage({
-        storeOverrides: {
-          user: {
-            selectedVenue: {
-              ...defaultGetOffererVenueResponseModel,
-              allowedOnAdage: true,
-              hasNonDraftOffers: true,
-            },
-          },
-        },
+        ...defaultGetOffererVenueResponseModel,
+        allowedOnAdage: true,
+        hasNonDraftOffers: true,
       })
 
       expect(
@@ -126,15 +121,9 @@ describe('NewHomepage', () => {
     it('should display the corresponding panel when click on a given tab', async () => {
       const user = userEvent.setup()
       renderNewHomepage({
-        storeOverrides: {
-          user: {
-            selectedVenue: {
-              ...defaultGetOffererVenueResponseModel,
-              allowedOnAdage: true,
-              hasNonDraftOffers: true,
-            },
-          },
-        },
+        ...defaultGetOffererVenueResponseModel,
+        allowedOnAdage: true,
+        hasNonDraftOffers: true,
       })
 
       await user.click(screen.getByRole('tab', { name: /Collectif/ }))
@@ -161,15 +150,9 @@ describe('NewHomepage', () => {
 
         const user = userEvent.setup()
         renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                allowedOnAdage: true,
-                hasNonDraftOffers: true,
-              },
-            },
-          },
+          ...defaultGetOffererVenueResponseModel,
+          allowedOnAdage: true,
+          hasNonDraftOffers: true,
         })
 
         expect(utils.getInitialTab).toHaveBeenCalledOnce()
@@ -198,15 +181,9 @@ describe('NewHomepage', () => {
           vi.spyOn(utils, 'onNewTabSelected')
 
           renderNewHomepage({
-            storeOverrides: {
-              user: {
-                selectedVenue: {
-                  ...defaultGetOffererVenueResponseModel,
-                  allowedOnAdage: hasCollective,
-                  hasNonDraftOffers: hasIndividual,
-                },
-              },
-            },
+            ...defaultGetOffererVenueResponseModel,
+            allowedOnAdage: hasCollective,
+            hasNonDraftOffers: hasIndividual,
           })
 
           expect(utils.getInitialTab).toHaveBeenCalledExactlyOnceWith(
@@ -231,15 +208,9 @@ describe('NewHomepage', () => {
     describe('homologation banner', () => {
       it('should not be displayed if the venue is validated', () => {
         renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                hasNonDraftOffers: true,
-                isValidated: true,
-              },
-            },
-          },
+          ...defaultGetOffererVenueResponseModel,
+          hasNonDraftOffers: true,
+          isValidated: true,
         })
 
         expect(
@@ -251,15 +222,9 @@ describe('NewHomepage', () => {
 
       it('should be displayed if the venue is not validated', () => {
         renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                hasNonDraftOffers: true,
-                isValidated: false,
-              },
-            },
-          },
+          ...defaultGetOffererVenueResponseModel,
+          hasNonDraftOffers: true,
+          isValidated: false,
         })
 
         expect(
@@ -273,15 +238,9 @@ describe('NewHomepage', () => {
     describe('budget module', () => {
       it('should be displayed if the venue has non free offers', () => {
         renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                hasNonDraftOffers: true,
-                hasNonFreeOffers: true,
-              },
-            },
-          },
+          ...defaultGetOffererVenueResponseModel,
+          hasNonDraftOffers: true,
+          hasNonFreeOffers: true,
         })
 
         expect(
@@ -291,15 +250,9 @@ describe('NewHomepage', () => {
 
       it("should not be displayed if the venue doesn't have non free offers", () => {
         renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                hasNonDraftOffers: true,
-                hasNonFreeOffers: false,
-              },
-            },
-          },
+          ...defaultGetOffererVenueResponseModel,
+          hasNonDraftOffers: true,
+          hasNonFreeOffers: false,
         })
 
         expect(
@@ -323,15 +276,9 @@ describe('NewHomepage', () => {
         today.setDate(today.getDate() + 30)
         vi.setSystemTime(today)
         renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                dateCreated,
-                hasNonDraftOffers: true,
-              },
-            },
-          },
+          ...defaultGetOffererVenueResponseModel,
+          dateCreated,
+          hasNonDraftOffers: true,
         })
 
         expect(
@@ -347,15 +294,9 @@ describe('NewHomepage', () => {
         today.setDate(today.getDate() + 40)
         vi.setSystemTime(today)
         renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                dateCreated,
-                hasNonDraftOffers: true,
-              },
-            },
-          },
+          ...defaultGetOffererVenueResponseModel,
+          dateCreated,
+          hasNonDraftOffers: true,
         })
 
         expect(
@@ -368,14 +309,8 @@ describe('NewHomepage', () => {
 
     it('should always have the mandatory modules', () => {
       renderNewHomepage({
-        storeOverrides: {
-          user: {
-            selectedVenue: {
-              ...defaultGetOffererVenueResponseModel,
-              hasNonDraftOffers: true,
-            },
-          },
-        },
+        ...defaultGetOffererVenueResponseModel,
+        hasNonDraftOffers: true,
       })
 
       expect(
@@ -404,15 +339,9 @@ describe('NewHomepage', () => {
     describe('homologation banner', () => {
       it('should not be displayed when the venue is validated', () => {
         renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                isValidated: true,
-                allowedOnAdage: true,
-              },
-            },
-          },
+          ...defaultGetOffererVenueResponseModel,
+          isValidated: true,
+          allowedOnAdage: true,
         })
 
         expect(
@@ -424,15 +353,9 @@ describe('NewHomepage', () => {
 
       it('should be displayed when the venue is not validated', () => {
         renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                isValidated: false,
-                allowedOnAdage: true,
-              },
-            },
-          },
+          ...defaultGetOffererVenueResponseModel,
+          isValidated: false,
+          allowedOnAdage: true,
         })
 
         expect(
@@ -446,14 +369,8 @@ describe('NewHomepage', () => {
     describe('collective DMS timeline', () => {
       it('should be displayed when venue has a collective DMS application', () => {
         renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                collectiveDmsApplications: [defaultDMSApplicationForEAC],
-              },
-            },
-          },
+          ...defaultGetOffererVenueResponseModel,
+          collectiveDmsApplications: [defaultDMSApplicationForEAC],
         })
 
         expect(
@@ -463,15 +380,9 @@ describe('NewHomepage', () => {
 
       it('should not be displayed when venue has not a collective DMS application', () => {
         renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                collectiveDmsApplications: undefined,
-                allowedOnAdage: true,
-              },
-            },
-          },
+          ...defaultGetOffererVenueResponseModel,
+          collectiveDmsApplications: undefined,
+          allowedOnAdage: true,
         })
 
         expect(
@@ -483,19 +394,13 @@ describe('NewHomepage', () => {
     describe('individual offers modules', () => {
       it('should be displayed when venue has a refused DMS application', () => {
         renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                collectiveDmsApplications: [
-                  {
-                    ...defaultDMSApplicationForEAC,
-                    state: DMSApplicationstatus.REFUSE,
-                  },
-                ],
-              },
+          ...defaultGetOffererVenueResponseModel,
+          collectiveDmsApplications: [
+            {
+              ...defaultDMSApplicationForEAC,
+              state: DMSApplicationstatus.REFUSE,
             },
-          },
+          ],
         })
 
         expect(
@@ -507,19 +412,13 @@ describe('NewHomepage', () => {
 
       it('should be displayed when venue has a "sans suite" DMS application', () => {
         renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                collectiveDmsApplications: [
-                  {
-                    ...defaultDMSApplicationForEAC,
-                    state: DMSApplicationstatus.SANS_SUITE,
-                  },
-                ],
-              },
+          ...defaultGetOffererVenueResponseModel,
+          collectiveDmsApplications: [
+            {
+              ...defaultDMSApplicationForEAC,
+              state: DMSApplicationstatus.SANS_SUITE,
             },
-          },
+          ],
         })
 
         expect(
@@ -531,14 +430,8 @@ describe('NewHomepage', () => {
 
       it('should not be displayed when venue has a pending DMS application', () => {
         renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                collectiveDmsApplications: [defaultDMSApplicationForEAC],
-              },
-            },
-          },
+          ...defaultGetOffererVenueResponseModel,
+          collectiveDmsApplications: [defaultDMSApplicationForEAC],
         })
 
         expect(
@@ -550,15 +443,9 @@ describe('NewHomepage', () => {
 
       it('should not be displayed when venue has no DMS application', () => {
         renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                collectiveDmsApplications: undefined,
-                allowedOnAdage: true,
-              },
-            },
-          },
+          ...defaultGetOffererVenueResponseModel,
+          collectiveDmsApplications: undefined,
+          allowedOnAdage: true,
         })
 
         expect(
@@ -572,15 +459,9 @@ describe('NewHomepage', () => {
     describe('budget module', () => {
       it('should be displayed if the venue has non free offers', () => {
         renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                hasNonFreeOffers: true,
-                allowedOnAdage: true,
-              },
-            },
-          },
+          ...defaultGetOffererVenueResponseModel,
+          hasNonFreeOffers: true,
+          allowedOnAdage: true,
         })
 
         expect(
@@ -590,15 +471,9 @@ describe('NewHomepage', () => {
 
       it("should not be displayed if the venue doesn't have non free offers", () => {
         renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                hasNonFreeOffers: false,
-                allowedOnAdage: true,
-              },
-            },
-          },
+          ...defaultGetOffererVenueResponseModel,
+          hasNonFreeOffers: false,
+          allowedOnAdage: true,
         })
 
         expect(
@@ -609,14 +484,8 @@ describe('NewHomepage', () => {
 
     it('should always have the mandatory modules', () => {
       renderNewHomepage({
-        storeOverrides: {
-          user: {
-            selectedVenue: {
-              ...defaultGetOffererVenueResponseModel,
-              allowedOnAdage: true,
-            },
-          },
-        },
+        ...defaultGetOffererVenueResponseModel,
+        allowedOnAdage: true,
       })
 
       expect(
@@ -651,15 +520,9 @@ describe('NewHomepage', () => {
         today.setDate(today.getDate() + 30)
         vi.setSystemTime(today)
         renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                adageInscriptionDate,
-                allowedOnAdage: true,
-              },
-            },
-          },
+          ...defaultGetOffererVenueResponseModel,
+          adageInscriptionDate,
+          allowedOnAdage: true,
         })
 
         expect(
@@ -675,15 +538,9 @@ describe('NewHomepage', () => {
         today.setDate(today.getDate() + 40)
         vi.setSystemTime(today)
         renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                adageInscriptionDate,
-                allowedOnAdage: true,
-              },
-            },
-          },
+          ...defaultGetOffererVenueResponseModel,
+          adageInscriptionDate,
+          allowedOnAdage: true,
         })
 
         expect(
@@ -699,16 +556,10 @@ describe('NewHomepage', () => {
         today.setDate(today.getDate() + 30)
         vi.setSystemTime(today)
         renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                dateCreated,
-                adageInscriptionDate: null,
-                allowedOnAdage: true,
-              },
-            },
-          },
+          ...defaultGetOffererVenueResponseModel,
+          dateCreated,
+          adageInscriptionDate: null,
+          allowedOnAdage: true,
         })
 
         expect(
@@ -724,16 +575,10 @@ describe('NewHomepage', () => {
         today.setDate(today.getDate() + 40)
         vi.setSystemTime(today)
         renderNewHomepage({
-          storeOverrides: {
-            user: {
-              selectedVenue: {
-                ...defaultGetOffererVenueResponseModel,
-                dateCreated,
-                adageInscriptionDate: null,
-                allowedOnAdage: true,
-              },
-            },
-          },
+          ...defaultGetOffererVenueResponseModel,
+          dateCreated,
+          adageInscriptionDate: null,
+          allowedOnAdage: true,
         })
 
         expect(
