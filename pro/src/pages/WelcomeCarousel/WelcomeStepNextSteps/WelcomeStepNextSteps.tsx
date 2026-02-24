@@ -68,7 +68,7 @@ const WelcomeStepNextSteps = (): JSX.Element => {
                 },
               },
             ]}
-          ></Banner>{' '}
+          />
         </div>
       </div>
       <div
