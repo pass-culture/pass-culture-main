@@ -32,7 +32,14 @@ export const ToggleVenueProviderStatusButton = ({
 
   const updateVenueProviderStatus = async () => {
     setIsLoading(true)
-    const payload: PutVenueProviderBody = { isActive: !venueProvider.isActive }
+    // For Allociné Provider, we need to send the entire payload, and not just `isActive`
+    const payload: PutVenueProviderBody = {
+      quantity: venueProvider.quantity,
+      price: venueProvider.price,
+      venueIdAtOfferProvider: venueProvider.venueIdAtOfferProvider,
+      isDuo: venueProvider.isDuo,
+      isActive: !venueProvider.isActive,
+    }
 
     try {
       await api.updateVenueProvider(venueProvider.id, payload)

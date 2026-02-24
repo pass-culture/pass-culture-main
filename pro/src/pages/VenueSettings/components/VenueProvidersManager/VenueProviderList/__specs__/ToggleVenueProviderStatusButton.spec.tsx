@@ -119,6 +119,10 @@ describe('ToggleVenueProviderStatusButton', () => {
       expect(api.updateVenueProvider).toHaveBeenCalledWith(
         mockVenueProvider.id,
         {
+          quantity: mockVenueProvider.quantity,
+          price: mockVenueProvider.price,
+          venueIdAtOfferProvider: mockVenueProvider.venueIdAtOfferProvider,
+          isDuo: mockVenueProvider.isDuo,
           isActive: false, // Inversé car isActive était true
         }
       )
@@ -170,6 +174,10 @@ describe('ToggleVenueProviderStatusButton', () => {
       expect(api.updateVenueProvider).toHaveBeenCalledWith(
         mockVenueProvider.id,
         {
+          quantity: mockVenueProvider.quantity,
+          price: mockVenueProvider.price,
+          venueIdAtOfferProvider: mockVenueProvider.venueIdAtOfferProvider,
+          isDuo: mockVenueProvider.isDuo,
           isActive: true, // Inversé car isActive était false
         }
       )
