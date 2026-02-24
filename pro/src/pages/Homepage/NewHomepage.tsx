@@ -1,7 +1,10 @@
 import { addDays, isBefore } from 'date-fns'
 import { useId, useState } from 'react'
 
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import {
+  DMSApplicationstatus,
+  type GetVenueResponseModel,
+} from '@/apiClient/v1'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { getToday } from '@/commons/utils/date'
@@ -36,6 +39,7 @@ export const NewHomepage = (): JSX.Element => {
   const hasIndividual = !!selectedVenue.hasNonDraftOffers
   const hasCollective =
     selectedVenue?.allowedOnAdage || collectiveDmsApplication
+  const adageInscriptionDate = selectedVenue?.adageInscriptionDate
 
   const [selectedTab, setSelectedTab] = useState(
     getInitialTab(selectedVenue.id, hasIndividual, !!hasCollective)
@@ -69,6 +73,18 @@ export const NewHomepage = (): JSX.Element => {
   const shouldDisplayWebinarCard: boolean = isBefore(
     getToday(),
     addDays(selectedVenue.dateCreated, 31)
+  )
+
+  // Collective modules display conditions
+  const hasRefusedDmsApplication: boolean =
+    collectiveDmsApplication?.state === DMSApplicationstatus.REFUSE ||
+    collectiveDmsApplication?.state === DMSApplicationstatus.SANS_SUITE
+
+  const collectiveActivationDate =
+    adageInscriptionDate ?? selectedVenue.dateCreated
+  const shouldDisplayCollectiveWebinarCard: boolean = isBefore(
+    getToday(),
+    addDays(collectiveActivationDate, 31)
   )
 
   return (
@@ -169,6 +185,14 @@ export const NewHomepage = (): JSX.Element => {
             Page d'accueil - part collective
           </span>
           <div className={styles['top']}>
+            {shouldDisplayHomologationBanner && (
+              <div>
+                Votre structure est en cours de traitement par les équipes du
+                pass Culture
+                <br />
+                <b>Banner Homologation</b>
+              </div>
+            )}
             {collectiveDmsApplication && (
               <CollectiveDmsTimeline
                 collectiveDmsApplication={collectiveDmsApplication}
@@ -177,6 +201,55 @@ export const NewHomepage = (): JSX.Element => {
                 variant={CollectiveDmsTimelineVariant.LITE}
               />
             )}
+          </div>
+          <div className={styles['main']}>
+            {hasRefusedDmsApplication ? (
+              <div>
+                Proposer vos offres aux jeunes sur l’application mobile pass
+                Culture
+                <br />
+                <b>Empty state offres indivs</b>
+              </div>
+            ) : (
+              <>
+                <div>
+                  Activités vos offres vitrines
+                  <br />
+                  <b>Module gestion offres vitrines</b>
+                </div>
+                <div>
+                  Activités vos offres réservables
+                  <br />
+                  <b>Module gestion offres réservables</b>
+                </div>
+              </>
+            )}
+          </div>
+          <div className={styles['side']}>
+            {shouldDisplayBudgetCard && (
+              <div>
+                Remboursement
+                <br />
+                <b>Module Budget</b>
+              </div>
+            )}
+            <div>
+              Votre page sur ADAGE
+              <br />
+              <b>Module page partenaire</b>
+            </div>
+            {shouldDisplayCollectiveWebinarCard && (
+              <div>
+                Participer à nos webinaires sur la part collective !
+                <br />
+                <b>Module Webinaires collectif</b>
+              </div>
+            )}
+            <div>
+              Suivez notre actualité !
+              <br />
+              <b>Module Newsletter</b>
+            </div>
           </div>
         </div>
       )}

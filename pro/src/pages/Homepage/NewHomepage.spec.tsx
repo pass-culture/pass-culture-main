@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
+import { DMSApplicationstatus } from '@/apiClient/v1/models/DMSApplicationstatus'
 import { defaultDMSApplicationForEAC } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererVenueResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -365,7 +366,7 @@ describe('NewHomepage', () => {
       })
     })
 
-    it('should always have the mendatory modules', () => {
+    it('should always have the mandatory modules', () => {
       renderNewHomepage({
         storeOverrides: {
           user: {
@@ -377,30 +378,370 @@ describe('NewHomepage', () => {
         },
       })
 
-      // Partner page
       expect(
         screen.getByRole('tabpanel', { description: /indiv/ })
       ).toHaveTextContent(/Votre page sur l’application/)
 
-      // Newsletter
       expect(
         screen.getByRole('tabpanel', { description: /indiv/ })
       ).toHaveTextContent(/Suivez notre actualité/)
 
-      // Edito
       expect(
         screen.getByRole('tabpanel', { description: /indiv/ })
       ).toHaveTextContent(/Comment valoriser vos offres auprès du jeune public/)
 
-      // Stats
       expect(
         screen.getByRole('tabpanel', { description: /indiv/ })
       ).toHaveTextContent(/Evolution de consultation de vos offres/)
 
-      // Offres
       expect(
         screen.getByRole('tabpanel', { description: /indiv/ })
       ).toHaveTextContent(/Activités sur vos offres individuelles/)
+    })
+  })
+
+  describe('collective panel', () => {
+    describe('homologation banner', () => {
+      it('should not be displayed when the venue is validated', () => {
+        renderNewHomepage({
+          storeOverrides: {
+            user: {
+              selectedVenue: {
+                ...defaultGetOffererVenueResponseModel,
+                isValidated: true,
+                allowedOnAdage: true,
+              },
+            },
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent(
+          /Votre structure est en cours de traitement par les équipes du pass Culture/
+        )
+      })
+
+      it('should be displayed when the venue is not validated', () => {
+        renderNewHomepage({
+          storeOverrides: {
+            user: {
+              selectedVenue: {
+                ...defaultGetOffererVenueResponseModel,
+                isValidated: false,
+                allowedOnAdage: true,
+              },
+            },
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).toHaveTextContent(
+          /Votre structure est en cours de traitement par les équipes du pass Culture/
+        )
+      })
+    })
+
+    describe('collective DMS timeline', () => {
+      it('should be displayed when venue has a collective DMS application', () => {
+        renderNewHomepage({
+          storeOverrides: {
+            user: {
+              selectedVenue: {
+                ...defaultGetOffererVenueResponseModel,
+                collectiveDmsApplications: [defaultDMSApplicationForEAC],
+              },
+            },
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).toHaveTextContent(/Votre dossier est en attente d’instruction/)
+      })
+
+      it('should not be displayed when venue has not a collective DMS application', () => {
+        renderNewHomepage({
+          storeOverrides: {
+            user: {
+              selectedVenue: {
+                ...defaultGetOffererVenueResponseModel,
+                collectiveDmsApplications: undefined,
+                allowedOnAdage: true,
+              },
+            },
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent(/Votre dossier est en attente d’instruction/)
+      })
+    })
+
+    describe('individual offers modules', () => {
+      it('should be displayed when venue has a refused DMS application', () => {
+        renderNewHomepage({
+          storeOverrides: {
+            user: {
+              selectedVenue: {
+                ...defaultGetOffererVenueResponseModel,
+                collectiveDmsApplications: [
+                  {
+                    ...defaultDMSApplicationForEAC,
+                    state: DMSApplicationstatus.REFUSE,
+                  },
+                ],
+              },
+            },
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).toHaveTextContent(
+          /Proposer vos offres aux jeunes sur l’application mobile pass Culture/
+        )
+      })
+
+      it('should be displayed when venue has a "sans suite" DMS application', () => {
+        renderNewHomepage({
+          storeOverrides: {
+            user: {
+              selectedVenue: {
+                ...defaultGetOffererVenueResponseModel,
+                collectiveDmsApplications: [
+                  {
+                    ...defaultDMSApplicationForEAC,
+                    state: DMSApplicationstatus.SANS_SUITE,
+                  },
+                ],
+              },
+            },
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).toHaveTextContent(
+          /Proposer vos offres aux jeunes sur l’application mobile pass Culture/
+        )
+      })
+
+      it('should not be displayed when venue has a pending DMS application', () => {
+        renderNewHomepage({
+          storeOverrides: {
+            user: {
+              selectedVenue: {
+                ...defaultGetOffererVenueResponseModel,
+                collectiveDmsApplications: [defaultDMSApplicationForEAC],
+              },
+            },
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent(
+          /Proposer vos offres aux jeunes sur l’application mobile pass Culture/
+        )
+      })
+
+      it('should not be displayed when venue has no DMS application', () => {
+        renderNewHomepage({
+          storeOverrides: {
+            user: {
+              selectedVenue: {
+                ...defaultGetOffererVenueResponseModel,
+                collectiveDmsApplications: undefined,
+                allowedOnAdage: true,
+              },
+            },
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent(
+          /Proposer vos offres aux jeunes sur l’application mobile pass Culture/
+        )
+      })
+    })
+
+    describe('budget module', () => {
+      it('should be displayed if the venue has non free offers', () => {
+        renderNewHomepage({
+          storeOverrides: {
+            user: {
+              selectedVenue: {
+                ...defaultGetOffererVenueResponseModel,
+                hasNonFreeOffers: true,
+                allowedOnAdage: true,
+              },
+            },
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).toHaveTextContent(/Remboursement/)
+      })
+
+      it("should not be displayed if the venue doesn't have non free offers", () => {
+        renderNewHomepage({
+          storeOverrides: {
+            user: {
+              selectedVenue: {
+                ...defaultGetOffererVenueResponseModel,
+                hasNonFreeOffers: false,
+                allowedOnAdage: true,
+              },
+            },
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent(/Remboursement/)
+      })
+    })
+
+    it('should always have the mandatory modules', () => {
+      renderNewHomepage({
+        storeOverrides: {
+          user: {
+            selectedVenue: {
+              ...defaultGetOffererVenueResponseModel,
+              allowedOnAdage: true,
+            },
+          },
+        },
+      })
+
+      expect(
+        screen.getByRole('tabpanel', { description: /collective/ })
+      ).toHaveTextContent(/Activités vos offres vitrines/)
+
+      expect(
+        screen.getByRole('tabpanel', { description: /collective/ })
+      ).toHaveTextContent(/Activités vos offres réservables/)
+
+      expect(
+        screen.getByRole('tabpanel', { description: /collective/ })
+      ).toHaveTextContent(/Votre page sur ADAGE/)
+
+      expect(
+        screen.getByRole('tabpanel', { description: /collective/ })
+      ).toHaveTextContent(/Suivez notre actualité/)
+    })
+
+    describe('webinar module', () => {
+      beforeEach(() => {
+        vi.useFakeTimers()
+      })
+
+      afterEach(() => {
+        vi.useRealTimers()
+      })
+
+      it('should be displayed until the 30th day of adage inscription date', () => {
+        const adageInscriptionDate = '2026-02-16T12:31:53.443732Z'
+        const today = new Date(adageInscriptionDate)
+        today.setDate(today.getDate() + 30)
+        vi.setSystemTime(today)
+        renderNewHomepage({
+          storeOverrides: {
+            user: {
+              selectedVenue: {
+                ...defaultGetOffererVenueResponseModel,
+                adageInscriptionDate,
+                allowedOnAdage: true,
+              },
+            },
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).toHaveTextContent(
+          /Participer à nos webinaires sur la part collective !/
+        )
+      })
+
+      it('should not be displayed after the 30th day of venue creation when venue has no adage inscription date', () => {
+        const adageInscriptionDate = '2026-02-16T12:31:53.443732Z'
+        const today = new Date(adageInscriptionDate)
+        today.setDate(today.getDate() + 40)
+        vi.setSystemTime(today)
+        renderNewHomepage({
+          storeOverrides: {
+            user: {
+              selectedVenue: {
+                ...defaultGetOffererVenueResponseModel,
+                adageInscriptionDate,
+                allowedOnAdage: true,
+              },
+            },
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent(
+          /Participer à nos webinaires sur la part collective !/
+        )
+      })
+
+      it('should be displayed until the 30th day of venue creation when venue has no adage inscription date', () => {
+        const dateCreated = '2026-02-16T12:31:53.443732Z'
+        const today = new Date(dateCreated)
+        today.setDate(today.getDate() + 30)
+        vi.setSystemTime(today)
+        renderNewHomepage({
+          storeOverrides: {
+            user: {
+              selectedVenue: {
+                ...defaultGetOffererVenueResponseModel,
+                dateCreated,
+                adageInscriptionDate: null,
+                allowedOnAdage: true,
+              },
+            },
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).toHaveTextContent(
+          /Participer à nos webinaires sur la part collective !/
+        )
+      })
+
+      it('should not be displayed after the 30th day of venue creation when venue has no adage inscription date', () => {
+        const dateCreated = '2026-02-16T12:31:53.443732Z'
+        const today = new Date(dateCreated)
+        today.setDate(today.getDate() + 40)
+        vi.setSystemTime(today)
+        renderNewHomepage({
+          storeOverrides: {
+            user: {
+              selectedVenue: {
+                ...defaultGetOffererVenueResponseModel,
+                dateCreated,
+                adageInscriptionDate: null,
+                allowedOnAdage: true,
+              },
+            },
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent(
+          /Participer à nos webinaires sur la part collective !/
+        )
+      })
     })
   })
 })
