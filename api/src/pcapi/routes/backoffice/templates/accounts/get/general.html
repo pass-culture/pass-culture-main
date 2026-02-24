@@ -119,22 +119,16 @@
               {% if show_personal_info %}
                 <div class="mb-1">
                   <span class="fw-bold">Tél :</span> {{ user.phoneNumber | empty_string_if_null }}
-                  {% if send_validation_code_form %}
+                  {% if manual_phone_validation_form %}
                     <div class="d-flex">
                       <div class="me-1">
-                        <form action="{{ url_for('.send_validation_code', user_id=user.id) }}"
-                              name="{{ url_for('.send_validation_code', user_id=user.id) | action_to_name }}"
+                        <form action="{{ url_for('.manually_validate_phone_number', user_id=user.id) }}"
+                              name="{{ url_for('.manually_validate_phone_number', user_id=user.id) | action_to_name }}"
                               method="post">
-                          {{ send_validation_code_form.csrf_token }}
-                          <button class="btn btn-outline-secondary btn-sm fw-bold mt-1">Envoyer un code de validation</button>
+                          {{ manual_phone_validation_form.csrf_token }}
+                          <button class="btn btn-outline-secondary btn-sm fw-bold mt-1">Valider le numéro de téléphone</button>
                         </form>
                       </div>
-                      <form action="{{ url_for('.manually_validate_phone_number', user_id=user.id) }}"
-                            name="{{ url_for('.manually_validate_phone_number', user_id=user.id) | action_to_name }}"
-                            method="post">
-                        {{ manual_phone_validation_form.csrf_token }}
-                        <button class="btn btn-outline-secondary btn-sm fw-bold mt-1">Valider le numéro de téléphone</button>
-                      </form>
                     </div>
                   {% endif %}
                 </div>
