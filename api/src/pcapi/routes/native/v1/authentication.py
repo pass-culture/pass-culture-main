@@ -222,26 +222,16 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
     oauth_state_token.expire()
 
     google_user = google_oauth.get_google_user(body.authorization_code)
-    email = google_user.email
-    sso_user_id = google_user.sub
+    if not google_user.email_verified:
+        raise ApiErrors({"code": "SSO_EMAIL_NOT_VALIDATED", "general": ["L'email n'a pas été validé."]})
 
-    single_sign_on = users_repo.get_single_sign_on("google", sso_user_id)
-    if not single_sign_on:
-        user = users_repo.find_user_by_email(email)
-    else:
-        user = single_sign_on.user
+    email = google_user.email
+    user = users_repo.find_user_by_email(email)
 
     if not user:
         logger.info(
             "Successful SSO authentication but no matching email found, sending account creation token",
-            extra={
-                "identifier": email,
-                "sso_provider": "google",
-                "sso_user_id": sso_user_id,
-                "user": None,
-                "avoid_current_user": True,
-                "success": True,
-            },
+            extra={"sso_provider": "google", "avoid_current_user": True},
             technical_message_id="users.login.sso.google",
         )
         encoded_account_creation_token = users_api.create_account_creation_token(google_user)
@@ -256,25 +246,13 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
             status_code=401,
         )
 
-    user_ssos = user.single_sign_ons if user else []
-    user_has_another_google_account_linked = user_ssos and sso_user_id not in [sso.ssoUserId for sso in user_ssos]
-    if user_has_another_google_account_linked:
-        raise ApiErrors(
-            {
-                "code": "SSO_DUPLICATE_GOOGLE_ACCOUNT",
-                "general": ["Un autre compte Google est déjà associé à ce compte."],
-            }
-        )
-
     if user.account_state.is_deleted:
         raise ApiErrors({"code": "SSO_ACCOUNT_DELETED", "general": ["Le compte a été supprimé"]})
 
     if user.account_state == user_models.AccountState.ANONYMIZED:
         raise ApiErrors({"code": "SSO_ACCOUNT_ANONYMIZED", "general": ["Le compte a été anonymisé"]})
 
-    if not google_user.email_verified:
-        raise ApiErrors({"code": "SSO_EMAIL_NOT_VALIDATED", "general": ["L'email n'a pas été validé."]})
-
+    sso_user_id = google_user.sub
     with transaction():
         if not user.isEmailValidated:
             # An account registered with a password and with its email not validated is a symptom
@@ -283,23 +261,21 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
             user.password = None
             user.isEmailValidated = True
 
-        if not single_sign_on:
-            single_sign_on = users_repo.create_single_sign_on(user, "google", sso_user_id)
-            db.session.add(single_sign_on)
+        current_google_sso = None
+        user_google_ssos = [sso for sso in user.single_sign_ons if sso.ssoProvider == "google"]
+        if user_google_ssos:
+            current_google_sso = user_google_ssos[0]
+            current_google_sso.ssoUserId = google_user.sub
+        else:
+            current_google_sso = users_repo.create_single_sign_on(user, "google", sso_user_id)
+            db.session.add(current_google_sso)
 
     users_api.save_device_info_and_notify_user(user, body.device_info)
 
     users_api.update_last_connection_date(user)
     logger.info(
         "Successful authentication attempt",
-        extra={
-            "identifier": email,
-            "user": user.id,
-            "sso_provider": "google",
-            "sso_user_id": sso_user_id,
-            "avoid_current_user": True,
-            "success": True,
-        },
+        extra={"sso_provider": "google", "avoid_current_user": True},
         technical_message_id="users.login.sso.google",
     )
     tokens = create_user_jwt_tokens(
