@@ -45,6 +45,13 @@ export type BannerProps = {
   onClose?: () => void
 }
 
+const variantToRole: Record<BannerVariants, React.AriaRole> = {
+  [BannerVariants.ERROR]: 'alert',
+  [BannerVariants.WARNING]: 'alert',
+  [BannerVariants.SUCCESS]: 'status',
+  [BannerVariants.DEFAULT]: 'status',
+}
+
 export const Banner = ({
   title,
   description,
@@ -57,7 +64,11 @@ export const Banner = ({
   onClose,
 }: BannerProps): JSX.Element => {
   return (
-    <div className={cx(styles.banner, styles[variant])} data-testid="banner">
+    <div
+      className={cx(styles.banner, styles[variant])}
+      role={variantToRole[variant]}
+      data-testid="banner"
+    >
       <div className={styles.inner}>
         <div className={styles.content}>
           <SvgIcon className={styles.info} src={icon} aria-hidden="true" />
