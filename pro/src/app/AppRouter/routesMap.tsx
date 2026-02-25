@@ -36,14 +36,6 @@ const NavigateToNewPasswordReset = ({ to, ...props }: NavigateProps) => {
 
 export const routes: CustomRouteTree = [
   {
-    // This route is always forbidden in order to let `withUserPermissions`
-    // automatically redirect to the right start path depending on the current user permissions
-    path: '/',
-    loader: withUserPermissions(() => false),
-    element: null,
-  },
-
-  {
     element: <Navigate to="/bienvenue" />,
     loader: withUserPermissions(mustBeUnauthenticated),
     path: '/',
