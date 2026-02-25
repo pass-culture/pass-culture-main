@@ -17,7 +17,6 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.subscription.factories as subscription_factories
 import pcapi.core.subscription.models as subscription_models
 from pcapi import settings
-from pcapi.connectors.beamer import BeamerException
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
@@ -25,6 +24,7 @@ from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.external.beamer.backends.beamer import BeamerException
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import api as geography_api
