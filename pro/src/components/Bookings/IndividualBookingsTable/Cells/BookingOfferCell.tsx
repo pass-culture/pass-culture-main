@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import { format } from 'date-fns-tz'
 
 import type { BookingRecapResponseModel } from '@/apiClient/v1'
@@ -46,23 +45,17 @@ export const BookingOfferCell = ({
   )
 
   return (
-    <div className={cn(styles['offer-details-wrapper'])}>
+    <div className={styles['offer-details-wrapper']}>
       <div>
-        <a
-          href={offerUrl}
-          className={styles['booking-offer-name']}
-          data-testid="booking-offer-name"
-        >
+        <a href={offerUrl} className={styles['booking-offer-name']}>
           {booking.stock.offerName}
         </a>
-
         {booking.stock.offerEan ||
           (eventBeginningDatetime && (
             <div className={styles['booking-offer-additional-info']}>
               {eventDatetimeFormatted || booking.stock.offerEan}
             </div>
           ))}
-
         <div className={styles['tarif']}>
           {booking.bookingPriceCategoryLabel
             ? `${booking.bookingPriceCategoryLabel} - ${

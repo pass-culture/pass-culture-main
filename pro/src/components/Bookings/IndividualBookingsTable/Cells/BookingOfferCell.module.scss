@@ -1,6 +1,12 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 
+.offer-details-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .booking-offer-name {
   @include fonts.body-accent;
 
@@ -10,12 +16,6 @@
   &:focus {
     text-decoration: underline;
   }
-}
-
-.offer-details-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 
 .bookings-duo-icon {
@@ -38,34 +38,4 @@
   margin-top: var(--size-spacing-xs);
   color: var(--color-text-subtle);
   white-space: nowrap;
-}
-
-.stocks {
-  display: flex;
-
-  .sold-out-dates {
-    background-color: var(--color-background-default);
-    border-radius: var(--size-border-radius-s);
-    box-shadow: var(--shadow-overlay);
-    display: none;
-    padding: var(--size-spacing-s);
-    position: absolute;
-  }
-
-  .sold-out-icon {
-    width: rem.torem(16px);
-    height: rem.torem(16px);
-    color: var(--color-icon-error);
-
-    // Center visually
-    position: relative;
-    top: 2px;
-
-    &:hover,
-    &:focus {
-      & ~ .sold-out-dates {
-        display: flex;
-      }
-    }
-  }
 }
