@@ -3930,6 +3930,7 @@ class SendReminderEmailToIndividualOfferersTest:
 
 
 class CleanUnusedOffererAddressTest:
+    # TODO bulle
     def test_clean_unused_offerer_address(self, caplog):
         offerers_factories.OfferLocationFactory()
         venue = offerers_factories.VenueFactory()

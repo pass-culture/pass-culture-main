@@ -506,6 +506,7 @@ class OfferLocationFactory(_LocationFactory):
     type = models.LocationType.OFFER_LOCATION
 
 
+# TODO bulle WHY
 def get_offerer_address_with_label_from_venue(venue: models.Venue) -> models.OffererAddress | None:
     oa = (
         db.session.query(models.OffererAddress)
