@@ -118,7 +118,6 @@ class Returns200Test:
             venue__dateCreated=now,
             venue__bookingEmail="test@test.com",
             venue__managingOfferer=user_offerer.offerer,
-            offererAddress=None,
             publicationDatetime=datetime(year=2020, month=10, day=1),
             bookingAllowedDatetime=datetime(year=2020, month=12, day=15),
             metaData=meta_data,
@@ -185,16 +184,16 @@ class Returns200Test:
             "url": None,
             "location": {
                 "label": venue.publicName,
-                "id": venue.offererAddress.address.id,
-                "banId": venue.offererAddress.address.banId,
-                "departmentCode": venue.offererAddress.address.departmentCode,
-                "inseeCode": venue.offererAddress.address.inseeCode,
-                "city": venue.offererAddress.address.city,
-                "latitude": float(venue.offererAddress.address.latitude),
-                "longitude": float(venue.offererAddress.address.longitude),
-                "postalCode": venue.offererAddress.address.postalCode,
-                "street": venue.offererAddress.address.street,
-                "isManualEdition": venue.offererAddress.address.isManualEdition,
+                "id": offer.offererAddress.address.id,
+                "banId": offer.offererAddress.address.banId,
+                "departmentCode": offer.offererAddress.address.departmentCode,
+                "inseeCode": offer.offererAddress.address.inseeCode,
+                "city": offer.offererAddress.address.city,
+                "latitude": float(offer.offererAddress.address.latitude),
+                "longitude": float(offer.offererAddress.address.longitude),
+                "postalCode": offer.offererAddress.address.postalCode,
+                "street": offer.offererAddress.address.street,
+                "isManualEdition": offer.offererAddress.address.isManualEdition,
                 "isVenueLocation": True,
             },
             "venue": {
@@ -310,47 +309,35 @@ class Returns200Test:
         assert response.json["bookingsCount"] == 2
         assert response.json["hasStocks"] == True
 
-    @pytest.mark.parametrize("offer_oa_label", ["label", None, ""])
-    def test_return_offer_offerer_address(self, offer_oa_label, client):
-        """If offer has an offererAddress, it should be used"""
-        user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        offer_offerer_address = offerers_factories.OfferLocationFactory(offerer=user_offerer.offerer, venue=venue)
-        offer = offers_factories.ThingOfferFactory(
-            venue__managingOfferer=user_offerer.offerer,
-            offererAddress=offer_offerer_address,
-        )
-        assert offer.venue.offererAddress != offer.offererAddress
-
-        auth_client = client.with_session_auth(email=user_offerer.user.email)
-        offer_id = offer.id
-        with testing.assert_num_queries(self.num_queries):
-            response = auth_client.get(f"/offers/{offer_id}")
-            assert response.status_code == 200
-
-        assert response.json["location"] == {
-            "label": offer_offerer_address.label,
-            "id": offer_offerer_address.address.id,
-            "banId": offer_offerer_address.address.banId,
-            "departmentCode": offer_offerer_address.address.departmentCode,
-            "inseeCode": offer_offerer_address.address.inseeCode,
-            "city": offer_offerer_address.address.city,
-            "latitude": float(offer_offerer_address.address.latitude),
-            "longitude": float(offer_offerer_address.address.longitude),
-            "postalCode": offer_offerer_address.address.postalCode,
-            "street": offer_offerer_address.address.street,
-            "isVenueLocation": False,
-            "isManualEdition": offer_offerer_address.address.isManualEdition,
-        }
-
-    def test_return_venue_offerer_address(self, client):
+    def test_no_location_for_digital_offer(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.ThingOfferFactory(
             venue__managingOfferer=user_offerer.offerer,
             offererAddress=None,
         )
-        offerer_address = offer.venue.offererAddress
-        assert offer.offererAddress is None
+
+        auth_client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_client.get(f"/offers/{offer_id}")
+            assert response.status_code == 200
+
+        assert response.json["location"] is None
+
+    @pytest.mark.parametrize("is_venue_location", [True, False])
+    def test_return_offer_offerer_address_is_venue_location(self, is_venue_location, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        if is_venue_location:
+            location = offerers_factories.OfferLocationFactory(
+                venue=venue, address=venue.offererAddress.address, label=venue.publicName
+            )
+        else:
+            location = offerers_factories.OfferLocationFactory(venue=venue)
+        offer = offers_factories.OfferFactory(
+            venue=venue,
+            offererAddress=location,
+        )
 
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
@@ -359,18 +346,18 @@ class Returns200Test:
             assert response.status_code == 200
 
         assert response.json["location"] == {
-            "label": offer.venue.publicName,
-            "id": offerer_address.address.id,
-            "banId": offerer_address.address.banId,
-            "departmentCode": offerer_address.address.departmentCode,
-            "inseeCode": offerer_address.address.inseeCode,
-            "city": offerer_address.address.city,
-            "latitude": float(offerer_address.address.latitude),
-            "longitude": float(offerer_address.address.longitude),
-            "postalCode": offerer_address.address.postalCode,
-            "street": offerer_address.address.street,
-            "isManualEdition": offerer_address.address.isManualEdition,
-            "isVenueLocation": True,
+            "label": location.label,
+            "id": location.address.id,
+            "banId": location.address.banId,
+            "departmentCode": location.address.departmentCode,
+            "inseeCode": location.address.inseeCode,
+            "city": location.address.city,
+            "latitude": float(location.address.latitude),
+            "longitude": float(location.address.longitude),
+            "postalCode": location.address.postalCode,
+            "street": location.address.street,
+            "isVenueLocation": is_venue_location,
+            "isManualEdition": location.address.isManualEdition,
         }
 
     @time_machine.travel("2020-10-15 00:00:00")
@@ -400,7 +387,6 @@ class Returns200Test:
             venue__dateCreated=now,
             venue__bookingEmail="test@test.com",
             venue__managingOfferer=user_offerer.offerer,
-            offererAddress=None,
             publicationDatetime=publication_date,
         )
         offer_id = offer.id
