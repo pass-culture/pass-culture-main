@@ -92,25 +92,23 @@ export const DetailsSubForm = ({
 
   return (
     <>
-      <div>
-        {displayRedirectionCallout && (
-          <div className={styles.callout}>
-            <Banner
-              title="EAN requis"
-              actions={[
-                {
-                  href: '#eanSearch',
-                  label: 'Scanner ou rechercher un produit par EAN',
-                  type: 'link',
-                  icon: fullNextIcon,
-                },
-              ]}
-              variant={BannerVariants.ERROR}
-              description="Cette catégorie nécessite un code EAN."
-            />
-          </div>
-        )}
-      </div>
+      {displayRedirectionCallout && (
+        <div className={styles.callout}>
+          <Banner
+            title="EAN requis"
+            actions={[
+              {
+                href: '#eanSearch',
+                label: 'Scanner ou rechercher un produit par EAN',
+                type: 'link',
+                icon: fullNextIcon,
+              },
+            ]}
+            variant={BannerVariants.ERROR}
+            description="Cette catégorie nécessite un code EAN."
+          />
+        </div>
+      )}
       {!displayRedirectionCallout && (
         <div className={styles['sub-form']}>
           {displayArtisticInformations && (
