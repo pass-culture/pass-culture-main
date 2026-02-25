@@ -21,22 +21,6 @@
   color: var(--color-text-error);
 }
 
-.download-actions {
-  display: flex;
-  padding-left: var(--size-spacing-s);
-  margin-top: var(--size-spacing-xxl);
-  flex-direction: column;
-  align-items: flex-start;
-
-  .download-all-checkbox:first-child {
-    margin-bottom: var(--size-spacing-s);
-  }
-
-  .first-action {
-    border: none;
-  }
-}
-
 .cell-document-type {
   display: flex;
   gap: var(--size-spacing-xs);
@@ -44,10 +28,6 @@
 
 .cell-actions {
   text-align: center;
-}
-
-.visually-hidden {
-  @include a11y.visually-hidden;
 }
 
 @media (min-width: size.$tablet) {
