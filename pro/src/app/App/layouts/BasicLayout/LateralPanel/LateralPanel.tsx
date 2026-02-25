@@ -129,7 +129,7 @@ export const LateralPanel = ({
         {!isHubPage && (
           <>
             {!isAdminArea && <LateralMenu isLateralPanelOpen={isOpen} />}
-            {isAdminArea && <AdminSideNavLinks isLateralPanelOpen={isOpen} />}
+            {isAdminArea && <AdminSideNavLinks />}
           </>
         )}
       </div>

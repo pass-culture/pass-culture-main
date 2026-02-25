@@ -1,5 +1,3 @@
-import classnames from 'classnames'
-
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant, IconPositionEnum } from '@/design-system/Button/types'
 import fullBackIcon from '@/icons/full-back.svg'
@@ -10,13 +8,7 @@ import strokeReportIcon from '@/icons/stroke-report.svg'
 import { type NavItem, SideNavLinks } from '../SideNavLinks/SideNavLinks'
 import styles from './AdminSideNav.module.scss'
 
-interface AdminSideNavLinksProps {
-  isLateralPanelOpen: boolean
-}
-
-export const AdminSideNavLinks = ({
-  isLateralPanelOpen,
-}: AdminSideNavLinksProps) => {
+export const AdminSideNavLinks = () => {
   const navItems: NavItem[] = [
     {
       key: 'financial_management',
@@ -60,11 +52,7 @@ export const AdminSideNavLinks = ({
   ]
 
   return (
-    <nav
-      className={classnames(styles['nav-links'], {
-        [styles['nav-links-open']]: isLateralPanelOpen,
-      })}
-    >
+    <nav className={styles['nav-links']}>
       <div className={styles['back-to-admin']}>
         <Button
           as="a"

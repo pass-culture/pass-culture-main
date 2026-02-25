@@ -6,9 +6,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { AdminSideNavLinks } from './AdminSideNav'
 
 const renderAdminSideNav = (props = {}) =>
-  renderWithProviders(
-    <AdminSideNavLinks isLateralPanelOpen={true} {...props} />
-  )
+  renderWithProviders(<AdminSideNavLinks {...props} />)
 
 describe('AdminSideNav', () => {
   it('should toggle the data section on button click', async () => {
