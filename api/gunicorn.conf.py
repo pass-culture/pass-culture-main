@@ -5,7 +5,7 @@ import pathlib
 
 import gunicorn.config
 import prometheus_client
-import prometheus_client.registry
+from prometheus_client import multiprocess
 from prometheus_flask_exporter.multiprocess import GunicornPrometheusMetrics
 
 from pcapi.flask_app import app
@@ -28,17 +28,48 @@ def when_ready(server):
 
 
 def child_exit(server, worker):
-    if ENABLE_FLASK_PROMETHEUS_EXPORTER:
-        GunicornPrometheusMetrics.mark_process_dead_on_child_exit(worker.pid)
-        try:
-            _clean_up_prometheus_metrics_directory(worker)
-        except Exception:
-            logger.exception("Got error while cleaning up Prometheus metrics directory")
+    if not ENABLE_FLASK_PROMETHEUS_EXPORTER:
+        return
+
+    _mark_dead_worker(worker.pid)
+
+    try:
+        _clean_up_prometheus_metrics_directory(worker.pid)
+    except Exception:
+        logger.exception("Got error while cleaning up Prometheus metrics directory")
 
 
-def _clean_up_prometheus_metrics_directory(worker):
+def worker_exit(server, worker):
+    if not ENABLE_FLASK_PROMETHEUS_EXPORTER:
+        return
+
+    _mark_dead_worker(worker.pid)
+
+    try:
+        _clean_up_prometheus_metrics_directory(worker.pid)
+    except Exception:
+        logger.exception("Got error while cleaning up Prometheus metrics directory")
+
+
+def _mark_dead_worker(pid: int) -> None:
+    # Mark dead through both helper and official prom client call
+    # so that collectors using live modes and dead markers behave correctly.
+    try:
+        GunicornPrometheusMetrics.mark_process_dead_on_child_exit(pid)
+    except Exception:
+        logger.exception("Failed to mark worker dead via GunicornPrometheusMetrics")
+
+    try:
+        multiprocess.mark_process_dead(pid)
+    except Exception:
+        logger.exception("Failed to mark worker dead via prometheus_client.multiprocess")
+
+
+def _clean_up_prometheus_metrics_directory(pid: int) -> None:
+    if not FLASK_PROMETHEUS_EXPORTER_METRICS_DIR:
+        return
     directory = pathlib.Path(FLASK_PROMETHEUS_EXPORTER_METRICS_DIR)
-    for path in directory.glob(f"*_{worker.pid}.db"):
+    for path in directory.glob(f"*_{pid}.db"):
         path.unlink(missing_ok=True)
 
 
@@ -55,30 +86,25 @@ def pre_fork(server, worker):
 
 def post_fork(server, worker):
     """Called when a Gunicorn worker is started."""
-    if ENABLE_FLASK_PROMETHEUS_EXPORTER:
-        registry = prometheus_client.registry.CollectorRegistry()
-        # We could export a ratio (percentage) of availability (number
-        # of available threads divided by total threads), but each pod
-        # would export a value, which would have to be averaged to
-        # calculate the overall ratio. Instead, we export 2 metrics
-        # (total and available) and let Grafana and Alert Manager
-        # calculate the ratio.
+    if not ENABLE_FLASK_PROMETHEUS_EXPORTER:
+        return
 
-        # Use those metrics instead
-        worker.total_threads = prometheus_client.Gauge(
-            "gunicorn_total_threads",
-            "Number of total Gunicorn threads running",
-            registry=registry,
-            multiprocess_mode="sum",
-        )
-        worker.total_threads.set(worker.cfg.settings["threads"].value)
-        worker.available_threads = prometheus_client.Gauge(
-            "gunicorn_available_threads",
-            "Number of Gunicorn threads that are not busy processing a request",
-            registry=registry,
-            multiprocess_mode="sum",
-        )
-        worker.available_threads.set(worker.cfg.settings["threads"].value)
+    # Use livesum so only live worker processes contribute, even if stale files exist.
+    threads = int(worker.cfg.settings["threads"].value or 1)
+
+    worker.total_threads = prometheus_client.Gauge(
+        "gunicorn_total_threads",
+        "Number of total Gunicorn threads running",
+        multiprocess_mode="livesum",
+    )
+    worker.available_threads = prometheus_client.Gauge(
+        "gunicorn_available_threads",
+        "Number of Gunicorn threads that are not busy processing a request",
+        multiprocess_mode="livesum",
+    )
+
+    worker.total_threads.set(threads)
+    worker.available_threads.set(threads)
 
 
 def pre_request(worker, req):
