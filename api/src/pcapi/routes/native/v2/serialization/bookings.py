@@ -2,8 +2,8 @@ import enum
 from datetime import datetime
 from typing import Any
 
-from pydantic.v1.class_validators import validator
-from pydantic.v1.utils import GetterDict
+from pydantic import field_validator
+from pydantic import model_validator
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings.api import has_email_been_sent
@@ -11,16 +11,23 @@ from pcapi.core.bookings.api import is_external_event_booking_visible
 from pcapi.core.bookings.api import is_voucher_displayed
 from pcapi.core.categories.subcategories import SEANCE_CINE
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
-from pcapi.core.geography.models import Address
-from pcapi.core.offerers.models import OffererAddress
+from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.reactions.models import ReactionTypeEnum
-from pcapi.routes.native.v1.serialization.common_models import Coordinates
-from pcapi.routes.native.v1.serialization.offers import OfferImageResponseV2
-from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.shared.price import convert_to_cent
+
+
+class CoordinatesV2(HttpBodyModel):
+    latitude: float | None = None
+    longitude: float | None = None
+
+
+class OfferImageV2(HttpBodyModel):
+    url: str
+    credit: str | None = None
 
 
 class TicketDisplayEnum(enum.Enum):
@@ -33,345 +40,397 @@ class TicketDisplayEnum(enum.Enum):
     TICKET = "ticket"
 
 
-class BookingVenueResponseV2GetterDict(GetterDict):
-    def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "name":
-            return self._obj.publicName
-        if key == "address":
-            return BookingVenueAddressResponseV2(id=self._obj.offererAddress.address.id)
-        if key == "timezone":
-            return self._obj.offererAddress.address.timezone
-
-        return super().get(key, default)
+class BookingVenueAddressResponseV2(HttpBodyModel):
+    id: int | None = None
 
 
-class BookingVenueAddressResponseV2(ConfiguredBaseModel):
-    id: int | None
-
-
-class BookingVenueResponseV2(ConfiguredBaseModel):
+class BookingVenueResponseV2(HttpBodyModel):
     id: int
     address: BookingVenueAddressResponseV2
     name: str
-    publicName: str
+    public_name: str
     timezone: str
-    bannerUrl: str | None
-    isOpenToPublic: bool
+    banner_url: str | None = None
+    is_open_to_public: bool
 
-    class Config:
-        getter_dict = BookingVenueResponseV2GetterDict
+    @model_validator(mode="before")
+    @classmethod
+    def _pre_process_venue(cls, data: Any) -> Any:
+        if isinstance(data, Venue):
+            return cls.build(data)
+        return data
+
+    @classmethod
+    def build(cls, venue: Venue) -> "BookingVenueResponseV2":
+        return cls(
+            id=venue.id,
+            address=BookingVenueAddressResponseV2(id=venue.offererAddress.address.id),
+            name=venue.publicName,
+            public_name=venue.publicName,
+            timezone=venue.offererAddress.address.timezone,
+            banner_url=venue.bannerUrl,
+            is_open_to_public=venue.isOpenToPublic,
+        )
 
 
-class BookingOfferExtraDataV2(ConfiguredBaseModel):
-    ean: str | None
+class BookingOfferExtraDataV2(HttpBodyModel):
+    ean: str | None = None
 
 
-class BookingOfferResponseAddressV2(ConfiguredBaseModel):
+class BookingOfferResponseAddressV2(HttpBodyModel):
     id: int
-    street: str | None
+    street: str | None = None
     postal_code: str
     city: str
-    label: str | None
-    coordinates: Coordinates
+    label: str | None = None
+    coordinates: CoordinatesV2
     timezone: str
 
 
-class BookingOfferResponseV2GetterDict(GetterDict):
-    def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "address":
-            offerer_address: OffererAddress | None
-            if self._obj.offererAddress:
-                offerer_address = self._obj.offererAddress
-            else:
-                offerer_address = self._obj.venue.offererAddress
-
-            if not offerer_address:
-                return None
-
-            address: Address = offerer_address.address
-            label = offerer_address.label
-
-            return BookingOfferResponseAddressV2(
-                id=address.id,
-                street=address.street,
-                postal_code=address.postalCode,
-                city=address.city,
-                label=label,
-                coordinates=Coordinates(latitude=address.latitude, longitude=address.longitude),
-                timezone=address.timezone,
-            )
-
-        return super().get(key, default)
-
-
-class BookingOfferResponseV2(ConfiguredBaseModel):
+class BookingOfferResponseV2(HttpBodyModel):
     id: int
-    address: BookingOfferResponseAddressV2 | None
-    booking_contact: str | None
+    address: BookingOfferResponseAddressV2 | None = None
+    booking_contact: str | None = None
     name: str
-    extra_data: BookingOfferExtraDataV2 | None
-    image: OfferImageResponseV2 | None
+    extra_data: BookingOfferExtraDataV2 | None = None
+    image: OfferImageV2 | None = None
     is_digital: bool
     is_permanent: bool
     subcategory_id: SubcategoryIdEnum
-    url: str | None
+    url: str | None = None
     venue: BookingVenueResponseV2
 
-    class Config:
-        getter_dict = BookingOfferResponseV2GetterDict
+    @model_validator(mode="before")
+    @classmethod
+    def _pre_process_offer(cls, data: Any) -> Any:
+        if isinstance(data, Offer):
+            return cls.build(data)
+        return data
+
+    @classmethod
+    def build(cls, offer: Offer) -> "BookingOfferResponseV2":
+        address_response = None
+        offerer_address = offer.offererAddress or (offer.venue.offererAddress if offer.venue else None)
+
+        if offerer_address:
+            addr = offerer_address.address
+
+            address_response = BookingOfferResponseAddressV2(
+                id=addr.id,
+                street=addr.street,
+                postal_code=addr.postalCode,
+                city=addr.city,
+                label=offerer_address.label,
+                coordinates=CoordinatesV2(latitude=addr.latitude, longitude=addr.longitude),
+                timezone=addr.timezone,
+            )
+
+        extra_data = None
+        if offer.extraData is not None:
+            extra_data = BookingOfferExtraDataV2(ean=offer.extraData.get("ean"))
+
+        return cls(
+            id=offer.id,
+            address=address_response,
+            booking_contact=offer.bookingContact,
+            name=offer.name,
+            extra_data=extra_data,
+            image=offer.image,
+            is_digital=offer.isDigital,
+            is_permanent=offer.isPermanent,
+            subcategory_id=offer.subcategoryId,
+            url=offer.url,
+            venue=BookingVenueResponseV2.model_validate(offer.venue),
+        )
 
 
-class BookingStockResponseV2GetterDict(GetterDict):
-    def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "priceCategoryLabel":
-            price_category = getattr(self._obj, "priceCategory", None)
-            return price_category.priceCategoryLabel.label if price_category else None
-
-        return super().get(key, default)
-
-
-class BookingStockResponseV2(ConfiguredBaseModel):
+class BookingStockResponseV2(HttpBodyModel):
     id: int
     is_automatically_used: bool
-    beginning_datetime: datetime | None
+    beginning_datetime: datetime | None = None
     features: list[str]
     offer: BookingOfferResponseV2
     price: int
-    price_category_label: str | None
+    price_category_label: str | None = None
 
-    _convert_price = validator("price", pre=True, allow_reuse=True)(convert_to_cent)
+    @model_validator(mode="before")
+    @classmethod
+    def _pre_process_stock(cls, data: Any) -> Any:
+        if isinstance(data, Stock):
+            return cls.build(data)
+        return data
 
-    class Config:
-        getter_dict = BookingStockResponseV2GetterDict
+    @classmethod
+    def build(cls, stock: Stock) -> "BookingStockResponseV2":
+        return cls(
+            id=stock.id,
+            is_automatically_used=stock.is_automatically_used,
+            beginning_datetime=stock.beginningDatetime,
+            features=stock.features,
+            offer=stock.offer,
+            price_category_label=stock.priceCategory.priceCategoryLabel.label if stock.priceCategory else None,
+            price=convert_to_cent(stock.price),
+        )
 
 
-class VoucherResponse(ConfiguredBaseModel):
-    data: str | None
+class VoucherResponse(HttpBodyModel):
+    data: str | None = None
 
 
-class TokenResponse(ConfiguredBaseModel):
-    data: str | None
+class TokenResponse(HttpBodyModel):
+    data: str | None = None
 
 
-class WithdrawalResponse(ConfiguredBaseModel):
-    details: str | None
-    type: WithdrawalTypeEnum | None
-    delay: int | None
+class WithdrawalResponse(HttpBodyModel):
+    details: str | None = None
+    type: WithdrawalTypeEnum | None = None
+    delay: int | None = None
 
 
-class ActivationCodeResponse(ConfiguredBaseModel):
+class ActivationCodeResponse(HttpBodyModel):
     code: str
-    expiration_date: datetime | None
+    expiration_date: datetime | None = None
 
 
-class ExternalBookingDataResponseV2(ConfiguredBaseModel):
+class ExternalBookingDataResponseV2(HttpBodyModel):
     barcode: str
-    seat: str | None
+    seat: str | None = None
 
 
-class ExternalBookingResponseV2(ConfiguredBaseModel):
-    data: list[ExternalBookingDataResponseV2] | None
+class ExternalBookingResponseV2(HttpBodyModel):
+    data: list[ExternalBookingDataResponseV2] | None = None
 
 
-class TicketResponse(ConfiguredBaseModel):
-    activation_code: ActivationCodeResponse | None
-    external_booking: ExternalBookingResponseV2 | None
+class TicketResponse(HttpBodyModel):
+    activation_code: ActivationCodeResponse | None = None
+    external_booking: ExternalBookingResponseV2 | None = None
     display: TicketDisplayEnum
-    token: TokenResponse | None
-    voucher: VoucherResponse | None
-    withdrawal: WithdrawalResponse
+    token: TokenResponse | None = None
+    voucher: VoucherResponse | None = None
+    withdrawal: WithdrawalResponse | None = None
 
 
-class BookingResponseGetterDict(GetterDict):
-    def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "confirmationDate":
-            return self._obj.cancellationLimitDate
-        if key == "ticket":
-            return self.get_ticket_infos()
+def get_ticket_infos(booking: bookings_models.Booking) -> TicketResponse:
+    stock: Stock = booking.stock
+    offer: Offer = stock.offer
+    withdrawal = WithdrawalResponse(
+        details=offer.withdrawalDetails,
+        type=offer.withdrawalType,
+        delay=offer.withdrawalDelay,
+    )
 
-        return super().get(key, default)
-
-    def get_ticket_infos(self) -> TicketResponse:
-        booking: bookings_models.Booking = self._obj
-        stock: Stock = booking.stock
-        offer: Offer = stock.offer
-        withdrawal = WithdrawalResponse(
-            details=offer.withdrawalDetails,
-            type=offer.withdrawalType,
-            delay=offer.withdrawalDelay,
-        )
-
-        if offer.withdrawalType == WithdrawalTypeEnum.BY_EMAIL:
-            return TicketResponse(
-                activation_code=None,
-                external_booking=None,
-                display=TicketDisplayEnum.EMAIL_SENT
-                if has_email_been_sent(stock=stock, withdrawal_delay=offer.withdrawalDelay)
-                else TicketDisplayEnum.EMAIL_WILL_BE_SENT,
-                token=None,
-                voucher=None,
-                withdrawal=withdrawal,
-            )
-
-        if offer.isDigital:
-            return TicketResponse(
-                activation_code=booking.activationCode,
-                external_booking=None,
-                display=TicketDisplayEnum.ONLINE_CODE,
-                token=TokenResponse(data=booking.token) if not booking.activationCode else None,
-                voucher=None,
-                withdrawal=withdrawal,
-            )
-
-        if offer.isEvent and booking.isExternal:
-            booking_visible = is_external_event_booking_visible(offer=offer, stock=stock)
-            return TicketResponse(
-                activation_code=None,
-                external_booking=ExternalBookingResponseV2(
-                    data=[
-                        ExternalBookingDataResponseV2(barcode=ext.barcode, seat=ext.seat)
-                        for ext in booking.externalBookings
-                    ]
-                    if booking_visible
-                    else None
-                ),
-                display=TicketDisplayEnum.QR_CODE if booking_visible else TicketDisplayEnum.NOT_VISIBLE,
-                token=None,
-                voucher=None,
-                withdrawal=withdrawal,
-            )
-
-        voucher = (
-            VoucherResponse(
-                data=getattr(booking, "qrCodeData", None),
-            )
-            if is_voucher_displayed(offer=offer, isExternal=booking.isExternal)
-            else None
-        )
-
-        token = TokenResponse(data=booking.token) if not booking.isExternal else None
-        display = TicketDisplayEnum.VOUCHER if voucher else TicketDisplayEnum.TICKET
-        if offer.subcategoryId == SEANCE_CINE.id:
-            display = TicketDisplayEnum.QR_CODE
-
+    if offer.withdrawalType == WithdrawalTypeEnum.BY_EMAIL:
         return TicketResponse(
             activation_code=None,
             external_booking=None,
-            display=display,
-            token=token,
-            voucher=voucher,
+            display=TicketDisplayEnum.EMAIL_SENT
+            if has_email_been_sent(stock=stock, withdrawal_delay=offer.withdrawalDelay)
+            else TicketDisplayEnum.EMAIL_WILL_BE_SENT,
+            token=None,
+            voucher=None,
             withdrawal=withdrawal,
         )
 
+    if offer.isDigital:
+        return TicketResponse(
+            activation_code=booking.activationCode,
+            external_booking=None,
+            display=TicketDisplayEnum.ONLINE_CODE,
+            token=TokenResponse(data=booking.token) if not booking.activationCode else None,
+            voucher=None,
+            withdrawal=withdrawal,
+        )
 
-class BookingResponse(ConfiguredBaseModel):
+    if offer.isEvent and booking.isExternal:
+        booking_visible = is_external_event_booking_visible(offer=offer, stock=stock)
+        return TicketResponse(
+            activation_code=None,
+            external_booking=ExternalBookingResponseV2(
+                data=[
+                    ExternalBookingDataResponseV2(barcode=ext.barcode, seat=ext.seat)
+                    for ext in booking.externalBookings
+                ]
+                if booking_visible
+                else None
+            ),
+            display=TicketDisplayEnum.QR_CODE if booking_visible else TicketDisplayEnum.NOT_VISIBLE,
+            token=None,
+            voucher=None,
+            withdrawal=withdrawal,
+        )
+
+    voucher = (
+        VoucherResponse(
+            data=getattr(booking, "qrCodeData", None),
+        )
+        if is_voucher_displayed(offer=offer, isExternal=booking.isExternal)
+        else None
+    )
+
+    token = TokenResponse(data=booking.token) if not booking.isExternal else None
+    display = TicketDisplayEnum.VOUCHER if voucher else TicketDisplayEnum.TICKET
+    if offer.subcategoryId == SEANCE_CINE.id:
+        display = TicketDisplayEnum.QR_CODE
+
+    return TicketResponse(
+        activation_code=None,
+        external_booking=None,
+        display=display,
+        token=token,
+        voucher=voucher,
+        withdrawal=withdrawal,
+    )
+
+
+class BookingResponse(HttpBodyModel):
     id: int
-    cancellation_date: datetime | None
-    cancellation_reason: bookings_models.BookingCancellationReasons | None
-    confirmation_date: datetime | None
-    completed_url: str | None
+    cancellation_date: datetime | None = None
+    cancellation_reason: bookings_models.BookingCancellationReasons | None = None
+    confirmation_date: datetime | None = None
+    completed_url: str | None = None
     date_created: datetime
-    date_used: datetime | None
-    display_as_ended: bool | None
-    expiration_date: datetime | None
+    date_used: datetime | None = None
+    display_as_ended: bool | None = None
+    expiration_date: datetime | None = None
     quantity: int
     stock: BookingStockResponseV2
     total_amount: int
     enable_pop_up_reaction: bool
     can_react: bool
-    user_reaction: ReactionTypeEnum | None
+    user_reaction: ReactionTypeEnum | None = None
     ticket: TicketResponse
 
-    _convert_total_amount = validator("total_amount", pre=True, allow_reuse=True)(convert_to_cent)
+    @model_validator(mode="before")
+    @classmethod
+    def _pre_process_booking(cls, data: Any) -> Any:
+        if isinstance(data, bookings_models.Booking):
+            return cls.build(data)
+        return data
 
-    class Config:
-        getter_dict = BookingResponseGetterDict
+    @classmethod
+    def build(cls, booking: bookings_models.Booking) -> "BookingResponse":
+        return cls(
+            id=booking.id,
+            cancellation_date=booking.cancellationDate,
+            cancellation_reason=booking.cancellationReason,
+            confirmation_date=booking.cancellationLimitDate,
+            completed_url=booking.completedUrl,
+            date_created=booking.dateCreated,
+            date_used=booking.dateUsed,
+            display_as_ended=booking.displayAsEnded,
+            expiration_date=booking.expirationDate,
+            quantity=booking.quantity,
+            stock=booking.stock,
+            total_amount=convert_to_cent(booking.total_amount),
+            enable_pop_up_reaction=booking.enable_pop_up_reaction,
+            can_react=booking.can_react,
+            user_reaction=booking.userReaction,
+            ticket=get_ticket_infos(booking),
+        )
 
 
-class BookingsResponseV2(ConfiguredBaseModel):
+class BookingsResponseV2(HttpBodyModel):
     ended_bookings: list[BookingResponse]
     ongoing_bookings: list[BookingResponse]
     has_bookings_after_18: bool
 
 
-class BookingListItemVenueResponseGetterDict(GetterDict):
-    def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "timezone":
-            return self._obj.offererAddress.address.timezone
-
-        return super().get(key, default)
-
-
-class BookingListItemVenueResponse(ConfiguredBaseModel):
+class BookingListItemVenueResponse(HttpBodyModel):
     id: int
     name: str
     timezone: str
 
-    class Config:
-        getter_dict = BookingListItemVenueResponseGetterDict
+    @model_validator(mode="before")
+    @classmethod
+    def _pre_process_venue(cls, data: Any) -> Any:
+        if isinstance(data, Venue):
+            return cls.build(data)
+        return data
+
+    @classmethod
+    def build(cls, venue: Venue) -> "BookingListItemVenueResponse":
+        return cls(
+            id=venue.id,
+            name=venue.name,
+            timezone=venue.offererAddress.address.timezone,
+        )
 
 
-class BookingListItemOfferResponseTimezone(ConfiguredBaseModel):
+class BookingListItemOfferResponseTimezone(HttpBodyModel):
     timezone: str
-    city: str | None
-    label: str | None
+    city: str | None = None
+    label: str | None = None
 
 
-class BookingListItemOfferResponseGetterDict(GetterDict):
-    def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "address":
-            offerer_address = self._obj.offererAddress or self._obj.venue.offererAddress
-            return BookingListItemOfferResponseTimezone(
+class BookingListItemOfferResponse(HttpBodyModel):
+    id: int
+    name: str
+    image_url: str | None = None
+    address: BookingListItemOfferResponseTimezone | None = None
+    is_digital: bool
+    is_permanent: bool
+    withdrawal_delay: int | None = None
+    withdrawal_type: WithdrawalTypeEnum | None = None
+    subcategory_id: SubcategoryIdEnum
+    venue: BookingListItemVenueResponse
+
+    @model_validator(mode="before")
+    @classmethod
+    def _pre_process_offer(cls, data: Any) -> Any:
+        if isinstance(data, Offer):
+            return cls.build(data)
+        return data
+
+    @classmethod
+    def build(cls, offer: Offer) -> "BookingListItemOfferResponse":
+        offerer_address = offer.offererAddress or (offer.venue.offererAddress if offer.venue else None)
+        address = None
+        if offerer_address:
+            address = BookingListItemOfferResponseTimezone(
                 timezone=offerer_address.address.timezone,
                 city=offerer_address.address.city,
                 label=offerer_address.label,
             )
-
-        if key == "image_url":
-            return self._obj.thumbUrl
-
-        return super().get(key, default)
-
-
-class BookingListItemOfferResponse(ConfiguredBaseModel):
-    id: int
-    name: str
-    image_url: str | None
-    address: BookingListItemOfferResponseTimezone | None
-    is_digital: bool
-    is_permanent: bool
-    withdrawal_delay: int | None
-    withdrawal_type: WithdrawalTypeEnum | None
-    subcategory_id: SubcategoryIdEnum
-    venue: BookingListItemVenueResponse
-
-    class Config:
-        getter_dict = BookingListItemOfferResponseGetterDict
+        return cls(
+            id=offer.id,
+            name=offer.name,
+            image_url=offer.thumbUrl,
+            address=address,
+            is_digital=offer.isDigital,
+            is_permanent=offer.isPermanent,
+            withdrawal_delay=offer.withdrawalDelay,
+            withdrawal_type=offer.withdrawalType,
+            subcategory_id=offer.subcategoryId,
+            venue=BookingListItemVenueResponse.build(offer.venue),
+        )
 
 
-class BookingListItemStockResponse(ConfiguredBaseModel):
-    beginning_datetime: datetime | None
+class BookingListItemStockResponse(HttpBodyModel):
+    beginning_datetime: datetime | None = None
     is_automatically_used: bool
     offer: BookingListItemOfferResponse
 
 
-class BookingListItemResponse(ConfiguredBaseModel):
+class BookingListItemResponse(HttpBodyModel):
     id: int
-    activation_code: ActivationCodeResponse | None
+    activation_code: ActivationCodeResponse | None = None
     can_react: bool
-    cancellation_date: datetime | None
-    cancellation_reason: bookings_models.BookingCancellationReasons | None
+    cancellation_date: datetime | None = None
+    cancellation_reason: bookings_models.BookingCancellationReasons | None = None
     date_created: datetime
-    date_used: datetime | None
-    is_archivable: bool | None
-    expiration_date: datetime | None
+    date_used: datetime | None = None
+    is_archivable: bool | None = None
+    expiration_date: datetime | None = None
     quantity: int
     stock: BookingListItemStockResponse
     total_amount: int
-    user_reaction: ReactionTypeEnum | None
+    user_reaction: ReactionTypeEnum | None = None
 
-    _convert_total_amount = validator("total_amount", pre=True, allow_reuse=True)(convert_to_cent)
+    @field_validator("total_amount", mode="before")
+    @classmethod
+    def _convert_total_amount(cls, v: Any) -> Any:
+        return convert_to_cent(v)
 
 
-class BookingsListResponseV2(ConfiguredBaseModel):
+class BookingsListResponseV2(HttpBodyModel):
     bookings: list[BookingListItemResponse]

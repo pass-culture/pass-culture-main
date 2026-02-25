@@ -253,16 +253,24 @@
                 "type": "array"
             },
             "ActivationCodeResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "code": {
                         "title": "Code",
                         "type": "string"
                     },
                     "expirationDate": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Expirationdate",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Expirationdate"
                     }
                 },
                 "required": [
@@ -771,24 +779,34 @@
                 "type": "object"
             },
             "BookingListItemOfferResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "address": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/BookingListItemOfferResponseTimezone"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "BookingListItemOfferResponseTimezone"
+                        "default": null
                     },
                     "id": {
                         "title": "Id",
                         "type": "integer"
                     },
                     "imageUrl": {
-                        "nullable": true,
-                        "title": "Imageurl",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Imageurl"
                     },
                     "isDigital": {
                         "title": "Isdigital",
@@ -809,17 +827,27 @@
                         "$ref": "#/components/schemas/BookingListItemVenueResponse"
                     },
                     "withdrawalDelay": {
-                        "nullable": true,
-                        "title": "Withdrawaldelay",
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Withdrawaldelay"
                     },
                     "withdrawalType": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/WithdrawalTypeEnum"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     }
                 },
                 "required": [
@@ -834,16 +862,31 @@
                 "type": "object"
             },
             "BookingListItemOfferResponseTimezone": {
+                "additionalProperties": false,
                 "properties": {
                     "city": {
-                        "nullable": true,
-                        "title": "City",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "City"
                     },
                     "label": {
-                        "nullable": true,
-                        "title": "Label",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Label"
                     },
                     "timezone": {
                         "title": "Timezone",
@@ -857,33 +900,46 @@
                 "type": "object"
             },
             "BookingListItemResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "activationCode": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/ActivationCodeResponse"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "ActivationCodeResponse"
+                        "default": null
                     },
                     "canReact": {
                         "title": "Canreact",
                         "type": "boolean"
                     },
                     "cancellationDate": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Cancellationdate",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Cancellationdate"
                     },
                     "cancellationReason": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/BookingCancellationReasons"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     },
                     "dateCreated": {
                         "format": "date-time",
@@ -891,25 +947,46 @@
                         "type": "string"
                     },
                     "dateUsed": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Dateused",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Dateused"
                     },
                     "expirationDate": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Expirationdate",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Expirationdate"
                     },
                     "id": {
                         "title": "Id",
                         "type": "integer"
                     },
                     "isArchivable": {
-                        "nullable": true,
-                        "title": "Isarchivable",
-                        "type": "boolean"
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Isarchivable"
                     },
                     "quantity": {
                         "title": "Quantity",
@@ -926,9 +1003,12 @@
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/ReactionTypeEnum"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     }
                 },
                 "required": [
@@ -943,12 +1023,20 @@
                 "type": "object"
             },
             "BookingListItemStockResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "beginningDatetime": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Beginningdatetime",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Beginningdatetime"
                     },
                     "isAutomaticallyUsed": {
                         "title": "Isautomaticallyused",
@@ -966,6 +1054,7 @@
                 "type": "object"
             },
             "BookingListItemVenueResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "id": {
                         "title": "Id",
@@ -1008,11 +1097,19 @@
                 "type": "object"
             },
             "BookingOfferExtraDataV2": {
+                "additionalProperties": false,
                 "properties": {
                     "ean": {
-                        "nullable": true,
-                        "title": "Ean",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Ean"
                     }
                 },
                 "title": "BookingOfferExtraDataV2",
@@ -1200,31 +1297,46 @@
                 "type": "object"
             },
             "BookingOfferResponseAddressV2": {
+                "additionalProperties": false,
                 "properties": {
                     "city": {
                         "title": "City",
                         "type": "string"
                     },
                     "coordinates": {
-                        "$ref": "#/components/schemas/Coordinates"
+                        "$ref": "#/components/schemas/CoordinatesV2"
                     },
                     "id": {
                         "title": "Id",
                         "type": "integer"
                     },
                     "label": {
-                        "nullable": true,
-                        "title": "Label",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Label"
                     },
                     "postalCode": {
                         "title": "Postalcode",
                         "type": "string"
                     },
                     "street": {
-                        "nullable": true,
-                        "title": "Street",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Street"
                     },
                     "timezone": {
                         "title": "Timezone",
@@ -1242,29 +1354,41 @@
                 "type": "object"
             },
             "BookingOfferResponseV2": {
+                "additionalProperties": false,
                 "properties": {
                     "address": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/BookingOfferResponseAddressV2"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "BookingOfferResponseAddressV2"
+                        "default": null
                     },
                     "bookingContact": {
-                        "nullable": true,
-                        "title": "Bookingcontact",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Bookingcontact"
                     },
                     "extraData": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/BookingOfferExtraDataV2"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "BookingOfferExtraDataV2"
+                        "default": null
                     },
                     "id": {
                         "title": "Id",
@@ -1273,11 +1397,13 @@
                     "image": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/OfferImageResponseV2"
+                                "$ref": "#/components/schemas/OfferImageV2"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "OfferImageResponseV2"
+                        "default": null
                     },
                     "isDigital": {
                         "title": "Isdigital",
@@ -1295,9 +1421,16 @@
                         "$ref": "#/components/schemas/SubcategoryIdEnum"
                     },
                     "url": {
-                        "nullable": true,
-                        "title": "Url",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Url"
                     },
                     "venue": {
                         "$ref": "#/components/schemas/BookingVenueResponseV2"
@@ -1495,35 +1628,60 @@
                 "type": "object"
             },
             "BookingResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "canReact": {
                         "title": "Canreact",
                         "type": "boolean"
                     },
                     "cancellationDate": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Cancellationdate",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Cancellationdate"
                     },
                     "cancellationReason": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/BookingCancellationReasons"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     },
                     "completedUrl": {
-                        "nullable": true,
-                        "title": "Completedurl",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Completedurl"
                     },
                     "confirmationDate": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Confirmationdate",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Confirmationdate"
                     },
                     "dateCreated": {
                         "format": "date-time",
@@ -1531,25 +1689,46 @@
                         "type": "string"
                     },
                     "dateUsed": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Dateused",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Dateused"
                     },
                     "displayAsEnded": {
-                        "nullable": true,
-                        "title": "Displayasended",
-                        "type": "boolean"
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Displayasended"
                     },
                     "enablePopUpReaction": {
                         "title": "Enablepopupreaction",
                         "type": "boolean"
                     },
                     "expirationDate": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Expirationdate",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Expirationdate"
                     },
                     "id": {
                         "title": "Id",
@@ -1573,9 +1752,12 @@
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/ReactionTypeEnum"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     }
                 },
                 "required": [
@@ -1648,12 +1830,20 @@
                 "type": "object"
             },
             "BookingStockResponseV2": {
+                "additionalProperties": false,
                 "properties": {
                     "beginningDatetime": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Beginningdatetime",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Beginningdatetime"
                     },
                     "features": {
                         "items": {
@@ -1678,9 +1868,16 @@
                         "type": "integer"
                     },
                     "priceCategoryLabel": {
-                        "nullable": true,
-                        "title": "Pricecategorylabel",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Pricecategorylabel"
                     }
                 },
                 "required": [
@@ -1694,11 +1891,19 @@
                 "type": "object"
             },
             "BookingVenueAddressResponseV2": {
+                "additionalProperties": false,
                 "properties": {
                     "id": {
-                        "nullable": true,
-                        "title": "Id",
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Id"
                     }
                 },
                 "title": "BookingVenueAddressResponseV2",
@@ -1751,14 +1956,22 @@
                 "type": "object"
             },
             "BookingVenueResponseV2": {
+                "additionalProperties": false,
                 "properties": {
                     "address": {
                         "$ref": "#/components/schemas/BookingVenueAddressResponseV2"
                     },
                     "bannerUrl": {
-                        "nullable": true,
-                        "title": "Bannerurl",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Bannerurl"
                     },
                     "id": {
                         "title": "Id",
@@ -1793,6 +2006,7 @@
                 "type": "object"
             },
             "BookingsListResponseV2": {
+                "additionalProperties": false,
                 "properties": {
                     "bookings": {
                         "items": {
@@ -1839,6 +2053,7 @@
                 "type": "object"
             },
             "BookingsResponseV2": {
+                "additionalProperties": false,
                 "properties": {
                     "endedBookings": {
                         "items": {
@@ -2267,6 +2482,37 @@
                 "title": "Coordinates",
                 "type": "object"
             },
+            "CoordinatesV2": {
+                "additionalProperties": false,
+                "properties": {
+                    "latitude": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Latitude"
+                    },
+                    "longitude": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Longitude"
+                    }
+                },
+                "title": "CoordinatesV2",
+                "type": "object"
+            },
             "Credit": {
                 "properties": {
                     "initial": {
@@ -2657,15 +2903,23 @@
                 "title": "ExpenseDomain"
             },
             "ExternalBookingDataResponseV2": {
+                "additionalProperties": false,
                 "properties": {
                     "barcode": {
                         "title": "Barcode",
                         "type": "string"
                     },
                     "seat": {
-                        "nullable": true,
-                        "title": "Seat",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Seat"
                     }
                 },
                 "required": [
@@ -2701,14 +2955,22 @@
                 "type": "object"
             },
             "ExternalBookingResponseV2": {
+                "additionalProperties": false,
                 "properties": {
                     "data": {
-                        "items": {
-                            "$ref": "#/components/schemas/ExternalBookingDataResponseV2"
-                        },
-                        "nullable": true,
-                        "title": "Data",
-                        "type": "array"
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "$ref": "#/components/schemas/ExternalBookingDataResponseV2"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Data"
                     }
                 },
                 "title": "ExternalBookingResponseV2",
@@ -4346,6 +4608,32 @@
                     "url"
                 ],
                 "title": "OfferImageResponseV2",
+                "type": "object"
+            },
+            "OfferImageV2": {
+                "additionalProperties": false,
+                "properties": {
+                    "credit": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Credit"
+                    },
+                    "url": {
+                        "title": "Url",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "url"
+                ],
+                "title": "OfferImageV2",
                 "type": "object"
             },
             "OfferOffererResponse": {
@@ -6840,7 +7128,6 @@
                 "type": "object"
             },
             "TicketDisplayEnum": {
-                "description": "An enumeration.",
                 "enum": [
                     "email_sent",
                     "email_will_be_sent",
@@ -6850,18 +7137,22 @@
                     "voucher",
                     "ticket"
                 ],
-                "title": "TicketDisplayEnum"
+                "title": "TicketDisplayEnum",
+                "type": "string"
             },
             "TicketResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "activationCode": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/ActivationCodeResponse"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "ActivationCodeResponse"
+                        "default": null
                     },
                     "display": {
                         "$ref": "#/components/schemas/TicketDisplayEnum"
@@ -6870,46 +7161,67 @@
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/ExternalBookingResponseV2"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "ExternalBookingResponseV2"
+                        "default": null
                     },
                     "token": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/TokenResponse"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "TokenResponse"
+                        "default": null
                     },
                     "voucher": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/VoucherResponse"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "VoucherResponse"
+                        "default": null
                     },
                     "withdrawal": {
-                        "$ref": "#/components/schemas/WithdrawalResponse"
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/WithdrawalResponse"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null
                     }
                 },
                 "required": [
-                    "display",
-                    "withdrawal"
+                    "display"
                 ],
                 "title": "TicketResponse",
                 "type": "object"
             },
             "TokenResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "data": {
-                        "nullable": true,
-                        "title": "Data",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Data"
                     }
                 },
                 "title": "TokenResponse",
@@ -7766,35 +8078,61 @@
                 "type": "object"
             },
             "VoucherResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "data": {
-                        "nullable": true,
-                        "title": "Data",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Data"
                     }
                 },
                 "title": "VoucherResponse",
                 "type": "object"
             },
             "WithdrawalResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "delay": {
-                        "nullable": true,
-                        "title": "Delay",
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Delay"
                     },
                     "details": {
-                        "nullable": true,
-                        "title": "Details",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Details"
                     },
                     "type": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/WithdrawalTypeEnum"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     }
                 },
                 "title": "WithdrawalResponse",
