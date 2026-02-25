@@ -89,14 +89,14 @@ export const AdageDiscovery = () => {
       <AdageDiscoveryBanner />
 
       <div className={styles['discovery-playlists']}>
-        <div className={styles['discovery-playlist']}>
+        <div>
           <NewOfferPlaylist
             onWholePlaylistSeen={onWholePlaylistSeen}
             trackPlaylistElementClicked={trackPlaylistElementClicked}
             observableRef={discoveryRef}
           />
         </div>
-        <div className={styles['discovery-playlist']}>
+        <div>
           <Carousel
             title={
               <h2 className={styles['playlist-carousel-title']}>
@@ -134,14 +134,14 @@ export const AdageDiscovery = () => {
             })}
           />
         </div>
-        <div className={styles['discovery-playlist']}>
+        <div>
           <NewOffererPlaylist
             onWholePlaylistSeen={onWholePlaylistSeen}
             trackPlaylistElementClicked={trackPlaylistElementClicked}
             observableRef={discoveryRef}
           />
         </div>
-        <div className={styles['discovery-playlist']}>
+        <div>
           <ClassroomPlaylist
             onWholePlaylistSeen={onWholePlaylistSeen}
             trackPlaylistElementClicked={trackPlaylistElementClicked}
@@ -149,7 +149,7 @@ export const AdageDiscovery = () => {
           />
         </div>
 
-        <div className={styles['discovery-playlist']} ref={footerSuggestion}>
+        <div ref={footerSuggestion}>
           <VenuePlaylist
             onWholePlaylistSeen={onWholePlaylistSeen}
             trackPlaylistElementClicked={trackPlaylistElementClicked}

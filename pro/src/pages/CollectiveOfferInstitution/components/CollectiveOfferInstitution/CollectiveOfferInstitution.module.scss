@@ -13,29 +13,6 @@
   width: rem.torem(570px);
 }
 
-.legend {
-  border: none;
-
-  @include fonts.title4;
-
-  margin-bottom: var(--size-spacing-xl);
-}
-
-.actions-layout {
-  padding-top: var(--size-spacing-xl);
-}
-
-.institution {
-  margin: 0;
-}
-
-.banner-with-bin {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .banner-space {
   margin-bottom: var(--size-spacing-l);
 }

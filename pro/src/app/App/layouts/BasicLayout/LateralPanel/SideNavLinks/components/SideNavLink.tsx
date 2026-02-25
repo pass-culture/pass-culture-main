@@ -5,7 +5,7 @@ import { NavLink, type To } from 'react-router'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import type { NavItem } from '../SideNavLinks'
-import styles from '../SideNavLinks.module.scss'
+import styles from './SideNavLink.module.scss'
 import { SideNavToggleButton } from './SideNavToggleButton'
 
 const NAV_ITEM_ICON_SIZE = '20'
@@ -28,16 +28,9 @@ const SideNavLink = ({ to, children, icon, end = false }: SideNavLinkProps) => {
         })
       }
     >
-      {icon && (
-        <SvgIcon
-          src={icon}
-          width={NAV_ITEM_ICON_SIZE}
-          className={styles.icon}
-        />
-      )}
+      {icon && <SvgIcon src={icon} width={NAV_ITEM_ICON_SIZE} />}
       <span
         className={classnames({
-          [styles['nav-links-item-title']]: icon,
           [styles['nav-links-item-without-icon']]: !icon,
         })}
       >

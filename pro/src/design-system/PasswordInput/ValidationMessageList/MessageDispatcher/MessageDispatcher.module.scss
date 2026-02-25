@@ -7,16 +7,12 @@
 
   display: flex;
   text-align: left;
+}
 
-  svg {
-    height: rem.torem(18px);
-    margin-right: var(--size-spacing-xs);
-    width: rem.torem(18px);
-  }
-
-  &-text {
-    white-space: pre-wrap;
-  }
+.message-icon {
+  width: rem.torem(18px);
+  height: rem.torem(18px);
+  margin-right: var(--size-spacing-xs);
 }
 
 .message-error {

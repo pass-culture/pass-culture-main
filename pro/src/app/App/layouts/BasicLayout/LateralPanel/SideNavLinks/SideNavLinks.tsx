@@ -1,5 +1,3 @@
-import classnames from 'classnames'
-
 import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import fullSmsIcon from '@/icons/full-sms.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -35,12 +33,7 @@ export const SideNavLinks = ({
   return (
     <div className={styles.sidebar}>
       {/* SCROLLABLE CONTENT */}
-      <ul
-        className={classnames(
-          styles['nav-links-group'],
-          styles['nav-links-scroll']
-        )}
-      >
+      <ul>
         {mainItems.map((item) => (
           <RenderNavItem key={item.key} item={item} />
         ))}
@@ -49,16 +42,13 @@ export const SideNavLinks = ({
       {/* FOOTER */}
       <div className={styles.footer}>
         {footerItems && (
-          <div className={styles['nav-links-group']}>
-            <div
-              className={styles['nav-links-last-group-separator']}
-              aria-hidden="true"
-            >
+          <div>
+            <div aria-hidden="true">
               <div className={styles['separator-line']} />
             </div>
 
             {withSwitchVenueFeature ? (
-              <ul className={styles['nav-links-footer']}>
+              <ul>
                 <li>
                   <UserReviewDialog
                     dialogTrigger={

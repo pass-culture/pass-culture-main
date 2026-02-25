@@ -1,37 +1,17 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_outline.scss" as outline;
 @use "styles/variables/_z-index.scss" as zIndex;
 
-.sidebar {
-  display: flex;
-  flex-direction: column;
-  height: 100vh; /* full sidebar height */
-  justify-content: space-between;
-}
-
-.footer {
-  padding: var(--size-spacing-s) 0;
-}
-
-.separator-line {
-  background-color: var(--separator-color-subtle);
-  margin: 0 rem.torem(16px);
-  height: rem.torem(1px);
-  margin-bottom: var(--size-spacing-l);
-}
-
-.nav-links-item {
-  @include fonts.button;
-
-  padding: var(--size-spacing-s) var(--size-spacing-l);
+.nav-links-help {
   display: flex;
   gap: var(--size-spacing-s);
   align-items: center;
+  padding: var(--size-spacing-s) var(--size-spacing-l);
   width: 100%;
   background-color: transparent;
   border: none;
+  justify-content: space-between;
 
   &:hover {
     background-color: var(--color-background-subtle);

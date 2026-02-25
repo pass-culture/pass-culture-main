@@ -1,5 +1,3 @@
-import cn from 'classnames'
-
 import { HelpDropdownMenu } from '@/app/App/layouts/components/Header/components/HeaderHelpDropdown/HelpDropdownMenu'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -8,7 +6,7 @@ import fullRightIcon from '@/icons/full-right.svg'
 import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
-import styles from '../SideNavLinks.module.scss'
+import styles from './HelpDropdownNavItem.module.scss'
 
 interface HelpDropdownNavItemProps {
   isMobileScreen: boolean
@@ -22,7 +20,7 @@ export const HelpDropdownNavItem = ({
     side={isMobileScreen ? 'top' : 'right'}
     sideOffset={0}
     trigger={
-      <div className={cn(styles['nav-links-item'], styles['nav-links-help'])}>
+      <div className={styles['nav-links-help']}>
         <Button
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}

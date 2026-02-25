@@ -27,10 +27,7 @@ export function FiledCharactersCount({
       >
         {debouncedCount} caractères sur {max}
       </span>
-      <span
-        className={styles['field-layout-character-count']}
-        aria-hidden="true"
-      >
+      <span aria-hidden="true">
         {current}/{max}
       </span>
     </span>
