@@ -56,7 +56,7 @@ const WelcomeStepNextSteps = (): JSX.Element => {
             title="Besoin de plus d'informations ?"
             actions={[
               {
-                href: '#', // TODO: jclery-pass (24/02/2026): Wait for target page to be ready
+                href: 'https://us06web.zoom.us/meeting/register/wtda-V2MQwmKKzkuvgpNlw#/registration',
                 icon: fullLinkIcon,
                 iconAlt: 'Nouvelle fenêtre',
                 label: 'Participez à notre prochain webinaire',
