@@ -7,12 +7,12 @@
 
   display: flex;
   text-align: left;
+}
 
-  svg {
-    width: rem.torem(18px);
-    height: rem.torem(18px);
-    margin-right: var(--size-spacing-xs);
-  }
+.message-icon {
+  width: rem.torem(18px);
+  height: rem.torem(18px);
+  margin-right: var(--size-spacing-xs);
 }
 
 .message-error {

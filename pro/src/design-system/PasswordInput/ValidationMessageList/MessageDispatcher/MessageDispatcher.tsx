@@ -37,7 +37,7 @@ const MessageSuccess = ({ message }: MessageProps): JSX.Element => (
     className={cn(styles['message'], styles['message-success'])}
     data-testid={`success-${message}`}
   >
-    <SvgIcon src={fullValidIcon} alt={''} width="16" />
+    <SvgIcon src={fullValidIcon} alt={''} className={styles['message-icon']} />
     <span>{message}</span>
   </div>
 )
@@ -47,7 +47,7 @@ const MessageError = ({ message }: MessageProps): JSX.Element => (
     className={cn(styles['message'], styles['message-error'])}
     data-testid={`error-${message}`}
   >
-    <SvgIcon src={fullErrorIcon} alt={''} width="16" />
+    <SvgIcon src={fullErrorIcon} alt={''} className={styles['message-icon']} />
     <span>{message}</span>
   </div>
 )
