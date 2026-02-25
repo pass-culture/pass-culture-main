@@ -2,7 +2,6 @@ import datetime
 
 from pcapi import settings
 from pcapi.core.educational import schemas
-from pcapi.core.educational.adage import serialize
 
 
 class AdageClient:
@@ -26,10 +25,10 @@ class AdageClient:
     ) -> list[dict[str, str | int | float | None]]:
         raise NotImplementedError()
 
-    def notify_institution_association(self, data: serialize.AdageCollectiveOffer) -> None:
+    def notify_institution_association(self, data: schemas.AdageCollectiveOffer) -> None:
         raise NotImplementedError()
 
-    def get_adage_educational_institutions(self, ansco: str) -> list[serialize.AdageEducationalInstitution]:
+    def get_adage_educational_institutions(self, ansco: str) -> list[schemas.AdageEducationalInstitution]:
         raise NotImplementedError()
 
     def get_adage_educational_redactor_from_uai(self, uai: str) -> list[dict[str, str]]:
@@ -38,5 +37,5 @@ class AdageClient:
     def notify_reimburse_collective_booking(self, data: schemas.AdageReimbursementNotification) -> None:
         raise NotImplementedError()
 
-    def notify_redactor_when_collective_request_is_made(self, data: serialize.AdageCollectiveRequest) -> None:
+    def notify_redactor_when_collective_request_is_made(self, data: schemas.AdageCollectiveRequest) -> None:
         raise NotImplementedError()

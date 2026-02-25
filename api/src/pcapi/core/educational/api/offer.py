@@ -16,11 +16,11 @@ from pcapi.core.educational import schemas
 from pcapi.core.educational import utils
 from pcapi.core.educational import validation
 from pcapi.core.educational.adage import api as adage_client
-from pcapi.core.educational.adage.serialize import serialize_collective_offer
-from pcapi.core.educational.adage.serialize import serialize_collective_offer_request
 from pcapi.core.educational.api import adage as api_adage
 from pcapi.core.educational.api import shared as api_shared
-from pcapi.core.educational.serialization import collective_booking as collective_booking_serialize
+from pcapi.core.educational.serialization.collective_booking import serialize_collective_booking
+from pcapi.core.educational.serialization.collective_offer import serialize_collective_offer
+from pcapi.core.educational.serialization.collective_request import serialize_collective_offer_request
 from pcapi.core.educational.utils import get_image_from_url
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.finance import api as finance_api
@@ -94,7 +94,7 @@ def notify_educational_redactor_on_collective_offer_or_stock_edit(
         return
 
     data = schemas.EducationalBookingEdition(
-        **collective_booking_serialize.serialize_collective_booking(active_collective_bookings).dict(),
+        **serialize_collective_booking(active_collective_bookings).dict(),
         updatedFields=updated_fields,
     )
     try:

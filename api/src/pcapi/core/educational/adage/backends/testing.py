@@ -5,9 +5,6 @@ from pcapi.core.educational import exceptions
 from pcapi.core.educational import schemas
 from pcapi.core.educational import testing
 from pcapi.core.educational.adage.backends.base import AdageClient
-from pcapi.core.educational.adage.serialize import AdageCollectiveOffer
-from pcapi.core.educational.adage.serialize import AdageCollectiveRequest
-from pcapi.core.educational.adage.serialize import AdageEducationalInstitution
 
 
 class AdageSpyClient(AdageClient):
@@ -91,13 +88,13 @@ class AdageSpyClient(AdageClient):
             },
         ]
 
-    def notify_institution_association(self, data: AdageCollectiveOffer) -> None:
+    def notify_institution_association(self, data: schemas.AdageCollectiveOffer) -> None:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/offre-assoc", "sent_data": data})
 
-    def get_adage_educational_institutions(self, ansco: str) -> list[AdageEducationalInstitution]:
+    def get_adage_educational_institutions(self, ansco: str) -> list[schemas.AdageEducationalInstitution]:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/etablissement-culturel/{ansco}", "sent_data": ""})
         return [
-            AdageEducationalInstitution(
+            schemas.AdageEducationalInstitution(
                 uai="0470009E",
                 sigle="COLLEGE",
                 libelle="DE LA TOUR0",
@@ -108,7 +105,7 @@ class AdageSpyClient(AdageClient):
                 latitude=decimal.Decimal("48.8534100"),
                 longitude=decimal.Decimal("2.3488000"),
             ),
-            AdageEducationalInstitution(
+            schemas.AdageEducationalInstitution(
                 uai="0470010E",
                 sigle="CLG",
                 libelle="Balamb Garden",
@@ -151,5 +148,5 @@ class AdageSpyClient(AdageClient):
         api_url = f"{self.base_url}/v1/reservation-remboursement"
         testing.adage_requests.append({"url": api_url, "sent_data": ""})
 
-    def notify_redactor_when_collective_request_is_made(self, data: AdageCollectiveRequest) -> None:
+    def notify_redactor_when_collective_request_is_made(self, data: schemas.AdageCollectiveRequest) -> None:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/offre-vitrine", "sent_data": data})

@@ -1,8 +1,8 @@
 import typing
 
 from pcapi.core.educational import models
-from pcapi.core.educational.adage.serialize import AdageCollectiveOffer
-from pcapi.core.educational.adage.serialize import AdageCollectiveRequest
+from pcapi.core.educational.schemas import AdageCollectiveOffer
+from pcapi.core.educational.schemas import AdageCollectiveRequest
 from pcapi.core.educational.schemas import EducationalBookingResponse
 
 

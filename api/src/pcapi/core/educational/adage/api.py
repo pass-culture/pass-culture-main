@@ -3,7 +3,6 @@ import typing
 
 from pcapi import settings
 from pcapi.core.educational import schemas
-from pcapi.core.educational.adage import serialize
 from pcapi.core.educational.adage.backends.adage import AdageHttpClient
 from pcapi.core.educational.adage.backends.logger import AdageLoggerClient
 from pcapi.core.educational.adage.backends.testing import AdageSpyClient
@@ -48,11 +47,11 @@ def get_cultural_partners(since_date: datetime.datetime | None = None) -> list[d
     return result
 
 
-def notify_institution_association(data: serialize.AdageCollectiveOffer) -> None:
+def notify_institution_association(data: schemas.AdageCollectiveOffer) -> None:
     _get_backend().notify_institution_association(data=data)
 
 
-def get_adage_educational_institutions(ansco: str) -> list[serialize.AdageEducationalInstitution]:
+def get_adage_educational_institutions(ansco: str) -> list[schemas.AdageEducationalInstitution]:
     result = _get_backend().get_adage_educational_institutions(ansco)
     return result
 
@@ -66,5 +65,5 @@ def notify_reimburse_collective_booking(data: schemas.AdageReimbursementNotifica
     _get_backend().notify_reimburse_collective_booking(data)
 
 
-def notify_redactor_when_collective_request_is_made(data: serialize.AdageCollectiveRequest) -> None:
+def notify_redactor_when_collective_request_is_made(data: schemas.AdageCollectiveRequest) -> None:
     _get_backend().notify_redactor_when_collective_request_is_made(data)
