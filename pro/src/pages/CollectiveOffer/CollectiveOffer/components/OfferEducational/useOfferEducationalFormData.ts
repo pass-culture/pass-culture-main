@@ -5,7 +5,7 @@ import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
-  NationalProgramModel,
+  NationalProgramResponseModel,
   VenueListItemResponseModel,
 } from '@/apiClient/v1'
 import {
@@ -18,7 +18,7 @@ import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains
 export type DomainOption = {
   id: string
   label: string
-  nationalPrograms: NationalProgramModel[]
+  nationalPrograms: NationalProgramResponseModel[]
 }
 
 type OfferEducationalFormData = {

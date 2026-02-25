@@ -1,5 +1,9 @@
 import { CollectiveLocationType } from '@/apiClient/adage'
-import { OfferContactFormEnum } from '@/apiClient/v1'
+import {
+  type GetCollectiveOfferVenueResponseModel,
+  type LocationResponseModelV2,
+  OfferContactFormEnum,
+} from '@/apiClient/v1'
 import { getDefaultEducationalValues } from '@/commons/core/OfferEducational/constants'
 import { formatShortDateForInput } from '@/commons/utils/date'
 import { getCollectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
@@ -7,7 +11,7 @@ import { venueListItemFactory } from '@/commons/utils/factories/individualApiFac
 
 import { computeInitialValuesFromOffer } from '../computeInitialValuesFromOffer'
 
-const venueAddress = {
+const venueAddress: LocationResponseModelV2 = {
   city: 'Paris',
   id: 1,
   isVenueLocation: true,
@@ -17,6 +21,9 @@ const venueAddress = {
   postalCode: '75018',
   street: 'rue de la paix',
   banId: '',
+  departmentCode: '75',
+  inseeCode: '',
+  label: '',
 }
 
 const venues = [
@@ -34,12 +41,13 @@ const offerer = {
   name: 'toto',
 }
 
-const offerVenue = {
+const offerVenue: GetCollectiveOfferVenueResponseModel = {
   id: 2,
   managingOfferer: offerer,
-  managedVenues: venues,
   name: 'Nom de la structure 2',
   publicName: 'Nom public de la structure 2',
+  departementCode: '33',
+  imgUrl: null,
 }
 
 describe('computeInitialValuesFromOffer', () => {
@@ -212,7 +220,11 @@ describe('computeInitialValuesFromOffer', () => {
               latitude: 12,
               longitude: 3,
               postalCode: '31000',
+              departmentCode: '33',
+              inseeCode: '',
+              banId: '',
             },
+            locationComment: null,
           },
           venue: offerVenue,
         }),
@@ -234,6 +246,7 @@ describe('computeInitialValuesFromOffer', () => {
             label: 'théâtre de savoie',
           },
           locationType: 'ADDRESS',
+          locationComment: null,
         },
       })
     )
@@ -249,6 +262,7 @@ describe('computeInitialValuesFromOffer', () => {
           location: {
             locationType: CollectiveLocationType.ADDRESS,
             location: venueAddress,
+            locationComment: null,
           },
           venue: offerVenue,
         }),

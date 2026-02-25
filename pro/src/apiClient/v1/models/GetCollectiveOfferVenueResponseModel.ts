@@ -4,9 +4,9 @@
 /* eslint-disable */
 import type { GetCollectiveOfferManagingOffererResponseModel } from './GetCollectiveOfferManagingOffererResponseModel';
 export type GetCollectiveOfferVenueResponseModel = {
-  departementCode?: string | null;
+  departementCode: string;
   id: number;
-  imgUrl?: string | null;
+  imgUrl: (string | null);
   managingOfferer: GetCollectiveOfferManagingOffererResponseModel;
   name: string;
   publicName: string;

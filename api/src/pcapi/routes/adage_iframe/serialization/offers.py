@@ -13,7 +13,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.native.v1.serialization import common_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
-from pcapi.routes.serialization import collective_offers_serialize
+from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.routes.shared import validation
 from pcapi.routes.shared.price import convert_to_cent
@@ -22,6 +22,41 @@ from pcapi.utils.date import format_into_utc_date
 
 
 logger = logging.getLogger(__name__)
+
+
+class CollectiveOfferDatesModel(BaseModel):
+    start: datetime
+    end: datetime
+
+    class Config:
+        json_encoders = {datetime: format_into_utc_date}
+
+
+class GetCollectiveOfferLocationModel(BaseModel):
+    locationType: models.CollectiveLocationType
+    locationComment: str | None
+    location: address_serialize.LocationResponseModel | None
+
+
+def get_collective_offer_location_model(
+    offer: models.CollectiveOffer | models.CollectiveOfferTemplate,
+) -> GetCollectiveOfferLocationModel:
+    location = None
+    oa = offer.offererAddress
+    venue = offer.venue
+    if oa is not None:
+        is_venue_location = False
+        if venue.offererAddress.addressId == oa.addressId and (oa.label is None or oa.label == venue.publicName):
+            is_venue_location = True
+        location = address_serialize.LocationResponseModel(
+            **address_serialize.retrieve_address_info_from_oa(oa),
+            label=offer.venue.publicName if is_venue_location else oa.label,
+            isVenueLocation=is_venue_location,
+        )
+
+    return GetCollectiveOfferLocationModel(
+        locationType=offer.locationType, locationComment=offer.locationComment, location=location
+    )
 
 
 class OfferManagingOffererResponse(BaseModel):
@@ -123,7 +158,7 @@ class CollectiveOfferBaseReponseModel(BaseModel, common_models.AccessibilityComp
     name: str
     venue: OfferVenueResponse
     students: list[models.StudentLevels]
-    location: collective_offers_serialize.GetCollectiveOfferLocationModel | None
+    location: GetCollectiveOfferLocationModel | None
     contactEmail: str | None
     contactPhone: str | None
     durationMinutes: int | None
@@ -160,7 +195,7 @@ class CollectiveOfferResponseModel(CollectiveOfferBaseReponseModel):
             stock=offer.collectiveStock,
             venue=offer.venue,
             students=offer.students,
-            location=collective_offers_serialize.get_collective_offer_location_model(offer),
+            location=get_collective_offer_location_model(offer),
             contactEmail=offer.contactEmail,
             contactPhone=offer.contactPhone,
             durationMinutes=offer.durationMinutes,
@@ -189,7 +224,7 @@ class ListCollectiveOffersResponseModel(BaseModel):
 
 class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
     isFavorite: bool | None
-    dates: collective_offers_serialize.CollectiveOfferDatesModel | None
+    dates: CollectiveOfferDatesModel | None
     contactUrl: str | None
     contactForm: models.OfferContactFormEnum | None
 
@@ -200,7 +235,7 @@ class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
         is_favorite: bool,
     ) -> "CollectiveOfferTemplateResponseModel":
         if offer.start and offer.end:
-            dates = collective_offers_serialize.CollectiveOfferDatesModel(start=offer.start, end=offer.end)
+            dates = CollectiveOfferDatesModel(start=offer.start, end=offer.end)
         else:
             dates = None
 
@@ -210,7 +245,7 @@ class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
             name=offer.name,
             venue=offer.venue,
             students=offer.students,
-            location=collective_offers_serialize.get_collective_offer_location_model(offer),
+            location=get_collective_offer_location_model(offer),
             durationMinutes=offer.durationMinutes,
             educationalPriceDetail=offer.priceDetail,
             domains=offer.domains,

@@ -88,6 +88,7 @@ const institutions: EducationalInstitutionResponseModel[] = [
     city: 'Paris',
     phoneNumber: '',
     institutionId: 'ABCDEF12',
+    institutionType: 'Collège',
   },
   {
     id: 42,
@@ -96,6 +97,7 @@ const institutions: EducationalInstitutionResponseModel[] = [
     city: 'Bordeaux',
     phoneNumber: '',
     institutionId: 'ABCDEF13',
+    institutionType: 'Collège',
   },
   {
     id: 43,
@@ -415,7 +417,9 @@ describe('CollectiveOfferInstitution', () => {
         /Nom de l’établissement scolaire ou code UAI/
       )
 
-      expect(institutionInput).toHaveValue('Institution 2 - Paris - ABCDEF12')
+      expect(institutionInput).toHaveValue(
+        'Collège Institution 2 - Paris - ABCDEF12'
+      )
     })
 
     it('should prefill form with requested information', async () => {

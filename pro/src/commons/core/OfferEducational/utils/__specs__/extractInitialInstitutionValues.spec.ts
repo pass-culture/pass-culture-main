@@ -19,6 +19,7 @@ describe('extractInitialInstitutionValues', () => {
       postalCode: '30100',
       phoneNumber: '',
       institutionId: 'ABCDEF11',
+      institutionType: 'Collège',
     }
     expect(extractInitialInstitutionValues(institution)).toStrictEqual({
       institution: '1',
@@ -35,6 +36,7 @@ describe('extractInitialInstitutionValues', () => {
       postalCode: '30100',
       phoneNumber: '',
       institutionId: 'ABCDEF11',
+      institutionType: 'Collège',
     }
     const teacher = {
       firstName: 'Reda',

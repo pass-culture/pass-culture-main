@@ -3,30 +3,23 @@ from datetime import date
 from datetime import datetime
 
 import pydantic as pydantic_v2
-from pydantic.v1 import ConstrainedStr
-from pydantic.v1 import Field
-from pydantic.v1 import utils as pydantic_utils
 from spectree.models import BaseFile
 
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import constants
 from pcapi.core.educational import models
 from pcapi.core.offerers import models as offerers_models
-from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
-from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import collective_history_serialize
 from pcapi.routes.serialization import educational_institutions
+from pcapi.routes.serialization import national_programs
 from pcapi.routes.serialization import venues_serialize
-from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.routes.serialization.utils import raise_error_from_location
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.serialization import utils
 from pcapi.serialization.exceptions import PydanticError
-from pcapi.serialization.utils import to_camel
-from pcapi.utils.date import format_into_utc_date
 
 
 class ListCollectiveOffersQueryModel(HttpQueryParamsModel):
@@ -56,33 +49,16 @@ class CollectiveOfferStockResponseModel(HttpBodyModel):
     numberOfTickets: int
 
 
-class EducationalRedactorResponseModel(BaseModel):
-    email: str | None
+class EducationalRedactorResponseModel(HttpBodyModel):
+    email: str
     firstName: str | None
     lastName: str | None
     civility: str | None
-
-    class Config:
-        orm_mode = True
-
-
-class CollectiveOfferDatesModel(BaseModel):
-    start: datetime
-    end: datetime
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
 
 
 class DatesModel(HttpBodyModel):
     start: datetime
     end: datetime
-
-
-class GetCollectiveOfferLocationModel(BaseModel):
-    locationType: models.CollectiveLocationType
-    locationComment: str | None
-    location: address_serialize.LocationResponseModel | None
 
 
 class GetCollectiveOfferLocationModelV2(HttpBodyModel):
@@ -121,7 +97,7 @@ class CollectiveOfferResponseModel(HttpBodyModel):
     # collective offer specific fields
     allowedActions: list[models.CollectiveOfferAllowedAction]
     stock: CollectiveOfferStockResponseModel | None
-    educationalInstitution: educational_institutions.EducationalInstitutionResponseModelV2 | None
+    educationalInstitution: educational_institutions.EducationalInstitutionResponseModel | None
 
     @classmethod
     def build(cls, offer: models.CollectiveOffer) -> typing.Self:
@@ -187,122 +163,68 @@ class ListCollectiveOfferTemplatesResponseModel(pydantic_v2.RootModel):
     root: list[CollectiveOfferTemplateResponseModel]
 
 
-class OfferDomain(BaseModel):
+class OfferDomain(HttpBodyModel):
     id: int
     name: str
 
-    class Config:
-        alias_generator = to_camel
-        orm_mode = True
 
-
-class GetCollectiveOfferManagingOffererResponseModel(BaseModel):
+class GetCollectiveOfferManagingOffererResponseModel(HttpBodyModel):
     id: int
     name: str
     siren: str
 
-    class Config:
-        orm_mode = True
 
-
-class GetCollectiveOfferVenueResponseModel(BaseModel):
-    departementCode: str | None
+class GetCollectiveOfferVenueResponseModel(HttpBodyModel):
+    departementCode: str
     id: int
     managingOfferer: GetCollectiveOfferManagingOffererResponseModel
     name: str
     publicName: str
-    bannerUrl: str | None = Field(alias="imgUrl")
-
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
-        allow_population_by_field_name = True
+    bannerUrl: str | None = pydantic_v2.Field(alias="imgUrl")
 
     @classmethod
-    def from_orm(cls, venue: offerers_models.Venue) -> "GetCollectiveOfferVenueResponseModel":
+    def build(cls, venue: offerers_models.Venue) -> typing.Self:
         return cls(
             departementCode=venue.offererAddress.address.departmentCode,
             id=venue.id,
             managingOfferer=venue.managingOfferer,
             name=venue.name,
             publicName=venue.publicName,
-            imgUrl=venue.bannerUrl,
+            bannerUrl=venue.bannerUrl,
         )
 
 
-class PriceDetail(ConstrainedStr):
-    max_length: int = 1_000
-
-
-class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
+class GetCollectiveOfferCollectiveStockResponseModel(HttpBodyModel):
     id: int
-    startDatetime: datetime | None
-    endDatetime: datetime | None
-    bookingLimitDatetime: datetime | None
+    startDatetime: datetime
+    endDatetime: datetime
+    bookingLimitDatetime: datetime
     price: float
-    numberOfTickets: int | None
-    priceDetail: PriceDetail | None = Field(alias="educationalPriceDetail")
-
-    class Config:
-        allow_population_by_field_name = True
-        orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
+    numberOfTickets: int
+    priceDetail: str | None = pydantic_v2.Field(alias="educationalPriceDetail")
 
 
-class GetCollectiveOfferBookingResponseModel(BaseModel):
+class GetCollectiveOfferBookingResponseModel(HttpBodyModel):
     id: int
     dateCreated: datetime
     status: models.CollectiveBookingStatus
-    educationalRedactor: EducationalRedactorResponseModel | None
+    educationalRedactor: EducationalRedactorResponseModel
     cancellationLimitDate: datetime
     cancellationReason: models.CollectiveBookingCancellationReasons | None
     confirmationLimitDate: datetime
 
-    class Config:
-        orm_mode = True
 
-
-def get_collective_offer_location_model(
-    offer: models.CollectiveOffer | models.CollectiveOfferTemplate,
-) -> GetCollectiveOfferLocationModel:
-    location = None
-    oa = offer.offererAddress
-    venue = offer.venue
-    if oa is not None:
-        is_venue_location = False
-        if venue.offererAddress.addressId == oa.addressId and (oa.label is None or oa.label == venue.publicName):
-            is_venue_location = True
-        location = address_serialize.LocationResponseModel(
-            **address_serialize.retrieve_address_info_from_oa(oa),
-            label=offer.venue.publicName if is_venue_location else oa.label,
-            isVenueLocation=is_venue_location,
-        )
-
-    return GetCollectiveOfferLocationModel(
-        locationType=offer.locationType, locationComment=offer.locationComment, location=location
-    )
-
-
-class GetCollectiveOfferBaseResponseGetterDict(pydantic_utils.GetterDict):
-    def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
-        offer = self._obj
-
-        if key == "location":
-            return get_collective_offer_location_model(offer)
-
-        if key == "history":
-            return collective_history_serialize.get_collective_offer_history(offer)
-
-        return super().get(key, default)
-
-
-class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixin):
+class GetCollectiveOfferBaseResponseModel(HttpBodyModel):
+    audioDisabilityCompliant: bool | None
+    mentalDisabilityCompliant: bool | None
+    motorDisabilityCompliant: bool | None
+    visualDisabilityCompliant: bool | None
     bookingEmails: list[str]
     dateCreated: datetime
     description: str
     durationMinutes: int | None
     students: list[models.StudentLevels]
-    location: GetCollectiveOfferLocationModel
+    location: GetCollectiveOfferLocationModelV2
     contactEmail: str | None
     contactPhone: str | None
     id: int
@@ -313,26 +235,61 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     interventionArea: list[str]
     imageCredit: str | None
     imageUrl: str | None
-    nationalProgram: NationalProgramModel | None
-    formats: typing.Sequence[EacFormat]
-
-    class Config:
-        allow_population_by_field_name = True
-        orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
-        use_enum_values = True
-        getter_dict = GetCollectiveOfferBaseResponseGetterDict
+    nationalProgram: national_programs.NationalProgramResponseModel | None
+    formats: list[EacFormat]
+    dates: DatesModel | None
 
 
 class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseModel):
-    priceDetail: PriceDetail | None = Field(alias="educationalPriceDetail")
-    dates: CollectiveOfferDatesModel | None
+    priceDetail: str | None = pydantic_v2.Field(alias="educationalPriceDetail")
     isTemplate: bool = True
-    contactEmail: str | None
-    contactPhone: str | None
     contactUrl: str | None
     contactForm: models.OfferContactFormEnum | None
     allowedActions: list[models.CollectiveOfferTemplateAllowedAction]
+
+    @classmethod
+    def build(cls, offer: models.CollectiveOfferTemplate) -> typing.Self:
+        national_program = (
+            national_programs.NationalProgramResponseModel.model_validate(offer.nationalProgram)
+            if offer.nationalProgram
+            else None
+        )
+
+        if offer.start and offer.end:
+            dates = DatesModel(start=offer.start, end=offer.end)
+        else:
+            dates = None
+
+        return cls(
+            audioDisabilityCompliant=offer.audioDisabilityCompliant,
+            mentalDisabilityCompliant=offer.mentalDisabilityCompliant,
+            motorDisabilityCompliant=offer.motorDisabilityCompliant,
+            visualDisabilityCompliant=offer.visualDisabilityCompliant,
+            bookingEmails=offer.bookingEmails,
+            dateCreated=offer.dateCreated,
+            description=offer.description,
+            durationMinutes=offer.durationMinutes,
+            students=offer.students,
+            location=GetCollectiveOfferLocationModelV2.build(offer),
+            contactEmail=offer.contactEmail,
+            contactPhone=offer.contactPhone,
+            id=offer.id,
+            name=offer.name,
+            venue=GetCollectiveOfferVenueResponseModel.build(offer.venue),
+            displayedStatus=offer.displayedStatus,
+            domains=[OfferDomain.model_validate(domain) for domain in offer.domains],
+            interventionArea=offer.interventionArea,
+            imageCredit=offer.imageCredit,
+            imageUrl=offer.imageUrl,
+            nationalProgram=national_program,
+            formats=offer.formats,
+            dates=dates,
+            priceDetail=offer.priceDetail,
+            isTemplate=True,
+            contactUrl=offer.contactUrl,
+            contactForm=offer.contactForm,
+            allowedActions=offer.allowedActions,
+        )
 
 
 class CollectiveOfferRedactorModel(HttpBodyModel):
@@ -360,25 +317,90 @@ class GetCollectiveOfferRequestResponseModel(HttpBodyModel):
     educationalInstitution: CollectiveOfferInstitutionModel = pydantic_v2.Field(alias="institution")
 
 
-class GetCollectiveOfferProviderResponseModel(BaseModel):
+class GetCollectiveOfferProviderResponseModel(HttpBodyModel):
     name: str
-
-    class Config:
-        orm_mode = True
 
 
 class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     collectiveStock: GetCollectiveOfferCollectiveStockResponseModel | None
-    lastBooking: GetCollectiveOfferBookingResponseModel | None = Field(alias="booking")
+    lastBooking: GetCollectiveOfferBookingResponseModel | None = pydantic_v2.Field(alias="booking")
     institution: educational_institutions.EducationalInstitutionResponseModel | None
     templateId: int | None
     teacher: EducationalRedactorResponseModel | None
     isPublicApi: bool
     provider: GetCollectiveOfferProviderResponseModel | None
     isTemplate: bool = False
-    dates: CollectiveOfferDatesModel | None
     allowedActions: list[models.CollectiveOfferAllowedAction]
     history: collective_history_serialize.CollectiveOfferHistory
+
+    @classmethod
+    def build(cls, offer: models.CollectiveOffer) -> typing.Self:
+        national_program = (
+            national_programs.NationalProgramResponseModel.model_validate(offer.nationalProgram)
+            if offer.nationalProgram
+            else None
+        )
+
+        if offer.start and offer.end:
+            dates = DatesModel(start=offer.start, end=offer.end)
+        else:
+            dates = None
+
+        collective_stock = (
+            GetCollectiveOfferCollectiveStockResponseModel.model_validate(offer.collectiveStock)
+            if offer.collectiveStock
+            else None
+        )
+
+        last_booking = (
+            GetCollectiveOfferBookingResponseModel.model_validate(offer.lastBooking) if offer.lastBooking else None
+        )
+
+        institution = (
+            educational_institutions.EducationalInstitutionResponseModel.model_validate(offer.institution)
+            if offer.institution
+            else None
+        )
+
+        teacher = EducationalRedactorResponseModel.model_validate(offer.teacher) if offer.teacher else None
+
+        provider = GetCollectiveOfferProviderResponseModel.model_validate(offer.provider) if offer.provider else None
+
+        return cls(
+            audioDisabilityCompliant=offer.audioDisabilityCompliant,
+            mentalDisabilityCompliant=offer.mentalDisabilityCompliant,
+            motorDisabilityCompliant=offer.motorDisabilityCompliant,
+            visualDisabilityCompliant=offer.visualDisabilityCompliant,
+            bookingEmails=offer.bookingEmails,
+            dateCreated=offer.dateCreated,
+            description=offer.description,
+            durationMinutes=offer.durationMinutes,
+            students=offer.students,
+            location=GetCollectiveOfferLocationModelV2.build(offer),
+            contactEmail=offer.contactEmail,
+            contactPhone=offer.contactPhone,
+            id=offer.id,
+            name=offer.name,
+            venue=GetCollectiveOfferVenueResponseModel.build(offer.venue),
+            displayedStatus=offer.displayedStatus,
+            domains=[OfferDomain.model_validate(domain) for domain in offer.domains],
+            interventionArea=offer.interventionArea,
+            imageCredit=offer.imageCredit,
+            imageUrl=offer.imageUrl,
+            nationalProgram=national_program,
+            formats=offer.formats,
+            dates=dates,
+            collectiveStock=collective_stock,
+            lastBooking=last_booking,
+            institution=institution,
+            templateId=offer.templateId,
+            teacher=teacher,
+            isPublicApi=offer.isPublicApi,
+            provider=provider,
+            isTemplate=False,
+            allowedActions=offer.allowedActions,
+            history=collective_history_serialize.get_collective_offer_history(offer),
+        )
 
 
 class CollectiveOfferResponseIdModel(HttpBodyModel):

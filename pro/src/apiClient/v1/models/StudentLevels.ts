@@ -2,9 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-/**
- * An enumeration.
- */
 export enum StudentLevels {
   _COLES_MARSEILLE_MATERNELLE = 'Écoles Marseille - Maternelle',
   _COLES_MARSEILLE_CP_CE1_CE2 = 'Écoles Marseille - CP, CE1, CE2',

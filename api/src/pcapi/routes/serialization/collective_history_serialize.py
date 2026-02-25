@@ -3,25 +3,20 @@ import logging
 import typing
 
 from pcapi.core.educational import models
-from pcapi.routes.serialization import BaseModel
-from pcapi.utils.date import format_into_utc_date
+from pcapi.routes.serialization import HttpBodyModel
 
 
 logger = logging.getLogger(__name__)
 
 
-class HistoryStep(BaseModel):
+class HistoryStep(HttpBodyModel):
     status: models.CollectiveOfferDisplayedStatus
     datetime: datetime.datetime | None
 
 
-class CollectiveOfferHistory(BaseModel):
+class CollectiveOfferHistory(HttpBodyModel):
     past: list[HistoryStep]
     future: list[models.CollectiveOfferDisplayedStatus]
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
-        use_enum_values = True
 
 
 NEXT_STATUS_BY_STATUS: typing.Final[

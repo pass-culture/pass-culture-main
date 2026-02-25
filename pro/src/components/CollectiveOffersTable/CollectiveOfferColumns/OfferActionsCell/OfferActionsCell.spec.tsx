@@ -24,7 +24,7 @@ import {
   getCollectiveOfferTemplateFactory,
   getCollectiveOfferVenueFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
-import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
+import { getLocationResponseModelV2 } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   defaultGetOffererResponseModel,
   makeVenueListItem,
@@ -326,11 +326,12 @@ describe('OfferActionsCells', () => {
         venue: getCollectiveOfferVenueFactory({ id: 4 }),
         location: {
           locationType: CollectiveLocationType.ADDRESS,
-          location: getLocationResponseModel({
+          location: getLocationResponseModelV2({
             isVenueLocation: true,
             isManualEdition: false,
             label: 'Structure 4',
           }),
+          locationComment: null,
         },
       })
       vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce(

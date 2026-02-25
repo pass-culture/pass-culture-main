@@ -16,6 +16,7 @@ describe('CollectiveOfferLocationSection', () => {
           ...offer,
           location: {
             locationType: CollectiveLocationType.ADDRESS,
+            locationComment: null,
             location: {
               label: 'Théâtre de la Corniche',
               city: 'Marseille',
@@ -26,6 +27,9 @@ describe('CollectiveOfferLocationSection', () => {
               longitude: 5,
               id: 1234,
               isManualEdition: false,
+              banId: null,
+              departmentCode: null,
+              inseeCode: null,
             },
           },
         }}
@@ -52,6 +56,7 @@ describe('CollectiveOfferLocationSection', () => {
           ...offer,
           location: {
             locationType: CollectiveLocationType.ADDRESS,
+            locationComment: null,
             location: {
               city: 'Marseille',
               street: '3 Rue Pimpim',
@@ -61,6 +66,10 @@ describe('CollectiveOfferLocationSection', () => {
               longitude: 5,
               id: 1234,
               isManualEdition: false,
+              banId: null,
+              departmentCode: null,
+              inseeCode: null,
+              label: null,
             },
           },
         }}
@@ -83,6 +92,8 @@ describe('CollectiveOfferLocationSection', () => {
           interventionArea: ['75', '92'],
           location: {
             locationType: CollectiveLocationType.SCHOOL,
+            location: null,
+            locationComment: null,
           },
         }}
       />
@@ -107,6 +118,7 @@ describe('CollectiveOfferLocationSection', () => {
           location: {
             locationType: CollectiveLocationType.TO_BE_DEFINED,
             locationComment: 'Parlons-en gaiement !',
+            location: null,
           },
         }}
       />
@@ -133,6 +145,8 @@ describe('CollectiveOfferLocationSection', () => {
           interventionArea: ['75', '92'],
           location: {
             locationType: CollectiveLocationType.TO_BE_DEFINED,
+            location: null,
+            locationComment: null,
           },
         }}
       />

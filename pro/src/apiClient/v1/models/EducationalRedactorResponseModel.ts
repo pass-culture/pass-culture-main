@@ -3,9 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export type EducationalRedactorResponseModel = {
-  civility?: string | null;
-  email?: string | null;
-  firstName?: string | null;
-  lastName?: string | null;
+  civility: (string | null);
+  email: string;
+  firstName: (string | null);
+  lastName: (string | null);
 };
 

@@ -18,7 +18,7 @@ describe('getEducationalInstitutions', () => {
           city: 'Gif-sur-Yvette',
           phoneNumber: '',
           institutionId: 'ABCDED11',
-          institutionType: null,
+          institutionType: 'Collège',
         },
         {
           id: 24,
@@ -27,7 +27,7 @@ describe('getEducationalInstitutions', () => {
           city: 'Paris',
           phoneNumber: '',
           institutionId: 'ABCDED12',
-          institutionType: null,
+          institutionType: 'Collège',
         },
         {
           id: 42,
@@ -36,7 +36,7 @@ describe('getEducationalInstitutions', () => {
           city: 'Bordeaux',
           phoneNumber: '',
           institutionId: 'ABCDED13',
-          institutionType: null,
+          institutionType: 'Collège',
         },
       ],
     }

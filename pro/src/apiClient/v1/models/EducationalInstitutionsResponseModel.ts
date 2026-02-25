@@ -2,9 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { EducationalInstitutionResponseModelV2 } from './EducationalInstitutionResponseModelV2';
+import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 export type EducationalInstitutionsResponseModel = {
-  educationalInstitutions: Array<EducationalInstitutionResponseModelV2>;
+  educationalInstitutions: Array<EducationalInstitutionResponseModel>;
   page: number;
   pages: number;
   total: number;
