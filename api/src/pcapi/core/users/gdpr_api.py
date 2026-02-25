@@ -26,13 +26,13 @@ import pcapi.core.users.models as users_models
 import pcapi.core.users.utils as users_utils
 from pcapi import settings
 from pcapi.connectors import api_adresse
-from pcapi.connectors.beamer import BeamerException
-from pcapi.connectors.beamer import delete_beamer_user
 from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.core import object_storage
 from pcapi.core.chronicles import api as chronicles_api
 from pcapi.core.chronicles import constants as chronicles_constants
 from pcapi.core.chronicles import models as chronicles_models
+from pcapi.core.external.beamer.api import delete_beamer_user
+from pcapi.core.external.beamer.backends.beamer import BeamerException
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography.repository import get_iris_from_address
 from pcapi.core.history.api import add_action

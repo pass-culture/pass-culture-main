@@ -2,8 +2,10 @@ import copy
 
 import pytest
 
-from pcapi.connectors import beamer
 from pcapi.core.external.attributes import models as attributes_models
+from pcapi.core.external.beamer.api import update_beamer_user
+from pcapi.core.external.beamer.backends.beamer import BeamerException
+from pcapi.core.external.beamer.serialization import format_pro_attributes
 from pcapi.core.offerers.models import VenueTypeCode
 
 
@@ -59,15 +61,15 @@ BEAMER_ATTRIBUTES = {
 
 
 def test_beamer_attributes_format():
-    assert BEAMER_ATTRIBUTES == beamer.format_pro_attributes(PRO_ATTRIBUTES)
+    assert BEAMER_ATTRIBUTES == format_pro_attributes(PRO_ATTRIBUTES)
 
 
-@pytest.mark.settings(BEAMER_BACKEND="pcapi.connectors.beamer.BeamerBackend")
+@pytest.mark.settings(BEAMER_BACKEND="BeamerBackend")
 class BeamerConnectorTest:
     def test_beamer_attributes(self, requests_mock):
         requests_mock.put("https://api.getbeamer.com/v0/users")
 
-        beamer.update_beamer_user(PRO_ATTRIBUTES)
+        update_beamer_user(PRO_ATTRIBUTES)
 
         assert requests_mock.last_request.json() == BEAMER_ATTRIBUTES
 
@@ -75,11 +77,11 @@ class BeamerConnectorTest:
         pro_attributes_with_no_id = copy.deepcopy(PRO_ATTRIBUTES)
         pro_attributes_with_no_id.user_id = ""
 
-        assert beamer.update_beamer_user(pro_attributes_with_no_id) is None
+        assert update_beamer_user(pro_attributes_with_no_id) is None
         assert not requests_mock.called
 
     def test_error_handling(self, requests_mock):
         requests_mock.put("https://api.getbeamer.com/v0/users", status_code=403)
 
-        with pytest.raises(beamer.BeamerException):
-            beamer.update_beamer_user(PRO_ATTRIBUTES)
+        with pytest.raises(BeamerException):
+            update_beamer_user(PRO_ATTRIBUTES)

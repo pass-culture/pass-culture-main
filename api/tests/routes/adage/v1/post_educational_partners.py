@@ -46,7 +46,7 @@ def test_post_educational_partners_with_unknown_venue(client: Any) -> None:
     assert db.session.query(offerers_models.Venue).count() == 0
 
 
-@mock.patch("pcapi.tasks.beamer_tasks.update_beamer_pro_attributes_task.delay", return_value=None)
+@mock.patch("pcapi.core.external.beamer.tasks.update_beamer_pro_attributes_task.delay", return_value=None)
 @mock.patch("pcapi.tasks.sendinblue_tasks.update_sib_pro_attributes_task.delay", return_value=None)
 def test_post_educational_partners_venue_now_has_adage_id(mocked_beamer, mocked_sib, client: Any) -> None:
     venue = offerers_factories.VenueFactory(adageId=None, managingOfferer__allowedOnAdage=False)
