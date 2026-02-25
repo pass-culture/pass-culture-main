@@ -6,10 +6,7 @@ import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
 import { api } from '@/apiClient/api'
 import { type GetVenueResponseModel, VenueTypeCode } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
-import {
-  defaultGetOffererResponseModel,
-  defaultVenueProvider,
-} from '@/commons/utils/factories/individualApiFactories'
+import { defaultVenueProvider } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
@@ -52,12 +49,6 @@ const defaultFormContext: VenueSettingsFormContext = {
   isCaledonian: false,
   withSiret: true,
   isVenueVirtual: false,
-  siren: '123456789',
-}
-
-const defaultOfferer = {
-  ...defaultGetOffererResponseModel,
-  id: 12,
   siren: '123456789',
 }
 
@@ -110,7 +101,6 @@ const renderVenueSettingsForm = async (
           noValidate
         >
           <VenueSettingsForm
-            offerer={defaultOfferer}
             venueProviders={venueProviders}
             venue={venue}
             formContext={formContext}
@@ -239,46 +229,30 @@ describe('VenueSettingsForm', () => {
     expect(emailField).toHaveValue('contact@lieuexemple.com')
   })
 
-  describe('with WIP_SWITCH_VENUE feature flag', () => {
-    const options: RenderWithProvidersOptions = {
-      features: ['WIP_SWITCH_VENUE'],
-    }
-
-    it('should not display reimbursement field when there is no pricing point', () => {
-      renderVenueSettingsForm(
-        {
-          venue: makeGetVenueResponseModel({ id: 1 }),
-        },
-        options
-      )
-
-      const reimbursementFieldsetTitle = screen.queryByRole('heading', {
-        name: /Barème de remboursement/,
-      })
-
-      expect(reimbursementFieldsetTitle).not.toBeInTheDocument()
+  it('should not display reimbursement section when venue has no pricing point', () => {
+    renderVenueSettingsForm({
+      venue: makeGetVenueResponseModel({ id: 1 }),
     })
 
-    it('should display reimbursement field when there is a pricing point', () => {
-      renderVenueSettingsForm(
-        {
-          venue: makeGetVenueResponseModel({
-            id: 1,
-            pricingPoint: {
-              id: 1,
-              siret: '12345678901234',
-              venueName: 'Structure 1',
-            },
-          }),
+    expect(
+      screen.queryByRole('heading', { name: /Barème de remboursement/ })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should display reimbursement section when venue has a pricing point', () => {
+    renderVenueSettingsForm({
+      venue: makeGetVenueResponseModel({
+        id: 1,
+        pricingPoint: {
+          id: 1,
+          siret: '12345678901234',
+          venueName: 'Structure 1',
         },
-        options
-      )
-
-      const reimbursementFieldsetTitle = screen.queryByRole('heading', {
-        name: /Barème de remboursement/,
-      })
-
-      expect(reimbursementFieldsetTitle).toBeVisible()
+      }),
     })
+
+    expect(
+      screen.queryByRole('heading', { name: /Barème de remboursement/ })
+    ).toBeVisible()
   })
 })

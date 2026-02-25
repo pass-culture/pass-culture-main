@@ -3,11 +3,9 @@ import { useLocation } from 'react-router'
 
 import type { AdresseData } from '@/apiClient/adresse/types'
 import type {
-  GetOffererResponseModel,
   GetVenueResponseModel,
   VenueProviderResponse,
 } from '@/apiClient/v1'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
@@ -33,20 +31,15 @@ import styles from './VenueSettingsForm.module.scss'
 import { WithdrawalDetails } from './WithdrawalDetails/WithdrawalDetails'
 
 export interface VenueSettingsFormProps {
-  offerer: GetOffererResponseModel
   venueProviders: VenueProviderResponse[]
   venue: GetVenueResponseModel
   formContext: VenueSettingsFormContext
 }
-
 export const VenueSettingsForm = ({
-  offerer,
   venueProviders,
   venue,
   formContext,
 }: VenueSettingsFormProps) => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-
   const {
     register,
     setValue,
@@ -165,12 +158,10 @@ export const VenueSettingsForm = ({
           </FormLayout.Row>
         </FormLayout.Section>
 
-        {(!withSwitchVenueFeature ||
-          (withSwitchVenueFeature && venue.pricingPoint?.id)) && (
+        {venue.pricingPoint?.id && (
           <ReimbursementFields
-            offerer={offerer}
             scrollToSection={Boolean(location.state) || Boolean(location.hash)}
-            venue={venue}
+            venuePricingPoint={venue.pricingPoint}
           />
         )}
       </FormLayout>

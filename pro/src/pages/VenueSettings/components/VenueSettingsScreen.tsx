@@ -76,7 +76,6 @@ export const VenueSettingsScreen = ({
           <VenueSettingsForm
             venueProviders={venueProviders}
             venue={venue}
-            offerer={offerer}
             formContext={formContext}
           />
         </form>
