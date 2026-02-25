@@ -292,7 +292,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                     defaultOptions={defaultCulturalDomain}
                     error={methods.formState.errors.culturalDomains?.message}
                     label="Domaine(s) d’activité"
-                    className={styles['cultural-domains-select']}
                     required={methods.watch('isOpenToPublic') === 'false'}
                     onSelectedOptionsChanged={(selectedOptions) => {
                       methods.setValue(

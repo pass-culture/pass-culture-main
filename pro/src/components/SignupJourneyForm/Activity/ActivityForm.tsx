@@ -86,7 +86,6 @@ export const ActivityForm = (): JSX.Element => {
           {...register('activity')}
           error={formState.errors.activity?.message}
           label="Activité principale"
-          className={styles['venue-type-select']}
           required
         />
       </FormLayout.Row>
@@ -102,7 +101,6 @@ export const ActivityForm = (): JSX.Element => {
             defaultOptions={defaultCulturalDomain}
             error={formState.errors.culturalDomains?.message}
             label="Domaine(s) d’activité"
-            className={styles['cultural-domains-select']}
             required={offerer?.isOpenToPublic === 'false'}
             onSelectedOptionsChanged={(selectedOptions, _y, _z) => {
               setValue(
@@ -137,36 +135,34 @@ export const ActivityForm = (): JSX.Element => {
       <FormLayout.Row mdSpaceAfter className={styles['url-list']}>
         {fields.map((field, index) => (
           <FormLayout.Row key={field.id}>
-            <div className={styles['url-input']}>
-              <TextInput
-                {...register(`socialUrls.${index}.url`)}
-                label="Site internet, réseau social"
-                description="Format : https://www.siteinternet.com"
-                type="url"
-                error={formState.errors.socialUrls?.[index]?.url?.message}
-                extension={
-                  watchSocialUrls.length > 1 && (
-                    <div
-                      data-error={
-                        formState.errors.socialUrls?.[index] ? 'true' : 'false'
-                      }
-                    >
-                      <Button
-                        variant={ButtonVariant.SECONDARY}
-                        color={ButtonColor.NEUTRAL}
-                        icon={fullTrashIcon}
-                        onClick={() => {
-                          remove(index)
-                          setFocus(`socialUrls.${index - 1}.url`)
-                        }}
-                        disabled={watchSocialUrls.length <= 1}
-                        tooltip={'Supprimer l’url'}
-                      />
-                    </div>
-                  )
-                }
-              />
-            </div>
+            <TextInput
+              {...register(`socialUrls.${index}.url`)}
+              label="Site internet, réseau social"
+              description="Format : https://www.siteinternet.com"
+              type="url"
+              error={formState.errors.socialUrls?.[index]?.url?.message}
+              extension={
+                watchSocialUrls.length > 1 && (
+                  <div
+                    data-error={
+                      formState.errors.socialUrls?.[index] ? 'true' : 'false'
+                    }
+                  >
+                    <Button
+                      variant={ButtonVariant.SECONDARY}
+                      color={ButtonColor.NEUTRAL}
+                      icon={fullTrashIcon}
+                      onClick={() => {
+                        remove(index)
+                        setFocus(`socialUrls.${index - 1}.url`)
+                      }}
+                      disabled={watchSocialUrls.length <= 1}
+                      tooltip={'Supprimer l’url'}
+                    />
+                  </div>
+                )
+              }
+            />
           </FormLayout.Row>
         ))}
 

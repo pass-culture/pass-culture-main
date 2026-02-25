@@ -26,18 +26,4 @@
 
     border-radius: var(--size-border-radius-l);
   }
-
-  &-active {
-    background-color: var(--color-background-subtle);
-    position: relative;
-
-    &::after {
-      content: "";
-      position: absolute;
-      width: rem.torem(4px);
-      height: 100%;
-      background-color: var(--color-border-brand-primary);
-      right: 0;
-    }
-  }
 }

@@ -1,12 +1,10 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.discovery {
-  &-playlists {
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-spacing-xxxl);
-    margin: var(--size-spacing-xxl) 0;
-  }
+.discovery-playlists {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-spacing-xxxl);
+  margin: var(--size-spacing-xxl) 0;
 }
 
 .playlist-carousel-title {

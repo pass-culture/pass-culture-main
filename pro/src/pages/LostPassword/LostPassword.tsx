@@ -76,24 +76,22 @@ export const LostPassword = (): JSX.Element => {
           <ReSendEmailCallout action={() => sendChangePasswordRequest(email)} />
         </section>
       ) : (
-        <section className={styles['change-password-request-form']}>
+        <section>
           <p className={styles['subtitle']}>
             Entrez votre email pour recevoir un lien de réinitialisation.
           </p>
           <form onSubmit={handleSubmit(submitChangePasswordRequest)}>
             <FormLayout>
               <FormLayout.Row>
-                <div className={styles['change-password-request-form-input']}>
-                  <TextInput
-                    label="Adresse email"
-                    description="Format : email@exemple.com"
-                    error={errors.email?.message}
-                    required
-                    requiredIndicator="hidden"
-                    type="email"
-                    {...register('email')}
-                  />
-                </div>
+                <TextInput
+                  label="Adresse email"
+                  description="Format : email@exemple.com"
+                  error={errors.email?.message}
+                  required
+                  requiredIndicator="hidden"
+                  type="email"
+                  {...register('email')}
+                />
               </FormLayout.Row>
               <FormLayout.Row className={styles['validation-button']}>
                 <Button
