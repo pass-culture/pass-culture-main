@@ -107,7 +107,7 @@ export const Hub = () => {
             `${filteredVenues.length} ${pluralizeFr(filteredVenues.length, 'structure trouvée', 'structures trouvées')}.`}
         </div>
       }
-      {filteredVenues.length === 0 && (
+      {venues.length > 0 && filteredVenues.length === 0 && (
         <div>Aucune structure ne correspond à votre recherche "{query}".</div>
       )}
       <div className={styles['venue-list']}>

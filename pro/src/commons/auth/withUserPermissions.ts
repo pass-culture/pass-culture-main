@@ -18,11 +18,15 @@ export const withUserPermissions = (
     }
 
     const userPermissions = getCurrentUserPermissions()
+    const hasVenues = state.user.venues && state.user.venues.length > 0
 
     if (!requireUserPermissions(userPermissions)) {
       switch (true) {
         case !userPermissions.isAuthenticated:
           return redirect('/connexion')
+
+        case !hasVenues:
+          return redirect('inscription/structure/recherche')
 
         case !userPermissions.hasSelectedVenue:
           return redirect('/hub')
