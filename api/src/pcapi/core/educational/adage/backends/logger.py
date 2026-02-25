@@ -4,7 +4,6 @@ import logging
 
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import schemas
-from pcapi.core.educational.adage import serialize
 from pcapi.core.educational.adage.backends.base import AdageClient
 
 
@@ -98,13 +97,13 @@ class AdageLoggerClient(AdageClient):
             },
         ]
 
-    def notify_institution_association(self, data: serialize.AdageCollectiveOffer) -> None:
+    def notify_institution_association(self, data: schemas.AdageCollectiveOffer) -> None:
         logger.info("Adage has been notified at %s, with payload: %s", f"{self.base_url}/v1/offre-assoc", data)
 
-    def get_adage_educational_institutions(self, ansco: str) -> list[serialize.AdageEducationalInstitution]:
+    def get_adage_educational_institutions(self, ansco: str) -> list[schemas.AdageEducationalInstitution]:
         logger.info("Adage has been called at %s", f"{self.base_url}/v1/etablissement-culturel/?ansco={ansco}")
         return [
-            serialize.AdageEducationalInstitution(
+            schemas.AdageEducationalInstitution(
                 uai="0470009E",
                 sigle="COLLEGE",
                 libelle="DE LA TOUR0",
@@ -160,5 +159,5 @@ class AdageLoggerClient(AdageClient):
         api_url = f"{self.base_url}/v1/reservation-remboursement"
         logger.info("Adage has been called at %s", api_url)
 
-    def notify_redactor_when_collective_request_is_made(self, data: serialize.AdageCollectiveRequest) -> None:
+    def notify_redactor_when_collective_request_is_made(self, data: schemas.AdageCollectiveRequest) -> None:
         logger.info("Adage has been notified at %s, with payload: %s", f"{self.base_url}/v1/offre-vitrine", data)

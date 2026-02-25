@@ -205,3 +205,64 @@ class CollectiveOffersFilter:
     formats: list[EacFormat] | None = None
     location_type: models.CollectiveLocationType | None = None
     offerer_address_id: int | None = None
+
+
+class AdageEducationalInstitution(AdageBaseResponseModel):
+    uai: str
+    sigle: str
+    libelle: str
+    communeLibelle: str
+    courriel: str | None
+    telephone: str | None
+    codePostal: str
+    latitude: decimal.Decimal | None
+    longitude: decimal.Decimal | None
+
+
+class AdageCollectiveOfferContact(AdageBaseResponseModel):
+    email: str | None
+    phone: str | None
+
+
+class AdageRedactor(AdageBaseResponseModel):
+    email: str | None
+    redactorCivility: str | None
+    redactorFirstName: str | None
+    redactorLastName: str | None
+
+
+class AdageCollectiveOffer(AdageBaseResponseModel):
+    UAICode: str
+    address: str
+    startDatetime: datetime.datetime
+    endDatetime: datetime.datetime
+    contact: AdageCollectiveOfferContact
+    description: str | None
+    durationMinutes: int | None
+    id: int
+    name: str
+    numberOfTickets: int
+    participants: list[models.StudentLevels]
+    price: decimal.Decimal
+    priceDetail: str | None
+    quantity: int
+    totalAmount: decimal.Decimal
+    venueName: str
+    venueTimezone: str
+    hasUrl: bool
+    withdrawalDetails: str | None
+    redactor: AdageRedactor | None
+
+
+class AdageCollectiveRequest(AdageBaseResponseModel):
+    redactorEmail: str
+    requestPhoneNumber: str | None
+    requestedDate: datetime.date | None
+    totalStudents: int | None
+    totalTeachers: int | None
+    offerContactEmail: str | None
+    offerContactPhoneNumber: str | None
+    offererName: str
+    venueName: str
+    offerName: str
+    comment: str

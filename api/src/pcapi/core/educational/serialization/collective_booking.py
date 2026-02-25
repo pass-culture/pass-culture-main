@@ -3,7 +3,7 @@ from typing import Iterable
 
 from pcapi.core.educational import models
 from pcapi.core.educational import schemas
-from pcapi.core.educational.adage import serialize as adage_serialize
+from pcapi.core.educational.serialization.collective_offer import get_collective_offer_address
 from pcapi.core.offers.utils import offer_app_link
 
 
@@ -57,7 +57,7 @@ def serialize_collective_booking(
 
     return schemas.EducationalBookingResponse(
         accessibility=_get_educational_offer_accessibility(offer),
-        address=adage_serialize.get_collective_offer_address(offer),
+        address=get_collective_offer_address(offer),
         startDatetime=stock.startDatetime,
         endDatetime=stock.endDatetime,
         cancellationDate=collective_booking.cancellationDate,
@@ -153,7 +153,7 @@ def serialize_reimbursement_notification(
 
     return schemas.AdageReimbursementNotification(
         accessibility=_get_educational_offer_accessibility(offer),
-        address=adage_serialize.get_collective_offer_address(offer),
+        address=get_collective_offer_address(offer),
         startDatetime=stock.startDatetime,
         endDatetime=stock.endDatetime,
         cancellationDate=collective_booking.cancellationDate,

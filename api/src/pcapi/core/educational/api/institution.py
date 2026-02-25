@@ -13,9 +13,9 @@ from pcapi.connectors.big_query.queries import InstitutionRuralLevelQuery
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational import repository
+from pcapi.core.educational import schemas
 from pcapi.core.educational import utils
 from pcapi.core.educational.adage import api as adage_client
-from pcapi.core.educational.adage.serialize import AdageEducationalInstitution
 from pcapi.core.educational.constants import INSTITUTION_TYPES
 from pcapi.models import db
 from pcapi.utils import date as date_utils
@@ -373,7 +373,7 @@ def create_missing_educational_institution_from_adage(destination_uai: str) -> m
 
 
 def create_educational_institution_from_adage(
-    institution: AdageEducationalInstitution,
+    institution: schemas.AdageEducationalInstitution,
 ) -> models.EducationalInstitution:
     educational_institution = models.EducationalInstitution(
         institutionId=institution.uai,

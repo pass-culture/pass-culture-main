@@ -8,7 +8,6 @@ from pydantic.v1 import parse_obj_as
 from pcapi import settings
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import schemas
-from pcapi.core.educational.adage import serialize
 from pcapi.core.educational.adage.backends.base import AdageClient
 from pcapi.utils import requests
 
@@ -166,7 +165,7 @@ class AdageHttpClient(AdageClient):
 
         return api_response.json()
 
-    def notify_institution_association(self, data: serialize.AdageCollectiveOffer) -> None:
+    def notify_institution_association(self, data: schemas.AdageCollectiveOffer) -> None:
         api_response = self._make_post_request(url=f"{self.base_url}/v1/offre-assoc", data=data.json())
 
         if api_response.status_code != 201:
@@ -181,7 +180,7 @@ class AdageHttpClient(AdageClient):
             if not is_adage_institution_without_email(api_response):
                 raise self._get_api_adage_exception(api_response, "Error getting Adage API")
 
-    def get_adage_educational_institutions(self, ansco: str) -> list[serialize.AdageEducationalInstitution]:
+    def get_adage_educational_institutions(self, ansco: str) -> list[schemas.AdageEducationalInstitution]:
         template_url = f"{self.base_url}/v1/etablissement-scolaire?ansco={ansco}&page=%s"
         page = 1
         institutions = []
@@ -202,7 +201,7 @@ class AdageHttpClient(AdageClient):
             institutions.extend(response_json)
             page += 1
 
-        return parse_obj_as(list[serialize.AdageEducationalInstitution], institutions)
+        return parse_obj_as(list[schemas.AdageEducationalInstitution], institutions)
 
     def get_adage_educational_redactor_from_uai(self, uai: str) -> list[dict[str, str]]:
         api_response = self._make_get_request(url=f"{self.base_url}/v1/redacteurs-projets/{uai}")
@@ -234,7 +233,7 @@ class AdageHttpClient(AdageClient):
         api_response = self._make_post_request(url=f"{self.base_url}{url}", data=data.json())
         self._handle_notify_response(api_response, url)
 
-    def notify_redactor_when_collective_request_is_made(self, data: serialize.AdageCollectiveRequest) -> None:
+    def notify_redactor_when_collective_request_is_made(self, data: schemas.AdageCollectiveRequest) -> None:
         url = "/v1/offre-vitrine"
         api_response = self._make_post_request(url=f"{self.base_url}{url}", data=data.json())
         self._handle_notify_response(api_response, url)

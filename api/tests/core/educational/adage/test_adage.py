@@ -2,11 +2,11 @@ import pytest
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.adage.backends.adage import AdageHttpClient
-from pcapi.core.educational.adage.serialize import serialize_collective_offer
-from pcapi.core.educational.adage.serialize import serialize_collective_offer_request
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.exceptions import AdageInvalidEmailException
-from pcapi.core.educational.serialization import collective_booking as collective_booking_serialize
+from pcapi.core.educational.serialization.collective_booking import serialize_collective_booking
+from pcapi.core.educational.serialization.collective_offer import serialize_collective_offer
+from pcapi.core.educational.serialization.collective_request import serialize_collective_offer_request
 from pcapi.utils import requests
 
 
@@ -39,7 +39,7 @@ class AdageHttpClientTest:
     def test_notify_prebooking_success_if_201(self, requests_mock):
         adage_client = AdageHttpClient()
         booking = educational_factories.CollectiveBookingFactory()
-        booking_data = collective_booking_serialize.serialize_collective_booking(booking)
+        booking_data = serialize_collective_booking(booking)
 
         endpoint = requests_mock.post(f"{MOCK_API_URL}/v1/prereservation", status_code=201)
         adage_client.notify_prebooking(booking_data)
@@ -50,7 +50,7 @@ class AdageHttpClientTest:
     def test_notify_prebooking_success_if_404(self, requests_mock, error_code):
         adage_client = AdageHttpClient()
         booking = educational_factories.CollectiveBookingFactory()
-        booking_data = collective_booking_serialize.serialize_collective_booking(booking)
+        booking_data = serialize_collective_booking(booking)
 
         requests_mock.post(
             f"{MOCK_API_URL}/v1/prereservation",
@@ -63,7 +63,7 @@ class AdageHttpClientTest:
     def test_notify_prebooking_success_if_450(self, requests_mock, caplog):
         adage_client = AdageHttpClient()
         booking = educational_factories.CollectiveBookingFactory()
-        booking_data = collective_booking_serialize.serialize_collective_booking(booking)
+        booking_data = serialize_collective_booking(booking)
 
         endpoint = requests_mock.post(
             f"{MOCK_API_URL}/v1/prereservation", status_code=450, json=ADAGE_RESPONSE_FOR_INSTITUTION_WITH_INVALID_EMAIL
@@ -80,7 +80,7 @@ class AdageHttpClientTest:
     def test_notify_prebooking_raises_if_500(self, requests_mock):
         adage_client = AdageHttpClient()
         booking = educational_factories.CollectiveBookingFactory()
-        booking_data = collective_booking_serialize.serialize_collective_booking(booking)
+        booking_data = serialize_collective_booking(booking)
 
         requests_mock.post(f"{MOCK_API_URL}/v1/prereservation", status_code=500, json=ADAGE_RESPONSE_FOR_ERROR)
         with pytest.raises(AdageException) as ex:
@@ -93,7 +93,7 @@ class AdageHttpClientTest:
     def test_notify_prebooking_connect_timeout(self, requests_mock):
         adage_client = AdageHttpClient()
         booking = educational_factories.CollectiveBookingFactory()
-        booking_data = collective_booking_serialize.serialize_collective_booking(booking)
+        booking_data = serialize_collective_booking(booking)
 
         requests_mock.post(f"{MOCK_API_URL}/v1/prereservation", exc=requests.exceptions.ConnectTimeout)
         with pytest.raises(AdageException) as ex:
@@ -104,7 +104,7 @@ class AdageHttpClientTest:
     def test_notify_prebooking_read_timeout(self, requests_mock):
         adage_client = AdageHttpClient()
         booking = educational_factories.CollectiveBookingFactory()
-        booking_data = collective_booking_serialize.serialize_collective_booking(booking)
+        booking_data = serialize_collective_booking(booking)
 
         requests_mock.post(f"{MOCK_API_URL}/v1/prereservation", exc=requests.exceptions.ReadTimeout)
         with pytest.raises(AdageException) as ex:
