@@ -32,7 +32,7 @@ def get_educational_institutions(
 
     return educational_institutions.EducationalInstitutionsResponseModel(
         educational_institutions=[
-            educational_institutions.EducationalInstitutionResponseModelV2.model_validate(institution)
+            educational_institutions.EducationalInstitutionResponseModel.model_validate(institution)
             for institution in institutions
         ],
         page=query.page,

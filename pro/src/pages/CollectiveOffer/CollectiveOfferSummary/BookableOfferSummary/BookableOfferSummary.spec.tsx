@@ -79,6 +79,7 @@ describe('BookableOfferSummary', () => {
         startDatetime: '2023-12-21T10:00:00Z',
         endDatetime: '2023-12-21T10:00:00Z',
         bookingLimitDatetime: '2023-12-31T22:59:59Z',
+        educationalPriceDetail: 'detail',
       },
       allowedActions: [
         CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
@@ -123,17 +124,12 @@ describe('BookableOfferSummary', () => {
   it("should render default recap value when value doesn't exist", () => {
     const testProps = {
       offer: getCollectiveOfferFactory({
-        collectiveStock: {
-          id: 1,
-          numberOfTickets: null,
-          price: 1000,
-          bookingLimitDatetime: null,
-        },
+        collectiveStock: null,
       }),
     }
 
     renderBookableOfferSummary(testProps)
-    expect(screen.getAllByText('-')).toHaveLength(3)
+    expect(screen.getAllByText('-')).toHaveLength(4)
   })
 
   it('should render the price', () => {
@@ -148,7 +144,10 @@ describe('BookableOfferSummary', () => {
           id: 1,
           numberOfTickets: 50,
           price: 0,
-          bookingLimitDatetime: null,
+          bookingLimitDatetime: '2023-12-21T10:00:00Z',
+          startDatetime: '2023-12-21T10:00:00Z',
+          endDatetime: '2023-12-21T10:00:00Z',
+          educationalPriceDetail: 'detail',
         },
       }),
     }
@@ -169,6 +168,8 @@ describe('BookableOfferSummary', () => {
       offer: getCollectiveOfferFactory({
         location: {
           locationType: CollectiveLocationType.SCHOOL,
+          location: null,
+          locationComment: null,
         },
       }),
     }
@@ -183,6 +184,8 @@ describe('BookableOfferSummary', () => {
       offer: getCollectiveOfferFactory({
         location: {
           locationType: CollectiveLocationType.TO_BE_DEFINED,
+          location: null,
+          locationComment: null,
         },
       }),
     }
@@ -205,6 +208,8 @@ describe('BookableOfferSummary', () => {
           price: 1000,
           startDatetime: '2023-12-21T10:00:00Z', // 11:00 in Paris (UTC+1)
           endDatetime: '2023-12-22T10:00:00Z', // 11:00 in Paris (UTC+1)
+          bookingLimitDatetime: '2023-12-21T10:00:00Z', // 11:00 in Paris (UTC+1)
+          educationalPriceDetail: 'detail',
         },
       }),
     }

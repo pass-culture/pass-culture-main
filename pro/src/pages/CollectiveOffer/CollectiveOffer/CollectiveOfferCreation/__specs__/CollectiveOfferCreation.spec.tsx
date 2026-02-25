@@ -53,7 +53,12 @@ describe('CollectiveOfferCreation', () => {
   })
   const defaultProps = {
     offer: getCollectiveOfferFactory({
-      venue: { ...venue, managingOfferer: { ...offerer, siren: '123456789' } },
+      venue: {
+        ...venue,
+        managingOfferer: { ...offerer, siren: '123456789' },
+        departementCode: '33',
+        imgUrl: null,
+      },
     }),
     isTemplate: false,
   }

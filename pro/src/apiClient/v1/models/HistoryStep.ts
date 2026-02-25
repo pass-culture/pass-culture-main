@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
 export type HistoryStep = {
-  datetime?: string | null;
+  datetime: (string | null);
   status: CollectiveOfferDisplayedStatus;
 };
 

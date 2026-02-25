@@ -373,6 +373,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
               past: [
                 {
                   status: CollectiveOfferDisplayedStatus.DRAFT,
+                  datetime: '2025-07-06T13:00:00.000000',
                 },
               ],
               future: [CollectiveOfferDisplayedStatus.PUBLISHED],
@@ -398,6 +399,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
               past: [
                 {
                   status: CollectiveOfferDisplayedStatus.PUBLISHED,
+                  datetime: '2025-07-06T13:00:00.000000',
                 },
               ],
               future: [CollectiveOfferDisplayedStatus.PREBOOKED],
@@ -425,6 +427,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
               past: [
                 {
                   status: CollectiveOfferDisplayedStatus.PREBOOKED,
+                  datetime: '2025-07-06T13:00:00.000000',
                 },
               ],
               future: [CollectiveOfferDisplayedStatus.BOOKED],
@@ -452,6 +455,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
               past: [
                 {
                   status: CollectiveOfferDisplayedStatus.REJECTED,
+                  datetime: '2025-07-06T13:00:00.000000',
                 },
               ],
               future: [CollectiveOfferDisplayedStatus.BOOKED],
@@ -475,6 +479,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
               past: [
                 {
                   status: CollectiveOfferDisplayedStatus.UNDER_REVIEW,
+                  datetime: '2025-07-06T13:00:00.000000',
                 },
               ],
               future: [CollectiveOfferDisplayedStatus.BOOKED],
@@ -498,6 +503,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
               past: [
                 {
                   status: CollectiveOfferDisplayedStatus.REIMBURSED,
+                  datetime: '2025-07-06T13:00:00.000000',
                 },
               ],
               future: [],
@@ -524,6 +530,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
               past: [
                 {
                   status: CollectiveOfferDisplayedStatus.PUBLISHED,
+                  datetime: '2025-07-06T13:00:00.000000',
                 },
                 {
                   status: CollectiveOfferDisplayedStatus.ARCHIVED,

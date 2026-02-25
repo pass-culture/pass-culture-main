@@ -152,7 +152,7 @@ def get_collective_offer(offer_id: int) -> collective_offers_serialize.GetCollec
             errors={"global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"]},
             status_code=404,
         )
-    return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
+    return collective_offers_serialize.GetCollectiveOfferResponseModel.build(offer)
 
 
 @private_api.route("/collective/offers-template/<int:offer_id>", methods=["GET"])
@@ -175,7 +175,7 @@ def get_collective_offer_template(offer_id: int) -> collective_offers_serialize.
             errors={"global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"]},
             status_code=404,
         )
-    return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.from_orm(offer)
+    return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.build(offer)
 
 
 @private_api.route("/collective/offers-template/request/<int:request_id>", methods=["GET"])
@@ -299,7 +299,7 @@ def edit_collective_offer(
         raise ApiErrors(error.errors)
 
     offer = repository.get_collective_offer_by_id(offer_id)
-    return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
+    return collective_offers_serialize.GetCollectiveOfferResponseModel.build(offer)
 
 
 @private_api.route("/collective/offers-template/<int:offer_id>", methods=["PATCH"])
@@ -353,7 +353,7 @@ def edit_collective_offer_template(
         raise ApiErrors({f"contact[{err.fields}]": err.msg}, status_code=400)
 
     offer = repository.get_collective_offer_template_by_id(offer_id)
-    return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.from_orm(offer)
+    return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.build(offer)
 
 
 @private_api.route("/collective/offers/archive", methods=["PATCH"])
@@ -457,7 +457,7 @@ def patch_collective_offers_educational_institution(
     except exceptions.EducationalRedactorNotFound:
         raise ApiErrors({"teacherEmail": ["L'enseignant n'à pas été trouvé dans cet établissement."]}, status_code=404)
 
-    return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
+    return collective_offers_serialize.GetCollectiveOfferResponseModel.build(offer)
 
 
 @private_api.route("/collective/offers/<int:offer_id>/publish", methods=["PATCH"])
@@ -478,7 +478,7 @@ def patch_collective_offer_publication(offer_id: int) -> collective_offers_seria
 
     offer = api_offer.publish_collective_offer(offer=offer, user=current_user)
 
-    return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
+    return collective_offers_serialize.GetCollectiveOfferResponseModel.build(offer)
 
 
 @private_api.route("/collective/offers-template/<int:offer_id>/publish", methods=["PATCH"])
@@ -502,7 +502,7 @@ def patch_collective_offer_template_publication(
 
     offer = api_offer.publish_collective_offer_template(offer_template=offer, user=current_user)
 
-    return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.from_orm(offer)
+    return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.build(offer)
 
 
 @private_api.route("/collective/offers-template", methods=["POST"])
@@ -767,4 +767,4 @@ def duplicate_collective_offer(
     except exceptions.CantGetImageFromUrl:
         raise ApiErrors({"image": ["l'image ne peut etre trouvé"]}, status_code=404)
 
-    return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
+    return collective_offers_serialize.GetCollectiveOfferResponseModel.build(offer)

@@ -44,7 +44,6 @@ export { CollectiveBookingCancellationReasons } from './models/CollectiveBooking
 export { CollectiveBookingStatus } from './models/CollectiveBookingStatus';
 export { CollectiveLocationType } from './models/CollectiveLocationType';
 export { CollectiveOfferAllowedAction } from './models/CollectiveOfferAllowedAction';
-export type { CollectiveOfferDatesModel } from './models/CollectiveOfferDatesModel';
 export { CollectiveOfferDisplayedStatus } from './models/CollectiveOfferDisplayedStatus';
 export type { CollectiveOfferHistory } from './models/CollectiveOfferHistory';
 export type { CollectiveOfferInstitutionModel } from './models/CollectiveOfferInstitutionModel';
@@ -80,7 +79,6 @@ export type { EditVenueCollectiveDataBodyModel } from './models/EditVenueCollect
 export type { EducationalDomainResponseModel } from './models/EducationalDomainResponseModel';
 export type { EducationalDomainsResponseModel } from './models/EducationalDomainsResponseModel';
 export type { EducationalInstitutionResponseModel } from './models/EducationalInstitutionResponseModel';
-export type { EducationalInstitutionResponseModelV2 } from './models/EducationalInstitutionResponseModelV2';
 export type { EducationalInstitutionsQueryModel } from './models/EducationalInstitutionsQueryModel';
 export type { EducationalInstitutionsResponseModel } from './models/EducationalInstitutionsResponseModel';
 export type { EducationalRedactor } from './models/EducationalRedactor';
@@ -102,7 +100,6 @@ export type { GetActiveEANOfferResponseModel } from './models/GetActiveEANOfferR
 export type { GetBookingResponse } from './models/GetBookingResponse';
 export type { GetCollectiveOfferBookingResponseModel } from './models/GetCollectiveOfferBookingResponseModel';
 export type { GetCollectiveOfferCollectiveStockResponseModel } from './models/GetCollectiveOfferCollectiveStockResponseModel';
-export type { GetCollectiveOfferLocationModel } from './models/GetCollectiveOfferLocationModel';
 export type { GetCollectiveOfferLocationModelV2 } from './models/GetCollectiveOfferLocationModelV2';
 export type { GetCollectiveOfferManagingOffererResponseModel } from './models/GetCollectiveOfferManagingOffererResponseModel';
 export type { GetCollectiveOfferProviderResponseModel } from './models/GetCollectiveOfferProviderResponseModel';
@@ -192,7 +189,6 @@ export type { MentalDisabilityModel } from './models/MentalDisabilityModel';
 export type { MinimalPostOfferBodyModel } from './models/MinimalPostOfferBodyModel';
 export type { MotorDisabilityModel } from './models/MotorDisabilityModel';
 export type { MusicTypeResponse } from './models/MusicTypeResponse';
-export type { NationalProgramModel } from './models/NationalProgramModel';
 export type { NationalProgramResponseModel } from './models/NationalProgramResponseModel';
 export type { NewPasswordBodyModel } from './models/NewPasswordBodyModel';
 export { OfferContactFormEnum } from './models/OfferContactFormEnum';

@@ -6,14 +6,14 @@ import type { CollectiveOfferAllowedAction } from './CollectiveOfferAllowedActio
 import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferStockResponseModel } from './CollectiveOfferStockResponseModel';
 import type { DatesModel } from './DatesModel';
-import type { EducationalInstitutionResponseModelV2 } from './EducationalInstitutionResponseModelV2';
+import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 import type { GetCollectiveOfferLocationModelV2 } from './GetCollectiveOfferLocationModelV2';
 import type { ListOffersVenueResponseModelV2 } from './ListOffersVenueResponseModelV2';
 export type CollectiveOfferResponseModel = {
   allowedActions: Array<CollectiveOfferAllowedAction>;
   dates: (DatesModel | null);
   displayedStatus: CollectiveOfferDisplayedStatus;
-  educationalInstitution: (EducationalInstitutionResponseModelV2 | null);
+  educationalInstitution: (EducationalInstitutionResponseModel | null);
   id: number;
   imageUrl: (string | null);
   location: GetCollectiveOfferLocationModelV2;

@@ -1,27 +1,11 @@
-from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
 
 
-# this v1 model is still used in collective offer serialize
-class EducationalInstitutionResponseModel(BaseModel):
+class EducationalInstitutionResponseModel(HttpBodyModel):
     id: int
     name: str
-    institutionType: str | None
-    postalCode: str
-    city: str
-    phoneNumber: str
-    institutionId: str
-
-    class Config:
-        orm_mode = True
-        extra = "forbid"
-
-
-class EducationalInstitutionResponseModelV2(HttpBodyModel):
-    id: int
-    name: str
-    institutionType: str | None
+    institutionType: str
     postalCode: str
     city: str
     phoneNumber: str
@@ -29,7 +13,7 @@ class EducationalInstitutionResponseModelV2(HttpBodyModel):
 
 
 class EducationalInstitutionsResponseModel(HttpBodyModel):
-    educational_institutions: list[EducationalInstitutionResponseModelV2]
+    educational_institutions: list[EducationalInstitutionResponseModel]
     page: int
     pages: int
     total: int

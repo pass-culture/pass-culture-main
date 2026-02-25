@@ -117,10 +117,8 @@ const listOffersVenueV2Factory = (
 })
 
 const sharedCollectiveOfferData = {
-  isActive: true,
   displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
   isTemplate: true,
-  allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
   name: 'Offre de test',
   bookingEmails: ['toto@example.com'],
   contactEmail: 'toto@example.com',
@@ -128,12 +126,10 @@ const sharedCollectiveOfferData = {
   dateCreated: new Date().toISOString(),
   description: 'blablabla,',
   domains: [{ id: 1, name: 'Danse' }],
-  hasBookingLimitDatetimesPassed: false,
   interventionArea: ['mainland'],
   isPublicApi: false,
   id: 123,
   students: [StudentLevels.COLL_GE_3E],
-  venueId: 'VENUE_ID',
   imageUrl: 'https://example.com/image.jpg',
   imageCredit: 'image credit',
   nationalProgram: {
@@ -144,9 +140,15 @@ const sharedCollectiveOfferData = {
   formats: [EacFormat.ATELIER_DE_PRATIQUE],
   location: {
     locationType: CollectiveLocationType.SCHOOL,
-    address: null,
+    location: null,
     locationComment: null,
   },
+  audioDisabilityCompliant: false,
+  mentalDisabilityCompliant: false,
+  motorDisabilityCompliant: false,
+  visualDisabilityCompliant: false,
+  dates: null,
+  durationMinutes: null,
 }
 
 export const getCollectiveOfferFactory = (
@@ -157,6 +159,10 @@ export const getCollectiveOfferFactory = (
     ...sharedCollectiveOfferData,
     id: currentOfferId,
     venue: getCollectiveOfferVenueFactory(),
+    booking: null,
+    institution: null,
+    teacher: null,
+    templateId: null,
     isTemplate: false,
     allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
     collectiveStock: getCollectiveOfferCollectiveStockFactory(),
@@ -195,6 +201,8 @@ export const getCollectiveOfferCollectiveStockFactory = (
     startDatetime: add(Date.now(), { days: 2 }).toISOString(),
     endDatetime: add(Date.now(), { days: 3 }).toISOString(),
     bookingLimitDatetime: add(Date.now(), { days: 1 }).toISOString(),
+    educationalPriceDetail: 'detail',
+    numberOfTickets: 10,
     ...customGetCollectiveOfferCollectiveStock,
   }
 }
@@ -209,6 +217,8 @@ export const getCollectiveOfferBookingFactory = (
     dateCreated: new Date().toISOString(),
     cancellationLimitDate: add(Date.now(), { days: 1 }).toISOString(),
     confirmationLimitDate: add(Date.now(), { days: 1 }).toISOString(),
+    cancellationReason: null,
+    educationalRedactor: { ...defaultEducationalRedactor },
     ...customGetCollectiveOfferBooking,
   }
 }
@@ -218,12 +228,16 @@ export const getCollectiveOfferTemplateFactory = (
 ): GetCollectiveOfferTemplateResponseModel => ({
   ...sharedCollectiveOfferData,
   id: offerId++,
+  allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
   venue: getCollectiveOfferVenueFactory(),
   isTemplate: true,
   dates: {
     start: new Date().toISOString(),
     end: addDays(new Date(), 1).toISOString(),
   },
+  contactForm: null,
+  contactUrl: null,
+  educationalPriceDetail: null,
   ...customCollectiveOfferTemplate,
 })
 
@@ -237,6 +251,7 @@ export const getCollectiveOfferVenueFactory = (
     publicName: `Nom public de la structure ${currentVenueId}`,
     id: currentVenueId,
     departementCode: '973',
+    imgUrl: null,
     ...customGetCollectiveOfferVenue,
   }
 }

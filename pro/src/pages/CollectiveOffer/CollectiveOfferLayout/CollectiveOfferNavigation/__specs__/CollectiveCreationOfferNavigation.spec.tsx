@@ -199,6 +199,7 @@ describe('CollectiveCreationOfferNavigation', () => {
           name: '',
           phoneNumber: '',
           postalCode: '',
+          institutionType: '',
         },
       }),
     })
@@ -233,6 +234,7 @@ describe('CollectiveCreationOfferNavigation', () => {
           name: '',
           phoneNumber: '',
           postalCode: '',
+          institutionType: '',
         },
       }),
     })
