@@ -357,13 +357,14 @@ class SSOSigninTest:
         )
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
-    def test_single_sign_on_ignores_email_if_found(self, mocked_google_oauth, client):
-        user = users_factories.UserFactory(email="another@email.com", isActive=True)
-        users_factories.SingleSignOnFactory(user=user, ssoUserId=self.valid_google_user.sub)
+    def test_updates_single_sign_on_email_change(self, mocked_google_oauth, client):
+        user = users_factories.UserFactory(isActive=True)
+        google_sso = users_factories.SingleSignOnFactory(user=user, ssoUserId="old google id")
         oauth_state_token = token_utils.UUIDToken.create(
             token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
         )
         mocked_google_oauth.return_value = self.valid_google_user
+        user.email = self.valid_google_user.email
 
         response = client.post(
             "/native/v1/oauth/google/authorize",
@@ -371,6 +372,7 @@ class SSOSigninTest:
         )
 
         assert response.status_code == 200
+        assert google_sso.ssoUserId == self.valid_google_user.sub
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
     def test_single_sign_on_inserts_sso_method_if_email_found(self, mocked_google_oauth, client):
@@ -428,7 +430,9 @@ class SSOSigninTest:
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
     def test_single_sign_on_does_not_duplicate_ssos(self, mocked_google_oauth, client):
-        single_sign_on = users_factories.SingleSignOnFactory(ssoUserId=self.valid_google_user.sub)
+        single_sign_on = users_factories.SingleSignOnFactory(
+            user__email=self.valid_google_user.email, ssoUserId=self.valid_google_user.sub
+        )
         oauth_state_token = token_utils.UUIDToken.create(
             token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
         )
@@ -441,22 +445,6 @@ class SSOSigninTest:
 
         assert response.status_code == 200
         assert db.session.query(SingleSignOn).filter(SingleSignOn.user == single_sign_on.user).count() == 1
-
-    @patch("pcapi.connectors.google_oauth.get_google_user")
-    def test_single_sign_on_raises_if_another_sso_is_already_configured(self, mocked_google_oauth, client):
-        oauth_state_token = token_utils.UUIDToken.create(
-            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
-        )
-        users_factories.SingleSignOnFactory(user__email=self.valid_google_user.email)
-        mocked_google_oauth.return_value = self.valid_google_user
-
-        response = client.post(
-            "/native/v1/oauth/google/authorize",
-            json={"authorizationCode": "4/google_code", "oauthStateToken": oauth_state_token.encoded_token},
-        )
-
-        assert response.status_code == 400
-        assert db.session.query(SingleSignOn).filter(SingleSignOn.ssoUserId == self.valid_google_user.sub).count() == 0
 
     def test_oauth_state_token_past_expiration_date(self, client):
         with time_machine.travel("2022-01-01"):
