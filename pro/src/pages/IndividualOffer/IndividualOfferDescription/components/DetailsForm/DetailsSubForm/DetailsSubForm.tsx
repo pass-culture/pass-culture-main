@@ -92,7 +92,7 @@ export const DetailsSubForm = ({
 
   return (
     <>
-      <div role="alert">
+      <div>
         {displayRedirectionCallout && (
           <div className={styles.callout}>
             <Banner
