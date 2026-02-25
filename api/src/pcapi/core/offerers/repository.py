@@ -1212,13 +1212,9 @@ def get_offerer_addresses(
             geography_models.Address.city,
             geography_models.Address.departmentCode,
         )
-        .filter(models.OffererAddress.offererId == offerer_id)
         .filter(
-            # TODO (prouzet, 2025-11-13) CLEAN_OA When data is migrated, only filter on OFFER_LOCATION
-            sa.or_(
-                offerers_models.OffererAddress.type.is_(None),
-                offerers_models.OffererAddress.type == offerers_models.LocationType.OFFER_LOCATION,
-            )
+            models.OffererAddress.offererId == offerer_id,
+            offerers_models.OffererAddress.type == offerers_models.LocationType.OFFER_LOCATION,
         )
         .join(geography_models.Address, models.OffererAddress.addressId == geography_models.Address.id)
         .outerjoin(models.Venue, models.Venue.id == models.OffererAddress.venueId)  # Do not filter on type

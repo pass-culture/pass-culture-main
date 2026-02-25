@@ -1589,6 +1589,7 @@ class OffererAddress(PcObject, Model):
     venue: sa_orm.Mapped[Venue | None] = sa_orm.relationship("Venue", foreign_keys=[venueId])
 
     __table_args__ = (
+        # TODO bulle
         # TODO (prouzet, 2025-10-09) When type and venueId are declared as non-nullable, index should be:
         # sa.Index("ix_unique_offerer_address_per_label, "offererId", "addressId", "label", "type", "venueId", unique=True),
         # probably with postgresql_nulls_not_distinct=True, because duplicate empty label should be on different venues.

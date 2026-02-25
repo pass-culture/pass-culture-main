@@ -193,23 +193,42 @@ class ListOffersStockResponseModel(BaseModel):
 
 
 def offer_location_getter_dict_helper(offer: offers_models.Offer) -> LocationResponseModel | None:
+    # is_venue_location = False
+    # if offer.status == OfferStatus.DRAFT and not offer.offererAddressId:
+    #     # The offer is still in the funnel creation and without any offererAddress defined
+    #     # We don't want to blindly return venue.offererAddress
+    #     return None
+    # offerer_address = None
+    # # TODO (prouzet, 2025-11-14) CLEAN_OA Remove second part of the condition when step 4.2 is completed
+    # if offer.offererAddress and (
+    #     offer.offererAddress.addressId != offer.venue.offererAddress.addressId
+    #     or (
+    #         offer.offererAddress.label != offer.venue.offererAddress.label
+    #         and offer.offererAddress.label != offer.venue.publicName
+    #     )
+    # ):
+    #     offerer_address = offer.offererAddress
+    # else:
+    #     offerer_address = offer.venue.offererAddress
+    #     is_venue_location = True
+    # label = offer.venue.publicName if (is_venue_location or offerer_address.label is None) else offerer_address.label
+    # return LocationResponseModel(
+    #     **retrieve_address_info_from_oa(offerer_address),
+    #     label=label,
+    #     isVenueLocation=is_venue_location,
+    # )
+
+    # TODO bulle
     is_venue_location = False
-    if offer.status == OfferStatus.DRAFT and not offer.offererAddressId:
+    if not offer.offererAddress or (offer.status == OfferStatus.DRAFT and not offer.offererAddressId):
         # The offer is still in the funnel creation and without any offererAddress defined
         # We don't want to blindly return venue.offererAddress
         return None
-    offerer_address = None
-    # TODO (prouzet, 2025-11-14) CLEAN_OA Remove second part of the condition when step 4.2 is completed
-    if offer.offererAddress and (
-        offer.offererAddress.addressId != offer.venue.offererAddress.addressId
-        or (
-            offer.offererAddress.label != offer.venue.offererAddress.label
-            and offer.offererAddress.label != offer.venue.publicName
-        )
+    offerer_address = offer.offererAddress
+    if offer.offererAddress.addressId == offer.venue.offererAddress.addressId and (
+        offer.offererAddress.label == offer.venue.offererAddress.label
+        or offer.offererAddress.label == offer.venue.publicName
     ):
-        offerer_address = offer.offererAddress
-    else:
-        offerer_address = offer.venue.offererAddress
         is_venue_location = True
     label = offer.venue.publicName if (is_venue_location or offerer_address.label is None) else offerer_address.label
     return LocationResponseModel(

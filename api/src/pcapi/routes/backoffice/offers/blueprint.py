@@ -107,13 +107,13 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
         "field": "department",
         "llm_filter": "venue_departement_code",
         "column": geography_models.Address.departmentCode,
-        "facet": "venue.departmentCode",  # FIXME (prouzet, 2025-08-14): user offer address when it is sent to Algolia
+        "facet": "venue.departmentCode",  # FIXME (prouzet, 2025-08-14): user offer address when it is sent to Algolia #TODO bulle?
         "inner_join": "address",
     },
     "REGION": {
         "field": "region",
         "column": geography_models.Address.departmentCode,
-        "facet": "venue.departmentCode",  # FIXME (prouzet, 2025-08-14): user offer address when it is sent to Algolia
+        "facet": "venue.departmentCode",  # FIXME (prouzet, 2025-08-14): user offer address when it is sent to Algolia #TODO bulle?
         "inner_join": "address",
         "special": regions_utils.get_department_codes_for_regions,
         "algolia_special": regions_utils.get_department_codes_for_regions,
