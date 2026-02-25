@@ -10,6 +10,7 @@ import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
 import pcapi.core.opening_hours.api as opening_hours_api
+import pcapi.core.pro_advice.api as pro_advice_api
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -863,3 +864,26 @@ def get_offer_pro_advice(offer_id: int) -> offers_serialize.GetProAdviceResponse
 
     pro_advice = offers_serialize.ProAdviceModel.model_validate(offer.proAdvice) if offer.proAdvice else None
     return offers_serialize.GetProAdviceResponseModel(pro_advice=pro_advice)
+
+
+@private_api.route("/offers/<int:offer_id>/pro_advice", methods=["POST"])
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.GetProAdviceResponseModel,
+    on_success_status=201,
+    api=blueprint.pro_private_schema,
+)
+@atomic()
+def create_offer_pro_advice(
+    offer_id: int, body: offers_serialize.ProAdviceBodyModel
+) -> offers_serialize.GetProAdviceResponseModel:
+    try:
+        offer = offers_repository.get_offer_by_id(offer_id, load_options=["venue", "pro_advice"])
+    except exceptions.OfferNotFound:
+        raise api_errors.ResourceNotFoundError()
+
+    if not users_repository.has_access(current_user, offer.venue.managingOffererId):
+        raise api_errors.ResourceNotFoundError()
+
+    pro_advice = pro_advice_api.create_pro_advice(offer, body.content, body.author, current_user)
+    return offers_serialize.GetProAdviceResponseModel(pro_advice=offers_serialize.ProAdviceModel.from_orm(pro_advice))
