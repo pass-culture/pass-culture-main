@@ -1,5 +1,5 @@
 import cx from 'classnames'
-import type { Ref } from 'react'
+import { type Ref, useState } from 'react'
 
 import type { SelectOption } from '@/commons/custom_types/form'
 
@@ -62,17 +62,9 @@ export const OptionsList = ({
           >
             <span className={styles['options-item']}>
               {(option.thumbUrl || thumbPlaceholder) && (
-                <img
-                  className={styles['options-img']}
-                  alt=""
-                  src={option.thumbUrl || thumbPlaceholder}
-                  aria-hidden={true}
-                  onError={(e) => {
-                    // if the thumbUrl fails to load, use the thumbPlaceholder
-                    if (thumbPlaceholder) {
-                      e.currentTarget.src = thumbPlaceholder
-                    }
-                  }}
+                <ThumbWithPlaceholder
+                  thumbUrl={option.thumbUrl}
+                  thumbPlaceholder={thumbPlaceholder}
                 />
               )}
               <span>{option.label}</span>
@@ -85,3 +77,40 @@ export const OptionsList = ({
     )}
   </ul>
 )
+
+const ThumbWithPlaceholder = ({
+  thumbUrl,
+  thumbPlaceholder,
+}: {
+  thumbUrl?: string | null
+  thumbPlaceholder?: string
+}) => {
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  return (
+    <span className={styles['options-img-wrapper']}>
+      {thumbPlaceholder && (
+        <img
+          className={styles['options-img']}
+          alt=""
+          src={thumbPlaceholder}
+          aria-hidden={true}
+        />
+      )}
+      {thumbUrl && (
+        <img
+          className={cx(
+            styles['options-img'],
+            styles['options-img-hidden'],
+            isLoaded && styles['options-img-visible']
+          )}
+          alt=""
+          src={thumbUrl}
+          aria-hidden={true}
+          onLoad={() => setIsLoaded(true)}
+          onError={() => setIsLoaded(false)}
+        />
+      )}
+    </span>
+  )
+}

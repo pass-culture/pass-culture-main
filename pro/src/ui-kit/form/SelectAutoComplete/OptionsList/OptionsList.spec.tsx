@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createRef } from 'react'
 
@@ -101,32 +101,51 @@ describe('<OptionsList />', () => {
     expect(imgs[0]).toHaveAttribute('src', '/placeholder.png')
   })
 
-  it('should use thumbUrl when provided', () => {
-    const optionsWithThumbUrl = [
-      { value: '01', label: 'Ain', thumbUrl: 'https://example.com/ain.jpg' },
-    ]
+  it('should render both placeholder and thumbUrl', () => {
     renderOptionsList({
       ...DEFAULT_PROPS,
-      filteredOptions: optionsWithThumbUrl,
+      filteredOptions: [
+        { value: '01', label: 'Ain', thumbUrl: 'https://example.com/ain.jpg' },
+      ],
       thumbPlaceholder: '/placeholder.png',
     })
 
-    const img = screen.getByRole('presentation', { hidden: true })
-    expect(img).toHaveAttribute('src', 'https://example.com/ain.jpg')
+    const imgs = screen.getAllByRole('presentation', { hidden: true })
+    expect(imgs).toHaveLength(2)
+    expect(imgs[0]).toHaveAttribute('src', '/placeholder.png')
+    expect(imgs[1]).toHaveAttribute('src', 'https://example.com/ain.jpg')
   })
 
-  it('should use thumbPlaceholder when thumbUrl fails to load', () => {
-    const optionsWithThumbUrl = [
-      { value: '01', label: 'Ain', thumbUrl: 'https://example.com/ain.jpg' },
-    ]
+  it('should make thumbUrl visible after it loads', () => {
     renderOptionsList({
       ...DEFAULT_PROPS,
-      filteredOptions: optionsWithThumbUrl,
+      filteredOptions: [
+        { value: '01', label: 'Ain', thumbUrl: 'https://example.com/ain.jpg' },
+      ],
       thumbPlaceholder: '/placeholder.png',
     })
 
-    const img = screen.getByRole('presentation', { hidden: true })
-    img.dispatchEvent(new Event('error'))
-    expect(img).toHaveAttribute('src', '/placeholder.png')
+    const imgs = screen.getAllByRole('presentation', { hidden: true })
+    const realImg = imgs[1]
+
+    expect(realImg).not.toHaveClass('options-img-visible')
+    fireEvent.load(realImg)
+    expect(realImg).toHaveClass('options-img-visible')
+  })
+
+  it('should keep thumbUrl hidden when thumbUrl fails to load', () => {
+    renderOptionsList({
+      ...DEFAULT_PROPS,
+      filteredOptions: [
+        { value: '01', label: 'Ain', thumbUrl: 'https://example.com/ain.jpg' },
+      ],
+      thumbPlaceholder: '/placeholder.png',
+    })
+
+    const imgs = screen.getAllByRole('presentation', { hidden: true })
+    const realImg = imgs[1]
+
+    fireEvent.error(realImg)
+    expect(realImg).not.toHaveClass('options-img-visible')
   })
 })

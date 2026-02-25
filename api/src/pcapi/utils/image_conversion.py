@@ -107,26 +107,6 @@ def process_original_image(content: bytes, resize: bool = True) -> bytes:
     return _post_process_image(image)
 
 
-def center_crop_image(
-    content: bytes,
-    ratio: ImageRatio,
-    max_width: int = MAX_THUMB_WIDTH,
-) -> bytes:
-    preprocessed_image = _pre_process_image(content)
-
-    crop_params = get_crop_params(preprocessed_image.width, preprocessed_image.height, ratio)
-    cropped_image = _crop_image(
-        crop_params.x_crop_percent,
-        crop_params.y_crop_percent,
-        crop_params.height_crop_percent,
-        crop_params.width_crop_percent,
-        preprocessed_image,
-    )
-    shrunk_image = _shrink_image(cropped_image, max_width)
-
-    return _post_process_image(shrunk_image)
-
-
 def _pre_process_image(content: bytes) -> PIL.Image.Image:
     raw_image = PIL.Image.open(io.BytesIO(content))
 

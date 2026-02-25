@@ -2,6 +2,7 @@ import pytest
 
 import pcapi.core.artist.factories as artist_factories
 import pcapi.core.users.factories as users_factories
+from pcapi import settings
 from pcapi.core import testing
 
 
@@ -9,8 +10,8 @@ from pcapi.core import testing
 class Returns200Test:
     @pytest.mark.features(WIP_OFFER_ARTISTS=True)
     def when_user_has_rights_on_managing_offerer(self, client):
-        artist1 = artist_factories.ArtistFactory(name="name1")
-        artist2 = artist_factories.ArtistFactory(name="2name")
+        artist1 = artist_factories.ArtistFactory(name="name-1")
+        artist2 = artist_factories.ArtistFactory(name="name-2", mediation_uuid="uuid-2")
 
         pro = users_factories.ProFactory()
 
@@ -22,5 +23,13 @@ class Returns200Test:
             response = auth_client.get("/artists?search=name")
             assert response.status_code == 200
 
-        assert {"id": artist1.id, "name": artist1.name, "thumbUrl": artist1.image} in response.json
-        assert {"id": artist2.id, "name": artist2.name, "thumbUrl": artist2.image} in response.json
+        assert {
+            "id": artist1.id,
+            "name": artist1.name,
+            "thumbUrl": None,
+        } in response.json
+        assert {
+            "id": artist2.id,
+            "name": artist2.name,
+            "thumbUrl": f"{settings.GCP_BUCKET_NAME}/{settings.ARTIST_THUMBS_FOLDER_NAME}/{artist2.mediation_uuid}",
+        } in response.json

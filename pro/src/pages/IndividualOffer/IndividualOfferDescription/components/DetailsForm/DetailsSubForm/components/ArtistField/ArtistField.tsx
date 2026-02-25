@@ -2,6 +2,7 @@ import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
 import { type ArtistResponseModel, ArtistType } from '@/apiClient/v1'
+import { resizeImageURL } from '@/commons/utils/resizeImageURL'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullMoreIcon from '@/icons/full-more.svg'
@@ -17,6 +18,8 @@ const ARTIST_TYPE_LABELS: Record<ArtistType, string> = {
   [ArtistType.PERFORMER]: 'Interprète',
   [ArtistType.STAGE_DIRECTOR]: 'Metteur en scène',
 }
+
+const ARTIST_THUMB_WIDTH = 36
 
 type ArtistOption = ArtistResponseModel & { value: string; label: string }
 
@@ -87,7 +90,12 @@ export function ArtistField({
                   ...artist,
                   value: artist.id,
                   label: artist.name,
-                  thumbUrl: artist.thumbUrl,
+                  thumbUrl: artist.thumbUrl
+                    ? resizeImageURL({
+                        imageURL: artist.thumbUrl,
+                        width: ARTIST_THUMB_WIDTH,
+                      })
+                    : null,
                 }))
               }}
               error={errors?.artistOfferLinks?.[index]?.artistName?.message}
