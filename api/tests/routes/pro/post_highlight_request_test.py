@@ -64,13 +64,14 @@ class Returns200Test:
         assert response.status_code == 201
 
         highlight_request_query = db.session.query(highlights_models.HighlightRequest).order_by(
-            highlights_models.HighlightRequest.id
+            highlights_models.HighlightRequest.highlightId
         )
         assert highlight_request_query.count() == 2
-        assert highlight_request_query.all()[0].offerId == offer.id
-        assert highlight_request_query.all()[0].highlightId == highlight.id
-        assert highlight_request_query.all()[1].offerId == offer.id
-        assert highlight_request_query.all()[1].highlightId == highlight2.id
+        highlight_requests = highlight_request_query.all()
+        assert highlight_requests[0].offerId == offer.id
+        assert highlight_requests[0].highlightId == highlight.id
+        assert highlight_requests[1].offerId == offer.id
+        assert highlight_requests[1].highlightId == highlight2.id
 
         assert len([log for log in caplog.records if log.message == "Highlight requests have been created"]) == 1
         log = next(log for log in caplog.records if log.message == "Highlight requests have been created")
