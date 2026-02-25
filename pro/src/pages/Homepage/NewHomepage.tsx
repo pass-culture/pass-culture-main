@@ -33,13 +33,12 @@ export const NewHomepage = (): JSX.Element => {
     useAppSelector(ensureSelectedVenue)
 
   const collectiveDmsApplication = getLastCollectiveDmsApplication(
-    selectedVenue?.collectiveDmsApplications ?? []
+    selectedVenue.collectiveDmsApplications ?? []
   )
 
   const hasIndividual = !!selectedVenue.hasNonDraftOffers
-  const hasCollective =
-    selectedVenue?.allowedOnAdage || collectiveDmsApplication
-  const adageInscriptionDate = selectedVenue?.adageInscriptionDate
+  const hasCollective = selectedVenue.allowedOnAdage || collectiveDmsApplication
+  const adageInscriptionDate = selectedVenue.adageInscriptionDate
 
   const [selectedTab, setSelectedTab] = useState(
     getInitialTab(selectedVenue.id, hasIndividual, !!hasCollective)
@@ -66,23 +65,23 @@ export const NewHomepage = (): JSX.Element => {
   }
 
   // Shared modules display conditions
-  const shouldDisplayHomologationBanner: boolean = !selectedVenue.isValidated
-  const shouldDisplayBudgetCard: boolean = selectedVenue.hasNonFreeOffers
+  const shouldDisplayHomologationBanner = !selectedVenue.isValidated
+  const shouldDisplayBudgetCard = selectedVenue.hasNonFreeOffers
 
   // Individual modules display conditions
-  const shouldDisplayWebinarCard: boolean = isBefore(
+  const shouldDisplayWebinarCard = isBefore(
     getToday(),
     addDays(selectedVenue.dateCreated, 31)
   )
 
   // Collective modules display conditions
-  const hasRefusedDmsApplication: boolean =
+  const hasRefusedDmsApplication =
     collectiveDmsApplication?.state === DMSApplicationstatus.REFUSE ||
     collectiveDmsApplication?.state === DMSApplicationstatus.SANS_SUITE
 
   const collectiveActivationDate =
     adageInscriptionDate ?? selectedVenue.dateCreated
-  const shouldDisplayCollectiveWebinarCard: boolean = isBefore(
+  const shouldDisplayCollectiveWebinarCard = isBefore(
     getToday(),
     addDays(collectiveActivationDate, 31)
   )
@@ -196,8 +195,8 @@ export const NewHomepage = (): JSX.Element => {
             {collectiveDmsApplication && (
               <CollectiveDmsTimeline
                 collectiveDmsApplication={collectiveDmsApplication}
-                hasAdageId={Boolean(selectedVenue?.hasAdageId)}
-                adageInscriptionDate={selectedVenue?.adageInscriptionDate}
+                hasAdageId={Boolean(selectedVenue.hasAdageId)}
+                adageInscriptionDate={selectedVenue.adageInscriptionDate}
                 variant={CollectiveDmsTimelineVariant.LITE}
               />
             )}
