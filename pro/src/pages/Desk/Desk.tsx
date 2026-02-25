@@ -189,22 +189,20 @@ export const Desk = (): JSX.Element => {
               />
             </div>
           </div>
-          <div className={`${styles['desk-callout']}`}>
-            <Banner
-              actions={[
-                {
-                  href: 'https://aide.passculture.app/hc/fr/articles/4416062183569--Acteurs-Culturels-Modalités-de-retrait-et-CGU',
-                  label: 'Modalités de retrait et CGU',
-                  isExternal: true,
-                  type: 'link',
-                  icon: fullLinkIcon,
-                  iconAlt: 'Nouvelle fenêtre',
-                },
-              ]}
-              title="N’oubliez pas de vérifier l’identité du bénéficiaire avant de valider la contremarque."
-              description="Les pièces d’identité doivent impérativement être présentées physiquement. Merci de ne pas accepter les pièces d’identité au format numérique."
-            />
-          </div>
+          <Banner
+            actions={[
+              {
+                href: 'https://aide.passculture.app/hc/fr/articles/4416062183569--Acteurs-Culturels-Modalités-de-retrait-et-CGU',
+                label: 'Modalités de retrait et CGU',
+                isExternal: true,
+                type: 'link',
+                icon: fullLinkIcon,
+                iconAlt: 'Nouvelle fenêtre',
+              },
+            ]}
+            title="N’oubliez pas de vérifier l’identité du bénéficiaire avant de valider la contremarque."
+            description="Les pièces d’identité doivent impérativement être présentées physiquement. Merci de ne pas accepter les pièces d’identité au format numérique."
+          />
         </div>
       </BasicLayout>
     </HeadlineOfferContextProvider>

@@ -44,7 +44,7 @@ export const RedirectDialog = ({
       icon={icon}
       hideIcon={hideIcon}
       explanation={children}
-      extraClassNames={`${extraClassNames} ${styles['confirm-dialog-explanation']}`}
+      extraClassNames={extraClassNames}
       open={open}
     >
       <div className={styles['redirect-dialog-actions']}>

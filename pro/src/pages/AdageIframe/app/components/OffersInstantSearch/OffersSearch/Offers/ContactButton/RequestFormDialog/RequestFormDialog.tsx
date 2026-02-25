@@ -147,14 +147,14 @@ export const RequestFormDialog = ({
       {type === 'mail' ? (
         <a
           href={`mailto:${value}`}
-          className={styles['form-description-text-contact']}
+          className={styles['form-description-contact']}
           target="_blank"
           rel="noreferrer"
         >
           {value}
         </a>
       ) : (
-        <span className={styles['form-description-text-contact']}>{value}</span>
+        <span className={styles['form-description-contact']}>{value}</span>
       )}
     </div>
   )
@@ -176,8 +176,8 @@ export const RequestFormDialog = ({
             <a
               href={`mailto:${contactEmail}`}
               className={classNames(
-                styles['form-description-text-value'],
-                styles['form-description-text-mail']
+                styles['form-description-value'],
+                styles['form-description-mail']
               )}
               target="_blank"
               rel="noreferrer"
@@ -189,7 +189,7 @@ export const RequestFormDialog = ({
         {contactPhone && (
           <li className={styles['form-description-list-item']}>
             par téléphone :{' '}
-            <span className={styles['form-description-text-value']}>
+            <span className={styles['form-description-value']}>
               {contactPhone}
             </span>
           </li>
@@ -218,7 +218,7 @@ export const RequestFormDialog = ({
           (userRole === AdageFrontRoles.REDACTOR || isPreview) && (
             <li className={styles['form-description-list-item']}>
               en renseignant{' '}
-              <span className={styles['form-description-text-value']}>
+              <span className={styles['form-description-value']}>
                 le formulaire ci-dessous
               </span>
             </li>

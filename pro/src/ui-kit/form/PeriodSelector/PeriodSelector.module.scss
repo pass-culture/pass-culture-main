@@ -3,29 +3,27 @@
 @use "styles/mixins/_a11y.scss" as a11y;
 @use "styles/mixins/_forms.scss" as form;
 
-.period-filter {
-  .period-filter-inputs {
-    display: flex;
-    height: var(--input-height-m);
-    margin-top: var(--size-spacing-xs);
-  }
+.period-filter-inputs {
+  display: flex;
+  height: var(--input-height-m);
+  margin-top: var(--size-spacing-xs);
+}
 
-  .field-date-begin {
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
-    padding-right: var(--size-spacing-s);
-  }
+.field-date-begin {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+  padding-right: var(--size-spacing-s);
+}
 
-  .field-date-end {
-    border-bottom-left-radius: 0;
-    border-left: none;
-    border-top-left-radius: 0;
-    padding-left: var(--size-spacing-s);
-  }
+.field-date-end {
+  border-bottom-left-radius: 0;
+  border-left: none;
+  border-top-left-radius: 0;
+  padding-left: var(--size-spacing-s);
+}
 
-  .period-filter-input {
-    width: rem.torem(145px);
-  }
+.period-filter-input {
+  width: rem.torem(145px);
 }
 
 .visually-hidden {

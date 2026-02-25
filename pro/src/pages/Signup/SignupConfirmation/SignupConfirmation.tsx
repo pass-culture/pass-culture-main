@@ -8,8 +8,8 @@ export const SignupConfirmation = () => {
   const location = useLocation()
 
   return (
-    <section className={styles['signup-confirmation']}>
-      <p className={styles['signup-confirmation-body']}>
+    <section>
+      <p className={styles['signup-confirmation']}>
         Cliquez sur le lien envoyé par email
         {location.state?.email && (
           <>

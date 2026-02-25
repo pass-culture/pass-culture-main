@@ -73,7 +73,7 @@ export const AccessibilityLabel = ({
           alt=""
         />
       )}
-      <span className={styles['text']}>{labelData.label}</span>
+      <span>{labelData.label}</span>
     </div>
   )
 }

@@ -2,87 +2,10 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_a11y.scss" as a11y;
 
-.no-data {
+.table-actions {
   display: flex;
-  flex-direction: column;
-  align-items: center;
   gap: var(--size-spacing-s);
-
-  &-icon {
-    width: rem.torem(88px);
-    color: var(--color-icon-subtle);
-  }
-}
-
-.bold {
-  @include fonts.body-accent;
-}
-
-.table {
-  width: 100%;
-  border-bottom: rem.torem(1px) solid var(--color-border-subtle);
-}
-
-.thead {
-  border-top-left-radius: rem.torem(8px);
-  border-top-right-radius: rem.torem(8px);
-  width: 100%;
-  background-color: var(--color-background-subtle);
-
-  &-th {
-    @include fonts.body-accent-xs;
-
-    padding: var(--size-spacing-s);
-    text-align: left;
-
-    &:first-child {
-      border-top-left-radius: rem.torem(8px);
-      padding-left: var(--size-spacing-l);
-    }
-
-    &:last-child {
-      border-top-right-radius: rem.torem(8px);
-      padding-right: var(--size-spacing-l);
-      text-align: right;
-    }
-  }
-}
-
-.tbody {
-  &-td {
-    padding: var(--size-spacing-s);
-
-    &-date {
-      margin-left: var(--size-spacing-s);
-    }
-
-    &-actions {
-      display: flex;
-      gap: var(--size-spacing-s);
-      justify-content: flex-end;
-    }
-
-    &:first-of-type {
-      padding-left: var(--size-spacing-l);
-
-      .tbody-td-date {
-        margin-left: 0;
-      }
-    }
-
-    &:last-of-type {
-      text-align: right;
-      padding-right: var(--size-spacing-l);
-    }
-  }
-}
-
-.tr {
-  border-bottom: rem.torem(1px) solid var(--color-border-subtle);
-}
-
-.select-all {
-  margin: var(--size-spacing-l) 0;
+  justify-content: center;
 }
 
 .delete-warning-block {

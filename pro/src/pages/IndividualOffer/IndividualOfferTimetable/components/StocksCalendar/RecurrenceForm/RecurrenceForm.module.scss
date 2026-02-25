@@ -19,19 +19,6 @@
   align-items: center;
   gap: rem.torem(10px);
   margin-bottom: var(--size-spacing-l);
-
-  &-icon {
-    width: rem.torem(20px);
-    height: rem.torem(20px);
-    color: var(--color-icon-brand-primary);
-  }
-}
-
-.radio-group {
-  display: flex;
-  gap: var(--size-spacing-s);
-  margin-bottom: var(--size-spacing-l);
-  flex-wrap: wrap;
 }
 
 .action-buttons {
@@ -65,10 +52,6 @@
   max-width: rem.torem(576px);
 }
 
-.beginning-time-input {
-  max-width: rem.torem(100px);
-}
-
 .date-input {
   width: rem.torem(235px);
   margin-bottom: 0;
@@ -88,13 +71,6 @@
   max-width: rem.torem(400px);
 }
 
-.mandatory {
-  @include fonts.body-accent-xs;
-
-  color: var(--color-text-subtle);
-  margin-bottom: var(--size-spacing-l);
-}
-
 .form {
   flex-grow: 1;
   display: flex;
@@ -107,10 +83,6 @@
 
 .recurrence-section {
   margin-bottom: var(--size-spacing-l);
-}
-
-.time-picker-container {
-  position: relative;
 }
 
 .time-slot {

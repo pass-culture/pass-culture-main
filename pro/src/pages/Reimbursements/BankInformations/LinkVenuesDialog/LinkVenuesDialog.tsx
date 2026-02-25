@@ -121,11 +121,7 @@ export const LinkVenuesDialog = ({
         }}
         title={`Compte bancaire : ${selectedBankAccount.label}`}
       >
-        <div
-          className={cn(styles['dialog'], {
-            [styles['dialog-with-banner']]: hasVenuesWithoutPricingPoint,
-          })}
-        >
+        <div className={cn(styles['dialog'])}>
           {hasVenuesWithoutPricingPoint && (
             <div className={styles['dialog-callout']}>
               <Banner
@@ -216,9 +212,6 @@ export const LinkVenuesDialog = ({
       </DialogBuilder>
 
       <ConfirmDialog
-        extraClassNames={cn(styles['discard-dialog'], {
-          [styles['discard-dialog-with-banner']]: hasVenuesWithoutPricingPoint,
-        })}
         icon={strokeWarningIcon}
         onCancel={() => setShowDiscardDialog(false)}
         title="Les informations non sauvegardées ne seront pas prises en compte"
@@ -232,9 +225,6 @@ export const LinkVenuesDialog = ({
         refToFocusOnClose={saveButtonRef}
       />
       <ConfirmDialog
-        extraClassNames={cn(styles['discard-dialog'], {
-          [styles['discard-dialog-with-banner']]: hasVenuesWithoutPricingPoint,
-        })}
         icon={strokeWarningIcon}
         onCancel={() => setShowUnlinkDialog(false)}
         title="Attention : la ou les structures désélectionnées ne seront plus remboursées sur ce compte bancaire"

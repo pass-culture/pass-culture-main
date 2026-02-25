@@ -15,10 +15,6 @@
   @include fonts.title4;
 }
 
-.booking-type-section {
-  flex-grow: 1;
-}
-
 .date-select-section {
   width: 100%;
 }
@@ -33,12 +29,6 @@
   flex-wrap: wrap;
   gap: var(--size-spacing-s);
   width: 100%;
-}
-
-.bookings-radio-buttons {
-  &-validated {
-    margin: var(--size-spacing-l) 0;
-  }
 }
 
 .bookings-date-count {
@@ -69,27 +59,4 @@
   &:first-child {
     padding-left: rem.torem(28px);
   }
-}
-
-.bookings-date-radio {
-  outline: none;
-
-  &:focus-within {
-    outline: none;
-  }
-}
-
-.bookings-day {
-  width: 4em;
-
-  @include fonts.body-accent;
-
-  text-decoration: none;
-  text-transform: capitalize;
-}
-
-.radio-label {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
 }

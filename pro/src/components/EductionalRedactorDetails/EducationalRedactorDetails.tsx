@@ -23,7 +23,7 @@ export const EducationalRedactorDetails = ({
 }: EducationalRedactorDetailsProps) => {
   return (
     <div className={styles['contact-container']}>
-      <div className={styles['contact-title']}>
+      <div>
         <dd>{title}</dd>
       </div>
       <div className={styles['contact-detail']}>
