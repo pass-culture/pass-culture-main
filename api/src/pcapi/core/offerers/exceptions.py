@@ -70,14 +70,6 @@ class NotACollectivity(Exception):
     pass
 
 
-class OffererAddressLabelAlreadyUsed(Exception):
-    pass
-
-
-class OffererAddressNotEditableException(Exception):
-    pass
-
-
 class publicNameRequiredException(Exception):
     pass
 

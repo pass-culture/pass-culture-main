@@ -13,6 +13,7 @@ from pcapi.core.educational.models import CollectiveLocationType
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.educational.models import StudentLevels
+from pcapi.core.offerers.utils import is_venue_address
 from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization.national_programs import NationalProgramModel
@@ -302,12 +303,7 @@ def get_collective_offer_location_from_offer(offer: CollectiveOffer) -> Collecti
                 comment=offer.locationComment,
             )
         case CollectiveLocationType.ADDRESS:
-            is_venue_address = (
-                offer.offererAddress is not None
-                and offer.offererAddress.addressId == offer.venue.offererAddress.addressId
-                and offer.offererAddress.label == offer.venue.publicName
-            )
-            if is_venue_address:
+            if offer.offererAddress and is_venue_address(offer.offererAddress, offer.venue):
                 return CollectiveOfferLocationAddressVenueModel(
                     type=CollectiveLocationType.ADDRESS.value, isVenueAddress=True
                 )

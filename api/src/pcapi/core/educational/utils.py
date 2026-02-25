@@ -10,6 +10,7 @@ from psycopg2.extras import DateTimeRange
 
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
+from pcapi.core.offerers.utils import is_venue_address
 from pcapi.core.users.utils import ALGORITHM_RS_256
 from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
@@ -127,7 +128,7 @@ def get_collective_offer_full_address(offer: models.CollectiveOffer | models.Col
 
             address = offer.offererAddress.address.fullAddress
             label: str | None
-            if offer.offererAddress == offer.venue.offererAddress:
+            if is_venue_address(offer.offererAddress, offer.venue):
                 label = offer.venue.publicName
             else:
                 label = offer.offererAddress.label

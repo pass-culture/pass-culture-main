@@ -7,6 +7,15 @@ def get_venue_currency(venue: offerers_models.Venue) -> CurrencyEnum:
     return CurrencyEnum.XPF if venue.is_caledonian else CurrencyEnum.EUR
 
 
+def is_venue_address(offer_location: offerers_models.OffererAddress, venue: offerers_models.Venue) -> bool:
+    # TODO bdalbianco labelOA: delete label is none
+    if offer_location.addressId == venue.offererAddress.addressId and (
+        offer_location.label is None or offer_location.label == venue.publicName
+    ):
+        return True
+    return False
+
+
 ACTIVITY_NAME_TO_VENUE_TYPE_CODE_MAPPING = {
     offerers_models.Activity.BOOKSTORE.name: offerers_schemas.VenueTypeCode.BOOKSTORE,
     offerers_models.Activity.LIBRARY.name: offerers_schemas.VenueTypeCode.LIBRARY,

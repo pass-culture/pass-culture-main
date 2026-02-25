@@ -503,7 +503,7 @@ def create_venue(
         offererId=venue_data.managing_offerer_id,
         addressId=address.id,
         type=offerers_models.LocationType.VENUE_LOCATION,
-        label=venue_address.label or None,
+        label=None,  # venue location always gets an empty label
         venue=venue,
     )
     db.session.add(offerer_address)

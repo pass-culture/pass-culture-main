@@ -764,7 +764,6 @@ class Returns200Test:
             offererAddress__address__longitude=1.34765,
             offererAddress__address__latitude=4.34765,
         )
-        offerer_address1 = venue.offererAddress
 
         event_offer1 = offers_factories.EventOfferFactory(
             name="The Weeknd",
@@ -805,20 +804,7 @@ class Returns200Test:
                 },
                 "status": "SOLD_OUT",
                 "isShowcase": False,
-                "location": {
-                    "id": offerer_address1.address.id,
-                    "banId": offerer_address1.address.banId,
-                    "inseeCode": offerer_address1.address.inseeCode,
-                    "label": venue.publicName,
-                    "street": offerer_address1.address.street,
-                    "postalCode": offerer_address1.address.postalCode,
-                    "city": offerer_address1.address.city,
-                    "departmentCode": offerer_address1.address.departmentCode,
-                    "isVenueLocation": True,
-                    "isManualEdition": offerer_address1.address.isManualEdition,
-                    "latitude": float(offerer_address1.address.latitude),
-                    "longitude": float(offerer_address1.address.longitude),
-                },
+                "location": None,
                 "publicationDatetime": "2022-11-21T13:19:00Z",
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,

@@ -33,6 +33,7 @@ class CalculatedOfferAddress:
     street: str | None
 
 
+# TODO bdalbianco 09/04/26 CLEAN_OA check function usage to ensure use of offer.venue.offererAddress is minimal/null
 def get_offer_address(offer: Offer) -> CalculatedOfferAddress:
     offerer_address = offer.offererAddress or offer.venue.offererAddress
     if offerer_address:
