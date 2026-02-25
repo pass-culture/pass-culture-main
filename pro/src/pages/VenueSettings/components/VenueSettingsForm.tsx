@@ -28,7 +28,9 @@ import type {
 } from '../commons/types'
 import { SiretOrCommentFields } from './SiretOrCommentFields/SiretOrCommentFields'
 import { OffersSynchronization } from './VenueProvidersManager/OffersSynchronization/OffersSynchronization'
+import styles from './VenueSettingsForm.module.scss'
 import { WithdrawalDetails } from './WithdrawalDetails/WithdrawalDetails'
+
 export interface VenueSettingsFormProps {
   offerer: GetOffererResponseModel
   venueProviders: VenueProviderResponse[]
@@ -117,7 +119,7 @@ export const VenueSettingsForm = ({
                 />
               </FormLayout.Row>
 
-              <FormLayout.Row>
+              <FormLayout.Row className={styles['manual-address-button']}>
                 <Button
                   type="button"
                   variant={ButtonVariant.TERTIARY}
