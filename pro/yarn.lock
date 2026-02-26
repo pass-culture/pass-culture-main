@@ -4524,10 +4524,10 @@ react-dom@19.0.4:
   dependencies:
     scheduler "^0.26.0"
 
-react-dropzone@14.4.1:
-  version "14.4.1"
-  resolved "https://registry.yarnpkg.com/react-dropzone/-/react-dropzone-14.4.1.tgz#a33b5c348365bfc73d5fec69c91cb32c350cb9d4"
-  integrity sha512-QDuV76v3uKbHiH34SpwifZ+gOLi1+RdsCO1kl5vxMT4wW8R82+sthjvBw4th3NHF/XX6FBsqDYZVNN+pnhaw0g==
+react-dropzone@15.0.0:
+  version "15.0.0"
+  resolved "https://registry.yarnpkg.com/react-dropzone/-/react-dropzone-15.0.0.tgz#bd03c7c2b14fe4ea9db1a9c74502b85339f2e505"
+  integrity sha512-lGjYV/EoqEjEWPnmiSvH4v5IoIAwQM2W4Z1C0Q/Pw2xD0eVzKPS359BQTUMum+1fa0kH2nrKjuavmTPOGhpLPg==
   dependencies:
     attr-accept "^2.2.4"
     file-selector "^2.1.0"
