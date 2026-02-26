@@ -40,6 +40,7 @@ export const AddressManual = ({
 
     methods.setValue('latitude', latitude)
     methods.setValue('longitude', longitude)
+    methods.trigger('coords')
   }
 
   return (
