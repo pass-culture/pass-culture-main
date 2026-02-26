@@ -41,6 +41,7 @@ export const findCurrentRoute = (location: Location) =>
     // This reverse is here so that subroutes (e.g. /inscription/compte/confirmation)
     // are matched before their parents (e.g. /inscription/*)
     .reverse()
+    .filter((route) => route.path !== '')
     .find(({ path }) => matchPath(path, location.pathname) !== null) as
     | CustomRouteOrphan
     | CustomRouteGroupChild
