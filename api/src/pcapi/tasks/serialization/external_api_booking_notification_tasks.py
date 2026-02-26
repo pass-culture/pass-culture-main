@@ -1,12 +1,6 @@
-from enum import Enum
-
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.external_bookings.serialize import ExternalEventBookingRequest
-
-
-class BookingAction(str, Enum):
-    BOOK = "BOOK"
-    CANCEL = "CANCEL"
+from pcapi.core.providers.tasks import BookingAction
 
 
 class ExternalApiBookingNotificationRequest(ExternalEventBookingRequest):
