@@ -872,6 +872,14 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     quality: sa_orm.Mapped["OfferQuality | None"] = sa_orm.relationship(
         "OfferQuality", foreign_keys="OfferQuality.offerId", back_populates="offer", uselist=False
     )
+    proAdvice: sa_orm.Mapped["ProAdvice | None"] = sa_orm.relationship(
+        "ProAdvice",
+        foreign_keys="ProAdvice.offerId",
+        back_populates="offer",
+        uselist=False,
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
     rankingWeight: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.Integer, nullable=True)
     subcategoryId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, index=True)
     url: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(255), nullable=True)
@@ -1777,6 +1785,20 @@ class OfferQuality(PcObject, Model):
     )
     offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", foreign_keys=[offerId], back_populates="quality")
     completionScore: sa_orm.Mapped[float] = sa_orm.mapped_column(sa.Float, nullable=False)
+    updatedAt: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now(), onupdate=sa.func.now()
+    )
+
+
+class ProAdvice(PcObject, Model):
+    __tablename__ = "pro_advice"
+
+    offerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False, unique=True
+    )
+    offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", foreign_keys=[offerId], back_populates="proAdvice")
+    content: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+    author: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     updatedAt: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now(), onupdate=sa.func.now()
     )
