@@ -54,7 +54,7 @@ def create_offer_artist_link(offer_id: int, row: dict) -> dict | None:
     artist_id = str(row[ARTIST_ID_HEADER])
     if artist_type not in artist_models.ArtistType:
         logger.warning(f"Artist Type {artist_type} is not a valid enum value")
-        pass
+        return None
 
     if artist_id:
         return {
@@ -77,6 +77,14 @@ def create_offer_artist_link(offer_id: int, row: dict) -> dict | None:
 
 def process_batch(batch_rows: tuple, commit: bool) -> None:
     batch_offer_ids = {int(row[OFFER_ID_HEADER]) for row in batch_rows if int(row[OFFER_ID_HEADER])}
+
+    # check_all_artist_exists
+    distinct_batch_artist_ids = set((row[ARTIST_ID_HEADER]) for row in batch_rows if row[ARTIST_ID_HEADER])
+    query = db.session.query(artist_models.Artist).filter(artist_models.Artist.id.in_(distinct_batch_artist_ids))
+    count_artists = query.count()
+    if len(distinct_batch_artist_ids) != count_artists:
+        logger.warning("Certains artistes de ce batch n'existent pas en base de données, il ne sera pas traîté")
+        return None
 
     existing_offer_ids = {
         offer.id

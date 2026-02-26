@@ -164,3 +164,21 @@ def test_dry_run_should_not_commit(mock_read_csv):
     main(commit=False, filename="mock_filename")
 
     assert db.session.query(artist_models.ArtistOfferLink).count() == 0
+
+
+@patch("pcapi.scripts.link_artists_to_offers.main.read_csv_file")
+def test_missing_artist_should_raise(mock_read_csv, caplog):
+    offer = offers_factories.OfferFactory()
+    offer_id = offer.id
+    mock_read_csv.return_value = [
+        {
+            "offer_id": str(offer_id),
+            "artist_type": "performer",
+            "custom_name": "",
+            "artist_id": "abcdefgh-1234-1234-abcd-1234abcdedfg5678",
+        }
+    ]
+
+    main(commit=False, filename="mock_filename")
+    assert "Certains artistes de ce batch n'existent pas en base de données, il ne sera pas traîté" in caplog.text
+    assert db.session.query(artist_models.ArtistOfferLink).count() == 0
