@@ -1,9 +1,5 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.open-to-public-toggle {
-  margin-top: var(--size-spacing-l);
-}
-
 .disabled-row {
   display: flex;
   place-content: center space-between;

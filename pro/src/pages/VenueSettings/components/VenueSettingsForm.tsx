@@ -8,18 +8,14 @@ import type {
   VenueProviderResponse,
 } from '@/apiClient/v1'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
+import { AddressFields } from '@/components/AddressFields/AddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import fullBackIcon from '@/icons/full-back.svg'
-import fullNextIcon from '@/icons/full-next.svg'
 import { ReimbursementFields } from '@/pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import { VenueFormActionBar } from '@/pages/VenueEdition/components/VenueFormActionBar/VenueFormActionBar'
 import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
-import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
 import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
 import type {
@@ -48,7 +44,7 @@ export const VenueSettingsForm = ({
     setValue,
     watch,
     clearErrors,
-    formState: { isDirty, isSubmitting, isSubmitted, errors },
+    formState: { isDirty, isSubmitting, isSubmitted, errors, disabled },
   } = useFormContext<VenueSettingsFormValues>()
 
   const location = useLocation()
@@ -108,31 +104,15 @@ export const VenueSettingsForm = ({
                 />
               </FormLayout.Row>
 
-              <FormLayout.Row mdSpaceAfter>
-                <AddressSelect
-                  {...register('addressAutocomplete')}
-                  disabled={manuallySetAddress}
-                  label={'Adresse postale'}
-                  onAddressChosen={onAddressSelect}
-                  error={errors.addressAutocomplete?.message}
-                />
-              </FormLayout.Row>
-
-              <FormLayout.Row>
-                <Button
-                  type="button"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  icon={manuallySetAddress ? fullBackIcon : fullNextIcon}
-                  onClick={toggleManuallySetAddress}
-                  label={
-                    manuallySetAddress
-                      ? 'Revenir à la sélection automatique'
-                      : 'Vous ne trouvez pas votre adresse ?'
-                  }
-                />
-              </FormLayout.Row>
-              {manuallySetAddress && <AddressManual />}
+              <AddressFields
+                addressRegister={register('addressAutocomplete')}
+                disabled={disabled}
+                onAddressChosen={onAddressSelect}
+                error={errors.addressAutocomplete?.message}
+                renderManual={() => <AddressManual />}
+                manual={manuallySetAddress}
+                onManualChange={toggleManuallySetAddress}
+              />
             </>
           )}
         </FormLayout.Section>

@@ -8,15 +8,11 @@ import {
 } from '@/apiClient/v1'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
+import { AddressFields } from '@/components/AddressFields/AddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import fullBackIcon from '@/icons/full-back.svg'
-import fullNextIcon from '@/icons/full-next.svg'
 import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
-import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
 import styles from '../OfferEducationalForm.module.scss'
@@ -128,43 +124,31 @@ export const FormLocation = ({
                     }
                     disabled={disableForm}
                   />
-                  <AddressSelect
-                    disabled={disableForm || isManualEdition}
+                  <AddressFields
+                    addressRegister={register('addressAutocomplete')}
                     onAddressChosen={onAddressSelect}
-                    label="Adresse postale"
-                    {...register('addressAutocomplete')}
-                    className={styles['specific-address-search']}
+                    renderManual={() => (
+                      <AddressManual
+                        gpsCalloutMessage={
+                          'Les coordonnées GPS permettent aux enseignants de trouver votre offre sur ADAGE.'
+                        }
+                        readOnlyFields={
+                          disableForm
+                            ? ['city', 'street', 'postalCode', 'coords']
+                            : []
+                        }
+                      />
+                    )}
                     error={
                       !disableForm && !isManualEdition
                         ? getFieldState('addressAutocomplete').error?.message
                         : undefined
                     }
-                  />
-                  <Button
-                    type="button"
-                    variant={ButtonVariant.TERTIARY}
-                    color={ButtonColor.NEUTRAL}
-                    icon={isManualEdition ? fullBackIcon : fullNextIcon}
-                    onClick={toggleManualAddressForm}
                     disabled={disableForm}
-                    label={
-                      isManualEdition
-                        ? 'Revenir à la sélection automatique'
-                        : 'Vous ne trouvez pas votre adresse ?'
-                    }
+                    className={styles['specific-address-search']}
+                    manual={isManualEdition}
+                    onManualChange={toggleManualAddressForm}
                   />
-                  {isManualEdition && (
-                    <AddressManual
-                      gpsCalloutMessage={
-                        'Les coordonnées GPS permettent aux enseignants de trouver votre offre sur ADAGE.'
-                      }
-                      readOnlyFields={
-                        disableForm
-                          ? ['city', 'street', 'postalCode', 'coords']
-                          : []
-                      }
-                    />
-                  )}
                 </div>
               ),
             },
