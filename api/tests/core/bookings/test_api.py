@@ -1229,6 +1229,77 @@ class CancelByBeneficiaryTest:
 
         assert updated_booking.stock.dnBookedQuantity == 1
 
+    @patch("pcapi.core.providers.tasks.external_api_booking_notification_task.delay")
+    @pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_EXTERNAL_BOOKING=True)
+    def test_send_notification_to_external_api_when_cancel_booking_with_FF(self, mocked_task):
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider", localClass=None, notificationExternalUrl="http://external.api.com/notify"
+        )
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = offers_factories.StockFactory(
+            offer__lastProvider=provider,
+            offer__ean="1234567890123",
+            dnBookedQuantity=1,
+            idAtProviders="",
+            lastProvider=provider,
+        )
+        booking = bookings_factories.BookingFactory(stock=stock)
+
+        api.cancel_booking_by_beneficiary(booking.user, booking)
+
+        updated_booking = db.session.query(models.Booking).filter().one()
+
+        assert db.session.query(models.Booking).filter().count() == 1
+        assert updated_booking.status == BookingStatus.CANCELLED
+
+        assert updated_booking.stock.dnBookedQuantity == 1
+
+        assert mocked_task.call_count == 1
+        notification = mocked_task.call_args.args[0]["data"]
+        assert notification["offer_ean"] == "1234567890123"
+        assert notification["offer_id"] == stock.offer.id
+        assert notification["offer_name"] == stock.offer.name
+        assert notification["offer_price"] == finance_api.utils.to_cents(stock.price)
+        assert notification["stock_id"] == stock.id
+        assert notification["booking_quantity"] == booking.quantity
+        assert notification["booking_creation_date"] == booking.dateCreated
+        assert notification["venue_address"] == stock.offer.venue.offererAddress.address.street
+        assert notification["user_email"] == booking.user.email
+        assert notification["user_first_name"] == booking.user.firstName
+        assert notification["user_last_name"] == booking.user.lastName
+        assert notification["user_phone"] == booking.user.phoneNumber
+        assert notification["action"] == BookingAction.CANCEL
+
+        assert mocked_task.call_args.args[0]["notificationUrl"] == provider.notificationExternalUrl
+
+    @patch("pcapi.core.providers.tasks.external_api_booking_notification_task.delay")
+    @pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_EXTERNAL_BOOKING=True)
+    def test_cancel_booking_when_send_notification_to_external_api_fails_with_FF(self, mocked_task):
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider", localClass=None, notificationExternalUrl="http://external.api.com/notify"
+        )
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = offers_factories.EventStockFactory(
+            offer__lastProvider=provider,
+            offer__ean="1234567890123",
+            offer__withdrawalType=offers_models.WithdrawalTypeEnum.NO_TICKET,
+            dnBookedQuantity=1,
+            idAtProviders="",
+            lastProvider=provider,
+        )
+        booking = bookings_factories.BookingFactory(stock=stock)
+
+        mocked_task.side_effect = Exception("Something wrong happened")
+
+        api.cancel_booking_by_beneficiary(booking.user, booking)
+
+        updated_booking = db.session.query(models.Booking).filter().one()
+
+        assert db.session.query(models.Booking).filter().count() == 1
+        assert updated_booking.status == BookingStatus.CANCELLED
+
+        assert updated_booking.stock.dnBookedQuantity == 1
+
     def test_cancel_booking_twice(self):
         booking = bookings_factories.BookingFactory()
         initial_quantity = booking.stock.dnBookedQuantity
