@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react'
+import { act, renderHook, waitFor } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { useParams } from 'react-router'
 import { SWRConfig } from 'swr'
@@ -112,7 +112,7 @@ describe('IndividualOfferContextProvider', () => {
       expect(result.current.isEvent).toBeNull()
       expect(result.current.offerId).toBeNull()
 
-      await waitFor(() => void result.current.setIsEvent(true))
+      await act(() => result.current.setIsEvent(true))
 
       expect(result.current.isEvent).toBe(true)
       expect(result.current.offerId).toBeNull()
@@ -198,7 +198,7 @@ describe('IndividualOfferContextProvider', () => {
 
       expect(result.current.isEvent).toBe(false)
 
-      await waitFor(() => void result.current.setIsEvent(true))
+      await act(() => result.current.setIsEvent(true))
 
       expect(result.current.isEvent).toBe(false)
     })
