@@ -10,12 +10,4 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--size-spacing-xl);
-
-  & > div {
-    flex-grow: 1;
-  }
-}
-
-.manual-address-button {
-  margin-top: var(--size-spacing-l);
 }
