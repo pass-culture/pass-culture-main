@@ -51,12 +51,8 @@
   margin-right: var(--size-spacing-l);
   margin-left: var(--size-spacing-l);
 
-  li {
+  &-item {
     margin-bottom: var(--size-spacing-s);
-
-    &:last-child {
-      margin-bottom: 0;
-    }
   }
 
   &-title {
@@ -82,7 +78,7 @@
   border-radius: var(--size-border-radius-m);
   background: var(--color-background-subtle);
 
-  svg {
+  &-icon {
     height: rem.torem(50px);
     width: rem.torem(50px);
     color: var(--color-icon-subtle);
