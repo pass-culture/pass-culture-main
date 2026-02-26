@@ -9,7 +9,6 @@ from pcapi.core.external.zendesk_sell.backends.base import ZendeskCustomFieldsSh
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models.feature import FeatureToggle
-from pcapi.tasks import zendesk_sell_tasks
 from pcapi.utils import module_loading
 from pcapi.utils.transaction_manager import on_commit
 
@@ -24,10 +23,6 @@ SEARCH_PARENT = -1
 
 def get_backend() -> "BaseBackend":
     backend_string = settings.ZENDESK_SELL_BACKEND
-    # Keep compatibility with environment settings for transition
-    backend_string = backend_string.replace(
-        "pcapi.core.external.zendesk_sell_backends", "pcapi.core.external.zendesk_sell.backends"
-    )
     backend_class = module_loading.import_string(backend_string)
     return backend_class()
 
@@ -97,20 +92,12 @@ def create_venue(venue: offerers_models.Venue) -> None:
         return
 
     # API calls to Zendesk Sell are delayed to return quickly
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_ZENDESK_SELL.is_active():
-        on_commit(
-            partial(
-                tasks.create_venue_task.delay,
-                serialization.VenuePayload(venue_id=venue.id).model_dump(),
-            )
+    on_commit(
+        partial(
+            tasks.create_venue_task.delay,
+            serialization.VenuePayload(venue_id=venue.id).model_dump(),
         )
-    else:
-        on_commit(
-            partial(
-                zendesk_sell_tasks.create_venue_task.delay,
-                zendesk_sell_tasks.VenuePayload(venue_id=venue.id),
-            )
-        )
+    )
 
 
 def do_create_venue(venue_id: int) -> None:
@@ -128,20 +115,12 @@ def update_venue(venue: offerers_models.Venue) -> None:
         return
 
     # API calls to Zendesk Sell are delayed to return quickly
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_ZENDESK_SELL.is_active():
-        on_commit(
-            partial(
-                tasks.update_venue_task.delay,
-                serialization.VenuePayload(venue_id=venue.id).model_dump(),
-            )
+    on_commit(
+        partial(
+            tasks.update_venue_task.delay,
+            serialization.VenuePayload(venue_id=venue.id).model_dump(),
         )
-    else:
-        on_commit(
-            partial(
-                zendesk_sell_tasks.update_venue_task.delay,
-                zendesk_sell_tasks.VenuePayload(venue_id=venue.id),
-            )
-        )
+    )
 
 
 def do_update_venue(venue_id: int) -> None:
@@ -172,20 +151,12 @@ def create_offerer(offerer: offerers_models.Offerer) -> None:
         return
 
     # API calls to Zendesk Sell are delayed to return quickly
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_ZENDESK_SELL.is_active():
-        on_commit(
-            partial(
-                tasks.create_offerer_task.delay,
-                serialization.OffererPayload(offerer_id=offerer.id).model_dump(),
-            )
+    on_commit(
+        partial(
+            tasks.create_offerer_task.delay,
+            serialization.OffererPayload(offerer_id=offerer.id).model_dump(),
         )
-    else:
-        on_commit(
-            partial(
-                zendesk_sell_tasks.create_offerer_task.delay,
-                zendesk_sell_tasks.OffererPayload(offerer_id=offerer.id),
-            )
-        )
+    )
 
 
 def do_create_offerer(offerer_id: int) -> None:
@@ -203,20 +174,12 @@ def update_offerer(offerer: offerers_models.Offerer) -> None:
         return
 
     # API calls to Zendesk Sell are delayed to return quickly
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_ZENDESK_SELL.is_active():
-        on_commit(
-            partial(
-                tasks.update_offerer_task.delay,
-                serialization.OffererPayload(offerer_id=offerer.id).model_dump(),
-            )
+    on_commit(
+        partial(
+            tasks.update_offerer_task.delay,
+            serialization.OffererPayload(offerer_id=offerer.id).model_dump(),
         )
-    else:
-        on_commit(
-            partial(
-                zendesk_sell_tasks.update_offerer_task.delay,
-                zendesk_sell_tasks.OffererPayload(offerer_id=offerer.id),
-            )
-        )
+    )
 
 
 def do_update_offerer(offerer_id: int) -> None:

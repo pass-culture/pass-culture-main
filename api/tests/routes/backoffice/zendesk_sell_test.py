@@ -96,11 +96,6 @@ class UpdateOffererOnZendeskSellTest(PostEndpointHelper):
         assert not testing.zendesk_sell_requests
 
 
-@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_ZENDESK_SELL=True)
-class UpdateOffererOnZendeskSellCeleryTest(UpdateOffererOnZendeskSellTest):
-    pass
-
-
 class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
     endpoint = "backoffice_web.zendesk_sell.update_venue"
     endpoint_kwargs = {"venue_id": 1}
@@ -281,8 +276,3 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         )
 
         assert not testing.zendesk_sell_requests
-
-
-@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_ZENDESK_SELL=True)
-class UpdateVenueOnZendeskSellCeleryTest(UpdateVenueOnZendeskSellTest):
-    pass
