@@ -60,6 +60,7 @@ export const OffererAuthentication = (): JSX.Element => {
     resolver: yupResolver(
       validationSchema(!offerer?.isDiffusible)
     ) as unknown as Resolver<OffererAuthenticationFormValues>,
+    mode: 'onBlur',
   })
 
   return (
