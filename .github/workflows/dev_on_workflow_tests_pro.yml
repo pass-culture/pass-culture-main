@@ -51,6 +51,7 @@ jobs:
       - run: yarn lint:dead-code
       - run: yarn lint:js --diagnostic-level=warn
       - run: yarn lint:scss
+      - run: yarn lint:scss:checkunused
 
   pro-run-tests:
     name: "Pro Unit tests"
