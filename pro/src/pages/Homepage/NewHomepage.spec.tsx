@@ -480,29 +480,68 @@ describe('NewHomepage', () => {
           screen.getByRole('tabpanel', { description: /collective/ })
         ).not.toHaveTextContent(/Remboursement/)
       })
+
+      it('should not be displayed when the venue is not allowed on adage', () => {
+        renderNewHomepage({
+          ...defaultGetOffererVenueResponseModel,
+          hasNonFreeOffers: false,
+          allowedOnAdage: false,
+          collectiveDmsApplications: [defaultDMSApplicationForEAC],
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent(/Remboursement/)
+      })
     })
 
-    it('should always have the mandatory modules', () => {
-      renderNewHomepage({
-        ...defaultGetOffererVenueResponseModel,
-        allowedOnAdage: true,
+    describe('mandatory modules', () => {
+      it('should always have the mandatory modules when allowed on adage', () => {
+        renderNewHomepage({
+          ...defaultGetOffererVenueResponseModel,
+          allowedOnAdage: true,
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).toHaveTextContent(/Activités vos offres vitrines/)
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).toHaveTextContent(/Activités vos offres réservables/)
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).toHaveTextContent(/Votre page sur ADAGE/)
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).toHaveTextContent(/Suivez notre actualité/)
       })
 
-      expect(
-        screen.getByRole('tabpanel', { description: /collective/ })
-      ).toHaveTextContent(/Activités vos offres vitrines/)
+      it('should not  have the mandatory modules when venue is not allowed on adage', () => {
+        renderNewHomepage({
+          ...defaultGetOffererVenueResponseModel,
+          allowedOnAdage: false,
+          collectiveDmsApplications: [defaultDMSApplicationForEAC],
+        })
 
-      expect(
-        screen.getByRole('tabpanel', { description: /collective/ })
-      ).toHaveTextContent(/Activités vos offres réservables/)
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent(/Activités vos offres vitrines/)
 
-      expect(
-        screen.getByRole('tabpanel', { description: /collective/ })
-      ).toHaveTextContent(/Votre page sur ADAGE/)
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent(/Activités vos offres réservables/)
 
-      expect(
-        screen.getByRole('tabpanel', { description: /collective/ })
-      ).toHaveTextContent(/Suivez notre actualité/)
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent(/Votre page sur ADAGE/)
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent(/Suivez notre actualité/)
+      })
     })
 
     describe('webinar module', () => {
@@ -579,6 +618,26 @@ describe('NewHomepage', () => {
           dateCreated,
           adageInscriptionDate: null,
           allowedOnAdage: true,
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent(
+          /Participer à nos webinaires sur la part collective !/
+        )
+      })
+
+      it('should not be displayed when venue is not allowed on adage', () => {
+        const dateCreated = '2026-02-16T12:31:53.443732Z'
+        const today = new Date(dateCreated)
+        today.setDate(today.getDate() + 40)
+        vi.setSystemTime(today)
+        renderNewHomepage({
+          ...defaultGetOffererVenueResponseModel,
+          dateCreated,
+          adageInscriptionDate: null,
+          allowedOnAdage: false,
+          collectiveDmsApplications: [defaultDMSApplicationForEAC],
         })
 
         expect(

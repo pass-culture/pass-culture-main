@@ -36,12 +36,12 @@ export const NewHomepage = (): JSX.Element => {
     selectedVenue.collectiveDmsApplications ?? []
   )
 
-  const hasIndividual = !!selectedVenue.hasNonDraftOffers
-  const hasCollective = selectedVenue.allowedOnAdage || collectiveDmsApplication
-  const adageInscriptionDate = selectedVenue.adageInscriptionDate
+  const hasIndividualTab = !!selectedVenue.hasNonDraftOffers
+  const hasCollectiveTab =
+    selectedVenue.allowedOnAdage || !!collectiveDmsApplication
 
   const [selectedTab, setSelectedTab] = useState(
-    getInitialTab(selectedVenue.id, hasIndividual, !!hasCollective)
+    getInitialTab(selectedVenue.id, hasIndividualTab, hasCollectiveTab)
   )
   const individualId = useId()
   const collectiveId = useId()
@@ -80,7 +80,7 @@ export const NewHomepage = (): JSX.Element => {
     collectiveDmsApplication?.state === DMSApplicationstatus.SANS_SUITE
 
   const collectiveActivationDate =
-    adageInscriptionDate ?? selectedVenue.dateCreated
+    selectedVenue.adageInscriptionDate ?? selectedVenue.dateCreated
   const shouldDisplayCollectiveWebinarCard = isBefore(
     getToday(),
     addDays(collectiveActivationDate, 31)
@@ -88,7 +88,7 @@ export const NewHomepage = (): JSX.Element => {
 
   return (
     <>
-      {hasIndividual && hasCollective && (
+      {hasIndividualTab && hasCollectiveTab && (
         <Tabs
           type="tabs"
           navLabel="Sous menu - page d'accueil"
@@ -97,7 +97,7 @@ export const NewHomepage = (): JSX.Element => {
           onChange={handleTabChange}
         />
       )}
-      {hasIndividual && selectedTab === TABS.INDIVIDUAL && (
+      {hasIndividualTab && selectedTab === TABS.INDIVIDUAL && (
         <div
           id={getPanelId(individualId)}
           role="tabpanel"
@@ -167,7 +167,7 @@ export const NewHomepage = (): JSX.Element => {
           </div>
         </div>
       )}
-      {hasCollective && selectedTab === TABS.COLLECTIVE && (
+      {hasCollectiveTab && selectedTab === TABS.COLLECTIVE && (
         <div
           id={getPanelId(collectiveId)}
           role="tabpanel"
@@ -201,16 +201,19 @@ export const NewHomepage = (): JSX.Element => {
               />
             )}
           </div>
-          <div className={styles['main']}>
-            {hasRefusedDmsApplication ? (
+          {hasRefusedDmsApplication && (
+            <div className={styles['main']}>
               <div>
                 Proposer vos offres aux jeunes sur l’application mobile pass
                 Culture
                 <br />
                 <b>Empty state offres indivs</b>
               </div>
-            ) : (
-              <>
+            </div>
+          )}
+          {selectedVenue.allowedOnAdage && (
+            <>
+              <div className={styles['main']}>
                 <div>
                   Activités vos offres vitrines
                   <br />
@@ -221,35 +224,35 @@ export const NewHomepage = (): JSX.Element => {
                   <br />
                   <b>Module gestion offres réservables</b>
                 </div>
-              </>
-            )}
-          </div>
-          <div className={styles['side']}>
-            {shouldDisplayBudgetCard && (
-              <div>
-                Remboursement
-                <br />
-                <b>Module Budget</b>
               </div>
-            )}
-            <div>
-              Votre page sur ADAGE
-              <br />
-              <b>Module page partenaire</b>
-            </div>
-            {shouldDisplayCollectiveWebinarCard && (
-              <div>
-                Participer à nos webinaires sur la part collective !
-                <br />
-                <b>Module Webinaires collectif</b>
+              <div className={styles['side']}>
+                {shouldDisplayBudgetCard && (
+                  <div>
+                    Remboursement
+                    <br />
+                    <b>Module Budget</b>
+                  </div>
+                )}
+                <div>
+                  Votre page sur ADAGE
+                  <br />
+                  <b>Module page partenaire</b>
+                </div>
+                {shouldDisplayCollectiveWebinarCard && (
+                  <div>
+                    Participer à nos webinaires sur la part collective !
+                    <br />
+                    <b>Module Webinaires collectif</b>
+                  </div>
+                )}
+                <div>
+                  Suivez notre actualité !
+                  <br />
+                  <b>Module Newsletter</b>
+                </div>
               </div>
-            )}
-            <div>
-              Suivez notre actualité !
-              <br />
-              <b>Module Newsletter</b>
-            </div>
-          </div>
+            </>
+          )}
         </div>
       )}
     </>
