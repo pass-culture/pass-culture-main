@@ -23,11 +23,11 @@ $icon-button-height: rem.torem(32px);
     }
   }
 
-  > .input-booking-limit-datetime {
+  .input-booking-limit-datetime {
     width: rem.torem(224px);
   }
 
-  > .input-activation-codes-expiration-datetime {
+  .input-activation-codes-expiration-datetime {
     width: rem.torem(160px);
   }
 }
@@ -37,23 +37,8 @@ $icon-button-height: rem.torem(32px);
     flex-direction: row;
     gap: var(--size-spacing-l);
 
-    > .input-label {
-      width: rem.torem(360px);
-    }
-
-    > .input-readonly {
+    .input-readonly {
       max-width: rem.torem(120px);
-
-      &--first {
-        margin-left: var(--size-spacing-l);
-      }
-
-      &,
-      &--first {
-        > span {
-          margin-top: rem.torem(7.5px);
-        }
-      }
     }
 
     .button-action {

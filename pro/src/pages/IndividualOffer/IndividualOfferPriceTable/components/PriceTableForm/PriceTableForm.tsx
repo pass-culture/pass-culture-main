@@ -199,7 +199,6 @@ export const PriceTableForm = ({
             : null
         }
       />
-
       <ActivationCodeFormDialog
         activationCodeButtonRef={activationCodeButtonRef}
         departmentCode={getDepartmentCode(offer)}
@@ -209,7 +208,6 @@ export const PriceTableForm = ({
         onSubmit={uploadActivationCodes}
         today={nowAsDate}
       />
-
       {fields.map((field, index) => {
         const entry = watch(`entries.${index}`)
 
@@ -337,7 +335,6 @@ export const PriceTableForm = ({
                     }
                   />
                 </div>
-
                 <div className={styles['input-readonly']}>
                   <TextInput
                     name={`entries.${index}.bookingsQuantity`}
