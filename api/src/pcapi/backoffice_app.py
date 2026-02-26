@@ -13,7 +13,7 @@ from pcapi import settings
 from pcapi.core.users.sessions import install_backoffice_login
 from pcapi.flask_app import app
 from pcapi.flask_app import setup_metrics
-from pcapi.routes.backoffice import static_utils
+from pcapi.routes.backoffice.utils import static as static_utils
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 
@@ -49,12 +49,13 @@ def handle_csrf_error(error: typing.Any) -> tuple[str, int]:
 
 
 def generate_error_response(errors: dict, backoffice_template_name: str = "errors/generic.html") -> Response:
-    from pcapi.routes.backoffice import utils
+    from pcapi.routes.backoffice.utils import request as request_utils
+    from pcapi.routes.backoffice.utils import response as response_utils
 
     content = ""
     # In case of a request coming from htmx, display errors as flash messages
-    if utils.is_request_from_htmx():
-        for error_line in utils.format_response_error_messages(errors):
+    if request_utils.is_request_from_htmx():
+        for error_line in response_utils.format_response_error_messages(errors):
             flash(error_line, "danger")
     else:
         content = render_template(

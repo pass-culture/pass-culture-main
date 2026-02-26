@@ -19,17 +19,18 @@ from pcapi.core.users import repository as users_repository
 from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.flask_app import backoffice_oauth
 from pcapi.models import db
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.utils import date as date_utils
 
 from . import blueprint
-from . import utils
 
 
 logger = logging.getLogger(__name__)
 
 
 @blueprint.backoffice_web.route("/login", methods=["GET"])
-def login() -> utils.BackofficeResponse:
+def login() -> response_utils.BackofficeResponse:
     use_google_without_credentials = settings.BACKOFFICE_LOGIN_WITHOUT_CREDENTIALS and (
         not settings.GOOGLE_CLIENT_ID or not settings.GOOGLE_CLIENT_SECRET
     )
@@ -54,7 +55,7 @@ def login() -> utils.BackofficeResponse:
 
 
 @blueprint.backoffice_web.route("/authorize", methods=["GET"])
-def authorize() -> utils.BackofficeResponse:
+def authorize() -> response_utils.BackofficeResponse:
     try:
         token = backoffice_oauth.google.authorize_access_token()
     except MismatchingStateError:
@@ -108,14 +109,14 @@ def authorize() -> utils.BackofficeResponse:
 
 
 @blueprint.backoffice_web.route("/logout", methods=["POST"])
-@utils.custom_login_required(redirect_to=".home")
-def logout() -> utils.BackofficeResponse:
+@access_control.custom_login_required(redirect_to=".home")
+def logout() -> response_utils.BackofficeResponse:
     logout_user()
     return redirect(url_for(".home"), code=303)
 
 
 @blueprint.backoffice_web.route("/user-not-found", methods=["GET"])
-def user_not_found() -> utils.BackofficeResponse:
+def user_not_found() -> response_utils.BackofficeResponse:
     return render_template("auth/user_not_found.html")
 
 

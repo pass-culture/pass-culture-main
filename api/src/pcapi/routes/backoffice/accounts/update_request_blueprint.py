@@ -36,11 +36,12 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users.email import update as email_update
 from pcapi.models import db
 from pcapi.routes.backoffice import autocomplete
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice import filters
-from pcapi.routes.backoffice import search_utils
-from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
-from pcapi.routes.backoffice.search_utils import paginate
+from pcapi.routes.backoffice.utils import request as request_utils
+from pcapi.routes.backoffice.utils import response as response_utils
+from pcapi.routes.backoffice.utils import search as search_utils
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 from pcapi.utils import phone_number as phone_number_utils
@@ -51,7 +52,7 @@ from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from . import forms as account_forms
 
 
-account_update_blueprint = utils.child_backoffice_blueprint(
+account_update_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "account_update",
     __name__,
     url_prefix="/account-update-requests",
@@ -217,7 +218,9 @@ def _get_filtered_account_update_requests(form: account_forms.AccountUpdateReque
     return query
 
 
-def _render_account_update_requests(account_update_requests_ids: list[int] | None = None) -> utils.BackofficeResponse:
+def _render_account_update_requests(
+    account_update_requests_ids: list[int] | None = None,
+) -> response_utils.BackofficeResponse:
     account_update_requests = []
     if account_update_requests_ids:
         query = _get_account_update_requests_query()
@@ -232,15 +235,15 @@ def _render_account_update_requests(account_update_requests_ids: list[int] | Non
 
 
 @account_update_blueprint.route("", methods=["GET"])
-def list_account_update_requests() -> utils.BackofficeResponse:
-    form = account_forms.AccountUpdateRequestSearchForm(formdata=utils.get_query_params())
+def list_account_update_requests() -> response_utils.BackofficeResponse:
+    form = account_forms.AccountUpdateRequestSearchForm(formdata=request_utils.get_query_params())
     if not form.validate():
         return render_template("accounts/update_requests_list.html", rows=[], form=form), 400
 
     query = _get_filtered_account_update_requests(form)
     query = query.order_by(getattr(users_models.UserAccountUpdateRequest.dateLastStatusUpdate, form.order.data)())
 
-    paginated_rows = paginate(
+    paginated_rows = search_utils.paginate(
         query=query,
         page=int(form.page.data),
         per_page=int(form.limit.data),
@@ -265,7 +268,7 @@ def list_account_update_requests() -> utils.BackofficeResponse:
 
 
 @account_update_blueprint.route("<int:ds_application_id>/instruct", methods=["POST"])
-def instruct(ds_application_id: int) -> utils.BackofficeResponse:
+def instruct(ds_application_id: int) -> response_utils.BackofficeResponse:
     if not current_user.backoffice_profile.dsInstructorId:
         raise Forbidden()
 
@@ -311,7 +314,7 @@ def _find_duplicate(update_request: users_models.UserAccountUpdateRequest) -> us
 
 
 @account_update_blueprint.route("<int:ds_application_id>/accept", methods=["GET"])
-def get_accept_form(ds_application_id: int) -> utils.BackofficeResponse:
+def get_accept_form(ds_application_id: int) -> response_utils.BackofficeResponse:
     if not current_user.backoffice_profile.dsInstructorId:
         raise Forbidden()
 
@@ -367,13 +370,13 @@ def get_accept_form(ds_application_id: int) -> utils.BackofficeResponse:
 
 
 @account_update_blueprint.route("<int:ds_application_id>/accept", methods=["POST"])
-def accept(ds_application_id: int) -> utils.BackofficeResponse:
+def accept(ds_application_id: int) -> response_utils.BackofficeResponse:
     if not current_user.backoffice_profile.dsInstructorId:
         raise Forbidden()
 
     form = account_forms.AccountUpdateRequestAcceptForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _render_account_update_requests()
 
     update_request: users_models.UserAccountUpdateRequest | None = (
@@ -497,7 +500,7 @@ def accept(ds_application_id: int) -> utils.BackofficeResponse:
 
 
 @account_update_blueprint.route("<int:ds_application_id>/ask-for-correction", methods=["GET"])
-def get_ask_for_correction_form(ds_application_id: int) -> utils.BackofficeResponse:
+def get_ask_for_correction_form(ds_application_id: int) -> response_utils.BackofficeResponse:
     if not current_user.backoffice_profile.dsInstructorId:
         raise Forbidden()
 
@@ -529,7 +532,7 @@ def get_ask_for_correction_form(ds_application_id: int) -> utils.BackofficeRespo
 
 
 @account_update_blueprint.route("<int:ds_application_id>/ask-for-correction", methods=["POST"])
-def ask_for_correction(ds_application_id: int) -> utils.BackofficeResponse:
+def ask_for_correction(ds_application_id: int) -> response_utils.BackofficeResponse:
     if not current_user.backoffice_profile.dsInstructorId:
         raise Forbidden()
 
@@ -545,7 +548,7 @@ def ask_for_correction(ds_application_id: int) -> utils.BackofficeResponse:
 
     form = account_forms.AccountUpdateRequestCorrectionForm(request.args)
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _render_account_update_requests([ds_application_id])
 
     correction_reason = form.correction_reason.data
@@ -573,7 +576,7 @@ def ask_for_correction(ds_application_id: int) -> utils.BackofficeResponse:
 
 
 @account_update_blueprint.route("<int:ds_application_id>/identity-theft", methods=["GET"])
-def get_identity_theft_form(ds_application_id: int) -> utils.BackofficeResponse:
+def get_identity_theft_form(ds_application_id: int) -> response_utils.BackofficeResponse:
     if not current_user.backoffice_profile.dsInstructorId:
         raise Forbidden()
 
@@ -600,7 +603,7 @@ def get_identity_theft_form(ds_application_id: int) -> utils.BackofficeResponse:
 
 
 @account_update_blueprint.route("<int:ds_application_id>/identity-theft", methods=["POST"])
-def identity_theft(ds_application_id: int) -> utils.BackofficeResponse:
+def identity_theft(ds_application_id: int) -> response_utils.BackofficeResponse:
     if not current_user.backoffice_profile.dsInstructorId:
         raise Forbidden()
 
@@ -641,7 +644,7 @@ def identity_theft(ds_application_id: int) -> utils.BackofficeResponse:
 
 
 @account_update_blueprint.route("<int:ds_application_id>/select-user", methods=["GET"])
-def get_select_user_form(ds_application_id: int) -> utils.BackofficeResponse:
+def get_select_user_form(ds_application_id: int) -> response_utils.BackofficeResponse:
     update_request = (
         db.session.query(users_models.UserAccountUpdateRequest)
         .filter_by(dsApplicationId=ds_application_id)
@@ -682,7 +685,7 @@ def get_select_user_form(ds_application_id: int) -> utils.BackofficeResponse:
 
 
 @account_update_blueprint.route("<int:ds_application_id>/select-user", methods=["POST"])
-def select_user(ds_application_id: int) -> utils.BackofficeResponse:
+def select_user(ds_application_id: int) -> response_utils.BackofficeResponse:
     update_request: users_models.UserAccountUpdateRequest | None = (
         db.session.query(users_models.UserAccountUpdateRequest)
         .filter_by(dsApplicationId=ds_application_id)
@@ -702,7 +705,7 @@ def select_user(ds_application_id: int) -> utils.BackofficeResponse:
 
     form = account_forms.AccountUpdateRequestSelectUserForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _render_account_update_requests([ds_application_id])
 
     update_request.set_user_id(form.user.data[0])

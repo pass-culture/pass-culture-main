@@ -24,14 +24,17 @@ from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.routes.backoffice import search_utils
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.pro import forms as pro_forms
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import logs as logs_utils
+from pcapi.routes.backoffice.utils import response as response_utils
+from pcapi.routes.backoffice.utils import search as search_utils
 from pcapi.utils import urls
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 
-pro_blueprint = utils.child_backoffice_blueprint(
+pro_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "pro",
     __name__,
     url_prefix="/pro",
@@ -95,7 +98,7 @@ def render_search_template(form: pro_forms.ProSearchForm | None = None) -> str:
 
 
 @pro_blueprint.route("/search", methods=["GET"])
-def search_pro() -> utils.BackofficeResponse:
+def search_pro() -> response_utils.BackofficeResponse:
     """
     Renders two search pages: first the one with the search form, then
     the one of the results.
@@ -119,7 +122,7 @@ def search_pro() -> utils.BackofficeResponse:
     next_page = partial(url_for, ".search_pro", **form.raw_data)
     next_pages_urls = search_utils.pagination_links(next_page, form.page.data, paginated_rows.pages)
 
-    utils.log_backoffice_tracking_data(
+    logs_utils.log_backoffice_tracking_data(
         event_name="PerformSearch",
         extra_data={
             "searchType": "ProSearch",
@@ -296,8 +299,8 @@ def _get_user_id_from_bank_account_id(bank_account_id: int) -> int:
 
 
 @pro_blueprint.route("/connect-as", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.CONNECT_AS_PRO)
-def connect_as() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.CONNECT_AS_PRO)
+def connect_as() -> response_utils.BackofficeResponse:
     form = pro_forms.ConnectAsForm()
     if not form.validate():
         flash("Échec de la validation de sécurité, veuillez réessayer", "warning")

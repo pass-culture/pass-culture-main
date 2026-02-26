@@ -21,8 +21,10 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users.email import update as email_update
 from pcapi.models import db
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.users import forms
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.utils.requests import ExternalAPIException
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
@@ -31,14 +33,14 @@ logger = logging.getLogger(__name__)
 
 # This blueprint is for common actions on User, which can be beneficiary, pro, admin...
 # Currently targets actions related to "Fraude & Conformité"
-users_blueprint = utils.child_backoffice_blueprint(
+users_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "users",
     __name__,
     url_prefix="/users",
 )
 
 
-def _redirect_to_user_page(user: users_models.User) -> utils.BackofficeResponse:
+def _redirect_to_user_page(user: users_models.User) -> response_utils.BackofficeResponse:
     # Actions should always come from user details page
     if request.referrer:
         return redirect(request.referrer, code=303)
@@ -53,17 +55,17 @@ def _redirect_to_user_page(user: users_models.User) -> utils.BackofficeResponse:
 def _check_user_role_vs_backoffice_permission(user: users_models.User, unsuspend: bool = False) -> None:
     def _check_public_account_role() -> None:
         if unsuspend:
-            if not utils.has_current_user_permission(perm_models.Permissions.UNSUSPEND_USER):
+            if not access_control.has_current_user_permission(perm_models.Permissions.UNSUSPEND_USER):
                 raise Forbidden()
         else:
-            if not utils.has_current_user_permission(perm_models.Permissions.SUSPEND_USER):
+            if not access_control.has_current_user_permission(perm_models.Permissions.SUSPEND_USER):
                 raise Forbidden()
 
     if user.has_admin_role or user.backoffice_profile:
-        if not utils.has_current_user_permission(perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS):
+        if not access_control.has_current_user_permission(perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS):
             raise Forbidden()
     elif user.has_any_pro_role:
-        if not utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
+        if not access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
             if not user.is_beneficiary:
                 raise Forbidden()
             # user has pro or non attached pro role but is also beneficiary
@@ -73,14 +75,14 @@ def _check_user_role_vs_backoffice_permission(user: users_models.User, unsuspend
 
 
 @users_blueprint.route("/<int:user_id>/suspend", methods=["POST"])
-@utils.permission_required_in(
+@access_control.permission_required_in(
     [
         perm_models.Permissions.SUSPEND_USER,
         perm_models.Permissions.PRO_FRAUD_ACTIONS,
         perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS,
     ]
 )
-def suspend_user(user_id: int) -> utils.BackofficeResponse:
+def suspend_user(user_id: int) -> response_utils.BackofficeResponse:
     user = (
         db.session.query(users_models.User)
         .filter_by(id=user_id)
@@ -119,14 +121,14 @@ def suspend_user(user_id: int) -> utils.BackofficeResponse:
 
 
 @users_blueprint.route("/<int:user_id>/unsuspend", methods=["POST"])
-@utils.permission_required_in(
+@access_control.permission_required_in(
     [
         perm_models.Permissions.UNSUSPEND_USER,
         perm_models.Permissions.PRO_FRAUD_ACTIONS,
         perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS,
     ]
 )
-def unsuspend_user(user_id: int) -> utils.BackofficeResponse:
+def unsuspend_user(user_id: int) -> response_utils.BackofficeResponse:
     user = (
         db.session.query(users_models.User)
         .filter_by(id=user_id)
@@ -170,8 +172,8 @@ def _render_batch_suspend_users_form(form: forms.BatchSuspendUsersForm) -> str:
 
 
 @users_blueprint.route("/batch-suspend-form", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
-def get_batch_suspend_users_form() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
+def get_batch_suspend_users_form() -> response_utils.BackofficeResponse:
     form = forms.BatchSuspendUsersForm(suspension_type=forms.SuspensionUserType.PUBLIC)
     return _render_batch_suspend_users_form(form)
 
@@ -207,8 +209,8 @@ def _check_users_to_suspend(ids_list: set[int]) -> tuple[list[users_models.User]
 
 
 @users_blueprint.route("/batch-suspend", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
-def batch_suspend_users() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
+def batch_suspend_users() -> response_utils.BackofficeResponse:
     form = forms.BatchSuspendUsersForm()
     if not form.validate():
         mark_transaction_as_invalid()
@@ -239,8 +241,8 @@ def batch_suspend_users() -> utils.BackofficeResponse:
 
 
 @users_blueprint.route("/batch-suspend/confirm", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
-def confirm_batch_suspend_users() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
+def confirm_batch_suspend_users() -> response_utils.BackofficeResponse:
     form = forms.BatchSuspendUsersForm()
     if not form.validate():
         mark_transaction_as_invalid()
@@ -270,13 +272,13 @@ def confirm_batch_suspend_users() -> utils.BackofficeResponse:
 
 
 @users_blueprint.route("/<int:user_id>/redirect-to-brevo", methods=["GET"])
-@utils.permission_required_in(
+@access_control.permission_required_in(
     [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.READ_PRO_ENTITY,
     ]
 )
-def redirect_to_brevo_user_page(user_id: int) -> utils.BackofficeResponse:
+def redirect_to_brevo_user_page(user_id: int) -> response_utils.BackofficeResponse:
     user = db.session.query(users_models.User).filter_by(id=user_id).one_or_none()
 
     if not user:

@@ -5,7 +5,7 @@ from flask_wtf import FlaskForm
 
 from pcapi import settings
 from pcapi.core.permissions import models as perm_models
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice.utils import access_control
 
 
 CONNECT_AS_OBJECT_TYPES = frozenset(
@@ -37,7 +37,7 @@ def get_connect_as(object_type: str, object_id: int, pc_pro_path: str) -> Connec
     if not pc_pro_path.startswith("/"):
         raise ValueError('pc_pro_path must be an absolute path in pc_pro (starting with "/")')
 
-    if not utils.has_current_user_permission(perm_models.Permissions.CONNECT_AS_PRO):
+    if not access_control.has_current_user_permission(perm_models.Permissions.CONNECT_AS_PRO):
         return None
 
     pc_pro_url = f"{settings.PRO_URL}{pc_pro_path}"

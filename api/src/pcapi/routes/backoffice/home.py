@@ -14,9 +14,10 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import offer_mixin
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import response as response_utils
 
 from . import blueprint
-from . import utils
 
 
 REDIRECT_AFTER_LOGIN_COOKIE_NAME = "redirect_after_login"
@@ -119,7 +120,7 @@ def _get_user_account_update_requests_stats() -> list[sa.sql.elements.Label]:
 
 
 @blueprint.backoffice_web.route("/", methods=["GET"])
-def home() -> utils.BackofficeResponse:
+def home() -> response_utils.BackofficeResponse:
     if not current_user or current_user.is_anonymous:
         return render_template("home/login.html")
 
@@ -133,11 +134,11 @@ def home() -> utils.BackofficeResponse:
     data: dict[str, typing.Any] = {}
     subqueries = []
 
-    if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
+    if access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
         subqueries += _get_fraud_stats()
 
     if (
-        utils.has_current_user_permission(perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST)
+        access_control.has_current_user_permission(perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST)
         and current_user.backoffice_profile.dsInstructorId
     ):
         subqueries += _get_user_account_update_requests_stats()
@@ -150,6 +151,6 @@ def home() -> utils.BackofficeResponse:
 
 
 @blueprint.backoffice_web.route("/_messages", methods=["GET"])
-@utils.custom_login_required(redirect_to="backoffice_web.home")
-def get_messages() -> utils.BackofficeResponse:
+@access_control.custom_login_required(redirect_to="backoffice_web.home")
+def get_messages() -> response_utils.BackofficeResponse:
     return render_template("components/messages.html")

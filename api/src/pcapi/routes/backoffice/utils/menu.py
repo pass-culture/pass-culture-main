@@ -5,7 +5,8 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import extra_funcs
 
 
 @dataclasses.dataclass
@@ -23,10 +24,10 @@ class MenuItem:
 
         conditions: list[bool] = []
         for permission in self.permissions or []:
-            conditions.append(utils.has_current_user_permission(permission))
+            conditions.append(access_control.has_current_user_permission(permission))
 
         for setting in self.settings or []:
-            conditions.append(utils.get_setting(setting))
+            conditions.append(extra_funcs.get_setting(setting))
 
         # If no conditions then return True as there is no check for the menu item
         return all(conditions)

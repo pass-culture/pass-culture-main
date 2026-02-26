@@ -10,9 +10,9 @@ from flask import url_for
 from flask_wtf import FlaskForm
 
 from pcapi.core.artist import models as artist_models
-from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils as forms_utils
+from pcapi.routes.backoffice.utils import advanced_search
 
 
 class ArtistAdvancedSearchAttributes(enum.Enum):
@@ -91,8 +91,8 @@ class ArtistAdvancedSearchSubForm(forms_utils.PCForm):
     )
     operator = fields.PCSelectField(
         "Opérateur",
-        choices=forms_utils.choices_from_enum(utils.AdvancedSearchOperators),
-        default=utils.AdvancedSearchOperators.EQUALS,
+        choices=forms_utils.choices_from_enum(advanced_search.AdvancedSearchOperators),
+        default=advanced_search.AdvancedSearchOperators.EQUALS,
         validators=[
             wtforms.validators.Optional(""),
         ],
@@ -179,7 +179,7 @@ class BaseArtistAdvancedSearchForm(GetArtistsBaseFields):
                     if operator not in self.form_field_configuration.get(search_field, {}).get("operator", []):
                         try:
                             errors.append(
-                                f"L'opérateur « {utils.AdvancedSearchOperators[operator].value} » n'est pas supporté par le filtre {ArtistAdvancedSearchAttributes[search_field].value}."
+                                f"L'opérateur « {advanced_search.AdvancedSearchOperators[operator].value} » n'est pas supporté par le filtre {ArtistAdvancedSearchAttributes[search_field].value}."
                             )
                         except KeyError:
                             errors.append(f"L'opérateur {operator} n'est pas supporté par le filtre {search_field}.")

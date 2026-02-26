@@ -21,8 +21,12 @@ from pcapi.models import db
 from pcapi.models.utils import get_or_404
 from pcapi.models.utils import get_or_404_from_query
 from pcapi.routes.backoffice import autocomplete
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.forms.empty import EmptyForm
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import request as request_utils
+from pcapi.routes.backoffice.utils import response as response_utils
+from pcapi.routes.backoffice.utils import search as search_utils
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 from pcapi.utils import string as string_utils
@@ -32,7 +36,7 @@ from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from . import forms
 
 
-non_payment_notices_blueprint = utils.child_backoffice_blueprint(
+non_payment_notices_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "non_payment_notices",
     __name__,
     url_prefix="/non-payment-notices",
@@ -121,15 +125,15 @@ def _get_notices(form: forms.GetNoticesSearchForm) -> list[offerers_models.NonPa
     )
 
     notices = notices_query.all()
-    return utils.limit_rows(notices, form.limit.data)
+    return search_utils.limit_rows(notices, form.limit.data)
 
 
 @non_payment_notices_blueprint.route("", methods=["GET"])
-def list_notices() -> utils.BackofficeResponse:
-    search_form = forms.GetNoticesSearchForm(formdata=utils.get_query_params())
+def list_notices() -> response_utils.BackofficeResponse:
+    search_form = forms.GetNoticesSearchForm(formdata=request_utils.get_query_params())
 
     if not search_form.validate():
-        flash(utils.build_form_error_msg(search_form), "warning")
+        flash(response_utils.build_form_error_msg(search_form), "warning")
         return render_template("non_payment_notices/list.html", rows=[], form=search_form)
 
     notices = _get_notices(search_form)
@@ -145,13 +149,13 @@ def list_notices() -> utils.BackofficeResponse:
     )
 
 
-def _redirect_to_list() -> utils.BackofficeResponse:
+def _redirect_to_list() -> response_utils.BackofficeResponse:
     return redirect(request.referrer or url_for("backoffice_web.non_payment_notices.list_notices"), code=303)
 
 
 @non_payment_notices_blueprint.route("/create", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
-def get_create_non_payment_notice_form() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
+def get_create_non_payment_notice_form() -> response_utils.BackofficeResponse:
     form = forms.CreateNonPaymentNoticeForm()
 
     return render_template(
@@ -167,9 +171,9 @@ def get_create_non_payment_notice_form() -> utils.BackofficeResponse:
 
 def _create_or_update_non_payment_notice(
     form: forms.CreateNonPaymentNoticeForm, notice: offerers_models.NonPaymentNotice | None = None
-) -> utils.BackofficeResponse:
+) -> response_utils.BackofficeResponse:
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _redirect_to_list()
 
     offerer = db.session.get(offerers_models.Offerer, int(form.offerer.data[0])) if form.offerer.data[0] else None
@@ -219,15 +223,15 @@ def _create_or_update_non_payment_notice(
 
 
 @non_payment_notices_blueprint.route("/create", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
-def create_non_payment_notice() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
+def create_non_payment_notice() -> response_utils.BackofficeResponse:
     form = forms.CreateNonPaymentNoticeForm()
     return _create_or_update_non_payment_notice(form)
 
 
 @non_payment_notices_blueprint.route("/<int:notice_id>/edit", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
-def get_edit_form(notice_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
+def get_edit_form(notice_id: int) -> response_utils.BackofficeResponse:
     notice: offerers_models.NonPaymentNotice = get_or_404(offerers_models.NonPaymentNotice, notice_id)
 
     form = forms.EditNonPaymentNoticeForm(
@@ -260,8 +264,8 @@ def get_edit_form(notice_id: int) -> utils.BackofficeResponse:
 
 
 @non_payment_notices_blueprint.route("/<int:notice_id>/edit", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
-def edit(notice_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
+def edit(notice_id: int) -> response_utils.BackofficeResponse:
     notice: offerers_models.NonPaymentNotice = get_or_404(offerers_models.NonPaymentNotice, notice_id)
 
     form = forms.EditNonPaymentNoticeForm()
@@ -269,8 +273,8 @@ def edit(notice_id: int) -> utils.BackofficeResponse:
 
 
 @non_payment_notices_blueprint.route("/<int:notice_id>/pending", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
-def get_set_pending_form(notice_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
+def get_set_pending_form(notice_id: int) -> response_utils.BackofficeResponse:
     form = forms.SetPendingForm()
 
     return render_template(
@@ -293,13 +297,13 @@ def _get_notice(notice_id: int) -> offerers_models.NonPaymentNotice:
 
 
 @non_payment_notices_blueprint.route("/<int:notice_id>/pending", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
-def set_pending(notice_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
+def set_pending(notice_id: int) -> response_utils.BackofficeResponse:
     notice = _get_notice(notice_id)
 
     form = forms.SetPendingForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _redirect_to_list()
 
     notice.status = offerers_models.NoticeStatus.PENDING
@@ -312,8 +316,8 @@ def set_pending(notice_id: int) -> utils.BackofficeResponse:
 
 
 @non_payment_notices_blueprint.route("/<int:notice_id>/no-continuation", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
-def get_set_no_continuation_form(notice_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
+def get_set_no_continuation_form(notice_id: int) -> response_utils.BackofficeResponse:
     return render_template(
         "components/dynamic/modal_form.html",
         form=EmptyForm(),
@@ -326,8 +330,8 @@ def get_set_no_continuation_form(notice_id: int) -> utils.BackofficeResponse:
 
 
 @non_payment_notices_blueprint.route("/<int:notice_id>/no-continuation", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
-def set_no_continuation(notice_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
+def set_no_continuation(notice_id: int) -> response_utils.BackofficeResponse:
     notice = _get_notice(notice_id)
 
     notice.status = offerers_models.NoticeStatus.WITHOUT_CONTINUATION
@@ -339,8 +343,8 @@ def set_no_continuation(notice_id: int) -> utils.BackofficeResponse:
 
 
 @non_payment_notices_blueprint.route("/<int:notice_id>/close", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
-def get_close_form(notice_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
+def get_close_form(notice_id: int) -> response_utils.BackofficeResponse:
     return render_template(
         "components/dynamic/modal_form.html",
         form=forms.CloseForm(),
@@ -353,13 +357,13 @@ def get_close_form(notice_id: int) -> utils.BackofficeResponse:
 
 
 @non_payment_notices_blueprint.route("/<int:notice_id>/close", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
-def close(notice_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
+def close(notice_id: int) -> response_utils.BackofficeResponse:
     notice = _get_notice(notice_id)
 
     form = forms.CloseForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _redirect_to_list()
 
     if form.batch.data:

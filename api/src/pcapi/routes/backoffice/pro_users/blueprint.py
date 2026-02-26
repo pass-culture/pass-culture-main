@@ -27,11 +27,14 @@ from pcapi.core.users.sessions import disconnect_user_session
 from pcapi.models import beneficiary_import as beneficiary_import_models
 from pcapi.models import beneficiary_import_status as beneficiary_import_status_models
 from pcapi.models import db
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.routes.backoffice.pro_users import forms as pro_users_forms
 from pcapi.routes.backoffice.users import forms as user_forms
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import logs as logs_utils
+from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.tasks.batch_tasks import DeleteBatchUserAttributesRequest
 from pcapi.tasks.batch_tasks import delete_user_attributes_task
 from pcapi.utils import date as date_utils
@@ -40,7 +43,7 @@ from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from pcapi.utils.transaction_manager import on_commit
 
 
-pro_user_blueprint = utils.child_backoffice_blueprint(
+pro_user_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "pro_user",
     __name__,
     url_prefix="/pro/user/<int:user_id>",
@@ -49,7 +52,7 @@ pro_user_blueprint = utils.child_backoffice_blueprint(
 
 
 @pro_user_blueprint.route("", methods=["GET"])
-def get(user_id: int) -> utils.BackofficeResponse:
+def get(user_id: int) -> response_utils.BackofficeResponse:
     # Make sure user is pro
     user = (
         users_api.get_pro_account_base_query(user_id)
@@ -73,7 +76,7 @@ def get(user_id: int) -> utils.BackofficeResponse:
     dst = url_for(".update_pro_user", user_id=user.id)
 
     if request.args.get("q") and request.args.get("search_rank"):
-        utils.log_backoffice_tracking_data(
+        logs_utils.log_backoffice_tracking_data(
             event_name="ConsultCard",
             extra_data={
                 "searchType": "ProSearch",
@@ -99,13 +102,13 @@ def get(user_id: int) -> utils.BackofficeResponse:
 
 
 @pro_user_blueprint.route("/details", methods=["GET"])
-def get_details(user_id: int) -> utils.BackofficeResponse:
+def get_details(user_id: int) -> response_utils.BackofficeResponse:
     user = users_api.get_pro_account_base_query(user_id).one_or_none()
     if not user:
         raise NotFound()
 
     actions = history_repository.find_all_actions_by_user(user_id)
-    can_add_comment = utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
+    can_add_comment = access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
     user_offerers = (
         db.session.query(offerers_models.UserOfferer)
         .filter_by(userId=user_id)
@@ -130,8 +133,8 @@ def get_details(user_id: int) -> utils.BackofficeResponse:
 
 
 @pro_user_blueprint.route("", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-def update_pro_user(user_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def update_pro_user(user_id: int) -> response_utils.BackofficeResponse:
     user = (
         users_api.get_pro_account_base_query(user_id).populate_existing().with_for_update(key_share=True).one_or_none()
     )
@@ -179,8 +182,8 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
 
 
 @pro_user_blueprint.route("/delete", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-def delete(user_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def delete(user_id: int) -> response_utils.BackofficeResponse:
     user = users_api.get_pro_account_base_query(user_id).populate_existing().with_for_update().one_or_none()
     if not user:
         raise NotFound()
@@ -252,8 +255,8 @@ def delete(user_id: int) -> utils.BackofficeResponse:
 
 
 @pro_user_blueprint.route("/comment", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-def comment_pro_user(user_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def comment_pro_user(user_id: int) -> response_utils.BackofficeResponse:
     user = (
         users_api.get_pro_account_base_query(user_id)
         .populate_existing()
@@ -266,7 +269,7 @@ def comment_pro_user(user_id: int) -> utils.BackofficeResponse:
     form = pro_users_forms.CommentForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
 
     users_api.add_comment_to_user(user=user, author_user=current_user, comment=form.comment.data)
@@ -276,8 +279,8 @@ def comment_pro_user(user_id: int) -> utils.BackofficeResponse:
 
 
 @pro_user_blueprint.route("/validate-email", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-def validate_pro_user_email(user_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def validate_pro_user_email(user_id: int) -> response_utils.BackofficeResponse:
     user = (
         users_api.get_pro_account_base_query(user_id).populate_existing().with_for_update(key_share=True).one_or_none()
     )
@@ -324,8 +327,8 @@ def _get_disconnect_kwargs(user_id: int) -> dict:
 
 
 @pro_user_blueprint.route("/disconnect", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-def disconnect_pro_user(user_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def disconnect_pro_user(user_id: int) -> response_utils.BackofficeResponse:
     form = pro_users_forms.DisconnectProUserForm()
 
     if not form.validate():

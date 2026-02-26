@@ -22,18 +22,20 @@ from pcapi.core.operations import models as operations_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.routes.backoffice import search_utils
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.filters import format_special_event_response_status_str
 from pcapi.routes.backoffice.forms import empty as empty_forms
-from pcapi.routes.backoffice.search_utils import paginate
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import request as request_utils
+from pcapi.routes.backoffice.utils import response as response_utils
+from pcapi.routes.backoffice.utils import search as search_utils
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 from . import forms as operations_forms
 
 
-operations_blueprint = utils.child_backoffice_blueprint(
+operations_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "operations",
     __name__,
     url_prefix="/operations/",
@@ -41,7 +43,7 @@ operations_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-def _render_responses_rows(special_event_id: int, responses_ids: list[int]) -> utils.BackofficeResponse:
+def _render_responses_rows(special_event_id: int, responses_ids: list[int]) -> response_utils.BackofficeResponse:
     if not responses_ids:
         return render_template("operations/details/rows.html", items=[])
 
@@ -69,8 +71,8 @@ def _render_responses_rows(special_event_id: int, responses_ids: list[int]) -> u
 
 
 @operations_blueprint.route("", methods=["GET"])
-def list_events() -> utils.BackofficeResponse:
-    form = operations_forms.SearchSpecialEventForm(formdata=utils.get_query_params())
+def list_events() -> response_utils.BackofficeResponse:
+    form = operations_forms.SearchSpecialEventForm(formdata=request_utils.get_query_params())
     if not form.validate():
         return (
             render_template(
@@ -97,7 +99,7 @@ def list_events() -> utils.BackofficeResponse:
 
         query = query.filter(query_filter)
 
-    paginated_rows = paginate(
+    paginated_rows = search_utils.paginate(
         query=query.order_by(operations_models.SpecialEvent.dateCreated.desc()),
         page=int(form.page.data),
         per_page=int(form.limit.data),
@@ -119,12 +121,12 @@ def list_events() -> utils.BackofficeResponse:
 
 
 @operations_blueprint.route("", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
-def create_event() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
+def create_event() -> response_utils.BackofficeResponse:
     form = operations_forms.CreateSpecialEventForm()
 
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for(".list_events"), code=303)
 
     try:
@@ -305,7 +307,7 @@ def _get_special_event_responses(
         response_form.eligibility.data,
     )
 
-    return paginate(
+    return search_utils.paginate(
         query=response_rows_query,
         page=int(response_form.page.data),
         per_page=int(response_form.limit.data),
@@ -313,7 +315,7 @@ def _get_special_event_responses(
 
 
 @operations_blueprint.route("/<int:special_event_id>", methods=["GET"])
-def get_event_details(special_event_id: int) -> utils.BackofficeResponse:
+def get_event_details(special_event_id: int) -> response_utils.BackofficeResponse:
     special_event_query = (
         db.session.query(
             operations_models.SpecialEvent,
@@ -339,10 +341,10 @@ def get_event_details(special_event_id: int) -> utils.BackofficeResponse:
         raise NotFound()
 
     response_form = operations_forms.OperationResponseForm(
-        formdata=utils.get_query_params(), questions=special_event.questions
+        formdata=request_utils.get_query_params(), questions=special_event.questions
     )
     if not response_form.validate():
-        flash(utils.build_form_error_msg(response_form), "warning")
+        flash(response_utils.build_form_error_msg(response_form), "warning")
         return redirect(url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id), 303)
 
     stats = _get_special_event_stats(special_event_id)
@@ -384,13 +386,13 @@ def _set_responses_status(
 
 
 @operations_blueprint.route("/<int:special_event_id>/responses/<int:response_id>/set-status", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
-def set_response_status(special_event_id: int, response_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
+def set_response_status(special_event_id: int, response_id: int) -> response_utils.BackofficeResponse:
     form = operations_forms.UpdateResponseStatusForm()
 
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _render_responses_rows(special_event_id, [])
 
     response_status = form.response_status.data
@@ -417,8 +419,10 @@ def set_response_status(special_event_id: int, response_id: int) -> utils.Backof
 @operations_blueprint.route(
     "/<int:special_event_id>/responses/set-status/<string:response_status>/batch", methods=["GET"]
 )
-@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
-def get_batch_update_responses_status_form(special_event_id: int, response_status: str) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
+def get_batch_update_responses_status_form(
+    special_event_id: int, response_status: str
+) -> response_utils.BackofficeResponse:
     event = db.session.query(operations_models.SpecialEvent.id).filter_by(id=special_event_id).one_or_none()
     if not event:
         raise NotFound()
@@ -447,8 +451,8 @@ def get_batch_update_responses_status_form(special_event_id: int, response_statu
 @operations_blueprint.route(
     "/<int:special_event_id>/responses/set-status/<string:response_status>/batch-validate", methods=["POST"]
 )
-@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
-def batch_validate_responses_status(special_event_id: int, response_status: str) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
+def batch_validate_responses_status(special_event_id: int, response_status: str) -> response_utils.BackofficeResponse:
     event = (
         db.session.query(operations_models.SpecialEvent.id)
         .filter(operations_models.SpecialEvent.id == special_event_id)
@@ -465,7 +469,7 @@ def batch_validate_responses_status(special_event_id: int, response_status: str)
     form = empty_forms.BatchForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _render_responses_rows(special_event_id, [])
 
     _set_responses_status(
@@ -479,8 +483,8 @@ def batch_validate_responses_status(special_event_id: int, response_status: str)
 
 
 @operations_blueprint.route("/<int:special_event_id>/update-event-date", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
-def get_update_date_event(special_event_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
+def get_update_date_event(special_event_id: int) -> response_utils.BackofficeResponse:
     event = db.session.query(operations_models.SpecialEvent.eventDate).filter_by(id=special_event_id).one_or_none()
     if not event:
         raise NotFound()
@@ -503,8 +507,8 @@ def get_update_date_event(special_event_id: int) -> utils.BackofficeResponse:
 
 
 @operations_blueprint.route("/<int:special_event_id>/update-event-date", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
-def update_date_event(special_event_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
+def update_date_event(special_event_id: int) -> response_utils.BackofficeResponse:
     event = (
         db.session.query(operations_models.SpecialEvent.id)
         .filter(operations_models.SpecialEvent.id == special_event_id)
@@ -516,7 +520,7 @@ def update_date_event(special_event_id: int) -> utils.BackofficeResponse:
     form = operations_forms.UpdateEventDateForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 303)
 
     db.session.query(operations_models.SpecialEvent).filter(
@@ -531,8 +535,8 @@ def update_date_event(special_event_id: int) -> utils.BackofficeResponse:
 
 
 @operations_blueprint.route("/<int:special_event_id>/update-end-import-date", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
-def get_update_end_import_date_event(special_event_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
+def get_update_end_import_date_event(special_event_id: int) -> response_utils.BackofficeResponse:
     event = db.session.query(operations_models.SpecialEvent.endImportDate).filter_by(id=special_event_id).one_or_none()
     if not event:
         raise NotFound()
@@ -555,8 +559,8 @@ def get_update_end_import_date_event(special_event_id: int) -> utils.BackofficeR
 
 
 @operations_blueprint.route("/<int:special_event_id>/update-end-import-date", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
-def update_end_import_date(special_event_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
+def update_end_import_date(special_event_id: int) -> response_utils.BackofficeResponse:
     event = (
         db.session.query(operations_models.SpecialEvent.id)
         .filter(operations_models.SpecialEvent.id == special_event_id)
@@ -568,7 +572,7 @@ def update_end_import_date(special_event_id: int) -> utils.BackofficeResponse:
     form = operations_forms.UpdateEventDateForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 303)
 
     db.session.query(operations_models.SpecialEvent).filter(
@@ -583,8 +587,8 @@ def update_end_import_date(special_event_id: int) -> utils.BackofficeResponse:
 
 
 @operations_blueprint.route("/<int:special_event_id>/update-venue", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
-def get_update_venue_form(special_event_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
+def get_update_venue_form(special_event_id: int) -> response_utils.BackofficeResponse:
     from pcapi.routes.backoffice.autocomplete import prefill_venues_choices
 
     event = (
@@ -615,8 +619,8 @@ def get_update_venue_form(special_event_id: int) -> utils.BackofficeResponse:
 
 
 @operations_blueprint.route("/<int:special_event_id>/update-venue", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
-def update_venue(special_event_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
+def update_venue(special_event_id: int) -> response_utils.BackofficeResponse:
     event = (
         db.session.query(operations_models.SpecialEvent.id)
         .filter(operations_models.SpecialEvent.id == special_event_id)
@@ -628,7 +632,7 @@ def update_venue(special_event_id: int) -> utils.BackofficeResponse:
     form = operations_forms.UpdateEventVenueForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(
             request.referrer
             or url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id),

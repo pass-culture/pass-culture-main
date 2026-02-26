@@ -19,17 +19,19 @@ from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users.email import update as email_update
 from pcapi.models import db
-from pcapi.routes.backoffice import search_utils
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.accounts import serialization
-from pcapi.routes.backoffice.search_utils import paginate
 from pcapi.routes.backoffice.users import forms as user_forms
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import request as request_utils
+from pcapi.routes.backoffice.utils import response as response_utils
+from pcapi.routes.backoffice.utils import search as search_utils
 from pcapi.utils import email as email_utils
 
 from . import forms
 
 
-bo_users_blueprint = utils.child_backoffice_blueprint(
+bo_users_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "bo_users",
     __name__,
     url_prefix="/admin/bo-users",
@@ -47,9 +49,9 @@ def get_admin_account_link(user_id: int, form: forms.BOUserSearchForm | None, **
 
 
 @bo_users_blueprint.route("/search", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.READ_ADMIN_ACCOUNTS)
-def search_bo_users() -> utils.BackofficeResponse:
-    request_args = utils.get_query_params()
+@access_control.permission_required(perm_models.Permissions.READ_ADMIN_ACCOUNTS)
+def search_bo_users() -> response_utils.BackofficeResponse:
+    request_args = request_utils.get_query_params()
     form = forms.BOUserSearchForm(formdata=request_args)
     if request_args and not form.validate():
         return render_template("admin/bo_users.html", search_form=form, search_dst=url_for(".search_bo_users")), 400
@@ -65,7 +67,7 @@ def search_bo_users() -> utils.BackofficeResponse:
         sa_orm.joinedload(users_models.User.tags),
     )
 
-    paginated_rows = paginate(
+    paginated_rows = search_utils.paginate(
         query=users,
         page=form.page.data,
         per_page=form.per_page.data,
@@ -126,7 +128,7 @@ def render_bo_user_page(user_id: int, edit_form: forms.EditBOUserForm | None = N
         required_permission=perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS,
     )
 
-    if utils.has_current_user_permission(perm_models.Permissions.READ_ADMIN_ACCOUNTS):
+    if access_control.has_current_user_permission(perm_models.Permissions.READ_ADMIN_ACCOUNTS):
         kwargs.update(
             {
                 "search_form": forms.BOUserSearchForm(q=request.args.get("q")),
@@ -134,7 +136,7 @@ def render_bo_user_page(user_id: int, edit_form: forms.EditBOUserForm | None = N
             }
         )
 
-    if utils.has_current_user_permission(perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS):
+    if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS):
         if not edit_form:
             edit_form = forms.EditBOUserForm(
                 last_name=user.lastName,
@@ -160,12 +162,13 @@ def render_bo_user_page(user_id: int, edit_form: forms.EditBOUserForm | None = N
 
 
 @bo_users_blueprint.route("/<int:user_id>", methods=["GET"])
-@utils.custom_login_required(redirect_to="backoffice_web.home")
-def get_bo_user(user_id: int) -> utils.BackofficeResponse:
+@access_control.custom_login_required(redirect_to="backoffice_web.home")
+def get_bo_user(user_id: int) -> response_utils.BackofficeResponse:
     if not (
         current_user.backoffice_profile
         and (
-            current_user.id == user_id or utils.has_current_user_permission(perm_models.Permissions.READ_ADMIN_ACCOUNTS)
+            current_user.id == user_id
+            or access_control.has_current_user_permission(perm_models.Permissions.READ_ADMIN_ACCOUNTS)
         )
     ):
         raise Forbidden()
@@ -174,8 +177,8 @@ def get_bo_user(user_id: int) -> utils.BackofficeResponse:
 
 
 @bo_users_blueprint.route("/<int:user_id>", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS)
-def update_bo_user(user_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS)
+def update_bo_user(user_id: int) -> response_utils.BackofficeResponse:
     user = _get_bo_user_query(user_id).populate_existing().with_for_update(key_share=True).one_or_none()
 
     if not user:

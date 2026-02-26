@@ -13,7 +13,7 @@ from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils
-from pcapi.routes.backoffice.utils import get_regions_choices
+from pcapi.routes.backoffice.utils.geography import get_regions_choices
 from pcapi.utils import siren as siren_utils
 from pcapi.utils import string as string_utils
 

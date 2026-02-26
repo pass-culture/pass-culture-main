@@ -13,7 +13,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models import offer_mixin
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice.utils import access_control
 
 from tests.routes.backoffice.helpers import html_parser
 from tests.routes.backoffice.helpers import url
@@ -250,7 +250,7 @@ class MessagesTest:
     def test_error_403_flash_message(
         self, client, user_with_no_permissions, override_homeview, headers, expected_alerts
     ):
-        @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+        @access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
         def view():
             return ""
 

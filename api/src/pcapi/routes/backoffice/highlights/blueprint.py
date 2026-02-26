@@ -13,9 +13,11 @@ from pcapi.core.highlights import models as highlights_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.models.utils import get_or_404
-from pcapi.routes.backoffice import search_utils
-from pcapi.routes.backoffice import utils
-from pcapi.routes.backoffice.search_utils import paginate
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import request as request_utils
+from pcapi.routes.backoffice.utils import response as response_utils
+from pcapi.routes.backoffice.utils import search as search_utils
 from pcapi.utils import db as db_utils
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
@@ -23,7 +25,7 @@ from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from . import forms as highlights_forms
 
 
-highlights_blueprint = utils.child_backoffice_blueprint(
+highlights_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "highlights",
     __name__,
     url_prefix="/highlights/",
@@ -32,8 +34,8 @@ highlights_blueprint = utils.child_backoffice_blueprint(
 
 
 @highlights_blueprint.route("", methods=["GET"])
-def list_highlights() -> utils.BackofficeResponse:
-    form = highlights_forms.SearchHighlightForm(formdata=utils.get_query_params())
+def list_highlights() -> response_utils.BackofficeResponse:
+    form = highlights_forms.SearchHighlightForm(formdata=request_utils.get_query_params())
     if not form.validate():
         return (
             render_template(
@@ -54,7 +56,7 @@ def list_highlights() -> utils.BackofficeResponse:
 
         query = query.filter(query_filter)
 
-    paginated_rows = paginate(
+    paginated_rows = search_utils.paginate(
         query=query.order_by(highlights_models.Highlight.highlight_datespan.desc(), highlights_models.Highlight.name),
         page=int(form.page.data),
         per_page=int(form.limit.data),
@@ -75,8 +77,8 @@ def list_highlights() -> utils.BackofficeResponse:
 
 
 @highlights_blueprint.route("/new", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_HIGHLIGHT)
-def get_create_highlight_form() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_HIGHLIGHT)
+def get_create_highlight_form() -> response_utils.BackofficeResponse:
     form = highlights_forms.CreateHighlightForm()
 
     return render_template(
@@ -91,12 +93,12 @@ def get_create_highlight_form() -> utils.BackofficeResponse:
 
 
 @highlights_blueprint.route("/create", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_HIGHLIGHT)
-def create_highlight() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_HIGHLIGHT)
+def create_highlight() -> response_utils.BackofficeResponse:
     form = highlights_forms.CreateHighlightForm()
 
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for(".list_highlights"), code=303)
 
     start_availability = form.availability_datespan.data[0]
@@ -128,8 +130,8 @@ def create_highlight() -> utils.BackofficeResponse:
 
 
 @highlights_blueprint.route("update/<int:highlight_id>", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_HIGHLIGHT)
-def get_update_highlight_form(highlight_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_HIGHLIGHT)
+def get_update_highlight_form(highlight_id: int) -> response_utils.BackofficeResponse:
     highlight = get_or_404(highlights_models.Highlight, highlight_id)
     form = highlights_forms.UpdateHighlightForm(obj=highlight)
 
@@ -146,12 +148,12 @@ def get_update_highlight_form(highlight_id: int) -> utils.BackofficeResponse:
 
 
 @highlights_blueprint.route("update/<int:highlight_id>", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_HIGHLIGHT)
-def update_highlight(highlight_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_HIGHLIGHT)
+def update_highlight(highlight_id: int) -> response_utils.BackofficeResponse:
     form = highlights_forms.UpdateHighlightForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for(".list_highlights"), code=303)
 
     highlight = get_or_404(highlights_models.Highlight, highlight_id)

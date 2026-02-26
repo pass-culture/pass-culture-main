@@ -15,16 +15,20 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.routes.backoffice import autocomplete
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.bookings import forms as booking_forms
 from pcapi.routes.backoffice.bookings import helpers as booking_helpers
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import request as request_utils
+from pcapi.routes.backoffice.utils import response as response_utils
+from pcapi.routes.backoffice.utils import search as search_utils
 from pcapi.utils import urls
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 
-collective_bookings_blueprint = utils.child_backoffice_blueprint(
+collective_bookings_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "collective_bookings",
     __name__,
     url_prefix="/collective-bookings",
@@ -129,7 +133,7 @@ def _get_collective_bookings(
     return base_query.all()
 
 
-def _render_collective_bookings(collective_bookings_ids: list[int] | None = None) -> utils.BackofficeResponse:
+def _render_collective_bookings(collective_bookings_ids: list[int] | None = None) -> response_utils.BackofficeResponse:
     bookings: list[educational_models.CollectiveBooking] = []
 
     if collective_bookings_ids:
@@ -155,8 +159,8 @@ def _render_collective_bookings(collective_bookings_ids: list[int] | None = None
 
 
 @collective_bookings_blueprint.route("", methods=["GET"])
-def list_collective_bookings() -> utils.BackofficeResponse:
-    form = booking_forms.GetCollectiveBookingListForm(formdata=utils.get_query_params())
+def list_collective_bookings() -> response_utils.BackofficeResponse:
+    form = booking_forms.GetCollectiveBookingListForm(formdata=request_utils.get_query_params())
     if not form.validate():
         return render_template("collective_bookings/list.html", isEAC=True, rows=[], form=form), 400
 
@@ -166,7 +170,7 @@ def list_collective_bookings() -> utils.BackofficeResponse:
 
     bookings = _get_collective_bookings(form)
 
-    bookings = utils.limit_rows(
+    bookings = search_utils.limit_rows(
         bookings,
         form.limit.data,
         sort_key=lambda booking: booking.collectiveStock.startDatetime,
@@ -199,8 +203,8 @@ def list_collective_bookings() -> utils.BackofficeResponse:
 
 
 @collective_bookings_blueprint.route("/<int:collective_booking_id>/mark-as-used", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
-def mark_booking_as_used(collective_booking_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
+def mark_booking_as_used(collective_booking_id: int) -> response_utils.BackofficeResponse:
     collective_booking = (
         db.session.query(educational_models.CollectiveBooking).filter_by(id=collective_booking_id).one_or_none()
     )
@@ -223,8 +227,8 @@ def mark_booking_as_used(collective_booking_id: int) -> utils.BackofficeResponse
 
 
 @collective_bookings_blueprint.route("/<int:collective_booking_id>/cancel", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
-def mark_booking_as_cancelled(collective_booking_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
+def mark_booking_as_cancelled(collective_booking_id: int) -> response_utils.BackofficeResponse:
     collective_booking = (
         db.session.query(educational_models.CollectiveBooking).filter_by(id=collective_booking_id).one_or_none()
     )
@@ -233,7 +237,7 @@ def mark_booking_as_cancelled(collective_booking_id: int) -> utils.BackofficeRes
 
     form = booking_forms.CancelCollectiveBookingForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _render_collective_bookings()
 
     try:

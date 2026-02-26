@@ -22,7 +22,11 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.routes.backoffice import autocomplete
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import request as request_utils
+from pcapi.routes.backoffice.utils import response as response_utils
+from pcapi.routes.backoffice.utils import search as search_utils
 from pcapi.utils import date as date_utils
 from pcapi.utils import string as string_utils
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
@@ -30,7 +34,7 @@ from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from . import forms as custom_reimbursement_rule_forms
 
 
-custom_reimbursement_rules_blueprint = utils.child_backoffice_blueprint(
+custom_reimbursement_rules_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "reimbursement_rules",
     __name__,
     url_prefix="/reimbursement-rules",
@@ -163,7 +167,7 @@ def _get_custom_reimbursement_rules(
 
 def _render_custom_reimbursement_rule(
     custom_reimbursement_rules_ids: list[int] | None = None,
-) -> utils.BackofficeResponse:
+) -> response_utils.BackofficeResponse:
     rows = []
     if custom_reimbursement_rules_ids:
         query = _get_custom_reimbursement_rules_query()
@@ -176,14 +180,16 @@ def _render_custom_reimbursement_rule(
 
 
 @custom_reimbursement_rules_blueprint.route("", methods=["GET"])
-def list_custom_reimbursement_rules() -> utils.BackofficeResponse:
-    form = custom_reimbursement_rule_forms.GetCustomReimbursementRulesListForm(formdata=utils.get_query_params())
+def list_custom_reimbursement_rules() -> response_utils.BackofficeResponse:
+    form = custom_reimbursement_rule_forms.GetCustomReimbursementRulesListForm(
+        formdata=request_utils.get_query_params()
+    )
     if not form.validate():
         return render_template("custom_reimbursement_rules/list.html", rows=[], form=form), 400
 
     custom_reimbursement_rules = _get_custom_reimbursement_rules(form)
 
-    custom_reimbursement_rules = utils.limit_rows(custom_reimbursement_rules, form.limit.data)
+    custom_reimbursement_rules = search_utils.limit_rows(custom_reimbursement_rules, form.limit.data)
 
     autocomplete.prefill_offerers_choices(form.offerer)
     autocomplete.prefill_venues_choices(form.venue, only_with_siret=True)
@@ -215,7 +221,7 @@ def _get_custom_reimburement_rule_stats() -> dict[str, int]:
 
 
 @custom_reimbursement_rules_blueprint.route("/stats", methods=["GET"])
-def get_stats() -> utils.BackofficeResponse:
+def get_stats() -> response_utils.BackofficeResponse:
     stats = _get_custom_reimburement_rule_stats()
 
     return render_template(
@@ -225,11 +231,11 @@ def get_stats() -> utils.BackofficeResponse:
 
 
 @custom_reimbursement_rules_blueprint.route("/create", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.CREATE_REIMBURSEMENT_RULES)
-def create_custom_reimbursement_rule() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.CREATE_REIMBURSEMENT_RULES)
+def create_custom_reimbursement_rule() -> response_utils.BackofficeResponse:
     form = custom_reimbursement_rule_forms.CreateCustomReimbursementRuleForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _redirect_after_reimbursement_rule_action()
 
     start_datetime = date_utils.get_day_start(form.start_date.data, finance_utils.ACCOUNTING_TIMEZONE)
@@ -272,8 +278,8 @@ def create_custom_reimbursement_rule() -> utils.BackofficeResponse:
 
 
 @custom_reimbursement_rules_blueprint.route("/new", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.CREATE_REIMBURSEMENT_RULES)
-def get_create_custom_reimbursement_rule_form() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.CREATE_REIMBURSEMENT_RULES)
+def get_create_custom_reimbursement_rule_form() -> response_utils.BackofficeResponse:
     form = custom_reimbursement_rule_forms.CreateCustomReimbursementRuleForm()
 
     return render_template(
@@ -288,8 +294,8 @@ def get_create_custom_reimbursement_rule_form() -> utils.BackofficeResponse:
 
 
 @custom_reimbursement_rules_blueprint.route("/<int:reimbursement_rule_id>/edit", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.CREATE_REIMBURSEMENT_RULES)
-def get_edit_custom_reimbursement_rule_form(reimbursement_rule_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.CREATE_REIMBURSEMENT_RULES)
+def get_edit_custom_reimbursement_rule_form(reimbursement_rule_id: int) -> response_utils.BackofficeResponse:
     custom_reimbursement_rule = (
         db.session.query(finance_models.CustomReimbursementRule).filter_by(id=reimbursement_rule_id).one_or_none()
     )
@@ -322,8 +328,8 @@ def get_edit_custom_reimbursement_rule_form(reimbursement_rule_id: int) -> utils
 
 
 @custom_reimbursement_rules_blueprint.route("/<int:reimbursement_rule_id>/edit", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.CREATE_REIMBURSEMENT_RULES)
-def edit_custom_reimbursement_rule(reimbursement_rule_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.CREATE_REIMBURSEMENT_RULES)
+def edit_custom_reimbursement_rule(reimbursement_rule_id: int) -> response_utils.BackofficeResponse:
     custom_reimbursement_rule = (
         db.session.query(finance_models.CustomReimbursementRule).filter_by(id=reimbursement_rule_id).one_or_none()
     )
@@ -332,7 +338,7 @@ def edit_custom_reimbursement_rule(reimbursement_rule_id: int) -> utils.Backoffi
 
     form = custom_reimbursement_rule_forms.EditCustomReimbursementRuleForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _render_custom_reimbursement_rule()
 
     # upper bound is exclusive, so it should be set at 0:00 on the day after
@@ -351,5 +357,5 @@ def edit_custom_reimbursement_rule(reimbursement_rule_id: int) -> utils.Backoffi
     return _render_custom_reimbursement_rule([reimbursement_rule_id])
 
 
-def _redirect_after_reimbursement_rule_action() -> utils.BackofficeResponse:
+def _redirect_after_reimbursement_rule_action() -> response_utils.BackofficeResponse:
     return redirect(request.referrer or url_for("backoffice_web.validation.list_offerers_to_validate"), code=303)

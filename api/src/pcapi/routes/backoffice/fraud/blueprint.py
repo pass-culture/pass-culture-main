@@ -19,13 +19,15 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users.api import suspend_account
 from pcapi.models import db
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
+from pcapi.routes.backoffice.utils import request as request_utils
+from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 from . import forms
 
 
-fraud_blueprint = utils.child_backoffice_blueprint(
+fraud_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "fraud",
     __name__,
     url_prefix="/fraud",
@@ -33,7 +35,7 @@ fraud_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-def render_domain_names_list(form: forms.BlacklistDomainNameForm | None = None) -> utils.BackofficeResponse:
+def render_domain_names_list(form: forms.BlacklistDomainNameForm | None = None) -> response_utils.BackofficeResponse:
     if not form:
         form = forms.PrepareBlacklistDomainNameForm()
 
@@ -66,7 +68,7 @@ def render_domain_names_list(form: forms.BlacklistDomainNameForm | None = None) 
 
 
 @fraud_blueprint.route("", methods=["GET"])
-def list_blacklisted_domain_names() -> utils.BackofficeResponse:
+def list_blacklisted_domain_names() -> response_utils.BackofficeResponse:
     return render_domain_names_list()
 
 
@@ -104,11 +106,11 @@ def _list_untouched_pro_accounts(domain_name: str) -> list[users_models.User]:
 
 
 @fraud_blueprint.route("/blacklist-domain-name", methods=["GET"])
-def prepare_blacklist_domain_name() -> utils.BackofficeResponse:
-    form = forms.PrepareBlacklistDomainNameForm(utils.get_query_params())
+def prepare_blacklist_domain_name() -> response_utils.BackofficeResponse:
+    form = forms.PrepareBlacklistDomainNameForm(request_utils.get_query_params())
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return render_domain_names_list(form)
 
     return render_template(
@@ -148,11 +150,11 @@ def _blacklist_domain_name(domain_name: str, actor: users_models.User) -> tuple[
 
 
 @fraud_blueprint.route("/blacklist-domain-name", methods=["POST"])
-def blacklist_domain_name() -> utils.BackofficeResponse:
+def blacklist_domain_name() -> response_utils.BackofficeResponse:
     form = forms.BlacklistDomainNameForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for(".list_blacklisted_domain_names"))
 
     users, cancelled_bookings_count = _blacklist_domain_name(form.domain.data, current_user)
@@ -199,7 +201,7 @@ def blacklist_domain_name() -> utils.BackofficeResponse:
 
 
 @fraud_blueprint.route("/blacklist-domain-name/remove/<string:domain>", methods=["POST"])
-def remove_blacklisted_domain_name(domain: str) -> utils.BackofficeResponse:
+def remove_blacklisted_domain_name(domain: str) -> response_utils.BackofficeResponse:
     query = db.session.query(fraud_models.BlacklistedDomainName).filter_by(domain=domain)
 
     row = query.one_or_none()

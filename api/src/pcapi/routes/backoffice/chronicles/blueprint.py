@@ -23,18 +23,19 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.utils import get_or_404
-from pcapi.routes.backoffice import search_utils
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.forms.empty import EmptyForm
-from pcapi.routes.backoffice.search_utils import paginate
-from pcapi.routes.backoffice.utils import permission_required
+from pcapi.routes.backoffice.utils import request as request_utils
+from pcapi.routes.backoffice.utils import response as response_utils
+from pcapi.routes.backoffice.utils import search as search_utils
+from pcapi.routes.backoffice.utils.access_control import permission_required
 from pcapi.utils import string as string_utils
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 from . import forms
 
 
-chronicles_blueprint = utils.child_backoffice_blueprint(
+chronicles_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "chronicles",
     __name__,
     url_prefix="/chronicles/",
@@ -73,8 +74,8 @@ def _get_chronicle_query() -> sa_orm.Query:
 
 
 @chronicles_blueprint.route("", methods=["GET"])
-def list_chronicles() -> utils.BackofficeResponse:
-    form = forms.GetChronicleSearchForm(formdata=utils.get_query_params())
+def list_chronicles() -> response_utils.BackofficeResponse:
+    form = forms.GetChronicleSearchForm(formdata=request_utils.get_query_params())
     if not form.validate():
         mark_transaction_as_invalid()
         return render_template("chronicles/list.html", rows=[], form=form), 400
@@ -139,7 +140,7 @@ def list_chronicles() -> utils.BackofficeResponse:
 
     query = query.order_by(chronicles_models.Chronicle.id.desc())
 
-    paginated_chronicles = paginate(
+    paginated_chronicles = search_utils.paginate(
         query=query,
         page=int(form.page.data),
         per_page=int(form.limit.data),
@@ -159,13 +160,13 @@ def list_chronicles() -> utils.BackofficeResponse:
     )
 
 
-def _render_chronicle_row(chronicle_id: int) -> utils.BackofficeResponse:
+def _render_chronicle_row(chronicle_id: int) -> response_utils.BackofficeResponse:
     row = _get_chronicle_query().filter(chronicles_models.Chronicle.id == chronicle_id).first()
     return render_template("chronicles/list_rows.html", chronicles=[row])
 
 
 @chronicles_blueprint.route("/<int:chronicle_id>", methods=["GET"])
-def details(chronicle_id: int) -> utils.BackofficeResponse:
+def details(chronicle_id: int) -> response_utils.BackofficeResponse:
     chronicle = (
         db.session.query(chronicles_models.Chronicle)
         .filter(
@@ -223,7 +224,7 @@ def details(chronicle_id: int) -> utils.BackofficeResponse:
 
 @chronicles_blueprint.route("/<int:chronicle_id>/update-content", methods=["GET"])
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
-def get_update_chronicle_content_form(chronicle_id: int) -> utils.BackofficeResponse:
+def get_update_chronicle_content_form(chronicle_id: int) -> response_utils.BackofficeResponse:
     chronicle = get_or_404(chronicles_models.Chronicle, chronicle_id)
     form = forms.UpdateContentForm(content=chronicle.content)
 
@@ -233,7 +234,7 @@ def get_update_chronicle_content_form(chronicle_id: int) -> utils.BackofficeResp
         "div_id": f"update-chronicle-content-{chronicle_id}",  # must be consistent with parameter passed to build_lazy_modal
         "title": "Modifier le contenu de la chronique",
         "button_text": "Enregistrer",
-        "ajax_submit": utils.is_request_from_htmx(),
+        "ajax_submit": request_utils.is_request_from_htmx(),
     }
 
     if kwargs["ajax_submit"]:
@@ -244,11 +245,11 @@ def get_update_chronicle_content_form(chronicle_id: int) -> utils.BackofficeResp
 
 @chronicles_blueprint.route("/<int:chronicle_id>/update-content", methods=["POST"])
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
-def update_chronicle_content(chronicle_id: int) -> utils.BackofficeResponse:
+def update_chronicle_content(chronicle_id: int) -> response_utils.BackofficeResponse:
     form = forms.UpdateContentForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(
             url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="content"), code=303
         )
@@ -263,7 +264,7 @@ def update_chronicle_content(chronicle_id: int) -> utils.BackofficeResponse:
         "success",
     )
 
-    if utils.is_request_from_htmx():
+    if request_utils.is_request_from_htmx():
         return _render_chronicle_row(chronicle_id)
     return redirect(
         request.referrer
@@ -274,7 +275,7 @@ def update_chronicle_content(chronicle_id: int) -> utils.BackofficeResponse:
 
 @chronicles_blueprint.route("/<int:chronicle_id>/publish", methods=["POST"])
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
-def publish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
+def publish_chronicle(chronicle_id: int) -> response_utils.BackofficeResponse:
     chronicle = get_or_404(chronicles_models.Chronicle, chronicle_id)
     chronicle.isActive = True
     db.session.add(chronicle)
@@ -285,14 +286,14 @@ def publish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
         chronicle=chronicle,
     )
     flash(f"La chronique {chronicle_id} a été publiée", "success")
-    if utils.is_request_from_htmx():
+    if request_utils.is_request_from_htmx():
         return _render_chronicle_row(chronicle_id)
     return redirect(request.referrer or url_for("backoffice_web.chronicles.list_chronicles"), code=303)
 
 
 @chronicles_blueprint.route("/<int:chronicle_id>/unpublish", methods=["POST"])
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
-def unpublish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
+def unpublish_chronicle(chronicle_id: int) -> response_utils.BackofficeResponse:
     chronicle = get_or_404(chronicles_models.Chronicle, chronicle_id)
     chronicle.isActive = False
     db.session.add(chronicle)
@@ -304,21 +305,21 @@ def unpublish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
     )
     flash(f"La chronique {chronicle_id} a été dépubliée", "success")
 
-    if utils.is_request_from_htmx():
+    if request_utils.is_request_from_htmx():
         return _render_chronicle_row(chronicle_id)
     return redirect(request.referrer or url_for("backoffice_web.chronicles.list_chronicles"), code=303)
 
 
 @chronicles_blueprint.route("/<int:chronicle_id>/attach-product", methods=["POST"])
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
-def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
+def attach_product(chronicle_id: int) -> response_utils.BackofficeResponse:
     selected_chronicle = get_or_404(chronicles_models.Chronicle, chronicle_id)
 
     form = forms.AttachProductForm()
 
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(
             url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="product"), code=303
         )
@@ -398,7 +399,7 @@ def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
 
 @chronicles_blueprint.route("/<int:chronicle_id>/detach-product/<int:product_id>", methods=["POST"])
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
-def detach_product(chronicle_id: int, product_id: int) -> utils.BackofficeResponse:
+def detach_product(chronicle_id: int, product_id: int) -> response_utils.BackofficeResponse:
     selected_chronicle = get_or_404(chronicles_models.Chronicle, chronicle_id)
     chronicles_subquery = (
         db.session.query(chronicles_models.Chronicle)
@@ -436,14 +437,14 @@ def detach_product(chronicle_id: int, product_id: int) -> utils.BackofficeRespon
 
 @chronicles_blueprint.route("/<int:chronicle_id>/attach-offer", methods=["POST"])
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
-def attach_offer(chronicle_id: int) -> utils.BackofficeResponse:
+def attach_offer(chronicle_id: int) -> response_utils.BackofficeResponse:
     selected_chronicle = get_or_404(chronicles_models.Chronicle, chronicle_id)
 
     form = forms.AttachOfferForm()
 
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(
             url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="offer"), code=303
         )
@@ -493,7 +494,7 @@ def attach_offer(chronicle_id: int) -> utils.BackofficeResponse:
 
 @chronicles_blueprint.route("/<int:chronicle_id>/detach-offer/<int:offer_id>", methods=["POST"])
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
-def detach_offer(chronicle_id: int, offer_id: int) -> utils.BackofficeResponse:
+def detach_offer(chronicle_id: int, offer_id: int) -> response_utils.BackofficeResponse:
     selected_chronicle = get_or_404(chronicles_models.Chronicle, chronicle_id)
     chronicles_subquery = (
         db.session.query(chronicles_models.Chronicle)
@@ -530,11 +531,11 @@ def detach_offer(chronicle_id: int, offer_id: int) -> utils.BackofficeResponse:
 
 
 @chronicles_blueprint.route("/<int:chronicle_id>/comment", methods=["POST"])
-def comment_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
+def comment_chronicle(chronicle_id: int) -> response_utils.BackofficeResponse:
     form = forms.CommentForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(
             url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="history"), code=303
         )
@@ -552,11 +553,11 @@ def comment_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
 
 @chronicles_blueprint.route("/create", methods=["POST"])
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
-def create_chronicle() -> utils.BackofficeResponse:
+def create_chronicle() -> response_utils.BackofficeResponse:
     form = forms.CreateChronicleForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.chronicles.list_chronicles"), code=303)
 
     unique_random_value = str(int(time())) + str(randint(100_000, 1_000_000))

@@ -20,6 +20,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError
 from pcapi.models.api_errors import UnauthorizedError
+from pcapi.routes.backoffice.utils import request as request_utils
 from pcapi.routes.error_handlers.utils import format_sql_statement_params
 from pcapi.utils.image_conversion import ImageRatioError
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
@@ -34,9 +35,8 @@ ApiErrorResponse = tuple[dict | Response, int]
 
 @app.errorhandler(NotFound)
 def restize_not_found_route_errors(error: NotFound) -> ApiErrorResponse | HtmlErrorResponse:
-    from pcapi.routes.backoffice import utils
 
-    if utils.is_request_from_htmx():
+    if request_utils.is_request_from_htmx():
         flashes = session.get("_flashes")
         if not flashes:
             flash("Objet non trouvé !", "warning")

@@ -13,14 +13,15 @@ from pcapi.core.finance import siret_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
+from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.utils import date as date_utils
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
-from . import utils
 from .forms import pro_support as pro_support_forms
 
 
-move_siret_blueprint = utils.child_backoffice_blueprint(
+move_siret_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "move_siret",
     __name__,
     url_prefix="/pro/support/move-siret",
@@ -90,7 +91,7 @@ def _validate_move_siret_form() -> tuple[
     return form, source_venue, target_venue
 
 
-def _render_form_page(form: pro_support_forms.MoveSiretForm, code: int = 200) -> utils.BackofficeResponse:
+def _render_form_page(form: pro_support_forms.MoveSiretForm, code: int = 200) -> response_utils.BackofficeResponse:
     return render_template("pro/move_siret.html", form=form, dst=url_for(".post_move_siret")), code
 
 
@@ -99,7 +100,7 @@ def _render_confirmation_page(
     source_venue: offerers_models.Venue,
     target_venue: offerers_models.Venue,
     code: int = 200,
-) -> utils.BackofficeResponse:
+) -> response_utils.BackofficeResponse:
     has_active_or_future_custom_reimbursement_rule = db.session.query(
         db.session.query(finance_models.CustomReimbursementRule)
         .filter(
@@ -127,13 +128,13 @@ def _render_confirmation_page(
 
 
 @move_siret_blueprint.route("", methods=["GET"])
-def move_siret() -> utils.BackofficeResponse:
+def move_siret() -> response_utils.BackofficeResponse:
     form = pro_support_forms.MoveSiretForm()
     return _render_form_page(form)
 
 
 @move_siret_blueprint.route("", methods=["POST"])
-def post_move_siret() -> utils.BackofficeResponse:
+def post_move_siret() -> response_utils.BackofficeResponse:
     form, source_venue, target_venue = _validate_move_siret_form()
     if not source_venue or not target_venue:
         mark_transaction_as_invalid()
@@ -155,7 +156,7 @@ def post_move_siret() -> utils.BackofficeResponse:
 
 
 @move_siret_blueprint.route("/apply", methods=["POST"])
-def apply_move_siret() -> utils.BackofficeResponse:
+def apply_move_siret() -> response_utils.BackofficeResponse:
     form, source_venue, target_venue = _validate_move_siret_form()
     if not source_venue or not target_venue:
         return _render_form_page(form, code=400)

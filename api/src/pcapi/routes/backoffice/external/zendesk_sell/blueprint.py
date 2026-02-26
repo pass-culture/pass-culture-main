@@ -9,11 +9,12 @@ from pcapi.core.external.zendesk_sell import api as zendesk_sell_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
+from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.utils import requests
 
 
-zendesk_sell_blueprint = utils.child_backoffice_blueprint(
+zendesk_sell_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "zendesk_sell",
     __name__,
     url_prefix="/zendesk-sell",
@@ -60,7 +61,7 @@ def _get_parent_organization_id(venue: offerers_models.Venue) -> int | None:
 
 
 @zendesk_sell_blueprint.route("/offerer/<int:offerer_id>/update", methods=["POST"])
-def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
+def update_offerer(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = (
         db.session.query(offerers_models.Offerer)
         .filter_by(id=offerer_id)
@@ -123,7 +124,7 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @zendesk_sell_blueprint.route("/venue/<int:venue_id>/update", methods=["POST"])
-def update_venue(venue_id: int) -> utils.BackofficeResponse:
+def update_venue(venue_id: int) -> response_utils.BackofficeResponse:
     venue = (
         db.session.query(offerers_models.Venue)
         .options(

@@ -46,12 +46,16 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.utils import get_or_404
 from pcapi.routes.backoffice import autocomplete
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice import filters
-from pcapi.routes.backoffice import search_utils
-from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import logs as logs_utils
+from pcapi.routes.backoffice.utils import request as request_utils
+from pcapi.routes.backoffice.utils import response as response_utils
+from pcapi.routes.backoffice.utils import search as search_utils
 from pcapi.utils import date as date_utils
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import string as string_utils
@@ -68,7 +72,7 @@ from . import forms
 
 logger = logging.getLogger(__name__)
 
-venue_blueprint = utils.child_backoffice_blueprint(
+venue_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "venue",
     __name__,
     url_prefix="/pro/venue",
@@ -77,7 +81,7 @@ venue_blueprint = utils.child_backoffice_blueprint(
 
 
 def _can_edit_siret() -> bool:
-    return utils.has_current_user_permission(perm_models.Permissions.MOVE_SIRET)
+    return access_control.has_current_user_permission(perm_models.Permissions.MOVE_SIRET)
 
 
 def _get_venues_base_query() -> sa_orm.Query:
@@ -160,7 +164,7 @@ def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
     return base_query.filter(offerers_models.Venue.isSoftDeleted != True).limit(form.limit.data + 1).all()
 
 
-def _render_venues(venues_ids: list[int] | None = None) -> utils.BackofficeResponse:
+def _render_venues(venues_ids: list[int] | None = None) -> response_utils.BackofficeResponse:
     rows = []
 
     if venues_ids:
@@ -175,7 +179,7 @@ def _render_venues(venues_ids: list[int] | None = None) -> utils.BackofficeRespo
 
 def get_venue(venue_id: int) -> sa.engine.Row:
     pricing_point = sa.orm.aliased(offerers_models.Venue)
-    if utils.has_current_user_permission(perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO):
+    if access_control.has_current_user_permission(perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO):
         has_fraudulent_booking_query: sa.sql.selectable.Exists | sa.sql.elements.Null = (
             sa.select(1)
             .select_from(bookings_models.Booking)
@@ -309,7 +313,7 @@ def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVi
 
     fraud_form = (
         forms.FraudForm(confidence_level=venue.confidenceLevel.value if venue.confidenceLevel else None)
-        if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+        if access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS)
         else None
     )
 
@@ -345,7 +349,7 @@ def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVi
             empty_forms.EmptyForm()
             if venue.isOpenToPublic
             and not venue.isVirtual
-            and utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
+            and access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
             else None
         ),
         get_region_name_from_postal_code=regions_utils.get_region_name_from_postal_code,
@@ -356,9 +360,9 @@ def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVi
 
 
 @venue_blueprint.route("", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-def list_venues() -> utils.BackofficeResponse:
-    form = forms.GetVenuesListForm(formdata=utils.get_query_params())
+@access_control.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def list_venues() -> response_utils.BackofficeResponse:
+    form = forms.GetVenuesListForm(formdata=request_utils.get_query_params())
 
     if not form.validate():
         mark_transaction_as_invalid()
@@ -369,7 +373,7 @@ def list_venues() -> utils.BackofficeResponse:
         return render_template("venue/list.html", rows=[], form=form)
 
     venues = _get_venues(form)
-    venues = utils.limit_rows(venues, form.limit.data)
+    venues = search_utils.limit_rows(venues, form.limit.data)
 
     autocomplete.prefill_criteria_choices(form.criteria)
     autocomplete.prefill_offerers_choices(form.offerer)
@@ -382,11 +386,11 @@ def list_venues() -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>", methods=["GET"])
-def get(venue_id: int) -> utils.BackofficeResponse:
+def get(venue_id: int) -> response_utils.BackofficeResponse:
     venue_row = get_venue(venue_id)
 
     if request.args.get("q") and request.args.get("search_rank"):
-        utils.log_backoffice_tracking_data(
+        logs_utils.log_backoffice_tracking_data(
             event_name="ConsultCard",
             extra_data={
                 "searchType": "ProSearch",
@@ -408,7 +412,7 @@ def _get_stat_urls(venue: offerers_models.Venue) -> dict[str, str]:
         "search-0-operator": "IN",
         "search-0-venue": venue.id,
     }
-    if utils.has_current_user_permission(perm_models.Permissions.READ_OFFERS):
+    if access_control.has_current_user_permission(perm_models.Permissions.READ_OFFERS):
         urls["list_offers"] = url_for("backoffice_web.offer.list_offers", **search_params)  # type: ignore [arg-type]
         urls["list_collective_offers"] = url_for(
             "backoffice_web.collective_offer.list_collective_offers",
@@ -417,7 +421,7 @@ def _get_stat_urls(venue: offerers_models.Venue) -> dict[str, str]:
         urls["list_collective_offer_templates"] = url_for(
             "backoffice_web.collective_offer_template.list_collective_offer_templates", venue=venue.id
         )
-    if utils.has_current_user_permission(perm_models.Permissions.READ_BOOKINGS):
+    if access_control.has_current_user_permission(perm_models.Permissions.READ_BOOKINGS):
         urls["list_bookings"] = url_for("backoffice_web.individual_bookings.list_individual_bookings", venue=venue.id)
         urls["list_collective_bookins"] = url_for(
             "backoffice_web.collective_bookings.list_collective_bookings", venue=venue.id
@@ -428,7 +432,7 @@ def _get_stat_urls(venue: offerers_models.Venue) -> dict[str, str]:
 
 
 @venue_blueprint.route("/<int:venue_id>/stats", methods=["GET"])
-def get_stats(venue_id: int) -> utils.BackofficeResponse:
+def get_stats(venue_id: int) -> response_utils.BackofficeResponse:
     venue = (
         db.session.query(offerers_models.Venue)
         .filter(
@@ -456,7 +460,7 @@ def get_stats(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/revenue-details", methods=["GET"])
-def get_revenue_details(venue_id: int) -> utils.BackofficeResponse:
+def get_revenue_details(venue_id: int) -> response_utils.BackofficeResponse:
     venue = (
         db.session.query(offerers_models.Venue)
         .filter_by(id=venue_id)
@@ -528,8 +532,8 @@ def _fetch_venue_provider(venue_id: int, provider_id: int) -> providers_models.V
 
 
 @venue_blueprint.route("/<int:venue_id>/provider/<int:provider_id>/active", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
-def toggle_venue_provider_is_active(venue_id: int, provider_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def toggle_venue_provider_is_active(venue_id: int, provider_id: int) -> response_utils.BackofficeResponse:
     venue_provider = _fetch_venue_provider(venue_id, provider_id)
 
     set_active = not venue_provider.isActive
@@ -551,8 +555,8 @@ def toggle_venue_provider_is_active(venue_id: int, provider_id: int) -> utils.Ba
 # TODO (tcoudray-pass, 04/02/26): Remove when we get rid of old local providers integrations
 # See https://passculture.atlassian.net/browse/PC-40117
 @venue_blueprint.route("/<int:venue_id>/provider/<int:provider_id>/cinema-integration", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
-def toggle_new_cinema_integration_is_enabled(venue_id: int, provider_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
+def toggle_new_cinema_integration_is_enabled(venue_id: int, provider_id: int) -> response_utils.BackofficeResponse:
     venue_provider = _fetch_venue_provider(venue_id, provider_id)
     venue_provider.isNewEtlIntegrationEnabled = not venue_provider.isNewEtlIntegrationEnabled
     db.session.flush()
@@ -568,10 +572,10 @@ def toggle_new_cinema_integration_is_enabled(venue_id: int, provider_id: int) ->
 
 
 @venue_blueprint.route("/<int:venue_id>/provider/<int:provider_id>/synchronize-cinema", methods=["POST"])
-@utils.permission_required_in(
+@access_control.permission_required_in(
     [perm_models.Permissions.ADVANCED_PRO_SUPPORT, perm_models.Permissions.MANAGE_TECH_PARTNERS]
 )
-def add_cinema_sessions_synchronize_task(venue_id: int, provider_id: int) -> utils.BackofficeResponse:
+def add_cinema_sessions_synchronize_task(venue_id: int, provider_id: int) -> response_utils.BackofficeResponse:
     venue_provider = _fetch_venue_provider(venue_id, provider_id)
 
     if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CINEMA_INTEGRATION.is_active():
@@ -586,8 +590,8 @@ def add_cinema_sessions_synchronize_task(venue_id: int, provider_id: int) -> uti
 
 
 @venue_blueprint.route("/<int:venue_id>/provider/<int:provider_id>/delete", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
-def delete_venue_provider(venue_id: int, provider_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def delete_venue_provider(venue_id: int, provider_id: int) -> response_utils.BackofficeResponse:
     venue_provider = _fetch_venue_provider(venue_id, provider_id)
 
     if venue_provider.isFromAllocineProvider:
@@ -603,11 +607,11 @@ def delete_venue_provider(venue_id: int, provider_id: int) -> utils.BackofficeRe
 
 def get_venue_with_history(venue_id: int) -> offerers_models.Venue:
     history_filter = history_models.ActionHistory.venueId == venue_id
-    if not utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
+    if not access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
         history_filter = sa.and_(
             history_filter, history_models.ActionHistory.actionType != history_models.ActionType.FRAUD_INFO_MODIFIED
         )
-    if not utils.has_current_user_permission(perm_models.Permissions.READ_PRO_REIMBURSEMENT_SUSPENSION):
+    if not access_control.has_current_user_permission(perm_models.Permissions.READ_PRO_REIMBURSEMENT_SUSPENSION):
         history_filter = sa.and_(
             history_filter,
             history_models.ActionHistory.actionType != history_models.ActionType.VENUE_REIMBURSEMENT_SUSPENDED,
@@ -633,7 +637,7 @@ def get_venue_with_history(venue_id: int) -> offerers_models.Venue:
 
 
 @venue_blueprint.route("/<int:venue_id>/history", methods=["GET"])
-def get_history(venue_id: int) -> utils.BackofficeResponse:
+def get_history(venue_id: int) -> response_utils.BackofficeResponse:
     venue = get_venue_with_history(venue_id)
     actions = sorted(venue.action_history, key=lambda action: action.actionDate, reverse=True)
 
@@ -650,8 +654,8 @@ def get_history(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/protected-info", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
-def get_entreprise_info(venue_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
+def get_entreprise_info(venue_id: int) -> response_utils.BackofficeResponse:
     venue = get_or_404(offerers_models.Venue, venue_id)
 
     if not venue.siret:
@@ -677,7 +681,7 @@ def get_entreprise_info(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/collective-dms-applications", methods=["GET"])
-def get_collective_dms_applications(venue_id: int) -> utils.BackofficeResponse:
+def get_collective_dms_applications(venue_id: int) -> response_utils.BackofficeResponse:
     collective_dms_applications = (
         db.session.query(educational_models.CollectiveDmsApplication)
         .filter(
@@ -703,8 +707,8 @@ def get_collective_dms_applications(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/delete", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.DELETE_PRO_ENTITY)
-def delete_venue(venue_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.DELETE_PRO_ENTITY)
+def delete_venue(venue_id: int) -> response_utils.BackofficeResponse:
     venue = (
         db.session.query(offerers_models.Venue)
         .filter_by(id=venue_id)
@@ -770,8 +774,8 @@ def delete_venue(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-def update_venue(venue_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def update_venue(venue_id: int) -> response_utils.BackofficeResponse:
     venue_row = get_venue(venue_id)
     venue: offerers_models.Venue = venue_row.Venue
 
@@ -929,8 +933,8 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/fraud", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def update_for_fraud(venue_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def update_for_fraud(venue_id: int) -> response_utils.BackofficeResponse:
     venue = (
         db.session.query(offerers_models.Venue)
         .filter_by(id=venue_id)
@@ -943,7 +947,7 @@ def update_for_fraud(venue_id: int) -> utils.BackofficeResponse:
     form = forms.FraudForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
     elif offerers_api.update_fraud_info(
         venue=venue,
         author_user=current_user,
@@ -958,8 +962,8 @@ def update_for_fraud(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/comment", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-def comment_venue(venue_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def comment_venue(venue_id: int) -> response_utils.BackofficeResponse:
     venue = (
         db.session.query(offerers_models.Venue)
         .filter_by(id=venue_id)
@@ -971,7 +975,7 @@ def comment_venue(venue_id: int) -> utils.BackofficeResponse:
 
     form = forms.CommentForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         mark_transaction_as_invalid()
     else:
         offerers_api.add_comment_to_venue(venue, current_user, comment=form.comment.data)
@@ -981,12 +985,12 @@ def comment_venue(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/batch-edit-form", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-def get_batch_edit_venues_form() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def get_batch_edit_venues_form() -> response_utils.BackofficeResponse:
     form = forms.BatchEditVenuesForm()
     if form.object_ids.data:
         if not form.validate():
-            flash(utils.build_form_error_msg(form), "warning")
+            flash(response_utils.build_form_error_msg(form), "warning")
             mark_transaction_as_invalid()
             return redirect(request.referrer or url_for(".list_venues"), code=303)
 
@@ -1018,11 +1022,11 @@ def get_batch_edit_venues_form() -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/batch-edit", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-def batch_edit_venues() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def batch_edit_venues() -> response_utils.BackofficeResponse:
     form = forms.BatchEditVenuesForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         mark_transaction_as_invalid()
         return _render_venues()
 
@@ -1122,7 +1126,7 @@ def _load_venue_for_removing_pricing_point(venue_id: int) -> offerers_models.Ven
 
 def _render_remove_pricing_point_content(
     venue: offerers_models.Venue, form: forms.RemovePricingPointForm | None = None, error: str | None = None
-) -> utils.BackofficeResponse:
+) -> response_utils.BackofficeResponse:
     current_pricing_point = venue.current_pricing_point
 
     kwargs = {}
@@ -1162,8 +1166,8 @@ def _render_remove_pricing_point_content(
 
 
 @venue_blueprint.route("/<int:venue_id>/remove-pricing-point", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
-def get_remove_pricing_point_form(venue_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def get_remove_pricing_point_form(venue_id: int) -> response_utils.BackofficeResponse:
     venue = _load_venue_for_removing_pricing_point(venue_id)
 
     try:
@@ -1177,8 +1181,8 @@ def get_remove_pricing_point_form(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/remove-pricing-point", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
-def remove_pricing_point(venue_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def remove_pricing_point(venue_id: int) -> response_utils.BackofficeResponse:
     venue = _load_venue_for_removing_pricing_point(venue_id)
 
     form = forms.RemovePricingPointForm()
@@ -1201,8 +1205,8 @@ def remove_pricing_point(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/set-pricing-point", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
-def get_set_pricing_point_form(venue_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def get_set_pricing_point_form(venue_id: int) -> response_utils.BackofficeResponse:
     aliased_venue = sa_orm.aliased(offerers_models.Venue)
     venue = (
         db.session.query(offerers_models.Venue)
@@ -1244,8 +1248,8 @@ def get_set_pricing_point_form(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/set-pricing-point", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
-def set_pricing_point(venue_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def set_pricing_point(venue_id: int) -> response_utils.BackofficeResponse:
     aliased_venue = sa_orm.aliased(offerers_models.Venue)
     venue = (
         db.session.query(offerers_models.Venue)
@@ -1275,7 +1279,7 @@ def set_pricing_point(venue_id: int) -> utils.BackofficeResponse:
 
     form = forms.PricingPointForm(venue=venue)
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         mark_transaction_as_invalid()
         return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
     try:
@@ -1327,7 +1331,7 @@ def _render_remove_siret_content(
     form: forms.RemoveSiretForm | None = None,
     error: str | None = None,
     info: str | None = None,
-) -> utils.BackofficeResponse:
+) -> response_utils.BackofficeResponse:
     kwargs = {}
     if form:
         kwargs.update(
@@ -1376,8 +1380,8 @@ def _render_remove_siret_content(
 
 
 @venue_blueprint.route("/<int:venue_id>/remove-siret", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MOVE_SIRET)
-def get_remove_siret_form(venue_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MOVE_SIRET)
+def get_remove_siret_form(venue_id: int) -> response_utils.BackofficeResponse:
     venue = _load_venue_for_removing_siret(venue_id)
 
     try:
@@ -1393,8 +1397,8 @@ def get_remove_siret_form(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/remove-siret", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MOVE_SIRET)
-def remove_siret(venue_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MOVE_SIRET)
+def remove_siret(venue_id: int) -> response_utils.BackofficeResponse:
     venue = _load_venue_for_removing_siret(venue_id)
 
     form = forms.RemoveSiretForm(venue)
@@ -1423,12 +1427,12 @@ def remove_siret(venue_id: int) -> utils.BackofficeResponse:
     )
 
 
-def _suspend_venue_reimbursement(venue_id: int, suspend: bool) -> utils.BackofficeResponse:
+def _suspend_venue_reimbursement(venue_id: int, suspend: bool) -> response_utils.BackofficeResponse:
     venue = get_or_404(offerers_models.Venue, venue_id)
 
     form = forms.CommentForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         mark_transaction_as_invalid()
 
     if venue.isReimbursementSuspended != suspend:
@@ -1455,12 +1459,12 @@ def _suspend_venue_reimbursement(venue_id: int, suspend: bool) -> utils.Backoffi
 
 
 @venue_blueprint.route("/<int:venue_id>/suspend-reimbursement", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION)
-def suspend_reimbursement(venue_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION)
+def suspend_reimbursement(venue_id: int) -> response_utils.BackofficeResponse:
     return _suspend_venue_reimbursement(venue_id, True)
 
 
 @venue_blueprint.route("/<int:venue_id>/unsuspend-reimbursement", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION)
-def unsuspend_reimbursement(venue_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION)
+def unsuspend_reimbursement(venue_id: int) -> response_utils.BackofficeResponse:
     return _suspend_venue_reimbursement(venue_id, False)

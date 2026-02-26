@@ -11,16 +11,19 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
+from pcapi.routes.backoffice import autocomplete
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
+from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import request as request_utils
+from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
-from .. import autocomplete
-from .. import utils
-from ..forms import empty as empty_forms
 from . import forms
 from .contexts import get_context
 
 
-pivots_blueprint = utils.child_backoffice_blueprint(
+pivots_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "pivots",
     __name__,
     url_prefix="/pro/pivots",
@@ -29,7 +32,7 @@ pivots_blueprint = utils.child_backoffice_blueprint(
 
 
 @pivots_blueprint.route("", methods=["GET"])
-def get_pivots() -> utils.BackofficeResponse:
+def get_pivots() -> response_utils.BackofficeResponse:
     return render_template(
         "pivots/get.html",
         active_tab=request.args.get("active_tab", "allocine"),
@@ -37,10 +40,10 @@ def get_pivots() -> utils.BackofficeResponse:
 
 
 @pivots_blueprint.route("/<string:name>", methods=["GET"])
-def list_pivots(name: str) -> utils.BackofficeResponse:
+def list_pivots(name: str) -> response_utils.BackofficeResponse:
     pivot_context = get_context(name)
 
-    form = forms.SearchPivotForm(formdata=utils.get_query_params())
+    form = forms.SearchPivotForm(formdata=request_utils.get_query_params())
     if not form.validate():
         return (
             render_template(f"pivots/get/{name}.html", rows=[], form=form, dst=url_for(".list_pivots", name=name)),
@@ -53,8 +56,8 @@ def list_pivots(name: str) -> utils.BackofficeResponse:
 
 
 @pivots_blueprint.route("/<string:name>/create", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
-def get_create_pivot_form(name: str) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
+def get_create_pivot_form(name: str) -> response_utils.BackofficeResponse:
     pivot_context = get_context(name)
 
     form = pivot_context.get_form()
@@ -70,15 +73,15 @@ def get_create_pivot_form(name: str) -> utils.BackofficeResponse:
 
 
 @pivots_blueprint.route("/<string:name>/create", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
-def create_pivot(name: str) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
+def create_pivot(name: str) -> response_utils.BackofficeResponse:
     pivot_context = get_context(name)
 
     form = pivot_context.get_form()
 
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for(".get_pivots", active_tab=name), code=303)
 
     venue = db.session.query(offerers_models.Venue).filter_by(id=form.venue_id.data[0]).one_or_none()
@@ -115,8 +118,8 @@ def create_pivot(name: str) -> utils.BackofficeResponse:
 
 
 @pivots_blueprint.route("/<string:name>/<int:pivot_id>/update", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
-def get_update_pivot_form(name: str, pivot_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
+def get_update_pivot_form(name: str, pivot_id: int) -> response_utils.BackofficeResponse:
     pivot_context = get_context(name)
 
     form = pivot_context.get_edit_form(pivot_id)
@@ -134,14 +137,14 @@ def get_update_pivot_form(name: str, pivot_id: int) -> utils.BackofficeResponse:
 
 
 @pivots_blueprint.route("/<string:name>/<int:pivot_id>/update", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
-def update_pivot(name: str, pivot_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
+def update_pivot(name: str, pivot_id: int) -> response_utils.BackofficeResponse:
     pivot_context = get_context(name)
 
     form = pivot_context.get_edit_form(pivot_id)
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for(".get_pivots", active_tab=name), code=303)
 
     try:
@@ -162,8 +165,8 @@ def update_pivot(name: str, pivot_id: int) -> utils.BackofficeResponse:
 
 
 @pivots_blueprint.route("/<string:name>/<int:pivot_id>/delete", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
-def get_delete_pivot_form(name: str, pivot_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
+def get_delete_pivot_form(name: str, pivot_id: int) -> response_utils.BackofficeResponse:
     return render_template(
         "components/dynamic/modal_form.html",
         form=empty_forms.EmptyForm(),
@@ -177,8 +180,8 @@ def get_delete_pivot_form(name: str, pivot_id: int) -> utils.BackofficeResponse:
 
 
 @pivots_blueprint.route("/<string:name>/<int:pivot_id>/delete", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
-def delete_pivot(name: str, pivot_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
+def delete_pivot(name: str, pivot_id: int) -> response_utils.BackofficeResponse:
     pivot_context = get_context(name)
 
     try:

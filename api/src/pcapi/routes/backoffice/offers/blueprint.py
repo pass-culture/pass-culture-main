@@ -50,11 +50,16 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.filters import format_amount
 from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import advanced_search
+from pcapi.routes.backoffice.utils import request as request_utils
+from pcapi.routes.backoffice.utils import response as response_utils
+from pcapi.routes.backoffice.utils import search as search_utils
 from pcapi.utils import date as date_utils
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import string as string_utils
@@ -66,7 +71,7 @@ from pcapi.utils.transaction_manager import on_commit
 from . import forms
 
 
-list_offers_blueprint = utils.child_backoffice_blueprint(
+list_offers_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "offer",
     __name__,
     url_prefix="/pro/offer",
@@ -475,7 +480,7 @@ class OfferDetailsActions:
 
 
 def _get_offer_ids_algolia(form: forms.GetOfferAlgoliaSearchForm) -> list[int]:
-    filters, warnings = utils.generate_algolia_search_string(
+    filters, warnings = advanced_search.generate_algolia_search_string(
         search_parameters=form.search.data,
         fields_definition=SEARCH_FIELD_TO_PYTHON,
     )
@@ -488,7 +493,7 @@ def _get_offer_ids_algolia(form: forms.GetOfferAlgoliaSearchForm) -> list[int]:
 
 
 def _get_offer_ids_query(form: forms.GetOfferAdvancedSearchForm) -> sa_orm.Query:
-    query, _, _, warnings = utils.generate_search_query(
+    query, _, _, warnings = advanced_search.generate_search_query(
         query=db.session.query(offers_models.Offer),
         search_parameters=form.search.data,
         fields_definition=SEARCH_FIELD_TO_PYTHON,
@@ -507,7 +512,7 @@ def _get_offer_ids_query(form: forms.GetOfferAdvancedSearchForm) -> sa_orm.Query
 def _get_offers_by_ids(
     offer_ids: list[int] | sa_orm.Query, *, sort: str | None = None, order: str | None = None
 ) -> list[sa.engine.Row]:
-    if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
+    if access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
         # Those columns are not shown to fraud pro users
         booked_quantity_subquery: sa.sql.selectable.ScalarSelect | sa.sql.elements.Null = sa.null()
         remaining_quantity_case: sa.sql.elements.Case | sa.sql.elements.Null = sa.null()
@@ -716,7 +721,7 @@ def _get_offers_by_ids(
             .correlate(offers_models.Offer)
             .scalar_subquery()
         )
-        if utils.has_current_user_permission(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
+        if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
         else sa.null()
     )
 
@@ -813,7 +818,7 @@ def _render_offer_list(
     page: str = "offer",
     is_form_empty: bool = False,
     **kwargs: dict,
-) -> utils.BackofficeResponse:
+) -> response_utils.BackofficeResponse:
     date_created_sort_url = None
     if advanced_form is not None and advanced_form.sort.data:
         date_created_sort_url = advanced_form.get_sort_link_with_search_data(".list_offers")
@@ -858,8 +863,8 @@ def _render_offer_list(
 
 
 @list_offers_blueprint.route("", methods=["GET"])
-def list_offers() -> utils.BackofficeResponse:
-    form = forms.GetOfferAdvancedSearchForm(formdata=utils.get_query_params())
+def list_offers() -> response_utils.BackofficeResponse:
+    form = forms.GetOfferAdvancedSearchForm(formdata=request_utils.get_query_params())
     if not form.validate():
         mark_transaction_as_invalid()
         return _render_offer_list(
@@ -870,7 +875,7 @@ def list_offers() -> utils.BackofficeResponse:
         )
 
     if form.is_empty():
-        form_data = MultiDict(utils.get_query_params())
+        form_data = MultiDict(request_utils.get_query_params())
         form_data.update({"search-0-search_field": "ID", "search-0-operator": "IN"})
         form = forms.GetOfferAdvancedSearchForm(formdata=form_data)
         return _render_offer_list(advanced_form=form, page="offer", is_form_empty=True)
@@ -880,7 +885,7 @@ def list_offers() -> utils.BackofficeResponse:
         sort=form.sort.data,
         order=form.order.data,
     )
-    offers = utils.limit_rows(offers, form.limit.data)
+    offers = search_utils.limit_rows(offers, form.limit.data)
 
     return _render_offer_list(
         rows=offers,
@@ -891,8 +896,8 @@ def list_offers() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/algolia", methods=["GET"])
-def list_algolia_offers() -> utils.BackofficeResponse:
-    form = forms.GetOfferAlgoliaSearchForm(formdata=utils.get_query_params())
+def list_algolia_offers() -> response_utils.BackofficeResponse:
+    form = forms.GetOfferAlgoliaSearchForm(formdata=request_utils.get_query_params())
     if not form.validate():
         mark_transaction_as_invalid()
         return _render_offer_list(
@@ -910,7 +915,7 @@ def list_algolia_offers() -> utils.BackofficeResponse:
             sort=form.sort.data,
             order=form.order.data,
         )
-        offers = utils.limit_rows(offers, form.limit.data)
+        offers = search_utils.limit_rows(offers, form.limit.data)
 
     return _render_offer_list(
         rows=offers,
@@ -921,8 +926,8 @@ def list_algolia_offers() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/llm", methods=["GET"])
-def list_llm_offers() -> utils.BackofficeResponse:
-    form = forms.GetOfferLlmSearchForm(formdata=utils.get_query_params())
+def list_llm_offers() -> response_utils.BackofficeResponse:
+    form = forms.GetOfferLlmSearchForm(formdata=request_utils.get_query_params())
     is_form_empty = True
     if not form.validate():
         mark_transaction_as_invalid()
@@ -933,7 +938,7 @@ def list_llm_offers() -> utils.BackofficeResponse:
             is_form_empty=is_form_empty,
         )
 
-    filters, warnings = utils.generate_llm_search_dict(
+    filters, warnings = advanced_search.generate_llm_search_dict(
         search_parameters=form.search.data,
         fields_definition=SEARCH_FIELD_TO_PYTHON,
     )
@@ -962,7 +967,7 @@ def list_llm_offers() -> utils.BackofficeResponse:
             sort=form.sort.data,
             order=form.order.data,
         )
-        offers = utils.limit_rows(offers, form.limit.data)
+        offers = search_utils.limit_rows(offers, form.limit.data)
 
     return _render_offer_list(
         rows=offers,
@@ -974,8 +979,8 @@ def list_llm_offers() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/edit", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
-def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFERS)
+def get_edit_offer_form(offer_id: int) -> response_utils.BackofficeResponse:
     offer = (
         db.session.query(offers_models.Offer)
         .filter_by(id=offer_id)
@@ -989,7 +994,7 @@ def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
     if not offer:
         raise NotFound()
 
-    form = forms.EditOfferForm(utils.get_query_params())
+    form = forms.EditOfferForm(request_utils.get_query_params())
     form.criteria.choices = [(criterion.id, criterion.name) for criterion in offer.criteria]
     if offer.rankingWeight:
         form.rankingWeight.data = offer.rankingWeight
@@ -1007,8 +1012,8 @@ def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch/validate", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def get_batch_validate_offers_form() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_batch_validate_offers_form() -> response_utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     return render_template(
         "components/dynamic/modal_form.html",
@@ -1022,12 +1027,12 @@ def get_batch_validate_offers_form() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch-validate", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def batch_validate_offers() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def batch_validate_offers() -> response_utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 400)
 
     _batch_validate_offers(form.object_ids_list)
@@ -1036,8 +1041,8 @@ def batch_validate_offers() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch/pending", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def get_batch_pending_offers_form() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_batch_pending_offers_form() -> response_utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     return render_template(
         "components/dynamic/modal_form.html",
@@ -1052,12 +1057,12 @@ def get_batch_pending_offers_form() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch-pending", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def batch_pending_offers() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def batch_pending_offers() -> response_utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 400)
 
     _batch_pending_offers(form.object_ids_list)
@@ -1069,8 +1074,8 @@ def batch_pending_offers() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch/reject", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def get_batch_reject_offers_form() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_batch_reject_offers_form() -> response_utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     return render_template(
         "components/dynamic/modal_form.html",
@@ -1084,12 +1089,12 @@ def get_batch_reject_offers_form() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch-reject", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def batch_reject_offers() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def batch_reject_offers() -> response_utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 400)
 
     _batch_reject_offers(form.object_ids_list)
@@ -1098,13 +1103,13 @@ def batch_reject_offers() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch/edit", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
-def get_batch_edit_offer_form() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFERS)
+def get_batch_edit_offer_form() -> response_utils.BackofficeResponse:
     form = forms.BatchEditOfferForm()
     if form.object_ids.data:
         if not form.validate():
             mark_transaction_as_invalid()
-            flash(utils.build_form_error_msg(form), "warning")
+            flash(response_utils.build_form_error_msg(form), "warning")
             return redirect(request.referrer, 400)
 
         offers = (
@@ -1134,12 +1139,12 @@ def get_batch_edit_offer_form() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch-edit", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
-def batch_edit_offer() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFERS)
+def batch_edit_offer() -> response_utils.BackofficeResponse:
     form = forms.BatchEditOfferForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 400)
 
     offers = (
@@ -1185,8 +1190,8 @@ def batch_edit_offer() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/edit", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
-def edit_offer(offer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFERS)
+def edit_offer(offer_id: int) -> response_utils.BackofficeResponse:
     offer = db.session.query(offers_models.Offer).filter_by(id=offer_id).one_or_none()
     if not offer:
         raise NotFound()
@@ -1214,21 +1219,21 @@ def edit_offer(offer_id: int) -> utils.BackofficeResponse:
 
     flash("L'offre a été modifiée", "success")
 
-    if utils.is_request_from_htmx():
+    if request_utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
 
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
 
 
 @list_offers_blueprint.route("/<int:offer_id>/validate", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def get_validate_offer_form(offer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_validate_offer_form(offer_id: int) -> response_utils.BackofficeResponse:
     offer = db.session.query(offers_models.Offer).filter_by(id=offer_id).one_or_none()
 
     if not offer:
         raise NotFound()
 
-    form = empty_forms.DynamicForm(utils.get_query_params())
+    form = empty_forms.DynamicForm(request_utils.get_query_params())
 
     return render_template(
         "components/dynamic/modal_form.html",
@@ -1242,7 +1247,7 @@ def get_validate_offer_form(offer_id: int) -> utils.BackofficeResponse:
     )
 
 
-def _render_offer_rows(offer_ids: list[int]) -> utils.BackofficeResponse:
+def _render_offer_rows(offer_ids: list[int]) -> response_utils.BackofficeResponse:
     offer_rows = _get_offers_by_ids(offer_ids=offer_ids)
     connect_as = {}
     for offer_row in offer_rows:
@@ -1260,25 +1265,25 @@ def _render_offer_rows(offer_ids: list[int]) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/validate", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def validate_offer(offer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def validate_offer(offer_id: int) -> response_utils.BackofficeResponse:
     _batch_validate_offers([offer_id])
     flash("L'offre a été validée", "success")
 
-    if utils.is_request_from_htmx():
+    if request_utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
 
 
 @list_offers_blueprint.route("/<int:offer_id>/pending", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def get_pending_offer_form(offer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_pending_offer_form(offer_id: int) -> response_utils.BackofficeResponse:
     offer = db.session.query(offers_models.Offer).filter_by(id=offer_id).one_or_none()
 
     if not offer:
         raise NotFound()
 
-    form = empty_forms.DynamicForm(utils.get_query_params())
+    form = empty_forms.DynamicForm(request_utils.get_query_params())
 
     return render_template(
         "components/dynamic/modal_form.html",
@@ -1294,28 +1299,28 @@ def get_pending_offer_form(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/pending", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def pending_offer(offer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def pending_offer(offer_id: int) -> response_utils.BackofficeResponse:
     _batch_pending_offers([offer_id])
     flash(
         "L’offre est repassée en instruction et n'est plus réservable. Les réservations en cours ne sont pas annulées",
         "success",
     )
 
-    if utils.is_request_from_htmx():
+    if request_utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
 
 
 @list_offers_blueprint.route("/<int:offer_id>/reject", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def get_reject_offer_form(offer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_reject_offer_form(offer_id: int) -> response_utils.BackofficeResponse:
     offer = db.session.query(offers_models.Offer).filter_by(id=offer_id).one_or_none()
 
     if not offer:
         raise NotFound()
 
-    form = empty_forms.DynamicForm(formdata=utils.get_query_params())
+    form = empty_forms.DynamicForm(formdata=request_utils.get_query_params())
 
     return render_template(
         "components/dynamic/modal_form.html",
@@ -1330,12 +1335,12 @@ def get_reject_offer_form(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/reject", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def reject_offer(offer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def reject_offer(offer_id: int) -> response_utils.BackofficeResponse:
     _batch_reject_offers([offer_id])
     flash("L'offre a été rejetée", "success")
 
-    if utils.is_request_from_htmx():
+    if request_utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
 
@@ -1510,17 +1515,17 @@ def _batch_pending_offers(offer_ids: list[int]) -> None:
 
 def _get_offer_details_actions(offer: offers_models.Offer, threshold: int) -> OfferDetailsActions:
     offer_details_actions = OfferDetailsActions(threshold)
-    if offer.isActive and utils.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT):
+    if offer.isActive and access_control.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT):
         offer_details_actions.add_action(OfferDetailsActionType.DEACTIVATE)
-    if not offer.isActive and utils.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT):
+    if not offer.isActive and access_control.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT):
         offer_details_actions.add_action(OfferDetailsActionType.ACTIVATE)
-    if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
+    if access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
         offer_details_actions.add_action(OfferDetailsActionType.VALIDATE)
         offer_details_actions.add_action(OfferDetailsActionType.PENDING)
         offer_details_actions.add_action(OfferDetailsActionType.REJECT)
-    if utils.has_current_user_permission(perm_models.Permissions.MANAGE_OFFERS):
+    if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_OFFERS):
         offer_details_actions.add_action(OfferDetailsActionType.TAG_WEIGHT)
-    if utils.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT):
+    if access_control.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT):
         offer_details_actions.add_action(OfferDetailsActionType.RESYNC)
 
     #################################################################################################
@@ -1531,8 +1536,8 @@ def _get_offer_details_actions(offer: offers_models.Offer, threshold: int) -> Of
 
 
 @list_offers_blueprint.route("/<int:offer_id>", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.READ_OFFERS)
-def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.READ_OFFERS)
+def get_offer_details(offer_id: int) -> response_utils.BackofficeResponse:
     VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
     VenueAddress = sa_orm.aliased(geography_models.Address)
 
@@ -1603,7 +1608,7 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
         # store the ids in a set as we will use multiple in on it
         editable_stock_ids = _get_editable_stock(offer_id)
 
-    is_advanced_pro_support = utils.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+    is_advanced_pro_support = access_control.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
     # if the actions count is above this threshold then display the action buttons in a dropdown menu
     allowed_actions = _get_offer_details_actions(offer, threshold=4)
 
@@ -1707,8 +1712,8 @@ def _manage_price_category(stock: offers_models.Stock, new_price: float) -> bool
 
 
 @list_offers_blueprint.route("/<int:offer_id>/stock/<int:stock_id>/edit", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
-def edit_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFERS)
+def edit_offer_stock(offer_id: int, stock_id: int) -> response_utils.BackofficeResponse:
     stock = (
         db.session.query(offers_models.Stock)
         .filter(
@@ -1740,7 +1745,7 @@ def edit_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
 
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
 
     new_price = 0.0
@@ -1772,8 +1777,8 @@ def edit_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/stock/<int:stock_id>/confirm", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
-def confirm_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFERS)
+def confirm_offer_stock(offer_id: int, stock_id: int) -> response_utils.BackofficeResponse:
     stock = db.session.query(offers_models.Stock).filter_by(id=stock_id).one()
 
     if stock.offerId != offer_id:
@@ -1827,12 +1832,12 @@ def confirm_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeRespons
 
 
 @list_offers_blueprint.route("/<int:offer_id>/stock/<int:stock_id>/edit", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def get_offer_stock_edit_form(
     offer_id: int,
     stock_id: int,
     form: forms.EditStockForm | None = None,
-) -> utils.BackofficeResponse:
+) -> response_utils.BackofficeResponse:
     if finance_api.are_cashflows_being_generated():
         return render_template(
             "components/dynamic/modal_form.html",
@@ -1856,7 +1861,7 @@ def _generate_offer_stock_edit_form(
     stock_id: int,
     form: forms.EditStockForm | None = None,
     alert: str | None = None,
-) -> utils.BackofficeResponse:
+) -> response_utils.BackofficeResponse:
     stock = db.session.query(offers_models.Stock).filter_by(id=stock_id).one()
 
     form = form or forms.EditStockForm(old_price=stock.price)
@@ -1898,8 +1903,8 @@ def _get_count_booking_prices_for_stock(stock: offers_models.Stock) -> list[tupl
 
 
 @list_offers_blueprint.route("/<int:offer_id>/reindex", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
-def reindex(offer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def reindex(offer_id: int) -> response_utils.BackofficeResponse:
     search.async_index_offer_ids(
         {offer_id},
         reason=IndexationReason.OFFER_MANUAL_REINDEXATION,
@@ -1910,8 +1915,8 @@ def reindex(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/edit-venue", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
-def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def edit_offer_venue(offer_id: int) -> response_utils.BackofficeResponse:
     offer_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id)
 
     offer = (
@@ -1927,7 +1932,7 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
         form = forms.EditOfferVenueForm()
         if not form.validate():
             mark_transaction_as_invalid()
-            flash(utils.build_form_error_msg(form), "warning")
+            flash(response_utils.build_form_error_msg(form), "warning")
             return redirect(offer_url, 303)
 
         destination_venue = (
@@ -1973,7 +1978,7 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/bookings.csv", methods=["GET"])
-def download_bookings_csv(offer_id: int) -> utils.BackofficeResponse:
+def download_bookings_csv(offer_id: int) -> response_utils.BackofficeResponse:
     export_data = booking_repository.get_export(
         user=current_user,
         offer_id=offer_id,
@@ -1989,7 +1994,7 @@ def download_bookings_csv(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/bookings.xlsx", methods=["GET"])
-def download_bookings_xlsx(offer_id: int) -> utils.BackofficeResponse:
+def download_bookings_xlsx(offer_id: int) -> response_utils.BackofficeResponse:
     export_data = booking_repository.get_export(
         user=current_user,
         offer_id=offer_id,
@@ -2005,14 +2010,14 @@ def download_bookings_xlsx(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/activate", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
-def get_activate_offer_form(offer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def get_activate_offer_form(offer_id: int) -> response_utils.BackofficeResponse:
     offer = db.session.query(offers_models.Offer).filter_by(id=offer_id).one_or_none()
 
     if not offer:
         raise NotFound()
 
-    form = empty_forms.DynamicForm(formdata=utils.get_query_params())
+    form = empty_forms.DynamicForm(formdata=request_utils.get_query_params())
 
     return render_template(
         "components/dynamic/modal_form.html",
@@ -2027,14 +2032,14 @@ def get_activate_offer_form(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/deactivate", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
-def get_deactivate_offer_form(offer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def get_deactivate_offer_form(offer_id: int) -> response_utils.BackofficeResponse:
     offer = db.session.query(offers_models.Offer).filter_by(id=offer_id).one_or_none()
 
     if not offer:
         raise NotFound()
 
-    form = empty_forms.DynamicForm(formdata=utils.get_query_params())
+    form = empty_forms.DynamicForm(formdata=request_utils.get_query_params())
 
     return render_template(
         "components/dynamic/modal_form.html",
@@ -2050,8 +2055,8 @@ def get_deactivate_offer_form(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch/activate", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
-def get_batch_activate_offers_form() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def get_batch_activate_offers_form() -> response_utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     return render_template(
         "components/dynamic/modal_form.html",
@@ -2065,8 +2070,8 @@ def get_batch_activate_offers_form() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch/deactivate", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
-def get_batch_deactivate_offers_form() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def get_batch_deactivate_offers_form() -> response_utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     return render_template(
         "components/dynamic/modal_form.html",
@@ -2086,22 +2091,22 @@ def _batch_update_activation_offers(offer_ids: list[int], *, is_active: bool) ->
 
 
 @list_offers_blueprint.route("/<int:offer_id>/activate", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
-def activate_offer(offer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def activate_offer(offer_id: int) -> response_utils.BackofficeResponse:
     _batch_update_activation_offers([offer_id], is_active=True)
     flash("L'offre a été publiée", "success")
-    if utils.is_request_from_htmx():
+    if request_utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
 
 
 @list_offers_blueprint.route("/batch-activate", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
-def batch_activate_offers() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def batch_activate_offers() -> response_utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 400)
 
     _batch_update_activation_offers(form.object_ids_list, is_active=True)
@@ -2110,22 +2115,22 @@ def batch_activate_offers() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/deactivate", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
-def deactivate_offer(offer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def deactivate_offer(offer_id: int) -> response_utils.BackofficeResponse:
     _batch_update_activation_offers([offer_id], is_active=False)
     flash("L'offre a été mise en pause, l’acteur pourra la réactiver", "success")
-    if utils.is_request_from_htmx():
+    if request_utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
 
 
 @list_offers_blueprint.route("/batch-deactivate", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
-def batch_deactivate_offers() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def batch_deactivate_offers() -> response_utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 400)
 
     _batch_update_activation_offers(form.object_ids_list, is_active=False)

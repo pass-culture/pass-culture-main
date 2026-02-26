@@ -16,14 +16,15 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import gdpr_api
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
 
-gdpr_extract_blueprint = utils.child_backoffice_blueprint(
+gdpr_extract_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "gdpr_extract",
     __name__,
     url_prefix="/gdpr-extract",
@@ -53,7 +54,7 @@ def _get_gdpr_data() -> list[users_models.GdprUserDataExtract]:
 
 
 @gdpr_extract_blueprint.route("", methods=["GET"])
-def list_gdpr_user_data_extract() -> utils.BackofficeResponse:
+def list_gdpr_user_data_extract() -> response_utils.BackofficeResponse:
     list_gdpr_data = _get_gdpr_data()
     return render_template(
         "gdpr_user_extract_data/list_gdpr_user_extract.html",
@@ -63,10 +64,10 @@ def list_gdpr_user_data_extract() -> utils.BackofficeResponse:
 
 
 @gdpr_extract_blueprint.route("/<int:extract_id>/download", methods=["POST"])
-def download_gdpr_extract(extract_id: int) -> utils.BackofficeResponse:
+def download_gdpr_extract(extract_id: int) -> response_utils.BackofficeResponse:
     form = empty_forms.EmptyForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(
             url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract"),
             code=303,
@@ -117,7 +118,7 @@ def download_gdpr_extract(extract_id: int) -> utils.BackofficeResponse:
 
 
 @gdpr_extract_blueprint.route("<int:gdpr_id>/extract", methods=["POST"])
-def delete_gdpr_user_data_extract(gdpr_id: int) -> utils.BackofficeResponse:
+def delete_gdpr_user_data_extract(gdpr_id: int) -> response_utils.BackofficeResponse:
     extract = db.session.query(users_models.GdprUserDataExtract).filter_by(id=gdpr_id).one_or_none()
     if not extract:
         flash("L'extrait demandé n'existe pas.", "warning")

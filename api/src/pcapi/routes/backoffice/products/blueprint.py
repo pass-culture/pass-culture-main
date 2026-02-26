@@ -29,16 +29,18 @@ from pcapi.core.providers.titelive_book_search import get_ineligibility_reasons
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.utils import requests
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 from . import forms
 
 
-list_products_blueprint = utils.child_backoffice_blueprint(
+list_products_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "product",
     __name__,
     url_prefix="/catalogue/product",
@@ -86,11 +88,11 @@ class ProductDetailsActions:
 
 def _get_product_details_actions(threshold: int) -> ProductDetailsActions:
     product_details_actions = ProductDetailsActions(threshold)
-    if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
+    if access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
         product_details_actions.add_action(ProductDetailsActionType.SYNCHRO_TITELIVE)
         product_details_actions.add_action(ProductDetailsActionType.WHITELIST)
         product_details_actions.add_action(ProductDetailsActionType.BLACKLIST)
-    if utils.has_current_user_permission(perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS):
+    if access_control.has_current_user_permission(perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS):
         product_details_actions.add_action(ProductDetailsActionType.TAG_MULTIPLE_OFFERS)
     return product_details_actions
 
@@ -106,7 +108,7 @@ def _get_current_criteria_on_active_offers(offers: list[offers_models.Offer]) ->
 
 
 @list_products_blueprint.route("/<int:product_id>", methods=["GET"])
-def get_product_details(product_id: int) -> utils.BackofficeResponse:
+def get_product_details(product_id: int) -> response_utils.BackofficeResponse:
     common_options = [
         sa_orm.load_only(
             offers_models.Offer.id,
@@ -254,8 +256,8 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
 
 
 @list_products_blueprint.route("/<int:product_id>/synchro_titelive", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def get_product_synchronize_with_titelive_form(product_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_product_synchronize_with_titelive_form(product_id: int) -> response_utils.BackofficeResponse:
     product = db.session.query(offers_models.Product).filter_by(id=product_id).one_or_none()
     if not (product and product.ean):
         raise NotFound()
@@ -292,8 +294,8 @@ def get_product_synchronize_with_titelive_form(product_id: int) -> utils.Backoff
 
 
 @list_products_blueprint.route("/<int:product_id>/synchro-titelive", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def synchronize_product_with_titelive(product_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def synchronize_product_with_titelive(product_id: int) -> response_utils.BackofficeResponse:
     product = db.session.query(offers_models.Product).filter_by(id=product_id).one_or_none()
     if not (product and product.ean):
         raise NotFound()
@@ -315,8 +317,8 @@ def synchronize_product_with_titelive(product_id: int) -> utils.BackofficeRespon
 
 
 @list_products_blueprint.route("/<int:product_id>/whitelist", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def get_product_whitelist_form(product_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_product_whitelist_form(product_id: int) -> response_utils.BackofficeResponse:
     product = db.session.query(offers_models.Product).filter_by(id=product_id).one_or_none()
     if not product:
         raise NotFound()
@@ -334,8 +336,8 @@ def get_product_whitelist_form(product_id: int) -> utils.BackofficeResponse:
 
 
 @list_products_blueprint.route("/<int:product_id>/whitelist", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def whitelist_product(product_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def whitelist_product(product_id: int) -> response_utils.BackofficeResponse:
     product = db.session.query(offers_models.Product).filter_by(id=product_id).one_or_none()
     if not product:
         raise NotFound()
@@ -346,8 +348,8 @@ def whitelist_product(product_id: int) -> utils.BackofficeResponse:
 
 
 @list_products_blueprint.route("/<int:product_id>/blacklist", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def get_product_blacklist_form(product_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_product_blacklist_form(product_id: int) -> response_utils.BackofficeResponse:
     product = db.session.query(offers_models.Product).filter_by(id=product_id).one_or_none()
     if not product:
         raise NotFound()
@@ -365,8 +367,8 @@ def get_product_blacklist_form(product_id: int) -> utils.BackofficeResponse:
 
 
 @list_products_blueprint.route("/<int:product_id>/blacklist", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def blacklist_product(product_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def blacklist_product(product_id: int) -> response_utils.BackofficeResponse:
     product = db.session.query(offers_models.Product).filter_by(id=product_id).one_or_none()
     if not (product and product.ean):
         raise NotFound()
@@ -382,8 +384,8 @@ def blacklist_product(product_id: int) -> utils.BackofficeResponse:
 
 
 @list_products_blueprint.route("/<int:product_id>/link_offers/confirm", methods=["GET", "POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def confirm_link_offers_forms(product_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def confirm_link_offers_forms(product_id: int) -> response_utils.BackofficeResponse:
     form = forms.BatchLinkOfferToProductForm()
 
     return render_template(
@@ -403,8 +405,8 @@ def confirm_link_offers_forms(product_id: int) -> utils.BackofficeResponse:
 
 
 @list_products_blueprint.route("/<int:product_id>/link_offers", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def batch_link_offers_to_product(product_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def batch_link_offers_to_product(product_id: int) -> response_utils.BackofficeResponse:
     form = forms.BatchLinkOfferToProductForm()
     product = db.session.query(offers_models.Product).filter(offers_models.Product.id == product_id).one_or_none()
     if not product:
@@ -429,8 +431,8 @@ def batch_link_offers_to_product(product_id: int) -> utils.BackofficeResponse:
 
 
 @list_products_blueprint.route("/<int:product_id>/tag-offers", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS)
-def get_tag_offers_form(product_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS)
+def get_tag_offers_form(product_id: int) -> response_utils.BackofficeResponse:
     product = (
         db.session.query(offers_models.Product)
         .options(sa_orm.selectinload(offers_models.Product.offers))
@@ -487,15 +489,15 @@ def get_tag_offers_form(product_id: int) -> utils.BackofficeResponse:
 
 
 @list_products_blueprint.route("/<int:product_id>/add-criteria", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS)
-def add_criteria_to_offers(product_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS)
+def add_criteria_to_offers(product_id: int) -> response_utils.BackofficeResponse:
     product = db.session.query(offers_models.Product).get(product_id)
     if not product:
         raise NotFound()
 
     form = forms.OfferCriteriaForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
 
     identifier_type = product.identifierType
     if identifier_type == offers_models.ProductIdentifierType.EAN:
@@ -528,7 +530,7 @@ def render_search_template(form: forms.ProductSearchForm | None = None) -> str:
 
 
 @list_products_blueprint.route("/search", methods=["GET"])
-def search_product() -> utils.BackofficeResponse:
+def search_product() -> response_utils.BackofficeResponse:
     if not request.args:
         return render_search_template()
 
@@ -596,8 +598,8 @@ def search_product() -> utils.BackofficeResponse:
 
 
 @list_products_blueprint.route("/<string:ean>/import_titelive_product_form", methods=["GET", "POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def get_import_product_from_titelive_form(ean: str) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_import_product_from_titelive_form(ean: str) -> response_utils.BackofficeResponse:
     is_ineligible = request.args.get("is_ineligible", "false").lower() == "true"
     if is_ineligible:
         form = forms.CommentForm()
@@ -616,8 +618,8 @@ def get_import_product_from_titelive_form(ean: str) -> utils.BackofficeResponse:
 
 
 @list_products_blueprint.route("/<string:ean>/import_titelive_product", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def import_product_from_titelive(ean: str) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def import_product_from_titelive(ean: str) -> response_utils.BackofficeResponse:
     is_ineligible = request.args.get("is_ineligible", "false").lower() == "true"
 
     try:

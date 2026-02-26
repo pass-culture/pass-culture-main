@@ -1755,6 +1755,17 @@ def action_to_name(action_url: str) -> str:
         return action_url
 
 
+def is_user_offerer_action_type(action: history_models.ActionHistory) -> bool:
+    user_offerer_action_types = {
+        history_models.ActionType.USER_OFFERER_NEW,
+        history_models.ActionType.USER_OFFERER_PENDING,
+        history_models.ActionType.USER_OFFERER_VALIDATED,
+        history_models.ActionType.USER_OFFERER_REJECTED,
+        history_models.ActionType.USER_OFFERER_DELETED,
+    }
+    return action.actionType in user_offerer_action_types
+
+
 def format_date_range(daterange: list[datetime.date]) -> str:
     """
     Prepare string for date range picker field with following format:
@@ -2176,3 +2187,4 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_user_profile_refresh_campaign_action_type"] = (
         format_user_profile_refresh_campaign_action_type
     )
+    app.jinja_env.filters["is_user_offerer_action_type"] = is_user_offerer_action_type
