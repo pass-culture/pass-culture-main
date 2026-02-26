@@ -110,35 +110,37 @@ export const PhysicalLocationSubform = ({
 
   return (
     <>
-      <RadioButtonGroup
-        label="Il s’agit de l’adresse à laquelle les jeunes devront se présenter."
-        name="offerLocation"
-        variant="detailed"
-        options={[
-          {
-            label: venueFullText,
-            value: venue?.location?.id.toString() ?? '',
-          },
-          {
-            label: 'À une autre adresse',
-            value: OFFER_LOCATION.OTHER_ADDRESS,
-          },
-        ]}
-        checkedOption={watch('location.offerLocation')}
-        onChange={toggleIsVenueAddress}
-        disabled={isDisabled}
-      />
+      <FormLayout.Row mdSpaceAfter>
+        <RadioButtonGroup
+          label="Il s’agit de l’adresse à laquelle les jeunes devront se présenter."
+          name="offerLocation"
+          variant="detailed"
+          options={[
+            {
+              label: venueFullText,
+              value: venue?.location?.id.toString() ?? '',
+            },
+            {
+              label: 'À une autre adresse',
+              value: OFFER_LOCATION.OTHER_ADDRESS,
+            },
+          ]}
+          checkedOption={watch('location.offerLocation')}
+          onChange={toggleIsVenueAddress}
+          disabled={isDisabled}
+        />
+      </FormLayout.Row>
 
       {!isVenueAddress && (
-        <div className={styles['other-address-wrapper']}>
-          <FormLayout.Row className={styles['location-row']}>
+        <>
+          <FormLayout.Row mdSpaceAfter>
             <TextInput
               {...register('location.label')}
               label="Intitulé de la localisation"
               disabled={isDisabled}
             />
           </FormLayout.Row>
-          <FormLayout.Row>
+          <FormLayout.Row mdSpaceAfter>
             {/*
               TODO (igabriele, 2025-08-25): Investigate ref issue in `AddressSelect`.
 
@@ -155,7 +157,7 @@ export const PhysicalLocationSubform = ({
             />
           </FormLayout.Row>
 
-          <FormLayout.Row className={styles['manual-address-button']}>
+          <FormLayout.Row>
             <Button
               type="button"
               variant={ButtonVariant.TERTIARY}
@@ -177,7 +179,7 @@ export const PhysicalLocationSubform = ({
               readOnlyFields={readOnlyFieldsForAddressManual}
             />
           )}
-        </div>
+        </>
       )}
     </>
   )

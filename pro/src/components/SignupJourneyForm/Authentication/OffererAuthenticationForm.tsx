@@ -73,7 +73,7 @@ export const OffererAuthenticationForm = (): JSX.Element => {
           />
         </FormLayout.Row>
       ) : (
-        <FormLayout.Row mdSpaceAfter className={styles['disabled-row']}>
+        <FormLayout.Row mdSpaceAfter inline>
           <TextInput
             value={offerer?.postalCode}
             name="initial-postalCode"
@@ -130,7 +130,7 @@ export const OffererAuthenticationForm = (): JSX.Element => {
       </FormLayout.Row>
       {shouldDisplayAddress && (
         <>
-          <FormLayout.Row>
+          <FormLayout.Row mdSpaceAfter>
             <AddressSelect
               {...register('addressAutocomplete')}
               label={'Adresse postale'}
@@ -152,7 +152,7 @@ export const OffererAuthenticationForm = (): JSX.Element => {
               }}
             />
           </FormLayout.Row>
-          <FormLayout.Row className={styles['manual-address-button']}>
+          <FormLayout.Row mdSpaceAfter>
             <Button
               type="button"
               variant={ButtonVariant.TERTIARY}
