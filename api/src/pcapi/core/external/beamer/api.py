@@ -12,9 +12,6 @@ type Backend = BeamerBackend | LoggerBackend
 BACKEND_BY_KEY: typing.Final[dict[str, type[Backend]]] = {
     "BeamerBackend": BeamerBackend,
     "LoggerBackend": LoggerBackend,
-    # TODO(vroullier): we keep these imports for now until we have updated the BEAMER_BACKEND setting in each environment
-    "pcapi.connectors.beamer.BeamerBackend": BeamerBackend,
-    "pcapi.connectors.beamer.LoggerBackend": LoggerBackend,
 }
 
 logger = logging.getLogger(__name__)
