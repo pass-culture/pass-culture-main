@@ -577,6 +577,7 @@
                 "type": "object"
             },
             "BookOfferRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "quantity": {
                         "title": "Quantity",
@@ -595,6 +596,7 @@
                 "type": "object"
             },
             "BookOfferResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "bookingId": {
                         "title": "Bookingid",
@@ -668,16 +670,24 @@
                 "type": "object"
             },
             "BookingActivationCodeResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "code": {
                         "title": "Code",
                         "type": "string"
                     },
                     "expirationDate": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Expirationdate",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Expirationdate"
                     }
                 },
                 "required": [
@@ -687,7 +697,6 @@
                 "type": "object"
             },
             "BookingCancellationReasons": {
-                "description": "An enumeration.",
                 "enum": [
                     "OFFERER",
                     "BENEFICIARY",
@@ -707,9 +716,11 @@
                     "OFFERER_CONNECT_AS",
                     "OFFERER_CLOSED"
                 ],
-                "title": "BookingCancellationReasons"
+                "title": "BookingCancellationReasons",
+                "type": "string"
             },
             "BookingDisplayStatusRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "ended": {
                         "title": "Ended",
@@ -941,11 +952,19 @@
                 "type": "object"
             },
             "BookingOfferExtraData": {
+                "additionalProperties": false,
                 "properties": {
                     "ean": {
-                        "nullable": true,
-                        "title": "Ean",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Ean"
                     }
                 },
                 "title": "BookingOfferExtraData",
@@ -963,29 +982,41 @@
                 "type": "object"
             },
             "BookingOfferResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "address": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/BookingOfferResponseAddress"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "BookingOfferResponseAddress"
+                        "default": null
                     },
                     "bookingContact": {
-                        "nullable": true,
-                        "title": "Bookingcontact",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Bookingcontact"
                     },
                     "extraData": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/BookingOfferExtraData"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "BookingOfferExtraData"
+                        "default": null
                     },
                     "id": {
                         "title": "Id",
@@ -994,11 +1025,13 @@
                     "image": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/OfferImageResponseV2"
+                                "$ref": "#/components/schemas/OfferImageResponse"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "OfferImageResponseV2"
+                        "default": null
                     },
                     "isDigital": {
                         "title": "Isdigital",
@@ -1016,30 +1049,54 @@
                         "$ref": "#/components/schemas/SubcategoryIdEnum"
                     },
                     "url": {
-                        "nullable": true,
-                        "title": "Url",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Url"
                     },
                     "venue": {
                         "$ref": "#/components/schemas/BookingVenueResponse"
                     },
                     "withdrawalDelay": {
-                        "nullable": true,
-                        "title": "Withdrawaldelay",
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Withdrawaldelay"
                     },
                     "withdrawalDetails": {
-                        "nullable": true,
-                        "title": "Withdrawaldetails",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Withdrawaldetails"
                     },
                     "withdrawalType": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/WithdrawalTypeEnum"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     }
                 },
                 "required": [
@@ -1054,27 +1111,42 @@
                 "type": "object"
             },
             "BookingOfferResponseAddress": {
+                "additionalProperties": false,
                 "properties": {
                     "city": {
                         "title": "City",
                         "type": "string"
                     },
                     "coordinates": {
-                        "$ref": "#/components/schemas/Coordinates"
+                        "$ref": "#/components/schemas/OfferCoordinatesResponse"
                     },
                     "label": {
-                        "nullable": true,
-                        "title": "Label",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Label"
                     },
                     "postalCode": {
                         "title": "Postalcode",
                         "type": "string"
                     },
                     "street": {
-                        "nullable": true,
-                        "title": "Street",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Street"
                     },
                     "timezone": {
                         "title": "Timezone",
@@ -1206,44 +1278,71 @@
                 "type": "object"
             },
             "BookingReponse": {
+                "additionalProperties": false,
                 "properties": {
                     "activationCode": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/BookingActivationCodeResponse"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "BookingActivationCodeResponse"
+                        "default": null
                     },
                     "canReact": {
                         "title": "Canreact",
                         "type": "boolean"
                     },
                     "cancellationDate": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Cancellationdate",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Cancellationdate"
                     },
                     "cancellationReason": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/BookingCancellationReasons"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     },
                     "completedUrl": {
-                        "nullable": true,
-                        "title": "Completedurl",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Completedurl"
                     },
                     "confirmationDate": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Confirmationdate",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Confirmationdate"
                     },
                     "dateCreated": {
                         "format": "date-time",
@@ -1251,37 +1350,65 @@
                         "type": "string"
                     },
                     "dateUsed": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Dateused",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Dateused"
                     },
                     "enablePopUpReaction": {
                         "title": "Enablepopupreaction",
                         "type": "boolean"
                     },
                     "expirationDate": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Expirationdate",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Expirationdate"
                     },
                     "externalBookings": {
-                        "items": {
-                            "$ref": "#/components/schemas/ExternalBookingResponse"
-                        },
-                        "nullable": true,
-                        "title": "Externalbookings",
-                        "type": "array"
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "$ref": "#/components/schemas/ExternalBookingResponse"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Externalbookings"
                     },
                     "id": {
                         "title": "Id",
                         "type": "integer"
                     },
                     "qrCodeData": {
-                        "nullable": true,
-                        "title": "Qrcodedata",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Qrcodedata"
                     },
                     "quantity": {
                         "title": "Quantity",
@@ -1291,9 +1418,16 @@
                         "$ref": "#/components/schemas/BookingStockResponse"
                     },
                     "token": {
-                        "nullable": true,
-                        "title": "Token",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Token"
                     },
                     "totalAmount": {
                         "title": "Totalamount",
@@ -1303,9 +1437,12 @@
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/ReactionTypeEnum"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     }
                 },
                 "required": [
@@ -1418,12 +1555,20 @@
                 "type": "object"
             },
             "BookingStockResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "beginningDatetime": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Beginningdatetime",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Beginningdatetime"
                     },
                     "features": {
                         "items": {
@@ -1444,9 +1589,16 @@
                         "type": "integer"
                     },
                     "priceCategoryLabel": {
-                        "nullable": true,
-                        "title": "Pricecategorylabel",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Pricecategorylabel"
                     }
                 },
                 "required": [
@@ -1516,11 +1668,19 @@
                 "type": "object"
             },
             "BookingVenueResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "bannerUrl": {
-                        "nullable": true,
-                        "title": "Bannerurl",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Bannerurl"
                     },
                     "id": {
                         "title": "Id",
@@ -1612,6 +1772,7 @@
                 "type": "object"
             },
             "BookingsResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "ended_bookings": {
                         "items": {
@@ -2447,15 +2608,23 @@
                 "type": "object"
             },
             "ExternalBookingResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "barcode": {
                         "title": "Barcode",
                         "type": "string"
                     },
                     "seat": {
-                        "nullable": true,
-                        "title": "Seat",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Seat"
                     }
                 },
                 "required": [
@@ -3698,6 +3867,37 @@
                     "chronicles"
                 ],
                 "title": "OfferChronicles",
+                "type": "object"
+            },
+            "OfferCoordinatesResponse": {
+                "additionalProperties": false,
+                "properties": {
+                    "latitude": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Latitude"
+                    },
+                    "longitude": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Longitude"
+                    }
+                },
+                "title": "OfferCoordinatesResponse",
                 "type": "object"
             },
             "OfferExtraDataResponse": {
@@ -5586,13 +5786,13 @@
                 "type": "object"
             },
             "ReactionTypeEnum": {
-                "description": "An enumeration.",
                 "enum": [
                     "LIKE",
                     "DISLIKE",
                     "NO_REACTION"
                 ],
-                "title": "ReactionTypeEnum"
+                "title": "ReactionTypeEnum",
+                "type": "string"
             },
             "RecommendationApiParams": {
                 "additionalProperties": false,
@@ -6262,7 +6462,6 @@
                 "type": "object"
             },
             "SubcategoryIdEnum": {
-                "description": "An enumeration.",
                 "enum": [
                     "ABO_BIBLIOTHEQUE",
                     "ABO_CONCERT",
@@ -6338,7 +6537,8 @@
                     "VISITE",
                     "VOD"
                 ],
-                "title": "SubcategoryIdEnum"
+                "title": "SubcategoryIdEnum",
+                "type": "string"
             },
             "SubcategoryResponseModelv2": {
                 "properties": {
@@ -7581,14 +7781,14 @@
                 "type": "object"
             },
             "WithdrawalTypeEnum": {
-                "description": "An enumeration.",
                 "enum": [
                     "by_email",
                     "in_app",
                     "no_ticket",
                     "on_site"
                 ],
-                "title": "WithdrawalTypeEnum"
+                "title": "WithdrawalTypeEnum",
+                "type": "string"
             },
             "YoungStatusResponse": {
                 "properties": {

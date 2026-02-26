@@ -1,205 +1,214 @@
-from datetime import datetime
-from typing import Any
+import datetime
 
-from pydantic.v1.class_validators import validator
-from pydantic.v1.utils import GetterDict
+import pydantic as pydantic_v2
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
-from pcapi.core.geography.models import Address
-from pcapi.core.offerers.models import OffererAddress
+from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.reactions.models import ReactionTypeEnum
-from pcapi.routes.native.v1.serialization.common_models import Coordinates
-from pcapi.routes.native.v1.serialization.offers import OfferImageResponseV2
-from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.shared.price import convert_to_cent
-from pcapi.serialization.utils import to_camel
-from pcapi.utils.date import format_into_utc_date
 
 
-class BookOfferRequest(BaseModel):
+class OfferCoordinatesResponse(HttpBodyModel):
+    latitude: float | None = None
+    longitude: float | None = None
+
+
+class OfferImageResponse(HttpBodyModel):
+    url: str
+    credit: str | None = None
+
+
+class BookOfferRequest(HttpBodyModel):
     stock_id: int
     quantity: int
 
-    class Config:
-        alias_generator = to_camel
+
+class BookingDisplayStatusRequest(HttpBodyModel):
+    ended: bool
 
 
-class BookOfferResponse(BaseModel):
-    bookingId: int
+class BookOfferResponse(HttpBodyModel):
+    booking_id: int
 
 
-class BookingVenueResponseGetterDict(GetterDict):
-    def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "name":
-            return self._obj.publicName
-        if key == "timezone":
-            return self._obj.offererAddress.address.timezone
-
-        return super().get(key, default)
-
-
-class BookingVenueResponse(BaseModel):
+class BookingVenueResponse(HttpBodyModel):
     id: int
     name: str
-    publicName: str
+    public_name: str
     timezone: str
-    bannerUrl: str | None
-    isOpenToPublic: bool
+    banner_url: str | None = None
+    is_open_to_public: bool
 
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
-        getter_dict = BookingVenueResponseGetterDict
+    @classmethod
+    def build(cls, venue: Venue) -> "BookingVenueResponse":
+        return cls(
+            id=venue.id,
+            name=venue.publicName,
+            public_name=venue.publicName,
+            timezone=venue.offererAddress.address.timezone,
+            banner_url=venue.bannerUrl,
+            is_open_to_public=venue.isOpenToPublic,
+        )
 
 
-class BookingOfferExtraData(BaseModel):
-    ean: str | None
+class BookingOfferExtraData(HttpBodyModel):
+    ean: str | None = None
 
 
-class BookingOfferResponseAddress(BaseModel):
-    street: str | None
-    postalCode: str
+class BookingOfferResponseAddress(HttpBodyModel):
+    street: str | None = None
+    postal_code: str
     city: str
-    label: str | None
-    coordinates: Coordinates
+    label: str | None = None
+    coordinates: OfferCoordinatesResponse
     timezone: str
 
-    class Config:
-        orm_mode = True
 
+class BookingOfferResponse(HttpBodyModel):
+    id: int
+    address: BookingOfferResponseAddress | None = None
+    booking_contact: str | None = None
+    name: str
+    extra_data: BookingOfferExtraData | None = None
+    image: OfferImageResponse | None = None
+    is_digital: bool
+    is_permanent: bool
+    subcategory_id: SubcategoryIdEnum
+    url: str | None = None
+    venue: BookingVenueResponse
+    withdrawal_details: str | None = None
+    withdrawal_type: WithdrawalTypeEnum | None = None
+    withdrawal_delay: int | None = None
 
-class BookingOfferResponseGetterDict(GetterDict):
-    def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "address":
-            offerer_address: OffererAddress | None
-            if self._obj.offererAddress:
-                offerer_address = self._obj.offererAddress
-            else:
-                offerer_address = self._obj.venue.offererAddress
+    @classmethod
+    def build(cls, offer: Offer) -> "BookingOfferResponse":
+        address_response = None
+        offerer_address = offer.offererAddress or offer.venue.offererAddress
 
-            if not offerer_address:
-                return None
-
-            address: Address = offerer_address.address
-            label = offerer_address.label
-
-            return BookingOfferResponseAddress(
-                street=address.street,
-                postalCode=address.postalCode,
-                city=address.city,
-                label=label,
-                coordinates=Coordinates(latitude=address.latitude, longitude=address.longitude),
-                timezone=address.timezone,
+        if offerer_address:
+            addr = offerer_address.address
+            address_response = BookingOfferResponseAddress(
+                street=addr.street,
+                postal_code=addr.postalCode,
+                city=addr.city,
+                label=offerer_address.label,
+                coordinates=OfferCoordinatesResponse(latitude=addr.latitude, longitude=addr.longitude),
+                timezone=addr.timezone,
             )
 
-        return super().get(key, default)
+        extra_data = None
+        if offer.extraData and offer.extraData.get("ean"):
+            extra_data = BookingOfferExtraData(ean=offer.extraData.get("ean"))
+
+        return cls(
+            id=offer.id,
+            address=address_response,
+            booking_contact=offer.bookingContact,
+            name=offer.name,
+            extra_data=extra_data,
+            image=offer.image,
+            is_digital=offer.isDigital,
+            is_permanent=offer.isPermanent,
+            subcategory_id=offer.subcategoryId,
+            url=offer.url,
+            venue=BookingVenueResponse.build(offer.venue),
+            withdrawal_details=offer.withdrawalDetails,
+            withdrawal_type=offer.withdrawalType,
+            withdrawal_delay=offer.withdrawalDelay,
+        )
 
 
-class BookingOfferResponse(BaseModel):
+class BookingStockResponse(HttpBodyModel):
     id: int
-    address: BookingOfferResponseAddress | None
-    bookingContact: str | None
-    name: str
-    extraData: BookingOfferExtraData | None
-    image: OfferImageResponseV2 | None
-    isDigital: bool
-    isPermanent: bool
-    subcategoryId: SubcategoryIdEnum
-    url: str | None
-    venue: BookingVenueResponse
-    withdrawalDetails: str | None
-    withdrawalType: WithdrawalTypeEnum | None
-    withdrawalDelay: int | None
-
-    class Config:
-        orm_mode = True
-        getter_dict = BookingOfferResponseGetterDict
-
-
-class BookingStockResponse(BaseModel):
-    id: int
-    beginningDatetime: datetime | None
+    beginning_datetime: datetime.datetime | None = None
     features: list[str]
     offer: BookingOfferResponse
     price: int
-    priceCategoryLabel: str | None
-
-    _convert_price = validator("price", pre=True, allow_reuse=True)(convert_to_cent)
-
-    class Config:
-        orm_mode = True
+    price_category_label: str | None = None
 
     @classmethod
-    def from_orm(cls, stock: Stock) -> "BookingStockResponse":
-        stock_response = super().from_orm(stock)
+    def build(cls, stock: Stock) -> "BookingStockResponse":
         price_category = getattr(stock, "priceCategory", None)
-        stock_response.priceCategoryLabel = price_category.priceCategoryLabel.label if price_category else None
-        return stock_response
+        return cls(
+            id=stock.id,
+            beginning_datetime=stock.beginningDatetime,
+            features=stock.features,
+            offer=BookingOfferResponse.build(stock.offer),
+            price=convert_to_cent(stock.price),
+            price_category_label=price_category.priceCategoryLabel.label if price_category else None,
+        )
 
 
-class BookingActivationCodeResponse(BaseModel):
+class BookingActivationCodeResponse(HttpBodyModel):
     code: str
-    expirationDate: datetime | None
-
-    class Config:
-        orm_mode = True
+    expiration_date: datetime.datetime | None = None
 
 
-class ExternalBookingResponse(BaseModel):
+class ExternalBookingResponse(HttpBodyModel):
     barcode: str
-    seat: str | None
-
-    class Config:
-        orm_mode = True
+    seat: str | None = None
 
 
-class BookingReponse(BaseModel):
+class BookingReponse(HttpBodyModel):
     id: int
-    cancellationDate: datetime | None
-    cancellationReason: bookings_models.BookingCancellationReasons | None
-    confirmationDate: datetime | None
-    completedUrl: str | None
-    dateCreated: datetime
-    dateUsed: datetime | None
-    expirationDate: datetime | None
-    qrCodeData: str | None
+    cancellation_date: datetime.datetime | None = None
+    cancellation_reason: bookings_models.BookingCancellationReasons | None = None
+    confirmation_date: datetime.datetime | None = None
+    completed_url: str | None = None
+    date_created: datetime.datetime
+    date_used: datetime.datetime | None = None
+    expiration_date: datetime.datetime | None = None
+    qr_code_data: str | None = None
     quantity: int
     stock: BookingStockResponse
     total_amount: int
-    token: str | None
+    token: str | None = None
     enable_pop_up_reaction: bool
     can_react: bool
-    userReaction: ReactionTypeEnum | None
-    activationCode: BookingActivationCodeResponse | None
-    externalBookings: list[ExternalBookingResponse] | None
-
-    _convert_total_amount = validator("total_amount", pre=True, allow_reuse=True)(convert_to_cent)
+    user_reaction: ReactionTypeEnum | None = None
+    activation_code: BookingActivationCodeResponse | None = None
+    external_bookings: list[ExternalBookingResponse] | None = None
 
     @classmethod
-    def from_orm(cls: Any, booking: bookings_models.Booking) -> "BookingReponse":
-        booking.confirmationDate = booking.cancellationLimitDate
-        serialized = super().from_orm(booking)
-        if booking.isExternal:
-            serialized.token = None
-        return serialized
+    def build(cls, booking: bookings_models.Booking) -> "BookingReponse":
+        token = None if booking.isExternal else booking.token
 
-    class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
+        return cls(
+            id=booking.id,
+            cancellation_date=booking.cancellationDate,
+            cancellation_reason=booking.cancellationReason,
+            confirmation_date=booking.cancellationLimitDate,
+            completed_url=booking.completedUrl,
+            date_created=booking.dateCreated,
+            date_used=booking.dateUsed,
+            expiration_date=booking.expirationDate,
+            qr_code_data=getattr(booking, "qrCodeData", None),
+            quantity=booking.quantity,
+            stock=BookingStockResponse.build(booking.stock),
+            total_amount=convert_to_cent(booking.total_amount),
+            token=token,
+            enable_pop_up_reaction=booking.enable_pop_up_reaction,
+            can_react=booking.can_react,
+            user_reaction=booking.userReaction,
+            activation_code=BookingActivationCodeResponse.model_validate(booking.activationCode)
+            if booking.activationCode
+            else None,
+            external_bookings=[ExternalBookingResponse.model_validate(eb) for eb in booking.externalBookings]
+            if booking.externalBookings
+            else None,
+        )
 
 
-class BookingsResponse(BaseModel):
+class BookingsResponse(HttpBodyModel):
     ended_bookings: list[BookingReponse]
     ongoing_bookings: list[BookingReponse]
     hasBookingsAfter18: bool
 
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
-
-
-class BookingDisplayStatusRequest(BaseModel):
-    ended: bool
+    model_config = pydantic_v2.ConfigDict(
+        alias_generator=None,
+    )

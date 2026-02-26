@@ -1126,7 +1126,7 @@ class GetBookingsTest:
                 "beginningDatetime": None,
                 "features": ["VO"],
                 "id": used2.stock.id,
-                "price": used2.stock.price * 100,
+                "price": 1010,
                 "priceCategoryLabel": None,
                 "offer": {
                     "address": {
@@ -1164,8 +1164,8 @@ class GetBookingsTest:
                 },
             },
             "token": used2.token,
-            "totalAmount": Decimal(1010),
-            "externalBookings": [],
+            "totalAmount": 1010,
+            "externalBookings": None,
         }
 
         for booking in response.json["ongoing_bookings"]:

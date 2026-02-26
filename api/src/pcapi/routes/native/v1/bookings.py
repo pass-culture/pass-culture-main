@@ -104,7 +104,7 @@ def book_offer(body: BookOfferRequest) -> BookOfferResponse:
         raise ApiErrors({"code": "PROVIDER_STOCK_NOT_ENOUGH_SEATS"})
     except external_bookings_exceptions.ExternalBookingShowDoesNotExistError:
         raise ApiErrors({"code": "PROVIDER_SHOW_DOES_NOT_EXIST"})
-    return BookOfferResponse(bookingId=booking.id)
+    return BookOfferResponse(booking_id=booking.id)
 
 
 @blueprint.native_route("/bookings", methods=["GET"])
@@ -115,8 +115,8 @@ def get_bookings() -> BookingsResponse:
     ended_bookings, ongoing_bookings = bookings_api.classify_and_sort_bookings(individual_bookings)
 
     return BookingsResponse(
-        ended_bookings=[BookingReponse.from_orm(booking) for booking in ended_bookings],
-        ongoing_bookings=[BookingReponse.from_orm(booking) for booking in ongoing_bookings],
+        ended_bookings=[BookingReponse.build(booking) for booking in ended_bookings],
+        ongoing_bookings=[BookingReponse.build(booking) for booking in ongoing_bookings],
         hasBookingsAfter18=any(
             booking for booking in individual_bookings if bookings_api.is_booking_by_18_user(booking)
         ),
