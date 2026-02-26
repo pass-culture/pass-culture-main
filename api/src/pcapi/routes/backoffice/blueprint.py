@@ -4,13 +4,16 @@ from spectree import SecurityScheme
 from spectree import SecuritySchemeData
 
 from pcapi import settings
+from pcapi.core.permissions import models as perm_models
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import extra_funcs as extra
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
-from . import menu
-from . import static_utils
-from . import utils
 from .forms import empty as empty_forms
+from .utils import menu
+from .utils import static as static_utils
+from .utils.access_control import _check_any_permission_of
 
 
 BACKOFFICE_WEB_BLUEPRINT_NAME = "backoffice_web"
@@ -49,11 +52,24 @@ backoffice_web_schema.register(backoffice_web)
 def extra_funcs() -> dict:
     return {
         "csrf_token": empty_forms.EmptyForm().csrf_token,
-        "has_permission": utils.has_current_user_permission,
-        "is_feature_active": utils.is_feature_active,
-        "is_user_offerer_action_type": utils.is_user_offerer_action_type,
-        "random_hash": utils.random_hash,
-        "get_setting": utils.get_setting,
+        "has_permission": access_control.has_current_user_permission,
+        "is_feature_active": extra.is_feature_active,
+        "random_hash": extra.random_hash,
+        "get_setting": extra.get_setting,
         "static_hashes": static_utils.get_hashes(),
         "menu": menu.get_menu_sections(),
     }
+
+
+def child_backoffice_blueprint(
+    name: str, import_name: str, url_prefix: str, permission: perm_models.Permissions | None = None
+) -> Blueprint:
+    child_blueprint = Blueprint(name, import_name, url_prefix=url_prefix)
+    backoffice_web.register_blueprint(child_blueprint)
+
+    @child_blueprint.before_request
+    def check_permission() -> None:
+        if permission:
+            _check_any_permission_of((permission,))
+
+    return child_blueprint

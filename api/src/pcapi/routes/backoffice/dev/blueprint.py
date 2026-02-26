@@ -23,8 +23,11 @@ from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import generator as users_generator
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.pro.utils import get_connect_as
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import request as request_utils
+from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.utils import date as date_utils
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
@@ -33,7 +36,7 @@ from . import forms
 
 logger = logging.getLogger(__name__)
 
-dev_blueprint = utils.child_backoffice_blueprint(
+dev_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "dev",
     __name__,
     url_prefix="/dev",
@@ -41,8 +44,8 @@ dev_blueprint = utils.child_backoffice_blueprint(
 
 
 @dev_blueprint.route("/components", methods=["GET"])
-@utils.custom_login_required(redirect_to="backoffice_web.home")
-def components() -> utils.BackofficeResponse:
+@access_control.custom_login_required(redirect_to="backoffice_web.home")
+def components() -> response_utils.BackofficeResponse:
     if not settings.ENABLE_BO_COMPONENT_PAGE:
         raise NotFound()
 
@@ -62,11 +65,11 @@ def components() -> utils.BackofficeResponse:
 
 
 @dev_blueprint.route("/user-generator", methods=["GET"])
-@utils.custom_login_required(redirect_to="backoffice_web.home")
-def get_generated_user() -> utils.BackofficeResponse:
+@access_control.custom_login_required(redirect_to="backoffice_web.home")
+def get_generated_user() -> response_utils.BackofficeResponse:
     form = forms.UserGeneratorForm()
-    user = _get_user_if_exists(utils.get_query_params().get("userId"))
-    token = utils.get_query_params().get("accessToken")
+    user = _get_user_if_exists(request_utils.get_query_params().get("userId"))
+    token = request_utils.get_query_params().get("accessToken")
     link_to_app = None
     link_to_local_app = None
     link_to_ubble_mock = None
@@ -74,7 +77,7 @@ def get_generated_user() -> utils.BackofficeResponse:
         path = "signup-confirmation"
         universal_link_url = f"{settings.WEBAPP_V2_URL}/{path}"
         params = {"token": token}
-        if expiration_timestamp := utils.get_query_params().get("expirationTimestamp"):
+        if expiration_timestamp := request_utils.get_query_params().get("expirationTimestamp"):
             params["expiration_timestamp"] = expiration_timestamp
         if user:
             params["email"] = user.email
@@ -116,13 +119,13 @@ def get_generated_user() -> utils.BackofficeResponse:
 
 
 @dev_blueprint.route("/user-generator", methods=["POST"])
-@utils.custom_login_required(redirect_to="backoffice_web.home")
-def generate_user() -> utils.BackofficeResponse:
+@access_control.custom_login_required(redirect_to="backoffice_web.home")
+def generate_user() -> response_utils.BackofficeResponse:
     form = forms.UserGeneratorForm()
 
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.dev.get_generated_user"), code=303)
 
     # >18yo user cannot be identified with Educonnect
@@ -202,22 +205,22 @@ def _get_user_if_exists(user_id: str | None) -> users_models.User | None:
 
 
 @dev_blueprint.route("/delete", methods=["GET"])
-@utils.custom_login_required(redirect_to="backoffice_web.home")
+@access_control.custom_login_required(redirect_to="backoffice_web.home")
 def get_user_deletion_form() -> str:
     form = forms.UserDeletionForm()
     return render_template("dev/users_deletion.html", form=form)
 
 
 @dev_blueprint.route("/delete", methods=["POST"])
-@utils.custom_login_required(redirect_to="backoffice_web.home")
-def delete_user() -> utils.BackofficeResponse:
+@access_control.custom_login_required(redirect_to="backoffice_web.home")
+def delete_user() -> response_utils.BackofficeResponse:
     if not settings.ENABLE_TEST_USER_GENERATION:
         raise NotFound()
 
     form = forms.UserDeletionForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return render_template("dev/users_deletion.html", form=form), 400
 
     email = form.email.data
@@ -250,8 +253,8 @@ def delete_user() -> utils.BackofficeResponse:
 
 
 @dev_blueprint.route("/<int:user_id>/ubble/configuration", methods=["POST"])
-@utils.custom_login_required(redirect_to=".home")
-def configure_ubble_v2_response(user_id: int) -> utils.BackofficeResponse:
+@access_control.custom_login_required(redirect_to=".home")
+def configure_ubble_v2_response(user_id: int) -> response_utils.BackofficeResponse:
     user = _get_user_if_exists(str(user_id))
     if user is None:
         mark_transaction_as_invalid()
@@ -261,7 +264,7 @@ def configure_ubble_v2_response(user_id: int) -> utils.BackofficeResponse:
     form = forms.UbbleConfigurationForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer or url_for("backoffice_web.dev.get_generated_user"), code=303)
 
     # Ubble response codes can be tested by inserting the ones we want in the external applicant id of the Ubble
@@ -304,8 +307,8 @@ def configure_ubble_v2_response(user_id: int) -> utils.BackofficeResponse:
 
 
 @dev_blueprint.route("/<int:user_id>/api_particulier/quotient_familial/configuration", methods=["POST"])
-@utils.custom_login_required(redirect_to=".home")
-def configure_api_quotient_familial_response(user_id: int) -> utils.BackofficeResponse:
+@access_control.custom_login_required(redirect_to=".home")
+def configure_api_quotient_familial_response(user_id: int) -> response_utils.BackofficeResponse:
     user = _get_user_if_exists(str(user_id))
     if user is None:
         mark_transaction_as_invalid()
@@ -315,7 +318,7 @@ def configure_api_quotient_familial_response(user_id: int) -> utils.BackofficeRe
     form = forms.QuotientFamilialConfigurationForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer or url_for("backoffice_web.dev.get_generated_user"), code=303)
 
     quotient_familial_config_fraud_check = subscription_models.BeneficiaryFraudCheck(

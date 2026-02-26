@@ -4,6 +4,8 @@ import typing
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from flask import flash
+from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.finance import models as finance_models
@@ -134,3 +136,24 @@ def apply_filter_on_beneficiary_status(query: sa_orm.Query, account_search_filte
         or_filters.append(users_models.User.isActive.is_(False))
 
     return query.filter(sa.or_(*or_filters)) if or_filters else query
+
+
+def limit_rows(
+    rows: list[typing.Any], limit: int, sort_key: typing.Callable | None = None, sort_reverse: bool = False
+) -> list[typing.Any]:
+    if len(rows) > limit:
+        # Not sorted by database for performance reasons (query may have to sort millions of matching rows),
+        # so there is no reason to sort random rows from database, which may be confusing for users.
+        flash(
+            Markup(
+                "Il y a plus de {limit} résultats dans la base de données, la liste ci-dessous n'en donne donc "
+                "qu'une partie{sort_info}. Veuillez affiner les filtres de recherche."
+            ).format(limit=limit, sort_info=Markup(", <b>non triés</b>") if sort_key else ""),
+            "info",
+        )
+        return rows[:limit]
+
+    if sort_key:
+        return sorted(rows, key=sort_key, reverse=sort_reverse)
+
+    return rows

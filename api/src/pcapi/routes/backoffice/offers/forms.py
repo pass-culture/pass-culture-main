@@ -19,11 +19,12 @@ from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
-from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import constants
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils as forms_utils
+from pcapi.routes.backoffice.utils import advanced_search
+from pcapi.routes.backoffice.utils import geography
 from pcapi.utils import string as string_utils
 
 
@@ -229,8 +230,8 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
     )
     operator = fields.PCSelectField(
         "Opérateur",
-        choices=forms_utils.choices_from_enum(utils.AdvancedSearchOperators),
-        default=utils.AdvancedSearchOperators.EQUALS,  # avoids empty option
+        choices=forms_utils.choices_from_enum(advanced_search.AdvancedSearchOperators),
+        default=advanced_search.AdvancedSearchOperators.EQUALS,  # avoids empty option
         validators=[
             wtforms.validators.Optional(""),
         ],
@@ -292,7 +293,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
     )
     region = fields.PCSelectMultipleField(
         "Régions",
-        choices=utils.get_regions_choices(),
+        choices=geography.get_regions_choices(),
         search_inline=True,
         field_list_compatibility=True,
     )
@@ -442,8 +443,8 @@ class OfferAlgoliaSearchSubForm(forms_utils.PCForm):
     )
     operator = fields.PCSelectField(
         "Opérateur",
-        choices=forms_utils.choices_from_enum(utils.AdvancedSearchOperators),
-        default=utils.AdvancedSearchOperators.EQUALS,  # avoids empty option
+        choices=forms_utils.choices_from_enum(advanced_search.AdvancedSearchOperators),
+        default=advanced_search.AdvancedSearchOperators.EQUALS,  # avoids empty option
         validators=[
             wtforms.validators.Optional(""),
         ],
@@ -473,7 +474,7 @@ class OfferAlgoliaSearchSubForm(forms_utils.PCForm):
     )
     region = fields.PCSelectMultipleField(
         "Régions",
-        choices=utils.get_regions_choices(),
+        choices=geography.get_regions_choices(),
         search_inline=True,
         field_list_compatibility=True,
     )
@@ -558,8 +559,8 @@ class OfferLlmSearchSubForm(forms_utils.PCForm):
     )
     operator = fields.PCSelectField(
         "Opérateur",
-        choices=forms_utils.choices_from_enum(utils.AdvancedSearchOperators),
-        default=utils.AdvancedSearchOperators.EQUALS,  # avoids empty option
+        choices=forms_utils.choices_from_enum(advanced_search.AdvancedSearchOperators),
+        default=advanced_search.AdvancedSearchOperators.EQUALS,  # avoids empty option
         validators=[
             wtforms.validators.Optional(""),
         ],
@@ -658,7 +659,7 @@ class BaseOfferAdvancedSearchForm(GetOffersBaseFields):
                     if operator not in self.form_field_configuration.get(search_field, {}).get("operator", []):
                         try:
                             errors.append(
-                                f"L'opérateur « {utils.AdvancedSearchOperators[operator].value} » n'est pas supporté par le filtre {IndividualOffersSearchAttributes[search_field].value}."
+                                f"L'opérateur « {advanced_search.AdvancedSearchOperators[operator].value} » n'est pas supporté par le filtre {IndividualOffersSearchAttributes[search_field].value}."
                             )
                         except KeyError:
                             errors.append(f"L'opérateur {operator} n'est pas supporté par le filtre {search_field}.")

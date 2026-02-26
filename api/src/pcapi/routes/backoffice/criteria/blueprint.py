@@ -14,18 +14,20 @@ from pcapi.core.criteria import models as criteria_models
 from pcapi.core.highlights import models as highlights_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
-from pcapi.routes.backoffice import search_utils
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.filters import format_datespan
 from pcapi.routes.backoffice.forms import empty as empty_forms
-from pcapi.routes.backoffice.search_utils import paginate
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import request as request_utils
+from pcapi.routes.backoffice.utils import response as response_utils
+from pcapi.routes.backoffice.utils import search as search_utils
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 from . import forms as criteria_forms
 
 
-tags_blueprint = utils.child_backoffice_blueprint(
+tags_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "tags",
     __name__,
     url_prefix="/tags/",
@@ -38,11 +40,11 @@ def get_tags_categories() -> list[criteria_models.CriterionCategory]:
 
 
 @tags_blueprint.route("", methods=["GET"])
-def list_tags() -> utils.BackofficeResponse:
-    form = criteria_forms.SearchTagForm(formdata=utils.get_query_params())
+def list_tags() -> response_utils.BackofficeResponse:
+    form = criteria_forms.SearchTagForm(formdata=request_utils.get_query_params())
     create_category_form = (
         criteria_forms.CreateCriterionCategoryForm()
-        if utils.has_current_user_permission(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
+        if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
         else None
     )
 
@@ -61,7 +63,7 @@ def list_tags() -> utils.BackofficeResponse:
             )
         code = 200
 
-    paginated_tags = paginate(
+    paginated_tags = search_utils.paginate(
         query=query.order_by(criteria_models.Criterion.name),
         page=int(form.page.data),
         per_page=int(form.per_page.data),
@@ -88,13 +90,13 @@ def list_tags() -> utils.BackofficeResponse:
 
 
 @tags_blueprint.route("/create", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
-def create_tag() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
+def create_tag() -> response_utils.BackofficeResponse:
     form = criteria_forms.EditCriterionForm()
     form.categories.choices = [(cat.id, cat.label) for cat in get_tags_categories()]
 
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.tags.list_tags"), code=303)
 
     try:
@@ -119,8 +121,8 @@ def create_tag() -> utils.BackofficeResponse:
 
 
 @tags_blueprint.route("/tags/new", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
-def get_create_tag_form() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
+def get_create_tag_form() -> response_utils.BackofficeResponse:
     form = criteria_forms.EditCriterionForm()
     form.categories.choices = [(cat.id, cat.label) for cat in get_tags_categories()]
 
@@ -136,8 +138,8 @@ def get_create_tag_form() -> utils.BackofficeResponse:
 
 
 @tags_blueprint.route("/<int:tag_id>/update", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
-def update_tag(tag_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
+def update_tag(tag_id: int) -> response_utils.BackofficeResponse:
     tag = db.session.query(criteria_models.Criterion).filter_by(id=tag_id).one_or_none()
     if not tag:
         raise NotFound()
@@ -146,7 +148,7 @@ def update_tag(tag_id: int) -> utils.BackofficeResponse:
     form.categories.choices = [(cat.id, cat.label) for cat in get_tags_categories()]
 
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.tags.list_tags"), code=303)
 
     tag.name = form.name.data
@@ -169,8 +171,8 @@ def update_tag(tag_id: int) -> utils.BackofficeResponse:
 
 
 @tags_blueprint.route("/<int:tag_id>/edit", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
-def get_update_tag_form(tag_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
+def get_update_tag_form(tag_id: int) -> response_utils.BackofficeResponse:
     tag = db.session.query(criteria_models.Criterion).filter_by(id=tag_id).one_or_none()
     if not tag:
         raise NotFound()
@@ -205,8 +207,8 @@ def get_update_tag_form(tag_id: int) -> utils.BackofficeResponse:
 
 
 @tags_blueprint.route("/<int:tag_id>/delete", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
-def delete_tag(tag_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
+def delete_tag(tag_id: int) -> response_utils.BackofficeResponse:
     tag = db.session.query(criteria_models.Criterion).filter_by(id=tag_id).one_or_none()
     if not tag:
         raise NotFound()
@@ -223,8 +225,8 @@ def delete_tag(tag_id: int) -> utils.BackofficeResponse:
 
 
 @tags_blueprint.route("/<int:tag_id>/delete", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
-def get_delete_tag_form(tag_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
+def get_delete_tag_form(tag_id: int) -> response_utils.BackofficeResponse:
     tag = db.session.query(criteria_models.Criterion).filter_by(id=tag_id).one_or_none()
     if not tag:
         raise NotFound()
@@ -247,12 +249,12 @@ def get_delete_tag_form(tag_id: int) -> utils.BackofficeResponse:
 
 
 @tags_blueprint.route("/tags/category", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
-def create_tag_category() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
+def create_tag_category() -> response_utils.BackofficeResponse:
     form = criteria_forms.CreateCriterionCategoryForm()
 
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.tags.list_tags", active_tab="categories"), code=303)
 
     try:

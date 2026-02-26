@@ -4,7 +4,7 @@ from werkzeug.exceptions import NotFound
 from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.models import db
-from pcapi.routes.backoffice import search_utils
+from pcapi.routes.backoffice.utils import search as search_utils
 
 
 pytestmark = [

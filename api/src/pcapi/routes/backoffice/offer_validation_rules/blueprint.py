@@ -19,15 +19,17 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice import autocomplete
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.routes.backoffice.utils import request as request_utils
+from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
-from .. import utils
 from . import forms
 
 
-offer_validation_rules_blueprint = utils.child_backoffice_blueprint(
+offer_validation_rules_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "offer_validation_rules",
     __name__,
     url_prefix="/offer-validation-rules",
@@ -96,8 +98,8 @@ def _get_venues_data_for_rules(rules: list[offers_models.OfferValidationRule]) -
 
 
 @offer_validation_rules_blueprint.route("", methods=["GET"])
-def list_rules() -> utils.BackofficeResponse:
-    form = forms.SearchRuleForm(formdata=utils.get_query_params())
+def list_rules() -> response_utils.BackofficeResponse:
+    form = forms.SearchRuleForm(formdata=request_utils.get_query_params())
 
     query = (
         db.session.query(offers_models.OfferValidationRule)
@@ -219,7 +221,7 @@ class SubRuleHistorySerializer:
 
 
 @offer_validation_rules_blueprint.route("/history", methods=["GET"])
-def get_rules_history() -> utils.BackofficeResponse:
+def get_rules_history() -> response_utils.BackofficeResponse:
     actions_history = (
         db.session.query(history_models.ActionHistory)
         .filter(history_models.ActionHistory.ruleId.is_not(None))
@@ -311,7 +313,7 @@ def _get_venues_data_for_rule_history(rules_history: list[history_models.ActionH
 
 
 @offer_validation_rules_blueprint.route("/create", methods=["GET"])
-def get_create_offer_validation_rule_form() -> utils.BackofficeResponse:
+def get_create_offer_validation_rule_form() -> response_utils.BackofficeResponse:
     form = forms.CreateOfferValidationRuleForm()
 
     return render_template(
@@ -326,11 +328,11 @@ def get_create_offer_validation_rule_form() -> utils.BackofficeResponse:
 
 
 @offer_validation_rules_blueprint.route("/create", methods=["POST"])
-def create_rule() -> utils.BackofficeResponse:
+def create_rule() -> response_utils.BackofficeResponse:
     form = forms.CreateOfferValidationRuleForm()
 
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         mark_transaction_as_invalid()
         return redirect(url_for("backoffice_web.offer_validation_rules.list_rules"), code=303)
 
@@ -379,7 +381,7 @@ def create_rule() -> utils.BackofficeResponse:
 
 
 @offer_validation_rules_blueprint.route("/<int:rule_id>/delete", methods=["GET"])
-def get_delete_offer_validation_rule_form(rule_id: int) -> utils.BackofficeResponse:
+def get_delete_offer_validation_rule_form(rule_id: int) -> response_utils.BackofficeResponse:
     rule_to_delete = db.session.query(offers_models.OfferValidationRule).filter_by(id=rule_id).one_or_none()
     if not rule_to_delete:
         mark_transaction_as_invalid()
@@ -401,7 +403,7 @@ def get_delete_offer_validation_rule_form(rule_id: int) -> utils.BackofficeRespo
 
 
 @offer_validation_rules_blueprint.route("/<int:rule_id>/delete", methods=["POST"])
-def delete_rule(rule_id: int) -> utils.BackofficeResponse:
+def delete_rule(rule_id: int) -> response_utils.BackofficeResponse:
     rule_to_delete = db.session.query(offers_models.OfferValidationRule).filter_by(id=rule_id).one_or_none()
     if not rule_to_delete:
         mark_transaction_as_invalid()
@@ -438,7 +440,7 @@ def delete_rule(rule_id: int) -> utils.BackofficeResponse:
 
 
 @offer_validation_rules_blueprint.route("/<int:rule_id>/edit", methods=["GET"])
-def get_edit_offer_validation_rule_form(rule_id: int) -> utils.BackofficeResponse:
+def get_edit_offer_validation_rule_form(rule_id: int) -> response_utils.BackofficeResponse:
     rule_to_update = db.session.query(offers_models.OfferValidationRule).filter_by(id=rule_id).one_or_none()
     if not rule_to_update:
         mark_transaction_as_invalid()
@@ -486,7 +488,7 @@ def get_edit_offer_validation_rule_form(rule_id: int) -> utils.BackofficeRespons
 
 
 @offer_validation_rules_blueprint.route("/<int:rule_id>/edit", methods=["POST"])
-def edit_rule(rule_id: int) -> utils.BackofficeResponse:
+def edit_rule(rule_id: int) -> response_utils.BackofficeResponse:
     rule_to_update = db.session.query(offers_models.OfferValidationRule).filter_by(id=rule_id).one_or_none()
     if not rule_to_update:
         mark_transaction_as_invalid()
@@ -495,7 +497,7 @@ def edit_rule(rule_id: int) -> utils.BackofficeResponse:
     form = forms.CreateOfferValidationRuleForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.offer_validation_rules.list_rules"), code=303)
 
     sub_rules_info: dict[str, list] = {"sub_rules_deleted": [], "sub_rules_created": [], "sub_rules_modified": []}

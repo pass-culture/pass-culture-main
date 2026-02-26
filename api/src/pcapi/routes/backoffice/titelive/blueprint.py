@@ -19,14 +19,17 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers.titelive_book_search import get_ineligibility_reasons
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import request as request_utils
+from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.utils import requests
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
-from .. import utils
 from . import forms
 
 
-titelive_blueprint = utils.child_backoffice_blueprint(
+titelive_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "titelive",
     __name__,
     url_prefix="/catalogue/titelive",
@@ -35,13 +38,13 @@ titelive_blueprint = utils.child_backoffice_blueprint(
 
 
 @titelive_blueprint.route("/", methods=["GET"])
-def search_titelive() -> utils.BackofficeResponse:
+def search_titelive() -> response_utils.BackofficeResponse:
     if not request.args:
         return render_template(
             "titelive/search_result.html", form=forms.SearchEanForm(), dst=url_for(".search_titelive")
         )
 
-    form = forms.SearchEanForm(formdata=utils.get_query_params())
+    form = forms.SearchEanForm(formdata=request_utils.get_query_params())
 
     if not form.validate():
         return render_template("titelive/search_result.html", form=form, dst=url_for(".search_titelive")), 400
@@ -94,8 +97,8 @@ def search_titelive() -> utils.BackofficeResponse:
 
 
 @titelive_blueprint.route("/<string:ean>/<string:title>/add-product-whitelist-confirmation-form", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def get_add_product_whitelist_confirmation_form(ean: str, title: str) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_add_product_whitelist_confirmation_form(ean: str, title: str) -> response_utils.BackofficeResponse:
     form = forms.OptionalCommentForm()
     return render_template(
         "components/dynamic/modal_form.html",
@@ -109,8 +112,8 @@ def get_add_product_whitelist_confirmation_form(ean: str, title: str) -> utils.B
 
 
 @titelive_blueprint.route("/<string:ean>/<string:title>/add", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def add_product_whitelist(ean: str, title: str) -> response_utils.BackofficeResponse:
     form = forms.OptionalCommentForm()
     try:
         product = offers_api.whitelist_product(ean)
@@ -152,8 +155,8 @@ def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
 
 
 @titelive_blueprint.route("/<string:ean>/delete", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def delete_product_whitelist(ean: str) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def delete_product_whitelist(ean: str) -> response_utils.BackofficeResponse:
     try:
         product_whitelist = (
             db.session.query(fraud_models.ProductWhitelist)

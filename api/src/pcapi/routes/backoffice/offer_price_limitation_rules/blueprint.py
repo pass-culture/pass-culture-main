@@ -12,15 +12,17 @@ from pcapi.core.categories import subcategories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.filters import format_offer_subcategory
 from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.routes.backoffice.utils import request as request_utils
+from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
-from .. import utils
 from . import forms
 
 
-offer_price_limitation_rules_blueprint = utils.child_backoffice_blueprint(
+offer_price_limitation_rules_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "offer_price_limitation_rules",
     __name__,
     url_prefix="/offer-price-limitation-rules",
@@ -29,8 +31,8 @@ offer_price_limitation_rules_blueprint = utils.child_backoffice_blueprint(
 
 
 @offer_price_limitation_rules_blueprint.route("", methods=["GET"])
-def list_rules() -> utils.BackofficeResponse:
-    form = forms.SearchRuleForm(formdata=utils.get_query_params())
+def list_rules() -> response_utils.BackofficeResponse:
+    form = forms.SearchRuleForm(formdata=request_utils.get_query_params())
 
     if not form.validate():
         return (
@@ -72,7 +74,7 @@ def list_rules() -> utils.BackofficeResponse:
 
 
 @offer_price_limitation_rules_blueprint.route("/create", methods=["GET"])
-def get_create_offer_price_limitation_rule_form() -> utils.BackofficeResponse:
+def get_create_offer_price_limitation_rule_form() -> response_utils.BackofficeResponse:
     form = forms.CreateOfferPriceLimitationRuleForm()
 
     return render_template(
@@ -87,11 +89,11 @@ def get_create_offer_price_limitation_rule_form() -> utils.BackofficeResponse:
 
 
 @offer_price_limitation_rules_blueprint.route("/create", methods=["POST"])
-def create_rule() -> utils.BackofficeResponse:
+def create_rule() -> response_utils.BackofficeResponse:
     form = forms.CreateOfferPriceLimitationRuleForm()
 
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.offer_price_limitation_rules.list_rules"), code=303)
 
     rate = Decimal(form.rate.data / 100).quantize(Decimal("0.0001"))
@@ -109,7 +111,7 @@ def create_rule() -> utils.BackofficeResponse:
 
 
 @offer_price_limitation_rules_blueprint.route("/<int:rule_id>/delete", methods=["GET"])
-def get_delete_offer_price_limitation_rule_form(rule_id: int) -> utils.BackofficeResponse:
+def get_delete_offer_price_limitation_rule_form(rule_id: int) -> response_utils.BackofficeResponse:
     rule_to_delete = db.session.query(offers_models.OfferPriceLimitationRule).filter_by(id=rule_id).one_or_none()
     if not rule_to_delete:
         raise NotFound()
@@ -129,7 +131,7 @@ def get_delete_offer_price_limitation_rule_form(rule_id: int) -> utils.Backoffic
 
 
 @offer_price_limitation_rules_blueprint.route("/<int:rule_id>/delete", methods=["POST"])
-def delete_rule(rule_id: int) -> utils.BackofficeResponse:
+def delete_rule(rule_id: int) -> response_utils.BackofficeResponse:
     rule_to_delete = db.session.query(offers_models.OfferPriceLimitationRule).filter_by(id=rule_id).one_or_none()
     if not rule_to_delete:
         raise NotFound()
@@ -148,7 +150,7 @@ def delete_rule(rule_id: int) -> utils.BackofficeResponse:
 
 
 @offer_price_limitation_rules_blueprint.route("/<int:rule_id>/edit", methods=["GET"])
-def get_edit_offer_price_limitation_rule_form(rule_id: int) -> utils.BackofficeResponse:
+def get_edit_offer_price_limitation_rule_form(rule_id: int) -> response_utils.BackofficeResponse:
     rule_to_update = db.session.query(offers_models.OfferPriceLimitationRule).filter_by(id=rule_id).one_or_none()
     if not rule_to_update:
         raise NotFound()
@@ -168,14 +170,14 @@ def get_edit_offer_price_limitation_rule_form(rule_id: int) -> utils.BackofficeR
 
 
 @offer_price_limitation_rules_blueprint.route("/<int:rule_id>/edit", methods=["POST"])
-def edit_rule(rule_id: int) -> utils.BackofficeResponse:
+def edit_rule(rule_id: int) -> response_utils.BackofficeResponse:
     rule_to_update = db.session.query(offers_models.OfferPriceLimitationRule).filter_by(id=rule_id).one_or_none()
     if not rule_to_update:
         raise NotFound()
 
     form = forms.EditOfferPriceLimitationRuleForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.offer_price_limitation_rules.list_rules"), code=303)
 
     rate = Decimal(form.rate.data / 100).quantize(Decimal("0.0001"))

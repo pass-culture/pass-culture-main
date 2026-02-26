@@ -21,10 +21,12 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.routes.serialization import reimbursement_csv_serialize
 from pcapi.utils import date as date_utils
 from pcapi.utils import urls
@@ -33,7 +35,7 @@ from pcapi.utils.human_ids import humanize
 from . import forms
 
 
-bank_blueprint = utils.child_backoffice_blueprint(
+bank_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "bank_account",
     __name__,
     url_prefix="/pro/bank-account",
@@ -44,7 +46,7 @@ bank_blueprint = utils.child_backoffice_blueprint(
 def render_bank_account_details(
     bank_account: finance_models.BankAccount, edit_form: forms.EditBankAccountForm | None = None
 ) -> str:
-    if not edit_form and utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY):
+    if not edit_form and access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY):
         edit_form = forms.EditBankAccountForm(label=bank_account.label)
 
     try:
@@ -73,7 +75,7 @@ def render_bank_account_details(
 
 
 @bank_blueprint.route("/<int:bank_account_id>", methods=["GET"])
-def get(bank_account_id: int) -> utils.BackofficeResponse:
+def get(bank_account_id: int) -> response_utils.BackofficeResponse:
     bank_account = (
         db.session.query(finance_models.BankAccount)
         .filter(finance_models.BankAccount.id == bank_account_id)
@@ -89,7 +91,7 @@ def get(bank_account_id: int) -> utils.BackofficeResponse:
 
 
 @bank_blueprint.route("/<int:bank_account_id>/linked_venues", methods=["GET"])
-def get_linked_venues(bank_account_id: int) -> utils.BackofficeResponse:
+def get_linked_venues(bank_account_id: int) -> response_utils.BackofficeResponse:
     linked_venues = (
         db.session.query(offerers_models.VenueBankAccountLink)
         .filter(
@@ -126,7 +128,7 @@ def get_linked_venues(bank_account_id: int) -> utils.BackofficeResponse:
 
 
 @bank_blueprint.route("/<int:bank_account_id>/history", methods=["GET"])
-def get_history(bank_account_id: int) -> utils.BackofficeResponse:
+def get_history(bank_account_id: int) -> response_utils.BackofficeResponse:
     actions_history = (
         db.session.query(history_models.ActionHistory)
         .filter_by(bankAccountId=bank_account_id)
@@ -155,7 +157,7 @@ def get_history(bank_account_id: int) -> utils.BackofficeResponse:
 
 
 @bank_blueprint.route("/<int:bank_account_id>/invoices", methods=["GET"])
-def get_invoices(bank_account_id: int) -> utils.BackofficeResponse:
+def get_invoices(bank_account_id: int) -> response_utils.BackofficeResponse:
     invoices = (
         db.session.query(finance_models.Invoice)
         .filter(finance_models.Invoice.bankAccountId == bank_account_id)
@@ -180,10 +182,10 @@ def get_invoices(bank_account_id: int) -> utils.BackofficeResponse:
 
 
 @bank_blueprint.route("/<int:bank_account_id>/reimbursement-details", methods=["POST"])
-def download_reimbursement_details(bank_account_id: int) -> utils.BackofficeResponse:
+def download_reimbursement_details(bank_account_id: int) -> response_utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(
             request.referrer or url_for("backoffice_web.bank_account.get", bank_account_id=bank_account_id), code=303
         )
@@ -206,8 +208,8 @@ def download_reimbursement_details(bank_account_id: int) -> utils.BackofficeResp
 
 
 @bank_blueprint.route("/<int:bank_account_id>", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-def update_bank_account(bank_account_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def update_bank_account(bank_account_id: int) -> response_utils.BackofficeResponse:
     bank_account = (
         db.session.query(finance_models.BankAccount)
         .filter_by(id=bank_account_id)

@@ -58,11 +58,13 @@ from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.feature import DisabledFeatureError
 from pcapi.routes.backoffice import autocomplete
-from pcapi.routes.backoffice import search_utils
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.bookings import helpers as booking_helpers
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.users import forms as user_forms
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import response as response_utils
+from pcapi.routes.backoffice.utils import search as search_utils
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 from pcapi.utils.transaction_manager import atomic
@@ -75,7 +77,7 @@ from . import serialization
 
 OptionableType = typing.TypeVar("OptionableType", bound="sa.orm.Query | sa.orm.strategy_options._AbstractLoad")
 
-public_accounts_blueprint = utils.child_backoffice_blueprint(
+public_accounts_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "public_accounts",
     __name__,
     url_prefix="/public-accounts",
@@ -116,8 +118,8 @@ def _load_current_deposit_data(query: sa_orm.Query, join_needed: bool = True) ->
 
 
 @public_accounts_blueprint.route("<int:user_id>/tags", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_ACCOUNT_TAGS)
-def tag_public_account(user_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_ACCOUNT_TAGS)
+def tag_public_account(user_id: int) -> response_utils.BackofficeResponse:
     user = (
         db.session.query(users_models.User)
         .filter(users_models.User.id == user_id)
@@ -132,7 +134,7 @@ def tag_public_account(user_id: int) -> utils.BackofficeResponse:
 
     form = account_forms.TagAccountForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for(".get_public_account", user_id=user_id), code=303)
 
     old_tags = {str(tag) for tag in user.tags}
@@ -159,8 +161,8 @@ def tag_public_account(user_id: int) -> utils.BackofficeResponse:
 
 
 @public_accounts_blueprint.route("<int:user_id>/anonymize", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT)
-def anonymize_public_account(user_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT)
+def anonymize_public_account(user_id: int) -> response_utils.BackofficeResponse:
     user = (
         db.session.query(users_models.User)
         .filter_by(id=user_id)
@@ -176,7 +178,7 @@ def anonymize_public_account(user_id: int) -> utils.BackofficeResponse:
 
     form = empty_forms.EmptyForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.public_accounts.get_public_account", user_id=user_id), code=303)
 
     if gdpr_api.has_unprocessed_extract(user):
@@ -223,7 +225,7 @@ def _pre_anonymize_user(user: users_models.User, author: users_models.User) -> N
 
 
 @public_accounts_blueprint.route("/search", methods=["GET"])
-def search_public_accounts() -> utils.BackofficeResponse:
+def search_public_accounts() -> response_utils.BackofficeResponse:
     """
     Renders two search pages: first the one with the search form, then
     the one of the results.
@@ -234,7 +236,7 @@ def search_public_accounts() -> utils.BackofficeResponse:
     form = account_forms.AccountSearchForm(request.args)
     form.tag.choices = [(tag.id, str(tag)) for tag in get_user_tags()]
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return render_search_template(form), 400
 
     users_query = users_api.search_public_account(form.q.data)
@@ -427,7 +429,7 @@ def render_public_account_details(
 
     kwargs: dict[str, typing.Any] = {}
 
-    if utils.has_current_user_permission(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT):
+    if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT):
         if not edit_account_form:
             edit_account_form = account_forms.EditAccountForm(
                 last_name=user.lastName,
@@ -447,10 +449,10 @@ def render_public_account_details(
                 marketing_email_subscription=user.get_notification_subscriptions().marketing_email,
             )
         extract_user_form = None
-        if utils.has_current_user_permission(perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT):
+        if access_control.has_current_user_permission(perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT):
             if user.is_beneficiary or user.roles == []:
                 extract_user_form = empty_forms.EmptyForm()
-        if utils.has_current_user_permission(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT):
+        if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT):
             kwargs.update(
                 {
                     "password_reset_dst": url_for(".send_public_account_reset_password_email", user_id=user.id),
@@ -461,10 +463,10 @@ def render_public_account_details(
             )
 
         manual_review_form = None
-        if utils.has_current_user_permission(perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW):
+        if access_control.has_current_user_permission(perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW):
             manual_review_form = account_forms.ManualReviewForm()
 
-        can_request_bonus_credit = utils.has_current_user_permission(
+        can_request_bonus_credit = access_control.has_current_user_permission(
             perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT
         ) and users_api.get_user_is_eligible_for_bonification(user, is_from_backoffice=True)
 
@@ -485,7 +487,7 @@ def render_public_account_details(
             kwargs["resend_email_validation_form"] = empty_forms.EmptyForm()
 
     if (
-        utils.has_current_user_permission(perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT)
+        access_control.has_current_user_permission(perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT)
         and not gdpr_api.has_user_pending_anonymization(user_id)
         and users_models.UserRole.ANONYMIZED not in user.roles
     ):
@@ -506,7 +508,7 @@ def render_public_account_details(
     is_user_expired = users_api.has_profile_expired(user)
 
     search_form = account_forms.AccountSearchForm()  # values taken from request
-    if utils.has_current_user_permission(perm_models.Permissions.MANAGE_ACCOUNT_TAGS):
+    if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_ACCOUNT_TAGS):
         tag_account_form = account_forms.TagAccountForm(tags=user.tags)
         kwargs["tag_public_account_form"] = tag_account_form
         kwargs["tag_public_account_dst"] = url_for(".tag_public_account", user_id=user.id)
@@ -1530,14 +1532,14 @@ def _get_progress(steps: list[RegistrationStep]) -> float:
 
 
 @public_accounts_blueprint.route("/<int:user_id>", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
-def get_public_account(user_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
+def get_public_account(user_id: int) -> response_utils.BackofficeResponse:
     return render_public_account_details(user_id)
 
 
 @public_accounts_blueprint.route("/<int:user_id>", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
-def update_public_account(user_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
+def update_public_account(user_id: int) -> response_utils.BackofficeResponse:
     user = (
         db.session.query(users_models.User)
         .filter_by(id=user_id)
@@ -1626,8 +1628,8 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
 
 
 @public_accounts_blueprint.route("/<int:user_id>/resend-validation-email", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
-def resend_validation_email(user_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
+def resend_validation_email(user_id: int) -> response_utils.BackofficeResponse:
     user = db.session.query(users_models.User).filter_by(id=user_id).one_or_none()
     if not user:
         raise NotFound()
@@ -1644,8 +1646,8 @@ def resend_validation_email(user_id: int) -> utils.BackofficeResponse:
 
 
 @public_accounts_blueprint.route("/<int:user_id>/validate-phone-number", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
-def manually_validate_phone_number(user_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
+def manually_validate_phone_number(user_id: int) -> response_utils.BackofficeResponse:
     user = (
         db.session.query(users_models.User)
         .filter_by(id=user_id)
@@ -1681,8 +1683,8 @@ def manually_validate_phone_number(user_id: int) -> utils.BackofficeResponse:
 
 
 @public_accounts_blueprint.route("/<int:user_id>/send-validation-code", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
-def send_validation_code(user_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
+def send_validation_code(user_id: int) -> response_utils.BackofficeResponse:
     user = (
         db.session.query(users_models.User)
         .filter_by(id=user_id)
@@ -1729,8 +1731,8 @@ def send_validation_code(user_id: int) -> utils.BackofficeResponse:
 
 
 @public_accounts_blueprint.route("/<int:user_id>/review", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW)
-def review_public_account(user_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW)
+def review_public_account(user_id: int) -> response_utils.BackofficeResponse:
     user = (
         db.session.query(users_models.User)
         .filter_by(id=user_id)
@@ -1744,7 +1746,7 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
 
     form = account_forms.ManualReviewForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.public_accounts.get_public_account", user_id=user_id), code=303)
 
     eligibility = users_models.EligibilityType[form.eligibility.data]
@@ -1803,8 +1805,8 @@ def _fetch_user_for_bonus(user_id: int) -> users_models.User:
 
 
 @public_accounts_blueprint.route("/<int:user_id>/bonus", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT)
-def get_request_bonus_credit_form(user_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT)
+def get_request_bonus_credit_form(user_id: int) -> response_utils.BackofficeResponse:
     user = _fetch_user_for_bonus(user_id)
 
     if not users_api.get_user_is_eligible_for_bonification(user, is_from_backoffice=True):
@@ -1851,8 +1853,8 @@ def get_request_bonus_credit_form(user_id: int) -> utils.BackofficeResponse:
 
 
 @public_accounts_blueprint.route("/<int:user_id>/bonus", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT)
-def request_bonus_credit(user_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT)
+def request_bonus_credit(user_id: int) -> response_utils.BackofficeResponse:
     user = _fetch_user_for_bonus(user_id)
 
     if not users_api.get_user_is_eligible_for_bonification(user, is_from_backoffice=True):
@@ -1862,7 +1864,7 @@ def request_bonus_credit(user_id: int) -> utils.BackofficeResponse:
 
     form = account_forms.BonusCreditRequestForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(get_public_account_link(user_id), code=303)
 
     fraud_check = bonus_fraud_api.create_bonus_credit_fraud_check(
@@ -1885,8 +1887,8 @@ def request_bonus_credit(user_id: int) -> utils.BackofficeResponse:
 
 
 @public_accounts_blueprint.route("/<int:user_id>/comment", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
-def comment_public_account(user_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
+def comment_public_account(user_id: int) -> response_utils.BackofficeResponse:
     user = (
         db.session.query(users_models.User)
         .filter_by(id=user_id)
@@ -1899,7 +1901,7 @@ def comment_public_account(user_id: int) -> utils.BackofficeResponse:
 
     form = account_forms.CommentForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
     else:
         users_api.add_comment_to_user(user=user, author_user=current_user, comment=form.comment.data)
         flash("Le commentaire a été enregistré", "success")
@@ -2065,7 +2067,7 @@ def get_public_account_history(
 
 
 @public_accounts_blueprint.route("/<int:user_id>/activity", methods=["GET"])
-def get_public_account_activity(user_id: int) -> utils.BackofficeResponse:
+def get_public_account_activity(user_id: int) -> response_utils.BackofficeResponse:
     activity: list[serialization.BeneficiaryActivity] = []
 
     special_event_responses = (
@@ -2118,8 +2120,8 @@ def get_public_account_activity(user_id: int) -> utils.BackofficeResponse:
 
 
 @public_accounts_blueprint.route("/<int:user_id>/gdpr-extract", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT)
-def create_extract_user_gdpr_data(user_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT)
+def create_extract_user_gdpr_data(user_id: int) -> response_utils.BackofficeResponse:
     user = (
         db.session.query(users_models.User)
         .filter(
@@ -2162,8 +2164,8 @@ def has_gdpr_extract(user: users_models.User) -> bool:
 
 
 @public_accounts_blueprint.route("/<int:user_id>/invalidate-password", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
-def invalidate_public_account_password(user_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
+def invalidate_public_account_password(user_id: int) -> response_utils.BackofficeResponse:
     user = db.session.query(users_models.User).filter(users_models.User.id == user_id).one_or_none()
     if not user:
         raise NotFound()
@@ -2179,8 +2181,8 @@ def invalidate_public_account_password(user_id: int) -> utils.BackofficeResponse
 
 
 @public_accounts_blueprint.route("/<int:user_id>/send-reset-password-email", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
-def send_public_account_reset_password_email(user_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
+def send_public_account_reset_password_email(user_id: int) -> response_utils.BackofficeResponse:
     user = db.session.query(users_models.User).filter(users_models.User.id == user_id).one_or_none()
     if not user:
         raise NotFound()
@@ -2194,7 +2196,7 @@ def send_public_account_reset_password_email(user_id: int) -> utils.BackofficeRe
     return redirect(get_public_account_link(user_id, active_tab="history"), code=303)
 
 
-def _render_individual_bookings(bookings_ids: list[int] | None = None) -> utils.BackofficeResponse:
+def _render_individual_bookings(bookings_ids: list[int] | None = None) -> response_utils.BackofficeResponse:
     bookings: list[bookings_models.Booking] = []
     if bookings_ids:
         query = db.session.query(bookings_models.Booking).filter(
@@ -2209,11 +2211,11 @@ def _render_individual_bookings(bookings_ids: list[int] | None = None) -> utils.
 
 
 @public_accounts_blueprint.route("/bookings/<int:booking_id>/mark-as-fraudulent", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_FRAUDULENT_BOOKING_INFO)
-def mark_booking_as_fraudulent(booking_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_FRAUDULENT_BOOKING_INFO)
+def mark_booking_as_fraudulent(booking_id: int) -> response_utils.BackofficeResponse:
     form = account_forms.TagFraudulentBookingsForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _render_individual_bookings()
 
     booking_helpers.tag_bookings_as_fraudulent(bookings_ids=[booking_id], send_emails=form.send_mails.data)
@@ -2222,12 +2224,12 @@ def mark_booking_as_fraudulent(booking_id: int) -> utils.BackofficeResponse:
 
 
 @public_accounts_blueprint.route("/bookings/<int:booking_id>/mark-as-not-fraudulent", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_FRAUDULENT_BOOKING_INFO)
-def mark_booking_as_not_fraudulent(booking_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_FRAUDULENT_BOOKING_INFO)
+def mark_booking_as_not_fraudulent(booking_id: int) -> response_utils.BackofficeResponse:
     form = empty_forms.EmptyForm()
 
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _render_individual_bookings()
 
     db.session.query(bookings_models.FraudulentBookingTag).filter(

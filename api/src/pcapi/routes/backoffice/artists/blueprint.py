@@ -21,14 +21,19 @@ from pcapi.core.search import async_index_offer_ids
 from pcapi.core.search import async_index_offers_of_artist_ids
 from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import advanced_search
+from pcapi.routes.backoffice.utils import request as request_utils
+from pcapi.routes.backoffice.utils import response as response_utils
+from pcapi.routes.backoffice.utils import search as search_utils
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 from . import forms
 
 
-artists_blueprint = utils.child_backoffice_blueprint(
+artists_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "artist",
     __name__,
     url_prefix="/catalogue/artist",
@@ -142,7 +147,7 @@ ARTIST_JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
 
 
 def _get_artist_ids_query(form: forms.GetArtistAdvancedSearchForm) -> sa_orm.Query:
-    query, _, _, warnings = utils.generate_search_query(
+    query, _, _, warnings = advanced_search.generate_search_query(
         query=db.session.query(artist_models.Artist),
         search_parameters=form.search.data,
         fields_definition=ARTIST_SEARCH_FIELD_TO_PYTHON,
@@ -202,7 +207,7 @@ def _render_artist_list(
     rows: list | None = None,
     advanced_form: forms.GetArtistAdvancedSearchForm | None = None,
     code: int = 200,
-) -> utils.BackofficeResponse:
+) -> response_utils.BackofficeResponse:
     date_created_sort_url = None
     if advanced_form is not None and advanced_form.sort.data:
         date_created_sort_url = advanced_form.get_sort_link_with_search_data(".list_artists")
@@ -230,8 +235,8 @@ def _render_artist_list(
 
 
 @artists_blueprint.route("/", methods=["GET"])
-def list_artists() -> utils.BackofficeResponse:
-    form = forms.GetArtistAdvancedSearchForm(formdata=utils.get_query_params())
+def list_artists() -> response_utils.BackofficeResponse:
+    form = forms.GetArtistAdvancedSearchForm(formdata=request_utils.get_query_params())
     if not form.validate():
         mark_transaction_as_invalid()
         return _render_artist_list(
@@ -240,7 +245,7 @@ def list_artists() -> utils.BackofficeResponse:
         )
 
     if form.is_empty():
-        form_data = MultiDict(utils.get_query_params())
+        form_data = MultiDict(request_utils.get_query_params())
         form_data.update({"search-0-search_field": "NAME_OR_ALIAS", "search-0-operator": "CONTAINS"})
         form = forms.GetArtistAdvancedSearchForm(formdata=form_data)
         return _render_artist_list(advanced_form=form)
@@ -252,7 +257,7 @@ def list_artists() -> utils.BackofficeResponse:
         sort=form.sort.data,
         order=form.order.data,
     )
-    artists = utils.limit_rows(artists, form.limit.data)
+    artists = search_utils.limit_rows(artists, form.limit.data)
 
     return _render_artist_list(
         rows=artists,
@@ -270,8 +275,8 @@ class ArtistDetailsActionType(enum.StrEnum):
 
 
 def _get_artist_details_actions() -> dict[ArtistDetailsActionType, bool]:
-    can_manage_artists = utils.has_current_user_permission(perm_models.Permissions.MANAGE_ARTISTS)
-    can_manage_fraud = utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+    can_manage_artists = access_control.has_current_user_permission(perm_models.Permissions.MANAGE_ARTISTS)
+    can_manage_fraud = access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 
     actions = {
         ArtistDetailsActionType.EDIT: can_manage_artists,
@@ -285,7 +290,7 @@ def _get_artist_details_actions() -> dict[ArtistDetailsActionType, bool]:
 
 
 @artists_blueprint.route("/<string:artist_id>", methods=["GET"])
-def get_artist_details(artist_id: str) -> utils.BackofficeResponse:
+def get_artist_details(artist_id: str) -> response_utils.BackofficeResponse:
     artist = (
         db.session.query(artist_models.Artist)
         .filter_by(id=artist_id)
@@ -315,8 +320,8 @@ def get_artist_details(artist_id: str) -> utils.BackofficeResponse:
 
 
 @artists_blueprint.route("/<string:artist_id>/edit", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
-def get_artist_edit_form(artist_id: str) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
+def get_artist_edit_form(artist_id: str) -> response_utils.BackofficeResponse:
     artist = db.session.query(artist_models.Artist).filter_by(id=artist_id).one_or_none()
     if not artist:
         raise NotFound()
@@ -334,8 +339,8 @@ def get_artist_edit_form(artist_id: str) -> utils.BackofficeResponse:
 
 
 @artists_blueprint.route("/<string:artist_id>/edit", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
-def post_artist_edit_form(artist_id: str) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
+def post_artist_edit_form(artist_id: str) -> response_utils.BackofficeResponse:
     artist = db.session.query(artist_models.Artist).filter_by(id=artist_id).one_or_none()
     if not artist:
         raise NotFound()
@@ -346,14 +351,14 @@ def post_artist_edit_form(artist_id: str) -> utils.BackofficeResponse:
         async_index_artist_ids([artist.id], reason=IndexationReason.ARTIST_EDITION)
         flash(Markup("L'artiste <strong>{name}</strong> a été mis à jour.").format(name=artist.name), "success")
     else:
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
 
     return redirect(request.referrer or url_for(".get_artist_details", artist_id=artist_id), 303)
 
 
 @artists_blueprint.route("/<string:artist_id>/blacklist", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def get_artist_blacklist_form(artist_id: str) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_artist_blacklist_form(artist_id: str) -> response_utils.BackofficeResponse:
     artist = db.session.query(artist_models.Artist).filter_by(id=artist_id).one_or_none()
     if not artist:
         raise NotFound()
@@ -374,8 +379,8 @@ def get_artist_blacklist_form(artist_id: str) -> utils.BackofficeResponse:
 
 
 @artists_blueprint.route("/<string:artist_id>/blacklist", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def post_artist_blacklist(artist_id: str) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def post_artist_blacklist(artist_id: str) -> response_utils.BackofficeResponse:
     artist = db.session.query(artist_models.Artist).filter_by(id=artist_id).one_or_none()
     if not artist:
         raise NotFound()
@@ -390,8 +395,8 @@ def post_artist_blacklist(artist_id: str) -> utils.BackofficeResponse:
 
 
 @artists_blueprint.route("/<string:artist_id>/unblacklist", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def get_artist_unblacklist_form(artist_id: str) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_artist_unblacklist_form(artist_id: str) -> response_utils.BackofficeResponse:
     artist = db.session.query(artist_models.Artist).filter_by(id=artist_id).one_or_none()
     if not artist:
         raise NotFound()
@@ -412,8 +417,8 @@ def get_artist_unblacklist_form(artist_id: str) -> utils.BackofficeResponse:
 
 
 @artists_blueprint.route("/<string:artist_id>/unblacklist", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def post_artist_unblacklist(artist_id: str) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def post_artist_unblacklist(artist_id: str) -> response_utils.BackofficeResponse:
     artist = db.session.query(artist_models.Artist).filter_by(id=artist_id).one_or_none()
     if not artist:
         raise NotFound()
@@ -426,8 +431,8 @@ def post_artist_unblacklist(artist_id: str) -> utils.BackofficeResponse:
 
 
 @artists_blueprint.route("/<string:artist_id>/products/<int:product_id>/unlink-form", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
-def get_unlink_product_form(artist_id: str, product_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
+def get_unlink_product_form(artist_id: str, product_id: int) -> response_utils.BackofficeResponse:
     artist = db.session.query(artist_models.Artist).filter_by(id=artist_id).one_or_none()
     if not artist:
         raise NotFound()
@@ -454,8 +459,8 @@ def get_unlink_product_form(artist_id: str, product_id: int) -> utils.Backoffice
 
 
 @artists_blueprint.route("/<string:artist_id>/products/<int:product_id>/unlink", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
-def post_unlink_product(artist_id: str, product_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
+def post_unlink_product(artist_id: str, product_id: int) -> response_utils.BackofficeResponse:
     link = (
         db.session.query(artist_models.ArtistProductLink).filter_by(artist_id=artist_id, product_id=product_id).first()
     )
@@ -480,8 +485,8 @@ def post_unlink_product(artist_id: str, product_id: int) -> utils.BackofficeResp
 
 
 @artists_blueprint.route("/<string:artist_id>/associate-product", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
-def associate_product_form(artist_id: str) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
+def associate_product_form(artist_id: str) -> response_utils.BackofficeResponse:
     artist = db.session.query(artist_models.Artist).filter_by(id=artist_id).one_or_none()
     if not artist:
         raise NotFound()
@@ -506,8 +511,8 @@ def associate_product_form(artist_id: str) -> utils.BackofficeResponse:
 
 
 @artists_blueprint.route("/<string:artist_id>/associate-product", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
-def associate_product(artist_id: str) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
+def associate_product(artist_id: str) -> response_utils.BackofficeResponse:
     artist = db.session.query(artist_models.Artist).filter_by(id=artist_id).one_or_none()
     if not artist:
         raise NotFound()
@@ -550,8 +555,8 @@ def associate_product(artist_id: str) -> utils.BackofficeResponse:
 
 
 @artists_blueprint.route("/<string:artist_id>/confirm-association", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
-def confirm_association(artist_id: str) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
+def confirm_association(artist_id: str) -> response_utils.BackofficeResponse:
     confirm_form = forms.ConfirmAssociationForm()
 
     if confirm_form.validate_on_submit():
@@ -575,14 +580,14 @@ def confirm_association(artist_id: str) -> utils.BackofficeResponse:
             flash("Produit associé avec succès.", "success")
 
     else:
-        flash(utils.build_form_error_msg(confirm_form), "warning")
+        flash(response_utils.build_form_error_msg(confirm_form), "warning")
 
     return redirect(url_for("backoffice_web.artist.get_artist_details", artist_id=artist_id), 303)
 
 
 @artists_blueprint.route("/<string:artist_id>/merge-form", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
-def get_merge_artist_form(artist_id: str) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
+def get_merge_artist_form(artist_id: str) -> response_utils.BackofficeResponse:
     artist = db.session.query(artist_models.Artist).filter_by(id=artist_id).one_or_none()
     if not artist:
         raise NotFound()
@@ -606,8 +611,8 @@ def get_merge_artist_form(artist_id: str) -> utils.BackofficeResponse:
 
 
 @artists_blueprint.route("/<string:artist_id>/merge", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
-def post_merge_artists(artist_id: str) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
+def post_merge_artists(artist_id: str) -> response_utils.BackofficeResponse:
     artist_to_keep_id = artist_id
     artist_to_keep = db.session.query(artist_models.Artist).filter_by(id=artist_to_keep_id).one_or_none()
     if not artist_to_keep:
@@ -615,7 +620,7 @@ def post_merge_artists(artist_id: str) -> utils.BackofficeResponse:
 
     form = forms.MergeArtistForm(source_artist_id=artist_to_keep_id)
     if not form.validate_on_submit():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer)
 
     artist_to_delete_id = form.target_artist_id.data[0]
@@ -649,8 +654,8 @@ def post_merge_artists(artist_id: str) -> utils.BackofficeResponse:
 
 
 @artists_blueprint.route("/<string:artist_id>/split-form", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
-def get_split_artist_form(artist_id: str) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
+def get_split_artist_form(artist_id: str) -> response_utils.BackofficeResponse:
     source_artist = (
         db.session.query(artist_models.Artist)
         .options(
@@ -679,8 +684,8 @@ def get_split_artist_form(artist_id: str) -> utils.BackofficeResponse:
 
 
 @artists_blueprint.route("/<string:artist_id>/split", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
-def post_split_artist(artist_id: str) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
+def post_split_artist(artist_id: str) -> response_utils.BackofficeResponse:
     source_artist = (
         db.session.query(artist_models.Artist)
         .options(

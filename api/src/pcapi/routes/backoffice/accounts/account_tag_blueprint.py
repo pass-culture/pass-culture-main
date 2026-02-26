@@ -11,13 +11,15 @@ from werkzeug.exceptions import NotFound
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.accounts import forms as accounts_forms
 from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 
-account_tag_blueprint = utils.child_backoffice_blueprint(
+account_tag_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "account_tag",
     __name__,
     url_prefix="/public-accounts/tags",
@@ -37,7 +39,7 @@ def get_user_tag_categories() -> list[users_models.UserTagCategory]:
 
 
 @account_tag_blueprint.route("", methods=["GET"])
-def list_account_tags() -> utils.BackofficeResponse:
+def list_account_tags() -> response_utils.BackofficeResponse:
     categories = get_user_tag_categories()
     user_tags = (
         db.session.query(users_models.UserTag)
@@ -48,7 +50,7 @@ def list_account_tags() -> utils.BackofficeResponse:
 
     forms = {}
 
-    if utils.has_current_user_permission(perm_models.Permissions.MANAGE_ACCOUNT_TAGS):
+    if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_ACCOUNT_TAGS):
         update_tag_forms = {}
         categories_choices = [(cat.id, str(cat)) for cat in categories]
 
@@ -68,7 +70,7 @@ def list_account_tags() -> utils.BackofficeResponse:
         forms["create_tag_form"] = create_tag_form
         forms["create_category_form"] = accounts_forms.CreateUserTagCategoryForm()
 
-    if utils.has_current_user_permission(perm_models.Permissions.MANAGE_ACCOUNT_TAGS_N2):
+    if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_ACCOUNT_TAGS_N2):
         forms["delete_tag_form"] = empty_forms.EmptyForm()
 
     return render_template(
@@ -81,15 +83,15 @@ def list_account_tags() -> utils.BackofficeResponse:
 
 
 @account_tag_blueprint.route("/create", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_ACCOUNT_TAGS)
-def create_account_tag() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_ACCOUNT_TAGS)
+def create_account_tag() -> response_utils.BackofficeResponse:
     categories = get_user_tag_categories()
     form = accounts_forms.EditUserTagForm()
     form.categories.choices = [(cat.id, cat.label) for cat in categories]
 
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.account_tag.list_account_tags"), code=303)
 
     new_categories = [cat for cat in categories if cat.id in form.categories.data]
@@ -143,8 +145,8 @@ def _update_user_tag(
 
 
 @account_tag_blueprint.route("/<int:user_tag_id>/update", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_ACCOUNT_TAGS)
-def update_account_tag(user_tag_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_ACCOUNT_TAGS)
+def update_account_tag(user_tag_id: int) -> response_utils.BackofficeResponse:
     user_tag_to_update = db.session.query(users_models.UserTag).filter_by(id=user_tag_id).one_or_none()
     if not user_tag_to_update:
         raise NotFound()
@@ -156,7 +158,7 @@ def update_account_tag(user_tag_id: int) -> utils.BackofficeResponse:
 
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.account_tag.list_account_tags"), code=303)
 
     new_categories = [cat for cat in categories if cat.id in form.categories.data]
@@ -177,8 +179,8 @@ def update_account_tag(user_tag_id: int) -> utils.BackofficeResponse:
 
 
 @account_tag_blueprint.route("/<int:user_tag_id>/delete", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_ACCOUNT_TAGS_N2)
-def delete_account_tag(user_tag_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_ACCOUNT_TAGS_N2)
+def delete_account_tag(user_tag_id: int) -> response_utils.BackofficeResponse:
     user_tag_to_delete = db.session.query(users_models.UserTag).filter_by(id=user_tag_id).one_or_none()
     if not user_tag_to_delete:
         raise NotFound()
@@ -198,13 +200,13 @@ def delete_account_tag(user_tag_id: int) -> utils.BackofficeResponse:
 
 
 @account_tag_blueprint.route("/category", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_ACCOUNT_TAGS)
-def create_account_tag_category() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_ACCOUNT_TAGS)
+def create_account_tag_category() -> response_utils.BackofficeResponse:
     form = accounts_forms.CreateUserTagCategoryForm()
 
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(
             url_for("backoffice_web.account_tag.list_account_tags", active_tab="categories"),
             code=303,

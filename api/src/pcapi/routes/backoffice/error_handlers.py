@@ -5,17 +5,18 @@ from flask import request
 from flask import url_for
 
 from pcapi.routes.backoffice.home import REDIRECT_AFTER_LOGIN_COOKIE_NAME
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import request as request_utils
+from pcapi.routes.backoffice.utils import response as response_utils
 
-from . import utils
 
-
-@app.errorhandler(utils.UnauthenticatedUserError)
-def unauthenticated_user_handler(error: utils.UnauthenticatedUserError) -> utils.BackofficeResponse:
+@app.errorhandler(access_control.UnauthenticatedUserError)
+def unauthenticated_user_handler(error: access_control.UnauthenticatedUserError) -> response_utils.BackofficeResponse:
     query_path = request.path
     if request.query_string:
         query_path += f"?{request.query_string.decode()}"
 
-    if utils.is_request_from_htmx():
+    if request_utils.is_request_from_htmx():
         return Response(
             response="redirecting",
             status=200,

@@ -18,16 +18,17 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import feature as feature_models
 from pcapi.notifications.internal.transactional import change_feature_flip as change_feature_flip_internal_message
+from pcapi.routes.backoffice import blueprint
+from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import response as response_utils
 
-from .. import blueprint
-from .. import utils
-from ..forms import empty as empty_forms
 from . import forms
 
 
 @blueprint.backoffice_web.route("/admin/roles", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.READ_PERMISSIONS)
-def get_roles() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.READ_PERMISSIONS)
+def get_roles() -> response_utils.BackofficeResponse:
     roles = (
         db.session.query(perm_models.Role)
         .options(sa_orm.joinedload(perm_models.Role.permissions))
@@ -54,8 +55,8 @@ def get_roles() -> utils.BackofficeResponse:
 
 
 @blueprint.backoffice_web.route("/admin/roles-matrix", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
-def get_roles_management() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
+def get_roles_management() -> response_utils.BackofficeResponse:
     roles = (
         db.session.query(perm_models.Role)
         .options(sa_orm.joinedload(perm_models.Role.permissions))
@@ -78,8 +79,8 @@ def get_roles_management() -> utils.BackofficeResponse:
 
 
 @blueprint.backoffice_web.route("/admin/roles-history", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.READ_PERMISSIONS)
-def get_roles_history() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.READ_PERMISSIONS)
+def get_roles_history() -> response_utils.BackofficeResponse:
     actions_history = (
         db.session.query(history_models.ActionHistory)
         .filter_by(actionType=history_models.ActionType.ROLE_PERMISSIONS_CHANGED)
@@ -96,8 +97,8 @@ def get_roles_history() -> utils.BackofficeResponse:
 
 
 @blueprint.backoffice_web.route("/admin/roles/<int:role_id>", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
-def update_role(role_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
+def update_role(role_id: int) -> response_utils.BackofficeResponse:
     role = (
         db.session.query(perm_models.Role)
         .options(sa_orm.joinedload(perm_models.Role.permissions))
@@ -113,7 +114,7 @@ def update_role(role_id: int) -> utils.BackofficeResponse:
 
     perm_form = forms.EditPermissionForm()
     if not perm_form.validate():
-        flash(utils.build_form_error_msg(perm_form), "warning")
+        flash(response_utils.build_form_error_msg(perm_form), "warning")
         return redirect(url_for(".get_roles", active_tab="management"), code=303)
 
     new_permissions_ids = []
@@ -130,8 +131,8 @@ def update_role(role_id: int) -> utils.BackofficeResponse:
 
 
 @blueprint.backoffice_web.route("/admin/feature-flipping", methods=["GET"])
-@utils.custom_login_required(redirect_to=".home")
-def list_feature_flags() -> utils.BackofficeResponse:
+@access_control.custom_login_required(redirect_to=".home")
+def list_feature_flags() -> response_utils.BackofficeResponse:
     feature_flags = db.session.query(feature_models.Feature).order_by(feature_models.Feature.name).all()
     form = empty_forms.EmptyForm()
     return render_template(
@@ -140,18 +141,18 @@ def list_feature_flags() -> utils.BackofficeResponse:
 
 
 @blueprint.backoffice_web.route("/admin/feature-flipping/<int:feature_flag_id>/enable", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.FEATURE_FLIPPING)
-def enable_feature_flag(feature_flag_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.FEATURE_FLIPPING)
+def enable_feature_flag(feature_flag_id: int) -> response_utils.BackofficeResponse:
     return toggle_feature_flag(feature_flag_id, True)
 
 
 @blueprint.backoffice_web.route("/admin/feature-flipping/<int:feature_flag_id>/disable", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.FEATURE_FLIPPING)
-def disable_feature_flag(feature_flag_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.FEATURE_FLIPPING)
+def disable_feature_flag(feature_flag_id: int) -> response_utils.BackofficeResponse:
     return toggle_feature_flag(feature_flag_id, False)
 
 
-def toggle_feature_flag(feature_flag_id: int, set_to_active: bool) -> utils.BackofficeResponse:
+def toggle_feature_flag(feature_flag_id: int, set_to_active: bool) -> response_utils.BackofficeResponse:
     feature_flag = db.session.query(feature_models.Feature).filter_by(id=feature_flag_id).one_or_none()
     if not feature_flag:
         raise NotFound()
@@ -175,8 +176,8 @@ def toggle_feature_flag(feature_flag_id: int, set_to_active: bool) -> utils.Back
 
 
 @blueprint.backoffice_web.route("/admin/subcategories", methods=["GET"])
-@utils.custom_login_required(redirect_to=".home")
-def get_subcategories() -> utils.BackofficeResponse:
+@access_control.custom_login_required(redirect_to=".home")
+def get_subcategories() -> response_utils.BackofficeResponse:
     all_subcategories = subcategories.ALL_SUBCATEGORIES_DICT.values()
 
     return render_template("admin/subcategories.html", rows=all_subcategories)

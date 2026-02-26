@@ -15,8 +15,8 @@ from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils
 from pcapi.routes.backoffice.forms.constants import area_choices
-from pcapi.routes.backoffice.utils import get_regions_choices
-from pcapi.routes.backoffice.utils import has_current_user_permission
+from pcapi.routes.backoffice.utils.access_control import has_current_user_permission
+from pcapi.routes.backoffice.utils.geography import get_regions_choices
 from pcapi.utils import siren as siren_utils
 
 

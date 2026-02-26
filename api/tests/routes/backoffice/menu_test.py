@@ -6,7 +6,7 @@ from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
-from pcapi.routes.backoffice import menu
+from pcapi.routes.backoffice.utils import menu
 
 
 pytestmark = [

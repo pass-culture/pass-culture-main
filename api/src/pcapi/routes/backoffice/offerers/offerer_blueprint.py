@@ -35,10 +35,15 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.utils import get_or_404
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.bookings import forms as bookings_forms
 from pcapi.routes.backoffice.filters import pluralize
+from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import logs as logs_utils
+from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import venues_serialize
 from pcapi.utils import date as date_utils
@@ -47,12 +52,10 @@ from pcapi.utils import siren as siren_utils
 from pcapi.utils import urls
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
-from .. import utils
-from ..forms import empty as empty_forms
 from . import forms as offerer_forms
 
 
-offerer_blueprint = utils.child_backoffice_blueprint(
+offerer_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "offerer",
     __name__,
     url_prefix="/pro/offerer/<int:offerer_id>",
@@ -62,7 +65,7 @@ offerer_blueprint = utils.child_backoffice_blueprint(
 
 def _self_redirect(
     offerer_id: int, active_tab: str | None = None, anchor: str | None = None
-) -> utils.BackofficeResponse:
+) -> response_utils.BackofficeResponse:
     url = url_for("backoffice_web.offerer.get", offerer_id=offerer_id, active_tab=active_tab)
     if anchor:
         url += f"#{anchor}"
@@ -132,7 +135,7 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
         .correlate(offerers_models.Offerer)
         .exists()
     )
-    if utils.has_current_user_permission(perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO):
+    if access_control.has_current_user_permission(perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO):
         has_fraudulent_booking_query: sa.sql.selectable.Exists | sa.sql.elements.Null = (
             sa.select(1)
             .select_from(bookings_models.Booking)
@@ -194,7 +197,7 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
 
     fraud_form = (
         offerer_forms.FraudForm(confidence_level=offerer.confidenceLevel.value if offerer.confidenceLevel else None)
-        if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+        if access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS)
         else None
     )
 
@@ -211,13 +214,13 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
     show_subscription_tab = (
         offerer.individualSubscription
         and (
-            utils.has_current_user_permission(perm_models.Permissions.VALIDATE_OFFERER)
-            or utils.has_current_user_permission(perm_models.Permissions.READ_PRO_AE_INFO)
+            access_control.has_current_user_permission(perm_models.Permissions.VALIDATE_OFFERER)
+            or access_control.has_current_user_permission(perm_models.Permissions.READ_PRO_AE_INFO)
         )
     ) or (
         not offerer.isValidated
         and "auto-entrepreneur" in {tag.name for tag in offerer.tags}
-        and utils.has_current_user_permission(perm_models.Permissions.VALIDATE_OFFERER)
+        and access_control.has_current_user_permission(perm_models.Permissions.VALIDATE_OFFERER)
     )
 
     connect_as_offerer = get_connect_as(
@@ -260,16 +263,16 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         zendesk_sell_synchronisation_form=(
             empty_forms.EmptyForm()
             if row.has_non_virtual_venues
-            and utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
+            and access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
             else None
         ),
     )
 
 
 @offerer_blueprint.route("", methods=["GET"])
-def get(offerer_id: int) -> utils.BackofficeResponse:
+def get(offerer_id: int) -> response_utils.BackofficeResponse:
     if request.args.get("q") and request.args.get("search_rank"):
-        utils.log_backoffice_tracking_data(
+        logs_utils.log_backoffice_tracking_data(
             event_name="ConsultCard",
             extra_data={
                 "searchType": "ProSearch",
@@ -291,7 +294,7 @@ def _get_stat_urls(offerer: offerers_models.Offerer) -> dict[str, str]:
         "search-0-operator": "IN",
         "search-0-offerer": offerer.id,
     }
-    if utils.has_current_user_permission(perm_models.Permissions.READ_OFFERS):
+    if access_control.has_current_user_permission(perm_models.Permissions.READ_OFFERS):
         urls["list_offers"] = url_for("backoffice_web.offer.list_offers", **search_params)  # type: ignore [arg-type]
         urls["list_collective_offers"] = url_for(
             "backoffice_web.collective_offer.list_collective_offers",
@@ -300,7 +303,7 @@ def _get_stat_urls(offerer: offerers_models.Offerer) -> dict[str, str]:
         urls["list_collective_offer_templates"] = url_for(
             "backoffice_web.collective_offer_template.list_collective_offer_templates", offerer=offerer.id
         )
-    if utils.has_current_user_permission(perm_models.Permissions.READ_BOOKINGS):
+    if access_control.has_current_user_permission(perm_models.Permissions.READ_BOOKINGS):
         urls["list_bookings"] = url_for(
             "backoffice_web.individual_bookings.list_individual_bookings", offerer=offerer.id
         )
@@ -313,7 +316,7 @@ def _get_stat_urls(offerer: offerers_models.Offerer) -> dict[str, str]:
 
 
 @offerer_blueprint.route("/stats", methods=["GET"])
-def get_stats(offerer_id: int) -> utils.BackofficeResponse:
+def get_stats(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = (
         db.session.query(offerers_models.Offerer)
         .filter_by(id=offerer_id)
@@ -333,7 +336,7 @@ def get_stats(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/revenue-details", methods=["GET"])
-def get_revenue_details(offerer_id: int) -> utils.BackofficeResponse:
+def get_revenue_details(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = (
         db.session.query(offerers_models.Offerer)
         .filter_by(id=offerer_id)
@@ -380,8 +383,8 @@ def get_revenue_details(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/suspend", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def suspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def suspend_offerer(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = (
         db.session.query(offerers_models.Offerer)
         .filter_by(id=offerer_id)
@@ -395,7 +398,7 @@ def suspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
     form = offerer_forms.SuspendOffererForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
     else:
         try:
             offerers_api.suspend_offerer(offerer, current_user, form.comment.data)
@@ -414,8 +417,8 @@ def suspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/unsuspend", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def unsuspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def unsuspend_offerer(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = (
         db.session.query(offerers_models.Offerer)
         .filter_by(id=offerer_id)
@@ -429,7 +432,7 @@ def unsuspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
     form = offerer_forms.SuspendOffererForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
     else:
         offerers_api.unsuspend_offerer(offerer, current_user, form.comment.data)
         flash(
@@ -443,8 +446,8 @@ def unsuspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/delete", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.DELETE_PRO_ENTITY)
-def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.DELETE_PRO_ENTITY)
+def delete_offerer(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = (
         db.session.query(offerers_models.Offerer)
         .filter_by(id=offerer_id)
@@ -496,8 +499,8 @@ def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def update_offerer(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = (
         db.session.query(offerers_models.Offerer)
         .filter_by(id=offerer_id)
@@ -536,8 +539,8 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/fraud", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def update_for_fraud(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def update_for_fraud(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = (
         db.session.query(offerers_models.Offerer)
         .filter_by(id=offerer_id)
@@ -550,7 +553,7 @@ def update_for_fraud(offerer_id: int) -> utils.BackofficeResponse:
     form = offerer_forms.FraudForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
     elif offerers_api.update_fraud_info(
         offerer=offerer,
         author_user=current_user,
@@ -566,13 +569,13 @@ def update_for_fraud(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/history", methods=["GET"])
-def get_history(offerer_id: int) -> utils.BackofficeResponse:
+def get_history(offerer_id: int) -> response_utils.BackofficeResponse:
     # this should not be necessary but in case there is a huge amount
     # of actions, it is safer to set a limit
     max_actions_count = 50
 
     filters = [history_models.ActionHistory.offererId == offerer_id]
-    if not utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
+    if not access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
         filters.append(
             history_models.ActionHistory.actionType != history_models.ActionType.FRAUD_INFO_MODIFIED,
         )
@@ -609,7 +612,7 @@ def get_history(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/users", methods=["GET"])
-def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
+def get_pro_users(offerer_id: int) -> response_utils.BackofficeResponse:
     # All ids which appear in either offerer history or attached users
     # Double join takes 30 seconds on staging, union takes 0.03 s.
     user_ids_subquery = (
@@ -693,7 +696,7 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
 
     kwargs = {}
 
-    if utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY):
+    if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY):
         kwargs.update(
             {
                 "invite_user_form": offerer_forms.InviteUserForm(),
@@ -741,8 +744,8 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/users/<int:user_offerer_id>/delete", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-def get_delete_user_offerer_form(offerer_id: int, user_offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def get_delete_user_offerer_form(offerer_id: int, user_offerer_id: int) -> response_utils.BackofficeResponse:
     user_offerer = (
         db.session.query(offerers_models.UserOfferer)
         .options(
@@ -774,8 +777,8 @@ def get_delete_user_offerer_form(offerer_id: int, user_offerer_id: int) -> utils
 
 
 @offerer_blueprint.route("/users/<int:user_offerer_id>/delete", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-def delete_user_offerer(offerer_id: int, user_offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def delete_user_offerer(offerer_id: int, user_offerer_id: int) -> response_utils.BackofficeResponse:
     user_offerer = (
         db.session.query(offerers_models.UserOfferer)
         .join(offerers_models.UserOfferer.offerer)
@@ -801,7 +804,7 @@ def delete_user_offerer(offerer_id: int, user_offerer_id: int) -> utils.Backoffi
     form = offerer_forms.OptionalCommentForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _self_redirect(offerer_id, active_tab="users", anchor="offerer_details_frame")
     user_email = user_offerer.user.email
     offerer_name = user_offerer.offerer.name
@@ -818,8 +821,8 @@ def delete_user_offerer(offerer_id: int, user_offerer_id: int) -> utils.Backoffi
 
 
 @offerer_blueprint.route("/invite-user", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-def invite_user(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def invite_user(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = db.session.query(offerers_models.Offerer).filter_by(id=offerer_id).one_or_none()
     if not offerer:
         raise NotFound()
@@ -827,7 +830,7 @@ def invite_user(offerer_id: int) -> utils.BackofficeResponse:
     form = offerer_forms.InviteUserForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _self_redirect(offerer.id, active_tab="users", anchor="offerer_details_frame")
 
     try:
@@ -845,8 +848,8 @@ def invite_user(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/invitation/<int:invitation_id>/resend", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-def resend_invitation(offerer_id: int, invitation_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def resend_invitation(offerer_id: int, invitation_id: int) -> response_utils.BackofficeResponse:
     invitation = (
         db.session.query(offerers_models.OffererInvitation)
         .filter(
@@ -871,8 +874,8 @@ def resend_invitation(offerer_id: int, invitation_id: int) -> utils.BackofficeRe
 
 
 @offerer_blueprint.route("/invitation/<int:invitation_id>/delete", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-def delete_invitation(offerer_id: int, invitation_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def delete_invitation(offerer_id: int, invitation_id: int) -> response_utils.BackofficeResponse:
     invitation = (
         db.session.query(offerers_models.OffererInvitation)
         .filter(
@@ -895,8 +898,8 @@ def delete_invitation(offerer_id: int, invitation_id: int) -> utils.BackofficeRe
 
 
 @offerer_blueprint.route("/venues", methods=["GET"])
-def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
-    if utils.has_current_user_permission(perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO):
+def get_managed_venues(offerer_id: int) -> response_utils.BackofficeResponse:
+    if access_control.has_current_user_permission(perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO):
         has_fraudulent_booking_query: sa.sql.selectable.Exists | sa.sql.elements.Null = (
             sa.select(1)
             .select_from(bookings_models.Booking)
@@ -990,8 +993,8 @@ def _render_get_create_venue_without_siret_form(form: pro_forms.CreateVenueWitho
 
 
 @offerer_blueprint.route("/create-without-siret", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.CREATE_PRO_ENTITY)
-def get_create_venue_without_siret_form(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.CREATE_PRO_ENTITY)
+def get_create_venue_without_siret_form(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = (
         db.session.query(offerers_models.Offerer)
         .options(sa_orm.joinedload(offerers_models.Offerer.managedVenues))
@@ -1005,8 +1008,8 @@ def get_create_venue_without_siret_form(offerer_id: int) -> utils.BackofficeResp
 
 
 @offerer_blueprint.route("/create-without-siret", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.CREATE_PRO_ENTITY)
-def create_venue(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.CREATE_PRO_ENTITY)
+def create_venue(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = (
         db.session.query(offerers_models.Offerer)
         .options(sa_orm.joinedload(offerers_models.Offerer.managedVenues))
@@ -1077,7 +1080,7 @@ def create_venue(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/addresses", methods=["GET"])
-def get_offerer_addresses(offerer_id: int) -> utils.BackofficeResponse:
+def get_offerer_addresses(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer_addresses = (
         db.session.query(
             geography_models.Address.id,
@@ -1120,7 +1123,7 @@ def get_offerer_addresses(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/collective-dms-applications", methods=["GET"])
-def get_collective_dms_applications(offerer_id: int) -> utils.BackofficeResponse:
+def get_collective_dms_applications(offerer_id: int) -> response_utils.BackofficeResponse:
     collective_dms_applications = (
         db.session.query(educational_models.CollectiveDmsApplication)
         .filter(
@@ -1154,7 +1157,7 @@ def get_collective_dms_applications(offerer_id: int) -> utils.BackofficeResponse
 
 
 @offerer_blueprint.route("/bank-accounts", methods=["GET"])
-def get_bank_accounts(offerer_id: int) -> utils.BackofficeResponse:
+def get_bank_accounts(offerer_id: int) -> response_utils.BackofficeResponse:
     rows = (
         db.session.query(
             finance_models.BankAccount,
@@ -1195,8 +1198,8 @@ def get_bank_accounts(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/comment", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
-def comment_offerer(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def comment_offerer(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = (
         db.session.query(offerers_models.Offerer)
         .filter_by(id=offerer_id)
@@ -1210,7 +1213,7 @@ def comment_offerer(offerer_id: int) -> utils.BackofficeResponse:
     form = offerer_forms.CommentForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
     else:
         offerers_api.add_comment_to_offerer(offerer, current_user, comment=form.comment.data)
         flash("Le commentaire a été enregistré", "success")
@@ -1219,8 +1222,10 @@ def comment_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/individual-subscription", methods=["GET"])
-@utils.permission_required_in([perm_models.Permissions.VALIDATE_OFFERER, perm_models.Permissions.READ_PRO_AE_INFO])
-def get_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required_in(
+    [perm_models.Permissions.VALIDATE_OFFERER, perm_models.Permissions.READ_PRO_AE_INFO]
+)
+def get_individual_subscription(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = (
         db.session.query(offerers_models.Offerer)
         .filter_by(id=offerer_id)
@@ -1242,7 +1247,7 @@ def get_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
     if not offerer:
         raise NotFound()
 
-    read_only = not utils.has_current_user_permission(perm_models.Permissions.VALIDATE_OFFERER)
+    read_only = not access_control.has_current_user_permission(perm_models.Permissions.VALIDATE_OFFERER)
 
     individual_subscription = offerer.individualSubscription
     if individual_subscription and individual_subscription.isEmailSent:
@@ -1286,8 +1291,8 @@ def get_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/send-individual-subscription-email", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def create_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def create_individual_subscription(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = (
         db.session.query(offerers_models.Offerer)
         .options(
@@ -1320,8 +1325,8 @@ def create_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/individual-subscription", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def update_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def update_individual_subscription(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = (
         db.session.query(offerers_models.Offerer)
         .filter_by(id=offerer_id)
@@ -1339,7 +1344,7 @@ def update_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
     form = offerer_forms.IndividualOffererSubscriptionForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _self_redirect(offerer_id, active_tab="subscription")
 
     db.session.query(offerers_models.IndividualOffererSubscription).filter_by(offererId=offerer_id).update(
@@ -1362,8 +1367,8 @@ def update_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/api-entreprise", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
-def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
+def get_entreprise_info(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = get_or_404(offerers_models.Offerer, offerer_id)
 
     if not siren_utils.is_valid_siren(offerer.siren):
@@ -1398,8 +1403,8 @@ def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/api-entreprise/rcs", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
-def get_entreprise_rcs_info(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
+def get_entreprise_rcs_info(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = get_or_404(offerers_models.Offerer, offerer_id)
 
     if not siren_utils.is_valid_siren(offerer.siren):
@@ -1417,8 +1422,8 @@ def get_entreprise_rcs_info(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/api-entreprise/urssaf", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.READ_PRO_SENSITIVE_INFO)
-def get_entreprise_urssaf_info(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.READ_PRO_SENSITIVE_INFO)
+def get_entreprise_urssaf_info(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = get_or_404(offerers_models.Offerer, offerer_id)
 
     if not siren_utils.is_valid_siren(offerer.siren):
@@ -1444,8 +1449,8 @@ def get_entreprise_urssaf_info(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/api-entreprise/dgfip", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.READ_PRO_SENSITIVE_INFO)
-def get_entreprise_dgfip_info(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.READ_PRO_SENSITIVE_INFO)
+def get_entreprise_dgfip_info(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = get_or_404(offerers_models.Offerer, offerer_id)
 
     if not siren_utils.is_valid_siren(offerer.siren):
@@ -1471,8 +1476,8 @@ def get_entreprise_dgfip_info(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/close", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.CLOSE_OFFERER)
-def get_close_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.CLOSE_OFFERER)
+def get_close_offerer_form(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = get_or_404(offerers_models.Offerer, offerer_id)
 
     form = offerer_forms.OffererClosureForm()
@@ -1525,8 +1530,8 @@ def get_close_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/close", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.CLOSE_OFFERER)
-def close_offerer(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.CLOSE_OFFERER)
+def close_offerer(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = (
         db.session.query(offerers_models.Offerer)
         .filter_by(id=offerer_id)
@@ -1544,7 +1549,7 @@ def close_offerer(offerer_id: int) -> utils.BackofficeResponse:
     form = offerer_forms.OffererClosureForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _self_redirect(offerer.id)
 
     offerers_api.close_offerer(

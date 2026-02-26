@@ -12,14 +12,16 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
+from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
-from .. import utils
-from ..forms import empty as empty_forms
 from . import forms as offerer_forms
 
 
-offerer_tag_blueprint = utils.child_backoffice_blueprint(
+offerer_tag_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "offerer_tag",
     __name__,
     url_prefix="/pro/offerer-tag",
@@ -32,7 +34,7 @@ def get_offerer_tag_categories() -> list[offerers_models.OffererTagCategory]:
 
 
 @offerer_tag_blueprint.route("", methods=["GET"])
-def list_offerer_tags() -> utils.BackofficeResponse:
+def list_offerer_tags() -> response_utils.BackofficeResponse:
     categories = get_offerer_tag_categories()
     offerer_tags = (
         db.session.query(offerers_models.OffererTag)
@@ -43,7 +45,7 @@ def list_offerer_tags() -> utils.BackofficeResponse:
 
     forms = {}
 
-    if utils.has_current_user_permission(perm_models.Permissions.MANAGE_OFFERER_TAG):
+    if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_OFFERER_TAG):
         update_tag_forms = {}
         categories_choices = [(cat.id, cat.label or cat.name) for cat in categories]
 
@@ -63,7 +65,7 @@ def list_offerer_tags() -> utils.BackofficeResponse:
         forms["create_tag_form"] = create_tag_form
         forms["create_category_form"] = offerer_forms.CreateOffererTagCategoryForm()
 
-    if utils.has_current_user_permission(perm_models.Permissions.MANAGE_TAGS_N2):
+    if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_TAGS_N2):
         forms["delete_tag_form"] = empty_forms.EmptyForm()
 
     return render_template(
@@ -76,15 +78,15 @@ def list_offerer_tags() -> utils.BackofficeResponse:
 
 
 @offerer_tag_blueprint.route("/create", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERER_TAG)
-def create_offerer_tag() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFERER_TAG)
+def create_offerer_tag() -> response_utils.BackofficeResponse:
     categories = get_offerer_tag_categories()
     form = offerer_forms.EditOffererTagForm()
     form.categories.choices = [(cat.id, cat.label) for cat in categories]
 
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.offerer_tag.list_offerer_tags"), code=303)
 
     new_categories = [cat for cat in categories if cat.id in form.categories.data]
@@ -107,8 +109,8 @@ def create_offerer_tag() -> utils.BackofficeResponse:
 
 
 @offerer_tag_blueprint.route("/<int:offerer_tag_id>/update", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERER_TAG)
-def update_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFERER_TAG)
+def update_offerer_tag(offerer_tag_id: int) -> response_utils.BackofficeResponse:
     offerer_tag_to_update = db.session.query(offerers_models.OffererTag).filter_by(id=offerer_tag_id).one_or_none()
     if not offerer_tag_to_update:
         raise NotFound()
@@ -120,7 +122,7 @@ def update_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
 
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.offerer_tag.list_offerer_tags"), code=303)
 
     new_categories = [cat for cat in categories if cat.id in form.categories.data]
@@ -141,8 +143,8 @@ def update_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_tag_blueprint.route("/<int:offerer_tag_id>/delete", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
-def delete_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
+def delete_offerer_tag(offerer_tag_id: int) -> response_utils.BackofficeResponse:
     offerer_tag_to_delete = db.session.query(offerers_models.OffererTag).filter_by(id=offerer_tag_id).one_or_none()
     if not offerer_tag_to_delete:
         raise NotFound()
@@ -158,13 +160,13 @@ def delete_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_tag_blueprint.route("/category", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERER_TAG)
-def create_offerer_tag_category() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFERER_TAG)
+def create_offerer_tag_category() -> response_utils.BackofficeResponse:
     form = offerer_forms.CreateOffererTagCategoryForm()
 
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.offerer_tag.list_offerer_tags", active_tab="categories"), code=303)
 
     try:

@@ -36,13 +36,16 @@ from pcapi.core.providers.clients import cgr_client
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice import autocomplete
-from pcapi.routes.backoffice import search_utils
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.bookings import forms as booking_forms
 from pcapi.routes.backoffice.bookings import helpers as booking_helpers
 from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import request as request_utils
+from pcapi.routes.backoffice.utils import response as response_utils
+from pcapi.routes.backoffice.utils import search as search_utils
 from pcapi.utils import urls
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
@@ -50,7 +53,7 @@ from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 logger = logging.getLogger(__name__)
 
-individual_bookings_blueprint = utils.child_backoffice_blueprint(
+individual_bookings_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "individual_bookings",
     __name__,
     url_prefix="/individual-bookings",
@@ -205,7 +208,7 @@ def _get_individual_bookings(
     return base_query.all()
 
 
-def _render_individual_bookings(bookings_ids: list[int] | None = None) -> utils.BackofficeResponse:
+def _render_individual_bookings(bookings_ids: list[int] | None = None) -> response_utils.BackofficeResponse:
     rows = []
     connect_as = {}
     if bookings_ids:
@@ -226,8 +229,8 @@ def _render_individual_bookings(bookings_ids: list[int] | None = None) -> utils.
 
 
 @individual_bookings_blueprint.route("", methods=["GET"])
-def list_individual_bookings() -> utils.BackofficeResponse:
-    form = booking_forms.GetIndividualBookingListForm(formdata=utils.get_query_params())
+def list_individual_bookings() -> response_utils.BackofficeResponse:
+    form = booking_forms.GetIndividualBookingListForm(formdata=request_utils.get_query_params())
     if not form.validate():
         return render_template("individual_bookings/list.html", rows=[], form=form), 400
 
@@ -239,7 +242,7 @@ def list_individual_bookings() -> utils.BackofficeResponse:
 
     pro_visualisation_link = f"{settings.PRO_URL}/reservations{form.pro_view_args}" if form.pro_view_args else ""
 
-    bookings = utils.limit_rows(
+    bookings = search_utils.limit_rows(
         bookings,
         form.limit.data,
         sort_key=lambda booking: (
@@ -275,8 +278,8 @@ def list_individual_bookings() -> utils.BackofficeResponse:
 
 
 @individual_bookings_blueprint.route("/download-csv", methods=["GET"])
-def get_individual_booking_csv_download() -> utils.BackofficeResponse:
-    form = booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
+def get_individual_booking_csv_download() -> response_utils.BackofficeResponse:
+    form = booking_forms.GetDownloadBookingsForm(formdata=request_utils.get_query_params())
     if not form.validate():
         raise BadRequest()
 
@@ -291,8 +294,8 @@ def get_individual_booking_csv_download() -> utils.BackofficeResponse:
 
 
 @individual_bookings_blueprint.route("/download-xlsx", methods=["GET"])
-def get_individual_booking_xlsx_download() -> utils.BackofficeResponse:
-    form = booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
+def get_individual_booking_xlsx_download() -> response_utils.BackofficeResponse:
+    form = booking_forms.GetDownloadBookingsForm(formdata=request_utils.get_query_params())
     if not form.validate():
         raise BadRequest()
 
@@ -320,8 +323,8 @@ def _get_booking_query_for_validation() -> sa_orm.Query:
 
 
 @individual_bookings_blueprint.route("/<int:booking_id>/mark-as-used", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
-def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
+def mark_booking_as_used(booking_id: int) -> response_utils.BackofficeResponse:
     booking = _get_booking_query_for_validation().filter_by(id=booking_id).one_or_none()
     if not booking:
         raise NotFound()
@@ -331,8 +334,8 @@ def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
 
 
 @individual_bookings_blueprint.route("/<int:booking_id>/cancel", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
-def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
+def mark_booking_as_cancelled(booking_id: int) -> response_utils.BackofficeResponse:
     booking = (
         db.session.query(bookings_models.Booking)
         .filter_by(id=booking_id)
@@ -356,7 +359,7 @@ def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
 
     form = booking_forms.CancelIndividualBookingForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _render_individual_bookings()
 
     _batch_cancel_bookings([booking], bookings_models.BookingCancellationReasons(form.reason.data))
@@ -365,8 +368,8 @@ def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
 
 
 @individual_bookings_blueprint.route("/batch-validate", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
-def get_batch_validate_individual_bookings_form() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
+def get_batch_validate_individual_bookings_form() -> response_utils.BackofficeResponse:
     form = empty_forms.BatchForm(request.args)
     return render_template(
         "components/dynamic/modal_form.html",
@@ -380,11 +383,11 @@ def get_batch_validate_individual_bookings_form() -> utils.BackofficeResponse:
 
 
 @individual_bookings_blueprint.route("/batch-validate", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
-def batch_validate_individual_bookings() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
+def batch_validate_individual_bookings() -> response_utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _render_individual_bookings()
 
     bookings = _get_booking_query_for_validation().filter(bookings_models.Booking.id.in_(form.object_ids_list)).all()
@@ -394,8 +397,8 @@ def batch_validate_individual_bookings() -> utils.BackofficeResponse:
 
 
 @individual_bookings_blueprint.route("/batch-cancel", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
-def get_batch_cancel_individual_bookings_form() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
+def get_batch_cancel_individual_bookings_form() -> response_utils.BackofficeResponse:
     form = booking_forms.BatchCancelIndividualBookingsForm(request.args)
     return render_template(
         "components/dynamic/modal_form.html",
@@ -409,11 +412,11 @@ def get_batch_cancel_individual_bookings_form() -> utils.BackofficeResponse:
 
 
 @individual_bookings_blueprint.route("/batch-cancel", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
-def batch_cancel_individual_bookings() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
+def batch_cancel_individual_bookings() -> response_utils.BackofficeResponse:
     form = booking_forms.BatchCancelIndividualBookingsForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _render_individual_bookings()
 
     bookings = (
@@ -626,8 +629,8 @@ def _build_booking_error_str(tokens: list[str], message: str) -> str:
 
 
 @individual_bookings_blueprint.route("/batch-tag-fraudulent-form", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def get_batch_tag_fraudulent_bookings_form() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_batch_tag_fraudulent_bookings_form() -> response_utils.BackofficeResponse:
     form = booking_forms.BatchTagFraudulentBookingsForms()
     if form.object_ids.data:
         tags_count = (
@@ -656,11 +659,11 @@ def get_batch_tag_fraudulent_bookings_form() -> utils.BackofficeResponse:
 
 
 @individual_bookings_blueprint.route("/batch-tag-fraudulent", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def batch_tag_fraudulent_bookings() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def batch_tag_fraudulent_bookings() -> response_utils.BackofficeResponse:
     form = booking_forms.BatchTagFraudulentBookingsForms()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _render_individual_bookings()
 
     booking_helpers.tag_bookings_as_fraudulent(bookings_ids=form.object_ids_list, send_emails=form.send_mails.data)
@@ -669,8 +672,8 @@ def batch_tag_fraudulent_bookings() -> utils.BackofficeResponse:
 
 
 @individual_bookings_blueprint.route("/batch-remove-fraudulent-form", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def get_batch_remove_fraudulent_booking_tag_form() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_batch_remove_fraudulent_booking_tag_form() -> response_utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     if form.object_ids.data:
         tags_count = (
@@ -699,11 +702,11 @@ def get_batch_remove_fraudulent_booking_tag_form() -> utils.BackofficeResponse:
 
 
 @individual_bookings_blueprint.route("/batch-remove-fraudulent", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-def batch_remove_fraudulent_booking_tag() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def batch_remove_fraudulent_booking_tag() -> response_utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _render_individual_bookings()
 
     db.session.query(bookings_models.FraudulentBookingTag).filter(

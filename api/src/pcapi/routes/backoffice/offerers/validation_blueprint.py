@@ -27,9 +27,12 @@ from pcapi.models import db
 from pcapi.models.utils import get_or_404
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice import autocomplete
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice import filters
-from pcapi.routes.backoffice import search_utils
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import request as request_utils
+from pcapi.routes.backoffice.utils import response as response_utils
+from pcapi.routes.backoffice.utils import search as search_utils
 from pcapi.utils import date as date_utils
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
@@ -37,7 +40,7 @@ from . import forms as offerer_forms
 from . import validation_repository
 
 
-validation_blueprint = utils.child_backoffice_blueprint(
+validation_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "validation",
     __name__,
     url_prefix="/pro/validation",
@@ -49,14 +52,14 @@ def _filter_homologation_tags(tags: list[offerers_models.OffererTag]) -> list[of
     return [tag for tag in tags if "homologation" in [cat.name for cat in tag.categories]]
 
 
-def _redirect_after_offerer_validation_action(code: int = 303) -> utils.BackofficeResponse:
+def _redirect_after_offerer_validation_action(code: int = 303) -> response_utils.BackofficeResponse:
     if request.referrer:
         return redirect(request.referrer, code)
 
     return redirect(url_for("backoffice_web.validation.list_offerers_to_validate"), code)
 
 
-def _render_offerers_to_validate(offerers_id: list[int]) -> utils.BackofficeResponse:
+def _render_offerers_to_validate(offerers_id: list[int]) -> response_utils.BackofficeResponse:
     items = validation_repository.list_offerers_to_be_validated(offerers_id=offerers_id)
     return render_template(
         "offerer/validation_rows.html",
@@ -65,10 +68,10 @@ def _render_offerers_to_validate(offerers_id: list[int]) -> utils.BackofficeResp
 
 
 @validation_blueprint.route("/offerer", methods=["GET"])
-def list_offerers_to_validate() -> utils.BackofficeResponse:
+def list_offerers_to_validate() -> response_utils.BackofficeResponse:
     stats = offerers_api.count_offerers_by_validation_status()
 
-    form = offerer_forms.OffererValidationListForm(formdata=utils.get_query_params())
+    form = offerer_forms.OffererValidationListForm(formdata=request_utils.get_query_params())
     if not form.validate():
         mark_transaction_as_invalid()
         return render_template("offerer/validation.html", rows=[], form=form, stats=stats), 400
@@ -201,8 +204,8 @@ def _get_validation_action_information(offerer_ids: typing.Collection[int]) -> s
 
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/validate", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def get_validate_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def get_validate_offerer_form(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = get_or_404(offerers_models.Offerer, offerer_id)
     information = _get_validation_action_information([offerer_id])
 
@@ -213,7 +216,7 @@ def get_validate_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
         "div_id": f"validate-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
         "title": f"Valider l'entité juridique {offerer.name.upper()}",
         "button_text": "Valider l'entité juridique",
-        "ajax_submit": utils.is_request_from_htmx(),
+        "ajax_submit": request_utils.is_request_from_htmx(),
     }
 
     if kwargs["ajax_submit"]:
@@ -223,8 +226,8 @@ def get_validate_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/validate", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def validate_offerer(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = (
         db.session.query(offerers_models.Offerer)
         .filter_by(id=offerer_id)
@@ -238,8 +241,8 @@ def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
     form = offerer_forms.OffererValidationForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
-        if utils.is_request_from_htmx():
+        flash(response_utils.build_form_error_msg(form), "warning")
+        if request_utils.is_request_from_htmx():
             return _render_offerers_to_validate([offerer_id])
         return _redirect_after_offerer_validation_action()
 
@@ -250,19 +253,19 @@ def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
     except offerers_exceptions.OffererAlreadyValidatedException:
         mark_transaction_as_invalid()
         flash(Markup("L'entité juridique <b>{name}</b> est déjà validée").format(name=offerer.name), "warning")
-        if utils.is_request_from_htmx():
+        if request_utils.is_request_from_htmx():
             return _render_offerers_to_validate([offerer_id])
         return _redirect_after_offerer_validation_action()
 
     flash(Markup("L'entité juridique <b>{name}</b> a été validée").format(name=offerer.name), "success")
-    if utils.is_request_from_htmx():
+    if request_utils.is_request_from_htmx():
         return _render_offerers_to_validate([offerer_id])
     return _redirect_after_offerer_validation_action()
 
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/reject", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def get_reject_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def get_reject_offerer_form(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = get_or_404(offerers_models.Offerer, offerer_id)
     information = _get_validation_action_information([offerer_id])
 
@@ -273,7 +276,7 @@ def get_reject_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
         "div_id": f"reject-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
         "title": f"Rejeter l'entité juridique {offerer.name.upper()}",
         "button_text": "Rejeter l'entité juridique",
-        "ajax_submit": utils.is_request_from_htmx(),
+        "ajax_submit": request_utils.is_request_from_htmx(),
     }
 
     if kwargs["ajax_submit"]:
@@ -283,8 +286,8 @@ def get_reject_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/reject", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def reject_offerer(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def reject_offerer(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = (
         db.session.query(offerers_models.Offerer)
         .filter_by(id=offerer_id)
@@ -298,8 +301,8 @@ def reject_offerer(offerer_id: int) -> utils.BackofficeResponse:
     form = offerer_forms.OffererRejectionForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
-        if utils.is_request_from_htmx():
+        flash(response_utils.build_form_error_msg(form), "warning")
+        if request_utils.is_request_from_htmx():
             return _render_offerers_to_validate([offerer_id])
         return _redirect_after_offerer_validation_action()
 
@@ -313,19 +316,19 @@ def reject_offerer(offerer_id: int) -> utils.BackofficeResponse:
     except offerers_exceptions.OffererAlreadyRejectedException:
         mark_transaction_as_invalid()
         flash(Markup("L'entité juridique <b>{name}</b> est déjà rejetée").format(name=offerer.name), "warning")
-        if utils.is_request_from_htmx():
+        if request_utils.is_request_from_htmx():
             return _render_offerers_to_validate([offerer_id])
         return _redirect_after_offerer_validation_action()
 
     flash(Markup("L'entité juridique <b>{name}</b> a été rejetée").format(name=offerer.name), "success")
-    if utils.is_request_from_htmx():
+    if request_utils.is_request_from_htmx():
         return _render_offerers_to_validate([offerer_id])
     return _redirect_after_offerer_validation_action()
 
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/pending", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def get_offerer_pending_form(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def get_offerer_pending_form(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = (
         db.session.query(offerers_models.Offerer)
         .filter_by(id=offerer_id)
@@ -347,7 +350,7 @@ def get_offerer_pending_form(offerer_id: int) -> utils.BackofficeResponse:
         "div_id": f"pending-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
         "title": f"Mettre en attente l'entité juridique {offerer.name.upper()}",
         "button_text": "Mettre en attente",
-        "ajax_submit": utils.is_request_from_htmx(),
+        "ajax_submit": request_utils.is_request_from_htmx(),
     }
 
     if kwargs["ajax_submit"]:
@@ -357,8 +360,8 @@ def get_offerer_pending_form(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/pending", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def set_offerer_pending(offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def set_offerer_pending(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = (
         db.session.query(offerers_models.Offerer)
         .filter_by(id=offerer_id)
@@ -372,8 +375,8 @@ def set_offerer_pending(offerer_id: int) -> utils.BackofficeResponse:
     form = offerer_forms.CommentAndTagOffererForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
-        if utils.is_request_from_htmx():
+        flash(response_utils.build_form_error_msg(form), "warning")
+        if request_utils.is_request_from_htmx():
             return _render_offerers_to_validate([offerer_id])
         return _redirect_after_offerer_validation_action()
 
@@ -387,7 +390,7 @@ def set_offerer_pending(offerer_id: int) -> utils.BackofficeResponse:
     )
 
     flash(Markup("L'entité juridique <b>{name}</b> a été mise en attente").format(name=offerer.name), "success")
-    if utils.is_request_from_htmx():
+    if request_utils.is_request_from_htmx():
         return _render_offerers_to_validate([offerer_id])
     return _redirect_after_offerer_validation_action()
 
@@ -396,10 +399,10 @@ def _offerer_batch_action(
     api_function: typing.Callable,
     success_message: str,
     form_class: typing.Callable,
-) -> utils.BackofficeResponse:
+) -> response_utils.BackofficeResponse:
     form = form_class()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _render_offerers_to_validate(offerers_id=form.object_ids_list)
 
     offerers = (
@@ -437,8 +440,8 @@ def _offerer_batch_action(
 
 
 @validation_blueprint.route("/offerer/batch-validate-form", methods=["GET", "POST"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def get_batch_validate_offerer_form() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def get_batch_validate_offerer_form() -> response_utils.BackofficeResponse:
     form = offerer_forms.BatchOffererValidationForm()
 
     if form.object_ids.data:
@@ -459,8 +462,8 @@ def get_batch_validate_offerer_form() -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/offerer/batch-validate", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def batch_validate_offerer() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def batch_validate_offerer() -> response_utils.BackofficeResponse:
     try:
         return _offerer_batch_action(
             offerers_api.validate_offerer,
@@ -474,13 +477,13 @@ def batch_validate_offerer() -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/offerer/batch-pending-form", methods=["GET", "POST"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def get_batch_offerer_pending_form() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def get_batch_offerer_pending_form() -> response_utils.BackofficeResponse:
     form = offerer_forms.BatchCommentAndTagOffererForm()
     if form.object_ids.data:
         if not form.validate():
             mark_transaction_as_invalid()
-            flash(utils.build_form_error_msg(form), "warning")
+            flash(response_utils.build_form_error_msg(form), "warning")
             return _redirect_after_offerer_validation_action()
 
         offerers = (
@@ -511,8 +514,8 @@ def get_batch_offerer_pending_form() -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/offerer/batch-pending", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def batch_set_offerer_pending() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def batch_set_offerer_pending() -> response_utils.BackofficeResponse:
     return _offerer_batch_action(
         offerers_api.set_offerer_pending,
         "Les entités juridiques sélectionnées ont été mises en attente",
@@ -521,8 +524,8 @@ def batch_set_offerer_pending() -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/offerer/batch-reject-form", methods=["GET", "POST"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def get_batch_reject_offerer_form() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def get_batch_reject_offerer_form() -> response_utils.BackofficeResponse:
     form = offerer_forms.BatchOffererRejectionForm()
 
     if form.object_ids.data:
@@ -543,8 +546,8 @@ def get_batch_reject_offerer_form() -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/offerer/batch-reject", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def batch_reject_offerer() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def batch_reject_offerer() -> response_utils.BackofficeResponse:
     try:
         return _offerer_batch_action(
             offerers_api.reject_offerer,
@@ -590,7 +593,7 @@ def _get_serialized_user_offerer_last_comment(
     return None
 
 
-def _display_users_offerers(user_offerers_ids: list[int]) -> utils.BackofficeResponse:
+def _display_users_offerers(user_offerers_ids: list[int]) -> response_utils.BackofficeResponse:
     items = []
     if user_offerers_ids:
         items = validation_repository.list_users_offerers_to_be_validated(
@@ -604,8 +607,8 @@ def _display_users_offerers(user_offerers_ids: list[int]) -> utils.BackofficeRes
 
 
 @validation_blueprint.route("/user-offerer", methods=["GET"])
-def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
-    form = offerer_forms.UserOffererValidationListForm(formdata=utils.get_query_params())
+def list_offerers_attachments_to_validate() -> response_utils.BackofficeResponse:
+    form = offerer_forms.UserOffererValidationListForm(formdata=request_utils.get_query_params())
     if not form.validate():
         mark_transaction_as_invalid()
         return render_template("offerer/user_offerer_validation.html", rows=[], form=form), 400
@@ -655,7 +658,9 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
     )
 
 
-def _redirect_after_user_offerer_validation_action(offerer_id: int, code: int = 303) -> utils.BackofficeResponse:
+def _redirect_after_user_offerer_validation_action(
+    offerer_id: int, code: int = 303
+) -> response_utils.BackofficeResponse:
     dst_url = url_for("backoffice_web.offerer.get", offerer_id=offerer_id, active_tab="users")
 
     if request.referrer:
@@ -668,14 +673,14 @@ def _redirect_after_user_offerer_validation_action(offerer_id: int, code: int = 
     return redirect(dst_url + "#offerer_details_frame", code=code)
 
 
-def _redirect_after_user_offerer_validation_action_list(code: int = 303) -> utils.BackofficeResponse:
+def _redirect_after_user_offerer_validation_action_list(code: int = 303) -> response_utils.BackofficeResponse:
     if request.referrer:
         return redirect(request.referrer, code)
 
     return redirect(url_for("backoffice_web.validation.list_offerers_attachments_to_validate"), code)
 
 
-user_offerer_blueprint = utils.child_backoffice_blueprint(
+user_offerer_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "user_offerer",
     __name__,
     url_prefix="/pro/user_offerer/<int:user_offerer_id>",
@@ -703,8 +708,8 @@ def _load_user_offerer(user_offerer_id: int) -> offerers_models.UserOfferer:
 
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/validate", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def validate_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def validate_user_offerer(user_offerer_id: int) -> response_utils.BackofficeResponse:
     user_offerer = _load_user_offerer(user_offerer_id)
 
     try:
@@ -717,7 +722,7 @@ def validate_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
             ).format(email=user_offerer.user.email, offerer_name=user_offerer.offerer.name),
             "warning",
         )
-        if utils.is_request_from_htmx():
+        if request_utils.is_request_from_htmx():
             return _display_users_offerers([])
         return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
@@ -727,14 +732,14 @@ def validate_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
         ),
         "success",
     )
-    if utils.is_request_from_htmx():
+    if request_utils.is_request_from_htmx():
         return _display_users_offerers([user_offerer_id])
     return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
 
 @validation_blueprint.route("/user-offerer/batch-reject", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def get_batch_reject_user_offerer_form() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def get_batch_reject_user_offerer_form() -> response_utils.BackofficeResponse:
     form = offerer_forms.BatchOptionalCommentForm(request.args)
     return render_template(
         "components/dynamic/modal_form.html",
@@ -748,8 +753,8 @@ def get_batch_reject_user_offerer_form() -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/user-offerer/batch-pending", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def get_batch_user_offerer_pending_form() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def get_batch_user_offerer_pending_form() -> response_utils.BackofficeResponse:
     form = offerer_forms.BatchOptionalCommentForm(request.args)
     return render_template(
         "components/dynamic/modal_form.html",
@@ -763,8 +768,8 @@ def get_batch_user_offerer_pending_form() -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/reject", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def get_reject_user_offerer_form(user_offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def get_reject_user_offerer_form(user_offerer_id: int) -> response_utils.BackofficeResponse:
     user_offerer = _load_user_offerer(user_offerer_id)
 
     form = offerer_forms.OptionalCommentForm()
@@ -775,7 +780,7 @@ def get_reject_user_offerer_form(user_offerer_id: int) -> utils.BackofficeRespon
         "div_id": f"reject-modal-{user_offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
         "title": f"Rejeter le rattachement à {user_offerer.offerer.name.upper()}",
         "button_text": "Rejeter le rattachement",
-        "ajax_submit": utils.is_request_from_htmx(),
+        "ajax_submit": request_utils.is_request_from_htmx(),
     }
     if kwargs["ajax_submit"]:
         kwargs["target_id"] = f"#user-offerer-row-{user_offerer_id}"
@@ -784,15 +789,15 @@ def get_reject_user_offerer_form(user_offerer_id: int) -> utils.BackofficeRespon
 
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/reject", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def reject_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def reject_user_offerer(user_offerer_id: int) -> response_utils.BackofficeResponse:
     user_offerer = _load_user_offerer(user_offerer_id)
 
     form = offerer_forms.OptionalCommentForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
-        if utils.is_request_from_htmx():
+        flash(response_utils.build_form_error_msg(form), "warning")
+        if request_utils.is_request_from_htmx():
             return _display_users_offerers([user_offerer.id])
         return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
@@ -804,14 +809,14 @@ def reject_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
         ),
         "success",
     )
-    if utils.is_request_from_htmx():
+    if request_utils.is_request_from_htmx():
         return _display_users_offerers([user_offerer.id])
     return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/pending", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def get_user_offerer_pending_form(user_offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def get_user_offerer_pending_form(user_offerer_id: int) -> response_utils.BackofficeResponse:
     user_offerer = _load_user_offerer(user_offerer_id)
 
     form = offerer_forms.OptionalCommentForm()
@@ -822,7 +827,7 @@ def get_user_offerer_pending_form(user_offerer_id: int) -> utils.BackofficeRespo
         "div_id": f"pending-modal-{user_offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
         "title": f"Mettre en attente le rattachement à {user_offerer.offerer.name.upper()}",
         "button_text": "Mettre en attente le rattachement",
-        "ajax_submit": utils.is_request_from_htmx(),
+        "ajax_submit": request_utils.is_request_from_htmx(),
     }
 
     if kwargs["ajax_submit"]:
@@ -832,15 +837,15 @@ def get_user_offerer_pending_form(user_offerer_id: int) -> utils.BackofficeRespo
 
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/pending", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def set_user_offerer_pending(user_offerer_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def set_user_offerer_pending(user_offerer_id: int) -> response_utils.BackofficeResponse:
     user_offerer = _load_user_offerer(user_offerer_id)
 
     form = offerer_forms.OptionalCommentForm()
     if not form.validate():
         mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
-        if utils.is_request_from_htmx():
+        flash(response_utils.build_form_error_msg(form), "warning")
+        if request_utils.is_request_from_htmx():
             return _display_users_offerers([user_offerer.id])
         return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
@@ -851,7 +856,7 @@ def set_user_offerer_pending(user_offerer_id: int) -> utils.BackofficeResponse:
         ).format(email=user_offerer.user.email, offerer_name=user_offerer.offerer.name),
         "success",
     )
-    if utils.is_request_from_htmx():
+    if request_utils.is_request_from_htmx():
         return _display_users_offerers([user_offerer.id])
     return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
@@ -859,10 +864,10 @@ def set_user_offerer_pending(user_offerer_id: int) -> utils.BackofficeResponse:
 def _user_offerer_batch_action(
     api_function: typing.Callable[[offerers_models.UserOfferer, users_models.User, str | None], None],
     success_message: str,
-) -> utils.BackofficeResponse:
+) -> response_utils.BackofficeResponse:
     form = offerer_forms.BatchOptionalCommentForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return _display_users_offerers([])
 
     user_offerers = (
@@ -879,16 +884,16 @@ def _user_offerer_batch_action(
 
 
 @validation_blueprint.route("/user-offerer/batch-pending", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def batch_set_user_offerer_pending() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def batch_set_user_offerer_pending() -> response_utils.BackofficeResponse:
     return _user_offerer_batch_action(
         offerers_api.set_offerer_attachment_pending, "Les rattachements ont été mis en attente"
     )
 
 
 @validation_blueprint.route("/user-offerer/batch-reject", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def batch_reject_user_offerer() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def batch_reject_user_offerer() -> response_utils.BackofficeResponse:
     try:
         return _user_offerer_batch_action(
             offerers_api.reject_offerer_attachment, "Les rattachements sélectionnés ont été rejetés"
@@ -900,8 +905,8 @@ def batch_reject_user_offerer() -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/user-offerer/batch-validate", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def batch_validate_user_offerer() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def batch_validate_user_offerer() -> response_utils.BackofficeResponse:
     try:
         return _user_offerer_batch_action(
             offerers_api.validate_offerer_attachment, "Les rattachements sélectionnés ont été validés"

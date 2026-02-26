@@ -12,12 +12,14 @@ from pcapi.core.history import models as history_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.admin import forms
+from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.utils import date as date_utils
 
 
-user_profile_refresh_campaigns_blueprint = utils.child_backoffice_blueprint(
+user_profile_refresh_campaigns_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     "user_profile_refresh_campaigns",
     __name__,
     url_prefix="/admin/user-profile-refresh-campaigns",
@@ -47,7 +49,7 @@ def _deactivate_existing_campaigns(excluded_campaign_id: int) -> list[int]:
 
 
 @user_profile_refresh_campaigns_blueprint.route("", methods=["GET"])
-def list_campaigns() -> utils.BackofficeResponse:
+def list_campaigns() -> response_utils.BackofficeResponse:
     creation_form = forms.UserProfileRefreshCampaignForm()
     campaigns = (
         db.session.query(users_models.UserProfileRefreshCampaign)
@@ -64,11 +66,11 @@ def list_campaigns() -> utils.BackofficeResponse:
 
 
 @user_profile_refresh_campaigns_blueprint.route("/create", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_USER_PROFILE_REFRESH_CAMPAIGN)
-def create_campaign() -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_USER_PROFILE_REFRESH_CAMPAIGN)
+def create_campaign() -> response_utils.BackofficeResponse:
     form = forms.UserProfileRefreshCampaignForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(
             request.referrer or url_for("backoffice_web.user_profile_refresh_campaigns.list_campaigns"),
             code=303,
@@ -96,8 +98,8 @@ def create_campaign() -> utils.BackofficeResponse:
 
 
 @user_profile_refresh_campaigns_blueprint.route("/<int:campaign_id>/edit_form", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_USER_PROFILE_REFRESH_CAMPAIGN)
-def get_campaign_edit_form(campaign_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_USER_PROFILE_REFRESH_CAMPAIGN)
+def get_campaign_edit_form(campaign_id: int) -> response_utils.BackofficeResponse:
     campaign = db.session.query(users_models.UserProfileRefreshCampaign).filter_by(id=campaign_id).one_or_none()
     if not campaign:
         raise NotFound()
@@ -122,15 +124,15 @@ def get_campaign_edit_form(campaign_id: int) -> utils.BackofficeResponse:
 
 
 @user_profile_refresh_campaigns_blueprint.route("/<int:campaign_id>/edit", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_USER_PROFILE_REFRESH_CAMPAIGN)
-def edit_campaign(campaign_id: int) -> utils.BackofficeResponse:
+@access_control.permission_required(perm_models.Permissions.MANAGE_USER_PROFILE_REFRESH_CAMPAIGN)
+def edit_campaign(campaign_id: int) -> response_utils.BackofficeResponse:
     campaign = db.session.query(users_models.UserProfileRefreshCampaign).filter_by(id=campaign_id).one_or_none()
     if not campaign:
         raise NotFound()
 
     form = forms.UserProfileRefreshCampaignForm()
     if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
+        flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 400)
 
     new_campaign_date = date_utils.datetime_to_localized_datetime(form.campaign_date.data).replace(tzinfo=None)
