@@ -10,15 +10,12 @@
     align-items: center;
     width: 100%;
     padding: 0 rem.torem(24px);
+    gap: var(--size-spacing-l);
 
     &-arrows {
       text-align: right;
       flex: 1;
       white-space: nowrap;
-
-      button:first-child {
-        margin-right: var(--size-spacing-l);
-      }
     }
   }
 

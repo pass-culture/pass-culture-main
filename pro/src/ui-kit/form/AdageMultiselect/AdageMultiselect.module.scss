@@ -15,7 +15,7 @@
   padding: var(--size-spacing-s) 0 0 0;
   color: var(--color-text-default);
 
-  li:last-child {
+  &-item:last-child {
     margin-bottom: rem.torem(20px);
   }
 }
