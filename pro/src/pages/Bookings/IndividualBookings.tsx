@@ -12,9 +12,11 @@ import {
 } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isEqual } from '@/commons/utils/isEqual'
 import { ChoosePreFiltersMessage } from '@/components/Bookings/Components/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
+import { DownloadsMovedBanner } from '@/components/DownloadsMovedBanner/DownloadsMovedBanner'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import {
@@ -31,10 +33,12 @@ import { useBookingsFilters } from '../../components/Bookings/Components/useBook
 import { filterBookingsRecap } from '../../components/Bookings/Components/utils/filterBookingsRecap'
 import { IndividualBookingsTable } from '../../components/Bookings/IndividualBookingsTable/IndividualBookingsTable'
 import { getFilteredIndividualBookingsAdapter } from './adapters/getFilteredIndividualBookingsAdapter'
+import styles from './IndividualBookings.module.scss'
 
 const MAX_LOADED_PAGES = 5
 
 export const IndividualBookings = () => {
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   const location = useLocation()
@@ -171,7 +175,11 @@ export const IndividualBookings = () => {
         urlParams={urlParams}
         updateUrl={updateUrl}
       />
-
+      {withSwitchVenueFeature && (
+        <div className={styles['downloads-banner']}>
+          <DownloadsMovedBanner isIndividual={true} />
+        </div>
+      )}
       <FilterByOmniSearch
         isDisabled={isLoading}
         keywords={filters.keywords}

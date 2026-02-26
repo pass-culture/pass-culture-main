@@ -128,7 +128,7 @@ describe('filter bookings by bookings period', () => {
     const select = screen.getByLabelText('Type de période')
     await userEvent.selectOptions(select, 'reimbursed')
 
-    await userEvent.click(screen.getByText('Afficher'))
+    await userEvent.click(screen.getByText('Rechercher les réservations'))
 
     expect(mockApplyNow).toHaveBeenCalledWith({
       bookingBeginningDate: '2020-12-01',
@@ -148,7 +148,7 @@ describe('filter bookings by bookings period', () => {
     const offererAddressInput = screen.getByLabelText('Localisation')
     await userEvent.selectOptions(offererAddressInput, '21')
 
-    await userEvent.click(screen.getByText('Afficher'))
+    await userEvent.click(screen.getByText('Rechercher les réservations'))
 
     expect(mockApplyNow).toHaveBeenCalledWith({
       bookingBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
@@ -198,22 +198,28 @@ describe('filter bookings by bookings period', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should disable "Afficher" when table is loading', () => {
+  it('should disable "Rechercher les réservations" when table is loading', () => {
     renderPreFilters({ ...props, isTableLoading: true })
 
-    expect(screen.getByRole('button', { name: 'Afficher' })).toBeDisabled()
+    expect(
+      screen.getByRole('button', { name: 'Rechercher les réservations' })
+    ).toBeDisabled()
   })
 
-  it('should disable "Afficher" when local loading', () => {
+  it('should disable "Rechercher les réservations" when local loading', () => {
     renderPreFilters({ ...props, isLocalLoading: true })
 
-    expect(screen.getByRole('button', { name: 'Afficher' })).toBeDisabled()
+    expect(
+      screen.getByRole('button', { name: 'Rechercher les réservations' })
+    ).toBeDisabled()
   })
 
-  it('should disable "Afficher" when filters are disabled', () => {
+  it('should disable "Rechercher les réservations" when filters are disabled', () => {
     renderPreFilters({ ...props, isFiltersDisabled: true })
 
-    expect(screen.getByRole('button', { name: 'Afficher' })).toBeDisabled()
+    expect(
+      screen.getByRole('button', { name: 'Rechercher les réservations' })
+    ).toBeDisabled()
   })
 
   it('should reset offerEventDate to default when event date is cleared', async () => {
@@ -226,36 +232,12 @@ describe('filter bookings by bookings period', () => {
 
     await userEvent.clear(offerEventDateInput)
 
-    await userEvent.click(screen.getByText('Afficher'))
+    await userEvent.click(screen.getByText('Rechercher les réservations'))
 
     expect(mockApplyNow).toHaveBeenCalledWith(
       expect.objectContaining({
         offerEventDate: DEFAULT_PRE_FILTERS.offerEventDate,
       })
     )
-  })
-
-  describe('download buttons feature toggle', () => {
-    it('should show MultiDownloadButtonsModal when WIP_SWITCH_VENUE feature is disabled', () => {
-      renderPreFilters(props, [])
-
-      expect(
-        screen.getByRole('button', { name: 'Télécharger' })
-      ).toBeInTheDocument()
-      expect(
-        screen.queryByRole('button', { name: 'Où les télécharger ?' })
-      ).not.toBeInTheDocument()
-    })
-
-    it('should show MovedBookingDownloadWarningModal when WIP_SWITCH_VENUE feature is enabled', () => {
-      renderPreFilters(props, ['WIP_SWITCH_VENUE'])
-
-      expect(
-        screen.getByRole('button', { name: 'Où les télécharger ?' })
-      ).toBeInTheDocument()
-      expect(
-        screen.queryByRole('button', { name: 'Télécharger les réservations' })
-      ).not.toBeInTheDocument()
-    })
   })
 })

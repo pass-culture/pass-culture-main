@@ -19,7 +19,6 @@ import fullRefreshIcon from '@/icons/full-refresh.svg'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { Select } from '@/ui-kit/form/Select/Select'
 
-import { MovedBookingDownloadWarningModal } from '../MovedBookingDownloadWarningModal/MovedBookingDownloadWarningModal'
 import { FilterByBookingStatusPeriod } from './FilterByBookingStatusPeriod/FilterByBookingStatusPeriod'
 import styles from './PreFilters.module.scss'
 import { downloadIndividualBookingsCSVFile } from './utils/downloadIndividualBookingsCSVFile'
@@ -197,19 +196,16 @@ export const PreFilters = ({
                 title="Télécharger les réservations"
               />
             )}
-            {withSwitchVenueFeature && !isAdministrationSpace && (
-              <MovedBookingDownloadWarningModal />
-            )}
 
             {!isAdministrationSpace && (
               <Button
                 disabled={isTableLoading || isLocalLoading || isFiltersDisabled}
-                variant={ButtonVariant.SECONDARY}
+                variant={ButtonVariant.PRIMARY}
                 onClick={() => {
                   applyNow()
                   logEvent('CLICKED_SHOW_BOOKINGS', { from: location.pathname })
                 }}
-                label="Afficher"
+                label="Rechercher les réservations"
               />
             )}
           </div>
