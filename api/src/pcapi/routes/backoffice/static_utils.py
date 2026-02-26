@@ -33,36 +33,7 @@ JS_FILES = [
     # Our app,
     Path("src/pcapi/static/backoffice/js/core/pc-backoffice-app.js"),
     # Our JS libs,
-    Path("src/pcapi/static/backoffice/js/addons/bs-tooltips.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-validation-filters.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-forms-check-validity.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-tom-select-field.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-override-custom-textarea-enter.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-table-multi-select.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-batch-action-form.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-postal-address-autocomplete.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-filter-dataset.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-confirm-modal.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-field-list.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-form-field.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-clipboard.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-date-range-field.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-form.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-pro-search-form.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-strip-query-string.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-hide-on-click.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-display-selector.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-table-manager.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-submit-form-button.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-section-focus-onload.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-table-paginator.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-fill-to-bottom.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-htmx-manager.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-sort-table.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-flash.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-textarea-counter.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-input-form.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-offer-criterion-form.js"),
+    Path("src/pcapi/static/backoffice/js/addons/"),
 ]
 CSS_BUNDLE = Path("src/pcapi/static/backoffice/css/bundle.css")
 CSS_FILES = [
@@ -132,11 +103,18 @@ def generate_bundle(files: list[Path], destination: Path) -> None:
         os.unlink(destination)
 
     bundle_content = b""
-    for filepath in files:
-        bundle_content += f"/* {filepath} */\n".encode("utf-8")
-        with open(filepath, mode="rb") as fp:
-            bundle_content += fp.read()
-            bundle_content += b"\n"
+    for path in files:
+        paths: list[Path] = []
+        if path.is_file():
+            paths.append(path)
+        else:
+            paths = list(path.iterdir())
+
+        for filepath in paths:
+            bundle_content += f"/* {filepath} */\n".encode("utf-8")
+            with open(filepath, mode="rb") as fp:
+                bundle_content += fp.read()
+                bundle_content += b"\n"
 
     bundle_hash = hashlib.sha256(bundle_content).hexdigest()
     bundle_content = (f"/*{bundle_hash}*/\n").encode("utf-8") + bundle_content
