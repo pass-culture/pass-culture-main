@@ -6,13 +6,13 @@
   @media (min-width: size.$tablet) {
     min-width: rem.torem(636px);
   }
+}
 
-  .explanation {
-    text-align: left;
+.explanation {
+  text-align: left;
 
-    ul {
-      list-style: disc;
-      margin-left: var(--size-spacing-xxl);
-    }
+  &-list {
+    list-style: disc;
+    margin-left: var(--size-spacing-xxl);
   }
 }

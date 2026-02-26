@@ -27,7 +27,7 @@
 .validation-screen {
   margin-bottom: var(--size-spacing-xl);
 
-  section:nth-child(even) {
+  &-section:nth-child(even) {
     margin-bottom: rem.torem(52px);
   }
 

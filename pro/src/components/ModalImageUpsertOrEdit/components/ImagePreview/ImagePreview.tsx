@@ -20,6 +20,8 @@ export const ImagePreview: FunctionComponent<ImagePreviewScreenProps> = ({
       className={styles['image-preview-previews-shell']}
     />
     <div className={styles['image-preview-screen']}>{children}</div>
-    <figcaption>{title}</figcaption>
+    <figcaption className={styles['image-preview-previews-wrapper-figcaption']}>
+      {title}
+    </figcaption>
   </figure>
 )

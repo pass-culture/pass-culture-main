@@ -67,7 +67,6 @@ export const FormStock = ({
         {...register('startDatetime')}
         onChange={handleStartDatetimeChange}
         error={formState.errors.startDatetime?.message}
-        className={styles['input-date']}
         required
         requiredIndicator="symbol"
       />

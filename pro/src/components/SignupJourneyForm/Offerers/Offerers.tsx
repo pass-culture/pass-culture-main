@@ -166,6 +166,7 @@ export const Offerers = (): JSX.Element => {
             <ul className={styles['venue-list']}>
               {permanentVenues.map((venue, index) => (
                 <li
+                  className={styles['venue-list-item']}
                   key={venue.id}
                   hidden={
                     displayToggleVenueList && !isVenueListOpen && index >= 4

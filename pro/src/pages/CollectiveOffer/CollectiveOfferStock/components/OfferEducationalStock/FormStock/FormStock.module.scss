@@ -2,10 +2,6 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_outline.scss" as outline;
 
-.input-date svg {
-  width: rem.torem(20px);
-}
-
 .input-custom-width {
   width: rem.torem(110px);
 }

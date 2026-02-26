@@ -34,7 +34,7 @@
   position: relative;
   align-items: center;
 
-  figcaption {
+  &-figcaption {
     @include fonts.body-accent-xs;
 
     margin-top: rem.torem(6px);
