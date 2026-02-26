@@ -5,30 +5,32 @@
  * <textarea class="pc-override-custom-textarea-enter" data-allow-line-breaks="true"></textarea>
  * <textarea class="pc-override-custom-textarea-enter" data-allow-line-breaks="false"></textarea>
  */
-class PcOverrideCustomTextareaEnter extends PcAddOn {
-  static TEXTAREA_SELECTOR = '.pc-override-custom-textarea-enter'
+addonList.push(
+  class PcOverrideCustomTextareaEnter extends PcAddOn {
+    static TEXTAREA_SELECTOR = '.pc-override-custom-textarea-enter'
 
-  bindEvents = () => {
-    EventHandler.on(document.body, 'keydown', PcOverrideCustomTextareaEnter.TEXTAREA_SELECTOR, this.#manageTextAreaKeydown)
-  }
+    bindEvents = () => {
+      EventHandler.on(document.body, 'keydown', PcOverrideCustomTextareaEnter.TEXTAREA_SELECTOR, this.#manageTextAreaKeydown)
+    }
 
-  unbindEvents = () => {
-    EventHandler.off(document.body, 'keydown', PcOverrideCustomTextareaEnter.TEXTAREA_SELECTOR, this.#manageTextAreaKeydown)
-  }
+    unbindEvents = () => {
+      EventHandler.off(document.body, 'keydown', PcOverrideCustomTextareaEnter.TEXTAREA_SELECTOR, this.#manageTextAreaKeydown)
+    }
 
-  #manageTextAreaKeydown = (event) => {
-    const $textarea = event.target
-    const allowLineBreaks = Boolean($textarea.dataset.allowLineBreaks)
-    if (event.keyCode === KeyboardKeyCode.ENTER) {
-      event.preventDefault()
-      if (allowLineBreaks && (event.ctrlKey || event.shiftKey)) {
-        const { selectionStart: start, value, selectionEnd } = $textarea
-        $textarea.value = `${value.slice(0, start)}\n${value.slice(selectionEnd)}`
-        $textarea.setSelectionRange(start + 1, start + 1)
-        $textarea.focus()
-        return
+    #manageTextAreaKeydown = (event) => {
+      const $textarea = event.target
+      const allowLineBreaks = Boolean($textarea.dataset.allowLineBreaks)
+      if (event.keyCode === KeyboardKeyCode.ENTER) {
+        event.preventDefault()
+        if (allowLineBreaks && (event.ctrlKey || event.shiftKey)) {
+          const { selectionStart: start, value, selectionEnd } = $textarea
+          $textarea.value = `${value.slice(0, start)}\n${value.slice(selectionEnd)}`
+          $textarea.setSelectionRange(start + 1, start + 1)
+          $textarea.focus()
+          return
+        }
+        $textarea.form.requestSubmit()
       }
-      $textarea.form.requestSubmit()
     }
   }
-}
+)

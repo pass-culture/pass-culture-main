@@ -33,38 +33,7 @@
     <script src="{{ url_for('static', filename='backoffice/js/bundle.js', hash=static_hashes.js) }}"></script>
     <script>
       const app = new PcBackofficeApp({
-        addOns: [
-          BsTooltips,
-          PcFilterDataset,
-          PcFormsCheckValidity,
-          PcValidationFilters,
-          PcTomSelectField,
-          PcOverrideCustomTextareaEnter,
-          PcTableMultiSelect,
-          PcBatchActionForm,
-          PcPostalAddressAutocomplete,
-          PcConfirmModal,
-          PcFieldList,
-          PcFormField,
-          PcDateRangeField,
-          PcClipBoard,
-          PcForm,
-          PcProSearchForm,
-          PcStripQueryString,
-          PcHideOnClick,
-          PcDisplaySelector,
-          PcTableManager,
-          PcSubmitFormButton,
-          PcFillToBottom,
-          PcSectionFocusOnload,
-          PcTablePaginator,
-          PcHtmxManager,
-          PcSortTable,
-          PcFlash,
-          PcTextareaCounter,
-          PcInputForm,
-          PcOfferCriterionForm,
-        ]
+        addOns: addonList
       })
     </script>
     <!-- Useful for local script and styles modification per-view -->

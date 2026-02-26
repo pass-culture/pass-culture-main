@@ -55,115 +55,117 @@
  *  {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_user_offerer_pending_form"), "batch-pending-modal", "eager") }}
  *  {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_reject_user_offerer_form"), "batch-reject-modal", "eager") }}
  */
-class PcBatchActionForm extends PcAddOn {
-  static BATCH_CONFIRM_BTN_GROUP_SELECTOR = '[data-toggle="pc-batch-confirm-btn-group"]'
-  static BATCH_CONFIRM_BTN_SELECTOR = 'button[data-use-confirmation-modal],button[data-use-dynamic-modal]'
-  static BATCH_ACTION_BUTTON_CONTAINER = '[data-table-multiselect-menu-for="%s"]'
-  static BATCH_ACTION_BUTTON_CONTAINER_ITEM_COUNTER = '.counter'
-  static BATCH_ACTION_BUTTON_CONTAINER_ITEM_VALUE = '.value'
+addonList.push(
+  class PcBatchActionForm extends PcAddOn {
+    static BATCH_CONFIRM_BTN_GROUP_SELECTOR = '[data-toggle="pc-batch-confirm-btn-group"]'
+    static BATCH_CONFIRM_BTN_SELECTOR = 'button[data-use-confirmation-modal],button[data-use-dynamic-modal]'
+    static BATCH_ACTION_BUTTON_CONTAINER = '[data-table-multiselect-menu-for="%s"]'
+    static BATCH_ACTION_BUTTON_CONTAINER_ITEM_COUNTER = '.counter'
+    static BATCH_ACTION_BUTTON_CONTAINER_ITEM_VALUE = '.value'
 
-  state = {}
+    state = {}
 
-  get $batchConfirmBtnGroups() {
-    return document.querySelectorAll(PcBatchActionForm.BATCH_CONFIRM_BTN_GROUP_SELECTOR)
-  }
+    get $batchConfirmBtnGroups() {
+      return document.querySelectorAll(PcBatchActionForm.BATCH_CONFIRM_BTN_GROUP_SELECTOR)
+    }
 
-  getBatchConfirmButtons($batchConfirmBtnGroup) {
-    return $batchConfirmBtnGroup.querySelectorAll(PcBatchActionForm.BATCH_CONFIRM_BTN_SELECTOR)
-  }
+    getBatchConfirmButtons($batchConfirmBtnGroup) {
+      return $batchConfirmBtnGroup.querySelectorAll(PcBatchActionForm.BATCH_CONFIRM_BTN_SELECTOR)
+    }
 
-  getBatchActionButtonContainer = (tableId) => {
-    return document.querySelector(PcBatchActionForm.BATCH_ACTION_BUTTON_CONTAINER.replace('%s', tableId))
-  }
+    getBatchActionButtonContainer = (tableId) => {
+      return document.querySelector(PcBatchActionForm.BATCH_ACTION_BUTTON_CONTAINER.replace('%s', tableId))
+    }
 
-  getCounterElement = ($menuContainer) => {
-    return $menuContainer.querySelector(PcBatchActionForm.BATCH_ACTION_BUTTON_CONTAINER_ITEM_COUNTER)
-  }
+    getCounterElement = ($menuContainer) => {
+      return $menuContainer.querySelector(PcBatchActionForm.BATCH_ACTION_BUTTON_CONTAINER_ITEM_COUNTER)
+    }
 
-  getValueElement = ($menuContainer) => {
-    return $menuContainer.querySelector(PcBatchActionForm.BATCH_ACTION_BUTTON_CONTAINER_ITEM_VALUE)
-  }
+    getValueElement = ($menuContainer) => {
+      return $menuContainer.querySelector(PcBatchActionForm.BATCH_ACTION_BUTTON_CONTAINER_ITEM_VALUE)
+    }
 
-  initialize = () => {
-    this.refreshState()
-  }
+    initialize = () => {
+      this.refreshState()
+    }
 
-  refreshState = () => {
-    this.$batchConfirmBtnGroups.forEach(($batchConfirmBtnGroup) => {
-      const { toggleId, pcTableMultiSelectId, inputIdsName } = $batchConfirmBtnGroup.dataset
-      this.state[toggleId] = {
-        inputIdsName,
-      }
-      this.getBatchConfirmButtons($batchConfirmBtnGroup).forEach(($button) => {
-        $button.dataset.pcTableMultiSelectId = pcTableMultiSelectId
-        $button.dataset.toggleId = toggleId
+    refreshState = () => {
+      this.$batchConfirmBtnGroups.forEach(($batchConfirmBtnGroup) => {
+        const { toggleId, pcTableMultiSelectId, inputIdsName } = $batchConfirmBtnGroup.dataset
+        this.state[toggleId] = {
+          inputIdsName,
+        }
+        this.getBatchConfirmButtons($batchConfirmBtnGroup).forEach(($button) => {
+          $button.dataset.pcTableMultiSelectId = pcTableMultiSelectId
+          $button.dataset.toggleId = toggleId
+        })
       })
-    })
-  }
+    }
 
-  bindEvents = () => {
-    this.refreshState()
-    addEventListener('pcTableMultiSelect:change', this.#onBatchSelectionChange)
-  }
+    bindEvents = () => {
+      this.refreshState()
+      addEventListener('pcTableMultiSelect:change', this.#onBatchSelectionChange)
+    }
 
-  unbindEvents = () => {
-    removeEventListener('pcTableMultiSelect:change', this.#onBatchSelectionChange)
-  }
+    unbindEvents = () => {
+      removeEventListener('pcTableMultiSelect:change', this.#onBatchSelectionChange)
+    }
 
-  #onBatchSelectionChange = ({ detail }) => {
-    const { selectedRowsIds, selectedCheckboxes, tableMultiSelectId } = detail
-    const $menuContainer = this.getBatchActionButtonContainer(tableMultiSelectId)
-    this.state[tableMultiSelectId] = { selectedRowsIds }
-    this.$batchConfirmBtnGroups.forEach(($batchConfirmBtnGroup) => {
-      const { pcTableMultiSelectId } = $batchConfirmBtnGroup.dataset
-      if (tableMultiSelectId !== pcTableMultiSelectId) {
-        return
-      }
+    #onBatchSelectionChange = ({ detail }) => {
+      const { selectedRowsIds, selectedCheckboxes, tableMultiSelectId } = detail
+      const $menuContainer = this.getBatchActionButtonContainer(tableMultiSelectId)
+      this.state[tableMultiSelectId] = { selectedRowsIds }
+      this.$batchConfirmBtnGroups.forEach(($batchConfirmBtnGroup) => {
+        const { pcTableMultiSelectId } = $batchConfirmBtnGroup.dataset
+        if (tableMultiSelectId !== pcTableMultiSelectId) {
+          return
+        }
 
-      this.getBatchConfirmButtons($batchConfirmBtnGroup).forEach(($button) => {
-        $button.disabled = selectedRowsIds.length === 0
+        this.getBatchConfirmButtons($batchConfirmBtnGroup).forEach(($button) => {
+          $button.disabled = selectedRowsIds.length === 0
+        })
       })
-    })
-    if($menuContainer !== null) {
-      if (selectedRowsIds.length === 0) {
-        $menuContainer.classList.add('d-none')
-      } else {
-        $menuContainer.classList.remove('d-none')
-        const $counterElement = this.getCounterElement($menuContainer)
-        $counterElement.innerText = selectedRowsIds.length
-        const $valueElement = this.getValueElement($menuContainer)
-        if ($valueElement != null) {
-          const totalValue = selectedCheckboxes.reduce(
-            (acc, checkbox) => acc + parseFloat(checkbox?.dataset?.value || 0)
-            , 0.0,
-          )
-          $valueElement.innerText = totalValue.toFixed(2).replace('.', ',')
+      if($menuContainer !== null) {
+        if (selectedRowsIds.length === 0) {
+          $menuContainer.classList.add('d-none')
+        } else {
+          $menuContainer.classList.remove('d-none')
+          const $counterElement = this.getCounterElement($menuContainer)
+          $counterElement.innerText = selectedRowsIds.length
+          const $valueElement = this.getValueElement($menuContainer)
+          if ($valueElement != null) {
+            const totalValue = selectedCheckboxes.reduce(
+              (acc, checkbox) => acc + parseFloat(checkbox?.dataset?.value || 0)
+              , 0.0,
+            )
+            $valueElement.innerText = totalValue.toFixed(2).replace('.', ',')
+          }
         }
       }
+      this.#updateHiddenFormIds(tableMultiSelectId, selectedRowsIds)
     }
-    this.#updateHiddenFormIds(tableMultiSelectId, selectedRowsIds)
-  }
 
-  #updateHiddenFormIds = (tableMultiSelectId, selectedRowsIds) => {
-    const formId = `form-ids-${tableMultiSelectId}`
-    const idsStr = [...selectedRowsIds].join(',')
-    let $form = document.getElementById(formId)
-    let $input = null
-    if (!$form) {
-      $form = document.createElement("form")
-      $form.classList.add("d-none")
-      $form.innerHTML = this.app.csrfTokenInput
-      $form.id = formId
-      $form.name = formId
-      $input = document.createElement("input")
-      $input.name = "object_ids"
-      $input.type = "hidden"
-      $input.value = idsStr
-      $form.appendChild($input)
-      document.body.append($form)
-    } else {
-      $input = $form.querySelector("[name=object_ids]")
-      $input.value = idsStr
+    #updateHiddenFormIds = (tableMultiSelectId, selectedRowsIds) => {
+      const formId = `form-ids-${tableMultiSelectId}`
+      const idsStr = [...selectedRowsIds].join(',')
+      let $form = document.getElementById(formId)
+      let $input = null
+      if (!$form) {
+        $form = document.createElement("form")
+        $form.classList.add("d-none")
+        $form.innerHTML = this.app.csrfTokenInput
+        $form.id = formId
+        $form.name = formId
+        $input = document.createElement("input")
+        $input.name = "object_ids"
+        $input.type = "hidden"
+        $input.value = idsStr
+        $form.appendChild($input)
+        document.body.append($form)
+      } else {
+        $input = $form.querySelector("[name=object_ids]")
+        $input.value = idsStr
+      }
     }
   }
-}
+)
