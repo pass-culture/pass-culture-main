@@ -13,7 +13,7 @@ from pcapi.core.offers import factories as offers_factories
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@pytest.mark.settings(ZENDESK_SELL_BACKEND="pcapi.core.external.zendesk_sell_backends.zendesk_sell.ZendeskSellBackend")
+@pytest.mark.settings(ZENDESK_SELL_BACKEND="pcapi.core.external.zendesk_sell.backends.zendesk_sell.ZendeskSellBackend")
 def test_create_offerer():
     offerer = offerers_factories.OffererFactory()
     offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__departmentCode="95")

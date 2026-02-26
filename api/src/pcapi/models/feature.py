@@ -148,10 +148,6 @@ class FeatureToggle(enum.Enum):
     WIP_ASYNCHRONOUS_CELERY_UPDATE_VENUE_OFFERS_EMAIL = (
         "Activer le backend de tâches asynchrones Celery pour les tâches liées à la mise à jour des emails des offres"
     )
-    WIP_ASYNCHRONOUS_CELERY_ZENDESK = "Activer le backend de tâches asynchrones Celery pour le webhook Zendesk Support"
-    WIP_ASYNCHRONOUS_CELERY_ZENDESK_SELL = (
-        "Activer le backend de tâches asynchrones Celery pour la synchronisation Zendesk Sell"
-    )
     WIP_ENABLE_FINANCE_SETTLEMENTS = "Active le workflow finance des règlements"
     WIP_ENABLE_NEW_PRO_HOME = "Activer la nouvelle page d'accueil du portail pro"
     WIP_ENABLE_OHO = "Activer la création d'offre individuelle sur plages horaires"
@@ -236,8 +232,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_SPECIAL_EVENT_TYPEFORM,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UPDATE_VENUE_OFFERS_ACCESSIBILITY,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UPDATE_VENUE_OFFERS_EMAIL,
-    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_ZENDESK,
-    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_ZENDESK_SELL,
     FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS,
     FeatureToggle.WIP_ENABLE_NEW_PRO_HOME,
     FeatureToggle.WIP_ENABLE_OHO,
