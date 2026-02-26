@@ -82,7 +82,10 @@ const NTH_ARGUMENT_GET_BOOKINGS = {
 
 const user = sharedCurrentUserFactory()
 
-const renderBookingsRecap = (overrides?: DeepPartial<RootState>) => {
+const renderBookingsRecap = (
+  overrides?: DeepPartial<RootState>,
+  features?: string[]
+) => {
   return renderWithProviders(null, {
     routes: individualBookingsRoutes,
     initialRouterEntries: ['/reservations'],
@@ -95,12 +98,15 @@ const renderBookingsRecap = (overrides?: DeepPartial<RootState>) => {
       offerer: currentOffererFactory(),
       ...overrides,
     },
+    features: features,
   })
 }
 
 const waitForCompleteLoading = async () => {
   await waitFor(() =>
-    expect(screen.getByRole('button', { name: 'Afficher' })).not.toBeDisabled()
+    expect(
+      screen.getByRole('button', { name: 'Rechercher les réservations' })
+    ).not.toBeDisabled()
   )
 
   await waitFor(() => {
@@ -180,7 +186,9 @@ describe('components | BookingsRecap | Pro user', () => {
       screen.getByLabelText('Localisation'),
       offererAddress[0].id.toString()
     )
-    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Rechercher les réservations' })
+    )
 
     await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
@@ -200,7 +208,9 @@ describe('components | BookingsRecap | Pro user', () => {
     renderBookingsRecap()
     await waitForCompleteLoading()
 
-    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Rechercher les réservations' })
+    )
 
     const noBookingsForPreFilters = await screen.findByText(
       'Aucune réservation trouvée pour votre recherche'
@@ -222,7 +232,9 @@ describe('components | BookingsRecap | Pro user', () => {
       screen.getByLabelText('Localisation'),
       offererAddress[0].id.toString()
     )
-    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Rechercher les réservations' })
+    )
 
     const resetButton = await screen.findByText(
       'Afficher toutes les réservations'
@@ -245,7 +257,9 @@ describe('components | BookingsRecap | Pro user', () => {
     renderBookingsRecap()
     await waitForCompleteLoading()
 
-    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Rechercher les réservations' })
+    )
 
     expect(
       screen.getByRole('button', { name: 'Réinitialiser les filtres' })
@@ -274,7 +288,9 @@ describe('components | BookingsRecap | Pro user', () => {
 
     await userEvent.type(beginningPeriodInput, '2019-01-01')
     await userEvent.type(endingPeriodInput, '2019-02-01')
-    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Rechercher les réservations' })
+    )
 
     const resetButton = await screen.findByRole('button', {
       name: 'Réinitialiser les filtres',
@@ -306,7 +322,9 @@ describe('components | BookingsRecap | Pro user', () => {
       screen.getByLabelText('Localisation'),
       offererAddress[0].id.toString()
     )
-    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Rechercher les réservations' })
+    )
 
     const resetButton = await screen.findByText('Réinitialiser les filtres')
     await userEvent.click(resetButton)
@@ -402,7 +420,9 @@ describe('components | BookingsRecap | Pro user', () => {
       screen.getByLabelText('Localisation'),
       offererAddress[0].id.toString()
     )
-    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Rechercher les réservations' })
+    )
 
     expect(
       await screen.findByText(bookings2.stock.offerName)
@@ -446,7 +466,9 @@ describe('components | BookingsRecap | Pro user', () => {
       screen.getByLabelText('Date de l’évènement'),
       '2020-06-08'
     )
-    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Rechercher les réservations' })
+    )
 
     await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
@@ -476,7 +498,9 @@ describe('components | BookingsRecap | Pro user', () => {
       screen.getByLabelText('Date de l’évènement'),
       '2020-08-10'
     )
-    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Rechercher les réservations' })
+    )
 
     await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
@@ -505,7 +529,9 @@ describe('components | BookingsRecap | Pro user', () => {
     renderBookingsRecap()
     await waitForCompleteLoading()
 
-    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Rechercher les réservations' })
+    )
 
     await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
@@ -540,7 +566,9 @@ describe('components | BookingsRecap | Pro user', () => {
     await userEvent.clear(endingPeriodInput)
     await userEvent.type(beginningPeriodInput, '2020-05-10')
     await userEvent.type(endingPeriodInput, '2020-06-05')
-    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Rechercher les réservations' })
+    )
 
     await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
@@ -582,13 +610,17 @@ describe('components | BookingsRecap | Pro user', () => {
       offererAddress[0].id.toString()
     )
 
-    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Rechercher les réservations' })
+    )
 
     await userEvent.selectOptions(
       screen.getByLabelText('Localisation'),
       ALL_OFFERER_ADDRESS_OPTION.label
     )
-    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Rechercher les réservations' })
+    )
 
     expect(await screen.findByText(booking.stock.offerName)).toBeInTheDocument()
     expect(
@@ -612,7 +644,9 @@ describe('components | BookingsRecap | Pro user', () => {
       screen.getByLabelText('Localisation'),
       offererAddress[0].id.toString()
     )
-    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Rechercher les réservations' })
+    )
 
     const informationalMessage = await screen.findByText(
       'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
@@ -636,7 +670,9 @@ describe('components | BookingsRecap | Pro user', () => {
       screen.getByLabelText('Localisation'),
       offererAddress[0].id.toString()
     )
-    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Rechercher les réservations' })
+    )
 
     await waitFor(() => expect(api.getBookingsPro).toHaveBeenCalledTimes(5))
     const informationalMessage = screen.queryByText(
@@ -649,7 +685,9 @@ describe('components | BookingsRecap | Pro user', () => {
     renderBookingsRecap()
     await waitForCompleteLoading()
 
-    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Rechercher les réservations' })
+    )
 
     await userEvent.selectOptions(
       screen.getByLabelText('Localisation'),
@@ -708,7 +746,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     expect(
       screen.getByRole('button', {
-        name: 'Afficher',
+        name: 'Rechercher les réservations',
       })
     ).toBeDisabled()
     expect(
@@ -745,5 +783,17 @@ describe('components | BookingsRecap | Pro user', () => {
       DEFAULT_PRE_FILTERS.bookingEndingDate,
       null
     )
+  })
+  describe('with WIP_SWITCH_VENUE feature flag', () => {
+    it('should render downloads moved banner', async () => {
+      renderBookingsRecap({}, ['WIP_SWITCH_VENUE'])
+      await waitForCompleteLoading()
+
+      expect(
+        screen.getByText(
+          'Télécharger vos réservations dans l’onglet “Données d’activité” de votre Espace Administration accessible en haut à droite.'
+        )
+      ).toBeInTheDocument()
+    })
   })
 })

@@ -30,6 +30,7 @@ import { getCollectiveOfferColumns } from '@/components/CollectiveOffersTable/Co
 import { ExpirationCell } from '@/components/CollectiveOffersTable/CollectiveOfferColumns/ExpirationCell/ExpirationCell'
 import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
 import { CollectiveOffersDownloadDrawer } from '@/components/CollectiveOffersTable/CollectiveOffersDownloadDrawer/CollectiveOffersDownloadDrawer'
+import { DownloadsMovedBanner } from '@/components/DownloadsMovedBanner/DownloadsMovedBanner'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import { Banner } from '@/design-system/Banner/Banner'
 import strokeNoBooking from '@/icons/stroke-no-booking.svg'
@@ -170,6 +171,11 @@ export const CollectiveOffersScreen = ({
         setSelectedFilters={setSelectedFilters}
         searchButtonRef={searchButtonRef}
       />
+      {withSwitchVenueFeature && (
+        <div className={styles['downloads-banner']}>
+          <DownloadsMovedBanner />
+        </div>
+      )}
       <output aria-live="polite">
         {offers.length > MAX_OFFERS_TO_DISPLAY && (
           <div className={styles['offers-table-callout']}>
@@ -190,10 +196,12 @@ export const CollectiveOffersScreen = ({
                 {pluralizeFr(offers.length, 'offre', 'offres')}
               </div>
             </div>
-            <CollectiveOffersDownloadDrawer
-              isDisabled={userHasNoOffers}
-              filters={selectedFilters}
-            />
+            {!withSwitchVenueFeature && (
+              <CollectiveOffersDownloadDrawer
+                isDisabled={userHasNoOffers}
+                filters={selectedFilters}
+              />
+            )}
           </div>
         )}
       </output>

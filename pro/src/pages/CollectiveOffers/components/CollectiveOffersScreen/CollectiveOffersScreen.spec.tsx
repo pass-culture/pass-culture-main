@@ -427,5 +427,13 @@ describe('CollectiveOffersScreen', () => {
         within(filtersButton).queryByText('actifs')
       ).not.toBeInTheDocument()
     })
+    it('should render downloads moved banner', () => {
+      renderOffers(props, optionsBase)
+      expect(
+        screen.getByText(
+          'Télécharger vos offres réservables dans l’onglet “Données d’activité” de votre Espace Administration accessible en haut à droite.'
+        )
+      ).toBeInTheDocument()
+    })
   })
 })
