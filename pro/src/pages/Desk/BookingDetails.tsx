@@ -1,5 +1,3 @@
-import cx from 'classnames'
-
 import type { GetBookingResponse } from '@/apiClient/v1'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import {
@@ -19,9 +17,9 @@ interface BookingProps {
 }
 
 const BookingDetailsLine = ({ label, value }: BookingProps) => (
-  <div>
+  <div className={styles['desk-line']}>
     <div className={styles['desk-label']}>{label}</div>
-    <div className={styles['desk-value']}>{value}</div>
+    <div>{value}</div>
   </div>
 )
 
@@ -52,14 +50,14 @@ export const BookingDetails = ({ booking }: BookingDetailsProps) => {
       />
 
       {booking.quantity === 2 ? (
-        <div>
-          <div className={styles['desk-label']}>{'Prix : '}</div>
-          <div className={cx(styles['desk-value'], styles['duo-price'])}>
+        <div className={styles['desk-line']}>
+          <div className={styles['desk-label']}>Prix :</div>
+          <div className={styles['desk-value']}>
             {isCaledonian
               ? formatPacificFranc(convertEuroToPacificFranc(booking.price * 2))
               : formatPrice(booking.price * 2)}
-            <SvgIcon src={strokeDuoIcon} alt="Réservation DUO" />
           </div>
+          <SvgIcon src={strokeDuoIcon} alt="Réservation DUO" width="30" />
         </div>
       ) : (
         <BookingDetailsLine
