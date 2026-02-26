@@ -14,48 +14,50 @@
  *     <!-- modal content -->
  * </div>
  */
-class PcConfirmModal extends PcAddOn {
+addonList.push(
+  class PcConfirmModal extends PcAddOn {
 
     static CONFIRM_INPUT_SELECTOR = '[data-confirm-modal]'
 
     state = {}
 
     get $inputs() {
-        return document.querySelectorAll(PcConfirmModal.CONFIRM_INPUT_SELECTOR)
+      return document.querySelectorAll(PcConfirmModal.CONFIRM_INPUT_SELECTOR)
     }
 
     initialize = () => {
-        this.$inputs.forEach(($input) => {
-            $input.dataset.initialValue = ['checkbox', 'radio'].includes($input.type) ? $input.checked : $input.value
-        })
+      this.$inputs.forEach(($input) => {
+        $input.dataset.initialValue = ['checkbox', 'radio'].includes($input.type) ? $input.checked : $input.value
+      })
     }
 
     bindEvents = () => {
-        EventHandler.on(document.body, 'change', PcConfirmModal.CONFIRM_INPUT_SELECTOR, this.#onChange)
+      EventHandler.on(document.body, 'change', PcConfirmModal.CONFIRM_INPUT_SELECTOR, this.#onChange)
     }
 
     unbindEvents = () => {
-        EventHandler.off(document.body, 'change', PcConfirmModal.CONFIRM_INPUT_SELECTOR, this.#onChange)
+      EventHandler.off(document.body, 'change', PcConfirmModal.CONFIRM_INPUT_SELECTOR, this.#onChange)
     }
 
     #onChange = (event) => {
-        const $input = event.target
-        const { confirmModal } = $input.dataset
-        const $modal = document.querySelector(confirmModal)
-        this.state.$input = $input
-        $modal.addEventListener('hidden.bs.modal', this.#restoreToInitialValue)
+      const $input = event.target
+      const { confirmModal } = $input.dataset
+      const $modal = document.querySelector(confirmModal)
+      this.state.$input = $input
+      $modal.addEventListener('hidden.bs.modal', this.#restoreToInitialValue)
     }
 
     #restoreToInitialValue = () => {
-        const { $input } = this.state
-        if (['checkbox', 'radio'].includes($input.type)) {
-            $input.checked = $input.dataset.initialValue === 'true'
-        } else {
-            $input.value = $input.dataset.initialValue
-        }
+      const { $input } = this.state
+      if (['checkbox', 'radio'].includes($input.type)) {
+        $input.checked = $input.dataset.initialValue === 'true'
+      } else {
+        $input.value = $input.dataset.initialValue
+      }
 
-        const $modal = document.querySelector($input.dataset.confirmModal)
-        $modal.removeEventListener('hidden.bs.modal', this.#restoreToInitialValue)
-        delete this.state.$input
+      const $modal = document.querySelector($input.dataset.confirmModal)
+      $modal.removeEventListener('hidden.bs.modal', this.#restoreToInitialValue)
+      delete this.state.$input
     }
-}
+  }
+)

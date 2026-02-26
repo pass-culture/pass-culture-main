@@ -68,310 +68,312 @@
  *   </tbody>
  * </table>
  */
-class PcTablePaginator extends PcAddOn {
-  static SELECTOR = '.pc-table-paginator'
-  static CONTROLS_CONTAINER = 'pc-paginator-controls'
-  static PREVIOUS_BUTTON = 'pc-paginator-prev'
-  static NEXT_BUTTON = 'pc-paginator-next'
-  static PAGE_LINK = 'pc-paginator-page'
-  static SEARCH_INPUT_SELECTOR = 'input[type="text"]'
-  static SEARCH_SELECT_SELECTOR = 'select'
-  static DEFAULT_ITEMS_PER_PAGE = 20
-  static DEFAULT_MAX_VISIBLE_PAGES = 20
+addonList.push(
+  class PcTablePaginator extends PcAddOn {
+    static SELECTOR = '.pc-table-paginator'
+    static CONTROLS_CONTAINER = 'pc-paginator-controls'
+    static PREVIOUS_BUTTON = 'pc-paginator-prev'
+    static NEXT_BUTTON = 'pc-paginator-next'
+    static PAGE_LINK = 'pc-paginator-page'
+    static SEARCH_INPUT_SELECTOR = 'input[type="text"]'
+    static SEARCH_SELECT_SELECTOR = 'select'
+    static DEFAULT_ITEMS_PER_PAGE = 20
+    static DEFAULT_MAX_VISIBLE_PAGES = 20
 
-  get $tables() {
-    return document.querySelectorAll(PcTablePaginator.SELECTOR)
-  }
-
-  #paginators = {}
-
-  #initializePaginatorForTable = ($table) => {
-    const tableId = $table.id
-
-    const $trElements = Array.from($table.querySelectorAll('tbody tr'))
-    if ($trElements.length === 0) {
-      $table.classList.remove('d-none')
-      return;
+    get $tables() {
+      return document.querySelectorAll(PcTablePaginator.SELECTOR)
     }
 
-    const allRows = $trElements.map($tr => {
-      const searchableColumns = {};
-      $tr.querySelectorAll('td[data-search-key]').forEach($cell => {
-        const key = $cell.dataset.searchKey;
-        const value = $cell.textContent;
-        searchableColumns[key] = value.toLowerCase();
+    #paginators = {}
+
+    #initializePaginatorForTable = ($table) => {
+      const tableId = $table.id
+
+      const $trElements = Array.from($table.querySelectorAll('tbody tr'))
+      if ($trElements.length === 0) {
+        $table.classList.remove('d-none')
+        return;
+      }
+
+      const allRows = $trElements.map($tr => {
+        const searchableColumns = {};
+        $tr.querySelectorAll('td[data-search-key]').forEach($cell => {
+          const key = $cell.dataset.searchKey;
+          const value = $cell.textContent;
+          searchableColumns[key] = value.toLowerCase();
+        });
+        return {
+          $element: $tr,
+          searchableColumns: searchableColumns
+        };
       });
-      return {
-        $element: $tr,
-        searchableColumns: searchableColumns
-      };
-    });
 
-    const showTotalCount = $table.dataset.pcShowTotalCount === 'true'
-    const itemsPerPage = parseInt($table.dataset.pcItemsPerPage, 10) || PcTablePaginator.DEFAULT_ITEMS_PER_PAGE
-    const maxVisiblePages = parseInt($table.dataset.pcMaxVisiblePages, 10) || PcTablePaginator.DEFAULT_MAX_VISIBLE_PAGES
+      const showTotalCount = $table.dataset.pcShowTotalCount === 'true'
+      const itemsPerPage = parseInt($table.dataset.pcItemsPerPage, 10) || PcTablePaginator.DEFAULT_ITEMS_PER_PAGE
+      const maxVisiblePages = parseInt($table.dataset.pcMaxVisiblePages, 10) || PcTablePaginator.DEFAULT_MAX_VISIBLE_PAGES
 
-    let $paginationControlsContainer = document.createElement('div')
-    $paginationControlsContainer.classList.add(PcTablePaginator.CONTROLS_CONTAINER)
-    $table.after($paginationControlsContainer)
+      let $paginationControlsContainer = document.createElement('div')
+      $paginationControlsContainer.classList.add(PcTablePaginator.CONTROLS_CONTAINER)
+      $table.after($paginationControlsContainer)
 
-    this.#paginators[tableId] = {
-      $table: $table,
-      allRows: allRows,
-      $filteredRows: allRows,
-      $paginationControlsContainer: $paginationControlsContainer,
-      totalItems: allRows.length,
-      showTotalCount: showTotalCount,
-      itemsPerPage: itemsPerPage,
-      totalPages: Math.ceil(allRows.length / itemsPerPage),
-      maxVisiblePages: maxVisiblePages,
-      currentPage: 1,
-      searchContainerId: $table.dataset.pcSearchContainerId || null,
-      $searchInput: null,
-      $searchSelect: null,
-      searchQuery: '',
-      searchColumn: 'all',
-      searchHandler: null,
-      filterChangeHandler: null
+      this.#paginators[tableId] = {
+        $table: $table,
+        allRows: allRows,
+        $filteredRows: allRows,
+        $paginationControlsContainer: $paginationControlsContainer,
+        totalItems: allRows.length,
+        showTotalCount: showTotalCount,
+        itemsPerPage: itemsPerPage,
+        totalPages: Math.ceil(allRows.length / itemsPerPage),
+        maxVisiblePages: maxVisiblePages,
+        currentPage: 1,
+        searchContainerId: $table.dataset.pcSearchContainerId || null,
+        $searchInput: null,
+        $searchSelect: null,
+        searchQuery: '',
+        searchColumn: 'all',
+        searchHandler: null,
+        filterChangeHandler: null
+      }
+
+      this.#initializeSearch(tableId)
+      this.#updateUI(tableId)
     }
 
-    this.#initializeSearch(tableId)
-    this.#updateUI(tableId)
-  }
+    #initializeSearch = (tableId) => {
+      const state = this.#paginators[tableId]
+      if (!state.searchContainerId) {
+        return;
+      }
 
-  #initializeSearch = (tableId) => {
-    const state = this.#paginators[tableId]
-    if (!state.searchContainerId) {
-      return;
-    }
+      const $searchContainer = document.getElementById(state.searchContainerId)
+      if (!$searchContainer) {
+        return;
+      }
 
-    const $searchContainer = document.getElementById(state.searchContainerId)
-    if (!$searchContainer) {
-      return;
-    }
+      state.$searchInput = $searchContainer.querySelector(PcTablePaginator.SEARCH_INPUT_SELECTOR)
+      state.$searchSelect = $searchContainer.querySelector(PcTablePaginator.SEARCH_SELECT_SELECTOR)
 
-    state.$searchInput = $searchContainer.querySelector(PcTablePaginator.SEARCH_INPUT_SELECTOR)
-    state.$searchSelect = $searchContainer.querySelector(PcTablePaginator.SEARCH_SELECT_SELECTOR)
+      if (state.$searchInput) {
+        state.searchHandler = () => this.#onSearchOrFilterChange(tableId)
+      }
 
-    if (state.$searchInput) {
-      state.searchHandler = () => this.#onSearchOrFilterChange(tableId)
-    }
-
-    if (state.$searchSelect) {
-      state.filterChangeHandler = () => this.#onSearchOrFilterChange(tableId)
-    }
-  }
-
-  #updateUI = (tableId) => {
-    this.#updateTopControls(tableId)
-    this.#updatePaginationControls(tableId)
-    this.#renderPage(tableId)
-  }
-
-  #updateTopControls = (tableId) => {
-    const $oldControls = document.querySelector(`[data-pc-paginator-top-controls-for="${tableId}"]`)
-    if ($oldControls) {
-      $oldControls.remove()
-    }
-
-    const state = this.#paginators[tableId]
-    if (!state || !state.showTotalCount) {
-      return;
-    }
-
-    const { $table, totalItems } = state
-    const $topWrapper = document.createElement('div')
-    $topWrapper.dataset.pcPaginatorTopControlsFor = tableId
-    $topWrapper.className = 'mb-2'
-
-    $topWrapper.innerHTML = `<p class="lead num-results-unlinked-offer">${totalItems} résultat${totalItems > 1 ? 's' : ''}</p>`
-
-    $table.parentNode.insertBefore($topWrapper, $table)
-  }
-
-  #updatePaginationControls = (tableId) => {
-    const state = this.#paginators[tableId]
-    state.$paginationControlsContainer.innerHTML = ''
-    if (state.totalPages <= 1) {
-      return;
-    }
-
-    const $list = document.createElement('ul')
-    $list.className = 'pagination'
-
-    $list.appendChild(this.#createNavButton(tableId, 'Précédent', state.currentPage === 1))
-
-    let startPage, endPage;
-    if (state.totalPages <= state.maxVisiblePages) {
-      startPage = 1; endPage = state.totalPages
-    } else {
-      const sidePages = Math.floor((state.maxVisiblePages - 1) / 2)
-      if (state.currentPage <= sidePages) {
-        startPage = 1; endPage = state.maxVisiblePages
-      } else if (state.currentPage + sidePages >= state.totalPages) {
-        startPage = state.totalPages - state.maxVisiblePages + 1; endPage = state.totalPages
-      } else {
-        startPage = state.currentPage - sidePages; endPage = state.currentPage + sidePages
+      if (state.$searchSelect) {
+        state.filterChangeHandler = () => this.#onSearchOrFilterChange(tableId)
       }
     }
-    for (let i = startPage; i <= endPage; i++) {
-      $list.appendChild(this.#createPageLink(i, state.currentPage, tableId));
+
+    #updateUI = (tableId) => {
+      this.#updateTopControls(tableId)
+      this.#updatePaginationControls(tableId)
+      this.#renderPage(tableId)
     }
 
-    $list.appendChild(this.#createNavButton(tableId, 'Suivant', state.currentPage === state.totalPages))
+    #updateTopControls = (tableId) => {
+      const $oldControls = document.querySelector(`[data-pc-paginator-top-controls-for="${tableId}"]`)
+      if ($oldControls) {
+        $oldControls.remove()
+      }
 
-    const $nav = document.createElement('nav')
-    $nav.setAttribute('aria-label', 'Table navigation')
-    $nav.appendChild($list)
-    state.$paginationControlsContainer.appendChild($nav)
-  }
+      const state = this.#paginators[tableId]
+      if (!state || !state.showTotalCount) {
+        return;
+      }
 
-  #renderPage = (tableId) => {
-    const state = this.#paginators[tableId]
-    const { $table, allRows, $filteredRows, currentPage, itemsPerPage } = state
+      const { $table, totalItems } = state
+      const $topWrapper = document.createElement('div')
+      $topWrapper.dataset.pcPaginatorTopControlsFor = tableId
+      $topWrapper.className = 'mb-2'
 
-    $table.classList.add('d-none')
-    allRows.forEach(row => row.$element.classList.add('d-none'))
+      $topWrapper.innerHTML = `<p class="lead num-results-unlinked-offer">${totalItems} résultat${totalItems > 1 ? 's' : ''}</p>`
 
-    const startIndex = (currentPage - 1) * itemsPerPage
-    const rowsToShow = $filteredRows.slice(startIndex, startIndex + itemsPerPage)
-    rowsToShow.forEach(row => row.$element.classList.remove('d-none'))
-    $table.classList.remove('d-none')
-  }
+      $table.parentNode.insertBefore($topWrapper, $table)
+    }
 
-  #createPageLink = (pageNum, currentPage, tableId) => {
+    #updatePaginationControls = (tableId) => {
+      const state = this.#paginators[tableId]
+      state.$paginationControlsContainer.innerHTML = ''
+      if (state.totalPages <= 1) {
+        return;
+      }
+
+      const $list = document.createElement('ul')
+      $list.className = 'pagination'
+
+      $list.appendChild(this.#createNavButton(tableId, 'Précédent', state.currentPage === 1))
+
+      let startPage, endPage;
+      if (state.totalPages <= state.maxVisiblePages) {
+        startPage = 1; endPage = state.totalPages
+      } else {
+        const sidePages = Math.floor((state.maxVisiblePages - 1) / 2)
+        if (state.currentPage <= sidePages) {
+          startPage = 1; endPage = state.maxVisiblePages
+        } else if (state.currentPage + sidePages >= state.totalPages) {
+          startPage = state.totalPages - state.maxVisiblePages + 1; endPage = state.totalPages
+        } else {
+          startPage = state.currentPage - sidePages; endPage = state.currentPage + sidePages
+        }
+      }
+      for (let i = startPage; i <= endPage; i++) {
+        $list.appendChild(this.#createPageLink(i, state.currentPage, tableId));
+      }
+
+      $list.appendChild(this.#createNavButton(tableId, 'Suivant', state.currentPage === state.totalPages))
+
+      const $nav = document.createElement('nav')
+      $nav.setAttribute('aria-label', 'Table navigation')
+      $nav.appendChild($list)
+      state.$paginationControlsContainer.appendChild($nav)
+    }
+
+    #renderPage = (tableId) => {
+      const state = this.#paginators[tableId]
+      const { $table, allRows, $filteredRows, currentPage, itemsPerPage } = state
+
+      $table.classList.add('d-none')
+      allRows.forEach(row => row.$element.classList.add('d-none'))
+
+      const startIndex = (currentPage - 1) * itemsPerPage
+      const rowsToShow = $filteredRows.slice(startIndex, startIndex + itemsPerPage)
+      rowsToShow.forEach(row => row.$element.classList.remove('d-none'))
+      $table.classList.remove('d-none')
+    }
+
+    #createPageLink = (pageNum, currentPage, tableId) => {
+        const $li = document.createElement('li')
+        const isActive = pageNum === currentPage
+        $li.className = `page-item ${isActive ? 'active' : ''}`
+        $li.innerHTML = `<a class="page-link ${PcTablePaginator.PAGE_LINK} ${isActive ? 'fw-bold' : ''}" href="#" data-pc-target-table-id="${tableId}" data-pc-page="${pageNum}">${pageNum}</a>`
+        return $li
+    }
+
+    #createNavButton = (tableId, text, isDisabled) => {
       const $li = document.createElement('li')
-      const isActive = pageNum === currentPage
-      $li.className = `page-item ${isActive ? 'active' : ''}`
-      $li.innerHTML = `<a class="page-link ${PcTablePaginator.PAGE_LINK} ${isActive ? 'fw-bold' : ''}" href="#" data-pc-target-table-id="${tableId}" data-pc-page="${pageNum}">${pageNum}</a>`
+      const className = text === 'Précédent' ? PcTablePaginator.PREVIOUS_BUTTON : PcTablePaginator.NEXT_BUTTON
+      $li.className = `page-item ${isDisabled ? 'disabled' : ''}`
+      $li.innerHTML = `<a class="page-link ${className}" href="#" data-pc-target-table-id="${tableId}">${text}</a>`
       return $li
-  }
-
-  #createNavButton = (tableId, text, isDisabled) => {
-    const $li = document.createElement('li')
-    const className = text === 'Précédent' ? PcTablePaginator.PREVIOUS_BUTTON : PcTablePaginator.NEXT_BUTTON
-    $li.className = `page-item ${isDisabled ? 'disabled' : ''}`
-    $li.innerHTML = `<a class="page-link ${className}" href="#" data-pc-target-table-id="${tableId}">${text}</a>`
-    return $li
-  }
-
-  #getStateFromEvent = (event) => {
-    const $trigger = event.target.closest('[data-pc-target-table-id]')
-    return $trigger ? this.#paginators[$trigger.dataset.pcTargetTableId] : null
-  }
-
-  #refreshStateAndUI = (tableId) => {
-    const state = this.#paginators[tableId]
-
-    state.totalItems = state.$filteredRows.length
-    state.totalPages = Math.ceil(state.totalItems / state.itemsPerPage)
-    state.currentPage = 1
-
-    this.#updateUI(tableId)
-  }
-
-  #onSearchOrFilterChange = (tableId) => {
-    const state = this.#paginators[tableId]
-    if (!state) {
-      return;
     }
 
-    state.searchQuery = state.$searchInput ? state.$searchInput.value.toLowerCase() : ''
-    state.searchColumn = state.$searchSelect ? state.$searchSelect.value : 'all'
-
-    state.$filteredRows = state.allRows.filter(row => {
-      if (state.searchQuery === '') {
-        return true
-      }
-      if (state.searchColumn === 'all') {
-        return Object.values(row.searchableColumns).some(value =>
-          value.includes(state.searchQuery)
-        );
-      } else {
-        const cell = row.searchableColumns[state.searchColumn]
-        return cell ? cell.includes(state.searchQuery) : false
-      }
-    })
-
-    this.#refreshStateAndUI(tableId)
-  }
-
-  #onPageClick = (event) => {
-    event.preventDefault()
-    const state = this.#getStateFromEvent(event)
-    if (!state) {
-      return;
+    #getStateFromEvent = (event) => {
+      const $trigger = event.target.closest('[data-pc-target-table-id]')
+      return $trigger ? this.#paginators[$trigger.dataset.pcTargetTableId] : null
     }
 
-    const page = parseInt(event.target.dataset.pcPage, 10)
-    if (page && page !== state.currentPage) {
-      state.currentPage = page
-      const tableId = state.$table.id
-      this.#renderPage(tableId)
-      this.#updatePaginationControls(tableId)
+    #refreshStateAndUI = (tableId) => {
+      const state = this.#paginators[tableId]
+
+      state.totalItems = state.$filteredRows.length
+      state.totalPages = Math.ceil(state.totalItems / state.itemsPerPage)
+      state.currentPage = 1
+
+      this.#updateUI(tableId)
     }
-  }
 
-  #onPrevClick = (event) => {
-    event.preventDefault()
-    const state = this.#getStateFromEvent(event)
-    if (state && state.currentPage > 1) {
-      state.currentPage--
-      const tableId = state.$table.id
-      this.#renderPage(tableId)
-      this.#updatePaginationControls(tableId)
-    }
-  }
-
-  #onNextClick = (event) => {
-    event.preventDefault()
-    const state = this.#getStateFromEvent(event)
-    if (state && state.currentPage < state.totalPages) {
-      state.currentPage++
-      const tableId = state.$table.id
-      this.#renderPage(tableId)
-      this.#updatePaginationControls(tableId)
-    }
-  }
-
-  initialize = () => {
-    this.#paginators = {}
-    this.$tables.forEach(this.#initializePaginatorForTable)
-  }
-
-  bindEvents = () => {
-    EventHandler.on(document.body, 'click', `.${PcTablePaginator.PAGE_LINK}`, this.#onPageClick)
-    EventHandler.on(document.body, 'click', `.${PcTablePaginator.PREVIOUS_BUTTON}`, this.#onPrevClick)
-    EventHandler.on(document.body, 'click', `.${PcTablePaginator.NEXT_BUTTON}`, this.#onNextClick)
-
-    for (const tableId in this.#paginators) {
-      const state = this.#paginators[tableId];
-
-      if (state.$searchInput && state.searchHandler) {
-        state.$searchInput.addEventListener('input', state.searchHandler);
+    #onSearchOrFilterChange = (tableId) => {
+      const state = this.#paginators[tableId]
+      if (!state) {
+        return;
       }
 
-      if (state.$searchSelect && state.filterChangeHandler) {
-        state.$searchSelect.addEventListener('change', state.filterChangeHandler);
+      state.searchQuery = state.$searchInput ? state.$searchInput.value.toLowerCase() : ''
+      state.searchColumn = state.$searchSelect ? state.$searchSelect.value : 'all'
+
+      state.$filteredRows = state.allRows.filter(row => {
+        if (state.searchQuery === '') {
+          return true
+        }
+        if (state.searchColumn === 'all') {
+          return Object.values(row.searchableColumns).some(value =>
+            value.includes(state.searchQuery)
+          );
+        } else {
+          const cell = row.searchableColumns[state.searchColumn]
+          return cell ? cell.includes(state.searchQuery) : false
+        }
+      })
+
+      this.#refreshStateAndUI(tableId)
+    }
+
+    #onPageClick = (event) => {
+      event.preventDefault()
+      const state = this.#getStateFromEvent(event)
+      if (!state) {
+        return;
+      }
+
+      const page = parseInt(event.target.dataset.pcPage, 10)
+      if (page && page !== state.currentPage) {
+        state.currentPage = page
+        const tableId = state.$table.id
+        this.#renderPage(tableId)
+        this.#updatePaginationControls(tableId)
       }
     }
-  }
 
-  unbindEvents = () => {
-    EventHandler.off(document.body, 'click', `.${PcTablePaginator.PAGE_LINK}`, this.#onPageClick)
-    EventHandler.off(document.body, 'click', `.${PcTablePaginator.PREVIOUS_BUTTON}`, this.#onPrevClick)
-    EventHandler.off(document.body, 'click', `.${PcTablePaginator.NEXT_BUTTON}`, this.#onNextClick)
-
-    for (const tableId in this.#paginators) {
-      const state = this.#paginators[tableId];
-
-      if (state.$searchInput && state.searchHandler) {
-        state.$searchInput.removeEventListener('input', state.searchHandler);
+    #onPrevClick = (event) => {
+      event.preventDefault()
+      const state = this.#getStateFromEvent(event)
+      if (state && state.currentPage > 1) {
+        state.currentPage--
+        const tableId = state.$table.id
+        this.#renderPage(tableId)
+        this.#updatePaginationControls(tableId)
       }
+    }
 
-      if (state.$searchSelect && state.filterChangeHandler) {
-        state.$searchSelect.removeEventListener('change', state.filterChangeHandler);
+    #onNextClick = (event) => {
+      event.preventDefault()
+      const state = this.#getStateFromEvent(event)
+      if (state && state.currentPage < state.totalPages) {
+        state.currentPage++
+        const tableId = state.$table.id
+        this.#renderPage(tableId)
+        this.#updatePaginationControls(tableId)
+      }
+    }
+
+    initialize = () => {
+      this.#paginators = {}
+      this.$tables.forEach(this.#initializePaginatorForTable)
+    }
+
+    bindEvents = () => {
+      EventHandler.on(document.body, 'click', `.${PcTablePaginator.PAGE_LINK}`, this.#onPageClick)
+      EventHandler.on(document.body, 'click', `.${PcTablePaginator.PREVIOUS_BUTTON}`, this.#onPrevClick)
+      EventHandler.on(document.body, 'click', `.${PcTablePaginator.NEXT_BUTTON}`, this.#onNextClick)
+
+      for (const tableId in this.#paginators) {
+        const state = this.#paginators[tableId];
+
+        if (state.$searchInput && state.searchHandler) {
+          state.$searchInput.addEventListener('input', state.searchHandler);
+        }
+
+        if (state.$searchSelect && state.filterChangeHandler) {
+          state.$searchSelect.addEventListener('change', state.filterChangeHandler);
+        }
+      }
+    }
+
+    unbindEvents = () => {
+      EventHandler.off(document.body, 'click', `.${PcTablePaginator.PAGE_LINK}`, this.#onPageClick)
+      EventHandler.off(document.body, 'click', `.${PcTablePaginator.PREVIOUS_BUTTON}`, this.#onPrevClick)
+      EventHandler.off(document.body, 'click', `.${PcTablePaginator.NEXT_BUTTON}`, this.#onNextClick)
+
+      for (const tableId in this.#paginators) {
+        const state = this.#paginators[tableId];
+
+        if (state.$searchInput && state.searchHandler) {
+          state.$searchInput.removeEventListener('input', state.searchHandler);
+        }
+
+        if (state.$searchSelect && state.filterChangeHandler) {
+          state.$searchSelect.removeEventListener('change', state.filterChangeHandler);
+        }
       }
     }
   }
-}
+)

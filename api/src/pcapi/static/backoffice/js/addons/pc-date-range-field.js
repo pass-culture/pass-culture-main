@@ -22,7 +22,8 @@
  *     calendar_end_date=datetime.date.today() - timedelta(days=30),
  * )
  */
-class PcDateRangeField extends PcAddOn {
+addonList.push(
+  class PcDateRangeField extends PcAddOn {
 
     static DATE_RANGE_SELECTOR = '.pc-date-range-field'
     static DATE_FORMAT = 'DD/MM/YYYY'
@@ -36,77 +37,76 @@ class PcDateRangeField extends PcAddOn {
     state = []
 
     get $$dateRange() {
-        return document.querySelectorAll(PcDateRangeField.DATE_RANGE_SELECTOR)
+      return document.querySelectorAll(PcDateRangeField.DATE_RANGE_SELECTOR)
     }
 
 
     get locale() {
-        return {
-            format: PcDateRangeField.DATE_FORMAT,
-            daysOfWeek: PcDateRangeField.LOCALE_DAY_OF_THE_WEEK,
-            monthNames: PcDateRangeField.LOCALE_MONTH_NAMES,
-            firstDay: PcDateRangeField.LOCALE_FIRST_DAY,
-            applyLabel: PcDateRangeField.LOCALE_APPLY_LABEL,
-            cancelLabel: PcDateRangeField.LOCALE_CANCEL_LABEL,
-            separator: PcDateRangeField.LOCALE_SEPARATOR,
-        }
+      return {
+        format: PcDateRangeField.DATE_FORMAT,
+        daysOfWeek: PcDateRangeField.LOCALE_DAY_OF_THE_WEEK,
+        monthNames: PcDateRangeField.LOCALE_MONTH_NAMES,
+        firstDay: PcDateRangeField.LOCALE_FIRST_DAY,
+        applyLabel: PcDateRangeField.LOCALE_APPLY_LABEL,
+        cancelLabel: PcDateRangeField.LOCALE_CANCEL_LABEL,
+        separator: PcDateRangeField.LOCALE_SEPARATOR,
+      }
     }
 
     bindEvents = () => {
-        const options = {
-            autoUpdateInput: false,
-            locale: this.locale,
-            maxDate: new Date(),
-            autoApply: false,
-            alwaysShowCalendars: true,
-            linkedCalendars: false,
-            drops: 'auto'
-        }
+      const options = {
+        autoUpdateInput: false,
+        locale: this.locale,
+        maxDate: new Date(),
+        autoApply: false,
+        alwaysShowCalendars: true,
+        linkedCalendars: false,
+        drops: 'auto'
+      }
 
-        this.$$dateRange.forEach(($dateRange) => {
-            const {
-                maxDate,
-                resetToBlank,
-                calendarStartDate,
-                calendarEndDate,
-                drops,
-            } = $dateRange.dataset
-            const dateRangePicker = new DateRangePicker($dateRange, {
-                ...options,
-                maxDate: maxDate ? moment(maxDate, PcDateRangeField.DATE_FORMAT) : undefined,
-                locale: {
-                    ...options.locale,
-                    cancelLabel: resetToBlank ? 'Réinitialiser' : PcDateRangeField.LOCALE_CANCEL_LABEL,
-                },
-                drops: drops
-            })
-            if (calendarStartDate) {
-                dateRangePicker.setStartDate(moment(calendarStartDate, PcDateRangeField.DATE_FORMAT))
-            }
-            if (calendarEndDate) {
-                dateRangePicker.setEndDate(moment(calendarEndDate, PcDateRangeField.DATE_FORMAT))
-            }
-            this.state.push(dateRangePicker)
+      this.$$dateRange.forEach(($dateRange) => {
+        const {
+          maxDate,
+          resetToBlank,
+          calendarStartDate,
+          calendarEndDate,
+          drops,
+        } = $dateRange.dataset
+        const dateRangePicker = new DateRangePicker($dateRange, {
+          ...options,
+          maxDate: maxDate ? moment(maxDate, PcDateRangeField.DATE_FORMAT) : undefined,
+          locale: {
+            ...options.locale,
+            cancelLabel: resetToBlank ? 'Réinitialiser' : PcDateRangeField.LOCALE_CANCEL_LABEL,
+          },
+          drops: drops
         })
+        if (calendarStartDate) {
+          dateRangePicker.setStartDate(moment(calendarStartDate, PcDateRangeField.DATE_FORMAT))
+        }
+        if (calendarEndDate) {
+          dateRangePicker.setEndDate(moment(calendarEndDate, PcDateRangeField.DATE_FORMAT))
+        }
+        this.state.push(dateRangePicker)
+      })
 
-        addEventListener('apply.daterangepicker', this.#applyDaterangePicker)
-        addEventListener('cancel.daterangepicker', this.#cancelDaterangePicker)
+      addEventListener('apply.daterangepicker', this.#applyDaterangePicker)
+      addEventListener('cancel.daterangepicker', this.#cancelDaterangePicker)
     }
 
     unbindEvents = () => {
-        this.state.forEach(($dateRange) => {
-            $dateRange.remove()
-        })
-        this.state = []
+      this.state.forEach(($dateRange) => {
+        $dateRange.remove()
+      })
+      this.state = []
 
-        removeEventListener('apply.daterangepicker', this.#applyDaterangePicker)
-        removeEventListener('cancel.daterangepicker', this.#cancelDaterangePicker)
+      removeEventListener('apply.daterangepicker', this.#applyDaterangePicker)
+      removeEventListener('cancel.daterangepicker', this.#cancelDaterangePicker)
     }
 
     #applyDaterangePicker(event) {
-        const detail = event.detail
-        detail.element.value =
-            `${detail.startDate.format(PcDateRangeField.DATE_FORMAT)}${PcDateRangeField.LOCALE_SEPARATOR}${detail.endDate.format(PcDateRangeField.DATE_FORMAT)}`
+      const detail = event.detail
+      detail.element.value = `${detail.startDate.format(PcDateRangeField.DATE_FORMAT)}${PcDateRangeField.LOCALE_SEPARATOR}${detail.endDate.format(PcDateRangeField.DATE_FORMAT)}`
     }
 
     #cancelDaterangePicker(event) {
@@ -116,15 +116,16 @@ class PcDateRangeField extends PcAddOn {
       }
       this.state.forEach((dateRangePicker) => {
         const {
-            calendarStartDate,
-            calendarEndDate,
+          calendarStartDate,
+          calendarEndDate,
         } = $dateRange.dataset
         if (calendarStartDate) {
-            dateRangePicker.setStartDate(moment(calendarStartDate, PcDateRangeField.DATE_FORMAT))
+          dateRangePicker.setStartDate(moment(calendarStartDate, PcDateRangeField.DATE_FORMAT))
         }
         if (calendarEndDate) {
-            dateRangePicker.setEndDate(moment(calendarEndDate, PcDateRangeField.DATE_FORMAT))
+          dateRangePicker.setEndDate(moment(calendarEndDate, PcDateRangeField.DATE_FORMAT))
         }
     })
     }
-}
+  }
+)
