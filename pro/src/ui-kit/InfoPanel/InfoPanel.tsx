@@ -13,7 +13,6 @@ export const InfoPanel = ({
   iconAlt,
   stepNumber,
 }: InfoPanelProps): JSX.Element => {
-  const hasIcon = icon && iconAlt
   const hasStepNumber = stepNumber !== undefined
 
   return (
@@ -26,11 +25,11 @@ export const InfoPanel = ({
     >
       <div
         className={cn(styles['infopanel-left-wrapper'], {
-          [styles['infopanel-left-wrapper-icon']]: hasIcon,
+          [styles['infopanel-left-wrapper-icon']]: icon,
           [styles['infopanel-left-wrapper-stepnumber']]: hasStepNumber,
         })}
       >
-        {hasIcon && (
+        {icon && (
           <SvgIcon
             src={icon}
             alt={iconAlt}

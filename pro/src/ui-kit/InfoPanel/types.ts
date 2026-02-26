@@ -17,7 +17,7 @@ type BaseProps = {
 
 type FlatProps = {
   icon: string
-  iconAlt: string
+  iconAlt?: string
   stepNumber?: never
 }
 

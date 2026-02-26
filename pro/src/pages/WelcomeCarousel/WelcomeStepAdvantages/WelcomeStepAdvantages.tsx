@@ -27,7 +27,6 @@ export const WelcomeStepAdvantages = (): JSX.Element => {
           surface={InfoPanelSurface.FLAT}
           size={InfoPanelSize.LARGE}
           icon={strokeProfilIcon}
-          iconAlt="alt"
         >
           Touchez une audience de 15-21 ans partout en France, activement à la
           recherche d'expériences culturelles
@@ -37,7 +36,6 @@ export const WelcomeStepAdvantages = (): JSX.Element => {
           surface={InfoPanelSurface.FLAT}
           size={InfoPanelSize.LARGE}
           icon={strokeReleaseIcon}
-          iconAlt="alt"
         >
           Contrairement aux appels à projet lourds et complexes, l'inscription à
           pass Culture Pro est simple et guidée
@@ -47,7 +45,6 @@ export const WelcomeStepAdvantages = (): JSX.Element => {
           surface={InfoPanelSurface.FLAT}
           size={InfoPanelSize.LARGE}
           icon={strokeOfferIcon}
-          iconAlt="alt"
         >
           Créez et modifiez vos offres, qu’elles soient gratuites ou payantes, à
           tout moment de l’année
