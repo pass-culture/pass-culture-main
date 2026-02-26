@@ -1249,14 +1249,14 @@ development = ["black", "flake8", "mypy", "pytest", "types-colorama"]
 
 [[package]]
 name = "commitizen"
-version = "4.13.7"
+version = "4.13.9"
 description = "Python commitizen client tool"
 optional = false
 python-versions = "<4.0,>=3.10"
 groups = ["dev"]
 files = [
-    {file = "commitizen-4.13.7-py3-none-any.whl", hash = "sha256:7e179fa2a29626d330e38332e3f306caa3f11ac1cc0bc139f61dff167f224434"},
-    {file = "commitizen-4.13.7.tar.gz", hash = "sha256:61b1872a3b5b9da69f1819a4e238249071a636ef422cf6f3735c491eb77e9526"},
+    {file = "commitizen-4.13.9-py3-none-any.whl", hash = "sha256:d2af3d6a83cacec9d5200e17768942c5de6266f93d932c955986c60c4285f2db"},
+    {file = "commitizen-4.13.9.tar.gz", hash = "sha256:2b4567ed50555e10920e5bd804a6a4e2c42ec70bb74f14a83f2680fe9eaf9727"},
 ]
 
 [package.dependencies]
@@ -4188,9 +4188,6 @@ files = [
     {file = "psycopg-3.2.10.tar.gz", hash = "sha256:0bce99269d16ed18401683a8569b2c5abd94f72f8364856d56c0389bcd50972a"},
 ]
 
-[package.dependencies]
-tzdata = {version = "*", markers = "sys_platform == \"win32\""}
-
 [package.extras]
 binary = ["psycopg-binary (==3.2.10) ; implementation_name != \"pypy\""]
 c = ["psycopg-c (==3.2.10) ; implementation_name != \"pypy\""]
@@ -6612,7 +6609,7 @@ files = [
     {file = "tzdata-2025.2-py2.py3-none-any.whl", hash = "sha256:1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8"},
     {file = "tzdata-2025.2.tar.gz", hash = "sha256:b60a638fcc0daffadf82fe0f57e53d06bdec2f36c4df66280ae79bce6bd6f2b9"},
 ]
-markers = {dev = "platform_system == \"Windows\" or sys_platform == \"win32\""}
+markers = {dev = "platform_system == \"Windows\""}
 
 [[package]]
 name = "tzlocal"
@@ -7338,4 +7335,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "b59a9fe10bec36df372ce6513a93785f86a0a356d43d2cb9a4d56aaedabbdea8"
+content-hash = "7151e3cdfdb2deabfb3fa274de91c666030960570deb712b57f6cb8a1d1396ac"
