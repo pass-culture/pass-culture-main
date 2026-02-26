@@ -1584,30 +1584,20 @@ class OffererAddress(PcObject, Model):
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False
     )
     offerer: sa_orm.Mapped["Offerer"] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
-    type: sa_orm.Mapped[LocationType | None] = sa_orm.mapped_column(db_utils.MagicEnum(LocationType), nullable=True)
-    venueId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=True
+    type: sa_orm.Mapped[LocationType] = sa_orm.mapped_column(db_utils.MagicEnum(LocationType), nullable=False)
+    venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=False
     )
     # Do not add back_populates="offererAddress" because it is not always the venue location
     venue: sa_orm.Mapped[Venue | None] = sa_orm.relationship("Venue", foreign_keys=[venueId])
 
     __table_args__ = (
-        # TODO (prouzet, 2025-10-09) When type and venueId are declared as non-nullable, index should be:
-        # sa.Index("ix_unique_offerer_address_per_label, "offererId", "addressId", "label", "type", "venueId", unique=True),
-        # probably with postgresql_nulls_not_distinct=True, because duplicate empty label should be on different venues.
-        #
-        # But this would break unique checking during transition because null values in type and venueId are distinct.
-        # Setting postgresql_nulls_not_distinct is not possible because :
-        # - null values must be distinct on label
-        # - null values should not be distinct on type and venueId
-        # so several partial indexes are created temporarily to ensure integrity during transition.
         sa.Index(
             "ix_unique_offerer_address_per_label",
             "venueId",
             "type",
             "addressId",
             "label",
-            "offererId",
             unique=True,
             postgresql_nulls_not_distinct=True,
         ),

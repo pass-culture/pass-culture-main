@@ -1195,7 +1195,6 @@ OFFER_MODEL_BY_OPTION: typing.Final[
 }
 
 
-# TODO(xordoquy): find if it does need to be filtering on type
 def get_offerer_addresses(
     offerer_id: int, with_offers_option: schemas.GetOffererAddressesWithOffersOption | None
 ) -> sa_orm.Query:
@@ -1214,15 +1213,9 @@ def get_offerer_addresses(
             geography_models.Address.departmentCode,
         )
         .filter(models.Venue.managingOffererId == offerer_id)
-        .filter(
-            # TODO (prouzet, 2025-11-13) CLEAN_OA When data is migrated, only filter on OFFER_LOCATION
-            sa.or_(
-                offerers_models.OffererAddress.type.is_(None),
-                offerers_models.OffererAddress.type == offerers_models.LocationType.OFFER_LOCATION,
-            )
-        )
+        .filter(offerers_models.OffererAddress.type == offerers_models.LocationType.OFFER_LOCATION)
         .join(geography_models.Address, models.OffererAddress.addressId == geography_models.Address.id)
-        .join(models.Venue, models.Venue.id == models.OffererAddress.venueId)  # Do not filter on type - why ?
+        .join(models.Venue, models.Venue.id == models.OffererAddress.venueId)
     )
 
     if with_offers_option is not None:

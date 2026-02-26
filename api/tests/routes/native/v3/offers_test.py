@@ -16,7 +16,6 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories
 from pcapi.core.geography.factories import AddressFactory
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offerers.factories import OffererAddressFactory
 from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offers.models import ImageType
 from pcapi.core.providers.constants import BookFormat
@@ -593,7 +592,7 @@ class OffersV3Test:
 
     def test_offers_has_own_address(self, client):
         address = AddressFactory()
-        oa = OffererAddressFactory(address=address)
+        oa = offerers_factories.OfferLocationFactory(address=address)
         offer = offers_factories.OfferFactory(offererAddress=oa)
 
         offer_id = offer.id

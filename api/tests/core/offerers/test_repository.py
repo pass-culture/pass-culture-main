@@ -243,15 +243,13 @@ class GetOffererAddressesTest:
         assert result.id == oa.id
 
     def test_get_offerer_addresses_do_not_return_venue_locations(self):
-        # TODO Bulle legacy?
         offerer = offerers_factories.OffererFactory()
-        oa = offerers_factories.OffererAddressFactory(offerer=offerer)
-        offer_oa = offerers_factories.OfferLocationFactory(offerer=offerer)
-        offerers_factories.VenueLocationFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offer_oa = offerers_factories.OfferLocationFactory(offerer=offerer, venue=venue)
 
         query = repository.get_offerer_addresses(offerer_id=offerer.id, with_offers_option=None)
         results = query.all()
-        assert {item.id for item in results} == {oa.id, offer_oa.id}
+        assert {item.id for item in results} == {offer_oa.id}
 
 
 class GetOffererHeadlineOfferTest:
@@ -318,10 +316,10 @@ def test_sould_return_user_offerer_timezones():
     user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
     offerer = user_offerer.offerer
 
-    offerers_factories.VenueLocationFactory(offerer=offerer, address__timezone="Europe/Paris")
-    offerers_factories.VenueLocationFactory(offerer=offerer, address__timezone="Europe/Paris")
-    offerers_factories.VenueLocationFactory(offerer=offerer, address__timezone="America/Guadeloupe")
-    offerers_factories.VenueLocationFactory(offerer=offerer, address__timezone="Indian/Mayotte")
+    offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__timezone="Europe/Paris")
+    offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__timezone="Europe/Paris")
+    offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__timezone="America/Guadeloupe")
+    offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__timezone="Indian/Mayotte")
 
     # Venue with different timezone
     offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__timezone="America/Cayenne")
