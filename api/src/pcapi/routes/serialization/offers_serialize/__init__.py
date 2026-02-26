@@ -741,6 +741,9 @@ class GetProAdviceResponseModel(HttpBodyModel):
 class PostProAdviceResponseModel(GetProAdviceResponseModel): ...
 
 
+class PatchProAdviceResponseModel(GetProAdviceResponseModel): ...
+
+
 class ProAdviceBodyModel(HttpBodyModel):
     content: str = pydantic_v2.Field(min_length=1, max_length=800)
     author: str | None = pydantic_v2.Field(min_length=1, max_length=20, default=None)

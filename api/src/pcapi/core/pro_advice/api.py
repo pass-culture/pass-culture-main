@@ -39,3 +39,30 @@ def create_pro_advice(
         technical_message_id="pro_advice.created",
     )
     return pro_advice
+
+
+def update_pro_advice(
+    offer: models.Offer,
+    content: str,
+    author: str | None,
+    current_user: users_models.User,
+) -> models.ProAdvice:
+    if offer.validation != models.OfferValidationStatus.APPROVED:
+        raise ProAdviceException({"global": ["Impossible de modifier une recommandation sur cette offre"]})
+
+    if offer.proAdvice is None:
+        raise ProAdviceException({"global": ["Aucune recommandation n'existe pour cette offre"]})
+
+    pro_advice = offer.proAdvice
+    pro_advice.content = content
+    pro_advice.author = author
+    pro_advice.updatedAt = date_utils.get_naive_utc_now()
+
+    db.session.flush()
+
+    logger.info(
+        "Pro advice updated",
+        extra={"offer_id": pro_advice.offerId, "venue_id": offer.venueId, "user_id": current_user.id},
+        technical_message_id="pro_advice.updated",
+    )
+    return pro_advice
