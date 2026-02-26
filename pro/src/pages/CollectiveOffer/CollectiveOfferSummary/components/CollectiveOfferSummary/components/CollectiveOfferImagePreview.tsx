@@ -29,7 +29,11 @@ export const CollectiveOfferImagePreview = ({
         />
       ) : (
         <div className={cn(styles['default-preview'], styles['image-preview'])}>
-          <SvgIcon alt={offer.name} src={strokeOfferIcon} />
+          <SvgIcon
+            alt={offer.name}
+            src={strokeOfferIcon}
+            className={styles['default-preview-icon']}
+          />
         </div>
       )}
     </SummarySubSection>
