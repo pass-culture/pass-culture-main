@@ -127,8 +127,8 @@ def recover_incomplete_ubble_verification() -> None:
     This function is meant to be called as often as needed by recovery workers.
     """
     page_size = 180
-    fraud_check_to_recover_stmt = (
-        sa.select(subscription_models.BeneficiaryFraudCheck)
+    fraud_check_to_recover_id_stmt = (
+        sa.select(subscription_models.BeneficiaryFraudCheck.id)
         .where(
             subscription_models.BeneficiaryFraudCheck.status == subscription_models.FraudCheckStatus.OK,
             subscription_models.BeneficiaryFraudCheck.type == subscription_models.FraudCheckType.UBBLE,
@@ -143,22 +143,29 @@ def recover_incomplete_ubble_verification() -> None:
         .order_by(subscription_models.BeneficiaryFraudCheck.id)
         .limit(page_size)
     )
-    incomplete_fraud_checks = db.session.scalars(fraud_check_to_recover_stmt).all()
 
-    if not incomplete_fraud_checks:
+    # PERF: Letting the SQLAlchemy engine bind the variables prevents PostgreSQL from using the correct index.
+    # There is no risk of SQL injection because only constants are bound to the query.
+    # This whole recovery process should be over by the end of March 2026. This code and the hard to use index will be gone by then.
+    compiled_query = fraud_check_to_recover_id_stmt.compile(
+        compile_kwargs={"literal_binds": True}, dialect=sa.dialects.postgresql.dialect()
+    )
+    incomplete_fraud_check_ids = [id for (id,) in db.session.execute(sa.text(str(compiled_query))).fetchall()]
+
+    if not incomplete_fraud_check_ids:
         logger.info("No incomplete Ubble verifications left, recovery code can be deleted.")
         return
 
-    for fraud_check in incomplete_fraud_checks:
-        payload = ubble_schemas.UpdateWorkflowPayload(beneficiary_fraud_check_id=fraud_check.id)
+    for fraud_check_id in incomplete_fraud_check_ids:
+        payload = ubble_schemas.UpdateWorkflowPayload(beneficiary_fraud_check_id=fraud_check_id)
         recover_incomplete_ubble_verification_task.delay(payload=payload.model_dump())
 
     logger.info(
         "Enqueued Ubble recovery from fraud check %d to fraud check %d",
-        incomplete_fraud_checks[0].id,
-        incomplete_fraud_checks[-1].id,
+        incomplete_fraud_check_ids[0],
+        incomplete_fraud_check_ids[-1],
         extra={
-            "starting_fraud_check_id": incomplete_fraud_checks[0].id,
-            "ending_fraud_check_id": incomplete_fraud_checks[-1].id,
+            "starting_fraud_check_id": incomplete_fraud_check_ids[0],
+            "ending_fraud_check_id": incomplete_fraud_check_ids[-1],
         },
     )
