@@ -23,7 +23,7 @@ const fieldsNames: Map<keyof AddressFormValues, string | null> = new Map([
 export function resetReactHookFormAddressFields<
   TFieldValues extends FieldValues,
 >(resetField: UseFormReturn<TFieldValues>['setValue']) {
-  fieldsNames.entries().forEach(([fieldName, defaultValue]) => {
+  fieldsNames.forEach((defaultValue, fieldName) => {
     resetField(
       fieldName as Path<TFieldValues>,
       defaultValue as PathValue<TFieldValues, Path<TFieldValues>>
