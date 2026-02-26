@@ -61,7 +61,7 @@ export const Dialog = ({
         <RadixDialog.Title>
           <div className={styles['dialog-title']} id={titleId}>
             {title}
-            <span>{secondTitle}</span>
+            <span className={styles['dialog-title-span']}>{secondTitle}</span>
           </div>
         </RadixDialog.Title>
         {explanation && (
