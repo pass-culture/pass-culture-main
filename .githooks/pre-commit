@@ -55,6 +55,7 @@ if [[ ! -z "$STAGED_FILES" ]]; then
     fi
   fi
 
+
   # run tests related to staged files
   if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",test," ]]; then
     echo "Running Tests"
@@ -85,6 +86,22 @@ if [[ ! -z "$STAGED_FILES" ]]; then
     else
       echo "✅ coverage 100 %"
     fi
+  fi
+fi
+
+# run check unused css on staged files
+if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",unusedcss," ]]; then
+  echo "Running check-unused-css ..."
+  
+  yarn lint:scss:checkunused
+  LINTER_EXIT_CODE=$?
+
+  # check linter exit code
+  if [ $LINTER_EXIT_CODE -ne 0 ]; then
+    echo "❌ Please fix check-unused-css errors first "
+    exit 1
+  else
+    echo "✅ check-unused-css all good"
   fi
 fi
 
