@@ -11,12 +11,12 @@ from pathlib import Path
 import semver
 from dotenv import load_dotenv
 
-from .routes.pro.signup_keys_examples.example_passwordless_token_keys import PASSWORDLESS_PRIVATE_KEY_EXAMPLE
-from .routes.pro.signup_keys_examples.example_passwordless_token_keys import PASSWORDLESS_PUBLIC_KEY_EXAMPLE
 from .utils import secrets as secrets_utils
 from .utils import settings as utils
 from .utils.example_certificate import PRIVATE_KEY_EXAMPLE
 from .utils.example_certificate import PUBLIC_CERTIFICATE_EXAMPLE
+from .utils.example_passwordless_token_keys import PASSWORDLESS_PRIVATE_KEY_EXAMPLE
+from .utils.example_passwordless_token_keys import PASSWORDLESS_PUBLIC_KEY_EXAMPLE
 
 
 ENV = os.environ.get("ENV", "development")
