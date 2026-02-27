@@ -65,9 +65,7 @@ export function Carousel({
   return (
     <div className={cn(styles['carousel'], className)}>
       <div className={styles['carousel-header']}>
-        {title && (
-          <div className={styles['carousel-header-title']}>{title}</div>
-        )}
+        {title && <div>{title}</div>}
         {!loading && (
           <div className={styles['carousel-header-arrows']}>
             <Button

@@ -33,7 +33,7 @@ export const ModalVideo = ({
     <DialogBuilder
       {...dialogBuilderProps}
       title="Ajouter une vidéo"
-      imageTitle={<img alt={''} src={youtubeLogo} />}
+      imageTitle={<img alt={''} height="17px" src={youtubeLogo} />}
       variant="drawer"
     >
       <div className={styles['modal-video']}>

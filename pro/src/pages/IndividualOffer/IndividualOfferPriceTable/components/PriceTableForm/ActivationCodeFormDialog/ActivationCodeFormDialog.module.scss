@@ -48,10 +48,8 @@
     margin-bottom: var(--size-spacing-l);
   }
 
-  .activation-codes-form {
-    p {
-      margin-bottom: var(--size-spacing-s);
-    }
+  .activation-codes-form-description {
+    margin-bottom: var(--size-spacing-s);
   }
 
   .activation-codes-form-expiration-date {
@@ -64,9 +62,5 @@
     justify-content: space-between;
     text-align: center;
     margin-top: var(--size-spacing-l);
-  }
-
-  .date-input svg {
-    width: rem.torem(20px);
   }
 }

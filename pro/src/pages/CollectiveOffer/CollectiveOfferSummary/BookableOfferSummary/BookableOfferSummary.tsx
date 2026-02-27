@@ -205,7 +205,11 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
             <div
               className={cn(styles['default-preview'], styles['image-preview'])}
             >
-              <SvgIcon alt={offer.name} src={strokeOfferIcon} />
+              <SvgIcon
+                alt={offer.name}
+                src={strokeOfferIcon}
+                className={styles['default-preview-icon']}
+              />
             </div>
           )}
         </div>
@@ -255,7 +259,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
             <span className={styles['header-actions-title']}>Actions</span>
             <ul>
               {canEditOffer && (
-                <li>
+                <li className={styles['header-actions-item']}>
                   <Button
                     as="a"
                     variant={ButtonVariant.SECONDARY}
@@ -270,7 +274,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
               )}
 
               {canPreviewOffer && (
-                <li>
+                <li className={styles['header-actions-item']}>
                   <Button
                     as="a"
                     variant={ButtonVariant.SECONDARY}
@@ -285,7 +289,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
               )}
 
               {canDuplicateOffer && (
-                <li>
+                <li className={styles['header-actions-item']}>
                   <Button
                     variant={ButtonVariant.SECONDARY}
                     color={ButtonColor.NEUTRAL}

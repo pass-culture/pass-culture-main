@@ -6,16 +6,3 @@
   gap: var(--size-spacing-l);
   margin: rem.torem(6px) 0;
 }
-
-.separator {
-  background-color: var(--separator-color-subtle);
-  height: rem.torem(24px);
-  width: rem.torem(1px);
-}
-
-.button-link {
-  svg {
-    width: rem.torem(20px);
-    height: rem.torem(20px);
-  }
-}

@@ -16,21 +16,19 @@ export const CollectiveAdagePendingStatus = () => {
       </div>
 
       <div className={styles['link-container']}>
-        <div className={styles['link-button-wrapper']}>
-          <Button
-            as="a"
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
-            icon={fullInfoIcon}
-            to="https://aide.passculture.app/hc/fr/categories/4410482280977--Acteurs-Culturels-Tout-savoir-sur-le-pass-Culture-collectif-%C3%A0-destination-des-groupes-scolaires"
-            isExternal
-            opensInNewTab
-            label="En savoir plus sur le pass Culture à destination des scolaires"
-          />
-        </div>
+        <Button
+          as="a"
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          icon={fullInfoIcon}
+          to="https://aide.passculture.app/hc/fr/categories/4410482280977--Acteurs-Culturels-Tout-savoir-sur-le-pass-Culture-collectif-%C3%A0-destination-des-groupes-scolaires"
+          isExternal
+          opensInNewTab
+          label="En savoir plus sur le pass Culture à destination des scolaires"
+        />
       </div>
 
-      <p className={styles.description}>
+      <p>
         Votre démarche de référencement est en cours de traitement par ADAGE.
       </p>
     </div>

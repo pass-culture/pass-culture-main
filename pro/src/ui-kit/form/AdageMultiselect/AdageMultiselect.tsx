@@ -189,7 +189,7 @@ export const AdageMultiselect = ({
           const isChecked = isIncluded(selectedItems, item.value)
 
           return (
-            <li key={`${liValueKey}`}>
+            <li className={styles['search-list-item']} key={`${liValueKey}`}>
               <Checkbox
                 key={`${name}-${item.label}`}
                 label={item.label}

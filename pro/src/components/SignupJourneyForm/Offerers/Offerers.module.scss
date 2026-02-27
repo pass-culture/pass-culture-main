@@ -28,7 +28,7 @@ $small-gap: var(--size-spacing-s);
     align-items: flex-start;
     gap: $small-gap;
 
-    li::before {
+    &item::before {
       content: "-";
       display: inline-block;
       width: 1em;

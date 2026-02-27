@@ -36,21 +36,19 @@ export const AddActivationCodeConfirmationForm = ({
   const minDate = minExpirationDate === null ? today : minExpirationDate
 
   return (
-    <div className={styles['activation-codes-form']}>
-      <div>
-        <p>
-          Vous êtes sur le point d’ajouter {unsavedActivationCodes?.length}{' '}
-          codes d’activation.
-        </p>
-        <p>
-          La quantité disponible pour cette offre sera mise à jour dans vos
-          stocks.
-        </p>
-        <p>
-          Veuillez ajouter une date de fin de validité. Cette date ne doit pas
-          être antérieure à la date limite de réservation.
-        </p>
-      </div>
+    <>
+      <p className={styles['activation-codes-form-description']}>
+        Vous êtes sur le point d’ajouter {unsavedActivationCodes?.length} codes
+        d’activation.
+      </p>
+      <p className={styles['activation-codes-form-description']}>
+        La quantité disponible pour cette offre sera mise à jour dans vos
+        stocks.
+      </p>
+      <p className={styles['activation-codes-form-description']}>
+        Veuillez ajouter une date de fin de validité. Cette date ne doit pas
+        être antérieure à la date limite de réservation.
+      </p>
       <div className={styles['activation-codes-form-expiration-date']}>
         <DatePicker
           onChange={(event: ChangeEvent<HTMLInputElement>) => {
@@ -66,7 +64,6 @@ export const AddActivationCodeConfirmationForm = ({
             }
           }}
           label={'Date limite de validité'}
-          className={styles['date-input']}
           name="activationCodesExpirationDatetime"
           minDate={getMinimumExpirationDatetime(minDate)}
         />
@@ -89,6 +86,6 @@ export const AddActivationCodeConfirmationForm = ({
           label="Valider"
         />
       </div>
-    </div>
+    </>
   )
 }

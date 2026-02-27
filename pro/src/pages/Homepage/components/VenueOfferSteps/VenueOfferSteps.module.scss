@@ -13,17 +13,9 @@
   flex-wrap: wrap;
 }
 
-.step-button-info {
-  & > svg,
-  &-text {
-    display: flex;
-    align-self: flex-start;
-  }
-}
-
 .card-title {
+  @include fonts.title3;
+
   display: block;
   margin-bottom: var(--size-spacing-s);
-
-  @include fonts.title3;
 }

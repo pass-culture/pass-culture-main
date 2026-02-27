@@ -26,13 +26,6 @@
       height: rem.torem(230px);
     }
   }
-
-  > button,
-  > img {
-    @media (min-width: size.$tablet) {
-      height: rem.torem(232px) !important;
-    }
-  }
 }
 
 .venue-details {
@@ -70,12 +63,4 @@
   // override default style
   margin: 0;
   background: none;
-}
-
-.venue-button {
-  width: 100%;
-
-  @media (min-width: size.$tablet) {
-    width: auto;
-  }
 }

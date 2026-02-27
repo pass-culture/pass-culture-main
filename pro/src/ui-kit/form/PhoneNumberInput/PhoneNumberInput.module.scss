@@ -39,18 +39,6 @@ $input-phone-number-padding-left: calc(
       margin-bottom: var(--size-spacing-xxs);
     }
 
-    &-footer {
-      @include formsM.field-layout-footer;
-    }
-
-    &-error {
-      flex: 1;
-
-      svg {
-        flex: 0 0 15px;
-      }
-    }
-
     &-info {
       display: flex;
       justify-content: space-between;

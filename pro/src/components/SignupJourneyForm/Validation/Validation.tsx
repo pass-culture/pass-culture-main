@@ -145,7 +145,7 @@ export const Validation = (): JSX.Element | undefined => {
 
   return (
     <div className={styles['validation-screen']}>
-      <section>
+      <section className={styles['validation-section-section']}>
         <div className={styles['validation-screen-subtitle']}>
           <h2 className={styles['subtitle']}>Vos informations</h2>
           <Button

@@ -15,7 +15,7 @@
   border-radius: var(--size-border-radius-s);
   background: var(--color-background-subtle);
 
-  svg {
+  &-icon {
     height: rem.torem(60px);
     width: rem.torem(60px);
     color: var(--color-icon-subtle);

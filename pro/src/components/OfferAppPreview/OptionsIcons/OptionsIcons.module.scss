@@ -20,10 +20,6 @@
     .icon {
       flex: 0 0 rem.torem(33px);
       margin-top: rem.torem(-4px);
-
-      .svg-color {
-        fill: var(--color-icon-subtle);
-      }
     }
 
     .text {
@@ -31,18 +27,6 @@
 
       flex: 1;
       margin-bottom: rem.torem(-9px);
-    }
-
-    &.disabled {
-      .icon {
-        path {
-          fill: var(--color-icon-disabled);
-        }
-      }
-
-      .text {
-        color: var(--color-text-disabled);
-      }
     }
   }
 }
