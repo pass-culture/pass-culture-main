@@ -43,17 +43,6 @@ $icon-button-height: rem.torem(32px);
 
     > .input-readonly {
       max-width: rem.torem(120px);
-
-      &--first {
-        margin-left: var(--size-spacing-l);
-      }
-
-      &,
-      &--first {
-        > span {
-          margin-top: rem.torem(7.5px);
-        }
-      }
     }
 
     .button-action {
