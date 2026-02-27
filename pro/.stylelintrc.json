@@ -9,7 +9,7 @@
       0,
       {
         "message": "Tag selectors are global code. Use a class instead.",
-        "severity": "warning"
+        "severity": "error"
       }
     ]
   }

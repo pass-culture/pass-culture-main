@@ -3,20 +3,7 @@
 
 .period-filter {
   display: flex;
-
-  &-selector {
-    margin-top: var(--size-spacing-xs) !important;
-  }
-
-  &-selector input {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-  }
-
-  &-status select {
-    border-top-right-radius: 0 !important;
-    border-bottom-right-radius: 0 !important;
-  }
+  gap: var(--size-spacing-s);
 }
 
 .visually-hidden {
