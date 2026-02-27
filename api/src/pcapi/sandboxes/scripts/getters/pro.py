@@ -224,9 +224,9 @@ def create_pro_user_with_individual_offers() -> dict:
     pro_user = users_factories.ProFactory.create()
     offerer = offerers_factories.OffererFactory.create()
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer)
-    venue0 = offerers_factories.VenueFactory.create(name="Mon Lieu 2", managingOfferer=offerer, isPermanent=True)
-    venue = offerers_factories.VenueFactory.create(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
-    offer0 = offers_factories.ThingOfferFactory.create(venue=venue0, name="Offre pour ma venue 2")
+    venue0 = offerers_factories.VenueFactory.create(name="Mon Lieu B", managingOfferer=offerer, isPermanent=True)
+    venue = offerers_factories.VenueFactory.create(name="Mon Lieu A", managingOfferer=offerer, isPermanent=True)
+    offer0 = offers_factories.ThingOfferFactory.create(venue=venue0, name="Offre pour ma venue B")
     offer1 = offers_factories.ThingOfferFactory.create(venue=venue, name="Une super offre")
     offers_factories.StockFactory.create(offer=offer1)
     offer2 = offers_factories.ThingOfferFactory.create(
@@ -285,17 +285,17 @@ def create_pro_user_with_individual_offers() -> dict:
 
 def create_pro_user_with_collective_offers() -> dict:
     pro_user = users_factories.ProFactory.create()
-    offerer = offerers_factories.OffererFactory.create()
+    offerer = offerers_factories.OffererFactory.create(allowedOnAdage=True)
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer)
     venue1 = offerers_factories.CollectiveVenueFactory.create(
-        name="Mon Lieu 1",
+        name="Mon Lieu A",
         managingOfferer=offerer,
         offererAddress__address__street="1 boulevard Poissonnière",
         offererAddress__address__postalCode="75002",
         offererAddress__address__city="Paris",
     )
     venue2 = offerers_factories.CollectiveVenueFactory.create(
-        name="Mon Lieu 2",
+        name="Mon Lieu B",
         managingOfferer=offerer,
         offererAddress__address__street="1 boulevard Poissonnière",
         offererAddress__address__postalCode="75002",
