@@ -20,9 +20,7 @@ from . import blueprint
 @private_api.route("/get-statistics", methods=["GET"])
 @atomic()
 @login_required
-@spectree_serialize(
-    response_model=StatisticsModel, api=blueprint.pro_private_schema, query_params_as_list=["venue_ids"]
-)
+@spectree_serialize(response_model=StatisticsModel, api=blueprint.pro_private_schema, query_params_as_list=["venueIds"])
 def get_statistics(query: StatisticsQueryModel) -> StatisticsModel:
     venue_ids = query.venue_ids
     if not venue_ids:
