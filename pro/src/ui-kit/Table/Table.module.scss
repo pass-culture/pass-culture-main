@@ -101,6 +101,7 @@
 }
 
 .table-checkbox-label {
+  /* stylelint-disable */
   *:not(input) {
     @include a11y.visually-hidden;
   }
