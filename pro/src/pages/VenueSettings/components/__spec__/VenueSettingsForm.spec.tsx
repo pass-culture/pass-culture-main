@@ -6,11 +6,9 @@ import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
 import { api } from '@/apiClient/api'
 import { type GetVenueResponseModel, VenueTypeCode } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
-import {
-  defaultGetOffererResponseModel,
-  defaultVenueProvider,
-} from '@/commons/utils/factories/individualApiFactories'
+import { defaultVenueProvider } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -54,12 +52,6 @@ const defaultFormContext: VenueSettingsFormContext = {
   siren: '123456789',
 }
 
-const defaultOfferer = {
-  ...defaultGetOffererResponseModel,
-  id: 12,
-  siren: '123456789',
-}
-
 const defaultVenue: GetVenueResponseModel = {
   ...defaultGetVenue,
   name: 'Lieu de test',
@@ -91,20 +83,15 @@ const renderVenueSettingsForm = async (
   props?: Partial<VenueSettingsFormProps>,
   options?: RenderWithProvidersOptions
 ) => {
+  const formContext = props?.formContext ?? defaultFormContext
+  const venue = props?.venue ?? defaultGetVenue
+
   const Wrapper = () => {
-    const formContext = {
-      ...defaultFormContext,
-      ...(props?.formContext || {}),
-    }
     const form = useForm({
       context: formContext,
-      defaultValues: toFormValues({
-        venue: {
-          ...defaultVenue,
-          ...(props?.venue || {}),
-        },
-      }),
+      defaultValues: toFormValues({ venue }),
     })
+
     return (
       <FormProvider {...form}>
         <form
@@ -114,9 +101,8 @@ const renderVenueSettingsForm = async (
           noValidate
         >
           <VenueSettingsForm
-            offerer={defaultOfferer}
             venueProviders={venueProviders}
-            venue={defaultGetVenue}
+            venue={venue}
             formContext={formContext}
           />
         </form>
@@ -124,11 +110,10 @@ const renderVenueSettingsForm = async (
     )
   }
 
-  options = {
+  renderWithProviders(<Wrapper />, {
+    ...options,
     user: sharedCurrentUserFactory(),
-  }
-
-  renderWithProviders(<Wrapper />, options)
+  })
 
   await waitFor(() => {
     screen.getByText('Informations administratives')
@@ -242,5 +227,32 @@ describe('VenueSettingsForm', () => {
       "Les retraits sont autorisés jusqu'à 24 heures avant l'événement."
     )
     expect(emailField).toHaveValue('contact@lieuexemple.com')
+  })
+
+  it('should not display reimbursement section when venue has no pricing point', () => {
+    renderVenueSettingsForm({
+      venue: makeGetVenueResponseModel({ id: 1 }),
+    })
+
+    expect(
+      screen.queryByRole('heading', { name: /Barème de remboursement/ })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should display reimbursement section when venue has a pricing point', () => {
+    renderVenueSettingsForm({
+      venue: makeGetVenueResponseModel({
+        id: 1,
+        pricingPoint: {
+          id: 1,
+          siret: '12345678901234',
+          venueName: 'Structure 1',
+        },
+      }),
+    })
+
+    expect(
+      screen.queryByRole('heading', { name: /Barème de remboursement/ })
+    ).toBeVisible()
   })
 })

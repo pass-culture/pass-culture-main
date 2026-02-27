@@ -3,7 +3,6 @@ import { useLocation } from 'react-router'
 
 import type { AdresseData } from '@/apiClient/adresse/types'
 import type {
-  GetOffererResponseModel,
   GetVenueResponseModel,
   VenueProviderResponse,
 } from '@/apiClient/v1'
@@ -31,14 +30,11 @@ import { OffersSynchronization } from './VenueProvidersManager/OffersSynchroniza
 import { WithdrawalDetails } from './WithdrawalDetails/WithdrawalDetails'
 
 export interface VenueSettingsFormProps {
-  offerer: GetOffererResponseModel
   venueProviders: VenueProviderResponse[]
   venue: GetVenueResponseModel
   formContext: VenueSettingsFormContext
 }
-
 export const VenueSettingsForm = ({
-  offerer,
   venueProviders,
   venue,
   formContext,
@@ -161,11 +157,12 @@ export const VenueSettingsForm = ({
           </FormLayout.Row>
         </FormLayout.Section>
 
-        <ReimbursementFields
-          offerer={offerer}
-          scrollToSection={Boolean(location.state) || Boolean(location.hash)}
-          venue={venue}
-        />
+        {venue.pricingPoint?.id && (
+          <ReimbursementFields
+            scrollToSection={Boolean(location.state) || Boolean(location.hash)}
+            venuePricingPoint={venue.pricingPoint}
+          />
+        )}
       </FormLayout>
       <VenueFormActionBar venue={venue} isSubmitting={isSubmitting} />
       <RouteLeavingGuardIndividualOffer
