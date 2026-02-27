@@ -48,6 +48,10 @@
     width: rem.torem(22px);
   }
 
+  &:focus-visible {
+    @include outline.focus-outline;
+  }
+
   &.btn-default {
     border-radius: var(--size-border-radius-m);
     gap: var(--size-spacing-s);
@@ -65,10 +69,6 @@
       &.btn-tertiary {
         padding: var(--size-spacing-s);
       }
-    }
-
-    &:focus-visible {
-      @include outline.focus-outline;
     }
   }
 

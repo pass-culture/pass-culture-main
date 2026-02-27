@@ -15,7 +15,7 @@ export const WelcomeCarousel = (): JSX.Element => {
         {/* biome-ignore lint/correctness/useUniqueElementIds: Layout is used once per page. There cannot be id duplications. */}
         <div id="content-wrapper" className={styles['content-wrapper']}>
           <div className={styles['content-container']}>
-            <main id="content" className={styles['content']}>
+            <main id="content" className={styles['content']} tabIndex={-1}>
               <Outlet />
             </main>
           </div>

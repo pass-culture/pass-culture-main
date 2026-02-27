@@ -1,72 +1,15 @@
 import { useEffect } from 'react'
+import { useLocation } from 'react-router'
 
-import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useCurrentRoute } from '@/commons/hooks/useCurrentRoute'
-import { selectCurrentUser } from '@/commons/store/user/selectors'
-
-const EXCLUDED_ROUTES: Set<string> = new Set(['/hub'])
-
-/**
- * @deprecated Replaced by `useFocusOnMounted`.
- */
 export const useFocus = (): void => {
-  const currentRoute = useCurrentRoute()
-  const currentUser = useAppSelector(selectCurrentUser)
+  const { pathname } = useLocation()
 
-  const isConnected = !!currentUser
-
+  // biome-ignore lint/correctness/useExhaustiveDependencies: we need the effect to re-run on every navigation (even though pathname isn't read inside the effect body) so that the focus is always on the top of the page
   useEffect(() => {
-    // TODO (igabriele, 2025-12-17): This useEffect is a complex pattern to maintain, it will likely be replaced by a focus handling done within each page to clarify responsability.
-    // In the meantime, we gradually exclude pages that migrated to `useFocusOnMounted`:
-    if (EXCLUDED_ROUTES.has(currentRoute.pathname)) {
-      return
+    const topPageLink = document.getElementById('top-page')
+
+    if (topPageLink) {
+      topPageLink.focus()
     }
-
-    /* istanbul ignore next : E2E tested */
-    document.getElementById('content-wrapper')?.scrollTo(0, 0)
-
-    if (currentRoute.handle?.isErrorPage) {
-      const errorReturnLink = document.getElementById('error-return-link')
-      if (errorReturnLink) {
-        errorReturnLink.focus()
-      }
-      return
-    }
-
-    const backToNav = document.getElementById('back-to-nav-link')
-    const goToContent = document.getElementById('go-to-content')
-    // Mind that those are subject to race conditions since they might be rendered after
-    // the userEffect is triggered.
-    // TODO (asaez-pass, 2025-09-16): a more robust way to implement this needs to be discussed.
-    const doesPageHaveStepper = document.querySelector('#stepper')
-    const doesPageHaveTabs = document.querySelector('#tablist')
-
-    if (isConnected) {
-      if (doesPageHaveStepper) {
-        // We don't want to focus the back to nav link if there is a stepper on the page,
-        // but regain focus on active step (if any)
-        // > check Stepper.tsx
-        const activeStep = document.querySelector('#stepper #active a')
-        if (activeStep) {
-          ;(activeStep as HTMLElement).focus()
-        }
-      } else if (doesPageHaveTabs) {
-        // We don't want to focus the back to nav link if there are tabs on the page,
-        // but regain focus on active tab (if any)
-        // > check NavLinkItems.tsx
-        const activeTab = document.querySelector('#tablist #selected a')
-        if (activeTab) {
-          ;(activeTab as HTMLElement).focus()
-        }
-      } else if (backToNav) {
-        backToNav.focus()
-      } else if (goToContent) {
-        goToContent.focus()
-      }
-    } else if (goToContent) {
-      goToContent.focus()
-    }
-
-    // If none of above is called, focus will be document.activeElement = body.
-  }, [currentRoute.handle?.isErrorPage, currentRoute.pathname, isConnected])
+  }, [pathname])
 }
