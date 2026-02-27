@@ -71,9 +71,9 @@ test.describe('Account creation', () => {
     await page.goto(emailData.params.EMAIL_VALIDATION_LINK)
 
     await expect(page).toHaveURL(/\/inscription\/structure\/recherche/)
-    await expect(
-      page.getByRole('link', { name: /Aller au contenu/ })
-    ).toBeFocused()
+    // Press tab to focus on the top of the page
+    await page.keyboard.press('Tab')
+    expect(page.getByRole('link', { name: 'Aller au contenu' })).toBeFocused()
 
     await checkAccessibility(page)
   })
