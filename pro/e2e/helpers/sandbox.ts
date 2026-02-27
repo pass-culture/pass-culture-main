@@ -108,10 +108,29 @@ export async function createProUserWithActiveCollectiveOffer(
   )
 }
 
-export async function createProUserWithCollectiveOffer(
+interface CollectiveOffer {
+  name: string
+  venueName: string
+}
+
+interface CollectiveOfferPublished extends CollectiveOffer {
+  startDatetime: string
+  endDatetime: string
+}
+
+export interface CollectiveOffersUserData {
+  user: {
+    email: string
+  }
+  offerPublished: CollectiveOfferPublished
+  offerArchived: CollectiveOffer
+  offerDraft: CollectiveOffer
+}
+
+export async function createProUserWithCollectiveOffers(
   request: APIRequestContext
-): Promise<ProUserWithActiveCollectiveOfferResponse> {
-  return await sandboxCall<ProUserWithActiveCollectiveOfferResponse>(
+): Promise<CollectiveOffersUserData> {
+  return await sandboxCall<CollectiveOffersUserData>(
     request,
     'GET',
     `${BASE_API_URL}/sandboxes/pro/create_pro_user_with_collective_offers`
@@ -159,5 +178,40 @@ export async function createNewProUserAndOffererWithVenue(
     request,
     'GET',
     `${BASE_API_URL}/sandboxes/pro/create_new_pro_user_and_offerer_with_venue`
+  )
+}
+
+interface Venue {
+  name: string
+  fullAddress: string
+}
+
+interface Offer {
+  name: string
+}
+
+export interface IndividualOffersUserData {
+  user: {
+    email: string
+  }
+  venue0: Venue
+  venue: Venue
+  offer0: Offer
+  offer1: Offer
+  offer2: Offer
+  offer3: Offer
+  offer4: Offer
+  offer5: Offer
+  offer6: Offer
+  offer7: Offer
+}
+
+export async function createProUserWithIndividualOffers(
+  request: APIRequestContext
+): Promise<IndividualOffersUserData> {
+  return await sandboxCall<IndividualOffersUserData>(
+    request,
+    'GET',
+    `${BASE_API_URL}/sandboxes/pro/create_pro_user_with_individual_offers`
   )
 }
