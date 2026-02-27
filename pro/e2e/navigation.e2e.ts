@@ -48,7 +48,7 @@ test.describe('Navigation', () => {
 
     await expect(page).toHaveURL(/\/structures\/\d+\/lieux\/\d+\/collectif/)
 
-    const backToNavLink = page.locator('#back-to-nav-link')
+    const backToNavLink = page.locator('#top-page')
     await expect(backToNavLink).toBeFocused({ timeout: 1000 })
 
     const scrollTopAfter = await contentWrapper.evaluate((el) => el.scrollTop)

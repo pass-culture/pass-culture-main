@@ -25,7 +25,9 @@ test.describe('Didactic Onboarding feature', () => {
       page.getByText('Sur ADAGE à destination des enseignants')
     ).toBeVisible()
 
-    await page.getByText('Aller au contenu').click()
+    // Press tab to focus on the top of the page
+    await page.keyboard.press('Tab')
+    await page.getByRole('link', { name: 'Aller au contenu' }).click()
   })
 
   test('I should not be able to onboard me by submitting an Adage referencing file if I don’t have an Adage ID', async ({
