@@ -86,6 +86,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_offers_with_ean import c
 from pcapi.sandboxes.scripts.creators.industrial.create_offers_with_price_categories import (
     create_offers_with_price_categories,
 )
+from pcapi.sandboxes.scripts.creators.industrial.create_offers_with_pro_advice import create_offers_with_pro_advice
 from pcapi.sandboxes.scripts.creators.industrial.create_offers_with_status import create_offers_with_status
 from pcapi.sandboxes.scripts.creators.industrial.create_special_events import create_special_events
 from pcapi.sandboxes.scripts.creators.industrial.create_user_account_update_requests import (
@@ -129,6 +130,8 @@ def save_industrial_sandbox() -> None:
     create_industrial_headline_offers(offers_by_name)
 
     create_offers_with_artists()
+
+    create_offers_with_pro_advice()
 
     criteria_by_name = create_industrial_criteria()
 
