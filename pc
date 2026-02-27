@@ -68,6 +68,8 @@ if [[ $# -gt 2 ]] && [[ "$1" == "-e" ]]; then
     ENV="pcapi-stg"
   elif [[ "$2" == "testing" ]]; then
     ENV="pcapi-tst"
+  elif [[ "$2" == "integration" ]]; then
+    ENV="pcapi-int"
   else
     ENV=$2
   fi
