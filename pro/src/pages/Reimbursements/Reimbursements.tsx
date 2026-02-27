@@ -7,6 +7,8 @@ import {
   ensureCurrentOfferer,
   ensureOffererNames,
 } from '@/commons/store/offerer/selectors'
+import { isSelectedVenueAssociated } from '@/commons/store/user/selectors'
+import { NonAttachedBanner } from '@/components/NonAttachedBanner/NonAttachedBanner'
 import { OffererSelect } from '@/components/OffererSelect/OffererSelect'
 import { ReimbursementsTabs } from '@/components/ReimbursementsTabs/ReimbursementsTabs'
 
@@ -15,6 +17,8 @@ export const Reimbursements = () => {
   const selectedOfferer = useAppSelector(ensureCurrentOfferer)
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
   const offererNames = useAppSelector(ensureOffererNames)
+  const selectedVenueAssociated =
+    useAppSelector(isSelectedVenueAssociated) ?? true
 
   return (
     <BasicLayout
@@ -24,8 +28,15 @@ export const Reimbursements = () => {
       {withSwitchVenueFeature && offererNames && offererNames.length > 1 && (
         <OffererSelect />
       )}
-      <ReimbursementsTabs selectedOfferer={selectedOfferer} />
-      <Outlet />
+      {selectedVenueAssociated && (
+        <>
+          <ReimbursementsTabs selectedOfferer={selectedOfferer} />
+          <Outlet />
+        </>
+      )}
+      {withSwitchVenueFeature && !selectedVenueAssociated && (
+        <NonAttachedBanner />
+      )}
     </BasicLayout>
   )
 }

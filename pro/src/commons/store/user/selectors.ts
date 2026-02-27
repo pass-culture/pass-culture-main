@@ -5,6 +5,9 @@ import type { RootState } from '@/commons/store/store'
 
 export const selectCurrentUser = (state: RootState) => state.user.currentUser
 
+export const isSelectedVenueAssociated = (state: RootState) =>
+  state.user.selectedVenue && state.user.access === 'full'
+
 export const ensureSelectedAdminOfferer = (state: RootState) => {
   assertOrFrontendError(
     state.user.selectedAdminOfferer,

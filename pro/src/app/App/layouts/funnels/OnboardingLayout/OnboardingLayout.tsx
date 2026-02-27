@@ -6,7 +6,10 @@ import { ConnectedAsAside } from '@/app/App/layouts/components/ConnectedAsAside/
 import { Header } from '@/app/App/layouts/components/Header/Header'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { selectCurrentUser } from '@/commons/store/user/selectors'
+import {
+  isSelectedVenueAssociated,
+  selectCurrentUser,
+} from '@/commons/store/user/selectors'
 import { Footer } from '@/components/Footer/Footer'
 import { SkipLinks } from '@/components/SkipLinks/SkipLinks'
 
@@ -48,6 +51,8 @@ export const OnboardingLayout = ({
   isEntryScreen = false,
 }: OnboardingLayoutProps) => {
   const currentUser = useAppSelector(selectCurrentUser)
+  const selectedVenueAssociated =
+    useAppSelector(isSelectedVenueAssociated) ?? false
 
   const mainHeadingWrapper = (
     <MainHeading
@@ -68,7 +73,7 @@ export const OnboardingLayout = ({
       {currentUser?.isImpersonated && (
         <ConnectedAsAside currentUser={currentUser} />
       )}
-      <Header disableHomeLink />
+      <Header disableHomeLink disableAdminMenu={selectedVenueAssociated} />
       <div
         className={cn(styles['page-layout'], {
           [styles['page-layout-connect-as']]: currentUser?.isImpersonated,
