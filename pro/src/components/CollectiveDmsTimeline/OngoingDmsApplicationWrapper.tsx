@@ -1,8 +1,8 @@
 import { Panel } from '@/ui-kit/Panel/Panel'
 
 import { CollectiveAdagePendingStatus } from './CollectiveAdagePendingStatus'
-import { CollectiveDmsTimelineVariant } from './CollectiveDmsTimeline'
 import styles from './CollectiveDmsTimeline.module.scss'
+import { CollectiveDmsTimelineVariant } from './types'
 
 export const OngoingDmsApplicationWrapper = ({
   children,
