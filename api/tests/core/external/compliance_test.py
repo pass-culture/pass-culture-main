@@ -16,7 +16,7 @@ from pcapi.utils import requests
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@pytest.mark.settings(COMPLIANCE_BACKEND="pcapi.core.external.compliance.backends.compliance.ComplianceBackend")
+@pytest.mark.settings(COMPLIANCE_BACKEND="ComplianceBackend")
 @pytest.mark.usefixtures("db_session")
 class GetDataComplianceScoringTest:
     @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")

@@ -1,4 +1,5 @@
 import logging
+import typing
 
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import insert
@@ -8,52 +9,49 @@ from pcapi.core.categories.genres import music
 from pcapi.core.categories.genres import show
 from pcapi.core.external.compliance import serialization
 from pcapi.core.external.compliance import tasks
-from pcapi.core.external.compliance.backends.base import BaseBackend
+from pcapi.core.external.compliance.backends.compliance import ComplianceBackend
+from pcapi.core.external.compliance.backends.development import DevelopmentBackend
+from pcapi.core.external.compliance.backends.test import TestBackend
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
-from pcapi.tasks import compliance_tasks
-from pcapi.utils.module_loading import import_string
 from pcapi.utils.transaction_manager import is_managed_transaction
 
 
 logger = logging.getLogger(__name__)
 
 
-def get_backend() -> "BaseBackend":
-    backend_string = settings.COMPLIANCE_BACKEND
-    # Keep compatibility with environment settings for transition, remove with WIP_ASYNCHRONOUS_CELERY_COMPLIANCE
-    backend_string = backend_string.replace(
-        "pcapi.core.external.compliance_backends", "pcapi.core.external.compliance.backends"
-    )
-    backend_class = import_string(backend_string)
-    return backend_class()
+type Backend = ComplianceBackend | DevelopmentBackend | TestBackend
+
+BACKEND_BY_KEY: typing.Final[dict[str, type[Backend]]] = {
+    "ComplianceBackend": ComplianceBackend,
+    "DevelopmentBackend": DevelopmentBackend,
+    "TestBackend": TestBackend,
+    "pcapi.core.external.compliance_backends.compliance.ComplianceBackend": ComplianceBackend,
+}
+
+logger = logging.getLogger(__name__)
+
+
+def _get_backend() -> Backend:
+    return BACKEND_BY_KEY[settings.COMPLIANCE_BACKEND]()
 
 
 def search_offers(payload: serialization.SearchOffersRequest) -> serialization.SearchOffersResponse | None:
-    return get_backend().search_offers(payload)
+    return _get_backend().search_offers(payload)
 
 
 def update_offer_compliance_score(offer: offers_models.Offer, is_primary: bool) -> None:
     payload = _get_payload_for_compliance_api(offer)
     if is_primary:
-        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_COMPLIANCE.is_active():
-            assert isinstance(payload, serialization.UpdateOfferComplianceScorePayload)
-            tasks.update_offer_compliance_score_primary_task.delay(payload.model_dump())
-        else:
-            compliance_tasks.update_offer_compliance_score_primary_task.delay(payload)
+        tasks.update_offer_compliance_score_primary_task.delay(payload.model_dump())
     else:
-        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_COMPLIANCE.is_active():
-            assert isinstance(payload, serialization.UpdateOfferComplianceScorePayload)
-            tasks.update_offer_compliance_score_secondary_task.delay(payload.model_dump())
-        else:
-            compliance_tasks.update_offer_compliance_score_secondary_task.delay(payload)
+        tasks.update_offer_compliance_score_secondary_task.delay(payload.model_dump())
 
 
 def make_update_offer_compliance_score(
-    payload: serialization.GetComplianceScoreRequest | serialization.UpdateOfferComplianceScorePayload,
+    payload: serialization.UpdateOfferComplianceScorePayload,
 ) -> None:
-    compliance_data = get_backend().get_score_from_compliance_api(payload)
+    compliance_data = _get_backend().get_score_from_compliance_api(payload)
 
     if compliance_data and compliance_data.probability_validated is not None:
         offer = db.session.query(offers_models.Offer).with_for_update().filter_by(id=payload.offer_id).one_or_none()
@@ -80,9 +78,7 @@ def make_update_offer_compliance_score(
             db.session.commit()
 
 
-def _get_payload_for_compliance_api(
-    offer: offers_models.Offer,
-) -> serialization.GetComplianceScoreRequest | serialization.UpdateOfferComplianceScorePayload:
+def _get_payload_for_compliance_api(offer: offers_models.Offer) -> serialization.UpdateOfferComplianceScorePayload:
     extra_data = offer.extraData or {}
     rayon = extra_data.get("rayon")
     macro_rayon = (
@@ -108,33 +104,17 @@ def _get_payload_for_compliance_api(
     elif music_sub_type := extra_data.get("musicSubType"):
         offer_sub_type_label = music.MUSIC_SUB_TYPES_LABEL_BY_CODE[int(music_sub_type)]
 
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_COMPLIANCE.is_active():
-        return serialization.UpdateOfferComplianceScorePayload(
-            offer_id=str(offer.id),
-            offer_name=offer.name,
-            offer_description=offer.description,
-            offer_subcategory_id=offer.subcategoryId,
-            rayon=rayon,
-            macro_rayon=macro_rayon,
-            stock_price=float(offer.max_price),
-            image_url=offer.thumbUrl,
-            offer_type_label=offer_type_label,
-            offer_sub_type_label=offer_sub_type_label,
-            author=extra_data.get("author"),
-            performer=extra_data.get("performer"),
-        )
-    else:
-        return serialization.GetComplianceScoreRequest(
-            offer_id=str(offer.id),
-            offer_name=offer.name,
-            offer_description=offer.description,
-            offer_subcategory_id=offer.subcategoryId,
-            rayon=rayon,
-            macro_rayon=macro_rayon,
-            stock_price=float(offer.max_price),
-            image_url=offer.thumbUrl,
-            offer_type_label=offer_type_label,
-            offer_sub_type_label=offer_sub_type_label,
-            author=extra_data.get("author"),
-            performer=extra_data.get("performer"),
-        )
+    return serialization.UpdateOfferComplianceScorePayload(
+        offer_id=str(offer.id),
+        offer_name=offer.name,
+        offer_description=offer.description,
+        offer_subcategory_id=offer.subcategoryId,
+        rayon=rayon,
+        macro_rayon=macro_rayon,
+        stock_price=float(offer.max_price),
+        image_url=offer.thumbUrl,
+        offer_type_label=offer_type_label,
+        offer_sub_type_label=offer_sub_type_label,
+        author=extra_data.get("author"),
+        performer=extra_data.get("performer"),
+    )
