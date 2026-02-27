@@ -124,7 +124,7 @@ export const NewHomepage = (): JSX.Element => {
             <div>
               Activités sur vos offres individuelles
               <br />
-              <b>Module gestion offre indivs</b>
+              <b>Module gestion offres indivs</b>
             </div>
             <div>
               Evolution de consultation de vos offres
@@ -154,7 +154,7 @@ export const NewHomepage = (): JSX.Element => {
               <div>
                 Participer à nos webinaires sur la part individuelle !
                 <br />
-                <b>Module Webinaires indiv</b>
+                <b>Module Webinaire indiv</b>
               </div>
             )}
             <div>
