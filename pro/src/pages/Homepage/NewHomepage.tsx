@@ -9,10 +9,8 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { getToday } from '@/commons/utils/date'
 import { getLastCollectiveDmsApplication } from '@/commons/utils/getLastCollectiveDmsApplication'
-import {
-  CollectiveDmsTimeline,
-  CollectiveDmsTimelineVariant,
-} from '@/components/CollectiveDmsTimeline/CollectiveDmsTimeline'
+import { CollectiveDmsTimeline } from '@/components/CollectiveDmsTimeline/CollectiveDmsTimeline'
+import { CollectiveDmsTimelineVariant } from '@/components/CollectiveDmsTimeline/types'
 import {
   getPanelId,
   getTabId,

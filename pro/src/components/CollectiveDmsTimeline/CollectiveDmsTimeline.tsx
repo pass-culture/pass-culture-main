@@ -13,11 +13,7 @@ import { Timeline, TimelineStepType } from '@/ui-kit/Timeline/Timeline'
 
 import styles from './CollectiveDmsTimeline.module.scss'
 import { OngoingDmsApplicationWrapper } from './OngoingDmsApplicationWrapper'
-
-export enum CollectiveDmsTimelineVariant {
-  DEFAULT = 'DEFAULT',
-  LITE = 'LITE',
-}
+import { CollectiveDmsTimelineVariant } from './types'
 
 export const CollectiveDmsTimeline = ({
   collectiveDmsApplication,

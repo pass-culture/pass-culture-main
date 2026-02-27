@@ -16,6 +16,10 @@ import { PartnerLayout } from '@/layouts/PartnerLayout/PartnerLayout'
 import * as utils from './commons/utils'
 import { NewHomepage } from './NewHomepage'
 
+vi.mock('@/components/CollectiveDmsTimeline/CollectiveDmsTimeline', () => ({
+  CollectiveDmsTimeline: () => <div>timeline DMS</div>,
+}))
+
 const newHomepageRoutes = [
   {
     path: '/',
@@ -375,7 +379,7 @@ describe('NewHomepage', () => {
 
         expect(
           screen.getByRole('tabpanel', { description: /collective/ })
-        ).toHaveTextContent(/Votre dossier est en attente d’instruction/)
+        ).toHaveTextContent(/timeline DMS/)
       })
 
       it('should not be displayed when venue has not a collective DMS application', () => {
@@ -387,7 +391,7 @@ describe('NewHomepage', () => {
 
         expect(
           screen.getByRole('tabpanel', { description: /collective/ })
-        ).not.toHaveTextContent(/Votre dossier est en attente d’instruction/)
+        ).not.toHaveTextContent(/timeline DMS/)
       })
     })
 
