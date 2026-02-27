@@ -1,31 +1,33 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
 
 .booking-summary {
   @include fonts.body-accent-xs;
 
-  margin-bottom: rem.torem(15px);
+  margin-bottom: var(--size-spacing-l);
+}
 
-  > div > div {
-    display: inline-block;
-    width: 50%;
-  }
+.desk-line {
+  display: flex;
 }
 
 .desk-label {
   color: var(--color-text-subtle);
   text-align: right;
+  width: 50%;
 }
 
 .desk-value {
   padding-left: rem.torem(5px);
   text-align: left;
+  width: 50%;
 }
 
 .duo-price {
   position: relative;
 
-  svg {
+  &-icon {
     position: absolute;
     top: rem.torem(-6px);
     margin-left: rem.torem(5px);
