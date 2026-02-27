@@ -81,7 +81,7 @@ export const OnboardingLayout = ({
               styles[`content-container-${layoutVariant}`]
             )}
           >
-            <main id="content">
+            <main id="content" tabIndex={-1}>
               <div
                 className={cn(
                   styles['content'],

@@ -92,7 +92,7 @@ export const BasicLayout = ({
         )}
         <div id="content-wrapper" className={styles['content-wrapper']}>
           <div className={styles['content-container']}>
-            <main id="content">
+            <main id="content" tabIndex={-1}>
               <div
                 className={
                   isFullPage ? styles['content-no-side-panel'] : styles.content

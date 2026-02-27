@@ -5,7 +5,6 @@ import type { VenueListItemResponseModel } from '@/apiClient/v1'
 import { FunnelLayout } from '@/app/App/layouts/funnels/FunnelLayout/FunnelLayout'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useFocusOnMounted } from '@/commons/hooks/useFocusOnMounted'
 import { setSelectedVenueById } from '@/commons/store/user/dispatchers/setSelectedVenueById'
 import { ensureVenues } from '@/commons/store/user/selectors'
 import { normalizeStrForSearch } from '@/commons/utils/normalizeStrForSearch'
@@ -67,8 +66,6 @@ export const Hub = () => {
 
     navigate('/accueil')
   }
-
-  useFocusOnMounted('#content', isLoading)
 
   if (isLoading) {
     return (

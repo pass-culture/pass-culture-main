@@ -4,15 +4,14 @@
 
 .skip-links {
   height: 0;
-  position: absolute;
-  background-color: var(--color-background-brand-primary);
   top: rem.torem(-36px);
+  position: absolute;
 
   &:focus-within {
-    height: rem.torem(36px);
-    position: relative;
+    height: initial;
     z-index: zIndex.$cookies-popup-z-index;
     top: 0;
+    left: 0;
   }
 }
 
