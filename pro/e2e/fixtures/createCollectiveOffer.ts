@@ -2,7 +2,7 @@
 import { expect, type APIRequestContext } from '@playwright/test'
 
 import { test as base } from './common'
-import { createProUserWithCollectiveOffer } from '../helpers/sandbox'
+import { createProUserWithCollectiveOffers } from '../helpers/sandbox'
 
 export const test = base.extend<{
   callSandbox: (ctx: APIRequestContext) => Promise<any>
@@ -10,7 +10,7 @@ export const test = base.extend<{
 }>({
   callSandbox: async ({ browser }, use) => {
     const callSandbox = (ctx: APIRequestContext): Promise<any> => {
-      return createProUserWithCollectiveOffer(ctx)
+      return createProUserWithCollectiveOffers(ctx)
     }
 
     await use(callSandbox)

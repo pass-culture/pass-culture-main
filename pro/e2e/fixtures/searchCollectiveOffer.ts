@@ -7,26 +7,11 @@ import {
 } from '@playwright/test'
 
 import { login } from '../helpers/auth'
-import { BASE_API_URL, sandboxCall } from '../helpers/sandbox'
-
-interface CollectiveOffer {
-  name: string
-  venueName: string
-}
-
-interface CollectiveOfferPublished extends CollectiveOffer {
-  startDatetime: string
-  endDatetime: string
-}
-
-export interface CollectiveOffersUserData {
-  user: {
-    email: string
-  }
-  offerPublished: CollectiveOfferPublished
-  offerArchived: CollectiveOffer
-  offerDraft: CollectiveOffer
-}
+import {
+  BASE_API_URL,
+  type CollectiveOffersUserData,
+  createProUserWithCollectiveOffers,
+} from '../helpers/sandbox'
 
 interface CollectiveOffersSession {
   data: CollectiveOffersUserData
@@ -34,20 +19,6 @@ interface CollectiveOffersSession {
 }
 
 const sharedSessionCache = new Map<string, CollectiveOffersSession>()
-
-async function createProUserWithCollectiveOffers(
-  requestContext: ReturnType<
-    typeof playwrightRequest.newContext
-  > extends Promise<infer T>
-    ? T
-    : never
-): Promise<CollectiveOffersUserData> {
-  return await sandboxCall<CollectiveOffersUserData>(
-    requestContext,
-    'GET',
-    `${BASE_API_URL}/sandboxes/pro/create_pro_user_with_collective_offers`
-  )
-}
 
 export const test = base.extend<{
   collectiveOffersUserData: CollectiveOffersUserData
