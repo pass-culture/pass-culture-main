@@ -12,15 +12,11 @@ logger = logging.getLogger(__name__)
 
 class ComplianceBackend(BaseBackend):
     def get_score_from_compliance_api(
-        self, payload: serialization.GetComplianceScoreRequest | serialization.UpdateOfferComplianceScorePayload
+        self, payload: serialization.UpdateOfferComplianceScorePayload
     ) -> serialization.CompliancePredictionOutput | None:
-        if isinstance(payload, serialization.GetComplianceScoreRequest):
-            payload_dict = payload.to_dict()
-        else:
-            payload_dict = payload.model_dump()
         data = self._post(
             route="/latest/model/compliance/scoring",
-            payload=payload_dict,
+            payload=payload.model_dump(),
         )
         if data:
             return serialization.CompliancePredictionOutput.model_validate(data)
