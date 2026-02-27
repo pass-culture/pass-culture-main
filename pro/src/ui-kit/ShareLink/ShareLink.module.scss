@@ -8,12 +8,8 @@
 
   &-input {
     flex: 1;
-
-    input {
-      text-overflow: ellipsis;
-      user-select: none;
-      pointer-events: none;
-    }
+    user-select: none;
+    pointer-events: none;
   }
 
   &-button {
