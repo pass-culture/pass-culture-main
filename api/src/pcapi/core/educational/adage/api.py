@@ -14,10 +14,6 @@ BACKEND_BY_KEY: typing.Final[dict[str, type[Client]]] = {
     "AdageHttpClient": AdageHttpClient,
     "AdageLoggerClient": AdageLoggerClient,
     "AdageSpyClient": AdageSpyClient,
-    # TODO(jcicurel-pass): we keep these imports for now until we have updated the ADAGE_BACKEND setting in each environment
-    "pcapi.core.educational.adage_backends.adage.AdageHttpClient": AdageHttpClient,
-    "pcapi.core.educational.adage_backends.logger.AdageLoggerClient": AdageLoggerClient,
-    "pcapi.core.educational.adage_backends.testing.AdageSpyClient": AdageSpyClient,
 }
 
 
