@@ -239,7 +239,7 @@ describe('useOrejime', () => {
   })
 
   describe('when orejime is already initialized', () => {
-    it('should reinitialize when pc-orejime cookie is missing', async () => {
+    it('should reinitialize when pc-pro-orejime cookie is missing', async () => {
       const manager = createMockManager()
       setupLoadOrejime(manager)
       mockLocation('/some-page')
@@ -260,7 +260,7 @@ describe('useOrejime', () => {
       expect(globalThis.loadOrejime).toHaveBeenCalledTimes(2)
     })
 
-    it('should not reinitialize when pc-orejime cookie is present', async () => {
+    it('should not reinitialize when pc-pro-orejime cookie is present', async () => {
       const manager = createMockManager()
       setupLoadOrejime(manager)
       mockLocation('/some-page')
@@ -271,7 +271,7 @@ describe('useOrejime', () => {
 
       expect(globalThis.loadOrejime).toHaveBeenCalledTimes(1)
 
-      mockCookie('pc-orejime=some-value')
+      mockCookie('pc-pro-orejime=some-value')
       vi.mocked(globalThis.loadOrejime!).mockClear()
       mockLocation('/another-page')
 
