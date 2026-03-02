@@ -1,3 +1,4 @@
+import { yupResolver } from '@hookform/resolvers/yup'
 import type React from 'react'
 import { useEffect, useId, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -7,6 +8,7 @@ import { isErrorAPIError } from '@/apiClient/helpers'
 import type { GetBookingResponse } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
+import { yup } from '@/commons/utils/yup'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { TextInput } from '@/design-system/TextInput/TextInput'
@@ -15,41 +17,50 @@ import fullLinkIcon from '@/icons/full-link.svg'
 import { BookingDetails } from './BookingDetails'
 import { ButtonInvalidateToken } from './ButtonInvalidateToken'
 import styles from './Desk.module.scss'
-import { DeskInputMessage } from './DeskInputMessage/DeskInputMessage'
 import { getBookingFailure } from './getBookingFailure'
-import { type ErrorMessage, MESSAGE_VARIANT } from './types'
-import { validateToken } from './validation'
 
 interface FormValues {
   token: string
 }
 
+const TOKEN_MAX_LENGTH = 6
+const VALID_TOKEN_SYNTAX = /^[A-Z0-9]+$/
+
 export const Desk = (): JSX.Element => {
   const [isTokenValidated, setIsTokenValidated] = useState(false)
   const [booking, setBooking] = useState<GetBookingResponse | null>(null)
-  const [message, setMessage] = useState<ErrorMessage>({
-    message: 'Saisissez une contremarque',
-  })
 
   const statusId = useId()
 
   const tokenInputRef = useRef<HTMLInputElement | null>(null)
 
-  const hookForm = useForm({
-    defaultValues: {
-      token: '',
-    },
-    mode: 'onBlur',
+  const hookForm = useForm<FormValues>({
+    mode: 'onChange', // important
+    defaultValues: { token: '' },
+    resolver: yupResolver(
+      yup.object({
+        token: yup
+          .string()
+          .required('Saisissez une contremarque')
+          .length(6, 'La contremarque doit contenir 6 caractères')
+          .matches(
+            /^[A-Z0-9]+$/,
+            'Caractères alphanumériques en majuscules (A–Z, 0–9)'
+          ),
+      })
+    ),
   })
 
   const {
     register,
     handleSubmit,
     setFocus,
-    resetField,
+    trigger,
     getValues,
     setValue,
-    formState: { isSubmitting },
+    setError,
+    watch,
+    formState: { errors, isValid, isSubmitting },
   } = hookForm
 
   useEffect(() => {
@@ -57,20 +68,14 @@ export const Desk = (): JSX.Element => {
   }, [setFocus])
 
   const onSubmit = async (formValues: FormValues) => {
-    setMessage({ message: 'Validation en cours...' })
-
     try {
       await api.patchBookingUseByToken(formValues.token)
 
-      setMessage({ message: 'Contremarque validée !' })
-      resetField('token')
+      //  resetField('token')
       setBooking(null)
     } catch (error) {
       if (isErrorAPIError(error)) {
-        setMessage({
-          message: error.body['global'],
-          variant: MESSAGE_VARIANT.ERROR,
-        })
+        setError('token', { message: error.body['global'] })
       }
     }
   }
@@ -79,65 +84,44 @@ export const Desk = (): JSX.Element => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const inputValue = event.target.value.toUpperCase()
-    // QRCODE return a prefix that we want to ignore.
     const token = inputValue.split(':').reverse()[0]
 
-    setValue('token', token)
-
-    setMessage({
-      message: 'Vérification...',
-    })
-
-    const tokenErrorMessage = validateToken(token)
-
-    if (tokenErrorMessage) {
-      setMessage(tokenErrorMessage)
+    setValue('token', token, { shouldValidate: true })
+    // 🚀 Only continue if regex is valid
+    if (!isValid) {
       setBooking(null)
-    } else {
-      setMessage({ message: 'Saisissez une contremarque' })
+      return
+    }
 
-      try {
-        const response = await api.getBookingByToken(token)
-        setBooking(response)
-        setMessage({
-          message: 'Coupon vérifié, cliquez sur "Valider" pour enregistrer',
-        })
-      } catch (e) {
-        if (isErrorAPIError(e)) {
-          const failure = getBookingFailure(e)
-          setIsTokenValidated(failure.isTokenValidated)
-          setBooking(null)
-          setMessage({
-            message: failure.message,
-            variant: MESSAGE_VARIANT.ERROR,
-          })
-        }
+    // ✅ Safe to call API
+    try {
+      const response = await api.getBookingByToken(token)
+      setBooking(response)
+    } catch (e) {
+      if (isErrorAPIError(e)) {
+        const failure = getBookingFailure(e)
+        setIsTokenValidated(failure.isTokenValidated)
+        setBooking(null)
+        setError('token', { message: failure.message })
       }
     }
   }
 
   const handleSubmitInvalidate = async (token: string) => {
-    setMessage({ message: 'Invalidation en cours...' })
-
     try {
       await api.patchBookingKeepByToken(token)
-      setMessage({ message: 'Contremarque invalidée !' })
       setIsTokenValidated(false)
-      resetField('token')
+      //  resetField('token')
     } catch (error) {
       if (isErrorAPIError(error)) {
         const failure = getBookingFailure(error)
         setIsTokenValidated(failure.isTokenValidated)
-        setMessage({
-          message: failure.message,
-          variant: MESSAGE_VARIANT.ERROR,
-        })
       }
     } finally {
       tokenInputRef.current?.focus()
     }
   }
-  const tokenRegister = register('token')
+
   return (
     <HeadlineOfferContextProvider>
       <BasicLayout mainHeading="Guichet">
@@ -150,18 +134,17 @@ export const Desk = (): JSX.Element => {
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className={styles['desk-form-input']}>
                 <TextInput
-                  {...tokenRegister}
+                  {...register('token')}
+                  value={watch('token')}
                   label="Contremarque"
                   onChange={handleOnChangeToken}
-                  description="Format : 6 caractères alphanumériques en majuscules. Par exemple : AZE123"
+                  description="Caractères alphanumériques en majuscules. Par exemple : AZE123"
                   describedBy={statusId}
                   autoComplete="off"
-                  ref={(input) => {
-                    tokenRegister.ref(input)
-                    tokenInputRef.current = input
-                  }}
                   required
                   requiredIndicator="explicit"
+                  maxCharactersCount={6}
+                  error={errors?.token?.message}
                 />
               </div>
 
@@ -176,18 +159,12 @@ export const Desk = (): JSX.Element => {
                   <Button
                     type="submit"
                     disabled={isSubmitting || !booking}
+                    isLoading={isSubmitting}
                     label="Valider la contremarque"
                   />
                 )}
               </div>
             </form>
-            {/** biome-ignore lint/a11y/useSemanticElements: We want a `role="status"` here, not an `<output />`. */}
-            <div role="status" id={statusId}>
-              <DeskInputMessage
-                message={message.message}
-                variant={message.variant}
-              />
-            </div>
           </div>
           <Banner
             actions={[
