@@ -3,6 +3,39 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_rem.scss" as rem;
 
+@mixin mobile-layout {
+  max-width: 100%;
+  width: 100%;
+
+  &.show {
+    animation: slide-in-top var(--snackbar-animation-duration) ease-out forwards;
+  }
+
+  &.hide {
+    animation: slide-out-top var(--snackbar-animation-duration) ease-in forwards;
+  }
+
+  .wrapper {
+    border-radius: 0;
+    animation-name: none;
+
+    .content {
+      .content-text {
+        @include fonts.body-accent-s;
+      }
+    }
+  }
+
+  .progress-bar-container {
+    bottom: rem.torem(-4px);
+    top: unset;
+
+    .progress-bar {
+      border-radius: 0 0 var(--size-border-radius-s) var(--size-border-radius-s);
+    }
+  }
+}
+
 .container {
   position: relative;
   width: fit-content;
@@ -122,35 +155,12 @@
 }
 
 .container.mobile {
-  max-width: 100%;
-  width: 100%;
+  @include mobile-layout;
+}
 
-  &.show {
-    animation: slide-in-top var(--snackbar-animation-duration) ease-out forwards;
-  }
-
-  &.hide {
-    animation: slide-out-top var(--snackbar-animation-duration) ease-in forwards;
-  }
-
-  .wrapper {
-    border-radius: 0;
-    animation-name: none;
-
-    .content {
-      .content-text {
-        @include fonts.body-accent-s;
-      }
-    }
-  }
-
-  .progress-bar-container {
-    bottom: rem.torem(-4px);
-    top: unset;
-
-    .progress-bar {
-      border-radius: 0 0 var(--size-border-radius-s) var(--size-border-radius-s);
-    }
+@media (max-width: size.$tablet) {
+  .container {
+    @include mobile-layout;
   }
 }
 

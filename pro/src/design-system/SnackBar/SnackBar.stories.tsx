@@ -3,7 +3,6 @@ import { useState } from 'react'
 import { INITIAL_VIEWPORTS } from 'storybook/viewport'
 
 import { SnackBar, SnackBarProps, SnackBarVariant } from './SnackBar'
-import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 
 /**
  * Meta object for the SnackBar component.
@@ -155,7 +154,6 @@ type Notification = {
 const PlaygroundComponent = () => {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [counter, setCounter] = useState(0)
-  const isSmallScreen = useMediaQuery('(max-width: 38.125rem)')
 
   const addNotification = (variant: SnackBarVariant, description: string) => {
     const id = counter
@@ -167,11 +165,7 @@ const PlaygroundComponent = () => {
     setNotifications((prev) => prev.filter((n) => n.id !== id))
   }
 
-  // Small (mobile/tablet): the last snackbar appears below the first one (ascending order)
-  // Large (desktop): the last snackbar appears above the first one (descending order)
-  const notificationsToDisplay = notifications.sort((a, b) =>
-    (isSmallScreen ? 1 : -1) * (a.date.getTime() - b.date.getTime())
-  );
+  const notificationsToDisplay = [...notifications]
 
   return (
     <div style={{ height: '500px' }}>
