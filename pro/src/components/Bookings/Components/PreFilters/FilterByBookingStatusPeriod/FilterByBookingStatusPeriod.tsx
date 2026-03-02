@@ -34,7 +34,6 @@ export const FilterByBookingStatusPeriod = ({
       <legend className={styles['visually-hidden']}>Période</legend>
 
       <Select
-        className={styles['period-filter-status']}
         onChange={(event) =>
           updateFilters({
             bookingStatusFilter: event.target.value as BookingStatusFilter,
@@ -49,7 +48,6 @@ export const FilterByBookingStatusPeriod = ({
       />
 
       <PeriodSelector
-        className={styles['period-filter-selector']}
         onBeginningDateChange={handleBookingBeginningDateChange}
         onEndingDateChange={handleBookingEndingDateChange}
         isDisabled={isDisabled}
