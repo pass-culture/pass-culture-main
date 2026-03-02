@@ -51,10 +51,10 @@ export const applyVenueDefaultsToFormValues = (
     //  If there are venue email and phone and no form email and phone yet, we pre-fill the form inputs
     return {
       ...values,
-      email:
-        venue.collectiveEmail && !values.email
+      contactEmail:
+        venue.collectiveEmail && !values.contactEmail
           ? venue.collectiveEmail
-          : values.email,
+          : values.contactEmail,
       phone:
         venue.collectivePhone && !values.phone
           ? venue.collectivePhone
@@ -99,10 +99,8 @@ export const applyVenueDefaultsToFormValues = (
       audio: Boolean(audioDisabilityCompliant),
       none: noDisabilityCompliant,
     },
-    email: venue.collectiveEmail ?? values.email,
+    contactEmail: venue.collectiveEmail ?? values.contactEmail,
     phone: venue.collectivePhone ?? values.phone,
-    notificationEmails: [
-      { email: venue.collectiveEmail ?? values.email ?? '' },
-    ],
+    bookingEmails: [venue.collectiveEmail ?? values.contactEmail ?? ''],
   }
 }

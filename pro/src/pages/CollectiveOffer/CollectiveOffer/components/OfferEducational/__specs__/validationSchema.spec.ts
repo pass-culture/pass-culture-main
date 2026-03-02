@@ -10,8 +10,8 @@ import { getOfferEducationalValidationSchema } from '../validationSchema'
 
 const defaultValues: OfferEducationalFormValues = {
   title: 'offer title',
-  email: 'test@test.co',
-  notificationEmails: [{ email: 'test@test.co' }],
+  contactEmail: 'test@test.co',
+  bookingEmails: ['test@test.co'],
   accessibility: {
     audio: false,
     mental: false,
@@ -74,7 +74,7 @@ describe('validationSchema OfferEducational', () => {
         formValues: {
           ...defaultValues,
           contactOptions: { email: true, form: false, phone: false },
-          email: '',
+          contactEmail: '',
         },
         expectedErrors: ['Veuillez renseigner une adresse email'],
       },
@@ -136,7 +136,7 @@ describe('validationSchema OfferEducational', () => {
         description: 'valid form without notification email',
         formValues: {
           ...defaultValues,
-          notificationEmails: [{ email: '' }],
+          bookingEmails: [''],
         },
         expectedErrors: ['Veuillez renseigner une adresse email'],
       },

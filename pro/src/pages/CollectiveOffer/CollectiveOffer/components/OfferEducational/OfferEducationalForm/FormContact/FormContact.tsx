@@ -31,9 +31,9 @@ export const FormContact = ({ disableForm }: FormContactProps): JSX.Element => {
           disabled={disableForm}
           type="email"
           description="Format : email@exemple.com"
-          {...register('email')}
+          {...register('contactEmail')}
           required
-          error={getFieldState('email').error?.message}
+          error={getFieldState('contactEmail').error?.message}
         />
       </FormLayout.Row>
     </FormLayout.Section>

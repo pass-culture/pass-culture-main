@@ -34,10 +34,10 @@ const baseSerializer: PatchOfferSerializer<PatchCollectiveOfferBodyModel> = {
     audioDisabilityCompliant: offer.accessibility.audio,
     visualDisabilityCompliant: offer.accessibility.visual,
   }),
-  notificationEmails: (payload, offer) => {
+  bookingEmails: (payload, offer) => {
     return {
       ...payload,
-      bookingEmails: offer.notificationEmails?.map((email) => email.email),
+      bookingEmails: offer.bookingEmails,
     }
   },
   offererId: (payload: PatchCollectiveOfferBodyModel) => payload,
@@ -53,9 +53,9 @@ const baseSerializer: PatchOfferSerializer<PatchCollectiveOfferBodyModel> = {
     ...payload,
     contactPhone: offer.phone || null,
   }),
-  email: (payload, offer) => ({
+  contactEmail: (payload, offer) => ({
     ...payload,
-    contactEmail: offer.email,
+    contactEmail: offer.contactEmail,
   }),
   domains: (payload, offer) => ({
     ...payload,
@@ -228,7 +228,7 @@ export const createPatchOfferTemplatePayload = (
   })
 
   changedValues.contactEmail =
-    (offer.contactOptions?.email && offer.email) || null
+    (offer.contactOptions?.email && offer.contactEmail) || null
   changedValues.contactPhone =
     (offer.contactOptions?.phone && offer.phone) || null
   changedValues.contactForm =
