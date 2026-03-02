@@ -61,7 +61,7 @@ export function toFormValues(
   return PriceTableValidationSchema.cast(
     {
       ...offer,
-      entries:
+      priceCategories:
         priceCategoriesOrOfferStocks.length > 0
           ? priceCategoriesOrOfferStocks.map((entry) => ({
               ...entry,

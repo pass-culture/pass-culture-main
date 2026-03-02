@@ -16,7 +16,7 @@ vi.mock('@/apiClient/api', () => ({
 describe('saveEventOfferPriceTable', () => {
   const offer = getIndividualOfferFactory()
   const formValues = {
-    entries: [
+    priceCategories: [
       {
         activationCodes: [],
         activationCodesExpirationDatetime: '',
@@ -38,7 +38,7 @@ describe('saveEventOfferPriceTable', () => {
     formState: {
       dirtyFields: {
         isDuo: true,
-        entries: true,
+        priceCategories: true,
       },
     },
   }

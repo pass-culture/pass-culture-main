@@ -55,7 +55,7 @@ export const toThingStocksBulkUpsertBodyModel = (
     departementCode?: string | null
   }
 ): ThingStocksBulkUpsertBodyModel => {
-  const stocks = formValues.entries.map((entry) =>
+  const stocks = formValues.priceCategories.map((entry) =>
     toThingStockUpsertBodyModel(entry, { departementCode })
   )
 

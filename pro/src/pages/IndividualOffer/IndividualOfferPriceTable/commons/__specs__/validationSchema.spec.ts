@@ -42,7 +42,7 @@ describe('PriceTableValidationSchema', () => {
     remainingQuantity: null,
   }
   const baseFormValues: PriceTableFormValues = {
-    entries: [baseEntry],
+    priceCategories: [baseEntry],
     isDuo: true,
   } as unknown as PriceTableFormValues
 
@@ -64,7 +64,7 @@ describe('PriceTableValidationSchema', () => {
         'missing label for event offer triggers label required error',
       formValues: {
         ...baseFormValues,
-        entries: [{ ...baseEntry, label: '' }],
+        priceCategories: [{ ...baseEntry, label: '' }],
       },
       context: baseContext,
       expectedErrors: ['Veuillez renseigner un intitulé de tarif'],
@@ -73,7 +73,7 @@ describe('PriceTableValidationSchema', () => {
       description: 'duplicate labels with same prices produce uniqueness error',
       formValues: {
         ...baseFormValues,
-        entries: [
+        priceCategories: [
           { ...baseEntry, label: 'Duplicate Label and Price', price: 12 },
           { ...baseEntry, label: 'Duplicate Label and Price', price: 12 },
         ],
@@ -87,7 +87,9 @@ describe('PriceTableValidationSchema', () => {
       description: 'price missing for creation triggers price required error',
       formValues: {
         ...baseFormValues,
-        entries: [{ ...baseEntry, price: undefined as unknown as number }],
+        priceCategories: [
+          { ...baseEntry, price: undefined as unknown as number },
+        ],
       },
       context: baseContext,
       expectedErrors: ['Veuillez renseigner un prix'],
@@ -96,7 +98,7 @@ describe('PriceTableValidationSchema', () => {
       description: 'CREATION mode with maximum price limit in EUR reached',
       formValues: {
         ...baseFormValues,
-        entries: [{ ...baseEntry, price: 301 }],
+        priceCategories: [{ ...baseEntry, price: 301 }],
       },
       context: baseContext,
       expectedErrors: ['Veuillez renseigner un prix inférieur à 300 €'],
@@ -105,7 +107,7 @@ describe('PriceTableValidationSchema', () => {
       description: 'CREATION mode with maximum price limit in XPF reached',
       formValues: {
         ...baseFormValues,
-        entries: [{ ...baseEntry, price: 28370 }],
+        priceCategories: [{ ...baseEntry, price: 28370 }],
       },
       context: {
         ...baseContext,
@@ -117,7 +119,7 @@ describe('PriceTableValidationSchema', () => {
       description: 'quantity below 1 in creation triggers min error',
       formValues: {
         ...baseFormValues,
-        entries: [{ ...baseEntry, quantity: 0 }],
+        priceCategories: [{ ...baseEntry, quantity: 0 }],
       },
       context: baseContext,
       expectedErrors: ['Veuillez indiquer un nombre supérieur à 0'],
@@ -126,7 +128,7 @@ describe('PriceTableValidationSchema', () => {
       description: 'quantity above max triggers max error',
       formValues: {
         ...baseFormValues,
-        entries: [{ ...baseEntry, quantity: 1_000_000 + 1 }],
+        priceCategories: [{ ...baseEntry, quantity: 1_000_000 + 1 }],
       },
       context: baseContext,
       expectedErrors: [
@@ -137,7 +139,7 @@ describe('PriceTableValidationSchema', () => {
       description: 'non-event offer does not require label',
       formValues: {
         ...baseFormValues,
-        entries: [{ ...baseEntry, label: '' }],
+        priceCategories: [{ ...baseEntry, label: '' }],
       },
       context: buildContext({
         offer: getIndividualOfferFactory({ isEvent: false }),
@@ -149,7 +151,7 @@ describe('PriceTableValidationSchema', () => {
         'EDITION mode with existing id allows zero quantity when bookingsQuantity = 0',
       formValues: {
         ...baseFormValues,
-        entries: [{ ...baseEntry, id: 42, quantity: 0 }],
+        priceCategories: [{ ...baseEntry, id: 42, quantity: 0 }],
       },
       context: buildContext({ mode: OFFER_WIZARD_MODE.EDITION }),
       expectedErrors: [],
@@ -185,7 +187,7 @@ describe('PriceTableValidationSchema', () => {
   it(`should keep price in EUR when not isCaledonian`, async () => {
     const formValues = {
       ...baseFormValues,
-      entries: [{ ...baseEntry, price: 200 }],
+      priceCategories: [{ ...baseEntry, price: 200 }],
     }
     const context = {
       ...baseContext,
@@ -200,13 +202,13 @@ describe('PriceTableValidationSchema', () => {
       }
     )
 
-    expect(validatedFormValues.entries[0].price).toBe(200)
+    expect(validatedFormValues.priceCategories[0].price).toBe(200)
   })
 
   it(`should convert price from XPF to EUR when isCaledonian`, async () => {
     const formValues = {
       ...baseFormValues,
-      entries: [{ ...baseEntry, price: 2000 }],
+      priceCategories: [{ ...baseEntry, price: 2000 }],
     }
     const context = {
       ...baseContext,
@@ -221,6 +223,6 @@ describe('PriceTableValidationSchema', () => {
       }
     )
 
-    expect(validatedFormValues.entries[0].price).toBe(16.76)
+    expect(validatedFormValues.priceCategories[0].price).toBe(16.76)
   })
 })

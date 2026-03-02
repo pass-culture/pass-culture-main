@@ -159,7 +159,7 @@ export type PriceTableEntryFormValues = yup.InferType<
 >
 
 export const PriceTableValidationSchema = yup.object().shape({
-  entries: yup
+  priceCategories: yup
     .array()
     .of(PriceTableEntryValidationSchema)
     .min(1)
