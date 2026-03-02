@@ -29,12 +29,6 @@
     }
   }
 
-  &:hover {
-    .image-upload-button-label {
-      text-decoration: underline;
-    }
-  }
-
   &:active {
     background-color: var(--color-background-subtle);
   }

@@ -162,15 +162,13 @@ export const AdageMultiselect = ({
 
   return (
     <div className={styles['container']}>
-      <div>
-        <SearchInput
-          {...getInputProps()}
-          onKeyDown={handleKeyDown}
-          value={inputValue}
-          aria-describedby={indicationId}
-          label={label}
-        />
-      </div>
+      <SearchInput
+        {...getInputProps()}
+        onKeyDown={handleKeyDown}
+        value={inputValue}
+        aria-describedby={indicationId}
+        label={label}
+      />
       <ul
         className={styles['search-list']}
         {...getMenuProps({

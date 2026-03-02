@@ -1,10 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.filters-wrapper {
-  margin-top: var(--size-spacing-l);
-}
-
 .bs-filter {
   position: relative;
   display: inline-block;
@@ -60,13 +56,6 @@
   &.active {
     color: var(--color-icon-brand-primary);
   }
-}
-
-.status-badge-icon {
-  position: absolute;
-  top: 0;
-  right: 0;
-  border-radius: var(--size-border-radius-s);
 }
 
 .bs-filter-checkboxes {

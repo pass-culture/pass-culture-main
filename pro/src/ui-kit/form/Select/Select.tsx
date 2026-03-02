@@ -53,48 +53,44 @@ export const Select = forwardRef(
 
     return (
       <div className={className}>
-        <div>
-          <FieldHeader
-            label={label}
-            fieldId={fieldId}
-            required={required}
-            requiredIndicator={requiredIndicator}
-          />
+        <FieldHeader
+          label={label}
+          fieldId={fieldId}
+          required={required}
+          requiredIndicator={requiredIndicator}
+        />
 
-          <div className={styles['select-input-wrapper']}>
-            <select
-              ref={ref}
-              id={fieldId}
-              name={name}
-              disabled={disabled}
-              value={value}
-              aria-label={ariaLabel}
-              aria-required={required}
-              aria-invalid={Boolean(error)}
-              aria-describedby={error ? errorId : undefined}
-              className={cn(styles['select-input'], {
-                [styles['has-error']]: Boolean(error),
-                [styles['select-input-placeholder']]: value === '',
-                [styles['has-value']]: !!value,
-              })}
-              onBlur={onBlur}
-              onChange={onChange}
-            >
-              {defaultOption && (
-                <option value={defaultOption.value}>
-                  {defaultOption.label}
-                </option>
-              )}
-              {options.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+        <div className={styles['select-input-wrapper']}>
+          <select
+            ref={ref}
+            id={fieldId}
+            name={name}
+            disabled={disabled}
+            value={value}
+            aria-label={ariaLabel}
+            aria-required={required}
+            aria-invalid={Boolean(error)}
+            aria-describedby={error ? errorId : undefined}
+            className={cn(styles['select-input'], {
+              [styles['has-error']]: Boolean(error),
+              [styles['select-input-placeholder']]: value === '',
+              [styles['has-value']]: !!value,
+            })}
+            onBlur={onBlur}
+            onChange={onChange}
+          >
+            {defaultOption && (
+              <option value={defaultOption.value}>{defaultOption.label}</option>
+            )}
+            {options.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
 
-            <div className={styles['select-input-icon']}>
-              <SvgIcon src={fullDownIcon} alt="" />
-            </div>
+          <div className={styles['select-input-icon']}>
+            <SvgIcon src={fullDownIcon} alt="" />
           </div>
         </div>
 

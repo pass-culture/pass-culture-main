@@ -2,6 +2,7 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_rem.scss" as rem;
 
+/* check-unused-css-disable-next-line */
 .income {
   &-box {
     margin-bottom: var(--size-spacing-xl);

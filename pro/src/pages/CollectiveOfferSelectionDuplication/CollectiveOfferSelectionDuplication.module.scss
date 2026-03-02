@@ -12,10 +12,6 @@
   margin-bottom: var(--size-spacing-l);
 }
 
-.sub-title {
-  @include fonts.title4;
-}
-
 .search-no-results {
   color: var(--color-text-subtle);
   text-align: center;

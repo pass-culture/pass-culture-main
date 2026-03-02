@@ -11,24 +11,22 @@
   }
 }
 
-.image-uploader-actions {
-  &-visible {
-    margin-top: var(--size-spacing-xxl);
-    margin-left: 0;
+.image-uploader-actions-visible {
+  margin-top: var(--size-spacing-xxl);
+  margin-left: 0;
 
-    @media screen and (min-width: size.$tablet) {
-      margin-top: 0;
-      margin-left: var(--size-spacing-xxl);
-    }
+  @media screen and (min-width: size.$tablet) {
+    margin-top: 0;
+    margin-left: var(--size-spacing-xxl);
   }
+}
 
-  &-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    gap: var(--size-spacing-l);
-  }
+.image-uploader-actions-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--size-spacing-l);
 }
 
 .image-preview {

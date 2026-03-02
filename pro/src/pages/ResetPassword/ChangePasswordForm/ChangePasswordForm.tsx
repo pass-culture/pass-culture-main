@@ -25,10 +25,7 @@ export const ChangePasswordForm = ({
   } = useFormContext<ResetPasswordValues>()
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className={styles['change-password-form']}
-    >
+    <form onSubmit={handleSubmit(onSubmit)}>
       <ScrollToFirstHookFormErrorAfterSubmit />
 
       <FormLayout>

@@ -55,12 +55,3 @@
 .venue-name {
   @include fonts.title2;
 }
-
-.separator {
-  width: 100%;
-  border-top: 2px solid var(--color-border-subtle);
-
-  // override default style
-  margin: 0;
-  background: none;
-}

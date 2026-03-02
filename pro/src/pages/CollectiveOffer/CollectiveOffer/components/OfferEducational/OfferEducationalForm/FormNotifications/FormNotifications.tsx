@@ -31,34 +31,31 @@ export const FormNotifications = ({
     >
       {fields.map((field, index) => (
         <FormLayout.Row key={field.id}>
-          <div>
-            <TextInput
-              label={NOTIFICATIONS_EMAIL_LABEL}
-              disabled={disableForm}
-              required
-              {...register(`notificationEmails.${index}.email`)}
-              error={
-                getFieldState(`notificationEmails.${index}.email`).error
-                  ?.message
-              }
-              description="Format : email@exemple.com"
-              extension={
-                index > 0 &&
-                !disableForm && (
-                  <Button
-                    variant={ButtonVariant.SECONDARY}
-                    color={ButtonColor.NEUTRAL}
-                    onClick={() => {
-                      remove(index)
-                      setFocus(`notificationEmails.${index - 1}.email`)
-                    }}
-                    icon={fullTrashIcon}
-                    tooltip="Supprimer l’email"
-                  />
-                )
-              }
-            />
-          </div>
+          <TextInput
+            label={NOTIFICATIONS_EMAIL_LABEL}
+            disabled={disableForm}
+            required
+            {...register(`notificationEmails.${index}.email`)}
+            error={
+              getFieldState(`notificationEmails.${index}.email`).error?.message
+            }
+            description="Format : email@exemple.com"
+            extension={
+              index > 0 &&
+              !disableForm && (
+                <Button
+                  variant={ButtonVariant.SECONDARY}
+                  color={ButtonColor.NEUTRAL}
+                  onClick={() => {
+                    remove(index)
+                    setFocus(`notificationEmails.${index - 1}.email`)
+                  }}
+                  icon={fullTrashIcon}
+                  tooltip="Supprimer l’email"
+                />
+              )
+            }
+          />
         </FormLayout.Row>
       ))}
       {!disableForm && fields.length <= 5 && (

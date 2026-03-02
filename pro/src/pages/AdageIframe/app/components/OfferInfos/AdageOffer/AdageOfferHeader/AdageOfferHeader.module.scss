@@ -44,10 +44,6 @@
 
 .offer-header-details-structure {
   margin-top: var(--size-spacing-l);
-
-  &-name {
-    @include fonts.body-accent;
-  }
 }
 
 .offer-header-details-institution {

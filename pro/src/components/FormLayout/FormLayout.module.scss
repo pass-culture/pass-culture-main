@@ -54,15 +54,8 @@ $info-box-margin-left: rem.torem(24px);
       margin-bottom: var(--size-spacing-l);
     }
 
-    &-description {
-      &-container {
-        margin-top: rem.torem(45px);
-        margin-bottom: var(--size-spacing-xxl);
-      }
-
-      &-content {
-        margin-top: var(--size-spacing-s);
-      }
+    &-description-content {
+       margin-top: var(--size-spacing-s);
     }
   }
 

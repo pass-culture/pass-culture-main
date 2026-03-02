@@ -20,19 +20,18 @@
   }
 }
 
-.informations-section {
-  &-title {
-    @include fonts.title4;
+.informations-section-title {
+  @include fonts.title4;
 
-    margin-bottom: var(--size-spacing-l);
-  }
-
-  &-content {
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-spacing-s);
-  }
+  margin-bottom: var(--size-spacing-l);
 }
+
+.informations-section-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-spacing-s);
+}
+
 
 .linked-venues-section {
   &-title {

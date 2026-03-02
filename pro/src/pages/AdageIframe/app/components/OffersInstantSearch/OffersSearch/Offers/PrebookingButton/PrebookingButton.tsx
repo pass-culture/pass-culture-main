@@ -135,9 +135,7 @@ export const PrebookingButton = ({
             {!hideLimitDate && stock.bookingLimitDatetime && (
               <span>
                 avant le :{' '}
-                <span>
-                  {format(new Date(stock.bookingLimitDatetime), 'dd/MM/yyyy')}
-                </span>
+                {format(new Date(stock.bookingLimitDatetime), 'dd/MM/yyyy')}
               </span>
             )}
           </div>

@@ -10,10 +10,8 @@ $input-phone-number-padding-left: calc(
     countryCodeSelect.$focus-border-width
 );
 
+/* check-unused-css-disable-next-line */
 .phone-number {
-  width: 100%;
-  margin-bottom: var(--size-spacing-s);
-
   &-input {
     @include formsM.input-theme;
     @include formsM.input-theme-nested;

@@ -73,13 +73,6 @@
   height: 100%;
 }
 
-.card-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: var(--size-spacing-l);
-}
-
 .card-limit-participation-date {
   @include fonts.body-accent-xs;
 

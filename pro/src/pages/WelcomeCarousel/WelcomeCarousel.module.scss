@@ -17,10 +17,6 @@ $connect-as-header-height: rem.torem(52px);
   overflow: hidden;
   width: 100%;
 
-  &-connect-as {
-    height: calc(100% - $connect-as-header-height);
-  }
-
   @media (min-width: size.$desktop) {
     margin: 0 auto;
     width: 100%;
@@ -57,12 +53,4 @@ $connect-as-header-height: rem.torem(52px);
   max-width: rem.torem(640px);
   width: 100%;
   padding: var(--size-spacing-xl);
-}
-
-.tablet-and-above {
-  display: block;
-
-  @media screen and (min-width: size.$tablet) {
-    display: none;
-  }
 }

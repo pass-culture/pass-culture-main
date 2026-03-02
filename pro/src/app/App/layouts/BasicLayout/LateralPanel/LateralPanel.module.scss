@@ -6,6 +6,7 @@
   margin: var(--size-spacing-l);
 }
 
+/* check-unused-css-disable-next-line */
 .lateral-panel {
   &-wrapper {
     display: none;
@@ -56,10 +57,6 @@
       padding: 0 0 0 rem.torem(16px);
       border-right: rem.torem(1px) solid var(--color-border-subtle);
     }
-
-    .logo {
-      width: rem.torem(80px);
-    }
   }
 
   &-logo {
@@ -68,6 +65,7 @@
 }
 
 @media (min-width: size.$laptop) {
+  /* check-unused-css-disable-next-line */
   .lateral-panel {
     &-wrapper {
       z-index: zIndex.$lateral-menu-z-index;

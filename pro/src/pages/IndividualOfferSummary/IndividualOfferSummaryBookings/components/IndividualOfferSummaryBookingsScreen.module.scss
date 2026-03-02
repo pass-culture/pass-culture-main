@@ -1,16 +1,5 @@
-@use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.no-data {
-  text-align: center;
-
-  &-icon {
-    color: var(--color-icon-subtle);
-    width: rem.torem(128px);
-    height: rem.torem(100px);
-    margin-bottom: var(--size-spacing-l);
-  }
-}
 
 .header {
   display: flex;

@@ -13,26 +13,3 @@ $icon-size: rem.torem(20px);
 .details-ean-search-callout {
   margin-top: var(--size-spacing-l);
 }
-
-.clear-button {
-  justify-content: center;
-  width: calc(#{$icon-size} + #{rem.torem(2px)});
-  height: calc(#{$icon-size} + #{rem.torem(2px)});
-  border-radius: var(--size-border-radius-pill);
-
-  &-container {
-    position: absolute;
-    border-radius: var(--size-border-radius-pill);
-    top: rem.torem(65px);
-    right: rem.torem(160px);
-  }
-
-  &:focus {
-    @include outline.focus-outline;
-  }
-
-  &-icon {
-    width: $icon-size;
-    height: $icon-size;
-  }
-}

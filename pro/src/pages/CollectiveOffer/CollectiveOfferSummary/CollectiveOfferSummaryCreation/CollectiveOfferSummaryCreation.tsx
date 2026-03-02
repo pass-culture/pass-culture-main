@@ -12,7 +12,6 @@ import {
 import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 
 import { CollectiveOfferSummary } from '../components/CollectiveOfferSummary/CollectiveOfferSummary'
-import styles from './CollectiveOfferSummaryCreation.module.scss'
 
 export const CollectiveOfferSummaryCreation = ({
   offer,
@@ -37,7 +36,7 @@ export const CollectiveOfferSummaryCreation = ({
       isCreation={true}
       offer={offer}
     >
-      <div className={styles['summary']}>
+      <div>
         <CollectiveOfferSummary
           offer={offer}
           offerEditLink={`/offre/collectif${

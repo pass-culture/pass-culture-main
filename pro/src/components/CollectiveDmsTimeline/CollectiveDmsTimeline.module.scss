@@ -8,6 +8,7 @@
   margin-bottom: var(--size-spacing-xl);
 }
 
+/* check-unused-css-disable-next-line */
 .timeline {
   &-step-title {
     @include fonts.body-accent;

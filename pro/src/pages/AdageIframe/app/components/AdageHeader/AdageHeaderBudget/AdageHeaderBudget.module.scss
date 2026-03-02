@@ -15,10 +15,6 @@
     margin-bottom: var(--size-spacing-xs);
   }
 
-  &-icon {
-    margin-right: var(--size-spacing-xs);
-  }
-
   &-value {
     @include fonts.title4;
 

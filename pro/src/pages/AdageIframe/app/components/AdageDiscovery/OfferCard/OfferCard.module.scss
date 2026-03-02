@@ -91,18 +91,3 @@ $offer-image-width: rem.torem(216px);
   overflow: hidden;
   margin-bottom: var(--size-spacing-l);
 }
-
-.offer-venue {
-  margin-bottom: var(--size-spacing-s);
-
-  &-name {
-    @include fonts.body-accent-xs;
-  }
-
-  &-distance {
-    @include fonts.body-accent-xs;
-
-    color: var(--color-text-subtle);
-    text-transform: uppercase;
-  }
-}

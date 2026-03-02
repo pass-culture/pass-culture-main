@@ -25,14 +25,6 @@
     margin-bottom: var(--size-spacing-l);
   }
 
-  &:not(.refresh-required) ~ .no-bookings-for-pre-filters {
-    padding-top: var(--size-spacing-l);
-  }
-
-  &.refresh-required ~ .no-bookings-for-pre-filters {
-    padding-top: 0;
-  }
-
   &-filters {
     margin-bottom: rem.torem(36px);
 

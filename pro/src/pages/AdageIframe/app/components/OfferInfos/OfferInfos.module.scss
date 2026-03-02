@@ -6,6 +6,7 @@
   &-breadcrumb {
     display: none;
     margin-bottom: var(--size-spacing-xxl);
+    padding: 0 rem.torem(8px);
   }
 
   &-fallback {
@@ -24,18 +25,9 @@
   }
 }
 
-.offer-container,
-.offers-info-breadcrumb {
-  padding: 0 rem.torem(8px);
-}
-
 @media (min-width: size.$tablet) {
   .offers-info-breadcrumb {
     display: block;
-  }
-
-  .offer-container,
-  .offers-info-breadcrumb {
     padding: 0 rem.torem(24px);
   }
 }

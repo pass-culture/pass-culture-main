@@ -27,6 +27,3 @@
   color: var(--color-text-subtle);
 }
 
-.sr-only {
-  @include a11y.visually-hidden;
-}

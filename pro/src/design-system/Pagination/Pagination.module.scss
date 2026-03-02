@@ -89,13 +89,6 @@
       &:focus {
         @include page-focus;
       }
-
-      // ellipsis marks (three dots for separation)
-      &.pagination-link-ellipsis {
-        background-color: transparent;
-        color: var(--color-text-default);
-        pointer-events: none;
-      }
     }
   }
 }
