@@ -449,9 +449,9 @@ def patch_collective_offers_educational_institution(
             teacher_email=body.teacher_email,
         )
     except exceptions.EducationalInstitutionNotFound:
-        raise ApiErrors({"educationalInstitution": ["Aucune institution trouvée à partir de cet id"]}, status_code=404)
+        raise ApiErrors({"educationalInstitution": ["Établissement introuvable"]}, status_code=404)
     except exceptions.EducationalInstitutionIsNotActive:
-        raise ApiErrors({"educationalInstitution": ["l'institution n'est pas active"]}, status_code=403)
+        raise ApiErrors({"educationalInstitution": ["L'institution n'est pas active"]}, status_code=403)
     except exceptions.CollectiveOfferForbiddenAction:
         raise ApiErrors({"offer": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
     except exceptions.EducationalRedactorNotFound:
