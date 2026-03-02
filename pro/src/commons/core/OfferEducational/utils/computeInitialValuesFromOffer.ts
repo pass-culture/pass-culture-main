@@ -186,10 +186,10 @@ export const computeInitialValuesFromOffer = (
         !offer.motorDisabilityCompliant &&
         !offer.visualDisabilityCompliant,
     },
-    email: email ?? defaultEducationalFormValues.email,
+    contactEmail: email ?? defaultEducationalFormValues.contactEmail,
     phone: phone ?? defaultEducationalFormValues.phone,
-    notificationEmails: offer.bookingEmails.map((email) => ({
-      email: email,
+    bookingEmails: offer.bookingEmails.map((email) => ({
+      email,
     })),
     domains,
     interventionArea: offer.interventionArea,

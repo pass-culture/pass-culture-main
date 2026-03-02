@@ -130,7 +130,7 @@ describe('computeInitialValuesFromOffer', () => {
     ).toEqual(
       expect.objectContaining({
         contactOptions: { email: true, phone: false, form: false },
-        email: 'email@test.co',
+        contactEmail: 'email@test.co',
       })
     )
   })

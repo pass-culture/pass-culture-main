@@ -1,11 +1,12 @@
 import type { EducationalInstitutionResponseModel } from '@/apiClient/v1'
-import { extractInitialInstitutionValues } from '@/commons/core/OfferEducational/utils/extractInitialInstitutionValues'
 import { defaultGetCollectiveOfferRequest } from '@/commons/utils/factories/collectiveApiFactories'
+
+import { extractInitialInstitutionValues } from '../extractInitialInstitutionValues'
 
 describe('extractInitialInstitutionValues', () => {
   it('should return default values when institution is not defined', () => {
     expect(extractInitialInstitutionValues(null)).toStrictEqual({
-      institution: '',
+      educationalInstitution: '',
       teacherEmail: '',
       teacherName: '',
     })
@@ -22,7 +23,7 @@ describe('extractInitialInstitutionValues', () => {
       institutionType: 'Collège',
     }
     expect(extractInitialInstitutionValues(institution)).toStrictEqual({
-      institution: '1',
+      educationalInstitution: '1',
       teacherEmail: '',
       teacherName: '',
     })
@@ -46,7 +47,7 @@ describe('extractInitialInstitutionValues', () => {
     }
     expect(extractInitialInstitutionValues(institution, teacher)).toStrictEqual(
       {
-        institution: '1',
+        educationalInstitution: '1',
         teacherEmail: 'reda.khteur@example.com',
         teacherName: 'Reda Khteur',
       }
@@ -65,7 +66,7 @@ describe('extractInitialInstitutionValues', () => {
     expect(
       extractInitialInstitutionValues(null, null, requestInformations)
     ).toStrictEqual({
-      institution: '',
+      educationalInstitution: '',
       teacherEmail: 'reda.khteur@example.com',
       teacherName: 'Reda Khteur',
     })

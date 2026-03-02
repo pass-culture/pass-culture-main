@@ -31,7 +31,7 @@ describe('FormNotifications', () => {
 
   it('should add notification mail input when button is clicked', async () => {
     initialValues = {
-      notificationEmails: [{ email: 'test@example.com' }],
+      bookingEmails: [{ email: 'test@example.com' }],
     }
     renderFormNotifications(initialValues)
 
@@ -54,7 +54,7 @@ describe('FormNotifications', () => {
 
   it('should remove notification mail input when trash icon is clicked', async () => {
     initialValues = {
-      notificationEmails: [
+      bookingEmails: [
         { email: 'test@example.com' },
         { email: 'test2@example.com' },
       ],

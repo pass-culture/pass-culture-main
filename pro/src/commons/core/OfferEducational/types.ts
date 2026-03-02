@@ -41,11 +41,11 @@ export interface OfferEducationalFormValues extends Partial<AddressFormValues> {
   }
   accessibility: AccessibilityFormValues
   phone?: string
-  email?: string
+  contactEmail?: string
   contactFormType?: 'form' | 'url'
   contactUrl?: string | null
   contactOptions?: { phone: boolean; email: boolean; form: boolean }
-  notificationEmails?: { email: string }[]
+  bookingEmails?: { email: string }[]
   domains?: string[]
   'search-domains'?: string
   'search-interventionArea'?: string
