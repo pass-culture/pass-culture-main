@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
 import { api } from '@/apiClient/api'
-import type { SharedCurrentUserResponseModel } from '@/apiClient/v1'
+import type { SharedCurrentUserResponseModel } from '@/apiClient/v1/new'
 import { updateOffererNames } from '@/commons/store/offerer/reducer'
 import { setSelectedAdminOffererById } from '@/commons/store/user/dispatchers/setSelectedAdminOffererById'
 import {
