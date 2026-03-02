@@ -5,7 +5,7 @@ import useSWR from 'swr'
 import { useDebouncedCallback } from 'use-debounce'
 
 import { api } from '@/apiClient/api'
-import { getHumanReadableApiError, isErrorAPIError } from '@/apiClient/helpers'
+import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
 import {
   CollectiveOfferAllowedAction,
   type EducationalInstitutionResponseModel,
@@ -43,7 +43,6 @@ import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import {
   GET_REDACTOR_NOT_FOUND_ERROR_MESSAGE,
   INSTITUTION_GENERIC_ERROR_MESSAGE,
-  POST_INSTITUTION_FORM_ERROR_MESSAGE,
   REDACTOR_GENERIC_ERROR_MESSAGE,
 } from '../../commons/constants'
 import {
@@ -186,11 +185,8 @@ export const CollectiveOfferInstitutionScreen = ({
         ...extractInitialInstitutionValues(collectiveOffer.institution),
       })
     } catch (error) {
-      // FIXME(anoukhello - 13/02/25): this error handling is not ideal, wait for this PR https://github.com/pass-culture/pass-culture-main/pull/21252 to be merged
       if (isErrorAPIError(error)) {
-        snackBar.error(
-          getHumanReadableApiError(error) || POST_INSTITUTION_FORM_ERROR_MESSAGE
-        )
+        serializeApiErrors(error.body, form.setError)
       } else {
         snackBar.error(SENT_DATA_ERROR_MESSAGE)
       }
