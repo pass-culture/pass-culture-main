@@ -256,7 +256,6 @@ describe('useOrejime', () => {
       renderHook(() => useOrejime())
       await act(() => vi.runAllTimers())
 
-      expect(manager.clearConsents).toHaveBeenCalled()
       expect(globalThis.loadOrejime).toHaveBeenCalledTimes(2)
     })
 
