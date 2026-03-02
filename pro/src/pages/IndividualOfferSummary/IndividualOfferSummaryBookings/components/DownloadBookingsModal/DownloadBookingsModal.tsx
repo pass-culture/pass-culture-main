@@ -112,7 +112,7 @@ export const DownloadBookingsModal = ({
     const date = new Date(eventDate)
     const day = mapDayToFrench(daysOfWeek[(date.getDay() + 6) % 7])
     return (
-      <tr key={eventDate} className={style['table-row']}>
+      <tr key={eventDate}>
         <td className={style['table-column']}>
           <RadioButton
             value={eventDate}

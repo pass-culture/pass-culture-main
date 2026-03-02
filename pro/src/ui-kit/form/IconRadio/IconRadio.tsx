@@ -44,7 +44,6 @@ export const IconRadio = forwardRef(
             type="radio"
             id={labelId}
             className={cn(styles['icon-radio-input'], {
-              [styles['has-error']]: hasError,
               [styles['icon-radio-input-checked']]: checked,
             })}
             aria-invalid={hasError}

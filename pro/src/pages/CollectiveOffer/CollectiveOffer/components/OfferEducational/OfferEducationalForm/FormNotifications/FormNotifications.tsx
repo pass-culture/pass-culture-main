@@ -30,8 +30,8 @@ export const FormNotifications = ({
       className={styles['emails']}
     >
       {fields.map((field, index) => (
-        <FormLayout.Row className={styles['notification-mail']} key={field.id}>
-          <div className={styles['notification-mail-input']}>
+        <FormLayout.Row key={field.id}>
+          <div>
             <TextInput
               label={NOTIFICATIONS_EMAIL_LABEL}
               disabled={disableForm}

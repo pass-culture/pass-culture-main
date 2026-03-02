@@ -25,42 +25,45 @@ export const SearchInput = forwardRef(
       Boolean(inputRef.current?.value) || Boolean(props.value)
 
     return (
-      <div className={styles['container']}>
-        <TextInput
-          spellCheck={false}
-          autoComplete="off"
-          ref={inputRef}
-          {...props}
-          type="search"
-          icon={strokeSearchIcon}
-          iconButton={
-            isClearButtonVisible && !props.disabled
-              ? {
-                  icon: fullClearIcon,
-                  label: 'Effacer',
-                  onClick: () => {
-                    const input = inputRef.current
-                    if (input) {
-                      input.value = ''
+      <>
+        {/* check-unused-css-disable-next-line */}
+        <div className={styles['container']}>
+          <TextInput
+            spellCheck={false}
+            autoComplete="off"
+            ref={inputRef}
+            {...props}
+            type="search"
+            icon={strokeSearchIcon}
+            iconButton={
+              isClearButtonVisible && !props.disabled
+                ? {
+                    icon: fullClearIcon,
+                    label: 'Effacer',
+                    onClick: () => {
+                      const input = inputRef.current
+                      if (input) {
+                        input.value = ''
 
-                      if (props.onChange) {
-                        const syntheticEvent: React.ChangeEvent<HTMLInputElement> =
-                          {
-                            ...({} as React.ChangeEvent<HTMLInputElement>),
-                            target: input,
-                            currentTarget: input,
-                            type: 'change',
-                          }
+                        if (props.onChange) {
+                          const syntheticEvent: React.ChangeEvent<HTMLInputElement> =
+                            {
+                              ...({} as React.ChangeEvent<HTMLInputElement>),
+                              target: input,
+                              currentTarget: input,
+                              type: 'change',
+                            }
 
-                        props.onChange(syntheticEvent)
+                          props.onChange(syntheticEvent)
+                        }
                       }
-                    }
-                  },
-                }
-              : undefined
-          }
-        />
-      </div>
+                    },
+                  }
+                : undefined
+            }
+          />
+        </div>
+      </>
     )
   }
 )

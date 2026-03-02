@@ -95,10 +95,7 @@ export const Homepage = (): JSX.Element => {
             )}
             {areHighlightsEnable && <HighlightHome />}
           </div>
-          <PublishedOfferStats
-            offerer={selectedOfferer}
-            className={styles['offer-stats']}
-          />
+          <PublishedOfferStats offerer={selectedOfferer} />
         </section>
       )}
 

@@ -162,7 +162,7 @@ export const AdageMultiselect = ({
 
   return (
     <div className={styles['container']}>
-      <div className={styles['search-input']}>
+      <div>
         <SearchInput
           {...getInputProps()}
           onKeyDown={handleKeyDown}

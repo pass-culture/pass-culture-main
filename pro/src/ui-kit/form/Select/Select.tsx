@@ -52,8 +52,8 @@ export const Select = forwardRef(
     const errorId = useId()
 
     return (
-      <div className={cn(styles['select'], className)}>
-        <div className={styles['select-field']}>
+      <div className={className}>
+        <div>
           <FieldHeader
             label={label}
             fieldId={fieldId}

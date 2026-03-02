@@ -104,10 +104,7 @@ export function TimetableOpeningHours({
           />
         )}
       </div>
-      <fieldset
-        className={styles['openging-hours']}
-        aria-describedby={openingHoursErrorId}
-      >
+      <fieldset aria-describedby={openingHoursErrorId}>
         <legend>
           {timetableTypeRadioGroupShown ? (
             <h3 className={styles['title']}>Horaires d’accès</h3>
@@ -129,7 +126,7 @@ export function TimetableOpeningHours({
           </div>
         )}
       </fieldset>
-      <fieldset className={styles['price-categories']}>
+      <fieldset>
         <legend>
           {timetableTypeRadioGroupShown ? (
             <h3 className={styles['title']}>Places et tarifs</h3>

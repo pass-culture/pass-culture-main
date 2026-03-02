@@ -119,10 +119,7 @@ export function Subcategories({
   }
 
   return (
-    <FormLayout.Section
-      title="Type d’offre"
-      className={styles['subcategories-section']}
-    >
+    <FormLayout.Section title="Type d’offre">
       <FormLayout.Row>
         <Select
           {...register('categoryId', {

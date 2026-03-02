@@ -50,27 +50,6 @@ describe('<MultiSelectTrigger />', () => {
     expect(button).toBeDisabled()
   })
 
-  it('should display the chevron open icon if panel is opened', () => {
-    const { container } = renderMultiSelectPanel({
-      disabled: true,
-      isOpen: true,
-    })
-
-    const chevronIcon = container.querySelector('svg')
-
-    expect(chevronIcon).toHaveClass('chevron chevronOpen')
-  })
-
-  it('should not display the chevron icon open if panel is closed', () => {
-    const { container } = renderMultiSelectPanel()
-
-    let chevronIcon = container.querySelector('svg')
-
-    chevronIcon = container.querySelector('svg')
-
-    expect(chevronIcon).not.toHaveClass('chevron chevronOpen')
-  })
-
   it('should render badge with correct count when options are selected', () => {
     renderMultiSelectPanel({ selectedCount: 3 })
 

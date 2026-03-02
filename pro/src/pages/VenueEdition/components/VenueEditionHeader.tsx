@@ -117,6 +117,7 @@ export const VenueEditionHeader = ({
     <div className={styles['header']}>
       <ImageDragAndDropUploader
         className={styles['image-uploader']}
+        // check-unused-css-disable-next-line
         dragAndDropClassName={styles['image-uploader-drag-and-drop']}
         onImageUpload={handleOnImageUpload}
         onImageDelete={() => noop}

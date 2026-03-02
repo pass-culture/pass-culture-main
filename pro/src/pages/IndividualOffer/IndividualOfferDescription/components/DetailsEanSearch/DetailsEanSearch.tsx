@@ -138,7 +138,7 @@ export const DetailsEanSearch = ({
     <form onSubmit={handleSubmit(onSearch)}>
       <FormLayout fullWidthActions>
         <div className={styles['details-ean-search']}>
-          <div className={styles['details-ean-search-container']}>
+          <div>
             <TextInput
               label="Scanner ou rechercher un produit par EAN"
               error={cumulativeError}

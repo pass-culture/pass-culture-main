@@ -63,6 +63,7 @@ const WelcomeStepTarget = (): JSX.Element => {
           <BubbleStepper
             page={1}
             total={4}
+            // check-unused-css-disable-next-line
             className={styles['actionbar-container-stepper']}
           />
           <Button

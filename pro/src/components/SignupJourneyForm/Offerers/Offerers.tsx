@@ -159,13 +159,12 @@ export const Offerers = (): JSX.Element => {
           {offerer.siret} :
         </div>
         <div className={styles['venues-layout']}>
-          <div className={styles['offerer-name-accent']}>
-            {venuesOfOfferer?.offererName}
-          </div>
+          <div>{venuesOfOfferer?.offererName}</div>
           {permanentVenues.length > 0 && (
             <ul className={styles['venue-list']}>
               {permanentVenues.map((venue, index) => (
                 <li
+                  // check-unused-css-disable-next-line
                   className={styles['venue-list-item']}
                   key={venue.id}
                   hidden={

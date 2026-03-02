@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import { useState } from 'react'
 
 import { apiAdage } from '@/apiClient/api'
@@ -41,11 +40,7 @@ export const SurveySatisfaction = ({
   }
 
   return !shouldHideSurveySatisfaction ? (
-    <div
-      className={cn(styles['survey-satisfaction'], {
-        [styles['survey-satisfaction-closed']]: shouldHideSurveySatisfaction,
-      })}
-    >
+    <div className={styles['survey-satisfaction']}>
       <div className={styles['survey-satisfaction-infos']}>
         <div className={styles['survey-satisfaction-infos-head']}>
           <div className={styles['survey-title']}>Enquête de satisfaction</div>

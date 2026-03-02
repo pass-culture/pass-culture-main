@@ -29,15 +29,10 @@ export const ExternalAccessibilityCollapse = ({
   }
 
   return (
-    <section className={styles['section']}>
+    <section>
       <header className={styles['header']}>
         <div className={styles['main-icon-container']}>
-          <SvgIcon
-            className={styles['main-icon']}
-            src={icon}
-            alt=""
-            width="40"
-          />
+          <SvgIcon src={icon} alt="" width="40" />
           <SvgIcon
             className={cn(
               styles['accessibility-icon'],

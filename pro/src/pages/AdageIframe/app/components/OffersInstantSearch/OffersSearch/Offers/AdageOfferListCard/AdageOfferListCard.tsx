@@ -75,11 +75,9 @@ export function AdageOfferListCard({
           <div className={styles['offer-headband-text']}>
             <span className={styles['intended-for']}>Offre destinée à :</span>
             {offer.teacher && (
-              <span
-                className={styles['infos']}
-              >{`${offer.teacher.civility} ${offer.teacher.lastName} ${offer.teacher.firstName}`}</span>
+              <span>{`${offer.teacher.civility} ${offer.teacher.lastName} ${offer.teacher.firstName}`}</span>
             )}
-            <span className={styles['infos']}>
+            <span>
               {offer.educationalInstitution?.institutionType}{' '}
               {offer.educationalInstitution?.name}
             </span>

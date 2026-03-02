@@ -69,7 +69,7 @@ export function ExpirationCell({ offer }: ExpirationCellProps) {
             : 'réservation par le chef d’établissement'}
         </div>
       </div>
-      <div className={styles['banner-booking-date']}>
+      <div>
         date limite de réservation :{' '}
         {bookingLimitDate
           ? format(

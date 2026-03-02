@@ -38,7 +38,7 @@ export const OfferNameCell = ({ offer }: OfferNameCellProps) => {
             className={styles['title-column-offer-id']}
           >{`N°${offer.id}`}</span>
         ) : null}
-        <div className={styles['text-overflow-ellipsis']}>{offer.name}</div>
+        <div>{offer.name}</div>
       </div>
     </Link>
   )

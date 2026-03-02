@@ -253,7 +253,7 @@ export const Offerer = (): JSX.Element => {
               },
             ]}
             description={
-              <p className={styles['callout-content-info']}>
+              <p>
                 Renseignez le SIRET de la structure à laquelle vous êtes
                 rattaché.
               </p>

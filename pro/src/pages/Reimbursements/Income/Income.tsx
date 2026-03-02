@@ -150,11 +150,7 @@ const Income = () => {
               <ul
                 className={classnames(
                   styles['income-filters'],
-                  styles['income-filters-by-year'],
-                  {
-                    [styles['income-filters-by-year-is-only-filter']]:
-                      hasSingleVenue,
-                  }
+                  styles['income-filters-by-year']
                 )}
                 aria-label="Filtrage par année"
               >
@@ -186,7 +182,7 @@ const Income = () => {
               {!activeYearHasData ? (
                 <IncomeNoData type="income-year" />
               ) : (
-                <div className={styles['income-results']}>
+                <div>
                   {activeYearIncome.revenue && (
                     <div className={styles['income-box']}>
                       <IncomeResultsBox

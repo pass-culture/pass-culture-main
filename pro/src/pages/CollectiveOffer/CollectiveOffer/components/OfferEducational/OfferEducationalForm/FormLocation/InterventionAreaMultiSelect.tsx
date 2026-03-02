@@ -6,8 +6,6 @@ import { offerInterventionOptions } from '@/commons/core/shared/interventionOpti
 import { selectInterventionAreas } from '@/commons/utils/selectInterventionAreas'
 import { MultiSelect, type Option } from '@/ui-kit/form/MultiSelect/MultiSelect'
 
-import styles from '../OfferEducationalForm.module.scss'
-
 interface InterventionAreaMultiSelectProps {
   label: string
   disabled: boolean
@@ -57,7 +55,6 @@ export const InterventionAreaMultiSelect = ({
       hasSelectAllOptions
       onSelectedOptionsChanged={handleInterventionAreaChange}
       error={getFieldState('interventionArea').error?.message}
-      className={styles['intervention-area']}
     />
   )
 }

@@ -21,7 +21,7 @@ export const OfferLocationCell = ({
 
     const { label, street, postalCode, city } = offerLocation?.location || {}
     return (
-      <div className={styles['text-overflow-ellipsis']}>
+      <div>
         {label ? `${label} - ` : ''}
         {street} {postalCode} {city}
       </div>

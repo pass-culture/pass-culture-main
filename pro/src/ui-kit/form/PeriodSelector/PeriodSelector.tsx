@@ -31,7 +31,7 @@ export const PeriodSelector = ({
   const ariaId = useId()
 
   return (
-    <fieldset className={styles['period-filter']} disabled={isDisabled}>
+    <fieldset disabled={isDisabled}>
       <legend
         className={cn({
           [styles['visually-hidden']]: legend === undefined,

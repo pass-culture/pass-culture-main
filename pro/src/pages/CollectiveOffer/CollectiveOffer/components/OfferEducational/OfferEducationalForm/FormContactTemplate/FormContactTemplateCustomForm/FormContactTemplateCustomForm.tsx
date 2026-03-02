@@ -16,7 +16,7 @@ export const FormContactTemplateCustomForm = ({
 }: FormContactTemplateCustomFormProps) => {
   const { watch, setValue, register, getFieldState } = useFormContext()
   return (
-    <div className={styles['contact-checkbox-inner-control']}>
+    <div>
       <RadioButtonGroup
         name="contactFormType"
         label="Choisissez un type de formulaire"
@@ -46,7 +46,7 @@ export const FormContactTemplateCustomForm = ({
             label: 'Mon propre formulaire',
             value: 'url',
             collapsed: (
-              <div className={styles['custom-form-radio-input-control']}>
+              <div>
                 <TextInput
                   label="URL de mon formulaire de contact"
                   type="url"

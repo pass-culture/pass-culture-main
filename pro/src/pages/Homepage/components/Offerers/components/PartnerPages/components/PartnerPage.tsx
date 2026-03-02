@@ -99,10 +99,7 @@ export const PartnerPage = ({
           <h3 className={styles['venue-name']}>{venue.publicName}</h3>
 
           {venue.location && (
-            <address
-              data-testid="venue-address"
-              className={styles['venue-address']}
-            >
+            <address data-testid="venue-address">
               {withVenueHelpers(venue).fullAddressAsString}
             </address>
           )}

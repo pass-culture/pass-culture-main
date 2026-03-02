@@ -28,7 +28,7 @@ export const FormContactTemplate = ({
         await trigger('contactOptions')
       },
       collapsed: (
-        <div className={styles['contact-checkbox-inner-control']}>
+        <div>
           <TextInput
             label="Adresse email"
             type="email"
@@ -49,7 +49,7 @@ export const FormContactTemplate = ({
         await trigger('contactOptions')
       },
       collapsed: (
-        <div className={styles['contact-checkbox-inner-control']}>
+        <div>
           <PhoneNumberInput
             {...register('phone')}
             label="Numéro de téléphone"
