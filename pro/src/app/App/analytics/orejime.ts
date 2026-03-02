@@ -49,7 +49,7 @@ function initOrejimeConsent(
     }
 
     try {
-      if (!orejime) {
+      if (!orejime || !document.cookie.includes('pc-orejime')) {
         orejime = globalThis.loadOrejime(orejimeConfig)
         addListener(setConsentedToFirebase, setConsentedToBeamer)
         setConsentedToFirebase(
@@ -58,10 +58,6 @@ function initOrejimeConsent(
         setConsentedToBeamer(
           orejime.manager.getConsent(Consents.BEAMER) || false
         )
-      } else if (!document.cookie.includes('pc-orejime')) {
-        orejime.manager.clearConsents()
-        orejime = globalThis.loadOrejime(orejimeConfig)
-        addListener(setConsentedToFirebase, setConsentedToBeamer)
       }
     } catch (e) {
       sendSentryCustomError(e)
