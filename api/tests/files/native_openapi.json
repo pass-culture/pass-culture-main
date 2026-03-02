@@ -1864,6 +1864,7 @@
                 "type": "object"
             },
             "CategoriesResponseModel": {
+                "additionalProperties": false,
                 "properties": {
                     "categories": {
                         "items": {
@@ -1880,14 +1881,22 @@
                 "type": "object"
             },
             "CategoryResponseModel": {
+                "additionalProperties": false,
                 "properties": {
                     "gtls": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "nullable": true,
-                        "title": "Gtls",
-                        "type": "array"
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Gtls"
                     },
                     "label": {
                         "title": "Label",
@@ -1901,22 +1910,43 @@
                         "type": "array"
                     },
                     "positions": {
-                        "additionalProperties": {
-                            "type": "integer"
-                        },
-                        "nullable": true,
-                        "title": "Positions",
-                        "type": "object"
+                        "anyOf": [
+                            {
+                                "additionalProperties": {
+                                    "type": "integer"
+                                },
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Positions"
                     },
                     "searchFilter": {
-                        "nullable": true,
-                        "title": "Searchfilter",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Searchfilter"
                     },
                     "searchValue": {
-                        "nullable": true,
-                        "title": "Searchvalue",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Searchvalue"
                     }
                 },
                 "required": [
@@ -2822,16 +2852,17 @@
                 "title": "GenderEnum"
             },
             "GenreType": {
-                "description": "An enumeration.",
                 "enum": [
                     "BOOK",
                     "MUSIC",
                     "SHOW",
                     "MOVIE"
                 ],
-                "title": "GenreType"
+                "title": "GenreType",
+                "type": "string"
             },
             "GenreTypeContentModel": {
+                "additionalProperties": false,
                 "properties": {
                     "name": {
                         "title": "Name",
@@ -2850,6 +2881,7 @@
                 "type": "object"
             },
             "GenreTypeModel": {
+                "additionalProperties": false,
                 "properties": {
                     "name": {
                         "$ref": "#/components/schemas/GenreType"
@@ -3033,15 +3065,23 @@
                 "type": "object"
             },
             "HomepageLabelResponseModelv2": {
+                "additionalProperties": false,
                 "properties": {
                     "name": {
                         "title": "Name",
                         "type": "string"
                     },
                     "value": {
-                        "nullable": true,
-                        "title": "Value",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Value"
                     }
                 },
                 "required": [
@@ -3379,14 +3419,18 @@
                 "type": "object"
             },
             "NativeCategoryResponseModelv2": {
+                "additionalProperties": false,
                 "properties": {
                     "genreType": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/GenreType"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     },
                     "name": {
                         "title": "Name",
@@ -3400,17 +3444,31 @@
                         "type": "array"
                     },
                     "positions": {
-                        "additionalProperties": {
-                            "type": "integer"
-                        },
-                        "nullable": true,
-                        "title": "Positions",
-                        "type": "object"
+                        "anyOf": [
+                            {
+                                "additionalProperties": {
+                                    "type": "integer"
+                                },
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Positions"
                     },
                     "value": {
-                        "nullable": true,
-                        "title": "Value",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Value"
                     }
                 },
                 "required": [
@@ -5310,13 +5368,13 @@
                 "type": "object"
             },
             "OnlineOfflinePlatformChoicesEnum": {
-                "description": "An enumeration.",
                 "enum": [
                     "OFFLINE",
                     "ONLINE",
                     "ONLINE_OR_OFFLINE"
                 ],
-                "title": "OnlineOfflinePlatformChoicesEnum"
+                "title": "OnlineOfflinePlatformChoicesEnum",
+                "type": "string"
             },
             "PaginatedFavoritesResponse": {
                 "properties": {
@@ -6094,15 +6152,23 @@
                 "type": "object"
             },
             "SearchGroupResponseModelv2": {
+                "additionalProperties": false,
                 "properties": {
                     "name": {
                         "title": "Name",
                         "type": "string"
                     },
                     "value": {
-                        "nullable": true,
-                        "title": "Value",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Value"
                     }
                 },
                 "required": [
@@ -6414,6 +6480,7 @@
                 "type": "object"
             },
             "SubcategoriesResponseModelv2": {
+                "additionalProperties": false,
                 "properties": {
                     "genreTypes": {
                         "items": {
@@ -6541,6 +6608,7 @@
                 "type": "string"
             },
             "SubcategoryResponseModelv2": {
+                "additionalProperties": false,
                 "properties": {
                     "appLabel": {
                         "title": "Applabel",
@@ -6563,9 +6631,16 @@
                         "type": "boolean"
                     },
                     "nativeCategoryId": {
-                        "nullable": true,
-                        "title": "Nativecategoryid",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Nativecategoryid"
                     },
                     "onlineOfflinePlatform": {
                         "$ref": "#/components/schemas/OnlineOfflinePlatformChoicesEnum"
