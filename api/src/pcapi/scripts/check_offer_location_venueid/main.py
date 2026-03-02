@@ -32,24 +32,16 @@ logger = logging.getLogger(__name__)
 
 
 @atomic()
-def find_incorrect_offers(
+def fix_incorrect_offers(
     location: offerers_models.OffererAddress,
     is_dry: bool,
+    incorrect_offers_venueIds: list,
     offer_model: type[offers_models.Offer]
     | type[educational_models.CollectiveOffer]
     | type[educational_models.CollectiveOfferTemplate],
 ) -> None:
     if is_dry:
         mark_transaction_as_invalid()
-    incorrect_offers_venueIds = (
-        db.session.query(offer_model.venueId)
-        .distinct()
-        .where(
-            offer_model.offererAddressId == location.id,
-            offer_model.venueId != location.venueId,
-        )
-        .all()
-    )
     for venueid in incorrect_offers_venueIds:
         appropriate_location = offerers_api.get_or_create_offer_location(
             offerer_id=location.offererId,
@@ -71,6 +63,44 @@ def find_incorrect_offers(
                         .where(offer_model.id == offer_id)
                         .values(offererAddressId=appropriate_location.id)
                     )
+
+
+def find_incorrect_offers(
+    location: offerers_models.OffererAddress,
+    is_dry: bool,
+    offer_model: type[offers_models.Offer]
+    | type[educational_models.CollectiveOffer]
+    | type[educational_models.CollectiveOfferTemplate],
+) -> None:
+    try:
+        incorrect_offers_venueIds = (
+            db.session.query(offer_model.venueId)
+            .distinct()
+            .where(
+                offer_model.offererAddressId == location.id,
+                offer_model.venueId != location.venueId,
+            )
+            .all()
+        )
+    except sa_exc.OperationalError as exc:  # when there are too many offers to check
+        logger.info("offererAddressId %s has too many offers, doing it one by one %s", location.id, exc)
+        while one_incorrect_offers_venueId := (
+            db.session.query(offer_model.venueId)
+            .where(
+                offer_model.offererAddressId == location.id,
+                offer_model.venueId != location.venueId,
+            )
+            .first()
+        ):
+            incorrect_offers_venueIds = [one_incorrect_offers_venueId]
+            fix_incorrect_offers(
+                location, is_dry=is_dry, incorrect_offers_venueIds=incorrect_offers_venueIds, offer_model=offer_model
+            )
+    else:
+        if incorrect_offers_venueIds:
+            fix_incorrect_offers(
+                location, is_dry=is_dry, incorrect_offers_venueIds=incorrect_offers_venueIds, offer_model=offer_model
+            )
 
 
 def main(is_dry: bool) -> None:
