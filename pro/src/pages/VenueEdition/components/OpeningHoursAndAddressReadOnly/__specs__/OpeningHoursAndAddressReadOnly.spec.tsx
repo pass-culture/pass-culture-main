@@ -55,7 +55,7 @@ describe('OpeningHoursAndAddressReadOnly', () => {
   })
 
   it('should display no opening hours !', () => {
-    render(<OpeningHoursAndAddressReadOnly openingHours={undefined} />)
+    render(<OpeningHoursAndAddressReadOnly openingHours={null} />)
 
     expect(
       screen.getByText(
