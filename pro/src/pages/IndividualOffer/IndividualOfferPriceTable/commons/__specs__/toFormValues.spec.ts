@@ -41,7 +41,7 @@ describe('toFormValues', () => {
     const priceCategory = { ...basePriceCateogry, price: 20 }
     const priceCategories = [priceCategory]
     const formValues = toFormValues(offer, priceCategories, context)
-    expect(formValues.entries[0].price).toBe(20)
+    expect(formValues.priceCategories[0].price).toBe(20)
   })
 
   it(`should cast and convert price from EUR to XPF when isCaledonian`, () => {
@@ -55,6 +55,6 @@ describe('toFormValues', () => {
     const priceCategory = { ...basePriceCateogry, price: 20 }
     const priceCategories = [priceCategory]
     const formValues = toFormValues(offer, priceCategories, context)
-    expect(formValues.entries[0].price).toBe(2385)
+    expect(formValues.priceCategories[0].price).toBe(2385)
   })
 })

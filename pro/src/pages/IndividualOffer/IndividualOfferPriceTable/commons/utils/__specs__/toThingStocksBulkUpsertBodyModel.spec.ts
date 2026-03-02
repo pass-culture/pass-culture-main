@@ -27,7 +27,7 @@ describe('toThingStocksBulkUpsertBodyModel', () => {
 
   it('should map a basic entry without dates or codes', () => {
     const formValues: PriceTableFormValues = {
-      entries: [formValuesEntryBase],
+      priceCategories: [formValuesEntryBase],
       isDuo: null,
     }
 
@@ -47,7 +47,7 @@ describe('toThingStocksBulkUpsertBodyModel', () => {
 
   it('should default null price to 0 and null quantity stay null', () => {
     const formValues: PriceTableFormValues = {
-      entries: [
+      priceCategories: [
         {
           ...formValuesEntryBase,
           price: null,
@@ -66,7 +66,7 @@ describe('toThingStocksBulkUpsertBodyModel', () => {
   it('should produce bookingLimitDatetime when valid date provided', () => {
     const today = format(new Date(), FORMAT_ISO_DATE_ONLY)
     const formValues: PriceTableFormValues = {
-      entries: [
+      priceCategories: [
         {
           ...formValuesEntryBase,
           bookingLimitDatetime: today,
@@ -86,7 +86,7 @@ describe('toThingStocksBulkUpsertBodyModel', () => {
 
   it('should ignore invalid bookingLimitDatetime', () => {
     const formValues: PriceTableFormValues = {
-      entries: [
+      priceCategories: [
         {
           ...formValuesEntryBase,
           bookingLimitDatetime: 'invalid-date',
@@ -102,7 +102,7 @@ describe('toThingStocksBulkUpsertBodyModel', () => {
 
   it('should not set activationCodesExpirationDatetime if no codes', () => {
     const formValues: PriceTableFormValues = {
-      entries: [
+      priceCategories: [
         {
           ...formValuesEntryBase,
           activationCodes: null,
@@ -122,7 +122,7 @@ describe('toThingStocksBulkUpsertBodyModel', () => {
 
   it('should set activationCodes and expiration when both valid', () => {
     const formValues: PriceTableFormValues = {
-      entries: [
+      priceCategories: [
         {
           ...formValuesEntryBase,
           activationCodes: ['A', 'B'],
@@ -144,7 +144,7 @@ describe('toThingStocksBulkUpsertBodyModel', () => {
 
   it('should NOT set activationCodesExpirationDatetime if invalid date despite codes', () => {
     const formValues: PriceTableFormValues = {
-      entries: [
+      priceCategories: [
         {
           ...formValuesEntryBase,
           activationCodes: ['A'],
@@ -163,7 +163,7 @@ describe('toThingStocksBulkUpsertBodyModel', () => {
 
   it('should handle multiple entries', () => {
     const formValues: PriceTableFormValues = {
-      entries: [
+      priceCategories: [
         {
           ...formValuesEntryBase,
           offerId: 1,
@@ -187,7 +187,7 @@ describe('toThingStocksBulkUpsertBodyModel', () => {
 
   it('should preserve provided id (update case)', () => {
     const formValues: PriceTableFormValues = {
-      entries: [
+      priceCategories: [
         {
           ...formValuesEntryBase,
           id: 99,

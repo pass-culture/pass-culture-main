@@ -4,7 +4,7 @@ import { toPriceCategoryBody } from '../toPriceCategoryBody'
 
 describe('toPriceCategoryBody', () => {
   const baseFormValues = {
-    entries: [
+    priceCategories: [
       {
         activationCodes: [],
         activationCodesExpirationDatetime: '',
@@ -35,7 +35,7 @@ describe('toPriceCategoryBody', () => {
   it('should keep id when provided', () => {
     const formValues = {
       ...baseFormValues,
-      entries: [{ ...baseFormValues.entries[0], id: 99 }],
+      priceCategories: [{ ...baseFormValues.priceCategories[0], id: 99 }],
     }
 
     const result = toPriceCategoryBody(formValues)
@@ -52,7 +52,7 @@ describe('toPriceCategoryBody', () => {
 
     const formValues = {
       ...baseFormValues,
-      entries: [{ ...baseFormValues.entries[0], label: '' }],
+      priceCategories: [{ ...baseFormValues.priceCategories[0], label: '' }],
     }
 
     const call = () => toPriceCategoryBody(formValues)
