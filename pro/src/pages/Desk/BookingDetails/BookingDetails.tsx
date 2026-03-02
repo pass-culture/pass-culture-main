@@ -27,57 +27,74 @@ export interface BookingDetailsProps {
   booking: GetBookingResponse
 }
 
-const formattedBookingDate = (booking: GetBookingResponse): string => {
-  return !booking.datetime
+/* ---------------- helpers ---------------- */
+
+const formattedBookingDate = (booking: GetBookingResponse): string =>
+  !booking.datetime
     ? 'Permanent'
     : formatLocalTimeDateString(
         booking.datetime,
         booking.offerDepartmentCode || undefined,
         "dd/MM/yyyy - HH'h'mm"
       )
+
+const getFormattedPrice = (
+  price: number,
+  isCaledonian: boolean | undefined
+): string => {
+  return isCaledonian
+    ? formatPacificFranc(convertEuroToPacificFranc(price))
+    : formatPrice(price)
 }
+
+/* ---------------- component ---------------- */
 
 export const BookingDetails = ({ booking }: BookingDetailsProps) => {
   const isCaledonian = useIsCaledonian()
 
+  const baseFields = [
+    { label: 'Utilisateur : ', value: booking.userName },
+    { label: 'Offre : ', value: booking.offerName },
+    {
+      label: 'Date de l’offre : ',
+      value: formattedBookingDate(booking),
+    },
+  ]
+
+  const optionalFields = [
+    booking.priceCategoryLabel && {
+      label: 'Intitulé du tarif : ',
+      value: booking.priceCategoryLabel,
+    },
+    booking.ean13 && {
+      label: 'EAN-13 : ',
+      value: booking.ean13,
+    },
+  ].filter(Boolean) as BookingProps[]
+
+  const totalPrice = booking.quantity === 2 ? booking.price * 2 : booking.price
+
+  const formattedPrice = getFormattedPrice(totalPrice, isCaledonian)
+
   return (
     <div className={styles['booking-summary']}>
-      <BookingDetailsLine label="Utilisateur : " value={booking.userName} />
-      <BookingDetailsLine label="Offre : " value={booking.offerName} />
-      <BookingDetailsLine
-        label="Date de l’offre : "
-        value={formattedBookingDate(booking)}
-      />
+      {baseFields.map((field) => (
+        <BookingDetailsLine key={field.label} {...field} />
+      ))}
 
       {booking.quantity === 2 ? (
         <div className={styles['desk-line']}>
           <div className={styles['desk-label']}>Prix :</div>
-          <div className={styles['desk-value']}>
-            {isCaledonian
-              ? formatPacificFranc(convertEuroToPacificFranc(booking.price * 2))
-              : formatPrice(booking.price * 2)}
-          </div>
+          <div className={styles['desk-value']}>{formattedPrice}</div>
           <SvgIcon src={strokeDuoIcon} alt="Réservation DUO" width="30" />
         </div>
       ) : (
-        <BookingDetailsLine
-          label="Prix : "
-          value={
-            isCaledonian
-              ? formatPacificFranc(convertEuroToPacificFranc(booking.price))
-              : formatPrice(booking.price)
-          }
-        />
+        <BookingDetailsLine label="Prix : " value={formattedPrice} />
       )}
-      {booking.priceCategoryLabel && (
-        <BookingDetailsLine
-          label="Intitulé du tarif : "
-          value={booking.priceCategoryLabel}
-        />
-      )}
-      {booking.ean13 && (
-        <BookingDetailsLine label="EAN-13 : " value={booking.ean13} />
-      )}
+
+      {optionalFields.map((field) => (
+        <BookingDetailsLine key={field.label} {...field} />
+      ))}
     </div>
   )
 }
