@@ -19,7 +19,10 @@ import { GET_COLLECTIVE_OFFER_TEMPLATES_QUERY_KEY } from '@/commons/config/swrQu
 import { useAccessibleScroll } from '@/commons/hooks/useAccessibleScroll'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
+import {
+  LAPTOP_MEDIA_QUERY,
+  useMediaQuery,
+} from '@/commons/hooks/useMediaQuery'
 import { setSearchView } from '@/commons/store/adageFilter/reducer'
 import { adageSearchViewSelector } from '@/commons/store/adageFilter/selectors'
 import { LOGS_DATA } from '@/commons/utils/config'
@@ -78,7 +81,7 @@ export const Offers = ({
   const { nbHits } = useStats()
   const { scopedResults, results: nonScopedResult } = useInstantSearch()
 
-  const isMobileScreen = useMediaQuery('(max-width: 64rem)')
+  const isMobileScreen = useMediaQuery(LAPTOP_MEDIA_QUERY)
 
   const location = useLocation()
 
