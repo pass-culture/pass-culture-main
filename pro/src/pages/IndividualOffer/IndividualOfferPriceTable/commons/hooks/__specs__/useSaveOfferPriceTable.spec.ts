@@ -42,7 +42,7 @@ const renderUseSaveOfferPriceTable = (params: {
   offer: ReturnType<typeof getIndividualOfferFactory>
 }) => {
   const defaultValues = {
-    entries: [
+    priceCategories: [
       {
         activationCodes: [],
         activationCodesExpirationDatetime: '',
@@ -135,7 +135,7 @@ describe('useSaveOfferPriceTable', () => {
     const { result } = renderUseSaveOfferPriceTable({ offer })
 
     act(() => {
-      result.current.form.setValue('entries.0.price', 15)
+      result.current.form.setValue('priceCategories.0.price', 15)
       result.current.form.formState = {
         ...result.current.form.formState,
         isDirty: true,
@@ -166,7 +166,7 @@ describe('useSaveOfferPriceTable', () => {
     const { result } = renderUseSaveOfferPriceTable({ offer })
 
     act(() => {
-      result.current.form.setValue('entries.0.price', 20)
+      result.current.form.setValue('priceCategories.0.price', 20)
       result.current.form.formState = {
         ...result.current.form.formState,
         isDirty: true,
@@ -197,7 +197,7 @@ describe('useSaveOfferPriceTable', () => {
 
     const { result } = renderUseSaveOfferPriceTable({ offer })
     act(() => {
-      result.current.form.setValue('entries.0.price', 22)
+      result.current.form.setValue('priceCategories.0.price', 22)
       result.current.form.formState = {
         ...result.current.form.formState,
         isDirty: true,
@@ -225,7 +225,9 @@ describe('useSaveOfferPriceTable', () => {
         {
           status: 400,
           body: {
-            bookingLimitDatetime: ['API bookingLimitDatetime ERROR'],
+            'priceCategories.0.bookingLimitDatetime': [
+              'API bookingLimitDatetime ERROR',
+            ],
           },
         } as ApiResult,
         ''
@@ -247,8 +249,9 @@ describe('useSaveOfferPriceTable', () => {
     })
 
     expect(spyFormSetError).toHaveBeenCalledWith(
-      'entries.0.bookingLimitDatetime',
+      'priceCategories.0.bookingLimitDatetime',
       {
+        type: 'custom',
         message: 'API bookingLimitDatetime ERROR',
       }
     )

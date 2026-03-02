@@ -69,7 +69,7 @@ export const PriceTableForm = ({
   } = useFormContext<PriceTableFormValues>()
   const { fields, append, remove, update } = useFieldArray({
     control,
-    name: 'entries',
+    name: 'priceCategories',
   })
 
   const [
@@ -93,7 +93,7 @@ export const PriceTableForm = ({
     mode,
   })
 
-  const firstEntry = watch('entries.0')
+  const firstEntry = watch('priceCategories.0')
   const activationCodesExpirationDatetimeMin = firstEntry
     ? computeEntryConstraints(firstEntry).activationCodesExpirationDatetimeMin
     : null
@@ -117,7 +117,7 @@ export const PriceTableForm = ({
       const indexToKeep = indexToRemove === 0 ? 1 : 0
 
       setValue(
-        `entries.${indexToKeep}.label`,
+        `priceCategories.${indexToKeep}.label`,
         DEFAULT_PRICE_TABLE_ENTRY_LABEL_WHEN_SINGLE
       )
     }
@@ -145,7 +145,7 @@ export const PriceTableForm = ({
       return
     }
 
-    const entryToRemove = getValues(`entries.${indexToRemove}`)
+    const entryToRemove = getValues(`priceCategories.${indexToRemove}`)
 
     if (
       mode === OFFER_WIZARD_MODE.EDITION &&
@@ -169,19 +169,19 @@ export const PriceTableForm = ({
     )
 
     setValue(
-      `entries.${activationCodeEntryIndexToUpload}.quantity`,
+      `priceCategories.${activationCodeEntryIndexToUpload}.quantity`,
       activationCodes.length
     )
     setValue(
-      `entries.${activationCodeEntryIndexToUpload}.activationCodes`,
+      `priceCategories.${activationCodeEntryIndexToUpload}.activationCodes`,
       activationCodes
     )
     setValue(
-      `entries.${activationCodeEntryIndexToUpload}.activationCodesExpirationDatetime`,
+      `priceCategories.${activationCodeEntryIndexToUpload}.activationCodesExpirationDatetime`,
       expirationDate ?? null
     )
     setValue(
-      `entries.${activationCodeEntryIndexToUpload}.hasActivationCode`,
+      `priceCategories.${activationCodeEntryIndexToUpload}.hasActivationCode`,
       true
     )
 
@@ -211,21 +211,21 @@ export const PriceTableForm = ({
       />
 
       {fields.map((field, index) => {
-        const entry = watch(`entries.${index}`)
+        const entry = watch(`priceCategories.${index}`)
 
         return (
           <div key={field.id} className={styles['row']}>
             {offer.isEvent && (
               <div className={styles['input-label']}>
                 <TextInput
-                  {...register(`entries.${index}.label`)}
+                  {...register(`priceCategories.${index}.label`)}
                   autoComplete="off"
                   disabled={
                     fields.length <= 1 ||
                     areAllFieldsDisabled ||
                     areAllFieldsDisabledButQuantity
                   }
-                  error={errors.entries?.[index]?.label?.message}
+                  error={errors.priceCategories?.[index]?.label?.message}
                   label="Intitulé du tarif"
                   maxCharactersCount={PRICE_TABLE_ENTRY_MAX_LABEL_LENGTH}
                 />
@@ -239,17 +239,17 @@ export const PriceTableForm = ({
             >
               <PriceInput
                 name="price"
-                value={watch(`entries.${index}.price`) ?? ''}
+                value={watch(`priceCategories.${index}.price`) ?? ''}
                 disabled={
                   areAllFieldsDisabled || areAllFieldsDisabledButQuantity
                 }
-                error={errors.entries?.[index]?.price?.message}
+                error={errors.priceCategories?.[index]?.price?.message}
                 label="Prix"
                 currency={isCaledonian ? 'XPF' : 'EUR'}
                 showFreeCheckbox={!offer.isDigital}
                 onChange={(event) => {
                   setValue(
-                    `entries.${index}.price`,
+                    `priceCategories.${index}.price`,
                     event.target.valueAsNumber,
                     {
                       shouldDirty: true,
@@ -261,25 +261,29 @@ export const PriceTableForm = ({
 
             {!offer.isEvent && (
               <DatePicker
-                {...register(`entries.${index}.bookingLimitDatetime`)}
+                {...register(`priceCategories.${index}.bookingLimitDatetime`)}
                 className={styles['input-booking-limit-datetime']}
                 disabled={
                   areAllFieldsDisabled || areAllFieldsDisabledButQuantity
                 }
-                error={errors.entries?.[index]?.bookingLimitDatetime?.message}
+                error={
+                  errors.priceCategories?.[index]?.bookingLimitDatetime?.message
+                }
                 label="Date limite de réservation"
                 maxDate={computeEntryConstraints(entry).bookingLimitDatetimeMax}
                 minDate={computeEntryConstraints(entry).bookingLimitDatetimeMin}
                 onBlur={() => {
                   if (
-                    defaultValues?.entries?.[index]?.bookingLimitDatetime !==
-                    getValues(`entries.${index}.bookingLimitDatetime`)
+                    defaultValues?.priceCategories?.[index]
+                      ?.bookingLimitDatetime !==
+                    getValues(`priceCategories.${index}.bookingLimitDatetime`)
                   ) {
                     logEvent(Events.UPDATED_BOOKING_LIMIT_DATE, {
                       from: location.pathname,
                       bookingLimitDatetime:
-                        getValues(`entries.${index}.bookingLimitDatetime`) ||
-                        '',
+                        getValues(
+                          `priceCategories.${index}.bookingLimitDatetime`
+                        ) || '',
                     })
                   }
                 }}
@@ -291,11 +295,11 @@ export const PriceTableForm = ({
                 className={styles['input-activation-codes-expiration-datetime']}
                 disabled
                 error={
-                  errors.entries?.[index]?.activationCodesExpirationDatetime
-                    ?.message
+                  errors.priceCategories?.[index]
+                    ?.activationCodesExpirationDatetime?.message
                 }
                 label="Date d'expiration"
-                name={`entries.${index}.activationCodesExpirationDatetime`}
+                name={`priceCategories.${index}.activationCodesExpirationDatetime`}
                 required
                 value={entry.activationCodesExpirationDatetime ?? undefined}
               />
@@ -305,12 +309,12 @@ export const PriceTableForm = ({
               <div className={styles['input-stock']}>
                 <QuantityInput
                   disabled={areAllFieldsDisabled || entry.hasActivationCode}
-                  error={errors.entries?.[index]?.quantity?.message}
+                  error={errors.priceCategories?.[index]?.quantity?.message}
                   label="Stock"
                   min={computeEntryConstraints(entry).quantityMin}
                   onChange={(e) =>
                     setValue(
-                      `entries.${index}.quantity`,
+                      `priceCategories.${index}.quantity`,
                       toNumberOrNull(e.target.value),
                       {
                         shouldDirty: true,
@@ -340,7 +344,7 @@ export const PriceTableForm = ({
 
                 <div className={styles['input-readonly']}>
                   <TextInput
-                    name={`entries.${index}.bookingsQuantity`}
+                    name={`priceCategories.${index}.bookingsQuantity`}
                     value={entry.bookingsQuantity?.toString() ?? '0'}
                     label="Réservations"
                     disabled

@@ -10,7 +10,7 @@ export const toPriceCategoryBody = (
   formValues: PriceTableFormValues
 ): PriceCategoryBody => {
   return {
-    priceCategories: formValues.entries.map((entry) => {
+    priceCategories: formValues.priceCategories.map((entry) => {
       assertOrFrontendError(entry.label, '`entry.label` is undefined.')
 
       return {

@@ -32,9 +32,9 @@ describe('toFormValues', () => {
 
     const result = toFormValues(offer, priceCategories, context)
 
-    expect(result.entries).toHaveLength(1)
-    expect(result.entries[0].label).toBe('Plein tarif')
-    expect(result.entries[0].offerId).toBe(offer.id)
+    expect(result.priceCategories).toHaveLength(1)
+    expect(result.priceCategories[0].label).toBe('Plein tarif')
+    expect(result.priceCategories[0].offerId).toBe(offer.id)
   })
 
   it('should create a default entry with label for empty event offer', () => {
@@ -43,9 +43,9 @@ describe('toFormValues', () => {
 
     const result = toFormValues(offer, [], context)
 
-    expect(result.entries).toHaveLength(1)
-    expect(result.entries[0].label).toBe('Tarif unique')
-    expect(result.entries[0].offerId).toBe(offer.id)
+    expect(result.priceCategories).toHaveLength(1)
+    expect(result.priceCategories[0].label).toBe('Tarif unique')
+    expect(result.priceCategories[0].offerId).toBe(offer.id)
   })
 
   it('should create a default entry with null label for empty non-event offer', () => {
@@ -54,7 +54,7 @@ describe('toFormValues', () => {
 
     const result = toFormValues(offer, [], context)
 
-    expect(result.entries).toHaveLength(1)
-    expect(result.entries[0].label).toBeNull()
+    expect(result.priceCategories).toHaveLength(1)
+    expect(result.priceCategories[0].label).toBeNull()
   })
 })
