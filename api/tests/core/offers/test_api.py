@@ -4788,7 +4788,7 @@ class ReplacePriceCategoriesTest:
         with pytest.raises(api_errors.ApiErrors) as error:
             api.replace_offer_price_categories(offer, inputs)
 
-        assert "price300" in error.value.errors
+        assert "priceCategories.0.price" in error.value.errors
 
 
 @pytest.mark.usefixtures("db_session")

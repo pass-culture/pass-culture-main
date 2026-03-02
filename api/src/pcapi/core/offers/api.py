@@ -2820,10 +2820,13 @@ def replace_offer_price_categories(
         raise exceptions.OfferException({"global": ["Cannot delete price categories on non-draft offers"]})
 
     synced_price_categories = []
-    for synced_price_category_input in synced_price_category_inputs:
-        validation.check_stock_price(synced_price_category_input["price"], offer)
+    for idx, synced_price_category_input in enumerate(synced_price_category_inputs):
+        validation.check_stock_price(
+            synced_price_category_input["price"], offer, None, "priceCategories.{}.price".format(idx)
+        )
 
         price_category_id = synced_price_category_input.get("id")
+
         if price_category_id:
             if price_category_id not in existing_price_categories_by_id:
                 raise exceptions.OfferException(
