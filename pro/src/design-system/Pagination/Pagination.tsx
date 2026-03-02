@@ -1,6 +1,9 @@
 import cn from 'classnames'
 
-import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
+import {
+  TABLET_MEDIA_QUERY,
+  useMediaQuery,
+} from '@/commons/hooks/useMediaQuery'
 import fullLeftIcon from '@/icons/full-left.svg'
 import fullRightIcon from '@/icons/full-right.svg'
 import threeDotsIcon from '@/icons/full-three-dots.svg'
@@ -36,7 +39,7 @@ export const Pagination = ({
   onPageClick,
   forceMobile = false,
 }: PaginationProps): JSX.Element | null => {
-  const isSmallScreen = useMediaQuery('(max-width: 38.125rem)')
+  const isSmallScreen = useMediaQuery(TABLET_MEDIA_QUERY)
   const isMobile = forceMobile || isSmallScreen
 
   // At least 2 pages are needed to display something, else we just display nothing

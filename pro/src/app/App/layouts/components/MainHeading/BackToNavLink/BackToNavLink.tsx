@@ -1,6 +1,9 @@
 import classnames from 'classnames'
 
-import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
+import {
+  LAPTOP_MEDIA_QUERY,
+  useMediaQuery,
+} from '@/commons/hooks/useMediaQuery'
 import fullGoTop from '@/icons/full-go-top.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
@@ -13,7 +16,7 @@ interface BackToNavLinkProps {
 export const BackToNavLink = ({
   className,
 }: BackToNavLinkProps): JSX.Element => {
-  const isMobileScreen = useMediaQuery('(max-width: 64rem)')
+  const isMobileScreen = useMediaQuery(LAPTOP_MEDIA_QUERY)
 
   return (
     // biome-ignore lint/correctness/useUniqueElementIds: This is always rendered once per page, so there cannot be id duplications.

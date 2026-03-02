@@ -1,4 +1,7 @@
-import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
+import {
+  LAPTOP_MEDIA_QUERY,
+  useMediaQuery,
+} from '@/commons/hooks/useMediaQuery'
 import fullSmsIcon from '@/icons/full-sms.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
@@ -28,7 +31,7 @@ export const SideNavLinks = ({
   const mainItems = navItems.filter((i) => i.group === 'main')
   const footerItems = navItems.filter((i) => i.group === 'footer')
 
-  const isMobileScreen = useMediaQuery('(max-width: 64rem)')
+  const isMobileScreen = useMediaQuery(LAPTOP_MEDIA_QUERY)
 
   return (
     <div className={styles.sidebar}>

@@ -3,7 +3,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { type NavItem, SideNavLinks } from './SideNavLinks'
 
-vi.mock('@/commons/hooks/useMediaQuery', () => ({
+vi.mock('@/commons/hooks/useMediaQuery', async (importOriginal) => ({
+  ...(await importOriginal()),
   useMediaQuery: vi.fn(),
 }))
 
