@@ -218,4 +218,149 @@ describe('ArtistField', () => {
       artistType: ArtistType.AUTHOR,
     })
   })
+
+  it('should reset artist field when trashing the only existing artist link', async () => {
+    const { getValues } = renderArtistField({
+      defaultArtistOfferLinks: [
+        {
+          artistId: '42',
+          artistName: 'John Doe',
+          artistType: ArtistType.AUTHOR,
+        },
+      ],
+    })
+
+    const trashButton = screen.getByRole('button', {
+      name: /Réinitialiser les valeurs de ce champ/i,
+    })
+    await userEvent.click(trashButton)
+
+    const artistOfferLinks = getValues().artistOfferLinks
+    expect(artistOfferLinks).toHaveLength(1)
+    expect(artistOfferLinks[0]).toEqual({
+      artistId: null,
+      artistName: '',
+      artistType: ArtistType.AUTHOR,
+    })
+  })
+
+  it('should disable trash button when there is only one artist field and it is empty', () => {
+    renderArtistField({
+      defaultArtistOfferLinks: [
+        {
+          artistId: null,
+          artistName: '',
+          artistType: ArtistType.AUTHOR,
+        },
+      ],
+    })
+
+    const trashButton = screen.getByRole('button', {
+      name: /Réinitialiser les valeurs de ce champ/i,
+    })
+    expect(trashButton).toBeDisabled()
+  })
+
+  it('should disable trash button when there is only one artist of current type and it is empty, even if other types exist', () => {
+    renderArtistField({
+      artistType: ArtistType.AUTHOR,
+      defaultArtistOfferLinks: [
+        {
+          artistId: null,
+          artistName: '',
+          artistType: ArtistType.AUTHOR,
+        },
+        {
+          artistId: '2',
+          artistName: 'Performer 1',
+          artistType: ArtistType.PERFORMER,
+        },
+      ],
+    })
+
+    const trashButton = screen.getByRole('button', {
+      name: /Réinitialiser les valeurs de ce champ/i,
+    })
+    expect(trashButton).toBeDisabled()
+  })
+
+  it('should remove artist field when trashing one of multiple artist links', async () => {
+    const { getValues } = renderArtistField({
+      defaultArtistOfferLinks: [
+        {
+          artistId: '1',
+          artistName: 'Author 1',
+          artistType: ArtistType.AUTHOR,
+        },
+        {
+          artistId: '2',
+          artistName: 'Author 2',
+          artistType: ArtistType.AUTHOR,
+        },
+      ],
+    })
+
+    const trashButtons = screen.getAllByRole('button', {
+      name: /Supprimer ce champ/i,
+    })
+    await userEvent.click(trashButtons[0])
+
+    const artistOfferLinks = getValues().artistOfferLinks
+    expect(artistOfferLinks).toHaveLength(1)
+    expect(artistOfferLinks[0].artistName).toBe('Author 2')
+  })
+
+  it('should reset artist field when trashing an artist while another type exists but it is the only one of its type', async () => {
+    const { getValues } = renderArtistField({
+      artistType: ArtistType.AUTHOR,
+      defaultArtistOfferLinks: [
+        {
+          artistId: '1',
+          artistName: 'Author 1',
+          artistType: ArtistType.AUTHOR,
+        },
+        {
+          artistId: '2',
+          artistName: 'Performer 1',
+          artistType: ArtistType.PERFORMER,
+        },
+      ],
+    })
+
+    const trashButton = screen.getByRole('button', {
+      name: /Réinitialiser les valeurs de ce champ/i,
+    })
+    await userEvent.click(trashButton)
+
+    const artistOfferLinks = getValues().artistOfferLinks
+    expect(artistOfferLinks).toHaveLength(2)
+    expect(artistOfferLinks[0]).toEqual({
+      artistId: null,
+      artistName: '',
+      artistType: ArtistType.AUTHOR,
+    })
+    expect(artistOfferLinks[1].artistType).toBe(ArtistType.PERFORMER)
+  })
+
+  it('should not show trash button when readOnly is true', () => {
+    renderArtistField({
+      readOnly: true,
+      defaultArtistOfferLinks: [
+        {
+          artistId: '1',
+          artistName: 'Author 1',
+          artistType: ArtistType.AUTHOR,
+        },
+      ],
+    })
+
+    expect(
+      screen.queryByRole('button', {
+        name: /Réinitialiser les valeurs de ce champ/i,
+      })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /Supprimer ce champ/i })
+    ).not.toBeInTheDocument()
+  })
 })
