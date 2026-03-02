@@ -2,7 +2,6 @@ import cn from 'classnames'
 
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { removeSnackBar } from '@/commons/store/snackBar/reducer'
 import {
   isStickyBarOpenSelector,
@@ -26,14 +25,8 @@ export const SnackBarContainer = (): JSX.Element => {
   const snackBars = useAppSelector(listSelector)
   const dispatch = useAppDispatch()
   const isStickyBarOpen = useAppSelector(isStickyBarOpenSelector)
-  const isSmallScreen = useMediaQuery('(max-width: 38.125rem)')
-
-  // Small (mobile/app): the last snackbar appears below the first one (ascending order)
-  // Large (desktop/tablet): the last snackbar appears above the first one (descending order)
   const snackBarsToDisplay = snackBars.sort(
-    (a, b) =>
-      (isSmallScreen ? 1 : -1) *
-      (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
   )
 
   return (

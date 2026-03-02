@@ -1,7 +1,6 @@
 import { act, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import * as useMediaQuery from '@/commons/hooks/useMediaQuery'
 import {
   type ISnackBarItem,
   snackBarAdapter,
@@ -18,8 +17,6 @@ import {
 describe('SnackBarContainer', () => {
   beforeEach(() => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
-
-    vi.spyOn(useMediaQuery, 'useMediaQuery').mockReturnValue(false)
   })
 
   afterEach(() => {
@@ -167,8 +164,6 @@ describe('SnackBarContainer', () => {
   })
 
   it('should sort snackbars in ascending order on small screen', () => {
-    vi.spyOn(useMediaQuery, 'useMediaQuery').mockReturnValue(true)
-
     const now = new Date()
     // Passer les snackbars dans un ordre différent pour tester le tri
     const snackBars = [
@@ -200,9 +195,6 @@ describe('SnackBarContainer', () => {
         },
       },
     })
-
-    // Sur petit écran, les snackbars doivent être triés en ordre croissant
-    // (le plus ancien en premier)
     expect(screen.getByTestId('global-snack-bar-success-0')).toHaveTextContent(
       'First'
     )
