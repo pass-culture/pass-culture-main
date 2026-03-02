@@ -273,6 +273,7 @@ def test_get_user_attributes_ex_beneficiary_because_of_expiration():
     )
 
 
+@pytest.mark.time_machine("2025-02-02")
 def test_get_user_attributes_beneficiary_because_of_credit():
     user = BeneficiaryFactory()
     initial_amount = user.deposit.amount

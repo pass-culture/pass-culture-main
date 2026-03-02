@@ -166,6 +166,7 @@ class DepositSpecificCapsTest:
         assert specific_caps.DIGITAL_CAP == Decimal(200)
         assert specific_caps.PHYSICAL_CAP == Decimal(200)
 
+    @pytest.mark.time_machine("2025-02-02")
     def should_have_150_euros_cap_when_from_mayotte(self):
         user = users_factories.BeneficiaryGrant18Factory(deposit__type=models.DepositType.GRANT_18, departementCode=976)
         specific_caps = user.deposit.specific_caps
@@ -173,6 +174,7 @@ class DepositSpecificCapsTest:
         assert specific_caps.DIGITAL_CAP == Decimal(150)
         assert specific_caps.PHYSICAL_CAP is None
 
+    @pytest.mark.time_machine("2025-02-02")
     def should_have_200_euros_cap_when_from_saint_pierre_et_miquelon(self):
         user = users_factories.BeneficiaryGrant18Factory(deposit__type=models.DepositType.GRANT_18, departementCode=975)
         specific_caps = user.deposit.specific_caps
