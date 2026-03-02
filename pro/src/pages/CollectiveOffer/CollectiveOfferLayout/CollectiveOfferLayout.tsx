@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import type React from 'react'
 import { useLocation, useParams } from 'react-router'
 
@@ -72,9 +71,7 @@ export const CollectiveOfferLayout = ({
       {!allowedOnAdage ? null : navigationProps.isCreatingOffer ? (
         <CollectiveCreationOfferNavigation
           activeStep={navigationProps.activeStep}
-          className={cn(styles['eac-layout-navigation'], {
-            [styles['stepper-navigation']]: navigationProps.isCreatingOffer,
-          })}
+          className={styles['eac-layout-navigation']}
           offerId={navigationProps.offerId}
           isTemplate={isTemplate}
           requestId={requestId}

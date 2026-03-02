@@ -133,9 +133,9 @@ export const PrebookingButton = ({
             />
 
             {!hideLimitDate && stock.bookingLimitDatetime && (
-              <span className={styles['prebooking-button-booking-limit']}>
+              <span>
                 avant le :{' '}
-                <span className={styles['prebooking-button-limit-date']}>
+                <span>
                   {format(new Date(stock.bookingLimitDatetime), 'dd/MM/yyyy')}
                 </span>
               </span>

@@ -1,4 +1,3 @@
-import classNames from 'classnames'
 import React, { type ForwardedRef, useId } from 'react'
 
 import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
@@ -46,7 +45,7 @@ export const DatePicker = React.forwardRef(
     const errorId = useId()
 
     return (
-      <div className={classNames(styles['date-picker'], className)}>
+      <div className={className}>
         <div>
           <label htmlFor={inputId} className={styles['label']}>
             {label}

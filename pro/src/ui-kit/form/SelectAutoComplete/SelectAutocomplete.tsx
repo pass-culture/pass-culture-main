@@ -344,12 +344,7 @@ export const SelectAutocomplete = forwardRef(
               alt=""
               width="16"
             />
-            <span
-              className={styles['field-error-text']}
-              data-testid={`error-${name}`}
-            >
-              {error}
-            </span>
+            <span data-testid={`error-${name}`}>{error}</span>
           </div>
         )}
       </div>

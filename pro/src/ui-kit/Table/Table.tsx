@@ -244,11 +244,9 @@ export function Table<
                   id={col.id}
                   colSpan={col.headerColSpan || 1}
                   key={`col-${col.id}`}
-                  className={classNames(
-                    styles.columnWidth,
-                    styles['table-header-th'],
-                    { [styles['table-header-sortable-th']]: col.sortable }
-                  )}
+                  className={classNames(styles['table-header-th'], {
+                    [styles['table-header-sortable-th']]: col.sortable,
+                  })}
                 >
                   {col.sortable ? (
                     <SortColumn
@@ -300,12 +298,11 @@ export function Table<
                   data-testid="table-row"
                   className={classNames({
                     [styles['table-row']]: !tableFullRowContent,
-                    [styles.selected]: isSelected,
                   })}
                 >
                   {selectable && (
                     <td
-                      className={classNames(styles['table-checkbox-cell'], {
+                      className={classNames({
                         [styles['table-separate-cell']]:
                           variant === TableVariant.SEPARATE,
                         [styles['table-collapse-cell']]:

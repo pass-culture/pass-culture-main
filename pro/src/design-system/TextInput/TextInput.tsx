@@ -89,9 +89,6 @@ export const TextInput = forwardRef(
     return (
       <div
         className={classNames(styles['container'], {
-          [styles['is-disabled']]: disabled,
-          [styles['has-error']]: Boolean(error),
-          [styles['has-description']]: Boolean(description),
           [styles['has-icon']]: Boolean(icon),
           [styles['has-button']]: Boolean(iconButton),
         })}

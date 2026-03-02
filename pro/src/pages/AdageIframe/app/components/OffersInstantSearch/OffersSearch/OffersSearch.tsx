@@ -214,7 +214,6 @@ export const OffersSearch = ({
         <div className={styles['separator']} />
         <div ref={offerFilterRef}>
           <OfferFilters
-            className={styles['search-filters']}
             localisationFilterState={localisationFilterState}
             setLocalisationFilterState={setlocalisationFilterState}
             domainsOptions={domainsOptions}

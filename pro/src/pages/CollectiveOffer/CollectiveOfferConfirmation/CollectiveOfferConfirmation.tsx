@@ -121,7 +121,7 @@ const showcaseOfferWithShareLink = (
         Votre offre a été publiée sur ADAGE
       </div>
       <div className={styles['confirmation-description']}>
-        <span className={styles['confirmation-description-instruction']}>
+        <span>
           Aidez les enseignants à retrouver votre offre plus facilement sur
           ADAGE
         </span>

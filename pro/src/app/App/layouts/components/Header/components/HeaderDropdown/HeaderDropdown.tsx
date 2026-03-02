@@ -132,12 +132,7 @@ export const HeaderDropdown = () => {
                 aria-label="fermer"
                 className={styles['close-button']}
               >
-                <SvgIcon
-                  src={fullCloseIcon}
-                  alt=""
-                  width="24"
-                  className={styles['close-button-icon']}
-                />
+                <SvgIcon src={fullCloseIcon} alt="" width="24" />
               </button>
             </DropdownMenu.Item>
             {!withSwitchVenueFeature && offererOptions.length >= 1 && (

@@ -89,7 +89,7 @@ export const AdagePreviewLayout = ({ offer }: AdagePreviewLayoutProps) => {
           aria-hidden="true"
         />
       </div>
-      <div className={styles['fake-adage-page-content']}>
+      <div>
         <div className={styles['fake-adage-page-pass']}>
           <div className={styles['fake-adage-page-pass-header']}>
             <SvgIcon

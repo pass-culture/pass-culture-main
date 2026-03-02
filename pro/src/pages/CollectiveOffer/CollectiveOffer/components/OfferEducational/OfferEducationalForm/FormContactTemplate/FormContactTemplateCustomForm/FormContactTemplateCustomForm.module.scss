@@ -1,14 +1,5 @@
-@use "styles/mixins/_rem.scss" as rem;
-
-.custom-form {
+.custom-form-radio-link {
   margin-top: var(--size-spacing-l);
-
-  &-radio {
-    margin-bottom: var(--size-spacing-l);
-
-    &-link {
-      margin: var(--size-spacing-s) 0 var(--size-spacing-s)
-        var(--size-spacing-xl);
-    }
-  }
+  margin-bottom: var(--size-spacing-l);
+  margin: var(--size-spacing-s) 0 var(--size-spacing-s) var(--size-spacing-xl);
 }

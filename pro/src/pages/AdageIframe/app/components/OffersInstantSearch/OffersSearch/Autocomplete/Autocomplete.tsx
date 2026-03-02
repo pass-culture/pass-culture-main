@@ -456,10 +456,7 @@ export const Autocomplete = ({
                         />
                       </div>
                     </span>
-                    <ul
-                      className={styles['dialog-panel-autocomplete-list']}
-                      {...autocomplete.getListProps()}
-                    >
+                    <ul {...autocomplete.getListProps()}>
                       {recentSearchesItems.map((item, index) => (
                         <li
                           key={`item-${index}`}
@@ -486,10 +483,7 @@ export const Autocomplete = ({
                       Partenaires culturels
                     </span>
 
-                    <ul
-                      className={styles['dialog-panel-autocomplete-list']}
-                      {...autocomplete.getListProps()}
-                    >
+                    <ul {...autocomplete.getListProps()}>
                       {venuesSuggestionsItems.map((item, index) => (
                         <li
                           key={`item-venue-${index}`}
@@ -525,10 +519,7 @@ export const Autocomplete = ({
                       Suggestions
                     </span>
 
-                    <ul
-                      className={styles['dialog-panel-autocomplete-list']}
-                      {...autocomplete.getListProps()}
-                    >
+                    <ul {...autocomplete.getListProps()}>
                       {keywordSuggestionsItems.map((item, index) => {
                         let shouldDisplayFormats = false
                         let displayValue = ''

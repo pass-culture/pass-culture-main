@@ -20,7 +20,6 @@ import styles from './OfferStats.module.scss'
 
 export interface PublishedOfferStatsProps {
   offerer: GetOffererResponseModel
-  className?: string
 }
 
 interface StatBlockProps {
@@ -59,10 +58,7 @@ const StatBlock = ({ icon, count, label, link, linkLabel }: StatBlockProps) => (
   </div>
 )
 
-export const PublishedOfferStats = ({
-  offerer,
-  className,
-}: PublishedOfferStatsProps) => {
+export const PublishedOfferStats = ({ offerer }: PublishedOfferStatsProps) => {
   const { logEvent } = useAnalytics()
 
   const { isLoading, data: stats } = useSWR(
@@ -111,7 +107,7 @@ export const PublishedOfferStats = ({
               Vos offres {pendingOfferWording}
             </h3>
 
-            <div className={styles['pending-description']}>
+            <div>
               <p>
                 Le contrôle de conformité peut prendre jusqu’à 72 heures. En cas
                 de validation, l’offre sera publiée automatiquement.

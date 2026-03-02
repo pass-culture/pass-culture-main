@@ -85,7 +85,7 @@ export const AdageDiscovery = () => {
   }
 
   return (
-    <div className={styles['discovery']} ref={discoveryRef}>
+    <div ref={discoveryRef}>
       <AdageDiscoveryBanner />
 
       <div className={styles['discovery-playlists']}>

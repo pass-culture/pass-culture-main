@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { Link } from 'react-router'
 
 import type { BaseTabsProps } from '../Tabs'
-import styles from '../Tabs.module.scss'
+import styles from './NavLinkItems.module.scss'
 
 export type NavLinkItem<T extends string> = {
   /**
@@ -45,7 +45,7 @@ export const NavLinkItems = <T extends string>({
                   [styles['is-selected']]: isSelected,
                 })}
               >
-                <span className={styles['menu-list-item-label']}>
+                <span>
                   {isSelected && (
                     <span className={styles['visually-hidden']}>
                       Lien actif

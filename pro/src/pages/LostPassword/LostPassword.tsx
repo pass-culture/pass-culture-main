@@ -69,7 +69,7 @@ export const LostPassword = (): JSX.Element => {
   return (
     <SignUpLayout mainHeading={mainHeading}>
       {email ? (
-        <section className={styles['change-password-request-success']}>
+        <section>
           <p className={styles['change-password-request-success-body']}>
             Cliquez sur le lien envoyé par email à <b>{email}</b>
           </p>

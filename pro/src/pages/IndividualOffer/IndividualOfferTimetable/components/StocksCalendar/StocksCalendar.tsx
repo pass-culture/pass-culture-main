@@ -224,7 +224,7 @@ export function StocksCalendar({
             <p>Aucune date à afficher</p>
           ) : (
             <>
-              <div className={styles['icon-container']}>
+              <div>
                 <SvgIcon
                   alt=""
                   className={styles['icon']}
@@ -247,7 +247,7 @@ export function StocksCalendar({
       )}
       <div className={styles['container']}>
         {!hasNoStocks && (
-          <div className={styles['content']}>
+          <div>
             <div className={styles['filters']}>
               <StocksCalendarFilters
                 priceCategories={offer.priceCategories}

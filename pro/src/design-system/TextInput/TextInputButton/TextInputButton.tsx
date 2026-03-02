@@ -29,7 +29,7 @@ export function TextInputButton({
         onBlur={onBlur}
         disabled={disabled}
       >
-        <SvgIcon src={icon} alt={label} className={styles['button-icon']} />
+        <SvgIcon src={icon} alt={label} />
       </button>
     </Tooltip>
   )

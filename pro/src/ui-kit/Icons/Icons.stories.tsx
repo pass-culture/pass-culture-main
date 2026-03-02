@@ -79,7 +79,7 @@ export const Icons = () => {
                     data-src={icon.src}
                   >
                     <div className={styles['copy-to-clipboard-wrapper']}>
-                      <span className={styles['copy-to-clipboard-name']}>
+                      <span>
                         Copié !
                       </span>
                     </div>

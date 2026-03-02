@@ -29,11 +29,7 @@ export const EducationalRedactorDetailsForBooking = ({
 
       <div className={styles['contact-detail']}>
         <dt>
-          <SvgIcon
-            className={styles['contact-redactor-icon']}
-            alt="Email"
-            src={strokeMailIcon}
-          />
+          <SvgIcon alt="Email" src={strokeMailIcon} />
         </dt>
         <dd>
           <Button

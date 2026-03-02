@@ -344,7 +344,6 @@ export const RequestFormDialog = ({
           </FormLayout.Row>
           <FormLayout.Row mdSpaceAfter>
             <DatePicker
-              className={styles['date-field-layout']}
               label="Date souhaitée"
               minDate={new Date()}
               error={hookForm.formState.errors.offerDate?.message}

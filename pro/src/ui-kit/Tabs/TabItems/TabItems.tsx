@@ -1,7 +1,7 @@
 import cn from 'classnames'
 
 import type { BaseTabsProps } from '../Tabs'
-import styles from '../Tabs.module.scss'
+import styles from './TabItems.module.scss'
 
 export type TabItem<T extends string> = {
   /**
@@ -81,7 +81,7 @@ export const TabItems = <T extends string>({
                 }
               )}
             >
-              <span className={styles['menu-list-item-label']}>
+              <span>
                 {isSelected && (
                   <span className={styles['visually-hidden']}>
                     Onglet actif

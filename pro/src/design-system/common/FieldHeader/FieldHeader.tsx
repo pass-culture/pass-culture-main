@@ -26,7 +26,7 @@ export function FieldHeader({
         [styles['has-description']]: Boolean(description),
       })}
     >
-      <div className={styles['field-header-left']}>
+      <div>
         <label htmlFor={fieldId} className={styles['label']}>
           {label}
           {required && requiredIndicator === 'symbol' && (
