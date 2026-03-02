@@ -10,6 +10,7 @@ from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions
 from pcapi.core.subscription import fraud_check_api as fraud_api
+from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import profile_options
 from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.bonus import fraud_check_api as bonus_fraud_api
@@ -42,8 +43,8 @@ logger = logging.getLogger(__name__)
 def get_subscription_stepper() -> serializers.SubscriptionStepperResponseV2:
     user_subscription_state = subscription_api.get_user_subscription_state(current_user)
     subscription_message = user_subscription_state.subscription_message
-    stepper_header = subscription_api.get_stepper_title_and_subtitle(current_user, user_subscription_state)
-    subscription_steps_to_display = subscription_api.get_subscription_steps_to_display(
+    stepper_header = subscription_messages.get_stepper_title_and_subtitle(current_user, user_subscription_state)
+    subscription_steps_to_display = subscription_messages.get_subscription_steps_to_display(
         current_user, user_subscription_state
     )
 
