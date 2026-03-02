@@ -42,8 +42,8 @@
             "name": "Attach to api server",
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}",
-                    "remoteRoot": "${workspaceFolder}"
+                    "localRoot": "${workspaceFolder}/api",
+                    "remoteRoot": "/usr/src/app"
                 }
             ],
             "connect": {
@@ -59,8 +59,8 @@
             "name": "Attach to backoffice server",
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}",
-                    "remoteRoot": "${workspaceFolder}"
+                    "localRoot": "${workspaceFolder}/api",
+                    "remoteRoot": "/usr/src/app"
                 }
             ],
             "connect": {
@@ -107,7 +107,9 @@
             "name": "Attach to Vitest",
             "port": 9229,
             "restart": true,
-            "skipFiles": ["<node_internals>/**"]
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
         }
     ],
     "inputs": [

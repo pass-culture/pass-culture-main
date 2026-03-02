@@ -98,4 +98,4 @@ if __name__ == "__main__":
             debugpy.wait_for_client()
             print("🎉 Code debugger attached, enjoy debugging 🎉", flush=True)
 
-    app.run(host="0.0.0.0", port=port, debug=True, use_reloader=not is_debugger_enabled)
+    app.run(host="0.0.0.0", port=port, debug=True, use_reloader=True)
