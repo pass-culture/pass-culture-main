@@ -9,9 +9,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.tasks.mails_tasks import send_withdrawal_detail_changed_emails
-from pcapi.tasks.serialization.mails_tasks import WithdrawalChangedMailBookingDetail
-from pcapi.tasks.serialization.mails_tasks import WithdrawalChangedMailRequest
 from pcapi.utils.date import format_time_in_second_to_human_readable
 
 
@@ -50,27 +47,21 @@ def send_email_for_each_ongoing_booking(offer: offers_models.Offer) -> None:
         )
     )
 
-    mails_request = WithdrawalChangedMailRequest(
-        offer_withdrawal_delay=(
-            format_time_in_second_to_human_readable(offer.withdrawalDelay) if offer.withdrawalDelay else None
-        ),
-        offer_withdrawal_details=offer.withdrawalDetails,
-        offer_withdrawal_type=getattr(offer.withdrawalType, "value", None),
-        offerer_name=offer.venue.managingOfferer.name,
-        bookers=[],
-    )
     for booking in ongoing_bookings:
         assert booking.user.firstName  #  helps mypy
-        mails_request.bookers.append(
-            WithdrawalChangedMailBookingDetail(
-                recipients=[booking.user.email],
-                user_first_name=booking.user.firstName,
-                offer_name=offer.name,
-                offer_token=booking.activationCode.code if booking.activationCode else booking.token,
-                offer_address=booking.stock.offer.fullAddress,
-            )
+        send_booking_withdrawal_updated(
+            recipients=[booking.user.email],
+            user_first_name=booking.user.firstName,
+            offer_name=offer.name,
+            offer_token=booking.activationCode.code if booking.activationCode else booking.token,
+            offer_withdrawal_delay=format_time_in_second_to_human_readable(offer.withdrawalDelay)
+            if offer.withdrawalDelay
+            else None,
+            offer_withdrawal_details=offer.withdrawalDetails,
+            offer_withdrawal_type=getattr(offer.withdrawalType, "value", None),
+            offerer_name=offer.venue.managingOfferer.name,
+            offer_address=booking.stock.offer.fullAddress,
         )
-    send_withdrawal_detail_changed_emails.delay(payload=mails_request)
 
 
 def send_booking_withdrawal_updated(
