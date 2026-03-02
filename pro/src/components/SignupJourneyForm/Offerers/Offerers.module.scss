@@ -28,7 +28,7 @@ $small-gap: var(--size-spacing-s);
     align-items: flex-start;
     gap: $small-gap;
 
-    &item::before {
+    &-item::before {
       content: "-";
       display: inline-block;
       width: 1em;
@@ -56,10 +56,6 @@ $small-gap: var(--size-spacing-s);
 
 .dialog-info {
   padding: 0 rem.torem(85px);
-}
-
-.button-add-new-offerer {
-  margin-bottom: rem.torem(10px);
 }
 
 .existing-offerers-layout-wrapper {

@@ -2,10 +2,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
 
-.expiration-cell {
-  padding-top: 0;
-}
-
 .banner {
   padding: var(--size-spacing-s);
   border-radius: var(--size-border-radius-m);

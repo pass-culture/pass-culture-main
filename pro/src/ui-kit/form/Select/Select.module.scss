@@ -38,12 +38,6 @@
     cursor: auto;
   }
 
-  &.has-description {
-    display: inline-block;
-    width: auto;
-    margin-right: var(--size-spacing-s);
-  }
-
   &.has-error {
     @include formsM.input-theme-error;
   }
@@ -54,11 +48,6 @@
 
   &-wrapper {
     position: relative;
-
-    &.has-description {
-      display: inline-block;
-      vertical-align: middle;
-    }
   }
 
   &-placeholder {

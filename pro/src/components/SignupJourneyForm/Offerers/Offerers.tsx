@@ -164,7 +164,6 @@ export const Offerers = (): JSX.Element => {
             <ul className={styles['venue-list']}>
               {permanentVenues.map((venue, index) => (
                 <li
-                  // check-unused-css-disable-next-line
                   className={styles['venue-list-item']}
                   key={venue.id}
                   hidden={

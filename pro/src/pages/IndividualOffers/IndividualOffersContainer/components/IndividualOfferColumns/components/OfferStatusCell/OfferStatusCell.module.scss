@@ -1,10 +1,4 @@
-@use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/_size.scss" as size;
-@use "styles/variables/_z-index.scss" as zIndex;
-@use "styles/mixins/_a11y.scss" as a11y;
-@use "styles/mixins/_outline.scss" as outline;
-
+/* check-unused-css-disable-next-line */
 .status-column {
   &-content {
     display: flex;

@@ -161,8 +161,7 @@
       justify-self: end;
     }
 
-    [data-actions],
-    .tbody-td-actions {
+    [data-actions] {
       justify-self: end;
       display: flex;
       gap: var(--size-spacing-s);

@@ -1,6 +1,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 
+/* check-unused-css-disable-next-line */
 .main-heading {
   &-wrapper {
     display: flex;

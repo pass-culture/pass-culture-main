@@ -4,10 +4,6 @@
 @use "styles/variables/_forms.scss" as forms;
 
 .content {
-  .siren-field {
-    margin-bottom: var(--size-spacing-l);
-  }
-
   .sign-up-infos-before-signup {
     margin-top: var(--size-spacing-xxl);
   }

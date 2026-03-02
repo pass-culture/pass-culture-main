@@ -3,15 +3,6 @@
 @use "styles/mixins/_a11y.scss" as a11y;
 @use "styles/mixins/_size.scss" as size;
 
-.onboarding-offer-container {
-  margin: var(--size-spacing-xxl) auto 0 auto;
-  padding: 0 rem.torem(32px);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
 .offers-subtitle {
   @include fonts.title3;
 

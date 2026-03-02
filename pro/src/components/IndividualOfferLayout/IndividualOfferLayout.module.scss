@@ -37,19 +37,6 @@
   margin-bottom: var(--size-spacing-l);
 }
 
-.publication-date {
-  margin-top: var(--size-spacing-xs);
-  display: flex;
-  gap: var(--size-spacing-s);
-  align-items: center;
-}
-
-.publication-icon {
-  color: var(--color-icon-success);
-  width: rem.torem(24px);
-  height: rem.torem(24px);
-}
-
 .banner-container {
   margin: var(--size-spacing-l) 0;
 }

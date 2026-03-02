@@ -55,10 +55,4 @@
   &:first-child {
     margin-bottom: var(--size-spacing-xl);
   }
-
-  &-subbox {
-    display: flex;
-    flex-flow: row wrap;
-    row-gap: rem.torem(20px);
-  }
 }

@@ -1,5 +1,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
+/* check-unused-css-disable-next-line */
 .offers-table {
   &-callout {
     margin-bottom: var(--size-spacing-l);

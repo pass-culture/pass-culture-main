@@ -1,9 +1,5 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.title {
-  @include fonts.title1;
-}
-
 .subtitle {
   @include fonts.title4;
 

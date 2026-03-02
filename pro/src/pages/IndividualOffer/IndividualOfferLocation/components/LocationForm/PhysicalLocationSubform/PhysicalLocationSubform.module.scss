@@ -1,16 +1,3 @@
-@use "styles/mixins/_fonts.scss" as fonts;
-
-.infotext {
-  @include fonts.body;
-
-  margin-top: var(--size-spacing-l);
-  margin-bottom: var(--size-spacing-s);
-}
-
-.location-row {
-  margin-bottom: var(--size-spacing-l);
-}
-
 .location-field {
   margin-bottom: 0;
 }

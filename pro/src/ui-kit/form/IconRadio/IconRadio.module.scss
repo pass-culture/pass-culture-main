@@ -25,10 +25,6 @@
   margin: 0 auto;
   justify-content: center;
 
-  &-icon {
-    padding: var(--size-spacing-s);
-  }
-
   &:hover {
     box-shadow: var(--shadow-overlay);
   }

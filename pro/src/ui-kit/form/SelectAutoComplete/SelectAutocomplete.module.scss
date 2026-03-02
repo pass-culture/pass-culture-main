@@ -91,7 +91,3 @@
   margin-top: var(--size-spacing-xs);
   margin-bottom: var(--size-spacing-s);
 }
-
-.visually-hidden {
-  @include a11y.visually-hidden;
-}

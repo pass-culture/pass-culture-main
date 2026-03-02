@@ -36,13 +36,8 @@
     cursor: pointer;
   }
 
-  &:disabled,
-  &.button-disabled {
+  &:disabled{
     cursor: default;
-  }
-
-  &.button-disabled {
-    pointer-events: none;
   }
 
   &:focus-visible {
@@ -60,14 +55,9 @@
       background-color: var(--color-background-brand-primary-hover);
       border-color: var(--color-border-brand-primary-hover);
       color: var(--color-text-locked-inverted);
-
-      .button-icon {
-        color: var(--color-text-locked-inverted);
-      }
     }
 
-    &:disabled,
-    &.button-disabled {
+    &:disabled {
       background-color: var(--color-background-disabled);
       color: var(--color-text-disabled);
       border-color: var(--color-border-disabled);

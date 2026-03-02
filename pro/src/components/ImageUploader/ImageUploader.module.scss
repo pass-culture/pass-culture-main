@@ -2,10 +2,6 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.explanatory-text {
-  margin-bottom: var(--size-spacing-xl);
-}
-
 .image-uploader-image-container {
   display: flex;
   margin-bottom: var(--size-spacing-l);

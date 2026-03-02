@@ -19,18 +19,16 @@
     max-width: 100%;
   }
 
-  &-separator {
-    &-wrapper {
+  &-separator-wrapper {
       align-items: center;
       display: flex;
       margin-top: rem.torem(23px);
     }
-
-    &-element {
-      background-color: var(--separator-color-subtle);
-      flex: 1;
-      height: rem.torem(1px);
-    }
+  
+  &-separator-element {
+    background-color: var(--separator-color-subtle);
+    flex: 1;
+    height: rem.torem(1px);
   }
 }
 

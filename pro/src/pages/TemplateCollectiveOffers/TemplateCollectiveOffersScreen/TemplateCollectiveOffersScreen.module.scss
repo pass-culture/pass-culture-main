@@ -4,20 +4,18 @@
   width: 100%;
 }
 
-.offers-table {
-  &-callout {
-    margin-bottom: var(--size-spacing-l);
-  }
+.offers-table-callout {
+  margin-bottom: var(--size-spacing-l);
+}
 
-  &-title {
-    display: flex;
-    align-items: center;
-    margin-bottom: var(--size-spacing-s);
+.offers-table-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--size-spacing-s);
 
-    &-heading {
-      @include fonts.title2;
+  &-heading {
+    @include fonts.title2;
 
-      margin-right: var(--size-spacing-l);
-    }
+    margin-right: var(--size-spacing-l);
   }
 }

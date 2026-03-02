@@ -28,17 +28,15 @@ export const FormContactTemplate = ({
         await trigger('contactOptions')
       },
       collapsed: (
-        <div>
-          <TextInput
-            label="Adresse email"
-            type="email"
-            {...register('email')}
-            disabled={disableForm}
-            description="Format : email@exemple.com"
-            required
-            error={getFieldState('email').error?.message}
-          />
-        </div>
+        <TextInput
+          label="Adresse email"
+          type="email"
+          {...register('email')}
+          disabled={disableForm}
+          description="Format : email@exemple.com"
+          required
+          error={getFieldState('email').error?.message}
+        />
       ),
     },
     {
@@ -49,15 +47,13 @@ export const FormContactTemplate = ({
         await trigger('contactOptions')
       },
       collapsed: (
-        <div>
-          <PhoneNumberInput
-            {...register('phone')}
-            label="Numéro de téléphone"
-            required
-            disabled={disableForm}
-            error={getFieldState('phone').error?.message}
-          />
-        </div>
+        <PhoneNumberInput
+          {...register('phone')}
+          label="Numéro de téléphone"
+          required
+          disabled={disableForm}
+          error={getFieldState('phone').error?.message}
+        />
       ),
     },
     {

@@ -37,12 +37,3 @@
   }
 }
 
-@media (prefers-reduced-motion) {
-  .carousel {
-    &-list {
-      &-ul {
-        scroll-behavior: unset;
-      }
-    }
-  }
-}

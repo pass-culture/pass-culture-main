@@ -6,10 +6,6 @@
   display: flex;
   flex-direction: column;
   margin: rem.torem(56px) 0;
-
-  &-icon {
-    color: var(--color-icon-subtle);
-  }
 }
 
 .no-refunds-title {

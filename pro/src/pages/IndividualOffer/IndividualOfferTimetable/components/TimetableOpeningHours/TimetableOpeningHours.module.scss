@@ -1,12 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.price-quantity {
-  display: flex;
-  gap: var(--size-spacing-l);
-  flex-wrap: wrap;
-}
-
 .title {
   @include fonts.title3;
 

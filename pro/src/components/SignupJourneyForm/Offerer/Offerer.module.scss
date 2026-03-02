@@ -1,5 +1,4 @@
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/_size.scss" as size;
 
 .subtitle {
   @include fonts.title3;
@@ -7,10 +6,4 @@
 
 .input-siret {
   margin-top: var(--size-spacing-xxl);
-}
-
-@media screen and (min-width: size.$tablet) {
-  .offerer-layout {
-    padding-bottom: 0;
-  }
 }

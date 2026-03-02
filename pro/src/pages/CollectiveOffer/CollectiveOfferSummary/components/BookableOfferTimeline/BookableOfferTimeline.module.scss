@@ -42,12 +42,4 @@
   &-accent {
     @include fonts.body-accent-s;
   }
-
-  &-margin {
-    padding-top: rem.torem(10px);
-  }
-
-  &-space {
-    margin-top: var(--size-spacing-xl);
-  }
 }

@@ -1,5 +1,4 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/_a11y.scss" as a11y;
 
 .container {
   display: flex;
@@ -18,10 +17,6 @@
   &-item:last-child {
     margin-bottom: rem.torem(20px);
   }
-}
-
-.visually-hidden {
-  @include a11y.visually-hidden;
 }
 
 .checkbox-label {

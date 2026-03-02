@@ -5,7 +5,6 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullTrashIcon from '@/icons/full-trash.svg'
 
-import styles from './ButtonImageDelete.module.scss'
 import { ModalImageDelete } from './ModalImageDelete'
 
 export interface ButtonImageDeleteProps {
@@ -37,7 +36,6 @@ export const ButtonImageDelete = ({
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
           icon={fullTrashIcon}
-          iconClassName={styles['button-image-delete-icon']}
           label="Supprimer"
         />
       }
