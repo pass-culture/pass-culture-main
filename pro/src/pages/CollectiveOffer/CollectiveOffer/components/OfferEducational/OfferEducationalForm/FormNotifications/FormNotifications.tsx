@@ -21,7 +21,7 @@ export const FormNotifications = ({
   const { getFieldState, setFocus, register } =
     useFormContext<OfferEducationalFormValues>()
   const { fields, remove, append } = useFieldArray({
-    name: 'notificationEmails',
+    name: 'bookingEmails',
   })
 
   return (
@@ -35,10 +35,8 @@ export const FormNotifications = ({
             label={NOTIFICATIONS_EMAIL_LABEL}
             disabled={disableForm}
             required
-            {...register(`notificationEmails.${index}.email`)}
-            error={
-              getFieldState(`notificationEmails.${index}.email`).error?.message
-            }
+            {...register(`bookingEmails.${index}.email`)}
+            error={getFieldState(`bookingEmails.${index}.email`).error?.message}
             description="Format : email@exemple.com"
             extension={
               index > 0 &&
@@ -48,7 +46,7 @@ export const FormNotifications = ({
                   color={ButtonColor.NEUTRAL}
                   onClick={() => {
                     remove(index)
-                    setFocus(`notificationEmails.${index - 1}.email`)
+                    setFocus(`bookingEmails.${index - 1}.email`)
                   }}
                   icon={fullTrashIcon}
                   tooltip="Supprimer l’email"

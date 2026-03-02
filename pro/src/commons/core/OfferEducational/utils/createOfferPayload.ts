@@ -102,9 +102,7 @@ const getCommonOfferPayload = (
   return {
     venueId: Number(offer.venueId),
     name: offer.title,
-    bookingEmails: offer.notificationEmails?.map((email) => email.email) ?? [
-      '',
-    ],
+    bookingEmails: offer.bookingEmails?.map((email) => email.email) ?? [''],
     description: offer.description,
     durationMinutes: offer.duration ? parseDuration(offer.duration) : undefined,
     ...disabilityCompliances(offer.accessibility),
@@ -133,7 +131,7 @@ export const createCollectiveOfferTemplatePayload = (
         ? serializeDates(offer.beginningDate, offer.endingDate, offer.hour)
         : undefined,
     priceDetail: offer.priceDetail,
-    contactEmail: offer.contactOptions?.email ? offer.email : undefined,
+    contactEmail: offer.contactOptions?.email ? offer.contactEmail : undefined,
     contactPhone: offer.contactOptions?.phone ? offer.phone : undefined,
     contactForm:
       offer.contactOptions?.form && offer.contactFormType === 'form'
@@ -153,7 +151,7 @@ export const createCollectiveOfferPayload = (
   return {
     ...getCommonOfferPayload(offer),
     templateId: offerTemplateId,
-    contactEmail: offer.email,
+    contactEmail: offer.contactEmail,
     contactPhone: offer.phone,
   }
 }

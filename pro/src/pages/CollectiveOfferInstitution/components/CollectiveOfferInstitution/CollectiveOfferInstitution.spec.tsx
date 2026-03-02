@@ -172,7 +172,7 @@ describe('CollectiveOfferInstitution', () => {
   it('should disable institution form if institution is not editable', async () => {
     props.initialValues = {
       ...props.initialValues,
-      institution: '12',
+      educationalInstitution: '12',
     }
     renderInstitutionStep({ ...props, offer: { ...offer, allowedActions: [] } })
     expect(
@@ -405,7 +405,7 @@ describe('CollectiveOfferInstitution', () => {
         ...props,
         mode: Mode.EDITION,
         initialValues: {
-          institution: '24',
+          educationalInstitution: '24',
           teacherEmail: 'teacher.teach@example.com',
         },
       })
@@ -507,7 +507,7 @@ describe('CollectiveOfferInstitution', () => {
         ...props,
         mode: Mode.EDITION,
         initialValues: {
-          institution: '24',
+          educationalInstitution: '24',
         },
       })
 
@@ -546,7 +546,7 @@ describe('CollectiveOfferInstitution', () => {
         ...props,
         mode: Mode.EDITION,
         initialValues: {
-          institution: '24',
+          educationalInstitution: '24',
         },
       })
       await userEvent.click(
@@ -567,7 +567,7 @@ describe('CollectiveOfferInstitution', () => {
           {
             status: 400,
             body: {
-              teacherEmail: ["L'enseignant est introuvable"],
+              teacherEmail: [REDACTOR_GENERIC_ERROR_MESSAGE],
             },
           } as ApiResult,
           ''
@@ -577,7 +577,7 @@ describe('CollectiveOfferInstitution', () => {
         ...props,
         mode: Mode.EDITION,
         initialValues: {
-          institution: '24',
+          educationalInstitution: '24',
         },
       })
       await userEvent.click(
@@ -645,7 +645,7 @@ describe('CollectiveOfferInstitution', () => {
   it('should not disable institution input when allowedAction CAN_EDIT_INSTITUTION exist', async () => {
     props.initialValues = {
       ...props.initialValues,
-      institution: '12',
+      educationalInstitution: '12',
     }
     renderInstitutionStep({
       ...props,
@@ -662,7 +662,7 @@ describe('CollectiveOfferInstitution', () => {
   it('should disable institution input when allowedAction CAN_EDIT_INSTITUTION  doesnt exist', async () => {
     props.initialValues = {
       ...props.initialValues,
-      institution: '12',
+      educationalInstitution: '12',
     }
     renderInstitutionStep({
       ...props,

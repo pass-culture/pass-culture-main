@@ -31,11 +31,11 @@ export const FormContactTemplate = ({
         <TextInput
           label="Adresse email"
           type="email"
-          {...register('email')}
+          {...register('contactEmail')}
           disabled={disableForm}
           description="Format : email@exemple.com"
           required
-          error={getFieldState('email').error?.message}
+          error={getFieldState('contactEmail').error?.message}
         />
       ),
     },

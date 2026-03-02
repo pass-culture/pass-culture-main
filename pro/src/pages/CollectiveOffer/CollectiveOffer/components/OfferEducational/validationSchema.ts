@@ -122,7 +122,7 @@ export function getOfferEducationalValidationSchema(): ObjectSchema<OfferEducati
           'Veuillez entrer un numéro de téléphone valide, exemple : 612345678',
         test: isPhoneValid,
       }),
-    email: yup.string().when(['contactOptions', 'isTemplate'], {
+    contactEmail: yup.string().when(['contactOptions', 'isTemplate'], {
       is: (
         contactOptions: OfferEducationalFormValues['contactOptions'],
         isTemplate: boolean
@@ -172,7 +172,7 @@ export function getOfferEducationalValidationSchema(): ObjectSchema<OfferEducati
             test: isOneTrue,
           }),
       }),
-    notificationEmails: yup.array().of(
+    bookingEmails: yup.array().of(
       yup.object().shape({
         email: yup
           .string()
