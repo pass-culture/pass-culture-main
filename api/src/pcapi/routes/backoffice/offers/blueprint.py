@@ -1,4 +1,3 @@
-import dataclasses
 import datetime
 import decimal
 import enum
@@ -60,6 +59,7 @@ from pcapi.routes.backoffice.utils import advanced_search
 from pcapi.routes.backoffice.utils import request as request_utils
 from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.routes.backoffice.utils import search as search_utils
+from pcapi.routes.backoffice.utils.details_actions import DetailsActions
 from pcapi.utils import date as date_utils
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import string as string_utils
@@ -446,37 +446,6 @@ class OfferDetailsActionType(enum.StrEnum):
     TAG_WEIGHT = enum.auto()
     RESYNC = enum.auto()
     EDIT_VENUE = enum.auto()
-
-
-@dataclasses.dataclass
-class OfferDetailsAction:
-    type: OfferDetailsActionType
-    position: int
-    inline: bool
-
-
-class OfferDetailsActions:
-    def __init__(self, threshold: int) -> None:
-        self.current_pos = 0
-        self.actions: list[OfferDetailsAction] = []
-        self.threshold = threshold
-
-    def add_action(self, action_type: OfferDetailsActionType) -> None:
-        self.actions.append(
-            OfferDetailsAction(type=action_type, position=self.current_pos, inline=self.current_pos < self.threshold)
-        )
-        self.current_pos += 1
-
-    def __contains__(self, action_type: OfferDetailsActionType) -> bool:
-        return action_type in [e.type for e in self.actions]
-
-    @property
-    def inline_actions(self) -> list[OfferDetailsActionType]:
-        return [action.type for action in self.actions if action.inline]
-
-    @property
-    def additional_actions(self) -> list[OfferDetailsActionType]:
-        return [action.type for action in self.actions if not action.inline]
 
 
 def _get_offer_ids_algolia(form: forms.GetOfferAlgoliaSearchForm) -> list[int]:
@@ -1513,8 +1482,8 @@ def _batch_pending_offers(offer_ids: list[int]) -> None:
     )
 
 
-def _get_offer_details_actions(offer: offers_models.Offer, threshold: int) -> OfferDetailsActions:
-    offer_details_actions = OfferDetailsActions(threshold)
+def _get_offer_details_actions(offer: offers_models.Offer, threshold: int) -> DetailsActions:
+    offer_details_actions = DetailsActions(OfferDetailsActionType, threshold=threshold)
     if offer.isActive and access_control.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT):
         offer_details_actions.add_action(OfferDetailsActionType.DEACTIVATE)
     if not offer.isActive and access_control.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT):
@@ -1638,7 +1607,6 @@ def get_offer_details(offer_id: int) -> response_utils.BackofficeResponse:
         edit_offer_venue_form=edit_offer_venue_form,
         connect_as=connect_as,
         allowed_actions=allowed_actions,
-        action=OfferDetailsActionType,
         music_titelive_subcategories=subcategories.MUSIC_TITELIVE_SUBCATEGORY_SEARCH_IDS,
     )
 
