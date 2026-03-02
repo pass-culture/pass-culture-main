@@ -39,6 +39,17 @@ test.describe('Cookie banner', () => {
       await expect(page.getByText('Respect de votre vie privée')).toBeVisible()
     })
 
+    // This test DO NOT WORK on localhost domain.
+    test('The cookie banner should remain displayed refreshing the page', async ({
+      page,
+    }) => {
+      await expect(page.getByText('Respect de votre vie privée')).toBeVisible()
+
+      await page.reload()
+
+      await expect(page.getByText('Respect de votre vie privée')).toBeVisible()
+    })
+
     test('I should be able to accept all cookies, and all the cookies are checked in the dialog', async ({
       page,
     }) => {
