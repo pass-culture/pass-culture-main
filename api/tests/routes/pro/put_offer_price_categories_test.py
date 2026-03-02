@@ -163,7 +163,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert db.session.query(offers_models.PriceCategory).count() == 0
-        assert response.json == {"price300": ["Le prix d’une offre ne peut excéder 300 euros."]}
+        assert response.json == {"priceCategories.0.price": ["Le prix d’une offre ne peut excéder 300 euros."]}
 
     def test_update_price_category_not_found(self, client):
         offer = offers_factories.EventOfferFactory(validation=offers_models.OfferValidationStatus.DRAFT)
