@@ -27,5 +27,5 @@ def mark_achievements_as_seen(body: serialization.MarkAchievementsAsSeenRequest)
         raise ApiErrors({"code": "ACHIEVEMENT_NOT_FOUND"}, status_code=404)
 
     return serialization.AchievementsResponse(
-        __root__=[serialization.AchievementResponse.from_orm(achievement) for achievement in current_user.achievements]
+        [serialization.AchievementResponse.model_validate(achievement) for achievement in current_user.achievements]
     )
