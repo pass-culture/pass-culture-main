@@ -282,6 +282,9 @@ class PCOptDateTimeField(PCDateTimeField):
 class PCDateField(wtforms.DateField):
     widget = partial(widget, template="components/forms/date_field.html")
     input_type = "date"
+    validators = [
+        validators.DataRequired("Information obligatoire"),
+    ]
 
     def gettext(self, string: str) -> str:
         match string:

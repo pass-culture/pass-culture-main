@@ -43,6 +43,62 @@ dev_blueprint = backoffice_blueprint.child_backoffice_blueprint(
 )
 
 
+def get_token_expiration_timestamp(token: token_utils.Token) -> int:
+    expiration_date = (
+        token.get_expiration_date_from_token()
+        or date_utils.get_naive_utc_now() + users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME
+    )
+    return int(expiration_date.timestamp())
+
+
+def create_ubble_fraud_check(user: users_models.User, form: forms.UbbleConfigurationForm) -> None:
+    final_response_code = form.final_response_code.data
+    intermediate_response_code = form.intermediate_response_code.data
+    if intermediate_response_code:
+        external_applicant_id = f"eaplt_{intermediate_response_code}A{final_response_code}".ljust(32, "0")
+    else:
+        external_applicant_id = f"eaplt_{final_response_code}".ljust(32, "0")
+    ubble_fraud_check = subscription_models.BeneficiaryFraudCheck(
+        user=user,
+        eligibilityType=user.eligibility,
+        type=subscription_models.FraudCheckType.UBBLE,
+        thirdPartyId="",
+        status=subscription_models.FraudCheckStatus.STARTED,
+        resultContent=ubble_schemas.UbbleContent(
+            birth_date=form.birth_date.data,
+            external_applicant_id=external_applicant_id,
+            id_document_number=form.id_document_number.data,
+        ).dict(exclude_none=True),
+    )
+    db.session.add(ubble_fraud_check)
+
+
+def create_qf_fraud_check(user: users_models.User, form: forms.QuotientFamilialConfigurationForm) -> None:
+    quotient_familial_config_fraud_check = subscription_models.BeneficiaryFraudCheck(
+        user=user,
+        eligibilityType=user.eligibility,
+        type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+        thirdPartyId=f"qf-bonus-credit-config-{user.id}",
+        status=subscription_models.FraudCheckStatus.MOCK_CONFIG,
+        resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
+            http_status_code=form.https_status_code.data,
+            quotient_familial=subscription_factories.QuotientFamilialContentFactory(
+                value=form.quotient_familial_value.data
+            ),
+            children=[
+                bonus_schemas.QuotientFamilialChild(
+                    last_name=form.last_name.data,
+                    common_name=form.common_name.data,
+                    first_names=[first_name.strip() for first_name in form.first_names.data.split(",")],
+                    birth_date=form.birth_date.data,
+                    gender=users_models.GenderEnum(form.gender.data),
+                )
+            ],
+        ).model_dump(),
+    )
+    db.session.add(quotient_familial_config_fraud_check)
+
+
 @dev_blueprint.route("/components", methods=["GET"])
 @access_control.custom_login_required(redirect_to="backoffice_web.home")
 def components() -> response_utils.BackofficeResponse:
@@ -181,17 +237,12 @@ def generate_user() -> response_utils.BackofficeResponse:
     token = token_utils.Token.create(
         token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION, users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME, user.id
     )
-    expiration_date = (
-        token.get_expiration_date_from_token()
-        or date_utils.get_naive_utc_now() + users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME
-    )
-    expiration_timestamp = int(expiration_date.timestamp())
     return redirect(
         url_for(
             "backoffice_web.dev.get_generated_user",
             userId=user.id,
             accessToken=token.encoded_token,
-            expirationTimestamp=expiration_timestamp,
+            expirationTimestamp=get_token_expiration_timestamp(token),
         ),
         code=303,
     )
@@ -269,26 +320,7 @@ def configure_ubble_v2_response(user_id: int) -> response_utils.BackofficeRespon
 
     # Ubble response codes can be tested by inserting the ones we want in the external applicant id of the Ubble
     # applicant. See https://docs.ubble.ai/#section/Testing/Declined-verification-on-retry-after-checks-inconclusive
-    final_response_code = form.final_response_code.data
-    intermediate_response_code = form.intermediate_response_code.data
-    if intermediate_response_code:
-        external_applicant_id = f"eaplt_{intermediate_response_code}A{final_response_code}".ljust(32, "0")
-    else:
-        external_applicant_id = f"eaplt_{final_response_code}".ljust(32, "0")
-
-    ubble_fraud_check = subscription_models.BeneficiaryFraudCheck(
-        user=user,
-        eligibilityType=user.eligibility,
-        type=subscription_models.FraudCheckType.UBBLE,
-        thirdPartyId="",
-        status=subscription_models.FraudCheckStatus.STARTED,
-        resultContent=ubble_schemas.UbbleContent(
-            birth_date=form.birth_date.data,
-            external_applicant_id=external_applicant_id,
-            id_document_number=form.id_document_number.data,
-        ).dict(exclude_none=True),
-    )
-    db.session.add(ubble_fraud_check)
+    create_ubble_fraud_check(user, form)
     db.session.flush()
 
     flash("La réponse d'Ubble v2 a été configurée pour cet utilisateur", "success")
@@ -297,11 +329,7 @@ def configure_ubble_v2_response(user_id: int) -> response_utils.BackofficeRespon
     params: dict[str, typing.Any] = {}
     if token:
         params["accessToken"] = token.encoded_token
-        expiration_date = (
-            token.get_expiration_date_from_token()
-            or date_utils.get_naive_utc_now() + users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME
-        )
-        params["expirationTimestamp"] = str(int(expiration_date.timestamp()))
+        params["expirationTimestamp"] = str(get_token_expiration_timestamp(token))
         params["email"] = user.email
     return redirect(url_for("backoffice_web.dev.get_generated_user", userId=user.id, **params), code=303)
 
@@ -321,29 +349,7 @@ def configure_api_quotient_familial_response(user_id: int) -> response_utils.Bac
         flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer or url_for("backoffice_web.dev.get_generated_user"), code=303)
 
-    quotient_familial_config_fraud_check = subscription_models.BeneficiaryFraudCheck(
-        user=user,
-        eligibilityType=user.eligibility,
-        type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
-        thirdPartyId=f"qf-bonus-credit-config-{user.id}",
-        status=subscription_models.FraudCheckStatus.MOCK_CONFIG,
-        resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
-            http_status_code=form.https_status_code.data,
-            quotient_familial=subscription_factories.QuotientFamilialContentFactory(
-                value=form.quotient_familial_value.data
-            ),
-            children=[
-                bonus_schemas.QuotientFamilialChild(
-                    last_name=form.last_name.data,
-                    common_name=form.common_name.data,
-                    first_names=[first_name.strip() for first_name in form.first_names.data.split(",")],
-                    birth_date=form.birth_date.data,
-                    gender=users_models.GenderEnum(form.gender.data),
-                )
-            ],
-        ).model_dump(),
-    )
-    db.session.add(quotient_familial_config_fraud_check)
+    create_qf_fraud_check(user, form)
     db.session.flush()
 
     flash("La réponse de l'API Particulier a été configurée pour cet utilisateur", "success")
@@ -352,10 +358,6 @@ def configure_api_quotient_familial_response(user_id: int) -> response_utils.Bac
     params: dict[str, typing.Any] = {}
     if token:
         params["accessToken"] = token.encoded_token
-        expiration_date = (
-            token.get_expiration_date_from_token()
-            or date_utils.get_naive_utc_now() + users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME
-        )
-        params["expirationTimestamp"] = str(int(expiration_date.timestamp()))
+        params["expirationTimestamp"] = str(get_token_expiration_timestamp(token))
         params["email"] = user.email
     return redirect(url_for("backoffice_web.dev.get_generated_user", userId=user.id, **params), code=303)
