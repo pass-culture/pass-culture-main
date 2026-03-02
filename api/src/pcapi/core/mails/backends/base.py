@@ -1,8 +1,7 @@
 from typing import Iterable
 
-from pcapi.tasks.serialization import sendinblue_tasks
-
 from .. import models
+from .. import serialization
 
 
 class BaseBackend:
@@ -14,7 +13,7 @@ class BaseBackend:
     ) -> None:
         raise NotImplementedError()
 
-    def create_contact(self, payload: sendinblue_tasks.UpdateSendinblueContactRequest) -> None:
+    def create_contact(self, payload: serialization.UpdateSendinblueContactRequest) -> None:
         raise NotImplementedError()
 
     def delete_contact(self, contact_email: str) -> None:

@@ -16,13 +16,11 @@ from brevo_python.rest import ApiException as SendinblueApiException
 
 import pcapi.core.users.models as users_models
 from pcapi import settings
-from pcapi.celery_tasks.sendinblue import update_contact_attributes_task_celery
 from pcapi.core import mails as mails_api
 from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.external.attributes import models as attributes_models
-from pcapi.models.feature import FeatureToggle
-from pcapi.tasks.sendinblue_tasks import update_contact_attributes_task_cloud_tasks
-from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRequest
+from pcapi.core.mails import serialization
+from pcapi.core.mails import tasks
 
 
 logger = logging.getLogger(__name__)
@@ -117,7 +115,7 @@ def update_contact_email(user: users_models.User, old_email: str, new_email: str
     else:
         contact_list_ids = [settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID]
 
-    contact_request = UpdateSendinblueContactRequest(
+    contact_request = serialization.UpdateSendinblueContactRequest(
         email=old_email,
         use_pro_subaccount=user.has_any_pro_role,
         attributes={"EMAIL": new_email},
@@ -126,15 +124,9 @@ def update_contact_email(user: users_models.User, old_email: str, new_email: str
     )
 
     if asynchronous:
-        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS.is_active():
-            update_contact_attributes_task_celery.delay(contact_request.dict())
-        else:
-            update_contact_attributes_task_cloud_tasks.delay(contact_request)
+        tasks.update_contact_attributes_task.delay(contact_request.model_dump())
     else:
-        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS.is_active():
-            update_contact_attributes_task_celery(contact_request.dict())
-        else:
-            update_contact_attributes_task_cloud_tasks(contact_request)
+        tasks.update_contact_attributes_task(contact_request.model_dump())
 
 
 def update_contact_attributes(
@@ -153,7 +145,7 @@ def update_contact_attributes(
             formatted_attributes.update(format_cultural_survey_answers(cultural_survey_answers))
         contact_list_ids = [settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID]
 
-    contact_request = UpdateSendinblueContactRequest(
+    contact_request = serialization.UpdateSendinblueContactRequest(
         email=user_email,
         use_pro_subaccount=attributes.is_pro,
         attributes=formatted_attributes,
@@ -162,10 +154,7 @@ def update_contact_attributes(
     )
 
     if asynchronous:
-        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS.is_active():
-            update_contact_attributes_task_celery.delay(contact_request.dict())
-        else:
-            update_contact_attributes_task_cloud_tasks.delay(contact_request)
+        tasks.update_contact_attributes_task.delay(contact_request.model_dump())
     else:
         make_update_request(contact_request)
 
@@ -321,7 +310,7 @@ def format_cultural_survey_answers(cultural_survey_answers: dict[str, list[str]]
     }
 
 
-def make_update_request(payload: UpdateSendinblueContactRequest) -> None:
+def make_update_request(payload: serialization.UpdateSendinblueContactRequest) -> None:
     mails_api.create_contact(payload)
 
 

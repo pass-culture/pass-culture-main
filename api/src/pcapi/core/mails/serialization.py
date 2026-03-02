@@ -1,9 +1,8 @@
-import pydantic.v1
+from pydantic import BaseModel as BaseModelV2
+from pydantic import Field
 
-from pcapi.routes.serialization import BaseModel
 
-
-class UpdateSendinblueContactRequest(BaseModel):
+class UpdateSendinblueContactRequest(BaseModelV2):
     email: str
     use_pro_subaccount: bool
     attributes: dict
@@ -11,9 +10,9 @@ class UpdateSendinblueContactRequest(BaseModel):
     emailBlacklisted: bool
 
 
-class SendTransactionalEmailRequest(BaseModel):
+class SendTransactionalEmailRequest(BaseModelV2):
     recipients: list[str]
-    bcc_recipients: list[str] = pydantic.v1.Field(default_factory=list)
+    bcc_recipients: list[str] = Field(default_factory=list)
     params: dict | None = None
     template_id: int | None = None
     tags: list[str] | None = None

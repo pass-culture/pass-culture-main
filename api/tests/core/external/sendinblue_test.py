@@ -18,7 +18,7 @@ from pcapi.core.external.sendinblue import format_pro_attributes
 from pcapi.core.external.sendinblue import format_user_attributes
 from pcapi.core.external.sendinblue import import_contacts_in_sendinblue
 from pcapi.core.external.sendinblue import make_update_request
-from pcapi.tasks.serialization import sendinblue_tasks
+from pcapi.core.mails.serialization import UpdateSendinblueContactRequest
 from pcapi.utils import date as date_utils
 
 from . import common_pro_attributes
@@ -391,7 +391,7 @@ class BulkImportUsersDataTest:
         # This test helps to check data received in Sendinblue dashboard manually.
         # Note that SENDINBLUE_API_KEY must be filled in settings.
         make_update_request(
-            sendinblue_tasks.UpdateSendinblueContactRequest(
+            UpdateSendinblueContactRequest(
                 email=f"test.pro.{date_utils.get_naive_utc_now().strftime('%y%m%d.%H%M')}@example.net",
                 use_pro_subaccount=True,
                 attributes=format_user_attributes(common_pro_attributes),
@@ -405,7 +405,7 @@ class BulkImportUsersDataTest:
         attributes = format_user_attributes(common_pro_attributes)
 
         make_update_request(
-            sendinblue_tasks.UpdateSendinblueContactRequest(
+            UpdateSendinblueContactRequest(
                 email=email,
                 use_pro_subaccount=True,
                 attributes=attributes,

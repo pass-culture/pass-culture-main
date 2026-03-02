@@ -5,15 +5,16 @@ import brevo_python
 from brevo_python.rest import ApiException
 
 from pcapi import settings
-from pcapi.tasks.serialization.sendinblue_tasks import SendTransactionalEmailRequest
 from pcapi.utils import email as email_utils
 from pcapi.utils import requests
+
+from .. import serialization
 
 
 logger = logging.getLogger(__name__)
 
 
-def send_transactional_email(payload: SendTransactionalEmailRequest) -> None:
+def send_transactional_email(payload: serialization.SendTransactionalEmailRequest) -> None:
     to = [{"email": email} for email in payload.recipients]
     bcc = [{"email": email} for email in payload.bcc_recipients] if payload.bcc_recipients else None
     sender = payload.sender
