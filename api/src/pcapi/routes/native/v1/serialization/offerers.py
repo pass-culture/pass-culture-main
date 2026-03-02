@@ -5,7 +5,6 @@ import pydantic.v1 as pydantic_v1
 
 from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.core.offerers import schemas as offerers_schemas
-from pcapi.core.offers import models as offers_models
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.routes.serialization import BaseModel
 from pcapi.utils import phone_number as phone_number_utils
@@ -114,12 +113,3 @@ class VenueResponse(BaseModel):
     class Config:
         orm_mode = True
         getter_dict = VenueResponseGetterDict
-
-
-class OffererHeadLineOfferResponseModel(BaseModel):
-    id: int
-    name: str
-    image: offers_models.OfferImage | None
-
-    class Config:
-        orm_mode = True

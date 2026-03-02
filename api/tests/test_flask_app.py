@@ -51,7 +51,6 @@ KNOWN_PUBLIC_ENDPOINTS = [
     "native.native_v1.get_categories",  # → response.status_code = 200
     "native.native_v1.get_movie_screenings_by_venue",  # → response.status_code = 200
     "native.native_v1.get_offer",  # → response.status_code = 404
-    "native.native_v1.get_offerer_headline_offer",  # → response.status_code = 404
     "native.native_v1.get_settings",  # → response.status_code = 200
     "native.native_v1.get_subcategories_v2",  # → response.status_code = 200
     "native.native_v1.get_venue",  # → response.status_code = 404
