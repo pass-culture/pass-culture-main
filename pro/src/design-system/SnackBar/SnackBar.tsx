@@ -4,7 +4,6 @@ import fullCloseIcon from 'icons/full-close.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SnackBar.module.scss'
@@ -85,8 +84,6 @@ export const SnackBar = ({
   const [isClosing, setIsClosing] = useState(false)
   const hasClosedRef = useRef(false)
   const onCloseRef = useRef(onClose)
-  const isSmallScreen = useMediaQuery('(max-width: 38.125rem)')
-  const isMobile = forceMobile || isSmallScreen
 
   // Keep onClose ref up to date without triggering re-renders
   useEffect(() => {
@@ -133,7 +130,7 @@ export const SnackBar = ({
         styles['container'],
         styles[variant],
         isClosing ? styles['hide'] : styles['show'],
-        isMobile ? styles['mobile'] : ''
+        forceMobile && styles['mobile']
       )}
       style={
         {
