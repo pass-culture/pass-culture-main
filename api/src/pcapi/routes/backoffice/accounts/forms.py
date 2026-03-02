@@ -59,7 +59,7 @@ class EditAccountForm(utils.PCForm):
     first_name = fields.PCOptStringField("Prénom")
     last_name = fields.PCOptStringField("Nom")
     email = fields.PCEmailField("Email")
-    birth_date = fields.PCDateField("Date de naissance")
+    birth_date = fields.PCOptDateField("Date de naissance")
     phone_number = fields.PCOptStringField("Numéro de téléphone")
     id_piece_number = fields.PCOptStringField("N° pièce d'identité")
     postal_address_autocomplete = fields.PcPostalAddressAutocomplete(

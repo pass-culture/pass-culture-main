@@ -319,6 +319,7 @@ CAN_RUN_SANDBOX = bool(int(os.environ.get("CAN_RUN_SANDBOX", 0)))
 TEST_DEFAULT_PASSWORD = secrets_utils.get("TEST_DEFAULT_PASSWORD", "user@AZERTY123")
 ENABLE_LOCAL_DEV_MODE_FOR_STORAGE = bool(int(os.environ.get("ENABLE_LOCAL_DEV_MODE_FOR_STORAGE", 0)))
 ENABLE_UBBLE_E2E_TESTING = bool(int(os.environ.get("ENABLE_UBBLE_E2E_TESTING", 0)))
+E2E_API_KEY = secrets_utils.get("E2E_API_KEY", "")
 
 # Test users on staging
 IMPORT_USERS_GOOGLE_DOCUMENT_ID = secrets_utils.get("IMPORT_USERS_GOOGLE_DOCUMENT_ID", "")
