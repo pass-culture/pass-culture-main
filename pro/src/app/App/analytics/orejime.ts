@@ -49,7 +49,7 @@ function initOrejimeConsent(
     }
 
     try {
-      if (!orejime || !document.cookie.includes('pc-orejime')) {
+      if (!orejime || !document.cookie.includes('pc-pro-orejime')) {
         orejime = globalThis.loadOrejime(orejimeConfig)
         addListener(setConsentedToFirebase, setConsentedToBeamer)
         setConsentedToFirebase(

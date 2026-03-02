@@ -14,7 +14,7 @@ async function doLogin(
   if (setCookieConsent) {
     await page.context().addCookies([
       {
-        name: 'pc-orejime',
+        name: 'pc-pro-orejime',
         value: '{"firebase":false,"hotjar":false,"beamer":false,"sentry":true}',
         domain: 'localhost',
         path: '/',
