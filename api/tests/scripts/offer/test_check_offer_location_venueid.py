@@ -14,7 +14,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 def test_check_incorrect_offer_location_venueid():
     venue1 = VenueFactory()
-    venue2 = VenueFactory()
+    venue2 = VenueFactory(managingOfferer=venue1.managingOfferer)
     offer1 = OfferFactory(
         venue=venue1,
         offererAddress=OfferLocationFactory(
@@ -42,4 +42,19 @@ def test_check_incorrect_offer_location_venueid():
     assert offer3.offererAddress != offer1.venueId
     assert offer4.offererAddress.venueId == offer2.venueId
     assert offer4.offererAddress != offer1.venueId
+    assert offer1.offererAddress.venueId == offer1.venueId
+
+
+def test_does_not_check_when_only_one_venue():
+    venue1 = VenueFactory()
+    offer1 = OfferFactory(
+        venue=venue1,
+        offererAddress=OfferLocationFactory(
+            venue=venue1, offerer=venue1.managingOfferer, type=LocationType.OFFER_LOCATION
+        ),
+    )
+    from pcapi.scripts.check_offer_location_venueid.main import main
+
+    main(is_dry=False)
+
     assert offer1.offererAddress.venueId == offer1.venueId
