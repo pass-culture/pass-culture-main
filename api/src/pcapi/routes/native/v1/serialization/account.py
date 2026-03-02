@@ -225,7 +225,7 @@ class UserProfileGetterDict(GetterDict):
 
 
 class UserProfileResponse(ConfiguredBaseModel):
-    achievements: list[achievements_serialization.AchievementResponse]
+    achievements: list[achievements_serialization.AchievementResponseLegacy]
     activity_id: profile_options.ActivityIdEnum | None
     address: str | None = pydantic_v1.Field(None, alias="street")
     birth_date: datetime.date | None

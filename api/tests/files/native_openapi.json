@@ -180,6 +180,43 @@
                 "title": "AchievementEnum"
             },
             "AchievementResponse": {
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "name": {
+                        "$ref": "#/components/schemas/AchievementEnum"
+                    },
+                    "seenDate": {
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Seendate"
+                    },
+                    "unlockedDate": {
+                        "format": "date-time",
+                        "title": "Unlockeddate",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "seenDate",
+                    "unlockedDate"
+                ],
+                "title": "AchievementResponse",
+                "type": "object"
+            },
+            "AchievementResponseLegacy": {
                 "properties": {
                     "id": {
                         "title": "Id",
@@ -205,7 +242,7 @@
                     "name",
                     "unlockedDate"
                 ],
-                "title": "AchievementResponse",
+                "title": "AchievementResponseLegacy",
                 "type": "object"
             },
             "AchievementsResponse": {
@@ -3128,6 +3165,7 @@
                 "title": "MaintenancePageType"
             },
             "MarkAchievementsAsSeenRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "achievementIds": {
                         "items": {
@@ -6945,7 +6983,7 @@
                 "properties": {
                     "achievements": {
                         "items": {
-                            "$ref": "#/components/schemas/AchievementResponse"
+                            "$ref": "#/components/schemas/AchievementResponseLegacy"
                         },
                         "title": "Achievements",
                         "type": "array"
