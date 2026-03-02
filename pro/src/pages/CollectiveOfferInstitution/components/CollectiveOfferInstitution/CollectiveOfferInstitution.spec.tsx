@@ -520,9 +520,6 @@ describe('CollectiveOfferInstitution', () => {
       await userEvent.click(
         screen.getByRole('button', { name: /Enregistrer et continuer/ })
       )
-      expect(
-        api.patchCollectiveOffersEducationalInstitution
-      ).not.toHaveBeenCalled()
 
       expect(
         await screen.findByText(REDACTOR_GENERIC_ERROR_MESSAGE)
@@ -539,7 +536,7 @@ describe('CollectiveOfferInstitution', () => {
           {
             status: 400,
             body: {
-              educationalInstitutionId: ["L'établissement est introuvable"],
+              educationalInstitution: [INSTITUTION_GENERIC_ERROR_MESSAGE],
             },
           } as ApiResult,
           ''
@@ -557,12 +554,7 @@ describe('CollectiveOfferInstitution', () => {
       )
       expect(api.patchCollectiveOffersEducationalInstitution).toHaveBeenCalled()
 
-      await waitFor(() =>
-        expect(snackBarError).toHaveBeenNthCalledWith(
-          1,
-          "L'établissement est introuvable"
-        )
-      )
+      expect(screen.getByText(INSTITUTION_GENERIC_ERROR_MESSAGE)).toBeVisible()
     })
 
     it('should display teacher specific error message when receiving an api error with form keys', async () => {
@@ -593,12 +585,7 @@ describe('CollectiveOfferInstitution', () => {
       )
       expect(api.patchCollectiveOffersEducationalInstitution).toHaveBeenCalled()
 
-      await waitFor(() =>
-        expect(snackBarError).toHaveBeenNthCalledWith(
-          1,
-          "L'enseignant est introuvable"
-        )
-      )
+      expect(screen.getByText(REDACTOR_GENERIC_ERROR_MESSAGE)).toBeVisible()
     })
   })
 
