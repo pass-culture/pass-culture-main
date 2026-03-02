@@ -9,10 +9,10 @@ import pcapi.core.users.constants as users_constants
 import pcapi.core.users.factories as users_factories
 from pcapi.core import token as token_utils
 from pcapi.core.mails import models
+from pcapi.core.mails import serialization
 from pcapi.core.mails.transactional.send_transactional_email import send_transactional_email
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.email_address_change_confirmation import send_email_confirmation_email
-from pcapi.tasks.serialization.sendinblue_tasks import SendTransactionalEmailRequest
 from pcapi.utils import requests
 
 
@@ -28,7 +28,7 @@ class TransactionalEmailWithTemplateTest:
             )
         )
 
-        payload = SendTransactionalEmailRequest(
+        payload = serialization.SendTransactionalEmailRequest(
             recipients=[], params={}, template_id=1, tags=[], sender={}, reply_to={}
         )
 
@@ -54,7 +54,7 @@ class TransactionalEmailWithTemplateTest:
             )
         )
 
-        payload = SendTransactionalEmailRequest(
+        payload = serialization.SendTransactionalEmailRequest(
             recipients=[], params={}, template_id=1, tags=[], sender={}, reply_to={}
         )
 
@@ -80,7 +80,7 @@ class TransactionalEmailWithTemplateTest:
             )
         )
 
-        payload = SendTransactionalEmailRequest(
+        payload = serialization.SendTransactionalEmailRequest(
             sender={"email": "support@example.com", "name": "pass Culture"},
             recipients=["invalid@example", "other@example.com"],
             bcc_recipients=["bcc@example.com"],
@@ -109,7 +109,7 @@ class TransactionalEmailWithTemplateTest:
         side_effect=ApiException(status=524, reason="Bad Request"),
     )
     def test_external_api_unavailable(self, mock, caplog):
-        payload = SendTransactionalEmailRequest(
+        payload = serialization.SendTransactionalEmailRequest(
             recipients=[], params={}, template_id=1, tags=[], sender={}, reply_to={}
         )
 
@@ -123,7 +123,7 @@ class TransactionalEmailWithTemplateTest:
 
     @patch("brevo_python.api.TransactionalEmailsApi.send_transac_email")
     def test_send_transactional_email_with_template_id_success(self, mock_send_transac_email):
-        payload = SendTransactionalEmailRequest(
+        payload = serialization.SendTransactionalEmailRequest(
             sender={"email": "support@example.com", "name": "pass Culture"},
             recipients=["avery.kelly@woobmail.com"],
             template_id=TransactionalEmail.EMAIL_CONFIRMATION.value.id,
@@ -150,7 +150,7 @@ class TransactionalEmailWithTemplateTest:
 
     @patch("brevo_python.api.TransactionalEmailsApi.send_transac_email")
     def test_send_transactional_email_with_reply_to_success(self, mock_send_transac_email):
-        payload = SendTransactionalEmailRequest(
+        payload = serialization.SendTransactionalEmailRequest(
             sender={"email": "support@example.com", "name": "pass Culture"},
             recipients=["avery.kelly@woobmail.com"],
             template_id=TransactionalEmail.EMAIL_CONFIRMATION.value.id,
@@ -174,7 +174,7 @@ class TransactionalEmailWithTemplateTest:
 
     @patch("brevo_python.api.TransactionalEmailsApi.send_transac_email")
     def test_send_transactional_email_with_template_id_success_empty_params(self, mock_send_transac_email):
-        payload = SendTransactionalEmailRequest(
+        payload = serialization.SendTransactionalEmailRequest(
             sender={"email": "support@example.com", "name": "pass Culture"},
             recipients=["avery.kelly@woobmail.com"],
             template_id=TransactionalEmail.EMAIL_CONFIRMATION.value.id,
@@ -199,21 +199,8 @@ class TransactionalEmailWithTemplateTest:
         assert mock_send_transac_email.call_args[0][0].headers == {"X-List-Unsub": "disabled"}
 
     @pytest.mark.settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
-    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_primary_task_cloud_tasks.delay")
+    @patch("pcapi.core.mails.tasks.send_transactional_email_primary_task.delay")
     def test_to_dev_send_email_confirmation_email(self, mock_send_transactional_email_task, db_session):
-        user = users_factories.UserFactory(email="john.stiles@gmail.com")
-        token = token_utils.Token.create(
-            type_=token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION,
-            ttl=users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
-            user_id=user.id,
-        )
-        send_email_confirmation_email(user.email, token=token)
-        mock_send_transactional_email_task.assert_called_once()
-
-    @pytest.mark.settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
-    @pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_MAILS=True)
-    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_primary_task_celery.delay")
-    def test_to_dev_send_email_confirmation_email_through_celery(self, mock_send_transactional_email_task, db_session):
         user = users_factories.UserFactory(email="john.celery@gmail.com")
         token = token_utils.Token.create(
             type_=token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION,
@@ -234,7 +221,7 @@ class TransactionalEmailWithoutTemplateTest:
 
     @patch("brevo_python.api.TransactionalEmailsApi.send_transac_email")
     def test_send_transactional_email_success(self, mock_send_transac_email):
-        payload = SendTransactionalEmailRequest(
+        payload = serialization.SendTransactionalEmailRequest(
             sender=dataclasses.asdict(self.data.sender.value),
             recipients=["avery.kelly@woobmail.com"],
             subject="Bienvenue au pass Culture",
@@ -260,7 +247,7 @@ class TransactionalEmailWithoutTemplateTest:
 
     @patch("brevo_python.api.TransactionalEmailsApi.send_transac_email")
     def test_send_transactional_email_success_empty_attachement(self, mock_send_transac_email):
-        payload = SendTransactionalEmailRequest(
+        payload = serialization.SendTransactionalEmailRequest(
             sender=dataclasses.asdict(self.data.sender.value),
             recipients=["avery.kelly@woobmail.com"],
             subject="Bienvenue au pass Culture",

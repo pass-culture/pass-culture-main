@@ -3,11 +3,11 @@ from functools import partial
 
 from pcapi import settings
 from pcapi.models.feature import FeatureToggle
-from pcapi.tasks.serialization import sendinblue_tasks
 from pcapi.utils.module_loading import import_string
 from pcapi.utils.transaction_manager import on_commit
 
 from . import models
+from . import serialization
 
 
 if typing.TYPE_CHECKING:
@@ -42,7 +42,7 @@ def send(
     )
 
 
-def create_contact(payload: sendinblue_tasks.UpdateSendinblueContactRequest) -> None:
+def create_contact(payload: serialization.UpdateSendinblueContactRequest) -> None:
     backend = _get_backend()
     backend(payload.use_pro_subaccount).create_contact(payload)
 

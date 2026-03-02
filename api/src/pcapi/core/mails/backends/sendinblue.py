@@ -6,19 +6,15 @@ from typing import Iterable
 import brevo_python
 from brevo_python.rest import ApiException as SendinblueApiException
 
-import pcapi.tasks.serialization.sendinblue_tasks as serializers
 from pcapi import settings
-from pcapi.celery_tasks.sendinblue import send_transactional_email_primary_task_celery
-from pcapi.celery_tasks.sendinblue import send_transactional_email_secondary_task_celery
+from pcapi.core.mails import tasks
 from pcapi.core.users.repository import find_user_by_email
-from pcapi.models.feature import FeatureToggle
-from pcapi.tasks.sendinblue_tasks import send_transactional_email_primary_task_cloud_tasks
-from pcapi.tasks.sendinblue_tasks import send_transactional_email_secondary_task_cloud_tasks
 from pcapi.utils import email as email_utils
 from pcapi.utils.email import is_email_whitelisted
 from pcapi.utils.requests import ExternalAPIException
 
 from .. import models
+from .. import serialization
 from .base import BaseBackend
 
 
@@ -44,7 +40,7 @@ class SendinblueBackend(BaseBackend):
         bcc_recipients: Iterable[str] = (),
     ) -> None:
         if isinstance(data, models.TransactionalEmailData):
-            payload = serializers.SendTransactionalEmailRequest(
+            payload = serialization.SendTransactionalEmailRequest(
                 recipients=list(recipients),
                 bcc_recipients=list(bcc_recipients),
                 template_id=data.template.id,
@@ -59,18 +55,12 @@ class SendinblueBackend(BaseBackend):
                 use_pro_subaccount=data.template.use_pro_subaccount,
             )
             if data.template.use_priority_queue:
-                if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS.is_active():
-                    send_transactional_email_primary_task_celery.delay(payload.dict())
-                else:
-                    send_transactional_email_primary_task_cloud_tasks.delay(payload)
+                tasks.send_transactional_email_primary_task.delay(payload.model_dump())
             else:
-                if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS.is_active():
-                    send_transactional_email_secondary_task_celery.delay(payload.dict())
-                else:
-                    send_transactional_email_secondary_task_cloud_tasks.delay(payload)
+                tasks.send_transactional_email_secondary_task.delay(payload.model_dump())
 
         elif isinstance(data, models.TransactionalWithoutTemplateEmailData):
-            payload = serializers.SendTransactionalEmailRequest(
+            payload = serialization.SendTransactionalEmailRequest(
                 recipients=list(recipients),
                 bcc_recipients=list(bcc_recipients),
                 sender=asdict(data.sender.value),
@@ -82,15 +72,12 @@ class SendinblueBackend(BaseBackend):
                 params=None,
                 tags=None,
             )
-            if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS.is_active():
-                send_transactional_email_secondary_task_celery.delay(payload.dict())
-            else:
-                send_transactional_email_secondary_task_cloud_tasks.delay(payload)
+            tasks.send_transactional_email_secondary_task.delay(payload.model_dump())
 
         else:
             raise ValueError(f"Tried sending an email via sendinblue, but received incorrectly formatted data: {data}")
 
-    def create_contact(self, payload: serializers.UpdateSendinblueContactRequest) -> None:
+    def create_contact(self, payload: serialization.UpdateSendinblueContactRequest) -> None:
         """
         Creates or updates a contact in Brevo (previously Sendinblue).
         """
@@ -175,7 +162,7 @@ class SendinblueBackend(BaseBackend):
             raise ExternalAPIException(is_retryable=True) from exception
 
     def _handle_sendinblue_exception(
-        self, exception: SendinblueApiException, payload: serializers.UpdateSendinblueContactRequest
+        self, exception: SendinblueApiException, payload: serialization.UpdateSendinblueContactRequest
     ) -> None:
         if exception.status >= 500:
             raise ExternalAPIException(is_retryable=True) from exception

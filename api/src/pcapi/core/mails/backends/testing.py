@@ -2,9 +2,9 @@ from dataclasses import asdict
 from typing import Iterable
 
 from pcapi.core.users import testing as users_testing
-from pcapi.tasks.serialization import sendinblue_tasks
 
 from .. import models
+from .. import serialization
 from .. import testing
 from .base import BaseBackend
 
@@ -31,7 +31,7 @@ class TestingBackend(BaseBackend):
         sent_data["use_pro_subaccount"] = self.use_pro_subaccount
         testing.outbox.append(sent_data)
 
-    def create_contact(self, payload: sendinblue_tasks.UpdateSendinblueContactRequest) -> None:
+    def create_contact(self, payload: serialization.UpdateSendinblueContactRequest) -> None:
         users_testing.sendinblue_requests.append(
             {
                 "email": payload.email,

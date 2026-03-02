@@ -703,6 +703,7 @@ class IdentificationSessionTest:
                 status=ubble_schemas.UbbleIdentificationStatus.PENDING,
             ),
         )
+        fraud_check_id = fraud_check.id
         with requests_mock.Mocker() as requests_mocker:
             # There is a state conflict between Ubble's user and ours
             requests_mocker.post(
@@ -727,7 +728,7 @@ class IdentificationSessionTest:
 
         fraud_check = db.session.scalar(
             sa.select(subscription_models.BeneficiaryFraudCheck).where(
-                subscription_models.BeneficiaryFraudCheck.id == fraud_check.id
+                subscription_models.BeneficiaryFraudCheck.id == fraud_check_id
             )
         )
         assert fraud_check.status == subscription_models.FraudCheckStatus.OK, fraud_check.reasonCodes

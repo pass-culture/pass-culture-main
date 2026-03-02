@@ -133,9 +133,6 @@ class FeatureToggle(enum.Enum):
     WIP_ASYNCHRONOUS_CELERY_EXTERNAL_BOOKING = (
         "Activer le backend de tâches asynchrones Celery pour l'envoi de notification aux providers"
     )
-    WIP_ASYNCHRONOUS_CELERY_MAILS = (
-        "Activer le backend de tâches asynchrones Celery pour les tâches liées à l'envoi de mails"
-    )
     WIP_ASYNCHRONOUS_CELERY_MATCH_ACCESLIBRE = (
         "Activer le backend de tâches asynchrones Celery pour les tâches liées à la mise à jour des infos d'Acceslibre"
     )
@@ -223,7 +220,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CINEMA_INTEGRATION,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_EXTERNAL_BOOKING,
-    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MATCH_ACCESLIBRE,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_SEND_TRANSACTIONAL_NOTIFICATION,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UPDATE_VENUE_OFFERS_ACCESSIBILITY,
