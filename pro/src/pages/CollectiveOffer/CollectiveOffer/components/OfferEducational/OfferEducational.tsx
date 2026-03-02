@@ -166,28 +166,7 @@ export const OfferEducational = ({
       )
     } catch (error) {
       if (isErrorAPIError(error) && error.status === 400) {
-        const serializedError = serializeApiErrors(
-          error.body,
-          {
-            contactEmail: 'email',
-          },
-          {
-            bookingEmails: 'notificationEmails',
-          }
-        )
-
-        ;(serializedError.notificationEmails || []).forEach((error, index) => {
-          if (error) {
-            form.setError(`notificationEmails.${index}.email`, {
-              message: error,
-            })
-          }
-        })
-        if (error.body.email && error.body.email.length > 0) {
-          form.setError('email', {
-            message: error.body.email[0],
-          })
-        }
+        serializeApiErrors(error.body, form.setError)
       } else {
         snackBar.error(SENT_DATA_ERROR_MESSAGE)
       }

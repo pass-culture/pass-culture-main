@@ -44,49 +44,20 @@ describe('serializeApiErrors', () => {
       f2: ['e2'],
       f3: ['e3'],
     }
-    const serializedError = serializeApiErrors(initialError)
+    const mockSetError = vi.fn()
+    serializeApiErrors(initialError, mockSetError)
 
-    expect(serializedError).toEqual({
-      f1: ['e1'],
-      f2: ['e2'],
-      f3: ['e3'],
+    expect(mockSetError).toHaveBeenNthCalledWith(1, 'f1', {
+      message: 'e1',
+      type: 'custom',
     })
-  })
-
-  it('should map api response errors to form one with changes', () => {
-    const initialError: Record<string, string[]> = {
-      f1: ['e1'],
-      f2: ['e2'],
-      f3: ['e3'],
-    }
-
-    const apiFieldsMap: Record<string, string> = {
-      f1: 'f4',
-    }
-    const serializedError = serializeApiErrors(initialError, apiFieldsMap)
-
-    expect(serializedError).toEqual({
-      f4: ['e1'],
-      f2: ['e2'],
-      f3: ['e3'],
+    expect(mockSetError).toHaveBeenNthCalledWith(2, 'f2', {
+      message: 'e2',
+      type: 'custom',
     })
-  })
-
-  it('should transform the api response errors of an array field into an error structure compatible with formik', () => {
-    const initialError: Record<string, string[]> = {
-      'emails.1': ['e1'],
-      otherField: ['e2'],
-      'emails.2': ['e3'],
-    }
-    const serializedError = serializeApiErrors(
-      initialError,
-      {},
-      { emails: 'notificationEmails' }
-    )
-
-    expect(serializedError).toEqual({
-      notificationEmails: ['', 'e1', 'e3'],
-      otherField: ['e2'],
+    expect(mockSetError).toHaveBeenNthCalledWith(3, 'f3', {
+      message: 'e3',
+      type: 'custom',
     })
   })
 })

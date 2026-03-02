@@ -73,21 +73,7 @@ export const useSaveOfferPriceTable = ({
       navigate(nextStepUrl)
     } catch (error) {
       if (isErrorAPIError(error)) {
-        const serializedApiErrors = serializeApiErrors(error.body)
-        Object.entries(serializedApiErrors).forEach(([key, value], index) => {
-          const message = typeof value === 'string' ? value : value?.join(',  ')
-          const formKey = `entries.${index}.${key}`
-          form.setError(formKey as keyof PriceTableFormValues, {
-            message,
-          })
-        })
-
-        if (serializedApiErrors.priceLimitationRule) {
-          form.setError('entries.0.price', {
-            type: 'custom',
-            message: 'Non valide',
-          })
-        }
+        serializeApiErrors(error.body, form.setError)
       }
 
       return snackBar.error(FAILED_PATCH_OFFER_USER_MESSAGE)
