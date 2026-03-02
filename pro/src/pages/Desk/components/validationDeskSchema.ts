@@ -8,8 +8,5 @@ export const validationDeskSchema = yup.object({
     .string()
     .required('Saisissez une contremarque')
     .length(TOKEN_MAX_LENGTH, 'La contremarque doit contenir 6 caractères')
-    .matches(
-      VALID_TOKEN_SYNTAX,
-      'Caractères alphanumériques en majuscules (A–Z, 0–9)'
-    ),
+    .matches(VALID_TOKEN_SYNTAX, 'Caractères valides : de A à Z et de 0 à 9'),
 })

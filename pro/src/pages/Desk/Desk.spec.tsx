@@ -6,10 +6,11 @@ import { api } from '@/apiClient/api'
 import { ApiError } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { defaultGetBookingResponse } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { Desk } from '../Desk'
+import { Desk } from './Desk'
 
 const renderDesk = () => {
   renderWithProviders(
@@ -22,33 +23,51 @@ const renderDesk = () => {
   )
 }
 
+const snackBarSuccess = vi.fn()
+const snackBarError = vi.fn()
+
 describe('Desk', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
+
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      success: snackBarSuccess,
+      error: snackBarError,
+    }))
   })
 
   describe('should validate while user is typing', () => {
     it('should remove QRcode prefix', async () => {
       renderDesk()
+
       const contremarque = screen.getByLabelText('Contremarque')
+
       await userEvent.type(contremarque, 'AA:ZERRZ')
+
       expect(contremarque).toHaveValue('ZERRZ')
     })
 
     it('should display default messages and disable submit button', async () => {
       renderDesk()
-      await waitFor(async () => {
-        const message = await screen.findByText('Saisissez une contremarque')
-        expect(message).toBeInTheDocument()
-      })
+
       expect(
         screen.getByText(
           'Saisissez les contremarques présentées par les bénéficiaires afin de les valider ou de les invalider.'
         )
       ).toBeInTheDocument()
-      expect(
-        screen.getByRole('button', { name: 'Valider la contremarque' })
-      ).toBeDisabled()
+
+      const validateBtn = screen.getByRole('button', {
+        name: 'Valider la contremarque',
+      })
+
+      expect(validateBtn).toBeEnabled()
+
+      userEvent.click(validateBtn)
+
+      await waitFor(async () => {
+        const message = await screen.findByText('Saisissez une contremarque')
+        expect(message).toBeInTheDocument()
+      })
     })
 
     it('should indicate the number of characters missing', async () => {
@@ -58,7 +77,8 @@ describe('Desk', () => {
       renderDesk()
       const contremarque = screen.getByLabelText('Contremarque')
       await userEvent.type(contremarque, 'AA')
-      expect(screen.getByText('Caractères restants : 4/6')).toBeInTheDocument()
+
+      expect(screen.getByText('2/6')).toBeInTheDocument()
     })
 
     it('should indicate the maximum number of caracters', async () => {
@@ -78,9 +98,20 @@ describe('Desk', () => {
     it('should indicate that the format is invalid and which characters are valid', async () => {
       renderDesk()
       const contremarque = screen.getByLabelText('Contremarque')
-      await userEvent.type(contremarque, 'AA-@')
+      await userEvent.type(contremarque, '@678HJ')
+
+      const validateBtn = screen.getByRole('button', {
+        name: 'Valider la contremarque',
+      })
+
+      expect(validateBtn).toBeEnabled()
+
+      userEvent.click(validateBtn)
+
       expect(
-        screen.getByText('Caractères valides : de A à Z et de 0 à 9')
+        screen.getByRole('alert', {
+          name: 'token',
+        })
       ).toBeInTheDocument()
     })
 
@@ -92,11 +123,6 @@ describe('Desk', () => {
       const contremarque = screen.getByLabelText('Contremarque')
       await userEvent.type(contremarque, 'AAAAAA')
       expect(api.getBookingByToken).toHaveBeenCalledWith('AAAAAA')
-      expect(
-        await screen.findByText(
-          'Coupon vérifié, cliquez sur "Valider" pour enregistrer'
-        )
-      ).toBeInTheDocument()
       expect(
         await screen.findByText(defaultGetBookingResponse.offerName)
       ).toBeInTheDocument()
@@ -130,13 +156,15 @@ describe('Desk', () => {
     })
     it('should display confirmation message and empty field when contremarque is validated', async () => {
       vi.spyOn(api, 'patchBookingUseByToken').mockResolvedValueOnce()
+
       renderDesk()
+
       const contremarque = screen.getByLabelText('Contremarque')
+
       await userEvent.type(contremarque, 'AAAAAA')
       await userEvent.click(screen.getByText('Valider la contremarque'))
-      expect(screen.getByTestId('desk-message')).toContainHTML(
-        'Contremarque validée !'
-      )
+
+      expect(snackBarSuccess).toHaveBeenCalledWith('Contremarque validée')
       expect(contremarque).toHaveValue('')
     })
 
@@ -178,6 +206,7 @@ describe('Desk', () => {
 
     it('should display invalidating message when waiting for invalidation and display invalidation confirmation', async () => {
       vi.spyOn(api, 'patchBookingKeepByToken').mockResolvedValueOnce()
+
       renderDesk()
 
       await userEvent.type(screen.getByLabelText('Contremarque'), 'AAAAAA')
@@ -189,9 +218,7 @@ describe('Desk', () => {
       await userEvent.click(confirmModalButton)
 
       await waitFor(() => {
-        expect(screen.getByTestId('desk-message')).toContainHTML(
-          'Contremarque invalidée !'
-        )
+        expect(snackBarSuccess).toHaveBeenCalledWith('Contremarque invalidée')
       })
     })
 
@@ -215,12 +242,12 @@ describe('Desk', () => {
       const confirmModalButton = screen.getByRole('button', {
         name: 'Continuer',
       })
+
       await userEvent.click(confirmModalButton)
-      const errorMessage = await screen.findByText(
+
+      expect(snackBarError).toHaveBeenCalledWith(
         'Erreur lors de la validation de la contremarque'
       )
-
-      expect(errorMessage).toBeInTheDocument()
     })
   })
 })

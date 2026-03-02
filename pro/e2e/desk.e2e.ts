@@ -38,13 +38,9 @@ test.describe('Desk (Guichet)', () => {
     const tokenInput = page.getByLabel('Contremarque')
     await tokenInput.fill(deskData.tokenConfirmed)
 
-    await expect(
-      page.getByText(/Coupon vérifié, cliquez sur .Valider. pour enregistrer/)
-    ).toBeVisible()
-
     await page.getByRole('button', { name: 'Valider la contremarque' }).click()
 
-    await expect(page.getByText('Contremarque validée !')).toBeVisible()
+    await expect(page.getByText('Contremarque validée')).toBeVisible()
 
     const a11yResults = await checkAccessibility()
     expect(a11yResults.violations).toHaveLength(0)
@@ -128,10 +124,6 @@ test.describe('Desk (Guichet)', () => {
     await tokenInput.fill(deskData.tokenCanceled)
 
     await expect(
-      page.getByRole('button', { name: 'Valider la contremarque' })
-    ).toBeDisabled()
-
-    await expect(
       page.getByText('Cette réservation a été annulée')
     ).toBeVisible()
   })
@@ -142,10 +134,6 @@ test.describe('Desk (Guichet)', () => {
   }) => {
     const tokenInput = page.getByLabel('Contremarque')
     await tokenInput.fill(deskData.tokenReimbursed)
-
-    await expect(
-      page.getByRole('button', { name: 'Valider la contremarque' })
-    ).toBeDisabled()
 
     await expect(
       page.getByText('Cette réservation a été remboursée')
