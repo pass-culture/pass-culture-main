@@ -98,7 +98,7 @@ def test_offer_indexation_on_venue_cycle(app, clear_redis):
 
 def test_artist_indexation_on_offer_cycle(app, clear_redis):
     beneficiary = users_factories.BeneficiaryGrant18Factory()
-    artist = artist_factories.ArtistFactory()
+    artist = artist_factories.ArtistFactory(app_search_score=2)
     product = offers_factories.ProductFactory()
     artist_factories.ArtistProductLinkFactory(artist_id=artist.id, product_id=product.id)
     stock = offers_factories.StockFactory(quantity=1, offer__product=product)
