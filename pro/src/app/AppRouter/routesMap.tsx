@@ -25,6 +25,7 @@ import {
   mustBeUnauthenticated,
   mustHaveSelectedAdminOfferer,
   mustHaveSelectedVenue,
+  mustHaveSelectedVenueCanBeNotOnboarded,
   mustNotBeOnboarded,
 } from './utils'
 
@@ -201,7 +202,7 @@ export const routes: CustomRouteTree = [
   },
   {
     lazy: () => import('@/pages/VenueSettings/VenueSettings'),
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustHaveSelectedVenueCanBeNotOnboarded),
     path: '/structures/:offererId/lieux/:venueId/parametres',
     title: 'Paramètres généraux',
     meta: {
