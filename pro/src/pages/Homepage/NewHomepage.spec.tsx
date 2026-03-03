@@ -20,6 +20,10 @@ vi.mock('@/components/CollectiveDmsTimeline/CollectiveDmsTimeline', () => ({
   CollectiveDmsTimeline: () => <div>timeline DMS</div>,
 }))
 
+vi.mock('./components/RevenueCard/RevenueCard', () => ({
+  RevenueCard: () => <div>Remboursement</div>,
+}))
+
 const newHomepageRoutes = [
   {
     path: '/',
