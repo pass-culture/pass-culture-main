@@ -15,14 +15,12 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Product
 from pcapi.models import db
 from pcapi.models.api_errors import ResourceNotFoundError
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.utils import first_or_404
 from pcapi.models.utils import get_or_404
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.transaction_manager import atomic
-from pcapi.workers import push_notification_job
 
 from .. import blueprint
 from .serialization import offers as serializers
@@ -142,11 +140,8 @@ def send_offer_link_by_push(offer_id: int) -> None:
     offer = get_or_404(Offer, offer_id)
     if offer.validation != OfferValidationStatus.APPROVED:
         raise ResourceNotFoundError()
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_SEND_TRANSACTIONAL_NOTIFICATION.is_active():
-        payload = tasks.SendOfferLinkByPushPayload(user_id=current_user.id, offer_id=offer_id)
-        tasks.send_offer_link_by_push_task.delay(payload.model_dump())
-    else:
-        push_notification_job.send_offer_link_by_push_job.delay(current_user.id, offer_id)
+    payload = tasks.SendOfferLinkByPushPayload(user_id=current_user.id, offer_id=offer_id)
+    tasks.send_offer_link_by_push_task.delay(payload.model_dump())
 
 
 @blueprint.native_route("/subcategories/v2", methods=["GET"])

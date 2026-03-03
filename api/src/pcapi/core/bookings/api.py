@@ -57,7 +57,6 @@ from pcapi.utils.requests import exceptions as requests_exceptions
 from pcapi.utils.transaction_manager import is_managed_transaction
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from pcapi.utils.transaction_manager import on_commit
-from pcapi.workers import push_notification_job
 
 from . import constants
 from . import exceptions
@@ -758,11 +757,8 @@ def cancel_booking_by_offerer(booking: models.Booking) -> None:
     validation.check_booking_can_be_cancelled(booking)
     _cancel_booking(booking, models.BookingCancellationReasons.OFFERER, raise_if_error=True)
     transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_SEND_TRANSACTIONAL_NOTIFICATION.is_active():
-        payload = tasks.SendCancelBookingNotificationPayload(bookings_ids=[booking.id])
-        tasks.send_cancel_booking_notification.delay(payload.model_dump())
-    else:
-        push_notification_job.send_cancel_booking_notification.delay([booking.id])
+    payload = tasks.SendCancelBookingNotificationPayload(bookings_ids=[booking.id])
+    tasks.send_cancel_booking_notification.delay(payload.model_dump())
 
 
 def cancel_bookings_from_stock_by_offerer(
