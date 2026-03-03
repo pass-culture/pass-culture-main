@@ -127,7 +127,6 @@ class FeatureToggle(enum.Enum):
     )
     VENUE_REGULARIZATION = "Déplacement de n'importe quelle offre vers une autre venue"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
-    WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES = "Activer le backend de tâches asynchrones Celery pour les tâches liées à la mise à jour du statut actif des offres"
     WIP_ASYNCHRONOUS_CELERY_CINEMA_INTEGRATION = (
         "Activer le backend de tâches asynchrones Celery pour les tâches liées aux intégrations cinéma"
     )
@@ -216,7 +215,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.VENUE_REGULARIZATION,
     FeatureToggle.SEND_ALL_EMAILS_TO_EHP,
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
-    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CINEMA_INTEGRATION,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_EXTERNAL_BOOKING,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_SEND_TRANSACTIONAL_NOTIFICATION,
