@@ -8,7 +8,10 @@ import {
   type BankAccountResponseModel,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
-import { GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES } from '@/commons/config/swrQueryKeys'
+import {
+  GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES,
+  GET_VENUE_QUERY_KEY,
+} from '@/commons/config/swrQueryKeys'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import {
   defaultBankAccount,
@@ -17,6 +20,7 @@ import {
   getOffererNameFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 import { Component as BankInformations } from '@/pages/Reimbursements/BankInformations/BankInformations'
@@ -105,9 +109,10 @@ describe('BankInformations page', () => {
   })
 
   it('should display discard dialog on cancel', async () => {
+    const user = userEvent.setup()
     renderBankInformations()
 
-    await userEvent.click(
+    await user.click(
       await screen.findByRole('button', {
         name: 'Modifier',
       })
@@ -119,9 +124,9 @@ describe('BankInformations page', () => {
       )
     ).toBeInTheDocument()
 
-    await userEvent.click(screen.getByText('wanted'))
+    await user.click(screen.getByText('wanted'))
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: 'Annuler',
       })
@@ -135,20 +140,21 @@ describe('BankInformations page', () => {
   })
 
   it('should display unlink venues dialog', async () => {
+    const user = userEvent.setup()
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
     renderBankInformations()
 
-    await userEvent.click(
+    await user.click(
       await screen.findByRole('button', {
         name: 'Modifier',
       })
     )
 
-    await userEvent.click(screen.getByText('wanted'))
+    await user.click(screen.getByText('wanted'))
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: 'Enregistrer',
       })
@@ -160,7 +166,7 @@ describe('BankInformations page', () => {
       )
     ).toBeInTheDocument()
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: 'Confirmer',
       })
@@ -291,6 +297,7 @@ describe('BankInformations page', () => {
   })
 
   it('should show AddBankInformationsDialog on click add bank account button', async () => {
+    const user = userEvent.setup()
     renderBankInformations()
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
@@ -300,7 +307,7 @@ describe('BankInformations page', () => {
       )
     ).not.toBeInTheDocument()
 
-    await userEvent.click(await screen.findByText('Ajouter un compte bancaire'))
+    await user.click(await screen.findByText('Ajouter un compte bancaire'))
 
     expect(
       screen.getByText(
@@ -308,7 +315,7 @@ describe('BankInformations page', () => {
       )
     ).toBeInTheDocument()
 
-    await userEvent.click(
+    await user.click(
       await screen.findByRole('button', { name: 'Fermer la fenêtre modale' })
     )
 
@@ -320,13 +327,14 @@ describe('BankInformations page', () => {
   })
 
   it('should track add bank account button', async () => {
+    const user = userEvent.setup()
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
     renderBankInformations()
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-    await userEvent.click(screen.getByText('Ajouter un compte bancaire'))
+    await user.click(screen.getByText('Ajouter un compte bancaire'))
     expect(mockLogEvent).toHaveBeenCalledWith(
       BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT,
       {
@@ -337,6 +345,7 @@ describe('BankInformations page', () => {
   })
 
   it('should update displayed link venue after closing link venue dialog', async () => {
+    const user = userEvent.setup()
     vi.spyOn(api, 'linkVenueToBankAccount').mockResolvedValue()
     vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
       id: 1,
@@ -349,17 +358,85 @@ describe('BankInformations page', () => {
     })
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-    await userEvent.click(screen.getByRole('button', { name: 'Modifier' }))
+    await user.click(screen.getByRole('button', { name: 'Modifier' }))
 
-    await userEvent.click(
-      screen.getByRole('checkbox', { name: 'Mon super lieu' })
-    )
-    await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
-    await userEvent.click(screen.getByRole('button', { name: 'Confirmer' }))
+    await user.click(screen.getByRole('checkbox', { name: 'Mon super lieu' }))
+    await user.click(screen.getByRole('button', { name: 'Enregistrer' }))
+    await user.click(screen.getByRole('button', { name: 'Confirmer' }))
 
     expect(mockMutate).toHaveBeenNthCalledWith(1, [
       GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES,
       1,
     ])
+  })
+
+  it('should refresh the selected venue in the Redux store after linking a venue to a bank account', async () => {
+    const user = userEvent.setup()
+    const venue = makeGetVenueResponseModel({ id: 1 })
+    const updatedVenue = makeGetVenueResponseModel({
+      id: 1,
+      bankAccount: {
+        id: 1,
+        label: 'jacob',
+        obfuscatedIban: 'XXXX-123',
+        isActive: true,
+      },
+    })
+
+    vi.spyOn(api, 'linkVenueToBankAccount').mockResolvedValue()
+    vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
+      id: 1,
+      bankAccounts: [{ ...defaultBankAccount }],
+      managedVenues: [{ ...defaultManagedVenue }],
+    })
+    const getVenueSpy = vi
+      .spyOn(api, 'getVenue')
+      .mockResolvedValue(updatedVenue)
+
+    // Make mockMutate execute the fetcher callback so api.getVenue is actually called
+    mockMutate.mockImplementation(
+      async (_key: unknown, fetcher?: () => Promise<unknown>) => {
+        if (typeof fetcher === 'function') {
+          return await fetcher()
+        }
+        return undefined
+      }
+    )
+
+    renderWithProviders(
+      <>
+        <BankInformations />
+        <SnackBarContainer />
+      </>,
+      {
+        user: sharedCurrentUserFactory(),
+        initialRouterEntries: ['/remboursements/informations-bancaires'],
+        storeOverrides: {
+          user: {
+            currentUser: sharedCurrentUserFactory(),
+            selectedVenue: venue,
+          },
+          offerer: {
+            currentOfferer: {
+              ...defaultGetOffererResponseModel,
+              hasValidBankAccount: true,
+            },
+          },
+        },
+      }
+    )
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    await user.click(screen.getByRole('button', { name: 'Modifier' }))
+
+    await user.click(screen.getByRole('checkbox', { name: 'Mon super lieu' }))
+    await user.click(screen.getByRole('button', { name: 'Enregistrer' }))
+    await user.click(screen.getByRole('button', { name: 'Confirmer' }))
+
+    expect(mockMutate).toHaveBeenCalledWith(
+      [GET_VENUE_QUERY_KEY, String(venue.id)],
+      expect.any(Function)
+    )
+    expect(getVenueSpy).toHaveBeenCalledWith(venue.id)
   })
 })
