@@ -26,7 +26,6 @@ API_KEY_HEADER_NAME = "X-API-KEY"
 def api_key_required(route_function: typing.Callable) -> typing.Callable:
     @functools.wraps(route_function)
     def wrapper(*args: typing.Any, **kwargs: typing.Any) -> flask.Response:
-
         if not (request.headers.get(API_KEY_HEADER_NAME) or "").strip():
             raise api_errors.UnauthorizedError(errors={"auth": "API key required"})
 

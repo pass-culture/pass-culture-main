@@ -203,6 +203,37 @@ class Returns200Test:
             assert response.status_code == 200
         assert response.json == {"incomeByYear": {}}
 
+    @patch(
+        "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
+        return_value=clickhouse_query_mock.AGGREGATED_VENUE_REVENUE_WITH_NO_INCOME,
+    )
+    @time_machine.travel("2026-01-01")
+    def test_get_statistics_with_no_income(self, run_query, client):
+        user = users_factories.UserFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_id = venue.id
+        educational_factories.CollectiveOfferFactory(venue=venue)
+        offers_factories.OfferFactory(venue=venue)
+
+        test_client = client.with_session_auth(email=user.email)
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select Offerer
+        num_queries += 1  # select Offer
+        num_queries += 1  # select CollectiveOffer
+        with testing.assert_num_queries(num_queries):
+            response = test_client.get(f"/get-statistics/?venueIds={venue_id}")
+            assert response.status_code == 200
+        assert response.json == {
+            "incomeByYear": {
+                "2026": {
+                    "expectedRevenue": {"collective": 0.0, "individual": 0.0, "total": 0.0},
+                    "revenue": {"collective": 0.0, "individual": 0.0, "total": 0.0},
+                }
+            }
+        }
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns422Test:
