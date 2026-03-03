@@ -32,7 +32,6 @@ from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import check_user_has_access_to_venues
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import on_commit
-from pcapi.workers.update_all_venue_offers_email_job import update_all_venue_offers_email_job
 
 from . import blueprint
 
@@ -214,14 +213,11 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
         )
 
     if body.bookingEmail:
-        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UPDATE_VENUE_OFFERS_EMAIL.is_active():
-            email_payload = offers_tasks.UpdateAllVenueOffersEmailPayload(
-                venue_id=venue.id,
-                email=body.bookingEmail,
-            )
-            on_commit(partial(offers_tasks.update_all_venue_offers_email_task.delay, email_payload.model_dump()))
-        else:
-            on_commit(partial(update_all_venue_offers_email_job.delay, venue.id, body.bookingEmail))
+        email_payload = offers_tasks.UpdateAllVenueOffersEmailPayload(
+            venue_id=venue.id,
+            email=body.bookingEmail,
+        )
+        on_commit(partial(offers_tasks.update_all_venue_offers_email_task.delay, email_payload.model_dump()))
 
     return venues_serialize.GetVenueResponseModel.from_orm(venue)
 
