@@ -20,6 +20,8 @@ def create_industrial_bank_accounts() -> None:
     create_offerer_with_none_venue_linked()
     create_offerer_with_all_his_venue_linked_to_one_bank_account()
     create_offerer_with_only_one_venue_linked()
+    create_offerer_with_pending_bank_account()
+    create_offerer_with_pending_corrections_bank_account()
 
 
 def create_offerer_without_bank_accounts() -> None:
@@ -193,3 +195,41 @@ def create_offerer_with_only_one_venue_linked() -> None:
     offerers_factories.VenueBankAccountLinkFactory.create(
         venue=third_venue_with_non_free_offer, bankAccount=bank_account
     )
+
+
+def create_offerer_with_pending_bank_account() -> None:
+    logger.info("create_offerer_with_pending_bank_account")
+    offerer = offerers_factories.OffererFactory.create(name="1 - [CB] Structure avec CB en cours de validation")
+    offerers_factories.UserOffererFactory.create(offerer=offerer, user__email="activation@example.com")
+    venue = offerers_factories.VenueFactory.create(
+        name="Lieu avec CB en cours de validation",
+        managingOfferer=offerer,
+        pricing_point="self",
+    )
+    offer = offers_factories.OfferFactory.create(venue=venue)
+    offers_factories.StockFactory.create(offer=offer)
+
+    bank_account = finance_factories.BankAccountFactory.create(
+        status=finance_models.BankAccountApplicationStatus.DRAFT,
+        offerer=offerer,
+    )
+    offerers_factories.VenueBankAccountLinkFactory.create(venue=venue, bankAccount=bank_account)
+
+
+def create_offerer_with_pending_corrections_bank_account() -> None:
+    logger.info("create_offerer_with_pending_corrections_bank_account")
+    offerer = offerers_factories.OffererFactory.create(name="1 - [CB] Structure avec CB à corriger")
+    offerers_factories.UserOffererFactory.create(offerer=offerer, user__email="activation@example.com")
+    venue = offerers_factories.VenueFactory.create(
+        name="Lieu avec CB à corriger",
+        managingOfferer=offerer,
+        pricing_point="self",
+    )
+    offer = offers_factories.OfferFactory.create(venue=venue)
+    offers_factories.StockFactory.create(offer=offer)
+
+    bank_account = finance_factories.BankAccountFactory.create(
+        status=finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS,
+        offerer=offerer,
+    )
+    offerers_factories.VenueBankAccountLinkFactory.create(venue=venue, bankAccount=bank_account)
