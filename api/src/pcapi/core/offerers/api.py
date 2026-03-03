@@ -3466,3 +3466,29 @@ def clean_unused_offerer_address() -> None:
     )
 
     logger.info("%s unused rows to delete in offerer_address", count)
+
+
+@dataclasses.dataclass
+class PendingAndValidatedOfferers:
+    validated: list[offerers_models.Offerer]
+    pending: list[offerers_models.Offerer]
+
+
+def get_user_pending_and_validated_offerers(
+    user: users_models.User,
+) -> PendingAndValidatedOfferers:
+    query = (
+        offerers_repository.get_all_offerers_for_user(user=user, include_non_validated_user_offerers=True)
+        .order_by(offerers_models.Offerer.name, offerers_models.Offerer.id)
+        .distinct(offerers_models.Offerer.name, offerers_models.Offerer.id)
+        .options(
+            sa_orm.load_only(
+                offerers_models.Offerer.id, offerers_models.Offerer.name, offerers_models.Offerer.allowedOnAdage
+            )
+        )
+    )
+
+    pending = query.filter(offerers_models.UserOfferer.isWaitingForValidation).all()
+    validated = query.filter(offerers_models.UserOfferer.isValidated).all()
+
+    return PendingAndValidatedOfferers(validated=validated, pending=pending)
