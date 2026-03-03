@@ -21,7 +21,7 @@ class CreateProAdviceTest:
         user = users_factories.UserFactory()
 
         with caplog.at_level("INFO"):
-            api.create_pro_advice(offer, "Une super reco.", "Le libraire du coin", user)
+            api.create_pro_advice(offer, "Une super reco.", "Le libraire du coin", user.id)
 
         pro_advice = db.session.query(models.ProAdvice).one()
         assert pro_advice.offerId == offer.id
@@ -47,7 +47,7 @@ class CreateProAdviceTest:
 
         offer = offers_factories.OfferFactory(validation=validation_status)
         with pytest.raises(ProAdviceException) as exception:
-            api.create_pro_advice(offer, "Une super reco.", None, user)
+            api.create_pro_advice(offer, "Une super reco.", None, user.id)
 
         assert exception.value.errors["global"] == ["Impossible de créer une recommandation sur cette offre"]
 
@@ -57,7 +57,7 @@ class CreateProAdviceTest:
         user = users_factories.UserFactory()
 
         with pytest.raises(ProAdviceException) as exception:
-            api.create_pro_advice(offer, "Une autre reco.", None, user)
+            api.create_pro_advice(offer, "Une autre reco.", None, user.id)
 
         assert exception.value.errors["global"] == ["Une recommandation existe déjà pour cette offre"]
 
@@ -74,7 +74,7 @@ class UpdateProAdviceTest:
         user = users_factories.UserFactory()
 
         with caplog.at_level("INFO"):
-            api.update_pro_advice(offer, "Nouveau conseil.", "Nouvel auteur", user)
+            api.update_pro_advice(offer, "Nouveau conseil.", "Nouvel auteur", user.id)
 
         pro_advice = db.session.query(models.ProAdvice).one()
         assert pro_advice.offerId == offer.id
@@ -101,7 +101,7 @@ class UpdateProAdviceTest:
         offer = offers_factories.OfferFactory(validation=validation_status)
         offers_factories.ProAdviceFactory(offer=offer, venue=offer.venue)
         with pytest.raises(ProAdviceException) as exception:
-            api.update_pro_advice(offer, "Conseil.", None, user)
+            api.update_pro_advice(offer, "Conseil.", None, user.id)
 
         assert exception.value.errors["global"] == ["Impossible de modifier une recommandation sur cette offre"]
 
@@ -110,6 +110,49 @@ class UpdateProAdviceTest:
         user = users_factories.UserFactory()
 
         with pytest.raises(ProAdviceException) as exception:
-            api.update_pro_advice(offer, "Conseil.", None, user)
+            api.update_pro_advice(offer, "Conseil.", None, user.id)
+
+        assert exception.value.errors["global"] == ["Aucune recommandation n'existe pour cette offre"]
+
+
+class DeleteProAdviceTest:
+    def test_delete_pro_advice(self, caplog):
+        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.APPROVED)
+        offers_factories.ProAdviceFactory(offer=offer, venue=offer.venue)
+        user = users_factories.UserFactory()
+
+        with caplog.at_level("INFO"):
+            api.delete_pro_advice(offer, user.id)
+
+        assert db.session.query(models.ProAdvice).count() == 0
+
+        assert len(caplog.records) == 1
+        assert caplog.records[0].technical_message_id == "pro_advice.deleted"
+        assert caplog.records[0].extra == {
+            "offer_id": offer.id,
+            "venue_id": offer.venueId,
+            "user_id": user.id,
+        }
+
+    @pytest.mark.parametrize(
+        "validation_status",
+        [OfferValidationStatus.DRAFT, OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED],
+    )
+    def test_raises_if_offer_is_not_approved(self, validation_status):
+        user = users_factories.UserFactory()
+
+        offer = offers_factories.OfferFactory(validation=validation_status)
+        offers_factories.ProAdviceFactory(offer=offer, venue=offer.venue)
+        with pytest.raises(ProAdviceException) as exception:
+            api.delete_pro_advice(offer, user.id)
+
+        assert exception.value.errors["global"] == ["Impossible de supprimer une recommandation sur cette offre"]
+
+    def test_raises_if_pro_advice_does_not_exist(self):
+        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.APPROVED)
+        user = users_factories.UserFactory()
+
+        with pytest.raises(ProAdviceException) as exception:
+            api.delete_pro_advice(offer, user.id)
 
         assert exception.value.errors["global"] == ["Aucune recommandation n'existe pour cette offre"]

@@ -881,7 +881,7 @@ def create_offer_pro_advice(
         raise api_errors.ResourceNotFoundError()
 
     user = current_user._get_current_object()
-    pro_advice = pro_advice_api.create_pro_advice(offer, body.content, body.author, user)
+    pro_advice = pro_advice_api.create_pro_advice(offer, body.content, body.author, user.id)
     return offers_serialize.PostProAdviceResponseModel(pro_advice=offers_serialize.ProAdviceModel.from_orm(pro_advice))
 
 
@@ -904,5 +904,25 @@ def update_offer_pro_advice(
         raise api_errors.ResourceNotFoundError()
 
     user = current_user._get_current_object()
-    pro_advice = pro_advice_api.update_pro_advice(offer, body.content, body.author, user)
+    pro_advice = pro_advice_api.update_pro_advice(offer, body.content, body.author, user.id)
     return offers_serialize.PatchProAdviceResponseModel(pro_advice=offers_serialize.ProAdviceModel.from_orm(pro_advice))
+
+
+@private_api.route("/offers/<int:offer_id>/pro_advice", methods=["DELETE"])
+@login_required
+@spectree_serialize(
+    api=blueprint.pro_private_schema,
+    on_success_status=204,
+)
+@atomic()
+def delete_offer_pro_advice(offer_id: int) -> None:
+    try:
+        offer = offers_repository.get_offer_by_id(offer_id, load_options=["venue", "pro_advice"])
+    except exceptions.OfferNotFound:
+        raise api_errors.ResourceNotFoundError()
+
+    if not users_repository.has_access(current_user, offer.venue.managingOffererId):
+        raise api_errors.ResourceNotFoundError()
+
+    user = current_user._get_current_object()
+    pro_advice_api.delete_pro_advice(offer, user.id)
