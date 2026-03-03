@@ -88,7 +88,6 @@ from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import is_managed_transaction
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from pcapi.utils.transaction_manager import on_commit
-from pcapi.workers.match_acceslibre_job import match_acceslibre_job
 
 from . import exceptions
 from . import models
@@ -266,22 +265,13 @@ def update_venue(
         virustotal.request_url_scan(contact_data.website, skip_if_recent_scan=True)
 
     if new_open_to_public or (has_address_changed and venue.isOpenToPublic):
-        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MATCH_ACCESLIBRE.is_active():
-            payload = tasks.MatchAcceslibrePayload(venue_id=venue.id)
-            on_commit(
-                functools.partial(
-                    tasks.match_acceslibre_task.delay,
-                    payload.model_dump(),
-                )
+        payload = tasks.MatchAcceslibrePayload(venue_id=venue.id)
+        on_commit(
+            functools.partial(
+                tasks.match_acceslibre_task.delay,
+                payload.model_dump(),
             )
-
-        else:
-            on_commit(
-                functools.partial(
-                    match_acceslibre_job.delay,
-                    venue.id,
-                )
-            )
+        )
 
     if not_open_to_public_anymore:
         delete_venue_accessibility_provider(venue)
