@@ -72,7 +72,7 @@ export const IndividualOfferLocationScreen = ({
   })
   const form = useForm({
     defaultValues: initialValues,
-    mode: 'all',
+    mode: 'onBlur',
     resolver: yupResolver(validationSchema),
   })
 
