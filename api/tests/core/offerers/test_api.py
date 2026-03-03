@@ -4064,3 +4064,34 @@ class GetStatsByVenueTest:
         assert stats.published_educational_offers == 0
         assert stats.pending_public_offers == 3
         assert stats.published_public_offers == 2
+
+
+class GetUserPendingAndValidatedOffererTest:
+    def test_user_with_no_offerer(self):
+        user = users_factories.UserFactory()
+
+        res = offerers_api.get_user_pending_and_validated_offerers(user)
+        assert res == offerers_api.PendingAndValidatedOfferers(pending=[], validated=[])
+
+    def test_user_with_only_validated_offerers(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        user = user_offerer.user
+
+        res = offerers_api.get_user_pending_and_validated_offerers(user)
+        assert res == offerers_api.PendingAndValidatedOfferers(pending=[], validated=[user_offerer.offerer])
+
+    def test_user_with_only_pending_offerers(self):
+        user_offerer = offerers_factories.PendingUserOffererFactory()
+        user = user_offerer.user
+
+        res = offerers_api.get_user_pending_and_validated_offerers(user)
+        assert res == offerers_api.PendingAndValidatedOfferers(pending=[user_offerer.offerer], validated=[])
+
+    def test_user_with_offerers(self):
+        user_offerer = offerers_factories.PendingUserOffererFactory()
+        user = user_offerer.user
+        pending_offerer = user_offerer.offerer
+        validated_offerer = offerers_factories.UserOffererFactory(user=user).offerer
+
+        res = offerers_api.get_user_pending_and_validated_offerers(user)
+        assert res == offerers_api.PendingAndValidatedOfferers(pending=[pending_offerer], validated=[validated_offerer])
