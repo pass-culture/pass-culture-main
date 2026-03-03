@@ -122,7 +122,8 @@
     "vitest-fetch-mock": "0.4.5"
   },
   "resolutions": {
-    "string-width": "4.2.3"
+    "string-width": "4.2.3",
+    "vite-plugin-html/ejs/jake/minimatch": "3.1.4"
   },
   "engines": {
     "node": "24.8"
