@@ -32,7 +32,6 @@ from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import check_user_has_access_to_venues
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import on_commit
-from pcapi.workers.update_all_venue_offers_accessibility_job import update_all_venue_offers_accessibility_job
 from pcapi.workers.update_all_venue_offers_email_job import update_all_venue_offers_email_job
 
 from . import blueprint
@@ -206,18 +205,13 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
 
     if have_accessibility_changes and body.isAccessibilityAppliedOnAllOffers:
         edited_accessibility = {field: getattr(venue, field) for field in accessibility_fields}
-        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UPDATE_VENUE_OFFERS_ACCESSIBILITY.is_active():
-            accessibility_payload = offers_tasks.UpdateAllVenueOffersAccessibilityPayload(
-                venue_id=venue.id,
-                accessibility=edited_accessibility,
-            )
-            on_commit(
-                partial(
-                    offers_tasks.update_all_venue_offers_accessibility_task.delay, accessibility_payload.model_dump()
-                )
-            )
-        else:
-            on_commit(partial(update_all_venue_offers_accessibility_job.delay, venue.id, edited_accessibility))
+        accessibility_payload = offers_tasks.UpdateAllVenueOffersAccessibilityPayload(
+            venue_id=venue.id,
+            accessibility=edited_accessibility,
+        )
+        on_commit(
+            partial(offers_tasks.update_all_venue_offers_accessibility_task.delay, accessibility_payload.model_dump())
+        )
 
     if body.bookingEmail:
         if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UPDATE_VENUE_OFFERS_EMAIL.is_active():
