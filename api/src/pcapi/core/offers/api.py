@@ -86,7 +86,6 @@ from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import is_managed_transaction
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from pcapi.utils.transaction_manager import on_commit
-from pcapi.workers import push_notification_job
 
 from . import exceptions
 from . import models
@@ -1158,23 +1157,15 @@ def _delete_stock(stock: models.Stock, author_id: int | None = None, user_connec
 
         transactional_mails.send_booking_cancellation_confirmation_by_pro_email(cancelled_bookings)
 
-        if feature.FeatureToggle.WIP_ASYNCHRONOUS_CELERY_SEND_TRANSACTIONAL_NOTIFICATION.is_active():
-            payload = bookings_tasks.SendCancelBookingNotificationPayload(
-                bookings_ids=[booking.id for booking in cancelled_bookings]
+        payload = bookings_tasks.SendCancelBookingNotificationPayload(
+            bookings_ids=[booking.id for booking in cancelled_bookings]
+        )
+        on_commit(
+            partial(
+                bookings_tasks.send_cancel_booking_notification.delay,
+                payload.model_dump(),
             )
-            on_commit(
-                partial(
-                    bookings_tasks.send_cancel_booking_notification.delay,
-                    payload.model_dump(),
-                )
-            )
-        else:
-            on_commit(
-                partial(
-                    push_notification_job.send_cancel_booking_notification.delay,
-                    [booking.id for booking in cancelled_bookings],
-                )
-            )
+        )
 
     # do not keep stocks without any booking: they have never been used,
     # there is no need to keep useless rows inside the database.
