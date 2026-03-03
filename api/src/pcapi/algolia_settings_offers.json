@@ -25,6 +25,7 @@
     "replicas": [
         "virtual(PRODUCTION Top offres)",
         "virtual(most liked offers)",
+        "virtual(cine club offers)",
         "PRODUCTION B",
         "PRODUCTIONC"
     ],
