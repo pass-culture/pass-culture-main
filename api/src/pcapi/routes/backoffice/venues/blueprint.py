@@ -43,7 +43,6 @@ from pcapi.core.search.models import IndexationReason
 from pcapi.local_providers.provider_manager import new_etl_integration_can_be_enabled
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.utils import get_or_404
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import blueprint as backoffice_blueprint
@@ -65,7 +64,6 @@ from pcapi.utils.siren import is_valid_siret
 from pcapi.utils.string import to_camelcase
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from pcapi.utils.transaction_manager import on_commit
-from pcapi.workers.venue_provider_job import venue_provider_job
 
 from . import forms
 
@@ -578,11 +576,8 @@ def toggle_new_cinema_integration_is_enabled(venue_id: int, provider_id: int) ->
 def add_cinema_sessions_synchronize_task(venue_id: int, provider_id: int) -> response_utils.BackofficeResponse:
     venue_provider = _fetch_venue_provider(venue_id, provider_id)
 
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CINEMA_INTEGRATION.is_active():
-        payload = providers_tasks.CinemaSynchronisationTaskPayload(venue_provider_id=venue_provider.id)
-        providers_tasks.synchronize_cinema_sessions_task.delay(payload.model_dump())
-    else:
-        venue_provider_job.delay(venue_provider.id)
+    payload = providers_tasks.CinemaSynchronisationTaskPayload(venue_provider_id=venue_provider.id)
+    providers_tasks.synchronize_cinema_sessions_task.delay(payload.model_dump())
 
     flash(Markup("La tâche de synchronisation a été ajoutée"), "success")
 
