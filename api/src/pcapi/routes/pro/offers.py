@@ -909,3 +909,22 @@ def update_offer_pro_advice(
 
     pro_advice = pro_advice_api.update_pro_advice(offer, body.content, body.author, current_user)
     return offers_serialize.GetProAdviceResponseModel(pro_advice=offers_serialize.ProAdviceModel.from_orm(pro_advice))
+
+
+@private_api.route("/offers/<int:offer_id>/pro_advice", methods=["DELETE"])
+@login_required
+@spectree_serialize(
+    api=blueprint.pro_private_schema,
+    on_success_status=204,
+)
+@atomic()
+def delete_offer_pro_advice(offer_id: int) -> None:
+    try:
+        offer = offers_repository.get_offer_by_id(offer_id, load_options=["venue", "pro_advice"])
+    except exceptions.OfferNotFound:
+        raise api_errors.ResourceNotFoundError()
+
+    if not users_repository.has_access(current_user, offer.venue.managingOffererId):
+        raise api_errors.ResourceNotFoundError()
+
+    pro_advice_api.delete_pro_advice(offer, current_user)

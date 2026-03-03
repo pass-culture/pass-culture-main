@@ -109,3 +109,31 @@ class UpdateProAdviceTest:
             api.update_pro_advice(offer, "Conseil.", None, user)
 
         assert exception.value.errors["global"] == ["Aucune recommandation n'existe pour cette offre"]
+
+
+class DeleteProAdviceTest:
+    def test_delete_pro_advice(self, caplog):
+        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.APPROVED)
+        offers_factories.ProAdviceFactory(offer=offer)
+        user = users_factories.UserFactory()
+
+        with caplog.at_level("INFO"):
+            api.delete_pro_advice(offer, user)
+
+        assert db.session.query(models.ProAdvice).count() == 0
+
+        assert len(caplog.records) == 1
+        assert caplog.records[0].technical_message_id == "pro_advice.deleted"
+        assert caplog.records[0].extra == {
+            "offer_id": offer.id,
+            "user_id": user.id,
+        }
+
+    def test_raises_if_pro_advice_does_not_exist(self):
+        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.APPROVED)
+        user = users_factories.UserFactory()
+
+        with pytest.raises(ProAdviceException) as exception:
+            api.delete_pro_advice(offer, user)
+
+        assert exception.value.errors["global"] == ["Aucune recommandation n'existe pour cette offre"]
