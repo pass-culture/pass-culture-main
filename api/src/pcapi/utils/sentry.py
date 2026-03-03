@@ -8,7 +8,6 @@ from pydantic.v1 import ValidationError
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
-from sentry_sdk.integrations.rq import RqIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 
 import pcapi.routes.apis as routes_apis
@@ -215,7 +214,6 @@ def init_sentry_sdk() -> None:
             CeleryIntegration(),
             FlaskIntegration(),
             RedisIntegration(),
-            RqIntegration(),
             SqlalchemyIntegration(),
         ],
         release=read_version_from_file(),

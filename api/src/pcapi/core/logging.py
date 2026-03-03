@@ -308,11 +308,9 @@ def _silence_noisy_loggers() -> None:
     logging.getLogger("transitions").setLevel(logging.ERROR)
 
     werkzeug_log_level = os.environ.get("WERZEUG_LOG_LEVEL", "WARNING")
-    rq_log_level = os.environ.get("RQ_LOG_LEVEL", "WARNING")
     # We don't want Werkzeug INFO log for each request, we already
     # have our own request logs.
     logging.getLogger("werkzeug").setLevel(getattr(logging, werkzeug_log_level))
-    logging.getLogger("rq.worker").setLevel(getattr(logging, rq_log_level))
 
 
 @contextlib.contextmanager
