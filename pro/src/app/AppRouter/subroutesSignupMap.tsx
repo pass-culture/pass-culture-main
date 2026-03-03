@@ -9,6 +9,7 @@ import {
 } from 'react-router'
 
 import { noop } from '@/commons/utils/noop'
+import { SubscriptionRedirection } from '@/pages/Redirection/SubscriptionRedirection'
 import { SignupValidation } from '@/pages/Signup/SignUpValidation/SignUpValidation'
 import { SignupConfirmation } from '@/pages/Signup/SignupConfirmation/SignupConfirmation'
 import { SignupContainer } from '@/pages/Signup/SignupContainer/SignupContainer'
@@ -61,7 +62,7 @@ export const routesSignup: CustomRouteGroupChild[] = [
     meta: { public: true },
   },
   {
-    element: <Navigate to="/inscription/compte/creation" />,
+    element: <SubscriptionRedirection />,
     loader: noop,
     path: '/inscription',
     title: 'Créer un compte',

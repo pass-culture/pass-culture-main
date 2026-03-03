@@ -36,18 +36,7 @@ const NavigateToNewPasswordReset = ({ to, ...props }: NavigateProps) => {
 
 export const routes: CustomRouteTree = [
   {
-    element: <Navigate to="/bienvenue" />,
-    loader: withUserPermissions(mustBeUnauthenticated),
-    path: '/',
-    featureName: 'WIP_PRE_SIGNUP_INFO',
-    title: 'Espace acteurs culturels',
-    meta: {
-      public: true,
-    },
-  },
-  {
     element: <Navigate to="/connexion" />,
-    disabledWithFeatureName: 'WIP_PRE_SIGNUP_INFO',
     loader: withUserPermissions(mustBeUnauthenticated),
     path: '/',
     title: 'Espace acteurs culturels',
@@ -55,7 +44,6 @@ export const routes: CustomRouteTree = [
       public: true,
     },
   },
-
   administrationRouteGroup,
   partnerRouteGroup,
   reimbursementsRouteGroup,
