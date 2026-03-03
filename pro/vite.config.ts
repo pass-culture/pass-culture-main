@@ -3,7 +3,6 @@ import { fontPreloads } from '@pass-culture/design-system/lib/global/font-preloa
 import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig, type PluginOption } from 'vite'
-import { createHtmlPlugin } from 'vite-plugin-html'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import { configDefaults, coverageConfigDefaults } from 'vitest/config'
 
@@ -24,12 +23,8 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       tsconfigPaths(),
-      createHtmlPlugin({
-        minify: true,
-        inject: { data: { mode } },
-      }),
       visualizer({ filename: 'bundleStats.html' }) as PluginOption,
-      htmlPlugin(),
+      htmlPlugin(mode),
     ],
     server: { port: 3001 },
     preview: { port: 3001 },
@@ -89,15 +84,30 @@ export default defineConfig(({ mode }) => {
   }
 })
 
-const htmlPlugin = () => {
-  //  Inject the design-system fonts files in the index.html preloads
+const CSP_DEV =
+  "default-src 'self' 'unsafe-eval' blob: data: https: http: gap://ready https://*.hotjar.com:* https://*.hotjar.io wss://*.hotjar.com https://*.getbeamer.com/; connect-src 'self' data: https: http: ws://*:3001 wss://*:3001; style-src 'self' https://app.getbeamer.com/styles/beamer-embed.css https://app.getbeamer.com/styles/beamer-embed-fonts.css https://app.getbeamer.com/styles/beamer-boosted-embed.css https://fonts.googleapis.com/css https://cdn.jsdelivr.net/npm/orejime@3.1.0/dist/orejime-standard.css 'unsafe-inline'"
+
+const CSP_PROD =
+  "default-src 'self' blob: data: https: http: gap://ready https://*.hotjar.com:* https://*.hotjar.io wss://*.hotjar.com https://*.getbeamer.com/; style-src 'self' https://app.getbeamer.com/styles/beamer-embed.css https://app.getbeamer.com/styles/beamer-embed-fonts.css https://app.getbeamer.com/styles/beamer-boosted-embed.css https://fonts.googleapis.com/css https://cdn.jsdelivr.net/npm/orejime@3.1.0/dist/orejime-standard.css 'unsafe-inline'"
+
+const htmlPlugin = (mode: string) => {
   return {
     name: 'html-transform',
     transformIndexHtml(html: string) {
-      return html.replace(
-        /<!-- inject:preload-design-system-fonts --><!-- endinject -->/g,
-        fontPreloads
-      )
+      const csp = mode === 'development' ? CSP_DEV : CSP_PROD
+      /*
+       * Do not use hashes to define CSP: we had a bug where Beamer was not loaded
+       * because the hash was invalid in some instances of Firefox.
+       * It is probably a Firefox bug where the hash is not computed correctly/is not reliable.
+       */
+      const cspTag = `<meta http-equiv="Content-Security-Policy" content="${csp}" />`
+
+      return html
+        .replace('<!-- inject:csp -->', cspTag)
+        .replace(
+          /<!-- inject:preload-design-system-fonts --><!-- endinject -->/g,
+          fontPreloads
+        )
     },
   }
 }

@@ -80,8 +80,8 @@
     "@storybook/addon-a11y": "9.1.19",
     "@storybook/addon-docs": "9.1.19",
     "@storybook/react-vite": "9.1.19",
-    "@testing-library/jest-dom": "6.9.1",
     "@testing-library/dom": "10.4.1",
+    "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "16.3.2",
     "@testing-library/user-event": "14.6.1",
     "@types/dompurify": "3.2.0",
@@ -113,7 +113,6 @@
     "ts-unused-exports": "11.0.1",
     "typescript": "5.9.3",
     "vite": "7.3.1",
-    "vite-plugin-html": "3.2.2",
     "vite-tsconfig-paths": "6.1.1",
     "vitest": "4.0.18",
     "vitest-axe": "0.1.0",
@@ -122,8 +121,7 @@
     "vitest-fetch-mock": "0.4.5"
   },
   "resolutions": {
-    "string-width": "4.2.3",
-    "vite-plugin-html/ejs/jake/minimatch": "3.1.4"
+    "string-width": "4.2.3"
   },
   "engines": {
     "node": "24.8"
