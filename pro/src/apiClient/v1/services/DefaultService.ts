@@ -2077,6 +2077,27 @@ export class DefaultService {
     });
   }
   /**
+   * delete_offer_pro_advice <DELETE>
+   * @param offerId
+   * @returns void
+   * @throws ApiError
+   */
+  public deleteOfferProAdvice(
+    offerId: number,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'DELETE',
+      url: '/offers/{offer_id}/pro_advice',
+      path: {
+        'offer_id': offerId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
    * get_offer_pro_advice <GET>
    * @param offerId
    * @returns GetProAdviceResponseModel OK
