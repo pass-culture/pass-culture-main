@@ -1,4 +1,3 @@
-import fullLinkIcon from 'icons/full-link.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import strokeEventsIcon from 'icons/stroke-events.svg'
 
@@ -36,11 +35,12 @@ const WelcomeStepIndividual = (): JSX.Element => {
         <div className={styles['helplink']}>
           <Button
             as="a"
-            to="#" // TODO: jclery-pass (23/02/2026): Wait for help page to be created on https://aide.passculture.app
+            to="https://aide.passculture.app/hc/fr/articles/4412007322641--Acteurs-Culturels-A-quoi-ressemblent-vos-offres-sur-l-application-pass-Culture"
             label="Exemples d'offres pour les jeunes"
-            icon={fullLinkIcon}
             variant={ButtonVariant.TERTIARY}
             size={ButtonSize.SMALL}
+            isExternal
+            opensInNewTab
           />
         </div>
       </div>
