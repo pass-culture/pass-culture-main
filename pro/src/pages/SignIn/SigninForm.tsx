@@ -26,7 +26,7 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
   const isAccountCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
 
   const accountCreationUrl = isAccountCreationAvailable
-    ? '/inscription/compte/creation'
+    ? '/inscription'
     : '/erreur/indisponible'
 
   const { formState, register, watch } = useFormContext<SigninFormValues>()

@@ -159,7 +159,7 @@ describe('SignIn', () => {
 
       expect(screen.getByRole('link', { name: 'S’inscrire' })).toHaveAttribute(
         'href',
-        '/inscription/compte/creation'
+        '/inscription'
       )
     })
 
