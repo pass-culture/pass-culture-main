@@ -11,6 +11,7 @@ from pcapi.core.offerers import models
 from pcapi.core.offerers import repository
 from pcapi.core.offerers import schemas
 from pcapi.core.users import factories as users_factories
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import date as date_utils
 
 
@@ -105,7 +106,7 @@ class GetAllOfferersForUserTest:
             pro_attachment_to_unvalidated_offerer = offerers_factories.UserNotValidatedOffererFactory(user=pro)
 
             # When
-            offerers = repository.get_all_offerers_for_user(user=pro, validated=True).all()
+            offerers = repository.get_all_offerers_for_user(user=pro, validated_offerers_only=True).all()
 
             # Then
             assert len(offerers) == 1
@@ -113,20 +114,22 @@ class GetAllOfferersForUserTest:
             assert pro_attachment_to_validated_offerer.offerer.id in offerers_ids
             assert pro_attachment_to_unvalidated_offerer.offerer.id not in offerers_ids
 
-        def should_return_only_unvalidated_offerers_when_filter_is_false(self) -> None:
+        def should_return_all_offerers_except_rejected_ones_when_filter_is_false(self) -> None:
             # Given
             pro = users_factories.ProFactory()
             pro_attachment_to_validated_offerer = offerers_factories.UserOffererFactory(user=pro)
             pro_attachment_to_unvalidated_offerer = offerers_factories.UserNotValidatedOffererFactory(user=pro)
+            non_validated_offerer = offerers_factories.OffererFactory(validationStatus=ValidationStatus.REJECTED)
 
             # When
-            offerers = repository.get_all_offerers_for_user(user=pro, validated=False).all()
+            offerers = repository.get_all_offerers_for_user(user=pro, validated_offerers_only=False).all()
 
             # Then
-            assert len(offerers) == 1
+            assert len(offerers) == 2
             offerers_ids = [offerer.id for offerer in offerers]
-            assert pro_attachment_to_validated_offerer.offerer.id not in offerers_ids
+            assert pro_attachment_to_validated_offerer.offerer.id in offerers_ids
             assert pro_attachment_to_unvalidated_offerer.offerer.id in offerers_ids
+            assert non_validated_offerer.id not in offerers_ids
 
 
 class FindNewOffererUserEmailTest:

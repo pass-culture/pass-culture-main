@@ -33,7 +33,7 @@ def get_all_venue_labels() -> list[models.VenueLabel]:
 
 def get_all_offerers_for_user(
     user: users_models.User,
-    validated: bool | None = None,
+    validated_offerers_only: bool = False,
     include_non_validated_user_offerers: bool = False,
 ) -> sa_orm.Query:
     """Return a query of matching, accessible offerers.
@@ -62,11 +62,8 @@ def get_all_offerers_for_user(
             )
         query = query.join(models.Offerer.UserOfferers).filter(*user_offerer_filters)
 
-    if validated is not None:
-        if validated:
-            query = query.filter(models.Offerer.isValidated)
-        else:
-            query = query.filter(models.Offerer.isWaitingForValidation)
+    if validated_offerers_only:
+        query = query.filter(models.Offerer.isValidated)
     else:
         query = query.filter(sa.not_(models.Offerer.isRejected))
 
