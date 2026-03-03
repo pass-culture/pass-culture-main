@@ -6,6 +6,7 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_repository
+import pcapi.core.providers.tasks as providers_tasks
 from pcapi.core.history import models as history_models
 from pcapi.core.offers.models import Movie
 from pcapi.core.providers.clients.cds_serializers import IdObjectCDS
@@ -23,8 +24,8 @@ from tests.local_providers.cinema_providers.cds import fixtures as cds_fixtures
 
 class Returns201Test:
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
-    def test_when_venue_provider_is_successfully_created(self, mock_synchronize_venue_provider, client):
+    @patch("pcapi.core.providers.tasks.synchronize_cinema_sessions_task.delay")
+    def test_when_venue_provider_is_successfully_created(self, mock_synchronize_cinema_sessions_task, client):
         venue = offerers_factories.VenueFactory(siret="12345678912345")
         user = user_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
@@ -45,11 +46,11 @@ class Returns201Test:
         assert action.authorUser == user
         assert action.extraData["provider_name"] == venue_provider.provider.name
 
-        mock_synchronize_venue_provider.assert_not_called()
+        mock_synchronize_cinema_sessions_task.assert_not_called()
 
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
-    def test_when_movie_provider_is_successfully_created(self, mock_synchronize_venue_provider, client):
+    @patch("pcapi.core.providers.tasks.synchronize_cinema_sessions_task.delay")
+    def test_when_movie_provider_is_successfully_created(self, mock_synchronize_cinema_sessions_task, client):
         venue = offerers_factories.VenueFactory(siret="12345678912345")
         user = user_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
@@ -61,10 +62,12 @@ class Returns201Test:
         assert response.status_code == 201
 
         venue_provider_id = response.json["id"]
-        mock_synchronize_venue_provider.assert_called_once_with(venue_provider_id)
+        mock_synchronize_cinema_sessions_task.assert_called_once_with(
+            providers_tasks.CinemaSynchronisationTaskPayload(venue_provider_id=venue_provider_id).model_dump()
+        )
 
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
+    @patch("pcapi.core.providers.tasks.synchronize_venue_provider")
     def test_when_add_allocine_stocks_provider_with_default_settings_at_import(
         self, mock_synchronize_venue_provider, client
     ):
@@ -94,7 +97,7 @@ class Returns201Test:
         mock_synchronize_venue_provider.assert_called_once_with(venue_provider)
 
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
+    @patch("pcapi.core.providers.tasks.synchronize_venue_provider")
     def test_when_add_allocine_stocks_provider_for_venue_without_siret(self, mock_synchronize_venue_provider, client):
         venue = offerers_factories.VenueWithoutSiretFactory(managingOfferer__siren="775671464")
         user = user_factories.ProFactory()
@@ -122,8 +125,8 @@ class Returns201Test:
         mock_synchronize_venue_provider.assert_called_once_with(venue_provider)
 
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
-    def test_when_no_regression_on_format(self, mock_synchronize_venue_provider, client):
+    @patch("pcapi.core.providers.tasks.synchronize_cinema_sessions_task.delay")
+    def test_when_no_regression_on_format(self, mock_synchronize_cinema_sessions_task, client):
         venue = offerers_factories.VenueFactory(siret="12345678912345")
         user = user_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
@@ -157,8 +160,8 @@ class Returns201Test:
         }
 
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
-    def test_when_venue_id_at_offer_provider_is_ignored_for_pro(self, mock_synchronize_venue_provider, client):
+    @patch("pcapi.core.providers.tasks.synchronize_cinema_sessions_task.delay")
+    def test_when_venue_id_at_offer_provider_is_ignored_for_pro(self, mock_synchronize_cinema_sessions_task, client):
         venue = offerers_factories.VenueFactory(siret="12345678912345")
         user = user_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
@@ -177,7 +180,7 @@ class Returns201Test:
         assert venue_provider.venueId == venue.id
         assert venue_provider.providerId == provider.id
         assert "id" in response.json
-        mock_synchronize_venue_provider.assert_not_called()
+        mock_synchronize_cinema_sessions_task.assert_not_called()
 
     @pytest.mark.usefixtures("db_session")
     def test_when_add_same_provider(self, client):
@@ -286,7 +289,7 @@ class Returns201Test:
         assert response.json["venueIdAtOfferProvider"] == cds_pivot.idAtProvider
 
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.workers.venue_provider_job.synchronize_ems_venue_provider")
+    @patch("pcapi.core.providers.tasks.synchronize_ems_venue_provider")
     def test_create_venue_provider_for_ems_cinema(self, mocked_synchronize_ems_venue_provider, requests_mock, client):
         venue = offerers_factories.VenueFactory()
         user = user_factories.ProFactory()
@@ -448,10 +451,10 @@ class ConnectProviderToVenueTest:
         mocked_connect_venue_to_provider.assert_called_once_with(venue, provider)
 
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.workers.venue_provider_job.venue_provider_job")
+    @patch("pcapi.core.providers.tasks.synchronize_cinema_sessions_task.delay")
     def test_should_connect_to_allocine(
         self,
-        mocked_venue_provider_job,
+        mocekd_synchronize_cinema_sessions_task,
         client,
     ):
         venue = offerers_factories.VenueFactory()
@@ -473,13 +476,15 @@ class ConnectProviderToVenueTest:
         assert len(venue.venueProviders) == 1
         venue_provider = venue.venueProviders[0]
         assert venue_provider.provider == provider
-        mocked_venue_provider_job.assert_called_once_with(venue_provider.id)
+        mocekd_synchronize_cinema_sessions_task.assert_called_once_with(
+            providers_tasks.CinemaSynchronisationTaskPayload(venue_provider_id=venue_provider.id).model_dump()
+        )
 
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.workers.venue_provider_job.venue_provider_job")
+    @patch("pcapi.core.providers.tasks.synchronize_cinema_sessions_task.delay")
     def test_should_connect_to_provider_linked_to_an_offerer(
         self,
-        mocked_venue_provider_job,
+        mocekd_synchronize_cinema_sessions_task,
         client,
     ):
         venue = offerers_factories.VenueFactory()
@@ -500,13 +505,13 @@ class ConnectProviderToVenueTest:
         assert len(venue.venueProviders) == 1
         venue_provider = venue.venueProviders[0]
         assert venue_provider.provider == provider
-        mocked_venue_provider_job.assert_not_called()
+        mocekd_synchronize_cinema_sessions_task.assert_not_called()
 
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.workers.venue_provider_job.venue_provider_job")
+    @patch("pcapi.core.providers.tasks.synchronize_cinema_sessions_task.delay")
     def test_should_connect_venue_without_siret_to_provider(
         self,
-        mocked_venue_provider_job,
+        mocekd_synchronize_cinema_sessions_task,
         client,
     ):
         venue = offerers_factories.VenueWithoutSiretFactory()
@@ -527,4 +532,4 @@ class ConnectProviderToVenueTest:
         assert len(venue.venueProviders) == 1
         venue_provider = venue.venueProviders[0]
         assert venue_provider.provider == provider
-        mocked_venue_provider_job.assert_not_called()
+        mocekd_synchronize_cinema_sessions_task.assert_not_called()

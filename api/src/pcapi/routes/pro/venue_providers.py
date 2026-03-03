@@ -17,14 +17,12 @@ from pcapi.core.providers.models import VenueProviderCreationPayload
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
-from pcapi.models.feature import FeatureToggle
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import venue_provider_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import rest
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import on_commit
-from pcapi.workers.venue_provider_job import venue_provider_job
 
 from . import blueprint
 
@@ -129,20 +127,16 @@ def create_venue_provider(
     except exceptions.NoPriceSpecified:
         raise ApiErrors({"price": ["Il est obligatoire de saisir un prix."]})
 
-    # venue_provider_job only handles movie providers now.
+    # synchronize_cinema_sessions_task only handles movie providers now.
     movie_provider_names = {"AllocineStocks"} | set(CINEMA_PROVIDER_NAMES)
     if new_venue_provider.provider.localClass in movie_provider_names:
-        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CINEMA_INTEGRATION.is_active():
-            on_commit(
-                functools.partial(
-                    providers_tasks.synchronize_cinema_sessions_task.delay,
-                    providers_tasks.CinemaSynchronisationTaskPayload(
-                        venue_provider_id=new_venue_provider.id
-                    ).model_dump_json(),
-                )
+        payload = providers_tasks.CinemaSynchronisationTaskPayload(venue_provider_id=new_venue_provider.id)
+        on_commit(
+            functools.partial(
+                providers_tasks.synchronize_cinema_sessions_task.delay,
+                payload.model_dump(),
             )
-        else:
-            on_commit(functools.partial(venue_provider_job.delay, new_venue_provider.id))
+        )
 
     return venue_provider_serialize.VenueProviderResponse.model_validate(new_venue_provider)
 
