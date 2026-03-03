@@ -25,6 +25,10 @@ vi.mock('./components/PartnerPageCard/PartnerPageCard', () => ({
   PartnerPageCard: () => <div>page partenaire</div>,
 }))
 
+vi.mock('./components/RevenueCard/RevenueCard', () => ({
+  RevenueCard: () => <div>Remboursement</div>,
+}))
+
 const newHomepageRoutes = [
   {
     path: '/',

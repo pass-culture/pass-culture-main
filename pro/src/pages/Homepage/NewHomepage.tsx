@@ -25,6 +25,7 @@ import {
   type TabKey,
 } from './commons/utils'
 import { PartnerPageCard } from './components/PartnerPageCard/PartnerPageCard'
+import { RevenueCard } from './components/RevenueCard/RevenueCard'
 import styles from './NewHomepage.module.scss'
 
 export const NewHomepage = (): JSX.Element => {
@@ -140,11 +141,10 @@ export const NewHomepage = (): JSX.Element => {
           </div>
           <div className={styles['side']}>
             {shouldDisplayBudgetCard && (
-              <div>
-                Remboursement
-                <br />
-                <b>Module Budget</b>
-              </div>
+              <RevenueCard
+                venueId={selectedVenue.id}
+                bankAccountStatus={selectedVenue.bankAccountStatus}
+              />
             )}
             <PartnerPageCard
               venueId={selectedVenue.id}
@@ -228,11 +228,10 @@ export const NewHomepage = (): JSX.Element => {
               </div>
               <div className={styles['side']}>
                 {shouldDisplayBudgetCard && (
-                  <div>
-                    Remboursement
-                    <br />
-                    <b>Module Budget</b>
-                  </div>
+                  <RevenueCard
+                    venueId={selectedVenue.id}
+                    bankAccountStatus={selectedVenue.bankAccountStatus}
+                  />
                 )}
                 <div>
                   Votre page sur ADAGE
