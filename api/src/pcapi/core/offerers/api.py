@@ -1811,7 +1811,7 @@ def get_educational_offerers(offerer_id: int | None, current_user: users_models.
         offerers = (
             offerers_repository.get_all_offerers_for_user(
                 user=current_user,
-                validated=True,
+                validated_offerers_only=True,
             )
             .join(models.Offerer.managedVenues)
             .options(
@@ -3478,7 +3478,9 @@ def get_user_pending_and_validated_offerers(
     user: users_models.User,
 ) -> PendingAndValidatedOfferers:
     query = (
-        offerers_repository.get_all_offerers_for_user(user=user, include_non_validated_user_offerers=True)
+        offerers_repository.get_all_offerers_for_user(
+            user=user, validated_offerers_only=False, include_non_validated_user_offerers=True
+        )
         .order_by(offerers_models.Offerer.name, offerers_models.Offerer.id)
         .distinct(offerers_models.Offerer.name, offerers_models.Offerer.id)
         .options(sa_orm.load_only(offerers_models.Offerer.id, offerers_models.Offerer.name))
