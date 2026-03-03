@@ -9,8 +9,8 @@ import {
   mustBeAuthenticated,
   mustBeUnauthenticated,
   mustHaveSelectedAdminOfferer,
-  mustHaveSelectedVenue,
   mustNotBeOnboarded,
+  mustOnboardedWithSelectedVenue,
 } from '../utils'
 
 const makeUserPermissions = (
@@ -61,7 +61,7 @@ describe('utils', () => {
         isSelectedVenueAssociated: true,
       })
 
-      expect(mustHaveSelectedVenue(permissions)).toBe(true)
+      expect(mustOnboardedWithSelectedVenue(permissions)).toBe(true)
     })
 
     it('should return false when user is not authenticated', () => {
@@ -71,7 +71,7 @@ describe('utils', () => {
         isSelectedVenueAssociated: true,
       })
 
-      expect(mustHaveSelectedVenue(permissions)).toBe(false)
+      expect(mustOnboardedWithSelectedVenue(permissions)).toBe(false)
     })
 
     it('should return false when user is not onboarded', () => {
@@ -81,7 +81,7 @@ describe('utils', () => {
         isSelectedVenueAssociated: true,
       })
 
-      expect(mustHaveSelectedVenue(permissions)).toBe(false)
+      expect(mustOnboardedWithSelectedVenue(permissions)).toBe(false)
     })
 
     it('should return false when venue is not associated', () => {
@@ -91,7 +91,7 @@ describe('utils', () => {
         isSelectedVenueAssociated: false,
       })
 
-      expect(mustHaveSelectedVenue(permissions)).toBe(false)
+      expect(mustOnboardedWithSelectedVenue(permissions)).toBe(false)
     })
   })
 

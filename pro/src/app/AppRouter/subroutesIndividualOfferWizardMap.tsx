@@ -3,7 +3,7 @@
 import { withUserPermissions } from '@/commons/auth/withUserPermissions'
 
 import type { CustomRouteGroupChild } from './types'
-import { mustHaveSelectedVenue, mustNotBeOnboarded } from './utils'
+import { mustNotBeOnboarded, mustOnboardedWithSelectedVenue } from './utils'
 
 export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
   {
@@ -13,7 +13,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/edition/details',
     title: 'Détails de l’offre - Modifier une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   {
     lazy: () =>
@@ -22,7 +22,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/recapitulatif/description',
     title: 'Détails de l’offre - Consulter une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   //  Description
   {
@@ -32,7 +32,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/creation/description',
     title: 'Description - Créer une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   {
     lazy: () =>
@@ -41,7 +41,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/creation/description',
     title: 'Description - Créer une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   {
     lazy: () =>
@@ -50,7 +50,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/edition/description',
     title: 'Description - Modifier une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   {
     lazy: () =>
@@ -59,7 +59,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/recapitulatif/description',
     title: 'Description - Consulter une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   //  Informations pratiques
   {
@@ -69,7 +69,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/creation/pratiques',
     title: 'Informations pratiques - Créer une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   {
     lazy: () =>
@@ -78,7 +78,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/edition/pratiques',
     title: 'Informations pratiques - Modifier une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   //  Location
   {
@@ -88,7 +88,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/creation/localisation',
     title: 'Localisation - Créer une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   {
     lazy: () =>
@@ -97,7 +97,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/edition/localisation',
     title: 'Localisation - Modifier une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   {
     lazy: () =>
@@ -106,7 +106,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/localisation',
     title: 'Localisation - Consulter une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   // Image & video (media) pages
   {
@@ -116,7 +116,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/creation/media',
     title: 'Image et vidéo - Créer une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   {
     lazy: () =>
@@ -125,7 +125,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/edition/media',
     title: 'Image et vidéo - Modifier une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   {
     lazy: () =>
@@ -134,7 +134,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/media',
     title: 'Image et vidéo - Consulter une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   // Price categories pages
   {
@@ -144,7 +144,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/creation/tarifs',
     title: 'Tarifs - Créer une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   {
     lazy: () =>
@@ -153,7 +153,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/edition/tarifs',
     title: 'Tarifs - Modifier une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   {
     lazy: () =>
@@ -162,7 +162,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/tarifs',
     title: 'Tarifs - Consulter une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   // Timetable
   {
@@ -172,7 +172,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/creation/horaires',
     title: 'Horaires - Créer une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   {
     lazy: () =>
@@ -181,7 +181,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/edition/horaires',
     title: 'Horaires - Modifier une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   {
     lazy: () =>
@@ -190,7 +190,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/horaires',
     title: 'Horaires - Consulter une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   {
     lazy: () =>
@@ -199,7 +199,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/creation/informations_pratiques',
     title: 'Informations pratiques - Créer une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   {
     lazy: () =>
@@ -208,7 +208,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/edition/informations_pratiques',
     title: 'Informations pratiques - Modifier une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   {
     lazy: () =>
@@ -217,7 +217,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/informations_pratiques',
     title: 'Informations pratiques - Consulter une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   // Booking summary page
   {
@@ -227,7 +227,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/reservations',
     title: 'Réservations - Consulter une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   // Confirmation pages
   {
@@ -237,7 +237,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/creation/confirmation',
     title: 'Confirmation - Offre individuelle publiée',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
   // Summary pages
   {
@@ -247,7 +247,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/offre/individuelle/:offerId/creation/recapitulatif',
     title: 'Récapitulatif - Créer une offre individuelle',
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   },
 ]
 

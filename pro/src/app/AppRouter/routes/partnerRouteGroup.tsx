@@ -2,11 +2,11 @@ import { withUserPermissions } from '@/commons/auth/withUserPermissions'
 import { PartnerLayout } from '@/layouts/PartnerLayout/PartnerLayout'
 
 import type { CustomRouteGroup } from '../types'
-import { isNewHomepageEnabled, mustHaveSelectedVenue } from '../utils'
+import { isNewHomepageEnabled, mustOnboardedWithSelectedVenue } from '../utils'
 
 export const partnerRouteGroup: CustomRouteGroup = {
   path: '',
-  loader: withUserPermissions(mustHaveSelectedVenue),
+  loader: withUserPermissions(mustOnboardedWithSelectedVenue),
   Component: PartnerLayout,
   children: [
     {
