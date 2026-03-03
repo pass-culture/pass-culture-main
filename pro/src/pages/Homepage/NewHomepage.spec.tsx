@@ -20,6 +20,10 @@ vi.mock('@/components/CollectiveDmsTimeline/CollectiveDmsTimeline', () => ({
   CollectiveDmsTimeline: () => <div>timeline DMS</div>,
 }))
 
+vi.mock('./components/PartnerPage/PartnerPage', () => ({
+  PartnerPage: () => <div>page partenaire</div>,
+}))
+
 const newHomepageRoutes = [
   {
     path: '/',
@@ -319,7 +323,7 @@ describe('NewHomepage', () => {
 
       expect(
         screen.getByRole('tabpanel', { description: /indiv/ })
-      ).toHaveTextContent(/Votre page sur l’application/)
+      ).toHaveTextContent(/page partenaire/)
 
       expect(
         screen.getByRole('tabpanel', { description: /indiv/ })
