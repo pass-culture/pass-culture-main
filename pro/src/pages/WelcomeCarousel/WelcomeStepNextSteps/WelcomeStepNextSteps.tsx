@@ -56,9 +56,10 @@ const WelcomeStepNextSteps = (): JSX.Element => {
             title="Besoin de plus d'informations ?"
             actions={[
               {
-                href: 'https://us06web.zoom.us/meeting/register/wtda-V2MQwmKKzkuvgpNlw#/registration',
+                href: 'https://us06web.zoom.us/meeting/register/wtda-V2MQwmKKzkuvgpNlw#/',
                 icon: fullLinkIcon,
                 iconAlt: 'Nouvelle fenêtre',
+                isExternal: true,
                 label: 'Participez à notre prochain webinaire',
                 type: 'link',
                 onClick() {
