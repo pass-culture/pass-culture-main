@@ -56,3 +56,18 @@ def test_with_soft_deleted_venues(siret, comment, is_permanent, is_open_to_publi
     assert venue.isPermanent == is_permanent  # should not change
     assert venue.isOpenToPublic == is_open_to_public  # should not change
     assert venue.isSoftDeleted == True  # should not change
+
+
+def test_dry_run_should_not_commit():
+    venue = offerers_factories.VenueFactory(
+        siret="1234567891234",
+        comment=None,
+        isPermanent=False,
+        isOpenToPublic=True,
+    )
+
+    main(commit=False)
+
+    assert venue.isPermanent == False  # should not change
+    assert venue.isOpenToPublic == True  # should not change
+    assert venue.isSoftDeleted == False  # should not change
