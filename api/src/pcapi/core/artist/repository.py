@@ -10,6 +10,7 @@ from pcapi.models import db
 def get_artist_search_eligibility_subquery() -> sa.ColumnElement[bool]:
     return sa.and_(
         sa.not_(models.Artist.is_blacklisted),
+        models.Artist.app_search_score >= 2,
         sa.select(1)
         .select_from(models.ArtistProductLink)
         .join(offers_models.Product)
