@@ -48,7 +48,10 @@ vi.mock('@/commons/utils/memoize', () => ({
   memoize: (func: unknown) => func,
 }))
 
-const renderOffererScreen = (contextValue: SignupJourneyContextValues) => {
+const renderOffererScreen = (
+  contextValue: SignupJourneyContextValues,
+  features: string[] = []
+) => {
   return renderWithProviders(
     <>
       <SignupJourneyContext.Provider value={contextValue}>
@@ -70,6 +73,7 @@ const renderOffererScreen = (contextValue: SignupJourneyContextValues) => {
       <SnackBarContainer />
     </>,
     {
+      features,
       user: sharedCurrentUserFactory(),
       initialRouterEntries: ['/inscription/structure/recherche'],
     }
@@ -869,6 +873,52 @@ describe('Offerer', () => {
       expect(
         screen.queryByText('Êtes-vous un professionnel de la culture ?')
       ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('When WIP_PRE_SIGNUP_INFO is enabled', () => {
+    it('should not display MaybeAppUserDialog for higher edication', async () => {
+      vi.spyOn(api, 'getStructureData').mockResolvedValue(
+        structureDataBodyModelFactory({ apeCode: '8542Z' })
+      )
+      renderOffererScreen(contextValue, ['WIP_PRE_SIGNUP_INFO'])
+
+      await userEvent.type(
+        screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+        '12345678933335'
+      )
+      await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
+      expect(api.getStructureData).toHaveBeenCalled()
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText(
+            "Travaillez-vous pour un établissement d'enseignement supérieur ?"
+          )
+        ).not.toBeInTheDocument()
+      })
+    })
+
+    it('should not display MaybeAppUserDialog', async () => {
+      vi.spyOn(api, 'getStructureData').mockResolvedValue(
+        structureDataBodyModelFactory({ apeCode: '8531Z' })
+      )
+      renderOffererScreen(contextValue, ['WIP_PRE_SIGNUP_INFO'])
+
+      await userEvent.type(
+        screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+        '12345678933335'
+      )
+      await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
+      expect(api.getStructureData).toHaveBeenCalled()
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText('Êtes-vous un professionnel de la culture ?')
+        ).not.toBeInTheDocument()
+      })
     })
   })
 })
