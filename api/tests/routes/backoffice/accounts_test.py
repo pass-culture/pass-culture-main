@@ -1609,6 +1609,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
             id_piece_number="123456654321",
             phoneNumber="+33601234567",
         )
+        users_factories.SingleSignOnFactory(user=user)
 
         form_data = {
             "first_name": "Comte ",
@@ -1642,6 +1643,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert user.postalCode == form_data["postal_code"].strip()
         assert user.departementCode == form_data["postal_code"][:2]
         assert user.city == form_data["city"]
+        assert not user.single_sign_ons
 
         assert len(user.email_history) == 1
         history = user.email_history[0]
