@@ -26,7 +26,6 @@ from pcapi.core.videos import api as videos_api
 from pcapi.core.videos import exceptions as videos_exceptions
 from pcapi.models import api_errors
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.utils import first_or_404
 from pcapi.models.utils import get_or_404
 from pcapi.routes.apis import private_api
@@ -39,7 +38,6 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import requests
 from pcapi.utils import rest
 from pcapi.utils.transaction_manager import atomic
-from pcapi.workers.update_all_offers_active_status_job import update_all_offers_active_status_job
 
 from . import blueprint
 
@@ -447,11 +445,8 @@ def patch_all_offers_active_status(
         "period_ending_date": body.period_ending_date,
         "offerer_address_id": body.offerer_address_id,
     }
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES.is_active():
-        payload = tasks.UpdateAllOffersActiveStatusPayload(is_active=body.is_active, **filters)
-        tasks.update_all_offers_active_status_task.delay(payload.model_dump())
-    else:
-        update_all_offers_active_status_job.delay(filters, body.is_active)
+    payload = tasks.UpdateAllOffersActiveStatusPayload(is_active=body.is_active, **filters)
+    tasks.update_all_offers_active_status_task.delay(payload.model_dump())
     return offers_serialize.PatchAllOffersActiveStatusResponseModel()
 
 

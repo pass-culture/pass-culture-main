@@ -17,13 +17,8 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import tasks as offers_tasks
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.routes.serialization.venue_provider_serialize import PutVenueProviderBody
 from pcapi.utils.transaction_manager import on_commit
-from pcapi.workers.update_all_offers_active_status_job import (
-    update_venue_synchronized_collective_offers_active_status_job,
-)
-from pcapi.workers.update_all_offers_active_status_job import update_venue_synchronized_offers_active_status_job
 
 from . import validation
 
@@ -93,22 +88,13 @@ def reset_stock_quantity(venue: offerers_models.Venue) -> None:
 def delete_venue_provider(
     venue_provider: providers_models.VenueProvider, author: users_models.User, send_email: bool = True
 ) -> None:
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES.is_active():
-        payload = offers_tasks.UpdateVenueOffersActiveStatusPayload(
-            is_active=False,
-            venue_id=venue_provider.venueId,
-            provider_id=venue_provider.providerId,
-        )
-        on_commit(functools.partial(offers_tasks.update_venue_offers_active_status_task.delay, payload.model_dump()))
-    else:
-        on_commit(
-            functools.partial(
-                update_venue_synchronized_offers_active_status_job.delay,
-                venue_provider.venueId,
-                venue_provider.providerId,
-                False,
-            )
-        )
+    payload = offers_tasks.UpdateVenueOffersActiveStatusPayload(
+        is_active=False,
+        venue_id=venue_provider.venueId,
+        provider_id=venue_provider.providerId,
+    )
+    on_commit(functools.partial(offers_tasks.update_venue_offers_active_status_task.delay, payload.model_dump()))
+
     if send_email and venue_provider.venue.bookingEmail:
         transactional_mails.send_venue_provider_deleted_email(venue_provider.venue.bookingEmail)
 
@@ -149,24 +135,12 @@ def activate_or_deactivate_venue_provider(
         if send_email and not venue_provider.isActive and venue_provider.venue.bookingEmail:
             transactional_mails.send_venue_provider_disabled_email(venue_provider.venue.bookingEmail)
 
-        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES.is_active():
-            payload = offers_tasks.UpdateVenueOffersActiveStatusPayload(
-                is_active=venue_provider.isActive,
-                venue_id=venue_provider.venueId,
-                provider_id=venue_provider.providerId,
-            )
-            on_commit(
-                functools.partial(offers_tasks.update_venue_offers_active_status_task.delay, payload.model_dump())
-            )
-        else:
-            on_commit(
-                functools.partial(
-                    update_venue_synchronized_offers_active_status_job.delay,
-                    venue_provider.venueId,
-                    venue_provider.providerId,
-                    venue_provider.isActive,
-                )
-            )
+        payload = offers_tasks.UpdateVenueOffersActiveStatusPayload(
+            is_active=venue_provider.isActive,
+            venue_id=venue_provider.venueId,
+            provider_id=venue_provider.providerId,
+        )
+        on_commit(functools.partial(offers_tasks.update_venue_offers_active_status_task.delay, payload.model_dump()))
 
         logger.info(
             "Updated VenueProvider %s isActive attribut to %s",
@@ -401,34 +375,11 @@ def disable_offers_linked_to_provider(provider_id: int, current_user: typing.Any
             venue_id=venue_provider.venueId,
             provider_id=provider_id,
         )
-        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES.is_active():
-            on_commit(
-                functools.partial(offers_tasks.update_venue_offers_active_status_task.delay, payload.model_dump())
+        on_commit(functools.partial(offers_tasks.update_venue_offers_active_status_task.delay, payload.model_dump()))
+        on_commit(
+            functools.partial(
+                educational_tasks.update_venue_collective_offers_active_status_task.delay, payload.model_dump()
             )
-        else:
-            on_commit(
-                functools.partial(
-                    update_venue_synchronized_offers_active_status_job.delay,
-                    venue_provider.venueId,
-                    provider_id,
-                    False,
-                ),
-            )
-
-        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES.is_active():
-            on_commit(
-                functools.partial(
-                    educational_tasks.update_venue_collective_offers_active_status_task.delay, payload.model_dump()
-                )
-            )
-        else:
-            on_commit(
-                functools.partial(
-                    update_venue_synchronized_collective_offers_active_status_job.delay,
-                    venue_provider.venueId,
-                    provider_id,
-                    False,
-                ),
-            )
+        )
 
         venue_provider.isActive = False
