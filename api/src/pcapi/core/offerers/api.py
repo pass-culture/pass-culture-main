@@ -3481,11 +3481,7 @@ def get_user_pending_and_validated_offerers(
         offerers_repository.get_all_offerers_for_user(user=user, include_non_validated_user_offerers=True)
         .order_by(offerers_models.Offerer.name, offerers_models.Offerer.id)
         .distinct(offerers_models.Offerer.name, offerers_models.Offerer.id)
-        .options(
-            sa_orm.load_only(
-                offerers_models.Offerer.id, offerers_models.Offerer.name, offerers_models.Offerer.allowedOnAdage
-            )
-        )
+        .options(sa_orm.load_only(offerers_models.Offerer.id, offerers_models.Offerer.name))
     )
 
     pending = query.filter(offerers_models.UserOfferer.isWaitingForValidation).all()

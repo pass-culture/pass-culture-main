@@ -96,6 +96,7 @@ describe('SignIn', () => {
           name: 'Ma super librairie',
         }),
       ],
+      offerersNamesWithPendingValidation: [],
     })
 
     vi.spyOn(api, 'getOfferer').mockResolvedValue(

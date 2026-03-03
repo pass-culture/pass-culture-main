@@ -124,7 +124,6 @@ export type { GetOffererMemberResponseModel } from './models/GetOffererMemberRes
 export type { GetOffererMembersResponseModel } from './models/GetOffererMembersResponseModel';
 export type { GetOffererNameResponseModel } from './models/GetOffererNameResponseModel';
 export type { GetOffererResponseModel } from './models/GetOffererResponseModel';
-export type { GetOfferersNamesQueryModel } from './models/GetOfferersNamesQueryModel';
 export type { GetOfferersNamesResponseModel } from './models/GetOfferersNamesResponseModel';
 export type { GetOffererStatsResponseModel } from './models/GetOffererStatsResponseModel';
 export type { GetOffererV2StatsResponseModel } from './models/GetOffererV2StatsResponseModel';

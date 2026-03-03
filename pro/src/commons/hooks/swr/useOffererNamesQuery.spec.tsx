@@ -51,13 +51,13 @@ describe('useOffererNamesQuery', () => {
   })
 
   it('should invoke API and dispatch if no data is present in the store', async () => {
-    const mockOffererNames = [
+    const expectedOfferersNames = [
       { id: 1, name: 'Offerer 1' },
       { id: 2, name: 'Offerer 2' },
     ]
-
     vi.mocked(api.listOfferersNames).mockResolvedValueOnce({
-      offerersNames: mockOffererNames,
+      offerersNames: expectedOfferersNames,
+      offerersNamesWithPendingValidation: [],
     })
 
     const { store } = renderComponent()
@@ -66,7 +66,7 @@ describe('useOffererNamesQuery', () => {
       expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
     })
 
-    expect(store.getState().offerer.offererNames).toEqual(mockOffererNames)
+    expect(store.getState().offerer.offererNames).toEqual(expectedOfferersNames)
 
     expect(screen.getByText('Offerer 1')).toBeInTheDocument()
     expect(screen.getByText('Offerer 2')).toBeInTheDocument()

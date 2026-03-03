@@ -276,6 +276,7 @@ describe('BankInformations page', () => {
           name: 'second offerer',
         }),
       ],
+      offerersNamesWithPendingValidation: [],
     })
     renderBankInformations()
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))

@@ -48,28 +48,10 @@ logger = logging.getLogger(__name__)
 @atomic()
 @login_required
 @spectree_serialize(response_model=offerers_serialize.GetOfferersNamesResponseModel, api=blueprint.pro_private_schema)
-def list_offerers_names(
-    query: offerers_serialize.GetOfferersNamesQueryModel,
-) -> offerers_serialize.GetOfferersNamesResponseModel:
-    if query.offerer_id is not None:
-        offerers = db.session.query(offerers_models.Offerer).filter(offerers_models.Offerer.id == query.offerer_id)
-    else:
-        offerers = repository.get_all_offerers_for_user(
-            user=current_user,
-            validated=query.validated,
-            include_non_validated_user_offerers=not query.validated_for_user,
-        )
-        offerers = offerers.order_by(offerers_models.Offerer.name, offerers_models.Offerer.id)
-        offerers = offerers.distinct(offerers_models.Offerer.name, offerers_models.Offerer.id)
-
-    offerers = offerers.options(
-        sa_orm.load_only(
-            offerers_models.Offerer.id, offerers_models.Offerer.name, offerers_models.Offerer.allowedOnAdage
-        )
-    )
-
-    return offerers_serialize.GetOfferersNamesResponseModel(
-        offerersNames=[offerers_serialize.GetOffererNameResponseModel.from_orm(offerer) for offerer in offerers]
+def list_offerers_names() -> offerers_serialize.GetOfferersNamesResponseModel:
+    offerers = api.get_user_pending_and_validated_offerers(current_user)
+    return offerers_serialize.GetOfferersNamesResponseModel.build(
+        offerers_names=offerers.validated, offerers_names_with_pending_validation=offerers.pending
     )
 
 

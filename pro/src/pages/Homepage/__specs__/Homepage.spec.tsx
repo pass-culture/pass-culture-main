@@ -116,6 +116,7 @@ describe('Homepage', () => {
     vi.spyOn(api, 'getProfile')
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: baseOfferersNames,
+      offerersNamesWithPendingValidation: [],
     })
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,

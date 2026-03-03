@@ -79,6 +79,7 @@ describe('Reimbursement page', () => {
   it('should render component even if offererNames is empty', () => {
     vi.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
       offerersNames: [],
+      offerersNamesWithPendingValidation: [],
     })
 
     renderReimbursements()

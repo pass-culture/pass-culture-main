@@ -4,7 +4,6 @@ import { api } from '@/apiClient/api'
 import { UserRole } from '@/apiClient/v1'
 import {
   defaultGetOffererResponseModel,
-  getOffererNameFactory,
   makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -55,14 +54,12 @@ describe('src | App', () => {
         name: 'Venue A1',
       })
     )
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [
-        getOffererNameFactory({
-          id: 1,
-          name: 'Offerer A',
-        }),
-      ],
-    })
+    const mockOffererNames = {
+      offerersNames: [{ id: 1, name: 'Offerer A' }],
+      offerersNamesWithPendingValidation: [],
+    }
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue(mockOffererNames)
+
     vi.spyOn(api, 'getVenues').mockResolvedValue({
       venues: [
         makeVenueListItem({
