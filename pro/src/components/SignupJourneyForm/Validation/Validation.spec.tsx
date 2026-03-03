@@ -245,6 +245,7 @@ describe('ValidationScreen', () => {
       }
       vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
         offerersNames: [],
+        offerersNamesWithPendingValidation: [],
       })
       vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
       vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
@@ -286,6 +287,7 @@ describe('ValidationScreen', () => {
       }
       vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
         offerersNames: [],
+        offerersNamesWithPendingValidation: [],
       })
       vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
       vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
@@ -328,6 +330,7 @@ describe('ValidationScreen', () => {
       }
       vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
         offerersNames: [],
+        offerersNamesWithPendingValidation: [],
       })
       vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
       const saveNewOnboardingDataMock = vi
@@ -362,6 +365,7 @@ describe('ValidationScreen', () => {
       }
       vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
         offerersNames: [],
+        offerersNamesWithPendingValidation: [],
       })
       vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
       const saveNewOnboardingDataMock = vi

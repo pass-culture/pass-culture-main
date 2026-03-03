@@ -71,7 +71,10 @@ const offersRecap: CollectiveOfferTemplateResponseModel[] = [
 describe('TemplateCollectiveOffers', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValue(offersRecap)
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [],
+      offerersNamesWithPendingValidation: [],
+    })
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       name: 'Mon offerer',

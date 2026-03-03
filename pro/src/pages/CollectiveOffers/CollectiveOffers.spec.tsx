@@ -107,7 +107,10 @@ describe('CollectiveOffers', () => {
   beforeEach(() => {
     vi.resetAllMocks()
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [],
+      offerersNamesWithPendingValidation: [],
+    })
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
     })
@@ -636,6 +639,7 @@ describe('CollectiveOffers', () => {
       )
       vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
         offerersNames: [],
+        offerersNamesWithPendingValidation: [],
       })
       vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
       vi.spyOn(api, 'getOfferer').mockResolvedValue({

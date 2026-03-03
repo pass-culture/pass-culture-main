@@ -43,6 +43,7 @@ describe('setSelectedOffererById', () => {
       getOffererNameFactory({ id: 100 }),
       getOffererNameFactory({ id: 200 }),
     ],
+    offerersNamesWithPendingValidation: [],
   }
   const venuesBase = [
     makeVenueListItem({ id: 101, managingOffererId: 100 }),

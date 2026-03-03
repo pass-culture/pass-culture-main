@@ -73,7 +73,10 @@ describe('SignupValidation', () => {
   })
 
   it('should verify validity of user token and redirect to home', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [],
+      offerersNamesWithPendingValidation: [],
+    })
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
     vi.spyOn(api, 'getProfile').mockResolvedValue(sharedCurrentUserFactory())
 
@@ -134,7 +137,10 @@ describe('SignupValidation', () => {
     const user = sharedCurrentUserFactory()
     const getProfile = vi.spyOn(api, 'getProfile').mockResolvedValue(user)
     const initializeUser = vi.spyOn(initializeUserModule, 'initializeUser')
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [],
+      offerersNamesWithPendingValidation: [],
+    })
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
 
     renderSignupValidation()

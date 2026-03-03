@@ -38,6 +38,7 @@ export const useOffererNamesQuery =
         } else {
           return {
             offerersNames: storeOffererNames,
+            offerersNamesWithPendingValidation: [], // This part is not stored in the Redux store, so we return an empty array
           }
         }
       },

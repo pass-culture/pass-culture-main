@@ -75,6 +75,7 @@ describe('Signup', () => {
           name: 'Ma super librairie',
         }),
       ],
+      offerersNamesWithPendingValidation: [],
     })
     Element.prototype.scrollIntoView = vi.fn()
   })

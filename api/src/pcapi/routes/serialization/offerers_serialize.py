@@ -154,12 +154,9 @@ class GetOffererResponseModel(BaseModel):
         json_encoders = {datetime: date_utils.format_into_utc_date}
 
 
-class GetOffererNameResponseModel(BaseModel):
+class GetOffererNameResponseModel(HttpBodyModel):
     id: int
     name: str
-
-    class Config:
-        orm_mode = True
 
 
 class OffererMemberStatus(enum.Enum):
@@ -176,11 +173,20 @@ class GetOffererMembersResponseModel(BaseModel):
     members: list[GetOffererMemberResponseModel]
 
 
-class GetOfferersNamesResponseModel(BaseModel):
-    offerersNames: list[GetOffererNameResponseModel]
+class GetOfferersNamesResponseModel(HttpBodyModel):
+    offerers_names: list[GetOffererNameResponseModel]
+    offerers_names_with_pending_validation: list[GetOffererNameResponseModel]
 
-    class Config:
-        orm_mode = True
+    @classmethod
+    def build(
+        cls, offerers_names: Iterable, offerers_names_with_pending_validation: Iterable
+    ) -> "GetOfferersNamesResponseModel":
+        return cls(
+            offerers_names=[GetOffererNameResponseModel(id=o.id, name=o.name) for o in offerers_names],
+            offerers_names_with_pending_validation=[
+                GetOffererNameResponseModel(id=o.id, name=o.name) for o in offerers_names_with_pending_validation
+            ],
+        )
 
 
 class GetOfferersNamesQueryModel(BaseModel):

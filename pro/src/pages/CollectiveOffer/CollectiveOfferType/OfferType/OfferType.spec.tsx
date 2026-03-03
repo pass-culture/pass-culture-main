@@ -98,6 +98,7 @@ describe('OfferType', () => {
           name: 'Ma super structure',
         }),
       ],
+      offerersNamesWithPendingValidation: [],
     })
     vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValue([])
 
