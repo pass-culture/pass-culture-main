@@ -2065,21 +2065,6 @@ class UpdateVenueTest(PostEndpointHelper):
             }
         }
 
-    @pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_MATCH_ACCESLIBRE=False)
-    @patch("pcapi.workers.match_acceslibre_job.match_acceslibre_job.delay")
-    def test_update_venue_becomes_permanent_should_not_call_match_acceslibre_job(
-        self, match_acceslibre_job, authenticated_client
-    ):
-        venue = offerers_factories.VenueFactory(isPermanent=False)
-        data = self._get_current_data(venue)
-        data["is_permanent"] = True
-
-        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
-
-        assert response.status_code == 303
-        match_acceslibre_job.assert_not_called()
-
-    @pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_MATCH_ACCESLIBRE=True)
     @patch("pcapi.core.offerers.tasks.match_acceslibre_task.delay")
     def test_update_venue_becomes_permanent_should_not_call_match_acceslibre_task(
         self, match_acceslibre_task, authenticated_client
