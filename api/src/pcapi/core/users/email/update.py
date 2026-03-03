@@ -308,6 +308,9 @@ def full_email_update_by_admin(user: models.User, email: str, commit: bool = Fal
     user.isEmailValidated = True
     db.session.add(user)
 
+    db.session.query(models.UserSession).filter_by(userId=user.id).delete(synchronize_session=False)
+    db.session.query(models.SingleSignOn).filter_by(userId=user.id).delete(synchronize_session=False)
+
     if commit:
         db.session.commit()
 
