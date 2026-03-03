@@ -351,7 +351,7 @@ class ReindexOfferIdsTest:
 class ReindexArtistIdsTest:
     def test_index_new_artists(self):
         uneligible_artist = artists_factories.ArtistFactory()
-        eligible_artist = artists_factories.ArtistFactory(app_search_score=2)
+        eligible_artist = artists_factories.ArtistFactory()
         product = offers_factories.ProductFactory()
         artists_factories.ArtistProductLinkFactory(artist_id=eligible_artist.id, product_id=product.id)
         offers_factories.StockFactory(offer__product=product)

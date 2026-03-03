@@ -304,7 +304,8 @@ def create_artists() -> None:
     )
     for _ in range(10):
         product = offers_factories.ProductFactory.create(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        offers_factories.OfferFactory.create(product=product, venue=venue)
+        offer = offers_factories.OfferFactory.create(product=product, venue=venue)
+        offers_factories.StockFactory.create(offer=offer)
         offers_factories.ArtistProductLinkFactory.create(
             artist_id=artist_1.id, product_id=product.id, artist_type=ArtistType.AUTHOR
         )
@@ -330,7 +331,8 @@ def create_artists() -> None:
     )
     for _ in range(10):
         product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
-        offers_factories.OfferFactory.create(product=product, venue=venue)
+        offer = offers_factories.OfferFactory.create(product=product, venue=venue)
+        offers_factories.StockFactory.create(offer=offer)
         offers_factories.ArtistProductLinkFactory.create(
             artist_id=artist_2.id, product_id=product.id, artist_type=ArtistType.PERFORMER
         )
@@ -354,7 +356,8 @@ def create_artists() -> None:
     )
     for _ in range(10):
         product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SEANCE_CINE.id)
-        offers_factories.OfferFactory.create(product=product, venue=venue)
+        offer = offers_factories.OfferFactory.create(product=product, venue=venue)
+        offers_factories.StockFactory.create(offer=offer)
         offers_factories.ArtistProductLinkFactory.create(
             artist_id=artist_3.id, product_id=product.id, artist_type=ArtistType.PERFORMER
         )
@@ -374,7 +377,8 @@ def create_artists() -> None:
     )
     for _ in range(2):
         product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
-        offers_factories.OfferFactory.create(product=product, venue=venue)
+        offer = offers_factories.OfferFactory.create(product=product, venue=venue)
+        offers_factories.StockFactory.create(offer=offer)
         offers_factories.ArtistProductLinkFactory.create(
             artist_id=artist_4.id, product_id=product.id, artist_type=ArtistType.PERFORMER
         )
@@ -391,7 +395,8 @@ def create_artists() -> None:
     )
     for _ in range(2):
         product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
-        offers_factories.OfferFactory.create(product=product, venue=venue)
+        offer = offers_factories.OfferFactory.create(product=product, venue=venue)
+        offers_factories.StockFactory.create(offer=offer)
         offers_factories.ArtistProductLinkFactory.create(
             artist_id=artist_5.id, product_id=product.id, artist_type=ArtistType.PERFORMER
         )
