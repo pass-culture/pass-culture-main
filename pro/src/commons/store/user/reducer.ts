@@ -3,9 +3,9 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import type {
   GetOffererResponseModel,
   GetVenueResponseModel,
-  SharedCurrentUserResponseModel,
   VenueListItemResponseModel,
 } from '@/apiClient/v1'
+import type { SharedCurrentUserResponseModel } from '@/apiClient/v1/new'
 
 export type UserAccess = 'no-offerer' | 'no-onboarding' | 'unattached' | 'full'
 

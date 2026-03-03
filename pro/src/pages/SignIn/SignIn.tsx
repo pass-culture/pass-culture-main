@@ -3,8 +3,9 @@ import { useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useRevalidator, useSearchParams } from 'react-router'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { HTTP_STATUS, isErrorAPIError } from '@/apiClient/helpers'
+import type { SharedCurrentUserResponseModel } from '@/apiClient/v1'
 import { SignUpLayout } from '@/app/App/layouts/logged-out/SignUpLayout/SignUpLayout'
 import {
   RECAPTCHA_ERROR,
@@ -64,10 +65,12 @@ export const SignIn = (): JSX.Element => {
     const { email, password } = values
     try {
       const captchaToken = await getReCaptchaToken('loginUser')
-      const user = await api.signin({
-        identifier: email,
-        password,
-        captchaToken,
+      const user = await apiNew.signin({
+        body: {
+          identifier: email,
+          password,
+          captchaToken,
+        },
       })
 
       await dispatch(initializeUser(user)).unwrap()

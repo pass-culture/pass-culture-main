@@ -1,4 +1,4 @@
-import type { SharedCurrentUserResponseModel } from '@/apiClient/v1'
+import type { SharedCurrentUserResponseModel } from '@/apiClient/v1/new'
 import type { DeepPartial } from '@/commons/custom_types/utils'
 import type { OffererState } from '@/commons/store/offerer/reducer'
 
