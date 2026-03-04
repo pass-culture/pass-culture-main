@@ -1,21 +1,27 @@
+import pydantic
+
 from pcapi.core.cultural_survey import cultural_survey
 from pcapi.core.cultural_survey import models as cultural_survey_models
-from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import to_camel
+from pcapi.routes.serialization import HttpBodyModel
+from pcapi.routes.serialization import HttpQueryParamsModel
 
 
-class CulturalSurveyQuestionsResponse(BaseModel):
+class CulturalSurveyQuestionsResponse(HttpBodyModel):
     questions: list[cultural_survey.CulturalSurveyQuestion]
 
+    model_config = pydantic.ConfigDict(
+        alias_generator=None,
+    )
 
-class CulturalSurveyUserAnswer(BaseModel):
+
+class CulturalSurveyUserAnswer(HttpBodyModel):
     question_id: cultural_survey_models.CulturalSurveyQuestionEnum
     answer_ids: list[cultural_survey_models.CulturalSurveyAnswerEnum]
 
-    class Config:
-        alias_generator = to_camel
-        use_enum_values = True
+    model_config = pydantic.ConfigDict(
+        use_enum_values=True,
+    )
 
 
-class CulturalSurveyAnswersRequest(BaseModel):
+class CulturalSurveyAnswersRequest(HttpQueryParamsModel):
     answers: list[CulturalSurveyUserAnswer]

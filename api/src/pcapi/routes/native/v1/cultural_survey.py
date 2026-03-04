@@ -41,7 +41,7 @@ def get_cultural_survey_questions() -> serializers.CulturalSurveyQuestionsRespon
 def post_cultural_survey_answers(body: serializers.CulturalSurveyAnswersRequest) -> None:
     payload = CulturalSurveyAnswersForData(
         user_id=current_user.id,
-        submitted_at=date_utils.get_naive_utc_now().isoformat(),  # type: ignore[arg-type]
+        submitted_at=date_utils.get_naive_utc_now().isoformat(),
         answers=body.answers,
     )
 
