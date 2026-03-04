@@ -3,7 +3,7 @@ import typing
 from functools import partial
 
 from flask_login import current_user
-from pydantic.v1 import ValidationError
+from pydantic import ValidationError
 
 from pcapi.connectors.beneficiaries import ubble as ubble_connector
 from pcapi.core.external.attributes import api as external_attributes_api
@@ -64,7 +64,7 @@ def get_subscription_stepper() -> serializers.SubscriptionStepperResponseV2:
         next_subscription_step=user_subscription_state.next_step,
         title=stepper_header.title,
         subtitle=stepper_header.subtitle,
-        subscription_message=serializers.SubscriptionMessageV2.from_orm(subscription_message)
+        subscription_message=serializers.SubscriptionMessageV2.model_validate(subscription_message)
         if subscription_message
         else None,
     )
@@ -75,8 +75,10 @@ def get_subscription_stepper() -> serializers.SubscriptionStepperResponseV2:
 @authenticated_and_active_user_required
 def get_profile() -> serializers.ProfileResponse | None:
     if (profile_data := subscription_api.get_profile_data(current_user)) is not None:
+        profile_data_dict = profile_data.dict()
+        profile_data_dict.pop("origin", None)
         try:
-            return serializers.ProfileResponse(profile=serializers.ProfileContent(**profile_data.dict()))
+            return serializers.ProfileResponse(profile=serializers.ProfileContent(**profile_data_dict))
         except ValidationError as e:
             logger.error("Invalid profile data for user %s: %s", current_user.id, e)
             return serializers.ProfileResponse()
@@ -118,8 +120,10 @@ def complete_profile(body: serializers.ProfileUpdateRequest) -> None:
 )
 @authenticated_and_active_user_required
 def get_activity_types() -> serializers.ActivityTypesResponse:
-    activities = [serializers.ActivityResponseModel.from_orm(activity) for activity in profile_options.ALL_ACTIVITIES]
-    middle_school = serializers.ActivityResponseModel.from_orm(profile_options.MIDDLE_SCHOOL_STUDENT)
+    activities = [
+        serializers.ActivityResponseModel.model_validate(activity) for activity in profile_options.ALL_ACTIVITIES
+    ]
+    middle_school = serializers.ActivityResponseModel.model_validate(profile_options.MIDDLE_SCHOOL_STUDENT)
     if current_user.is_18_or_above_eligible and middle_school in activities:
         activities.remove(middle_school)
 
@@ -177,7 +181,7 @@ def start_identification_session(
         identification_url = ubble_subscription_api.start_ubble_workflow(
             current_user, declared_names[0], declared_names[1], body.redirectUrl
         )
-        return serializers.IdentificationSessionResponse(identificationUrl=identification_url)  # type: ignore[arg-type]
+        return serializers.IdentificationSessionResponse(identificationUrl=identification_url)
 
     except ubble_connector.UbbleHttpError as exception:
         if isinstance(exception, ubble_connector.UbbleServerError):

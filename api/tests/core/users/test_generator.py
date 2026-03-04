@@ -175,9 +175,9 @@ class UserGeneratorTest:
         profile_completion = subscription_repository.get_completed_profile_check(user, user.eligibility)
         assert profile_completion.resultContent["address"] == user.address
         assert profile_completion.resultContent["city"] == user.city
-        assert profile_completion.resultContent["firstName"] == user.firstName
-        assert profile_completion.resultContent["lastName"] == user.lastName
-        assert profile_completion.resultContent["postalCode"] == user.postalCode
+        assert profile_completion.resultContent["first_name"] == user.firstName
+        assert profile_completion.resultContent["last_name"] == user.lastName
+        assert profile_completion.resultContent["postal_code"] == user.postalCode
 
     def test_identity_check_is_consistent_with_user_data(self):
         user_data = users_generator.GenerateUserData(
