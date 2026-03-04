@@ -128,8 +128,14 @@ class FeatureToggle(enum.Enum):
     )
     VENUE_REGULARIZATION = "Déplacement de n'importe quelle offre vers une autre venue"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
+    WIP_ASYNCHRONOUS_CELERY_BEAMER = (
+        "Activer le backend de tâches asynchrones Celery pour la màj des attributs pro dans Beamer"
+    )
     WIP_ASYNCHRONOUS_CELERY_CHECK_OFFERERS = (
         "Activer le backend de tâches asynchrones Celery pour la vérification automatique des entités juridiques"
+    )
+    WIP_ASYNCHRONOUS_CELERY_CULTURAL_SURVEY = (
+        "Activer le backend de tâches asynchrones Celery pour la synchro avec le cultural survey"
     )
     WIP_ASYNCHRONOUS_CELERY_EXTERNAL_BOOKING = (
         "Activer le backend de tâches asynchrones Celery pour l'envoi de notification aux providers"
@@ -149,9 +155,7 @@ class FeatureToggle(enum.Enum):
         "Autoriser l'ajout de nouvelle structure seulement pour les collectivités"
     )
     WIP_SWITCH_VENUE = "Activer la gestion de l'espace partenaire par venue sans passer par l'offerer"
-    WIP_ASYNCHRONOUS_CELERY_CULTURAL_SURVEY = (
-        "Activer le backend de tâches asynchrones Celery pour la synchro avec le cultural survey"
-    )
+
     WIP_VOLUNTEERING = "Active la fonctionnalité de bénévolat"
 
     def is_active(self) -> bool:
@@ -208,6 +212,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.SEND_ALL_EMAILS_TO_EHP,
     FeatureToggle.SYNCHRONIZE_ALLOCINE_PRODUCTS_FROM_BIGQUERY_TABLES,
     FeatureToggle.VENUE_REGULARIZATION,
+    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BEAMER,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CHECK_OFFERERS,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CULTURAL_SURVEY,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_EXTERNAL_BOOKING,

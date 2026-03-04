@@ -23,6 +23,7 @@ CELERY_BASE_SETTINGS: typing.Final = dict(
     task_routes={
         # External calls
         "tasks.api_particulier.default.*": {"queue": CELERY_EXTERNAL_CALLS_DEFAULT_QUEUE_NAME},
+        "tasks.beamer.default.*": {"queue": CELERY_EXTERNAL_CALLS_DEFAULT_QUEUE_NAME},
         "tasks.batch.priority.*": {"queue": CELERY_EXTERNAL_CALLS_PRIORITY_QUEUE_NAME},
         "tasks.compliance.default.*": {"queue": CELERY_EXTERNAL_CALLS_DEFAULT_QUEUE_NAME},
         "tasks.compliance.priority.*": {"queue": CELERY_EXTERNAL_CALLS_PRIORITY_QUEUE_NAME},
