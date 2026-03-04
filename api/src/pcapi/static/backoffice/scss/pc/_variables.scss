@@ -7,7 +7,7 @@
     src: url("/static/backoffice/fonts/Inter-VariableFont_opsz,wght.ttf") format("truetype");
 }
 
-$purple: #25026c;
+$purple: #320096;
 
 // scss-docs-start theme-color-variables
 $primary:   $purple;
@@ -207,3 +207,11 @@ $spacers: (
   56: $spacer * 3.5,
 );
 
+
+// scss-doc-start colors
+$purple-200: #F3EDFF;
+$purple-300: #C1A3FF;
+$purple-400: #6123DF;
+$purple-500: #320096;
+$purple-600: #25026C;
+// scss-doc-end colors
