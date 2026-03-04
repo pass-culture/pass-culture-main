@@ -1,11 +1,12 @@
 import dataclasses
 import enum
 
-from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
+from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.serialization.utils import to_camel
 
 
-class BannerQueryParams(BaseModel):
+class BannerQueryParams(HttpQueryParamsModel):
     is_geolocated: bool = False
 
     class Config:
@@ -41,5 +42,5 @@ class Banner:
     text: str
 
 
-class BannerResponse(BaseModel):
-    banner: Banner | None
+class BannerResponse(HttpBodyModel):
+    banner: Banner | None = None

@@ -515,16 +515,17 @@
                 "type": "object"
             },
             "BannerName": {
-                "description": "An enumeration.",
                 "enum": [
                     "geolocation_banner",
                     "activation_banner",
                     "retry_identity_check_banner",
                     "transition_17_18_banner"
                 ],
-                "title": "BannerName"
+                "title": "BannerName",
+                "type": "string"
             },
             "BannerQueryParams": {
+                "additionalProperties": false,
                 "properties": {
                     "isGeolocated": {
                         "default": false,
@@ -536,14 +537,18 @@
                 "type": "object"
             },
             "BannerResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "banner": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/Banner"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     }
                 },
                 "title": "BannerResponse",

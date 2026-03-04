@@ -15,7 +15,7 @@ from pcapi.serialization.decorator import spectree_serialize
 @blueprint.native_route("/banner", methods=["GET"])
 @spectree_serialize(on_success_status=200, api=blueprint.api, response_model=serializers.BannerResponse)
 @authenticated_and_active_user_required
-def get_banner(query: serializers.BannerQueryParams) -> serializers.BannerResponse | None:
+def get_banner(query: serializers.BannerQueryParams) -> serializers.BannerResponse:
     joined_user = (
         db.session.query(users_models.User)
         .filter_by(id=current_user.id)
