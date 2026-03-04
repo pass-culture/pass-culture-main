@@ -497,3 +497,13 @@ class OfferQualityFactory(BaseFactory):
 
     offer = factory.SubFactory(OfferFactory)
     completionScore = 5.0
+
+
+class ProAdviceFactory(BaseFactory[offers_models.ProAdvice]):
+    class Meta:
+        model = models.ProAdvice
+
+    author = "Author"
+    content = "Content"
+    offer = factory.SubFactory(OfferFactory)
+    venue = factory.SelfAttribute("offer.venue")

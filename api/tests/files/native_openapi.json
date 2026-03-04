@@ -7453,6 +7453,111 @@
                 "title": "VenueMovieScreeningsRequest",
                 "type": "object"
             },
+            "VenueProAdvice": {
+                "additionalProperties": false,
+                "properties": {
+                    "author": {
+                        "title": "Author",
+                        "type": "string"
+                    },
+                    "content": {
+                        "title": "Content",
+                        "type": "string"
+                    },
+                    "offerId": {
+                        "title": "Offerid",
+                        "type": "integer"
+                    },
+                    "offerName": {
+                        "title": "Offername",
+                        "type": "string"
+                    },
+                    "offerSubcategory": {
+                        "title": "Offersubcategory",
+                        "type": "string"
+                    },
+                    "offerThumbUrl": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Offerthumburl"
+                    },
+                    "publicationDatetime": {
+                        "format": "date-time",
+                        "title": "Publicationdatetime",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "author",
+                    "content",
+                    "offerId",
+                    "offerName",
+                    "offerSubcategory",
+                    "publicationDatetime"
+                ],
+                "title": "VenueProAdvice",
+                "type": "object"
+            },
+            "VenueProAdviceQuery": {
+                "additionalProperties": false,
+                "properties": {
+                    "maxContentLength": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Maxcontentlength"
+                    },
+                    "page": {
+                        "default": 1,
+                        "exclusiveMinimum": 0,
+                        "title": "Page",
+                        "type": "integer"
+                    },
+                    "resultsPerPage": {
+                        "default": 20,
+                        "exclusiveMinimum": 0,
+                        "title": "Resultsperpage",
+                        "type": "integer"
+                    }
+                },
+                "title": "VenueProAdviceQuery",
+                "type": "object"
+            },
+            "VenueProAdvices": {
+                "additionalProperties": false,
+                "properties": {
+                    "nbResults": {
+                        "title": "Nbresults",
+                        "type": "integer"
+                    },
+                    "proAdvices": {
+                        "items": {
+                            "$ref": "#/components/schemas/VenueProAdvice"
+                        },
+                        "title": "Proadvices",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "proAdvices",
+                    "nbResults"
+                ],
+                "title": "VenueProAdvices",
+                "type": "object"
+            },
             "VenueResponse": {
                 "additionalProperties": false,
                 "properties": {
@@ -11016,6 +11121,96 @@
                     }
                 },
                 "summary": "get_venue <GET>",
+                "tags": []
+            }
+        },
+        "/native/v1/venue/{venue_id}/advices": {
+            "get": {
+                "description": "",
+                "operationId": "get__native_v1_venue_{venue_id}_advices",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "venue_id",
+                        "required": true,
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "maxContentLength",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "integer"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Maxcontentlength"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "page",
+                        "required": false,
+                        "schema": {
+                            "default": 1,
+                            "exclusiveMinimum": 0,
+                            "title": "Page",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "resultsPerPage",
+                        "required": false,
+                        "schema": {
+                            "default": 20,
+                            "exclusiveMinimum": 0,
+                            "title": "Resultsperpage",
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VenueProAdvices"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "summary": "get_venue_advices <GET>",
                 "tags": []
             }
         },
