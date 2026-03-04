@@ -1,6 +1,8 @@
 import logging
+from urllib.parse import quote
 
 import flask
+import jwt
 from flask import redirect
 from flask import render_template
 from flask import request
@@ -29,6 +31,7 @@ from . import utils
 logger = logging.getLogger(__name__)
 
 ERROR_STRING_PREFIX = "Erreur d'authentification Discord: "
+GENERIC_ASSOCIATION_ERROR = "Impossible d'associer ton compte Discord. Contacte le support pour plus d'informations."
 
 
 @blueprint.auth_blueprint.route("/discord/signin", methods=["GET"])
@@ -49,10 +52,8 @@ def discord_success() -> Response | str:
     access_token = request.args.get("access_token")
     user_id = request.args.get("user_id")
 
-    if not access_token:
-        return redirect_with_error(f"{ERROR_STRING_PREFIX}access token non récupéré")
-    if not user_id:
-        return redirect_with_error(f"{ERROR_STRING_PREFIX}user_id pass Culture non récupéré")
+    if not access_token or not user_id:
+        return redirect_with_error(f"{ERROR_STRING_PREFIX}session invalide ou expirée")
 
     try:
         user_discord_id = discord_connector.get_user_id(access_token)
@@ -71,18 +72,14 @@ def discord_success() -> Response | str:
         )
     try:
         update_discord_user(user_id, user_discord_id)
-    except users_exceptions.DiscordUserAlreadyLinked:
-        return redirect_with_error("Ce compte Discord est déjà lié à un autre compte pass Culture.")
-    except users_exceptions.UserNotEligible:
-        return redirect_with_error(
-            "Accès refusé au serveur Discord. Tu dois avoir au moins 17 ans et bénéficier du crédit pass Culture pour accéder à ce serveur."
-        )
-    except users_exceptions.UserNotABeneficiary:
-        return redirect_with_error(
-            "Accès refusé au serveur Discord. Tu dois être bénéficiaire du pass Culture pour accéder à ce serveur."
-        )
-    except users_exceptions.UserNotAllowed:
-        return redirect_with_error("Accès refusé au serveur Discord. Contacte le support pour plus d'informations")
+    except (
+        users_exceptions.DiscordUserAlreadyLinked,
+        users_exceptions.UserNotEligible,
+        users_exceptions.UserNotABeneficiary,
+        users_exceptions.UserNotAllowed,
+    ) as exc:
+        logger.warning("Discord association error for user_id=%s: %s", user_id, type(exc).__name__)
+        return redirect_with_error(GENERIC_ASSOCIATION_ERROR)
 
     try:
         discord_connector.add_to_server(access_token, user_discord_id)
@@ -98,12 +95,17 @@ def discord_success() -> Response | str:
 @blueprint.auth_blueprint.route("/discord/callback", methods=["GET"])
 def discord_call_back() -> Response | str:
     code = request.args.get("code")
-    user_id = request.args.get("state")
+    state = request.args.get("state")
 
     if not code:
         return redirect_with_error(f"{ERROR_STRING_PREFIX}code non récupéré")
-    if not user_id:
-        return redirect_with_error(f"{ERROR_STRING_PREFIX}user_id pass Culture non récupéré")
+    if not state:
+        return redirect_with_error(f"{ERROR_STRING_PREFIX}état de la requête non récupéré")
+
+    try:
+        user_id = discord_connector.verify_state(state)
+    except (jwt.PyJWTError, KeyError):
+        return redirect_with_error(f"{ERROR_STRING_PREFIX}lien invalide ou expiré")
 
     try:
         access_token = discord_connector.retrieve_access_token(code)
@@ -203,8 +205,7 @@ def discord_signin_post() -> Response | str:
 
 def redirect_with_error(error_message: str) -> Response:
     mark_transaction_as_invalid()
-    auth_signin_url = flask.url_for("auth.discord_signin", error=error_message)
-    return redirect(auth_signin_url, code=303)
+    return redirect(f"/auth/discord/signin?error={quote(error_message)}", code=303)
 
 
 def handle_http_error(error: requests.exceptions.HTTPError) -> Response:
