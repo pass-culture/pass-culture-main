@@ -1,7 +1,7 @@
 Flask<3
 flask-cors==6.0.0
 appengine-python-standard>=0.2.2
-google-cloud-storage==2.5.0
+google-cloud-storage==3.9.0
 gunicorn==23.0.0
 # Uncomment if you need to debug
 # google-python-cloud-debugger
