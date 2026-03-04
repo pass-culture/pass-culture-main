@@ -1802,4 +1802,4 @@ class ProAdvice(PcObject, Model):
     updatedAt: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now(), onupdate=sa.func.now()
     )
-    venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, nullable=True, unique=False)
+    venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, nullable=False, unique=False)
