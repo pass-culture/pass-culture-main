@@ -1254,6 +1254,52 @@ def get_offerer_headline_offer(offerer_id: int) -> offers_models.Offer:
     )
 
 
+def get_venue_pro_advices_count(venue_id: int) -> int:
+    return db.session.scalar(sa.select(sa.func.count()).where(offers_models.ProAdvice.venueId == venue_id)) or 0
+
+
+def get_venue_pro_advices(venue_id: int, offset: int, limit: int | None) -> list[offers_models.ProAdvice]:
+    pro_advices_query = (
+        sa.select(offers_models.ProAdvice)
+        .where(offers_models.ProAdvice.venueId == venue_id)
+        .order_by(offers_models.ProAdvice.updatedAt.desc())
+    )
+    pro_advices_query = pro_advices_query.offset(offset)
+    if limit:
+        pro_advices_query = pro_advices_query.limit(limit)
+
+    subquery = pro_advices_query.subquery()
+    query = (
+        sa.select(offers_models.ProAdvice)
+        .join(subquery, subquery.c.id == offers_models.ProAdvice.id)
+        .join(offers_models.Offer, offers_models.ProAdvice.offerId == offers_models.Offer.id)
+        .outerjoin(offers_models.Mediation, offers_models.Offer.id == offers_models.Mediation.offerId)
+        .options(
+            sa_orm.contains_eager(offers_models.ProAdvice.offer)
+            .load_only(offers_models.Offer.id, offers_models.Offer.name, offers_models.Offer.subcategoryId)
+            .options(
+                sa_orm.contains_eager(offers_models.Offer.mediations).load_only(
+                    offers_models.Mediation.id,
+                    offers_models.Mediation.credit,
+                    offers_models.Mediation.dateCreated,
+                    offers_models.Mediation.isActive,
+                    offers_models.Mediation.thumbCount,
+                )
+            )
+            .options(
+                sa_orm.joinedload(offers_models.Offer.product)
+                .load_only(offers_models.Product.id, offers_models.Product.thumbCount)
+                .joinedload(offers_models.Product.productMediations)
+                .load_only(offers_models.ProductMediation.imageType, offers_models.ProductMediation.uuid)
+            )
+        )
+        .order_by(offers_models.ProAdvice.updatedAt.desc())
+    )
+
+    pro_advices = db.session.scalars(query).unique().all()
+    return list(pro_advices)
+
+
 def venues_have_non_free_offers(venue_ids: typing.Collection[int]) -> set[int]:
     query = (
         db.session.query(offers_models.Offer.venueId)
