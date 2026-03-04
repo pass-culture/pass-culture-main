@@ -1,3 +1,5 @@
+import datetime
+
 import pydantic
 
 from pcapi.core.cultural_survey import cultural_survey
@@ -24,4 +26,10 @@ class CulturalSurveyUserAnswer(HttpBodyModel):
 
 
 class CulturalSurveyAnswersRequest(HttpQueryParamsModel):
+    answers: list[CulturalSurveyUserAnswer]
+
+
+class CulturalSurveyAnswersForData(pydantic.BaseModel):
+    user_id: int
+    submitted_at: datetime.datetime
     answers: list[CulturalSurveyUserAnswer]
