@@ -2264,14 +2264,24 @@
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/CulturalSurveyQuestionEnum"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     },
                     "subtitle": {
-                        "nullable": true,
-                        "title": "Subtitle",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Subtitle"
                     },
                     "title": {
                         "title": "Title",
@@ -2286,7 +2296,6 @@
                 "type": "object"
             },
             "CulturalSurveyAnswerEnum": {
-                "description": "An enumeration.",
                 "enum": [
                     "FESTIVAL",
                     "SPECTACLE",
@@ -2331,9 +2340,11 @@
                     "PROJECTION_JEU",
                     "PROJECTION_AUTRE"
                 ],
-                "title": "CulturalSurveyAnswerEnum"
+                "title": "CulturalSurveyAnswerEnum",
+                "type": "string"
             },
             "CulturalSurveyAnswersRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "answers": {
                         "items": {
@@ -2375,7 +2386,6 @@
                 "type": "object"
             },
             "CulturalSurveyQuestionEnum": {
-                "description": "An enumeration.",
                 "enum": [
                     "SORTIES",
                     "FESTIVALS",
@@ -2383,9 +2393,11 @@
                     "ACTIVITES",
                     "PROJECTIONS"
                 ],
-                "title": "CulturalSurveyQuestionEnum"
+                "title": "CulturalSurveyQuestionEnum",
+                "type": "string"
             },
             "CulturalSurveyQuestionsResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "questions": {
                         "items": {
@@ -2402,11 +2414,13 @@
                 "type": "object"
             },
             "CulturalSurveyUserAnswer": {
+                "additionalProperties": false,
                 "properties": {
                     "answerIds": {
                         "items": {
                             "$ref": "#/components/schemas/CulturalSurveyAnswerEnum"
                         },
+                        "title": "Answerids",
                         "type": "array"
                     },
                     "questionId": {
