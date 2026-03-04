@@ -154,22 +154,22 @@ def send_offer_link_by_push(offer_id: int) -> None:
 def get_subcategories_v2() -> subcategories_v2_serializers.SubcategoriesResponseModelv2:
     return subcategories_v2_serializers.SubcategoriesResponseModelv2(
         subcategories=[
-            subcategories_v2_serializers.SubcategoryResponseModelv2.build(subcategory)
+            subcategories_v2_serializers.SubcategoryResponseModelv2.from_orm(subcategory)
             for subcategory in subcategories.ALL_SUBCATEGORIES
         ],
         searchGroups=[
-            subcategories_v2_serializers.SearchGroupResponseModelv2.build(search_group)
+            subcategories_v2_serializers.SearchGroupResponseModelv2.from_orm(search_group)
             for search_group in SEARCH_GROUPS
         ],
         homepageLabels=[
-            subcategories_v2_serializers.HomepageLabelResponseModelv2.build(homepage_label_name)
+            subcategories_v2_serializers.HomepageLabelResponseModelv2.from_orm(homepage_label_name)
             for homepage_label_name in subcategories.HomepageLabels
         ],
         nativeCategories=[
-            subcategories_v2_serializers.NativeCategoryResponseModelv2.build(native_category)
+            subcategories_v2_serializers.NativeCategoryResponseModelv2.from_orm(native_category)
             for native_category in NATIVE_CATEGORIES
         ],
-        genreTypes=[subcategories_v2_serializers.GenreTypeModel.build(genre_type) for genre_type in GenreType],
+        genreTypes=[subcategories_v2_serializers.GenreTypeModel.from_orm(genre_type) for genre_type in GenreType],
     )
 
 
@@ -177,5 +177,5 @@ def get_subcategories_v2() -> subcategories_v2_serializers.SubcategoriesResponse
 @spectree_serialize(api=blueprint.api, response_model=subcategories_v2_serializers.CategoriesResponseModel)
 def get_categories() -> subcategories_v2_serializers.CategoriesResponseModel:
     return subcategories_v2_serializers.CategoriesResponseModel(
-        categories=[subcategories_v2_serializers.CategoryResponseModel.build(node) for node in SEARCH_NODES]
+        categories=[subcategories_v2_serializers.CategoryResponseModel.from_orm(node) for node in SEARCH_NODES]
     )
