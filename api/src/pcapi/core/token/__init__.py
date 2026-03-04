@@ -235,8 +235,10 @@ class SecureToken:
         """
         This object has two modes:
         - If token is provided this class will try to retrieve the data from redis. If they are not found it will
-        raise a ValueError. Warning retrieving a token from redis will destroy it (it is single use and this
-        operation is atomic)
+        raise a ValueError.
+
+        Warning retrieving a token from redis will destroy it (it is single use and this operation is atomic)
+
         - If no token is provided this class will dump data in json, generate a token and store the data with the
         ttl (in seconds) in redis.
 
@@ -245,13 +247,7 @@ class SecureToken:
         """
         if token:
             self.token = token
-            # # TODO replace get+delete by getdel once we have access to a redis 6.2+
-            # raw_data = app.redis_client.getdel(self.key)
-            with app.redis_client.pipeline(transaction=True) as pipeline:
-                pipeline.get(self.key)
-                pipeline.delete(self.key)
-                results = pipeline.execute()
-            raw_data = results[0]
+            raw_data = app.redis_client.getdel(self.key)
             if not raw_data:
                 # add robustness against timing attacks
                 time.sleep(random.random())
@@ -266,7 +262,7 @@ class SecureToken:
 
     @property
     def key(self) -> str:
-        return f"pcapi:token:SecureToken_{self.token}"
+        return f"pcapi:token:SecureToken:{self.token}"
 
 
 class AsymetricToken(AbstractToken):
@@ -336,13 +332,13 @@ PASSWORDLESS_REDIS_KEY_TEMPLATE = "pcapi:token:%(type_)s:%(key_suffix)s"
 def create_passwordless_login_token(user_id: int, ttl: timedelta) -> str:
     """
     Single use token that allow a user to login without entering any credentials.
-    This token is signed using a RSA private key and verified using the corresponding
+    This token is signed using a RSA private key and verified using the corresponding
     public key.
     In exchange of this token, a user should be returned a valid session.
 
     The payload of this token expects several claims:
 
-        jti: Token unique identifier preventing replay attacks. Ensure each JWT is used only once.
+        jti: Token unique identifier preventing replay attacks. Ensure each JWT is used only once.
         sub: The subject of the token. Contains the user id.
         iat: Issued at.
         exp: Expiration date.
