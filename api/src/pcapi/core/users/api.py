@@ -92,6 +92,22 @@ def create_recently_reset_password_token(user: models.User) -> token_utils.Token
     )
 
 
+def create_phone_validation_token(
+    user: models.User,
+    phone_number: str,
+) -> token_utils.SixDigitsToken:
+    return token_utils.SixDigitsToken.create(
+        type_=token_utils.TokenType.PHONE_VALIDATION,
+        user_id=user.id,
+        ttl=constants.PHONE_VALIDATION_TOKEN_LIFE_TIME,
+        data={"phone_number": phone_number},
+    )
+
+
+def delete_all_users_phone_validation_tokens(user: models.User) -> None:
+    token_utils.Token.delete(token_utils.TokenType.PHONE_VALIDATION, user.id)
+
+
 def create_account(
     *,
     email: str,

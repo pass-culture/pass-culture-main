@@ -414,6 +414,7 @@ class UbbleWorkflowV2Test:
 
     @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME)
     @patch("pcapi.core.subscription.ubble.tasks.store_id_pictures_task.delay")
+    @pytest.mark.features(ENABLE_PHONE_VALIDATION=False)
     def test_ubble_workflow_updates_birth_date_on_eligibility_upgrade(self, store_id_pictures_task_mock, requests_mock):
         last_year = date_utils.get_naive_utc_now() - relativedelta(years=1)
         with time_machine.travel(last_year):
