@@ -16,6 +16,7 @@ from pcapi.routes.apis import private_api
 from pcapi.routes.pro import blueprint
 from pcapi.routes.serialization import collective_stock_serialize
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.rest import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.transaction_manager import atomic
 
@@ -38,7 +39,7 @@ def create_collective_stock(
     try:
         offerer = offerers_repository.get_by_collective_offer_id(body.offerId)
     except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ResourceNotFoundError({"offerer": ["Aucune structure trouvée à partir de cette offre"]})
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
@@ -71,12 +72,12 @@ def edit_collective_stock(
 ) -> collective_stock_serialize.CollectiveStockResponseModel:
     collective_stock = repository.get_collective_stock(collective_stock_id)
     if collective_stock is None:
-        raise ResourceNotFoundError({"code": "COLLECTIVE_STOCK_NOT_FOUND"})
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
 
     try:
         offerer = offerers_repository.get_by_collective_stock_id(collective_stock.id)
     except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ResourceNotFoundError({"offerer": ["Aucune structure trouvée à partir de cette offre"]})
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
