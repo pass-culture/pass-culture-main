@@ -38,6 +38,7 @@ CELERY_BASE_SETTINGS: typing.Final = dict(
         "tasks.zendesk_sell.default.*": {"queue": CELERY_EXTERNAL_CALLS_DEFAULT_QUEUE_NAME},
         "tasks.compliance.default.*": {"queue": CELERY_EXTERNAL_CALLS_DEFAULT_QUEUE_NAME},
         "tasks.compliance.priority.*": {"queue": CELERY_EXTERNAL_CALLS_PRIORITY_QUEUE_NAME},
+        "tasks.cultural_survey.default.*": {"queue": CELERY_EXTERNAL_CALLS_DEFAULT_QUEUE_NAME},
     },
     task_ignore_result=True,
 )
