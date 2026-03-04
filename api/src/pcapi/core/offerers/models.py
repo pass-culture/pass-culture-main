@@ -462,6 +462,9 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     headlineOffers: sa_orm.Mapped[list["offers_models.HeadlineOffer"]] = sa_orm.relationship(
         "HeadlineOffer", foreign_keys="HeadlineOffer.venueId", back_populates="venue"
     )
+    proAdvices: sa_orm.Mapped[list["offers_models.ProAdvice"]] = sa_orm.relationship(
+        "ProAdvice", foreign_keys="ProAdvice.venueId", back_populates="venue"
+    )
     finance_incidents: sa_orm.Mapped[list["finance_models.FinanceIncident"]] = sa_orm.relationship(
         "FinanceIncident", foreign_keys="FinanceIncident.venueId", back_populates="venue"
     )
