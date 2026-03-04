@@ -98,7 +98,7 @@ class PostUserReviewTest:
         with caplog.at_level(logging.INFO):
             response = client.post("/users/log-user-review", json=data)
 
-        assert response.status_code == 403
+        assert response.status_code == 404
         assert "User submitting review" not in caplog.messages
         harvestr_create_message.assert_not_called()
 

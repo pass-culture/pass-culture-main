@@ -123,7 +123,7 @@ class Returns401Test:
         assert response.status_code == 401
 
 
-class Returns403Test:
+class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def test_user_has_right_on_venue(self, client):
         user = user_factories.ProFactory()
@@ -146,4 +146,4 @@ class Returns403Test:
             },
         )
 
-        assert response.status_code == 403
+        assert response.status_code == 404

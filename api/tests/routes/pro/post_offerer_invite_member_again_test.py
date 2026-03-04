@@ -76,6 +76,9 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"email": "Impossible de renvoyer une invitation pour ce collaborateur"}
 
+
+@pytest.mark.usefixtures("db_session")
+class Returns404Test:
     def test_user_has_not_access_to_offerer(self, client):
         pro_user = users_factories.ProFactory(email="pro.user@example.com")
         offerer = offerers_factories.OffererFactory(id=1)
@@ -86,4 +89,4 @@ class Returns400Test:
 
         response = client.with_session_auth("pro.user@example.com").post("/offerers/2/invite", json=data)
 
-        assert response.status_code == 403
+        assert response.status_code == 404

@@ -20,7 +20,7 @@ def test_delete_venue_provider(client):
 
 
 @pytest.mark.usefixtures("db_session")
-def test_delete_venue_provider_should_return_404(client):
+def test_delete_invalid_venue_provider_should_return_404(client):
     user_offerer = offerers_factories.UserOffererFactory()
     offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
@@ -30,7 +30,7 @@ def test_delete_venue_provider_should_return_404(client):
 
 
 @pytest.mark.usefixtures("db_session")
-def test_delete_venue_provider_should_return_403(client):
+def test_delete_venue_provider_should_return_404(client):
     user_offerer = offerers_factories.UserOffererFactory()
     venue = offerers_factories.VenueFactory()
     provider = providers_factories.PublicApiProviderFactory()
@@ -38,4 +38,4 @@ def test_delete_venue_provider_should_return_403(client):
 
     response = client.with_session_auth(email=user_offerer.user.email).delete(f"/venue-providers/{venue_provider.id}")
 
-    assert response.status_code == 403
+    assert response.status_code == 404

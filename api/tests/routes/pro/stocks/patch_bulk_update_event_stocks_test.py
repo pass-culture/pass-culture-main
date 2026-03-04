@@ -564,7 +564,7 @@ class Returns400Test:
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns403Test:
+class Returns404Test:
     def when_user_has_no_rights_and_creating_stock_from_offer_id(self, client, db_session):
         users_factories.ProFactory(email="wrong@example.com")
         offer = offers_factories.EventOfferFactory()
@@ -585,7 +585,7 @@ class Returns403Test:
             },
         )
 
-        assert response.status_code == 403
+        assert response.status_code == 404
         assert response.json == {
             "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
         }
