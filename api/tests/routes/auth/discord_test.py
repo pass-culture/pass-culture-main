@@ -1,8 +1,9 @@
 import unittest
 from unittest.mock import patch
-from urllib.parse import unquote_plus
+from urllib.parse import unquote
 
 import pytest
+import time_machine
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from flask import g
@@ -14,6 +15,7 @@ from pcapi.core.history import factories as history_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import utils as users_utils
 from pcapi.core.users.models import DiscordUser
 from pcapi.models import db
 from pcapi.utils import requests
@@ -64,11 +66,23 @@ class DiscordSigninTest:
 
         return client.post(url, form=form, headers=headers, follow_redirects=follow_redirects)
 
+    def _build_signed_state(self, user_id):
+        # Access to the private _sign_state is intentional: tests need a valid signed state
+        # without going through the full signin flow.
+        return discord_connector._sign_state(user_id)
+
+    @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
     def test_build_discord_redirection_uri(self):
-        assert (
-            discord_connector.build_discord_redirection_uri("1")
-            == f"https://discord.com/api/oauth2/authorize?client_id={discord_connector.DISCORD_CLIENT_ID}&redirect_uri={discord_connector.DISCORD_CALLBACK_URI}&response_type=code&scope=identify%20guilds.join&state=1"
+        uri = discord_connector.build_discord_redirection_uri(1)
+        assert uri.startswith(
+            f"https://discord.com/api/oauth2/authorize?client_id={discord_connector.DISCORD_CLIENT_ID}"
         )
+        assert "&state=" in uri
+        # Verify the state is a signed RS256 JWT containing the user_id
+        state = uri.split("&state=")[1]
+        payload = users_utils.decode_jwt_token_rs256(state, public_key=settings.DISCORD_JWT_PUBLIC_KEY)
+        assert payload["user_id"] == 1
+        assert "exp" in payload
 
     @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
     def test_redirect_to_discord_on_post(self, client):
@@ -77,14 +91,14 @@ class DiscordSigninTest:
             "password": settings.TEST_DEFAULT_PASSWORD,
             "recaptcha_token": "recaptcha_token",
         }
-        user = users_factories.BeneficiaryFactory(
+        _user = users_factories.BeneficiaryFactory(
             email=form_data["email"], password=form_data["password"], isActive=True
         )
 
         response = self.post_to_endpoint(client, form=form_data)
 
         assert response.status_code == 302
-        assert response.location == discord_connector.build_discord_redirection_uri(user.id)
+        assert response.location.startswith("https://discord.com/api/oauth2/authorize")
 
     @pytest.mark.settings(RECAPTCHA_IGNORE_VALIDATION=0)
     @patch("pcapi.connectors.api_recaptcha.get_token_validation_and_score")
@@ -102,19 +116,44 @@ class DiscordSigninTest:
         response_data = response.data.decode("utf-8")
         assert "La vérification a échoué. Recharge la page et réessaie" in response_data
 
+    @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
     @unittest.mock.patch(
         "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
     )
-    def test_webhook_redirects_to_success_url(self, mock_retrieve_access_token, client):
+    def test_callback_redirects_to_success_url(self, mock_retrieve_access_token, client):
         user = users_factories.BeneficiaryFactory()
+        signed_state = self._build_signed_state(user.id)
 
-        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=str(user.id)))
+        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=signed_state))
 
         assert mock_retrieve_access_token.call_count == 1
         assert mock_retrieve_access_token.call_args[0][0] == "discord_code"
 
         assert response.status_code == 303
-        assert url_for("auth.discord_success", access_token="access_token", user_id=user.id) in response.location
+
+    @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem)
+    def test_callback_rejects_invalid_state(self, client):
+        response = client.get(url_for("auth.discord_call_back", code="discord_code", state="forged_user_id"))
+
+        assert response.status_code == 303
+        assert "lien invalide ou expir" in unquote(response.location)
+
+    @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
+    def test_callback_rejects_expired_state(self, client):
+        user = users_factories.BeneficiaryFactory()
+        with time_machine.travel("2020-01-01"):
+            expired_state = self._build_signed_state(user.id)
+
+        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=expired_state))
+
+        assert response.status_code == 303
+        assert "lien invalide ou expir" in unquote(response.location)
+
+    def test_callback_rejects_missing_state(self, client):
+        response = client.get(url_for("auth.discord_call_back", code="discord_code"))
+
+        assert response.status_code == 303
+        assert "état de la requête non récupéré" in unquote(response.location)
 
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.add_to_server")
@@ -164,6 +203,12 @@ class DiscordSigninTest:
             "Erreur lors de l&#39;ajout au serveur Discord: réessaye en cliquant sur le bouton ci-dessous"
             in response.data.decode("utf-8")
         )
+
+    def test_success_without_session_redirects_with_error(self, client):
+        response = client.get(url_for("auth.discord_success"))
+
+        assert response.status_code == 303
+        assert "session invalide ou expir" in unquote(response.location)
 
     def test_account_anonymized_user_request_account_state(self, client):
         form_data = {
@@ -264,13 +309,15 @@ class DiscordSigninTest:
         "pcapi.routes.auth.discord.discord_connector.add_to_server",
         side_effect=requests.exceptions.HTTPError(),
     )
+    @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
     def test_error_adding_user_to_server_rollbacks(
         self, _mock_add_to_server, _mock_get_user_id, _mock_retrieve_access_token, client, db_session
     ):
         user = users_factories.BeneficiaryFactory()
         discord_user = users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=True, isBanned=False)
+        signed_state = self._build_signed_state(user.id)
 
-        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=str(user.id)))
+        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=signed_state))
 
         assert response.status_code == 303
 
@@ -360,12 +407,24 @@ class DiscordSigninTest:
             url_for("auth.discord_success", user_id=str(another_user.id), access_token="access_token")
         )
         assert response.status_code == 303
-        assert "Ce compte Discord est déjà lié à un autre compte pass Culture." in unquote_plus(response.location)
+        assert "Impossible d" in unquote(response.location)
 
         assert mock_get_user_id.call_count == 1
         assert mock_get_user_id.call_args[0][0] == "access_token"
 
         assert mock_add_to_server.call_count == 0
+
+    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    def test_association_errors_return_generic_message(self, _mock_get_user_id, client, db_session):
+        """All association errors should return the same generic message to prevent information leakage."""
+        non_beneficiary = users_factories.UserFactory()
+
+        response = client.get(
+            url_for("auth.discord_success", user_id=str(non_beneficiary.id), access_token="access_token")
+        )
+        assert response.status_code == 303
+        assert "Impossible" in unquote(response.location)
+        assert "Contacte le support" in unquote(response.location)
 
     @pytest.mark.features(DISCORD_ENABLE_NEW_ACCESS=False)
     def test_discord_signin_disabled(self, client):

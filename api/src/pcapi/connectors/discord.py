@@ -1,4 +1,8 @@
+from datetime import timedelta
+
 from pcapi import settings
+from pcapi.core.users import utils as users_utils
+from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 
 
@@ -11,6 +15,8 @@ DISCORD_HOME_URI = f"https://discord.com/channels/{DISCORD_GUILD_ID}/@home"
 
 DISCORD_API_URI = "https://discord.com/api"
 
+DISCORD_STATE_TTL = timedelta(minutes=10)
+
 
 def build_discord_redirection_uri(user_id: int) -> str:
     base_uri = f"{DISCORD_API_URI}/oauth2/authorize"
@@ -19,7 +25,25 @@ def build_discord_redirection_uri(user_id: int) -> str:
     response_type = "code"
     scope = "identify%20guilds.join"
 
-    return f"{base_uri}?client_id={client_id}&redirect_uri={redirect_uri}&response_type={response_type}&scope={scope}&state={user_id}"
+    signed_state = _sign_state(user_id)
+    return f"{base_uri}?client_id={client_id}&redirect_uri={redirect_uri}&response_type={response_type}&scope={scope}&state={signed_state}"
+
+
+def _sign_state(user_id: int) -> str:
+    payload = {"user_id": user_id}
+    expiration = date_utils.get_naive_utc_now() + DISCORD_STATE_TTL
+    return users_utils.encode_jwt_payload_rs256(
+        payload, private_key=settings.DISCORD_JWT_PRIVATE_KEY, expiration_date=expiration
+    )
+
+
+def verify_state(state: str) -> int:
+    """Verify the signed OAuth state and return the user_id.
+
+    Raises jwt.PyJWTError on invalid or expired state.
+    """
+    payload = users_utils.decode_jwt_token_rs256(state, public_key=settings.DISCORD_JWT_PUBLIC_KEY)
+    return payload["user_id"]
 
 
 def get_user_id(access_token: str) -> str | None:
