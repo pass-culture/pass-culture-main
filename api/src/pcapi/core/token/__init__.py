@@ -118,7 +118,7 @@ class AbstractToken(abc.ABC):
         self._log(self._TokenAction.EXPIRE)
 
     def _log(self, action: _TokenAction) -> None:
-        logger.info("[TOKEN](%s)%s, %s, %s", action.value, self.key_suffix, self.type_.value, self.encoded_token)
+        logger.info("[TOKEN](%s)%s, %s", action.value, self.key_suffix, self.type_.value)
 
 
 class Token(AbstractToken):
