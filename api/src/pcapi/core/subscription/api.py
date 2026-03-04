@@ -188,7 +188,8 @@ def get_phone_validation_subscription_item(
     elif subscription_repository.has_failed_phone_validation(user):
         status = subscription_schemas.SubscriptionItemStatus.KO
     elif eligibility_api.is_eligibility_activable(user, eligibility):
-        if user.phoneNumber is not None:
+        has_user_filled_phone = user.phoneNumber is not None
+        if not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active() and has_user_filled_phone:
             status = subscription_schemas.SubscriptionItemStatus.OK
         else:
             status = subscription_schemas.SubscriptionItemStatus.TODO

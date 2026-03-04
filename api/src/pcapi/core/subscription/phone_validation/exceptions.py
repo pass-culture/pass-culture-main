@@ -2,6 +2,10 @@ class PhoneVerificationException(Exception):
     pass
 
 
+class UserPhoneNumberAlreadyValidated(PhoneVerificationException):
+    pass
+
+
 class RequiredPhoneNumber(PhoneVerificationException):
     pass
 
@@ -12,3 +16,36 @@ class InvalidPhoneNumber(PhoneVerificationException):
 
 class InvalidCountryCode(InvalidPhoneNumber):
     pass
+
+
+class SMSSendingLimitReached(PhoneVerificationException):
+    pass
+
+
+class PhoneAlreadyExists(PhoneVerificationException):
+    pass
+
+
+class PhoneValidationAttemptsLimitReached(PhoneVerificationException):
+    def __init__(self, attempts: int):
+        self.attempts = attempts
+        super().__init__()
+
+
+class PhoneNumberNotFoundInToken(PhoneVerificationException):
+    pass
+
+
+class UnvalidatedEmail(PhoneVerificationException):
+    pass
+
+
+class UserAlreadyBeneficiary(PhoneVerificationException):
+    pass
+
+
+class NotValidCode(PhoneVerificationException):
+    def __init__(self, remaining_attempts: int, attempts: int):
+        self.remaining_attempts = remaining_attempts
+        self.attempts = attempts
+        super().__init__()

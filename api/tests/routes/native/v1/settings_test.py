@@ -14,6 +14,7 @@ class SettingsTest:
         ENABLE_FRONT_IMAGE_RESIZING=True,
         ENABLE_NATIVE_APP_RECAPTCHA=True,
         ENABLE_NATIVE_CULTURAL_SURVEY=True,
+        ENABLE_PHONE_VALIDATION=True,
         ID_CHECK_ADDRESS_AUTOCOMPLETION=True,
         APP_ENABLE_AUTOCOMPLETE=True,
     )
@@ -30,6 +31,7 @@ class SettingsTest:
             "displayDmsRedirection": True,
             "enableFrontImageResizing": True,
             "enableNativeCulturalSurvey": True,
+            "enablePhoneValidation": True,
             "idCheckAddressAutocompletion": True,
             "isRecaptchaEnabled": True,
             "objectStorageUrl": "http://localhost/storage",
@@ -44,6 +46,7 @@ class SettingsTest:
         ENABLE_FRONT_IMAGE_RESIZING=False,
         ENABLE_NATIVE_APP_RECAPTCHA=False,
         ENABLE_NATIVE_CULTURAL_SURVEY=False,
+        ENABLE_PHONE_VALIDATION=False,
         ID_CHECK_ADDRESS_AUTOCOMPLETION=False,
         APP_ENABLE_AUTOCOMPLETE=False,
     )
@@ -60,6 +63,7 @@ class SettingsTest:
             "displayDmsRedirection": False,
             "enableFrontImageResizing": False,
             "enableNativeCulturalSurvey": False,
+            "enablePhoneValidation": False,
             "idCheckAddressAutocompletion": False,
             "isRecaptchaEnabled": False,
             "objectStorageUrl": "http://localhost/storage",

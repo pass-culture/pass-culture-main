@@ -176,6 +176,66 @@ class Token(AbstractToken):
         return token
 
 
+@dataclasses.dataclass(frozen=True)
+class SixDigitsToken(AbstractToken):
+    @classmethod
+    def _get_redis_extra_data_key(cls, type_: TokenType, user_id: int) -> str:
+        return f"pcapi:token:data:{type_.value}_{user_id}"
+
+    @classmethod
+    def load_and_check(
+        cls: typing.Type[T],
+        encoded_token: str,
+        type_: TokenType,
+        user_id: int | None = None,
+    ) -> T:
+        token = cls.load_without_checking(encoded_token, type_=type_, user_id=user_id)
+        token.check(type_, user_id)
+        return token
+
+    @classmethod
+    def load_without_checking(
+        cls,
+        encoded_token: str,
+        type_: TokenType,
+        user_id: int,
+    ) -> "SixDigitsToken":
+        if user_id is None:
+            raise ValueError("user_id is required for SixDigitsToken")
+        try:
+            data_json = app.redis_client.get(cls._get_redis_extra_data_key(type_=type_, user_id=user_id))
+            if data_json is None:
+                raise users_exceptions.InvalidToken()
+            data = json.loads(data_json)
+        except json.JSONDecodeError as e:
+            raise users_exceptions.InvalidToken() from e
+        return cls(type_, user_id, encoded_token, data)
+
+    @classmethod
+    def create(
+        cls, type_: TokenType, ttl: timedelta | None, user_id: int, data: dict | None = None
+    ) -> "SixDigitsToken":
+        encoded_token = "{:06}".format(secrets.randbelow(1_000_000))  # 6 digits
+        app.redis_client.set(cls.get_redis_key(type_, user_id), encoded_token, ex=ttl)
+        json_data = json.dumps(data or {})
+        app.redis_client.set(cls._get_redis_extra_data_key(type_, user_id), json_data, ex=ttl)
+        token = cls.load_without_checking(encoded_token, type_, user_id)
+        token._log(cls._TokenAction.CREATE)
+        return token
+
+    @classmethod
+    def delete(cls, type_: TokenType, user_id: int | str | None) -> None:
+        if not isinstance(user_id, int):
+            raise ValueError("user_id can only be an int for SixDigitsToken")
+        super().delete(type_, user_id)
+        app.redis_client.delete(cls._get_redis_extra_data_key(type_, user_id))
+
+    def expire(self) -> None:
+        assert isinstance(self.key_suffix, int), "SixDigitsToken key suffix can only be a user id"
+        super().expire()
+        app.redis_client.delete(self._get_redis_extra_data_key(self.type_, self.key_suffix))
+
+
 class UUIDToken(AbstractToken):
     @classmethod
     def load_and_check(

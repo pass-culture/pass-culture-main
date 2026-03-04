@@ -5353,6 +5353,25 @@
                 "title": "PaginatedFavoritesResponse",
                 "type": "object"
             },
+            "PhoneValidationRemainingAttemptsRequest": {
+                "properties": {
+                    "counterResetDatetime": {
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Counterresetdatetime",
+                        "type": "string"
+                    },
+                    "remainingAttempts": {
+                        "title": "Remainingattempts",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "remainingAttempts"
+                ],
+                "title": "PhoneValidationRemainingAttemptsRequest",
+                "type": "object"
+            },
             "PlaylistRequestBody": {
                 "additionalProperties": false,
                 "properties": {
@@ -6101,6 +6120,19 @@
                 "title": "SearchGroupResponseModelv2",
                 "type": "object"
             },
+            "SendPhoneValidationRequest": {
+                "properties": {
+                    "phoneNumber": {
+                        "title": "Phonenumber",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "phoneNumber"
+                ],
+                "title": "SendPhoneValidationRequest",
+                "type": "object"
+            },
             "SettingsResponse": {
                 "properties": {
                     "accountCreationMinimumAge": {
@@ -6131,6 +6163,10 @@
                     },
                     "enableNativeCulturalSurvey": {
                         "title": "Enablenativeculturalsurvey",
+                        "type": "boolean"
+                    },
+                    "enablePhoneValidation": {
+                        "title": "Enablephonevalidation",
                         "type": "boolean"
                     },
                     "idCheckAddressAutocompletion": {
@@ -6177,6 +6213,7 @@
                     "displayDmsRedirection",
                     "enableFrontImageResizing",
                     "enableNativeCulturalSurvey",
+                    "enablePhoneValidation",
                     "idCheckAddressAutocompletion",
                     "ineligiblePostalCodes",
                     "isRecaptchaEnabled",
@@ -7248,6 +7285,19 @@
                     "refreshToken"
                 ],
                 "title": "ValidateEmailResponse",
+                "type": "object"
+            },
+            "ValidatePhoneNumberRequest": {
+                "properties": {
+                    "code": {
+                        "title": "Code",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "code"
+                ],
+                "title": "ValidatePhoneNumberRequest",
                 "type": "object"
             },
             "ValidationError": {
@@ -9514,6 +9564,45 @@
                 "tags": []
             }
         },
+        "/native/v1/phone_validation/remaining_attempts": {
+            "get": {
+                "description": "",
+                "operationId": "get__native_v1_phone_validation_remaining_attempts",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PhoneValidationRemainingAttemptsRequest"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "phone_validation_remaining_attempts <GET>",
+                "tags": []
+            }
+        },
         "/native/v1/profile": {
             "patch": {
                 "description": "",
@@ -10351,6 +10440,48 @@
                 "tags": []
             }
         },
+        "/native/v1/send_phone_validation_code": {
+            "post": {
+                "description": "",
+                "operationId": "post__native_v1_send_phone_validation_code",
+                "parameters": [],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SendPhoneValidationRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "send_phone_validation_code <POST>",
+                "tags": []
+            }
+        },
         "/native/v1/settings": {
             "get": {
                 "description": "",
@@ -10789,6 +10920,48 @@
                     }
                 },
                 "summary": "validate_email <POST>",
+                "tags": []
+            }
+        },
+        "/native/v1/validate_phone_number": {
+            "post": {
+                "description": "",
+                "operationId": "post__native_v1_validate_phone_number",
+                "parameters": [],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ValidatePhoneNumberRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "validate_phone_number <POST>",
                 "tags": []
             }
         },

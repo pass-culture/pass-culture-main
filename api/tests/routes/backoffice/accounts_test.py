@@ -46,6 +46,7 @@ from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.feature import DisabledFeatureError
+from pcapi.notifications.sms import testing as sms_testing
 from pcapi.routes.backoffice.accounts.blueprint import RegistrationStep
 from pcapi.routes.backoffice.accounts.blueprint import RegistrationStepStatus
 from pcapi.routes.backoffice.accounts.blueprint import TunnelType
@@ -1895,6 +1896,9 @@ class ManuallyValidatePhoneNumberTest(PostEndpointHelper):
         token_utils.Token.create(
             token_utils.TokenType.RESET_PASSWORD, users_constants.RESET_PASSWORD_TOKEN_LIFE_TIME, user.id
         )
+        token_utils.Token.create(
+            token_utils.TokenType.PHONE_VALIDATION, users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME, user.id
+        )
         response = self.post_to_endpoint(authenticated_client, user_id=user.id)
 
         assert user.is_phone_validated is True
@@ -1903,6 +1907,7 @@ class ManuallyValidatePhoneNumberTest(PostEndpointHelper):
             db.session.query(history_models.ActionHistory).filter(history_models.ActionHistory.user == user).count()
             == 1
         )
+        assert not token_utils.Token.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
         assert token_utils.Token.token_exists(token_utils.TokenType.RESET_PASSWORD, user.id)
 
     @pytest.mark.usefixtures("clean_database")
@@ -1911,6 +1916,9 @@ class ManuallyValidatePhoneNumberTest(PostEndpointHelper):
 
         token_utils.Token.create(
             token_utils.TokenType.RESET_PASSWORD, users_constants.RESET_PASSWORD_TOKEN_LIFE_TIME, user.id
+        )
+        token_utils.Token.create(
+            token_utils.TokenType.PHONE_VALIDATION, users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME, user.id
         )
 
         with patch(
@@ -1927,6 +1935,70 @@ class ManuallyValidatePhoneNumberTest(PostEndpointHelper):
         assert not user.roles
         assert not user.deposits
         assert db.session.query(history_models.ActionHistory).count() == 0
+        assert token_utils.Token.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
+
+
+class SendValidationCodeTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.send_validation_code"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+
+    def test_send_validation_code(self, authenticated_client, app):
+        user = users_factories.UserFactory(
+            phoneValidationStatus=None, phoneNumber="+33601020304", isEmailValidated=True
+        )
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id)
+
+        assert response.status_code == 303
+
+        assert len(sms_testing.requests) == 1
+        assert sms_testing.requests[0]["recipient"] == user.phoneNumber
+
+        assert token_utils.Token.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
+        assert token_utils.SixDigitsToken.get_expiration_date(
+            token_utils.TokenType.PHONE_VALIDATION, user.id
+        ).timestamp() == pytest.approx(
+            (date_utils.get_naive_utc_now() + users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME).timestamp(),
+            1,
+        )
+
+    def test_phone_validation_code_sending_ignores_limit(self, authenticated_client):
+        user = users_factories.UserFactory(phoneValidationStatus=None, phoneNumber="+33612345678")
+
+        with patch("pcapi.core.subscription.phone_validation.sending_limit.is_SMS_sending_allowed") as limit_mock:
+            limit_mock.return_value = False
+            response = self.post_to_endpoint(authenticated_client, user_id=user.id)
+
+        assert limit_mock.call_count == 0
+        assert response.status_code == 303
+        assert token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
+
+    def test_nothing_sent_use_cases(self, authenticated_client):
+        other_user = users_factories.BeneficiaryFactory(
+            phoneNumber="+33601020304",
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+
+        users = [
+            # no phone number
+            users_factories.UserFactory(phoneNumber=None),
+            # phone number already validated
+            users_factories.UserFactory(
+                phoneNumber="+33601020304", phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
+            ),
+            # user is already beneficiary
+            users_factories.BeneficiaryFactory(phoneNumber="+33601020304"),
+            # email has not been validated
+            users_factories.UserFactory(phoneNumber="+33601020304", isEmailValidated=False),
+            # phone number is already used
+            users_factories.UserFactory(phoneNumber=other_user.phoneNumber),
+        ]
+
+        for idx, user in enumerate(users):
+            response = self.post_to_endpoint(authenticated_client, user_id=user.id)
+
+            assert response.status_code == 303, f"[{idx}] found: {response.status_code}, expected: 303"
+            assert not sms_testing.requests, f"[{idx}] {len(sms_testing.requests)} sms sent"
 
 
 class ReviewPublicAccountTest(PostEndpointHelper):

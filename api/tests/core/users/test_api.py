@@ -1355,6 +1355,16 @@ class BeneficiaryInformationUpdateTest:
         users_api.update_user_information_from_external_source(user, dms_data)
         assert user.idPieceNumber == "140767100016"
 
+    @pytest.mark.features(ENABLE_PHONE_VALIDATION=True)
+    def test_phone_number_does_not_update(self):
+        user = users_factories.UserFactory(phoneNumber="+33611111111")
+        dms_data = subscription_factories.DMSContentFactory(phoneNumber="+33622222222")
+
+        users_api.update_user_information_from_external_source(user, dms_data)
+
+        assert user.phoneNumber == "+33611111111"
+
+    @pytest.mark.features(ENABLE_PHONE_VALIDATION=False)
     def test_phone_number_does_not_update_if_not_empty(self):
         user = users_factories.UserFactory(phoneNumber="+33611111111")
         dms_data = subscription_factories.DMSContentFactory(phone="+33622222222")
