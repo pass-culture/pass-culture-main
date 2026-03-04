@@ -3,7 +3,7 @@
     <button class="btn btn-sm {{ 'btn-outline-success' if 'accepte' in dms_venues | map(attribute="state") else 'btn-outline-danger' }} pc-btn-chevron-toggle"
             data-bs-toggle="collapse"
             data-bs-target=".pc-offerer-validation-{{ offerer_id }}">
-      <i class="bi bi-chevron-right"></i>
+      <i class="bi bi-chevron-down"></i>
     </button>
   {% endif %}
 {% endmacro %}

@@ -1,4 +1,5 @@
 import datetime
+import enum
 import typing
 from functools import partial
 
@@ -26,6 +27,7 @@ from pcapi.routes.backoffice.utils import access_control
 from pcapi.routes.backoffice.utils import request as request_utils
 from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.routes.backoffice.utils import search as search_utils
+from pcapi.routes.backoffice.utils.details_actions import DetailsActions
 from pcapi.utils import email as email_utils
 
 from . import forms
@@ -102,6 +104,13 @@ def get_bo_user_history(user: users_models.User) -> list[serialization.AccountAc
     return history
 
 
+class AdminDetailsActionType(enum.StrEnum):
+    BREVO = enum.auto()
+    UPDATE = enum.auto()
+    SUSPEND = enum.auto()
+    UNSUSPEND = enum.auto()
+
+
 def render_bo_user_page(user_id: int, edit_form: forms.EditBOUserForm | None = None) -> str:
     user = (
         _get_bo_user_query(user_id)
@@ -121,6 +130,9 @@ def render_bo_user_page(user_id: int, edit_form: forms.EditBOUserForm | None = N
 
     if not user:
         raise NotFound()
+
+    actions = DetailsActions(AdminDetailsActionType)
+    actions.add_action(AdminDetailsActionType.BREVO)
 
     kwargs = user_forms.get_toggle_suspension_args(
         user,
@@ -149,14 +161,19 @@ def render_bo_user_page(user_id: int, edit_form: forms.EditBOUserForm | None = N
                 "edit_account_dst": url_for(".update_bo_user", user_id=user.id) if edit_form else None,
             }
         )
+        actions.add_action(AdminDetailsActionType.UPDATE)
+        if user.isActive and access_control.has_current_user_permission(perm_models.Permissions.SUSPEND_USER):
+            actions.add_action(AdminDetailsActionType.SUSPEND)
+        if not user.isActive and access_control.has_current_user_permission(perm_models.Permissions.UNSUSPEND_USER):
+            actions.add_action(AdminDetailsActionType.UNSUSPEND)
 
     return render_template(
         "accounts/get.html",
-        layout="layouts/admin.html",
         user=user,
         history=get_bo_user_history(user),
         roles=user.backoffice_profile.roles if user.backoffice_profile else [],
         active_tab=request.args.get("active_tab", "history"),
+        allowed_actions=actions,
         **kwargs,
     )
 
