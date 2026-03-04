@@ -1803,6 +1803,6 @@ class ProAdvice(PcObject, Model):
         sa.DateTime, nullable=False, server_default=sa.func.now(), onupdate=sa.func.now()
     )
     venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=False, unique=False
+        sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False, unique=False
     )
     venue: sa_orm.Mapped["Venue"] = sa_orm.relationship("Venue", foreign_keys=[venueId], back_populates="proAdvices")
