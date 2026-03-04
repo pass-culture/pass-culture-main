@@ -3,6 +3,7 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core.testing import assert_no_duplicated_queries
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils.rest import check_user_has_access_to_offerer
 
@@ -25,7 +26,5 @@ class CheckUserHasAccessToOffererTest:
         with pytest.raises(ApiErrors) as error:
             check_user_has_access_to_offerer(user, offerer.id)
 
-        assert error.value.errors["global"] == [
-            "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
-        ]
-        assert error.value.status_code == 403
+        assert error.value.errors["global"] == [OBJECT_NOT_FOUND_ERROR_MESSAGE]
+        assert error.value.status_code == 404

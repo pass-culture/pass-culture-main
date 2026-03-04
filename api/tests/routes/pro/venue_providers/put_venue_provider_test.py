@@ -5,6 +5,7 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as provider_models
 import pcapi.core.users.factories as user_factories
 from pcapi.models import db
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
 
 class Returns200Test:
@@ -147,3 +148,13 @@ class Returns404Test:
         )
 
         assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
+
+    @pytest.mark.usefixtures("db_session")
+    def test_venue_provider_not_found(self, client):
+        user = user_factories.ProFactory()
+        auth_request = client.with_session_auth(email=user.email)
+        response = auth_request.put("/venue-providers/123456789", json={})
+
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

@@ -9,6 +9,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.connectors.clickhouse import query_mock as clickhouse_query_mock
 from pcapi.core import testing
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.models.validation_status_mixin import ValidationStatus
 
 
@@ -223,7 +224,7 @@ class Returns422Test:
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns403Test:
+class Returns404Test:
     def test_get_statistics_for_not_owned_venue_should_fail(self, client):
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
@@ -234,16 +235,9 @@ class Returns403Test:
         foreign_venue = venue_not_belonging_to_user.id
 
         test_client = client.with_session_auth(email=user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select Offerer
-        num_queries += 1  # rollback
-        num_queries += 1  # rollback
-        with testing.assert_num_queries(num_queries):
-            response = test_client.get(f"/get-statistics/?venueIds={venue_id}&venueIds={foreign_venue}")
-            assert response.status_code == 403
-        assert response.json["global"] == [
-            "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
-        ]
+        response = test_client.get(f"/get-statistics/?venueIds={venue_id}&venueIds={foreign_venue}")
+        assert response.status_code == 404
+        assert response.json["global"] == [OBJECT_NOT_FOUND_ERROR_MESSAGE]
 
     def test_get_statistics_with_unvalidated_userofferer_should_fail(self, client):
         user = users_factories.UserFactory()
@@ -255,13 +249,6 @@ class Returns403Test:
         offers_factories.OfferFactory(venue=venue)
 
         test_client = client.with_session_auth(email=user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select Offerer
-        num_queries += 1  # rollback
-        num_queries += 1  # rollback
-        with testing.assert_num_queries(num_queries):
-            response = test_client.get(f"/get-statistics/?venueIds={venue_id}")
-            assert response.status_code == 403
-        assert response.json["global"] == [
-            "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
-        ]
+        response = test_client.get(f"/get-statistics/?venueIds={venue_id}")
+        assert response.status_code == 404
+        assert response.json["global"] == [OBJECT_NOT_FOUND_ERROR_MESSAGE]

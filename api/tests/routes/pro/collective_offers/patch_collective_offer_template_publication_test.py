@@ -6,6 +6,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
@@ -48,7 +49,7 @@ class Returns204Test:
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns403Test:
+class Returns404Test:
     def expect_offer_to_be_approved(self, client):
         offer = educational_factories.CollectiveOfferTemplateFactory(validation=OfferValidationStatus.DRAFT)
         user_offerer = offerers_factories.UserOffererFactory()
@@ -57,10 +58,19 @@ class Returns403Test:
 
         response = client.with_session_auth(user_offerer.user.email).patch(url)
 
-        assert response.status_code == 403
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
         offer = db.session.query(educational_models.CollectiveOfferTemplate).filter_by(id=offer.id).one()
         assert offer.validation == OfferValidationStatus.DRAFT
         assert not offer.lastValidationAuthor
+
+    def test_offer_not_found(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        client_auth = client.with_session_auth(user_offerer.user.email)
+        response = client_auth.patch("/collective/offers-template/123456789/publish")
+
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
 
 @pytest.mark.usefixtures("db_session")

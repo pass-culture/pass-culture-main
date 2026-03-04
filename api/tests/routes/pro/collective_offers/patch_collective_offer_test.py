@@ -16,6 +16,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.routes.serialization.collective_offers_serialize import PatchCollectiveOfferBodyModel
 
 
@@ -839,21 +840,6 @@ class Returns400Test:
 
 
 class Returns403Test:
-    def when_user_is_not_attached_to_offerer(self, app, client):
-        offer = educational_factories.CollectiveOfferFactory(name="Old name")
-        offerers_factories.UserOffererFactory(user__email="user@example.com")
-
-        data = {"name": "New name"}
-        client = client.with_session_auth("user@example.com")
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
-
-        assert response.status_code == 403
-        assert response.json["global"] == [
-            "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
-        ]
-        assert db.session.get(models.CollectiveOffer, offer.id).name == "Old name"
-
     def test_patch_collective_offer_replacing_venue_with_different_offerer(self, client):
         offerer = offerers_factories.OffererFactory()
         offerer2 = offerers_factories.OffererFactory()
@@ -955,12 +941,26 @@ class Returns403Test:
 
 
 class Returns404Test:
+    def when_user_is_not_attached_to_offerer(self, app, client):
+        offer = educational_factories.CollectiveOfferFactory(name="Old name")
+        offerers_factories.UserOffererFactory(user__email="user@example.com")
+
+        data = {"name": "New name"}
+        client = client.with_session_auth("user@example.com")
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
+        assert db.session.get(models.CollectiveOffer, offer.id).name == "Old name"
+
     def test_returns_404_if_offer_does_not_exist(self, app, client):
         users_factories.UserFactory(email="user@example.com")
 
-        response = client.with_session_auth("user@example.com").patch("/collective/offers/ADFGA", json={})
+        response = client.with_session_auth("user@example.com").patch("/collective/offers/123456789", json={})
 
         assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
     def test_patch_offer_with_unknown_educational_domain(self, app, client):
         offer = educational_factories.CollectiveOfferFactory(educational_domains=None)
@@ -997,4 +997,4 @@ class Returns404Test:
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 404
-        assert response.json == {"venueId": "The venue does not exist."}
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

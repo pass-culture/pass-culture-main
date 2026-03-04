@@ -3,6 +3,7 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers import api as providers_api
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
 
 @pytest.mark.usefixtures("db_session")
@@ -27,10 +28,11 @@ def test_delete_invalid_venue_provider_should_return_404(client):
     response = client.with_session_auth(email=user_offerer.user.email).delete("/venue-providers/12345")
 
     assert response.status_code == 404
+    assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
 
 @pytest.mark.usefixtures("db_session")
-def test_delete_venue_provider_should_return_404(client):
+def test_delete_venue_provider_should_return_404_when_user_has_no_rights(client):
     user_offerer = offerers_factories.UserOffererFactory()
     venue = offerers_factories.VenueFactory()
     provider = providers_factories.PublicApiProviderFactory()
@@ -39,3 +41,4 @@ def test_delete_venue_provider_should_return_404(client):
     response = client.with_session_auth(email=user_offerer.user.email).delete(f"/venue-providers/{venue_provider.id}")
 
     assert response.status_code == 404
+    assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

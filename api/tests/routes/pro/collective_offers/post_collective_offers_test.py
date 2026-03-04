@@ -12,6 +12,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.models import db
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -339,19 +340,6 @@ class Returns200Test:
 
 
 class Returns403Test:
-    def test_create_collective_offer_random_user(self, client):
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
-        data = base_offer_payload(venue=venue)
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth(user.email).post("/collective/offers", json=data)
-
-        assert response.status_code == 403
-        assert db.session.query(models.CollectiveOffer).count() == 0
-
     def test_create_collective_offer_cannot_create_educational(self, client):
         def raise_ac(*args, **kwargs):
             raise educational_exceptions.CulturalPartnerNotFoundException("pouet")
@@ -649,6 +637,20 @@ class Returns400Test:
 
 
 class Returns404Test:
+    def test_create_collective_offer_random_user(self, client):
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        data = base_offer_payload(venue=venue)
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth(user.email).post("/collective/offers", json=data)
+
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
+        assert db.session.query(models.CollectiveOffer).count() == 0
+
     def test_create_collective_offer_with_unknown_domain(self, client):
         # Given
         venue = offerers_factories.VenueFactory()
@@ -756,3 +758,4 @@ class Returns404Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

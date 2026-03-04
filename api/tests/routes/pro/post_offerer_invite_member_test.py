@@ -4,6 +4,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
 
 @pytest.mark.usefixtures("db_session")
@@ -52,3 +53,4 @@ class Returns404Test:
         response = client.with_session_auth("pro.user@example.com").post("/offerers/2/invite", json=data)
 
         assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

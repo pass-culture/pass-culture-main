@@ -491,7 +491,7 @@ def patch_collective_offer_template_publication(
 ) -> collective_offers_serialize.GetCollectiveOfferTemplateResponseModel:
     try:
         offer = repository.get_collective_offer_template_by_id(offer_id)
-    except exceptions.CollectiveOfferNotFound:
+    except exceptions.CollectiveOfferTemplateNotFound:
         raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)

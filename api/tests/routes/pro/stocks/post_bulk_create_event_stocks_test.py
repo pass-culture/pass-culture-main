@@ -10,10 +10,9 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
-
-from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
 
 @pytest.mark.usefixtures("db_session")
@@ -349,6 +348,25 @@ class Returns404Test:
                     "beginningDatetime": format_into_utc_date(beginning),
                     "bookingLimitDatetime": format_into_utc_date(beginning),
                     "priceCategoryId": price_category.id + 1,
+                },
+            ],
+        }
+        response = client.with_session_auth(user.email).post("/stocks/bulk", json=stock_data)
+
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
+
+    def test_when_offer_id_not_found(self, client):
+        user = users_factories.ProFactory()
+        beginning = date_utils.get_naive_utc_now() + relativedelta(days=10)
+
+        stock_data = {
+            "offerId": 123456789,
+            "stocks": [
+                {
+                    "beginningDatetime": format_into_utc_date(beginning),
+                    "bookingLimitDatetime": format_into_utc_date(beginning),
+                    "priceCategoryId": 1,
                 },
             ],
         }

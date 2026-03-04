@@ -7,6 +7,7 @@ from pcapi import settings
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
 import tests
 
@@ -68,7 +69,8 @@ class DeleteImageFromFileTest:
         )
 
         # then
-        assert response.status_code == 403
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
     def test_not_authentified(self, client):
         # when
@@ -88,3 +90,4 @@ class DeleteImageFromFileTest:
 
         # then
         assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

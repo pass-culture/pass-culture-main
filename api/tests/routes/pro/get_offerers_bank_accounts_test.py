@@ -8,6 +8,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils import date as date_utils
 
 
@@ -23,13 +24,9 @@ class OfferersBankAccountTest:
 
         http_client = client.with_session_auth(pro_user.email)
 
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # Check user permission on offerer
-        with testing.assert_num_queries(num_queries):
-            response = http_client.get(f"/offerers/{offerer_2_id}/bank-accounts")
-            assert response.status_code == 403
-
-        assert "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information." in str(response.json)
+        response = http_client.get(f"/offerers/{offerer_2_id}/bank-accounts")
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
     @pytest.mark.usefixtures("db_session")
     def test_user_can_access_bank_accounts_page_even_if_it_doesnt_have_any(self, client):

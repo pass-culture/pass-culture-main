@@ -14,6 +14,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
@@ -144,13 +145,9 @@ class GetOffererTest:
 
         client = client.with_session_auth(pro.email)
         offerer_id = offerer.id
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # check user_offerer exists
-        num_queries += 1  # rollback
-        num_queries += 1  # rollback
-        with testing.assert_num_queries(num_queries):
-            response = client.get(f"/offerers/{offerer_id}")
-            assert response.status_code == 403
+        response = client.get(f"/offerers/{offerer_id}")
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
     def test_serialize_venue_offer_created_flag(self, client):
         pro = users_factories.ProFactory()

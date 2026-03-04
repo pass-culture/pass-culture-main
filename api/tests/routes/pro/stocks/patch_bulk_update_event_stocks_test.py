@@ -15,6 +15,7 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.mails.transactional import sendinblue_template_ids
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
@@ -586,6 +587,26 @@ class Returns404Test:
         )
 
         assert response.status_code == 404
-        assert response.json == {
-            "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
-        }
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
+
+    def test_offer_not_found(self, client):
+        users_factories.ProFactory(email="user@example.com")
+        booking_datetime = date_utils.get_naive_utc_now() + relativedelta(hours=4)
+
+        response = client.with_session_auth("user@example.com").patch(
+            "/stocks/bulk",
+            json={
+                "offerId": 123456789,
+                "stocks": [
+                    {
+                        "id": 10,
+                        "priceCategoryId": 10,
+                        "quantity": 10,
+                        "beginningDatetime": format_into_utc_date(booking_datetime),
+                    },
+                ],
+            },
+        )
+
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
