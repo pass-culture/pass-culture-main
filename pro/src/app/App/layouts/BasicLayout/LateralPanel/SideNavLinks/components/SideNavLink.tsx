@@ -48,7 +48,7 @@ export const RenderNavItem = ({ item }: { item: NavItem }) => {
       return (
         <li>
           {item.to && (
-            <SideNavLink to={item.to} icon={item.icon}>
+            <SideNavLink to={item.to} icon={item.icon} end={item.end}>
               {item.title}
             </SideNavLink>
           )}
