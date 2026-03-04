@@ -1,6 +1,6 @@
 {
   "name": "@pass-culture/pass-culture-pro",
-  "version": "0.0.0",
+  "version": "430.0.0",
   "private": true,
   "homepage": "/",
   "type": "module",
@@ -80,8 +80,8 @@
     "@storybook/addon-a11y": "9.1.19",
     "@storybook/addon-docs": "9.1.19",
     "@storybook/react-vite": "9.1.19",
-    "@testing-library/jest-dom": "6.9.1",
     "@testing-library/dom": "10.4.1",
+    "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "16.3.2",
     "@testing-library/user-event": "14.6.1",
     "@types/dompurify": "3.2.0",
