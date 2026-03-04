@@ -148,6 +148,9 @@ class FeatureToggle(enum.Enum):
         "Autoriser l'ajout de nouvelle structure seulement pour les collectivités"
     )
     WIP_SWITCH_VENUE = "Activer la gestion de l'espace partenaire par venue sans passer par l'offerer"
+    WIP_ASYNCHRONOUS_CELERY_CULTURAL_SURVEY = (
+        "Activer le backend de tâches asynchrones Celery pour la synchro avec le cultural survey"
+    )
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -215,6 +218,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_PRO_AUTONOMOUS_ANONYMIZATION,
     FeatureToggle.WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY,
     FeatureToggle.WIP_SWITCH_VENUE,
+    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CULTURAL_SURVEY,
     # Please keep alphabetic order
 )
 

@@ -4,6 +4,7 @@ import typing
 from celery import signals
 
 import pcapi.core.bookings.tasks  # noqa: F401
+import pcapi.core.cultural_survey.tasks  # noqa: F401
 import pcapi.core.educational.tasks  # noqa: F401
 import pcapi.core.external.compliance.tasks  # noqa: F401
 import pcapi.core.external.zendesk.tasks  # noqa: F401
