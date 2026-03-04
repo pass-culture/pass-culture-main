@@ -1,5 +1,6 @@
 import logging
 
+import flask
 from flask import redirect
 from flask import render_template
 from flask import request
@@ -115,7 +116,8 @@ def discord_call_back() -> Response | str:
         error_message += "Tu peux réessayer ou contacter le support."
         return redirect_with_error(ERROR_STRING_PREFIX + error_message)
 
-    return redirect(f"/auth/discord/success?access_token={access_token}&user_id={user_id}", code=303)
+    auth_success_url = flask.url_for("auth.discord_success", access_token=access_token, user_id=user_id)
+    return redirect(auth_success_url, code=303)
 
 
 def update_discord_user(user_id: str, discord_id: str) -> None:
@@ -201,7 +203,8 @@ def discord_signin_post() -> Response | str:
 
 def redirect_with_error(error_message: str) -> Response:
     mark_transaction_as_invalid()
-    return redirect(f"/auth/discord/signin?error={error_message}", code=303)
+    auth_signin_url = flask.url_for("auth.discord_signin", error=error_message)
+    return redirect(auth_signin_url, code=303)
 
 
 def handle_http_error(error: requests.exceptions.HTTPError) -> Response:
@@ -215,8 +218,5 @@ def handle_http_error(error: requests.exceptions.HTTPError) -> Response:
 
 
 def render_retry_template(access_token: str, user_id: str, error_message: str) -> str:
-    return render_template(
-        "discord_retry.html",
-        error=error_message,
-        url=f"/auth/discord/success?access_token={access_token}&user_id={user_id}",
-    )
+    auth_success_url = flask.url_for("auth.discord_success", access_token=access_token, user_id=user_id)
+    return render_template("discord_retry.html", error=error_message, url=auth_success_url)

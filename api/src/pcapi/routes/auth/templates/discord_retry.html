@@ -15,8 +15,7 @@
                     {% if error %}
                         <div class="alert alert-danger mt-4" role="alert">{{ error }}: réessaye en cliquant sur le bouton ci-dessous</div>
                     {% endif %}
-                    <button class="btn btn-primary btn-lg mt-5"
-                            onclick="window.location.href = '{{ url }}'">Rejoindre le Discord pass Culture</button>
+                    <a href="{{ url }}" class="btn btn-primary btn-lg mt-5">Rejoindre le Discord pass Culture</a>
                 </div>
             </div>
         </div>

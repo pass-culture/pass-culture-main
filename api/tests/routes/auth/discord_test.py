@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import patch
+from urllib.parse import unquote_plus
 
 import pytest
 from cryptography.hazmat.primitives import serialization
@@ -132,6 +133,21 @@ class DiscordSigninTest:
 
         db.session.refresh(discord_user)
         assert discord_user.discordId == "discord_user_id"
+
+    @unittest.mock.patch(
+        "pcapi.routes.auth.discord.discord_connector.get_user_id",
+        side_effect=requests.exceptions.HTTPError(),
+    )
+    def test_xss_access_token_is_encoded_in_retry_page(self, _mock_get_user_id, client):
+        user = users_factories.BeneficiaryFactory()
+        malicious_token = "';alert(1)//"
+
+        response = client.get(url_for("auth.discord_success", user_id=str(user.id), access_token=malicious_token))
+
+        assert response.status_code == 200
+        body = response.data.decode("utf-8")
+        assert malicious_token not in body
+        assert "onclick" not in body
 
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
     @unittest.mock.patch(
@@ -344,8 +360,7 @@ class DiscordSigninTest:
             url_for("auth.discord_success", user_id=str(another_user.id), access_token="access_token")
         )
         assert response.status_code == 303
-        response_data = response.data.decode("utf-8")
-        assert "Ce compte Discord est déjà lié à un autre compte pass Culture." in response_data
+        assert "Ce compte Discord est déjà lié à un autre compte pass Culture." in unquote_plus(response.location)
 
         assert mock_get_user_id.call_count == 1
         assert mock_get_user_id.call_args[0][0] == "access_token"
