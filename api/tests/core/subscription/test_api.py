@@ -6,6 +6,7 @@ from unittest.mock import patch
 
 import psycopg2
 import pytest
+import sqlalchemy as sa
 import time_machine
 from dateutil.relativedelta import relativedelta
 from flask_jwt_extended.utils import create_access_token
@@ -16,8 +17,10 @@ import pcapi.core.users.api as users_api
 from pcapi import settings
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
@@ -2712,3 +2715,110 @@ class TestQueriesTest:
         # but the ff is already cached by BeneficiaryFraudCheckFactory.eligibilityType
         with assert_num_queries(0):
             subscription_api.get_user_subscription_state(fetched_user)
+
+
+@pytest.mark.usefixtures("db_session")
+class MoveSubscriptionTest:
+    def test_moves_subscription(self):
+        last_year = datetime.now(tz=None) + relativedelta(years=1)
+        with time_machine.travel(last_year):
+            credited_account = users_factories.BeneficiaryFactory(age=17)
+
+        duplicate_account = users_factories.UserFactory(age=18, _phoneNumber="+33123456789")
+        profile_fraud_check = subscription_factories.ProfileCompletionFraudCheckFactory(
+            user=duplicate_account, eligibilityType=users_models.EligibilityType.AGE18
+        )
+        identity_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=duplicate_account,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[subscription_models.FraudReasonCode.DUPLICATE_USER],
+        )
+        honor_fraud_check = subscription_factories.HonorStatementFraudCheckFactory(
+            user=duplicate_account, eligibilityType=users_models.EligibilityType.AGE18
+        )
+
+        subscription_api.move_subscription_fraud_checks(
+            from_user=duplicate_account, to_user=credited_account, eligibility=users_models.EligibilityType.AGE18
+        )
+
+        assert profile_fraud_check.userId == credited_account.id
+        assert identity_fraud_check.userId == credited_account.id
+        assert honor_fraud_check.userId == credited_account.id
+
+        assert identity_fraud_check.status == subscription_models.FraudCheckStatus.OK
+        assert identity_fraud_check.reasonCodes == []
+        assert credited_account.validatedBirthDate == identity_fraud_check.source_data().get_birth_date()
+
+        action_history = db.session.scalars(
+            sa.select(history_models.ActionHistory).where(history_models.ActionHistory.userId == credited_account.id)
+        ).one_or_none()
+        assert action_history is not None
+
+    def test_subscription_move_prefers_ok_id_fraud_check(self):
+        last_year = datetime.now(tz=None) + relativedelta(years=1)
+        with time_machine.travel(last_year):
+            credited_account = users_factories.BeneficiaryFactory(age=17)
+
+        duplicate_account = users_factories.UserFactory(age=18, _phoneNumber="+33123456789")
+        ok_id_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=duplicate_account,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            type=subscription_models.FraudCheckType.DMS,
+            status=subscription_models.FraudCheckStatus.OK,
+        )
+        suspicious_id_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=duplicate_account,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[subscription_models.FraudReasonCode.DUPLICATE_USER],
+        )
+
+        subscription_api.move_subscription_fraud_checks(
+            from_user=duplicate_account, to_user=credited_account, eligibility=users_models.EligibilityType.AGE18
+        )
+
+        assert ok_id_fraud_check.userId == credited_account.id
+        assert suspicious_id_fraud_check.userId == duplicate_account.id
+
+    def test_subscription_move_prefers_ubble_fraud_check(self):
+        last_year = datetime.now(tz=None) + relativedelta(years=1)
+        with time_machine.travel(last_year):
+            credited_account = users_factories.BeneficiaryFactory(age=17)
+
+        duplicate_account = users_factories.UserFactory(age=18, _phoneNumber="+33123456789")
+        ubble_id_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=duplicate_account,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[subscription_models.FraudReasonCode.DUPLICATE_USER],
+        )
+        dms_id_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=duplicate_account,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            type=subscription_models.FraudCheckType.DMS,
+            status=subscription_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[subscription_models.FraudReasonCode.DUPLICATE_USER],
+        )
+
+        subscription_api.move_subscription_fraud_checks(
+            from_user=duplicate_account, to_user=credited_account, eligibility=users_models.EligibilityType.AGE18
+        )
+
+        assert ubble_id_fraud_check.userId == credited_account.id
+        assert dms_id_fraud_check.userId == duplicate_account.id
+
+    def test_cannot_move_subscription_of_credited_accounts(self):
+        last_year = datetime.now(tz=None) + relativedelta(years=1)
+        with time_machine.travel(last_year):
+            credited_account = users_factories.BeneficiaryFactory(age=17)
+
+        duplicate_account = users_factories.UserFactory(age=18, _phoneNumber="+33123456789")
+
+        with pytest.raises(subscription_exceptions.SubscriptionNotMovable):
+            subscription_api.move_subscription_fraud_checks(
+                from_user=credited_account, to_user=duplicate_account, eligibility=users_models.EligibilityType.AGE18
+            )

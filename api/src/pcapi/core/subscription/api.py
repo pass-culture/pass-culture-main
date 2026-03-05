@@ -14,6 +14,7 @@ from pcapi import settings
 from pcapi.core.external import batch
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import deposit_api
+from pcapi.core.history import models as history_models
 from pcapi.core.subscription import machines as subscription_machines
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
@@ -750,3 +751,87 @@ def requires_identity_check_step(user: users_models.User) -> bool:
     ):
         return False
     return True
+
+
+def move_subscription_fraud_checks(
+    from_user: users_models.User,
+    to_user: users_models.User,
+    eligibility: users_models.EligibilityType,
+    author_id: int | None = None,
+) -> None:
+    if from_user.is_beneficiary:
+        # if the user was granted a credit on the first account, then we want the user to keep using that account
+        raise exceptions.SubscriptionNotMovable()
+
+    fraud_checks_to_move = [
+        fraud_check
+        for fraud_check in from_user.beneficiaryFraudChecks
+        if fraud_check.eligibilityType == eligibility
+        and fraud_check.type not in subscription_models.IDENTITY_CHECK_TYPES
+    ]
+
+    identity_fraud_check = _get_ok_or_duplicate_identity_fraud_check(from_user, eligibility)
+    if identity_fraud_check:
+        identity_fraud_check.status = subscription_models.FraudCheckStatus.OK
+        identity_fraud_check.reasonCodes = []
+
+        source_data = identity_fraud_check.source_data()
+        if isinstance(source_data, subscription_schemas.IdentityCheckContent):
+            to_user.validatedBirthDate = source_data.get_birth_date()
+
+        fraud_checks_to_move.append(identity_fraud_check)
+
+    for fraud_check in fraud_checks_to_move:
+        fraud_check.userId = to_user.id
+
+    action_history = history_models.ActionHistory(
+        actionType=history_models.ActionType.COMMENT,
+        authorUserId=author_id,
+        comment=f"Subscription moved from account {from_user.id} to account {to_user.id}",
+        user=to_user,
+    )
+    db.session.add(action_history)
+
+    logger.info("Moved %s subscription from user %d to user %d", eligibility.value, from_user.id, to_user.id)
+
+
+def _get_ok_or_duplicate_identity_fraud_check(
+    user: users_models.User, eligibility: users_models.EligibilityType
+) -> subscription_models.BeneficiaryFraudCheck | None:
+    allowed_id_providers = [subscription_models.FraudCheckType.UBBLE, subscription_models.FraudCheckType.DMS]
+    allowed_statuses = [
+        subscription_models.FraudCheckStatus.OK,
+        subscription_models.FraudCheckStatus.SUSPICIOUS,
+    ]
+    identity_fraud_checks = [
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.eligibilityType == eligibility and fraud_check.type in allowed_id_providers
+    ]
+
+    completed_id_fraud_checks = []
+    for fraud_check in identity_fraud_checks:
+        if fraud_check.status not in allowed_statuses:
+            continue
+
+        if fraud_check.status == subscription_models.FraudCheckStatus.OK:
+            completed_id_fraud_checks.append(fraud_check)
+
+        if fraud_check.status == subscription_models.FraudCheckStatus.SUSPICIOUS:
+            is_because_of_duplicate = fraud_check.reasonCodes == [subscription_models.FraudReasonCode.DUPLICATE_USER]
+            if is_because_of_duplicate:
+                completed_id_fraud_checks.append(fraud_check)
+
+    completed_id_fraud_checks.sort(
+        key=lambda fraud_check: (
+            # prefer OK fraud checks
+            allowed_statuses.index(fraud_check.status or subscription_models.FraudCheckStatus.KO),
+            # prefer Ubble fraud checks
+            allowed_id_providers.index(fraud_check.type),
+        )
+    )
+
+    if not completed_id_fraud_checks:
+        return None
+
+    return completed_id_fraud_checks[0]
