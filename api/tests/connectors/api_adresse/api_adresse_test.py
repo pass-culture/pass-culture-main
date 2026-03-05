@@ -418,9 +418,9 @@ def test_we_dont_cache_falsy_empty_response(mocked_redis_get, mocked_redis_set, 
     ### redis_client.delete calls ###
     mocked_redis_delete.assert_called_with(
         address_cache_key
-    )  #  Ensure we don’t serve the wrongly empty response for others users
+    )  #  Ensure we don’t serve the wrongly empty response for others users
 
-    ### Ensure we don’t break anything from the BAN API connector ###
+    ### Ensure we don’t break anything from the BAN API connector ###
     assert (
         mocked_search.call_count == 2
     )  # Searching the address, BAN API return wrongly an empty response, then falling back on asking for the centroid
@@ -486,9 +486,9 @@ def test_we_dont_cache_falsy_empty_response_when_falling_back_on_centroid(
     ### redis_client.delete calls ###
     mocked_redis_delete.assert_has_calls(
         [call(address_cache_key), call(centroid_cache_key)]
-    )  #  Ensure we don’t serve the wrongly empty responses for others users
+    )  #  Ensure we don’t serve the wrongly empty responses for others users
 
-    ### Ensure we don’t break anything from the BAN API connector ###
+    ### Ensure we don’t break anything from the BAN API connector ###
     assert (
         mocked_search.call_count == 2
     )  # Searching the address, BAN API return wrongly an empty response, then falling back on asking for the centroid

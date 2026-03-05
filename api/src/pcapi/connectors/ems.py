@@ -161,7 +161,7 @@ class EMSBookingConnector:
         content = response.json()
 
         if not content and response.status_code == 200:
-            # EMS return an empty response when cancelling instead of there usual ones
+            # EMS return an empty response when cancelling instead of there usual ones
             # So we are forced to assume that empty response + 200 status code means we are ok
             return
 
