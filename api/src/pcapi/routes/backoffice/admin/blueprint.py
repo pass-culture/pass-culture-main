@@ -12,12 +12,12 @@ from werkzeug.exceptions import NotFound
 from pcapi import settings
 from pcapi.core.categories import subcategories
 from pcapi.core.history import models as history_models
+from pcapi.core.internal_notifications.transactional import change_feature_flip as change_feature_flip_internal_message
 from pcapi.core.permissions import api as perm_api
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import feature as feature_models
-from pcapi.notifications.internal.transactional import change_feature_flip as change_feature_flip_internal_message
 from pcapi.routes.backoffice import blueprint
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.utils import access_control

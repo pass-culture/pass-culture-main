@@ -1,8 +1,9 @@
 from pcapi import settings
 from pcapi.core.users.models import User
 from pcapi.models.feature import Feature
-from pcapi.notifications.internal import send_internal_message
 from pcapi.utils import urls
+
+from ..api import send_internal_message
 
 
 def send(feature: Feature, current_user: User) -> None:
