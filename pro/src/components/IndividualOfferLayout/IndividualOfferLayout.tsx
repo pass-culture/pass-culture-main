@@ -99,13 +99,13 @@ export const IndividualOfferLayout = ({
           ))}
       </div>
 
-      {offer && (
-        <p className={styles['offer-title']}>
+      {offer && mode !== OFFER_WIZARD_MODE.READ_ONLY && (
+        <h2 className={styles['offer-title']}>
           {offer.name}
           {offer.isHeadlineOffer && (
             <Tag label="Offre à la une" variant={TagVariant.HEADLINE} />
           )}
-        </p>
+        </h2>
       )}
 
       {offer && <OfferStatusBanner status={offer.status} />}

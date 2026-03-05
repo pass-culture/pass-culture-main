@@ -4,38 +4,55 @@ import { Outlet, useLocation } from 'react-router'
 
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { OnboardingLayout } from '@/app/App/layouts/funnels/OnboardingLayout/OnboardingLayout'
-import { IndividualOfferContextProvider } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import {
+  IndividualOfferContextProvider,
+  useIndividualOfferContext,
+} from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 
 import styles from './IndividualOfferWizard.module.scss'
 import { getTitle } from './utils/getTitle'
 
-export const IndividualOfferWizard = () => {
+const IndividualOfferWizardConsumer = () => {
+  const { offer } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
   const { pathname } = useLocation()
-  const isOnboarding = pathname.indexOf('onboarding') !== -1
+
+  const isOnboarding = pathname.includes('onboarding')
   const isConfirmationPage = pathname.endsWith('confirmation')
-  const mainHeading = getTitle(mode)
+
+  const mainHeading = getTitle(mode, isConfirmationPage, offer?.name)
 
   const children = (
-    <IndividualOfferContextProvider>
-      <div className={styles['offer-wizard-container']}>
-        <Outlet />
-      </div>
-    </IndividualOfferContextProvider>
+    <div className={styles['offer-wizard-container']}>
+      <Outlet />
+    </div>
   )
 
-  return isOnboarding ? (
-    <OnboardingLayout mainHeading={mainHeading} isStickyActionBarInChild>
-      {children}
-    </OnboardingLayout>
-  ) : (
+  if (isOnboarding) {
+    return (
+      <OnboardingLayout mainHeading={mainHeading} isStickyActionBarInChild>
+        {children}
+      </OnboardingLayout>
+    )
+  }
+
+  return (
     <BasicLayout
       mainHeading={mainHeading}
       isStickyActionBarInChild={!isConfirmationPage}
+      isHeadingCentered={isConfirmationPage}
     >
       {children}
     </BasicLayout>
+  )
+}
+
+export const IndividualOfferWizard = () => {
+  return (
+    <IndividualOfferContextProvider>
+      <IndividualOfferWizardConsumer />
+    </IndividualOfferContextProvider>
   )
 }
 
