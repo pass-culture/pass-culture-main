@@ -2816,6 +2816,7 @@
                 "title": "EligibilityType"
             },
             "EmailChangeConfirmationResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "accessToken": {
                         "title": "Accesstoken",
@@ -2830,9 +2831,16 @@
                         "type": "string"
                     },
                     "resetPasswordToken": {
-                        "nullable": true,
-                        "title": "Resetpasswordtoken",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Resetpasswordtoken"
                     }
                 },
                 "required": [
@@ -2844,7 +2852,6 @@
                 "type": "object"
             },
             "EmailHistoryEventTypeEnum": {
-                "description": "An enumeration.",
                 "enum": [
                     "UPDATE_REQUEST",
                     "CONFIRMATION",
@@ -2855,9 +2862,11 @@
                     "ADMIN_UPDATE_REQUEST",
                     "ADMIN_UPDATE"
                 ],
-                "title": "EmailHistoryEventTypeEnum"
+                "title": "EmailHistoryEventTypeEnum",
+                "type": "string"
             },
             "EmailUpdateStatusResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "expired": {
                         "title": "Expired",
@@ -2868,22 +2877,43 @@
                         "type": "boolean"
                     },
                     "newEmail": {
-                        "nullable": true,
-                        "title": "Newemail",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Newemail"
                     },
                     "resetPasswordToken": {
-                        "nullable": true,
-                        "title": "Resetpasswordtoken",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Resetpasswordtoken"
                     },
                     "status": {
                         "$ref": "#/components/schemas/EmailHistoryEventTypeEnum"
                     },
                     "token": {
-                        "nullable": true,
-                        "title": "Token",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Token"
                     }
                 },
                 "required": [
@@ -3874,6 +3904,7 @@
                 "type": "object"
             },
             "NewEmailSelectionRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "newEmail": {
                         "format": "email",
