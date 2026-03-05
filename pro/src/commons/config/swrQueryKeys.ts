@@ -58,6 +58,7 @@ export const GET_PROVIDERS_QUERY_KEY = 'getProviders'
 export const GET_STOCKS_EVENT_STATS_QUERY_KEY = 'getStocksEventStats'
 export const GET_STOCKS_QUERY_KEY = 'getStocks'
 export const GET_VENUE_QUERY_KEY = 'getVenue'
+export const GET_VENUE_ADDRESS_QUERY_KEY = 'getVenueAddresses'
 export const GET_VENUES_OF_OFFERER_FROM_SIRET_QUERY_KEY =
   'getVenuesOfOffererFromSiret'
 export const GET_VENUE_PROVIDERS_QUERY_KEY = 'getVenueProviders'

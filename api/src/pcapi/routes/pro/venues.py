@@ -334,3 +334,35 @@ def get_offers_statistics(venue_id: int) -> venues_serialize.GetOffersStatsRespo
         pending_public_offers=stats.pending_public_offers,
         pending_educational_offers=stats.pending_educational_offers,
     )
+
+
+@private_api.route("/venues/<int:venue_id>/locations", methods=["GET"])
+@login_required
+@spectree_serialize(
+    on_success_status=200,
+    api=blueprint.pro_private_schema,
+    response_model=venues_serialize.GetVenueAddressesResponseModel,
+)
+def get_venue_addresses(
+    venue_id: int, query: venues_serialize.GetVenueAddressesQueryModel
+) -> venues_serialize.GetVenueAddressesResponseModel:
+    check_user_has_access_to_venues(current_user, [venue_id])
+
+    results = offerers_repository.get_venue_addresses(venue_id, with_offers_option=query.withOffersOption)
+
+    venue_addresses = [
+        venues_serialize.GetVenueAddressResponseModel(
+            id=result.id,
+            addressId=result.addressId,
+            label=result.label if hasattr(result, "label") and result.label else result.publicName,
+            venueId=result.venueId,
+            venueName=result.publicName,
+            street=result.street,
+            postalCode=result.postalCode,
+            city=result.city,
+            departmentCode=result.departmentCode,
+        )
+        for result in results
+    ]
+
+    return venues_serialize.GetVenueAddressesResponseModel(venue_addresses)

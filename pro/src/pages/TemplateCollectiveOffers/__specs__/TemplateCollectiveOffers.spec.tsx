@@ -10,6 +10,7 @@ import {
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferTemplateResponseModel,
   type GetOffererAddressResponseModel,
+  type GetVenueAddressResponseModel,
 } from '@/apiClient/v1'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
@@ -24,6 +25,7 @@ import {
   currentOffererFactory,
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
+import { venueAddressFactory } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { TemplateCollectiveOffers } from '../TemplateCollectiveOffers'
@@ -33,6 +35,15 @@ const offererAddress: GetOffererAddressResponseModel[] = [
     label: 'Label',
   }),
   offererAddressFactory({
+    city: 'New York',
+  }),
+]
+
+const venueAddress: GetVenueAddressResponseModel[] = [
+  venueAddressFactory(1, {
+    city: 'London',
+  }),
+  venueAddressFactory(1, {
     city: 'New York',
   }),
 ]
@@ -77,6 +88,7 @@ describe('TemplateCollectiveOffers', () => {
       name: 'Mon offerer',
     })
     vi.spyOn(api, 'getOffererAddresses').mockResolvedValue(offererAddress)
+    vi.spyOn(api, 'getVenueAddresses').mockResolvedValue(venueAddress)
   })
 
   afterEach(() => {

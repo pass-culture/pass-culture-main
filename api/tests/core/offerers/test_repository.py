@@ -254,6 +254,35 @@ class GetOffererAddressesTest:
         assert {item.id for item in results} == {oa.id, offer_oa.id}
 
 
+class GetVenueAddressesTest:
+    def test_get_all_venue_addresses(self):
+        offer_location = offerers_factories.OfferLocationFactory()
+        venue_id = offer_location.venueId
+        query = repository.get_venue_addresses(venue_id=venue_id, with_offers_option=None)
+        results = query.all()
+        assert len(results) == 1
+
+    def test_get_venue_addresses_individual_only(self):
+        offer_location = offerers_factories.OfferLocationFactory()
+        offers_factories.OfferFactory(venue=offer_location.venue, offererAddress=offer_location)
+        venue_id = offer_location.venueId
+        query = repository.get_venue_addresses(
+            venue_id=venue_id, with_offers_option=schemas.GetVenueAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
+        )
+        results = query.all()
+        assert len(results) == 1
+
+    def test_get_venue_addresses_collective_only(self):
+        offer_location = offerers_factories.OfferLocationFactory()
+        educational_factories.CollectiveOfferFactory(venue=offer_location.venue)
+        venue_id = offer_location.venueId
+        query = repository.get_venue_addresses(
+            venue_id=venue_id, with_offers_option=schemas.GetVenueAddressesWithOffersOption.COLLECTIVE_OFFERS_ONLY
+        )
+        results = query.all()
+        assert len(results) == 1
+
+
 class GetOffererHeadlineOfferTest:
     def test_return_headline_offer(self):
         offer = offers_factories.OfferFactory()

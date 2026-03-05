@@ -6,6 +6,7 @@ import { beforeEach, expect } from 'vitest'
 import { api } from '@/apiClient/api'
 import {
   type GetOffererAddressResponseModel,
+  type GetVenueAddressResponseModel,
   type ListOffersOfferResponseModel,
   OfferStatus,
 } from '@/apiClient/v1'
@@ -27,6 +28,7 @@ import {
   currentOffererFactory,
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
+import { venueAddressFactory } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { IndividualOffers } from './IndividualOffers'
@@ -61,6 +63,15 @@ const offererAddress: GetOffererAddressResponseModel[] = [
     label: 'Label',
   }),
   offererAddressFactory({
+    city: 'New York',
+  }),
+]
+
+const venueAddress: GetVenueAddressResponseModel[] = [
+  venueAddressFactory(1, {
+    city: 'London',
+  }),
+  venueAddressFactory(1, {
     city: 'New York',
   }),
 ]
@@ -129,6 +140,7 @@ describe('IndividualOffers', () => {
     })
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
     vi.spyOn(api, 'getOffererAddresses').mockResolvedValue(offererAddress)
+    vi.spyOn(api, 'getVenueAddresses').mockResolvedValue(venueAddress)
     vi.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
   })
 
@@ -940,45 +952,90 @@ describe('IndividualOffers', () => {
       )
     })
   })
-
-  it('should have offerer address value when user filters by address', async () => {
-    vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
-    vi.spyOn(api, 'getOffererAddresses').mockResolvedValueOnce(offererAddress)
-    vi.spyOn(api, 'getOfferer').mockResolvedValueOnce(
-      defaultGetOffererResponseModel
-    )
-    await renderIndividualOffers(DEFAULT_SEARCH_FILTERS)
-
-    expect(api.listOffers).toHaveBeenCalledTimes(1)
-
-    const offererAddressOption = screen.getByLabelText('Localisation')
-
-    await waitFor(() => {
-      expect(within(offererAddressOption).getAllByRole('option').length).toBe(3)
-    })
-
-    const firstOffererAddressOption =
-      within(offererAddressOption).getAllByRole('option')[1]
-
-    await userEvent.selectOptions(
-      offererAddressOption,
-      firstOffererAddressOption
-    )
-    await userEvent.click(screen.getByText('Rechercher'))
-
-    await waitFor(() => {
-      expect(api.listOffers).toHaveBeenCalledTimes(2)
-      expect(api.listOffers).toHaveBeenLastCalledWith(
-        null,
-        defaultGetOffererResponseModel.id,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        offererAddress[1].id
+  describe('With switch venue FF deactivated', () => {
+    it('should have offerer address value when user filters by address', async () => {
+      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+      vi.spyOn(api, 'getOffererAddresses').mockResolvedValueOnce(offererAddress)
+      vi.spyOn(api, 'getOfferer').mockResolvedValueOnce(
+        defaultGetOffererResponseModel
       )
+      await renderIndividualOffers(DEFAULT_SEARCH_FILTERS)
+
+      expect(api.listOffers).toHaveBeenCalledTimes(1)
+
+      const offererAddressOption = screen.getByLabelText('Localisation')
+
+      await waitFor(() => {
+        expect(within(offererAddressOption).getAllByRole('option').length).toBe(
+          3
+        )
+      })
+
+      const firstOffererAddressOption =
+        within(offererAddressOption).getAllByRole('option')[1]
+
+      await userEvent.selectOptions(
+        offererAddressOption,
+        firstOffererAddressOption
+      )
+      await userEvent.click(screen.getByText('Rechercher'))
+
+      await waitFor(() => {
+        expect(api.listOffers).toHaveBeenCalledTimes(2)
+        expect(api.listOffers).toHaveBeenLastCalledWith(
+          null,
+          defaultGetOffererResponseModel.id,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          offererAddress[1].id
+        )
+      })
+    })
+  })
+  describe('When switch venue FF is activated', () => {
+    it('should have offerer address value when user filters by address', async () => {
+      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+      vi.spyOn(api, 'getVenueAddresses').mockResolvedValueOnce(venueAddress)
+      vi.spyOn(api, 'getOfferer').mockResolvedValueOnce(
+        defaultGetOffererResponseModel
+      )
+      await renderIndividualOffers(DEFAULT_SEARCH_FILTERS, ['WIP_SWITCH_VENUE'])
+
+      expect(api.listOffers).toHaveBeenCalledTimes(1)
+
+      const venueAddressOption = screen.getByLabelText('Localisation')
+
+      await waitFor(() => {
+        expect(within(venueAddressOption).getAllByRole('option').length).toBe(3)
+      })
+
+      const firstOffererAddressOption =
+        within(venueAddressOption).getAllByRole('option')[1]
+
+      await userEvent.selectOptions(
+        venueAddressOption,
+        firstOffererAddressOption
+      )
+      await userEvent.click(screen.getByText('Rechercher'))
+
+      await waitFor(() => {
+        expect(api.listOffers).toHaveBeenCalledTimes(2)
+        expect(api.listOffers).toHaveBeenLastCalledWith(
+          null,
+          defaultGetOffererResponseModel.id,
+          null,
+          2,
+          null,
+          null,
+          null,
+          null,
+          venueAddress[0].id
+        )
+      })
     })
   })
 })

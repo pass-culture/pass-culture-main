@@ -3,7 +3,10 @@ import { formatAndOrderAddresses } from 'repository/venuesService'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import { GetOffererAddressesWithOffersOption } from '@/apiClient/v1'
+import {
+  GetOffererAddressesWithOffersOption,
+  GetVenueAddressesWithOffersOption,
+} from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import {
   GET_CATEGORIES_QUERY_KEY,
@@ -17,6 +20,7 @@ import { computeIndividualOffersUrl } from '@/commons/core/Offers/utils/computeI
 import { serializeApiIndividualFilters } from '@/commons/core/Offers/utils/serializeApiIndividualFilters'
 import type { Audience } from '@/commons/core/shared/types'
 import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
+import { useVenueAddresses } from '@/commons/hooks/swr/useVenueAddresses'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
@@ -73,8 +77,12 @@ export const IndividualOffers = (): JSX.Element => {
   const offererAddressQuery = useOffererAddresses(
     GetOffererAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
   )
-  // TODO (igabriele, 2025-07-21): offererAddresses should be unique (which is not guaranteed in current code).
-  const offererAddresses = formatAndOrderAddresses(offererAddressQuery.data)
+  const venueAddressQuery = useVenueAddresses(
+    GetVenueAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
+  )
+  const offererAddresses = formatAndOrderAddresses(
+    withSwitchVenueFeature ? venueAddressQuery.data : offererAddressQuery.data
+  )
 
   const apiFilters = computeIndividualApiFilters(
     finalSearchFilters,

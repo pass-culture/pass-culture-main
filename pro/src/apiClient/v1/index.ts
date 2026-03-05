@@ -137,6 +137,10 @@ export type { GetOfferStockResponseModel } from './models/GetOfferStockResponseM
 export type { GetOfferVenueResponseModel } from './models/GetOfferVenueResponseModel';
 export type { GetProductInformations } from './models/GetProductInformations';
 export type { GetStocksResponseModel } from './models/GetStocksResponseModel';
+export type { GetVenueAddressesQueryModel } from './models/GetVenueAddressesQueryModel';
+export type { GetVenueAddressesResponseModel } from './models/GetVenueAddressesResponseModel';
+export { GetVenueAddressesWithOffersOption } from './models/GetVenueAddressesWithOffersOption';
+export type { GetVenueAddressResponseModel } from './models/GetVenueAddressResponseModel';
 export type { GetVenueDomainResponseModel } from './models/GetVenueDomainResponseModel';
 export type { GetVenueListLiteResponseModel } from './models/GetVenueListLiteResponseModel';
 export type { GetVenueListResponseModel } from './models/GetVenueListResponseModel';
