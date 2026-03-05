@@ -1,5 +1,6 @@
 import factory
 
+from pcapi import settings
 from pcapi.core.factories import BaseFactory
 from pcapi.core.offers import models as offers_models
 
@@ -21,6 +22,7 @@ class ArtistFactory(BaseFactory[models.Artist]):
 
     name = factory.Faker("name")
     description = factory.Faker("text")
+    app_search_score = settings.ALGOLIA_ARTIST_MIN_APP_SEARCH_SCORE
     image_license_url = factory.Faker("url")
     image = factory.LazyAttributeSequence(lambda _, n: some_artist_images[n % len(some_artist_images)])
     wikidata_id = factory.Sequence(lambda n: f"Q{n + 1:05d}")
