@@ -1,7 +1,7 @@
 import { useFormContext } from 'react-hook-form'
 
 import { isError } from '@/apiClient/helpers'
-import { getSiretData } from '@/commons/core/Venue/getSiretData'
+import { getSiretData } from '@/commons/core/Venue/utils/getSiretData'
 import {
   humanizeSiret,
   isSiretStartingWithSiren,
