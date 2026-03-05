@@ -4,6 +4,7 @@ import typing
 from enum import Enum
 
 import email_validator
+import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
 from jwt import DecodeError
 from jwt import ExpiredSignatureError
@@ -31,11 +32,24 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.routes.native.v1.serialization import achievements as achievements_serialization
 from pcapi.routes.native.v1.serialization import subscription as subscription_serialization
 from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.shared.price import convert_to_cent
 from pcapi.utils import date as date_utils
 from pcapi.utils.email import sanitize_email
 
 
+class TrustedDeviceV2(HttpBodyModel):
+    device_id: str
+    os: str | None = None
+    source: str | None = None
+
+    model_config = pydantic_v2.ConfigDict(
+        str_strip_whitespace=True,
+    )
+
+
+# TODO remove this class and use TrustedDeviceV2 above everywhere.
+# Then rename TrustedDeviceV2 to TrustedDevice once migration is done
 class TrustedDevice(ConfiguredBaseModel):
     device_id: str
     os: str | None

@@ -151,7 +151,6 @@
                 "type": "object"
             },
             "AccountState": {
-                "description": "An enumeration.",
                 "enum": [
                     "ACTIVE",
                     "ANONYMIZED",
@@ -162,7 +161,8 @@
                     "DELETED",
                     "WAITING_FOR_ANONYMIZATION"
                 ],
-                "title": "AccountState"
+                "title": "AccountState",
+                "type": "string"
             },
             "AchievementEnum": {
                 "description": "An enumeration.",
@@ -2009,6 +2009,7 @@
                 "type": "object"
             },
             "ChangePasswordRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "currentPassword": {
                         "title": "Currentpassword",
@@ -3523,6 +3524,7 @@
                 "type": "object"
             },
             "OAuthSigninRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "authorizationCode": {
                         "title": "Authorizationcode",
@@ -3531,11 +3533,13 @@
                     "deviceInfo": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/TrustedDevice"
+                                "$ref": "#/components/schemas/TrustedDeviceV2"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "TrustedDevice"
+                        "default": null
                     },
                     "oauthStateToken": {
                         "title": "Oauthstatetoken",
@@ -3550,6 +3554,7 @@
                 "type": "object"
             },
             "OauthStateResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "oauthStateToken": {
                         "title": "Oauthstatetoken",
@@ -5894,6 +5899,7 @@
                 "title": "RecreditType"
             },
             "RefreshResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "accessToken": {
                         "title": "Accesstoken",
@@ -5939,15 +5945,23 @@
                 "type": "object"
             },
             "RequestPasswordResetRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "email": {
                         "title": "Email",
                         "type": "string"
                     },
                     "token": {
-                        "nullable": true,
-                        "title": "Token",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Token"
                     }
                 },
                 "required": [
@@ -5971,15 +5985,18 @@
                 "type": "object"
             },
             "ResetPasswordRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "deviceInfo": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/TrustedDevice"
+                                "$ref": "#/components/schemas/TrustedDeviceV2"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "TrustedDevice"
+                        "default": null
                     },
                     "newPassword": {
                         "title": "Newpassword",
@@ -5998,6 +6015,7 @@
                 "type": "object"
             },
             "ResetPasswordResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "accessToken": {
                         "title": "Accesstoken",
@@ -6278,15 +6296,18 @@
                 "type": "object"
             },
             "SigninRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "deviceInfo": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/TrustedDevice"
+                                "$ref": "#/components/schemas/TrustedDeviceV2"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "TrustedDevice"
+                        "default": null
                     },
                     "identifier": {
                         "title": "Identifier",
@@ -6297,9 +6318,16 @@
                         "type": "string"
                     },
                     "token": {
-                        "nullable": true,
-                        "title": "Token",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Token"
                     }
                 },
                 "required": [
@@ -6310,6 +6338,7 @@
                 "type": "object"
             },
             "SigninResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "accessToken": {
                         "title": "Accesstoken",
@@ -6919,6 +6948,44 @@
                 "title": "TrustedDevice",
                 "type": "object"
             },
+            "TrustedDeviceV2": {
+                "additionalProperties": false,
+                "properties": {
+                    "deviceId": {
+                        "title": "Deviceid",
+                        "type": "string"
+                    },
+                    "os": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Os"
+                    },
+                    "source": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Source"
+                    }
+                },
+                "required": [
+                    "deviceId"
+                ],
+                "title": "TrustedDeviceV2",
+                "type": "object"
+            },
             "UbbleError": {
                 "description": "An enumeration.",
                 "enum": [
@@ -7253,15 +7320,18 @@
                 "type": "object"
             },
             "ValidateEmailRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "deviceInfo": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/TrustedDevice"
+                                "$ref": "#/components/schemas/TrustedDeviceV2"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "TrustedDevice"
+                        "default": null
                     },
                     "emailValidationToken": {
                         "title": "Emailvalidationtoken",
@@ -7275,6 +7345,7 @@
                 "type": "object"
             },
             "ValidateEmailResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "accessToken": {
                         "title": "Accesstoken",
