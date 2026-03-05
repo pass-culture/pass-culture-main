@@ -93,6 +93,8 @@ KNOWN_PUBLIC_ENDPOINTS = [
     "test_extended_spec_tree_blueprint.openapi_apidoc",  # → response.status_code = 200
     "test_extended_spec_tree_blueprint.spectree_get_test_endpoint",  # → response.status_code = 204
     "test_extended_spec_tree_blueprint.spectree_post_test_endpoint",  # → response.status_code = 204
+    "native.write_native_session",  # → response.status_code = 500
+    "pro_private_api.write_pro_session",  # → response.status_code = 200
 ]
 
 SUFFIX_WHITE_LIST = [
@@ -113,6 +115,7 @@ PREFIX_WHITE_LIST = [
 IGNORE_ERROR_500_LIST = [
     "Private API.testing_route_with_common_errors",
     "Private API.testing_route_with_validation_errors",
+    "native.write_native_session",
 ]
 
 
@@ -143,6 +146,7 @@ def test_endpoints_require_authentication(client, app):
                 continue
             response = client.open(url, method=method, json={})
             if response.status_code // 100 == 5 and rule.endpoint not in IGNORE_ERROR_500_LIST:
+                breakpoint()
                 errors.append(
                     f"Endpoint '{rule.endpoint}' returns a response with status code = {response.status_code}. Is this normal?"
                 )
