@@ -26,3 +26,7 @@ class FraudException(Exception):
 
 class IncompatibleFraudCheckStatus(FraudException):
     pass
+
+
+class SubscriptionNotMovable(Exception):
+    pass
