@@ -14,6 +14,7 @@ import {
   GET_DATA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
 import { getSiretData } from '@/commons/core/Venue/getSiretData'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { unhumanizeSiret } from '@/commons/utils/siren'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -42,6 +43,7 @@ interface OffererFormValues {
 
 export const Offerer = (): JSX.Element => {
   const { logEvent } = useAnalytics()
+  const isWelcomeCarouselEnabled = useActiveFeature('WIP_PRE_SIGNUP_INFO')
   const snackBar = useSnackBar()
   const navigate = useNavigate()
   const { offerer, setOfferer, setInitialAddress } = useSignupJourneyContext()
@@ -82,6 +84,17 @@ export const Offerer = (): JSX.Element => {
 
     try {
       offererSiretData = await getSiretData(formattedSiret)
+
+      if (!offererSiretData) {
+        snackBar.error('Une erreur est survenue')
+        return
+      }
+
+      if (isWelcomeCarouselEnabled) {
+        // Do not show dialog if FF is enabled
+        return
+      }
+
       if (
         !showIsAppUserDialog &&
         offererSiretData?.apeCode &&
@@ -101,10 +114,6 @@ export const Offerer = (): JSX.Element => {
       if (showIsAppUserDialog) {
         setIsHigherEducation(false)
         setShowIsAppUserDialog(false)
-      }
-      if (!offererSiretData) {
-        snackBar.error('Une erreur est survenue')
-        return
       }
     } catch (error) {
       if (error instanceof Error) {
