@@ -221,6 +221,7 @@ export type { PostOffererResponseModel } from './models/PostOffererResponseModel
 export type { PostVenueProviderBody } from './models/PostVenueProviderBody';
 export type { PriceCategoryBody } from './models/PriceCategoryBody';
 export type { PriceCategoryResponseModel } from './models/PriceCategoryResponseModel';
+export type { ProAdviceBodyModel } from './models/ProAdviceBodyModel';
 export type { ProAdviceModel } from './models/ProAdviceModel';
 export type { ProAnonymizationEligibilityResponseModel } from './models/ProAnonymizationEligibilityResponseModel';
 export type { ProUserCreationBodyV2Model } from './models/ProUserCreationBodyV2Model';
