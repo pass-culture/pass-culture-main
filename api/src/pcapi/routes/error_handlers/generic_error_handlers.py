@@ -35,7 +35,6 @@ ApiErrorResponse = tuple[dict | Response, int]
 
 @app.errorhandler(NotFound)
 def restize_not_found_route_errors(error: NotFound) -> ApiErrorResponse | HtmlErrorResponse:
-
     if request_utils.is_request_from_htmx():
         flashes = session.get("_flashes")
         if not flashes:
