@@ -58,7 +58,7 @@ class SearchGroupResponseModelv2(HttpBodyModel):
 
     @classmethod
     def build(cls, searchGroup: categories_models.SearchNode) -> "SearchGroupResponseModelv2":
-        return cls(name=searchGroup.name, value=searchGroup.search_value)
+        return cls(name=searchGroup.name, value=searchGroup.value)
 
 
 class HomepageLabelResponseModelv2(HttpBodyModel):
