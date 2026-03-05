@@ -1,5 +1,5 @@
 from pcapi import settings
-from pcapi.notifications.internal import send_internal_message
+from pcapi.core.internal_notifications.api import send_internal_message
 
 
 def send() -> None:
