@@ -441,7 +441,7 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.27.1"
 
-"@babel/runtime@^7.12.5", "@babel/runtime@^7.18.3", "@babel/runtime@^7.27.6", "@babel/runtime@^7.28.6":
+"@babel/runtime@^7.12.5", "@babel/runtime@^7.18.3", "@babel/runtime@^7.28.6":
   version "7.28.6"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.28.6.tgz#d267a43cb1836dc4d182cce93ae75ba954ef6d2b"
   integrity sha512-05WQkdpL9COIMz4LjTxGpPNCdlpyimKppYNoJ5Di5EUObifl8t4tuLuUBBZEpoLYOmfvIWrsp9fCl0HoPRVTdA==
@@ -1966,6 +1966,13 @@
     "@storybook/global" "^5.0.0"
     "@storybook/react-dom-shim" "9.1.19"
 
+"@swc/helpers@0.5.18":
+  version "0.5.18"
+  resolved "https://registry.yarnpkg.com/@swc/helpers/-/helpers-0.5.18.tgz#feeeabea0d10106ee25aaf900165df911ab6d3b1"
+  integrity sha512-TXTnIcNJQEKwThMMqBXsZ4VGAza6bvN4pa41Rkqoio6QBKMvo+5lexeTMScGCIxtzgQJzElcvIltani+adC5PQ==
+  dependencies:
+    tslib "^2.8.0"
+
 "@testing-library/dom@10.4.1":
   version "10.4.1"
   resolved "https://registry.yarnpkg.com/@testing-library/dom/-/dom-10.4.1.tgz#d444f8a889e9a46e9a3b4f3b88e0fcb3efb6cf95"
@@ -2363,10 +2370,10 @@ ajv@^8.0.1:
     json-schema-traverse "^1.0.0"
     require-from-string "^2.0.2"
 
-algoliasearch-helper@3.27.1:
-  version "3.27.1"
-  resolved "https://registry.yarnpkg.com/algoliasearch-helper/-/algoliasearch-helper-3.27.1.tgz#199e3849ea7ebc21ec0a4b62013c0df616b16fc0"
-  integrity sha512-XXGr02Cz285vLbqM6vPfb39xqV1ptpFr1xn9mqaW+nUvYTvFTdKgYTC/Cg1VzgRTQqNkq9+LlUVv8cfCeOoKig==
+algoliasearch-helper@3.28.0:
+  version "3.28.0"
+  resolved "https://registry.yarnpkg.com/algoliasearch-helper/-/algoliasearch-helper-3.28.0.tgz#37193c329b5743937d2466e9c8800623a409002b"
+  integrity sha512-GBN0xsxGggaCPElZq24QzMdfphrjIiV2xA+hRXE4/UMpN3nsF2WrM8q+x80OGvGpJWtB7F+4Hq5eSfWwuejXrg==
   dependencies:
     "@algolia/events" "^4.0.1"
 
@@ -3636,30 +3643,31 @@ ini@^1.3.5:
   resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.8.tgz#a29da425b48806f34767a4efce397269af28432c"
   integrity sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew==
 
-instantsearch-ui-components@0.18.0:
-  version "0.18.0"
-  resolved "https://registry.yarnpkg.com/instantsearch-ui-components/-/instantsearch-ui-components-0.18.0.tgz#27be60f7f52d9924629ca8d2c3a6264b6b68c296"
-  integrity sha512-VfrDRNUMDPEAOqhQmBSyctnNPygGS5wOweMAvmudD69/GGC2YOvWWO9fMTcdCjwm5E1MQkuQK32V+HFD293aSQ==
+instantsearch-ui-components@0.20.0:
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/instantsearch-ui-components/-/instantsearch-ui-components-0.20.0.tgz#8e684d5281c38194d0468f780d50e56f3efb60e0"
+  integrity sha512-wZ+GT8lb10m3r6+9TEVLDQeB1YNRgXFSFSsfhzh4jUFMVDiovY+NE+cj7oNFk7GzFWvxQvXd7aPjTLDD7RkhnA==
   dependencies:
-    "@babel/runtime" "^7.27.6"
+    "@swc/helpers" "0.5.18"
     markdown-to-jsx "^7.7.15"
     zod "^3.25.76 || ^4"
     zod-to-json-schema "3.24.6"
 
-instantsearch.js@4.88.0:
-  version "4.88.0"
-  resolved "https://registry.yarnpkg.com/instantsearch.js/-/instantsearch.js-4.88.0.tgz#1b671f75e02143c3e6a65ffb08cd2a2d8d65c565"
-  integrity sha512-jlypEDXRp0UDXPFVodYBAD2++EwGzd1dS1NDle59sZD6ULT9qKRbNakGN6NlNrzSSHIRbpt7q/KHRb9tRSUh1g==
+instantsearch.js@4.90.0:
+  version "4.90.0"
+  resolved "https://registry.yarnpkg.com/instantsearch.js/-/instantsearch.js-4.90.0.tgz#00cdc38845fd030f437175a09e364730f7e4b964"
+  integrity sha512-HfMMvQCsmrLikx93skFNXsoX+zkPEqzszYuFbh1nKMI7qy18QfL+yG7BKX/mt7HPC/SbP+k4vZQzXgIT2+SXPw==
   dependencies:
     "@algolia/events" "^4.0.1"
+    "@swc/helpers" "0.5.18"
     "@types/dom-speech-recognition" "^0.0.1"
     "@types/google.maps" "^3.55.12"
     "@types/hogan.js" "^3.0.0"
     "@types/qs" "^6.5.3"
-    algoliasearch-helper "3.27.1"
+    algoliasearch-helper "3.28.0"
     hogan.js "^3.0.2"
     htm "^3.0.0"
-    instantsearch-ui-components "0.18.0"
+    instantsearch-ui-components "0.20.0"
     preact "^10.10.0"
     qs "^6.5.1"
     react ">= 0.14.0"
@@ -4505,27 +4513,27 @@ react-inspector@6.0.2:
   resolved "https://registry.yarnpkg.com/react-inspector/-/react-inspector-6.0.2.tgz#aa3028803550cb6dbd7344816d5c80bf39d07e9d"
   integrity sha512-x+b7LxhmHXjHoU/VrFAzw5iutsILRoYyDq97EDYdFpPLcvqtEzk4ZSZSQjnFPbr5T57tLXnHcqFYoN1pI6u8uQ==
 
-react-instantsearch-core@7.24.0:
-  version "7.24.0"
-  resolved "https://registry.yarnpkg.com/react-instantsearch-core/-/react-instantsearch-core-7.24.0.tgz#f0f3e855eaa2613c44805080f3038098719019f6"
-  integrity sha512-8Ndxuj4IjL9PrmGblfFzKTO0gVRl6JlUK/vbjnaZIZxKipj3zmJKeOws9sOFlCNSL98CkYSKJ9ssTBTGOr7mEg==
+react-instantsearch-core@7.26.0:
+  version "7.26.0"
+  resolved "https://registry.yarnpkg.com/react-instantsearch-core/-/react-instantsearch-core-7.26.0.tgz#b0589e93ee9033d304bc4c9214477f628bc0eb29"
+  integrity sha512-Pi+sUkOLQhWG0rv550YowJHk0wLVGiLiz6SK3s0Fbz4V2tJqd2t692jZ29zNWJPooFLHzMjTDQ4Wf2CDLXfHDw==
   dependencies:
-    "@babel/runtime" "^7.27.6"
-    algoliasearch-helper "3.27.1"
-    instantsearch.js "4.88.0"
+    "@swc/helpers" "0.5.18"
+    algoliasearch-helper "3.28.0"
+    instantsearch.js "4.90.0"
     use-sync-external-store "^1.0.0"
     zod "^3.25.76 || ^4"
     zod-to-json-schema "3.24.6"
 
-react-instantsearch@7.24.0:
-  version "7.24.0"
-  resolved "https://registry.yarnpkg.com/react-instantsearch/-/react-instantsearch-7.24.0.tgz#407ce7100315c0f2e089e2a5fe7f83d7731769b2"
-  integrity sha512-ddyOz3HZ652X32IHRLXqSk+aLSDj3U+wGNzqoqyMbLU1DK29hs26kugslqATLUc0eShID1Nw97OwPXyO/M1Htw==
+react-instantsearch@7.26.0:
+  version "7.26.0"
+  resolved "https://registry.yarnpkg.com/react-instantsearch/-/react-instantsearch-7.26.0.tgz#74850c60579ad3ab7cd4e174e89623f0781f4f04"
+  integrity sha512-XzkNdH5ZVuwEyl7IUQabyi5OEqKWsEo6ny72saLdNCIfXL0O6wkcQvfhSzursoqw1zrwq3r0s+3dKRY4tVh6Cw==
   dependencies:
-    "@babel/runtime" "^7.27.6"
-    instantsearch-ui-components "0.18.0"
-    instantsearch.js "4.88.0"
-    react-instantsearch-core "7.24.0"
+    "@swc/helpers" "0.5.18"
+    instantsearch-ui-components "0.20.0"
+    instantsearch.js "4.90.0"
+    react-instantsearch-core "7.26.0"
 
 react-is@^16.13.1, react-is@^16.7.0:
   version "16.13.1"
@@ -5266,7 +5274,7 @@ tsconfig-paths@^4.2.0:
     minimist "^1.2.6"
     strip-bom "^3.0.0"
 
-tslib@^2.0.0, tslib@^2.0.1, tslib@^2.0.3, tslib@^2.1.0, tslib@^2.7.0, tslib@^2.8.1:
+tslib@^2.0.0, tslib@^2.0.1, tslib@^2.0.3, tslib@^2.1.0, tslib@^2.7.0, tslib@^2.8.0, tslib@^2.8.1:
   version "2.8.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.8.1.tgz#612efe4ed235d567e8aba5f2a5fab70280ade83f"
   integrity sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==
