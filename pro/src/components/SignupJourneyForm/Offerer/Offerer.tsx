@@ -13,7 +13,7 @@ import {
   FORM_ERROR_MESSAGE,
   GET_DATA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
-import { getSiretData } from '@/commons/core/Venue/getSiretData'
+import { getSiretData } from '@/commons/core/Venue/utils/getSiretData'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { unhumanizeSiret } from '@/commons/utils/siren'
