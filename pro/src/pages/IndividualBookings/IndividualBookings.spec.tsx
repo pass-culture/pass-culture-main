@@ -7,7 +7,11 @@ import {
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
-import { ApiError, type GetOffererAddressResponseModel } from '@/apiClient/v1'
+import {
+  ApiError,
+  type GetOffererAddressResponseModel,
+  type GetVenueAddressResponseModel,
+} from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
@@ -29,6 +33,7 @@ import {
   currentOffererFactory,
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
+import { venueAddressFactory } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 import { PartnerLayout } from '@/layouts/PartnerLayout/PartnerLayout'
@@ -54,6 +59,15 @@ const individualBookingsRoutes = [
   },
 ]
 
+const venueAddress: GetVenueAddressResponseModel[] = [
+  venueAddressFactory(1, {
+    city: 'London',
+  }),
+  venueAddressFactory(1, {
+    city: 'New York',
+  }),
+]
+
 vi.mock('@/apiClient/api', () => ({
   api: {
     getProfile: vi.fn(),
@@ -62,6 +76,7 @@ vi.mock('@/apiClient/api', () => ({
     getUserHasBookings: vi.fn(),
     getBookingsCsv: vi.fn(),
     getOffererAddresses: vi.fn(),
+    getVenueAddresses: vi.fn(),
   },
 }))
 
@@ -142,6 +157,7 @@ describe('components | BookingsRecap | Pro user', () => {
     vi.spyOn(api, 'getUserHasBookings').mockResolvedValue({ hasBookings: true })
     vi.spyOn(api, 'getOffererAddresses').mockResolvedValue(offererAddress)
     vi.spyOn(api, 'getBookingsCsv').mockResolvedValue({})
+    vi.spyOn(api, 'getVenueAddresses').mockResolvedValue(venueAddress)
   })
 
   it('should show a pre-filter section', async () => {

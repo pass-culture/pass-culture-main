@@ -1,5 +1,6 @@
 import type {
   GetOfferVenueResponseModel,
+  GetVenueAddressResponseModel,
   GetVenueManagingOffererResponseModel,
   GetVenueResponseModel,
   VenueTypeResponseModel,
@@ -112,5 +113,26 @@ const makeVenueTypeResponseModel = <T extends Partial<VenueTypeResponseModel>>(
   return {
     ...fake,
     ...override,
+  }
+}
+
+let venueAddressId = 1
+
+export const venueAddressFactory = (
+  venueId: number,
+  customVenueAddress: Partial<GetVenueAddressResponseModel> = {}
+): GetVenueAddressResponseModel => {
+  const currentOaId = venueAddressId++
+
+  return {
+    venueId: venueId,
+    addressId: currentOaId,
+    id: currentOaId,
+    city: 'Paris',
+    postalCode: '75001',
+    street: '1 Rue de paris',
+    departmentCode: '75',
+    venueName: 'some venue',
+    ...customVenueAddress,
   }
 }

@@ -3,10 +3,12 @@ import typing
 from datetime import datetime
 from decimal import Decimal
 from io import BytesIO
+from typing import Any
 from urllib.parse import urlparse
 
 import pydantic.v1 as pydantic_v1
 from PIL import Image
+from pydantic import RootModel
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
@@ -677,3 +679,29 @@ class ListOffersVenueResponseModelV2(HttpBodyModel):
             publicName=venue.publicName,
             departementCode=venue.offererAddress.address.departmentCode,
         )
+
+
+class GetVenueAddressesWithOffersOption(enum.Enum):
+    INDIVIDUAL_OFFERS_ONLY = "INDIVIDUAL_OFFERS_ONLY"
+    COLLECTIVE_OFFERS_ONLY = "COLLECTIVE_OFFERS_ONLY"
+    COLLECTIVE_OFFER_TEMPLATES_ONLY = "COLLECTIVE_OFFER_TEMPLATES_ONLY"
+
+
+class GetVenueAddressesQueryModel(HttpBodyModel):
+    withOffersOption: GetVenueAddressesWithOffersOption | None
+
+
+class GetVenueAddressResponseModel(HttpBodyModel):
+    id: int
+    addressId: int
+    label: str | None = None
+    venueId: int
+    venueName: str | None
+    street: str | None
+    postalCode: str
+    city: str
+    departmentCode: str | None
+
+
+class GetVenueAddressesResponseModel(RootModel):
+    root: list[GetVenueAddressResponseModel]
