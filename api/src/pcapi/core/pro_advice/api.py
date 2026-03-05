@@ -65,3 +65,20 @@ def update_pro_advice(
         technical_message_id="pro_advice.updated",
     )
     return pro_advice
+
+
+def delete_pro_advice(
+    offer: models.Offer,
+    current_user: users_models.User,
+) -> None:
+    if offer.proAdvice is None:
+        raise ProAdviceException({"global": ["Aucune recommandation n'existe pour cette offre"]})
+
+    db.session.delete(offer.proAdvice)
+    db.session.flush()
+
+    logger.info(
+        "Pro advice deleted",
+        extra={"offer_id": offer.id, "user_id": current_user.id},
+        technical_message_id="pro_advice.deleted",
+    )
