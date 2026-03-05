@@ -65,7 +65,7 @@ class ExternalFinanceTest:
         assert dummy_invoices[0] == invoice1
 
     @pytest.mark.settings(SLACK_GENERATE_INVOICES_FINISHED_CHANNEL="channel")
-    @patch("pcapi.core.finance.external.send_internal_message")
+    @patch("pcapi.core.internal_notifications.transactional.notify_invoices_finished.send_internal_message")
     def test_push_invoices_sends_slack_notification(self, mock_send_internal_message):
         invoices = finance_factories.InvoiceFactory.create_batch(
             5, status=finance_models.InvoiceStatus.PENDING, cashflows=[finance_factories.CashflowFactory()]

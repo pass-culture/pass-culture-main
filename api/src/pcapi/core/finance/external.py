@@ -10,9 +10,9 @@ from pcapi.core.finance import backend as finance_backend
 from pcapi.core.finance import conf
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.backend.base import SettlementType
+from pcapi.core.internal_notifications.transactional import notify_invoices_finished
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.notifications.internal import send_internal_message
 from pcapi.utils import date as date_utils
 
 
@@ -147,20 +147,7 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
             if settings.GENERATE_CGR_KINEPOLIS_INVOICES:
                 finance_api.export_provider_reimbursement_csv_and_send_notification_emails(batch)
 
-            if settings.SLACK_GENERATE_INVOICES_FINISHED_CHANNEL:
-                send_internal_message(
-                    channel=settings.SLACK_GENERATE_INVOICES_FINISHED_CHANNEL,
-                    blocks=[
-                        {
-                            "type": "section",
-                            "text": {
-                                "type": "mrkdwn",
-                                "text": f"L'envoi des factures du ({batch.label}) sur l'outil comptable est terminé avec succès",
-                            },
-                        }
-                    ],
-                    icon_emoji=":large_green_circle:",
-                )
+            notify_invoices_finished.send(batch)
 
     finally:
         app.redis_client.delete(conf.REDIS_PUSH_INVOICE_LOCK)

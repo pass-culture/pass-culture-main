@@ -1,5 +1,6 @@
-from pcapi.notifications.internal import testing
-from pcapi.notifications.internal.backends.logger import LoggerBackend
+from pcapi.core.internal_notifications import testing
+
+from .logger import LoggerBackend
 
 
 class TestingBackend(LoggerBackend):

@@ -1,5 +1,24 @@
+import typing
+
 from pcapi import settings
-from pcapi.utils.module_loading import import_string
+from pcapi.core.internal_notifications.backends.logger import LoggerBackend
+from pcapi.core.internal_notifications.backends.slack import SlackBackend
+from pcapi.core.internal_notifications.backends.testing import TestingBackend
+
+
+type Backend = SlackBackend | LoggerBackend | TestingBackend
+
+BACKEND_BY_KEY: typing.Final[dict[str, type[Backend]]] = {
+    "SlackBackend": SlackBackend,
+    "LoggerBackend": LoggerBackend,
+    "TestingBackend": TestingBackend,
+    # TODO (vroullier 9/3/26) delete when infra drops the long name
+    "pcapi.notifications.internal.backends.slack.SlackBackend": SlackBackend,
+}
+
+
+def _get_backend() -> Backend:
+    return BACKEND_BY_KEY[settings.INTERNAL_NOTIFICATION_BACKEND]()
 
 
 def send_internal_message(channel: str, blocks: list[dict], icon_emoji: str) -> None:
@@ -16,5 +35,4 @@ def send_internal_message(channel: str, blocks: list[dict], icon_emoji: str) -> 
         blocks: List of message blocks. Possible format can be found on the slack's documentation (https://api.slack.com/reference/block-kit/blocks)
         icon_emoji: emoji name as a string, for example ":rubber-duck:". Can be used to easily identify the origin of the message. Beware that messages from the same bot are sometimes aggregated in a way that a change of emoji is not visible.
     """
-    backend = import_string(settings.INTERNAL_NOTIFICATION_BACKEND)
-    backend().send_internal_message(channel, blocks, icon_emoji)
+    _get_backend().send_internal_message(channel, blocks, icon_emoji)

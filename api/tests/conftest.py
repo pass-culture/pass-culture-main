@@ -40,12 +40,12 @@ import pcapi.core.testing
 import pcapi.core.users.models as users_models
 from pcapi.celery_tasks.celery import celery_init_app
 from pcapi.celery_tasks.config import CELERY_BASE_SETTINGS
+from pcapi.core.internal_notifications import testing as internal_notifications_testing
 from pcapi.core.users import testing as users_testing
 from pcapi.db_utils import clean_all_database
 from pcapi.db_utils import install_database_extensions
 from pcapi.models import db
 from pcapi.models import feature
-from pcapi.notifications.internal import testing as internal_notifications_testing
 from pcapi.notifications.push import testing as push_notifications_testing
 from pcapi.notifications.sms import testing as sms_notifications_testing
 from pcapi.routes.backoffice import install_routes

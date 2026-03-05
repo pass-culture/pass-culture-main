@@ -1,7 +1,7 @@
 from pcapi import settings
+from pcapi.core.internal_notifications.api import send_internal_message
 from pcapi.core.users.models import User
 from pcapi.models.feature import Feature
-from pcapi.notifications.internal import send_internal_message
 from pcapi.utils import urls
 
 
