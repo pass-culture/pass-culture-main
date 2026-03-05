@@ -14,7 +14,7 @@ import {
   SignupJourneyContext,
   type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
-import * as getSiretData from '@/commons/core/Venue/getSiretData'
+import * as getSiretData from '@/commons/core/Venue/utils/getSiretData'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { structureDataBodyModelFactory } from '@/commons/utils/factories/userOfferersFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'

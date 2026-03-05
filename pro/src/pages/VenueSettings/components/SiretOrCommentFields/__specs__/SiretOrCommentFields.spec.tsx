@@ -4,7 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 import { expect, vi } from 'vitest'
 
-import { getSiretData } from '@/commons/core/Venue/getSiretData'
+import { getSiretData } from '@/commons/core/Venue/utils/getSiretData'
 import { structureDataBodyModelFactory } from '@/commons/utils/factories/userOfferersFactories'
 import {
   type RenderWithProvidersOptions,
@@ -20,7 +20,7 @@ import { SiretOrCommentValidationSchema } from '../validationSchema'
 
 vi.mock('@/commons/core/Venue/siretApiValidate')
 
-vi.mock('@/commons/core/Venue/getSiretData', () => ({
+vi.mock('@/commons/core/Venue/utils/getSiretData', () => ({
   getSiretData: vi.fn(),
 }))
 

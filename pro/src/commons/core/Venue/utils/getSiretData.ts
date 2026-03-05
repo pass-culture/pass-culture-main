@@ -4,7 +4,14 @@ import type { StructureDataBodyModel } from '@/apiClient/v1/models/StructureData
 import { memoize } from '@/commons/utils/memoize'
 import { unhumanizeSiret } from '@/commons/utils/siren'
 
-import { validateSiret } from './validate'
+const validateSiret = (siret: string): string => {
+  if (siret.length < 14) {
+    return 'SIRET trop court'
+  } else if (siret.length > 14) {
+    return 'SIRET trop long'
+  }
+  return ''
+}
 
 const getSiretDataRequest = async (
   humanSiret: string
