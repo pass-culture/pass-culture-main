@@ -396,13 +396,13 @@ PASSWORDLESS_REDIS_KEY_TEMPLATE = "pcapi:token:%(type_)s:%(key_suffix)s"
 def create_passwordless_login_token(user_id: int, ttl: timedelta) -> str:
     """
     Single use token that allow a user to login without entering any credentials.
-    This token is signed using a RSA private key and verified using the corresponding
+    This token is signed using a RSA private key and verified using the corresponding
     public key.
     In exchange of this token, a user should be returned a valid session.
 
     The payload of this token expects several claims:
 
-        jti: Token unique identifier preventing replay attacks. Ensure each JWT is used only once.
+        jti: Token unique identifier preventing replay attacks. Ensure each JWT is used only once.
         sub: The subject of the token. Contains the user id.
         iat: Issued at.
         exp: Expiration date.
