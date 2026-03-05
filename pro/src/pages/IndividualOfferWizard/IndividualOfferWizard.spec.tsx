@@ -4,6 +4,12 @@ import { Route, Routes } from 'react-router'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { IndividualOfferWizard } from '@/pages/IndividualOfferWizard/IndividualOfferWizard'
 
+vi.mock('@/apiClient/api', () => ({
+  api: {
+    getCategories: vi.fn(),
+  },
+}))
+
 const renderOffer = (initialRoute = '/') => {
   return renderWithProviders(
     <Routes>
@@ -15,9 +21,9 @@ const renderOffer = (initialRoute = '/') => {
 }
 
 describe('IndividualOfferWizard', () => {
-  it('should display with the lateral bar', () => {
+  it('should display with the lateral bar', async () => {
     renderOffer()
-    expect(screen.getByTestId('lateral-panel')).toBeInTheDocument()
+    expect(await screen.findByTestId('lateral-panel')).toBeInTheDocument()
   })
 
   it('should not render when the offer is not set', () => {

@@ -20,7 +20,7 @@ interface BasicLayoutProps {
    * Name of the page to display in the main heading.
    * Make sure that only one heading is displayed per page.
    */
-  mainHeading: React.ReactNode
+  mainHeading?: React.ReactNode
   /**
    * Complementary name of the page to display in the main heading,
    * as a subheading.
@@ -99,10 +99,12 @@ export const BasicLayout = ({
                   isFullPage ? styles['content-no-side-panel'] : styles.content
                 }
               >
-                <MainHeading
-                  mainHeading={mainHeading}
-                  mainSubHeading={mainSubHeading}
-                />
+                {mainHeading && (
+                  <MainHeading
+                    mainHeading={mainHeading}
+                    mainSubHeading={mainSubHeading}
+                  />
+                )}
 
                 {children}
               </div>

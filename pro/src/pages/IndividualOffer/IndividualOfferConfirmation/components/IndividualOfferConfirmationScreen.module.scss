@@ -6,21 +6,22 @@
   text-align: center;
 }
 
-.validate-icon {
-  height: rem.torem(56px);
-  color: var(--color-icon-success);
-}
-
-.pending-icon {
-  height: rem.torem(43px);
-  margin-bottom: rem.torem(17px);
-  color: var(--color-icon-subtle);
-}
-
 .confirmation-title {
-  @include fonts.title2;
+  @include fonts.title1;
 
-  margin-bottom: var(--size-spacing-xl);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: var(--size-spacing-xs) var(--size-spacing-s);
+  width: 100%; 
+  margin-bottom: var(--size-spacing-xxl);
+
+  &-icon {
+    display: flex;
+    flex-shrink: 0;
+  }
 }
 
 .display-in-app-link {
