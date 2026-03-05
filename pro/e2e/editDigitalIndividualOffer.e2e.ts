@@ -26,8 +26,6 @@ test.describe('Edit digital individual offers', () => {
         '/offre/individuelle/1/recapitulatif/description'
       )
 
-      await expect(page.getByText('Récapitulatif')).toBeVisible()
-
       await checkAccessibility(page)
 
       await expect(

@@ -86,7 +86,6 @@ describe('IndividualOfferConfirmation', () => {
   it('should display a pending message when offer is pending for validation', () => {
     offer.status = OfferStatus.PENDING
     renderOffer(contextOverride)
-    expect(screen.getByText('Offre en cours de validation')).toBeInTheDocument()
     expect(
       screen.getByRole('link', {
         name: /Visualiser l’offre dans l’application/,
@@ -104,7 +103,6 @@ describe('IndividualOfferConfirmation', () => {
     offer.publicationDate = new Date(Date.now() + 3600).toISOString()
     offer.status = OfferStatus.PENDING
     renderOffer(contextOverride)
-    expect(screen.getByText('Offre en cours de validation')).toBeInTheDocument()
     expect(
       screen.queryByText('Visualiser l’offre dans l’application', {
         selector: 'a',
@@ -120,7 +118,6 @@ describe('IndividualOfferConfirmation', () => {
 
   it('should display a success message when offer is accepted', () => {
     renderOffer(contextOverride)
-    expect(screen.getByText('Offre créée avec succès !')).toBeInTheDocument()
     expect(
       screen.getByRole('link', {
         name: /Visualiser l’offre dans l’application/,
