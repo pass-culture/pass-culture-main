@@ -14,6 +14,7 @@ from pcapi.core.finance import deposit_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
+from pcapi.core.internal_notifications.transactional import import_test_user_failure
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
@@ -25,7 +26,6 @@ from pcapi.core.users.models import UserRole
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.notifications.internal.transactional import import_test_user_failure
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
