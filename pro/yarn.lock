@@ -1414,10 +1414,10 @@
     "@parcel/watcher-win32-ia32" "2.5.1"
     "@parcel/watcher-win32-x64" "2.5.1"
 
-"@pass-culture/design-system@0.6.2":
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/@pass-culture/design-system/-/design-system-0.6.2.tgz#ee0319d99e14a7c2727952ce899d882362a152c9"
-  integrity sha512-gh+OkzE6NiLnKk0riGxcO6crpiwV/LgfHncscWeo7D4ueCHhRXyg+c+lLnENn1QudbCZvfr3UCA/4gENrwtUQg==
+"@pass-culture/design-system@0.7.3":
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/@pass-culture/design-system/-/design-system-0.7.3.tgz#465fb7457cf531bc9c8f4e01c703d5b8a3550a41"
+  integrity sha512-QrTSohqHeCKA2RmphNbBgtiM4qLC9B2n73jwDT4u1MMk63XBAXbFGslf1pnGKoEuCd4b0RsEMUQSz9AWpKspeg==
 
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
