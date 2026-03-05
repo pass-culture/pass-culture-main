@@ -12,8 +12,8 @@ import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/Displa
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
-import fullValidateIcon from '@/icons/full-validate.svg'
 import fullWaitIcon from '@/icons/full-wait.svg'
+import strokePartyIcon from '@/icons/stroke-party.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './IndividualOfferConfirmationScreen.module.scss'
@@ -32,26 +32,22 @@ export const IndividualOfferConfirmationScreen = ({
 
   return (
     <div className={styles['confirmation-container']}>
+      {isPendingOffer ? (
+        <h1 className={styles['confirmation-title']}>
+          Offre en cours de validation{' '}
+          <span className={styles['confirmation-title-icon']}>
+            <SvgIcon src={fullWaitIcon} alt="" width="38" />
+          </span>
+        </h1>
+      ) : (
+        <h1 className={styles['confirmation-title']}>
+          Votre offre a été publiée avec succès{' '}
+          <span className={styles['confirmation-title-icon']}>
+            <SvgIcon src={strokePartyIcon} alt="" width="38" />
+          </span>
+        </h1>
+      )}
       <div>
-        {isPendingOffer ? (
-          <SvgIcon
-            src={fullWaitIcon}
-            alt=""
-            className={styles['pending-icon']}
-          />
-        ) : (
-          <SvgIcon
-            src={fullValidateIcon}
-            alt=""
-            className={styles['validate-icon']}
-          />
-        )}
-        <h2 className={styles['confirmation-title']}>
-          {isPendingOffer
-            ? `Offre en cours de validation`
-            : `Offre créée avec succès !`}
-        </h2>
-
         {isPendingOffer && (
           <p className={styles['confirmation-details']}>
             Nous vérifions actuellement l’éligibilité de votre offre.{' '}
@@ -63,7 +59,6 @@ export const IndividualOfferConfirmationScreen = ({
           </p>
         )}
       </div>
-
       {!isPublishedInTheFuture && (
         <div className={styles['display-in-app-link']}>
           <DisplayOfferInAppLink
@@ -75,7 +70,6 @@ export const IndividualOfferConfirmationScreen = ({
           />
         </div>
       )}
-
       <div className={styles['confirmation-actions']}>
         <Button
           as="a"
