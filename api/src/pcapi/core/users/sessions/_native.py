@@ -129,7 +129,7 @@ def _delete_jwt_container() -> None:
 
 def create_user_jwt_tokens(
     user: users_models.User,
-    device_info: "account_serialization.TrustedDevice | None" = None,
+    device_info: "account_serialization.TrustedDevice | account_serialization.TrustedDeviceV2 | None" = None,
 ) -> TokensContainer:
     if _is_used_jwt_refresh():
         # TODO regenerate a refresh token when renewing the access token
