@@ -54,7 +54,7 @@ protobuf = "6.33.5"
 psycopg2 = "^2.9.11"
 py7zr = "1.1.0"
 # required by schwifty upgraded manually because of setuptools
-pycountry = "24.6.1"
+pycountry = "26.2.16"
 pydantic = { version = "2.12.5", extras = ["email"] }
 pyjwt = { version = "2.11.0", extras = ["crypto"] }
 pyopenssl = "25.3.0"
