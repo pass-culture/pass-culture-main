@@ -1,18 +1,19 @@
 from enum import Enum
 
 from pcapi.core.users.models import AccountState
-from pcapi.routes.native.v1.serialization.account import TrustedDevice
-from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.routes.native.v1.serialization.account import TrustedDeviceV2
+from pcapi.routes.serialization import HttpBodyModel
+from pcapi.routes.serialization import HttpQueryParamsModel
 
 
-class SigninRequest(ConfiguredBaseModel):
+class SigninRequest(HttpQueryParamsModel):
     identifier: str
     password: str
-    device_info: TrustedDevice | None = None
+    device_info: TrustedDeviceV2 | None = None
     token: str | None = None
 
 
-class SigninResponse(ConfiguredBaseModel):
+class SigninResponse(HttpBodyModel):
     refresh_token: str
     access_token: str
     account_state: AccountState
@@ -23,46 +24,46 @@ class SSOProvider(Enum):
     GOOGLE = "google"
 
 
-class RefreshResponse(ConfiguredBaseModel):
+class RefreshResponse(HttpBodyModel):
     access_token: str
 
 
-class RequestPasswordResetRequest(ConfiguredBaseModel):
+class RequestPasswordResetRequest(HttpQueryParamsModel):
     email: str
     token: str | None = None
 
 
-class ResetPasswordRequest(ConfiguredBaseModel):
+class ResetPasswordRequest(HttpQueryParamsModel):
     reset_password_token: str
     new_password: str
-    device_info: TrustedDevice | None = None
+    device_info: TrustedDeviceV2 | None = None
 
 
-class ResetPasswordResponse(ConfiguredBaseModel):
+class ResetPasswordResponse(HttpBodyModel):
     access_token: str
     refresh_token: str
 
 
-class ChangePasswordRequest(ConfiguredBaseModel):
+class ChangePasswordRequest(HttpQueryParamsModel):
     current_password: str
     new_password: str
 
 
-class ValidateEmailRequest(ConfiguredBaseModel):
+class ValidateEmailRequest(HttpQueryParamsModel):
     email_validation_token: str
-    device_info: TrustedDevice | None = None
+    device_info: TrustedDeviceV2 | None = None
 
 
-class ValidateEmailResponse(ConfiguredBaseModel):
+class ValidateEmailResponse(HttpBodyModel):
     access_token: str
     refresh_token: str
 
 
-class OauthStateResponse(ConfiguredBaseModel):
+class OauthStateResponse(HttpBodyModel):
     oauth_state_token: str
 
 
-class OAuthSigninRequest(ConfiguredBaseModel):
+class OAuthSigninRequest(HttpQueryParamsModel):
     authorization_code: str
     oauth_state_token: str
-    device_info: TrustedDevice | None = None
+    device_info: TrustedDeviceV2 | None = None

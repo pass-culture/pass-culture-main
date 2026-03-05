@@ -31,11 +31,20 @@ from pcapi.core.users.utils import decode_jwt_token
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.shared.price import convert_to_cent
 from pcapi.utils import date as date_utils
 from pcapi.utils.email import sanitize_email
 
 
+class TrustedDeviceV2(HttpBodyModel):
+    device_id: str
+    os: str | None = None
+    source: str | None = None
+
+
+# TODO remove this class and use TrustedDeviceV2 above everywhere.
+# Then rename TrustedDeviceV2 to TrustedDevice once migration is done
 class TrustedDevice(ConfiguredBaseModel):
     device_id: str
     os: str | None
