@@ -68,7 +68,7 @@ pytz = "2025.2"
 rapidfuzz = "3.14.3"
 regex = "2026.1.15"
 requests = "2.32.5"
-rq = "2.6.1"
+rq = "2.7.0"
 schwifty = "2026.1.0"
 semver = "3.0.4"
 sentry-sdk = { version = "2.53.0", extras = ["flask", "celery"] }
