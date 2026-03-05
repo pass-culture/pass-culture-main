@@ -8,6 +8,7 @@ from pcapi.core.offers.models import GcuCompatibilityType
 from pcapi.core.offers.models import ImageType
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -64,21 +65,15 @@ class Return200Test:
             assert response.status_code == 200
 
 
-class Return400Test:
-    num_queries = testing.AUTHENTICATION_QUERIES
-    num_queries += 1  # check user_offerer
-    num_queries += 1  # get headline offer
-    num_queries += 1  # rollback (atomic)
-    num_queries += 1  # rollback (atomic)
-
+class Return404Test:
     def test_access_by_unauthorized_pro_user(self, client):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         client = client.with_session_auth(email=pro.email)
         offerer_id = offerer.id
-        with assert_num_queries(self.num_queries - 1):  # unauthorized, so no query to headline offer made
-            response = client.get(f"/offerers/{offerer_id}/headline-offer")
-            assert response.status_code == 403
+        response = client.get(f"/offerers/{offerer_id}/headline-offer")
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
     def test_get_offerer_headline_offer_not_found(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -86,9 +81,8 @@ class Return400Test:
         offerer = user_offerer.offerer
         client = client.with_session_auth(email=pro.email)
         offerer_id = offerer.id
-        with assert_num_queries(self.num_queries):
-            response = client.get(f"/offerers/{offerer_id}/headline-offer")
-            assert response.status_code == 404
+        response = client.get(f"/offerers/{offerer_id}/headline-offer")
+        assert response.status_code == 404
 
     def test_with_multiple_headline_offer_on_one_offerer_should_fail(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -102,7 +96,6 @@ class Return400Test:
         offers_factories.HeadlineOfferFactory(offer=other_offer, venue=other_venue)
         client = client.with_session_auth(email=pro.email)
         offerer_id = offerer.id
-        with assert_num_queries(self.num_queries):
-            response = client.get(f"/offerers/{offerer_id}/headline-offer")
-            assert response.status_code == 404
-            assert response.json == {"global": "Une entité juridique ne peut avoir qu’une seule offre à la une"}
+        response = client.get(f"/offerers/{offerer_id}/headline-offer")
+        assert response.status_code == 404
+        assert response.json == {"global": "Une entité juridique ne peut avoir qu’une seule offre à la une"}

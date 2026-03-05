@@ -16,12 +16,14 @@ from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization import educational_redactors
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import date as date_utils
 from pcapi.utils.image_conversion import CropParams
+from pcapi.utils.rest import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.transaction_manager import atomic
 
@@ -142,16 +144,13 @@ def get_collective_offer(offer_id: int) -> collective_offers_serialize.GetCollec
     try:
         offerer = offerers_api.get_offerer_by_collective_offer_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
         offer = repository.get_collective_offer_by_id(offer_id)
     except exceptions.CollectiveOfferNotFound:
-        raise ApiErrors(
-            errors={"global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"]},
-            status_code=404,
-        )
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
     return collective_offers_serialize.GetCollectiveOfferResponseModel.build(offer)
 
 
@@ -166,15 +165,12 @@ def get_collective_offer_template(offer_id: int) -> collective_offers_serialize.
     try:
         offerer = offerers_api.get_offerer_by_collective_offer_template_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
     check_user_has_access_to_offerer(current_user, offerer.id)
     try:
         offer = repository.get_collective_offer_template_by_id(offer_id)
     except exceptions.CollectiveOfferTemplateNotFound:
-        raise ApiErrors(
-            errors={"global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"]},
-            status_code=404,
-        )
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
     return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.build(offer)
 
 
@@ -189,7 +185,7 @@ def get_collective_offer_request(request_id: int) -> collective_offers_serialize
     try:
         collective_offer_request = repository.get_collective_offer_request_by_id(request_id)
     except exceptions.CollectiveOfferRequestNotFound:
-        raise ApiErrors(errors={"global": ["Le formulaire demandé n'existe pas"]}, status_code=404)
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
 
     offerer_id = collective_offer_request.collectiveOfferTemplate.venue.managingOffererId
     check_user_has_access_to_offerer(current_user, offerer_id)
@@ -213,9 +209,9 @@ def create_collective_offer(
 
     # venue / offerer errors
     except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
     except exceptions.VenueIdDoesNotExist:
-        raise ApiErrors({"venueId": "The venue does not exist."}, 404)
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
 
     # adage errors
     except exceptions.CulturalPartnerNotFoundException:
@@ -255,7 +251,7 @@ def edit_collective_offer(
     try:
         offerer = offerers_api.get_offerer_by_collective_offer_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     if not offerers_api.can_offerer_create_educational_offer(offerer.id):
@@ -276,7 +272,7 @@ def edit_collective_offer(
     except exceptions.OffererOfVenueDontMatchOfferer:
         raise ApiErrors({"venueId": "New venue needs to have the same offerer"}, 403)
     except exceptions.VenueIdDoesNotExist:
-        raise ApiErrors({"venueId": "The venue does not exist."}, 404)
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
 
     # domains / national_program errors
     except exceptions.NationalProgramNotFound:
@@ -315,7 +311,7 @@ def edit_collective_offer_template(
     try:
         offerer = offerers_api.get_offerer_by_collective_offer_template_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     if not offerers_api.can_offerer_create_educational_offer(offerer.id):
@@ -326,7 +322,7 @@ def edit_collective_offer_template(
 
     # venue / offerer errors
     except exceptions.VenueIdDoesNotExist:
-        raise ApiErrors({"venueId": "The venue does not exist."}, 404)
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
     except exceptions.OffererOfVenueDontMatchOfferer:
         raise ApiErrors({"venueId": "New venue needs to have the same offerer"}, 403)
 
@@ -439,7 +435,7 @@ def patch_collective_offers_educational_institution(
     try:
         offerer = offerers_api.get_offerer_by_collective_offer_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
@@ -465,14 +461,14 @@ def patch_collective_offers_educational_institution(
 @login_required
 @spectree_serialize(
     on_success_status=200,
-    on_error_statuses=[403, 404],
+    on_error_statuses=[404],
     api=blueprint.pro_private_schema,
     response_model=collective_offers_serialize.GetCollectiveOfferResponseModel,
 )
 def patch_collective_offer_publication(offer_id: int) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
     offer = repository.get_collective_offer_and_confidence_rules(offer_id)
     if offer is None:
-        raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id"]}, status_code=404)
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
@@ -486,7 +482,7 @@ def patch_collective_offer_publication(offer_id: int) -> collective_offers_seria
 @login_required
 @spectree_serialize(
     on_success_status=200,
-    on_error_statuses=[403, 404],
+    on_error_statuses=[404],
     api=blueprint.pro_private_schema,
     response_model=collective_offers_serialize.GetCollectiveOfferTemplateResponseModel,
 )
@@ -495,8 +491,8 @@ def patch_collective_offer_template_publication(
 ) -> collective_offers_serialize.GetCollectiveOfferTemplateResponseModel:
     try:
         offer = repository.get_collective_offer_template_by_id(offer_id)
-    except exceptions.CollectiveOfferNotFound:
-        raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id"]}, status_code=404)
+    except exceptions.CollectiveOfferTemplateNotFound:
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
@@ -521,9 +517,9 @@ def create_collective_offer_template(
 
     # venue / offerer errors
     except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
     except exceptions.VenueIdDoesNotExist:
-        raise ApiErrors({"venueId": "The venue does not exist."}, 404)
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
 
     # adage errors
     except exceptions.CulturalPartnerNotFoundException:
@@ -607,7 +603,7 @@ def attach_offer_image(
     try:
         offer = repository.get_collective_offer_by_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
@@ -647,7 +643,7 @@ def attach_offer_template_image(
     try:
         offer = repository.get_collective_offer_template_by_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
@@ -679,7 +675,7 @@ def delete_offer_image(offer_id: int) -> None:
     try:
         offer = repository.get_collective_offer_by_id(offer_id)
     except exceptions.CollectiveOfferNotFound:
-        raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
@@ -702,7 +698,7 @@ def delete_offer_template_image(offer_id: int) -> None:
     try:
         offer = repository.get_collective_offer_template_by_id(offer_id)
     except exceptions.CollectiveOfferTemplateNotFound:
-        raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
@@ -750,13 +746,13 @@ def duplicate_collective_offer(
     try:
         offerer = offerers_api.get_offerer_by_collective_offer_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
         original_offer = repository.get_collective_offer_by_id(offer_id)
     except exceptions.CollectiveOfferNotFound:
-        raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id"]}, status_code=404)
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
 
     try:
         offer = api_offer.duplicate_offer_and_stock(original_offer=original_offer)

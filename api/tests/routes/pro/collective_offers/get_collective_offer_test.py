@@ -9,6 +9,7 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
 from pcapi.core.testing import assert_num_queries
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
@@ -320,7 +321,7 @@ class Returns200Test:
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns403Test:
+class Returns404Test:
     def test_access_by_unauthorized_pro_user(self, client):
         pro_user = users_factories.ProFactory()
         offer = educational_factories.CollectiveOfferFactory()
@@ -336,4 +337,13 @@ class Returns403Test:
         # rollback
         with assert_num_queries(expected_num_queries):
             response = client.get(f"/collective/offers/{offer_id}")
-            assert response.status_code == 403
+            assert response.status_code == 404
+            assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
+
+    def test_offer_not_found(self, client):
+        pro_user = users_factories.ProFactory()
+        client = client.with_session_auth(email=pro_user.email)
+        response = client.get("/collective/offers/123456789")
+
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

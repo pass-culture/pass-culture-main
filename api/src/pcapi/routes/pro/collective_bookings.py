@@ -8,8 +8,10 @@ from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.routes.apis import private_api
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.rest import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.transaction_manager import atomic
 
@@ -31,8 +33,8 @@ def cancel_collective_offer_booking(offer_id: int) -> None:
     try:
         offerer = offerers_api.get_offerer_by_collective_offer_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ApiErrors(
-            {"code": "NO_COLLECTIVE_OFFER_FOUND", "message": "No collective offer has been found with this id"}, 404
+        raise ResourceNotFoundError(
+            errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]},
         )
     check_user_has_access_to_offerer(current_user, offerer.id)
 
@@ -41,12 +43,12 @@ def cancel_collective_offer_booking(offer_id: int) -> None:
             offer_id, current_user.real_user.id, current_user.is_impersonated
         )
     except collective_exceptions.CollectiveStockNotFound:
-        raise ApiErrors(
-            {"code": "NO_ACTIVE_STOCK_FOUND", "message": "No active stock has been found with this id"}, 404
+        raise ResourceNotFoundError(
+            errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]},
         )
     except collective_exceptions.CollectiveOfferNotFound:
-        raise ApiErrors(
-            {"code": "NO_COLLECTIVE_OFFER_FOUND", "message": "No collective offer has been found with this id"}, 404
+        raise ResourceNotFoundError(
+            errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]},
         )
     except collective_exceptions.NoCollectiveBookingToCancel:
         raise ApiErrors({"code": "NO_BOOKING", "message": "This collective offer has no booking to cancel"}, 400)

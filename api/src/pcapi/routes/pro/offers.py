@@ -38,6 +38,7 @@ from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailRespo
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import requests
 from pcapi.utils import rest
+from pcapi.utils.rest import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils.transaction_manager import atomic
 from pcapi.workers.update_all_offers_active_status_job import update_all_offers_active_status_job
 
@@ -98,12 +99,7 @@ def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferWithAddressRe
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options=load_all)
     except exceptions.OfferNotFound:
-        raise api_errors.ApiErrors(
-            errors={
-                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
-            },
-            status_code=404,
-        )
+        raise api_errors.ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     return offers_serialize.GetIndividualOfferWithAddressResponseModel.from_orm(offer)
@@ -120,12 +116,7 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options=["offerer_address"])
     except exceptions.OfferNotFound:
-        raise api_errors.ApiErrors(
-            errors={
-                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
-            },
-            status_code=404,
-        )
+        raise api_errors.ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     filtered_stocks = offers_repository.get_filtered_stocks(
@@ -168,12 +159,7 @@ def upsert_offer_stocks(
     try:
         offer = offers_repository.get_offer_by_id(offer_id)
     except exceptions.OfferNotFound:
-        raise api_errors.ApiErrors(
-            errors={
-                "global": "No offer found for this id",
-            },
-            status_code=404,
-        )
+        raise api_errors.ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     stock_inputs: list[offers_schemas.ThingStockUpsertInput] = []
@@ -203,12 +189,7 @@ def delete_stocks(offer_id: int, body: offers_serialize.DeleteStockListBody) -> 
     try:
         offer = offers_repository.get_offer_by_id(offer_id)
     except exceptions.OfferNotFound:
-        raise api_errors.ApiErrors(
-            errors={
-                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
-            },
-            status_code=404,
-        )
+        raise api_errors.ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     stocks_to_delete = [stock for stock in offer.stocks if stock.id in body.ids_to_delete]
@@ -232,12 +213,7 @@ def get_stocks_stats(offer_id: int) -> offers_serialize.StockStatsResponseModel:
     try:
         offer = offers_repository.get_offer_by_id(offer_id)
     except exceptions.OfferNotFound:
-        raise api_errors.ApiErrors(
-            errors={
-                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
-            },
-            status_code=404,
-        )
+        raise api_errors.ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     try:
         stocks_stats = offers_api.get_stocks_stats(offer_id=offer_id)
@@ -264,9 +240,7 @@ def get_stocks_stats(offer_id: int) -> offers_serialize.StockStatsResponseModel:
 @atomic()
 def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
     if not body.ids:
-        raise api_errors.ResourceNotFoundError(
-            {"global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"]}
-        )
+        raise api_errors.ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
     query = offers_repository.get_offers_by_ids(current_user, body.ids)  # type: ignore[arg-type]
     offers_api.batch_delete_draft_offers(query)
 
@@ -376,7 +350,7 @@ def post_offer(
 @login_required
 @spectree_serialize(
     on_success_status=200,
-    on_error_statuses=[404, 403],
+    on_error_statuses=[404],
     api=blueprint.pro_private_schema,
     response_model=offers_serialize.GetIndividualOfferResponseModel,
 )
@@ -387,13 +361,13 @@ def patch_publish_offer(
     try:
         offerer = offerers_repository.get_by_offer_id(body.id)
     except offerers_exceptions.CannotFindOffererForOfferId:
-        raise api_errors.ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+        raise api_errors.ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
 
     rest.check_user_has_access_to_offerer(current_user, offerer.id)
 
     offer = offers_repository.get_offer_and_extradata(body.id)
     if offer is None:
-        raise api_errors.ApiErrors({"offer": ["Cette offre n’existe pas"]}, status_code=404)
+        raise api_errors.ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
     if not offers_repository.offer_has_bookable_stocks(offer.id):
         raise api_errors.ApiErrors({"offer": "Cette offre n’a pas de stock réservable"}, 400)
 
@@ -481,7 +455,7 @@ def patch_offer(
             ],
         )
     except exceptions.OfferNotFound:
-        raise api_errors.ResourceNotFoundError()
+        raise api_errors.ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
@@ -524,9 +498,7 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
     try:
         offer = offers_repository.get_offer_by_id(form.offer_id)
     except exceptions.OfferNotFound:
-        raise api_errors.ResourceNotFoundError(
-            errors={"global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"]}
-        )
+        raise api_errors.ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     if "thumb" not in request.files:
@@ -615,7 +587,7 @@ def replace_offer_price_categories(
     try:
         offer = offers_repository.get_offer_by_id(offer_id)
     except exceptions.OfferNotFound:
-        raise api_errors.ResourceNotFoundError(errors={"offer_id": "Offer not found"})
+        raise api_errors.ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     price_category_inputs: list[offers_schemas.PriceCategoryInput] = []
@@ -655,9 +627,7 @@ def get_active_venue_offer_by_ean(venue_id: int, ean: str) -> offers_serialize.G
         rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
         offer = offers_repository.get_active_offer_by_venue_id_and_ean(venue_id, ean)
     except exceptions.OfferNotFound:
-        raise api_errors.ResourceNotFoundError(
-            errors={"global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"]}
-        )
+        raise api_errors.ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
 
     return offers_serialize.GetActiveEANOfferResponseModel.from_orm(offer)
 
@@ -806,10 +776,7 @@ def post_highlight_request_offer(
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options={"venue"})
     except exceptions.OfferNotFound:
-        raise api_errors.ApiErrors(
-            errors={"global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"]},
-            status_code=404,
-        )
+        raise api_errors.ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     validation.check_offer_can_ask_for_highlight_request(offer)
 

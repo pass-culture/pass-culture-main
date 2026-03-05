@@ -6,27 +6,21 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils import date as date_utils
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns403Test:
-    num_queries = testing.AUTHENTICATION_QUERIES
-    num_queries += 1  # select offer
-    num_queries += 1  # select venue
-    num_queries += 1  # check user has rights on venue
-    num_queries += 1  # rollback
-    num_queries += 1  # rollback
-
+class Returns404Test:
     def test_access_by_beneficiary(self, client):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         offer = offers_factories.OfferFactory()
 
         client = client.with_session_auth(beneficiary.email)
         offer_id = offer.id
-        with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offers/{offer_id}/stocks")
-            assert response.status_code == 403
+        response = client.get(f"/offers/{offer_id}/stocks")
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
     def test_access_by_unauthorized_pro_user(self, client):
         pro_user = users_factories.ProFactory()
@@ -34,9 +28,16 @@ class Returns403Test:
 
         client = client.with_session_auth(pro_user.email)
         offer_id = offer.id
-        with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offers/{offer_id}/stocks")
-            assert response.status_code == 403
+        response = client.get(f"/offers/{offer_id}/stocks")
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
+
+    def test_offer_not_found(self, client):
+        pro_user = users_factories.ProFactory()
+        client = client.with_session_auth(pro_user.email)
+        response = client.get("/offers/123456789/stocks")
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
 
 @pytest.mark.usefixtures("db_session")

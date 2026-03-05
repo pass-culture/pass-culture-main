@@ -1,6 +1,5 @@
 from functools import partial
 
-import flask
 import pydantic.v1 as pydantic_v1
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -20,7 +19,9 @@ from pcapi.core.offerers import validation
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import tasks as offers_tasks
 from pcapi.models import db
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.utils import get_or_404
 from pcapi.routes.apis import private_api
@@ -75,7 +76,7 @@ def get_venue(venue_id: int) -> venues_serialize.GetVenueResponseModel:
         .options(sa_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address))
     ).one_or_none()
     if not venue:
-        flask.abort(404)
+        raise ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     return venues_serialize.GetVenueResponseModel.from_orm(venue)

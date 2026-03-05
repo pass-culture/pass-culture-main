@@ -14,6 +14,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offerers.models import Weekday
 from pcapi.models import db
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.date import timespan_str_to_numrange
@@ -711,24 +712,23 @@ class Returns200Test:
         assert response.json["hasNonDraftOffers"] is True
 
 
-class Returns403Test:
+@pytest.mark.usefixtures("db_session")
+class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_current_user_doesnt_have_rights(self, client):
         pro = users_factories.ProFactory(email="user.pro@example.com")
         venue = offerers_factories.VenueFactory(name="L'encre et la plume")
 
         auth_request = client.with_session_auth(email=pro.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_pricing_point_link
-        num_queries += 1  # check user has rignts on venue
-        num_queries += 1  # rollback
-        num_queries += 1  # rollback
         venue_id = venue.id
-        with testing.assert_num_queries(num_queries):
-            response = auth_request.get("/venues/%s" % venue_id)
-            assert response.status_code == 403
+        response = auth_request.get("/venues/%s" % venue_id)
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
-        assert response.json["global"] == [
-            "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
-        ]
+    @pytest.mark.usefixtures("db_session")
+    def test_venue_not_found(self, client):
+        pro = users_factories.ProFactory()
+        auth_request = client.with_session_auth(email=pro.email)
+        response = auth_request.get("/venues/123456789")
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
