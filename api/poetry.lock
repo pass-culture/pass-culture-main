@@ -4188,9 +4188,6 @@ files = [
     {file = "psycopg-3.2.10.tar.gz", hash = "sha256:0bce99269d16ed18401683a8569b2c5abd94f72f8364856d56c0389bcd50972a"},
 ]
 
-[package.dependencies]
-tzdata = {version = "*", markers = "sys_platform == \"win32\""}
-
 [package.extras]
 binary = ["psycopg-binary (==3.2.10) ; implementation_name != \"pypy\""]
 c = ["psycopg-c (==3.2.10) ; implementation_name != \"pypy\""]
@@ -6440,14 +6437,14 @@ types-setuptools = "*"
 
 [[package]]
 name = "types-protobuf"
-version = "6.32.1.20251210"
+version = "6.32.1.20260221"
 description = "Typing stubs for protobuf"
 optional = false
-python-versions = ">=3.9"
+python-versions = ">=3.10"
 groups = ["dev"]
 files = [
-    {file = "types_protobuf-6.32.1.20251210-py3-none-any.whl", hash = "sha256:2641f78f3696822a048cfb8d0ff42ccd85c25f12f871fbebe86da63793692140"},
-    {file = "types_protobuf-6.32.1.20251210.tar.gz", hash = "sha256:c698bb3f020274b1a2798ae09dc773728ce3f75209a35187bd11916ebfde6763"},
+    {file = "types_protobuf-6.32.1.20260221-py3-none-any.whl", hash = "sha256:da7cdd947975964a93c30bfbcc2c6841ee646b318d3816b033adc2c4eb6448e4"},
+    {file = "types_protobuf-6.32.1.20260221.tar.gz", hash = "sha256:6d5fb060a616bfb076cbb61b4b3c3969f5fc8bec5810f9a2f7e648ee5cbcbf6e"},
 ]
 
 [[package]]
@@ -6595,7 +6592,7 @@ files = [
     {file = "tzdata-2025.2-py2.py3-none-any.whl", hash = "sha256:1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8"},
     {file = "tzdata-2025.2.tar.gz", hash = "sha256:b60a638fcc0daffadf82fe0f57e53d06bdec2f36c4df66280ae79bce6bd6f2b9"},
 ]
-markers = {dev = "platform_system == \"Windows\" or sys_platform == \"win32\""}
+markers = {dev = "platform_system == \"Windows\""}
 
 [[package]]
 name = "tzlocal"
@@ -7321,4 +7318,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "01da05674d0bb200e99fdb54b4cfd2bb4d47fbf28691cb538c43c5dbf8b87494"
+content-hash = "167ae5d8914e0203ac357b7e583c9a398b852bd655befc47ce21e7b20cb378e5"
