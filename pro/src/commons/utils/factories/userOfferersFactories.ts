@@ -4,7 +4,7 @@ import merge from 'lodash/merge'
 import type {
   GetEducationalOffererResponseModel,
   GetEducationalOffererVenueResponseModel,
-  LocationBodyModel,
+  LocationModelV2,
   StructureDataBodyModel,
 } from '@/apiClient/v1'
 
@@ -53,7 +53,7 @@ export const structureDataBodyModelFactory = (
   overrides: Partial<StructureDataBodyModel> = {}
 ): StructureDataBodyModel => {
   return {
-    location: locationBodyModelFactory(overrides.location ?? {}),
+    location: locationBodyModelV2Factory(overrides.location ?? {}),
     apeCode: '9003A',
     isDiffusible: true,
     name: 'ma super stucture',
@@ -63,9 +63,9 @@ export const structureDataBodyModelFactory = (
   }
 }
 
-const locationBodyModelFactory = (
-  overrides: Partial<LocationBodyModel> = {}
-): LocationBodyModel => {
+const locationBodyModelV2Factory = (
+  overrides: Partial<LocationModelV2> = {}
+): LocationModelV2 => {
   return {
     banId: '49759_1304_00002',
     city: 'Paris',
@@ -73,8 +73,8 @@ const locationBodyModelFactory = (
     isManualEdition: false,
     isVenueLocation: true,
     label: 'Ma super maison',
-    latitude: 48.869440910282734,
-    longitude: 2.3087717501609233,
+    latitude: '48.869440910282734',
+    longitude: '2.3087717501609233',
     postalCode: '75001',
     street: '4 rue Carnot',
     ...overrides,

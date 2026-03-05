@@ -2,15 +2,15 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type LocationModel = {
-  banId?: string | null;
+export type LocationModelV2 = {
+  banId?: (string | null);
   city: string;
-  inseeCode?: string | null;
+  inseeCode?: (string | null);
   isManualEdition?: boolean;
   isVenueLocation?: boolean;
-  label?: string | null;
-  latitude: (number | string);
-  longitude: (number | string);
+  label?: (string | null);
+  latitude: string;
+  longitude: string;
   postalCode: string;
   street: string;
 };
