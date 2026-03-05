@@ -1,24 +1,20 @@
-import { useState } from 'react'
-import { postImageToVenue } from 'repository/pcapi/pcapi'
 import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
-import type { BannerMetaModel, GetVenueResponseModel } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { useOnVenueImageUpload } from '@/commons/core/Venue/hooks/useOnVenueImageUpload'
+import { buildInitialVenueImageValues } from '@/commons/core/Venue/utils/buildInitialVenueImageValues'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
-import {
-  UploaderModeEnum,
-  type UploadImageValues,
-} from '@/commons/utils/imageUploadTypes'
+import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { noop } from '@/commons/utils/noop'
 import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
 import { ButtonImageEdit } from '@/components/ImageUploader/components/ButtonImageEdit/ButtonImageEdit'
-import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -34,36 +30,6 @@ export interface VenueEditionHeaderProps {
   context: 'collective' | 'partnerPage' | 'address'
 }
 
-export const buildInitialValues = (
-  bannerUrl?: string | null,
-  bannerMeta?: BannerMetaModel | null
-): UploadImageValues => {
-  let cropParams:
-    | {
-        xCropPercent: number
-        yCropPercent: number
-        heightCropPercent: number
-        widthCropPercent: number
-      }
-    | undefined
-
-  if (bannerMeta !== undefined) {
-    cropParams = {
-      xCropPercent: bannerMeta?.crop_params?.x_crop_percent || 0,
-      yCropPercent: bannerMeta?.crop_params?.y_crop_percent || 0,
-      heightCropPercent: bannerMeta?.crop_params?.height_crop_percent || 0,
-      widthCropPercent: bannerMeta?.crop_params?.width_crop_percent || 0,
-    }
-  }
-
-  return {
-    croppedImageUrl: bannerUrl || undefined,
-    originalImageUrl: bannerMeta?.original_image_url || undefined,
-    cropParams,
-    credit: bannerMeta?.image_credit || '',
-  }
-}
-
 export const VenueEditionHeader = ({
   venue,
   context,
@@ -72,34 +38,13 @@ export const VenueEditionHeader = ({
   const { mutate } = useSWRConfig()
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
 
-  const initialValues = buildInitialValues(venue.bannerUrl, venue.bannerMeta)
-  const [imageValues, setImageValues] =
-    useState<UploadImageValues>(initialValues)
-
-  const handleOnImageUpload = async ({
-    imageFile,
-    credit,
-    cropParams,
-  }: OnImageUploadArgs) => {
-    const editedVenue = await postImageToVenue(
-      venue.id,
-      imageFile,
-      credit,
-      cropParams?.x,
-      cropParams?.y,
-      cropParams?.height,
-      cropParams?.width
-    )
-    setImageValues(
-      buildInitialValues(editedVenue.bannerUrl, editedVenue.bannerMeta)
-    )
-    await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
-  }
+  const { imageValues, setImageValues, handleOnImageUpload } =
+    useOnVenueImageUpload(venue)
 
   const handleOnImageDelete = async () => {
     await api.deleteVenueBanner(venue.id)
 
-    setImageValues(buildInitialValues(null, null))
+    setImageValues(buildInitialVenueImageValues(null, null))
     await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
   }
 

@@ -1,24 +1,16 @@
-import { useState } from 'react'
-import { postImageToVenue } from 'repository/pcapi/pcapi'
-import { useSWRConfig } from 'swr'
-
 import type {
   GetOffererResponseModel,
   GetVenueResponseModel,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { GET_OFFERER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { useOnVenueImageUpload } from '@/commons/core/Venue/hooks/useOnVenueImageUpload'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
-import {
-  UploaderModeEnum,
-  type UploadImageValues,
-} from '@/commons/utils/imageUploadTypes'
+import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { noop } from '@/commons/utils/noop'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { ImageUploader } from '@/components/ImageUploader/ImageUploader'
-import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -27,7 +19,6 @@ import {
 } from '@/design-system/Button/types'
 import fullParametersIcon from '@/icons/full-parameters.svg'
 import { VenueOfferSteps } from '@/pages/Homepage/components/VenueOfferSteps/VenueOfferSteps'
-import { buildInitialValues } from '@/pages/VenueEdition/components/VenueEditionHeader'
 import { Panel } from '@/ui-kit/Panel/Panel'
 
 import styles from './PartnerPage.module.scss'
@@ -46,32 +37,9 @@ export const PartnerPage = ({
   venueHasPartnerPage,
 }: PartnerPageProps) => {
   const { logEvent } = useAnalytics()
-  const { mutate } = useSWRConfig()
-  const initialValues = buildInitialValues(venue.bannerUrl, venue.bannerMeta)
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
-  const [imageValues, setImageValues] =
-    useState<UploadImageValues>(initialValues)
 
-  const handleOnImageUpload = async ({
-    imageFile,
-    credit,
-    cropParams,
-  }: OnImageUploadArgs) => {
-    const editedVenue = await postImageToVenue(
-      venue.id,
-      imageFile,
-      credit,
-      cropParams?.x,
-      cropParams?.y,
-      cropParams?.height,
-      cropParams?.width
-    )
-    setImageValues(
-      buildInitialValues(editedVenue.bannerUrl, editedVenue.bannerMeta)
-    )
-
-    await mutate([GET_OFFERER_QUERY_KEY, String(offerer.id)])
-  }
+  const { imageValues, handleOnImageUpload } = useOnVenueImageUpload(venue)
 
   const logButtonAddClick = () => {
     logEvent(Events.CLICKED_ADD_IMAGE, {
