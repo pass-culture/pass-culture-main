@@ -39,6 +39,30 @@ class SubcategoriesTest:
         expected_genre_types = {x.name for x in categories_models.GenreType}
         assert found_genre_types == expected_genre_types
 
+    def test_search_groups(self, client):
+        with assert_num_queries(0):
+            response = client.get("/native/v1/subcategories/v2")
+
+        assert response.status_code == 200
+        search_groups = response.json["searchGroups"]
+
+        assert search_groups == [
+            {"name": "ARTS_LOISIRS_CREATIFS", "value": "Arts & loisirs créatifs"},
+            {"name": "CARTES_JEUNES", "value": "Cartes jeunes"},
+            {"name": "CONCERTS_FESTIVALS", "value": "Concerts & festivals"},
+            {"name": "EVENEMENTS_EN_LIGNE", "value": "Évènements en ligne"},
+            {"name": "CINEMA", "value": "Cinéma"},
+            {"name": "FILMS_DOCUMENTAIRES_SERIES", "value": "Films, séries et documentaires"},
+            {"name": "JEUX_JEUX_VIDEOS", "value": "Jeux & jeux vidéos"},
+            {"name": "LIVRES", "value": "Livres"},
+            {"name": "MEDIA_PRESSE", "value": "Médias & presse"},
+            {"name": "MUSEES_VISITES_CULTURELLES", "value": "Musées & visites culturelles"},
+            {"name": "MUSIQUE", "value": "Musique"},
+            {"name": "NONE", "value": "None"},
+            {"name": "RENCONTRES_CONFERENCES", "value": "Conférences & rencontres"},
+            {"name": "SPECTACLES", "value": "Spectacles"},
+        ]
+
     def test_genre_types(self, client):
         with assert_num_queries(0):
             response = client.get("/native/v1/subcategories/v2")
