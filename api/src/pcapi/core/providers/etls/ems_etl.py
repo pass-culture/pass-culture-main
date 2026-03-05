@@ -7,6 +7,7 @@ from pcapi.connectors.ems import EMSScheduleConnector
 from pcapi.connectors.serialization import ems_serializers
 from pcapi.core.providers import models
 from pcapi.core.providers import repository
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
 from pcapi.utils.transaction_manager import atomic
 
@@ -30,6 +31,8 @@ class EMSExtractTransformLoadProcess(CinemaETLProcessTemplate[EMSScheduleConnect
     Integration to import products, offers, stocks & price_categories for a `Venue`
     linked to `EMS`.
     """
+
+    feature_flag = FeatureToggle.ENABLE_EMS_INTEGRATION
 
     def __init__(self, venue_provider: models.VenueProvider, *, from_last_version: bool = False):
         """

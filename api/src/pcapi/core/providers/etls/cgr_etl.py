@@ -7,6 +7,7 @@ from pcapi import settings
 from pcapi.core.providers import models
 from pcapi.core.providers.clients import cgr_serializers
 from pcapi.core.providers.clients.cgr_client import CGRAPIClient
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
 
 from .cinema_etl_template import CinemaETLProcessTemplate
@@ -27,6 +28,8 @@ class CGRExtractTransformLoadProcess(CinemaETLProcessTemplate[CGRAPIClient, CGRE
     Integration to import products, offers, stocks & price_categories for a `Venue`
     linked to `CGR`.
     """
+
+    feature_flag = FeatureToggle.ENABLE_CGR_INTEGRATION
 
     def __init__(self, venue_provider: models.VenueProvider):
         """

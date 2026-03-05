@@ -14,6 +14,7 @@ import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.factories as providers_factories
 from pcapi.connectors.ems import ems_serializers
 from pcapi.core.categories import subcategories
+from pcapi.core.providers.etls.cinema_etl_template import ETLStopProcessException
 from pcapi.core.providers.etls.ems_etl import EMSExtractTransformLoadProcess
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.search import models as search_models
@@ -29,6 +30,7 @@ from . import ems_fixtures
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+@pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
 class EMSExtractTransformLoadProcessTest:
     def setup_cinema_objects(self):
         ems_provider = get_provider_by_local_class("EMSStocks")
@@ -49,6 +51,15 @@ class EMSExtractTransformLoadProcessTest:
         requests_mock.get("https://fake_url.com?version=0", json=ems_fixtures.DATA_VERSION_0)
         requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
         requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+
+    @pytest.mark.features(ENABLE_EMS_INTEGRATION=False)
+    def test_execute_should_raise_inactive_feature_flag(self, requests_mock):
+        venue_provider = self.setup_cinema_objects()
+        self.setup_requests_mock(requests_mock)
+        etl_process = EMSExtractTransformLoadProcess(venue_provider)
+
+        with pytest.raises(ETLStopProcessException):
+            etl_process.execute()
 
     def test_execute_should_raise_inactive_provider(self, requests_mock):
         venue_provider = self.setup_cinema_objects()

@@ -17,6 +17,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.providers.clients import boost_client
 from pcapi.core.providers.clients import boost_serializers
 from pcapi.core.providers.etls.boost_etl import BoostExtractTransformLoadProcess
+from pcapi.core.providers.etls.cinema_etl_template import ETLStopProcessException
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.search import models as search_models
 from pcapi.models import db
@@ -62,6 +63,15 @@ class BoostExtractTransformLoadProcessTest:
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=2&per_page=30",
             json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
         )
+
+    @pytest.mark.features(ENABLE_BOOST_API_INTEGRATION=False)
+    def test_execute_should_raise_inactive_feature_flag(self, requests_mock):
+        venue_provider = self.setup_cinema_objects()
+        self.setup_requests_mock(requests_mock)
+        etl_process = BoostExtractTransformLoadProcess(venue_provider)
+
+        with pytest.raises(ETLStopProcessException):
+            etl_process.execute()
 
     def test_execute_should_raise_inactive_provider(self):
         venue_provider = self.setup_cinema_objects()
