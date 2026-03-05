@@ -154,6 +154,19 @@ describe('IndividualOfferLayout', () => {
       ).not.toBeInTheDocument()
     })
 
+    it('should not display offer name title in readonly', () => {
+      vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.READ_ONLY)
+
+      const offer = getIndividualOfferFactory({
+        isActive: false,
+        status: OfferStatus.ACTIVE,
+      })
+
+      renderIndividualOfferLayout({ props: { offer } })
+
+      expect(screen.queryByText(/offer name/)).not.toBeInTheDocument()
+    })
+
     it('should display provider banner', () => {
       const offer = getIndividualOfferFactory({
         lastProvider: { name: 'Boost' },

@@ -40,6 +40,11 @@ interface BasicLayoutProps {
    * Optional: display the Lateral Panel
    */
   isFullPage?: boolean
+
+  /**
+   * Optional: Center heading
+   */
+  isHeadingCentered?: boolean
 }
 
 export const BasicLayout = ({
@@ -49,6 +54,7 @@ export const BasicLayout = ({
   isStickyActionBarInChild = false,
   isAdminArea = false,
   isFullPage = false,
+  isHeadingCentered = false,
 }: BasicLayoutProps) => {
   const currentUser = useAppSelector(selectCurrentUser)
   const [isLateralPanelOpen, setIsLateralPanelOpen] = useState(false)
@@ -102,6 +108,9 @@ export const BasicLayout = ({
                   mainHeading={mainHeading}
                   mainSubHeading={mainSubHeading}
                   shouldDisplayBackToNavLink={!isFullPage}
+                  className={cn(styles['main-heading'], {
+                    [styles['center']]: isHeadingCentered,
+                  })}
                 />
 
                 {children}
