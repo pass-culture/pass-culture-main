@@ -46,7 +46,7 @@ export function getDefaultEducationalValues(
       mental: false,
       none: false,
     },
-    notificationEmails: [{ email: '' }],
+    bookingEmails: [''],
     domains: [],
     'search-domains': '',
     'search-formats': '',
@@ -81,7 +81,7 @@ export const DEFAULT_EAC_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {
 }
 
 export const DEFAULT_INSTITUTION_FORM_VALUES: InstitutionFormValues = {
-  institution: '',
+  educationalInstitution: '',
   teacherEmail: undefined,
   teacherName: undefined,
 }

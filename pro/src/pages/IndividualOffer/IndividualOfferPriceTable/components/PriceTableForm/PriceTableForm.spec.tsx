@@ -53,7 +53,7 @@ const renderPriceTableForm: RenderComponentFunction<
     ...params.contextValues,
   }
   const defaultValues: PriceTableFormValues = params.defaultValues ?? {
-    entries: [
+    priceCategories: [
       {
         activationCodes: [],
         activationCodesExpirationDatetime: null,
@@ -122,7 +122,7 @@ describe('PriceTableForm', () => {
     id: 1,
     isEvent: false,
   })
-  const entryBase: PriceTableFormValues['entries'][0] = {
+  const entryBase: PriceTableFormValues['priceCategories'][0] = {
     activationCodes: null,
     activationCodesExpirationDatetime: null,
     bookingLimitDatetime: null,
@@ -220,7 +220,7 @@ describe('PriceTableForm', () => {
     const contextValues = { mode: OFFER_WIZARD_MODE.EDITION }
     const props = { mode: OFFER_WIZARD_MODE.EDITION }
     const defaultValues = {
-      entries: [
+      priceCategories: [
         {
           ...entryBase,
           bookingsQuantity: 2,
@@ -249,7 +249,7 @@ describe('PriceTableForm', () => {
     const contextValues = { mode: OFFER_WIZARD_MODE.EDITION }
     const props = { mode: OFFER_WIZARD_MODE.EDITION }
     const defaultValues = {
-      entries: [
+      priceCategories: [
         {
           ...entryBase,
           bookingsQuantity: 3,
@@ -303,7 +303,7 @@ describe('PriceTableForm', () => {
     const contextValues = { mode: OFFER_WIZARD_MODE.EDITION }
     const props = { mode: OFFER_WIZARD_MODE.EDITION }
     const defaultValues = {
-      entries: [
+      priceCategories: [
         {
           ...entryBase,
           price: 12,
@@ -354,7 +354,7 @@ describe('PriceTableForm', () => {
     const contextValues = { mode: OFFER_WIZARD_MODE.EDITION }
     const props = { mode: OFFER_WIZARD_MODE.EDITION }
     const defaultValues = {
-      entries: [
+      priceCategories: [
         {
           ...entryBase,
           bookingsQuantity: 3,
@@ -525,7 +525,7 @@ describe('PriceTableForm', () => {
     const Wrapper = () => {
       const form = useForm<PriceTableFormValues>({
         defaultValues: {
-          entries: [
+          priceCategories: [
             {
               activationCodes: null,
               activationCodesExpirationDatetime: null,
@@ -633,7 +633,7 @@ describe('PriceTableForm', () => {
       lastProvider: { name: 'SomeOtherProvider' },
     }
     const defaultValues = {
-      entries: [
+      priceCategories: [
         {
           ...entryBase,
           label: 'Cat 1',
@@ -667,7 +667,7 @@ describe('PriceTableForm', () => {
       isDigital: true,
     }
     const defaultValues = {
-      entries: [
+      priceCategories: [
         {
           ...entryBase,
           activationCodes: ['A', 'B'],
@@ -691,7 +691,7 @@ describe('PriceTableForm', () => {
   it('should disable quantity input when activation codes are present', () => {
     const offer = { ...nonEventOffer, isDigital: true }
     const defaultValues = {
-      entries: [
+      priceCategories: [
         {
           ...entryBase,
           activationCodes: ['A1', 'A2', 'A3'],

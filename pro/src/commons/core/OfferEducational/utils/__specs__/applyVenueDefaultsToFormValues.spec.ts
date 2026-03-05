@@ -106,7 +106,7 @@ describe('applyVenueDefaultsToFormValues', () => {
       true
     )
 
-    expect(newFormValues.email).toEqual('test@email.co')
+    expect(newFormValues.contactEmail).toEqual('test@email.co')
     expect(newFormValues.phone).toEqual('00000000')
   })
 
@@ -116,7 +116,7 @@ describe('applyVenueDefaultsToFormValues', () => {
         ...getDefaultEducationalValues(),
         offererId: '1',
         venueId: '2',
-        email: 'test2@email.co',
+        contactEmail: 'test2@email.co',
         phone: '11111111',
       },
       {
@@ -137,7 +137,7 @@ describe('applyVenueDefaultsToFormValues', () => {
       true
     )
 
-    expect(newFormValues.email).toEqual('test2@email.co')
+    expect(newFormValues.contactEmail).toEqual('test2@email.co')
     expect(newFormValues.phone).toEqual('11111111')
   })
 })

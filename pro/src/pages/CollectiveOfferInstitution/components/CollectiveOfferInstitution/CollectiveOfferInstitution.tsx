@@ -5,7 +5,7 @@ import useSWR from 'swr'
 import { useDebouncedCallback } from 'use-debounce'
 
 import { api } from '@/apiClient/api'
-import { getHumanReadableApiError, isErrorAPIError } from '@/apiClient/helpers'
+import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
 import {
   CollectiveOfferAllowedAction,
   type EducationalInstitutionResponseModel,
@@ -43,7 +43,6 @@ import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import {
   GET_REDACTOR_NOT_FOUND_ERROR_MESSAGE,
   INSTITUTION_GENERIC_ERROR_MESSAGE,
-  POST_INSTITUTION_FORM_ERROR_MESSAGE,
   REDACTOR_GENERIC_ERROR_MESSAGE,
 } from '../../commons/constants'
 import {
@@ -130,7 +129,7 @@ export const CollectiveOfferInstitutionScreen = ({
     body: PatchCollectiveOfferEducationalInstitution
   ) => {
     if (!body.educationalInstitutionId) {
-      form.setError('institution', {
+      form.setError('educationalInstitution', {
         message: INSTITUTION_GENERIC_ERROR_MESSAGE,
       })
       return false
@@ -162,7 +161,7 @@ export const CollectiveOfferInstitutionScreen = ({
     const teacherEmail = selectedTeacher ? selectedTeacher.email : null
 
     const isValid = manualFormValidation({
-      educationalInstitutionId: Number(values.institution),
+      educationalInstitutionId: Number(values.educationalInstitution),
       teacherEmail,
     })
     if (!isValid) {
@@ -172,7 +171,7 @@ export const CollectiveOfferInstitutionScreen = ({
     try {
       const collectiveOffer =
         await api.patchCollectiveOffersEducationalInstitution(offer.id, {
-          educationalInstitutionId: Number(values.institution),
+          educationalInstitutionId: Number(values.educationalInstitution),
           teacherEmail,
         })
       onSuccess({
@@ -186,11 +185,8 @@ export const CollectiveOfferInstitutionScreen = ({
         ...extractInitialInstitutionValues(collectiveOffer.institution),
       })
     } catch (error) {
-      // FIXME(anoukhello - 13/02/25): this error handling is not ideal, wait for this PR https://github.com/pass-culture/pass-culture-main/pull/21252 to be merged
       if (isErrorAPIError(error)) {
-        snackBar.error(
-          getHumanReadableApiError(error) || POST_INSTITUTION_FORM_ERROR_MESSAGE
-        )
+        serializeApiErrors(error.body, form.setError)
       } else {
         snackBar.error(SENT_DATA_ERROR_MESSAGE)
       }
@@ -200,7 +196,7 @@ export const CollectiveOfferInstitutionScreen = ({
   initialValues = requestInformations
     ? {
         ...extractInitialInstitutionValues(null, null, requestInformations),
-        institution:
+        educationalInstitution:
           institutionsOptions
             .find(
               (option) =>
@@ -227,7 +223,7 @@ export const CollectiveOfferInstitutionScreen = ({
     formState: { isDirty, isSubmitting, errors },
   } = form
 
-  const institution = watch('institution')
+  const institution = watch('educationalInstitution')
   const selectedInstitution = institutionsOptions.find(
     (_institution) => _institution.value === institution
   )
@@ -275,7 +271,7 @@ export const CollectiveOfferInstitutionScreen = ({
 
     const formValues: InstitutionFormValues = {
       ...extractInitialInstitutionValues(null, null, requestInformations),
-      institution: institutionOption?.value.toString() ?? '',
+      educationalInstitution: institutionOption?.value.toString() ?? '',
       teacherEmail: requestInformations.redactor.email,
     }
 
@@ -295,7 +291,7 @@ export const CollectiveOfferInstitutionScreen = ({
 
   const onSearchTeacher = useDebouncedCallback(async (pattern: string) => {
     const selectedInstitution = institutionsOptions.find(
-      (institution) => institution.value === watch('institution')
+      (institution) => institution.value === watch('educationalInstitution')
     )
 
     const searchTeacherValue = pattern.trim()
@@ -364,13 +360,13 @@ export const CollectiveOfferInstitutionScreen = ({
                       description="Ex : Lycee General Simone Weil ou 010456E ou Le Havre"
                       shouldResetOnOpen={true}
                       onSearch={(searchText) => {
-                        setValue('institution', searchText, {
+                        setValue('educationalInstitution', searchText, {
                           shouldDirty: true,
                           shouldValidate: true,
                         })
                       }}
                       onChange={(event) => {
-                        setValue('institution', event.target.value, {
+                        setValue('educationalInstitution', event.target.value, {
                           shouldDirty: true,
                           shouldValidate: true,
                         })
@@ -382,7 +378,7 @@ export const CollectiveOfferInstitutionScreen = ({
                         searchPatternInOptions(options, pattern, 300)
                       }
                       value={selectedInstitution?.value ?? ''}
-                      error={errors.institution?.message}
+                      error={errors.educationalInstitution?.message}
                       required
                       requiredIndicator="explicit"
                     />
@@ -390,7 +386,7 @@ export const CollectiveOfferInstitutionScreen = ({
                 </FormLayout.Row>
                 <FormLayout.Row className={styles['row-layout']}>
                   <SelectAutocomplete
-                    name="teacher"
+                    name="teacherEmail"
                     options={teachersOptions}
                     label="Prénom et nom de l’enseignant (au moins 3 caractères)"
                     required={false}
@@ -405,7 +401,7 @@ export const CollectiveOfferInstitutionScreen = ({
                     }}
                     disabled={
                       !canEditInstitution ||
-                      !watch('institution') ||
+                      !watch('educationalInstitution') ||
                       isPreloadingRedactors
                     }
                     onChange={(event) => {
@@ -442,7 +438,9 @@ export const CollectiveOfferInstitutionScreen = ({
                 <ActionsBarSticky.Right dirtyForm={isDirty} mode={mode}>
                   <Button
                     type="submit"
-                    disabled={!watch('institution') || !canEditInstitution}
+                    disabled={
+                      !watch('educationalInstitution') || !canEditInstitution
+                    }
                     label="Enregistrer et continuer"
                   />
                 </ActionsBarSticky.Right>
