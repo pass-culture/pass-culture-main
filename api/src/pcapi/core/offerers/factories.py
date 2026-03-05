@@ -468,44 +468,69 @@ class OffererAddressFactory(BaseFactory[models.OffererAddress]):
         cls, model_class: type[models.OffererAddress], *args: typing.Any, **kwargs: typing.Any
     ) -> models.OffererAddress:
         offerer = kwargs.get("offerer")
-        if venue := kwargs.get("venue"):
-            if offerer:
-                if offerer != venue.managingOfferer:
-                    raise ValueError("venue must be consistent with offerer")
-            else:
-                kwargs["offerer"] = venue.managingOfferer
-        elif not offerer:
-            kwargs["offerer"] = OffererFactory()
+        venue = kwargs.get("venue")
+        if not venue and not offerer:
+            venue = VenueFactory.create()
+            kwargs["offerer"] = venue.managingOfferer
+        elif offerer and not venue:
+            venue = VenueFactory.create(managingOfferer=offerer)
+        elif venue and offerer:
+            if offerer != venue.managingOfferer:
+                raise ValueError("venue must be consistent with offerer")
+        elif venue and not offerer:
+            kwargs["offerer"] = venue.managingOfferer
+
+        # if venue := kwargs.get("venue"):
+        #     if offerer:
+        #         if offerer != venue.managingOfferer:
+        #             raise ValueError("venue must be consistent with offerer")
+        #     else:
+        #         kwargs["offerer"] = venue.managingOfferer
+        # # elif not offerer:
+        # #     kwargs["offerer"] = OffererFactory()
+        # else:
+        #     if offerer:
+        #         venue = VenueFactory.create(managingOfferer=offerer)  # type: ignore[attr-defined]
+        #     # offerer = OffererFactory()
+        #     # kwargs["offerer"] = OffererFactory()
+        #     else:
+        #         venue = VenueFactory.create()
+        #         kwargs["offerer"] = venue.managingOfferer
+        #     # venue = VenueFactory.create(managingOfferer=kwargs["offerer"])  # type: ignore[attr-defined]
+        #     # db.session.add(self)
+        #     # db.session.flush()
         return super()._create(model_class, *args, **kwargs)
 
 
-class _LocationFactory(OffererAddressFactory):
-    # TODO (prouzet, 2025-11-13) CLEAN_OA When venueId is mandatory, type always set and Venue.offererAddressId removed,
-    # this could be simplified and Venue created in OffererAddressFactory._create without reference to self.
-    @factory.post_generation
-    def venue(self, create: bool, extracted: models.Venue | None, **kwargs: typing.Any) -> models.Venue | None:
-        if not create:
-            return None
-        if extracted:
-            self.venue = extracted
-            if self.offerer != extracted.managingOfferer:  # type: ignore[attr-defined]
-                raise ValueError("venue must be consistent with offerer")
-        else:
-            self.venue = VenueFactory.create(managingOfferer=self.offerer, offererAddress=self)  # type: ignore[attr-defined]
-            db.session.add(self)
-            db.session.flush()
-        return self.venue
+# class _LocationFactory(OffererAddressFactory):
+#     # TODO bulle
+#     # TODO (prouzet, 2025-11-13) CLEAN_OA When venueId is mandatory, type always set and Venue.offererAddressId removed,
+#     # this could be simplified and Venue created in OffererAddressFactory._create without reference to self.
+#     @factory.post_generation
+#     def venue(self, create: bool, extracted: models.Venue | None, **kwargs: typing.Any) -> models.Venue | None:
+#         if not create:
+#             return None
+#         if extracted:
+#             self.venue = extracted
+#             if self.offerer != extracted.managingOfferer:  # type: ignore[attr-defined]
+#                 raise ValueError("venue must be consistent with offerer")
+#         else:
+#             self.venue = VenueFactory.create(managingOfferer=self.offerer, offererAddress=self)  # type: ignore[attr-defined]
+#             db.session.add(self)
+#             db.session.flush()
+#         return self.venue
 
 
-class VenueLocationFactory(_LocationFactory):
+class VenueLocationFactory(OffererAddressFactory):  # (_LocationFactory):
     type = models.LocationType.VENUE_LOCATION
     label = None
 
 
-class OfferLocationFactory(_LocationFactory):
+class OfferLocationFactory(OffererAddressFactory):  # (_LocationFactory):
     type = models.LocationType.OFFER_LOCATION
 
 
+# TODO bulle WHY
 def get_offerer_address_with_label_from_venue(venue: models.Venue) -> models.OffererAddress | None:
     oa = (
         db.session.query(models.OffererAddress)

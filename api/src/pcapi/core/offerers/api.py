@@ -3099,8 +3099,8 @@ def get_or_create_address(location_data: LocationData, is_manual_edition: bool =
 
 def get_or_create_offer_location(
     offerer_id: int,
+    venue_id: int,
     address_id: int,
-    venue_id: int | None = None,
     label: str | None = None,
 ) -> models.OffererAddress:
     offerer_address: models.OffererAddress | None = (
@@ -3110,14 +3110,9 @@ def get_or_create_offer_location(
             models.OffererAddress.venueId == venue_id,
             models.OffererAddress.label == label,
             models.OffererAddress.addressId == address_id,
-            # TODO (prouzet, 2025-11-13) CLEAN_OA When data is migrated, only filter on OFFER_LOCATION
-            sa.or_(
-                models.OffererAddress.type.is_(None),
-                models.OffererAddress.type == models.LocationType.OFFER_LOCATION,
-            ),
+            models.OffererAddress.type == models.LocationType.OFFER_LOCATION,
         )
         .options(sa_orm.joinedload(models.OffererAddress.address))
-        .order_by(models.OffererAddress.type.nulls_last())
         .first()
     )
 
@@ -3132,31 +3127,6 @@ def get_or_create_offer_location(
         db.session.add(offerer_address)
         db.session.flush([offerer_address])
 
-    return offerer_address
-
-
-def get_offerer_address(offerer_id: int, address_id: int, label: str | None = None) -> models.OffererAddress | None:
-    return (
-        db.session.query(models.OffererAddress)
-        .filter(
-            models.OffererAddress.offererId == offerer_id,
-            models.OffererAddress.label == label,
-            models.OffererAddress.addressId == address_id,
-        )
-        .options(sa_orm.joinedload(models.OffererAddress.address))
-        .first()
-    )
-
-
-def create_offerer_address(offerer_id: int, address_id: int, label: str | None = None) -> models.OffererAddress:
-    assert offerer_id
-    try:
-        offerer_address = models.OffererAddress(offererId=offerer_id, addressId=address_id, label=label)
-        db.session.add(offerer_address)
-        db.session.flush()
-    except sa.exc.IntegrityError:
-        db.session.rollback()
-        raise (exceptions.OffererAddressCreationError())
     return offerer_address
 
 

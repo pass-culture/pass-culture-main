@@ -3801,10 +3801,6 @@ class GetOffererConfidenceLevelTest:
 
 
 class OffererAddressTest:
-    # TODO (prouzet, 2025-11-13) CLEAN_OA After transition, no need for this first parametrize, use OfferLocationFactory
-    @pytest.mark.parametrize(
-        "factory", [offerers_factories.OffererAddressFactory, offerers_factories.OfferLocationFactory]
-    )
     @pytest.mark.parametrize(
         "same_label,same_address, same_venue,",
         [
@@ -3818,15 +3814,19 @@ class OffererAddressTest:
             [False, False, False],
         ],
     )
-    def test_get_or_create_offer_location(self, same_label, same_address, same_venue, factory):
+    def test_get_or_create_offer_location(self, same_label, same_address, same_venue):
         venue = offerers_factories.VenueFactory()
-        oa_1 = factory(offerer=venue.managingOfferer, venue=venue, address=venue.offererAddress.address)
+        oa_1 = offerers_factories.OfferLocationFactory(
+            offerer=venue.managingOfferer, venue=venue, address=venue.offererAddress.address
+        )
         other_address = geography_factories.AddressFactory(
             street="1 rue de la paix",
         )
         other_venue = offerers_factories.VenueFactory()
 
-        oa_doppleganger = factory(offerer=venue.managingOfferer, address=other_address, label="somethingdifferent")
+        oa_doppleganger = offerers_factories.OfferLocationFactory(
+            offerer=venue.managingOfferer, address=other_address, label="somethingdifferent"
+        )
 
         oa_return = offerers_api.get_or_create_offer_location(
             offerer_id=venue.managingOfferer.id,
@@ -3875,7 +3875,7 @@ class OffererAddressTest:
     def test_create_offerer_address(self):
         offerer = offerers_factories.OffererFactory()
         address = geography_factories.AddressFactory()
-        oa = offerers_api.create_offerer_address(offerer_id=offerer.id, address_id=address.id, label="label")
+        oa = offerers_factories.OffererAddressFactory(offerer=offerer, address=address, label="label")
         assert oa.offerer == offerer
         assert oa.id
         assert oa.label == "label"
@@ -3883,8 +3883,8 @@ class OffererAddressTest:
     def test_create_multiple_identical_offerer_address_with_label_null(self):
         offerer = offerers_factories.OffererFactory()
         address = geography_factories.AddressFactory()
-        oa = offerers_api.create_offerer_address(offerer_id=offerer.id, address_id=address.id, label=None)
-        oa_ = offerers_api.create_offerer_address(offerer_id=offerer.id, address_id=address.id, label=None)
+        oa = offerers_factories.OffererAddressFactory(offerer=offerer, address=address, label=None)
+        oa_ = offerers_factories.OffererAddressFactory(offerer=offerer, address=address, label=None)
 
         assert oa.offerer == offerer
         assert oa_.offerer == offerer
@@ -3898,9 +3898,9 @@ class OffererAddressTest:
     def test_should_not_create_multiple_oa_with_same_label(self):
         offerer = offerers_factories.OffererFactory()
         address = geography_factories.AddressFactory()
-        offerers_api.create_offerer_address(offerer_id=offerer.id, address_id=address.id, label="label")
-        with pytest.raises(offerers_exceptions.OffererAddressCreationError):
-            offerers_api.create_offerer_address(offerer_id=offerer.id, address_id=address.id, label="label")
+        offerers_factories.OffererAddressFactory(offerer=offerer, address=address, label="label")
+        with pytest.raises(sa.exc.IntegrityError):
+            offerers_factories.OffererAddressFactory(offerer=offerer, address=address, label="label")
 
 
 class SendReminderEmailToIndividualOfferersTest:
@@ -3946,6 +3946,7 @@ class SendReminderEmailToIndividualOfferersTest:
 
 
 class CleanUnusedOffererAddressTest:
+    # TODO bulle
     def test_clean_unused_offerer_address(self, caplog):
         offerers_factories.OfferLocationFactory()
         venue = offerers_factories.VenueFactory()

@@ -243,7 +243,6 @@ class GetOffererAddressesTest:
         assert result.id == oa.id
 
     def test_get_offerer_addresses_do_not_return_venue_locations(self):
-        # TODO Bulle legacy?
         offerer = offerers_factories.OffererFactory()
         oa = offerers_factories.OffererAddressFactory(offerer=offerer)
         offer_oa = offerers_factories.OfferLocationFactory(offerer=offerer)
