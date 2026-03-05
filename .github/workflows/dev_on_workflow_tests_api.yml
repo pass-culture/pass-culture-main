@@ -28,9 +28,12 @@ jobs:
       - uses: actions/checkout@v6
       - name: "Compute docker image name:tag"
         id: compute-image-name
+        env:
+          IMAGE: ${{ inputs.image }}
+          TAG: ${{ inputs.tag }}
         run: |
-          echo "image_name=${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
-          echo "::notice:: Running tests api with ${{ inputs.image }}:${{ inputs.tag }}"
+          echo "image_name=$IMAGE:$TAG" | tee -a "${GITHUB_OUTPUT}"
+          echo "::notice:: Running tests api with $IMAGE:$TAG"
       - name: "Download artifact"
         if: ${{ inputs.tag != 'latest' }}
         uses: actions/download-artifact@v6
@@ -39,8 +42,11 @@ jobs:
           path: ${{ runner.temp }}
       - name: "Docker load artifact."
         if: ${{ inputs.tag != 'latest' }}
+        env:
+          IMAGE: ${{ inputs.image }}
+          TAG: ${{ inputs.tag }}
         run: |
-          docker load --input ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.tag }}.tar
+          docker load --input "${{ runner.temp }}/$IMAGE-$TAG.tar"
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v3"
         with:
@@ -72,13 +78,13 @@ jobs:
         run: |
           docker run \
             --entrypoint sh \
-            ${{ steps.compute-image-name.outputs.image_name }} \
+            "${{ steps.compute-image-name.outputs.image_name }}" \
             -c 'pip freeze'
       - name: "Run mypy"
         run: |
           docker run \
             --entrypoint sh \
-            ${{ steps.compute-image-name.outputs.image_name }} \
+            "${{ steps.compute-image-name.outputs.image_name }}" \
             -c 'mypy src'
 
   ruff-checks:
@@ -137,19 +143,22 @@ jobs:
           then SHA="HEAD"
           else
             git fetch origin master
-            SHA=$(git merge-base HEAD origin/master)
+            SHA="$(git merge-base HEAD origin/master)"
           fi
-          git checkout ${SHA}
+          git checkout "${SHA}"
       - name: "Get base alembic pre and post heads"
         id: "base_heads"
         run: |
-          pre=$(head --lines 1 alembic_version_conflict_detection.txt | cut --fields 1 --delimiter " ")
-          post=$(tail --lines 1 alembic_version_conflict_detection.txt | cut --fields 1 --delimiter " ")
-          echo "pre=$pre" >> $GITHUB_OUTPUT
-          echo "post=$post" >> $GITHUB_OUTPUT
+          pre="$(head --lines 1 alembic_version_conflict_detection.txt | cut --fields 1 --delimiter " ")"
+          post="$(tail --lines 1 alembic_version_conflict_detection.txt | cut --fields 1 --delimiter " ")"
+          echo "pre=$pre" >> "$GITHUB_OUTPUT"
+          echo "post=$post" >> "$GITHUB_OUTPUT"
       - name: "Compute docker image name:tag"
         id: compute-image-name
-        run: echo "image_name=${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
+        env:
+          IMAGE: ${{ inputs.image }}
+          TAG: ${{ inputs.tag }}
+        run: echo "image_name=$IMAGE:$TAG" | tee -a "${GITHUB_OUTPUT}"
       - name: "Download artifact"
         if: ${{ inputs.tag != 'latest' }}
         uses: actions/download-artifact@v6
@@ -158,8 +167,11 @@ jobs:
           path: ${{ runner.temp }}
       - name: "Docker load artifact."
         if: ${{ inputs.tag != 'latest' }}
+        env:
+          IMAGE: ${{ inputs.image }}
+          TAG: ${{ inputs.tag }}
         run: |
-          docker load --input ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.tag }}.tar
+          docker load --input "${{ runner.temp }}/$IMAGE-$TAG.tar"
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v3"
         with:
@@ -191,11 +203,11 @@ jobs:
         run: |
           docker run \
             --entrypoint bash \
-            ${{ steps.compute-image-name.outputs.image_name }} \
+            "${{ steps.compute-image-name.outputs.image_name }}" \
             -c '
-              LINE_COUNT=$(wc -l <<< "$(alembic heads)")
+              LINE_COUNT="$(wc -l <<< "$(alembic heads)")"
               echo "Found "$LINE_COUNT" head(s)"
-              if [ ${LINE_COUNT} -ne 2 ]; then echo "There must be two heads";exit 1;fi
+              if [ "${LINE_COUNT}" -ne 2 ]; then echo "There must be two heads";exit 1;fi
             '
       - name: "Check database and model are aligned"
         run: |
@@ -292,7 +304,7 @@ jobs:
         working-directory: /
         id: get-date
         run: |
-          echo "date=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_OUTPUT
+          echo "date=$(/bin/date -u "+%Y%m%d")" >> "$GITHUB_OUTPUT"
         shell: bash
 
       # It's mandatory to use the exact same path when saving/restoring cache, otherwise it won't work
@@ -319,6 +331,7 @@ jobs:
           path: /tests/.test_durations
 
   pytest:
+    needs: restore-test-durations
     name: "Pytest ${{ matrix.pytest_args.description }} : ${{ matrix.group }}/4"
     env:
       RUN_ENV: tests
@@ -364,7 +377,10 @@ jobs:
       - uses: actions/checkout@v6
       - name: "Compute docker image name:tag"
         id: compute-image-name
-        run: echo "image_name=${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
+        env:
+          IMAGE: ${{ inputs.image }}
+          TAG: ${{ inputs.tag }}
+        run: echo "image_name=$IMAGE:$TAG" | tee -a "${GITHUB_OUTPUT}"
       - name: "Download artifact"
         if: ${{ inputs.tag != 'latest' }}
         uses: actions/download-artifact@v6
@@ -373,8 +389,11 @@ jobs:
           path: ${{ runner.temp }}
       - name: "Docker load artifact."
         if: ${{ inputs.tag != 'latest' }}
+        env:
+          IMAGE: ${{ inputs.image }}
+          TAG: ${{ inputs.tag }}
         run: |
-          docker load --input ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.tag }}.tar
+          docker load --input "${{ runner.temp }}/$IMAGE-$TAG.tar"
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v3"
         with:
@@ -408,7 +427,7 @@ jobs:
             --network "${{ job.container.network }}" \
             --env RUN_ENV --env DATABASE_URL_TEST \
             --entrypoint bash \
-            ${{ steps.compute-image-name.outputs.image_name }} \
+            "${{ steps.compute-image-name.outputs.image_name }}" \
             -c '
               set -e
               flask install_postgres_extensions
@@ -423,7 +442,7 @@ jobs:
             --volume ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests \
             --user 0 \
             --entrypoint bash \
-            ${{ steps.compute-image-name.outputs.image_name }} \
+            "${{ steps.compute-image-name.outputs.image_name }}" \
             -c '
               echo "Changing owner and group fort directory test"
               chown -R pcapi:pcapi /tests
@@ -439,7 +458,7 @@ jobs:
 
       - name: Use cached test durations
         if: needs.restore-test-durations.outputs.restored == 'true'
-        run: mv .test_durations ${{ runner.workspace }}/pass-culture-main/api/tests/.test_durations
+        run: mv .test_durations "${{ runner.workspace }}/pass-culture-main/api/tests/.test_durations"
 
         # When running pytest, we write the new test durations using options `--store-durations --clean-durations`.
         # Option `--clean-durations` is undocumented but you can check its implementation here:
@@ -452,7 +471,7 @@ jobs:
             --network "${{ job.container.network }}" \
             --entrypoint bash \
             --env RUN_ENV --env DATABASE_URL_TEST --env REDIS_URL --env SQLALCHEMY_WARN_20 \
-            ${{ steps.compute-image-name.outputs.image_name }} \
+            "${{ steps.compute-image-name.outputs.image_name }}" \
             -c '
               pytest ${{ matrix.pytest_args.collection }} \
               --splits 4 --group ${{ matrix.group }} \
@@ -514,7 +533,7 @@ jobs:
         working-directory: /
         id: get-date
         run: |
-          echo "date=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_OUTPUT
+          echo "date=$(/bin/date -u "+%Y%m%d")" >> "$GITHUB_OUTPUT"
         shell: bash
 
       # Finally, we cache the new test durations. This file will be restored in next CI execution

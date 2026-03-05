@@ -45,9 +45,11 @@ jobs:
 
       - name: "Get pro channel name"
         id: pro-channel-name
+        env:
+          HEAD_REF: ${{ github.head_ref }}
         run: |
-          shortname=$(echo "${{ github.head_ref }}" | cut -c1-20)
-          echo "channel-name=pr${{ github.event.pull_request.number }}-$shortname" >> $GITHUB_OUTPUT
+          shortname="$(echo "$HEAD_REF" | cut -c1-20)"
+          echo "channel-name=pr${{ github.event.pull_request.number }}-$shortname" >> "$GITHUB_OUTPUT"
 
       - name: "Test if channel exists"
         id: test-channel-existence
@@ -57,9 +59,9 @@ jobs:
           firebase projects:list 
           firebase use testing
           if firebase hosting:channel:list | grep "$channel"; then
-            echo "should_delete=true" >> $GITHUB_OUTPUT
+            echo "should_delete=true" >> "$GITHUB_OUTPUT"
           else
-            echo "should_delete=false" >> $GITHUB_OUTPUT
+            echo "should_delete=false" >> "$GITHUB_OUTPUT"
           fi
 
       # Delete pro firebase deployment
