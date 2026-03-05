@@ -41,7 +41,7 @@ jobs:
           cache-dependency-path: "**/yarn.lock"
           node-version-file: "pro/package.json"
 
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@9a5f036470496551365fe9c26afbd4febe20a8cb
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@7ebd9f4b39a558370a8a7a125413f1faad7d638c
 
       - name: Install dependencies
         run: yarn install --immutable
@@ -94,7 +94,7 @@ jobs:
           cache-dependency-path: "**/yarn.lock"
           node-version-file: "pro/package.json"
 
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@9a5f036470496551365fe9c26afbd4febe20a8cb
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@7ebd9f4b39a558370a8a7a125413f1faad7d638c
 
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v3"
@@ -227,7 +227,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version-file: "pro/package.json"
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@9a5f036470496551365fe9c26afbd4febe20a8cb
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@7ebd9f4b39a558370a8a7a125413f1faad7d638c
 
       - name: "Cache the node_modules"
         id: "yarn-modules-cache"
