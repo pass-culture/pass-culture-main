@@ -68,6 +68,7 @@ function generateNavItems(
       group: 'main',
       title: 'Offres',
       to: '/offres',
+      end: true,
     },
     {
       key: 'reservation',
@@ -75,6 +76,7 @@ function generateNavItems(
       group: 'main',
       title: 'Réservations',
       to: '/reservations',
+      end: true,
     },
     {
       key: 'ticket_office',
@@ -92,6 +94,7 @@ function generateNavItems(
       group: 'main',
       title: 'Page sur l’application',
       to: `/structures/${selectedOfferer.id}/lieux/${selectedPartnerPageVenueId}/page-partenaire`,
+      end: true,
     })
   }
 
@@ -129,6 +132,7 @@ function generateNavItems(
       group: 'main',
       title: 'Page dans ADAGE',
       to: `/structures/${selectedOfferer.id}/lieux/${venueId}/collectif`,
+      end: true,
     })
   }
 
