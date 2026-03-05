@@ -197,8 +197,27 @@ def update_venue(
         )
         if external_accessibility_id:
             set_accessibility_provider_id(venue, external_accessibility_id, external_accessibility_url)
+            logger.info(
+                "Acceslibre manual synchronisation",
+                extra={
+                    "analyticsSource": "app-pro",
+                    "venue_id": venue.id,
+                    "acceslibre_slug": external_accessibility_id,
+                    "update_message": "Manual update of acceslibre synchronisation",
+                },
+                technical_message_id="acceslibre.synchronisation.manual",
+            )
             set_accessibility_infos_from_provider_id(venue)
         else:
+            logger.info(
+                "Acceslibre manually removed",
+                extra={
+                    "analyticsSource": "app-pro",
+                    "venue_id": venue.id,
+                    "update_message": "Manually removed acceslibre for this Venue",
+                },
+                technical_message_id="acceslibre.synchronisation.removed",
+            )
             delete_venue_accessibility_provider(venue)
 
     if criteria is not offerers_constants.UNCHANGED:
@@ -2859,6 +2878,16 @@ def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = F
                     accessibility_data.dict() if accessibility_data else None
                 )
                 db.session.add(venue.accessibilityProvider)
+                logger.info(
+                    "Acceslibre update synchronisation",
+                    extra={
+                        "analyticsSource": "app-pro",
+                        "venue_id": venue.id,
+                        "acceslibre_slug": slug,
+                        "update_message": "New slug found at acceslibre for already synchronized venue",
+                    },
+                    technical_message_id="acceslibre.synchronisation.update",
+                )
         else:
             logger.info(
                 "Acceslibre synchronisation loss",
@@ -2866,9 +2895,9 @@ def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = F
                     "analyticsSource": "app-pro",
                     "venue_id": venue.id,
                     "acceslibre_slug": slug,
-                    "slug_loss_message": "Slug not found at acceslibre, AccessibilityProvider removed for this venue",
+                    "update_message": "Slug not found at acceslibre, AccessibilityProvider removed for this venue",
                 },
-                technical_message_id="acceslibre.synchronisation",
+                technical_message_id="acceslibre.synchronisation.lost",
             )
             db.session.delete(venue.accessibilityProvider)
 
@@ -2948,6 +2977,16 @@ def match_acceslibre(venue: offerers_models.Venue) -> None:
         )
 
     set_accessibility_infos_from_provider_id(venue)
+    logger.info(
+        "Acceslibre new synchronisation",
+        extra={
+            "analyticsSource": "app-pro",
+            "venue_id": venue.id,
+            "acceslibre_slug": venue.accessibilityProvider.externalAccessibilityId,
+            "update_message": "New entry found at acceslibre for this venue",
+        },
+        technical_message_id="acceslibre.synchronisation.created",
+    )
     db.session.add(venue)
     db.session.commit()
 
