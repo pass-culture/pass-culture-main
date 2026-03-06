@@ -4,7 +4,7 @@ import {
   OfferStatus,
   SubcategoryIdEnum,
   type VenueListItemResponseModel,
-  type VenueTypeCode,
+  type VenueTypeCodeKey,
 } from '@/apiClient/v1'
 import {
   getIndividualOfferFactory,
@@ -583,7 +583,7 @@ describe('getFormReadOnlyFields', () => {
           lastProvider: { name: 'provider' },
         }),
         false,
-        makeVenueListItem({ id: 1, venueTypeCode: 'MUSEUM' as VenueTypeCode })
+        makeVenueListItem({ id: 1, venueTypeCode: 'MUSEUM' as VenueTypeCodeKey })
       )
     ).toStrictEqual(expectedValues)
   })

@@ -9,7 +9,7 @@ import {
   OfferStatus,
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
-  VenueTypeCode,
+  VenueTypeCodeKey,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
@@ -720,7 +720,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
                 id: 2,
                 // Auto-generated `VenueTypeCode` enum is completely wrong:
                 // real keys are those declared in api/src/pcapi/core/offerers/schemas.py
-                venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
+                venueTypeCode: 'RECORD_STORE' as VenueTypeCodeKey,
               }),
             ],
           },
@@ -746,7 +746,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
           props: {
             venues: [
               venueListItemFactory({
-                venueTypeCode: VenueTypeCode.FESTIVAL,
+                venueTypeCode: VenueTypeCodeKey.FESTIVAL,
               }),
             ],
           },
@@ -784,7 +784,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
             props: {
               venues: [
                 venueListItemFactory({
-                  venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
+                  venueTypeCode: 'RECORD_STORE' as VenueTypeCodeKey,
                 }),
               ],
             },
@@ -834,7 +834,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
             props: {
               venues: [
                 venueListItemFactory({
-                  venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
+                  venueTypeCode: 'RECORD_STORE' as VenueTypeCodeKey,
                 }),
               ],
             },
@@ -887,7 +887,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
             props: {
               venues: [
                 venueListItemFactory({
-                  venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
+                  venueTypeCode: 'RECORD_STORE' as VenueTypeCodeKey,
                 }),
               ],
             },
@@ -923,7 +923,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
             props: {
               venues: [
                 venueListItemFactory({
-                  venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
+                  venueTypeCode: 'RECORD_STORE' as VenueTypeCodeKey,
                 }),
               ],
             },
