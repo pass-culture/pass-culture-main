@@ -302,6 +302,7 @@ class OfferResponse(HttpBodyModel):
     booking_allowed_datetime: datetime.datetime | None
     chronicles: list[ChroniclePreview]
     chronicles_count: int | None = None
+    pro_advices_count: int | None = None
     description: str | None = None
     expense_domains: list[ExpenseDomain]
     external_ticket_office_url: str | None = None
@@ -405,6 +406,9 @@ class OfferResponse(HttpBodyModel):
             booking_allowed_datetime=offer.bookingAllowedDatetime,
             chronicles=[ChroniclePreview.build(c) for c in published_chronicles[:MAX_PREVIEW_CHRONICLES]],
             chronicles_count=product.chroniclesCount if product and product.chroniclesCount else offer.chroniclesCount,
+            pro_advices_count=product.proAdvicesCount
+            if product and product.proAdvicesCount is not None
+            else offer.proAdvicesCount,
             description=offer.description,
             expense_domains=map(lambda domain: domain.value, get_expense_domains(offer)),
             external_ticket_office_url=offer.externalTicketOfficeUrl,

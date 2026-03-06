@@ -231,6 +231,11 @@ class AlgoliaSerializationMixin:
         )
         headlines_count = offer.product.headlinesCount if offer.product and offer.product.headlinesCount else None
         likes_count = offer.product.likesCount if offer.product and offer.product.likesCount else offer.likesCount
+        pro_advices_count = (
+            offer.product.proAdvicesCount
+            if offer.product and offer.product.proAdvicesCount is not None
+            else offer.proAdvicesCount
+        )
         # If you update this dictionary, please check whether you need to
         # also update `core.offerers.api.VENUE_ALGOLIA_INDEXED_FIELDS`.
         object_to_index: dict[str, typing.Any] = {
@@ -251,6 +256,7 @@ class AlgoliaSerializationMixin:
                 "gtlCodeLevel4": gtl_code_4,
                 "hasImage": offer.thumbUrl is not None,
                 "headlinesCount": headlines_count or None,
+                "proAdvicesCount": pro_advices_count or None,
                 "indexedAt": date_utils.get_naive_utc_now().isoformat(),
                 "hasUrl": offer.hasUrl,
                 "isDuo": offer.isDuo,

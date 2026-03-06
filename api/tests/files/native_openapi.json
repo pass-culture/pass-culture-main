@@ -4939,6 +4939,18 @@
                         "title": "Name",
                         "type": "string"
                     },
+                    "proAdvicesCount": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Proadvicescount"
+                    },
                     "publicationDate": {
                         "anyOf": [
                             {
