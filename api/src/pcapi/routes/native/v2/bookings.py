@@ -28,7 +28,7 @@ def get_booking(booking_id: int) -> BookingResponse:
     booking = bookings_api.get_booking_by_id(current_user, booking_id)
     if booking is None:
         raise ResourceNotFoundError()
-    return BookingResponse.from_orm(booking)
+    return BookingResponse.model_validate(booking)
 
 
 @blueprint.native_route("/bookings", version="v2", methods=["GET"])
@@ -39,8 +39,8 @@ def get_bookings() -> BookingsResponseV2:
     ended_bookings, ongoing_bookings = bookings_api.classify_and_sort_bookings(individual_bookings)
 
     return BookingsResponseV2(
-        ended_bookings=[BookingResponse.from_orm(booking) for booking in ended_bookings],
-        ongoing_bookings=[BookingResponse.from_orm(booking) for booking in ongoing_bookings],
+        ended_bookings=[BookingResponse.model_validate(booking) for booking in ended_bookings],
+        ongoing_bookings=[BookingResponse.model_validate(booking) for booking in ongoing_bookings],
         has_bookings_after_18=any(
             booking for booking in individual_bookings if bookings_api.is_booking_by_18_user(booking)
         ),
@@ -60,4 +60,6 @@ def get_bookings_list(status: str) -> BookingsListResponseV2:
 
     bookings_list = bookings_api.get_user_bookings_by_status(current_user, status)
 
-    return BookingsListResponseV2(bookings=[BookingListItemResponse.from_orm(booking) for booking in bookings_list])
+    return BookingsListResponseV2(
+        bookings=[BookingListItemResponse.model_validate(booking) for booking in bookings_list]
+    )
