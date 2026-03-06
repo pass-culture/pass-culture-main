@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { mutate } from 'swr'
 
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import type { BannerMetaModel } from '@/apiClient/v1'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import type { UploadImageValues } from '@/commons/utils/imageUploadTypes'
 import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
@@ -9,12 +9,15 @@ import { postImageToVenue } from '@/repository/pcapi/pcapi'
 
 import { buildInitialVenueImageValues } from '../utils/buildInitialVenueImageValues'
 
-export const useOnVenueImageUpload = (venue: GetVenueResponseModel) => {
+export const useOnVenueImageUpload = (
+  venueId: number,
+  venueBannerUrl?: string | null,
+  venueBannerMeta?: BannerMetaModel | null
+) => {
   const initialValues = buildInitialVenueImageValues(
-    venue.bannerUrl,
-    venue.bannerMeta
+    venueBannerUrl,
+    venueBannerMeta
   )
-  const venueId = venue.id
 
   const [imageValues, setImageValues] =
     useState<UploadImageValues>(initialValues)
