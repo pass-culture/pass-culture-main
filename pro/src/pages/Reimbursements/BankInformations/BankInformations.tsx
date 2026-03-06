@@ -7,9 +7,8 @@ import { api } from '@/apiClient/api'
 import type { BankAccountResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
-  GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES,
+  GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
   GET_OFFERER_QUERY_KEY,
-  GET_VENUE_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
@@ -55,7 +54,7 @@ const BankInformations = (): JSX.Element => {
     useState<BankAccountResponseModel | null>(null)
 
   const bankAccountVenuesQuery = useSWR(
-    [GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES, offererId],
+    [GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY, offererId],
     ([, offererId]) =>
       api.getOffererBankAccountsAndAttachedVenues(Number(offererId)),
     {
@@ -73,7 +72,7 @@ const BankInformations = (): JSX.Element => {
   const updateOfferer = async (offererId: number) => {
     if (offererId) {
       await mutate([
-        GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES,
+        GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
         Number(offererId),
       ])
       await mutate([GET_OFFERER_QUERY_KEY, Number(offererId)])
@@ -86,13 +85,11 @@ const BankInformations = (): JSX.Element => {
         await updateOfferer(offererId)
 
         if (selectedVenue) {
-          const updatedVenue = await mutate(
-            [GET_VENUE_QUERY_KEY, String(selectedVenue.id)],
-            () => api.getVenue(selectedVenue.id)
-          )
-          if (updatedVenue) {
-            dispatch(setSelectedVenue(updatedVenue))
-          }
+          // Direct API call without SWR mutate because no useSWR(GET_VENUE_QUERY_KEY)
+          // is mounted on this page, so mutate(key) would not trigger any
+          // revalidation (see https://swr.vercel.app/docs/mutation#global-mutate)
+          const updatedVenue = await api.getVenue(selectedVenue.id)
+          dispatch(setSelectedVenue(updatedVenue))
         }
       }
       setSelectedBankAccount(null)

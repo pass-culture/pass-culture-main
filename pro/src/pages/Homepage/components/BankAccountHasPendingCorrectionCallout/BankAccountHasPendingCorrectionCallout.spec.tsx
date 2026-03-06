@@ -77,7 +77,7 @@ describe('LinkVenueCallout', () => {
       )
 
       expect(mockLogEvent).toHaveBeenCalledWith(
-        BankAccountEvents.CLICKED__BANK_ACCOUNT_HAS_PENDING_CORRECTIONS,
+        BankAccountEvents.CLICKED_BANK_ACCOUNT_HAS_PENDING_CORRECTIONS,
         {
           from: '/accueil',
           offererId: 1,
