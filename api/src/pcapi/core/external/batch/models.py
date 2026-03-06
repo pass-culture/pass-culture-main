@@ -1,7 +1,5 @@
 import enum
 
-from pcapi.routes.serialization import BaseModel
-
 
 class BatchEvent(enum.Enum):
     RECREDITED_ACCOUNT = "recredited_account"
@@ -13,13 +11,3 @@ class BatchEvent(enum.Enum):
     HAS_RECEIVED_BONUS = "has_received_bonus"
     RECREDIT_ACCOUNT_CANCELLATION = "recredit_account_cancellation"
     FUTURE_OFFER_ACTIVATED = "future_offer_activated"
-
-
-class TrackBatchEventRequest(BaseModel):
-    user_id: int
-    event_name: BatchEvent
-    event_payload: dict
-
-
-class TrackBatchEventsRequest(BaseModel):
-    trigger_events: list[TrackBatchEventRequest]

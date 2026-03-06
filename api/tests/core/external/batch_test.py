@@ -1,9 +1,18 @@
 from copy import deepcopy
 
 import pytest
+import requests_mock
 
 from pcapi.core.cultural_survey import models as cultural_survey_models
-from pcapi.core.external.batch import format_user_attributes
+from pcapi.core.external.batch import testing as batch_testing
+from pcapi.core.external.batch.api import update_user_attributes
+from pcapi.core.external.batch.attributes import format_user_attributes
+from pcapi.core.external.batch.backends.batch import BatchAPI
+from pcapi.core.external.batch.backends.batch import BatchBackend
+from pcapi.core.external.batch.transactional_notifications import TransactionalNotificationData
+from pcapi.core.external.batch.transactional_notifications import TransactionalNotificationMessage
+from pcapi.core.external.batch.utils import batch_length
+from pcapi.core.external.batch.utils import shorten_for_batch
 
 from . import common_user_attributes
 
@@ -11,6 +20,22 @@ from . import common_user_attributes
 pytestmark = pytest.mark.usefixtures("db_session")
 
 MAX_BATCH_PARAMETER_SIZE = 30
+
+
+def test_update_user_attributes():
+    user_id = 123
+    attributes = {"param": "value"}
+
+    update_user_attributes(BatchAPI.IOS, user_id, attributes)
+
+    assert batch_testing.requests == [
+        {
+            "attribute_values": {"param": "value"},
+            "batch_api": "IOS",
+            "user_id": 123,
+            "can_be_asynchronously_retried": False,
+        }
+    ]
 
 
 class FormatUserAttributesTest:
@@ -113,3 +138,168 @@ class FormatUserAttributesTest:
         assert "ut.achievements" in formatted
         assert isinstance(formatted["ut.achievements"], list)
         assert formatted["ut.achievements"] == ["FIRST_MOVIE_BOOKING"]
+
+
+class BatchPushNotificationClientTest:
+    def test_update_user_attributes(self):
+        with requests_mock.Mocker() as mock:
+            ios_post = mock.post("https://api.batch.com/1.0/fake_android_api_key/data/users/1")
+
+            BatchBackend().update_user_attributes(BatchAPI.ANDROID, 1, {"attri": "but"})
+
+            assert ios_post.last_request.json() == {"overwrite": False, "values": {"attri": "but"}}
+
+    def test_send_transactional_notification(self):
+        with requests_mock.Mocker() as mock:
+            android_post = mock.post("https://api.batch.com/1.1/fake_android_api_key/transactional/send")
+            ios_post = mock.post("https://api.batch.com/1.1/fake_ios_api_key/transactional/send")
+
+            BatchBackend().send_transactional_notification(
+                TransactionalNotificationData(
+                    group_id="Group_id",
+                    user_ids=[1234, 4321],
+                    message=TransactionalNotificationMessage(title="Putsch", body="Notif"),
+                )
+            )
+
+            assert ios_post.last_request.json() == {
+                "group_id": "Group_id",
+                "recipients": {"custom_ids": ["1234", "4321"]},
+                "message": {"body": "Notif", "title": "Putsch"},
+            }
+            assert android_post.last_request.json() == {
+                "group_id": "Group_id",
+                "recipients": {"custom_ids": ["1234", "4321"]},
+                "message": {"body": "Notif", "title": "Putsch"},
+            }
+
+    def test_api_exception(self):
+        with requests_mock.Mocker() as mock:
+            android_post = mock.post("https://api.batch.com/1.1/fake_android_api_key/transactional/send")
+            ios_post = mock.post("https://api.batch.com/1.1/fake_ios_api_key/transactional/send")
+
+            BatchBackend().send_transactional_notification(
+                TransactionalNotificationData(
+                    group_id="Group_id",
+                    user_ids=[1234, 4321],
+                    message=TransactionalNotificationMessage(title="Putsch", body="Notif"),
+                )
+            )
+
+            assert ios_post.last_request.json() == {
+                "group_id": "Group_id",
+                "recipients": {"custom_ids": ["1234", "4321"]},
+                "message": {"body": "Notif", "title": "Putsch"},
+            }
+            assert android_post.last_request.json() == {
+                "group_id": "Group_id",
+                "recipients": {"custom_ids": ["1234", "4321"]},
+                "message": {"body": "Notif", "title": "Putsch"},
+            }
+
+
+class ShortenForBatchTest:
+    def test_batch_length_no_emoji(self):
+        s = "Hello World"
+        # Without emojis, batch_length should equal the standard length
+        assert batch_length(s) == len(s)
+
+    def test_batch_length_with_emoji(self):
+        s = "Hello 😎"
+        # "Hello " = 6 characters, "😎" counts as 2, so total should be 8
+        assert batch_length(s) == 8
+
+    def test_batch_length_multiple_emojis(self):
+        s = "😎😎"
+        # Each emoji counts as 2, total should be 4
+        assert batch_length(s) == 4
+
+    def test_batch_length_complex_emojis(self):
+        # Test with various complex emoji types:
+        # - Combined emojis (family, couples)
+        # - Skin tone modifiers
+        # - Flags
+        # - ZWJ sequences (professional emojis)
+        # - Directional text emojis
+        s = "👨‍👩‍👧‍👦👩🏽‍💻🏳️‍🌈👨🏾‍🦰🫂🇫🇷🤌🦾🧬🎭"
+        # Each complex emoji sequence counts differently:
+        # 👨‍👩‍👧‍👦 (family) = 8 (4 people joined)
+        # 👩🏽‍💻 (woman technologist with medium skin tone) = 4
+        # 🏳️‍🌈 (rainbow flag) = 4 (+ 1 for the variation selector)
+        # 👨🏾‍🦰 (man with afro and medium-dark skin tone) = 4
+        # 🫂 (people hugging) = 2
+        # 🇫🇷 (flag) = 4
+        # 🤌 (pinched fingers) = 2
+        # 🦾 (mechanical arm) = 2
+        # 🧬 (dna) = 2
+        # 🎭 (performing arts) = 2
+        # Total expected length = 35
+        assert batch_length(s) == 35
+
+    def test_shorten_for_batch_no_truncation(self):
+        s = "Hello World"
+        max_length = 20
+        # The string is shorter than max_length, so it should be returned unchanged
+        assert shorten_for_batch(s, max_length) == s
+
+    def test_shorten_for_batch_truncation_no_emoji(self):
+        s = "Hello World, this is a long text"
+        max_length = 10
+        result = shorten_for_batch(s, max_length)
+        # The result should end with the placeholder and not exceed max_length when measured with batch_length
+        assert result.endswith("...")
+        assert batch_length(result) == max_length
+
+    def test_shorten_for_batch_truncation_no_emoji_preserve_words(self):
+        s = "Hello World, this is a long text"
+        max_length = 10
+        result = shorten_for_batch(s, max_length, preserve_words=True)
+        assert result == "Hello..."
+
+    def test_shorten_for_batch_truncation_with_emoji(self):
+        s = "Hello 😎, this is a long text with emojis 😎😎"
+        max_length = 20
+        result = shorten_for_batch(s, max_length)
+        # The result should end with the placeholder and its batch length should not exceed max_length
+        assert result.endswith("...")
+        assert batch_length(result) == max_length
+
+    def test_shorten_for_batch_truncation_with_emoji_preserve_words(self):
+        s = "Hello 😎, this is a long text with emojis 😎😎"
+        max_length = 25
+        result = shorten_for_batch(s, max_length, preserve_words=True)
+        assert result == "Hello 😎, this is a..."
+
+    def test_shorten_for_batch_exact_boundary(self):
+        # Construct a string where the batch length equals max_length exactly, so no truncation occurs.
+        s = "Hello😎"  # "Hello" = 5, "😎" = 2, total = 7
+        max_length = 7
+        result = shorten_for_batch(s, max_length)
+        # Since the string already fits the max_length, it should be returned unchanged.
+        assert result == s
+
+    def test_shorten_for_batch_complex_emojis(self):
+        s = "👨‍👩‍👧‍👦👩🏽‍💻🏳️‍🌈👨🏾‍🦰🫂🇫🇷🤌🦾🧬🎭"
+        # Each complex emoji sequence counts differently:
+        # 👨‍👩‍👧‍👦 (family) = 8 (4 people joined)
+        # 👩🏽‍💻 (woman technologist with medium skin tone) = 4
+        # 🏳️‍🌈 (rainbow flag) = 4
+        # 👨🏾‍🦰 (man with afro and medium-dark skin tone) = 4
+        # 🫂 (people hugging) = 2
+        # 🇫🇷 (flag) = 4
+        # 🤌 (pinched fingers) = 2
+        # 🦾 (mechanical arm) = 2
+        # 🧬 (dna) = 2
+        # 🎭 (performing arts) = 2
+        max_length = 20
+        result = shorten_for_batch(s, max_length, preserve_words=True)
+        assert result == "👨‍👩‍👧‍👦👩🏽‍💻🏳️‍🌈..."
+
+    def test_shorten_for_batch_variation_selector(self):
+        assert batch_length("🗝️") == 3  # 2 for the keycap and 1 for the variation selector
+        s = "🗝️Escape Game à Paris - Entretien avec Gustave Eiffel | Tarif sur le site de l'offre"
+        max_length = 64
+        result = shorten_for_batch(s, max_length)
+        assert result.endswith("...")
+        assert result == "🗝️Escape Game à Paris - Entretien avec Gustave Eiffel | Tari..."
+        assert batch_length(result) <= max_length

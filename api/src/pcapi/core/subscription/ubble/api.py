@@ -14,14 +14,13 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from pydantic.v1.networks import HttpUrl
 
-import pcapi.core.external.batch as batch_notification
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.subscription.ubble.constants as ubble_fraud_constants
 from pcapi.connectors.beneficiaries import outscale
 from pcapi.connectors.beneficiaries import ubble
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.external.attributes import api as external_attributes_api
-from pcapi.core.external.batch import track_ubble_ko_event
+from pcapi.core.external.batch import trigger_events
 from pcapi.core.finance import models as finance_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
@@ -176,7 +175,7 @@ def start_ubble_workflow(
         raise
 
     _update_identity_fraud_check(ubble_fraud_check, content)
-    batch_notification.track_identity_check_started_event(ubble_fraud_check.user.id, ubble_fraud_check.type)
+    trigger_events.track_identity_check_started_event(ubble_fraud_check.user.id, ubble_fraud_check.type)
 
     return content.identification_url
 
@@ -301,7 +300,7 @@ def _dispatch_reminder(user: users_models.User, error_code: subscription_models.
     if error_code in ubble_fraud_constants.REASON_CODE_REQUIRING_IMMEDIATE_EMAIL_REMINDER:
         transactional_mails.send_subscription_document_error_email(user.email, error_code)
     if error_code in ubble_fraud_constants.REASON_CODE_REQUIRING_IMMEDIATE_NOTIFICATION_REMINDER:
-        track_ubble_ko_event(user.id, error_code)
+        trigger_events.track_ubble_ko_event(user.id, error_code)
 
 
 def handle_validation_errors(

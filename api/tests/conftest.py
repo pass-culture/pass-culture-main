@@ -33,6 +33,7 @@ from requests.auth import _basic_auth_str  # noqa: TID251
 from sqlalchemy import orm as sa_orm
 
 import pcapi.core.educational.testing as adage_api_testing
+import pcapi.core.external.batch.testing as batch_testing
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.object_storage.testing as object_storage_testing
 import pcapi.core.search.testing as search_testing
@@ -46,7 +47,6 @@ from pcapi.db_utils import clean_all_database
 from pcapi.db_utils import install_database_extensions
 from pcapi.models import db
 from pcapi.models import feature
-from pcapi.notifications.push import testing as push_notifications_testing
 from pcapi.notifications.sms import testing as sms_notifications_testing
 from pcapi.routes.backoffice import install_routes
 from pcapi.utils import requests
@@ -185,7 +185,7 @@ def clear_outboxes():
     finally:
         internal_notifications_testing.reset_requests()
         mails_testing.reset_outbox()
-        push_notifications_testing.reset_requests()
+        batch_testing.reset_requests()
         search_testing.reset_search_store()
         sms_notifications_testing.reset_requests()
         users_testing.reset_sendinblue_requests()

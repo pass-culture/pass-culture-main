@@ -12,6 +12,7 @@ from werkzeug.exceptions import NotFound
 
 from pcapi.core import mails as mails_api
 from pcapi.core.external.attributes import api as external_attributes_api
+from pcapi.core.external.batch.serialization import DeleteBatchUserAttributesRequest
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
@@ -35,7 +36,6 @@ from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.routes.backoffice.utils import access_control
 from pcapi.routes.backoffice.utils import logs as logs_utils
 from pcapi.routes.backoffice.utils import response as response_utils
-from pcapi.tasks.batch_tasks import DeleteBatchUserAttributesRequest
 from pcapi.tasks.batch_tasks import delete_user_attributes_task
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils

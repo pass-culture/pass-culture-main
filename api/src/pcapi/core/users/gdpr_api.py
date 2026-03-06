@@ -31,6 +31,7 @@ from pcapi.core import object_storage
 from pcapi.core.chronicles import api as chronicles_api
 from pcapi.core.chronicles import constants as chronicles_constants
 from pcapi.core.chronicles import models as chronicles_models
+from pcapi.core.external.batch.api import delete_user_attributes
 from pcapi.core.external.beamer.api import delete_beamer_user
 from pcapi.core.external.beamer.backends.beamer import BeamerException
 from pcapi.core.finance import models as finance_models
@@ -47,7 +48,6 @@ from pcapi.core.users import schemas
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.notifications import push as push_api
 from pcapi.utils import date as date_utils
 from pcapi.utils import transaction_manager
 from pcapi.utils.date import get_naive_utc_now
@@ -97,7 +97,7 @@ def anonymize_user(
             pass
 
     try:
-        push_api.delete_user_attributes(user_id=user.id, can_be_asynchronously_retried=True)
+        delete_user_attributes(user_id=user.id, can_be_asynchronously_retried=True)
     except ExternalAPIException as exc:
         # If is_retryable it is a real error. If this flag is False then it means the email is unknown for brevo.
         if exc.is_retryable:

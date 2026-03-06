@@ -13,6 +13,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 
 import pcapi.core.educational.factories as educational_factories
+import pcapi.core.external.batch.testing as push_testing
 import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.factories as finance_factories
@@ -23,7 +24,6 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
-import pcapi.notifications.push.testing as push_testing
 from pcapi.connectors.ems import EMSAPIException
 from pcapi.connectors.ems import EMSBookingConnector
 from pcapi.core.bookings import api
@@ -39,7 +39,7 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.external.batch import BATCH_DATETIME_FORMAT
+from pcapi.core.external.batch.utils import BATCH_DATETIME_FORMAT
 from pcapi.core.external_bookings import factories as external_bookings_factories
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail

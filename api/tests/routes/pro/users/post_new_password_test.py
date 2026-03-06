@@ -5,11 +5,11 @@ import pytest
 import time_machine
 
 from pcapi.core import token as token_utils
+from pcapi.core.external.batch import testing as push_testing
 from pcapi.core.users import constants as user_constants
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as users_testing
-from pcapi.notifications.push import testing as push_testing
 
 
 @pytest.mark.usefixtures("db_session")

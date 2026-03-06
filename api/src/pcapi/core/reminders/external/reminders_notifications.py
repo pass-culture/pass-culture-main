@@ -1,6 +1,6 @@
 import logging
 
-from pcapi.core.external.batch import send_users_reminders_for_offer
+from pcapi.core.external.batch.trigger_events import send_users_reminders_for_offer
 from pcapi.core.offers.models import Offer
 from pcapi.core.reminders.repository import delete_offer_reminders_on_offer
 from pcapi.core.reminders.repository import get_user_ids_with_reminders

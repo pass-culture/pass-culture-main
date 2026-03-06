@@ -9,6 +9,8 @@ from pcapi.core import search
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.api import offer as educational_api_offer
+from pcapi.core.external.batch.api import send_transactional_notification
+from pcapi.core.external.batch.transactional_notifications import get_offer_notification_data
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
@@ -22,8 +24,6 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.notifications.push import send_transactional_notification
-from pcapi.notifications.push.transactional_notifications import get_offer_notification_data
 from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_v1_serialization
 from pcapi.routes.public.individual_offers.v1 import utils as individual_offers_v1_utils
 from pcapi.routes.public.individual_offers.v1.serializers import products as products_serializers

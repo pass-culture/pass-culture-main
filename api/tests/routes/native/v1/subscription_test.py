@@ -9,6 +9,7 @@ import time_machine
 from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
+from pcapi.core.external.batch import testing as push_testing
 from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import schemas as subscription_schemas
@@ -18,7 +19,6 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.notifications.push import testing as push_testing
 from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 from pcapi.utils.postal_code import INELIGIBLE_POSTAL_CODES

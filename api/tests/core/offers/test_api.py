@@ -42,6 +42,7 @@ from pcapi.core import search
 from pcapi.core.artist.api import ArtistOfferLinkKey
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.models import EacFormat
+from pcapi.core.external.batch import testing as push_testing
 from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
@@ -60,7 +61,6 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.notifications.push import testing as push_testing
 from pcapi.routes.serialization import artist_serialize
 from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize

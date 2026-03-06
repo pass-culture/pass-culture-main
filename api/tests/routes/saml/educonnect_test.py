@@ -10,7 +10,7 @@ from flask_jwt_extended.utils import create_access_token
 
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.subscription.models as subscription_models
-import pcapi.notifications.push.testing as push_testing
+from pcapi.core.external.batch import testing as push_testing
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import schemas as subscription_schemas

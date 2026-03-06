@@ -11,6 +11,7 @@ from dateutil.relativedelta import relativedelta
 import pcapi.core.mails.testing as mails_testing
 from pcapi import settings as pcapi_settings
 from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.external.batch import testing as push_testing
 from pcapi.core.finance import conf
 from pcapi.core.finance import deposit_api as api
 from pcapi.core.finance import exceptions
@@ -23,7 +24,6 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.notifications.push import testing as push_testing
 from pcapi.utils import date as date_utils
 
 from tests.core.subscription.test_factories import IdentificationState

@@ -3,8 +3,8 @@ from dataclasses import dataclass
 from enum import Enum
 
 from pcapi import settings
-from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
-from pcapi.notifications.push.trigger_events import TrackBatchEventRequest
+from pcapi.core.external.batch.serialization import TrackBatchEventRequest
+from pcapi.core.external.batch.serialization import TransactionalNotificationData
 from pcapi.utils import requests
 
 
