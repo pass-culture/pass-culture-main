@@ -1493,10 +1493,18 @@ def get_qf_bonus_credit_fraud_checks(user: models.User) -> list[subscription_mod
 
 
 def get_user_qf_bonification_status(user: models.User) -> subscription_models.QFBonificationStatus:
-    is_18_years_old = user.age == 18
-    has_v3_credit = user.received_pass_17_18
+    has_eligible_age = False
+    if user.age == 18:
+        has_eligible_age = True
+    elif user.age == 19 and user.birth_date is not None:
+        nineteenth_birthday = user.birth_date + relativedelta(years=19)
+        has_eligible_age = (
+            settings.CREDIT_V3_DECREE_DATETIME.date()
+            <= nineteenth_birthday
+            <= settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME.date()
+        )
 
-    if not is_18_years_old or not user.is_beneficiary or not has_v3_credit:
+    if not has_eligible_age or not user.is_beneficiary or not user.received_pass_17_18:
         return subscription_models.QFBonificationStatus.NOT_ELIGIBLE
 
     qf_bonus_credit_fraud_checks = get_qf_bonus_credit_fraud_checks(user)
@@ -1518,7 +1526,7 @@ def get_user_qf_bonification_status(user: models.User) -> subscription_models.QF
         subscription_models.FraudCheckStatus.ERROR,
     )
 
-    if is_18_years_old and has_v3_credit and has_never_completely_tried:
+    if has_eligible_age and user.received_pass_17_18 and has_never_completely_tried:
         return subscription_models.QFBonificationStatus.ELIGIBLE
 
     if bonus_fraud_check_status == subscription_models.FraudCheckStatus.KO:
