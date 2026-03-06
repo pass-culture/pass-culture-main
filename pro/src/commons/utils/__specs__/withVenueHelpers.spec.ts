@@ -28,6 +28,10 @@ describe('withVenueHelpers', () => {
           street: '123 Rue de Rivoli',
           postalCode: '75001',
           city: 'Paris',
+          banId: 'banid',
+          departmentCode: '75',
+          inseeCode: '75056',
+          label: 'label',
         },
       })
 
@@ -46,6 +50,10 @@ describe('withVenueHelpers', () => {
           street: null,
           postalCode: '75001',
           city: 'Paris',
+          banId: 'banid',
+          departmentCode: '75',
+          inseeCode: '75056',
+          label: 'label',
         },
       })
 

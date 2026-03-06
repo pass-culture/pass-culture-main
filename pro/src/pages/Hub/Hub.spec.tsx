@@ -120,6 +120,7 @@ describe('Hub', () => {
         managingOffererId: 100,
         location: {
           id: 1,
+          banId: null,
           street: '123 Rue de Test',
           postalCode: '75001',
           city: 'Paris',
@@ -127,6 +128,9 @@ describe('Hub', () => {
           longitude: 2.3522,
           isManualEdition: false,
           isVenueLocation: false,
+          departmentCode: '75',
+          inseeCode: '75056',
+          label: 'label',
         },
       }),
     ]
@@ -142,7 +146,7 @@ describe('Hub', () => {
         id: 101,
         publicName: 'Nom public de la structure sans localisation',
         managingOffererId: 100,
-        location: undefined,
+        location: null,
       }),
     ]
 

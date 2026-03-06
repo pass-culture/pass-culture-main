@@ -26,6 +26,7 @@ import {
   type VenueListItemResponseModel,
   type VenueProviderResponse,
   VenueTypeCode,
+  VenueTypeCodeKey,
 } from '@/apiClient/v1'
 import type { IndividualOfferContextValues } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
@@ -250,27 +251,32 @@ export const venueListItemFactory = (
   // Auto-generated `VenueTypeCode` enum is completely wrong:
   // real keys are those declared in api/src/pcapi/core/offerers/schemas.py
   const venueTypeCode =
-    customVenueListItem.venueTypeCode ?? ('OTHER' as VenueTypeCode)
+    customVenueListItem.venueTypeCode ?? ('OTHER' as VenueTypeCodeKey)
 
   return {
     id,
     audioDisabilityCompliant: true,
     bankAccountStatus: null,
+    bookingEmail: null,
     hasCreatedOffer: true,
     hasNonFreeOffers: true,
+    externalAccessibilityData: null,
     isActive: true,
     isCaledonian: false,
     isPermanent: true,
     isValidated: true,
     isVirtual: false,
+    location: null,
     managingOffererId: offererId,
     mentalDisabilityCompliant: true,
     motorDisabilityCompliant: true,
     name: `Nom de la structure ${id}`,
     offererName,
     publicName: `Nom public de la structure ${id}`,
+    siret: null,
     venueTypeCode,
     visualDisabilityCompliant: true,
+    withdrawalDetails: null,
     ...customVenueListItem,
   }
 }
@@ -283,11 +289,14 @@ export const makeVenueListItem = <
   const offererName = override.offererName ?? `Entité ${offererId}`
   // Auto-generated `VenueTypeCode` enum is completely wrong:
   // real keys are those declared in api/src/pcapi/core/offerers/schemas.py
-  const venueTypeCode = override.venueTypeCode ?? ('OTHER' as VenueTypeCode)
+  const venueTypeCode = override.venueTypeCode ?? ('OTHER' as VenueTypeCodeKey)
 
   const fake: VenueListItemResponseModel = {
     id: override.id,
     audioDisabilityCompliant: false,
+    bankAccountStatus: null,
+    bookingEmail: `booking.${override.id}@email.com`,
+    externalAccessibilityData: null,
     hasCreatedOffer: false,
     hasNonFreeOffers: false,
     isActive: false,
@@ -295,14 +304,17 @@ export const makeVenueListItem = <
     isPermanent: false,
     isValidated: false,
     isVirtual: false,
+    location: null,
     managingOffererId: offererId,
     mentalDisabilityCompliant: false,
     motorDisabilityCompliant: false,
     name: `Nom de la structure ${override.id}`,
     offererName,
     publicName: `Nom public de la structure ${override.id}`,
+    siret: null,
     venueTypeCode,
     visualDisabilityCompliant: false,
+    withdrawalDetails: null,
   }
 
   return {
