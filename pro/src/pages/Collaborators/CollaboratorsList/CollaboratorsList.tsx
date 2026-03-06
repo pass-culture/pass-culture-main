@@ -1,0 +1,228 @@
+import { yupResolver } from '@hookform/resolvers/yup'
+import classNames from 'classnames'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import useSWR from 'swr'
+
+import { api } from '@/apiClient/api'
+import { isErrorAPIError } from '@/apiClient/helpers'
+import { OffererMemberStatus } from '@/apiClient/v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { GET_MEMBERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { OffererLinkEvents } from '@/commons/core/FirebaseEvents/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { TextInput } from '@/design-system/TextInput/TextInput'
+import fullDownIcon from '@/icons/full-down.svg'
+import fullUpIcon from '@/icons/full-up.svg'
+import { validationSchema } from '@/pages/Collaborators/validationSchema'
+
+import styles from './CollaboratorsList.module.scss'
+
+const SUCCESS_MESSAGE = "L'invitation a bien été envoyée."
+const ERROR_MESSAGE = 'Une erreur est survenue lors de l’envoi de l’invitation.'
+
+type UserEmailFormValues = {
+  email: string
+}
+
+// TODO (igabriele, 2026-02-10): Merge that within `<AdministrationLayout />` once `WIP_SWITCH_VENUE` FF is enabled and removed.
+export const CollaboratorsList = () => {
+  const currentOffererId = useAppSelector(
+    (state) => state.offerer.currentOfferer
+  )?.id
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+
+  const { logEvent } = useAnalytics()
+  const snackBar = useSnackBar()
+  const [displayAllMembers, setDisplayAllMembers] = useState(false)
+  const [showInvitationForm, setShowInvitationForm] = useState(false)
+
+  const adminSelectedOfferer = useAppSelector(
+    (store) => store.user.selectedAdminOfferer
+  )
+  const offererId = withSwitchVenueFeature
+    ? adminSelectedOfferer?.id
+    : currentOffererId
+
+  const { data } = useSWR(
+    [GET_MEMBERS_QUERY_KEY, offererId],
+    ([, offererIdParam]) =>
+      !offererIdParam ? null : api.getOffererMembers(offererIdParam),
+    { fallbackData: null }
+  )
+  const members = data?.members ?? []
+
+  const hookForm = useForm<UserEmailFormValues>({
+    defaultValues: { email: '' },
+    resolver: yupResolver(validationSchema),
+    mode: 'onBlur',
+  })
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setError,
+    formState: { errors, isSubmitting },
+  } = hookForm
+
+  const onSubmit = async ({ email }: { email: string }) => {
+    try {
+      if (!offererId) {
+        return
+      }
+
+      await api.inviteMember(offererId, { email: email })
+
+      members.unshift({
+        email,
+        status: OffererMemberStatus.PENDING,
+      })
+      reset()
+      logEvent(OffererLinkEvents.CLICKED_SEND_INVITATION, {
+        offererId: offererId,
+      })
+      snackBar.success(SUCCESS_MESSAGE)
+    } catch (error) {
+      if (isErrorAPIError(error) && error.status === 400 && error.body.email) {
+        setError('email', { message: error.body.email })
+      } else {
+        snackBar.error(ERROR_MESSAGE)
+      }
+    }
+  }
+
+  const MAX_COLLABORATORS = 10
+
+  if (!offererId) {
+    return null
+  }
+
+  return (
+    <section className={styles['section']}>
+      <h2 className={styles['main-list-title']}>Liste des collaborateurs</h2>
+
+      {members.length > 0 && (
+        <div className={styles['members-container']}>
+          <table
+            className={classNames(styles['members-list'], {
+              [styles['members-list--withMarginBottom']]:
+                members.length > MAX_COLLABORATORS,
+            })}
+          >
+            <thead>
+              <tr className={styles['members-list-tr']}>
+                <th scope="col" className={styles['members-list-th']}>
+                  Email
+                </th>
+                <th scope="col" className={styles['members-list-th']}>
+                  Statut
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {members.map(
+                ({ email, status }, index) =>
+                  !(!displayAllMembers && index > MAX_COLLABORATORS - 1) && (
+                    <tr key={email} className={styles['members-list-tr']}>
+                      <td
+                        className={classNames(
+                          styles['member-email'],
+                          styles['members-list-td']
+                        )}
+                      >
+                        {email}
+                      </td>
+                      <td
+                        className={classNames(
+                          styles['member-status'],
+                          styles['members-list-td']
+                        )}
+                      >
+                        {status === OffererMemberStatus.VALIDATED
+                          ? 'Validé'
+                          : 'En attente'}
+                      </td>
+                    </tr>
+                  )
+              )}
+            </tbody>
+          </table>
+
+          {members.length > MAX_COLLABORATORS && (
+            <Button
+              onClick={() => setDisplayAllMembers(!displayAllMembers)}
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
+              icon={displayAllMembers ? fullUpIcon : fullDownIcon}
+              label={
+                displayAllMembers
+                  ? 'Voir moins de collaborateurs'
+                  : 'Voir plus de collaborateurs'
+              }
+            />
+          )}
+        </div>
+      )}
+
+      {!showInvitationForm ? (
+        <Button
+          variant={ButtonVariant.SECONDARY}
+          onClick={() => {
+            logEvent(OffererLinkEvents.CLICKED_ADD_COLLABORATOR, {
+              offererId: offererId,
+            })
+            setShowInvitationForm(true)
+          }}
+          label="Ajouter un collaborateur"
+        />
+      ) : (
+        <>
+          <h3 className={styles['subtitle']}>Ajout de collaborateurs</h3>
+          <p className={styles['description']}>
+            Vous pouvez inviter des collaborateurs à rejoindre votre espace. Une
+            invitation leur sera envoyée par email. Vous serez notifié quand ils
+            auront rejoint l’espace.
+          </p>
+          <form
+            className={styles['invitation-form']}
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <FormLayout>
+              <FormLayout.Row className={styles['invitation-email-wrapper']}>
+                <div className={styles['invitation-email-field']}>
+                  <TextInput
+                    label="Adresse email"
+                    type="email"
+                    description="Format : email@exemple.com"
+                    error={errors.email?.message}
+                    required
+                    requiredIndicator="explicit"
+                    {...register('email')}
+                    extension={
+                      <Button
+                        type="submit"
+                        isLoading={isSubmitting}
+                        data-error={errors.email?.message ? 'true' : 'false'}
+                        label="Inviter"
+                      />
+                    }
+                  />
+                </div>
+              </FormLayout.Row>
+            </FormLayout>
+          </form>
+        </>
+      )}
+    </section>
+  )
+}
+
+// Lazy-loaded by react-router
+// ts-unused-exports:disable-next-line
+export const Component = CollaboratorsList

@@ -13,7 +13,7 @@ import {
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
-import { Component as Collaborators } from '../Collaborators'
+import { CollaboratorsList } from '../CollaboratorsList/CollaboratorsList'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -27,7 +27,7 @@ const mockLogEvent = vi.fn()
 const renderCollaborators = async () => {
   renderWithProviders(
     <>
-      <Collaborators />
+      <CollaboratorsList />
       <SnackBarContainer />
     </>,
     {
@@ -44,7 +44,7 @@ const renderCollaborators = async () => {
   })
 }
 
-describe('Collaborators', () => {
+describe('CollaboratorsList', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getOffererMembers').mockResolvedValueOnce({ members: [] })
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({

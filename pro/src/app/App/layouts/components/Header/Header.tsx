@@ -32,6 +32,7 @@ type HeaderProps = {
   disableHomeLink?: boolean
   isUnauthenticated?: boolean
   isAdminArea?: boolean
+  disableAdminMenu?: boolean
 }
 
 export const Header = forwardRef(
@@ -43,6 +44,7 @@ export const Header = forwardRef(
       disableHomeLink = false,
       isUnauthenticated = false,
       isAdminArea = false,
+      disableAdminMenu = false,
     }: HeaderProps,
     openButtonRef: ForwardedRef<HTMLButtonElement>
   ) => {
@@ -145,6 +147,7 @@ export const Header = forwardRef(
                           ? 'Revenir à l’Espace Partenaire'
                           : 'Espace administration'
                       }
+                      disabled={disableAdminMenu}
                     />
                   </div>
                 )}
