@@ -5,6 +5,17 @@
 Les tests E2E sont lancés sur l'app react en local (sur votre machine, et la CI). Il faut donc lancer l'app pro.
 Il faudra aussi lancer pcapi, et vérifier qu'il n'y ait pas d'erreurs lors de l'execution des tests.
 
+NB: Les tests e2e écrasent et recréent les données dans postgres. Pour éviter d'utiliser votre postrge de développement, vous pouvez ajouter la variable d'environnement `IS_E2E_TESTS=1` dans l'api.
+Par exemple, si vous lancez l'api dans docker, vous pouvez ajouter dans le `docker-compose-backend.yml` :
+
+```yml
+  flask:
+    ...
+    environment:
+      - IS_E2E_TESTS=1
+    ...
+```
+
 ## Installation
 
 ```

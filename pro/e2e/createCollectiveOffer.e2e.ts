@@ -27,8 +27,8 @@ import {
 } from './helpers/requests'
 
 const newOfferName = 'Ma nouvelle offre collective créée'
-const otherVenueName = 'Mon Lieu 2'
-const venueName = 'Mon Lieu 1'
+const otherVenueName = 'Mon Lieu B'
+const venueName = 'Mon Lieu A'
 const venueFullAddress = '1 boulevard Poissonnière, 75002, Paris'
 const defaultDate = addDays(new Date(), 2)
 const defaultBookingLimitDate = addDays(new Date(), 1)
@@ -218,7 +218,7 @@ test.describe('Create collective offers', () => {
     await page.getByText('Étape suivante').click()
     await fillBasicOFferForm(page)
     await fillOfferDetails(page, checkAccessibility, true)
-    await expect(page.getByText('Intitulé : Mon Lieu 1')).toBeVisible()
+    await expect(page.getByText('Intitulé : Mon Lieu A')).toBeVisible()
     await expect(page.getByText(`Adresse : ${venueFullAddress}`)).toBeVisible()
     await publishAndSearchOffer(
       page,
@@ -363,12 +363,12 @@ async function fillBasicOFferForm(page: Page) {
   await page.getByLabel(/Structure/).selectOption(otherVenueName)
   await page.getByLabel(/Structure/).selectOption(otherVenueName)
   await expect(
-    page.getByText('Mon Lieu 2 - 1 boulevard Poissonnière 75002 Paris')
+    page.getByText('Mon Lieu B - 1 boulevard Poissonnière 75002 Paris')
   ).toBeVisible()
 
   await page.getByLabel(/Structure/).selectOption(venueName)
   await expect(
-    page.getByText('Mon Lieu 1 - 1 boulevard Poissonnière 75002 Paris')
+    page.getByText('Mon Lieu A - 1 boulevard Poissonnière 75002 Paris')
   ).toBeVisible()
 
   await page.getByLabel('Domaines artistiques').click()

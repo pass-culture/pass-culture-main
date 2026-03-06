@@ -8,6 +8,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.models import EacFormat
+from pcapi.core.educational.constants import ALL_INTERVENTION_AREA
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.educational.utils import UAI_FOR_FAKE_TOKEN
 from pcapi.core.finance import factories as finance_factories
@@ -15,8 +16,10 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.sandboxes.scripts.utils.helpers import get_pro_user_helper
 from pcapi.utils import date as date_utils
+from pcapi.utils import siren as siren_utils
 
 
 def create_new_pro_user() -> dict:
@@ -224,9 +227,9 @@ def create_pro_user_with_individual_offers() -> dict:
     pro_user = users_factories.ProFactory.create()
     offerer = offerers_factories.OffererFactory.create()
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer)
-    venue0 = offerers_factories.VenueFactory.create(name="Mon Lieu 2", managingOfferer=offerer, isPermanent=True)
-    venue = offerers_factories.VenueFactory.create(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
-    offer0 = offers_factories.ThingOfferFactory.create(venue=venue0, name="Offre pour ma venue 2")
+    venue0 = offerers_factories.VenueFactory.create(name="Mon Lieu B", managingOfferer=offerer, isPermanent=True)
+    venue = offerers_factories.VenueFactory.create(name="Mon Lieu A", managingOfferer=offerer, isPermanent=True)
+    offer0 = offers_factories.ThingOfferFactory.create(venue=venue0, name="Offre pour ma venue B")
     offer1 = offers_factories.ThingOfferFactory.create(venue=venue, name="Une super offre")
     offers_factories.StockFactory.create(offer=offer1)
     offer2 = offers_factories.ThingOfferFactory.create(
@@ -285,17 +288,17 @@ def create_pro_user_with_individual_offers() -> dict:
 
 def create_pro_user_with_collective_offers() -> dict:
     pro_user = users_factories.ProFactory.create()
-    offerer = offerers_factories.OffererFactory.create()
+    offerer = offerers_factories.OffererFactory.create(allowedOnAdage=True)
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer)
     venue1 = offerers_factories.CollectiveVenueFactory.create(
-        name="Mon Lieu 1",
+        name="Mon Lieu A",
         managingOfferer=offerer,
         offererAddress__address__street="1 boulevard Poissonnière",
         offererAddress__address__postalCode="75002",
         offererAddress__address__city="Paris",
     )
     venue2 = offerers_factories.CollectiveVenueFactory.create(
-        name="Mon Lieu 2",
+        name="Mon Lieu B",
         managingOfferer=offerer,
         offererAddress__address__street="1 boulevard Poissonnière",
         offererAddress__address__postalCode="75002",
@@ -546,6 +549,126 @@ def create_pro_user_with_collective_bookings() -> dict:
         collectiveStock=collectiveStock_B, educationalInstitution__name="Victor Hugo"
     )
     return {"user": get_pro_user_helper(pro_user)}
+
+
+def create_eac_with_non_validated_offerer() -> dict:
+    user_offerer = offerers_factories.UserOffererFactory.create(
+        user__email="eac_en_construction@example.com",
+        offerer__name="eac_en_construction",
+        offerer__siren="843082389",
+        offerer__validationStatus=ValidationStatus.NEW,
+        offerer__allowedOnAdage=False,
+    )
+    venue = offerers_factories.VenueFactory.create(
+        name=f"dms_en_construction {user_offerer.offerer.name}",
+        managingOfferer=user_offerer.offerer,
+        collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        siret=siren_utils.complete_siren_or_siret(f"{user_offerer.offerer.siren}0001"),
+    )
+    educational_factories.CollectiveDmsApplicationFactory.create(
+        venue=venue,
+        application=12345,
+        procedure=57189,
+        lastChangeDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=2),
+        depositDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=10, minutes=2),
+        expirationDate=date_utils.get_naive_utc_now() + datetime.timedelta(weeks=40),
+        buildDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=10),
+        instructionDate=None,
+        processingDate=None,
+        state="en_construction",
+    )
+    return {"user": get_pro_user_helper(user_offerer.user)}
+
+
+def create_eac_en_instruction() -> dict:
+    user_offerer = offerers_factories.UserOffererFactory.create(
+        user__email="eac_en_instruction@example.com",
+        offerer__name="eac_en_instruction",
+        offerer__siren="843082389",
+        offerer__allowedOnAdage=False,
+    )
+    venue = offerers_factories.VenueFactory.create(
+        name=f"dms_en_instruction {user_offerer.offerer.name}",
+        managingOfferer=user_offerer.offerer,
+        collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        siret=siren_utils.complete_siren_or_siret(f"{user_offerer.offerer.siren}0001"),
+    )
+    educational_factories.CollectiveDmsApplicationFactory.create(
+        venue=venue,
+        application=12345,
+        procedure=57189,
+        lastChangeDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=2),
+        depositDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=10, minutes=2),
+        expirationDate=date_utils.get_naive_utc_now() + datetime.timedelta(weeks=40),
+        buildDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=10),
+        instructionDate=None,
+        processingDate=None,
+        state="en_instruction",
+    )
+    return {"user": get_pro_user_helper(user_offerer.user)}
+
+
+def create_eac_complete_lt_30d() -> dict:
+    user_offerer = offerers_factories.UserOffererFactory.create(
+        user__email="eac_complete_30-d@example.com",
+        offerer__name="eac_complete_30-d",
+        offerer__siren="848009452",
+    )
+    venue = offerers_factories.VenueFactory.create(
+        managingOfferer=user_offerer.offerer,
+        name=f"accepted_dms {user_offerer.offerer.name}",
+        collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        siret=siren_utils.complete_siren_or_siret(f"{user_offerer.offerer.siren}0001"),
+        adageId="98763",
+        adageInscriptionDate=date_utils.get_naive_utc_now(),
+    )
+    educational_factories.CollectiveDmsApplicationFactory.create(
+        venue=venue,
+        application=12345,
+        procedure=57189,
+        lastChangeDate=date_utils.get_naive_utc_now(),
+        depositDate=datetime.datetime.fromisoformat("2022-05-17 14:43:22+00:00"),
+        expirationDate=datetime.datetime.fromisoformat("2025-11-08 14:09:31+00:00"),
+        buildDate=datetime.datetime.fromisoformat("2022-05-17 14:43:22+00:00"),
+        instructionDate=datetime.datetime.fromisoformat("2022-10-25 12:40:41+00:00"),
+        processingDate=date_utils.get_naive_utc_now(),
+        state="accepte",
+    )
+    return {"user": get_pro_user_helper(user_offerer.user)}
+
+
+def create_pro_user_with_non_draft_individual_offer() -> dict:
+    user_offerer = offerers_factories.UserOffererFactory.create(
+        user__email="indiv_non_draft_offer@example.com",
+        offerer__name="indiv_non_draft_offer",
+        offerer__siren="848009452",
+        offerer__allowedOnAdage=False,
+    )
+    venue = offerers_factories.VenueFactory.create(
+        managingOfferer=user_offerer.offerer,
+        name=f"venue {user_offerer.offerer.name}",
+        siret=siren_utils.complete_siren_or_siret(f"{user_offerer.offerer.siren}0001"),
+        dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(weeks=5),
+    )
+    offers_factories.ThingOfferFactory.create(venue=venue, name="Offre pour ma venue")
+    return {"user": get_pro_user_helper(user_offerer.user)}
+
+
+def create_pro_user_with_non_validated_offerer() -> dict:
+    user_offerer = offerers_factories.UserOffererFactory.create(
+        user__email="indiv_non_validated_offerer@example.com",
+        offerer__name="indiv_non_validated_offerer",
+        offerer__siren="848009452",
+        offerer__validationStatus=ValidationStatus.NEW,
+        offerer__allowedOnAdage=False,
+    )
+    venue = offerers_factories.VenueFactory.create(
+        managingOfferer=user_offerer.offerer,
+        name=f"new_offerer {user_offerer.offerer.name}",
+        siret=siren_utils.complete_siren_or_siret(f"{user_offerer.offerer.siren}0001"),
+    )
+    offers_factories.ThingOfferFactory.create(venue=venue, name="Offre pour ma venue")
+    return {"user": get_pro_user_helper(user_offerer.user)}
 
 
 def get_national_programs_and_domains() -> tuple[
