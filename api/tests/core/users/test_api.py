@@ -2041,3 +2041,45 @@ class GetSuspendedAccountsUponUserRequestSinceTest:
 
         with assert_num_queries(1):
             assert not list(users_api.get_suspended_upon_user_request_accounts_since(5))
+
+
+class BonusCreditEligibilityTest:
+    def test_eighteen_year_old_is_eligible(self):
+        user = users_factories.BeneficiaryFactory(age=18)
+
+        qf_bonification_status = users_api.get_user_qf_bonification_status(user)
+
+        assert qf_bonification_status == subscription_models.QFBonificationStatus.ELIGIBLE
+
+    def test_nineteen_year_old_within_extended_cutoff_is_eligible(self):
+        # user is 19 years old at the cutoff date
+        birth_date = settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME - relativedelta(years=19)
+        user = users_factories.BeneficiaryFactory(validatedBirthDate=birth_date)
+
+        day_before_user_turns_20 = birth_date + relativedelta(years=20, days=-1)
+        with time_machine.travel(day_before_user_turns_20):
+            qf_bonification_status = users_api.get_user_qf_bonification_status(user)
+
+        assert qf_bonification_status == subscription_models.QFBonificationStatus.ELIGIBLE
+
+    def test_nineteen_year_old_after_extended_cutoff_not_eligible(self):
+        # user is 19 years old the day after the cutoff date
+        birth_date = settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME - relativedelta(years=19, days=-1)
+        user = users_factories.BeneficiaryFactory(validatedBirthDate=birth_date)
+
+        day_when_user_is_19 = birth_date + relativedelta(years=19)
+        with time_machine.travel(day_when_user_is_19):
+            qf_bonification_status = users_api.get_user_qf_bonification_status(user)
+
+        assert qf_bonification_status == subscription_models.QFBonificationStatus.NOT_ELIGIBLE
+
+    def test_nineteen_year_old_before_extended_cutoff_not_eligible(self):
+        # user is 19 years old the day before the credit v3 decree
+        birth_date = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=19, days=1)
+        user = users_factories.BeneficiaryFactory(validatedBirthDate=birth_date)
+
+        day_when_user_is_19 = birth_date + relativedelta(years=19)
+        with time_machine.travel(day_when_user_is_19):
+            qf_bonification_status = users_api.get_user_qf_bonification_status(user)
+
+        assert qf_bonification_status == subscription_models.QFBonificationStatus.NOT_ELIGIBLE

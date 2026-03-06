@@ -31,7 +31,10 @@ import tests.core.subscription.bonus.bonus_fixtures as bonus_fixtures
 class GetQuotientFamilialTest:
     @patch("pcapi.core.external.attributes.api.update_external_user")
     def test_apply_for_quotient_familial_bonus(self, update_external_user_mock):
-        user = _build_user_from_fixture(bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
+        eighteen_years_ago = datetime.date.today() - relativedelta(years=18)
+        with_18_child_quotient_familial = copy.deepcopy(bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
+        with_18_child_quotient_familial["data"]["enfants"][0]["date_naissance"] = eighteen_years_ago.isoformat()
+        user = _build_user_from_fixture(with_18_child_quotient_familial)
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
             user=user,
             type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
@@ -50,7 +53,7 @@ class GetQuotientFamilialTest:
         )
 
         with requests_mock.Mocker() as mock:
-            mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, json=bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
+            mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, json=with_18_child_quotient_familial)
 
             bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
 
@@ -78,7 +81,7 @@ class GetQuotientFamilialTest:
                     last_name="LEFEBVRE",
                     common_name=None,
                     first_names=["LEO"],
-                    birth_date=datetime.date(1990, 4, 20),
+                    birth_date=eighteen_years_ago.isoformat(),
                     gender=users_models.GenderEnum.M,
                 )
             ],
@@ -102,21 +105,24 @@ class GetQuotientFamilialTest:
         assert out_mail["template"] == TransactionalEmail.BONUS_GRANTED.value.__dict__
 
     def test_minimum_quotient_familial_retained(self):
-        user = _build_user_from_fixture(bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
+        eighteen_years_ago = datetime.date.today() - relativedelta(years=18)
+        with_18_child_quotient_familial = copy.deepcopy(bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
+        with_18_child_quotient_familial["data"]["enfants"][0]["date_naissance"] = eighteen_years_ago.isoformat()
+        user = _build_user_from_fixture(with_18_child_quotient_familial)
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
             status=subscription_models.FraudCheckStatus.STARTED,
             resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory().model_dump(),
         )
-        high_quotient_familial = copy.deepcopy(bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
+        high_quotient_familial = copy.deepcopy(with_18_child_quotient_familial)
         high_quotient_familial["data"]["quotient_familial"]["valeur"] = 9_999_999
 
         with requests_mock.Mocker() as mock:
             mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, json=high_quotient_familial)
             mock.get(
                 f"{api_particulier.QUOTIENT_FAMILIAL_ENDPOINT}?mois={user.birth_date.month}",
-                json=bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE,
+                json=with_18_child_quotient_familial,
             )
 
             bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
@@ -211,21 +217,17 @@ class GetQuotientFamilialTest:
         assert out_mail["template"] == TransactionalEmail.BONUS_DECLINED.value.__dict__
 
     def test_user_quotient_familial_too_high(self):
-        child_data = bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE["data"]["enfants"][0]
-        last_name = child_data["nom_naissance"]
-        first_names = child_data["prenoms"]
-        birth_date = datetime.date.fromisoformat(child_data["date_naissance"])
-        user = users_factories.BeneficiaryFactory(
-            lastName=last_name, firstName=first_names, validatedBirthDate=birth_date
-        )
+        eighteen_years_ago = datetime.date.today() - relativedelta(years=18)
+        high_quotient_familial = copy.deepcopy(bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
+        high_quotient_familial["data"]["enfants"][0]["date_naissance"] = eighteen_years_ago.isoformat()
+        high_quotient_familial["data"]["quotient_familial"]["valeur"] = 9_999_999
+        user = _build_user_from_fixture(high_quotient_familial)
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
             status=subscription_models.FraudCheckStatus.STARTED,
             resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory().model_dump(),
         )
-        high_quotient_familial = copy.deepcopy(bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
-        high_quotient_familial["data"]["quotient_familial"]["valeur"] = 9_999_999
 
         with requests_mock.Mocker() as mock:
             mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, json=high_quotient_familial)
@@ -276,7 +278,7 @@ class GetQuotientFamilialTest:
         )
 
         with requests_mock.Mocker() as mock:
-            mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, status_code=500)
+            mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, status_code=500, json={})
 
             with sentry_sdk.Hub(client):
                 try:
@@ -284,8 +286,8 @@ class GetQuotientFamilialTest:
                 except api_particulier.ParticulierApiUnavailable as exc:
                     sentry_sdk.capture_exception(exc)
 
-        assert len(captured_events) == 1
-        event = captured_events[0]
+        assert len(captured_events) == 2
+        event = captured_events[-1]
         stacktrace_frames = event["exception"]["values"][0]["stacktrace"]["frames"]
         assert stacktrace_frames[1]["vars"]["quotient_familial_response"] == "[REDACTED]"
         assert stacktrace_frames[1]["vars"]["source_data"] == "[REDACTED]"
@@ -314,7 +316,7 @@ class GetQuotientFamilialTest:
         )
 
         with requests_mock.Mocker() as mock:
-            mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, status_code=422)
+            mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, status_code=422, json={})
 
             with pytest.raises(api_particulier.ParticulierApiQueryError):
                 bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
