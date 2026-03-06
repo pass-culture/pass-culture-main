@@ -1,4 +1,13 @@
+from datetime import datetime
+
 import regex
+
+
+BATCH_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
+
+
+def format_date(date: datetime | None) -> str | None:
+    return date.strftime(BATCH_DATETIME_FORMAT) if date else None
 
 
 def _get_cluster_length(cluster: str) -> tuple[int, int]:

@@ -1,9 +1,9 @@
-from pcapi.notifications.push import testing
-from pcapi.notifications.push.backends.batch import BatchAPI
-from pcapi.notifications.push.backends.batch import UserUpdateData
-from pcapi.notifications.push.backends.logger import LoggerBackend
-from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
-from pcapi.notifications.push.trigger_events import TrackBatchEventRequest
+from pcapi.core.external.batch import testing
+from pcapi.core.external.batch.backends.batch import BatchAPI
+from pcapi.core.external.batch.backends.batch import UserUpdateData
+from pcapi.core.external.batch.backends.logger import LoggerBackend
+from pcapi.core.external.batch.serialization import TrackBatchEventRequest
+from pcapi.core.external.batch.serialization import TransactionalNotificationData
 
 
 class TestingBackend(LoggerBackend):

@@ -7,8 +7,8 @@ import pytest
 import time_machine
 from dateutil.relativedelta import relativedelta
 
+import pcapi.core.external.batch.testing as push_testing
 import pcapi.core.mails.testing as mails_testing
-import pcapi.notifications.push.testing as push_testing
 from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import factories as dms_factories

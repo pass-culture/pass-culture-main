@@ -5,10 +5,10 @@ from pydantic import BaseModel
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.offers.models as offers_models
 from pcapi.celery_tasks.tasks import celery_async_task
+from pcapi.core.external.batch.api import send_transactional_notification
+from pcapi.core.external.batch.transactional_notifications import get_bookings_cancellation_notification_data
+from pcapi.core.external.batch.transactional_notifications import get_today_stock_booking_notification_data
 from pcapi.models import db
-from pcapi.notifications.push import send_transactional_notification
-from pcapi.notifications.push.transactional_notifications import get_bookings_cancellation_notification_data
-from pcapi.notifications.push.transactional_notifications import get_today_stock_booking_notification_data
 
 
 logger = logging.getLogger(__name__)

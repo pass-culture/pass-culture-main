@@ -6,9 +6,10 @@ import sqlalchemy as sa
 
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
+from pcapi.core.external.batch.serialization import TransactionalNotificationData
+from pcapi.core.external.batch.serialization import TransactionalNotificationMessage
 from pcapi.core.offers.models import Offer
 from pcapi.models import db
-from pcapi.routes.serialization import BaseModel
 from pcapi.utils.urls import booking_app_link
 from pcapi.utils.urls import offer_app_link
 
@@ -22,18 +23,6 @@ class GroupId(Enum):
     OFFER_LINK = "Offer_link"
     SOON_EXPIRING_BOOKINGS = "Soon_expiring_bookings"
     FAVORITES_NOT_BOOKED = "Favorites_not_booked"
-
-
-class TransactionalNotificationMessage(BaseModel):
-    body: str
-    title: str | None = None
-
-
-class TransactionalNotificationData(BaseModel):
-    group_id: str  # Name of the campaign, useful for analytics purpose
-    user_ids: list[int]
-    message: TransactionalNotificationMessage
-    extra: dict = {}
 
 
 def get_bookings_cancellation_notification_data(booking_ids: list[int]) -> TransactionalNotificationData | None:

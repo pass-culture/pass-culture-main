@@ -4,6 +4,7 @@ import pytest
 import time_machine
 from dateutil.relativedelta import relativedelta
 
+import pcapi.core.external.batch.testing as push_testing
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.mails.transactional.sendinblue_template_ids as sendinblue_template
 import pcapi.core.subscription.factories as subscription_factories
@@ -11,7 +12,6 @@ import pcapi.core.subscription.models as subscription_models
 import pcapi.core.subscription.ubble.constants as ubble_constants
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
-import pcapi.notifications.push.testing as push_testing
 from pcapi import settings
 from pcapi.core.mails.transactional.users.ubble.reminder_emails import _find_users_to_remind
 from pcapi.core.mails.transactional.users.ubble.reminder_emails import send_reminders

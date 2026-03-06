@@ -17,13 +17,13 @@ import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_api
-import pcapi.notifications.push.testing as push_testing
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
+from pcapi.core.external.batch import testing as push_testing
 from pcapi.core.external_bookings.exceptions import ExternalBookingTimeoutException
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.finance import utils as finance_utils

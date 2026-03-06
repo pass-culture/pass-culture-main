@@ -8,9 +8,9 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.external.booking_notifications import notify_users_bookings_not_retrieved
 from pcapi.core.bookings.external.booking_notifications import send_today_events_notifications_metropolitan_france
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.external.batch import testing
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
-from pcapi.notifications.push import testing
 from pcapi.utils import date as date_utils
 
 

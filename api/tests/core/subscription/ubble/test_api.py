@@ -9,9 +9,10 @@ import pytest
 import time_machine
 from dateutil.relativedelta import relativedelta
 
-import pcapi.notifications.push.testing as push_testing
 from pcapi import settings
 from pcapi.connectors.beneficiaries import ubble
+from pcapi.core.external.batch import models as batch_models
+from pcapi.core.external.batch import testing as push_testing
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import schemas as subscription_schemas
@@ -30,7 +31,6 @@ from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.notifications.push import trigger_events
 from pcapi.utils import date as date_utils
 from pcapi.utils import requests as requests_utils
 from pcapi.utils.date import DATE_ISO_FORMAT
@@ -1025,7 +1025,7 @@ class HandleValidationErrorsTest:
         assert push_testing.requests[0] == {
             "can_be_asynchronously_retried": True,
             "user_id": user.id,
-            "event_name": trigger_events.BatchEvent.HAS_UBBLE_KO_STATUS.value,
+            "event_name": batch_models.BatchEvent.HAS_UBBLE_KO_STATUS.value,
             "event_payload": {"error_code": reason_code.value},
         }
 
