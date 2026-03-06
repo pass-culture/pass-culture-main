@@ -1191,6 +1191,17 @@ OFFER_MODEL_BY_OPTION: typing.Final[
     schemas.GetOffererAddressesWithOffersOption.COLLECTIVE_OFFER_TEMPLATES_ONLY: educational_models.CollectiveOfferTemplate,
 }
 
+VENUE_OFFER_MODEL_BY_OPTION: typing.Final[
+    dict[
+        schemas.GetVenueAddressesWithOffersOption,
+        type[offers_models.Offer | educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate],
+    ]
+] = {
+    schemas.GetVenueAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY: offers_models.Offer,
+    schemas.GetVenueAddressesWithOffersOption.COLLECTIVE_OFFERS_ONLY: educational_models.CollectiveOffer,
+    schemas.GetVenueAddressesWithOffersOption.COLLECTIVE_OFFER_TEMPLATES_ONLY: educational_models.CollectiveOfferTemplate,
+}
+
 
 def get_offerer_addresses(
     offerer_id: int, with_offers_option: schemas.GetOffererAddressesWithOffersOption | None
@@ -1227,6 +1238,41 @@ def get_offerer_addresses(
             sa.select(offer_model.id, offer_model.offererAddressId).select_from(offer_model).subquery()
         )
         query = query.where(subquery.filter(offer_model.offererAddressId == models.OffererAddress.id).exists())
+
+    query = query.order_by(models.OffererAddress.label)
+    return query
+
+
+def get_venue_addresses(
+    venue_id: int, with_offers_option: schemas.GetVenueAddressesWithOffersOption | None
+) -> sa_orm.Query:
+    query = (
+        db.session.query(
+            models.OffererAddress.id,
+            geography_models.Address.id.label("addressId"),
+            models.OffererAddress.label,
+            models.Venue.publicName,
+            models.Venue.id.label("venueId"),
+            geography_models.Address.street,
+            geography_models.Address.postalCode,
+            geography_models.Address.city,
+            geography_models.Address.departmentCode,
+        )
+        .join(models.OffererAddress.address)
+        .join(models.OffererAddress.venue)
+        .filter(models.OffererAddress.venueId == venue_id)
+        .filter(
+            sa.or_(
+                models.OffererAddress.type.is_(None),
+                models.OffererAddress.type == offerers_models.LocationType.OFFER_LOCATION,
+            )
+        )
+    )
+
+    if with_offers_option is not None:
+        offer_model = VENUE_OFFER_MODEL_BY_OPTION[with_offers_option]
+        subquery = db.session.query(sa.select(offer_model.id, offer_model.venueId).select_from(offer_model).subquery())
+        query = query.where(subquery.filter(offer_model.venueId == models.Venue.id).exists())
 
     query = query.order_by(models.OffererAddress.label)
     return query

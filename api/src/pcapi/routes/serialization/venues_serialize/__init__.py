@@ -3,9 +3,11 @@ import typing
 from datetime import datetime
 from decimal import Decimal
 from io import BytesIO
+from typing import Any
 
 import pydantic.v1 as pydantic_v1
 from PIL import Image
+from pydantic import RootModel
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
@@ -647,3 +649,23 @@ class ListOffersVenueResponseModelV2(HttpBodyModel):
             publicName=venue.publicName,
             departementCode=venue.offererAddress.address.departmentCode,
         )
+
+
+class GetVenueAddressesQueryModel(HttpBodyModel):
+    withOffersOption: offerers_schemas.GetVenueAddressesWithOffersOption | None
+
+
+class GetVenueAddressResponseModel(HttpBodyModel):
+    id: int
+    addressId: int
+    label: str | None = None
+    venueId: int
+    venueName: str | None
+    street: str | None
+    postalCode: str
+    city: str
+    departmentCode: str | None
+
+
+class GetVenueAddressesResponseModel(RootModel):
+    root: list[GetVenueAddressResponseModel]
