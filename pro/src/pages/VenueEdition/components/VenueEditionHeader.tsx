@@ -39,7 +39,7 @@ export const VenueEditionHeader = ({
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
 
   const { imageValues, setImageValues, handleOnImageUpload } =
-    useOnVenueImageUpload(venue)
+    useOnVenueImageUpload(venue.id, venue.bannerUrl, venue.bannerMeta)
 
   const handleOnImageDelete = async () => {
     await api.deleteVenueBanner(venue.id)
