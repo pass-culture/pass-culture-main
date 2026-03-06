@@ -33,10 +33,9 @@ from pcapi.core.categories.subcategories import NUMBER_SECONDS_HIDE_QR_CODE
 from pcapi.core.categories.subcategories import SEANCE_CINE
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import utils as educational_utils
-from pcapi.core.external import batch
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.external.attributes.api import update_external_user
-from pcapi.core.external.batch import track_offer_booked_event
+from pcapi.core.external.batch import api as batch_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.providers.clients.ems_client import EMS_EXTERNAL_BOOKINGS_TO_CANCEL
@@ -471,7 +470,7 @@ def book_offer(
             "stock_quantity": stock.quantity,
         },
     )
-    track_offer_booked_event(beneficiary.id, stock.offer)
+    batch_api.track_offer_booked_event(beneficiary.id, stock.offer)
     external_bookings_api.send_booking_notification_to_external_service(booking, BookingAction.BOOK)
 
     transactional_mails.send_user_new_booking_to_pro_email(booking, first_venue_booking)
@@ -588,7 +587,7 @@ def _cancel_booking(
         },
         technical_message_id="booking.cancelled",
     )
-    batch.track_booking_cancellation(booking)
+    batch_api.track_booking_cancellation(booking)
     external_bookings_api.send_booking_notification_to_external_service(booking, BookingAction.CANCEL)
 
     update_external_user(booking.user)

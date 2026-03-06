@@ -14,7 +14,7 @@ from pcapi.core.categories import pro_categories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.repository import has_collective_offers_for_program_and_venue_ids
 from pcapi.core.external.attributes import models
-from pcapi.core.external.batch import update_user_attributes as update_batch_user
+from pcapi.core.external.batch.api import update_user_attributes as update_batch_user
 from pcapi.core.external.sendinblue import update_contact_attributes as update_sendinblue_user
 from pcapi.core.finance import deposit_api
 from pcapi.core.finance import models as finance_models

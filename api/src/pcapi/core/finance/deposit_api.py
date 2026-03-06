@@ -11,7 +11,7 @@ import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.models as users_models
 from pcapi.core.categories.models import ReimbursementRuleChoices
-from pcapi.core.external import batch as push_notifications
+from pcapi.core.external.batch import api as batch_api
 from pcapi.core.users import utils as users_utils
 from pcapi.models import db
 from pcapi.utils import date as date_utils
@@ -151,7 +151,7 @@ def _recredit_user_if_no_missing_step(user: users_models.User) -> None:
     db.session.add(user)
 
     external_attributes_api.update_external_user(user)
-    push_notifications.track_account_recredited(user.id, user.deposit, len(user.deposits))
+    batch_api.track_account_recredited(user.id, user.deposit, len(user.deposits))
     if user.age and user.age >= users_constants.ELIGIBILITY_AGE_18 and recredit.amount > 0:
         transactional_mails.send_recredit_email_to_18_years_old(user)
 

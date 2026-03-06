@@ -7,7 +7,7 @@ from flask_login import current_user
 
 from pcapi import settings
 from pcapi.core.external.attributes.api import update_external_user
-from pcapi.core.external.batch import track_offer_added_to_favorites_event
+from pcapi.core.external.batch.api import track_offer_added_to_favorites_event
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import OffererAddress
 from pcapi.core.offerers.models import Venue

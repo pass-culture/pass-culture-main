@@ -11,8 +11,8 @@ import pcapi.core.subscription.ubble.constants as ubble_constants
 import pcapi.utils.postal_code as postal_code_utils
 import pcapi.utils.repository as pcapi_repository
 from pcapi import settings
-from pcapi.core.external import batch
 from pcapi.core.external.attributes import api as external_attributes_api
+from pcapi.core.external.batch import api as batch_api
 from pcapi.core.finance import deposit_api
 from pcapi.core.history import models as history_models
 from pcapi.core.subscription import machines as subscription_machines
@@ -112,7 +112,7 @@ def activate_beneficiary_for_eligibility(
 
     transactional_mails.send_accepted_as_beneficiary_email(user=user)
     external_attributes_api.update_external_user(user)
-    batch.track_deposit_activated_event(user.id, deposit)
+    batch_api.track_deposit_activated_event(user.id, deposit)
 
     return user
 
@@ -730,7 +730,7 @@ def initialize_identity_fraud_check(
     )
     db.session.add(fraud_check)
     db.session.flush()
-    batch.track_identity_check_started_event(user.id, fraud_check.type)
+    batch_api.track_identity_check_started_event(user.id, fraud_check.type)
     return fraud_check
 
 
