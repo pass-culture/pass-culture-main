@@ -1,0 +1,15 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+.row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--size-spacing-s);
+
+  .select {
+    flex: 1;
+  }
+
+  .button-action {
+    margin-top: rem.torem(30px);
+  }
+}
