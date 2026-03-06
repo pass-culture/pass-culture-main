@@ -215,3 +215,14 @@ export async function createProUserWithIndividualOffers(
     `${BASE_API_URL}/sandboxes/pro/create_pro_user_with_individual_offers`
   )
 }
+
+export async function createProUserEac(
+  request: APIRequestContext,
+  getterName: string
+): Promise<ProUserWithOffererAndVenueData> {
+  return await sandboxCall<ProUserWithOffererAndVenueData>(
+    request,
+    'GET',
+    `${BASE_API_URL}/sandboxes/pro/${getterName}`
+  )
+}
