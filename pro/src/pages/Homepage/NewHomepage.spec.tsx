@@ -20,6 +20,10 @@ vi.mock('@/components/CollectiveDmsTimeline/CollectiveDmsTimeline', () => ({
   CollectiveDmsTimeline: () => <div>timeline DMS</div>,
 }))
 
+vi.mock('./components/IncomeCard/IncomeCard', () => ({
+  IncomeCard: () => <div>Remboursement</div>,
+}))
+
 const newHomepageRoutes = [
   {
     path: '/',
@@ -239,7 +243,7 @@ describe('NewHomepage', () => {
       })
     })
 
-    describe('budget module', () => {
+    describe('income module', () => {
       it('should be displayed if the venue has non free offers', () => {
         renderNewHomepage({
           ...defaultGetOffererVenueResponseModel,
@@ -460,7 +464,7 @@ describe('NewHomepage', () => {
       })
     })
 
-    describe('budget module', () => {
+    describe('income module', () => {
       it('should be displayed if the venue has non free offers', () => {
         renderNewHomepage({
           ...defaultGetOffererVenueResponseModel,

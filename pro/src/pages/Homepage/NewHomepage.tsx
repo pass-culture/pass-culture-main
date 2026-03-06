@@ -24,6 +24,7 @@ import {
   TABS,
   type TabKey,
 } from './commons/utils'
+import { IncomeCard } from './components/IncomeCard/IncomeCard'
 import styles from './NewHomepage.module.scss'
 
 export const NewHomepage = (): JSX.Element => {
@@ -64,7 +65,7 @@ export const NewHomepage = (): JSX.Element => {
 
   // Shared modules display conditions
   const shouldDisplayHomologationBanner = !selectedVenue.isValidated
-  const shouldDisplayBudgetCard = selectedVenue.hasNonFreeOffers
+  const shouldDisplayIncomeCard = selectedVenue.hasNonFreeOffers
 
   // Individual modules display conditions
   const shouldDisplayWebinarCard = isBefore(
@@ -138,12 +139,11 @@ export const NewHomepage = (): JSX.Element => {
             </div>
           </div>
           <div className={styles['side']}>
-            {shouldDisplayBudgetCard && (
-              <div>
-                Remboursement
-                <br />
-                <b>Module Budget</b>
-              </div>
+            {shouldDisplayIncomeCard && (
+              <IncomeCard
+                venueId={selectedVenue.id}
+                bankAccountStatus={selectedVenue.bankAccountStatus}
+              />
             )}
             <div>
               Votre page sur l’application
@@ -224,12 +224,11 @@ export const NewHomepage = (): JSX.Element => {
                 </div>
               </div>
               <div className={styles['side']}>
-                {shouldDisplayBudgetCard && (
-                  <div>
-                    Remboursement
-                    <br />
-                    <b>Module Budget</b>
-                  </div>
+                {shouldDisplayIncomeCard && (
+                  <IncomeCard
+                    venueId={selectedVenue.id}
+                    bankAccountStatus={selectedVenue.bankAccountStatus}
+                  />
                 )}
                 <div>
                   Votre page sur ADAGE

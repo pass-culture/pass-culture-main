@@ -9,12 +9,15 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES,
   GET_OFFERER_QUERY_KEY,
+  GET_VENUE_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
+import { setSelectedVenue } from '@/commons/store/user/reducer'
 import { ReimbursementBankAccount } from '@/components/ReimbursementBankAccount/ReimbursementBankAccount'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
@@ -30,11 +33,13 @@ const BankInformations = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
   const { mutate } = useSWRConfig()
+  const dispatch = useAppDispatch()
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
   const selectedOfferer = useAppSelector(ensureCurrentOfferer)
   const adminSelectedOfferer = useAppSelector(
     (store) => store.user.selectedAdminOfferer
   )
+  const selectedVenue = useAppSelector((store) => store.user.selectedVenue)
 
   const offererId = withSwitchVenueFeature
     ? adminSelectedOfferer?.id
@@ -79,6 +84,16 @@ const BankInformations = (): JSX.Element => {
     if (offererId) {
       if (update) {
         await updateOfferer(offererId)
+
+        if (selectedVenue) {
+          const updatedVenue = await mutate(
+            [GET_VENUE_QUERY_KEY, String(selectedVenue.id)],
+            () => api.getVenue(selectedVenue.id)
+          )
+          if (updatedVenue) {
+            dispatch(setSelectedVenue(updatedVenue))
+          }
+        }
       }
       setSelectedBankAccount(null)
     }
