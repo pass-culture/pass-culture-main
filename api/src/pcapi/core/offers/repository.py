@@ -349,6 +349,7 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query[models.Offer]:
         .options(sa_orm.selectinload(models.Offer.mediations))
         .options(sa_orm.with_expression(models.Offer.chroniclesCount, get_offer_chronicles_count_subquery()))
         .options(sa_orm.with_expression(models.Offer.likesCount, get_offer_reaction_count_subquery()))
+        .options(sa_orm.with_expression(models.Offer.proAdvicesCount, get_offer_pro_advices_count_subquery()))
         .options(
             sa_orm.joinedload(models.Offer.product)
             .load_only(
@@ -360,6 +361,7 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query[models.Offer]:
                 models.Product.durationMinutes,
                 models.Product.chroniclesCount,
                 models.Product.likesCount,
+                models.Product.proAdvicesCount,
             )
             .joinedload(models.Product.productMediations)
         )
@@ -974,6 +976,16 @@ def get_offer_reaction_count_subquery() -> sa.sql.selectable.ScalarSelect:
         .select_from(reactions_models.Reaction)
         .where(reactions_models.Reaction.offerId == models.Offer.id)
         .where(reactions_models.Reaction.reactionType == reactions_models.ReactionTypeEnum.LIKE)
+        .correlate(models.Offer)
+        .scalar_subquery()
+    )
+
+
+def get_offer_pro_advices_count_subquery() -> sa.sql.selectable.ScalarSelect:
+    return (
+        sa.select(sa.func.count())
+        .select_from(models.ProAdvice)
+        .where(models.ProAdvice.offerId == models.Offer.id)
         .correlate(models.Offer)
         .scalar_subquery()
     )
