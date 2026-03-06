@@ -24,7 +24,7 @@ import {
   TABS,
   type TabKey,
 } from './commons/utils'
-import { PartnerPage } from './components/PartnerPage/PartnerPage'
+import { PartnerPageCard } from './components/PartnerPageCard/PartnerPageCard'
 import styles from './NewHomepage.module.scss'
 
 export const NewHomepage = (): JSX.Element => {
@@ -146,7 +146,13 @@ export const NewHomepage = (): JSX.Element => {
                 <b>Module Budget</b>
               </div>
             )}
-            <PartnerPage venue={selectedVenue} />
+            <PartnerPageCard
+              venueId={selectedVenue.id}
+              venueName={selectedVenue.name}
+              offererId={selectedVenue.managingOfferer.id}
+              venueBannerUrl={selectedVenue.bannerUrl}
+              venueBannerMeta={selectedVenue.bannerMeta}
+            />
             {shouldDisplayWebinarCard && (
               <div>
                 Participer à nos webinaires sur la part individuelle !

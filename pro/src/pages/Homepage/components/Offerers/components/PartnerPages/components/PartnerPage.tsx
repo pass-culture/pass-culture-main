@@ -39,7 +39,11 @@ export const PartnerPage = ({
   const { logEvent } = useAnalytics()
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
 
-  const { imageValues, handleOnImageUpload } = useOnVenueImageUpload(venue)
+  const { imageValues, handleOnImageUpload } = useOnVenueImageUpload(
+    venue.id,
+    venue.bannerUrl,
+    venue.bannerMeta
+  )
 
   const logButtonAddClick = () => {
     logEvent(Events.CLICKED_ADD_IMAGE, {

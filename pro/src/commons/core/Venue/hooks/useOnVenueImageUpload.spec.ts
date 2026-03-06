@@ -54,7 +54,9 @@ describe('useOnVenueImageUpload', () => {
   })
 
   it('should initialize image values with venue data', () => {
-    const { result } = renderHook(() => useOnVenueImageUpload(venue))
+    const { result } = renderHook(() =>
+      useOnVenueImageUpload(venue.id, venue.bannerUrl, venue.bannerMeta)
+    )
 
     expect(buildInitialVenueImageValues).toHaveBeenCalledWith(
       venue.bannerUrl,
@@ -69,7 +71,9 @@ describe('useOnVenueImageUpload', () => {
       .mockReturnValueOnce(mockInitialValues) // initial call
       .mockReturnValueOnce(mockUpdatedValues) // call after upload
 
-    const { result } = renderHook(() => useOnVenueImageUpload(venue))
+    const { result } = renderHook(() =>
+      useOnVenueImageUpload(venue.id, venue.bannerUrl, venue.bannerMeta)
+    )
 
     const uploadArgs = {
       imageFile: new File(['img'], 'photo.jpg', { type: 'image/jpeg' }),
