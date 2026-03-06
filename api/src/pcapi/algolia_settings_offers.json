@@ -68,6 +68,7 @@
         "offer.subcategoryId",
         "searchable(offer.tags)",
         "filterOnly(offer.times)",
+        "venue.activity",
         "filterOnly(venue.departmentCode)",
         "filterOnly(venue.id)",
         "venue.isAudioDisabilityCompliant",
