@@ -162,7 +162,7 @@ class SecureTokenTest:
 
         token = token_tools.SecureToken(data=data)
 
-        assert 29 < app.redis_client.ttl(f"pcapi:token:SecureToken_{token.token}") <= 30
+        assert 29 < app.redis_client.ttl(f"pcapi:token:SecureToken:{token.token}") <= 30
         assert len(token.token) == 86
         assert token.data["int"] == data["int"]
         assert token.data["str"] == data["str"]
@@ -170,7 +170,7 @@ class SecureTokenTest:
     def test_create_token_without_data(self, app):
         token = token_tools.SecureToken(ttl=10)
 
-        assert 9 < app.redis_client.ttl(f"pcapi:token:SecureToken_{token.token}") <= 10
+        assert 9 < app.redis_client.ttl(f"pcapi:token:SecureToken:{token.token}") <= 10
         assert len(token.token) == 86
 
     def test_retrieve_token_with_data(self, app):
@@ -179,7 +179,7 @@ class SecureTokenTest:
 
         token = token_tools.SecureToken(token=original_token.token)
 
-        assert app.redis_client.ttl(f"pcapi:token:SecureToken_{original_token.token}") == -2
+        assert app.redis_client.ttl(f"pcapi:token:SecureToken:{original_token.token}") == -2
         assert token.data["int"] == data["int"]
         assert token.data["str"] == data["str"]
 
@@ -188,14 +188,14 @@ class SecureTokenTest:
 
         token = token_tools.SecureToken(token=original_token.token)
 
-        assert app.redis_client.ttl(f"pcapi:token:SecureToken_{original_token.token}") == -2
+        assert app.redis_client.ttl(f"pcapi:token:SecureToken:{original_token.token}") == -2
         assert token.data == {}
 
     def test_retrieve_unknown_token(self, app):
         # create token
         original_token = token_tools.SecureToken()
         # remove token from redis
-        app.redis_client.delete(f"pcapi:token:SecureToken_{original_token.token}")
+        app.redis_client.delete(f"pcapi:token:SecureToken:{original_token.token}")
         with pytest.raises(InvalidToken):
             token_tools.SecureToken(token=original_token.token)
 
