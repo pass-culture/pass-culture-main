@@ -32,17 +32,17 @@ import { Panel } from '@/ui-kit/Panel/Panel'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
-import styles from './RevenueCard.module.scss'
+import styles from './IncomeCard.module.scss'
 
-interface RevenueCardProps {
+interface IncomeCardProps {
   venueId: number
-  bankAccountStatus?: SimplifiedBankAccountStatus | null
+  bankAccountStatus: SimplifiedBankAccountStatus | null
 }
 
 const BankAccountBanner = ({
   venueId,
   bankAccountStatus,
-}: RevenueCardProps): JSX.Element | null => {
+}: IncomeCardProps): JSX.Element | null => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
 
@@ -104,10 +104,10 @@ const BankAccountBanner = ({
   }
 }
 
-export const RevenueCard = ({
+export const IncomeCard = ({
   venueId,
   bankAccountStatus,
-}: RevenueCardProps): JSX.Element | null => {
+}: IncomeCardProps): JSX.Element | null => {
   const currentYear = new Date().getFullYear()
   const isCaledonian = useIsCaledonian()
 
@@ -136,28 +136,28 @@ export const RevenueCard = ({
 
   const currentYearIncome = incomeByYear?.[currentYear]
 
-  const revenue = currentYearIncome?.revenue as
+  const income = currentYearIncome?.revenue as
     | TotalRevenue
     | CollectiveRevenue
     | IndividualRevenue
     | undefined
 
-  const getRevenueTotal = (
-    revenue: TotalRevenue | CollectiveRevenue | IndividualRevenue | undefined
+  const getIncomeTotal = (
+    income: TotalRevenue | CollectiveRevenue | IndividualRevenue | undefined
   ): number => {
-    if (!revenue) {
+    if (!income) {
       return 0
     }
-    if (isCollectiveAndIndividualRevenue(revenue)) {
-      return revenue.total
+    if (isCollectiveAndIndividualRevenue(income)) {
+      return income.total
     }
-    if (isCollectiveRevenue(revenue)) {
-      return revenue.collective
+    if (isCollectiveRevenue(income)) {
+      return income.collective
     }
-    return revenue.individual
+    return income.individual
   }
 
-  const total = getRevenueTotal(revenue)
+  const total = getIncomeTotal(income)
 
   const isEmptyState =
     bankAccountStatus === SimplifiedBankAccountStatus.VALID && total === 0
@@ -169,19 +169,19 @@ export const RevenueCard = ({
         currency: 'EUR',
       })
 
+  const cardHeader = (
+    <header>
+      <h3 className={styles['income-card-title']}>Remboursement</h3>
+      <p className={styles['income-card-subtitle']}>Individuel et collectif</p>
+    </header>
+  )
+
   return (
     <Panel>
-      <div className={styles['revenue-card']}>
-        {!isEmptyState && (
-          <header>
-            <h3 className={styles['revenue-card-title']}>Remboursement</h3>
-            <p className={styles['revenue-card-subtitle']}>
-              Individuel et collectif
-            </p>
-          </header>
-        )}
+      <div className={styles['income-card']}>
+        {!isEmptyState && cardHeader}
 
-        <div className={styles['revenue-card-banner']}>
+        <div className={styles['income-card-banner']}>
           <BankAccountBanner
             venueId={venueId}
             bankAccountStatus={bankAccountStatus}
@@ -189,20 +189,15 @@ export const RevenueCard = ({
         </div>
 
         {isEmptyState && (
-          <div className={styles['revenue-card-empty']}>
+          <div className={styles['income-card-empty']}>
             <SvgIcon
-              className={styles['revenue-card-empty-icon']}
+              className={styles['income-card-empty-icon']}
               src={strokeClockIcon}
               alt=""
               width="57"
             />
-            <header>
-              <h3 className={styles['revenue-card-title']}>Remboursement</h3>
-              <p className={styles['revenue-card-subtitle']}>
-                Individuel et collectif
-              </p>
-            </header>
-            <p className={styles['revenue-card-empty-text']}>
+            {cardHeader}
+            <p className={styles['income-card-empty-text']}>
               Vos informations financières seront prochainement affichées ici.
             </p>
           </div>
@@ -210,16 +205,16 @@ export const RevenueCard = ({
 
         {bankAccountStatus === SimplifiedBankAccountStatus.VALID &&
           total > 0 && (
-            <div className={styles['revenue-card-content']}>
-              <div className={styles['revenue-card-amount']}>
-                <p className={styles['revenue-card-label']}>
+            <div className={styles['income-card-content']}>
+              <div className={styles['income-card-amount']}>
+                <p className={styles['income-card-label']}>
                   Chiffre d'affaire total {currentYear}
                 </p>
                 <Tag variant={TagVariant.SUCCESS} label={formattedTotal} />
               </div>
               <Button
                 as="a"
-                to="/remboursements/informations-bancaires"
+                to="/remboursements/revenus"
                 variant={ButtonVariant.SECONDARY}
                 color={ButtonColor.NEUTRAL}
                 size={ButtonSize.DEFAULT}

@@ -51,7 +51,7 @@ export const BankAccountHasPendingCorrectionCallout = ({
             icon: fullNextIcon,
             onClick: () => {
               logEvent(
-                BankAccountEvents.CLICKED__BANK_ACCOUNT_HAS_PENDING_CORRECTIONS,
+                BankAccountEvents.CLICKED_BANK_ACCOUNT_HAS_PENDING_CORRECTIONS,
                 {
                   from: location.pathname,
                   ...(!withSwitchVenueFeature && { offererId: offerer?.id }),
