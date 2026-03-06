@@ -7,6 +7,7 @@ import { DMSApplicationstatus } from '@/apiClient/v1/models/DMSApplicationstatus
 import { defaultDMSApplicationForEAC } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererVenueResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -18,6 +19,10 @@ import { NewHomepage } from './NewHomepage'
 
 vi.mock('@/components/CollectiveDmsTimeline/CollectiveDmsTimeline', () => ({
   CollectiveDmsTimeline: () => <div>timeline DMS</div>,
+}))
+
+vi.mock('./components/PartnerPageCard/PartnerPageCard', () => ({
+  PartnerPageCard: () => <div>page partenaire</div>,
 }))
 
 const newHomepageRoutes = [
@@ -39,6 +44,11 @@ const renderNewHomepage = (
   options?: RenderWithProvidersOptions
 ) => {
   const user = sharedCurrentUserFactory()
+  const defaultVenue = makeGetVenueResponseModel({
+    id: 1,
+    managingOffererId: 1,
+    name: 'Club Dorothy',
+  })
   const { storeOverrides, ...restOptions } = options ?? {}
   return renderWithProviders(null, {
     features: ['WIP_ENABLE_NEW_PRO_HOME', 'WIP_SWITCH_VENUE'],
@@ -50,7 +60,7 @@ const renderNewHomepage = (
       user: {
         currentUser: user,
         selectedVenue: {
-          ...defaultGetOffererVenueResponseModel,
+          ...defaultVenue,
           ...venueOverrides,
         },
       },
@@ -319,7 +329,7 @@ describe('NewHomepage', () => {
 
       expect(
         screen.getByRole('tabpanel', { description: /indiv/ })
-      ).toHaveTextContent(/Votre page sur l’application/)
+      ).toHaveTextContent(/page partenaire/)
 
       expect(
         screen.getByRole('tabpanel', { description: /indiv/ })
