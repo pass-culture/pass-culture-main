@@ -1,81 +1,183 @@
-import test, { expect, request as playwrightRequest } from '@playwright/test'
+import test, { expect } from '@playwright/test'
 
-import { login } from './helpers/auth'
-import { setFeatureFlags } from './helpers/features'
 import {
-  BASE_API_URL,
-  createProUserWithCollectiveOffers,
-  createProUserWithIndividualOffers,
-} from './helpers/sandbox'
+  expectCollectiveModules,
+  expectIndividualModules,
+  loginAsAndGoToHomepage,
+} from './fixtures/newHomepage'
 
-test.describe('New Homepage', () => {
-  test('when I do individual: I should see the individual homepage', async ({
-    page,
-  }) => {
-    const requestContext = await playwrightRequest.newContext({
-      baseURL: BASE_API_URL,
-    })
-    const userData = await createProUserWithIndividualOffers(requestContext)
-    await setFeatureFlags(requestContext, [
-      { name: 'WIP_SWITCH_VENUE', isActive: true },
-      { name: 'WIP_ENABLE_NEW_PRO_HOME', isActive: true },
+test.describe('when I do individual', () => {
+  test('with non draft offers', async ({ page }) => {
+    await loginAsAndGoToHomepage(
+      page,
+      'create_pro_user_with_non_draft_individual_offer'
+    )
+
+    await expect
+      .soft(
+        page.getByRole('heading', {
+          level: 1,
+          name: 'Votre espace venue indiv_non_draft_offer',
+        })
+      )
+      .toBeVisible()
+    await expect.soft(page.getByRole('tablist')).not.toBeVisible()
+
+    await expectIndividualModules(page, [
+      'OFFERS_CARD',
+      'STATS_CARD',
+      'EDITO_CARD',
+      'INCOME_CARD',
+      'PARTNER_PAGE_CARD',
+      'NEWSLETTER_CARD',
     ])
-    await requestContext.dispose()
-
-    await login(page, userData.user.email)
-    await page.goto('/accueil')
-
-    await page.getByRole('button', { name: /Mon Lieu A/i }).click()
-
-    await expect(
-      page.getByRole('heading', {
-        level: 1,
-        name: 'Votre espace Mon Lieu A',
-      })
-    ).toBeVisible()
-
-    await expect(page.getByText('Module gestion offres indivs')).toBeVisible()
-    await expect(page.getByText('Module statistiques')).toBeVisible()
-    await expect(page.getByText('Module Edito')).toBeVisible()
-
-    await expect(page.getByText('Module Budget')).toBeVisible()
-    await expect(page.getByText('Module page partenaire')).toBeVisible()
-    await expect(page.getByText('Module Webinaire indiv')).toBeVisible()
-    await expect(page.getByText('Module Newsletter')).toBeVisible()
   })
 
-  test('when I do collective: I should see the collective homepage', async ({
+  test('non validated offerer', async ({ page }) => {
+    await loginAsAndGoToHomepage(
+      page,
+      'create_pro_user_with_non_validated_offerer'
+    )
+
+    await expect
+      .soft(
+        page.getByRole('heading', {
+          level: 1,
+          name: 'Votre espace new_offerer indiv_non_validated_offerer',
+        })
+      )
+      .toBeVisible()
+    await expect.soft(page.getByRole('tablist')).not.toBeVisible()
+
+    await expectIndividualModules(page, [
+      'HOMOLOGATION_BANNER',
+      'OFFERS_CARD',
+      'STATS_CARD',
+      'EDITO_CARD',
+      'INCOME_CARD',
+      'PARTNER_PAGE_CARD',
+      'NEWSLETTER_CARD',
+      'WEBINARS_CARD',
+    ])
+  })
+})
+
+test.describe('when I do collective', () => {
+  test('with collective offers', async ({ page }) => {
+    await loginAsAndGoToHomepage(
+      page,
+      'create_pro_user_with_collective_offers',
+      'Mon Lieu A'
+    )
+
+    await expect
+      .soft(
+        page.getByRole('heading', {
+          level: 1,
+          name: 'Votre espace Mon Lieu A',
+        })
+      )
+      .toBeVisible()
+    await expect.soft(page.getByRole('tablist')).not.toBeVisible()
+
+    await expectCollectiveModules(page, [
+      'COLLECTIVE_OFFER_TEMPLATES_CARD',
+      'COLLECTIVE_OFFERS_CARD',
+      'INCOME_CARD',
+      'ADAGE_PAGE_CARD',
+      'NEWSLETTER_CARD',
+    ])
+  })
+
+  test('with non validated offerer', async ({ page }) => {
+    await loginAsAndGoToHomepage(page, 'create_eac_with_non_validated_offerer')
+
+    await expect
+      .soft(
+        page.getByRole('heading', { level: 1, name: /eac_en_construction/ })
+      )
+      .toBeVisible()
+    await expect.soft(page.getByRole('tablist')).not.toBeVisible()
+
+    await expectCollectiveModules(page, [
+      'HOMOLOGATION_BANNER',
+      'DMS_CARD_TIMELINE',
+    ])
+  })
+
+  test('DMS en instruction', async ({ page }) => {
+    await loginAsAndGoToHomepage(page, 'create_eac_en_instruction')
+
+    await expect
+      .soft(page.getByRole('heading', { level: 1, name: /eac_en_instruction/ }))
+      .toBeVisible()
+    await expect.soft(page.getByRole('tablist')).not.toBeVisible()
+
+    await expectCollectiveModules(page, ['DMS_CARD_TIMELINE'])
+  })
+
+  test('DMS accepted -30d', async ({ page }) => {
+    await loginAsAndGoToHomepage(page, 'create_eac_complete_lt_30d')
+
+    await expect
+      .soft(page.getByRole('heading', { level: 1, name: /eac_complete_30-d/ }))
+      .toBeVisible()
+    await expect.soft(page.getByRole('tablist')).not.toBeVisible()
+
+    await expectCollectiveModules(page, [
+      'COLLECTIVE_OFFER_TEMPLATES_CARD',
+      'COLLECTIVE_OFFERS_CARD',
+      'INCOME_CARD',
+      'ADAGE_PAGE_CARD',
+      'NEWSLETTER_CARD',
+      'WEBINARS_CARD',
+      'DMS_CARD_ACCEPTED_BANNER',
+    ])
+  })
+})
+
+test.describe('when I do both individual and collective', () => {
+  test('I should see tabs and be able to access both homepages', async ({
     page,
   }) => {
-    const requestContext = await playwrightRequest.newContext({
-      baseURL: BASE_API_URL,
-    })
-    const userData = await createProUserWithCollectiveOffers(requestContext)
-    await setFeatureFlags(requestContext, [
-      { name: 'WIP_SWITCH_VENUE', isActive: true },
-      { name: 'WIP_ENABLE_NEW_PRO_HOME', isActive: true },
+    await loginAsAndGoToHomepage(
+      page,
+      'create_pro_user_with_individual_offers',
+      'Mon Lieu A'
+    )
+
+    await expect
+      .soft(
+        page.getByRole('heading', {
+          level: 1,
+          name: 'Votre espace Mon Lieu A',
+        })
+      )
+      .toBeVisible()
+    await expect.soft(page.getByRole('tablist')).toBeVisible()
+    await expect
+      .soft(page.getByRole('tab', { name: 'Individuel', selected: true }))
+      .toBeVisible()
+
+    await expectIndividualModules(page, [
+      'OFFERS_CARD',
+      'STATS_CARD',
+      'EDITO_CARD',
+      'INCOME_CARD',
+      'PARTNER_PAGE_CARD',
+      'NEWSLETTER_CARD',
+      'WEBINARS_CARD',
     ])
-    await requestContext.dispose()
 
-    await login(page, userData.user.email)
-    await page.goto('/accueil')
+    await page.getByRole('tab', { name: 'Collectif' }).click()
 
-    await page.getByRole('button', { name: /Mon Lieu A/i }).click()
-
-    await expect(
-      page.getByRole('heading', {
-        level: 1,
-        name: 'Votre espace Mon Lieu A',
-      })
-    ).toBeVisible()
-
-    await expect(page.getByText('Module gestion offres vitrines')).toBeVisible()
-    await expect(
-      page.getByText('Module gestion offres réservables')
-    ).toBeVisible()
-
-    await expect(page.getByText('Module Budget')).toBeVisible()
-    await expect(page.getByText('Module page partenaire')).toBeVisible()
-    await expect(page.getByText('Module Newsletter')).toBeVisible()
+    await expectCollectiveModules(page, [
+      'COLLECTIVE_OFFER_TEMPLATES_CARD',
+      'COLLECTIVE_OFFERS_CARD',
+      'INCOME_CARD',
+      'ADAGE_PAGE_CARD',
+      'NEWSLETTER_CARD',
+      'WEBINARS_CARD',
+    ])
   })
 })
