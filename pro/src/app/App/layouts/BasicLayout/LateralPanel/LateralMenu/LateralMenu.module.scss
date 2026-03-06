@@ -45,6 +45,7 @@
   &-switch-venue-button {
     min-height: rem.torem(64px);
     margin: var(--size-spacing-l);
+    overflow-wrap: anywhere;
   }
 }
 
