@@ -1,7 +1,8 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
-import useSWR, { type SWRResponse } from 'swr'
+import type { SWRResponse } from 'swr'
+import useSWR from 'swr/immutable'
 import { expect, vi } from 'vitest'
 
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
@@ -18,7 +19,7 @@ import { Button } from '@/design-system/Button/Button'
 
 import { ActivityForm, type ActivityFormValues } from '../ActivityForm'
 
-vi.mock('swr', async (importOriginal) => ({
+vi.mock('swr/immutable', async (importOriginal) => ({
   ...(await importOriginal()),
   default: vi.fn(),
 }))
