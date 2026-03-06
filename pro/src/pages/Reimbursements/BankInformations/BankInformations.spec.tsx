@@ -8,10 +8,7 @@ import {
   type BankAccountResponseModel,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
-import {
-  GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES,
-  GET_VENUE_QUERY_KEY,
-} from '@/commons/config/swrQueryKeys'
+import { GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import {
   defaultBankAccount,
@@ -366,7 +363,7 @@ describe('BankInformations page', () => {
     await user.click(screen.getByRole('button', { name: 'Confirmer' }))
 
     expect(mockMutate).toHaveBeenNthCalledWith(1, [
-      GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES,
+      GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
       1,
     ])
   })
@@ -392,17 +389,7 @@ describe('BankInformations page', () => {
     })
     const getVenueSpy = vi
       .spyOn(api, 'getVenue')
-      .mockResolvedValue(updatedVenue)
-
-    // Make mockMutate execute the fetcher callback so api.getVenue is actually called
-    mockMutate.mockImplementation(
-      async (_key: unknown, fetcher?: () => Promise<unknown>) => {
-        if (typeof fetcher === 'function') {
-          return await fetcher()
-        }
-        return undefined
-      }
-    )
+      .mockResolvedValueOnce(updatedVenue)
 
     renderWithProviders(
       <>
@@ -434,10 +421,6 @@ describe('BankInformations page', () => {
     await user.click(screen.getByRole('button', { name: 'Enregistrer' }))
     await user.click(screen.getByRole('button', { name: 'Confirmer' }))
 
-    expect(mockMutate).toHaveBeenCalledWith(
-      [GET_VENUE_QUERY_KEY, String(venue.id)],
-      expect.any(Function)
-    )
     expect(getVenueSpy).toHaveBeenCalledWith(venue.id)
   })
 })

@@ -24,8 +24,8 @@ import {
   TABS,
   type TabKey,
 } from './commons/utils'
+import { IncomeCard } from './components/IncomeCard/IncomeCard'
 import { PartnerPageCard } from './components/PartnerPageCard/PartnerPageCard'
-import { RevenueCard } from './components/RevenueCard/RevenueCard'
 import styles from './NewHomepage.module.scss'
 
 export const NewHomepage = (): JSX.Element => {
@@ -66,7 +66,7 @@ export const NewHomepage = (): JSX.Element => {
 
   // Shared modules display conditions
   const shouldDisplayHomologationBanner = !selectedVenue.isValidated
-  const shouldDisplayBudgetCard = selectedVenue.hasNonFreeOffers
+  const shouldDisplayIncomeCard = selectedVenue.hasNonFreeOffers
 
   // Individual modules display conditions
   const shouldDisplayWebinarCard = isBefore(
@@ -140,10 +140,10 @@ export const NewHomepage = (): JSX.Element => {
             </div>
           </div>
           <div className={styles['side']}>
-            {shouldDisplayBudgetCard && (
-              <RevenueCard
+            {shouldDisplayIncomeCard && (
+              <IncomeCard
                 venueId={selectedVenue.id}
-                bankAccountStatus={selectedVenue.bankAccountStatus}
+                bankAccountStatus={selectedVenue.bankAccountStatus ?? null}
               />
             )}
             <PartnerPageCard
@@ -227,10 +227,10 @@ export const NewHomepage = (): JSX.Element => {
                 </div>
               </div>
               <div className={styles['side']}>
-                {shouldDisplayBudgetCard && (
-                  <RevenueCard
+                {shouldDisplayIncomeCard && (
+                  <IncomeCard
                     venueId={selectedVenue.id}
-                    bankAccountStatus={selectedVenue.bankAccountStatus}
+                    bankAccountStatus={selectedVenue.bankAccountStatus ?? null}
                   />
                 )}
                 <div>
