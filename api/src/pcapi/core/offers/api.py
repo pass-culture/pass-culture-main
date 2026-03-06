@@ -344,6 +344,13 @@ def update_offer(
 
     if venue:
         fields["venue"] = venue
+        if not offerer_address and offer.offererAddress:
+            fields["offererAddress"] = offerers_api.get_or_create_offer_location(
+                offerer_id=venue.managingOffererId,
+                venue_id=venue.id,
+                address_id=offer.offererAddress.addressId,
+                label=offer.offererAddress.label,
+            )
 
     if offerer_address:
         fields["offererAddress"] = offerer_address

@@ -78,10 +78,6 @@ class OffererAddressNotEditableException(Exception):
     pass
 
 
-class OffererAddressCreationError(Exception):
-    pass
-
-
 class publicNameRequiredException(Exception):
     pass
 

@@ -1209,16 +1209,10 @@ def get_offerer_addresses(
             geography_models.Address.city,
             geography_models.Address.departmentCode,
         )
-        .filter(models.OffererAddress.offererId == offerer_id)
-        .filter(
-            # TODO (prouzet, 2025-11-13) CLEAN_OA When data is migrated, only filter on OFFER_LOCATION
-            sa.or_(
-                offerers_models.OffererAddress.type.is_(None),
-                offerers_models.OffererAddress.type == offerers_models.LocationType.OFFER_LOCATION,
-            )
-        )
+        .filter(models.Venue.managingOffererId == offerer_id)
+        .filter(offerers_models.OffererAddress.type == offerers_models.LocationType.OFFER_LOCATION)
         .join(geography_models.Address, models.OffererAddress.addressId == geography_models.Address.id)
-        .outerjoin(models.Venue, models.Venue.id == models.OffererAddress.venueId)  # Do not filter on type
+        .join(models.Venue, models.Venue.id == models.OffererAddress.venueId)
     )
 
     if with_offers_option is not None:
@@ -1322,8 +1316,11 @@ def get_pro_user_timezones(user_id: int) -> set[str]:
         db.session.query(geography_models.Address)
         .with_entities(geography_models.Address.timezone)
         .join(offerers_models.OffererAddress, offerers_models.OffererAddress.addressId == geography_models.Address.id)
-        .join(offerers_models.Offerer, offerers_models.OffererAddress.offererId == offerers_models.Offerer.id)
-        .join(offerers_models.UserOfferer, offerers_models.UserOfferer.offererId == offerers_models.Offerer.id)
+        .join(offerers_models.Venue, offerers_models.OffererAddress.venueId == offerers_models.Venue.id)
+        .join(
+            offerers_models.UserOfferer,
+            offerers_models.UserOfferer.offererId == offerers_models.Venue.managingOffererId,
+        )
         .filter(offerers_models.UserOfferer.userId == user_id)
         .distinct()
     )

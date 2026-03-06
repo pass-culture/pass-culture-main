@@ -11,7 +11,6 @@ import sqlalchemy as sa
 import time_machine
 
 import pcapi.core.mails.testing as mails_testing
-import pcapi.core.offerers.exceptions as offerers_exceptions
 from pcapi.connectors import acceslibre as acceslibre_connector
 from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.core.bookings import factories as bookings_factories
@@ -28,6 +27,7 @@ from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import api as offerers_api
+from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
@@ -3801,10 +3801,6 @@ class GetOffererConfidenceLevelTest:
 
 
 class OffererAddressTest:
-    # TODO (prouzet, 2025-11-13) CLEAN_OA After transition, no need for this first parametrize, use OfferLocationFactory
-    @pytest.mark.parametrize(
-        "factory", [offerers_factories.OffererAddressFactory, offerers_factories.OfferLocationFactory]
-    )
     @pytest.mark.parametrize(
         "same_label,same_address, same_venue,",
         [
@@ -3818,15 +3814,19 @@ class OffererAddressTest:
             [False, False, False],
         ],
     )
-    def test_get_or_create_offer_location(self, same_label, same_address, same_venue, factory):
+    def test_get_or_create_offer_location(self, same_label, same_address, same_venue):
         venue = offerers_factories.VenueFactory()
-        oa_1 = factory(offerer=venue.managingOfferer, venue=venue, address=venue.offererAddress.address)
+        oa_1 = offerers_factories.OfferLocationFactory(
+            offerer=venue.managingOfferer, venue=venue, address=venue.offererAddress.address
+        )
         other_address = geography_factories.AddressFactory(
             street="1 rue de la paix",
         )
         other_venue = offerers_factories.VenueFactory()
 
-        oa_doppleganger = factory(offerer=venue.managingOfferer, address=other_address, label="somethingdifferent")
+        oa_doppleganger = offerers_factories.OfferLocationFactory(
+            offerer=venue.managingOfferer, address=other_address, label="somethingdifferent"
+        )
 
         oa_return = offerers_api.get_or_create_offer_location(
             offerer_id=venue.managingOfferer.id,
@@ -3875,32 +3875,18 @@ class OffererAddressTest:
     def test_create_offerer_address(self):
         offerer = offerers_factories.OffererFactory()
         address = geography_factories.AddressFactory()
-        oa = offerers_api.create_offerer_address(offerer_id=offerer.id, address_id=address.id, label="label")
+        oa = offerers_factories.OfferLocationFactory(offerer=offerer, address=address, label="label")
         assert oa.offerer == offerer
         assert oa.id
         assert oa.label == "label"
 
-    def test_create_multiple_identical_offerer_address_with_label_null(self):
-        offerer = offerers_factories.OffererFactory()
+    @pytest.mark.parametrize("label", ["label", None])
+    def test_should_not_create_multiple_oa_with_same_label(self, label):
+        venue = offerers_factories.VenueFactory()
         address = geography_factories.AddressFactory()
-        oa = offerers_api.create_offerer_address(offerer_id=offerer.id, address_id=address.id, label=None)
-        oa_ = offerers_api.create_offerer_address(offerer_id=offerer.id, address_id=address.id, label=None)
-
-        assert oa.offerer == offerer
-        assert oa_.offerer == offerer
-        assert oa.id
-        assert oa_.id
-        assert oa.label == None
-        assert oa.address == oa_.address
-        assert oa.label == oa_.label
-        assert oa_ != oa
-
-    def test_should_not_create_multiple_oa_with_same_label(self):
-        offerer = offerers_factories.OffererFactory()
-        address = geography_factories.AddressFactory()
-        offerers_api.create_offerer_address(offerer_id=offerer.id, address_id=address.id, label="label")
-        with pytest.raises(offerers_exceptions.OffererAddressCreationError):
-            offerers_api.create_offerer_address(offerer_id=offerer.id, address_id=address.id, label="label")
+        offerers_factories.OfferLocationFactory(venue=venue, address=address, label=label)
+        with pytest.raises(sa.exc.IntegrityError):
+            offerers_factories.OfferLocationFactory(venue=venue, address=address, label=label)
 
 
 class SendReminderEmailToIndividualOfferersTest:
@@ -3947,12 +3933,12 @@ class SendReminderEmailToIndividualOfferersTest:
 
 class CleanUnusedOffererAddressTest:
     def test_clean_unused_offerer_address(self, caplog):
-        offerers_factories.OfferLocationFactory()
         venue = offerers_factories.VenueFactory()
         oa1 = venue.offererAddress
         oa2, oa3, oa4, _ = offerers_factories.OfferLocationFactory.create_batch(
             4, offerer=venue.managingOfferer, venue=venue
         )
+        unused_oa = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer, venue=venue)
         offers_factories.OfferFactory(venue=venue, offererAddress=oa2)
         educational_factories.CollectiveOfferFactory(
             venue=venue, locationType=educational_models.CollectiveLocationType.ADDRESS, offererAddress=oa3
@@ -3966,6 +3952,7 @@ class CleanUnusedOffererAddressTest:
 
         remaining_ids = db.session.query(sa.func.array_agg(offerers_models.OffererAddress.id)).scalar()
         assert set(remaining_ids) == {oa1.id, oa2.id, oa3.id, oa4.id}
+        assert unused_oa not in remaining_ids
 
         assert caplog.records[0].message == "2 unused rows to delete in offerer_address"
 

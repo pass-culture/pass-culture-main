@@ -222,29 +222,6 @@ def create_offerer_and_venue(data: dict, counters: ImportCounters, comment: str)
         logger.info(f"Venue existante trouvée: {existing_venue.name} (SIRET: {existing_venue.siret})")
         counters.already_existing_venues += 1
     else:
-        address = create_or_get_address(data)
-
-        offerer_address = (
-            db.session.query(offerers_models.OffererAddress)
-            .filter(
-                offerers_models.OffererAddress.offererId == offerer.id,
-                offerers_models.OffererAddress.addressId == address.id,
-                offerers_models.OffererAddress.label.is_(None),
-            )
-            .one_or_none()
-        )
-
-        if not offerer_address:
-            offerer_address = offerers_models.OffererAddress(
-                offerer=offerer,
-                address=address,
-                label=None,
-            )
-            db.session.add(offerer_address)
-            db.session.flush()
-
-        db.session.flush()
-
         booking_email = data.get("booking_email")
         if booking_email and not email_utils.is_valid_email(booking_email):
             logger.error("Invalid email address: %s", booking_email)
@@ -263,7 +240,7 @@ def create_offerer_and_venue(data: dict, counters: ImportCounters, comment: str)
             mentalDisabilityCompliant=data.get("cognitive_access"),
             motorDisabilityCompliant=data.get("motor_access"),
             visualDisabilityCompliant=data.get("visual_access"),
-            offererAddressId=offerer_address.id,
+            # offererAddressId=offerer_address.id,
             bookingEmail=booking_email,
         )
 
@@ -274,6 +251,18 @@ def create_offerer_and_venue(data: dict, counters: ImportCounters, comment: str)
             venue=venue,
             comment=f"Création des acteurs culturels calédoniens par script - {comment}",
         )
+        db.session.flush()
+
+        address = create_or_get_address(data)
+
+        offerer_address = offerers_models.OffererAddress(
+            offererId=offerer.id,
+            addressId=address.id,
+            type=offerers_models.LocationType.VENUE_LOCATION,
+            label=address.label or None,
+            venueId=venue.id,
+        )
+        db.session.add(offerer_address)
         db.session.flush()
         logger.info(f"Venue créée: {venue.name} (SIRET: {venue.siret})")
 

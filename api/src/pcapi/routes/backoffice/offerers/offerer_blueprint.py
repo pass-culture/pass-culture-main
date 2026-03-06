@@ -131,7 +131,8 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
     has_offerer_address_query = (
         sa.select(1)
         .select_from(offerers_models.OffererAddress)
-        .where(offerers_models.OffererAddress.offererId == offerers_models.Offerer.id)
+        .join(offerers_models.OffererAddress.venue)
+        .where(offerers_models.Venue.managingOffererId == offerers_models.Offerer.id)
         .correlate(offerers_models.Offerer)
         .exists()
     )
@@ -1107,8 +1108,8 @@ def get_offerer_addresses(offerer_id: int) -> response_utils.BackofficeResponse:
         )
         .select_from(geography_models.Address)
         .join(offerers_models.OffererAddress)
-        .outerjoin(offerers_models.OffererAddress.venue)
-        .filter(offerers_models.OffererAddress.offererId == offerer_id)
+        .join(offerers_models.OffererAddress.venue)
+        .filter(offerers_models.Venue.managingOffererId == offerer_id)
         .group_by(
             geography_models.Address.id,
             geography_models.Address.street,

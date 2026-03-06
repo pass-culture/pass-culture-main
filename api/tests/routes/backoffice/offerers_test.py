@@ -1645,6 +1645,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[0]["Compte bancaire associé"] == "Compte NC"
 
 
+# TODO check use of endpoint
 class GetOffererAddressesTest(GetEndpointHelper):
     endpoint = "backoffice_web.offerer.get_offerer_addresses"
     endpoint_kwargs = {"offerer_id": 1}
@@ -1655,11 +1656,14 @@ class GetOffererAddressesTest(GetEndpointHelper):
     expected_num_queries = 2
 
     def test_get_offerer_addresses(self, authenticated_client, offerer):
-        offerers_factories.OfferLocationFactory(
-            offerer=offerer, label="Première adresse", address__street="3 Bd Poissonnière"
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer, offererAddress__address__street="12 Bd Poissonnière"
         )
         offerers_factories.OfferLocationFactory(
-            offerer=offerer, label="Deuxième adresse", address__street="5 Bd Poissonnière"
+            offerer=offerer, venue=venue, label="Première adresse", address__street="3 Bd Poissonnière"
+        )
+        offerers_factories.OfferLocationFactory(
+            offerer=offerer, venue=venue, label="Deuxième adresse", address__street="5 Bd Poissonnière"
         )
         offerers_factories.OfferLocationFactory()  # other offerer
 
@@ -1670,15 +1674,18 @@ class GetOffererAddressesTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == 2
+        assert len(rows) == 3
 
-        assert rows[0]["Intitulé"] == "Première adresse"
-        assert rows[0]["Adresse"] == "3 Bd Poissonnière 75002 Paris"
-        assert rows[0]["Localisation"] == "48.87055, 2.34765"
+        assert rows[0]["Intitulé"] == venue.publicName
+        assert rows[0]["Adresse"] == "12 Bd Poissonnière 75002 Paris"
 
-        assert rows[1]["Intitulé"] == "Deuxième adresse"
-        assert rows[1]["Adresse"] == "5 Bd Poissonnière 75002 Paris"
+        assert rows[1]["Intitulé"] == "Première adresse"
+        assert rows[1]["Adresse"] == "3 Bd Poissonnière 75002 Paris"
         assert rows[1]["Localisation"] == "48.87055, 2.34765"
+
+        assert rows[2]["Intitulé"] == "Deuxième adresse"
+        assert rows[2]["Adresse"] == "5 Bd Poissonnière 75002 Paris"
+        assert rows[2]["Localisation"] == "48.87055, 2.34765"
 
     def test_offerer_addresses_linked_to_venues_should_display_public_name(self, authenticated_client, offerer):
         venue = offerers_factories.VenueFactory(
@@ -1690,7 +1697,7 @@ class GetOffererAddressesTest(GetEndpointHelper):
             offererAddress__address__street="3 Bd Poissonnière",
         )
         offerers_factories.OfferLocationFactory(
-            offerer=offerer, label="Autre localisation", address__street="5 Bd Poissonnière"
+            offerer=offerer, venue=venue, label="Autre localisation", address__street="5 Bd Poissonnière"
         )
         offerers_factories.OfferLocationFactory()  # other offerer
 
