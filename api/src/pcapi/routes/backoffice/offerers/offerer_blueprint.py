@@ -1033,6 +1033,13 @@ def create_venue(offerer_id: int) -> response_utils.BackofficeResponse:
     )
     if not attachment_venue:
         raise NotFound()
+
+    # TODO: (lmaubert 2026-04): Remove when all Venues have a value for activity and the attribute has been made mandatory
+    if not attachment_venue.activity:
+        mark_transaction_as_invalid()
+        flash(Markup("Merci de renseigner l'activité principale du partenaire culturel existant."), "warning")
+        return _self_redirect(offerer_id, active_tab="managed_venues")
+
     assert attachment_venue.offererAddress
 
     attachment_address = attachment_venue.offererAddress.address
