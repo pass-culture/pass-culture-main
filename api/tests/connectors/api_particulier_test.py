@@ -137,7 +137,7 @@ def test_get_quotient_familial_for_abroad_born_custodian_ignores_city_code(reque
 )
 def test_quotient_familial_error(requests_mock, status_code, exception):
     custodian = subscription_factories.QuotientFamilialCustodianFactory.create()
-    requests_mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, status_code=status_code)
+    requests_mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, status_code=status_code, json={})
 
     with pytest.raises(exception):
         api_particulier.get_quotient_familial(custodian, date(2023, 6, 1))

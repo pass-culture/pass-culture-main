@@ -122,10 +122,13 @@ def get_quotient_familial(
         raise ParticulierApiRateLimitExceeded("Particulier API rate limit exceeded")
 
     if response.status_code // 100 == 4:
+        logger.error("Invalid query for Particulier API", extra={"response": response.content})
         raise ParticulierApiQueryError("Invalid query for Particulier API")
     if response.status_code // 100 == 5:
+        logger.error("Particulier API is not responding", extra={"response": response.content})
         raise ParticulierApiUnavailable("Particulier API is not responding")
     elif response.status_code // 100 != 2:
+        logger.error("Unexpected response from Particulier API", extra={"response": response.content})
         raise ParticulierApiException("Unexpected response from Particulier API")
 
     return QuotientFamilialResponse.model_validate(response.json())
