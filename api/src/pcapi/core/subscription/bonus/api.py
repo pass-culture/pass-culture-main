@@ -5,8 +5,8 @@ from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
 from pcapi.connectors import api_particulier
-from pcapi.core.external import batch
 from pcapi.core.external.attributes import api as external_attributes_api
+from pcapi.core.external.batch import api as batch_api
 from pcapi.core.finance import deposit_api
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.subscription import models as subscription_models
@@ -61,7 +61,7 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
     if status == subscription_models.FraudCheckStatus.OK:
         if given_recredit:
             logger.info("Recredited user %s with bonus credit", user.id)
-            batch.track_has_received_bonus(user.id)
+            batch_api.track_has_received_bonus(user.id)
             transactional_mails.send_bonus_granted_email(user)
         elif deposit_api.can_receive_bonus_credit(user):
             logger.error(

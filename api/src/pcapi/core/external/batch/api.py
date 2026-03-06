@@ -8,7 +8,7 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.subscription.models as subscription_models
 from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.external.attributes import models as attributes_models
-from pcapi.core.external.batch_utils import shorten_for_batch
+from pcapi.core.external.batch.utils import shorten_for_batch
 from pcapi.core.mails.transactional.utils import format_price
 from pcapi.notifications.push.trigger_events import BatchEvent
 from pcapi.notifications.push.trigger_events import TrackBatchEventRequest

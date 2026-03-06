@@ -39,7 +39,7 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.external.batch import BATCH_DATETIME_FORMAT
+from pcapi.core.external.batch.api import BATCH_DATETIME_FORMAT
 from pcapi.core.external_bookings import factories as external_bookings_factories
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail

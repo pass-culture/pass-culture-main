@@ -11,10 +11,10 @@ from dataclasses import dataclass
 import sqlalchemy as sa
 import urllib3.exceptions
 
-from pcapi.core.external import batch
 from pcapi.core.external import sendinblue
 from pcapi.core.external.attributes.api import get_user_attributes
 from pcapi.core.external.attributes.models import UserAttributes
+from pcapi.core.external.batch import api as batch_api
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.notifications.push import update_users_attributes
@@ -71,7 +71,7 @@ def _collect_users_attributes(user_ids: list[int]) -> list[CollectedAttributes]:
 def _format_batch_users(users_attributes: list[CollectedAttributes]) -> list[UserUpdateData]:
     res = []
     for user_attributes in users_attributes:
-        attributes = batch.format_user_attributes(user_attributes.attributes)
+        attributes = batch_api.format_user_attributes(user_attributes.attributes)
         res.append(UserUpdateData(user_id=str(user_attributes.attributes.user_id), attributes=attributes))
     logger.info("[update_brevo_and_batch_users] %d users formatted for Batch...", len(res))
     return res
