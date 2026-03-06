@@ -1,4 +1,4 @@
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import type { BannerMetaModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useOnVenueImageUpload } from '@/commons/core/Venue/hooks/useOnVenueImageUpload'
@@ -14,23 +14,35 @@ import {
 } from '@/design-system/Button/types'
 import { Panel } from '@/ui-kit/Panel/Panel'
 
-import styles from './PartnerPage.module.scss'
+import styles from './PartnerPageCard.module.scss'
 
 type PartnerPageProps = {
-  venue: GetVenueResponseModel
+  venueId: number
+  venueName: string
+  offererId: number
+  venueBannerUrl?: string | null
+  venueBannerMeta?: BannerMetaModel | null
 }
 
-export const PartnerPage = ({ venue }: PartnerPageProps) => {
+export const PartnerPageCard = ({
+  venueId,
+  venueName,
+  offererId,
+  venueBannerUrl,
+  venueBannerMeta,
+}: PartnerPageProps) => {
   const { logEvent } = useAnalytics()
-  const { imageValues, handleOnImageUpload } = useOnVenueImageUpload(venue)
-  const venuePreviewLink = `${WEBAPP_URL}/lieu/${venue.id}`
-  const venueId = venue.id
-  const offererId = venue.managingOfferer.id
+  const { imageValues, handleOnImageUpload } = useOnVenueImageUpload(
+    venueId,
+    venueBannerUrl,
+    venueBannerMeta
+  )
+  const venuePreviewLink = `${WEBAPP_URL}/lieu/${venueId}`
 
   const logButtonAddClick = () => {
     logEvent(Events.CLICKED_ADD_IMAGE, {
       offererId: offererId.toString(),
-      venueId: venue.id,
+      venueId,
       imageType: UploaderModeEnum.VENUE,
       isEdition: true,
       imageCreationStage: 'add image',
@@ -49,7 +61,7 @@ export const PartnerPage = ({ venue }: PartnerPageProps) => {
           hideActionButtons
           onImageDropOrSelected={logButtonAddClick}
         />
-        <h3 className={styles['title']}>{venue.name}</h3>
+        <h3 className={styles['title']}>{venueName}</h3>
         <div className={styles['buttons']}>
           <Button
             label="Compléter ma page"
