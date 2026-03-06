@@ -13,7 +13,7 @@ import {
 } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { RevenueCard } from '../RevenueCard'
+import { IncomeCard } from '../IncomeCard'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -28,7 +28,7 @@ const MOCK_STATISTICS = statisticsFactory({
 
 const mockLogEvent = vi.fn()
 
-const renderRevenueCard = (
+const renderIncomeCard = (
   props?: {
     venueId?: number
     bankAccountStatus?: SimplifiedBankAccountStatus | null
@@ -39,7 +39,7 @@ const renderRevenueCard = (
     props ?? {}
 
   renderWithProviders(
-    <RevenueCard venueId={venueId} bankAccountStatus={bankAccountStatus} />,
+    <IncomeCard venueId={venueId} bankAccountStatus={bankAccountStatus} />,
     {
       user: sharedCurrentUserFactory(),
       storeOverrides: {
@@ -50,7 +50,7 @@ const renderRevenueCard = (
   )
 }
 
-describe('RevenueCard', () => {
+describe('IncomeCard', () => {
   beforeEach(() => {
     vi.spyOn(useIsCaledonian, 'useIsCaledonian').mockReturnValue(false)
     vi.spyOn(api, 'getStatistics').mockResolvedValue(MOCK_STATISTICS)
@@ -61,7 +61,7 @@ describe('RevenueCard', () => {
       () => new Promise(() => {}) as any
     )
 
-    renderRevenueCard()
+    renderIncomeCard()
 
     expect(screen.getByTestId('spinner')).toBeInTheDocument()
   })
@@ -69,7 +69,7 @@ describe('RevenueCard', () => {
   it('should display an error banner when the API call fails', async () => {
     vi.spyOn(api, 'getStatistics').mockRejectedValueOnce(new Error('error'))
 
-    renderRevenueCard()
+    renderIncomeCard()
 
     expect(
       await screen.findByText(
@@ -80,7 +80,7 @@ describe('RevenueCard', () => {
 
   describe('when bank account status is null', () => {
     it('should display a banner to add a bank account', async () => {
-      renderRevenueCard({ bankAccountStatus: null })
+      renderIncomeCard({ bankAccountStatus: null })
 
       expect(
         await screen.findByText(
@@ -92,7 +92,7 @@ describe('RevenueCard', () => {
 
   describe('when bank account status is PENDING_CORRECTIONS', () => {
     it('should display a banner for incomplete bank account', async () => {
-      renderRevenueCard({
+      renderIncomeCard({
         bankAccountStatus: SimplifiedBankAccountStatus.PENDING_CORRECTIONS,
       })
 
@@ -102,7 +102,7 @@ describe('RevenueCard', () => {
 
   describe('when bank account status is PENDING', () => {
     it('should display a banner for pending verification', async () => {
-      renderRevenueCard({
+      renderIncomeCard({
         bankAccountStatus: SimplifiedBankAccountStatus.PENDING,
       })
 
@@ -116,7 +116,7 @@ describe('RevenueCard', () => {
 
   describe('when bank account status is VALID', () => {
     it('should display the revenue section with total formatted in EUR', async () => {
-      renderRevenueCard()
+      renderIncomeCard()
 
       expect(await screen.findByText('Remboursement')).toBeVisible()
       expect(screen.getByText('Individuel et collectif')).toBeVisible()
@@ -125,7 +125,7 @@ describe('RevenueCard', () => {
     })
 
     it('should display a link to financial management', async () => {
-      renderRevenueCard()
+      renderIncomeCard()
 
       expect(
         await screen.findByText('Accéder à la gestion financière')
@@ -143,7 +143,7 @@ describe('RevenueCard', () => {
         })
       )
 
-      renderRevenueCard()
+      renderIncomeCard()
 
       expect(await screen.findByText(/1 000/)).toBeVisible()
     })
@@ -159,7 +159,7 @@ describe('RevenueCard', () => {
         })
       )
 
-      renderRevenueCard()
+      renderIncomeCard()
 
       expect(await screen.findByText(/3 000/)).toBeVisible()
     })
@@ -169,14 +169,14 @@ describe('RevenueCard', () => {
     it('should display the total in Pacific Franc (F)', async () => {
       vi.spyOn(useIsCaledonian, 'useIsCaledonian').mockReturnValue(true)
 
-      renderRevenueCard()
+      renderIncomeCard()
 
       expect(await screen.findByText(/F$/)).toBeVisible()
       expect(screen.queryByText(/€/)).not.toBeInTheDocument()
     })
 
     it('should display the total in EUR when isCaledonian is false', async () => {
-      renderRevenueCard()
+      renderIncomeCard()
 
       expect(await screen.findByText(/€/)).toBeVisible()
       expect(screen.queryByText(/F$/)).not.toBeInTheDocument()
@@ -186,11 +186,11 @@ describe('RevenueCard', () => {
   describe('tracking', () => {
     it('should log CLICKED_ADD_BANK_ACCOUNT when clicking on add bank account link', async () => {
       const user = userEvent.setup()
-      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementationOnce(() => ({
+      vi.spyOn(useAnalytics, 'useAnalytics').mockReturnValue({
         logEvent: mockLogEvent,
-      }))
+      })
 
-      renderRevenueCard({ bankAccountStatus: null }, ['/accueil'])
+      renderIncomeCard({ bankAccountStatus: null }, ['/accueil'])
 
       const link = await screen.findByRole('link', {
         name: 'Ajouter un compte bancaire',
@@ -210,11 +210,11 @@ describe('RevenueCard', () => {
 
     it('should log CLICKED_BANK_ACCOUNT_HAS_PENDING_CORRECTIONS when clicking on pending corrections link', async () => {
       const user = userEvent.setup()
-      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementationOnce(() => ({
+      vi.spyOn(useAnalytics, 'useAnalytics').mockReturnValue({
         logEvent: mockLogEvent,
-      }))
+      })
 
-      renderRevenueCard(
+      renderIncomeCard(
         {
           bankAccountStatus: SimplifiedBankAccountStatus.PENDING_CORRECTIONS,
         },
