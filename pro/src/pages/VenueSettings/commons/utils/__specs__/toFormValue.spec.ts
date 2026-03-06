@@ -90,7 +90,7 @@ describe('toFormValues', () => {
         ...venue,
         location: {
           ...venue.location!, // Ensure address is not null
-          inseeCode: undefined,
+          inseeCode: null,
         },
       },
     })
@@ -103,7 +103,7 @@ describe('toFormValues', () => {
         ...venue,
         location: {
           ...venue.location!, // Ensure address is not null
-          banId: undefined,
+          banId: null,
         },
       },
     })
@@ -118,7 +118,7 @@ describe('toFormValues', () => {
         siret: 'NC0123456789XX',
         location: {
           ...venue.location!, // Ensure address is not null
-          banId: undefined,
+          banId: null,
         },
       },
     })

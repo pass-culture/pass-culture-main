@@ -42,6 +42,7 @@ describe('OpeningHoursAndAddressReadOnly', () => {
     render(
       <OpeningHoursAndAddressReadOnly
         openingHours={MOCK_DATA.venue.openingHours}
+        address={MOCK_DATA.venue.address}
       />
     )
 
@@ -55,7 +56,7 @@ describe('OpeningHoursAndAddressReadOnly', () => {
   })
 
   it('should display no opening hours !', () => {
-    render(<OpeningHoursAndAddressReadOnly openingHours={undefined} />)
+    render(<OpeningHoursAndAddressReadOnly openingHours={null} address={MOCK_DATA.venue.address} />)
 
     expect(
       screen.getByText(
@@ -108,7 +109,30 @@ describe('OpeningHoursAndAddressReadOnly', () => {
   it('should display a default message when opening hours are set but empty', () => {
     render(
       <OpeningHoursAndAddressReadOnly
-        openingHours={{}}
+        openingHours={{
+          MONDAY: [['08:00', '20:00']],
+          TUESDAY: [
+            ['10:00', '13:00'],
+            ['14:00', '19:30'],
+          ],
+          WEDNESDAY: [
+            ['10:00', '13:00'],
+            ['14:00', '19:30'],
+          ],
+          THURSDAY: [
+            ['10:00', '13:00'],
+            ['14:00', '19:30'],
+          ],
+          FRIDAY: [
+            ['10:00', '13:00'],
+            ['14:00', '19:30'],
+          ],
+          SATURDAY: [
+            ['10:00', '13:00'],
+            ['14:00', '19:30'],
+          ],
+          SUNDAY: null,
+        }}
         address={MOCK_DATA.venue.address}
       />
     )

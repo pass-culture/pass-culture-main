@@ -315,7 +315,7 @@ describe('VenueEdition', () => {
     it('should check none accessibility', async () => {
       vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
         ...baseVenue,
-        siret: undefined,
+        siret: null,
         visualDisabilityCompliant: false,
         mentalDisabilityCompliant: false,
         audioDisabilityCompliant: false,

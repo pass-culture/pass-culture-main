@@ -7,7 +7,7 @@ import { OpeningHoursReadOnly } from './OpeningHoursReadOnly'
 
 type OpeningHoursAndAddressReadOnlyProps = {
   openingHours: GetVenueResponseModel['openingHours']
-  address?: GetVenueResponseModel['location']
+  address: GetVenueResponseModel['location']
 }
 
 export function OpeningHoursAndAddressReadOnly({

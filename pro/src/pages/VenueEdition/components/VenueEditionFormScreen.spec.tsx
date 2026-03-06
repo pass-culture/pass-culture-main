@@ -205,6 +205,7 @@ describe('VenueEditionFormScreen', () => {
             phoneNumber: '123',
             email: 'e@mail.fr',
             website: 'site.web',
+            socialMedias: null,
           },
         },
         { initialRouterEntries: ['/'] }
@@ -466,6 +467,12 @@ describe('VenueEditionFormScreen', () => {
             ['09:00', '12:00'],
             ['13:00', '18:00'],
           ],
+          TUESDAY: [[]],
+          WEDNESDAY: [[]],
+          THURSDAY: [[]],
+          FRIDAY: [[]],
+          SATURDAY: [[]],
+          SUNDAY: [[]],
         },
       })
 
@@ -863,6 +870,7 @@ describe('VenueEditionFormScreen', () => {
             email: 'email@example.com',
             phoneNumber: '0612345678',
             website: 'http://example.com',
+            socialMedias: null,
           },
           collectiveDomains: [],
         },
@@ -908,6 +916,7 @@ describe('VenueEditionFormScreen', () => {
             phoneNumber: '123',
             email: 'e@mail.fr',
             website: 'site.web',
+            socialMedias: null,
           },
           collectiveDomains: [
             { id: 1, name: 'domaine 1' },
@@ -934,6 +943,7 @@ describe('VenueEditionFormScreen', () => {
             phoneNumber: '123',
             email: 'e@mail.fr',
             website: 'site.web',
+            socialMedias: null,
           },
         },
         {
@@ -952,6 +962,7 @@ describe('VenueEditionFormScreen', () => {
             phoneNumber: '123',
             email: 'e@mail.fr',
             website: 'site.web',
+            socialMedias: null,
           },
         },
         {
@@ -980,6 +991,7 @@ describe('VenueEditionFormScreen', () => {
             phoneNumber: '123',
             email: 'e@mail.fr',
             website: 'site.web',
+            socialMedias: null,
           },
           collectiveDomains: [{ name: 'domaine 1', id: 1 }],
         },
@@ -1004,6 +1016,7 @@ describe('VenueEditionFormScreen', () => {
             phoneNumber: '123',
             email: 'e@mail.fr',
             website: 'site.web',
+            socialMedias: null,
           },
         },
         {

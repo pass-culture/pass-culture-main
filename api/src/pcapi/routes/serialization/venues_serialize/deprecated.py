@@ -1,17 +1,26 @@
 import typing
 
+import pydantic as pydantic_v2
+
 from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.core.offerers import models as offerers_models
-from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
-from pcapi.routes.serialization import BaseModel
+from pcapi.core.offerers import schemas as offerers_schemas
+from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixinV2
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import address_serialize
 
 from . import utils
 
 
+def parse_venue_type_code(venue_type_code: str | offerers_schemas.VenueTypeCode) -> offerers_schemas.VenueTypeCodeKey:
+    if isinstance(venue_type_code, str):
+        return offerers_schemas.VenueTypeCodeKey[venue_type_code]
+    return offerers_schemas.VenueTypeCodeKey[venue_type_code.name]
+
+
 # TODO(jbaudet - 11/2025): remove once (pro) GET /venues has been
 # migrated (-> minimum information returned)
-class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
+class VenueListItemResponseModel(AccessibilityComplianceMixinV2):
     id: int
     managingOffererId: int
     name: str
@@ -22,9 +31,11 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     withdrawalDetails: str | None
     siret: str | None
     hasCreatedOffer: bool
-    venueTypeCode: offerers_models.VenueTypeCode
-    externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
-    location: address_serialize.LocationResponseModel | None
+    venueTypeCode: typing.Annotated[
+        offerers_schemas.VenueTypeCodeKey, pydantic_v2.BeforeValidator(parse_venue_type_code)
+    ]
+    externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModelV2 | None
+    location: address_serialize.LocationResponseModelV2 | None
     isPermanent: bool
     isCaledonian: bool
     isActive: bool
@@ -66,37 +77,24 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     @classmethod
     def build_external_accessibility_data(
         cls, venue: offerers_models.Venue
-    ) -> acceslibre_serializers.ExternalAccessibilityDataModel | None:
+    ) -> acceslibre_serializers.ExternalAccessibilityDataModelV2 | None:
         if not venue.accessibilityProvider:
             return None
-        return acceslibre_serializers.ExternalAccessibilityDataModel.from_accessibility_infos(
+        return acceslibre_serializers.ExternalAccessibilityDataModelV2.from_accessibility_infos(
             venue.accessibilityProvider.externalAccessibilityData
         )
 
     @classmethod
-    def build_address(cls, venue: offerers_models.Venue) -> address_serialize.LocationResponseModel | None:
+    def build_address(cls, venue: offerers_models.Venue) -> address_serialize.LocationResponseModelV2 | None:
         offerer_address = venue.offererAddress
         if not offerer_address:
             return None
-        data: dict[str, typing.Any] = {
-            "id": offerer_address.addressId,
-            "id_oa": offerer_address.id,
-            "banId": offerer_address.address.banId,
-            "inseeCode": offerer_address.address.inseeCode,
-            "longitude": offerer_address.address.longitude,
-            "latitude": offerer_address.address.latitude,
-            "postalCode": offerer_address.address.postalCode,
-            "street": offerer_address.address.street,
-            "city": offerer_address.address.city,
-            "label": venue.publicName,
-            "isManualEdition": offerer_address.address.isManualEdition,
-            "departmentCode": offerer_address.address.departmentCode,
-            "isVenueLocation": True,
-        }
-        return address_serialize.LocationResponseModel(**data)
+        return address_serialize.LocationResponseModelV2.build(
+            offerer_address, label=venue.publicName, is_venue_location=True
+        )
 
 
 # TODO(jbaudet - 11/2025): remove once (pro) GET /venues has been
 # migrated (-> minimum information returned)
-class GetVenueListResponseModel(BaseModel):
+class GetVenueListResponseModel(HttpBodyModel):
     venues: list[VenueListItemResponseModel]
