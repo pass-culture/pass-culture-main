@@ -2065,21 +2065,6 @@ class UpdateVenueTest(PostEndpointHelper):
             }
         }
 
-    @pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_MATCH_ACCESLIBRE=False)
-    @patch("pcapi.workers.match_acceslibre_job.match_acceslibre_job.delay")
-    def test_update_venue_becomes_permanent_should_not_call_match_acceslibre_job(
-        self, match_acceslibre_job, authenticated_client
-    ):
-        venue = offerers_factories.VenueFactory(isPermanent=False)
-        data = self._get_current_data(venue)
-        data["is_permanent"] = True
-
-        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
-
-        assert response.status_code == 303
-        match_acceslibre_job.assert_not_called()
-
-    @pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_MATCH_ACCESLIBRE=True)
     @patch("pcapi.core.offerers.tasks.match_acceslibre_task.delay")
     def test_update_venue_becomes_permanent_should_not_call_match_acceslibre_task(
         self, match_acceslibre_task, authenticated_client
@@ -3409,27 +3394,8 @@ class AddCinemaSessionsSynchronizeTaskPostTest(PostEndpointHelper):
         perm_models.Permissions.ADVANCED_PRO_SUPPORT,
     }
 
-    @pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_CINEMA_INTEGRATION=False)
-    @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
-    def test_add_cinema_sessions_synchronize_task_with_old_job(
-        self, venue_provider_job_mock, authenticated_client, legit_user
-    ):
-        venue_provider = providers_factories.VenueProviderFactory(provider__name="Cinema provider")
-
-        response = self.post_to_endpoint(
-            authenticated_client, venue_id=venue_provider.venue.id, provider_id=venue_provider.provider.id
-        )
-        assert response.status_code == 303
-
-        db.session.refresh(venue_provider)
-
-        response = authenticated_client.get(response.location)
-        assert html_parser.extract_alert(response.data) == "La tâche de synchronisation a été ajoutée"
-        venue_provider_job_mock.assert_called_with(venue_provider.id)
-
-    @pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_CINEMA_INTEGRATION=True)
     @patch("pcapi.core.providers.tasks.synchronize_cinema_sessions_task.delay")
-    def test_add_cinema_sessions_synchronize_task_with_new_task(
+    def test_add_cinema_sessions_synchronize_task(
         self, synchronize_cinema_sessions_task_mock, authenticated_client, legit_user
     ):
         venue_provider = providers_factories.VenueProviderFactory(provider__name="Cinema provider")

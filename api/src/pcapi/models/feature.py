@@ -127,22 +127,8 @@ class FeatureToggle(enum.Enum):
     )
     VENUE_REGULARIZATION = "Déplacement de n'importe quelle offre vers une autre venue"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
-    WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES = "Activer le backend de tâches asynchrones Celery pour les tâches liées à la mise à jour du statut actif des offres"
-    WIP_ASYNCHRONOUS_CELERY_CINEMA_INTEGRATION = (
-        "Activer le backend de tâches asynchrones Celery pour les tâches liées aux intégrations cinéma"
-    )
     WIP_ASYNCHRONOUS_CELERY_EXTERNAL_BOOKING = (
         "Activer le backend de tâches asynchrones Celery pour l'envoi de notification aux providers"
-    )
-    WIP_ASYNCHRONOUS_CELERY_MATCH_ACCESLIBRE = (
-        "Activer le backend de tâches asynchrones Celery pour les tâches liées à la mise à jour des infos d'Acceslibre"
-    )
-    WIP_ASYNCHRONOUS_CELERY_SEND_TRANSACTIONAL_NOTIFICATION = (
-        "Activer le backend de tâches asynchrones Celery pour les tâches liées à l'envoi de notification Batch"
-    )
-    WIP_ASYNCHRONOUS_CELERY_UPDATE_VENUE_OFFERS_ACCESSIBILITY = "Activer le backend de tâches asynchrones Celery pour les tâches liées à la mise à jour des infos d'accessibilité des offres"
-    WIP_ASYNCHRONOUS_CELERY_UPDATE_VENUE_OFFERS_EMAIL = (
-        "Activer le backend de tâches asynchrones Celery pour les tâches liées à la mise à jour des emails des offres"
     )
     WIP_ENABLE_FINANCE_SETTLEMENTS = "Active le workflow finance des règlements"
     WIP_ENABLE_NEW_PRO_HOME = "Activer la nouvelle page d'accueil du portail pro"
@@ -219,13 +205,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.VENUE_REGULARIZATION,
     FeatureToggle.SEND_ALL_EMAILS_TO_EHP,
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
-    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES,
-    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CINEMA_INTEGRATION,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_EXTERNAL_BOOKING,
-    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MATCH_ACCESLIBRE,
-    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_SEND_TRANSACTIONAL_NOTIFICATION,
-    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UPDATE_VENUE_OFFERS_ACCESSIBILITY,
-    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UPDATE_VENUE_OFFERS_EMAIL,
     FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS,
     FeatureToggle.WIP_ENABLE_NEW_PRO_HOME,
     FeatureToggle.WIP_ENABLE_OHO,

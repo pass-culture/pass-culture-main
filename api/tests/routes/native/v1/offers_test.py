@@ -2198,58 +2198,6 @@ class SendOfferLinkNotificationTest:
         user = users_factories.UserFactory()
         client = client.with_token(user)
 
-        with assert_no_duplicated_queries():
-            response = client.post(f"/native/v1/send_offer_link_by_push/{offer_id}")
-            assert response.status_code == 204
-
-        assert len(notifications_testing.requests) == 1
-
-        notification = notifications_testing.requests[0]
-        assert notification["user_ids"] == [user.id]
-
-        assert offer.name in notification["message"]["title"]
-
-    def test_send_offer_link_notification_not_found(self, client):
-        """Test that no push notification is sent when offer is not found"""
-        user = users_factories.UserFactory()
-        client = client.with_token(user)
-
-        with assert_no_duplicated_queries():
-            response = client.post("/native/v1/send_offer_link_by_push/9999999999")
-            assert response.status_code == 404
-
-        assert len(notifications_testing.requests) == 0
-
-    @pytest.mark.parametrize(
-        "validation", [OfferValidationStatus.DRAFT, OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED]
-    )
-    def test_send_non_approved_offer_link_notification(self, client, validation):
-        user = users_factories.UserFactory()
-        client = client.with_token(user)
-        offer_id = offers_factories.OfferFactory(validation=validation).id
-
-        with assert_no_duplicated_queries():
-            response = client.post(f"/native/v1/send_offer_link_by_push/{offer_id}")
-            assert response.status_code == 404
-
-        assert len(notifications_testing.requests) == 0
-
-
-@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_SEND_TRANSACTIONAL_NOTIFICATION=True)
-class SendOfferLinkNotificationWithFFTest:
-    def test_send_offer_link_notification(self, client):
-        """
-        Test that a push notification to the user is sent with a link to the
-        offer.
-        """
-        # offer.id must be used before the assert_num_queries context manager
-        # because it triggers a SQL query.
-        offer = offers_factories.OfferFactory()
-        offer_id = offer.id
-
-        user = users_factories.UserFactory()
-        client = client.with_token(user)
-
         num_queries = 1  # select user
         num_queries += 1  # select offer in route
         num_queries += 1  # select offer in task

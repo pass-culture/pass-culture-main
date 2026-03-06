@@ -4,7 +4,6 @@ import decimal
 import pytest
 
 from pcapi.core.educational import factories as educational_factories
-from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
@@ -43,16 +42,12 @@ def test_update_all_venue_offers_email_task():
 def test_update_all_venue_offers_accessibility_task() -> None:
     venue = offerers_factories.VenueFactory(bookingEmail="old.venue@email.com")
     offer1 = factories.OfferFactory(venue=venue)
-    offer1_id = offer1.id
     offer2 = factories.OfferFactory(venue=venue)
-    offer2_id = offer2.id
 
     collective_offer = educational_factories.CollectiveOfferFactory(venue=venue, audioDisabilityCompliant=False)
-    collective_offer_id = collective_offer.id
     collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
         venue=venue, audioDisabilityCompliant=False
     )
-    collective_offer_template_id = collective_offer_template.id
     new_accessibility = {
         "audioDisabilityCompliant": True,
         "mentalDisabilityCompliant": False,
@@ -62,13 +57,6 @@ def test_update_all_venue_offers_accessibility_task() -> None:
 
     tasks.update_all_venue_offers_accessibility_task(
         tasks.UpdateAllVenueOffersAccessibilityPayload(venue_id=venue.id, accessibility=new_accessibility).model_dump()
-    )
-
-    offer1 = db.session.query(models.Offer).filter_by(id=offer1_id).one()
-    offer2 = db.session.query(models.Offer).filter_by(id=offer2_id).one()
-    collective_offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=collective_offer_id).one()
-    collective_offer_template = (
-        db.session.query(educational_models.CollectiveOfferTemplate).filter_by(id=collective_offer_template_id).one()
     )
 
     assert offer1.audioDisabilityCompliant == new_accessibility["audioDisabilityCompliant"]
