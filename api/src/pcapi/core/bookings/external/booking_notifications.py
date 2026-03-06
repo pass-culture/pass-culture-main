@@ -10,10 +10,10 @@ from pcapi import settings
 from pcapi.core.bookings import tasks as bookings_tasks
 from pcapi.core.bookings.exceptions import BookingIsExpired
 from pcapi.core.bookings.repository import get_soon_expiring_bookings
-from pcapi.core.offers.repository import find_today_event_stock_ids_metropolitan_france
-from pcapi.notifications.push.transactional_notifications import (
+from pcapi.core.external.batch.transactional_notifications import (
     get_soon_expiring_bookings_with_offers_notification_data,
 )
+from pcapi.core.offers.repository import find_today_event_stock_ids_metropolitan_france
 from pcapi.tasks import batch_tasks
 
 

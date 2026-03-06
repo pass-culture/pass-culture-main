@@ -10,6 +10,7 @@ import sentry_sdk
 from dateutil.relativedelta import relativedelta
 
 import pcapi.connectors.api_particulier as api_particulier
+import pcapi.core.external.batch.testing as push_testing
 import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.subscription.bonus.api as bonus_api
@@ -19,8 +20,7 @@ import pcapi.core.subscription.factories as subscription_factories
 import pcapi.core.subscription.models as subscription_models
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
-import pcapi.notifications.push.testing as push_testing
-import pcapi.notifications.push.trigger_events as trigger_events
+from pcapi.core.external.batch import models as batch_models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.utils.sentry import before_send
 
@@ -91,7 +91,7 @@ class GetQuotientFamilialTest:
             {
                 "can_be_asynchronously_retried": True,
                 "user_id": user.id,
-                "event_name": trigger_events.BatchEvent.HAS_RECEIVED_BONUS.value,
+                "event_name": batch_models.BatchEvent.HAS_RECEIVED_BONUS.value,
                 "event_payload": {"has_received_bonus": True},
             }
         ]

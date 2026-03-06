@@ -19,6 +19,7 @@ from pcapi.core.external.attributes.api import get_user_bookings
 from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.external.attributes.models import BookingsAttributes
 from pcapi.core.external.attributes.models import UserAttributes
+from pcapi.core.external.batch import testing as batch_testing
 from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offers.factories import EventOfferFactory
@@ -43,7 +44,6 @@ from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 from pcapi.models import db
-from pcapi.notifications.push import testing as batch_testing
 from pcapi.utils import date as date_utils
 
 

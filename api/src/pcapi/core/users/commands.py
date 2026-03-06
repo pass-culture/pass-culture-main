@@ -13,6 +13,8 @@ from pcapi import settings
 from pcapi.connectors.dms.utils import import_ds_applications
 from pcapi.core.external.automations import pro_user as pro_user_automations
 from pcapi.core.external.automations import user as user_automations
+from pcapi.core.external.batch import transactional_notifications
+from pcapi.core.external.batch.api import send_transactional_notification
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.mails.transactional.users import online_event_reminder
 from pcapi.core.users import ds as users_ds
@@ -20,8 +22,6 @@ from pcapi.core.users import gdpr_api
 from pcapi.core.users import sessions
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.notifications import push
-from pcapi.notifications.push import transactional_notifications
 from pcapi.utils.blueprint import Blueprint
 from pcapi.utils.transaction_manager import atomic
 
@@ -270,7 +270,7 @@ def _send_notification_favorites_not_booked() -> None:
             )
 
             if notification_data:
-                push.send_transactional_notification(notification_data)
+                send_transactional_notification(notification_data)
         except Exception:
             log_extra = {"offer": row.offer_id, "users": row.user_ids, "count": len(row.user_ids)}
             logger.error("Favorites not booked: failed to send notification", extra=log_extra)

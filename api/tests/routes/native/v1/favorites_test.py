@@ -8,14 +8,14 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
+from pcapi.core.external.batch import models as batch_models
+from pcapi.core.external.batch import testing as push_testing
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as users_testing
 from pcapi.core.users.models import Favorite
 from pcapi.models import db
-from pcapi.notifications.push import testing as push_testing
-from pcapi.notifications.push import trigger_events
 from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
 
@@ -403,7 +403,7 @@ class PostTest:
         favorite_creation_tracking_event = next(
             event
             for event in push_testing.requests
-            if event.get("event_name") == trigger_events.BatchEvent.HAS_ADDED_OFFER_TO_FAVORITES.value
+            if event.get("event_name") == batch_models.BatchEvent.HAS_ADDED_OFFER_TO_FAVORITES.value
         )
         event_payload = favorite_creation_tracking_event["event_payload"]
         assert event_payload["event_date"] == earliest_stock.beginningDatetime.isoformat(timespec="seconds")

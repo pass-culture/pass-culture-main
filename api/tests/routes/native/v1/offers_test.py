@@ -13,11 +13,11 @@ import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.local_providers.cinema_providers.constants as cinema_providers_constants
-import pcapi.notifications.push.testing as notifications_testing
 from pcapi import settings
 from pcapi.core.artist.models import ArtistType
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories
+from pcapi.core.external.batch import testing as notifications_testing
 from pcapi.core.geography.factories import AddressFactory
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers.factories import OffererAddressFactory

@@ -11,12 +11,12 @@ from flask_jwt_extended.utils import create_access_token
 from flask_jwt_extended.utils import create_refresh_token
 
 import pcapi.core.mails.testing as mails_testing
-import pcapi.notifications.push.testing as bash_testing
 from pcapi import settings
 from pcapi.connectors import apple_oauth
 from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core import token as token_utils
+from pcapi.core.external.batch import testing as batch_testing
 from pcapi.core.history import factories as history_factories
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.subscription import factories as subscription_factories
@@ -1117,7 +1117,7 @@ class EmailValidationTest:
         assert protected_response.status_code == 200
 
         # assert we updated the external users
-        assert len(bash_testing.requests) == 2
+        assert len(batch_testing.requests) == 2
         assert len(sendinblue_testing.sendinblue_requests) == 1
 
         # Ensure the access token contains user.id
@@ -1156,7 +1156,7 @@ class EmailValidationTest:
         assert response.status_code == 200
 
         # assert we updated the external users
-        assert len(bash_testing.requests) == 2
+        assert len(batch_testing.requests) == 2
         assert len(sendinblue_testing.sendinblue_requests) == 1
 
         # Ensure the access token is valid

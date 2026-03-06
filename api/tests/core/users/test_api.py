@@ -21,6 +21,7 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
+from pcapi.core.external.batch import testing as batch_testing
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
@@ -39,7 +40,6 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.email import update as email_update
 from pcapi.models import db
-from pcapi.notifications.push import testing as batch_testing
 from pcapi.routes.native.v1.serialization import account as account_serialization
 from pcapi.routes.serialization import users as users_serialization
 from pcapi.utils import date as date_utils

@@ -2,13 +2,13 @@ import logging
 
 import pytest
 
+from pcapi.core.external.batch import testing as push_testing
 from pcapi.core.offers import factories as offer_factories
 from pcapi.core.reminders import factories
 from pcapi.core.reminders import models
 from pcapi.core.reminders.external.reminders_notifications import notify_users_offer_is_bookable
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
-from pcapi.notifications.push import testing as push_testing
 
 
 @pytest.mark.usefixtures("db_session")

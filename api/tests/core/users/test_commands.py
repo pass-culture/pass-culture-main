@@ -2,10 +2,10 @@ from unittest.mock import patch
 
 import pytest
 
-import pcapi.notifications.push.testing as notifications_testing
 from pcapi import settings
 from pcapi.connectors.dms import api as dms_api
 from pcapi.connectors.dms import factories as dms_factories
+from pcapi.core.external.batch import testing as notifications_testing
 from pcapi.core.users import commands as users_commands
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models

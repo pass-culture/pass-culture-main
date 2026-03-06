@@ -24,6 +24,7 @@ from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.external.batch import testing as batch_testing
 from pcapi.core.external.beamer.backends.beamer import BeamerException
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
@@ -44,7 +45,6 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.notifications.push import testing as batch_testing
 from pcapi.utils import date as date_utils
 
 import tests
