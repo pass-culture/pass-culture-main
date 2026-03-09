@@ -1,9 +1,15 @@
+import pytest
+
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_no_duplicated_queries
+from pcapi.models import db
+
+
+pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Returns200Test:
-    def test_get_all_venues_serialization(self, client, db_session) -> None:
+    def test_get_all_venues_serialization(self, client):
         venue1 = offerers_factories.CollectiveVenueFactory(
             name="a beautiful name",
             siret=None,
@@ -15,6 +21,12 @@ class Returns200Test:
                 "should": "be_ignored",
             },
         )
+
+        # a soft deleted venue should not appear in the response
+        soft_deleted_venue = offerers_factories.CollectiveVenueFactory()
+        soft_deleted_venue.isSoftDeleted = True
+        db.session.add(soft_deleted_venue)
+        db.session.flush()
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues")
@@ -60,7 +72,7 @@ class Returns200Test:
             ]
         }
 
-    def test_get_all_venues_pagination(self, client, db_session) -> None:
+    def test_get_all_venues_pagination(self, client):
         first_venues = offerers_factories.VenueFactory.create_batch(2, isPermanent=True)
         last_venues = offerers_factories.VenueFactory.create_batch(8, isPermanent=True)
 
