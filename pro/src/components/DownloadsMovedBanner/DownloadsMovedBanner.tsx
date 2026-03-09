@@ -1,5 +1,5 @@
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
-import fullMailIcon from '@/icons/full-mail.svg'
+import fullNextIcon from '@/icons/full-next.svg'
 
 interface OfferEducationalModalProps {
   isIndividual?: boolean
@@ -28,7 +28,7 @@ export const DownloadsMovedBanner = ({
       actions={[
         {
           label: bannerContent.label,
-          icon: fullMailIcon,
+          icon: fullNextIcon,
           href: bannerContent.href,
           type: 'link',
         },
