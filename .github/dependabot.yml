@@ -69,9 +69,6 @@ updates:
       linting:
         patterns:
           - "@biomejs*"
-          - "eslint*"
-          - "@eslint/*"
-          - "prettier*"
           - "stylelint*"
           - "typescript-eslint*"
         update-types:
