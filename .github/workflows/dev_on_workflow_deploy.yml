@@ -390,6 +390,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }} # GitHub will create a deployment for this environment
     if: always()
+    env:
+      ENV: ${{ inputs.environment }}
     steps:
       - name: Check deploy jobs status
         run: |
@@ -398,4 +400,4 @@ jobs:
             exit 1
           fi
       - name: Deployments Success
-        run: echo "All deploy jobs for ${{ inputs.environment }} are successful !"
+        run: echo "All deploy jobs for $ENV are successful !"

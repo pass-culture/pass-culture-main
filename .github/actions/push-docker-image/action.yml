@@ -4,48 +4,39 @@ inputs:
   image:
     description: The docker image name
     required: true
-    type: string
 
   tag:
     description: The docker image tag
     required: true
-    type: string
 
   tag_latest:
     description: Tag also image as latest
     required: false
-    type: boolean
     default: false
 
   registry:
     description: Artifactory registry
     required: false
-    type: string
 
   project_id:
     description: Project ID for Artifact Registry
     required: false
-    type: string
 
   repository:
     description: Repository for Artifact Registry
     required: false
-    type: string
 
   artifact_registry_workload_identity_provider_secret_name:
     description: Google Artifact Registry Workload identity provider secret name stored in secret manager
     required: false
-    type: string
 
   artifact_registry_service_account_secret_name:
     description: Google Artifact Registry Service account secret name stored in secret manager
     required: false
-    type: string
 
   cosign_kms_key_secret_name:
     description: Cosign KMS key secret name stored in secret manager
     required: false
-    type: string
 
   workload_identity_provider:
     description: Workload Identity Provider for fetching secrets in Secret Manager

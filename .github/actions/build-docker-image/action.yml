@@ -4,22 +4,18 @@ inputs:
   image:
     description: The docker image name
     required: true
-    type: string
 
   context:
     description: The build context directory
     required: true
-    type: string
 
   tag:
     description: The docker image tag
     required: true
-    type: string
 
   artifact_path:
     description: Paths to include in the artifact upload
     required: false
-    type: string
     default: |
       ./
       !./pro/scripts/generator'

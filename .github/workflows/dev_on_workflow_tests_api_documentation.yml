@@ -24,7 +24,6 @@ jobs:
   api-documentation-build-checks:
     name: "Check API documentation can be built"
     runs-on: ubuntu-22.04
-    environment: ${{ inputs.environment }}
     permissions:
       id-token: write
       contents: read
