@@ -39,6 +39,361 @@ class SubcategoriesTest:
         expected_genre_types = {x.name for x in categories_models.GenreType}
         assert found_genre_types == expected_genre_types
 
+    def test_search_groups(self, client):
+        with assert_num_queries(0):
+            response = client.get("/native/v1/subcategories/v2")
+
+        assert response.status_code == 200
+        search_groups = response.json["searchGroups"]
+
+        assert search_groups == [
+            {"name": "ARTS_LOISIRS_CREATIFS", "value": "Arts & loisirs créatifs"},
+            {"name": "CARTES_JEUNES", "value": "Cartes jeunes"},
+            {"name": "CONCERTS_FESTIVALS", "value": "Concerts & festivals"},
+            {"name": "EVENEMENTS_EN_LIGNE", "value": "Évènements en ligne"},
+            {"name": "CINEMA", "value": "Cinéma"},
+            {"name": "FILMS_DOCUMENTAIRES_SERIES", "value": "Films, séries et documentaires"},
+            {"name": "JEUX_JEUX_VIDEOS", "value": "Jeux & jeux vidéos"},
+            {"name": "LIVRES", "value": "Livres"},
+            {"name": "MEDIA_PRESSE", "value": "Médias & presse"},
+            {"name": "MUSEES_VISITES_CULTURELLES", "value": "Musées & visites culturelles"},
+            {"name": "MUSIQUE", "value": "Musique"},
+            {"name": "NONE", "value": "None"},
+            {"name": "RENCONTRES_CONFERENCES", "value": "Conférences & rencontres"},
+            {"name": "SPECTACLES", "value": "Spectacles"},
+        ]
+
+    def test_homepage_labels(self, client):
+        with assert_num_queries(0):
+            response = client.get("/native/v1/subcategories/v2")
+
+        homepage_labels = response.json["homepageLabels"]
+        assert homepage_labels == [
+            {"name": "BEAUX_ARTS", "value": "Beaux-Arts"},
+            {"name": "CARTE_JEUNES", "value": "Carte jeunes"},
+            {"name": "CINEMA", "value": "Cin\u00e9ma"},
+            {"name": "CONCERT", "value": "Concert"},
+            {"name": "COURS", "value": "Cours"},
+            {"name": "FESTIVAL", "value": "Festival"},
+            {"name": "FILMS", "value": "Films"},
+            {"name": "INSTRUMENT", "value": "Instrument"},
+            {"name": "JEUX", "value": "Jeux"},
+            {"name": "LIVRES", "value": "Livres"},
+            {"name": "MEDIAS", "value": "M\u00e9dias"},
+            {"name": "MUSEE", "value": "Mus\u00e9e"},
+            {"name": "MUSIQUE", "value": "Musique"},
+            {"name": "NONE", "value": None},
+            {"name": "PLATEFORME", "value": "Plateforme"},
+            {"name": "RENCONTRES", "value": "Rencontres"},
+            {"name": "SPECTACLES", "value": "Spectacles"},
+            {"name": "STAGE_ATELIER", "value": "Stage, atelier"},
+            {"name": "VISITES", "value": "Visites"},
+        ]
+
+    def test_native_categories(self, client):
+        with assert_num_queries(0):
+            response = client.get("/native/v1/subcategories/v2")
+
+        native_categories = response.json["nativeCategories"]
+        assert native_categories == [
+            {
+                "name": "ABO_PLATEFORME_VIDEO",
+                "value": "Abonnements streaming",
+                "genreType": None,
+                "parents": ["FILMS_DOCUMENTAIRES_SERIES"],
+                "positions": {"FILMS_DOCUMENTAIRES_SERIES": 0},
+            },
+            {
+                "name": "ABONNEMENTS_MUSEE",
+                "value": "Abonnements mus\u00e9e",
+                "genreType": None,
+                "parents": ["MUSEES_VISITES_CULTURELLES"],
+                "positions": {"MUSEES_VISITES_CULTURELLES": 0},
+            },
+            {
+                "name": "ABONNEMENTS_SPECTACLE",
+                "value": "Abonnements spectacle",
+                "genreType": "SHOW",
+                "parents": ["SPECTACLES"],
+                "positions": {"SPECTACLES": 0},
+            },
+            {
+                "name": "ACHAT_LOCATION_INSTRUMENT",
+                "value": "Achat et location d'instruments",
+                "genreType": None,
+                "parents": ["MUSIQUE"],
+                "positions": {"MUSIQUE": 0},
+            },
+            {
+                "name": "ARTS_VISUELS",
+                "value": "Arts visuels",
+                "genreType": None,
+                "parents": ["ARTS_LOISIRS_CREATIFS"],
+                "positions": {"ARTS_LOISIRS_CREATIFS": 0},
+            },
+            {
+                "name": "AUTRES_MEDIAS",
+                "value": "Autres m\u00e9dias",
+                "genreType": None,
+                "parents": ["MEDIA_PRESSE"],
+                "positions": {"MEDIA_PRESSE": 0},
+            },
+            {
+                "name": "BIBLIOTHEQUE_MEDIATHEQUE",
+                "value": "Abonnements aux m\u00e9diath\u00e8ques et biblioth\u00e8ques",
+                "genreType": None,
+                "parents": ["LIVRES"],
+                "positions": None,
+            },
+            {
+                "name": "CARTES_CINEMA",
+                "value": "Cartes cin\u00e9ma",
+                "genreType": None,
+                "parents": ["CINEMA"],
+                "positions": {"CINEMA": 0},
+            },
+            {"name": "CD", "value": "CDs", "genreType": "MUSIC", "parents": ["MUSIQUE"], "positions": {"MUSIQUE": 2}},
+            {
+                "name": "CONCERTS_EN_LIGNE",
+                "value": "Concerts en ligne",
+                "genreType": "MUSIC",
+                "parents": ["EVENEMENTS_EN_LIGNE"],
+                "positions": {"EVENEMENTS_EN_LIGNE": 2},
+            },
+            {
+                "name": "CONCERTS_EVENEMENTS",
+                "value": "Concerts",
+                "genreType": "MUSIC",
+                "parents": ["CONCERTS_FESTIVALS", "MUSIQUE"],
+                "positions": {"CONCERTS_FESTIVALS": 0, "MUSIQUE": 3},
+            },
+            {
+                "name": "CONCOURS",
+                "value": "Concours",
+                "genreType": None,
+                "parents": ["JEUX_JEUX_VIDEOS"],
+                "positions": {"JEUX_JEUX_VIDEOS": 0},
+            },
+            {
+                "name": "CONFERENCES",
+                "value": "Conf\u00e9rences",
+                "genreType": None,
+                "parents": ["RENCONTRES_CONFERENCES"],
+                "positions": {"RENCONTRES_CONFERENCES": 0},
+            },
+            {
+                "name": "DEPRECIEE",
+                "value": "D\u00e9pr\u00e9ci\u00e9e",
+                "genreType": None,
+                "parents": [],
+                "positions": {},
+            },
+            {
+                "name": "DVD_BLU_RAY",
+                "value": "DVD, Blu-Ray",
+                "genreType": None,
+                "parents": ["FILMS_DOCUMENTAIRES_SERIES"],
+                "positions": {"FILMS_DOCUMENTAIRES_SERIES": 1},
+            },
+            {
+                "name": "ESCAPE_GAMES",
+                "value": "Escape games",
+                "genreType": None,
+                "parents": ["NONE"],
+                "positions": {"NONE": 0},
+            },
+            {
+                "name": "EVENEMENTS_CINEMA",
+                "value": "Ev\u00e8nements cin\u00e9ma",
+                "genreType": None,
+                "parents": ["CINEMA"],
+                "positions": {"CINEMA": 1},
+            },
+            {
+                "name": "EVENEMENTS_PATRIMOINE",
+                "value": "Ev\u00e8nements patrimoine",
+                "genreType": None,
+                "parents": ["MUSEES_VISITES_CULTURELLES"],
+                "positions": {"MUSEES_VISITES_CULTURELLES": 1},
+            },
+            {
+                "name": "FESTIVALS",
+                "value": "Festivals",
+                "genreType": "MUSIC",
+                "parents": ["CONCERTS_FESTIVALS", "MUSIQUE"],
+                "positions": {"CONCERTS_FESTIVALS": 1, "MUSIQUE": 4},
+            },
+            {
+                "name": "FESTIVAL_DU_LIVRE",
+                "value": "\u00c9v\u00e8nements autour du livre",
+                "genreType": None,
+                "parents": ["LIVRES"],
+                "positions": None,
+            },
+            {
+                "name": "JEUX_EN_LIGNE",
+                "value": "Jeux en ligne",
+                "genreType": None,
+                "parents": ["JEUX_JEUX_VIDEOS"],
+                "positions": {"JEUX_JEUX_VIDEOS": 1},
+            },
+            {"name": "JEUX_PHYSIQUES", "value": "Jeux physiques", "genreType": None, "parents": [], "positions": {}},
+            {
+                "name": "LIVRES_AUDIO_PHYSIQUES",
+                "value": "Livres audio",
+                "genreType": None,
+                "parents": ["LIVRES"],
+                "positions": None,
+            },
+            {
+                "name": "LIVRES_NUMERIQUE_ET_AUDIO",
+                "value": "E-books",
+                "genreType": None,
+                "parents": ["LIVRES"],
+                "positions": None,
+            },
+            {
+                "name": "LIVRES_PAPIER",
+                "value": "Livres papier",
+                "genreType": "BOOK",
+                "parents": ["LIVRES"],
+                "positions": None,
+            },
+            {
+                "name": "LUDOTHEQUE",
+                "value": "Ludoth\u00e8que",
+                "genreType": None,
+                "parents": ["JEUX_JEUX_VIDEOS"],
+                "positions": {"JEUX_JEUX_VIDEOS": 2},
+            },
+            {
+                "name": "MATERIELS_CREATIFS",
+                "value": "Mat\u00e9riels cr\u00e9atifs",
+                "genreType": None,
+                "parents": ["ARTS_LOISIRS_CREATIFS"],
+                "positions": {"ARTS_LOISIRS_CREATIFS": 1},
+            },
+            {
+                "name": "MUSIQUE_EN_LIGNE",
+                "value": "Musique en ligne",
+                "genreType": "MUSIC",
+                "parents": ["MUSIQUE"],
+                "positions": {"MUSIQUE": 5},
+            },
+            {
+                "name": "PARTITIONS_DE_MUSIQUE",
+                "value": "Partitions de musique",
+                "genreType": None,
+                "parents": ["MUSIQUE"],
+                "positions": {"MUSIQUE": 1},
+            },
+            {
+                "name": "PODCAST",
+                "value": "Podcast",
+                "genreType": None,
+                "parents": ["MEDIA_PRESSE"],
+                "positions": {"MEDIA_PRESSE": 1},
+            },
+            {
+                "name": "PRATIQUES_ET_ATELIERS_ARTISTIQUES",
+                "value": "Pratiques & ateliers artistiques",
+                "genreType": None,
+                "parents": ["ARTS_LOISIRS_CREATIFS"],
+                "positions": {"ARTS_LOISIRS_CREATIFS": 2},
+            },
+            {
+                "name": "PRATIQUE_ARTISTIQUE_EN_LIGNE",
+                "value": "Pratique artistique en ligne",
+                "genreType": None,
+                "parents": ["ARTS_LOISIRS_CREATIFS", "EVENEMENTS_EN_LIGNE"],
+                "positions": {"ARTS_LOISIRS_CREATIFS": 3, "EVENEMENTS_EN_LIGNE": 0},
+            },
+            {
+                "name": "PRESSE_EN_LIGNE",
+                "value": "Presse en ligne",
+                "genreType": None,
+                "parents": ["MEDIA_PRESSE"],
+                "positions": {"MEDIA_PRESSE": 2},
+            },
+            {
+                "name": "RENCONTRES",
+                "value": "Rencontres",
+                "genreType": None,
+                "parents": ["RENCONTRES_CONFERENCES"],
+                "positions": {"RENCONTRES_CONFERENCES": 1},
+            },
+            {
+                "name": "RENCONTRES_EN_LIGNE",
+                "value": "Rencontres en ligne",
+                "genreType": None,
+                "parents": ["EVENEMENTS_EN_LIGNE", "RENCONTRES_CONFERENCES"],
+                "positions": {"EVENEMENTS_EN_LIGNE": 1, "RENCONTRES_CONFERENCES": 2},
+            },
+            {
+                "name": "RENCONTRES_EVENEMENTS",
+                "value": "Rencontres \u00e9v\u00e8nements",
+                "genreType": None,
+                "parents": ["JEUX_JEUX_VIDEOS"],
+                "positions": {"JEUX_JEUX_VIDEOS": 3},
+            },
+            {
+                "name": "SALONS_ET_METIERS",
+                "value": "Salons & m\u00e9tiers",
+                "genreType": None,
+                "parents": ["RENCONTRES_CONFERENCES"],
+                "positions": {"RENCONTRES_CONFERENCES": 3},
+            },
+            {
+                "name": "SEANCES_DE_CINEMA",
+                "value": "Films \u00e0 l'affiche",
+                "genreType": "MOVIE",
+                "parents": ["CINEMA"],
+                "positions": {"CINEMA": 2},
+            },
+            {
+                "name": "SPECTACLES_ENREGISTRES",
+                "value": "Spectacles enregistr\u00e9s",
+                "genreType": "SHOW",
+                "parents": ["SPECTACLES"],
+                "positions": {"SPECTACLES": 1},
+            },
+            {
+                "name": "SPECTACLES_REPRESENTATIONS",
+                "value": "Spectacles & repr\u00e9sentations",
+                "genreType": "SHOW",
+                "parents": ["SPECTACLES"],
+                "positions": {"SPECTACLES": 2},
+            },
+            {
+                "name": "VIDEOS_ET_DOCUMENTAIRES",
+                "value": "Vid\u00e9os et documentaires",
+                "genreType": None,
+                "parents": ["FILMS_DOCUMENTAIRES_SERIES"],
+                "positions": {"FILMS_DOCUMENTAIRES_SERIES": 2},
+            },
+            {
+                "name": "VINYLES",
+                "value": "Vinyles",
+                "genreType": "MUSIC",
+                "parents": ["MUSIQUE"],
+                "positions": {"MUSIQUE": 6},
+            },
+            {
+                "name": "VISITES_CULTURELLES",
+                "value": "Visites culturelles",
+                "genreType": None,
+                "parents": ["MUSEES_VISITES_CULTURELLES"],
+                "positions": {"MUSEES_VISITES_CULTURELLES": 2},
+            },
+            {
+                "name": "VISITES_CULTURELLES_EN_LIGNE",
+                "value": "Visites culturelles en ligne",
+                "genreType": None,
+                "parents": ["MUSEES_VISITES_CULTURELLES"],
+                "positions": {"MUSEES_VISITES_CULTURELLES": 3},
+            },
+        ]
+
     def test_genre_types(self, client):
         with assert_num_queries(0):
             response = client.get("/native/v1/subcategories/v2")
@@ -789,8 +1144,8 @@ class SubcategoriesTest:
                     {"name": "Arts de la rue", "value": "Arts de la rue"},
                     {"name": "Autre", "value": "Autre"},
                     {
-                        "name": "Autre (spectacle sur glace, historique, aquatique, …)  ",
-                        "value": "Autre (spectacle sur glace, historique, aquatique, …)  ",
+                        "name": "Autre (spectacle sur glace, historique, aquatique, …)",
+                        "value": "Autre (spectacle sur glace, historique, aquatique, …)",
                     },
                     {"name": "Cirque", "value": "Cirque"},
                     {"name": "Danse", "value": "Danse"},
@@ -1043,11 +1398,10 @@ class SubcategoriesTest:
             },
         ]
 
-    def test_categories_association(self, client):
+    def test_subcategories(self, client):
         with assert_num_queries(0):
             response = client.get("/native/v1/subcategories/v2")
 
-        assert response.status_code == 200
         assert response.json["subcategories"] == [
             {
                 "id": "ABO_BIBLIOTHEQUE",
@@ -1173,7 +1527,7 @@ class SubcategoriesTest:
                 "id": "ACTIVATION_EVENT",
                 "categoryId": "TECHNIQUE",
                 "nativeCategoryId": "DEPRECIEE",
-                "appLabel": "Catégorie technique d'évènement d'activation ",
+                "appLabel": "Catégorie technique d'évènement d'activation",
                 "searchGroupName": "NONE",
                 "homepageLabelName": "NONE",
                 "isEvent": True,
