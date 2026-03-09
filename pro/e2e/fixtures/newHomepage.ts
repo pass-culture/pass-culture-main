@@ -74,7 +74,10 @@ export async function expectIndividualModules(
     visibleModules.includes('INCOME_CARD')
   )
   await expectModuleVisibility(
-    page.getByText('Module page partenaire'),
+    page.getByRole('heading', {
+      level: 2,
+      name: "Votre page sur l'application",
+    }),
     visibleModules.includes('PARTNER_PAGE_CARD')
   )
   await expectModuleVisibility(
