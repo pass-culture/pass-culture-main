@@ -65,6 +65,7 @@ OFFER_LOAD_OPTIONS = typing.Iterable[
         "openingHours",
         "highlight_requests",
         "artists",
+        "pro_advice",
     ]
 ]
 
@@ -1153,6 +1154,8 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
                     artist_models.Artist.name,
                 )
             )
+        if "pro_advice" in load_options:
+            query = query.options(sa_orm.joinedload(models.Offer.proAdvice))
         return query.one()
     except sa_orm.exc.NoResultFound:
         raise exceptions.OfferNotFound(offer_id=offer_id)
