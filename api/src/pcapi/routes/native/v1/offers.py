@@ -158,18 +158,18 @@ def get_subcategories_v2() -> subcategories_v2_serializers.SubcategoriesResponse
             for subcategory in subcategories.ALL_SUBCATEGORIES
         ],
         searchGroups=[
-            subcategories_v2_serializers.SearchGroupResponseModelv2.build(search_group)
+            subcategories_v2_serializers.SearchGroupResponseModelv2.model_validate(search_group)
             for search_group in SEARCH_GROUPS
         ],
         homepageLabels=[
-            subcategories_v2_serializers.HomepageLabelResponseModelv2.build(homepage_label_name)
+            subcategories_v2_serializers.HomepageLabelResponseModelv2.model_validate(homepage_label_name)
             for homepage_label_name in subcategories.HomepageLabels
         ],
         nativeCategories=[
             subcategories_v2_serializers.NativeCategoryResponseModelv2.build(native_category)
             for native_category in NATIVE_CATEGORIES
         ],
-        genreTypes=[subcategories_v2_serializers.GenreTypeModel.build(genre_type) for genre_type in GenreType],
+        genreTypes=[subcategories_v2_serializers.GenreTypeModel.model_validate(genre_type) for genre_type in GenreType],
     )
 
 

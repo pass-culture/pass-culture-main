@@ -56,18 +56,10 @@ class SearchGroupResponseModelv2(HttpBodyModel):
     name: str
     value: str | None = None
 
-    @classmethod
-    def build(cls, searchGroup: categories_models.SearchNode) -> "SearchGroupResponseModelv2":
-        return cls(name=searchGroup.name, value=searchGroup.value)
-
 
 class HomepageLabelResponseModelv2(HttpBodyModel):
     name: str
     value: str | None = None
-
-    @classmethod
-    def build(cls, homepageLabel: subcategories.HomepageLabels) -> "HomepageLabelResponseModelv2":
-        return cls(name=homepageLabel.name, value=homepageLabel.value)
 
 
 class NativeCategoryResponseModelv2(HttpBodyModel):
@@ -98,14 +90,6 @@ class GenreTypeModel(HttpBodyModel):
     name: categories_models.GenreType
     values: list[GenreTypeContentModel]
     trees: list[BookType] | list[MusicType] | list[ShowType] | list[MovieType]
-
-    @classmethod
-    def build(cls, genreType: categories_models.GenreType) -> "GenreTypeModel":
-        return cls(
-            name=genreType,
-            values=[GenreTypeContentModel(name=v.name, value=v.value) for v in genreType.values],
-            trees=genreType.trees,
-        )
 
 
 class SubcategoriesResponseModelv2(HttpBodyModel):
