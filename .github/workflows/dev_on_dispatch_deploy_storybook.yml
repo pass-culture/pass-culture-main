@@ -60,4 +60,4 @@ jobs:
             echo "| Results                              | Value |"
             echo "| ------------------------------------ | ----- |"
             echo "| [pro] preview url                    |  ${{ steps.firebase-deploy.outputs.details_url }} |"
-          } >> $GITHUB_STEP_SUMMARY
+          } >> "$GITHUB_STEP_SUMMARY"

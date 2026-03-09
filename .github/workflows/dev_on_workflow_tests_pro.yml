@@ -11,6 +11,7 @@ on:
         required: true
       GCP_EHP_SERVICE_ACCOUNT:
         required: true
+      PAT_ALLURE_REPORTS_TEMP:
 
 defaults:
   run:
@@ -152,7 +153,7 @@ jobs:
         env:
           TOKEN: ${{ secrets.PAT_ALLURE_REPORTS_TEMP }}
         run: |
-          git clone https://x-access-token:${TOKEN}@github.com/fseguin-pass/allure-reports-temp.git allure-report-temp
+          git clone "https://x-access-token:${TOKEN}@github.com/fseguin-pass/allure-reports-temp.git" allure-report-temp
             mkdir -p allure-results/history
             if [ -d "allure-report-temp/history" ]; then
               cp -r allure-report-temp/history/* allure-results/history/

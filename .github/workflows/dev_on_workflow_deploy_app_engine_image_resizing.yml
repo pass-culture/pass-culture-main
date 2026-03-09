@@ -91,15 +91,20 @@ jobs:
         run: echo "${{ github.sha }}" > version.txt
       - name: "Deploy the image-resizing service to ${{ inputs.environment }} environment"
         working-directory: app-engine/image-resizing
+        env:
+          BASE_REF: ${{ inputs.base_ref }}
+          GOOGLE_PROJECT: ${{ inputs.google_project }}
         run: |
           gcloud app deploy --quiet \
-            --service-account=${{ steps.secrets.outputs.APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT }} \
-            --project=${{ inputs.google_project }} \
-            --version=$(echo ${{ inputs.base_ref }}| tr '.' '-'| tr '/' '-'| tr '[:upper:]' '[:lower:]' | cut -c1-25)
+            --service-account="${{ steps.secrets.outputs.APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT }}" \
+            --project="$GOOGLE_PROJECT" \
+            --version="$(echo "$BASE_REF" | tr '.' '-'| tr '/' '-'| tr '[:upper:]' '[:lower:]' | cut -c1-25)"
       - name: "Clear unused apps"
         # Delete all versions that are not serving traffic
         # This is a cleanup step to avoid having too many versions(limit is 210)
+        env:
+          GOOGLE_PROJECT: ${{ inputs.google_project }}
         run: |
-          gcloud app versions list --service=image-resizing --format="table[no-heading](id)" --project=${{ inputs.google_project }} \
-            | grep -v $(gcloud app versions list --service=image-resizing --hide-no-traffic --format="table[no-heading](id)" --project=${{ inputs.google_project }}) \
-            | xargs --no-run-if-empty gcloud app versions delete --service=image-resizing --project=${{ inputs.google_project }}
+          gcloud app versions list --service=image-resizing --format="table[no-heading](id)" --project="$GOOGLE_PROJECT" \
+            | grep -v "$(gcloud app versions list --service=image-resizing --hide-no-traffic --format="table[no-heading](id)" --project="$GOOGLE_PROJECT")" \
+            | xargs --no-run-if-empty gcloud app versions delete --service=image-resizing --project="$GOOGLE_PROJECT"

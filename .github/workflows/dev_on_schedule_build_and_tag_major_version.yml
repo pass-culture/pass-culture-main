@@ -21,14 +21,14 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - id: check-date-exclusion
-        run: ./.github/workflows/scripts/check-schedule-exclusion.sh >> $GITHUB_OUTPUT
+        run: ./.github/workflows/scripts/check-schedule-exclusion.sh >> "$GITHUB_OUTPUT"
       - if: steps.check-date-exclusion.outputs.schedule_exclusion  == 'true'
         run: echo "Today is excluded – ${{ steps.check-date-exclusion.outputs.reason }}"
       # we allow the workflow_dispatch event
       - id: check-workflow-event
         if: ${{ github.event_name == 'workflow_dispatch'}}
         run: |
-          echo "schedule_override=true" >> $GITHUB_OUTPUT
+          echo "schedule_override=true" >> "$GITHUB_OUTPUT"
           echo "The workflow has been triggered manually, we override the schedule exclusion"
       - name: "Publish Summary"
         run: |
@@ -38,7 +38,7 @@ jobs:
             echo "| ------------------- | ----------------------------------------------------------- |"
             echo "| schedule_exclusion  |  ${{steps.check-date-exclusion.outputs.schedule_exclusion}} |"
             echo "| schedule_override   |  ${{steps.check-workflow-event.outputs.schedule_override}}  |"
-          } >> $GITHUB_STEP_SUMMARY
+          } >> "$GITHUB_STEP_SUMMARY"
 
   prepare-variables:
     needs: check-schedule
@@ -59,25 +59,25 @@ jobs:
         id: version
         run: |
           # Get all with format vX.X.X, sort them and get the last one
-          latestTag=$(git tag -l "v[0-9]*.[0-9]*.[0-9]*" | sort -V | tail -n 1)
-          echo "latestTag=$latestTag" >> $GITHUB_OUTPUT
+          latestTag="$(git tag -l "v[0-9]*.[0-9]*.[0-9]*" | sort -V | tail -n 1)"
+          echo "latestTag=$latestTag" >> "$GITHUB_OUTPUT"
 
           # Extract major version
-          major=$(echo "$latestTag" | sed -E 's/^v([0-9]+)\..*/\1/')
+          major="$(echo "$latestTag" | sed -E 's/^v([0-9]+)\..*/\1/')"
 
-          releaseNumber=$((major + 1))
-          echo "releaseNumber=$releaseNumber" >> $GITHUB_OUTPUT
+          releaseNumber="$((major + 1))"
+          echo "releaseNumber=$releaseNumber" >> "$GITHUB_OUTPUT"
 
       - name: Get commit hash from RC tag
         id: rc_commit
         run: |
-          rc_tag=$(git tag -l "rc" | tail -n 1)
+          rc_tag="$(git tag -l "rc" | tail -n 1)"
           if [ -z "$rc_tag" ]; then
             echo "Pas de tag RC trouvé"
             exit 1
           fi
-          commit_hash=$(git rev-list -n 1 "$rc_tag")
-          echo "commitHash=$commit_hash" >> $GITHUB_OUTPUT
+          commit_hash="$(git rev-list -n 1 "$rc_tag")"
+          echo "commitHash=$commit_hash" >> "$GITHUB_OUTPUT"
 
   beginning-slack-notification:
     needs: prepare-variables
@@ -124,8 +124,8 @@ jobs:
       - name: "Delete vN-2 maintenance branch"
         continue-on-error: true
         run: |
-          release_number=${{ needs.prepare-variables.outputs.releaseNumber }}
-          old_branch_number=$((release_number-2))
+          release_number="${{ needs.prepare-variables.outputs.releaseNumber }}"
+          old_branch_number="$((release_number-2))"
           git push origin --delete "maint/v$old_branch_number"
 
   end-slack-success-notification:
