@@ -12,6 +12,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.models import db
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.utils import date as date_utils
+from pcapi.utils import siren as siren_utils
 from pcapi.utils.date import timespan_str_to_numrange
 
 
@@ -34,12 +35,14 @@ OFFER_DESCRIPTION = (
 
 def create_offerer() -> offerers_models.Offerer:
     max_siren = db.session.execute(
-        sa.select(sa.func.max(sa.cast(offerers_models.Offerer.siren, sa.Integer))).filter(
-            offerers_models.Offerer.siren.notlike("NC%")
-        )
+        sa.select(
+            sa.func.max(
+                sa.cast(sa.func.substr(offerers_models.Offerer.siren, 1, siren_utils.SIREN_LENGTH - 1), sa.Integer)
+            )
+        ).filter(offerers_models.Offerer.siren.notlike("NC%"))
     ).scalar()
 
-    new_siren = f"{(max_siren or 0) + 1:0>8}"
+    new_siren = siren_utils.complete_siren_or_siret(f"{(max_siren or 0) + 1:0>8}")
     offerer = offerers_factories.OffererFactory.build(siren=new_siren)
     db.session.add(offerer)
     return offerer
