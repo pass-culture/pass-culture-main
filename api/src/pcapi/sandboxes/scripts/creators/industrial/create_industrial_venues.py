@@ -16,6 +16,7 @@ from pcapi.sandboxes.scripts.mocks.accessibility_mocks import ACCESSIBILITY_MOCK
 from pcapi.sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
 from pcapi.sandboxes.scripts.mocks.venue_mocks import MOCK_NAME_TO_PUBLIC_NAME
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import siren as siren_utils
 
 
 logger = logging.getLogger(__name__)
@@ -70,7 +71,7 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
         else:
             if offerer_index % OFFERERS_WITH_PHYSICAL_VENUE_WITH_SIRET_REMOVE_MODULO:
                 comment = None
-                siret = f"{offerer.siren}11111"
+                siret = siren_utils.complete_siren_or_siret(f"{offerer.siren}0001")
             else:
                 comment = "Pas de siret car c'est comme cela."
                 siret = None
@@ -117,7 +118,7 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
                     offererAddress__address__longitude=longitude,
                     comment=None,
                     name=second_venue_name,
-                    siret=f"{offerer.siren}22222",
+                    siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0002"),
                     venueTypeCode=random.choice(offerers_models.PERMENANT_VENUE_TYPES),
                     pricing_point="self",
                 )

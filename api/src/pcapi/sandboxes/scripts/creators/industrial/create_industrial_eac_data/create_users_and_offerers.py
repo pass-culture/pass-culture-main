@@ -130,7 +130,7 @@ def create_eac_users_offerers() -> list[offerers_models.Offerer]:
     user_offerer = offerers_factories.UserOffererFactory.create(
         user__email="eac_with_application_with_no_venue@example.com",
         offerer__name="eac_with_application_with_no_venue",
-        offerer__siren="956513150",
+        offerer__siren="956513154",
     )
     offerers.append(user_offerer.offerer)
 
@@ -153,7 +153,7 @@ def create_eac_users_offerers() -> list[offerers_models.Offerer]:
     user_offerer = offerers_factories.UserOffererFactory.create(
         user__email="eac_with_deposits_by_period@example.com",
         offerer__name="eac_with_deposits_by_period",
-        offerer__siren="552120223",
+        offerer__siren="552120230",
         offerer__allowedOnAdage=True,
     )
     offerers.append(user_offerer.offerer)
