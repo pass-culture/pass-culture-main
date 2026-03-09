@@ -19,6 +19,7 @@ PRO_FEATURES = (
     FeatureToggle.WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY,
     FeatureToggle.WIP_SWITCH_VENUE,
     FeatureToggle.WIP_OFFER_ARTISTS,
+    FeatureToggle.WIP_OFFER_RECOMMENDATION_PRO,
     FeatureToggle.WIP_ENABLE_OHO,
     FeatureToggle.WIP_ENABLE_NEW_PRO_HOME,
     FeatureToggle.WIP_PRE_SIGNUP_INFO,
