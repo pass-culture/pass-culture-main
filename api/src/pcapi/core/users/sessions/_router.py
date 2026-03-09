@@ -6,9 +6,11 @@ from pcapi.core.users import models as users_models
 from . import _common
 from . import _native
 from . import _pro
+from . import _sessions
 
 
 def install_login() -> None:
+    flask.current_app.session_interface = _sessions.CustomSessionInterface()
     login_manager = flask_login.LoginManager()
     login_manager.init_app(flask.current_app)
     login_manager.unauthorized_handler(_common.unauthorized_handler)
