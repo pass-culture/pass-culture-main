@@ -8,7 +8,6 @@ import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 
-import { NOTIFICATIONS_EMAIL_LABEL } from '../../constants/labels'
 import styles from './FormNotifications.module.scss'
 
 interface FormNotificationsProps {
@@ -32,7 +31,7 @@ export const FormNotifications = ({
       {fields.map((field, index) => (
         <FormLayout.Row key={field.id}>
           <TextInput
-            label={NOTIFICATIONS_EMAIL_LABEL}
+            label="Email auquel envoyer les notifications"
             disabled={disableForm}
             required
             {...register(`bookingEmails.${index}.email`)}
