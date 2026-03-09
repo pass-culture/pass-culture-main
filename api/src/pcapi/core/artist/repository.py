@@ -2,6 +2,7 @@ import sqlalchemy as sa
 from sqlalchemy import case
 from sqlalchemy import func
 
+from pcapi import settings
 from pcapi.core.artist import models
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
@@ -10,6 +11,7 @@ from pcapi.models import db
 def get_artist_search_eligibility_subquery() -> sa.ColumnElement[bool]:
     return sa.and_(
         sa.not_(models.Artist.is_blacklisted),
+        models.Artist.app_search_score >= settings.ALGOLIA_ARTIST_MIN_APP_SEARCH_SCORE,
         sa.select(1)
         .select_from(models.ArtistProductLink)
         .join(offers_models.Product)
