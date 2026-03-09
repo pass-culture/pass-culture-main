@@ -33,6 +33,7 @@ class Returns200Test:
     num_queries += 1  # venue.hasPartnerPage
     num_queries += 1  # venue.canDisplayHighlights
     num_queries += 1  # venue.hasNonDraftOffers
+    num_queries += 2  # venue_has_non_free_offers (individual and collective)
 
     num_queries_no_places_info = num_queries - 1
 
@@ -247,7 +248,7 @@ class Returns200Test:
         db.session.expire_all()
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        num_queries = self.num_queries + 1  # venue_bank_account_link
+        num_queries = self.num_queries
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200

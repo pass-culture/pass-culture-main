@@ -38,8 +38,12 @@ export async function loginAsAndGoToHomepage(
 
 function expectModuleVisibility(moduleLocator: Locator, isVisible: boolean) {
   return isVisible
-    ? expect.soft(moduleLocator).toBeVisible()
-    : expect.soft(moduleLocator).not.toBeVisible()
+    ? expect
+        .soft(moduleLocator, `${moduleLocator} should be visible`)
+        .toBeVisible()
+    : expect
+        .soft(moduleLocator, `${moduleLocator} should not be visible`)
+        .not.toBeVisible()
 }
 
 type IndividualModule =
