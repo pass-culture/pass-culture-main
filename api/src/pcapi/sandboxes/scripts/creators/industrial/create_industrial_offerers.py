@@ -8,6 +8,7 @@ from pcapi.models import db
 from pcapi.sandboxes.scripts.mocks.educational_siren_mocks import MOCK_ADAGE_ELIGIBLE_SIREN
 from pcapi.sandboxes.scripts.mocks.offerer_mocks import MOCK_NAMES
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import siren as siren_utils
 
 
 logger = logging.getLogger(__name__)
@@ -68,7 +69,7 @@ def create_industrial_offerers() -> dict[str, Offerer]:
         offerers_by_name[offerer_name] = offerer
 
     # loop on locations to create offerers
-    incremented_siren = 222222222
+    incremented_siren = 22222222
     starting_index = 0
 
     for location_index, location in enumerate(OFFERER_LOCATIONS):
@@ -76,11 +77,12 @@ def create_industrial_offerers() -> dict[str, Offerer]:
 
         mock_index = location_index % len(MOCK_NAMES) + starting_index
 
-        offerer_name = "{} lat:{} lon:{}".format(incremented_siren, location.latitude, location.longitude)
+        valid_siren = siren_utils.complete_siren_or_siret(str(incremented_siren))
+        offerer_name = "{} lat:{} lon:{}".format(valid_siren, location.latitude, location.longitude)
 
         offerer = offerers_factories.OffererFactory.create(
             name=MOCK_NAMES[mock_index],
-            siren=str(incremented_siren),
+            siren=valid_siren,
         )
 
         if create_educational_offerer:
