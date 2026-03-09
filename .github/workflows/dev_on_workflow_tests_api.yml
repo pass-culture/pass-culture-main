@@ -138,8 +138,10 @@ jobs:
           # that, we want the latest commit of the branch.
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       - name: "Checkout HEAD (on master) or the parent of the first commit (pull request)"
+        env:
+          GITHUB_REF: ${{ github.ref }}
         run: |
-          if [[ "${{ github.ref }}" == "master" ]];
+          if [[ "$GITHUB_REF" == "master" ]];
           then SHA="HEAD"
           else
             git fetch origin master

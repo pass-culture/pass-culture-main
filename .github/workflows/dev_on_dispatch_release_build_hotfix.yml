@@ -12,8 +12,10 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Check worflow ref
+        env:
+          REF: ${{ github.ref }}
         run: |
-          if ! [[ ${{ github.ref }} =~ ^refs/heads/maint/v*$ ]]; then
+          if ! [[ "$REF" =~ ^refs/heads/maint/v*$ ]]; then
             echo "This workflow can only be triggered from a maintenance branch (starting with 'maint/v')"
             exit 1
           fi
@@ -34,8 +36,9 @@ jobs:
           fetch-depth: 0 # Fetch all history to get all tags
       - name: "Find hotfix tag number"
         id: "find-hotfix-tag-number"
+        env:
+          GITHUB_REF: ${{ github.ref }}
         run: |
-          GITHUB_REF="${{ github.ref }}"
           MAJOR_NUMBER="${GITHUB_REF//refs\/heads\/maint\/v/ }"
           CURRENT_PATCH_NUMBER="$(git tag -l "v${MAJOR_NUMBER}.0.*" | sort -V | tail -n 1 | cut -d. -f3)"
           NEXT_PATCH_NUMBER="$((CURRENT_PATCH_NUMBER + 1))"
