@@ -22,6 +22,7 @@ from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers import tasks
 from pcapi.core.offers import validation
 from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
+from pcapi.core.users import repository as users_repository
 from pcapi.core.videos import api as videos_api
 from pcapi.core.videos import exceptions as videos_exceptions
 from pcapi.models import api_errors
@@ -837,3 +838,23 @@ def post_highlight_request_offer(
     ]
     offer = offers_repository.get_offer_by_id(offer_id, load_options)
     return offers_serialize.GetIndividualOfferWithAddressResponseModel.from_orm(offer)
+
+
+@private_api.route("/offers/<int:offer_id>/pro_advice", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.GetProAdviceResponseModel,
+    api=blueprint.pro_private_schema,
+)
+@atomic()
+def get_offer_pro_advice(offer_id: int) -> offers_serialize.GetProAdviceResponseModel:
+    try:
+        offer = offers_repository.get_offer_by_id(offer_id, load_options=["venue", "pro_advice"])
+    except exceptions.OfferNotFound:
+        raise api_errors.ResourceNotFoundError()
+
+    if not users_repository.has_access(current_user, offer.venue.managingOffererId):
+        raise api_errors.ResourceNotFoundError()
+
+    pro_advice = offers_serialize.ProAdviceModel.model_validate(offer.proAdvice) if offer.proAdvice else None
+    return offers_serialize.GetProAdviceResponseModel(pro_advice=pro_advice)

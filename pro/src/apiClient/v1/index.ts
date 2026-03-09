@@ -134,6 +134,7 @@ export type { GetOfferMediationResponseModel } from './models/GetOfferMediationR
 export type { GetOffersStatsResponseModel } from './models/GetOffersStatsResponseModel';
 export type { GetOfferStockResponseModel } from './models/GetOfferStockResponseModel';
 export type { GetOfferVenueResponseModel } from './models/GetOfferVenueResponseModel';
+export type { GetProAdviceResponseModel } from './models/GetProAdviceResponseModel';
 export type { GetProductInformations } from './models/GetProductInformations';
 export type { GetStocksResponseModel } from './models/GetStocksResponseModel';
 export type { GetVenueDomainResponseModel } from './models/GetVenueDomainResponseModel';
@@ -219,6 +220,7 @@ export type { PostOffererResponseModel } from './models/PostOffererResponseModel
 export type { PostVenueProviderBody } from './models/PostVenueProviderBody';
 export type { PriceCategoryBody } from './models/PriceCategoryBody';
 export type { PriceCategoryResponseModel } from './models/PriceCategoryResponseModel';
+export type { ProAdviceModel } from './models/ProAdviceModel';
 export type { ProAnonymizationEligibilityResponseModel } from './models/ProAnonymizationEligibilityResponseModel';
 export type { ProUserCreationBodyV2Model } from './models/ProUserCreationBodyV2Model';
 export type { ProviderResponse } from './models/ProviderResponse';

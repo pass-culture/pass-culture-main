@@ -53,6 +53,7 @@ import type { GetOfferersNamesResponseModel } from '../models/GetOfferersNamesRe
 import type { GetOffererStatsResponseModel } from '../models/GetOffererStatsResponseModel';
 import type { GetOffererV2StatsResponseModel } from '../models/GetOffererV2StatsResponseModel';
 import type { GetOffersStatsResponseModel } from '../models/GetOffersStatsResponseModel';
+import type { GetProAdviceResponseModel } from '../models/GetProAdviceResponseModel';
 import type { GetProductInformations } from '../models/GetProductInformations';
 import type { GetStocksResponseModel } from '../models/GetStocksResponseModel';
 import type { GetVenueListLiteResponseModel } from '../models/GetVenueListLiteResponseModel';
@@ -2056,6 +2057,27 @@ export class DefaultService {
       },
       body: requestBody,
       mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * get_offer_pro_advice <GET>
+   * @param offerId
+   * @returns GetProAdviceResponseModel OK
+   * @throws ApiError
+   */
+  public getOfferProAdvice(
+    offerId: number,
+  ): CancelablePromise<GetProAdviceResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/offers/{offer_id}/pro_advice',
+      path: {
+        'offer_id': offerId,
+      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Content`,

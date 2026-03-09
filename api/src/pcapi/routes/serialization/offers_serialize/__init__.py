@@ -1,9 +1,10 @@
 import datetime
 import decimal
-import enum
 import typing
+from types import NoneType
 from typing import Any
 
+import pydantic as pydantic_v2
 from pydantic.v1 import EmailStr
 from pydantic.v1 import Field
 from pydantic.v1 import HttpUrl
@@ -23,6 +24,7 @@ from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import artist_serialize
 from pcapi.routes.serialization import highlight_serialize
@@ -724,3 +726,13 @@ class PostOfferBodyModel(MinimalPostOfferBodyModel):
         if value == offers_models.WithdrawalTypeEnum.IN_APP:
             raise ValueError("Withdrawal type cannot be in_app for manually created offers")
         return value
+
+
+class ProAdviceModel(HttpBodyModel):
+    content: str
+    author: str | None
+    updated_at: datetime.datetime
+
+
+class GetProAdviceResponseModel(HttpBodyModel):
+    pro_advice: ProAdviceModel | None
