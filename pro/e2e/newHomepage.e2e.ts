@@ -5,13 +5,19 @@ import {
   expectIndividualModules,
   loginAsAndGoToHomepage,
 } from './fixtures/newHomepage'
+import {
+  createEacCompleteLt30d,
+  createEacEnInstruction,
+  createEacWithNonValidatedOfferer,
+  createProUserWithCollectiveOffers,
+  createProUserWithIndividualOffers,
+  createProUserWithNonDraftIndividualOffer,
+  createProUserWithNonValidatedOfferer,
+} from './helpers/sandbox'
 
 test.describe('when I do individual', () => {
   test('with non draft offers', async ({ page }) => {
-    await loginAsAndGoToHomepage(
-      page,
-      'create_pro_user_with_non_draft_individual_offer'
-    )
+    await loginAsAndGoToHomepage(page, createProUserWithNonDraftIndividualOffer)
 
     await expect
       .soft(
@@ -34,10 +40,7 @@ test.describe('when I do individual', () => {
   })
 
   test('non validated offerer', async ({ page }) => {
-    await loginAsAndGoToHomepage(
-      page,
-      'create_pro_user_with_non_validated_offerer'
-    )
+    await loginAsAndGoToHomepage(page, createProUserWithNonValidatedOfferer)
 
     await expect
       .soft(
@@ -66,7 +69,7 @@ test.describe('when I do collective', () => {
   test('with collective offers', async ({ page }) => {
     await loginAsAndGoToHomepage(
       page,
-      'create_pro_user_with_collective_offers',
+      createProUserWithCollectiveOffers,
       'Mon Lieu A'
     )
 
@@ -90,7 +93,7 @@ test.describe('when I do collective', () => {
   })
 
   test('with non validated offerer', async ({ page }) => {
-    await loginAsAndGoToHomepage(page, 'create_eac_with_non_validated_offerer')
+    await loginAsAndGoToHomepage(page, createEacWithNonValidatedOfferer)
 
     await expect
       .soft(
@@ -106,7 +109,7 @@ test.describe('when I do collective', () => {
   })
 
   test('DMS en instruction', async ({ page }) => {
-    await loginAsAndGoToHomepage(page, 'create_eac_en_instruction')
+    await loginAsAndGoToHomepage(page, createEacEnInstruction)
 
     await expect
       .soft(page.getByRole('heading', { level: 1, name: /eac_en_instruction/ }))
@@ -117,7 +120,7 @@ test.describe('when I do collective', () => {
   })
 
   test('DMS accepted -30d', async ({ page }) => {
-    await loginAsAndGoToHomepage(page, 'create_eac_complete_lt_30d')
+    await loginAsAndGoToHomepage(page, createEacCompleteLt30d)
 
     await expect
       .soft(page.getByRole('heading', { level: 1, name: /eac_complete_30-d/ }))
@@ -142,7 +145,7 @@ test.describe('when I do both individual and collective', () => {
   }) => {
     await loginAsAndGoToHomepage(
       page,
-      'create_pro_user_with_individual_offers',
+      createProUserWithIndividualOffers,
       'Mon Lieu A'
     )
 

@@ -1,4 +1,5 @@
 import {
+  type APIRequestContext,
   expect,
   type Locator,
   type Page,
@@ -7,21 +8,19 @@ import {
 
 import { login } from '../helpers/auth'
 import { setFeatureFlags } from '../helpers/features'
-import {
-  BASE_API_URL,
-  createProUserEac,
-  type ProUserWithOffererAndVenueData,
-} from '../helpers/sandbox'
+import { BASE_API_URL } from '../helpers/sandbox'
 
 export async function loginAsAndGoToHomepage(
   page: Page,
-  getterName: string,
+  sandboxSpecificCall: (
+    request: APIRequestContext
+  ) => Promise<Record<string, any>>,
   venueToSelect: string = ''
-): Promise<ProUserWithOffererAndVenueData> {
+): Promise<Record<string, any>> {
   const requestContext = await playwrightRequest.newContext({
     baseURL: BASE_API_URL,
   })
-  const userData = await createProUserEac(requestContext, getterName)
+  const userData = await sandboxSpecificCall(requestContext)
   await setFeatureFlags(requestContext, [
     { name: 'WIP_SWITCH_VENUE', isActive: true },
     { name: 'WIP_ENABLE_NEW_PRO_HOME', isActive: true },
@@ -34,7 +33,6 @@ export async function loginAsAndGoToHomepage(
   if (venueToSelect) {
     await page.getByRole('button', { name: venueToSelect }).click()
   }
-
   return userData
 }
 
@@ -54,54 +52,38 @@ type IndividualModule =
   | 'NEWSLETTER_CARD'
   | 'WEBINARS_CARD'
 
-const defaultIndividualModulesHidden: Record<IndividualModule, boolean> = {
-  HOMOLOGATION_BANNER: false,
-  OFFERS_CARD: false,
-  STATS_CARD: false,
-  EDITO_CARD: false,
-  INCOME_CARD: false,
-  PARTNER_PAGE_CARD: false,
-  NEWSLETTER_CARD: false,
-  WEBINARS_CARD: false,
-}
-
 export async function expectIndividualModules(
   page: Page,
   visibleModules: IndividualModule[]
 ) {
-  const moduleVisibility = { ...defaultIndividualModulesHidden }
-  visibleModules.forEach((module) => {
-    moduleVisibility[module] = true
-  })
-
   await expectModuleVisibility(
     page.getByText('Module gestion offres indivs'),
-    moduleVisibility.OFFERS_CARD
+    visibleModules.includes('OFFERS_CARD')
   )
   await expectModuleVisibility(
     page.getByText('Module statistiques'),
-    moduleVisibility.STATS_CARD
+    visibleModules.includes('STATS_CARD')
   )
   await expectModuleVisibility(
     page.getByText('Module Edito'),
-    moduleVisibility.EDITO_CARD
+    visibleModules.includes('EDITO_CARD')
   )
 
   await expectModuleVisibility(
     page.getByText('Module Budget'),
-    moduleVisibility.INCOME_CARD
+    visibleModules.includes('INCOME_CARD')
   )
   await expectModuleVisibility(
     page.getByText('Module page partenaire'),
-    moduleVisibility.PARTNER_PAGE_CARD
+    visibleModules.includes('PARTNER_PAGE_CARD')
   )
   await expectModuleVisibility(
     page.getByText('Module Webinaire indiv'),
-    moduleVisibility.WEBINARS_CARD
+    visibleModules.includes('WEBINARS_CARD')
   )
   await expectModuleVisibility(
     page.getByText('Module Newsletter'),
-    moduleVisibility.NEWSLETTER_CARD
+    visibleModules.includes('NEWSLETTER_CARD')
   )
 }
 
@@ -116,67 +98,50 @@ type CollectiveModule =
   | 'NEWSLETTER_CARD'
   | 'WEBINARS_CARD'
 
-const defaultCollectiveModulesHidden: Record<CollectiveModule, boolean> = {
-  HOMOLOGATION_BANNER: false,
-  DMS_CARD_TIMELINE: false,
-  DMS_CARD_ACCEPTED_BANNER: false,
-  COLLECTIVE_OFFER_TEMPLATES_CARD: false,
-  COLLECTIVE_OFFERS_CARD: false,
-  INCOME_CARD: false,
-  ADAGE_PAGE_CARD: false,
-  NEWSLETTER_CARD: false,
-  WEBINARS_CARD: false,
-}
-
 export async function expectCollectiveModules(
   page: Page,
   visibleModules: CollectiveModule[]
 ) {
-  const moduleVisibility = { ...defaultCollectiveModulesHidden }
-  visibleModules.forEach((module) => {
-    moduleVisibility[module] = true
-  })
-
   await expectModuleVisibility(
     page.getByRole('heading', {
       level: 2,
       name: 'État d’avancement de votre dossier',
     }),
-    moduleVisibility.DMS_CARD_TIMELINE
+    visibleModules.includes('DMS_CARD_TIMELINE')
   )
 
   await expectModuleVisibility(
     page.getByText(/Votre dossier a été validé/),
-    moduleVisibility.DMS_CARD_ACCEPTED_BANNER
+    visibleModules.includes('DMS_CARD_ACCEPTED_BANNER')
   )
 
   await expectModuleVisibility(
     page.getByText('Module gestion offres vitrines'),
-    moduleVisibility.COLLECTIVE_OFFER_TEMPLATES_CARD
+    visibleModules.includes('COLLECTIVE_OFFER_TEMPLATES_CARD')
   )
 
   await expectModuleVisibility(
     page.getByText('Module gestion offres réservables'),
-    moduleVisibility.COLLECTIVE_OFFERS_CARD
+    visibleModules.includes('COLLECTIVE_OFFERS_CARD')
   )
 
   await expectModuleVisibility(
     page.getByText('Module Budget'),
-    moduleVisibility.INCOME_CARD
+    visibleModules.includes('INCOME_CARD')
   )
 
   await expectModuleVisibility(
     page.getByText('Module page partenaire'),
-    moduleVisibility.ADAGE_PAGE_CARD
+    visibleModules.includes('ADAGE_PAGE_CARD')
   )
 
   await expectModuleVisibility(
     page.getByText('Module Newsletter'),
-    moduleVisibility.NEWSLETTER_CARD
+    visibleModules.includes('NEWSLETTER_CARD')
   )
 
   await expectModuleVisibility(
     page.getByText('Module Webinaires collectif'),
-    moduleVisibility.WEBINARS_CARD
+    visibleModules.includes('WEBINARS_CARD')
   )
 }
