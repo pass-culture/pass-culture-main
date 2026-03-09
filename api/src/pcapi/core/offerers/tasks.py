@@ -38,6 +38,9 @@ class CheckOffererSirenRequest(BaseModelV2):
     time_window_size=settings.CHECK_OFFERER_RATE_LIMIT_TIME_WINDOW_SECONDS,
 )
 def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
+    # Missing info traces in GCP logs for celery workers, so we need warning to ensure it runs with expected rate
+    logger.warning("Running check_offerer_siren_task", extra={"siren": payload.siren})
+
     if not siren_utils.is_valid_siren(payload.siren):
         logger.error("Invalid SIREN format in the database", extra={"siren": payload.siren})
         return
@@ -45,7 +48,7 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
     try:
         siren_info = entreprise_api.get_siren_open_data(payload.siren, with_address=False)
     except entreprise_exceptions.EntrepriseException as exc:
-        logger.info("Could not fetch info from Entreprise API", extra={"siren": payload.siren, "exc": exc})
+        logger.warning("Could not fetch info from Entreprise API", extra={"siren": payload.siren, "exc": exc})
         return
 
     offerer = (
