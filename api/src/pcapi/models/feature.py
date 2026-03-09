@@ -140,6 +140,7 @@ class FeatureToggle(enum.Enum):
     )
     WIP_LLM_OFFER_SEARCH = "Activer la recherche par LLM dans le BO"
     WIP_OFFER_ARTISTS = "Active la suggestion d'artistes à la création d'une offre"
+    WIP_OFFER_RECOMMENDATION_PRO = "Active les recommandations, côté pro"
     WIP_PRE_SIGNUP_INFO = (
         "Activer le nouveau sas d'information avant inscription des partenaires culturels sur le portail pro"
     )
@@ -217,6 +218,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_OHO,
     FeatureToggle.WIP_LLM_OFFER_SEARCH,
     FeatureToggle.WIP_OFFER_ARTISTS,
+    FeatureToggle.WIP_OFFER_RECOMMENDATION_PRO,
     FeatureToggle.WIP_PRE_SIGNUP_INFO,
     FeatureToggle.WIP_PRO_AUTONOMOUS_ANONYMIZATION,
     FeatureToggle.WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY,
