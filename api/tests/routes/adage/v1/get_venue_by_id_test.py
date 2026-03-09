@@ -1,16 +1,15 @@
-from typing import Any
-
 import pytest
 
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers.models import VenueTypeCode
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Returns200Test:
-    def test_get_venue_by_id(self, client: Any) -> None:
+    def test_get_venue_by_id(self, client):
         venue = offerers_factories.CollectiveVenueFactory(
             bannerUrl="http://example.com/image_cropped.png",
             bannerMeta={
@@ -60,7 +59,7 @@ class Returns200Test:
             },
         }
 
-    def test_get_relative_venues_by_id(self, client: Any) -> None:
+    def test_get_relative_venues_by_id(self, client):
         offerer = offerers_factories.OffererFactory()
         venue1 = offerers_factories.CollectiveVenueFactory(
             isPermanent=True,
@@ -79,9 +78,14 @@ class Returns200Test:
             name="zertyu",
             venueTypeCode=VenueTypeCode.OTHER,
         )
-        offerers_factories.CollectiveVenueFactory(
-            isPermanent=True,
-        )
+
+        # same offerer but soft deleted -> should not appear in the result
+        soft_deleted_venue = offerers_factories.CollectiveVenueFactory(isPermanent=True, managingOfferer=offerer)
+        soft_deleted_venue.isSoftDeleted = True
+        db.session.add(soft_deleted_venue)
+        db.session.flush()
+
+        offerers_factories.CollectiveVenueFactory()
 
         client.with_eac_token()
         response = client.get(f"/adage/v1/venues/relative/id/{venue1.id}")
@@ -165,9 +169,21 @@ class Returns200Test:
 
 
 class Returns404Test:
-    def test_when_no_venue_is_found(self, client: Any) -> None:
+    def test_when_no_venue_is_found(self, client):
         client.with_eac_token()
         response = client.get("/adage/v1/venues/id/0")
 
+        assert response.status_code == 404
+        assert response.json == {"code": "VENUE_NOT_FOUND"}
+
+    def test_get_venue_by_id_soft_deleted(self, client):
+        venue = offerers_factories.CollectiveVenueFactory()
+
+        venue.isSoftDeleted = True
+        db.session.add(venue)
+        db.session.flush()
+
+        client.with_eac_token()
+        response = client.get(f"/adage/v1/venues/id/{venue.id}")
         assert response.status_code == 404
         assert response.json == {"code": "VENUE_NOT_FOUND"}

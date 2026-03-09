@@ -52,6 +52,7 @@ def get_all_venues(page: int | None, per_page: int | None) -> list[offerers_mode
         db.session.query(offerers_models.Venue)
         .filter(
             sa.not_(offerers_models.Venue.isVirtual),
+            offerers_models.Venue.isSoftDeleted.is_(False),
         )
         .order_by(offerers_models.Venue.id)
         .offset((page - 1) * per_page)

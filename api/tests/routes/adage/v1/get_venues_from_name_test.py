@@ -233,6 +233,11 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory()
         venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, name="azerty", isPermanent=True)
         venue2 = offerers_factories.VenueFactory(managingOfferer=offerer, name="z123", isPermanent=False)
+        # same offerer but soft deleted -> should not appear in the result
+        venue3 = offerers_factories.VenueFactory(managingOfferer=offerer, name="z124", isPermanent=True)
+        venue3.isSoftDeleted = True
+        db_session.add(venue3)
+        db_session.commit()
         offerers_factories.VenueFactory(isPermanent=True)
 
         client.with_eac_token()
@@ -318,6 +323,18 @@ class Returns404Test:
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues/name/utiful")
+
+        assert response.status_code == 404
+        assert response.json == {"code": "VENUES_NOT_FOUND"}
+
+    def test_when_no_venue_is_found_soft_deleted(self, client, db_session) -> None:
+        venue = offerers_factories.CollectiveVenueFactory(name="a beautiful name")
+        venue.isSoftDeleted = True
+        db_session.add(venue)
+        db_session.commit()
+
+        client.with_eac_token()
+        response = client.get("/adage/v1/venues/name/utiful%20name")
 
         assert response.status_code == 404
         assert response.json == {"code": "VENUES_NOT_FOUND"}

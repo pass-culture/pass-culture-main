@@ -3,6 +3,7 @@ import pytest
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")
@@ -248,6 +249,13 @@ class Returns200Test:
             managingOfferer=offerer,
             isPermanent=True,
         )
+
+        # same offerer but soft deleted -> should not appear in the result
+        soft_deleted_venue = offerers_factories.CollectiveVenueFactory(siret="12345678912344", managingOfferer=offerer)
+        soft_deleted_venue.isSoftDeleted = True
+        db.session.add(soft_deleted_venue)
+        db.session.flush()
+
         offerers_factories.VenueFactory(
             siret="7896541238521",
             audioDisabilityCompliant=None,
@@ -347,6 +355,18 @@ class Returns404Test:
     def test_when_no_venue_is_found(self, client) -> None:
         client.with_eac_token()
         response = client.get("/adage/v1/venues/a_fake_siret")
+
+        assert response.status_code == 404
+        assert response.json == {"code": "VENUES_NOT_FOUND"}
+
+    def test_get_venues_from_siret_soft_deleted(self, client):
+        soft_deleted_venue = offerers_factories.CollectiveVenueFactory(siret="12345678912345")
+        soft_deleted_venue.isSoftDeleted = True
+        db.session.add(soft_deleted_venue)
+        db.session.flush()
+
+        client.with_eac_token()
+        response = client.get("/adage/v1/venues/12345678912345")
 
         assert response.status_code == 404
         assert response.json == {"code": "VENUES_NOT_FOUND"}
