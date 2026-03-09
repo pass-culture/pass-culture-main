@@ -7,13 +7,13 @@ $connect-as-header-height: rem.torem(52px);
   background-color: var(--color-background-subtle);
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
 }
 
 .page-layout {
   border-top: none;
   display: flex;
-  height: 100%;
+  min-height: calc(100vh - size.$top-menu-height);
   overflow: hidden;
   width: 100%;
 
