@@ -319,35 +319,35 @@ class GetOffererHeadlineOfferTest:
             repository.get_offerer_headline_offer(offerer.id)
 
 
-class HasVenueNoneFreeOffersTest:
+class VenueHasNonFreeOffersTest:
     def test_venue_with_no_offers_returns_nothing(self):
         venue = offerers_factories.VenueFactory()
-        assert not repository.venues_have_non_free_offers([venue.id])
+        assert not repository.venue_has_non_free_offers(venue.id)
 
     def test_unknown_venue_returns_nothing(self):
-        assert not repository.venues_have_non_free_offers([-1])
+        assert not repository.venue_has_non_free_offers(-1)
 
     def test_venue_with_non_free_inactive_offers_returns_nothing(self):
         venue = offerers_factories.VenueFactory()
         offers_factories.StockFactory(price=100, offer__isActive=False, offer__venue=venue)
-        assert not repository.venues_have_non_free_offers([venue.id])
+        assert not repository.venue_has_non_free_offers(venue.id)
 
     def test_venue_with_non_free_soft_deleted_offers_returns_nothing(self):
         venue = offerers_factories.VenueFactory()
         offers_factories.StockFactory(price=100, isSoftDeleted=True, offer__venue=venue)
-        assert not repository.venues_have_non_free_offers([venue.id])
+        assert not repository.venue_has_non_free_offers(venue.id)
 
     def test_venue_with_at_least_one_non_free_offer_returns_venue(self):
         venue = offerers_factories.VenueFactory()
         offers_factories.StockFactory(price=100, offer__venue=venue)
         offers_factories.StockFactory(price=0, offer__venue=venue)
-        assert repository.venues_have_non_free_offers([venue.id]) == {venue.id}
+        assert repository.venue_has_non_free_offers(venue.id)
 
     def test_venue_with_only_non_free_offer_returns_venue(self):
         venue = offerers_factories.VenueFactory()
         offers_factories.StockFactory(price=100, offer__venue=venue)
         offers_factories.StockFactory(price=200, offer__venue=venue)
-        assert repository.venues_have_non_free_offers([venue.id]) == {venue.id}
+        assert repository.venue_has_non_free_offers(venue.id)
 
 
 def test_sould_return_user_offerer_timezones():
