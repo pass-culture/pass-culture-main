@@ -120,11 +120,11 @@ def create_regular_pro_user_with_virtual_offer() -> dict:
     offerer = offerers_factories.OffererFactory.create()
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer)
     venue = offerers_factories.VenueFactory.create(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
-    offers_factories.DigitalOfferFactory.create(
-        name="Mon offre virtuelle",
-        subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
-        venue=venue,
-        url="http://www.example.com",
+    offers_factories.StockWithActivationCodesFactory.create(
+        offer__name="Mon offre virtuelle",
+        offer__subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
+        offer__venue=venue,
+        offer__url="http://www.example.com",
     )
     return {"user": get_pro_user_helper(pro_user)}
 
@@ -634,6 +634,9 @@ def create_eac_complete_lt_30d() -> dict:
         processingDate=date_utils.get_naive_utc_now(),
         state="accepte",
     )
+    educational_factories.CollectiveStockFactory.create(
+        collectiveOffer__venue=venue, collectiveOffer__name="Mon offre collective"
+    )
     return {"user": get_pro_user_helper(user_offerer.user)}
 
 
@@ -650,7 +653,7 @@ def create_pro_user_with_non_draft_individual_offer() -> dict:
         siret=siren_utils.complete_siren_or_siret(f"{user_offerer.offerer.siren}0001"),
         dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(weeks=5),
     )
-    offers_factories.ThingOfferFactory.create(venue=venue, name="Offre pour ma venue")
+    offers_factories.ThingStockFactory.create(offer__venue=venue, offer__name="Offre pour ma venue")
     return {"user": get_pro_user_helper(user_offerer.user)}
 
 
@@ -667,7 +670,7 @@ def create_pro_user_with_non_validated_offerer() -> dict:
         name=f"new_offerer {user_offerer.offerer.name}",
         siret=siren_utils.complete_siren_or_siret(f"{user_offerer.offerer.siren}0001"),
     )
-    offers_factories.ThingOfferFactory.create(venue=venue, name="Offre pour ma venue")
+    offers_factories.ThingStockFactory.create(offer__venue=venue, offer__name="Offre pour ma venue")
     return {"user": get_pro_user_helper(user_offerer.user)}
 
 

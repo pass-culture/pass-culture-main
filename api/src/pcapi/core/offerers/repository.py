@@ -1320,10 +1320,13 @@ def get_venue_pro_advices(venue_id: int, offset: int, limit: int | None) -> list
     return list(pro_advices)
 
 
-def venues_have_non_free_offers(venue_ids: typing.Collection[int]) -> set[int]:
+def venue_has_non_free_offers(venue_id: int) -> bool:
+    return venue_has_non_free_individual_offers(venue_id) or venue_has_non_free_collective_offers(venue_id)
+
+
+def venue_has_non_free_individual_offers(venue_id: int) -> bool:
     query = (
-        db.session.query(offers_models.Offer.venueId)
-        .select_from(offers_models.Offer)
+        db.session.query(offers_models.Offer)
         .join(offers_models.Stock)
         .filter(
             sa.and_(
@@ -1332,11 +1335,26 @@ def venues_have_non_free_offers(venue_ids: typing.Collection[int]) -> set[int]:
                 offers_models.Offer.isActive,
             )
         )
-        .filter(offers_models.Offer.venueId.in_(venue_ids))
-        .with_entities(offers_models.Offer.venueId)
+        .filter(offers_models.Offer.venueId == venue_id)
     )
 
-    return {row[0] for row in query}
+    return db.session.query(query.exists()).scalar()
+
+
+def venue_has_non_free_collective_offers(venue_id: int) -> bool:
+    query = (
+        db.session.query(educational_models.CollectiveOffer)
+        .join(educational_models.CollectiveStock)
+        .filter(
+            sa.and_(
+                educational_models.CollectiveStock.price > 0,
+                educational_models.CollectiveOffer.isActive.is_(True),
+            )
+        )
+        .filter(educational_models.CollectiveOffer.venueId == venue_id)
+    )
+
+    return db.session.query(query.exists()).scalar()
 
 
 def get_pro_user_timezones(user_id: int) -> set[str]:
