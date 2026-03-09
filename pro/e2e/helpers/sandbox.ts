@@ -216,13 +216,52 @@ export async function createProUserWithIndividualOffers(
   )
 }
 
-export async function createProUserEac(
-  request: APIRequestContext,
-  getterName: string
+export async function createProUserWithNonDraftIndividualOffer(
+  request: APIRequestContext
 ): Promise<ProUserWithOffererAndVenueData> {
   return await sandboxCall<ProUserWithOffererAndVenueData>(
     request,
     'GET',
-    `${BASE_API_URL}/sandboxes/pro/${getterName}`
+    `${BASE_API_URL}/sandboxes/pro/create_pro_user_with_non_draft_individual_offer`
+  )
+}
+
+export async function createProUserWithNonValidatedOfferer(
+  request: APIRequestContext
+): Promise<ProUserWithOffererAndVenueData> {
+  return await sandboxCall<ProUserWithOffererAndVenueData>(
+    request,
+    'GET',
+    `${BASE_API_URL}/sandboxes/pro/create_pro_user_with_non_validated_offerer`
+  )
+}
+
+export async function createEacWithNonValidatedOfferer(
+  request: APIRequestContext
+): Promise<ProUserWithOffererAndVenueData> {
+  return await sandboxCall<ProUserWithOffererAndVenueData>(
+    request,
+    'GET',
+    `${BASE_API_URL}/sandboxes/pro/create_eac_with_non_validated_offerer`
+  )
+}
+
+export async function createEacEnInstruction(
+  request: APIRequestContext
+): Promise<ProUserWithOffererAndVenueData> {
+  return await sandboxCall<ProUserWithOffererAndVenueData>(
+    request,
+    'GET',
+    `${BASE_API_URL}/sandboxes/pro/create_eac_en_instruction`
+  )
+}
+
+export async function createEacCompleteLt30d(
+  request: APIRequestContext
+): Promise<ProUserWithOffererAndVenueData> {
+  return await sandboxCall<ProUserWithOffererAndVenueData>(
+    request,
+    'GET',
+    `${BASE_API_URL}/sandboxes/pro/create_eac_complete_lt_30d`
   )
 }
