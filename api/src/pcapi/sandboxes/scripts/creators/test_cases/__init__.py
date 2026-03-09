@@ -53,6 +53,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_with_
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_role_permissions import create_roles_with_permissions
 from pcapi.sandboxes.scripts.creators.industrial.create_venue_labels import create_venue_labels
+from pcapi.sandboxes.scripts.creators.test_cases import pro_advices_mocks
 from pcapi.sandboxes.scripts.creators.test_cases import venues_mock
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
@@ -78,6 +79,7 @@ def save_test_cases_sandbox() -> None:
     create_offers_with_compliance_score()
     create_offers_for_each_subcategory()
     create_offers_with_same_author()
+    create_pro_advices()
     create_roles_with_permissions()
     create_industrial_offer_price_limitation_rules()
     create_industrial_offer_validation_rules()
@@ -1090,6 +1092,155 @@ def _create_multiauthors_books(venues: list[offerers_models.Venue]) -> None:
     author = "collectif"
     for _ in range(3):
         create_offer_with_ean(Fake.ean13(), random.choice(venues), author=author)
+
+
+def create_pro_advices() -> None:
+    # Cas 1 :
+    # - ✔︎ Offre à la une
+    # - ✘ Avis sur l'offre à la une
+    # - ✘ Autres offres
+    # - ✘ Avis sur les autres offres
+    venue_1 = offerers_factories.VenueFactory(
+        name="Lieu avec headlines et advices 1", description="Lieu avec une offre à la une sans avis"
+    )
+    headline_offer_1 = offers_factories.StockFactory(
+        offer__venue=venue_1,
+        offer__name=f"Offre à la une du lieu {venue_1.id} - sans avis",
+        offer__subcategoryId=subcategories.SEANCE_CINE.id,
+    ).offer
+    offers_factories.HeadlineOfferFactory(offer=headline_offer_1)
+
+    # Cas 2 :
+    # - ✔︎ Offre à la une
+    # - ✔︎ Avis sur l'offre à la une
+    # - ✘ Autres offres
+    # - ✘ Avis sur les autres offres
+    venue_2 = offerers_factories.VenueFactory(
+        name="Lieu avec headlines et advices 2", description="Lieu avec une offre à la une avec un avis sur celle-ci"
+    )
+    headline_offer_2 = offers_factories.StockFactory(
+        offer__venue=venue_2,
+        offer__name=f"Offre à la une du lieu {venue_2.id}",
+        offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
+    ).offer
+    offers_factories.HeadlineOfferFactory(offer=headline_offer_2)
+    offers_factories.ProAdviceFactory(offer=headline_offer_2, **pro_advices_mocks.advices["fully-featured"])
+
+    # Cas 3 :
+    # - ✔︎ Offre à la une
+    # - ✘ Avis sur l'offre à la une
+    # - ✔︎ Autres offres x1
+    # - ✔︎ Avis sur les autres offres
+    venue_3 = offerers_factories.VenueFactory(
+        name="Lieu avec headlines et advices 3",
+        description="Lieu avec une offre à la une sans avis, mais avec un avis sur une autre offre",
+    )
+    headline_offer_3 = offers_factories.StockFactory(
+        offer__venue=venue_3,
+        offer__name=f"Offre à la une du lieu {venue_3.id} - sans avis",
+        offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+    ).offer
+    offers_factories.HeadlineOfferFactory(offer=headline_offer_3)
+    offer_with_advice = offers_factories.StockFactory(
+        offer__venue=venue_3,
+        offer__name=f"Offre du lieu {venue_3.id} - avec avis",
+        offer__subcategoryId=subcategories.CONCERT.id,
+    ).offer
+    offers_factories.ProAdviceFactory(offer=offer_with_advice, **pro_advices_mocks.advices["long"])
+
+    # Cas 4 :
+    # - ✔︎ Offre à la une
+    # - ✔︎ Avis sur l'offre à la une
+    # - ✔︎ Autres offres
+    # - ✔︎ Avis sur les autres offres
+    venue_4 = offerers_factories.VenueFactory(
+        name="Lieu avec headlines et advices 4",
+        description="Lieu avec une offre à la une avec un avis, mais aussi avec d'autres avis sur d'autres offres.",
+    )
+    headline_offer_4 = offers_factories.StockFactory(
+        offer__venue=venue_4,
+        offer__name=f"Offre à la une du lieu {venue_4.id} - avec avis",
+        offer__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
+    ).offer
+    offers_factories.HeadlineOfferFactory(offer=headline_offer_4)
+    offers_factories.ProAdviceFactory(offer=headline_offer_4, **pro_advices_mocks.advices["short"])
+    offer_with_advice_1 = offers_factories.StockFactory(
+        offer__venue=venue_4,
+        offer__name=f"Offre 1 du lieu {venue_4.id} - avec avis",
+        offer__subcategoryId=subcategories.ABO_PRESSE_EN_LIGNE.id,
+    ).offer
+    offers_factories.ProAdviceFactory(offer=offer_with_advice_1, **pro_advices_mocks.advices["standard"])
+    offer_with_advice_2 = offers_factories.StockFactory(
+        offer__venue=venue_4,
+        offer__name=f"Offre 2 du lieu {venue_4.id} - avec avis",
+        offer__subcategoryId=subcategories.CARTE_MUSEE.id,
+    ).offer
+    offers_factories.ProAdviceFactory(offer=offer_with_advice_2, **pro_advices_mocks.advices["standard2"])
+    offer_with_advice_3 = offers_factories.StockFactory(
+        offer__venue=venue_4,
+        offer__name=f"Offre 3 du lieu {venue_4.id} - avec avis",
+        offer__subcategoryId=subcategories.SEANCE_CINE.id,
+    ).offer
+    offers_factories.ProAdviceFactory(offer=offer_with_advice_3, **pro_advices_mocks.advices["long"])
+
+    # Cas 5 :
+    # - ✔︎ Offre à la une
+    # - ✘ Avis sur l'offre à la une
+    # - ✔︎ Autres offres x3
+    # - ✔︎ Avis sur les autres offres
+    venue_5 = offerers_factories.VenueFactory(
+        name="Lieu avec headlines et advices 5",
+        description="Lieu avec offre à la une sans avis mais avec des avis sur d'autres offres.",
+    )
+    headline_offer_5 = offers_factories.StockFactory(
+        offer__venue=venue_5,
+        offer__name=f"Offre à la une du lieu {venue_5.id} - sans avis",
+        offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
+    ).offer
+    offers_factories.HeadlineOfferFactory(offer=headline_offer_5)
+    offer_with_advice_1 = offers_factories.StockFactory(
+        offer__venue=venue_5,
+        offer__name=f"Offre 1 du lieu {venue_5.id} - avec avis",
+        offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
+    ).offer
+    offers_factories.ProAdviceFactory(offer=offer_with_advice_1, **pro_advices_mocks.advices["short"])
+    offer_with_advice_2 = offers_factories.StockFactory(
+        offer__venue=venue_5,
+        offer__name=f"Offre 2 du lieu {venue_5.id} - avec avis",
+        offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
+    ).offer
+    offers_factories.ProAdviceFactory(offer=offer_with_advice_2, **pro_advices_mocks.advices["standard"])
+    offer_with_advice_3 = offers_factories.StockFactory(
+        offer__venue=venue_5,
+        offer__name=f"Offre 3 du lieu {venue_5.id} - avec avis",
+        offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
+    ).offer
+    offers_factories.ProAdviceFactory(offer=offer_with_advice_3, **pro_advices_mocks.advices["fully-featured"])
+
+    # Cas 6 :
+    # - ✘ Offre à la une
+    # - ✘ Avis sur l'offre à la une
+    # - ✔︎ Autres offres
+    # - ✔︎ Avis sur les autres offres
+    venue_6 = offerers_factories.VenueFactory(
+        name="Lieu avec headlines et advices 6",
+        description="Lieu sans offre à la une mais avec des avis sur d'autres offres.",
+    )
+    offer_with_advice_1 = offers_factories.StockFactory(
+        offer__venue=venue_6,
+        offer__name=f"Offre 1 du lieu {venue_6.id}",
+    ).offer
+    offers_factories.ProAdviceFactory(offer=offer_with_advice_1, **pro_advices_mocks.advices["fully-featured"])
+    offer_with_advice_2 = offers_factories.StockFactory(
+        offer__venue=venue_6,
+        offer__name=f"Offre 2 du lieu {venue_6.id}",
+    ).offer
+    offers_factories.ProAdviceFactory(offer=offer_with_advice_2, **pro_advices_mocks.advices["short"])
+    offer_with_advice_3 = offers_factories.StockFactory(
+        offer__venue=venue_6,
+        offer__name=f"Offre 3 du lieu {venue_6.id}",
+    ).offer
+    offers_factories.ProAdviceFactory(offer=offer_with_advice_3, **pro_advices_mocks.advices["standard2"])
 
 
 @log_func_duration
