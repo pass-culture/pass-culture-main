@@ -16,8 +16,6 @@ import type { SelectOption } from '@/commons/custom_types/form'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Select } from '@/ui-kit/form/Select/Select'
 
-import { STRUCTURE_LABEL } from '../../constants/labels'
-
 interface FormVenueProps {
   userOfferer: GetEducationalOffererResponseModel | null
   venuesOptions: SelectOption[]
@@ -64,7 +62,7 @@ export const FormVenue = ({
         <FormLayout.Row>
           <Select
             disabled={venuesOptions.length === 1 || disableVenueSelection}
-            label={STRUCTURE_LABEL}
+            label="Structure"
             {...register('venueId')}
             options={venuesOptions}
             required
