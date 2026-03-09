@@ -24,9 +24,11 @@ jobs:
       TARGET_ENVIRONMENT: ${{ inputs.target_environment }}
     steps:
       - name: "Check workflow ref"
+        env:
+          GITHUB_REF: ${{ github.ref }}
         run: |
-          echo "Deploying to $TARGET_ENVIRONMENT from ref: ${{ github.ref }}"
-          if ! [[ ${{ github.ref }} =~ ^refs\/tags\/v*$ ]]; then
+          echo "Deploying to $TARGET_ENVIRONMENT from ref: $GITHUB_REF"
+          if ! [[ "$GITHUB_REF" =~ ^refs\/tags\/v*$ ]]; then
             echo "This workflow can only be triggered from a tag (starting with a 'v')"
             exit 1
           fi
@@ -195,8 +197,9 @@ jobs:
       - name: "Publish Github prerelease"
         env:
           GH_TOKEN: ${{ github.token }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
-          gh release edit "${{ github.ref_name }}" \
+          gh release edit "$REF_NAME" \
           --prerelease=false \
           --latest \
           --verify-tag
