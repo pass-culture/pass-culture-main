@@ -206,8 +206,9 @@ describe('VenueEditionFormScreen', () => {
             email: 'e@mail.fr',
             website: 'site.web',
           },
+          volunteeringUrl: 'http://coucou.fr',
         },
-        { initialRouterEntries: ['/'] }
+        { initialRouterEntries: ['/'], features: ['WIP_VOLUNTEERING'] }
       )
       expect(await screen.findByText('Vos informations')).toBeInTheDocument()
       expect(screen.getByText('À propos de votre activité')).toBeInTheDocument()
@@ -221,6 +222,7 @@ describe('VenueEditionFormScreen', () => {
       expect(screen.getByText('123')).toBeInTheDocument()
       expect(screen.getByText(/URL de votre site web/)).toBeInTheDocument()
       expect(screen.getByText('site.web')).toBeInTheDocument()
+      expect(screen.getByText('http://coucou.fr')).toBeInTheDocument()
     })
 
     it('should dispaly an accessibility section', () => {
@@ -516,6 +518,41 @@ describe('VenueEditionFormScreen', () => {
       await userEvent.click(screen.getByText(/Enregistrer/))
 
       expect(editVenueSpy).toHaveBeenCalled()
+    })
+
+    it('should not let the actor submit with volunteering url when FF is disabled', async () => {
+      renderForm({
+        ...baseVenue,
+      })
+
+      await waitFor(() => {
+        expect(screen.queryByText(/Bénévolat/)).not.toBeInTheDocument()
+      })
+    })
+
+    it('should let the actor submit with volunteering url', async () => {
+      const editVenueSpy = vi.spyOn(api, 'editVenue')
+      renderForm(
+        {
+          ...baseVenue,
+        },
+        { features: ['WIP_VOLUNTEERING'] }
+      )
+
+      await userEvent.type(
+        screen.getByLabelText(/URL de votre page jeveuxaider.gouv/),
+        'https://www.jeveuxaider.gouv.fr/organisations/exemple'
+      )
+
+      await userEvent.click(screen.getByText(/Enregistrer/))
+
+      expect(editVenueSpy).toHaveBeenCalledWith(
+        1,
+        expect.objectContaining({
+          volunteeringUrl:
+            'https://www.jeveuxaider.gouv.fr/organisations/exemple',
+        })
+      )
     })
 
     it('should not let the actor submit then when not synchronized with acceslibre if accessibility was never set', async () => {
@@ -865,6 +902,7 @@ describe('VenueEditionFormScreen', () => {
             website: 'http://example.com',
           },
           collectiveDomains: [],
+          volunteeringUrl: 'coucou.fr',
         },
         { initialRouterEntries: ['/'] }
       )
@@ -899,7 +937,7 @@ describe('VenueEditionFormScreen', () => {
       expect(screen.getByText(/Domaines d’activité/)).toBeInTheDocument()
     })
 
-    it('should display about activity at top with the FF enabled', () => {
+    it('should display about activity upper with the FF enabled', () => {
       renderForm(
         {
           ...baseVenue,
@@ -935,6 +973,7 @@ describe('VenueEditionFormScreen', () => {
             email: 'e@mail.fr',
             website: 'site.web',
           },
+          volunteeringUrl: 'coucou.fr',
         },
         {
           initialRouterEntries: ['/'],
