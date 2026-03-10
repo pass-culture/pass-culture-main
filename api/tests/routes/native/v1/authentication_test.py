@@ -1196,3 +1196,28 @@ class EmailValidationTest:
 
         fraud_check = subscription_repository.get_relevant_identity_fraud_check(user, user.eligibility)
         assert fraud_check is not None
+
+    def test_validate_email_with_device_info(self, client):
+        user = users_factories.UserFactory(
+            isEmailValidated=False,
+            age=18,
+        )
+        token = self.initialize_token(user)
+
+        response = client.post(
+            "/native/v1/validate_email",
+            json={
+                "email_validation_token": token,
+                "deviceInfo": {
+                    "os": "Windows XP",
+                    "deviceId": "ID",
+                    "source": "app",
+                    "fontScale": -1,
+                    "resolution": "750x1334",
+                    "screenZoomLevel": None,
+                },
+            },
+        )
+
+        assert response.status_code == 200
+        assert user.isEmailValidated
