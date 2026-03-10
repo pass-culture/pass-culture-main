@@ -1,8 +1,11 @@
 import { act, renderHook } from '@testing-library/react'
+import React from 'react'
+import { Provider } from 'react-redux'
 import { mutate } from 'swr'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { configureTestStore } from '@/commons/store/testUtils'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { postImageToVenue } from '@/repository/pcapi/pcapi'
 
@@ -47,6 +50,19 @@ const mockEditedVenue = {
   bannerMeta: { alt_text: 'new', author: 'new', image_credit: 'new-credit' },
 }
 
+const renderUseOnVenueImageUpload = () => {
+  const store = configureTestStore()
+  const wrapper: React.FC<{ children?: React.ReactNode }> = ({ children }) =>
+    React.createElement(Provider, { store, children })
+
+  return renderHook(
+    () => useOnVenueImageUpload(venue.id, venue.bannerUrl, venue.bannerMeta),
+    {
+      wrapper,
+    }
+  )
+}
+
 describe('useOnVenueImageUpload', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -54,10 +70,7 @@ describe('useOnVenueImageUpload', () => {
   })
 
   it('should initialize image values with venue data', () => {
-    const { result } = renderHook(() =>
-      useOnVenueImageUpload(venue.id, venue.bannerUrl, venue.bannerMeta)
-    )
-
+    const { result } = renderUseOnVenueImageUpload()
     expect(buildInitialVenueImageValues).toHaveBeenCalledWith(
       venue.bannerUrl,
       venue.bannerMeta
@@ -71,9 +84,7 @@ describe('useOnVenueImageUpload', () => {
       .mockReturnValueOnce(mockInitialValues) // initial call
       .mockReturnValueOnce(mockUpdatedValues) // call after upload
 
-    const { result } = renderHook(() =>
-      useOnVenueImageUpload(venue.id, venue.bannerUrl, venue.bannerMeta)
-    )
+    const { result } = renderUseOnVenueImageUpload()
 
     const uploadArgs = {
       imageFile: new File(['img'], 'photo.jpg', { type: 'image/jpeg' }),
@@ -100,7 +111,6 @@ describe('useOnVenueImageUpload', () => {
       mockEditedVenue.bannerMeta
     )
     expect(result.current.imageValues).toEqual(mockUpdatedValues)
-
     expect(mutate).toHaveBeenCalledWith([GET_VENUE_QUERY_KEY, String(venue.id)])
   })
 })
