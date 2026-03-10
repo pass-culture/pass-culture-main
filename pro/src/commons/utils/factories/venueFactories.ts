@@ -90,6 +90,7 @@ export const makeGetVenueResponseModel = <
     visualDisabilityCompliant: false,
     canDisplayHighlights: false,
     hasNonDraftOffers: false,
+    volunteeringUrl: null,
   }
 
   return {

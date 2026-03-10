@@ -102,6 +102,7 @@ class VenueFactory(BaseFactory[models.Venue]):
     _bannerUrl: str | None = None
     adageId: str | factory.declarations.BaseDeclaration | None = None
     isReimbursementSuspended: bool = False
+    volunteeringUrl: str | None = None
 
     offererAddress: factory.declarations.BaseDeclaration | None = factory.RelatedFactory(
         "pcapi.core.offerers.factories.VenueLocationFactory",
@@ -225,6 +226,10 @@ class GooglePlacesInfoFactory(BaseFactory[models.GooglePlacesInfo]):
         "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={}".format
     )
     bannerMeta: dict | None = None
+
+
+class VenueWithVolunteeringUrlFactory(VenueFactory):
+    volunteeringUrl = "https://www.jeveuxaider.gouv.fr/organisations/structure-name"
 
 
 class VenueWithoutSiretFactory(VenueFactory):

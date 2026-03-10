@@ -32,6 +32,7 @@ export type EditVenueBodyModel = {
   street?: string | null;
   venueLabelId?: number | null;
   visualDisabilityCompliant?: boolean | null;
+  volunteeringUrl?: string | null;
   withdrawalDetails?: string | null;
 };
 
