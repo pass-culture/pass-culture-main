@@ -3998,7 +3998,7 @@
                     "deviceInfo": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/TrustedDeviceV2"
+                                "$ref": "#/components/schemas/ExtentedTrustedDevice"
                             },
                             {
                                 "type": "null"
@@ -6485,7 +6485,7 @@
                     "deviceInfo": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/TrustedDeviceV2"
+                                "$ref": "#/components/schemas/ExtentedTrustedDevice"
                             },
                             {
                                 "type": "null"
@@ -6804,7 +6804,7 @@
                     "deviceInfo": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/TrustedDeviceV2"
+                                "$ref": "#/components/schemas/ExtentedTrustedDevice"
                             },
                             {
                                 "type": "null"
@@ -7527,44 +7527,6 @@
                     "deviceId"
                 ],
                 "title": "TrustedDevice",
-                "type": "object"
-            },
-            "TrustedDeviceV2": {
-                "additionalProperties": false,
-                "properties": {
-                    "deviceId": {
-                        "title": "Deviceid",
-                        "type": "string"
-                    },
-                    "os": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Os"
-                    },
-                    "source": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Source"
-                    }
-                },
-                "required": [
-                    "deviceId"
-                ],
-                "title": "TrustedDeviceV2",
                 "type": "object"
             },
             "UbbleError": {
