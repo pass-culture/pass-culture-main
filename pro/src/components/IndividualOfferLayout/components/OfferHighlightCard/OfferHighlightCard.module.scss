@@ -1,0 +1,44 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
+
+.highlight-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-spacing-l);
+  padding: var(--size-spacing-xl);
+  border: 1px solid var(--color-border-brand-primary);
+  border-radius: var(--size-border-radius-m);
+  background-color: var(--color-background-primary);
+  max-width: 400px;
+
+  &-top {
+    display: flex;
+    align-items: center;
+    gap: var(--size-spacing-m);
+  }
+
+  &-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-brand-primary);
+  }
+
+  &-text {
+    @include fonts.body-accent;
+
+    margin: 0;
+    flex: 1;
+  }
+
+  &-actions {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+
+    :global(.pc-button) {
+      width: 100%;
+    }
+  }
+}

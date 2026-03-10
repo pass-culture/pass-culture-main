@@ -29,6 +29,10 @@ import {
   type IndividualOfferLayoutProps,
 } from './IndividualOfferLayout'
 
+vi.mock('./components/OfferHighlightCard/OfferHighlightCard', () => ({
+  OfferHighlightCard: vi.fn(() => <div>Mocked OfferHighlightCard</div>),
+}))
+
 vi.mock('react-router', async () => ({
   ...(await vi.importActual<typeof import('react-router')>('react-router')),
   Navigate: vi.fn(),
@@ -262,6 +266,54 @@ describe('IndividualOfferLayout', () => {
       expect(
         screen.queryByRole('button', { name: 'Choisir un temps fort' })
       ).not.toBeInTheDocument()
+    })
+
+    describe('when WIP_OFFER_RECOMMENDATION_PRO flag is active', () => {
+      it('should display the highlight card instead of the banner', () => {
+        // Given
+        const offer = getIndividualOfferFactory({
+          status: OfferStatus.ACTIVE,
+          isEvent: true,
+        })
+
+        // When
+        renderIndividualOfferLayout({
+          props: { offer },
+          options: { features: ['WIP_OFFER_RECOMMENDATION_PRO'] },
+        })
+
+        // Then
+        expect(
+          screen.getByText('Mocked OfferHighlightCard')
+        ).toBeInTheDocument()
+        expect(
+          screen.queryByRole('button', { name: 'Choisir un temps fort' })
+        ).not.toBeInTheDocument()
+      })
+    })
+
+    describe('when WIP_OFFER_RECOMMENDATION_PRO flag is inactive', () => {
+      it('should display the highlight banner', () => {
+        // Given
+        const offer = getIndividualOfferFactory({
+          status: OfferStatus.ACTIVE,
+          isEvent: true,
+        })
+
+        // When
+        renderIndividualOfferLayout({
+          props: { offer },
+          options: { features: [] },
+        })
+
+        // Then
+        expect(
+          screen.queryByText('Mocked OfferHighlightCard')
+        ).not.toBeInTheDocument()
+        expect(
+          screen.getByRole('button', { name: 'Choisir un temps fort' })
+        ).toBeInTheDocument()
+      })
     })
 
     it('should not display publication date in creation', () => {
