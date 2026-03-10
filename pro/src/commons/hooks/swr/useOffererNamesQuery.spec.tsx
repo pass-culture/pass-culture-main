@@ -19,7 +19,7 @@ const user = sharedCurrentUserFactory()
 const TestComponent = () => {
   const offererNamesQuery = useOffererNamesQuery()
 
-  const offererNames = offererNamesQuery.data?.offerersNames
+  const offererNames = offererNamesQuery.data
 
   return (
     <div data-testid="offerernamesquery-hook">
@@ -35,6 +35,8 @@ const TestComponent = () => {
 const renderComponent = (
   overrides: DeepPartial<RootState> = {
     offerer: {
+      offererNamesAttached: null,
+      offerersNamesWithPendingValidation: null,
       offererNames: null,
     },
   }
@@ -51,13 +53,17 @@ describe('useOffererNamesQuery', () => {
   })
 
   it('should invoke API and dispatch if no data is present in the store', async () => {
-    const expectedOfferersNames = [
+    const expectedOfferersNamesAttached = [
       { id: 1, name: 'Offerer 1' },
       { id: 2, name: 'Offerer 2' },
     ]
+    const expectedOfferersNamesWithPendingValidation = [
+      { id: 3, name: 'Offerer 3' },
+    ]
     vi.mocked(api.listOfferersNames).mockResolvedValueOnce({
-      offerersNames: expectedOfferersNames,
-      offerersNamesWithPendingValidation: [],
+      offerersNames: expectedOfferersNamesAttached,
+      offerersNamesWithPendingValidation:
+        expectedOfferersNamesWithPendingValidation,
     })
 
     const { store } = renderComponent()
@@ -66,21 +72,32 @@ describe('useOffererNamesQuery', () => {
       expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
     })
 
-    expect(store.getState().offerer.offererNames).toEqual(expectedOfferersNames)
+    expect(store.getState().offerer.offererNamesAttached).toEqual(
+      expectedOfferersNamesAttached
+    )
+    expect(store.getState().offerer.offerersNamesWithPendingValidation).toEqual(
+      expectedOfferersNamesWithPendingValidation
+    )
 
     expect(screen.getByText('Offerer 1')).toBeInTheDocument()
     expect(screen.getByText('Offerer 2')).toBeInTheDocument()
+    expect(screen.getByText('Offerer 3')).toBeInTheDocument()
   })
 
   it('should not invoke API and dispatch if data is present in the store', async () => {
-    const mockOffererNames = [
+    const mockOffererNamesAttached = [
       { id: 3, name: 'Offerer 3' },
       { id: 4, name: 'Offerer 4' },
+    ]
+    const mockOfferersNamesWithPendingValidation = [
+      { id: 5, name: 'Offerer 5' },
     ]
 
     renderComponent({
       offerer: {
-        offererNames: mockOffererNames,
+        offererNamesAttached: mockOffererNamesAttached,
+        offerersNamesWithPendingValidation:
+          mockOfferersNamesWithPendingValidation,
       },
     })
 

@@ -6,16 +6,28 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import {
   ensureCurrentOfferer,
   ensureOffererNames,
+  ensureOffererNamesAttached,
 } from '@/commons/store/offerer/selectors'
 import { OffererSelect } from '@/components/OffererSelect/OffererSelect'
 import { ReimbursementsTabs } from '@/components/ReimbursementsTabs/ReimbursementsTabs'
+
+import { NonAttachedBanner } from '../NonAttached/NonAttachedBanner/NonAttachedBanner'
 
 // TODO (igabriele, 2026-02-10): Merge that within `<AdministrationLayout />` once `WIP_SWITCH_VENUE` FF is enabled and removed.
 export const Reimbursements = () => {
   const selectedOfferer = useAppSelector(ensureCurrentOfferer)
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
   const offererNames = useAppSelector(ensureOffererNames)
-
+  const adminSelectedOfferer = useAppSelector(
+    (store) => store.user.selectedAdminOfferer
+  )
+  const offererId = withSwitchVenueFeature
+    ? adminSelectedOfferer?.id
+    : selectedOfferer?.id
+  const offererNamesAttached = useAppSelector(ensureOffererNamesAttached)
+  const isSelectedOffererAttached = offererNamesAttached.some(
+    (offerer) => offerer.id === offererId
+  )
   return (
     <BasicLayout
       mainHeading="Gestion financière"
@@ -24,8 +36,14 @@ export const Reimbursements = () => {
       {withSwitchVenueFeature && offererNames && offererNames.length > 1 && (
         <OffererSelect />
       )}
-      <ReimbursementsTabs selectedOfferer={selectedOfferer} />
-      <Outlet />
+      {isSelectedOffererAttached ? (
+        <>
+          <ReimbursementsTabs selectedOfferer={selectedOfferer} />
+          <Outlet />
+        </>
+      ) : (
+        <NonAttachedBanner></NonAttachedBanner>
+      )}
     </BasicLayout>
   )
 }

@@ -14,7 +14,10 @@ import { OffererLinkEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { ensureOffererNames } from '@/commons/store/offerer/selectors'
+import {
+  ensureOffererNames,
+  ensureOffererNamesAttached,
+} from '@/commons/store/offerer/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OffererSelect } from '@/components/OffererSelect/OffererSelect'
 import { Button } from '@/design-system/Button/Button'
@@ -24,6 +27,7 @@ import fullDownIcon from '@/icons/full-down.svg'
 import fullUpIcon from '@/icons/full-up.svg'
 import { validationSchema } from '@/pages/Collaborators/validationSchema'
 
+import { NonAttachedBanner } from '../NonAttached/NonAttachedBanner/NonAttachedBanner'
 import styles from './Collaborators.module.scss'
 
 const SUCCESS_MESSAGE = "L'invitation a bien été envoyée."
@@ -39,7 +43,6 @@ const Collaborators = () => {
     (state) => state.offerer.currentOfferer
   )?.id
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const [displayAllMembers, setDisplayAllMembers] = useState(false)
@@ -48,15 +51,23 @@ const Collaborators = () => {
   const adminSelectedOfferer = useAppSelector(
     (store) => store.user.selectedAdminOfferer
   )
-  const offererNames = useAppSelector(ensureOffererNames)
+
   const offererId = withSwitchVenueFeature
     ? adminSelectedOfferer?.id
     : currentOffererId
 
+  const offererNames = useAppSelector(ensureOffererNames)
+  const offererNamesAttached = useAppSelector(ensureOffererNamesAttached)
+  const isSelectedOffererAttached = offererNamesAttached.some(
+    (offerer) => offerer.id === offererId
+  )
+
   const { data } = useSWR(
     [GET_MEMBERS_QUERY_KEY, offererId],
     ([, offererIdParam]) =>
-      !offererIdParam ? null : api.getOffererMembers(offererIdParam),
+      !offererIdParam || !isSelectedOffererAttached
+        ? null
+        : api.getOffererMembers(offererIdParam),
     { fallbackData: null }
   )
   const members = data?.members ?? []
@@ -102,7 +113,7 @@ const Collaborators = () => {
   }
 
   const MAX_COLLABORATORS = 10
-
+  // TODO (cmoinier, 2026-03-13): Remove this once `WIP_SWITCH_VENUE` FF is enabled and removed.
   if (!offererId) {
     return null
   }
@@ -115,122 +126,134 @@ const Collaborators = () => {
       {withSwitchVenueFeature && offererNames && offererNames.length > 1 && (
         <OffererSelect />
       )}
-      <section className={styles['section']}>
-        <h2 className={styles['main-list-title']}>Liste des collaborateurs</h2>
+      {isSelectedOffererAttached ? (
+        <section className={styles['section']}>
+          <h2 className={styles['main-list-title']}>
+            Liste des collaborateurs
+          </h2>
 
-        {members.length > 0 && (
-          <div className={styles['members-container']}>
-            <table
-              className={classNames(styles['members-list'], {
-                [styles['members-list--withMarginBottom']]:
-                  members.length > MAX_COLLABORATORS,
-              })}
-            >
-              <thead>
-                <tr className={styles['members-list-tr']}>
-                  <th scope="col" className={styles['members-list-th']}>
-                    Email
-                  </th>
-                  <th scope="col" className={styles['members-list-th']}>
-                    Statut
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {members.map(
-                  ({ email, status }, index) =>
-                    !(!displayAllMembers && index > MAX_COLLABORATORS - 1) && (
-                      <tr key={email} className={styles['members-list-tr']}>
-                        <td
-                          className={classNames(
-                            styles['member-email'],
-                            styles['members-list-td']
-                          )}
-                        >
-                          {email}
-                        </td>
-                        <td
-                          className={classNames(
-                            styles['member-status'],
-                            styles['members-list-td']
-                          )}
-                        >
-                          {status === OffererMemberStatus.VALIDATED
-                            ? 'Validé'
-                            : 'En attente'}
-                        </td>
-                      </tr>
-                    )
-                )}
-              </tbody>
-            </table>
+          {members.length > 0 && (
+            <div className={styles['members-container']}>
+              <table
+                className={classNames(styles['members-list'], {
+                  [styles['members-list--withMarginBottom']]:
+                    members.length > MAX_COLLABORATORS,
+                })}
+              >
+                <thead>
+                  <tr className={styles['members-list-tr']}>
+                    <th scope="col" className={styles['members-list-th']}>
+                      Email
+                    </th>
+                    <th scope="col" className={styles['members-list-th']}>
+                      Statut
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {members.map(
+                    ({ email, status }, index) =>
+                      !(
+                        !displayAllMembers && index > MAX_COLLABORATORS - 1
+                      ) && (
+                        <tr key={email} className={styles['members-list-tr']}>
+                          <td
+                            className={classNames(
+                              styles['member-email'],
+                              styles['members-list-td']
+                            )}
+                          >
+                            {email}
+                          </td>
+                          <td
+                            className={classNames(
+                              styles['member-status'],
+                              styles['members-list-td']
+                            )}
+                          >
+                            {status === OffererMemberStatus.VALIDATED
+                              ? 'Validé'
+                              : 'En attente'}
+                          </td>
+                        </tr>
+                      )
+                  )}
+                </tbody>
+              </table>
 
-            {members.length > MAX_COLLABORATORS && (
-              <Button
-                onClick={() => setDisplayAllMembers(!displayAllMembers)}
-                variant={ButtonVariant.TERTIARY}
-                color={ButtonColor.NEUTRAL}
-                icon={displayAllMembers ? fullUpIcon : fullDownIcon}
-                label={
-                  displayAllMembers
-                    ? 'Voir moins de collaborateurs'
-                    : 'Voir plus de collaborateurs'
-                }
-              />
-            )}
-          </div>
-        )}
+              {members.length > MAX_COLLABORATORS && (
+                <Button
+                  onClick={() => setDisplayAllMembers(!displayAllMembers)}
+                  variant={ButtonVariant.TERTIARY}
+                  color={ButtonColor.NEUTRAL}
+                  icon={displayAllMembers ? fullUpIcon : fullDownIcon}
+                  label={
+                    displayAllMembers
+                      ? 'Voir moins de collaborateurs'
+                      : 'Voir plus de collaborateurs'
+                  }
+                />
+              )}
+            </div>
+          )}
 
-        {!showInvitationForm ? (
-          <Button
-            variant={ButtonVariant.SECONDARY}
-            onClick={() => {
-              logEvent(OffererLinkEvents.CLICKED_ADD_COLLABORATOR, {
-                offererId: offererId,
-              })
-              setShowInvitationForm(true)
-            }}
-            label="Ajouter un collaborateur"
-          />
-        ) : (
-          <>
-            <h3 className={styles['subtitle']}>Ajout de collaborateurs</h3>
-            <p className={styles['description']}>
-              Vous pouvez inviter des collaborateurs à rejoindre votre espace.
-              Une invitation leur sera envoyée par email. Vous serez notifié
-              quand ils auront rejoint l’espace.
-            </p>
-            <form
-              className={styles['invitation-form']}
-              onSubmit={handleSubmit(onSubmit)}
-            >
-              <FormLayout>
-                <FormLayout.Row className={styles['invitation-email-wrapper']}>
-                  <div className={styles['invitation-email-field']}>
-                    <TextInput
-                      label="Adresse email"
-                      type="email"
-                      description="Format : email@exemple.com"
-                      error={errors.email?.message}
-                      required
-                      requiredIndicator="explicit"
-                      {...register('email')}
-                      extension={
-                        <Button
-                          type="submit"
-                          isLoading={isSubmitting}
-                          data-error={errors.email?.message ? 'true' : 'false'}
-                          label="Inviter"
-                        />
-                      }
-                    />
-                  </div>
-                </FormLayout.Row>
-              </FormLayout>
-            </form>
-          </>
-        )}
-      </section>
+          {!showInvitationForm ? (
+            <Button
+              variant={ButtonVariant.SECONDARY}
+              onClick={() => {
+                logEvent(OffererLinkEvents.CLICKED_ADD_COLLABORATOR, {
+                  offererId: offererId,
+                })
+                setShowInvitationForm(true)
+              }}
+              label="Ajouter un collaborateur"
+            />
+          ) : (
+            <>
+              <h3 className={styles['subtitle']}>Ajout de collaborateurs</h3>
+              <p className={styles['description']}>
+                Vous pouvez inviter des collaborateurs à rejoindre votre espace.
+                Une invitation leur sera envoyée par email. Vous serez notifié
+                quand ils auront rejoint l’espace.
+              </p>
+              <form
+                className={styles['invitation-form']}
+                onSubmit={handleSubmit(onSubmit)}
+              >
+                <FormLayout>
+                  <FormLayout.Row
+                    className={styles['invitation-email-wrapper']}
+                  >
+                    <div className={styles['invitation-email-field']}>
+                      <TextInput
+                        label="Adresse email"
+                        type="email"
+                        description="Format : email@exemple.com"
+                        error={errors.email?.message}
+                        required
+                        requiredIndicator="explicit"
+                        {...register('email')}
+                        extension={
+                          <Button
+                            type="submit"
+                            isLoading={isSubmitting}
+                            data-error={
+                              errors.email?.message ? 'true' : 'false'
+                            }
+                            label="Inviter"
+                          />
+                        }
+                      />
+                    </div>
+                  </FormLayout.Row>
+                </FormLayout>
+              </form>
+            </>
+          )}
+        </section>
+      ) : (
+        <NonAttachedBanner></NonAttachedBanner>
+      )}
     </BasicLayout>
   )
 }

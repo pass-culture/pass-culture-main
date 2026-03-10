@@ -77,6 +77,7 @@ export default defineConfig(({ mode }) => {
             },
           ],
       clearMocks: true,
+      mockReset: true,
       restoreMocks: true,
       cacheDir: '.vitest_cache',
       css: { modules: { classNameStrategy: 'non-scoped' } },
