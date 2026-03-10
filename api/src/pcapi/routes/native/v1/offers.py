@@ -3,6 +3,7 @@ from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import BadRequest
 
 import pcapi.core.chronicles.api as chronicles_api
+import pcapi.core.external.batch.tasks as batch_tasks
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.app_search_tree import NATIVE_CATEGORIES
@@ -10,7 +11,6 @@ from pcapi.core.categories.app_search_tree import SEARCH_GROUPS
 from pcapi.core.categories.app_search_tree import SEARCH_NODES
 from pcapi.core.categories.models import GenreType
 from pcapi.core.offers import repository
-from pcapi.core.offers import tasks
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Product
 from pcapi.models import db
@@ -140,8 +140,8 @@ def send_offer_link_by_push(offer_id: int) -> None:
     offer = get_or_404(Offer, offer_id)
     if offer.validation != OfferValidationStatus.APPROVED:
         raise ResourceNotFoundError()
-    payload = tasks.SendOfferLinkByPushPayload(user_id=current_user.id, offer_id=offer_id)
-    tasks.send_offer_link_by_push_task.delay(payload.model_dump())
+    payload = batch_tasks.SendOfferLinkByPushPayload(user_id=current_user.id, offer_id=offer_id)
+    batch_tasks.send_offer_link_by_push_task.delay(payload.model_dump())
 
 
 @blueprint.native_route("/subcategories/v2", methods=["GET"])

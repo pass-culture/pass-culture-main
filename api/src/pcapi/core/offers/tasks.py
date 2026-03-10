@@ -9,8 +9,6 @@ from pcapi.core import search
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.api import offer as educational_api_offer
-from pcapi.core.external.batch.api import send_transactional_notification
-from pcapi.core.external.batch.transactional_notifications import get_offer_notification_data
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
@@ -485,15 +483,3 @@ def _create_or_update_ean_offers(
         reason=IndexationReason.OFFER_UPDATE,
         log_extra={"venue_id": venue_id, "source": "offers_public_api"},
     )
-
-
-class SendOfferLinkByPushPayload(BaseModelV2):
-    user_id: int
-    offer_id: int
-
-
-@celery_async_task(name="tasks.offers.priority.send_offer_link_by_push", model=SendOfferLinkByPushPayload)
-def send_offer_link_by_push_task(payload: SendOfferLinkByPushPayload) -> None:
-    offer = db.session.query(offers_models.Offer).filter_by(id=payload.offer_id).one()
-    notification_data = get_offer_notification_data(payload.user_id, offer)
-    send_transactional_notification(notification_data)
