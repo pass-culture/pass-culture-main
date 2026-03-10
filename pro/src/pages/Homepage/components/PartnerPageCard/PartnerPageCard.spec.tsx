@@ -36,6 +36,7 @@ const baseVenue = makeGetVenueResponseModel({
 })
 
 const renderPartnerPageCard = (
+  variant: 'individual' | 'collective' = 'individual',
   venueOverrides?: Partial<GetVenueResponseModel>
 ) => {
   const venue = makeGetVenueResponseModel({
@@ -49,13 +50,14 @@ const renderPartnerPageCard = (
       offererId={venue.managingOfferer.id}
       venueBannerUrl={venue.bannerUrl}
       venueBannerMeta={venue.bannerMeta}
+      variant={variant}
     />
   )
 }
 
 describe('PartnerPageCard', () => {
   it('should render the partner page module with the venue information', () => {
-    renderPartnerPageCard({
+    renderPartnerPageCard('individual', {
       bannerMeta: {
         original_image_url: 'MyFirstImage',
         crop_params: {
@@ -77,26 +79,6 @@ describe('PartnerPageCard', () => {
     renderPartnerPageCard()
 
     expect(screen.getByText('Importez une image')).toBeVisible()
-  })
-
-  it('should render venue edition link', () => {
-    renderPartnerPageCard()
-
-    expect(
-      screen.getByRole('link', { name: 'Compléter ma page' })
-    ).toHaveAttribute(
-      'href',
-      `/structures/${baseVenue.managingOffererId}/lieux/${baseVenue.id}/page-partenaire`
-    )
-  })
-
-  it('should render venue page preview link', () => {
-    renderPartnerPageCard()
-
-    expect(screen.getByRole('link', { name: /Voir ma page/ })).toHaveAttribute(
-      'href',
-      `https://mon-url-de-base/lieu/${baseVenue.id}`
-    )
   })
 
   it('should log CLICKED_ADD_IMAGE on image upload', async () => {
@@ -124,6 +106,54 @@ describe('PartnerPageCard', () => {
         isEdition: true,
         imageCreationStage: 'add image',
       })
+    })
+  })
+
+  describe('individual variant', () => {
+    it('should render venue edition link', () => {
+      renderPartnerPageCard()
+
+      expect(
+        screen.getByRole('link', { name: 'Compléter ma page' })
+      ).toHaveAttribute(
+        'href',
+        `/structures/${baseVenue.managingOffererId}/lieux/${baseVenue.id}/page-partenaire`
+      )
+    })
+
+    it('should render venue page preview link', () => {
+      renderPartnerPageCard()
+
+      expect(
+        screen.getByRole('link', { name: /Voir ma page/ })
+      ).toHaveAttribute('href', `https://mon-url-de-base/lieu/${baseVenue.id}`)
+    })
+  })
+
+  describe('collective variant', () => {
+    it('should render the correct title for collective variant', () => {
+      renderPartnerPageCard('collective')
+
+      expect(screen.getByText('Votre page sur ADAGE')).toBeVisible()
+    })
+
+    it('should render venue edition link', () => {
+      renderPartnerPageCard('collective')
+
+      expect(
+        screen.getByRole('link', { name: 'Compléter ma page' })
+      ).toHaveAttribute(
+        'href',
+        `/structures/${baseVenue.managingOffererId}/lieux/${baseVenue.id}/collectif`
+      )
+    })
+
+    it('should not render venue page preview link', () => {
+      renderPartnerPageCard('collective')
+
+      expect(
+        screen.queryByRole('link', { name: /Voir ma page/ })
+      ).not.toBeInTheDocument()
     })
   })
 })
