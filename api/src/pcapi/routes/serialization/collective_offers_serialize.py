@@ -157,6 +157,25 @@ class ListCollectiveOfferTemplatesResponseModel(pydantic_v2.RootModel):
     root: list[CollectiveOfferTemplateResponseModel]
 
 
+### GET collective offers for homepage
+class ListCollectiveOffersHomeQueryModel(HttpQueryParamsModel):
+    venue_id: int
+
+
+class CollectiveOfferTemplateHomeResponseModel(HttpBodyModel):
+    id: int
+    name: str
+    displayedStatus: models.CollectiveOfferDisplayedStatus
+    imageUrl: str | None
+    dates: DatesModel | None
+    allowedActions: list[models.CollectiveOfferTemplateAllowedAction]
+
+
+class CollectiveOfferTemplatesHomeResponseModel(HttpBodyModel):
+    has_offers: bool
+    offers: list[CollectiveOfferTemplateHomeResponseModel]
+
+
 ### GET one collective offer models
 class OfferDomain(HttpBodyModel):
     id: int
