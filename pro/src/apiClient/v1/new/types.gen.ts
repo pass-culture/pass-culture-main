@@ -563,6 +563,30 @@ export type CollectiveOfferHistory = {
 };
 
 /**
+ * CollectiveOfferHomeResponseModel
+ */
+export type CollectiveOfferHomeResponseModel = {
+    /**
+     * Allowedactions
+     */
+    allowedActions: Array<CollectiveOfferAllowedAction>;
+    collectiveStock: CollectiveStockHomeResponseModel | null;
+    displayedStatus: CollectiveOfferDisplayedStatus;
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Imageurl
+     */
+    imageUrl: string | null;
+    /**
+     * Name
+     */
+    name: string;
+};
+
+/**
  * CollectiveOfferInstitutionModel
  */
 export type CollectiveOfferInstitutionModel = {
@@ -695,6 +719,30 @@ export enum CollectiveOfferTemplateAllowedAction {
 }
 
 /**
+ * CollectiveOfferTemplateHomeResponseModel
+ */
+export type CollectiveOfferTemplateHomeResponseModel = {
+    /**
+     * Allowedactions
+     */
+    allowedActions: Array<CollectiveOfferTemplateAllowedAction>;
+    dates: DatesModel | null;
+    displayedStatus: CollectiveOfferDisplayedStatus;
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Imageurl
+     */
+    imageUrl: string | null;
+    /**
+     * Name
+     */
+    name: string;
+};
+
+/**
  * CollectiveOfferTemplateResponseModel
  */
 export type CollectiveOfferTemplateResponseModel = {
@@ -718,6 +766,20 @@ export type CollectiveOfferTemplateResponseModel = {
      */
     name: string;
     venue: ListOffersVenueResponseModelV2;
+};
+
+/**
+ * CollectiveOfferTemplatesHomeResponseModel
+ */
+export type CollectiveOfferTemplatesHomeResponseModel = {
+    /**
+     * Hasoffers
+     */
+    hasOffers: boolean;
+    /**
+     * Offers
+     */
+    offers: Array<CollectiveOfferTemplateHomeResponseModel>;
 };
 
 /**
@@ -792,6 +854,28 @@ export type CollectiveStockEditionBodyModel = {
      * Totalprice
      */
     totalPrice?: number | null;
+};
+
+/**
+ * CollectiveStockHomeResponseModel
+ */
+export type CollectiveStockHomeResponseModel = {
+    /**
+     * Bookinglimitdatetime
+     */
+    bookingLimitDatetime: string;
+    /**
+     * Enddatetime
+     */
+    endDatetime: string;
+    /**
+     * Numberoftickets
+     */
+    numberOfTickets: number;
+    /**
+     * Startdatetime
+     */
+    startDatetime: string;
 };
 
 /**
@@ -3827,6 +3911,30 @@ export type ListBookingsResponseModel = {
  * ListCollectiveOfferTemplatesResponseModel
  */
 export type ListCollectiveOfferTemplatesResponseModel = Array<CollectiveOfferTemplateResponseModel>;
+
+/**
+ * ListCollectiveOffersHomeQueryModel
+ */
+export type ListCollectiveOffersHomeQueryModel = {
+    /**
+     * Venueid
+     */
+    venueId: number;
+};
+
+/**
+ * ListCollectiveOffersHomeResponseModel
+ */
+export type ListCollectiveOffersHomeResponseModel = {
+    /**
+     * Hasoffers
+     */
+    hasOffers: boolean;
+    /**
+     * Offers
+     */
+    offers: Array<CollectiveOfferHomeResponseModel>;
+};
 
 /**
  * ListCollectiveOffersQueryModel
@@ -7403,6 +7511,74 @@ export type getCollectiveEducationalDomainsResponses = {
 };
 
 export type getCollectiveEducationalDomainsResponse = getCollectiveEducationalDomainsResponses[keyof getCollectiveEducationalDomainsResponses];
+
+export type getCollectiveHomeBookableOffersData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Venueid
+         */
+        venueId: number;
+    };
+    url: '/collective/home/bookable-offers';
+};
+
+export type getCollectiveHomeBookableOffersErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type getCollectiveHomeBookableOffersError = getCollectiveHomeBookableOffersErrors[keyof getCollectiveHomeBookableOffersErrors];
+
+export type getCollectiveHomeBookableOffersResponses = {
+    /**
+     * OK
+     */
+    200: ListCollectiveOffersHomeResponseModel;
+};
+
+export type getCollectiveHomeBookableOffersResponse = getCollectiveHomeBookableOffersResponses[keyof getCollectiveHomeBookableOffersResponses];
+
+export type getCollectiveHomeOffersTemplateData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Venueid
+         */
+        venueId: number;
+    };
+    url: '/collective/home/offers-template';
+};
+
+export type getCollectiveHomeOffersTemplateErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type getCollectiveHomeOffersTemplateError = getCollectiveHomeOffersTemplateErrors[keyof getCollectiveHomeOffersTemplateErrors];
+
+export type getCollectiveHomeOffersTemplateResponses = {
+    /**
+     * OK
+     */
+    200: CollectiveOfferTemplatesHomeResponseModel;
+};
+
+export type getCollectiveHomeOffersTemplateResponse = getCollectiveHomeOffersTemplateResponses[keyof getCollectiveHomeOffersTemplateResponses];
 
 export type postCollectiveOffersData = {
     body: PostCollectiveOfferBodyModel;
