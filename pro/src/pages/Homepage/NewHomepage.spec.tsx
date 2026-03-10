@@ -530,14 +530,14 @@ describe('NewHomepage', () => {
 
         expect(
           screen.getByRole('tabpanel', { description: /collective/ })
-        ).toHaveTextContent(/Votre page sur ADAGE/)
+        ).toHaveTextContent('page partenaire')
 
         expect(
           screen.getByRole('tabpanel', { description: /collective/ })
         ).toHaveTextContent(/Suivez notre actualité/)
       })
 
-      it('should not  have the mandatory modules when venue is not allowed on adage', () => {
+      it('should not have the mandatory modules when venue is not allowed on adage', () => {
         renderNewHomepage({
           ...defaultGetOffererVenueResponseModel,
           allowedOnAdage: false,
@@ -554,7 +554,7 @@ describe('NewHomepage', () => {
 
         expect(
           screen.getByRole('tabpanel', { description: /collective/ })
-        ).not.toHaveTextContent(/Votre page sur ADAGE/)
+        ).not.toHaveTextContent('page partenaire')
 
         expect(
           screen.getByRole('tabpanel', { description: /collective/ })
