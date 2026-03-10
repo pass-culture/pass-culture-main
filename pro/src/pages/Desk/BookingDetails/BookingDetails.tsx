@@ -85,7 +85,7 @@ export const BookingDetails = ({ booking }: BookingDetailsProps) => {
       {booking.quantity === 2 ? (
         <div className={styles['desk-line']}>
           <div className={styles['desk-label']}>Prix :</div>
-          <div className={styles['desk-value']}>{formattedPrice}</div>
+          <div>{formattedPrice}</div>
           <SvgIcon src={strokeDuoIcon} alt="Réservation DUO" width="30" />
         </div>
       ) : (

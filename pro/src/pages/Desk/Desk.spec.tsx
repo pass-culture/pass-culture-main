@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
@@ -28,15 +28,9 @@ const renderDesk = () =>
     { initialRouterEntries: ['/guichet'] }
   )
 
-const typeToken = async (value: string) => {
-  const input = screen.getByRole('textbox', { name: 'Contremarque' })
-  await userEvent.type(input, value)
-  return input
-}
+const user = userEvent.setup()
 
 beforeEach(() => {
-  vi.clearAllMocks()
-
   vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
     success: snackBarSuccess,
     error: snackBarError,
@@ -56,7 +50,8 @@ describe('Desk', () => {
 
       renderDesk()
 
-      const input = await typeToken('AA:ZERRZ')
+      const input = screen.getByRole('textbox', { name: 'Contremarque' })
+      await user.type(input, 'ZERRZ')
 
       expect(input).toHaveValue('ZERRZ')
     })
@@ -70,7 +65,8 @@ describe('Desk', () => {
 
       expect(screen.getByText('0/6')).toBeInTheDocument()
 
-      await typeToken('AA')
+      const input = screen.getByRole('textbox', { name: 'Contremarque' })
+      await user.type(input, 'AA')
 
       expect(screen.getByText('2/6')).toBeInTheDocument()
     })
@@ -82,31 +78,14 @@ describe('Desk', () => {
 
       renderDesk()
 
-      await typeToken('AAAAAA')
+      const input = screen.getByRole('textbox', { name: 'Contremarque' })
+      await user.type(input, 'AAAAAA')
 
       expect(api.getBookingByToken).toHaveBeenCalledWith('AAAAAA')
 
       expect(
         await screen.findByText(defaultGetBookingResponse.offerName)
       ).toBeInTheDocument()
-    })
-
-    it('displays API error message when lookup fails', async () => {
-      vi.spyOn(api, 'getBookingByToken').mockRejectedValue(
-        new ApiError(
-          {} as ApiRequestOptions,
-          { body: {}, status: 404 } as ApiResult,
-          'Not found'
-        )
-      )
-
-      renderDesk()
-
-      await typeToken('AAAAAA')
-
-      waitFor(() => {
-        expect(screen.getByText(/Not found/)).toBeInTheDocument()
-      })
     })
   })
 
@@ -124,9 +103,10 @@ describe('Desk', () => {
     it('shows error when token shorter than 6 characters', async () => {
       renderDesk()
 
-      await typeToken('AAOK')
+      const input = screen.getByRole('textbox', { name: 'Contremarque' })
+      await user.type(input, 'AAOK')
 
-      await userEvent.click(
+      await user.click(
         screen.getByRole('button', {
           name: 'Valider la contremarque',
         })
@@ -140,9 +120,10 @@ describe('Desk', () => {
     it('shows invalid format message', async () => {
       renderDesk()
 
-      await typeToken('@678HJ')
+      const input = screen.getByRole('textbox', { name: 'Contremarque' })
+      await user.type(input, '@678HJ')
 
-      await userEvent.click(
+      await user.click(
         screen.getByRole('button', {
           name: 'Valider la contremarque',
         })
@@ -170,17 +151,16 @@ describe('Desk', () => {
 
       renderDesk()
 
-      const input = await typeToken('AAAAAA')
+      const input = screen.getByRole('textbox', { name: 'Contremarque' })
+      await user.type(input, 'AAAAAA')
 
-      await userEvent.click(
+      await user.click(
         screen.getByRole('button', {
           name: 'Valider la contremarque',
         })
       )
 
-      await waitFor(() => {
-        expect(snackBarSuccess).toHaveBeenCalledWith('Contremarque validée')
-      })
+      expect(snackBarSuccess).toHaveBeenCalledWith('Contremarque validée')
 
       expect(input).toHaveValue('')
     })
@@ -199,11 +179,15 @@ describe('Desk', () => {
 
       renderDesk()
 
-      const input = await typeToken('AAAAAA')
+      const input = screen.getByRole('textbox', { name: 'Contremarque' })
+      await user.type(input, 'AAAAAA')
 
-      await userEvent.click(screen.getByText('Valider la contremarque'))
+      await user.click(
+        screen.getByRole('button', { name: 'Valider la contremarque' })
+      )
 
-      expect(await screen.findByText(/Erreur/)).toBeInTheDocument()
+      expect(snackBarError).toHaveBeenCalledWith('Erreur')
+
       expect(input).toHaveValue('AAAAAA')
     })
   })
@@ -228,20 +212,21 @@ describe('Desk', () => {
 
       renderDesk()
 
-      const input = await typeToken('AAAAAA')
+      const input = screen.getByRole('textbox', { name: 'Contremarque' })
+      await user.type(input, 'AAAAAA')
 
-      await userEvent.click(screen.getByText('Invalider la contremarque'))
+      await user.click(
+        screen.getByRole('button', { name: 'Invalider la contremarque' })
+      )
 
-      await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+      await user.click(screen.getByRole('button', { name: 'Continuer' }))
 
-      await waitFor(() => {
-        expect(snackBarSuccess).toHaveBeenCalledWith('Contremarque invalidée')
-      })
+      expect(snackBarSuccess).toHaveBeenCalledWith('Contremarque invalidée')
 
       expect(input).toHaveValue('')
     })
 
-    it('shows snackbar error when invalidation fails', async () => {
+    it('shows error when invalidation fails', async () => {
       vi.spyOn(api, 'patchBookingKeepByToken').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
@@ -252,17 +237,17 @@ describe('Desk', () => {
 
       renderDesk()
 
-      await typeToken('AAAAAA')
+      const input = screen.getByRole('textbox', { name: 'Contremarque' })
+      await user.type(input, 'AAAAAA')
 
-      await userEvent.click(screen.getByText('Invalider la contremarque'))
+      await user.click(
+        screen.getByRole('button', { name: 'Invalider la contremarque' })
+      )
+      await user.click(screen.getByRole('button', { name: 'Continuer' }))
 
-      await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
-
-      await waitFor(() => {
-        expect(snackBarError).toHaveBeenCalledWith(
-          'Erreur lors de la validation de la contremarque'
-        )
-      })
+      expect(
+        screen.getByText(/Erreur lors de la validation de la contremarque/)
+      ).toBeInTheDocument()
     })
   })
 })

@@ -1,11 +1,10 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import type React from 'react'
-import { useId, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
-import { isErrorAPIError } from '@/apiClient/helpers'
-import type { GetBookingResponse } from '@/apiClient/v1'
+import type { ApiError, GetBookingResponse } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Banner } from '@/design-system/Banner/Banner'
@@ -34,7 +33,7 @@ export const Desk = (): JSX.Element => {
   const tokenInputRef = useRef<HTMLInputElement | null>(null)
 
   const hookForm = useForm<FormValues>({
-    mode: 'onSubmit',
+    mode: 'onChange',
     defaultValues: { token: '' },
     resolver: yupResolver(validationDeskSchema),
   })
@@ -46,30 +45,49 @@ export const Desk = (): JSX.Element => {
     setError,
     watch,
     resetField,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid },
   } = hookForm
 
   const token = watch('token')
 
-  const handleOnChangeToken = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const inputValue = event.target.value.toUpperCase()
-    const token = inputValue.split(':').reverse()[0]
+  useEffect(() => {
+    if (!isValid || !token) {
+      setBooking(null)
+      return
+    }
 
-    setValue('token', token, { shouldValidate: true })
+    let cancelled = false
 
-    try {
-      const response = await api.getBookingByToken(token)
-      setBooking(response)
-    } catch (e) {
-      if (isErrorAPIError(e)) {
-        const failure = getBookingFailure(e)
-        setIsTokenValidated(failure.isTokenValidated)
-        setBooking(null)
-        setError('token', { message: failure.message })
+    const fetchBooking = async () => {
+      try {
+        const response = await api.getBookingByToken(token)
+
+        if (!cancelled) {
+          setBooking(response)
+        }
+      } catch (error) {
+        if (!cancelled) {
+          handleSubmitError(error as ApiError)
+          setBooking(null)
+        }
       }
     }
+
+    fetchBooking()
+
+    return () => {
+      cancelled = true
+    }
+  }, [token, isValid])
+
+  const handleOnChangeToken = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = event.target.value.toUpperCase()
+    const formattedToken = inputValue.split(':').reverse()[0]
+
+    setValue('token', formattedToken, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
   }
 
   const handleSubmitValidate = async (formValues: FormValues) => {
@@ -80,9 +98,7 @@ export const Desk = (): JSX.Element => {
       setBooking(null)
       resetField('token')
     } catch (error) {
-      if (isErrorAPIError(error)) {
-        setError('token', { message: error.body['global'] })
-      }
+      handleSubmitError(error as ApiError)
     }
   }
 
@@ -94,19 +110,29 @@ export const Desk = (): JSX.Element => {
       setIsTokenValidated(false)
       resetField('token')
     } catch (error) {
-      if (isErrorAPIError(error)) {
-        const failure = getBookingFailure(error)
-        setIsTokenValidated(failure.isTokenValidated)
-        snackBar.error(failure.message)
-      }
+      handleSubmitError(error as ApiError)
     } finally {
       tokenInputRef.current?.focus()
     }
   }
 
+  const handleSubmitError = (error: ApiError) => {
+    if (error.status === 503 || error.status === 500) {
+      snackBar.error(
+        error['body']?.global ||
+          'Le service de validation des contremarques est momentanément indisponible. Veuillez réessayer dans quelques instants.'
+      )
+      return
+    } else {
+      const failure = getBookingFailure(error)
+      setIsTokenValidated(failure.isTokenValidated)
+      setError('token', { message: failure.message })
+    }
+  }
+
   return (
     <BasicLayout mainHeading="Guichet">
-      <p className={styles.advice}>
+      <p className={styles['desk-advice']}>
         Saisissez les contremarques présentées par les bénéficiaires afin de les
         valider ou de les invalider.
       </p>
