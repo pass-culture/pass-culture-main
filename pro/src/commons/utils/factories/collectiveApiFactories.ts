@@ -327,6 +327,7 @@ export const defaultGetVenue: GetVenueResponseModel = {
   hasNonFreeOffers: true,
   canDisplayHighlights: true,
   hasNonDraftOffers: true,
+  volunteeringUrl: null,
 }
 
 export const defaultGetCollectiveOfferRequest: GetCollectiveOfferRequestResponseModel =
