@@ -33,12 +33,12 @@ describe('OffererSelect', () => {
       useOffererNamesQueryModule,
       'useOffererNamesQuery'
     ).mockReturnValue({
-      data: undefined,
-      error: undefined,
+      combinedOffererNames: [],
       isLoading: false,
       isValidating: false,
+      error: undefined,
       mutate: vi.fn(),
-    })
+    } as any)
   })
 
   it('should render select when there are multiple offerers', () => {
@@ -55,7 +55,7 @@ describe('OffererSelect', () => {
     renderOffererSelect({
       storeOverrides: {
         offerer: {
-          offererNames: offerers,
+          combinedOffererNames: offerers,
         },
         user: {
           selectedAdminOfferer: fullOfferer,
@@ -81,7 +81,7 @@ describe('OffererSelect', () => {
     renderOffererSelect({
       storeOverrides: {
         offerer: {
-          offererNames: offerers,
+          combinedOffererNames: offerers,
         },
         user: {
           selectedAdminOfferer: fullOfferer,
@@ -113,7 +113,7 @@ describe('OffererSelect', () => {
     renderOffererSelect({
       storeOverrides: {
         offerer: {
-          offererNames: offerers,
+          combinedOffererNames: offerers,
         },
         user: {
           selectedAdminOfferer: fullOfferer,
@@ -148,7 +148,7 @@ describe('OffererSelect', () => {
     const { store } = renderOffererSelect({
       storeOverrides: {
         offerer: {
-          offererNames: offerers,
+          combinedOffererNames: offerers,
         },
         user: {
           selectedAdminOfferer: fullOfferer1,
@@ -180,7 +180,7 @@ describe('OffererSelect', () => {
     renderOffererSelect({
       storeOverrides: {
         offerer: {
-          offererNames: offerers,
+          combinedOffererNames: offerers,
         },
         user: {
           selectedAdminOfferer: fullOfferer,

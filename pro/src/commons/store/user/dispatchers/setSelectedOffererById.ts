@@ -45,24 +45,37 @@ export const setSelectedOffererById = createAsyncThunk<
     try {
       const state = getState()
 
-      let offererNames: GetOffererNameResponseModel[] =
-        state.offerer.offererNames || []
+      let offererNamesAttached: GetOffererNameResponseModel[] =
+        state.offerer.offererNamesAttached || []
+      let offerersNamesWithPendingValidation: GetOffererNameResponseModel[] =
+        state.offerer.offerersNamesWithPendingValidation || []
       if (shouldRefetch) {
         const response = await api.listOfferersNames()
-        offererNames = response.offerersNames
+        offererNamesAttached = response.offerersNames
         // here we add the offerers with pending validation to the same list, so that the offerer can be selected after a signup journey
-        offererNames = offererNames.concat(
+        offerersNamesWithPendingValidation =
           response.offerersNamesWithPendingValidation
-        )
       }
-      assertOrFrontendError(offererNames, '`offererNames` is null.')
+      const combinedOffererNames = offererNamesAttached.concat(
+        offerersNamesWithPendingValidation
+      )
+      assertOrFrontendError(
+        combinedOffererNames,
+        '`combinedOffererNames` is null.'
+      )
 
       const venues = shouldRefetch
         ? (await api.getVenues()).venues
         : ensureVenues(state)
 
       if (shouldRefetch) {
-        dispatch(updateOffererNames(offererNames))
+        dispatch(
+          updateOffererNames({
+            offerersNames: offererNamesAttached,
+            offerersNamesWithPendingValidation:
+              offerersNamesWithPendingValidation,
+          })
+        )
         dispatch(setVenues(venues))
       }
 
@@ -75,8 +88,9 @@ export const setSelectedOffererById = createAsyncThunk<
       // in case an "unattached" API 403 error is thrown
       // to allow the UI to display the offerer name in the header dropdown even when their selected venue is "unattached"
       nextCurrentOffererName =
-        offererNames.find((offerer) => offerer.id === nextSelectedOffererId) ??
-        null
+        combinedOffererNames.find(
+          (offerer) => offerer.id === nextSelectedOffererId
+        ) ?? null
       assertOrFrontendError(
         nextCurrentOffererName,
         '`nextCurrentOffererName` is null.'

@@ -94,7 +94,9 @@ export const renderWithProviders = (
         }
       : overrides?.storeOverrides?.user,
     offerer: {
-      offererNames: [],
+      offererNamesAttached: [],
+      combinedOffererNames: [],
+      offerersNamesWithPendingValidation: [],
       ...overrides?.storeOverrides?.offerer,
     },
   }

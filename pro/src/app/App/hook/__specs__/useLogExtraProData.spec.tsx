@@ -25,7 +25,7 @@ const renderLogExtraProData = async () => {
       initialRouterEntries: ['/accueil'],
       storeOverrides: {
         offerer: currentOffererFactory({
-          offererNames: [
+          offererNamesAttached: [
             getOffererNameFactory({ id: 1 }),
             getOffererNameFactory({ id: 2, name: 'super structure' }),
           ],

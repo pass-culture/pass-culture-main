@@ -35,10 +35,15 @@ describe('setSelectedVenueById', () => {
     offerer: {
       currentOfferer: { ...defaultGetOffererResponseModel, id: 200 },
       currentOffererName: getOffererNameFactory({ id: 200 }),
-      offererNames: [
+      offererNamesAttached: [
         getOffererNameFactory({ id: 100 }),
         getOffererNameFactory({ id: 200 }),
       ],
+      combinedOffererNames: [
+        getOffererNameFactory({ id: 100 }),
+        getOffererNameFactory({ id: 200 }),
+      ],
+      offerersNamesWithPendingValidation: [],
     },
     user: {
       access: null,
@@ -140,7 +145,7 @@ describe('setSelectedVenueById', () => {
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('101')
   })
 
-  it('should throw when offererNames is null', async () => {
+  it('should throw when offererNamesAttached is null', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
     const logoutSpy = vi.spyOn(logoutModule, 'logout')
@@ -149,7 +154,7 @@ describe('setSelectedVenueById', () => {
       ...storeDataBase,
       offerer: {
         ...storeDataBase.offerer!,
-        offererNames: null,
+        offererNamesAttached: null,
       },
     })
 
@@ -176,7 +181,7 @@ describe('setSelectedVenueById', () => {
     vi.spyOn(api, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({ id: 101, managingOffererId: 999 })
     )
-    // The selected venue belongs to offerer 999, which is not in offererNames
+    // The selected venue belongs to offerer 999, which is not in offererNamesAttached
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 999,
@@ -189,10 +194,15 @@ describe('setSelectedVenueById', () => {
       offerer: {
         currentOfferer: { ...defaultGetOffererResponseModel, id: 200 },
         currentOffererName: getOffererNameFactory({ id: 200 }),
-        offererNames: [
+        offererNamesAttached: [
           getOffererNameFactory({ id: 100 }),
           getOffererNameFactory({ id: 200 }),
         ],
+        combinedOffererNames: [
+          getOffererNameFactory({ id: 100 }),
+          getOffererNameFactory({ id: 200 }),
+        ],
+        offerersNamesWithPendingValidation: [],
       },
       user: {
         access: null,

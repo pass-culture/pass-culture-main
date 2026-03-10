@@ -36,7 +36,7 @@ const renderHub: RenderComponentFunction<
       offerer: {
         currentOfferer: { ...defaultGetOffererResponseModel, id: 100 },
         currentOffererName: getOffererNameFactory({ id: 100 }),
-        offererNames: [
+        offererNamesAttached: [
           getOffererNameFactory({ id: 100 }),
           getOffererNameFactory({ id: 200 }),
         ],

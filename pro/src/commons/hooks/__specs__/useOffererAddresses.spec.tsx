@@ -68,7 +68,7 @@ describe('useOffererAddresses', () => {
     renderComponent({
       user: { currentUser: user },
       offerer: {
-        offererNames: [],
+        offererNamesAttached: [],
         currentOfferer: null,
       },
     })

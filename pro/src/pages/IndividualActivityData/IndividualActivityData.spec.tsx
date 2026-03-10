@@ -62,7 +62,7 @@ const renderIndividualActivityData = () => {
         selectedAdminOfferer: defaultGetOffererResponseModel,
       },
       offerer: {
-        offererNames: [defaultGetOffererResponseModel],
+        offererNamesAttached: [defaultGetOffererResponseModel],
         currentOfferer: defaultGetOffererResponseModel,
       },
     },

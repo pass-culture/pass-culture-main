@@ -3,13 +3,13 @@ import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { NonAttached } from './NonAttached'
+import { NonAttachedBanner } from './NonAttachedBanner'
 
 const render = () => {
-  return renderWithProviders(<NonAttached />)
+  return renderWithProviders(<NonAttachedBanner />)
 }
 
-describe('NonAttached', () => {
+describe('NonAttachedBanner', () => {
   it('should render without errors', async () => {
     const { container } = render()
     expect(

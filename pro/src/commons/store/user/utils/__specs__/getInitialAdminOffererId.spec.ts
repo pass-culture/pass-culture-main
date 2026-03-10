@@ -20,7 +20,7 @@ vi.mock('@/commons/utils/localStorageManager', () => ({
 }))
 
 describe('getInitialAdminOffererId', () => {
-  const offererNames = [
+  const offererNamesAttached = [
     getOffererNameFactory({ id: 100 }),
     getOffererNameFactory({ id: 200 }),
   ]
@@ -30,25 +30,25 @@ describe('getInitialAdminOffererId', () => {
   })
 
   describe('Priority 1: localStorage', () => {
-    it('should return saved offerer id when present in offererNames', () => {
+    it('should return saved offerer id when present in offererNamesAttached', () => {
       vi.spyOn(localStorageManager, 'getItem').mockReturnValue('100')
 
       const result = getInitialAdminOffererId({
-        offererNames,
+        offererNamesAttached,
         selectedVenue: null,
       })
 
       expect(result).toBe(100)
     })
 
-    it('should call handleUnexpectedError and return null when saved id is not in offererNames', () => {
+    it('should call handleUnexpectedError and return null when saved id is not in offererNamesAttached', () => {
       vi.spyOn(localStorageManager, 'getItem').mockReturnValue('999')
       const handleUnexpectedErrorSpy = vi
         .spyOn(handleUnexpectedErrorModule, 'handleUnexpectedError')
         .mockImplementation(() => {})
 
       const result = getInitialAdminOffererId({
-        offererNames,
+        offererNamesAttached,
         selectedVenue: null,
       })
 
@@ -66,14 +66,14 @@ describe('getInitialAdminOffererId', () => {
       })
 
       const result = getInitialAdminOffererId({
-        offererNames,
+        offererNamesAttached,
         selectedVenue,
       })
 
       expect(result).toBe(100)
     })
 
-    it('should call handleUnexpectedError and return null when selectedVenue parent offerer is not in offererNames', () => {
+    it('should call handleUnexpectedError and return null when selectedVenue parent offerer is not in offererNamesAttached', () => {
       vi.spyOn(localStorageManager, 'getItem').mockReturnValue(null)
       const handleUnexpectedErrorSpy = vi
         .spyOn(handleUnexpectedErrorModule, 'handleUnexpectedError')
@@ -84,7 +84,7 @@ describe('getInitialAdminOffererId', () => {
       })
 
       const result = getInitialAdminOffererId({
-        offererNames,
+        offererNamesAttached,
         selectedVenue,
       })
 
@@ -98,7 +98,7 @@ describe('getInitialAdminOffererId', () => {
       vi.spyOn(localStorageManager, 'getItem').mockReturnValue(null)
 
       const result = getInitialAdminOffererId({
-        offererNames,
+        offererNamesAttached,
         selectedVenue: null,
       })
 
@@ -107,11 +107,11 @@ describe('getInitialAdminOffererId', () => {
   })
 
   describe('Priority 4: no offerers', () => {
-    it('should return null when offererNames is empty', () => {
+    it('should return null when offererNamesAttached is empty', () => {
       vi.spyOn(localStorageManager, 'getItem').mockReturnValue(null)
 
       const result = getInitialAdminOffererId({
-        offererNames: [],
+        offererNamesAttached: [],
         selectedVenue: null,
       })
 

@@ -163,7 +163,7 @@ sequenceDiagram
     API-->>Login: Success + user data
 
     Login->>Store: dispatch(initializeUser)
-    Note over Store: Fetch offererNames,<br/>fetch venues,<br/>set currentUser
+    Note over Store: Fetch offererNamesAttached,<br/>fetch venues,<br/>set currentUser
 
     Store->>LocalStorage: Check for persisted venue ID
 
