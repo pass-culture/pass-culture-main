@@ -1,5 +1,7 @@
 from enum import Enum
 
+import pydantic as pydantic_v2
+
 from pcapi.core.users.models import AccountState
 from pcapi.routes.native.v1.serialization.account import TrustedDeviceV2
 from pcapi.routes.serialization import HttpBodyModel
@@ -29,6 +31,10 @@ class ExtentedTrustedDevice(HttpBodyModel):
             os=self.os,
             source=self.source,
         )
+
+    model_config = pydantic_v2.ConfigDict(
+        extra="ignore",
+    )
 
 
 class SigninRequest(HttpQueryParamsModel):

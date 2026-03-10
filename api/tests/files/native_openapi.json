@@ -2991,7 +2991,6 @@
                 "title": "ExpenseDomain"
             },
             "ExtentedTrustedDevice": {
-                "additionalProperties": false,
                 "description": "This serializer has all the fields from TrustedDevice/TrustedDeviceV2\nin addition to the last 3 fields (font_scale, resolution and screen_zoom_level)\nthat are not used by the backend.\nThey are accepted here just to fit with what's the front is sending.\nIn future API version we might need to remove them and use TrustedDevice instead.",
                 "properties": {
                     "deviceId": {
