@@ -6,10 +6,35 @@ from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
 
 
+class ExtentedTrustedDevice(HttpBodyModel):
+    """
+    This serializer has all the fields from TrustedDevice/TrustedDeviceV2
+    in addition to the last 3 fields (font_scale, resolution and screen_zoom_level)
+    that are not used by the backend.
+    They are accepted here just to fit with what's the front is sending.
+    In future API version we might need to remove them and use TrustedDevice instead.
+    """
+
+    device_id: str
+    os: str | None = None
+    source: str | None = None
+    # TODO remove the following fields in future api version
+    font_scale: int | None = None
+    resolution: str | None = None
+    screen_zoom_level: int | None = None
+
+    def to_trusted_device(self) -> TrustedDeviceV2:
+        return TrustedDeviceV2(
+            device_id=self.device_id,
+            os=self.os,
+            source=self.source,
+        )
+
+
 class SigninRequest(HttpQueryParamsModel):
     identifier: str
     password: str
-    device_info: TrustedDeviceV2 | None = None
+    device_info: ExtentedTrustedDevice | None = None
     token: str | None = None
 
 
@@ -36,7 +61,7 @@ class RequestPasswordResetRequest(HttpQueryParamsModel):
 class ResetPasswordRequest(HttpQueryParamsModel):
     reset_password_token: str
     new_password: str
-    device_info: TrustedDeviceV2 | None = None
+    device_info: ExtentedTrustedDevice | None = None
 
 
 class ResetPasswordResponse(HttpBodyModel):
@@ -47,31 +72,6 @@ class ResetPasswordResponse(HttpBodyModel):
 class ChangePasswordRequest(HttpQueryParamsModel):
     current_password: str
     new_password: str
-
-
-class ExtentedTrustedDevice(HttpBodyModel):
-    """
-    This serializer has all the fields from TrustedDevice/TrustedDeviceV2
-    in addition to the last 3 fields (font_scale, resolution and screen_zoom_level)
-    that are not used by the backend.
-    They are accepted here just to fit with what's the front is sending.
-    In future API version we might need to remove them and use TrustedDevice instead.
-    """
-
-    device_id: str
-    os: str | None = None
-    source: str | None = None
-    # TODO remove the following fields in future api version
-    font_scale: int | None = None
-    resolution: str | None = None
-    screen_zoom_level: int | None = None
-
-    def to_trusted_device(self) -> TrustedDeviceV2:
-        return TrustedDeviceV2(
-            device_id=self.device_id,
-            os=self.os,
-            source=self.source,
-        )
 
 
 class ValidateEmailRequest(HttpQueryParamsModel):
@@ -91,4 +91,4 @@ class OauthStateResponse(HttpBodyModel):
 class OAuthSigninRequest(HttpQueryParamsModel):
     authorization_code: str
     oauth_state_token: str
-    device_info: TrustedDeviceV2 | None = None
+    device_info: ExtentedTrustedDevice | None = None

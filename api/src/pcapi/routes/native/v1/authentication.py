@@ -66,12 +66,13 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     if user.account_state == user_models.AccountState.ANONYMIZED:
         raise ApiErrors({"code": "ACCOUNT_ANONYMIZED", "general": ["Le compte a été anonymisé"]})
 
-    users_api.save_device_info_and_notify_user(user, body.device_info)
+    users_api.save_device_info_and_notify_user(user, body.device_info.to_trusted_device() if body.device_info else None)
 
     users_api.update_last_connection_date(user)
     tokens = create_user_jwt_tokens(
         user=user,
-        device_info=body.device_info,
+        # TODO remove this and use body.device_info directly once `ExtentedTrustedDevice` is removed
+        device_info=body.device_info.to_trusted_device() if body.device_info else None,
     )
     return authentication.SigninResponse(
         access_token=tokens.access,
@@ -123,7 +124,8 @@ def reset_password(body: ResetPasswordRequest) -> ResetPasswordResponse:
     user = users_api.reset_password_with_token(body.new_password, body.reset_password_token)
     tokens = create_user_jwt_tokens(
         user=user,
-        device_info=body.device_info,
+        # TODO remove this and use body.device_info directly once `ExtentedTrustedDevice` is removed
+        device_info=body.device_info.to_trusted_device() if body.device_info else None,
     )
     return ResetPasswordResponse(
         access_token=tokens.access,
@@ -292,7 +294,7 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) ->
             current_google_sso = users_repo.create_single_sign_on(user, "google", sso_user_id)
             db.session.add(current_google_sso)
 
-    users_api.save_device_info_and_notify_user(user, body.device_info)
+    users_api.save_device_info_and_notify_user(user, body.device_info.to_trusted_device() if body.device_info else None)
 
     users_api.update_last_connection_date(user)
     logger.info(
@@ -300,7 +302,9 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) ->
         extra={"sso_provider": "google", "avoid_current_user": True},
         technical_message_id="users.login.sso.google",
     )
-    tokens = create_user_jwt_tokens(user=user, device_info=body.device_info)
+    tokens = create_user_jwt_tokens(
+        user=user, device_info=body.device_info.to_trusted_device() if body.device_info else None
+    )
     return authentication.SigninResponse(
         access_token=tokens.access,
         refresh_token=tokens.refresh,
