@@ -28,7 +28,7 @@ jobs:
           GITHUB_REF: ${{ github.ref }}
         run: |
           echo "Deploying to $TARGET_ENVIRONMENT from ref: $GITHUB_REF"
-          if ! [[ "$GITHUB_REF" =~ ^refs\/tags\/v*$ ]]; then
+          if ! [[ "$GITHUB_REF" =~ ^refs\/tags\/v.*$ ]]; then
             echo "This workflow can only be triggered from a tag (starting with a 'v')"
             exit 1
           fi

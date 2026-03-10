@@ -15,7 +15,7 @@ jobs:
         env:
           REF: ${{ github.ref }}
         run: |
-          if ! [[ "$REF" =~ ^refs/heads/maint/v*$ ]]; then
+          if ! [[ "$REF" =~ ^refs/heads/maint/v.*$ ]]; then
             echo "This workflow can only be triggered from a maintenance branch (starting with 'maint/v')"
             exit 1
           fi
