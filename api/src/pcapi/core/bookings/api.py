@@ -35,6 +35,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import utils as educational_utils
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.external.attributes.api import update_external_user
+from pcapi.core.external.batch import tasks as batch_tasks
 from pcapi.core.external.batch import trigger_events
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
@@ -61,7 +62,6 @@ from . import constants
 from . import exceptions
 from . import models
 from . import repository
-from . import tasks
 from . import utils
 from . import validation
 
@@ -756,8 +756,8 @@ def cancel_booking_by_offerer(booking: models.Booking) -> None:
     validation.check_booking_can_be_cancelled(booking)
     _cancel_booking(booking, models.BookingCancellationReasons.OFFERER, raise_if_error=True)
     transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
-    payload = tasks.SendCancelBookingNotificationPayload(bookings_ids=[booking.id])
-    tasks.send_cancel_booking_notification.delay(payload.model_dump())
+    payload = batch_tasks.SendCancelBookingNotificationPayload(bookings_ids=[booking.id])
+    batch_tasks.send_cancel_booking_notification.delay(payload.model_dump())
 
 
 def cancel_bookings_from_stock_by_offerer(

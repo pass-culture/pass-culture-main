@@ -7,14 +7,14 @@ from datetime import timedelta
 
 import pcapi.core.offers.repository as offers_repository
 from pcapi import settings
-from pcapi.core.bookings import tasks as bookings_tasks
 from pcapi.core.bookings.exceptions import BookingIsExpired
 from pcapi.core.bookings.repository import get_soon_expiring_bookings
+from pcapi.core.external.batch import tasks as batch_tasks
 from pcapi.core.external.batch.transactional_notifications import (
     get_soon_expiring_bookings_with_offers_notification_data,
 )
 from pcapi.core.offers.repository import find_today_event_stock_ids_metropolitan_france
-from pcapi.tasks import batch_tasks
+from pcapi.tasks import batch_tasks as batch_cloud_tasks
 
 
 logger = logging.getLogger(__name__)
@@ -35,8 +35,8 @@ def send_today_events_notifications_metropolitan_france() -> None:
 
     for stock_id in stock_ids:
         try:
-            payload = bookings_tasks.SendTodayStockNotificationPayload(stock_id=stock_id)
-            bookings_tasks.send_today_stock_notification.delay(payload.model_dump())
+            payload = batch_tasks.SendTodayStockNotificationPayload(stock_id=stock_id)
+            batch_tasks.send_today_stock_notification.delay(payload.model_dump())
         except Exception:
             logger.exception("Could not send today stock notification", extra={"stock": stock_id})
 
@@ -68,8 +68,8 @@ def send_today_events_notifications_overseas(utc_mean_offset: int, departments: 
 
     for stock_id in stock_ids:
         try:
-            payload = bookings_tasks.SendTodayStockNotificationPayload(stock_id=stock_id)
-            bookings_tasks.send_today_stock_notification.delay(payload.model_dump())
+            payload = batch_tasks.SendTodayStockNotificationPayload(stock_id=stock_id)
+            batch_tasks.send_today_stock_notification.delay(payload.model_dump())
         except Exception:
             logger.exception("Could not send today stock notification", extra={"stock": stock_id})
 
@@ -110,7 +110,7 @@ def notify_users_bookings_not_retrieved() -> None:
     for booking in bookings:
         try:
             notification_data = get_soon_expiring_bookings_with_offers_notification_data(booking)
-            batch_tasks.send_transactional_notification_task.delay(notification_data)
+            batch_cloud_tasks.send_transactional_notification_task.delay(notification_data)
         except BookingIsExpired:
             logger.exception("Booking %d is expired", booking.id, extra={"booking": booking.id, "user": booking.userId})
         except Exception:
