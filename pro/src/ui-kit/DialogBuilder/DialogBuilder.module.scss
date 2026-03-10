@@ -83,6 +83,7 @@ $animation-timing-function: ease-in-out;
   width: initial;
   margin: var(--size-spacing-xxl) auto;
   padding: var(--size-spacing-l);
+  overflow-y: auto;
 }
 
 .dialog-builder-overlay-drawer {
