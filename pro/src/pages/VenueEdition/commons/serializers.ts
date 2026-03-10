@@ -58,6 +58,7 @@ function buildEditVenuePayload(
         ? (normalizedActivity ?? undefined)
         : (normalizedActivity as ActivityOpenToPublic),
     culturalDomains: formValues.culturalDomains,
+    volunteeringUrl: formValues.volunteeringUrl,
   }
 }
 
