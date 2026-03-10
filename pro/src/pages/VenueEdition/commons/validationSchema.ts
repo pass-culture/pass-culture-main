@@ -13,6 +13,41 @@ import type { VenueEditionFormValues } from './types'
 const isOneTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
 
+const volunteeringUrlSchema: yup.TestConfig<string | null | undefined> = {
+  name: 'is-volunteering-url-valid',
+  test(value) {
+    if (!value?.trim()) {
+      return true
+    }
+    try {
+      const parsed = new URL(value)
+      const host = parsed.hostname.toLowerCase()
+      if (
+        host !== 'www.jeveuxaider.gouv.fr' &&
+        host !== 'jeveuxaider.gouv.fr'
+      ) {
+        return this.createError({
+          message:
+            'Veuillez renseigner une URL provenant de la plateforme jeveuxaider.gouv',
+        })
+      }
+      const path = parsed.pathname.toLowerCase()
+      if (
+        !path.startsWith('/organisations/') ||
+        path.replace(/\/+$/, '') === '/organisations'
+      ) {
+        return this.createError({
+          message:
+            'Veuillez renseigner l’URL de votre page organisation. Ex : https://www.jeveuxaider.gouv.fr/organisations/exemple',
+        })
+      }
+      return true
+    } catch {
+      return false
+    }
+  },
+}
+
 const openingHoursDaySchema = yup
   .array()
   //  TODO  : Maybe there is an easier way to check for validations (having an array of array makes it complicated to read)
@@ -157,5 +192,10 @@ export const getValidationSchema = (): ObjectSchema<VenueEditionFormValues> => {
             ),
         otherwise: (schema) => schema,
       }),
+    volunteeringUrl: yup
+      .string()
+      .url('Veuillez renseigner une URL valide. Ex : https://exemple.com')
+      .test(volunteeringUrlSchema)
+      .nullable(),
   })
 }
