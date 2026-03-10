@@ -41,8 +41,11 @@ export const setSelectedVenueById = createAsyncThunk<
     try {
       const state = getState()
 
-      const offererNames = state.offerer.offererNames
-      assertOrFrontendError(offererNames, '`offererNames` is null.')
+      const offererNamesValidated = state.offerer.offererNamesValidated
+      assertOrFrontendError(
+        offererNamesValidated,
+        '`offererNamesValidated` is null.'
+      )
       const previousSelectedVenue = state.user.selectedVenue
       if (nextSelectedVenueId === previousSelectedVenue?.id) {
         return {
@@ -55,7 +58,7 @@ export const setSelectedVenueById = createAsyncThunk<
       const nextSelectedOfferer = await api.getOfferer(
         nextSelectedVenue.managingOfferer.id
       )
-      const nextSelectedOffererName = offererNames.find(
+      const nextSelectedOffererName = offererNamesValidated.find(
         (offerer) => offerer.id === nextSelectedOfferer.id
       )
       assertOrFrontendError(

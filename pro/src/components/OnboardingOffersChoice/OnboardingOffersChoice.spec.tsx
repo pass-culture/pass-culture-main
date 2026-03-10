@@ -20,7 +20,7 @@ describe('OnboardingOffersChoice Component', () => {
       storeOverrides: {
         offerer: {
           currentOfferer: { id: 1, isOnboarded: false },
-          offererNames: [],
+          offererNamesValidated: [],
         },
       },
     })

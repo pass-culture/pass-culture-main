@@ -63,7 +63,7 @@ const renderCollectiveActivityData = () => {
         selectedAdminOfferer: defaultGetOffererResponseModel,
       },
       offerer: {
-        offererNames: [defaultGetOffererResponseModel],
+        offererNamesValidated: [defaultGetOffererResponseModel],
         currentOfferer: defaultGetOffererResponseModel,
       },
     },

@@ -3,7 +3,10 @@ import type { RouteObject } from 'react-router'
 
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
-import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import {
+  type RenderWithProvidersOptions,
+  renderWithProviders,
+} from '@/commons/utils/renderWithProviders'
 
 import { AdministrationLayout } from './AdministrationLayout'
 
@@ -27,15 +30,27 @@ const buildRoutes = (childTitle: string): RouteObject[] => [
   },
 ]
 
+const offererNamesValidated = [
+  {
+    ...defaultGetOffererResponseModel,
+    id: 1,
+    name: `Offerer 1`,
+  },
+]
+
 const renderAdministrationLayout = (
   childTitle = "Données d'activité : individuel",
-  offererCount = 1
+  offererCount = 1,
+  options?: RenderWithProvidersOptions
 ) => {
-  const offererNames = Array.from({ length: offererCount }, (_, i) => ({
-    ...defaultGetOffererResponseModel,
-    id: i + 1,
-    name: `Offerer ${i + 1}`,
-  }))
+  const offererNamesValidated = Array.from(
+    { length: offererCount },
+    (_, i) => ({
+      ...defaultGetOffererResponseModel,
+      id: i + 1,
+      name: `Offerer ${i + 1}`,
+    })
+  )
 
   renderWithProviders(null, {
     routes: buildRoutes(childTitle),
@@ -43,8 +58,13 @@ const renderAdministrationLayout = (
     user,
     storeOverrides: {
       user: { currentUser: user },
-      offerer: { offererNames },
+      offerer: {
+        offererNamesValidated,
+        offererNames: offererNamesValidated,
+        currentOfferer: offererNamesValidated[0],
+      },
     },
+    ...options,
   })
 }
 
@@ -75,5 +95,24 @@ describe('AdministrationLayout', () => {
     renderAdministrationLayout(undefined, 2)
 
     expect(screen.getByLabelText('Entité juridique')).toBeInTheDocument()
+  })
+  it('should render non attached banner if offerer is not attached', () => {
+    renderAdministrationLayout(undefined, 2, {
+      storeOverrides: {
+        offerer: {
+          currentOfferer: {
+            id: 1,
+          },
+          offererNamesValidated: [],
+          offererNames: offererNamesValidated,
+        },
+      },
+    })
+
+    expect(
+      screen.getByText(
+        'Votre rattachement est en cours de traitement par les équipes du pass Culture'
+      )
+    ).toBeInTheDocument()
   })
 })

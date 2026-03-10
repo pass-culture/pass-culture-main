@@ -40,9 +40,11 @@ describe('setSelectedAdminOffererById', () => {
 
       const store = configureTestStore({
         offerer: {
-          offererNames: [getOffererNameFactory({ id: 100 })],
+          offererNamesValidated: [getOffererNameFactory({ id: 100 })],
           currentOfferer: null,
           currentOffererName: null,
+          offererNames: [getOffererNameFactory({ id: 100 })],
+          offerersNamesWithPendingValidation: null,
         },
       })
 
@@ -70,9 +72,11 @@ describe('setSelectedAdminOffererById', () => {
 
       const store = configureTestStore({
         offerer: {
-          offererNames: [getOffererNameFactory({ id: 200 })],
+          offererNamesValidated: [getOffererNameFactory({ id: 200 })],
           currentOfferer: null,
           currentOffererName: null,
+          offererNames: [getOffererNameFactory({ id: 200 })],
+          offerersNamesWithPendingValidation: null,
         },
       })
 
@@ -102,9 +106,11 @@ describe('setSelectedAdminOffererById', () => {
 
       const store = configureTestStore({
         offerer: {
-          offererNames: [getOffererNameFactory({ id: 100 })],
+          offererNamesValidated: [getOffererNameFactory({ id: 100 })],
           currentOfferer: null,
           currentOffererName: null,
+          offererNames: [getOffererNameFactory({ id: 100 })],
+          offerersNamesWithPendingValidation: null,
         },
       })
 
@@ -125,9 +131,11 @@ describe('setSelectedAdminOffererById', () => {
 
       const store = configureTestStore({
         offerer: {
-          offererNames: [getOffererNameFactory({ id: 100 })],
+          offererNamesValidated: [getOffererNameFactory({ id: 100 })],
           currentOfferer: null,
           currentOffererName: null,
+          offererNames: [getOffererNameFactory({ id: 100 })],
+          offerersNamesWithPendingValidation: null,
         },
       })
 
@@ -138,6 +146,39 @@ describe('setSelectedAdminOffererById', () => {
         "Une erreur est survenue lors du chargement de l'entité juridique."
       )
       expect(logoutSpy).not.toHaveBeenCalled()
+    })
+
+    it('should create a minimal offerer without API call when offerer is not attached to display the banners', async () => {
+      const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
+      const getOffererSpy = vi.spyOn(api, 'getOfferer')
+
+      const store = configureTestStore({
+        offerer: {
+          offererNamesValidated: [getOffererNameFactory({ id: 100 })],
+          currentOfferer: null,
+          currentOffererName: null,
+          offererNames: [
+            getOffererNameFactory({ id: 100 }),
+            getOffererNameFactory({ id: 101 }),
+          ],
+          offerersNamesWithPendingValidation: [
+            getOffererNameFactory({ id: 101 }),
+          ],
+        },
+      })
+
+      await store.dispatch(setSelectedAdminOffererById(101)).unwrap()
+
+      expect(getOffererSpy).not.toHaveBeenCalled()
+
+      expect(handleErrorSpy).not.toHaveBeenCalled()
+
+      const state = store.getState()
+      expect(state.user.selectedAdminOfferer?.id).toBe(101)
+
+      expect(
+        localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID)
+      ).toBe('101')
     })
   })
 })

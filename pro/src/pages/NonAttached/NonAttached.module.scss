@@ -1,6 +1,9 @@
 @use "styles/mixins/_size.scss" as size;
 
 .wrapper {
+  display: flex;
+  flex-direction: column;
   max-width: 100%;
   max-width: size.$signup-content-width;
+  gap: var(--size-spacing-xl);
 }

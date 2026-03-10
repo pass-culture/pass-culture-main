@@ -39,7 +39,7 @@ const renderOnboardingOfferIndividual = (
               },
             ],
           },
-          offererNames: [],
+          offererNamesValidated: [],
         },
       },
     },

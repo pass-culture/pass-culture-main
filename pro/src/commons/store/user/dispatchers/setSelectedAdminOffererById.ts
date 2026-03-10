@@ -20,8 +20,34 @@ export const setSelectedAdminOffererById = createAsyncThunk<
   AppThunkApiConfig
 >(
   'user/setSelectedAdminOffererById',
-  async (offererOrOffererId, { dispatch }) => {
+  async (offererOrOffererId, { dispatch, getState }) => {
     try {
+      const state = getState()
+      const offererNamesPendingIds =
+        state.offerer.offerersNamesWithPendingValidation?.map((o) => o.id)
+      const offererId =
+        typeof offererOrOffererId === 'number'
+          ? offererOrOffererId
+          : offererOrOffererId.id
+
+      if (
+        offererNamesPendingIds &&
+        offererNamesPendingIds.length > 0 &&
+        offererNamesPendingIds.includes(offererId)
+      ) {
+        // if the offerer is unattached, we set a minimal offerer to avoid having getOfferer() return a 403
+        // this allows to display the unattached banner to the user
+        const minimalOfferer = {
+          id: offererId,
+        } as GetOffererResponseModel
+        dispatch(setSelectedAdminOfferer(minimalOfferer))
+        localStorageManager.setItem(
+          LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID,
+          String(offererId)
+        )
+        return
+      }
+
       const nextOfferer =
         typeof offererOrOffererId === 'number'
           ? await api.getOfferer(offererOrOffererId)
