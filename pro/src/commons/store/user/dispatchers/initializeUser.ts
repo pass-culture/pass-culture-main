@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 
 import { api } from '@/apiClient/api'
 import type { SharedCurrentUserResponseModel } from '@/apiClient/v1'
+import type { SharedCurrentUserResponseModel as SharedCurrentUserResponseModelNew } from '@/apiClient/v1/new'
 import { updateOffererNames } from '@/commons/store/offerer/reducer'
 import { setSelectedAdminOffererById } from '@/commons/store/user/dispatchers/setSelectedAdminOffererById'
 import {
@@ -21,7 +22,7 @@ import { setSelectedVenueById } from './setSelectedVenueById'
 
 export const initializeUser = createAsyncThunk<
   void,
-  SharedCurrentUserResponseModel,
+  SharedCurrentUserResponseModel | SharedCurrentUserResponseModelNew,
   AppThunkApiConfig
 >('user/initializeUser', async (user, { dispatch, getState }) => {
   try {

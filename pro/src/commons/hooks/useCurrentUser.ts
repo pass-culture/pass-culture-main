@@ -1,4 +1,5 @@
 import type { SharedCurrentUserResponseModel } from '@/apiClient/v1'
+import type { SharedCurrentUserResponseModel as SharedCurrentUserResponseModelNew } from '@/apiClient/v1/new'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 
@@ -6,7 +7,9 @@ import { assertOrFrontendError } from '../errors/assertOrFrontendError'
 import { useAppSelector } from './useAppSelector'
 
 interface UseCurrentUserReturn {
-  currentUser: SharedCurrentUserResponseModel
+  currentUser:
+    | SharedCurrentUserResponseModel
+    | SharedCurrentUserResponseModelNew
   selectedOffererId: number | null
 }
 

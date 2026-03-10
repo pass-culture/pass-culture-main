@@ -13,6 +13,7 @@
     "build:production": "VITE_APP_VERSION=$(node -pe 'require(\"./package.json\").version') vite build --mode production",
     "generate:api:client:local": "./scripts/generate_api_client_local.sh",
     "generate:api:client:local:no:docker": "PCAPI_HOST=localhost:5001 ./scripts/generate_api_client_local.sh",
+    "generate:api:client:local:no:docker:next": "PCAPI_HOST=localhost:5001 ./scripts/generate_api_client_local_next.sh",
     "lint:js": "biome check --no-errors-on-unmatched",
     "lint:js:fix": "yarn lint:js --write",
     "lint:scss": "stylelint '**/*.scss'",
@@ -76,6 +77,7 @@
   "devDependencies": {
     "@axe-core/playwright": "4.11.1",
     "@biomejs/biome": "2.4.5",
+    "@hey-api/openapi-ts": "0.94.0",
     "@hookform/devtools": "4.4.0",
     "@playwright/test": "1.58.2",
     "@storybook/addon-a11y": "9.1.19",

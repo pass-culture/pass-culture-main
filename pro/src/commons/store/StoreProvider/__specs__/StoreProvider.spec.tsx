@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import { UserRole } from '@/apiClient/v1'
 import {
   defaultGetOffererResponseModel,
@@ -22,11 +22,13 @@ const renderStoreProvider = () => {
 vi.mock('@/apiClient/api', () => ({
   api: {
     getProfile: vi.fn(),
-    listFeatures: vi.fn(),
     listOfferersNames: vi.fn(),
     getOfferer: vi.fn(),
     getVenue: vi.fn(),
     getVenues: vi.fn(),
+  },
+  apiNew: {
+    listFeatures: vi.fn(),
   },
 }))
 vi.mock('@/commons/utils/storageAvailable', () => ({
@@ -69,7 +71,7 @@ describe('src | App', () => {
         }),
       ],
     })
-    vi.spyOn(api, 'listFeatures').mockResolvedValue([])
+    vi.spyOn(apiNew, 'listFeatures').mockResolvedValue([])
   })
 
   it('should load current user, its offerers and', async () => {
@@ -77,7 +79,7 @@ describe('src | App', () => {
 
     await screen.findByText('Sub component')
 
-    expect(api.listFeatures).toHaveBeenCalledTimes(1)
+    expect(apiNew.listFeatures).toHaveBeenCalledTimes(1)
     expect(api.getProfile).toHaveBeenCalledTimes(1)
     expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
     expect(api.getVenues).toHaveBeenCalledTimes(1)

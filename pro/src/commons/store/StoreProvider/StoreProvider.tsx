@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { updateFeatures } from '@/commons/store/features/reducer'
 import { updateUser } from '@/commons/store/user/reducer'
@@ -32,7 +32,7 @@ export const StoreProvider = ({
 
     const getFeatures = async () => {
       try {
-        return await api.listFeatures()
+        return await apiNew.listFeatures()
       } catch {
         return []
       }
@@ -40,7 +40,7 @@ export const StoreProvider = ({
 
     const getStoreInitialState = async () => {
       const features = await getFeatures()
-      dispatch(updateFeatures(features))
+      dispatch(updateFeatures(features ?? []))
 
       if (!isAdageIframe) {
         const user = await getUser()

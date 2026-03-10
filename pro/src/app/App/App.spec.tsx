@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import { App } from '@/app/App/App'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as orejime from '@/app/App/analytics/orejime'
@@ -66,7 +66,7 @@ const user = sharedCurrentUserFactory({ hasUserOfferer: true })
 describe('App', () => {
   beforeEach(() => {
     vi.spyOn(window, 'scrollTo')
-    vi.spyOn(api, 'listFeatures').mockResolvedValue([])
+    vi.spyOn(apiNew, 'listFeatures').mockResolvedValue([])
   })
 
   it('should render App and children components when isMaintenanceActivated is false', async () => {
