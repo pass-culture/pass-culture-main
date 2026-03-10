@@ -2,10 +2,11 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
+import { ApiError } from '@/apiClient/adage'
+import type { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
+import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
 import { api } from '@/apiClient/api'
-import { ApiError } from '@/apiClient/v1'
-import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import { HTTP_STATUS } from '@/apiClient/helpers'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { defaultGetBookingResponse } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -38,6 +39,10 @@ describe('Desk', () => {
 
   describe('should validate while user is typing', () => {
     it('should remove QRcode prefix', async () => {
+      vi.spyOn(api, 'getBookingByToken').mockResolvedValue(
+        defaultGetBookingResponse
+      )
+
       renderDesk()
 
       const contremarque = screen.getByLabelText('Contremarque')
@@ -47,71 +52,62 @@ describe('Desk', () => {
       expect(contremarque).toHaveValue('ZERRZ')
     })
 
-    it('should display default messages and disable submit button', async () => {
-      renderDesk()
-
-      expect(
-        screen.getByText(
-          'Saisissez les contremarques présentées par les bénéficiaires afin de les valider ou de les invalider.'
-        )
-      ).toBeInTheDocument()
-
-      const validateBtn = screen.getByRole('button', {
-        name: 'Valider la contremarque',
-      })
-
-      expect(validateBtn).toBeEnabled()
-
-      userEvent.click(validateBtn)
-
-      await waitFor(async () => {
-        const message = await screen.findByText('Saisissez une contremarque')
-        expect(message).toBeInTheDocument()
-      })
-    })
-
-    it('should indicate the number of characters missing', async () => {
+    it('should indicate the number of characters missing and indicate the maximum number of caracters', async () => {
       vi.spyOn(api, 'getBookingByToken').mockResolvedValue(
         defaultGetBookingResponse
       )
+
       renderDesk()
+
+      expect(screen.getByText('0/6')).toBeInTheDocument()
+
       const contremarque = screen.getByLabelText('Contremarque')
+
       await userEvent.type(contremarque, 'AA')
 
       expect(screen.getByText('2/6')).toBeInTheDocument()
     })
 
-    it('should indicate the maximum number of caracters', async () => {
+    it('should indicate the minimum number of caracters', async () => {
       vi.spyOn(api, 'getBookingByToken').mockResolvedValue(
         defaultGetBookingResponse
       )
+
       renderDesk()
+
       const contremarque = screen.getByLabelText('Contremarque')
-      await userEvent.type(contremarque, 'AAOURIRIR')
+
+      await userEvent.type(contremarque, 'AAOK')
+
+      const validateBtn = screen.getByRole('button', {
+        name: 'Valider la contremarque',
+      })
+
+      await userEvent.click(validateBtn)
+
       expect(
-        screen.getByText(
-          'La contremarque ne peut pas faire plus de 6 caractères'
-        )
+        screen.getByText('La contremarque doit contenir 6 caractères')
       ).toBeInTheDocument()
     })
 
     it('should indicate that the format is invalid and which characters are valid', async () => {
+      vi.spyOn(api, 'getBookingByToken').mockResolvedValue(
+        defaultGetBookingResponse
+      )
+
       renderDesk()
-      const contremarque = screen.getByLabelText('Contremarque')
+
+      const contremarque = screen.getByRole('textbox', { name: 'Contremarque' })
       await userEvent.type(contremarque, '@678HJ')
 
       const validateBtn = screen.getByRole('button', {
         name: 'Valider la contremarque',
       })
 
-      expect(validateBtn).toBeEnabled()
-
-      userEvent.click(validateBtn)
+      await userEvent.click(validateBtn)
 
       expect(
-        screen.getByRole('alert', {
-          name: 'token',
-        })
+        screen.getByText('Caractères valides : de A à Z et de 0 à 9')
       ).toBeInTheDocument()
     })
 
@@ -119,9 +115,12 @@ describe('Desk', () => {
       vi.spyOn(api, 'getBookingByToken').mockResolvedValue(
         defaultGetBookingResponse
       )
+
       renderDesk()
-      const contremarque = screen.getByLabelText('Contremarque')
+
+      const contremarque = screen.getByRole('textbox', { name: 'Contremarque' })
       await userEvent.type(contremarque, 'AAAAAA')
+
       expect(api.getBookingByToken).toHaveBeenCalledWith('AAAAAA')
       expect(
         await screen.findByText(defaultGetBookingResponse.offerName)
@@ -134,41 +133,51 @@ describe('Desk', () => {
           {} as ApiRequestOptions,
           {
             body: {},
-            status: 503,
+            status: 404,
           } as ApiResult,
-          'Oups, an error occured'
+          'Not found'
         )
       )
+
       renderDesk()
-      const contremarque = screen.getByLabelText('Contremarque')
+
+      const contremarque = screen.getByRole('textbox', { name: 'Contremarque' })
       await userEvent.type(contremarque, 'AAAAAA')
-      expect(
-        await screen.findByText(/Oups, an error occured/)
-      ).toBeInTheDocument()
+
+      waitFor(() => {
+        expect(screen.getByText(/Not found/)).toBeInTheDocument()
+      })
     })
   })
 
   describe('should validate contremarque when the user submits the form', () => {
-    beforeEach(() => {
-      vi.spyOn(api, 'getBookingByToken').mockResolvedValueOnce(
+    it('should display confirmation message and empty field when contremarque is validated', async () => {
+      vi.spyOn(api, 'getBookingByToken').mockResolvedValue(
         defaultGetBookingResponse
       )
-    })
-    it('should display confirmation message and empty field when contremarque is validated', async () => {
       vi.spyOn(api, 'patchBookingUseByToken').mockResolvedValueOnce()
 
       renderDesk()
 
-      const contremarque = screen.getByLabelText('Contremarque')
-
+      const contremarque = screen.getByRole('textbox', { name: 'Contremarque' })
       await userEvent.type(contremarque, 'AAAAAA')
-      await userEvent.click(screen.getByText('Valider la contremarque'))
 
-      expect(snackBarSuccess).toHaveBeenCalledWith('Contremarque validée')
-      expect(contremarque).toHaveValue('')
+      const validateBtn = screen.getByRole('button', {
+        name: 'Valider la contremarque',
+      })
+
+      userEvent.click(validateBtn)
+
+      waitFor(() => {
+        expect(snackBarSuccess).toHaveBeenCalledWith('Contremarque validée')
+        expect(contremarque).toHaveValue('')
+      })
     })
 
     it('should display error message and empty field when contremarque could not be validated', async () => {
+      vi.spyOn(api, 'getBookingByToken').mockResolvedValue(
+        defaultGetBookingResponse
+      )
       vi.spyOn(api, 'patchBookingUseByToken').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
@@ -191,30 +200,32 @@ describe('Desk', () => {
   })
 
   describe('should invalidate contremarque when the user submits the form', () => {
-    beforeEach(() => {
+    it('should display invalidating message when waiting for invalidation and display invalidation confirmation', async () => {
       vi.spyOn(api, 'getBookingByToken').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
           {
             body: {},
-            status: 410,
+            status: HTTP_STATUS.GONE,
           } as ApiResult,
-          'api error'
+          'Already validated'
         )
       )
-    })
-
-    it('should display invalidating message when waiting for invalidation and display invalidation confirmation', async () => {
       vi.spyOn(api, 'patchBookingKeepByToken').mockResolvedValueOnce()
 
       renderDesk()
 
-      await userEvent.type(screen.getByLabelText('Contremarque'), 'AAAAAA')
-      await userEvent.click(screen.getByText('Invalider la contremarque'))
+      const contremarque = screen.getByRole('textbox', { name: 'Contremarque' })
+      await userEvent.type(contremarque, 'AAAAAA')
+
+      const invalidateBtn = screen.getByText('Invalider la contremarque')
+
+      await userEvent.click(invalidateBtn)
 
       const confirmModalButton = screen.getByRole('button', {
         name: 'Continuer',
       })
+
       await userEvent.click(confirmModalButton)
 
       await waitFor(() => {
@@ -223,12 +234,22 @@ describe('Desk', () => {
     })
 
     it('should display error message when invalidation failed', async () => {
+      vi.spyOn(api, 'getBookingByToken').mockRejectedValue(
+        new ApiError(
+          {} as ApiRequestOptions,
+          {
+            body: {},
+            status: 410,
+          } as ApiResult,
+          'Already validated'
+        )
+      )
       vi.spyOn(api, 'patchBookingKeepByToken').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
           {
             body: {},
-            status: 500,
+            status: 410,
           } as ApiResult,
           'Erreur lors de la validation de la contremarque'
         )
@@ -236,8 +257,12 @@ describe('Desk', () => {
 
       renderDesk()
 
-      await userEvent.type(screen.getByLabelText('Contremarque'), 'AAAAAA')
-      await userEvent.click(screen.getByText('Invalider la contremarque'))
+      const contremarque = screen.getByRole('textbox', { name: 'Contremarque' })
+      await userEvent.type(contremarque, 'AAAAAA')
+
+      const invalidateBtn = screen.getByText('Invalider la contremarque')
+
+      await userEvent.click(invalidateBtn)
 
       const confirmModalButton = screen.getByRole('button', {
         name: 'Continuer',

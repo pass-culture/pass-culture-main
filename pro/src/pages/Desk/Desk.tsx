@@ -57,7 +57,7 @@ export const Desk = (): JSX.Element => {
     const inputValue = event.target.value.toUpperCase()
     const token = inputValue.split(':').reverse()[0]
 
-    setValue('token', token)
+    setValue('token', token, { shouldValidate: true })
 
     try {
       const response = await api.getBookingByToken(token)
