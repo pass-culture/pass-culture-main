@@ -119,6 +119,34 @@ describe('VenueEditionForm validationSchema', () => {
       },
       expectedErrors: [],
     },
+    {
+      description: 'invalid host for volunteeringUrl',
+      formValues: {
+        ...defaultValues,
+        volunteeringUrl: 'https://coucou.fr/organisations/yop',
+      },
+      expectedErrors: [
+        'Veuillez renseigner une URL provenant de la plateforme jeveuxaider.gouv',
+      ],
+    },
+    {
+      description: 'invalid path for volunteeringUrl',
+      formValues: {
+        ...defaultValues,
+        volunteeringUrl: 'https://jeveuxaider.gouv.fr/kikou',
+      },
+      expectedErrors: [
+        'Veuillez renseigner l’URL de votre page organisation. Ex : https://www.jeveuxaider.gouv.fr/organisations/exemple',
+      ],
+    },
+    {
+      description: 'valid volunteeringUrl',
+      formValues: {
+        ...defaultValues,
+        volunteeringUrl: 'https://jeveuxaider.gouv.fr/organisations/yop',
+      },
+      expectedErrors: [],
+    },
   ]
 
   cases.forEach(({ description, formValues, expectedErrors }) => {

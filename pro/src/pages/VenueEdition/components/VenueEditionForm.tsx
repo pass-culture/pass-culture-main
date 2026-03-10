@@ -27,6 +27,12 @@ import { OpeningHours } from '@/components/OpeningHours/OpeningHours'
 import { OpenToPublicToggle } from '@/components/OpenToPublicToggle/OpenToPublicToggle'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Banner } from '@/design-system/Banner/Banner'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { MultiSelect, type Option } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
@@ -48,6 +54,7 @@ interface VenueFormProps {
 
 export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+  const isVolunteeringActive = useActiveFeature('WIP_VOLUNTEERING')
 
   const navigate = useNavigate()
   const location = useLocation()
@@ -193,6 +200,39 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
         <FormLayout fullWidthActions>
           <FormLayout.Section title="Vos informations">
             <MandatoryInfo />
+            {isVolunteeringActive && (
+              <FormLayout.SubSection
+                title="Bénévolat"
+                description={
+                  <>
+                    Proposez des missions de bénévolat au sein du service{' '}
+                    <span className={styles['volunteering-link']}>
+                      <Button
+                        as="a"
+                        variant={ButtonVariant.TERTIARY}
+                        isExternal
+                        opensInNewTab
+                        to="https://www.jeveuxaider.gouv.fr/"
+                        color={ButtonColor.NEUTRAL}
+                        size={ButtonSize.SMALL}
+                        label={'jeveuxaider.gouv.fr'}
+                      />
+                    </span>{' '}
+                    et permettez aux jeunes de s’engager à vos côtés.
+                  </>
+                }
+              >
+                <FormLayout.Row>
+                  <TextInput
+                    {...methods.register('volunteeringUrl')}
+                    name="volunteeringUrl"
+                    label="URL de votre page jeveuxaider.gouv"
+                    description="Format : https://www.jeveuxaider.gouv.fr/organisations/exemple"
+                    error={methods.formState.errors.volunteeringUrl?.message}
+                  />
+                </FormLayout.Row>
+              </FormLayout.SubSection>
+            )}
 
             <FormLayout.SubSection title="Accueil du public">
               <FormLayout.Row>
