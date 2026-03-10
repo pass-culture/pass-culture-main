@@ -3,6 +3,8 @@ import { mutate } from 'swr'
 
 import type { BannerMetaModel } from '@/apiClient/v1'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
+import { setSelectedVenue } from '@/commons/store/user/reducer'
 import type { UploadImageValues } from '@/commons/utils/imageUploadTypes'
 import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import { postImageToVenue } from '@/repository/pcapi/pcapi'
@@ -14,6 +16,7 @@ export const useOnVenueImageUpload = (
   venueBannerUrl?: string | null,
   venueBannerMeta?: BannerMetaModel | null
 ) => {
+  const dispatch = useAppDispatch()
   const initialValues = buildInitialVenueImageValues(
     venueBannerUrl,
     venueBannerMeta
@@ -44,6 +47,7 @@ export const useOnVenueImageUpload = (
     )
 
     await mutate([GET_VENUE_QUERY_KEY, String(venueId)])
+    dispatch(setSelectedVenue(editedVenue))
   }
 
   return {
