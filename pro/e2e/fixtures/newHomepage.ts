@@ -134,7 +134,7 @@ export async function expectCollectiveModules(
   )
 
   await expectModuleVisibility(
-    page.getByText('Module page partenaire'),
+    page.getByText('Votre page sur ADAGE'),
     visibleModules.includes('ADAGE_PAGE_CARD')
   )
 

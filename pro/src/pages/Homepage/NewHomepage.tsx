@@ -148,6 +148,7 @@ export const NewHomepage = (): JSX.Element => {
               offererId={selectedVenue.managingOfferer.id}
               venueBannerUrl={selectedVenue.bannerUrl}
               venueBannerMeta={selectedVenue.bannerMeta}
+              variant="individual"
             />
             {shouldDisplayWebinarCard && (
               <div>
@@ -221,11 +222,14 @@ export const NewHomepage = (): JSX.Element => {
                     bankAccountStatus={selectedVenue.bankAccountStatus ?? null}
                   />
                 )}
-                <div>
-                  Votre page sur ADAGE
-                  <br />
-                  <b>Module page partenaire</b>
-                </div>
+                <PartnerPageCard
+                  venueId={selectedVenue.id}
+                  venueName={selectedVenue.name}
+                  offererId={selectedVenue.managingOfferer.id}
+                  venueBannerUrl={selectedVenue.bannerUrl}
+                  venueBannerMeta={selectedVenue.bannerMeta}
+                  variant="collective"
+                />
                 {shouldDisplayCollectiveWebinarCard && (
                   <div>
                     Participer à nos webinaires sur la part collective !
