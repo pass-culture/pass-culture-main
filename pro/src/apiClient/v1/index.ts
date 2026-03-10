@@ -54,7 +54,9 @@ export type { CollectiveOfferResponseIdModel } from './models/CollectiveOfferRes
 export type { CollectiveOfferResponseModel } from './models/CollectiveOfferResponseModel';
 export type { CollectiveOfferStockResponseModel } from './models/CollectiveOfferStockResponseModel';
 export { CollectiveOfferTemplateAllowedAction } from './models/CollectiveOfferTemplateAllowedAction';
+export type { CollectiveOfferTemplateHomeResponseModel } from './models/CollectiveOfferTemplateHomeResponseModel';
 export type { CollectiveOfferTemplateResponseModel } from './models/CollectiveOfferTemplateResponseModel';
+export type { CollectiveOfferTemplatesHomeResponseModel } from './models/CollectiveOfferTemplatesHomeResponseModel';
 export type { CollectiveRevenue } from './models/CollectiveRevenue';
 export type { CollectiveStockCreationBodyModel } from './models/CollectiveStockCreationBodyModel';
 export type { CollectiveStockEditionBodyModel } from './models/CollectiveStockEditionBodyModel';

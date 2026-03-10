@@ -960,6 +960,24 @@ def list_collective_offer_templates(
     return offers
 
 
+def get_collective_offer_templates_homepage(
+    user_id: int, venue_id: int, offers_limit: int
+) -> tuple[list[models.CollectiveOfferTemplate], bool]:
+    filters = schemas.CollectiveOffersFilter(
+        user_id=user_id,
+        venue_id=venue_id,
+        statuses=[models.CollectiveOfferDisplayedStatus.PUBLISHED, models.CollectiveOfferDisplayedStatus.UNDER_REVIEW],
+    )
+    query = get_collective_offers_template_by_filters(filters=filters)
+    offers = query.order_by(models.CollectiveOfferTemplate.dateRange.nulls_last()).limit(offers_limit).all()
+
+    all_offers_filters = schemas.CollectiveOffersFilter(user_id=user_id, venue_id=venue_id)
+    all_offers_query = get_collective_offers_template_by_filters(filters=all_offers_filters)
+    has_offers = db.session.query(all_offers_query.exists()).scalar()
+
+    return offers, has_offers
+
+
 def list_public_collective_offers(
     *,
     required_id: int,

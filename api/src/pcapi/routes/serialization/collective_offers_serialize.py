@@ -157,6 +157,46 @@ class ListCollectiveOfferTemplatesResponseModel(pydantic_v2.RootModel):
     root: list[CollectiveOfferTemplateResponseModel]
 
 
+### GET collective offers for homepage
+class ListCollectiveOffersHomeQueryModel(HttpQueryParamsModel):
+    venue_id: int
+
+
+class CollectiveStockHomeResponseModel(HttpBodyModel):
+    startDatetime: datetime
+    endDatetime: datetime
+    bookingLimitDatetime: datetime
+    numberOfTickets: int
+
+
+class CollectiveOfferHomeResponseModel(HttpBodyModel):
+    id: int
+    name: str
+    displayedStatus: models.CollectiveOfferDisplayedStatus
+    imageUrl: str | None
+    allowedActions: list[models.CollectiveOfferAllowedAction]
+    collectiveStock: CollectiveStockHomeResponseModel | None
+
+
+class ListCollectiveOffersHomeResponseModel(HttpBodyModel):
+    has_offers: bool
+    offers: list[CollectiveOfferHomeResponseModel]
+
+
+class CollectiveOfferTemplateHomeResponseModel(HttpBodyModel):
+    id: int
+    name: str
+    displayedStatus: models.CollectiveOfferDisplayedStatus
+    imageUrl: str | None
+    dates: DatesModel | None
+    allowedActions: list[models.CollectiveOfferTemplateAllowedAction]
+
+
+class CollectiveOfferTemplatesHomeResponseModel(HttpBodyModel):
+    has_offers: bool
+    offers: list[CollectiveOfferTemplateHomeResponseModel]
+
+
 ### GET one collective offer models
 class OfferDomain(HttpBodyModel):
     id: int
@@ -378,32 +418,6 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
             allowedActions=offer.allowedActions,
             history=collective_history_serialize.get_collective_offer_history(offer),
         )
-
-
-### GET collective offers models for home
-class CollectiveStockHomeResponseModel(HttpBodyModel):
-    startDatetime: datetime
-    endDatetime: datetime
-    bookingLimitDatetime: datetime
-    numberOfTickets: int
-
-
-class ListCollectiveOffersHomeQueryModel(HttpQueryParamsModel):
-    venue_id: int
-
-
-class CollectiveOfferHomeResponseModel(HttpBodyModel):
-    id: int
-    name: str
-    displayedStatus: models.CollectiveOfferDisplayedStatus
-    imageUrl: str | None
-    allowedActions: list[models.CollectiveOfferAllowedAction]
-    collectiveStock: CollectiveStockHomeResponseModel | None
-
-
-class ListCollectiveOffersHomeResponseModel(HttpBodyModel):
-    has_offers: bool
-    offers: list[CollectiveOfferHomeResponseModel]
 
 
 ### POST collective offer models
