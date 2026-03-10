@@ -2990,6 +2990,81 @@
                 ],
                 "title": "ExpenseDomain"
             },
+            "ExtentedTrustedDevice": {
+                "additionalProperties": false,
+                "description": "This serializer has all the fields from TrustedDevice/TrustedDeviceV2\nin addition to the last 3 fields (font_scale, resolution and screen_zoom_level)\nthat are not used by the backend.\nThey are accepted here just to fit with what's the front is sending.\nIn future API version we might need to remove them and use TrustedDevice instead.",
+                "properties": {
+                    "deviceId": {
+                        "title": "Deviceid",
+                        "type": "string"
+                    },
+                    "fontScale": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Fontscale"
+                    },
+                    "os": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Os"
+                    },
+                    "resolution": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Resolution"
+                    },
+                    "screenZoomLevel": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Screenzoomlevel"
+                    },
+                    "source": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Source"
+                    }
+                },
+                "required": [
+                    "deviceId"
+                ],
+                "title": "ExtentedTrustedDevice",
+                "type": "object"
+            },
             "ExternalBookingDataResponseV2": {
                 "additionalProperties": false,
                 "properties": {
@@ -7843,7 +7918,7 @@
                     "deviceInfo": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/TrustedDeviceV2"
+                                "$ref": "#/components/schemas/ExtentedTrustedDevice"
                             },
                             {
                                 "type": "null"
