@@ -1,38 +1,70 @@
 import { render, screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
+import userEvent from '@testing-library/user-event'
 
 import { ButtonInvalidateToken } from '../ButtonInvalidateToken'
 
+const setup = () => {
+  const onConfirm = vi.fn()
+
+  render(<ButtonInvalidateToken onConfirm={onConfirm} />)
+
+  const openDialog = async () => {
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Invalider la contremarque',
+      })
+    )
+  }
+
+  return { onConfirm, openDialog }
+}
+
 describe('ButtonInvalidateToken', () => {
-  it('should open modal on invalidate button click', async () => {
-    render(<ButtonInvalidateToken onConfirm={vi.fn()} />)
+  describe('dialog opening', () => {
+    it('opens confirmation dialog when clicking invalidate button', async () => {
+      const { openDialog } = setup()
 
-    await userEvent.click(screen.getByText('Invalider la contremarque'))
+      await openDialog()
 
-    expect(
-      screen.getByText('Voulez-vous vraiment invalider cette contremarque ?')
-    ).toBeInTheDocument()
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+
+      expect(
+        screen.getByText('Voulez-vous vraiment invalider cette contremarque ?')
+      ).toBeInTheDocument()
+    })
   })
 
-  it('should close Dialog on cancel button click', async () => {
-    render(<ButtonInvalidateToken onConfirm={vi.fn()} />)
+  describe('dialog closing', () => {
+    it('closes dialog when cancel is clicked', async () => {
+      const { openDialog } = setup()
 
-    await userEvent.click(screen.getByText('Invalider la contremarque'))
-    await userEvent.click(screen.getByText('Annuler'))
+      await openDialog()
 
-    expect(
-      screen.queryByText('Voulez-vous vraiment invalider cette contremarque ?')
-    ).not.toBeInTheDocument()
+      await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
+
+    it('closes dialog when confirm is clicked', async () => {
+      const { openDialog } = setup()
+
+      await openDialog()
+
+      await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
   })
 
-  it('should close Dialog on confirm button click', async () => {
-    render(<ButtonInvalidateToken onConfirm={vi.fn()} />)
+  describe('confirmation behaviour', () => {
+    it('calls onConfirm when user confirms', async () => {
+      const { openDialog, onConfirm } = setup()
 
-    await userEvent.click(screen.getByText('Invalider la contremarque'))
-    await userEvent.click(screen.getByText('Continuer'))
+      await openDialog()
 
-    expect(
-      screen.queryByText('Voulez-vous vraiment invalider cette contremarque ?')
-    ).not.toBeInTheDocument()
+      await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
+      expect(onConfirm).toHaveBeenCalledTimes(1)
+    })
   })
 })

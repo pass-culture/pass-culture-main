@@ -1,100 +1,107 @@
+import { HTTP_STATUS } from '@/apiClient/helpers'
 import { ApiError } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 
 import { getBookingFailure } from '../getBookingFailure'
 
+const buildApiError = ({
+  status,
+  body = {},
+  message = 'api error',
+}: {
+  status: number
+  body?: Record<string, unknown>
+  message?: string
+}) =>
+  new ApiError({} as ApiRequestOptions, { body, status } as ApiResult, message)
+
 describe('getBookingFailure', () => {
-  it('should return already cancelled message when booking is already cancelled', () => {
-    const failure = getBookingFailure(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          body: {
-            booking_cancelled: 'already cancelled',
-          },
-          status: 410,
-        } as ApiResult,
-        'api error'
+  /* ---------------------------------------------------------------------- */
+  /*                              HTTP 410 (GONE)                           */
+  /* ---------------------------------------------------------------------- */
+
+  describe('when status is HTTP_STATUS.GONE (410)', () => {
+    it('returns cancelled message when booking is already cancelled', () => {
+      const failure = getBookingFailure(
+        buildApiError({
+          status: HTTP_STATUS.GONE,
+          body: { booking_cancelled: 'already cancelled' },
+        })
       )
-    )
-    expect(failure).toStrictEqual({
-      isTokenValidated: false,
-      message: 'already cancelled',
+
+      expect(failure).toStrictEqual({
+        isTokenValidated: false,
+        message: 'already cancelled',
+      })
+    })
+
+    it('returns validated state when booking already validated', () => {
+      const failure = getBookingFailure(
+        buildApiError({
+          status: HTTP_STATUS.GONE,
+        })
+      )
+
+      expect(failure).toStrictEqual({
+        isTokenValidated: true,
+        message: 'api error',
+      })
     })
   })
 
-  it('should return already validated message when booking is already validated', () => {
-    const failure = getBookingFailure(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          body: {},
-          status: 410,
-        } as ApiResult,
-        'api error'
+  /* ---------------------------------------------------------------------- */
+  /*                            HTTP 403 (FORBIDDEN)                        */
+  /* ---------------------------------------------------------------------- */
+
+  describe('when status is HTTP_STATUS.FORBIDDEN (403)', () => {
+    it('returns reimbursed message when booking already reimbursed', () => {
+      const failure = getBookingFailure(
+        buildApiError({
+          status: HTTP_STATUS.FORBIDDEN,
+          body: { payment: 'already reimbursed' },
+        })
       )
-    )
-    expect(failure).toStrictEqual({
-      isTokenValidated: true,
-      message: 'api error',
+
+      expect(failure).toStrictEqual({
+        isTokenValidated: false,
+        message: 'already reimbursed',
+      })
+    })
+
+    it('returns cant-be-validated message', () => {
+      const failure = getBookingFailure(
+        buildApiError({
+          status: HTTP_STATUS.FORBIDDEN,
+          body: { booking: 'you will be able to validate later' },
+          message: '',
+        })
+      )
+
+      expect(failure).toStrictEqual({
+        isTokenValidated: false,
+        message: 'you will be able to validate later',
+      })
     })
   })
 
-  it('should return already reimbursed message when booking is already reimbursed', () => {
-    const failure = getBookingFailure(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          body: {
-            payment: 'already reimbursed',
-          },
-          status: 403,
-        } as ApiResult,
-        'api error'
-      )
-    )
+  /* ---------------------------------------------------------------------- */
+  /*                             Other statuses                              */
+  /* ---------------------------------------------------------------------- */
 
-    expect(failure).toStrictEqual({
-      isTokenValidated: false,
-      message: 'already reimbursed',
-    })
-  })
-
-  it('should return error message when the booking cant be validated and not reimbursed yet', () => {
-    const failure = getBookingFailure(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          body: {
-            booking: 'you will be able to validate later',
-          },
-          status: 403,
-        } as ApiResult,
-        ''
-      )
-    )
-
-    expect(failure).toStrictEqual({
-      isTokenValidated: false,
-      message: 'you will be able to validate later',
-    })
-  })
-
-  it('should return the api error message for error status other that 410 and not handled when 403', () => {
-    const failure = getBookingFailure(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          body: {},
+  describe('when status is not handled', () => {
+    it('returns api error message', () => {
+      const failure = getBookingFailure(
+        buildApiError({
           status: 500,
-        } as ApiResult,
-        'api internal error'
+          message: 'api internal error',
+        })
       )
-    )
-    expect(failure).toStrictEqual({
-      isTokenValidated: false,
-      message: 'api internal error',
+
+      expect(failure).toStrictEqual({
+        isTokenValidated: false,
+        message: 'api internal error',
+      })
     })
   })
 })
