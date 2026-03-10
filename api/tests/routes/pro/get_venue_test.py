@@ -45,6 +45,7 @@ class Returns200Test:
             collectiveDescription="Description du lieu",
             isOpenToPublic=True,
             activity=offerers_models.Activity.BOOKSTORE,
+            volunteeringUrl="https://www.jeveuxaider.gouv.fr/organisations/structure-name",
         )
         offerers_factories.VenuePricingPointLinkFactory(
             venue=venue,
@@ -241,6 +242,7 @@ class Returns200Test:
             "allowedOnAdage": True,
             "hasPartnerPage": True,
             "hasNonDraftOffers": True,
+            "volunteeringUrl": "https://www.jeveuxaider.gouv.fr/organisations/structure-name",
         }
         db.session.expire_all()
 
