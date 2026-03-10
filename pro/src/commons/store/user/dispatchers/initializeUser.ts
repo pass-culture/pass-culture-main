@@ -31,8 +31,10 @@ export const initializeUser = createAsyncThunk<
     ) /// TODO (igabriele, 2025-10-28): Simplify this Backend route and its core method once `WIP_SWITCH_VENUE` FF is enabled and removed (no need for query params anymore).
     const offererNamesResponse = await api.listOfferersNames()
     const venuesResponse = await api.getVenues(null, true) // only active venues
-
-    dispatch(updateOffererNames(offererNamesResponse.offerersNames))
+    const offererNames = offererNamesResponse.offerersNames.concat(
+      offererNamesResponse.offerersNamesWithPendingValidation
+    )
+    dispatch(updateOffererNames(offererNamesResponse))
     dispatch(setVenues(venuesResponse.venues))
     dispatch(updateUser(user))
 
@@ -42,10 +44,7 @@ export const initializeUser = createAsyncThunk<
           initialOffererId: null,
           initialVenueId: getInitialPartnerVenueId(venuesResponse.venues),
         }
-      : getInitialOffererIdAndVenueId(
-          offererNamesResponse.offerersNames,
-          venuesResponse.venues
-        )
+      : getInitialOffererIdAndVenueId(offererNames, venuesResponse.venues)
 
     // Initialize the Partner Space selected venue if any
     const { selectedVenue } = initialVenueId
@@ -65,12 +64,16 @@ export const initializeUser = createAsyncThunk<
     if (withSwitchVenueFeature) {
       const initialAdminOffererId = getInitialAdminOffererId({
         selectedVenue,
-        offererNames: offererNamesResponse.offerersNames,
+        offererNamesAttached: offererNames,
       })
 
       // Initialize the Administration Space selected offerer if any
       if (initialAdminOffererId) {
-        await dispatch(setSelectedAdminOffererById(initialAdminOffererId))
+        await dispatch(
+          setSelectedAdminOffererById({
+            offererId: initialAdminOffererId,
+          })
+        )
       }
 
       return

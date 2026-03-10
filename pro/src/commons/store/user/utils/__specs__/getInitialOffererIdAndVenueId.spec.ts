@@ -28,11 +28,11 @@ describe('getInitialOffererIdAndVenueId', () => {
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '123')
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '999')
 
-    const offererNames = [makeOffererName({ id: 1 })]
+    const offererNamesAttached = [makeOffererName({ id: 1 })]
     const venues = [makeVenueListItem({ id: 2 })]
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
-      offererNames,
+      offererNamesAttached,
       venues
     )
 
@@ -43,14 +43,14 @@ describe('getInitialOffererIdAndVenueId', () => {
   it('should return venue id from local storage when present (priority 2)', () => {
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '123')
 
-    const offererNames = [makeOffererName({ id: 1 })]
+    const offererNamesAttached = [makeOffererName({ id: 1 })]
     const venues = [
       makeVenueListItem({ id: 123 }),
       makeVenueListItem({ id: 2 }),
     ]
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
-      offererNames,
+      offererNamesAttached,
       venues
     )
 
@@ -61,14 +61,14 @@ describe('getInitialOffererIdAndVenueId', () => {
   it('should ignore venue id from local storage if not found in venues and fallback to first venue (priority 4)', () => {
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '999')
 
-    const offererNames = [makeOffererName({ id: 1 })]
+    const offererNamesAttached = [makeOffererName({ id: 1 })]
     const venues = [
       makeVenueListItem({ id: 11 }),
       makeVenueListItem({ id: 22 }),
     ]
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
-      offererNames,
+      offererNamesAttached,
       venues
     )
 
@@ -79,11 +79,11 @@ describe('getInitialOffererIdAndVenueId', () => {
   it('should return offerer id from local storage when venue id is absent (priority 3)', () => {
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '789')
 
-    const offererNames = [makeOffererName({ id: 789 })]
+    const offererNamesAttached = [makeOffererName({ id: 789 })]
     const venues = [makeVenueListItem({ id: 2 })]
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
-      offererNames,
+      offererNamesAttached,
       venues
     )
 
@@ -94,7 +94,7 @@ describe('getInitialOffererIdAndVenueId', () => {
   it('should ignore offerer id from local storage if not found in offerers and fallback to first venue (priority 4)', () => {
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '555')
 
-    const offererNames = [
+    const offererNamesAttached = [
       makeOffererName({ id: 1 }),
       makeOffererName({ id: 2 }),
     ]
@@ -104,7 +104,7 @@ describe('getInitialOffererIdAndVenueId', () => {
     ]
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
-      offererNames,
+      offererNamesAttached,
       venues
     )
 
@@ -113,14 +113,14 @@ describe('getInitialOffererIdAndVenueId', () => {
   })
 
   it('should fall back to the first venue when no ids are in storage (priority 4)', () => {
-    const offererNames = [makeOffererName({ id: 1 })]
+    const offererNamesAttached = [makeOffererName({ id: 1 })]
     const venues = [
       makeVenueListItem({ id: 11 }),
       makeVenueListItem({ id: 22 }),
     ]
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
-      offererNames,
+      offererNamesAttached,
       venues
     )
 
@@ -129,14 +129,14 @@ describe('getInitialOffererIdAndVenueId', () => {
   })
 
   it('should fall back to the first offerer when no venues exist (priority 5)', () => {
-    const offererNames = [
+    const offererNamesAttached = [
       makeOffererName({ id: 20 }),
       makeOffererName({ id: 21 }),
     ]
     const venues: VenueListItemResponseModel[] = []
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
-      offererNames,
+      offererNamesAttached,
       venues
     )
 
@@ -145,11 +145,11 @@ describe('getInitialOffererIdAndVenueId', () => {
   })
 
   it('should return null ids when nothing is available (priority 6: new user without offerers nor venues)', () => {
-    const offererNames: GetOffererNameResponseModel[] = []
+    const offererNamesAttached: GetOffererNameResponseModel[] = []
     const venues: VenueListItemResponseModel[] = []
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
-      offererNames,
+      offererNamesAttached,
       venues
     )
 

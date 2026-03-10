@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
 import { api } from '@/apiClient/api'
-import { isErrorAPIError } from '@/apiClient/helpers'
+import { HTTP_STATUS, isErrorAPIError } from '@/apiClient/helpers'
 import type { GetOffererResponseModel } from '@/apiClient/v1'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleError } from '@/commons/errors/handleError'
@@ -16,12 +16,40 @@ import { logout } from './logout'
 
 export const setSelectedAdminOffererById = createAsyncThunk<
   void,
-  number | GetOffererResponseModel,
+  {
+    offererId: number | GetOffererResponseModel
+  },
   AppThunkApiConfig
 >(
   'user/setSelectedAdminOffererById',
-  async (offererOrOffererId, { dispatch }) => {
+  async ({ offererId: offererOrOffererId }, { dispatch, getState }) => {
     try {
+      const state = getState()
+      const offererNamesPendingIds =
+        state.offerer.offerersNamesWithPendingValidation?.map((o) => o.id)
+      const offererId =
+        typeof offererOrOffererId === 'number'
+          ? offererOrOffererId
+          : offererOrOffererId.id
+
+      if (
+        offererNamesPendingIds &&
+        offererNamesPendingIds.length > 0 &&
+        offererNamesPendingIds.includes(offererId)
+      ) {
+        // if the offerer is unattached, we set a minimal offerer to avoid having getOfferer() return a 403
+        // this allows to display the unattached banner to the user
+        const minimalOfferer = {
+          id: offererId,
+        } as GetOffererResponseModel
+        dispatch(setSelectedAdminOfferer(minimalOfferer))
+        localStorageManager.setItem(
+          LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID,
+          String(offererId)
+        )
+        return
+      }
+
       const nextOfferer =
         typeof offererOrOffererId === 'number'
           ? await api.getOfferer(offererOrOffererId)
@@ -32,6 +60,23 @@ export const setSelectedAdminOffererById = createAsyncThunk<
         String(nextOfferer.id)
       )
     } catch (err) {
+      if (isErrorAPIError(err) && err.status === HTTP_STATUS.FORBIDDEN) {
+        const offererId =
+          typeof offererOrOffererId === 'number'
+            ? offererOrOffererId
+            : offererOrOffererId.id
+
+        const minimalOfferer = {
+          id: offererId,
+        } as GetOffererResponseModel
+        dispatch(setSelectedAdminOfferer(minimalOfferer))
+        localStorageManager.setItem(
+          LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID,
+          String(offererId)
+        )
+        return
+      }
+
       handleError(
         err,
         "Une erreur est survenue lors du chargement de l'entité juridique."

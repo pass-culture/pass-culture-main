@@ -526,7 +526,7 @@ describe('initializeUser', () => {
       expect(state.user.currentUser).toBeNull()
       expect(state.offerer.currentOfferer).toBeNull()
       expect(state.offerer.currentOffererName).toBeNull()
-      expect(state.offerer.offererNames).toBeNull()
+      expect(state.offerer.offererNamesAttached).toBeNull()
       expect(state.user.selectedVenue).toBeNull()
       expect(state.user.venues).toBeNull()
 

@@ -1,10 +1,9 @@
 import useSWR, { type SWRResponse } from 'swr'
 
 import { api } from '@/apiClient/api'
-import type { GetOfferersNamesResponseModel } from '@/apiClient/v1'
+import type { GetOffererNameResponseModel } from '@/apiClient/v1'
 import { GET_OFFERER_NAMES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { updateOffererNames } from '@/commons/store/offerer/reducer'
-import { selectOffererNames } from '@/commons/store/offerer/selectors'
 
 import { useAppDispatch } from '../useAppDispatch'
 import { useAppSelector } from '../useAppSelector'
@@ -17,35 +16,44 @@ import { useAppSelector } from '../useAppSelector'
  * it is returned immediately without making a new request.
  * Else, we perform the query and dispatch it to the store.
  *
- * @returns {SWRResponse<GetOfferersNamesResponseModel>} An object containing:
+ * @returns {SWRResponse<UseOffererNamesQueryResponse>} An object containing:
  * - data: The offerer names data
  * - isLoading: Loading state
  * - isValidating: Validation state
  * - error: Potential error
  */
-export const useOffererNamesQuery =
-  (): SWRResponse<GetOfferersNamesResponseModel> => {
-    const storeOffererNames = useAppSelector(selectOffererNames)
-    const dispatch = useAppDispatch()
+export const useOffererNamesQuery = (): SWRResponse<
+  GetOffererNameResponseModel[]
+> => {
+  const storeOffererNamesAttached = useAppSelector(
+    (state) => state.offerer.offererNamesAttached
+  )
+  const storeOfferersNamesWithPendingValidation = useAppSelector(
+    (state) => state.offerer.offerersNamesWithPendingValidation
+  )
+  const dispatch = useAppDispatch()
 
-    const offererNamesQuery = useSWR(
-      [GET_OFFERER_NAMES_QUERY_KEY],
-      async () => {
-        if (!storeOffererNames) {
-          const response = await api.listOfferersNames()
-          dispatch(updateOffererNames(response.offerersNames))
-          return response
-        } else {
-          return {
-            offerersNames: storeOffererNames,
-            offerersNamesWithPendingValidation: [], // This part is not stored in the Redux store, so we return an empty array
-          }
-        }
-      },
-      {
-        shouldRetryOnError: false,
+  const offererNamesQuery = useSWR<GetOffererNameResponseModel[]>(
+    [GET_OFFERER_NAMES_QUERY_KEY],
+    async (): Promise<GetOffererNameResponseModel[]> => {
+      if (storeOffererNamesAttached) {
+        return storeOffererNamesAttached.concat(
+          storeOfferersNamesWithPendingValidation ?? []
+        )
+      } else {
+        const response = await api.listOfferersNames()
+        dispatch(updateOffererNames(response))
+        return response.offerersNames.concat(
+          response.offerersNamesWithPendingValidation ?? []
+        )
       }
-    )
+    },
+    {
+      shouldRetryOnError: false,
+    }
+  )
 
-    return offererNamesQuery
+  return {
+    ...offererNamesQuery,
   }
+}

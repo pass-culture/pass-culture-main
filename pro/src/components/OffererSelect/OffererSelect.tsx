@@ -11,7 +11,6 @@ export const OffererSelect = (): JSX.Element | null => {
   const dispatch = useAppDispatch()
   const { isLoading } = useOffererNamesQuery()
   const offererNames = useAppSelector(ensureOffererNames)
-
   const selectedAdminOfferer = useAppSelector(
     (store) => store.user.selectedAdminOfferer
   )
@@ -26,7 +25,11 @@ export const OffererSelect = (): JSX.Element | null => {
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const offererId = Number(event.target.value)
-    dispatch(setSelectedAdminOffererById(offererId))
+    dispatch(
+      setSelectedAdminOffererById({
+        offererId,
+      })
+    )
   }
 
   return (
