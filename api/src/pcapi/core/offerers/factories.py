@@ -102,6 +102,7 @@ class VenueFactory(BaseFactory[models.Venue]):
     _bannerUrl: str | None = None
     adageId: str | factory.declarations.BaseDeclaration | None = None
     isReimbursementSuspended: bool = False
+    volunteeringUrl: str | None = "https://www.jeveuxaider.gouv.fr/organisations/structure-name"
 
     offererAddress: factory.declarations.BaseDeclaration | None = factory.RelatedFactory(
         "pcapi.core.offerers.factories.VenueLocationFactory",

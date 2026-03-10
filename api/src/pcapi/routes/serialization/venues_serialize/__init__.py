@@ -350,6 +350,7 @@ class GetVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     hasPartnerPage: bool
     canDisplayHighlights: bool
     hasNonDraftOffers: bool
+    volunteeringUrl: str | None = pydantic_v1.Field(...)
 
     class Config:
         orm_mode = True
