@@ -8,6 +8,7 @@ import {
 } from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { SynchronizedProviderInformation } from '@/components/SynchronisedProviderInformation/SynchronizedProviderInformation'
@@ -19,6 +20,7 @@ import fullTrashIcon from '@/icons/full-trash.svg'
 
 import { IndividualOfferNavigation } from './components/IndividualOfferNavigation/IndividualOfferNavigation'
 import { OfferHighlightBanner } from './components/OfferHighlightBanner/OfferHighlightBanner'
+import { OfferHighlightCard } from './components/OfferHighlightCard/OfferHighlightCard'
 import { OfferPublicationEdition } from './components/OfferPublicationEdition/OfferPublicationEdition'
 import { OfferStatusBanner } from './components/OfferStatusBanner/OfferStatusBanner'
 import { Status } from './components/Status/Status'
@@ -36,6 +38,9 @@ export const IndividualOfferLayout = ({
 }: IndividualOfferLayoutProps) => {
   const { hasPublishedOfferWithSameEan } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
+  const isOfferRecommendationEnabled = useActiveFeature(
+    'WIP_OFFER_RECOMMENDATION_PRO'
+  )
 
   // All offer's publication dates can be manually edited except for:
   // - rejected offers
@@ -135,10 +140,17 @@ export const IndividualOfferLayout = ({
 
       {shouldDisplayHighlightsBanner && (
         <div className={styles['banner-container']}>
-          <OfferHighlightBanner
-            offerId={offer.id}
-            highlightRequests={offer.highlightRequests}
-          />
+          {isOfferRecommendationEnabled ? (
+            <OfferHighlightCard
+              offerId={offer.id}
+              highlightRequests={offer.highlightRequests}
+            />
+          ) : (
+            <OfferHighlightBanner
+              offerId={offer.id}
+              highlightRequests={offer.highlightRequests}
+            />
+          )}
         </div>
       )}
 

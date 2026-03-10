@@ -1,0 +1,54 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_rem.scss" as rem;
+
+.highlight-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-spacing-l);
+  padding: var(--size-spacing-xl);
+  border-radius: var(--size-border-radius-m);
+  background: var(--color-background-bookclub);
+  max-width: rem.torem(400px);
+
+  &-edit {
+    background: var(--color-background-default);
+    border: solid 1px var(--color-border-default);
+  }
+
+  &-top {
+    display: flex;
+    align-items: center;
+    gap: var(--size-spacing-m);
+  }
+
+  &-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-brand-primary);
+  }
+
+  &-highlights {
+    display: flex;
+    gap: var(--size-spacing-xs);
+  }
+
+  &-text {
+    @include fonts.body-accent;
+
+    margin: 0;
+    flex: 1;
+  }
+
+  &-actions {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+
+    &-edit {
+      justify-content: left;
+    }
+  }
+}
