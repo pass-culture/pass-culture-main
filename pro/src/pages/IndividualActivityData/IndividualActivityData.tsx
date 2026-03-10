@@ -26,12 +26,9 @@ const IndividualActivityData = () => {
     updateUrl,
     urlParams,
     wereBookingsRequested,
-  } = useBookingsFilters()
-
-  const selectedPreFiltersWithSelectedOffererId = {
-    ...selectedPreFilters,
+  } = useBookingsFilters({
     offererId: selectedAdminOfferer.id.toString(),
-  }
+  })
 
   const offererAddressQuery = useOffererAddresses(
     GetOffererAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
@@ -59,7 +56,7 @@ const IndividualActivityData = () => {
         isTableLoading={false}
         offererAddresses={offererAddresses}
         resetPreFilters={resetPreFiltersAndLog}
-        selectedPreFilters={selectedPreFiltersWithSelectedOffererId}
+        selectedPreFilters={selectedPreFilters}
         updateSelectedFilters={updateSelectedFilters}
         updateUrl={updateUrl}
         urlParams={urlParams}

@@ -795,5 +795,67 @@ describe('components | BookingsRecap | Pro user', () => {
         )
       ).toBeInTheDocument()
     })
+
+    it('should not show download dropdown', async () => {
+      renderBookingsRecap({}, ['WIP_SWITCH_VENUE'])
+      await waitForCompleteLoading()
+
+      expect(
+        screen.queryByRole('button', { name: 'Télécharger' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should fetch bookings using venueId without offererId when clicking "Afficher"', async () => {
+      const bookingRecap = bookingRecapFactory()
+      const spyGetBookingsPro = vi
+        .spyOn(api, 'getBookingsPro')
+        .mockResolvedValue({
+          page: 1,
+          pages: 1,
+          total: 1,
+          bookingsRecap: [bookingRecap],
+        })
+      renderBookingsRecap({}, ['WIP_SWITCH_VENUE'])
+      await waitForCompleteLoading()
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Rechercher les réservations' })
+      )
+
+      await screen.findAllByText(bookingRecap.stock.offerName)
+      const callArgs = spyGetBookingsPro.mock.calls[0]
+      expect(callArgs[1]).toBeUndefined()
+      expect(callArgs[2]).toBe(
+        defaultGetOffererVenueResponseModel.id.toString()
+      )
+    })
+
+    it('should reset filters to venue-scoped defaults', async () => {
+      vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
+        page: 1,
+        pages: 0,
+        total: 0,
+        bookingsRecap: [],
+      })
+      renderBookingsRecap({}, ['WIP_SWITCH_VENUE'])
+      await waitForCompleteLoading()
+
+      await userEvent.selectOptions(
+        screen.getByLabelText('Localisation'),
+        offererAddress[0].id.toString()
+      )
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Rechercher les réservations' })
+      )
+
+      const resetButton = await screen.findByText(
+        'Afficher toutes les réservations'
+      )
+      await userEvent.click(resetButton)
+
+      expect(screen.getByLabelText('Localisation')).toHaveValue(
+        DEFAULT_PRE_FILTERS.offererAddressId
+      )
+    })
   })
 })
