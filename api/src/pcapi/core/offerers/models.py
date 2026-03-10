@@ -313,6 +313,8 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         server_default=expression.false(),
     )
 
+    volunteeringUrl: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+
     isPermanent: sa_orm.Mapped[bool] = sa_orm.mapped_column(sa.Boolean, nullable=False, default=False)
 
     isOpenToPublic: sa_orm.Mapped[bool] = sa_orm.mapped_column(sa.Boolean, nullable=False, default=False)
