@@ -93,18 +93,20 @@ class Returns200Test:
                 "longitude": 2.308289,
                 "postalCode": "75001",
                 "isOpenToPublic": True,
+                "volunteeringUrl": "https://www.jeveuxaider.gouv.fr/organisations/new-structure-name",
             },
             venue,
         )
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
 
         # then
-        assert response.status_code == 200
+        assert response.status_code == 200, response.json
 
         # the venue should be updated
         assert venue.publicName == "Ma librairie"
         assert venue.venueTypeCode == offerers_models.VenueTypeCode.BOOKSTORE
         assert venue.activity == offerers_models.Activity.BOOKSTORE
+        assert venue.volunteeringUrl == "https://www.jeveuxaider.gouv.fr/organisations/new-structure-name"
 
         # venue location is updated
         new_location = db.session.query(offerers_models.OffererAddress).one()
@@ -130,6 +132,7 @@ class Returns200Test:
         assert response.json["location"]["banId"] == new_address.banId
         assert response.json["location"]["city"] == new_address.city
         assert response.json["location"]["postalCode"] == new_address.postalCode
+        assert response.json["volunteeringUrl"] == "https://www.jeveuxaider.gouv.fr/organisations/new-structure-name"
 
         # an update request should be sent to Zendesk
         assert len(external_testing.sendinblue_requests) == 1
@@ -166,6 +169,7 @@ class Returns200Test:
         assert update_snapshot["offererAddress.address.latitude"]["new_info"] == str(new_address.latitude)
         assert update_snapshot["offererAddress.address.longitude"]["new_info"] == str(new_address.longitude)
         assert update_snapshot["offererAddress.addressId"]["new_info"] == new_address.id
+        assert update_snapshot["volunteeringUrl"]["new_info"] == venue_data["volunteeringUrl"]
 
         # one action should be added for updated accessibility info
         acceslibre_action = [
@@ -1322,6 +1326,56 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"contact.website": ["ensure this value has at most 256 characters"]}
+
+    def test_update_with_wrong_volunteering_url_protocol(self, client) -> None:
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+
+        venue_data = populate_missing_data_from_venue({"volunteeringUrl": "wrong-url"}, venue)
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+
+        assert response.status_code == 400
+        assert response.json == {"volunteeringUrl": ['L\'URL doit commencer par "http://" ou "https://"']}
+
+    def test_update_with_wrong_volunteering_url_domain(self, client) -> None:
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+
+        venue_data = populate_missing_data_from_venue({"volunteeringUrl": "https://example.com"}, venue)
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "volunteeringUrl": ["Veuillez renseigner une URL provenant de la plateforme jeveuxaider.gouv"]
+        }
+
+    def test_update_with_wrong_volunteering_url_path(self, client) -> None:
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+
+        venue_data = populate_missing_data_from_venue(
+            {"volunteeringUrl": "https://www.jeveuxaider.gouv.fr/test"}, venue
+        )
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "volunteeringUrl": [
+                "Veuillez renseigner l’URL de votre page association. Ex : https://www.jeveuxaider.gouv.fr/organisations/exemple"
+            ]
+        }
 
 
 @pytest.mark.parametrize(

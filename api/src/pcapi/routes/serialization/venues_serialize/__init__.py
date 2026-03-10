@@ -3,6 +3,7 @@ import typing
 from datetime import datetime
 from decimal import Decimal
 from io import BytesIO
+from urllib.parse import urlparse
 
 import pydantic.v1 as pydantic_v1
 from PIL import Image
@@ -19,6 +20,7 @@ from pcapi.core.geography.constants import MAX_LONGITUDE
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
+from pcapi.core.offerers.constants import JE_VEUX_AIDER_GOUV_BASE_URL
 from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
 from pcapi.core.offers.validation import ACCEPTED_THUMBNAIL_FORMATS
 from pcapi.core.opening_hours import api as opening_hours_api
@@ -420,6 +422,7 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     contact: offerers_schemas.VenueContactModel | None
     openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None
     isOpenToPublic: bool | None
+    volunteeringUrl: pydantic_v1.HttpUrl | None
 
     # TODO: move and rationalize Venue validation after serialization refactoring
     @validator("latitude", pre=True)
@@ -454,6 +457,31 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
         if booking_email == "":
             return None
         return booking_email
+
+    @validator("volunteeringUrl", always=True)
+    @classmethod
+    def validate_volunteering_url(cls, volunteering_url: str | None) -> str | None:
+        if not volunteering_url:
+            return None
+
+        parsed = urlparse(volunteering_url)
+        hostname = parsed.hostname
+
+        if hostname and hostname.replace("www.", "") != JE_VEUX_AIDER_GOUV_BASE_URL:
+            raise exceptions.OffererException(
+                {"volunteeringUrl": ["Veuillez renseigner une URL provenant de la plateforme jeveuxaider.gouv"]}
+            )
+
+        if not parsed.path.startswith("/organisations"):
+            raise exceptions.OffererException(
+                {
+                    "volunteeringUrl": [
+                        "Veuillez renseigner l’URL de votre page association. Ex : https://www.jeveuxaider.gouv.fr/organisations/exemple"
+                    ]
+                }
+            )
+
+        return volunteering_url
 
 
 class EditVenueCollectiveDataBodyModel(BaseModel):
