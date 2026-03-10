@@ -29,38 +29,32 @@ class SearchError(Exception):
 class AlgoliaBackend(
     serialization.AlgoliaSerializationMixin, redis_queues.AlgoliaIndexingQueuesMixin, base.SearchBackend
 ):
-    def save_objects(self, index: str | None, serialized_object: list[dict]) -> None:
-        assert index  # helps mypy
+    def save_objects(self, index: str, serialized_object: list[dict]) -> None:
         with search_client.SearchClientSync(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
             client.save_objects(index, serialized_object)
 
-    def delete_objects(self, index: str | None, object_ids: abc.Collection[typing.Union[str, int]]) -> None:
-        assert index  # helps mypy
+    def delete_objects(self, index: str, object_ids: abc.Collection[typing.Union[str, int]]) -> None:
         with search_client.SearchClientSync(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
             client.delete_objects(index, [str(i) for i in object_ids])
 
-    def clear_objects(self, index: str | None) -> None:
-        assert index  # helps mypy
+    def clear_objects(self, index: str) -> None:
         with search_client.SearchClientSync(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
             client.clear_objects(index)
 
     def search(
         self,
-        index: str | None,
+        index: str,
         query: str,
         params: dict[str, typing.Any],
     ) -> SearchResponse:
-        assert index  # helps mypy
         with search_client.SearchClientSync(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
             return client.search_single_index(index, {"query": query, **params})
 
-    def set_settings(self, index: str | None, algolia_settings: dict) -> None:
-        assert index  # helps mypy
+    def set_settings(self, index: str, algolia_settings: dict) -> None:
         with search_client.SearchClientSync(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
             client.set_settings(index, IndexSettings.from_dict(algolia_settings) or {})
 
-    def get_settings(self, index: str | None) -> dict:
-        assert index  # helps mypy
+    def get_settings(self, index: str) -> dict:
         with search_client.SearchClientSync(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
             return client.get_settings(index).to_dict()
 
@@ -74,6 +68,7 @@ class AlgoliaBackend(
         if not offers:
             return
         objects = [self.serialize_offer(offer, last_30_days_bookings.get(offer.id) or 0) for offer in offers]
+        assert settings.ALGOLIA_OFFERS_INDEX_NAME
         self.save_objects(settings.ALGOLIA_OFFERS_INDEX_NAME, objects)
         offer_ids = [offer.id for offer in offers]
         self.add_offer_ids_to_store(offer_ids)
@@ -88,21 +83,25 @@ class AlgoliaBackend(
             self.serialize_collective_offer_template(collective_offer_template)
             for collective_offer_template in collective_offer_templates
         ]
+        assert settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME
         self.save_objects(settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME, objects)
 
     def index_venues(self, venues: abc.Collection[offerers_models.Venue]) -> None:
         if not venues:
             return
         objects = [self.serialize_venue(venue) for venue in venues]
+        assert settings.ALGOLIA_VENUES_INDEX_NAME
         self.save_objects(settings.ALGOLIA_VENUES_INDEX_NAME, objects)
 
     def unindex_offer_ids(self, offer_ids: abc.Collection[int]) -> None:
         if not offer_ids:
             return
+        assert settings.ALGOLIA_OFFERS_INDEX_NAME
         self.delete_objects(settings.ALGOLIA_OFFERS_INDEX_NAME, offer_ids)
         self.remove_offer_ids_from_store(offer_ids)
 
     def unindex_all_offers(self) -> None:
+        assert settings.ALGOLIA_OFFERS_INDEX_NAME
         self.clear_objects(settings.ALGOLIA_OFFERS_INDEX_NAME)
         self.remove_all_offers_from_store()
 
@@ -117,14 +116,17 @@ class AlgoliaBackend(
     def unindex_venue_ids(self, venue_ids: abc.Collection[int]) -> None:
         if not venue_ids:
             return
+        assert settings.ALGOLIA_VENUES_INDEX_NAME
         self.delete_objects(settings.ALGOLIA_VENUES_INDEX_NAME, venue_ids)
 
     def unindex_all_venues(self) -> None:
+        assert settings.ALGOLIA_VENUES_INDEX_NAME
         self.clear_objects(settings.ALGOLIA_VENUES_INDEX_NAME)
 
     def unindex_collective_offer_template_ids(self, collective_offer_template_ids: abc.Collection[int]) -> None:
         if not collective_offer_template_ids:
             return
+        assert settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME
         self.delete_objects(
             settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME,
             [
@@ -134,6 +136,7 @@ class AlgoliaBackend(
         )
 
     def unindex_all_collective_offer_templates(self) -> None:
+        assert settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME
         self.clear_objects(settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME)
 
     def search_offer_ids(self, query: str = "", count: int = 20, **params: typing.Any) -> list[int]:
@@ -143,6 +146,7 @@ class AlgoliaBackend(
             hits_per_page = min(count, count - _count, MAX_SEARCH_QUERY_COUNT)
             params["page"] = page
             params["hitsPerPage"] = hits_per_page
+            assert settings.ALGOLIA_OFFERS_INDEX_NAME
             try:
                 results = self.search(settings.ALGOLIA_OFFERS_INDEX_NAME, query, params)
             except Exception as exp:
