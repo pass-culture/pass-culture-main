@@ -70,7 +70,7 @@ export async function expectIndividualModules(
   )
 
   await expectModuleVisibility(
-    page.getByText('Module Budget'),
+    page.getByRole('heading', { level: 3, name: 'Remboursement' }),
     visibleModules.includes('INCOME_CARD')
   )
   await expectModuleVisibility(
@@ -129,7 +129,7 @@ export async function expectCollectiveModules(
   )
 
   await expectModuleVisibility(
-    page.getByText('Module Budget'),
+    page.getByRole('heading', { level: 3, name: 'Remboursement' }),
     visibleModules.includes('INCOME_CARD')
   )
 
