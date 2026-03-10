@@ -92,12 +92,15 @@ import type { PatchCollectiveOfferTemplateBodyModel } from '../models/PatchColle
 import type { PatchOfferActiveStatusBodyModel } from '../models/PatchOfferActiveStatusBodyModel';
 import type { PatchOfferBodyModel } from '../models/PatchOfferBodyModel';
 import type { PatchOfferPublishBodyModel } from '../models/PatchOfferPublishBodyModel';
+import type { PatchProAdviceResponseModel } from '../models/PatchProAdviceResponseModel';
 import type { PostCollectiveOfferBodyModel } from '../models/PostCollectiveOfferBodyModel';
 import type { PostCollectiveOfferTemplateBodyModel } from '../models/PostCollectiveOfferTemplateBodyModel';
 import type { PostOfferBodyModel } from '../models/PostOfferBodyModel';
 import type { PostOffererResponseModel } from '../models/PostOffererResponseModel';
+import type { PostProAdviceResponseModel } from '../models/PostProAdviceResponseModel';
 import type { PostVenueProviderBody } from '../models/PostVenueProviderBody';
 import type { PriceCategoryBody } from '../models/PriceCategoryBody';
+import type { ProAdviceBodyModel } from '../models/ProAdviceBodyModel';
 import type { ProAnonymizationEligibilityResponseModel } from '../models/ProAnonymizationEligibilityResponseModel';
 import type { ProUserCreationBodyV2Model } from '../models/ProUserCreationBodyV2Model';
 import type { PutVenueProviderBody } from '../models/PutVenueProviderBody';
@@ -2078,6 +2081,56 @@ export class DefaultService {
       path: {
         'offer_id': offerId,
       },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * update_offer_pro_advice <PATCH>
+   * @param offerId
+   * @param requestBody
+   * @returns PatchProAdviceResponseModel OK
+   * @throws ApiError
+   */
+  public updateOfferProAdvice(
+    offerId: number,
+    requestBody: ProAdviceBodyModel,
+  ): CancelablePromise<PatchProAdviceResponseModel> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/offers/{offer_id}/pro_advice',
+      path: {
+        'offer_id': offerId,
+      },
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * create_offer_pro_advice <POST>
+   * @param offerId
+   * @param requestBody
+   * @returns PostProAdviceResponseModel Created
+   * @throws ApiError
+   */
+  public createOfferProAdvice(
+    offerId: number,
+    requestBody: ProAdviceBodyModel,
+  ): CancelablePromise<PostProAdviceResponseModel> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/offers/{offer_id}/pro_advice',
+      path: {
+        'offer_id': offerId,
+      },
+      body: requestBody,
+      mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Content`,
