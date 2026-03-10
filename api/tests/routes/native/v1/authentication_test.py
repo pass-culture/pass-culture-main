@@ -266,6 +266,25 @@ class SigninTest:
         assert user.lastConnectionDate == datetime(2020, 3, 15)
         assert len(sendinblue_testing.sendinblue_requests) == 1
 
+    def test_signin_with_extra_device_info(self, client):
+        data = {
+            "identifier": "user@test.com",
+            "password": settings.TEST_DEFAULT_PASSWORD,
+            "deviceInfo": {
+                "os": "Windows XP",
+                "deviceId": "ID",
+                "source": "app",
+                "fontScale": -1,
+                "resolution": "750x1334",
+                "screenZoomLevel": None,
+            },
+        }
+        users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=True)
+
+        response = client.post("/native/v1/signin", json=data)
+        assert response.status_code == 200
+        assert response.json["accountState"] == AccountState.ACTIVE.value
+
 
 class SSOSigninTest:
     valid_sso_user = users_schemas.SSOUser(
@@ -935,6 +954,33 @@ class ResetPasswordTest:
         client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
         refresh_response = client.post("/native/v1/refresh_access_token", json={})
         assert refresh_response.status_code == 200
+
+    def test_change_password_with_extra_device_info(self, client):
+        new_password = "New_password1998!"
+
+        user = users_factories.UserFactory()
+        token = token_utils.Token.create(
+            token_utils.TokenType.RESET_PASSWORD, users_constants.RESET_PASSWORD_TOKEN_LIFE_TIME, user_id=user.id
+        )
+
+        data = {
+            "resetPasswordToken": token.encoded_token,
+            "newPassword": new_password,
+            "deviceInfo": {
+                "os": "Windows XP",
+                "deviceId": "ID",
+                "source": "app",
+                "fontScale": -1,
+                "resolution": "750x1334",
+                "screenZoomLevel": None,
+            },
+        }
+
+        response = client.post("/native/v1/reset_password", json=data)
+
+        assert response.status_code == 200, response.json
+        db.session.refresh(user)
+        assert user.password == crypto.hash_password(new_password)
 
     @patch("pcapi.core.subscription.dms.api.try_dms_orphan_adoption")
     def test_reset_password_for_unvalidated_email(self, try_dms_orphan_adoption_mock, client):
