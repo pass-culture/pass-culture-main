@@ -68,6 +68,7 @@ export type GetVenueResponseModel = {
   siret?: string | null;
   venueType: VenueTypeResponseModel;
   visualDisabilityCompliant?: boolean | null;
+  volunteeringUrl: string | null;
   withdrawalDetails?: string | null;
 };
 
