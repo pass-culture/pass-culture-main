@@ -1,7 +1,7 @@
 import { useLocation } from 'react-router'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { GET_FEATURES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -23,8 +23,7 @@ export function useLoadFeatureFlags() {
       return areFeaturesUpToDate ? null : [GET_FEATURES_QUERY_KEY, pathname]
     },
     async () => {
-      const response = await api.listFeatures()
-      dispatch(updateFeatures(response))
+      dispatch(updateFeatures((await apiNew.listFeatures()) ?? []))
     }
   )
 }
