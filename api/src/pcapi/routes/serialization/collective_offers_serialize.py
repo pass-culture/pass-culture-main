@@ -22,6 +22,7 @@ from pcapi.serialization import utils
 from pcapi.serialization.exceptions import PydanticError
 
 
+### GET all collective offers models
 class ListCollectiveOffersQueryModel(HttpQueryParamsModel):
     name: str | None = None
     offerer_id: int | None = None
@@ -47,13 +48,6 @@ class CollectiveOfferStockResponseModel(HttpBodyModel):
     bookingLimitDatetime: datetime
     price: float
     numberOfTickets: int
-
-
-class EducationalRedactorResponseModel(HttpBodyModel):
-    email: str
-    firstName: str | None
-    lastName: str | None
-    civility: str | None
 
 
 class DatesModel(HttpBodyModel):
@@ -163,6 +157,7 @@ class ListCollectiveOfferTemplatesResponseModel(pydantic_v2.RootModel):
     root: list[CollectiveOfferTemplateResponseModel]
 
 
+### GET one collective offer models
 class OfferDomain(HttpBodyModel):
     id: int
     name: str
@@ -192,26 +187,6 @@ class GetCollectiveOfferVenueResponseModel(HttpBodyModel):
             publicName=venue.publicName,
             bannerUrl=venue.bannerUrl,
         )
-
-
-class GetCollectiveOfferCollectiveStockResponseModel(HttpBodyModel):
-    id: int
-    startDatetime: datetime
-    endDatetime: datetime
-    bookingLimitDatetime: datetime
-    price: float
-    numberOfTickets: int
-    priceDetail: str | None = pydantic_v2.Field(alias="educationalPriceDetail")
-
-
-class GetCollectiveOfferBookingResponseModel(HttpBodyModel):
-    id: int
-    dateCreated: datetime
-    status: models.CollectiveBookingStatus
-    educationalRedactor: EducationalRedactorResponseModel
-    cancellationLimitDate: datetime
-    cancellationReason: models.CollectiveBookingCancellationReasons | None
-    confirmationLimitDate: datetime
 
 
 class GetCollectiveOfferBaseResponseModel(HttpBodyModel):
@@ -292,29 +267,31 @@ class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseMode
         )
 
 
-class CollectiveOfferRedactorModel(HttpBodyModel):
+class GetCollectiveOfferCollectiveStockResponseModel(HttpBodyModel):
+    id: int
+    startDatetime: datetime
+    endDatetime: datetime
+    bookingLimitDatetime: datetime
+    price: float
+    numberOfTickets: int
+    priceDetail: str | None = pydantic_v2.Field(alias="educationalPriceDetail")
+
+
+class EducationalRedactorResponseModel(HttpBodyModel):
+    email: str
     firstName: str | None
     lastName: str | None
-    email: str
+    civility: str | None
 
 
-class CollectiveOfferInstitutionModel(HttpBodyModel):
-    institutionId: str
-    institutionType: str
-    name: str
-    city: str
-    postalCode: str
-
-
-class GetCollectiveOfferRequestResponseModel(HttpBodyModel):
-    educationalRedactor: CollectiveOfferRedactorModel = pydantic_v2.Field(alias="redactor")
-    requestedDate: date | None
-    totalStudents: int | None
-    totalTeachers: int | None
-    phoneNumber: str | None
-    comment: str
-    dateCreated: date
-    educationalInstitution: CollectiveOfferInstitutionModel = pydantic_v2.Field(alias="institution")
+class GetCollectiveOfferBookingResponseModel(HttpBodyModel):
+    id: int
+    dateCreated: datetime
+    status: models.CollectiveBookingStatus
+    educationalRedactor: EducationalRedactorResponseModel
+    cancellationLimitDate: datetime
+    cancellationReason: models.CollectiveBookingCancellationReasons | None
+    confirmationLimitDate: datetime
 
 
 class GetCollectiveOfferProviderResponseModel(HttpBodyModel):
@@ -403,10 +380,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
         )
 
 
-class CollectiveOfferResponseIdModel(HttpBodyModel):
-    id: int
-
-
+### POST collective offer models
 class PatchDateRangeModel(HttpBodyModel):
     start: datetime
     end: datetime
@@ -533,6 +507,11 @@ class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
     dates: PostDateRangeModel | None = None
 
 
+class CollectiveOfferResponseIdModel(HttpBodyModel):
+    id: int
+
+
+### PATCH collective offer models
 class PatchCollectiveOfferBodyModel(HttpBodyModel):
     audio_disability_compliant: bool | None = None
     mental_disability_compliant: bool | None = None
@@ -616,3 +595,28 @@ class AttachImageFormModel(HttpBodyModel):
 
 class AttachImageResponseModel(HttpBodyModel):
     image_url: str
+
+
+class CollectiveOfferRedactorModel(HttpBodyModel):
+    firstName: str | None
+    lastName: str | None
+    email: str
+
+
+class CollectiveOfferInstitutionModel(HttpBodyModel):
+    institutionId: str
+    institutionType: str
+    name: str
+    city: str
+    postalCode: str
+
+
+class GetCollectiveOfferRequestResponseModel(HttpBodyModel):
+    educationalRedactor: CollectiveOfferRedactorModel = pydantic_v2.Field(alias="redactor")
+    requestedDate: date | None
+    totalStudents: int | None
+    totalTeachers: int | None
+    phoneNumber: str | None
+    comment: str
+    dateCreated: date
+    educationalInstitution: CollectiveOfferInstitutionModel = pydantic_v2.Field(alias="institution")
