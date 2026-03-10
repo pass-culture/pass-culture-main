@@ -183,7 +183,8 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
 
     tokens = create_user_jwt_tokens(
         user=user,
-        device_info=body.device_info,
+        # TODO remove this and use body.device_info directly once `ExtentedTrustedDevice` is removed
+        device_info=body.device_info.to_trusted_device() if body.device_info else None,
     )
     response = ValidateEmailResponse(
         access_token=tokens.access,
