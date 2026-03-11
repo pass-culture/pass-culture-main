@@ -2397,3 +2397,264 @@ class OfferChroniclesTest:
 
         assert chronicles[0]["id"] == 8888
         assert chronicles[1]["id"] == 7777
+
+
+class GetProAdvicesTest:
+    expected_num_queries = 1  # product
+    expected_num_queries += 1  # pro_advices
+
+    def test_returns_product_pro_advices(self, client):
+        product = offers_factories.ProductFactory()
+        offer = offers_factories.OfferFactory(product=product)
+        pro_advice = offers_factories.ProAdviceFactory(offer=offer)
+        offer_id = offer.id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/native/v1/offer/{offer_id}/advices")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "proAdvices": [
+                {
+                    "author": "Author",
+                    "content": "Content",
+                    "distance": None,
+                    "venueId": offer.venue.id,
+                    "venueName": offer.venue.name,
+                    "venueThumbUrl": offer.venue.thumbUrl,
+                    "publicationDatetime": date_utils.format_into_utc_date(pro_advice.updatedAt),
+                }
+            ],
+            "nbResults": 1,
+        }
+
+    def test_returns_offer_pro_advices(self, client):
+        offer = offers_factories.OfferFactory()
+        pro_advice = offers_factories.ProAdviceFactory(offer=offer)
+        offer_id = pro_advice.offer.id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/native/v1/offer/{offer_id}/advices")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "proAdvices": [
+                {
+                    "author": "Author",
+                    "content": "Content",
+                    "distance": None,
+                    "venueId": offer.venue.id,
+                    "venueName": offer.venue.name,
+                    "venueThumbUrl": offer.venue.thumbUrl,
+                    "publicationDatetime": date_utils.format_into_utc_date(pro_advice.updatedAt),
+                }
+            ],
+            "nbResults": 1,
+        }
+
+    def test_wording_when_no_author(self, client):
+        offer = offers_factories.OfferFactory()
+        pro_advice = offers_factories.ProAdviceFactory(offer=offer, author=None)
+        offer_id = pro_advice.offer.id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/native/v1/offer/{offer_id}/advices")
+
+        assert response.status_code == 200
+        assert response.json["proAdvices"][0]["author"] == "avis du pro"
+
+    def test_does_not_return_distance_if_venue_not_open_to_public(self, client):
+        offer = offers_factories.OfferFactory(venue__isOpenToPublic=False)
+        pro_advice = offers_factories.ProAdviceFactory(offer=offer)
+        offer_id = pro_advice.offer.id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/native/v1/offer/{offer_id}/advices")
+
+        assert response.status_code == 200
+        assert response.json["proAdvices"][0]["distance"] is None
+
+    def test_returns_product_pro_advices_with_distance(self, client):
+        address = AddressFactory(latitude=48.85, longitude=2.35)
+        product = offers_factories.ProductFactory()
+        venue = offerers_factories.VenueFactory(isOpenToPublic=True, offererAddress__address=address)
+        offer = offers_factories.OfferFactory(product=product, venue=venue)
+        pro_advice = offers_factories.ProAdviceFactory(offer=offer)
+        offer_id = offer.id
+
+        params = {"latitude": 48.8457151, "longitude": 2.33802}
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/native/v1/offer/{offer_id}/advices", params=params)
+
+        assert response.status_code == 200
+        assert response.json == {
+            "proAdvices": [
+                {
+                    "author": "Author",
+                    "content": "Content",
+                    "distance": 1000,
+                    "venueId": offer.venue.id,
+                    "venueName": offer.venue.publicName,
+                    "venueThumbUrl": offer.venue.thumbUrl,
+                    "publicationDatetime": date_utils.format_into_utc_date(pro_advice.updatedAt),
+                }
+            ],
+            "nbResults": 1,
+        }
+
+    def test_returns_offer_pro_advices_with_distance(self, client):
+        address = AddressFactory(latitude=48.85, longitude=2.35)
+        venue = offerers_factories.VenueFactory(isOpenToPublic=True, offererAddress__address=address)
+        offer = offers_factories.OfferFactory(venue=venue)
+        _pro_advice = offers_factories.ProAdviceFactory(offer=offer)
+        offer_id = offer.id
+
+        params = {"latitude": 48.8457151, "longitude": 2.33802}
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/native/v1/offer/{offer_id}/advices", params=params)
+
+        assert response.status_code == 200
+        assert response.json["proAdvices"][0]["distance"] == 1000
+
+    def test_does_not_return_advices_from_not_validated_offerer(self, client):
+        venue = offerers_factories.VenueFactory(
+            managingOfferer__validationStatus=offerers_factories.ValidationStatus.NEW
+        )
+        offer = offers_factories.OfferFactory(venue=venue)
+        _pro_advice = offers_factories.ProAdviceFactory(offer=offer)
+        offer_id = offer.id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/native/v1/offer/{offer_id}/advices")
+
+        assert response.status_code == 200
+        assert response.json["proAdvices"] == []
+        assert response.json["nbResults"] == 0
+
+    def test_returns_empty_list(self, client):
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/native/v1/offer/99999999/advices")
+
+        assert response.status_code == 200
+        assert response.json == {"proAdvices": [], "nbResults": 0}
+
+    def test_advices_are_ordered_by_recency(self, client):
+        product = offers_factories.ProductFactory()
+        offer_1 = offers_factories.OfferFactory(product=product)
+        offer_2 = offers_factories.OfferFactory(product=product)
+        offer_1_id = offer_1.id
+        _newer_advice = offers_factories.ProAdviceFactory(offer=offer_1, updatedAt=datetime(2026, 2, 2))
+        _older_advice = offers_factories.ProAdviceFactory(offer=offer_2, updatedAt=datetime(2026, 2, 1))
+
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/native/v1/offer/{offer_1_id}/advices")
+
+        assert response.status_code == 200
+        first = response.json["proAdvices"][0]
+        last = response.json["proAdvices"][1]
+        assert first["publicationDatetime"] > last["publicationDatetime"]
+
+    def test_trims_content(self, client):
+        product = offers_factories.ProductFactory()
+        offer = offers_factories.OfferFactory(product=product)
+        offer_id = offer.id
+        _pro_advice = offers_factories.ProAdviceFactory(offer=offer, content="very long content")
+        params = {"maxContentLength": 8}
+
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/native/v1/offer/{offer_id}/advices", params=params)
+
+        assert response.status_code == 200
+        assert response.json["proAdvices"][0]["content"] == "very…"
+
+    def test_returns_only_one_page(self, client):
+        product = offers_factories.ProductFactory()
+        offer_1 = offers_factories.OfferFactory(product=product)
+        offer_2 = offers_factories.OfferFactory(product=product)
+        offer_1_id = offer_1.id
+        offers_factories.ProAdviceFactory(offer=offer_1)
+        offers_factories.ProAdviceFactory(offer=offer_2)
+        params = {"resultsPerPage": 1, "page": 1}
+
+        self.expected_num_queries += 1  # pro_advices count
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/native/v1/offer/{offer_1_id}/advices", params=params)
+
+        assert response.status_code == 200
+        assert len(response.json["proAdvices"]) == 1
+        assert response.json["nbResults"] == 2
+
+    def test_returns_requested_page(self, client):
+        product = offers_factories.ProductFactory()
+        offer_1 = offers_factories.OfferFactory(product=product)
+        offer_2 = offers_factories.OfferFactory(product=product)
+        offer_1_id = offer_1.id
+        _newer_advice = offers_factories.ProAdviceFactory(
+            offer=offer_1, updatedAt=datetime(2026, 2, 2), content="Page 1 content"
+        )
+        _older_advice = offers_factories.ProAdviceFactory(
+            offer=offer_2, updatedAt=datetime(2026, 2, 1), content="Page 2 content"
+        )
+        params = {"resultsPerPage": 1, "page": 2}
+
+        self.expected_num_queries += 1  # pro_advices count
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/native/v1/offer/{offer_1_id}/advices", params=params)
+
+        assert response.status_code == 200
+        assert response.json["proAdvices"][0]["content"] == "Page 2 content"
+        assert response.json["nbResults"] == 2
+
+    def test_returns_number_of_results(self, client):
+        product = offers_factories.ProductFactory()
+        offer_1 = offers_factories.OfferFactory(product=product)
+        offer_2 = offers_factories.OfferFactory(product=product)
+        offer_3 = offers_factories.OfferFactory(product=product)
+        offer_1_id = offer_1.id
+        _advice_1 = offers_factories.ProAdviceFactory(offer=offer_1)
+        _advice_2 = offers_factories.ProAdviceFactory(offer=offer_2)
+        _advice_2 = offers_factories.ProAdviceFactory(offer=offer_3)
+        params = {"resultsPerPage": 2, "page": 1}
+
+        self.expected_num_queries += 1  # pro_advices count
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/native/v1/offer/{offer_1_id}/advices", params=params)
+
+        assert response.status_code == 200
+        assert response.json["nbResults"] == 3
+
+    def test_page_cannot_be_lt_1(self, client):
+        params = {"page": 0, "resultsPerPage": 1}
+        with assert_num_queries(0):
+            response = client.get("/native/v1/offer/1/advices", params=params)
+
+        assert response.status_code == 400
+
+    def test_page_cannot_be_gt_20(self, client):
+        params = {"page": 21, "resultsPerPage": 1}
+        with assert_num_queries(0):
+            response = client.get("/native/v1/offer/1/advices", params=params)
+
+        assert response.status_code == 400
+
+    def test_results_per_page_cannot_be_lt_1(self, client):
+        params = {"page": 1, "resultsPerPage": 0}
+        with assert_num_queries(0):
+            response = client.get("/native/v1/offer/1/advices", params=params)
+
+        assert response.status_code == 400
+
+    def test_results_per_page_cannot_be_gt_50(self, client):
+        params = {"page": 1, "resultsPerPage": 51}
+        with assert_num_queries(0):
+            response = client.get("/native/v1/offer/1/advices", params=params)
+
+        assert response.status_code == 400
+
+    @pytest.mark.parametrize("latitude,longitude", [(-91, 0), (91, 0), (0, -181), (0, 181)])
+    def test_coordinates_are_bound_to_real_values(self, client, latitude, longitude):
+        params = {"latitude": latitude, "longitude": longitude}
+        with assert_num_queries(0):
+            response = client.get("/native/v1/offer/1/advices", params=params)
+
+        assert response.status_code == 400
