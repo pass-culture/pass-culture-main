@@ -8,7 +8,6 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
-from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -48,7 +47,8 @@ class Returns200Test:
         stock_to_update = offers_factories.ThingStockFactory(offer=offer, price=decimal.Decimal("5"), quantity=10)
         stock_to_delete = offers_factories.ThingStockFactory(offer=offer, price=decimal.Decimal("7"), quantity=3)
 
-        updated_stock_booking_limit_datetime = date_utils.get_naive_utc_now() + datetime.timedelta(days=2)
+        now = datetime.datetime.now(datetime.UTC)
+        updated_stock_booking_limit_datetime = now + datetime.timedelta(days=2)
         payload = {
             "stocks": [
                 {
@@ -80,7 +80,7 @@ class Returns200Test:
 
         assert not deleted_stock
         assert updated_stock.price == decimal.Decimal("9.99") and updated_stock.quantity == 15
-        assert updated_stock.bookingLimitDatetime == updated_stock_booking_limit_datetime.replace(tzinfo=None)
+        assert updated_stock.bookingLimitDatetime == updated_stock_booking_limit_datetime
         created_stocks = [s for s in offer.activeStocks if s.id not in (stock_to_update.id, stock_to_delete.id)]
         assert len(created_stocks) == 1
         assert created_stocks[0].quantity is None  # unlimited because quantity=None and no activation codes

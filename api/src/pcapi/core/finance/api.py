@@ -125,8 +125,12 @@ ORIGIN_OF_CREDIT_CASE: sa.sql.elements.Case = sa.case(
 def get_pricing_ordering_date(
     booking: bookings_models.Booking | educational_models.CollectiveBooking,
 ) -> datetime.datetime:
+    # TODO(jbaudet-03/2026) - remove calls to .replace(tzinfo=None) once
+    # Offer, Stock and Booking models all have timezoned datetimes
+    # fields
     if isinstance(booking, bookings_models.Booking):
         eventDatetime = booking.stock.beginningDatetime
+        eventDatetime = eventDatetime.replace(tzinfo=None) if eventDatetime else None
     else:
         eventDatetime = booking.collectiveStock.endDatetime
     # IMPORTANT: if you change this, you must also adapt the SQL query

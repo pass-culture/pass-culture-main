@@ -4,7 +4,6 @@ import logging
 import os
 import pathlib
 from datetime import UTC
-from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
@@ -445,9 +444,10 @@ class EditStockTest:
 
     def test_edit_event_without_beginning_update(self):
         # Given
-        previous_booking_limit = date_utils.get_naive_utc_now() + timedelta(days=4)
-        beginning = date_utils.get_naive_utc_now() + timedelta(days=8)
-        new_booking_limit = date_utils.get_naive_utc_now() + timedelta(days=6)
+        now = datetime.now(UTC)
+        previous_booking_limit = now + timedelta(days=4)
+        beginning = now + timedelta(days=8)
+        new_booking_limit = now + timedelta(days=6)
         existing_stock = factories.EventStockFactory(
             price=10, quantity=7, beginningDatetime=beginning, bookingLimitDatetime=previous_booking_limit
         )
@@ -697,12 +697,13 @@ class EditStockTest:
 
     def test_does_not_allow_booking_limit_after_beginning_for_an_event_offer(self):
         # Given
-        previous_booking_limit = date_utils.get_naive_utc_now()
-        previous_beginning = date_utils.get_naive_utc_now() + timedelta(days=1)
+        now = datetime.now(UTC)
+        previous_booking_limit = now
+        previous_beginning = now + timedelta(days=1)
         existing_stock = factories.EventStockFactory(
             bookingLimitDatetime=previous_booking_limit, beginningDatetime=previous_beginning
         )
-        beginning_date = date_utils.get_naive_utc_now() + timedelta(days=4)
+        beginning_date = now + timedelta(days=4)
         booking_limit = beginning_date + timedelta(days=4)
 
         # When
@@ -2589,7 +2590,7 @@ class HeadlineOfferTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_headline_offer_on_expired_offer_is_inactive(self, mocked_async_index_offer_ids):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
-        tomorrow = date.today() + timedelta(days=1)
+        tomorrow = datetime.now(UTC) + timedelta(days=1)
         stock = factories.StockFactory(bookingLimitDatetime=tomorrow)
         mediation = factories.MediationFactory()
         offer = factories.OfferFactory(
@@ -4061,7 +4062,7 @@ class GetStocksStatsTest:
     def test_get_stocks_stats(self):
         # Given
         offer = factories.OfferFactory()
-        now = date_utils.get_naive_utc_now()
+        now = datetime.now(UTC)
         factories.StockFactory(offer=offer, quantity=10, dnBookedQuantity=5, beginningDatetime=now)
         factories.StockFactory(offer=offer, quantity=20, dnBookedQuantity=5, beginningDatetime=now + timedelta(hours=1))
 
@@ -4877,7 +4878,7 @@ class MoveOfferTest:
 
     def test_move_event_offer_with_past_stocks(self):
         """Moving an event offer with past stocks should be possible"""
-        today = date.today()
+        today = datetime.now(UTC)
         yesterday = today - timedelta(days=1)
         tomorow = today + timedelta(days=1)
 

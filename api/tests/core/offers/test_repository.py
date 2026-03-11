@@ -1249,11 +1249,11 @@ class IncomingEventStocksTest:
 
 @pytest.mark.usefixtures("db_session")
 class GetExpiredOffersTest:
-    start_time = (datetime.datetime(2021, 1, 1, 0, 0),)
-    end_time = (datetime.datetime(2021, 1, 2, 0, 0),)
-    dt_before = datetime.datetime(2020, 12, 31)
-    dt_within = datetime.datetime(2021, 1, 1)
-    dt_after = datetime.datetime(2021, 1, 3)
+    start_time = datetime.datetime(2021, 1, 1, 0, 0, tzinfo=datetime.UTC)
+    end_time = datetime.datetime(2021, 1, 2, 0, 0, tzinfo=datetime.UTC)
+    dt_before = datetime.datetime(2020, 12, 31, tzinfo=datetime.UTC)
+    dt_within = datetime.datetime(2021, 1, 1, tzinfo=datetime.UTC)
+    dt_after = datetime.datetime(2021, 1, 3, tzinfo=datetime.UTC)
 
     def test_basics(self):
         offer1 = factories.OfferFactory()
