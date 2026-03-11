@@ -19,7 +19,7 @@ class ExtentedTrustedDevice(HttpBodyModel):
     os: str | None = None
     source: str | None = None
     # TODO remove the following fields in future api version
-    font_scale: int | None = None
+    font_scale: float | None = None
     resolution: str | None = None
     screen_zoom_level: int | None = None
 

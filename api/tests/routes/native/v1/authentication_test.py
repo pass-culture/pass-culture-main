@@ -1257,8 +1257,8 @@ class EmailValidationTest:
                 "deviceInfo": {
                     "os": "Windows XP",
                     "deviceId": "ID",
-                    "source": "app",
-                    "fontScale": -1,
+                    "source": "iPhone",
+                    "fontScale": 1.35,
                     "resolution": "750x1334",
                     "screenZoomLevel": None,
                 },
