@@ -231,11 +231,7 @@ class AlgoliaSerializationMixin:
         )
         headlines_count = offer.product.headlinesCount if offer.product and offer.product.headlinesCount else None
         likes_count = offer.product.likesCount if offer.product and offer.product.likesCount else offer.likesCount
-        pro_advices_count = (
-            offer.product.proAdvicesCount
-            if offer.product and offer.product.proAdvicesCount is not None
-            else offer.proAdvicesCount
-        )
+        pro_advices_count = offer.product.proAdvicesCount if offer.product else (1 if offer.hasProAdvice else 0)
         # If you update this dictionary, please check whether you need to
         # also update `core.offerers.api.VENUE_ALGOLIA_INDEXED_FIELDS`.
         object_to_index: dict[str, typing.Any] = {
