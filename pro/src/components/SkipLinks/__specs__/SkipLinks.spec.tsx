@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { SkipLinksProvider } from '@/components/SkipLinks/SkipLinksContext'
 
 import { SkipLinks } from '../SkipLinks'
 
@@ -10,12 +11,12 @@ const renderApp = () =>
     <Routes>
       <Route
         element={
-          <div>
+          <SkipLinksProvider>
             <SkipLinks />
             <div id={'content'}>
               <a href="#">focusable content element</a>
             </div>
-          </div>
+          </SkipLinksProvider>
         }
         path={'/accueil'}
       />

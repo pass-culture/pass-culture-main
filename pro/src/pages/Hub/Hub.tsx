@@ -80,7 +80,6 @@ export const Hub = () => {
       isHubPage
       mainHeading="À quelle structure souhaitez-vous accéder ?"
       withFlexContent
-      tabIndex={-1}
     >
       {venues.length > 4 && (
         <SearchInput

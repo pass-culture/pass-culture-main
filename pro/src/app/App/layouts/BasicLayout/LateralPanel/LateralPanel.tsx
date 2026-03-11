@@ -1,14 +1,22 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: LateralPanel is used once per page. There cannot be id duplications. */
 import classnames from 'classnames'
 import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 
+import {
+  LAPTOP_MEDIA_QUERY,
+  useMediaQuery,
+} from '@/commons/hooks/useMediaQuery'
 import { noop } from '@/commons/utils/noop'
+import { useSkipLinksContext } from '@/components/SkipLinks/SkipLinksContext'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
+  ButtonSize,
   ButtonVariant,
   IconPositionEnum,
 } from '@/design-system/Button/types'
+import fullNextIcon from '@/icons/full-next.svg'
 import logoPassCultureProIcon from '@/icons/logo-pass-culture-pro.svg'
 import strokeCloseIcon from '@/icons/stroke-close.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
@@ -70,6 +78,13 @@ export const LateralPanel = ({
     }
   }, [isOpen, navPanel])
 
+  const { menuContainer } = useSkipLinksContext()
+
+  // Gives the right target for the skip link button depending on the screen size.
+  const skipLinkTarget = useMediaQuery(LAPTOP_MEDIA_QUERY)
+    ? '#header-nav-toggle'
+    : '#lateral-panel'
+
   return (
     <nav
       data-testid="lateral-panel"
@@ -82,6 +97,21 @@ export const LateralPanel = ({
       ref={navPanel}
       aria-label="Menu principal"
     >
+      {/* Skip link button to access the lateral panel menu (will be injected into the <SkipLinks> component via createPortal) */}
+      {menuContainer &&
+        createPortal(
+          <Button
+            as="a"
+            to={skipLinkTarget}
+            isExternal
+            icon={fullNextIcon}
+            label="Aller au menu"
+            size={ButtonSize.SMALL}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+          />,
+          menuContainer
+        )}
       <div className={styles['lateral-panel-menu']}>
         {isOpen && (
           <div

@@ -3,12 +3,27 @@
 @use "styles/mixins/_a11y.scss" as a11y;
 
 .skip-links {
-  height: 0;
+  background-color: var(--color-background-subtle);
   top: rem.torem(-36px);
+  height: 0;
   position: absolute;
+  left: 0;
+  right: 0;
+  padding: 0;
+
+  &-list {
+    height: 0;
+    display: flex;
+  }
 
   &:focus-within {
+    & .skip-links-list {
+      height: initial;
+      gap: var(--size-spacing-s);
+    }
+
     height: initial;
+    padding: var(--size-spacing-s);
     z-index: zIndex.$cookies-popup-z-index;
     top: 0;
     left: 0;

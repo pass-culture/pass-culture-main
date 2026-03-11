@@ -21,7 +21,6 @@ export interface FunnelLayoutProps {
    */
   mainHeading: React.ReactNode
   withFlexContent?: boolean
-  tabIndex?: number
 }
 
 export const FunnelLayout = ({
@@ -29,7 +28,6 @@ export const FunnelLayout = ({
   isHubPage = false,
   mainHeading,
   withFlexContent = false,
-  tabIndex,
 }: FunnelLayoutProps) => {
   const currentUser = useAppSelector(selectCurrentUser)
   const [isLateralPanelOpen, setIsLateralPanelOpen] = useState(false)
@@ -82,8 +80,7 @@ export const FunnelLayout = ({
               className={
                 withFlexContent ? styles['content-flex'] : styles['content']
               }
-              // TODO: tabIndex={-1} breaks the ability to click on a multiselect element label.
-              tabIndex={tabIndex}
+              tabIndex={-1}
             >
               <MainHeading mainHeading={mainHeading} />
 

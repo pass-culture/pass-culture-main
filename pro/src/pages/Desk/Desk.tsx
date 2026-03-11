@@ -1,5 +1,5 @@
 import type React from 'react'
-import { useEffect, useId, useRef, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
@@ -45,16 +45,11 @@ export const Desk = (): JSX.Element => {
   const {
     register,
     handleSubmit,
-    setFocus,
     resetField,
     getValues,
     setValue,
     formState: { isSubmitting },
   } = hookForm
-
-  useEffect(() => {
-    setFocus('token')
-  }, [setFocus])
 
   const onSubmit = async (formValues: FormValues) => {
     setMessage({ message: 'Validation en cours...' })
