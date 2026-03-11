@@ -5,5 +5,6 @@
 import type { VenueListItemLiteResponseModel } from './VenueListItemLiteResponseModel';
 export type GetVenueListLiteResponseModel = {
   venues: Array<VenueListItemLiteResponseModel>;
+  venuesWithPendingValidation: Array<VenueListItemLiteResponseModel>;
 };
 

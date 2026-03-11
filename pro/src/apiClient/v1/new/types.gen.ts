@@ -3325,6 +3325,10 @@ export type GetVenueListLiteResponseModel = {
      * Venues
      */
     venues: Array<VenueListItemLiteResponseModel>;
+    /**
+     * Venueswithpendingvalidation
+     */
+    venuesWithPendingValidation: Array<VenueListItemLiteResponseModel>;
 };
 
 /**
