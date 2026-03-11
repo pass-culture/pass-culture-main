@@ -102,7 +102,6 @@ export const BasicLayout = ({
                 <MainHeading
                   mainHeading={mainHeading}
                   mainSubHeading={mainSubHeading}
-                  shouldDisplayBackToNavLink={!isFullPage}
                 />
 
                 {children}
