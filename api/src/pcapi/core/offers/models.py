@@ -243,8 +243,8 @@ class Product(PcObject, Model, HasThumbMixin):
         nullable=False,
         server_default=sa.text("0"),
     )
-    proAdvicesCount: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
-        sa.BigInteger,
+    proAdvicesCount: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.Integer,
         sa.CheckConstraint('"proAdvicesCount" >= 0', name="check_pro_advices_count_is_positive"),
         nullable=False,
         server_default=sa.text("0"),
@@ -952,8 +952,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     hasPendingBookings: sa_orm.Mapped["bool"] = sa_orm.query_expression()
     chroniclesCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
     likesCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
-    proAdvicesCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
-
+    hasProAdvice: sa_orm.Mapped["bool"] = sa_orm.query_expression()
     __table_args__ = (
         sa.Index(
             "idx_offer_lastValidationAuthorUserId",

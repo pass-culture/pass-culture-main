@@ -17,13 +17,16 @@ def upgrade() -> None:
         "product",
         sa.Column(
             "proAdvicesCount",
-            sa.BigInteger,
-            sa.CheckConstraint('"proAdvicesCount" >= 0', name="check_pro_advices_count_is_positive"),
+            sa.Integer,
             nullable=False,
             server_default=sa.text("0"),
         ),
     )
+    op.execute(
+        """ALTER TABLE "product" ADD CONSTRAINT "check_pro_advices_count_is_positive" CHECK ("proAdvicesCount" >= 0) NOT VALID"""
+    )
 
 
 def downgrade() -> None:
+    op.drop_constraint("check_pro_advices_count_is_positive", table_name="product")
     op.drop_column("product", "proAdvicesCount")
