@@ -1,5 +1,7 @@
 from decimal import Decimal
 
+import pydantic as pydantic_v2
+
 
 # fmt: off
 # isort: off
@@ -27,3 +29,10 @@ class AccessibilityComplianceStrictMixin(PydanticBaseModel):
     mentalDisabilityCompliant: bool
     motorDisabilityCompliant: bool
     visualDisabilityCompliant: bool
+
+
+class AccessibilityComplianceMixinV2(pydantic_v2.BaseModel):
+    audioDisabilityCompliant: bool | None
+    mentalDisabilityCompliant: bool | None
+    motorDisabilityCompliant: bool | None
+    visualDisabilityCompliant: bool | None

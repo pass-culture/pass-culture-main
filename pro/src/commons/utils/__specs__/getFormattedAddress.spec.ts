@@ -15,7 +15,7 @@ describe('getFormattedAddress', () => {
   it('should return formatted address without street', () => {
     const formattedAddress = getFormattedAddress({
       ...MOCK_ADDRESS,
-      street: undefined,
+      street: null,
     })
     expect(formattedAddress).toBe(
       `${MOCK_ADDRESS.postalCode} ${MOCK_ADDRESS.city}`
