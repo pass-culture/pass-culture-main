@@ -94,7 +94,7 @@ def generate_fake_adage_token(readonly: bool, cannot_prebook: bool, uai: str | N
     help="Link the institutions to a program, if given.",
 )
 @click.option("--final", is_flag=True, help="Flag deposits as final.")
-@click.option("--not-dry", is_flag=True, help="Do not commit the changes.")
+@click.option("--apply", is_flag=True, help="Do commit the changes.")
 def import_deposit_csv(
     *,
     year: int,
@@ -105,12 +105,12 @@ def import_deposit_csv(
     ministry_conflict: institution_api.MinistryConflictOption,
     educational_program_name: str,
     final: bool,
-    not_dry: bool = False,
+    apply: bool = False,
 ) -> None:
     """
     Import CSV deposits and update institution according to adage data
     """
-    args = f"{year=}, {ministry=}, {period_option=}, {credit_update=}, {filename=}, {ministry_conflict=}, {educational_program_name=}, {final=}, {not_dry=}"
+    args = f"{year=}, {ministry=}, {period_option=}, {credit_update=}, {filename=}, {ministry_conflict=}, {educational_program_name=}, {final=}, {apply=}"
     logger.info("Starting import deposit csv with args %s", args)
 
     # A flask command that we run via a github action copy the input file to pcapi/scripts/flask
@@ -136,7 +136,7 @@ def import_deposit_csv(
             lines = (f"{field} = {value}\n" for field, value in dataclasses.asdict(output).items())
             f.writelines(lines)
 
-    if not_dry:
+    if apply:
         logger.info("Finished import deposit csv, committing")
         db.session.commit()
     else:
@@ -318,11 +318,11 @@ def notify_reimburse_collective_booking(booking_id: int, reason: str, value: Dec
     help="The adage year id. If not provided, the current year will be used.",
     required=False,
 )
-@click.option("--not-dry", is_flag=True, help="Do not commit the changes.")
-def synchronise_institutions_geolocation(adage_year_id: str | None, not_dry: bool = False) -> None:
+@click.option("--apply", is_flag=True, help="Do commit the changes.")
+def synchronise_institutions_geolocation(adage_year_id: str | None, apply: bool = False) -> None:
     institution_api.synchronise_institutions_geolocation(adage_year_id=adage_year_id)
 
-    if not_dry:
+    if apply:
         db.session.commit()
 
 

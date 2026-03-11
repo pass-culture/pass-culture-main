@@ -62,7 +62,7 @@ def test_move_batch_offer(_extract_invalid_venues_to_csv_patch):
 
     origin_venue_id = origin_venue.id
 
-    _move_all_venue_offers(dry_run=False, origin=origin_venue.id, destination=destination_venue.id)
+    _move_all_venue_offers(apply=True, origin=origin_venue.id, destination=destination_venue.id)
 
     db.session.refresh(collective_offer)
     db.session.refresh(collective_offer2)
@@ -114,7 +114,7 @@ def test_move_batch_offer_destination_venue_already_permanent_no_action_history_
 
     origin_venue_id = origin_venue.id
 
-    _move_all_venue_offers(dry_run=False, origin=origin_venue.id, destination=destination_venue.id)
+    _move_all_venue_offers(apply=True, origin=origin_venue.id, destination=destination_venue.id)
 
     db.session.refresh(offer)
     assert offer.venue == destination_venue
@@ -179,7 +179,7 @@ def test_move_batch_offer_with_provider(_extract_invalid_venues_to_csv_patch):
     # sanity check
     assert len(destination_venue.venueProviders) == 1
 
-    _move_all_venue_offers(dry_run=False, origin=origin_venue.id, destination=destination_venue.id)
+    _move_all_venue_offers(apply=True, origin=origin_venue.id, destination=destination_venue.id)
 
     db.session.refresh(destination_venue)
     assert len(destination_venue.venueProviders) == 2

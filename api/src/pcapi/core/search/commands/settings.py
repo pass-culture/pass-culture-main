@@ -49,10 +49,10 @@ def _get_dict_diff(old: dict, new: dict) -> str:
     return diff
 
 
-def _get_settings(index: SearchIndex, not_dry: bool = True) -> list[str]:
+def _get_settings(index: SearchIndex, apply: bool = True) -> list[str]:
     outputs = []
 
-    if not_dry:
+    if apply:
         index_settings = index.get_settings()
         outputs.append(json.dumps(index_settings, indent=4))
     else:
@@ -62,10 +62,10 @@ def _get_settings(index: SearchIndex, not_dry: bool = True) -> list[str]:
     return outputs
 
 
-def _set_settings(index: SearchIndex, path: str, not_dry: bool = False) -> list[str]:
+def _set_settings(index: SearchIndex, path: str, apply: bool = False) -> list[str]:
     outputs = []
 
-    if not not_dry:
+    if not apply:
         outputs.append(f"settings will be read from {path}")
         outputs.append(f"settings will be applied to {index.name} Algolia index")
 
@@ -81,7 +81,7 @@ def _set_settings(index: SearchIndex, path: str, not_dry: bool = False) -> list[
     diff = _get_dict_diff(old_settings, new_settings)
     outputs.append(diff)
 
-    if not_dry:
+    if apply:
         index.set_settings(new_settings)
 
     return outputs
@@ -107,8 +107,8 @@ def get_settings(index_type_name: str) -> None:
     type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True),
     default=None,
 )
-@click.option("--not-dry", is_flag=True)
-def set_settings(index_type_name: str, path: str, not_dry: bool = False) -> None:
+@click.option("--apply", is_flag=True)
+def set_settings(index_type_name: str, path: str, apply: bool = False) -> None:
     try:
         index_type: IndexTypes = IndexTypes[index_type_name]
     except KeyError as err:
@@ -116,8 +116,8 @@ def set_settings(index_type_name: str, path: str, not_dry: bool = False) -> None
 
     index = _get_index_client(index_type)
     path = path or _get_index_default_file(index_type)
-    if not not_dry:
+    if not apply:
         click.echo(" ".join(["/!\\"] * 16))
-        click.echo("/!\\ DRY RUN (use --not-dry to actually apply effects) /!\\")
+        click.echo("/!\\ DRY RUN (use --apply to actually apply effects) /!\\")
         click.echo(" ".join(["/!\\"] * 16))
-    click.echo("\n".join(_set_settings(index, path, not_dry)))
+    click.echo("\n".join(_set_settings(index, path, apply)))

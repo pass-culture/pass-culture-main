@@ -59,7 +59,7 @@ from pcapi.models import db
 
 logger = logging.getLogger(__name__)
 
-def main(not_dry: bool) -> None:
+def main() -> None:
     # implement your script here
     pass
 
@@ -67,12 +67,12 @@ if __name__ == "__main__":
     app.app_context().push()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--not-dry", action="store_true")
+    parser.add_argument("--apply", action="store_true")
     args = parser.parse_args()
 
-    main(not_dry=args.not_dry)
+    main()
 
-    if args.not_dry:
+    if args.apply:
         logger.info("Finished")
         db.session.commit()
     else:
