@@ -30,13 +30,13 @@ export interface BookingDetailsProps {
 /* ---------------- helpers ---------------- */
 
 const formattedBookingDate = (booking: GetBookingResponse): string =>
-  !booking.datetime
-    ? 'Permanent'
-    : formatLocalTimeDateString(
+  booking.datetime
+    ? formatLocalTimeDateString(
         booking.datetime,
         booking.offerDepartmentCode || undefined,
         "dd/MM/yyyy - HH'h'mm"
       )
+    : 'Permanent'
 
 const getFormattedPrice = (
   price: number,

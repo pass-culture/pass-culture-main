@@ -122,7 +122,6 @@ export const Desk = (): JSX.Element => {
         error['body']?.global ||
           'Le service de validation des contremarques est momentanément indisponible. Veuillez réessayer dans quelques instants.'
       )
-      return
     } else {
       const failure = getBookingFailure(error)
       setIsTokenValidated(failure.isTokenValidated)
