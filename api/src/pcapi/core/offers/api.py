@@ -26,7 +26,6 @@ import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.chronicles.models as chronicles_models
 import pcapi.core.criteria.models as criteria_models
-import pcapi.core.external.batch.tasks as batch_tasks
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.highlights.models as highlights_models
 import pcapi.core.mails.transactional as transactional_mails
@@ -53,6 +52,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import music
 from pcapi.core.educational import models as educational_models
 from pcapi.core.external.attributes.api import update_external_pro
+from pcapi.core.external.batch import transactional_notifications
 from pcapi.core.external.compliance import api
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
@@ -1157,13 +1157,10 @@ def _delete_stock(stock: models.Stock, author_id: int | None = None, user_connec
 
         transactional_mails.send_booking_cancellation_confirmation_by_pro_email(cancelled_bookings)
 
-        payload = batch_tasks.SendCancelBookingNotificationPayload(
-            bookings_ids=[booking.id for booking in cancelled_bookings]
-        )
         on_commit(
             partial(
-                batch_tasks.send_cancel_booking_notification.delay,
-                payload.model_dump(),
+                transactional_notifications.send_cancel_booking_notification,
+                [booking.id for booking in cancelled_bookings],
             )
         )
 
