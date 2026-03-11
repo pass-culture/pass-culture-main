@@ -13,24 +13,24 @@ app.app_context().push()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="mais qui va lire ça ?")
-    parser.add_argument("--dry-run", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument("--apply", action=argparse.BooleanOptionalAction, default=False)
     parser.add_argument("--origin", default=None)
     parser.add_argument("--destination", default=None)
     args = parser.parse_args()
 
-    dry_run = args.dry_run
+    apply = args.apply
     origin = args.origin
     destination = args.destination
 
     try:
         db.session.execute(sa.text("SET SESSION statement_timeout = '1200s'"))  # 20 minutes
-        _move_all_venue_offers(dry_run=dry_run, origin=origin, destination=destination)
+        _move_all_venue_offers(apply=apply, origin=origin, destination=destination)
         db.session.execute(sa.text(f"SET SESSION statement_timeout={settings.DATABASE_STATEMENT_TIMEOUT}"))
     except:
         db.session.rollback()
         raise
     else:
-        if args.dry_run:
-            db.session.rollback()
-        else:
+        if args.apply:
             db.session.commit()
+        else:
+            db.session.rollback()

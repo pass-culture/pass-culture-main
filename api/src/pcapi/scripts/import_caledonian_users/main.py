@@ -104,7 +104,7 @@ def create_pro(
 
 
 @atomic()
-def main(filename: str, not_dry: bool) -> None:
+def main(filename: str, apply: bool) -> None:
     namespace_dir = os.path.dirname(os.path.abspath(__file__))
 
     with open(f"{namespace_dir}/{filename}", encoding="utf-8") as f:
@@ -131,7 +131,7 @@ def main(filename: str, not_dry: bool) -> None:
 
     logger.info("Import counters: %s", counters.model_dump(mode="json"))
 
-    if not not_dry:
+    if not apply:
         mark_transaction_as_invalid()
 
 
@@ -139,12 +139,12 @@ if __name__ == "__main__":
     app.app_context().push()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--not-dry", action="store_true")
+    parser.add_argument("--apply", action="store_true")
     parser.add_argument("--filename", type=str, required=True)
     args = parser.parse_args()
 
     logger.info("Starting NC users import with args %s", args)
 
-    main(filename=args.filename, not_dry=args.not_dry)
+    main(filename=args.filename, apply=args.apply)
 
     logger.info("Finished")

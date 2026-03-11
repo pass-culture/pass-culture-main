@@ -282,12 +282,12 @@ def create_offerer_and_venue(data: dict, counters: ImportCounters, comment: str)
 
 
 @atomic()
-def main(filename: str, not_dry: bool) -> None:
+def main(filename: str, apply: bool) -> None:
     """Fonction principale d'import."""
 
     namespace_dir = os.path.dirname(os.path.abspath(__file__))
     filepath = f"{namespace_dir}/{filename}"
-    logger.info(f"Mode dry run: {not not_dry}")
+    logger.info(f"Mode dry run: {not apply}")
     logger.info(f"Processing file: {filepath}")
 
     if not os.path.exists(filepath):
@@ -334,7 +334,7 @@ def main(filename: str, not_dry: bool) -> None:
     logger.info(f"- Offerer déjà existant: {counters.already_existing_offerers}")
     logger.info(f"- Erreurs: {errors}")
 
-    if not not_dry:
+    if not apply:
         mark_transaction_as_invalid()
 
 
@@ -348,8 +348,8 @@ if __name__ == "__main__":
     app.app_context().push()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--not-dry", action="store_true")
+    parser.add_argument("--apply", action="store_true")
     parser.add_argument("--filename", type=str, required=True)
     args = parser.parse_args()
 
-    main(filename=args.filename, not_dry=args.not_dry)
+    main(filename=args.filename, apply=args.apply)

@@ -465,9 +465,9 @@ def _move_providers(
 
 
 @atomic()
-def _move_all_venue_offers(dry_run: bool, origin: int | None, destination: int | None) -> None:
+def _move_all_venue_offers(apply: bool, origin: int | None, destination: int | None) -> None:
     invalid_venues = []
-    if dry_run:
+    if not apply:
         logger.info("Dry run mode enabled, no changes will be made to the database")
         mark_transaction_as_invalid()
     for row in _get_venue_rows(origin, destination):
@@ -517,7 +517,7 @@ def _move_all_venue_offers(dry_run: bool, origin: int | None, destination: int |
                     )
                     db.session.flush()
 
-                    if not dry_run:
+                    if apply:
                         on_commit(partial(search.reindex_venue_ids, [origin_venue_id]))
                     logger.info("Transfer done for venue %d to venue %d", origin_venue_id, destination_venue_id)
             except sa_exc.SQLAlchemyError:
@@ -532,16 +532,15 @@ def _move_all_venue_offers(dry_run: bool, origin: int | None, destination: int |
 
 
 @blueprint.cli.command("move_batch_offer")
-@click.option("--not-dry", is_flag=True)
+@click.option("--apply", is_flag=True)
 @click.option("--origin", type=int, required=False)
 @click.option("--destination", type=int, required=False)
-def move_batch_offer(not_dry: bool, origin: int | None, destination: int | None) -> None:
-    dry_run = not not_dry
+def move_batch_offer(apply: bool, origin: int | None, destination: int | None) -> None:
     db.session.execute(sa.text("SET SESSION statement_timeout = '1200s'"))  # 20 minutes
-    _move_all_venue_offers(dry_run=dry_run, origin=origin, destination=destination)
+    _move_all_venue_offers(apply=apply, origin=origin, destination=destination)
     db.session.execute(sa.text(f"SET SESSION statement_timeout={settings.DATABASE_STATEMENT_TIMEOUT}"))
 
-    if not dry_run:
+    if apply:
         logger.info("Finished")
     else:
         db.session.rollback()
