@@ -5,6 +5,7 @@ import click
 import sqlalchemy as sa
 
 import pcapi.core.artist.models as artist_models
+import pcapi.utils.cron as cron_decorators
 from pcapi.connectors.big_query.importer.artist import ArtistImporter
 from pcapi.connectors.big_query.importer.artist import ArtistProductLinkImporter
 from pcapi.connectors.big_query.importer.artist_score import ArtistScoresImporter
@@ -13,6 +14,7 @@ from pcapi.core.artist import api as artist_api
 from pcapi.core.search import async_index_artist_ids
 from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -59,6 +61,7 @@ def compute_artists_most_relevant_image(batch_size: int = BATCH_SIZE) -> None:
 
 
 @blueprint.cli.command("update_artists_from_delta")
+@cron_decorators.cron_require_feature(FeatureToggle.SYNCHRONIZE_ARTISTS_FROM_BIGQUERY_TABLES)
 def update_artists_from_delta() -> None:
     logger.info("Starting artists update from delta tables...")
     for importer in ARTIST_IMPORTERS:

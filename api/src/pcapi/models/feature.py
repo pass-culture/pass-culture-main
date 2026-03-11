@@ -98,6 +98,9 @@ class FeatureToggle(enum.Enum):
         "Envoyer tous les emails en testing et staging. À activer temporairement lors de phase de test"
     )
     SYNCHRONIZE_ALLOCINE = "Permettre la synchronisation journalière avec Allociné"
+    SYNCHRONIZE_ARTISTS_FROM_BIGQUERY_TABLES = (
+        "Permet la synchronisation des artistes via les tables BigQuery fournies par l'équipe Data"
+    )
     SYNCHRONIZE_TITELIVE_PRODUCTS = "Permettre limport journalier du référentiel des livres"
     SYNCHRONIZE_TITELIVE_BOOK_PRODUCTS_FROM_BIGQUERY_TABLES = (
         "Permet la synchronisation des produits livre Titelive via les tables BigQuery fournies par l'équipe Data"
