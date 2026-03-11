@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/suspicious/noConsole: <explanation> */
 import { fileURLToPath, URL } from 'node:url'
 import { fontPreloads } from '@pass-culture/design-system/lib/global/font-preloads'
 import react from '@vitejs/plugin-react'
@@ -44,7 +45,37 @@ export default defineConfig(({ mode }) => {
       ],
       reporters: process.env.GITHUB_ACTIONS
         ? ['verbose', 'github-actions']
-        : ['verbose'],
+        : [
+            'verbose',
+            {
+              onTestRunEnd(testModules, unhandledErrors, reason) {
+                // Reporter to print slowest tests
+                const tests = testModules
+                  .flatMap((m) => [...m.children.allTests()])
+                  .filter((t) => (t.diagnostic()?.duration ?? 0) >= 1000)
+                tests.sort(
+                  (x, y) =>
+                    // biome-ignore lint/suspicious/noNonNullAssertedOptionalChain: <explanation>
+                    x.diagnostic()?.duration! - y.diagnostic()?.duration!
+                )
+                tests.reverse()
+                if (tests.length > 1) {
+                  console.log('Slow tests')
+                  console.log(
+                    Object.fromEntries(
+                      tests.map((t) => {
+                        const date = new Date(t.diagnostic()?.duration ?? 0)
+                        return [
+                          `${t.module.moduleId} | ${t.fullName}`,
+                          `${date.getMilliseconds()}ms`,
+                        ]
+                      })
+                    )
+                  )
+                }
+              },
+            },
+          ],
       clearMocks: true,
       restoreMocks: true,
       cacheDir: '.vitest_cache',
