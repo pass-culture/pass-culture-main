@@ -3629,3 +3629,42 @@ class UnsuspendReimbursementTest(PostEndpointHelper):
         assert venue.action_history[0].extraData["modified_info"] == {
             "isReimbursementSuspended": {"new_info": False, "old_info": True}
         }
+
+
+class GetOfferLocationsTest(GetEndpointHelper):
+    endpoint = "backoffice_web.venue.get_offer_locations"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
+    # - session + authenticated user (1 query)
+    # - addresses (1 query)
+    expected_num_queries = 2
+
+    def test_get_offer_locations(self, authenticated_client, offerer):
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer, offererAddress__address__street="12 Bd Poissonnière"
+        )
+        offerers_factories.OfferLocationFactory(
+            venue=venue, label="Première adresse", address__street="3 Bd Poissonnière"
+        )
+        offerers_factories.OfferLocationFactory(
+            venue=venue, label="Deuxième adresse", address__street="5 Bd Poissonnière"
+        )
+        offerers_factories.OfferLocationFactory()  # other offerer and venue
+
+        url = url_for(self.endpoint, venue_id=venue.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+
+        assert rows[0]["Intitulé"] == "Première adresse"
+        assert rows[0]["Adresse"] == "3 Bd Poissonnière 75002 Paris"
+        assert rows[0]["Localisation"] == "48.87055, 2.34765"
+
+        assert rows[1]["Intitulé"] == "Deuxième adresse"
+        assert rows[1]["Adresse"] == "5 Bd Poissonnière 75002 Paris"
+        assert rows[1]["Localisation"] == "48.87055, 2.34765"

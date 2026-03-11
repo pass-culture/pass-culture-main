@@ -32,9 +32,9 @@
         <td>{{ links.build_external_address_link(address) }}</td>
         <td>
           {% set search_params = {
-                      "search-0-search_field": "OFFERER",
+                      "search-0-search_field": "VENUE",
                       "search-0-operator": "IN",
-                      "search-0-offerer": offerer_id,
+                      "search-0-venue": venue_id,
                       "search-1-search_field": "ADDRESS",
                       "search-1-operator": "IN",
                       "search-1-address": address.id,

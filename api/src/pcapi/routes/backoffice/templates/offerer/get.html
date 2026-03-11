@@ -218,10 +218,6 @@
         {% endif %}
         {{ build_details_tab("pro-users", "Comptes pro", active_tab == 'users') }}
         {{ build_details_tab("managed-venues", "Partenaires culturels", active_tab == 'managed_venues') }}
-        {% if has_offerer_address %}
-          {# tab is hidden when there is no address in database; so it does not need a FF until migration #}
-          {{ build_details_tab("addresses", "Localisations", active_tab == 'addresses') }}
-        {% endif %}
         {% if not offerer.is_caledonian %}{{ build_details_tab("dms-adage", "Dossiers DMS ADAGE", active_tab == 'dms_adage') }}{% endif %}
         {{ build_details_tab("bank-accounts", "Comptes bancaires", active_tab == 'bank_accounts') }}
       {% endcall %}
@@ -261,15 +257,6 @@
             {{ build_loading_spinner() }}
           </div>
         {% endcall %}
-        {% if has_offerer_address %}
-          {% call build_details_tab_content("addresses", active_tab == 'addresses') %}
-            <div id="offerer_addresses_frame"
-                 hx-trigger="intersect once"
-                 hx-get="{{ url_for('backoffice_web.offerer.get_offerer_addresses', offerer_id=offerer.id) }}">
-              {{ build_loading_spinner() }}
-            </div>
-          {% endcall %}
-        {% endif %}
         {% if not offerer.is_caledonian %}
           {% call build_details_tab_content("dms-adage", active_tab == 'dms_adage') %}
             <div id="offerer_collective_dms_applications_frame"
