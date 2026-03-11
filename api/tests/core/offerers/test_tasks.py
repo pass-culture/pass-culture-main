@@ -4,7 +4,6 @@ from unittest.mock import patch
 import pytest
 import time_machine
 
-from pcapi import settings
 from pcapi.connectors.entreprise.models import SirenInfo
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
@@ -28,9 +27,7 @@ class CheckOffererTest:
         offerer = offerers_factories.OffererFactory()
 
         offerers_tasks.check_offerer_siren_task.run(
-            offerers_tasks.CheckOffererSirenRequest(
-                siren=offerer.siren, close_or_tag_when_inactive=True, must_fill_in_codir_report=False
-            )
+            offerers_tasks.CheckOffererSirenRequest(siren=offerer.siren, close_or_tag_when_inactive=True)
         )
 
         assert not offerer.tags
@@ -66,98 +63,12 @@ class CheckOffererTest:
             ),
         ):
             offerers_tasks.check_offerer_siren_task.run(
-                offerers_tasks.CheckOffererSirenRequest(
-                    siren=offerer.siren, close_or_tag_when_inactive=True, must_fill_in_codir_report=False
-                )
+                offerers_tasks.CheckOffererSirenRequest(siren=offerer.siren, close_or_tag_when_inactive=True)
             )
 
         assert not offerer.tags
         mock_append_to_spreadsheet.assert_not_called()
         mock_close_offerer.assert_not_called()
-
-    @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet", return_value=1)
-    @patch("pcapi.connectors.googledrive.TestingBackend.create_spreadsheet", return_value="new-file-id")
-    @patch("pcapi.connectors.googledrive.TestingBackend.search_file", return_value="report-file-id")
-    def test_active_offerer_with_report(
-        self, mock_search_file, mock_create_spreadsheet, mock_append_to_spreadsheet, client, siren_caduc_tag
-    ):
-        offerer = offerers_factories.OffererFactory(siren="900150004")
-
-        offerers_tasks.check_offerer_siren_task.run(
-            offerers_tasks.CheckOffererSirenRequest(
-                siren=offerer.siren, close_or_tag_when_inactive=True, must_fill_in_codir_report=True
-            )
-        )
-
-        assert not offerer.tags
-
-        mock_search_file.assert_called_once()
-        mock_create_spreadsheet.assert_not_called()
-        mock_append_to_spreadsheet.assert_called_once_with(
-            "report-file-id",
-            [
-                [
-                    datetime.date.today().strftime("%d/%m/%Y"),
-                    offerer.siren,
-                    "[ND]",
-                    "Oui",
-                    "OK",
-                    "N/A : Hors périmètre",
-                    "Entrepreneur individuel",
-                    0,
-                    0.0,
-                    f"{settings.BACKOFFICE_URL}/pro/offerer/{offerer.id}",
-                ]
-            ],
-        )
-
-    @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet", return_value=1)
-    @patch("pcapi.connectors.googledrive.TestingBackend.create_spreadsheet", return_value="new-file-id")
-    @patch("pcapi.connectors.googledrive.TestingBackend.search_file", return_value=None)
-    def test_active_offerer_with_first_report(
-        self, mock_search_file, mock_create_spreadsheet, mock_append_to_spreadsheet, client, siren_caduc_tag
-    ):
-        offerer = offerers_factories.OffererFactory(siren="010500007")  # See TestingBackend for SIREN digits
-
-        offerers_tasks.check_offerer_siren_task.run(
-            offerers_tasks.CheckOffererSirenRequest(
-                siren=offerer.siren, close_or_tag_when_inactive=True, must_fill_in_codir_report=True
-            )
-        )
-
-        assert not offerer.tags
-
-        mock_search_file.assert_called_once()
-        mock_create_spreadsheet.assert_called_once()
-        mock_append_to_spreadsheet.assert_called_once_with(
-            "new-file-id",
-            [
-                [
-                    "Date de vérification",
-                    "SIREN",
-                    "Nom",
-                    "En activité",
-                    "Attestation Urssaf",
-                    "Attestation IS",
-                    "Forme juridique",
-                    "Offres réservables",
-                    f"CA {datetime.date.today().year}",
-                    "Lien Backoffice",
-                ],
-                [
-                    datetime.date.today().strftime("%d/%m/%Y"),
-                    offerer.siren,
-                    "MINISTERE DE LA CULTURE",
-                    "Oui",
-                    "OK",
-                    "N/A : Entreprise créée dans l'année en cours",
-                    "Société à responsabilité limitée (sans autre indication)",
-                    0,
-                    0.0,
-                    f"{settings.BACKOFFICE_URL}/pro/offerer/{offerer.id}",
-                ],
-            ],
-        )
 
     @patch("time.sleep")
     def test_untag_revalidated_offerer_still_tagged(self, mock_sleep, client, siren_caduc_tag):
@@ -165,9 +76,7 @@ class CheckOffererTest:
         offerers_factories.UserOffererFactory(offerer=offerer)
 
         offerers_tasks.check_offerer_siren_task.run(
-            offerers_tasks.CheckOffererSirenRequest(
-                siren=offerer.siren, close_or_tag_when_inactive=True, must_fill_in_codir_report=True
-            )
+            offerers_tasks.CheckOffererSirenRequest(siren=offerer.siren, close_or_tag_when_inactive=True)
         )
 
         action = db.session.query(history_models.ActionHistory).one()
@@ -187,9 +96,7 @@ class CheckOffererTest:
         offerer = offerers_factories.PendingOffererFactory()
 
         offerers_tasks.check_offerer_siren_task.run(
-            offerers_tasks.CheckOffererSirenRequest(
-                siren=offerer.siren, close_or_tag_when_inactive=True, must_fill_in_codir_report=True
-            )
+            offerers_tasks.CheckOffererSirenRequest(siren=offerer.siren, close_or_tag_when_inactive=True)
         )
 
         assert offerer.isWaitingForValidation
@@ -223,9 +130,7 @@ class CheckOffererTest:
             ),
         ):
             offerers_tasks.check_offerer_siren_task.run(
-                offerers_tasks.CheckOffererSirenRequest(
-                    siren=offerer.siren, close_or_tag_when_inactive=True, must_fill_in_codir_report=False
-                )
+                offerers_tasks.CheckOffererSirenRequest(siren=offerer.siren, close_or_tag_when_inactive=True)
             )
 
         mock_handle_closed_offerer.assert_called_once_with(
@@ -256,9 +161,7 @@ class CheckOffererTest:
             ),
         ):
             offerers_tasks.check_offerer_siren_task.run(
-                offerers_tasks.CheckOffererSirenRequest(
-                    siren=offerer.siren, close_or_tag_when_inactive=False, must_fill_in_codir_report=False
-                )
+                offerers_tasks.CheckOffererSirenRequest(siren=offerer.siren, close_or_tag_when_inactive=False)
             )
 
         assert not offerer.tags
@@ -271,9 +174,7 @@ class CheckOffererTest:
         offerer = offerers_factories.OffererFactory(siren="000000000")
 
         offerers_tasks.check_offerer_siren_task.run(
-            offerers_tasks.CheckOffererSirenRequest(
-                siren=offerer.siren, close_or_tag_when_inactive=True, must_fill_in_codir_report=False
-            )
+            offerers_tasks.CheckOffererSirenRequest(siren=offerer.siren, close_or_tag_when_inactive=True)
         )
 
         assert not offerer.tags
@@ -285,9 +186,7 @@ class CheckOffererTest:
         offerer = offerers_factories.OffererFactory(siren="123456789")
 
         offerers_tasks.check_offerer_siren_task.run(
-            offerers_tasks.CheckOffererSirenRequest(
-                siren=offerer.siren, close_or_tag_when_inactive=False, must_fill_in_codir_report=False
-            )
+            offerers_tasks.CheckOffererSirenRequest(siren=offerer.siren, close_or_tag_when_inactive=False)
         )
 
         assert caplog.records[0].message == "Invalid SIREN format in the database"
