@@ -89,22 +89,6 @@ if [[ ! -z "$STAGED_FILES" ]]; then
   fi
 fi
 
-# run check unused css on staged files
-if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",unusedcss," ]]; then
-  echo "Running check-unused-css ..."
-  
-  yarn lint:scss:checkunused
-  LINTER_EXIT_CODE=$?
-
-  # check linter exit code
-  if [ $LINTER_EXIT_CODE -ne 0 ]; then
-    echo "❌ Please fix check-unused-css errors first "
-    exit 1
-  else
-    echo "✅ check-unused-css all good"
-  fi
-fi
-
 STAGED_SCSS_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep '^pro/src/*' | grep 'css' | sed 's|^pro\/||g')
 if [[ ! -z "$STAGED_SCSS_FILES" ]]; then
   # run stylelint on staged files
@@ -122,6 +106,25 @@ if [[ ! -z "$STAGED_SCSS_FILES" ]]; then
       exit 1
     else
       echo "✅ stylelint all good"
+    fi
+  fi
+fi
+
+STAGED_TS_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep '^pro/src/*' | grep '.ts' | sed 's|^pro\/||g')
+if [[ ! -z "$STAGED_SCSS_FILES" || ! -z "$STAGED_TS_FILES" ]]; then
+  # run check unused css on staged files
+  if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",unusedcss," ]]; then
+    echo "Running check-unused-css ..."
+    
+    yarn lint:scss:checkunused
+    LINTER_EXIT_CODE=$?
+
+    # check linter exit code
+    if [ $LINTER_EXIT_CODE -ne 0 ]; then
+      echo "❌ Please fix check-unused-css errors first "
+      exit 1
+    else
+      echo "✅ check-unused-css all good"
     fi
   fi
 fi
