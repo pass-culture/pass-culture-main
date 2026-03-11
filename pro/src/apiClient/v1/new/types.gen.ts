@@ -3326,6 +3326,10 @@ export type GetVenueListLiteResponseModel = {
      * Venues
      */
     venues: Array<VenueListItemLiteResponseModel>;
+    /**
+     * Venueswithpendingvalidation
+     */
+    venuesWithPendingValidation: Array<VenueListItemLiteResponseModel>;
 };
 
 /**
@@ -8798,20 +8802,7 @@ export type getHighlightsResponse = getHighlightsResponses[keyof getHighlightsRe
 export type getLiteVenuesData = {
     body?: never;
     path?: never;
-    query?: {
-        /**
-         * Validated
-         */
-        validated?: boolean;
-        /**
-         * Activeofferersonly
-         */
-        activeOfferersOnly?: boolean;
-        /**
-         * Offererid
-         */
-        offererId?: number;
-    };
+    query?: never;
     url: '/lite/venues';
 };
 

@@ -107,6 +107,7 @@ describe('setSelectedOffererById', () => {
     vi.spyOn(api, 'getVenue').mockResolvedValue(selectedVenueBase)
     vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
       venues: venuesBase,
+      venuesWithPendingValidation: [],
     })
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue(
       offerersNamesResponseBase

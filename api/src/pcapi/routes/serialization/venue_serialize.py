@@ -375,10 +375,20 @@ class VenueListItemLiteResponseModel(HttpBodyModel):
 
 class GetVenueListLiteResponseModel(HttpBodyModel):
     venues: list[VenueListItemLiteResponseModel]
+    venues_with_pending_validation: list[VenueListItemLiteResponseModel]
 
     @classmethod
-    def build(cls, venues: list[offerers_models.Venue]) -> "GetVenueListLiteResponseModel":
-        return cls(venues=[VenueListItemLiteResponseModel.build(venue) for venue in venues])
+    def build(
+        cls,
+        venues: typing.Collection[offerers_models.Venue],
+        with_pending_validation: typing.Collection[offerers_models.Venue],
+    ) -> "GetVenueListLiteResponseModel":
+        return cls(
+            venues=[VenueListItemLiteResponseModel.build(venue) for venue in venues],
+            venues_with_pending_validation=[
+                VenueListItemLiteResponseModel.build(venue) for venue in with_pending_validation
+            ],
+        )
 
 
 class VenueListQueryModel(BaseModel):

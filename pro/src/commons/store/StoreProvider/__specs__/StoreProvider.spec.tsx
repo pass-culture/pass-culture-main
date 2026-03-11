@@ -68,6 +68,7 @@ describe('src | App', () => {
           managingOffererId: 1,
         }),
       ],
+      venuesWithPendingValidation: [],
     })
     vi.spyOn(apiNew, 'listFeatures').mockResolvedValue([])
   })
