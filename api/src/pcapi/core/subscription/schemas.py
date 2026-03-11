@@ -3,12 +3,13 @@ import datetime
 import enum
 import typing
 
-import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
+from pydantic.v1.class_validators import validator
 
 from pcapi.core.subscription.models import BeneficiaryFraudCheck
 from pcapi.core.subscription.models import FraudReasonCode
 from pcapi.core.users import models as users_models
+from pcapi.serialization.utils import to_camel
 from pcapi.utils.string import u_nbsp
 
 
@@ -164,7 +165,7 @@ class FraudItem:
         return self.extra_data.get("duplicate_id")
 
 
-class ProfileCompletionContent(pydantic_v2.BaseModel):
+class ProfileCompletionContent(pydantic_v1.BaseModel):
     activity: (
         users_models.ActivityEnum | str | None
     )  # str for backward compatibility. All new data should be ActivityEnum
@@ -174,19 +175,19 @@ class ProfileCompletionContent(pydantic_v2.BaseModel):
     last_name: str
     origin: str  # Where the profile was completed by the user. Can be the APP or DMS
     postal_code: str | None  # Optional because it was not saved up until now
-    school_type: users_models.SchoolTypeEnum | None = None
+    school_type: users_models.SchoolTypeEnum | None
 
-    @pydantic_v2.field_validator("activity", mode="before")
-    @classmethod
+    @validator("activity", pre=True)
     def validate_activity(cls, value: users_models.ActivityEnum | str | None) -> users_models.ActivityEnum | str | None:
         # Avoid validation error for old data because of rewording
         if value == "Chômeur":
             return users_models.ActivityEnum.UNEMPLOYED.value
         return value
 
-    model_config = pydantic_v2.ConfigDict(
-        use_enum_values=True,
-    )
+    class Config:
+        allow_population_by_field_name = True
+        use_enum_values = True
+        alias_generator = to_camel
 
 
 class IdentityCheckContent(pydantic_v1.BaseModel):
