@@ -57,6 +57,7 @@ const defaultUseLocationValue = {
   key: '',
   pathname: '',
   search: '',
+  unstable_mask: undefined,
 }
 
 const renderCollectiveEditingOfferNavigation = (

@@ -23,6 +23,7 @@ const defaultUseLocationValue = {
   key: '',
   pathname: '/adage-iframe/recherche',
   search: '',
+  unstable_mask: undefined,
 }
 
 function renderAdageOffer({

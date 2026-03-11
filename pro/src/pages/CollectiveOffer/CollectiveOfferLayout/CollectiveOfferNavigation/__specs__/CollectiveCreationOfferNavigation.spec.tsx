@@ -60,6 +60,7 @@ describe('CollectiveCreationOfferNavigation', () => {
     key: '',
     pathname: '',
     search: '',
+    unstable_mask: undefined,
   }
 
   beforeEach(async () => {
