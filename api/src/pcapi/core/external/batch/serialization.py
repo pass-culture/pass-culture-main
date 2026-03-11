@@ -1,3 +1,5 @@
+from pydantic import BaseModel as BaseModelV2
+
 from pcapi.routes.serialization import BaseModel
 
 from .models import BatchEvent
@@ -31,4 +33,16 @@ class TransactionalNotificationData(BaseModel):
     group_id: str  # Name of the campaign, useful for analytics purpose
     user_ids: list[int]
     message: TransactionalNotificationMessage
+    extra: dict = {}
+
+
+class TransactionalNotificationMessageV2(BaseModelV2):
+    body: str
+    title: str | None = None
+
+
+class TransactionalNotificationDataV2(BaseModelV2):
+    group_id: str  # Name of the campaign, useful for analytics purpose
+    user_ids: list[int]
+    message: TransactionalNotificationMessageV2
     extra: dict = {}

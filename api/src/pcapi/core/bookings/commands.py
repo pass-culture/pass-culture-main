@@ -11,6 +11,7 @@ from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import repository as bookings_repository
 from pcapi.core.bookings.external import booking_notifications
 from pcapi.core.educational.api import booking as educational_booking_api
+from pcapi.core.external.batch import transactional_notifications
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils.blueprint import Blueprint
@@ -110,7 +111,7 @@ def send_today_events_notifications_metropolitan_france_command() -> None:
     notification to all the user to remind them of the event to remind
     the users of the incoming event
     """
-    booking_notifications.send_today_events_notifications_metropolitan_france()
+    transactional_notifications.send_today_events_notifications_metropolitan_france()
 
 
 @blueprint.cli.command("send_today_events_notifications_overseas_france")
@@ -123,7 +124,7 @@ def send_today_events_notifications_overseas_france(utc_mean_offset: int, depart
     France departments and send notifications to remind the users
     of the incoming event
     """
-    booking_notifications.send_today_events_notifications_overseas(
+    transactional_notifications.send_today_events_notifications_overseas(
         utc_mean_offset=utc_mean_offset, departments=departments
     )
 

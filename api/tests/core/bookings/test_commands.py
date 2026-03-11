@@ -6,20 +6,24 @@ from unittest import mock
 from unittest.mock import patch
 
 import pytest
+import time_machine
 
 import pcapi.core.mails.testing as mails_testing
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.bookings import commands as bookings_commands
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
+from pcapi.core.external.batch import testing as notifications_testing
+from pcapi.core.external.batch import transactional_notifications
 from pcapi.core.mails.transactional.bookings.booking_event_reminder_to_beneficiary import (
     get_booking_event_reminder_to_beneficiary_email_data,
 )
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offer_models
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.testing import assert_no_duplicated_queries
+from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.utils import date as date_utils
 
@@ -128,6 +132,45 @@ class ArchiveOldBookingsTest:
         old_booking = db.session.get(bookings_models.Booking, old_booking_id)
         assert not recent_booking.displayAsEnded
         assert old_booking.displayAsEnded
+
+
+@pytest.mark.usefixtures("db_session")
+class SendTodayEventsNotificationsTest:
+    # Set time to evening so that `send_today_events_notifications_metropolitan_france()`
+    # finds test stock in its `13:00 - 24:00` window.
+    @time_machine.travel("20:00:00")
+    def test_send_today_events_notifications_only_to_individual_bookings_users(self):
+        """
+        Test that each stock that is linked to an offer that occurs today and
+        creates a job that will send a notification to all of the stock's users
+        with a valid (not cancelled) booking, for individual bookings only.
+        """
+        in_one_hour = date_utils.get_naive_utc_now() + timedelta(hours=1)
+        stock_today = offers_factories.EventStockFactory(beginningDatetime=in_one_hour, offer__name="my_offer")
+
+        next_week = date_utils.get_naive_utc_now() + timedelta(days=7)
+        stock_next_week = offers_factories.EventStockFactory(beginningDatetime=next_week)
+
+        user1 = users_factories.BeneficiaryGrant18Factory()
+        user2 = users_factories.BeneficiaryGrant18Factory()
+
+        # should be fetched
+        bookings_factories.BookingFactory(stock=stock_today, user=user1)
+        bookings_factories.BookingFactory(stock=stock_today, user=user2)
+
+        # should not be fetched: cancelled
+        bookings_factories.BookingFactory(stock=stock_today, status=bookings_models.BookingStatus.CANCELLED, user=user2)
+
+        # should not be fetched: next week
+        bookings_factories.BookingFactory(stock=stock_next_week, user=user2)
+
+        transactional_notifications.send_today_events_notifications_metropolitan_france()
+
+        assert len(notifications_testing.requests) == 2
+        assert all(data["message"]["title"] == "C'est aujourd'hui !" for data in notifications_testing.requests)
+
+        user_ids = {user_id for data in notifications_testing.requests for user_id in data["user_ids"]}
+        assert user_ids == {user1.id, user2.id}
 
 
 @pytest.mark.usefixtures("db_session")
