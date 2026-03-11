@@ -13,7 +13,10 @@ import {
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
+import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { isEqual } from '@/commons/utils/isEqual'
 import { ChoosePreFiltersMessage } from '@/components/Bookings/Components/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import { DownloadsMovedBanner } from '@/components/DownloadsMovedBanner/DownloadsMovedBanner'
@@ -43,6 +46,9 @@ export const IndividualBookings = () => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
 
+  const selectedOfferer = useAppSelector(ensureCurrentOfferer)
+  const selectedVenue = useAppSelector(ensureSelectedVenue)
+
   const {
     initialAppliedFilters,
     appliedPreFilters,
@@ -57,7 +63,11 @@ export const IndividualBookings = () => {
     resetPreFilters,
     resetAndApplyPreFilters,
     updateUrl,
-  } = useBookingsFilters()
+  } = useBookingsFilters(
+    withSwitchVenueFeature
+      ? { offerVenueId: selectedVenue.id.toString() }
+      : { offererId: selectedOfferer.id.toString() }
+  )
 
   const offererAddressQuery = useOffererAddresses(
     GetOffererAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY

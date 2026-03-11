@@ -4,9 +4,7 @@ import { useLocation, useNavigate } from 'react-router'
 import { BookingStatusFilter } from '@/apiClient/v1'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
-import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useCurrentRoute } from '@/commons/hooks/useCurrentRoute'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { isDateValid } from '@/commons/utils/date'
 import { isEqual } from '@/commons/utils/isEqual'
 import { stringify } from '@/commons/utils/query-string'
@@ -20,18 +18,22 @@ function isBookingStatusFilter(
   )
 }
 
-export function useBookingsFilters() {
+export function useBookingsFilters(
+  params: { offererId?: string; offerVenueId?: string } = {}
+) {
   const navigate = useNavigate()
   const location = useLocation()
   const currentRoute = useCurrentRoute()
-  const selectedOffererId = useAppSelector(selectCurrentOffererId)
 
   const initialAppliedFilters: PreFiltersParams = useMemo(
     () => ({
       ...DEFAULT_PRE_FILTERS,
-      offererId: selectedOffererId?.toString() ?? '',
+      ...(params.offererId ? { offererId: params.offererId } : undefined),
+      ...(params.offerVenueId
+        ? { offerVenueId: params.offerVenueId }
+        : undefined),
     }),
-    [selectedOffererId]
+    [params.offererId, params.offerVenueId]
   )
 
   const [appliedPreFilters, setAppliedPreFilters] = useState<PreFiltersParams>(
@@ -47,52 +49,51 @@ export function useBookingsFilters() {
   )
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search)
+    const urlSearchParams = new URLSearchParams(location.search)
 
     if (
-      params.has('offerVenueId') ||
-      params.has('bookingStatusFilter') ||
-      params.has('bookingBeginningDate') ||
-      params.has('bookingEndingDate') ||
-      params.has('offerType') ||
-      params.has('offerEventDate') ||
-      params.has('offererId') ||
-      params.has('offererAddressId')
+      urlSearchParams.has('offerVenueId') ||
+      urlSearchParams.has('bookingStatusFilter') ||
+      urlSearchParams.has('bookingBeginningDate') ||
+      urlSearchParams.has('bookingEndingDate') ||
+      urlSearchParams.has('offerType') ||
+      urlSearchParams.has('offerEventDate') ||
+      urlSearchParams.has('offererId') ||
+      urlSearchParams.has('offererAddressId')
     ) {
       const next: PreFiltersParams = {
         offerVenueId:
-          params.get('offerVenueId') ?? DEFAULT_PRE_FILTERS.offerVenueId,
+          urlSearchParams.get('offerVenueId') ??
+          initialAppliedFilters.offerVenueId,
         offererAddressId:
-          params.get('offererAddressId') ??
+          urlSearchParams.get('offererAddressId') ??
           DEFAULT_PRE_FILTERS.offererAddressId,
         bookingStatusFilter: (() => {
-          const param = params.get('bookingStatusFilter')
+          const param = urlSearchParams.get('bookingStatusFilter')
           return isBookingStatusFilter(param)
             ? param
             : initialAppliedFilters.bookingStatusFilter
         })(),
         bookingBeginningDate:
-          params.get('bookingBeginningDate') ??
-          (params.has('offerEventDate')
+          urlSearchParams.get('bookingBeginningDate') ??
+          (urlSearchParams.has('offerEventDate')
             ? ''
             : initialAppliedFilters.bookingBeginningDate),
         bookingEndingDate:
-          params.get('bookingEndingDate') ??
-          (params.has('offerEventDate')
+          urlSearchParams.get('bookingEndingDate') ??
+          (urlSearchParams.has('offerEventDate')
             ? ''
             : initialAppliedFilters.bookingEndingDate),
         offerEventDate:
-          params.get('offerEventDate') ?? initialAppliedFilters.offerEventDate,
-        offererId:
-          selectedOffererId !== null
-            ? selectedOffererId.toString()
-            : DEFAULT_PRE_FILTERS.offererId,
+          urlSearchParams.get('offerEventDate') ??
+          initialAppliedFilters.offerEventDate,
+        offererId: initialAppliedFilters.offererId,
       }
 
       setAppliedPreFilters(next)
       setSelectedPreFilters(next)
     }
-  }, [location.search, selectedOffererId, initialAppliedFilters])
+  }, [initialAppliedFilters, location.search])
 
   const hasPreFilters = useMemo(() => {
     let key: keyof PreFiltersParams
@@ -105,8 +106,7 @@ export function useBookingsFilters() {
         isDateValid(defaultValue)
       ) {
         if (
-          new Date(selectedValue as string).getTime() !==
-          new Date(defaultValue as string).getTime()
+          new Date(selectedValue).getTime() !== new Date(defaultValue).getTime()
         ) {
           return true
         }

@@ -17,7 +17,7 @@ import { DEFAULT_OMNISEARCH_CRITERIA } from '@/components/Bookings/Components/Fi
 import { filterBookingsRecap } from '@/components/Bookings/Components/utils/filterBookingsRecap'
 import { IndividualBookingsTable } from '@/components/Bookings/IndividualBookingsTable/IndividualBookingsTable'
 import { Button } from '@/design-system/Button/Button'
-import { getFilteredIndividualBookingsAdapter } from '@/pages/Bookings/adapters/getFilteredIndividualBookingsAdapter'
+import { getFilteredIndividualBookingsAdapter } from '@/pages/IndividualBookings/adapters/getFilteredIndividualBookingsAdapter'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import { DownloadBookingsModal } from './DownloadBookingsModal/DownloadBookingsModal'

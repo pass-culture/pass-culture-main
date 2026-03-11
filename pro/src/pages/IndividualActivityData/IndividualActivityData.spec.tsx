@@ -3,6 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import type { RouteObject } from 'react-router'
 
 import { api } from '@/apiClient/api'
+import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
@@ -14,6 +15,7 @@ import { Component as IndividualActivityData } from './IndividualActivityData'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
+    getBookingsCsv: vi.fn(),
     getOffererAddresses: vi.fn(),
   },
 }))
@@ -104,5 +106,30 @@ describe('IndividualActivityData', () => {
     expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_RESET_FILTERS, {
       from: '/administration/donnees-activite/individuel',
     })
+  })
+
+  it('should pass admin offerer id to CSV download', async () => {
+    vi.spyOn(api, 'getBookingsCsv').mockResolvedValue({})
+    renderIndividualActivityData()
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Télécharger les réservations' })
+    )
+    const downloadSubButton = await screen.findByRole('menuitem', {
+      name: 'Fichier CSV (.csv)',
+    })
+    await userEvent.click(downloadSubButton)
+
+    expect(api.getBookingsCsv).toHaveBeenCalledWith(
+      1,
+      defaultGetOffererResponseModel.id,
+      null,
+      null,
+      null,
+      DEFAULT_PRE_FILTERS.bookingStatusFilter,
+      DEFAULT_PRE_FILTERS.bookingBeginningDate,
+      DEFAULT_PRE_FILTERS.bookingEndingDate,
+      null
+    )
   })
 })
