@@ -73,6 +73,7 @@ export const BasicLayout = ({
         }}
         ref={openButtonRef}
         isAdminArea={isAdminArea}
+        disableHomeLink={isFullPage}
       />
 
       <div
