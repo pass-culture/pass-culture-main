@@ -2038,6 +2038,19 @@ def move_offer(
             db.session.add(destination_oa)
             offer.offererAddress = destination_oa
 
+        # End any active headline offer before changing venue
+        for headline_offer in offer.headlineOffers:
+            if headline_offer.isActive:
+                remove_headline_offer(headline_offer)
+                logger.info(
+                    "Headline Offer Deactivation",
+                    extra={
+                        "analyticsSource": "backoffice",
+                        "HeadlineOfferId": headline_offer.id,
+                        "Reason": "Offer venue was changed in backoffice",
+                    },
+                    technical_message_id="headline_offer_deactivation",
+                )
         offer.venue = destination_venue
         db.session.add(offer)
 
@@ -2132,6 +2145,20 @@ def move_event_offer(
                     label=offer.offererAddress.label,
                 )
                 offer.offererAddress = destination_oa
+
+        # End any active headline offer before changing venue
+        for headline_offer in offer.headlineOffers:
+            if headline_offer.isActive:
+                remove_headline_offer(headline_offer)
+                logger.info(
+                    "Headline Offer Deactivation",
+                    extra={
+                        "analyticsSource": "backoffice",
+                        "HeadlineOfferId": headline_offer.id,
+                        "Reason": "Offer venue was changed in backoffice",
+                    },
+                    technical_message_id="headline_offer_deactivation",
+                )
         offer.venue = destination_venue
         db.session.add(offer)
 

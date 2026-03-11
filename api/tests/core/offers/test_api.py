@@ -4886,6 +4886,47 @@ class MoveOfferTest:
         db.session.refresh(offer)
         assert offer.venue == new_venue
 
+    def test_move_offer_ends_active_headline_offer(self):
+        """Moving an offer from a venue to another venue should end the active headline offer"""
+        offer = factories.OfferFactory()
+        headline_offer = factories.HeadlineOfferFactory(offer=offer, venue=offer.venue)
+        assert headline_offer.isActive
+
+        new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
+        api.move_offer(offer, new_venue)
+
+        db.session.refresh(offer)
+        db.session.refresh(headline_offer)
+        assert offer.venue == new_venue
+        assert not headline_offer.isActive
+        assert headline_offer.timespan.upper is not None
+
+    def test_move_event_offer_ends_active_headline_offer(self):
+        """Moving an event offer from a venue to another venue should end the active headline offer"""
+        offer = factories.EventOfferFactory()
+        factories.EventStockFactory(offer=offer, quantity=10)
+        headline_offer = factories.HeadlineOfferFactory(offer=offer, venue=offer.venue)
+        assert headline_offer.isActive
+
+        new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
+        offerers_factories.VenuePricingPointLinkFactory(
+            venue=offer.venue,
+            pricingPoint=offer.venue,
+            timespan=[date_utils.get_naive_utc_now() - timedelta(days=7), None],
+        )
+        offerers_factories.VenuePricingPointLinkFactory(
+            venue=new_venue,
+            pricingPoint=offer.venue,
+            timespan=[date_utils.get_naive_utc_now() - timedelta(days=7), None],
+        )
+        api.move_event_offer(offer, new_venue)
+
+        db.session.refresh(offer)
+        db.session.refresh(headline_offer)
+        assert offer.venue == new_venue
+        assert not headline_offer.isActive
+        assert headline_offer.timespan.upper is not None
+
     def create_offer_by_state(self, venue, state):
         offer = None
         if state == OfferValidationStatus.DRAFT:
