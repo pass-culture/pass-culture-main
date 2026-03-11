@@ -547,7 +547,7 @@ def get_base_query_for_offer_indexation() -> sa_orm.Query:
         )
         .options(
             sa_orm.with_expression(
-                offers_models.Offer.proAdvicesCount, offers_repository.get_offer_pro_advices_count_subquery()
+                offers_models.Offer.hasProAdvice, offers_repository.get_offer_has_pro_advice_subquery()
             )
         )
         .options(sa_orm.joinedload(offers_models.Offer.criteria).load_only(criteria_models.Criterion.id))
