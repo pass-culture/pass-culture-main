@@ -19,6 +19,7 @@ from pcapi.core.offerers import models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers import validation
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offerers.venues import api as venues_api
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import tasks as offers_tasks
 from pcapi.models import db
@@ -131,15 +132,9 @@ def get_venues(query: venue_serialize.VenueListQueryModel) -> venue_deprecated_s
 @private_api.route("/lite/venues", methods=["GET"])
 @login_required
 @spectree_serialize(response_model=venue_serialize.GetVenueListLiteResponseModel, api=blueprint.pro_private_schema)
-def get_venues_lite(query: venue_serialize.VenueListQueryModel) -> venue_serialize.GetVenueListLiteResponseModel:
-    venue_list = offerers_repository.get_filtered_venues(
-        pro_user_id=current_user.id,
-        active_offerers_only=query.active_offerers_only,
-        offerer_id=query.offerer_id,
-        validated_offerer=query.validated,
-    )
-
-    return venue_serialize.GetVenueListLiteResponseModel.build(venue_list)
+def get_venues_lite() -> venue_serialize.GetVenueListLiteResponseModel:
+    splitted = venues_api.fetch_user_venues_splitted_based_on_user_offerer_status(current_user.id)
+    return venue_serialize.GetVenueListLiteResponseModel.build(splitted.others, splitted.with_pending_validation)
 
 
 @private_api.route("/venues/<int:venue_id>", methods=["PATCH"])

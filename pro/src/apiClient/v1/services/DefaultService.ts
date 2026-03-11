@@ -1353,25 +1353,13 @@ export class DefaultService {
   }
   /**
    * get_venues_lite <GET>
-   * @param validated
-   * @param activeOfferersOnly
-   * @param offererId
    * @returns GetVenueListLiteResponseModel OK
    * @throws ApiError
    */
-  public getVenuesLite(
-    validated?: boolean | null,
-    activeOfferersOnly?: boolean | null,
-    offererId?: number | null,
-  ): CancelablePromise<GetVenueListLiteResponseModel> {
+  public getVenuesLite(): CancelablePromise<GetVenueListLiteResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/lite/venues',
-      query: {
-        'validated': validated,
-        'activeOfferersOnly': activeOfferersOnly,
-        'offererId': offererId,
-      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Content`,

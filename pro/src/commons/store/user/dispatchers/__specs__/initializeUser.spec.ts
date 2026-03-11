@@ -53,6 +53,7 @@ describe('initializeUser', () => {
             managingOffererId: 200,
           }),
         ],
+        venuesWithPendingValidation: [],
       })
 
       vi.spyOn(api, 'getOfferer').mockResolvedValue({
@@ -113,6 +114,7 @@ describe('initializeUser', () => {
             managingOffererId: 200,
           }),
         ],
+        venuesWithPendingValidation: [],
       })
       vi.spyOn(api, 'getVenue').mockResolvedValue(
         makeGetVenueResponseModel({
@@ -172,6 +174,7 @@ describe('initializeUser', () => {
             managingOffererId: 200,
           }),
         ],
+        venuesWithPendingValidation: [],
       })
       vi.spyOn(api, 'getOfferer').mockResolvedValue({
         ...defaultGetOffererResponseModel,
@@ -229,6 +232,7 @@ describe('initializeUser', () => {
             managingOffererId: 200,
           }),
         ],
+        venuesWithPendingValidation: [],
       })
       vi.spyOn(api, 'getVenue').mockResolvedValue(
         makeGetVenueResponseModel({
@@ -266,7 +270,10 @@ describe('initializeUser', () => {
         offerersNamesWithPendingValidation: [],
         offerersNames: [],
       })
-      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({ venues: [] })
+      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+        venues: [],
+        venuesWithPendingValidation: [],
+      })
       const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
       const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
 
@@ -286,7 +293,10 @@ describe('initializeUser', () => {
         offerersNamesWithPendingValidation: [],
         offerersNames: [getOffererNameFactory({ id: 100 })],
       })
-      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({ venues: [] })
+      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+        venues: [],
+        venuesWithPendingValidation: [],
+      })
       vi.spyOn(api, 'getOfferer').mockRejectedValue({
         name: 'ApiError',
         message: 'Forbidden',
@@ -339,6 +349,7 @@ describe('initializeUser', () => {
             managingOffererId: 100,
           }),
         ],
+        venuesWithPendingValidation: [],
       })
       vi.spyOn(api, 'getVenue').mockResolvedValue(
         makeGetVenueResponseModel({
@@ -382,6 +393,7 @@ describe('initializeUser', () => {
             managingOffererId: 100,
           }),
         ],
+        venuesWithPendingValidation: [],
       })
       vi.spyOn(api, 'getVenue').mockResolvedValue(
         makeGetVenueResponseModel({
@@ -422,6 +434,7 @@ describe('initializeUser', () => {
             managingOffererId: 100,
           }),
         ],
+        venuesWithPendingValidation: [],
       })
       vi.spyOn(api, 'getOfferer').mockResolvedValue({
         ...defaultGetOffererResponseModel,
@@ -447,7 +460,10 @@ describe('initializeUser', () => {
         offerersNamesWithPendingValidation: [],
         offerersNames: [getOffererNameFactory({ id: 100 })],
       })
-      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({ venues: [] })
+      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+        venues: [],
+        venuesWithPendingValidation: [],
+      })
       vi.spyOn(api, 'getOfferer').mockResolvedValue({
         ...defaultGetOffererResponseModel,
         id: 100,
@@ -471,7 +487,10 @@ describe('initializeUser', () => {
         offerersNamesWithPendingValidation: [],
         offerersNames: [],
       })
-      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({ venues: [] })
+      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+        venues: [],
+        venuesWithPendingValidation: [],
+      })
       const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
       const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
 
@@ -502,6 +521,7 @@ describe('initializeUser', () => {
             managingOffererId: 100,
           }),
         ],
+        venuesWithPendingValidation: [],
       })
       vi.spyOn(api, 'getOfferer').mockResolvedValue({
         ...defaultGetOffererResponseModel,
@@ -535,6 +555,7 @@ describe('initializeUser', () => {
             managingOffererId: 100,
           }),
         ],
+        venuesWithPendingValidation: [],
       })
       vi.spyOn(api, 'getVenue').mockResolvedValue(
         makeGetVenueResponseModel({
