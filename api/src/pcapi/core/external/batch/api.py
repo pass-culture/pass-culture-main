@@ -17,7 +17,6 @@ BACKEND_BY_KEY: typing.Final[dict[str, type[Backend]]] = {
     "BatchBackend": BatchBackend,
     "LoggerBackend": LoggerBackend,
     "TestingBackend": TestingBackend,
-    "pcapi.notifications.push.backends.batch.BatchBackend": BatchBackend,
 }
 
 

@@ -12,8 +12,6 @@ BACKEND_BY_KEY: typing.Final[dict[str, type[Backend]]] = {
     "SlackBackend": SlackBackend,
     "LoggerBackend": LoggerBackend,
     "TestingBackend": TestingBackend,
-    # TODO (vroullier 9/3/26) delete when infra drops the long name
-    "pcapi.notifications.internal.backends.slack.SlackBackend": SlackBackend,
 }
 
 
