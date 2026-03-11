@@ -10,11 +10,17 @@ export enum Events {
   CLICKED_SEE_LATER_FROM_SUCCESS_OFFER_CREATION_MODAL = 'hasClickedSeeLaterFromSuccessOfferCreationModal',
   CLICKED_SAVE_VENUE = 'hasClickedSaveVenue',
   CLICKED_DOWNLOAD_BOOKINGS = 'hasClickedDownloadBooking',
+  CLICKED_ADMIN_DOWNLOAD_BOOKINGS = 'hasClickedAdminDownloadBooking',
   CLICKED_DOWNLOAD_BOOKINGS_CSV = 'hasClickedDownloadBookingCsv',
+  CLICKED_ADMIN_DOWNLOAD_BOOKINGS_CSV = 'hasClickedAdminDownloadBookingCsv',
   CLICKED_DOWNLOAD_BOOKINGS_XLS = 'hasClickedDownloadBookingXls',
+  CLICKED_ADMIN_DOWNLOAD_BOOKINGS_XLS = 'hasClickedAdminDownloadBookingXls',
   CLICKED_DOWNLOAD_COLLECTIVE_OFFERS = 'hasClickedDownloadCollectiveOffers',
+  CLICKED_ADMIN_DOWNLOAD_COLLECTIVE_OFFERS = 'hasClickedAdminDownloadCollectiveOffers',
   CLICKED_DOWNLOAD_COLLECTIVE_OFFERS_CSV = 'hasClickedDownloadCollectiveOffersCsv',
+  CLICKED_ADMIN_DOWNLOAD_COLLECTIVE_OFFERS_CSV = 'hasClickedAdminDownloadCollectiveOffersCsv',
   CLICKED_DOWNLOAD_COLLECTIVE_OFFERS_XLS = 'hasClickedDownloadCollectiveOffersXls',
+  CLICKED_ADMIN_DOWNLOAD_COLLECTIVE_OFFERS_XLS = 'hasClickedAdminDownloadCollectiveOffersXls',
   CLICKED_EDIT_PROFILE = 'hasClickedEditProfile',
   CLICKED_EDIT_COLLECTIVE_OFFER = 'hasClickedEditCollectiveOffer',
   CLICKED_HOME_STATS_PENDING_OFFERS_FAQ = 'hasClickedHomeStatsPendingOffersFaq',
@@ -84,7 +90,7 @@ export enum Events {
   OFFER_FORM_VIDEO_URL_ERROR = 'videoUrlError',
   CLICKED_COPY_TEMPLATE_OFFER_LINK = 'hasClickedCopyTemplateOfferLink',
   CLICKED_VIEW_APP_OFFER = 'hasClickedViewAppOffer',
-  CLICKED_THE_ESPACE_ADMIN_BUTTON = 'hasClickedTheEspaceAdminButton',
+  CLICKED_HEADER_ADMIN_BUTTON = 'hasClickedHeaderAdminButton',
 }
 
 export enum VenueEvents {

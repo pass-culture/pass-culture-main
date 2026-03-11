@@ -3,6 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import type { RouteObject } from 'react-router'
 
 import { api } from '@/apiClient/api'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -12,8 +13,9 @@ import { AdministrationLayout } from '@/layouts/AdministrationLayout/Administrat
 
 import { Component as CollectiveActivityData } from './CollectiveActivityData'
 
+const mockLogEvent = vi.fn()
 vi.mock('@/app/App/analytics/firebase', () => ({
-  useAnalytics: () => ({ logEvent: vi.fn() }),
+  useAnalytics: () => ({ logEvent: mockLogEvent }),
 }))
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -171,5 +173,37 @@ describe('CollectiveActivityData', () => {
     )
 
     expect(screen.getByLabelText('Format')).toHaveValue('all')
+  })
+
+  describe('tracking', () => {
+    it('should log events on download buttons click', async () => {
+      renderCollectiveActivityData()
+
+      await userEvent.click(
+        screen.getByRole('button', { name: LABEL.button.downloadDropdown })
+      )
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.CLICKED_ADMIN_DOWNLOAD_COLLECTIVE_OFFERS,
+        { from: '/administration/donnees-activite/collectif' }
+      )
+      await userEvent.click(
+        screen.getByRole('menuitem', { name: LABEL.button.downloadXls })
+      )
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.CLICKED_ADMIN_DOWNLOAD_COLLECTIVE_OFFERS_XLS,
+        { from: '/administration/donnees-activite/collectif' }
+      )
+
+      await userEvent.click(
+        screen.getByRole('button', { name: LABEL.button.downloadDropdown })
+      )
+      await userEvent.click(
+        screen.getByRole('menuitem', { name: LABEL.button.downloadCsv })
+      )
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.CLICKED_ADMIN_DOWNLOAD_COLLECTIVE_OFFERS_CSV,
+        { from: '/administration/donnees-activite/collectif' }
+      )
+    })
   })
 })

@@ -8,6 +8,8 @@ import {
   CollectiveOfferDisplayedStatus,
 } from '@/apiClient/v1'
 import { CollectiveLocationType } from '@/apiClient/v1/models/CollectiveLocationType'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -39,12 +41,15 @@ const renderCollectiveOffersDownloadDrawer = ({
   isDisabled = false,
   filtersProp = filters,
 } = {}) => {
-  return renderWithProviders(
-    <CollectiveOffersDownloadDrawer
-      isDisabled={isDisabled}
-      filters={filtersProp}
-    />
-  )
+  return {
+    user: userEvent.setup(),
+    component: renderWithProviders(
+      <CollectiveOffersDownloadDrawer
+        isDisabled={isDisabled}
+        filters={filtersProp}
+      />
+    ),
+  }
 }
 
 describe('CollectiveOffersDownloadDrawer', () => {
@@ -53,10 +58,10 @@ describe('CollectiveOffersDownloadDrawer', () => {
   })
 
   it('should render download button with drawer action', async () => {
-    renderCollectiveOffersDownloadDrawer()
+    const { user } = renderCollectiveOffersDownloadDrawer()
 
     const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
-    await userEvent.click(downloadButton)
+    await user.click(downloadButton)
 
     expect(
       screen.getByRole('button', { name: 'Télécharger format CSV' })
@@ -81,15 +86,15 @@ describe('CollectiveOffersDownloadDrawer', () => {
       .spyOn(api, 'getCollectiveOffersCsv')
       .mockResolvedValueOnce('csv,data')
 
-    renderCollectiveOffersDownloadDrawer()
+    const { user } = renderCollectiveOffersDownloadDrawer()
 
     const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
-    await userEvent.click(downloadButton)
+    await user.click(downloadButton)
 
     const csvButton = screen.getByRole('button', {
       name: 'Télécharger format CSV',
     })
-    await userEvent.click(csvButton)
+    await user.click(csvButton)
 
     expect(mockGetCollectiveOffersCsv).toHaveBeenCalledWith(
       'test offer',
@@ -109,15 +114,15 @@ describe('CollectiveOffersDownloadDrawer', () => {
       .spyOn(api, 'getCollectiveOffersExcel')
       .mockResolvedValueOnce(new Blob())
 
-    renderCollectiveOffersDownloadDrawer()
+    const { user } = renderCollectiveOffersDownloadDrawer()
 
     const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
-    await userEvent.click(downloadButton)
+    await user.click(downloadButton)
 
     const excelButton = screen.getByRole('button', {
       name: 'Télécharger format Excel',
     })
-    await userEvent.click(excelButton)
+    await user.click(excelButton)
 
     expect(mockGetCollectiveOffersExcel).toHaveBeenCalledWith(
       'test offer',
@@ -137,15 +142,15 @@ describe('CollectiveOffersDownloadDrawer', () => {
       new Error('Download failed')
     )
 
-    renderCollectiveOffersDownloadDrawer()
+    const { user } = renderCollectiveOffersDownloadDrawer()
 
     const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
-    await userEvent.click(downloadButton)
+    await user.click(downloadButton)
 
     const csvButton = screen.getByRole('button', {
       name: 'Télécharger format CSV',
     })
-    await userEvent.click(csvButton)
+    await user.click(csvButton)
 
     expect(snackBarError).toHaveBeenCalledWith(
       'Nous avons rencontré un problème lors de la récupération des données.'
@@ -160,15 +165,15 @@ describe('CollectiveOffersDownloadDrawer', () => {
 
     vi.spyOn(api, 'getCollectiveOffersCsv').mockReturnValueOnce(downloadPromise)
 
-    renderCollectiveOffersDownloadDrawer()
+    const { user } = renderCollectiveOffersDownloadDrawer()
 
     const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
-    await userEvent.click(downloadButton)
+    await user.click(downloadButton)
 
     const csvButton = screen.getByRole('button', {
       name: 'Télécharger format CSV',
     })
-    await userEvent.click(csvButton)
+    await user.click(csvButton)
 
     // Wait for the state to update
     await waitFor(() => {
@@ -198,18 +203,18 @@ describe('CollectiveOffersDownloadDrawer', () => {
       offererAddressId: '123',
     }
 
-    renderCollectiveOffersDownloadDrawer({
+    const { user } = renderCollectiveOffersDownloadDrawer({
       isDisabled: false,
       filtersProp: filtersWithLocation,
     })
 
     const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
-    await userEvent.click(downloadButton)
+    await user.click(downloadButton)
 
     const csvButton = screen.getByRole('button', {
       name: 'Télécharger format CSV',
     })
-    await userEvent.click(csvButton)
+    await user.click(csvButton)
 
     expect(mockGetCollectiveOffersCsv).toHaveBeenCalledWith(
       'test offer',
@@ -234,18 +239,18 @@ describe('CollectiveOffersDownloadDrawer', () => {
       locationType: CollectiveLocationType.SCHOOL,
     }
 
-    renderCollectiveOffersDownloadDrawer({
+    const { user } = renderCollectiveOffersDownloadDrawer({
       isDisabled: false,
       filtersProp: filtersWithLocation,
     })
 
     const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
-    await userEvent.click(downloadButton)
+    await user.click(downloadButton)
 
     const excelButton = screen.getByRole('button', {
       name: 'Télécharger format Excel',
     })
-    await userEvent.click(excelButton)
+    await user.click(excelButton)
 
     expect(mockGetCollectiveOffersExcel).toHaveBeenCalledWith(
       'test offer',
@@ -258,5 +263,45 @@ describe('CollectiveOffersDownloadDrawer', () => {
       CollectiveLocationType.SCHOOL,
       null
     )
+  })
+
+  describe('tracking', () => {
+    const mockLogEvent = vi.fn()
+    beforeEach(() => {
+      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+        logEvent: mockLogEvent,
+      }))
+      vi.spyOn(api, 'getCollectiveOffersExcel').mockResolvedValueOnce(
+        new Blob()
+      )
+      vi.spyOn(api, 'getCollectiveOffersCsv').mockResolvedValueOnce('csv,data')
+    })
+
+    it('should log events for download buttons', async () => {
+      const { user } = renderCollectiveOffersDownloadDrawer()
+
+      const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
+      await user.click(downloadButton)
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.CLICKED_DOWNLOAD_COLLECTIVE_OFFERS,
+        { from: '/' }
+      )
+
+      await user.click(
+        screen.getByRole('button', { name: 'Télécharger format CSV' })
+      )
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.CLICKED_DOWNLOAD_COLLECTIVE_OFFERS_CSV,
+        { from: '/' }
+      )
+
+      await user.click(
+        screen.getByRole('button', { name: 'Télécharger format Excel' })
+      )
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.CLICKED_DOWNLOAD_COLLECTIVE_OFFERS_XLS,
+        { from: '/' }
+      )
+    })
   })
 })

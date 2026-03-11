@@ -173,9 +173,9 @@ export const PreFilters = ({
             isDisabled={isDownloading || isFiltersDisabled || isLocalLoading}
             label="Télécharger les réservations"
             logEventNames={{
-              onSelectCsv: Events.CLICKED_DOWNLOAD_BOOKINGS_CSV,
-              onSelectXls: Events.CLICKED_DOWNLOAD_BOOKINGS_XLS,
-              onToggle: Events.CLICKED_DOWNLOAD_BOOKINGS,
+              onSelectCsv: Events.CLICKED_ADMIN_DOWNLOAD_BOOKINGS_CSV,
+              onSelectXls: Events.CLICKED_ADMIN_DOWNLOAD_BOOKINGS_XLS,
+              onToggle: Events.CLICKED_ADMIN_DOWNLOAD_BOOKINGS,
             }}
             onSelect={download}
           />

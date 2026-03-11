@@ -17,7 +17,6 @@ const defaultProps = {
 }
 
 describe('Header', () => {
-  const user = userEvent.setup()
   it('should show "Espace administration" button when FF is enabled and isAdminArea is false', () => {
     renderWithProviders(<Header {...defaultProps} />, {
       features: ['WIP_SWITCH_VENUE'],
@@ -54,6 +53,7 @@ describe('Header', () => {
     })
 
     it('should track "Espace administration" button click', async () => {
+      const user = userEvent.setup()
       renderWithProviders(<Header {...defaultProps} />, {
         features: ['WIP_SWITCH_VENUE'],
       })
@@ -61,11 +61,15 @@ describe('Header', () => {
         screen.getByRole('link', { name: 'Espace administration' })
       )
       expect(mockLogEvent).toHaveBeenCalledWith(
-        Events.CLICKED_THE_ESPACE_ADMIN_BUTTON
+        Events.CLICKED_HEADER_ADMIN_BUTTON,
+        {
+          from: '/',
+        }
       )
     })
 
     it('should NOT track "Revenir à l’Espace Partenaire" button click', async () => {
+      const user = userEvent.setup()
       renderWithProviders(<Header {...defaultProps} isAdminArea={true} />, {
         features: ['WIP_SWITCH_VENUE'],
       })

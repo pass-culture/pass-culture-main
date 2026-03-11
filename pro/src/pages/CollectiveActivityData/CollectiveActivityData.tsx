@@ -71,9 +71,9 @@ const CollectiveActivityData = () => {
         isDisabled={isDownloading}
         label="Télécharger les offres réservables"
         logEventNames={{
-          onSelectCsv: Events.CLICKED_DOWNLOAD_COLLECTIVE_OFFERS_CSV,
-          onSelectXls: Events.CLICKED_DOWNLOAD_COLLECTIVE_OFFERS_XLS,
-          onToggle: Events.CLICKED_DOWNLOAD_COLLECTIVE_OFFERS,
+          onSelectCsv: Events.CLICKED_ADMIN_DOWNLOAD_COLLECTIVE_OFFERS_CSV,
+          onSelectXls: Events.CLICKED_ADMIN_DOWNLOAD_COLLECTIVE_OFFERS_XLS,
+          onToggle: Events.CLICKED_ADMIN_DOWNLOAD_COLLECTIVE_OFFERS,
         }}
         onSelect={download}
       />
