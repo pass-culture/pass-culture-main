@@ -159,6 +159,13 @@ export const Header = forwardRef(
                     to={isAdminArea ? '/accueil' : '/remboursements'}
                     iconPosition={IconPositionEnum.LEFT}
                     icon={isAdminArea ? fullBackIcon : strokeRepaymentIcon}
+                    onClick={() => {
+                      if (!isAdminArea) {
+                        logEvent(Events.CLICKED_THE_ESPACE_ADMIN_BUTTON, {
+                          from: location.pathname,
+                        })
+                      }
+                    }}
                     {...adminButtonLabelProps}
                   />
                 )}
