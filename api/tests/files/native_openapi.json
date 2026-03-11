@@ -3001,7 +3001,7 @@
                     "fontScale": {
                         "anyOf": [
                             {
-                                "type": "integer"
+                                "type": "number"
                             },
                             {
                                 "type": "null"
