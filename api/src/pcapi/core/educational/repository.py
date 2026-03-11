@@ -877,8 +877,34 @@ def list_collective_offers(filters: schemas.CollectiveOffersFilter, offers_limit
 def list_collective_offers_for_homepage(
     user_id: int, venue_id: int, offers_limit: int
 ) -> tuple[list[models.CollectiveOffer], bool]:
+    filters = schemas.CollectiveOffersFilter(
+        user_id=user_id,
+        venue_id=venue_id,
+        statuses=[
+            models.CollectiveOfferDisplayedStatus.PREBOOKED,
+            models.CollectiveOfferDisplayedStatus.BOOKED,
+            models.CollectiveOfferDisplayedStatus.UNDER_REVIEW,
+            models.CollectiveOfferDisplayedStatus.PUBLISHED,
+        ],
+        period_beginning_date=date_utils.get_naive_utc_now(),
+    )
+    query = get_collective_offers_by_filters(filters)
+    offers = (
+        query.order_by(models.CollectiveOffer.dateCreated.desc())
+        .options(
+            sa_orm.joinedload(models.CollectiveOffer.collectiveStock).joinedload(
+                models.CollectiveStock.collectiveBookings
+            )
+        )
+        .limit(offers_limit)
+        .all()
+    )
 
-    return [], False
+    all_offers_filters = schemas.CollectiveOffersFilter(user_id=user_id, venue_id=venue_id)
+    all_offers_query = get_collective_offers_by_filters(filters=all_offers_filters)
+    has_offers = db.session.query(all_offers_query.exists()).scalar()
+
+    return offers, has_offers
 
 
 def list_collective_offer_templates(
