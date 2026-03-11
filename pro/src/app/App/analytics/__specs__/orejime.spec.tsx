@@ -73,6 +73,7 @@ function mockLocation(pathname: string) {
     hash: '',
     state: null,
     key: 's',
+    unstable_mask: undefined,
   })
 }
 

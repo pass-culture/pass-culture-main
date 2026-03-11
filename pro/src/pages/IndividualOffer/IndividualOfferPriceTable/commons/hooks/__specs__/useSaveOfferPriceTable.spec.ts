@@ -78,6 +78,7 @@ describe('useSaveOfferPriceTable', () => {
     pathname: '/offers',
     search: '',
     state: {},
+    unstable_mask: undefined,
   }
 
   const snackBarError = vi.fn()

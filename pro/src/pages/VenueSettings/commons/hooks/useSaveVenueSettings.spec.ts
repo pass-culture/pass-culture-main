@@ -102,6 +102,7 @@ describe('useSaveVenueSettings', () => {
     pathname: '/lieux/id',
     search: '',
     state: {},
+    unstable_mask: undefined,
   }
 
   const logEvent = vi.fn()
