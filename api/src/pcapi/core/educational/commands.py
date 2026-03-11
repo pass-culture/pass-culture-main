@@ -2,7 +2,6 @@ import dataclasses
 import datetime
 import logging
 import os
-from decimal import Decimal
 from pathlib import Path
 
 import click
@@ -10,7 +9,6 @@ from flask import current_app
 
 from pcapi.core import search
 from pcapi.core.educational import models
-from pcapi.core.educational import repository
 from pcapi.core.educational.api import adage as adage_api
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api import institution as institution_api
@@ -273,41 +271,6 @@ def handle_pending_collective_booking_j3() -> None:
 def import_eac_dms_application(ignore_previous: bool = False) -> None:
     """Import procedures from dms."""
     import_dms_applications_for_all_eac_procedures(ignore_previous=ignore_previous)
-
-
-@blueprint.cli.command("notify_reimburse_collective_booking")
-@click.option(
-    "--booking_id",
-    type=int,
-    help="Id of the collective booking to reimburse",
-    required=True,
-)
-@click.option(
-    "--reason",
-    type=click.Choice(("MISSING_PEOPLE", "MISSING_DATE", "NO_EVENT"), case_sensitive=False),
-    help="Reason of the reimbursement.",
-    required=True,
-)
-@click.option(
-    "--value",
-    type=Decimal,
-    default=None,
-    help="Value reimbursed. It must be lower than the booking value. If omitted it is set to the booking value.",
-)
-@click.option(
-    "--details",
-    type=str,
-    default="",
-    help="Free text with details about the reimbursement.",
-)
-def notify_reimburse_collective_booking(booking_id: int, reason: str, value: Decimal, details: str) -> None:
-    collective_booking = repository.find_collective_booking_by_id(booking_id)
-    if not collective_booking:
-        print(f"Collective booking {booking_id} not found")
-        return
-    educational_api_booking.notify_reimburse_collective_booking(
-        collective_booking=collective_booking, reason=reason.upper(), value=value, details=details
-    )
 
 
 @blueprint.cli.command("synchronise_institutions_geolocation")
