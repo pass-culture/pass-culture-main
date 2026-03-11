@@ -222,9 +222,9 @@ class ProfileCompletedUserFactory(PhoneValidatedUserFactory):
                 user=obj,
                 resultContent__address=obj.address,
                 resultContent__city=obj.city,
-                resultContent__first_name=obj.firstName,
-                resultContent__last_name=obj.lastName,
-                resultContent__postal_code=obj.postalCode,
+                resultContent__firstName=obj.firstName,
+                resultContent__lastName=obj.lastName,
+                resultContent__postalCode=obj.postalCode,
                 **profile_completion_kwargs,
             )
         )
