@@ -3286,7 +3286,7 @@ export type GetVenueAddressResponseModel = {
  * GetVenueAddressesQueryModel
  */
 export type GetVenueAddressesQueryModel = {
-    withOffersOption: GetVenueAddressesWithOffersOption | null;
+    withOffersOption: GetVenueAddressesWithOffersOption;
 };
 
 /**
@@ -6548,10 +6548,15 @@ export type VenueListItemLiteResponseModel = {
      * Id
      */
     id: number;
+    location: LocationResponseModelV2;
     /**
-     * Name
+     * Managingoffererid
      */
-    name: string;
+    managingOffererId: number;
+    /**
+     * Publicname
+     */
+    publicName: string;
 };
 
 /**
@@ -11341,7 +11346,7 @@ export type getVenuesByVenueIdLocationsData = {
         venue_id: number;
     };
     query: {
-        withOffersOption: GetVenueAddressesWithOffersOption | null;
+        withOffersOption: GetVenueAddressesWithOffersOption;
     };
     url: '/venues/{venue_id}/locations';
 };

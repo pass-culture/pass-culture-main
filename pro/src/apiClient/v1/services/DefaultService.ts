@@ -3138,7 +3138,7 @@ export class DefaultService {
    */
   public getVenueAddresses(
     venueId: number,
-    withOffersOption: (GetVenueAddressesWithOffersOption | null),
+    withOffersOption: GetVenueAddressesWithOffersOption,
   ): CancelablePromise<GetVenueAddressesResponseModel> {
     return this.httpRequest.request({
       method: 'GET',

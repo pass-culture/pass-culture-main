@@ -2,8 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { LocationResponseModelV2 } from './LocationResponseModelV2';
 export type VenueListItemLiteResponseModel = {
   id: number;
-  name: string;
+  location: LocationResponseModelV2;
+  managingOffererId: number;
+  publicName: string;
 };
 

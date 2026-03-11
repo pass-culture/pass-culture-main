@@ -1,4 +1,4 @@
-import { makeVenueListItem } from '../factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '../factories/venueFactories'
 import { withVenueHelpers } from '../withVenueHelpers'
 
 describe('withVenueHelpers', () => {
@@ -13,7 +13,7 @@ describe('withVenueHelpers', () => {
 
   describe('fullAddressAsString', () => {
     it('should return null when location is nullish', () => {
-      const venue = makeVenueListItem({ id: 1, location: null })
+      const venue = makeGetVenueResponseModel({ id: 1, location: null })
 
       const venueWithHelpers = withVenueHelpers(venue)
 
@@ -21,7 +21,7 @@ describe('withVenueHelpers', () => {
     })
 
     it('should return full location with street when street is provided', () => {
-      const venue = makeVenueListItem({
+      const venue = makeGetVenueResponseModel({
         id: 1,
         location: {
           ...baseLocation,
@@ -39,7 +39,7 @@ describe('withVenueHelpers', () => {
     })
 
     it('should return location without street when street is nullish', () => {
-      const venue = makeVenueListItem({
+      const venue = makeGetVenueResponseModel({
         id: 1,
         location: {
           ...baseLocation,

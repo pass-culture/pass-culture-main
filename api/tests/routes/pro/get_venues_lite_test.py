@@ -11,7 +11,10 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 def test_loads_all_venues_ids_and_names(client):
     user_offerer = offerers_factories.UserOffererFactory()
-    venues = offerers_factories.VenueFactory.create_batch(2, managingOfferer=user_offerer.offerer)
+    # Reverse-ordered to test sorting behavior
+    second_venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, publicName="Def")
+    first_venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, publicName="Abc")
+    venues = [first_venue, second_venue]
 
     client = client.with_session_auth(user_offerer.user.email)
 
@@ -24,10 +27,30 @@ def test_loads_all_venues_ids_and_names(client):
     assert "venues" in response.json
     assert len(response.json["venues"]) == len(venues)
 
-    expected = [{"id": v.id, "name": v.name} for v in venues]
-    expected = sorted(expected, key=lambda item: item["id"])
+    expected = [
+        {
+            "id": venue.id,
+            "managingOffererId": venue.managingOffererId,
+            "publicName": venue.publicName,
+            "location": {
+                "banId": "75102_7560_00001",
+                "city": "Paris",
+                "departmentCode": "75",
+                "id": venue.offererAddress.addressId,
+                "inseeCode": "75102",
+                "isManualEdition": False,
+                "isVenueLocation": True,
+                "label": venue.publicName,
+                "latitude": 48.87055,
+                "longitude": 2.34765,
+                "postalCode": "75002",
+                "street": venue.offererAddress.address.street,
+            },
+        }
+        for venue in venues
+    ]
 
-    assert expected == sorted(response.json["venues"], key=lambda item: item["id"])
+    assert response.json["venues"] == expected
 
 
 def test_invalid_offerer_id(client):

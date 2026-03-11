@@ -3,14 +3,16 @@ import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
-import type { VenueListItemResponseModel } from '@/apiClient/v1'
+import type { VenueListItemLiteResponseModel } from '@/apiClient/v1'
 import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,
-  makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
-import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
+import {
+  makeGetVenueResponseModel,
+  makeVenueListItemLiteResponseModel,
+} from '@/commons/utils/factories/venueFactories'
 import {
   type RenderComponentFunction,
   renderWithProviders,
@@ -29,7 +31,7 @@ vi.mock('@/apiClient/api', () => ({
 const renderHub: RenderComponentFunction<
   void,
   void,
-  { venues: VenueListItemResponseModel[] | null }
+  { venues: VenueListItemLiteResponseModel[] | null }
 > = ({ venues }) => {
   return renderWithProviders(<Hub />, {
     storeOverrides: {
@@ -54,17 +56,17 @@ const renderHub: RenderComponentFunction<
 
 describe('Hub', () => {
   const venuesBase = [
-    makeVenueListItem({
+    makeVenueListItemLiteResponseModel({
       id: 101,
       publicName: 'Théâtre du Soleil',
       managingOffererId: 100,
     }),
-    makeVenueListItem({
+    makeVenueListItemLiteResponseModel({
       id: 102,
       publicName: 'Café des Arts',
       managingOffererId: 100,
     }),
-    makeVenueListItem({
+    makeVenueListItemLiteResponseModel({
       id: 201,
       publicName: 'Cinéma Lumière',
       managingOffererId: 200,
@@ -73,12 +75,12 @@ describe('Hub', () => {
 
   const venuesWithMoreThanFour = [
     ...venuesBase,
-    makeVenueListItem({
+    makeVenueListItemLiteResponseModel({
       id: 202,
       publicName: 'Musée National',
       managingOffererId: 200,
     }),
-    makeVenueListItem({
+    makeVenueListItemLiteResponseModel({
       id: 203,
       publicName: 'Galerie Moderne',
       managingOffererId: 200,
@@ -112,21 +114,25 @@ describe('Hub', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display venue address when location is available', () => {
+  it('should display venue address', () => {
     const venuesWithLocation = [
-      makeVenueListItem({
+      makeVenueListItemLiteResponseModel({
         id: 101,
         publicName: 'Nom public de la structure avec localisation',
         managingOffererId: 100,
         location: {
           id: 1,
-          street: '123 Rue de Test',
-          postalCode: '75001',
+          banId: null,
           city: 'Paris',
-          latitude: 48.8566,
-          longitude: 2.3522,
+          departmentCode: null,
+          inseeCode: null,
           isManualEdition: false,
           isVenueLocation: false,
+          label: null,
+          latitude: 48.8566,
+          longitude: 2.3522,
+          postalCode: '75001',
+          street: '123 Rue de Test',
         },
       }),
     ]
@@ -134,25 +140,6 @@ describe('Hub', () => {
     renderHub({ venues: venuesWithLocation })
 
     expect(screen.getByText('123 Rue de Test, 75001 Paris')).toBeInTheDocument()
-  })
-
-  it('should not display venue address when location is unavailable', () => {
-    const venuesWithoutLocation = [
-      makeVenueListItem({
-        id: 101,
-        publicName: 'Nom public de la structure sans localisation',
-        managingOffererId: 100,
-        location: undefined,
-      }),
-    ]
-
-    renderHub({ venues: venuesWithoutLocation })
-
-    expect(
-      screen.getByRole('button', {
-        name: 'Nom public de la structure sans localisation',
-      })
-    ).toBeInTheDocument()
   })
 
   it('should call setSelectedVenueById when clicking on any venue', async () => {
@@ -177,7 +164,7 @@ describe('Hub', () => {
 
     renderHub({ venues: venuesBase })
 
-    await userEvent.click(screen.getByRole('button', { name: 'Café des Arts' }))
+    await userEvent.click(screen.getByRole('button', { name: /Café des Arts/ }))
 
     await waitFor(() => {
       expect(api.getVenue).toHaveBeenCalledWith(102)
@@ -205,7 +192,7 @@ describe('Hub', () => {
 
     renderHub({ venues: venuesBase })
 
-    await userEvent.click(screen.getByRole('button', { name: 'Café des Arts' }))
+    await userEvent.click(screen.getByRole('button', { name: /Café des Arts/ }))
 
     await waitFor(() => {
       expect(

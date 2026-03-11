@@ -7,12 +7,12 @@ import { configureTestStore } from '@/commons/store/testUtils'
 import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,
-  makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueManagingOffererResponseModel,
   makeGetVenueResponseModel,
+  makeVenueListItemLiteResponseModel,
 } from '@/commons/utils/factories/venueFactories'
 import { LOCAL_STORAGE_KEY } from '@/commons/utils/localStorageManager'
 
@@ -23,7 +23,7 @@ vi.mock('@/apiClient/api', () => ({
   api: {
     listOfferersNames: vi.fn(),
     getVenue: vi.fn(),
-    getVenues: vi.fn(),
+    getVenuesLite: vi.fn(),
     getOfferer: vi.fn(),
     signout: vi.fn(),
   },
@@ -47,8 +47,13 @@ describe('initializeUser', () => {
         offerersNames: [getOffererNameFactory({ id: 200 })],
         offerersNamesWithPendingValidation: [],
       })
-      vi.spyOn(api, 'getVenues').mockResolvedValueOnce({
-        venues: [makeVenueListItem({ id: 201, managingOffererId: 200 })],
+      vi.spyOn(api, 'getVenuesLite').mockResolvedValueOnce({
+        venues: [
+          makeVenueListItemLiteResponseModel({
+            id: 201,
+            managingOffererId: 200,
+          }),
+        ],
       })
 
       vi.spyOn(api, 'getOfferer').mockResolvedValue({
@@ -94,11 +99,20 @@ describe('initializeUser', () => {
           getOffererNameFactory({ id: 200 }),
         ],
       })
-      vi.spyOn(api, 'getVenues').mockResolvedValue({
+      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
         venues: [
-          makeVenueListItem({ id: 101, managingOffererId: 100 }),
-          makeVenueListItem({ id: 201, managingOffererId: 200 }),
-          makeVenueListItem({ id: 202, managingOffererId: 200 }),
+          makeVenueListItemLiteResponseModel({
+            id: 101,
+            managingOffererId: 100,
+          }),
+          makeVenueListItemLiteResponseModel({
+            id: 201,
+            managingOffererId: 200,
+          }),
+          makeVenueListItemLiteResponseModel({
+            id: 202,
+            managingOffererId: 200,
+          }),
         ],
       })
       vi.spyOn(api, 'getVenue').mockResolvedValue(
@@ -144,11 +158,20 @@ describe('initializeUser', () => {
           getOffererNameFactory({ id: 200 }),
         ],
       })
-      vi.spyOn(api, 'getVenues').mockResolvedValue({
+      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
         venues: [
-          makeVenueListItem({ id: 101, managingOffererId: 100 }),
-          makeVenueListItem({ id: 201, managingOffererId: 200 }),
-          makeVenueListItem({ id: 202, managingOffererId: 200 }),
+          makeVenueListItemLiteResponseModel({
+            id: 101,
+            managingOffererId: 100,
+          }),
+          makeVenueListItemLiteResponseModel({
+            id: 201,
+            managingOffererId: 200,
+          }),
+          makeVenueListItemLiteResponseModel({
+            id: 202,
+            managingOffererId: 200,
+          }),
         ],
       })
       vi.spyOn(api, 'getOfferer').mockResolvedValue({
@@ -192,11 +215,20 @@ describe('initializeUser', () => {
           getOffererNameFactory({ id: 200 }),
         ],
       })
-      vi.spyOn(api, 'getVenues').mockResolvedValue({
+      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
         venues: [
-          makeVenueListItem({ id: 101, managingOffererId: 100 }),
-          makeVenueListItem({ id: 201, managingOffererId: 200 }),
-          makeVenueListItem({ id: 202, managingOffererId: 200 }),
+          makeVenueListItemLiteResponseModel({
+            id: 101,
+            managingOffererId: 100,
+          }),
+          makeVenueListItemLiteResponseModel({
+            id: 201,
+            managingOffererId: 200,
+          }),
+          makeVenueListItemLiteResponseModel({
+            id: 202,
+            managingOffererId: 200,
+          }),
         ],
       })
       vi.spyOn(api, 'getVenue').mockResolvedValue(
@@ -235,7 +267,7 @@ describe('initializeUser', () => {
         offerersNamesWithPendingValidation: [],
         offerersNames: [],
       })
-      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
+      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({ venues: [] })
       const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
       const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
 
@@ -255,7 +287,7 @@ describe('initializeUser', () => {
         offerersNamesWithPendingValidation: [],
         offerersNames: [getOffererNameFactory({ id: 100 })],
       })
-      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
+      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({ venues: [] })
       vi.spyOn(api, 'getOfferer').mockRejectedValue({
         name: 'ApiError',
         message: 'Forbidden',
@@ -297,10 +329,16 @@ describe('initializeUser', () => {
         offerersNamesWithPendingValidation: [],
         offerersNames: [getOffererNameFactory({ id: 100 })],
       })
-      vi.spyOn(api, 'getVenues').mockResolvedValue({
+      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
         venues: [
-          makeVenueListItem({ id: 101, managingOffererId: 100 }),
-          makeVenueListItem({ id: 102, managingOffererId: 100 }),
+          makeVenueListItemLiteResponseModel({
+            id: 101,
+            managingOffererId: 100,
+          }),
+          makeVenueListItemLiteResponseModel({
+            id: 102,
+            managingOffererId: 100,
+          }),
         ],
       })
       vi.spyOn(api, 'getVenue').mockResolvedValue(
@@ -338,8 +376,13 @@ describe('initializeUser', () => {
         offerersNamesWithPendingValidation: [],
         offerersNames: [getOffererNameFactory({ id: 100 })],
       })
-      vi.spyOn(api, 'getVenues').mockResolvedValue({
-        venues: [makeVenueListItem({ id: 101, managingOffererId: 100 })],
+      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+        venues: [
+          makeVenueListItemLiteResponseModel({
+            id: 101,
+            managingOffererId: 100,
+          }),
+        ],
       })
       vi.spyOn(api, 'getVenue').mockResolvedValue(
         makeGetVenueResponseModel({
@@ -369,10 +412,16 @@ describe('initializeUser', () => {
         offerersNamesWithPendingValidation: [],
         offerersNames: [getOffererNameFactory({ id: 100 })],
       })
-      vi.spyOn(api, 'getVenues').mockResolvedValue({
+      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
         venues: [
-          makeVenueListItem({ id: 101, managingOffererId: 100 }),
-          makeVenueListItem({ id: 102, managingOffererId: 100 }),
+          makeVenueListItemLiteResponseModel({
+            id: 101,
+            managingOffererId: 100,
+          }),
+          makeVenueListItemLiteResponseModel({
+            id: 102,
+            managingOffererId: 100,
+          }),
         ],
       })
       vi.spyOn(api, 'getOfferer').mockResolvedValue({
@@ -399,7 +448,7 @@ describe('initializeUser', () => {
         offerersNamesWithPendingValidation: [],
         offerersNames: [getOffererNameFactory({ id: 100 })],
       })
-      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
+      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({ venues: [] })
       vi.spyOn(api, 'getOfferer').mockResolvedValue({
         ...defaultGetOffererResponseModel,
         id: 100,
@@ -423,7 +472,7 @@ describe('initializeUser', () => {
         offerersNamesWithPendingValidation: [],
         offerersNames: [],
       })
-      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
+      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({ venues: [] })
       const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
       const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
 
@@ -443,10 +492,16 @@ describe('initializeUser', () => {
         offerersNamesWithPendingValidation: [],
         offerersNames: [getOffererNameFactory({ id: 100 })],
       })
-      vi.spyOn(api, 'getVenues').mockResolvedValue({
+      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
         venues: [
-          makeVenueListItem({ id: 101, managingOffererId: 100 }),
-          makeVenueListItem({ id: 102, managingOffererId: 100 }),
+          makeVenueListItemLiteResponseModel({
+            id: 101,
+            managingOffererId: 100,
+          }),
+          makeVenueListItemLiteResponseModel({
+            id: 102,
+            managingOffererId: 100,
+          }),
         ],
       })
       vi.spyOn(api, 'getOfferer').mockResolvedValue({
@@ -474,8 +529,13 @@ describe('initializeUser', () => {
         offerersNamesWithPendingValidation: [],
         offerersNames: [getOffererNameFactory({ id: 100 })],
       })
-      vi.spyOn(api, 'getVenues').mockResolvedValue({
-        venues: [makeVenueListItem({ id: 101, managingOffererId: 100 })],
+      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+        venues: [
+          makeVenueListItemLiteResponseModel({
+            id: 101,
+            managingOffererId: 100,
+          }),
+        ],
       })
       vi.spyOn(api, 'getVenue').mockResolvedValue(
         makeGetVenueResponseModel({

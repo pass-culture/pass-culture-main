@@ -137,9 +137,7 @@ def get_venues_lite(query: venue_serialize.VenueListQueryModel) -> venue_seriali
         validated_offerer=query.validated,
     )
 
-    return venue_serialize.GetVenueListLiteResponseModel(
-        venues=[venue_serialize.VenueListItemLiteResponseModel(id=venue.id, name=venue.name) for venue in venue_list]
-    )
+    return venue_serialize.GetVenueListLiteResponseModel.build(venue_list)
 
 
 @private_api.route("/venues/<int:venue_id>", methods=["PATCH"])

@@ -12,9 +12,11 @@ import { configureTestStore } from '@/commons/store/testUtils'
 import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,
-  makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
-import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
+import {
+  makeGetVenueResponseModel,
+  makeVenueListItemLiteResponseModel,
+} from '@/commons/utils/factories/venueFactories'
 
 import * as logoutModule from '../logout'
 import { setSelectedVenueById } from '../setSelectedVenueById'
@@ -49,8 +51,16 @@ describe('setSelectedVenueById', () => {
         managingOffererId: 200,
       }),
       venues: [
-        makeVenueListItem({ id: 101, name: 'V1', managingOffererId: 100 }),
-        makeVenueListItem({ id: 201, name: 'V2', managingOffererId: 200 }),
+        makeVenueListItemLiteResponseModel({
+          id: 101,
+          name: 'V1',
+          managingOffererId: 100,
+        }),
+        makeVenueListItemLiteResponseModel({
+          id: 201,
+          name: 'V2',
+          managingOffererId: 200,
+        }),
       ],
     },
   }
@@ -203,8 +213,14 @@ describe('setSelectedVenueById', () => {
           managingOffererId: 200,
         }),
         venues: [
-          makeVenueListItem({ id: 101, managingOffererId: 999 }),
-          makeVenueListItem({ id: 201, managingOffererId: 200 }),
+          makeVenueListItemLiteResponseModel({
+            id: 101,
+            managingOffererId: 999,
+          }),
+          makeVenueListItemLiteResponseModel({
+            id: 201,
+            managingOffererId: 200,
+          }),
         ],
       },
     })

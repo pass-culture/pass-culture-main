@@ -1,5 +1,3 @@
-import { computeVenueDisplayName } from 'repository/venuesService'
-
 import {
   type ArtistOfferLinkResponseModel,
   type CategoryResponseModel,
@@ -124,7 +122,7 @@ export function getVenuesAsOptions(
   return venues
     .map((v) => ({
       value: String(v.id),
-      label: computeVenueDisplayName(v),
+      label: v.publicName,
     }))
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
 }

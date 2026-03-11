@@ -31,7 +31,7 @@ export const initializeUser = createAsyncThunk<
       'WIP_SWITCH_VENUE'
     ) /// TODO (igabriele, 2025-10-28): Simplify this Backend route and its core method once `WIP_SWITCH_VENUE` FF is enabled and removed (no need for query params anymore).
     const offererNamesResponse = await api.listOfferersNames()
-    const venuesResponse = await api.getVenues(null, true) // only active venues
+    const venuesResponse = await api.getVenuesLite(null, true) // only active venues
 
     dispatch(updateOffererNames(offererNamesResponse.offerersNames))
     dispatch(setVenues(venuesResponse.venues))
