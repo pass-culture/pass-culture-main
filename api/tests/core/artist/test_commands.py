@@ -10,9 +10,8 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.connectors.big_query.importer.artist import ArtistImporter
 from pcapi.connectors.big_query.importer.artist import ArtistProductLinkImporter
 from pcapi.connectors.big_query.importer.artist_score import ArtistScoresImporter
-from pcapi.connectors.big_query.importer.base import DeltaAction
-from pcapi.connectors.big_query.queries.artist import ArtistProductLinkModel
 from pcapi.connectors.big_query.queries.artist import ArtistScoresModel
+from pcapi.connectors.big_query.queries.artist import DeltaAction
 from pcapi.connectors.big_query.queries.artist import DeltaArtistModel
 from pcapi.connectors.big_query.queries.artist import DeltaArtistProductLinkModel
 from pcapi.core.artist import commands
@@ -20,104 +19,13 @@ from pcapi.core.artist.factories import ArtistFactory
 from pcapi.core.artist.factories import ArtistProductLinkFactory
 from pcapi.core.artist.models import Artist
 from pcapi.core.artist.models import ArtistProductLink
-from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.search import redis_queues
 from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 
-from . import fixtures
-
 
 pytestmark = pytest.mark.usefixtures("db_session")
-
-
-class ImportAllArtistsTest:
-    @patch("pcapi.connectors.big_query.queries.artist.ArtistQuery.execute")
-    def test_import_all_artists_creates_artists(
-        self,
-        get_all_artists_mock,
-    ):
-        get_all_artists_mock.return_value = fixtures.big_query_artist_fixture
-
-        ArtistImporter().import_all()
-
-        get_all_artists_mock.assert_called_once()
-        all_artists = db.session.query(Artist).all()
-        assert len(all_artists) == 2
-
-    @patch("pcapi.connectors.big_query.queries.artist.ArtistQuery.execute")
-    def test_import_all_artists_creates_artists_is_idempotent(self, get_all_artists_mock):
-        get_all_artists_mock.return_value = fixtures.big_query_artist_fixture
-
-        ArtistImporter().import_all()
-
-        get_all_artists_mock.assert_called_once()
-
-        all_artists = db.session.query(Artist).all()
-        assert len(all_artists) == 2
-
-        get_all_artists_mock.reset_mock()
-        ArtistImporter().import_all()
-
-        get_all_artists_mock.assert_called_once()
-        all_artists = db.session.query(Artist).all()
-        assert len(all_artists) == 2
-
-    @patch("pcapi.connectors.big_query.queries.artist.ArtistProductLinkQuery.execute")
-    def test_import_all_artist_product_links_creates_product_links(self, get_all_artists_product_links_mock, caplog):
-        albums_by_same_artist = ProductFactory.create_batch(
-            size=4, subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id
-        )
-        books_by_same_artist = ProductFactory.create_batch(size=4, subcategoryId=subcategories.LIVRE_PAPIER.id)
-        author = ArtistFactory()
-        performer = ArtistFactory()
-
-        artists_product_link_fixture = fixtures.build_big_query_artist_product_link_fixture(
-            product_ids=[album.id for album in books_by_same_artist],
-            artist_id=author.id,
-            artist_type=artist_models.ArtistType.AUTHOR.value,
-        ) + fixtures.build_big_query_artist_product_link_fixture(
-            product_ids=[album.id for album in albums_by_same_artist],
-            artist_id=performer.id,
-            artist_type=artist_models.ArtistType.PERFORMER.value,
-        )
-        get_all_artists_product_links_mock.return_value = artists_product_link_fixture
-
-        with caplog.at_level(logging.INFO):
-            ArtistProductLinkImporter().import_all()
-
-        get_all_artists_product_links_mock.assert_called_once()
-
-        author = db.session.query(Artist).filter_by(id=author.id).one()
-        for product in author.products:
-            assert product in books_by_same_artist
-
-        performer = db.session.query(Artist).filter_by(id=performer.id).one()
-        for product in performer.products:
-            assert product in albums_by_same_artist
-
-        assert "Successfully imported 8 ArtistProductLink" in caplog.text
-
-    @patch("pcapi.connectors.big_query.queries.artist.ArtistProductLinkQuery.execute")
-    @patch("pcapi.connectors.big_query.importer.base.BATCH_SIZE", 2)
-    def test_import_all_artist_ignores_missing_products(self, get_all_artists_product_link_mock, caplog):
-        artist = ArtistFactory()
-        existing_product = ProductFactory()
-        get_all_artists_product_link_mock.return_value = [
-            ArtistProductLinkModel(
-                artist_id=artist.id, product_id=999999999, artist_type=artist_models.ArtistType.AUTHOR.value
-            ),
-            ArtistProductLinkModel(
-                artist_id=artist.id, product_id=existing_product.id, artist_type=artist_models.ArtistType.AUTHOR.value
-            ),
-        ]
-
-        with caplog.at_level(logging.ERROR):
-            ArtistProductLinkImporter().import_all()
-
-        assert 'Key (product_id)=(999999999) is not present in table "product"' in caplog.text
-        assert db.session.query(ArtistProductLink).count() == 1
 
 
 class UpdateArtistsFromDeltaTest:
@@ -197,24 +105,36 @@ class UpdateArtistsFromDeltaTest:
         assert db.session.query(ArtistProductLink).filter_by(id=link_to_delete_id).first() is None
         assert db.session.query(ArtistProductLink).count() == 2
 
+    @patch("pcapi.connectors.big_query.importer.artist.copy_file_between_storage_backends")
     @patch("pcapi.connectors.big_query.queries.artist.ArtistDeltaQuery.execute")
-    def test_update_action_modifies_existing_artist(self, mock_artist_delta_query):
-        artist_to_update = ArtistFactory(name="Ancien Nom", description="Description initiale")
-        initial_artist_count = db.session.query(Artist).count()
+    def test_update_action_modifies_existing_artist(self, mock_artist_delta_query, mock_copy_file):
+        artist_to_update = ArtistFactory(name="Richard Paul Astley", description="chanteur")
+        mediation_uuid = str(uuid.uuid4())
         mock_artist_delta_query.return_value = [
             DeltaArtistModel(
                 id=artist_to_update.id,
-                name="Nouveau Nom",
-                description="Description mise à jour",
+                name="Rick Astley",
+                description="Chanteur britannique",
+                wikidata_id="Q219237",
+                wikipedia_url="https://fr.wikipedia.org/wiki/Rick_Astley",
+                biography="Rick Astley est un chanteur britannique né le 6 février 1966 à Newton-le-Willows...",
+                mediation_uuid=mediation_uuid,
                 action=DeltaAction.UPDATE,
             ),
         ]
+        mock_copy_file.side_effect = lambda file_id, **kwargs: file_id
 
         ArtistImporter().run_delta_update()
 
-        assert artist_to_update.name == "Nouveau Nom"
-        assert artist_to_update.description == "Description mise à jour"
-        assert db.session.query(Artist).count() == initial_artist_count
+        assert artist_to_update.name == "Rick Astley"
+        assert artist_to_update.description == "Chanteur britannique"
+        assert artist_to_update.wikidata_id == "Q219237"
+        assert artist_to_update.wikipedia_url == "https://fr.wikipedia.org/wiki/Rick_Astley"
+        assert (
+            artist_to_update.biography
+            == "Rick Astley est un chanteur britannique né le 6 février 1966 à Newton-le-Willows..."
+        )
+        assert artist_to_update.mediation_uuid == mediation_uuid
 
     @patch("pcapi.connectors.big_query.queries.artist.ArtistDeltaQuery.execute")
     def test_update_action_does_nothing_for_non_existent_artist(self, mock_artist_delta_query):
@@ -229,6 +149,58 @@ class UpdateArtistsFromDeltaTest:
 
         assert db.session.query(Artist).filter_by(id=non_existent_id).first() is None
         assert db.session.query(Artist).count() == initial_artist_count
+
+    @patch("pcapi.connectors.big_query.queries.artist.ArtistDeltaQuery.execute")
+    def test_add_action_skips_artist_if_wikidata_id_exists(self, mock_artist_delta_query, caplog):
+        ArtistFactory(wikidata_id="Q123456")
+        new_artist_id = str(uuid.uuid4())
+        mock_artist_delta_query.return_value = [
+            DeltaArtistModel(
+                id=new_artist_id,
+                name="Duplicate Wikidata Artist",
+                wikidata_id="Q123456",
+                action=DeltaAction.ADD,
+            ),
+        ]
+
+        with caplog.at_level(logging.INFO):
+            ArtistImporter().run_delta_update()
+
+        assert db.session.query(Artist).filter_by(id=new_artist_id).first() is None
+        assert "Artists skipped (duplicate wikidata_id) in batch" in caplog.text
+
+    @patch("pcapi.connectors.big_query.importer.artist.copy_file_between_storage_backends")
+    @patch("pcapi.connectors.big_query.queries.artist.ArtistDeltaQuery.execute")
+    def test_update_artists_batch_failure_triggers_retry(self, mock_artist_delta_query, mock_copy_file, caplog):
+        artist1 = ArtistFactory(name="Old Name 1")
+        artist2 = ArtistFactory(name="Old Name 2")
+
+        delta1 = DeltaArtistModel(id=artist1.id, name="New Name 1", action=DeltaAction.UPDATE)
+        delta2 = DeltaArtistModel(id=artist2.id, name="New Name 2", action=DeltaAction.UPDATE)
+
+        mock_artist_delta_query.return_value = [delta1, delta2]
+        mock_copy_file.side_effect = lambda file_id, **kwargs: file_id
+
+        with patch("pcapi.models.db.session.commit") as mock_commit:
+            # 1st call: batch update -> IntregrityError
+            # 2nd call: individual update artist1 -> Success
+            # 3rd call: individual update artist2 -> Success
+            mock_commit.side_effect = [
+                sa_exc.IntegrityError("Simulated Batch Integrity Error", params=None, orig=None),
+                None,
+                None,
+            ]
+
+            with caplog.at_level(logging.WARNING):
+                ArtistImporter().run_delta_update(batch_size=2)
+
+        assert "Batch update failed for Artist, retrying one by one" in caplog.text
+
+        updated_artist1 = db.session.query(Artist).get(artist1.id)
+        updated_artist2 = db.session.query(Artist).get(artist2.id)
+
+        assert updated_artist1.name == "New Name 1"
+        assert updated_artist2.name == "New Name 2"
 
 
 class ComputeArtistsMostRelevantImageTest:
@@ -281,39 +253,6 @@ class ComputeArtistsMostRelevantImageTest:
         assert artist.computed_image is None
         assert artist.image == "http://example.com"
         mock_async_index_artist.assert_not_called()
-
-
-class UpdateArtistFromDeltaTest:
-    @patch("pcapi.connectors.big_query.importer.artist.copy_file_between_storage_backends")
-    @patch("pcapi.connectors.big_query.queries.artist.ArtistDeltaQuery.execute")
-    def test_update_action_modifies_existing_artist(self, mock_artist_delta_query, mock_copy_file):
-        artist_to_update = ArtistFactory(name="Richard Paul Astley", description="chanteur")
-        mediation_uuid = str(uuid.uuid4())
-        mock_artist_delta_query.return_value = [
-            DeltaArtistModel(
-                id=artist_to_update.id,
-                name="Rick Astley",
-                description="Chanteur britannique",
-                wikidata_id="Q219237",
-                wikipedia_url="https://fr.wikipedia.org/wiki/Rick_Astley",
-                biography="Rick Astley est un chanteur britannique né le 6 février 1966 à Newton-le-Willows...",
-                mediation_uuid=mediation_uuid,
-                action=DeltaAction.UPDATE,
-            ),
-        ]
-        mock_copy_file.side_effect = lambda file_id, **kwargs: file_id
-
-        ArtistImporter().run_delta_update()
-
-        assert artist_to_update.name == "Rick Astley"
-        assert artist_to_update.description == "Chanteur britannique"
-        assert artist_to_update.wikidata_id == "Q219237"
-        assert artist_to_update.wikipedia_url == "https://fr.wikipedia.org/wiki/Rick_Astley"
-        assert (
-            artist_to_update.biography
-            == "Rick Astley est un chanteur britannique né le 6 février 1966 à Newton-le-Willows..."
-        )
-        assert artist_to_update.mediation_uuid == mediation_uuid
 
 
 class UpdateArtistScoresTest:
