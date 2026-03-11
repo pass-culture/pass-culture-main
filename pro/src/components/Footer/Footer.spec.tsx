@@ -2,7 +2,9 @@ import { screen } from '@testing-library/react'
 
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { SkipLinksProvider } from '@/components/SkipLinks/SkipLinksContext'
 
+import { SkipLinks } from '../SkipLinks/SkipLinks'
 import { Footer } from './Footer'
 
 const renderFooter = (isConnected: boolean = true) => {
@@ -38,5 +40,21 @@ describe('Footer', () => {
     expect(
       screen.queryByRole('link', { name: 'Plan du site' })
     ).not.toBeInTheDocument()
+  })
+
+  it('should portal "go to footer" skip link when SkipLinks context provides a container', () => {
+    renderWithProviders(
+      <SkipLinksProvider>
+        <SkipLinks />
+        <Footer />
+      </SkipLinksProvider>,
+      {
+        user: sharedCurrentUserFactory({ hasSeenProTutorials: true }),
+      }
+    )
+
+    expect(
+      screen.getByRole('link', { name: 'Aller au pied de page' })
+    ).toBeInTheDocument()
   })
 })

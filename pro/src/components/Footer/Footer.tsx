@@ -44,7 +44,6 @@ export const Footer = ({ layout }: FooterProps) => {
           // biome-ignore lint/correctness/useUniqueElementIds: Go to footer link is used once per page. There cannot be id duplications.
           <Button
             as="a"
-            id="go-to-footer"
             to="#pied-de-page"
             isExternal
             icon={fullNextIcon}

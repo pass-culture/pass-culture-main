@@ -1,12 +1,23 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
+import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { SkipLinksProvider } from '@/components/SkipLinks/SkipLinksContext'
 
 import { BasicLayout } from './BasicLayout'
 
+vi.mock('@/commons/hooks/useMediaQuery', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useMediaQuery: vi.fn(),
+}))
+
 const renderBasicLayout = () => {
-  renderWithProviders(<BasicLayout mainHeading="Titre" />)
+  renderWithProviders(
+    <SkipLinksProvider>
+      <BasicLayout mainHeading="Titre" />
+    </SkipLinksProvider>
+  )
 }
 
 describe('BasicLayout', () => {
@@ -52,5 +63,33 @@ describe('BasicLayout', () => {
         expect(screen.getByLabelText('Fermer')).toHaveFocus()
       })
     })
+  })
+
+  it('should portal "go to menu" skip link when SkipLinks context provides a container', () => {
+    renderBasicLayout()
+
+    expect(
+      screen.getByRole('link', { name: 'Aller au menu' })
+    ).toBeInTheDocument()
+  })
+
+  it('should point the "go to menu" skip link to #lateral-panel on small screens', () => {
+    vi.mocked(useMediaQuery).mockReturnValue(false)
+    renderBasicLayout()
+
+    expect(screen.getByRole('link', { name: 'Aller au menu' })).toHaveAttribute(
+      'href',
+      '#lateral-panel'
+    )
+  })
+
+  it('should point the "go to menu" skip link to #header-nav-toggle on laptop screens', () => {
+    vi.mocked(useMediaQuery).mockReturnValue(true)
+    renderBasicLayout()
+
+    expect(screen.getByRole('link', { name: 'Aller au menu' })).toHaveAttribute(
+      'href',
+      '#header-nav-toggle'
+    )
   })
 })
