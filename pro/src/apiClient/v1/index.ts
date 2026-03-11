@@ -46,6 +46,7 @@ export { CollectiveLocationType } from './models/CollectiveLocationType';
 export { CollectiveOfferAllowedAction } from './models/CollectiveOfferAllowedAction';
 export { CollectiveOfferDisplayedStatus } from './models/CollectiveOfferDisplayedStatus';
 export type { CollectiveOfferHistory } from './models/CollectiveOfferHistory';
+export type { CollectiveOfferHomeResponseModel } from './models/CollectiveOfferHomeResponseModel';
 export type { CollectiveOfferInstitutionModel } from './models/CollectiveOfferInstitutionModel';
 export type { CollectiveOfferLocationModel } from './models/CollectiveOfferLocationModel';
 export type { CollectiveOfferRedactorModel } from './models/CollectiveOfferRedactorModel';
@@ -57,6 +58,7 @@ export type { CollectiveOfferTemplateResponseModel } from './models/CollectiveOf
 export type { CollectiveRevenue } from './models/CollectiveRevenue';
 export type { CollectiveStockCreationBodyModel } from './models/CollectiveStockCreationBodyModel';
 export type { CollectiveStockEditionBodyModel } from './models/CollectiveStockEditionBodyModel';
+export type { CollectiveStockHomeResponseModel } from './models/CollectiveStockHomeResponseModel';
 export type { CollectiveStockResponseModel } from './models/CollectiveStockResponseModel';
 export type { Consent } from './models/Consent';
 export type { CookieConsentRequest } from './models/CookieConsentRequest';
@@ -168,6 +170,8 @@ export type { LinkVenueToBankAccountBodyModel } from './models/LinkVenueToBankAc
 export type { LinkVenueToPricingPointBodyModel } from './models/LinkVenueToPricingPointBodyModel';
 export type { ListBookingsQueryModel } from './models/ListBookingsQueryModel';
 export type { ListBookingsResponseModel } from './models/ListBookingsResponseModel';
+export type { ListCollectiveOffersHomeQueryModel } from './models/ListCollectiveOffersHomeQueryModel';
+export type { ListCollectiveOffersHomeResponseModel } from './models/ListCollectiveOffersHomeResponseModel';
 export type { ListCollectiveOffersQueryModel } from './models/ListCollectiveOffersQueryModel';
 export type { ListCollectiveOffersResponseModel } from './models/ListCollectiveOffersResponseModel';
 export type { ListCollectiveOfferTemplatesResponseModel } from './models/ListCollectiveOfferTemplatesResponseModel';
