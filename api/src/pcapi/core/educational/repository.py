@@ -874,6 +874,13 @@ def list_collective_offers(filters: schemas.CollectiveOffersFilter, offers_limit
     return offers
 
 
+def list_collective_offers_for_homepage(
+    user_id: int, venue_id: int, offers_limit: int
+) -> tuple[list[models.CollectiveOffer], bool]:
+
+    return [], False
+
+
 def list_collective_offer_templates(
     filters: schemas.CollectiveOffersFilter, offers_limit: int
 ) -> list[models.CollectiveOfferTemplate]:

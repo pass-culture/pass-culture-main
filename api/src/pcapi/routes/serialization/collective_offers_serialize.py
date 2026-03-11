@@ -380,6 +380,32 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
         )
 
 
+### GET collective offers models for home
+class CollectiveStockHomeResponseModel(HttpBodyModel):
+    startDatetime: datetime
+    endDatetime: datetime
+    bookingLimitDatetime: datetime
+    numberOfTickets: int
+
+
+class ListCollectiveOffersHomeQueryModel(HttpQueryParamsModel):
+    venue_id: int
+
+
+class CollectiveOfferHomeResponseModel(HttpBodyModel):
+    id: int
+    name: str
+    displayedStatus: models.CollectiveOfferDisplayedStatus
+    imageUrl: str | None
+    allowedActions: list[models.CollectiveOfferAllowedAction]
+    collectiveStock: CollectiveStockHomeResponseModel | None
+
+
+class ListCollectiveOffersHomeResponseModel(HttpBodyModel):
+    has_offers: bool
+    offers: list[CollectiveOfferHomeResponseModel]
+
+
 ### POST collective offer models
 class PatchDateRangeModel(HttpBodyModel):
     start: datetime

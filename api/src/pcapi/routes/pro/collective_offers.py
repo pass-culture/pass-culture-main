@@ -65,6 +65,28 @@ def get_collective_offers(
     )
 
 
+@private_api.route("/collective/home/bookable-offers", methods=["GET"])
+@atomic()
+@login_required
+@spectree_serialize(
+    response_model=collective_offers_serialize.ListCollectiveOffersHomeResponseModel,
+    api=blueprint.pro_private_schema,
+)
+def get_collective_offers_home(
+    query: collective_offers_serialize.ListCollectiveOffersHomeQueryModel,
+) -> collective_offers_serialize.ListCollectiveOffersHomeResponseModel:
+    offers, has_offers = repository.list_collective_offers_for_homepage(
+        user_id=current_user.id,
+        venue_id=query.venue_id,
+        offers_limit=api_offer.OFFERS_HOMEPAGE_LIMIT,
+    )
+
+    return collective_offers_serialize.ListCollectiveOffersHomeResponseModel(
+        has_offers=has_offers,
+        offers=[collective_offers_serialize.CollectiveOfferHomeResponseModel.model_validate(offer) for offer in offers],
+    )
+
+
 @private_api.route("/collective/offers-template", methods=["GET"])
 @atomic()
 @login_required

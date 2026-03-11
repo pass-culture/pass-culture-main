@@ -71,6 +71,7 @@ import type { InvoiceListV2ResponseModel } from '../models/InvoiceListV2Response
 import type { LinkVenueToBankAccountBodyModel } from '../models/LinkVenueToBankAccountBodyModel';
 import type { LinkVenueToPricingPointBodyModel } from '../models/LinkVenueToPricingPointBodyModel';
 import type { ListBookingsResponseModel } from '../models/ListBookingsResponseModel';
+import type { ListCollectiveOffersHomeResponseModel } from '../models/ListCollectiveOffersHomeResponseModel';
 import type { ListCollectiveOffersResponseModel } from '../models/ListCollectiveOffersResponseModel';
 import type { ListCollectiveOfferTemplatesResponseModel } from '../models/ListCollectiveOfferTemplatesResponseModel';
 import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
@@ -513,6 +514,27 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/collective/educational-domains',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * get_collective_offers_home <GET>
+   * @param venueId
+   * @returns ListCollectiveOffersHomeResponseModel OK
+   * @throws ApiError
+   */
+  public getCollectiveOffersHome(
+    venueId: number,
+  ): CancelablePromise<ListCollectiveOffersHomeResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/collective/home/bookable-offers',
+      query: {
+        'venueId': venueId,
+      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Content`,
