@@ -36,6 +36,7 @@ from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.subscription.bonus import constants as bonus_constants
+from pcapi.core.subscription.phone_validation.sms import testing as sms_testing
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -46,7 +47,6 @@ from pcapi.core.users.api import create_phone_validation_token
 from pcapi.core.users.email.repository import get_email_update_latest_event
 from pcapi.core.users.utils import ALGORITHM_HS_256
 from pcapi.models import db
-from pcapi.notifications.sms import testing as sms_testing
 from pcapi.routes.native.v1.serialization import account as account_serializers
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date

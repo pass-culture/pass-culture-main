@@ -1,5 +1,5 @@
-from pcapi.notifications.sms import testing
-from pcapi.notifications.sms.backends.logger import LoggerBackend
+from pcapi.core.subscription.phone_validation.sms import testing
+from pcapi.core.subscription.phone_validation.sms.backends.logger import LoggerBackend
 
 
 class TestingBackend(LoggerBackend):

@@ -12,10 +12,10 @@ from pcapi.core.subscription import fraud_check_api as fraud_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.phone_validation import sending_limit
+from pcapi.core.subscription.phone_validation.sms import api as sms_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.notifications import sms as sms_notifications
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils import requests
 from pcapi.utils.transaction_manager import is_managed_transaction
@@ -139,7 +139,7 @@ def _send_sms_with_retry(phone_number: str, message: str, max_attempt: int = 3) 
     base_backoff = 1
     for i_retry in range(max_attempt):
         try:
-            sms_notifications.send_transactional_sms(phone_number, message)
+            sms_api.send_transactional_sms(phone_number, message)
             return
         except requests.ExternalAPIException as exception:
             if exception.is_retryable:

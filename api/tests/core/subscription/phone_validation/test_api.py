@@ -30,9 +30,9 @@ class EnsurePhoneNumberUnicityTest:
         token_utils.Token.token_exists(token_utils.TokenType.PHONE_VALIDATION, in_validation_user.id)
 
     @patch(
-        "pcapi.notifications.sms.backends.sendinblue.brevo_python.TransactionalSMSApi.send_transac_sms",
+        "pcapi.core.subscription.phone_validation.sms.backends.sendinblue.brevo_python.TransactionalSMSApi.send_transac_sms",
     )
-    @pytest.mark.settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
+    @pytest.mark.settings(SMS_NOTIFICATION_BACKEND="SendinblueBackend")
     def test_send_phone_code_success_if_validated_by_not_beneficiary(self, send_sms_mock):
         already_validated_user = users_factories.EligibleUnderageFactory(
             age=17,
@@ -99,9 +99,9 @@ class EnsurePhoneNumberUnicityTest:
 @pytest.mark.usefixtures("db_session")
 class SendSMSTest:
     @patch(
-        "pcapi.notifications.sms.backends.sendinblue.brevo_python.TransactionalSMSApi.send_transac_sms",
+        "pcapi.core.subscription.phone_validation.sms.backends.sendinblue.brevo_python.TransactionalSMSApi.send_transac_sms",
     )
-    @pytest.mark.settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
+    @pytest.mark.settings(SMS_NOTIFICATION_BACKEND="SendinblueBackend")
     def test_send_sms_success(self, mock, app):
         user = users_factories.UserFactory()
 
@@ -110,10 +110,10 @@ class SendSMSTest:
         assert app.redis_client.get(f"sent_SMS_counter_user_{user.id}") == "1"
 
     @patch(
-        "pcapi.notifications.sms.backends.sendinblue.brevo_python.TransactionalSMSApi.send_transac_sms",
+        "pcapi.core.subscription.phone_validation.sms.backends.sendinblue.brevo_python.TransactionalSMSApi.send_transac_sms",
     )
     @patch("secrets.randbelow")
-    @pytest.mark.settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
+    @pytest.mark.settings(SMS_NOTIFICATION_BACKEND="SendinblueBackend")
     def test_send_sms_phone_number_with_space(self, randbelow_mock, send_sms_mock):
         user = users_factories.UserFactory()
         randbelow_mock.return_value = "123456"
@@ -131,9 +131,9 @@ class SendSMSTest:
         assert user.phoneNumber == "+33600000000"
 
     @patch(
-        "pcapi.notifications.sms.backends.sendinblue.brevo_python.TransactionalSMSApi.send_transac_sms",
+        "pcapi.core.subscription.phone_validation.sms.backends.sendinblue.brevo_python.TransactionalSMSApi.send_transac_sms",
     )
-    @pytest.mark.settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
+    @pytest.mark.settings(SMS_NOTIFICATION_BACKEND="SendinblueBackend")
     def test_send_sms_bad_request(self, send_sms_mock, caplog, app):
         user = users_factories.UserFactory()
         send_sms_mock.side_effect = ApiException(status=400)
@@ -148,9 +148,9 @@ class SendSMSTest:
         assert caplog.records[0].levelname == "ERROR"
 
     @patch(
-        "pcapi.notifications.sms.backends.sendinblue.brevo_python.TransactionalSMSApi.send_transac_sms",
+        "pcapi.core.subscription.phone_validation.sms.backends.sendinblue.brevo_python.TransactionalSMSApi.send_transac_sms",
     )
-    @pytest.mark.settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
+    @pytest.mark.settings(SMS_NOTIFICATION_BACKEND="SendinblueBackend")
     def test_retry_success(self, send_sms_mock, caplog, app):
         user = users_factories.UserFactory()
         send_sms_mock.side_effect = [SSLError(), ApiException(status=524), True]
