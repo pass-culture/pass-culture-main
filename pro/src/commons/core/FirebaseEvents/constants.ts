@@ -84,6 +84,7 @@ export enum Events {
   OFFER_FORM_VIDEO_URL_ERROR = 'videoUrlError',
   CLICKED_COPY_TEMPLATE_OFFER_LINK = 'hasClickedCopyTemplateOfferLink',
   CLICKED_VIEW_APP_OFFER = 'hasClickedViewAppOffer',
+  CLICKED_THE_ESPACE_ADMIN_BUTTON = 'hasClickedTheEspaceAdminButton',
 }
 
 export enum VenueEvents {
