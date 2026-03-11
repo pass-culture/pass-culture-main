@@ -18,6 +18,7 @@ from flask import jsonify
 from flask import request
 from flask.logging import default_handler
 from flask_login import current_user
+from prometheus_client import Counter
 from sqlalchemy.event import listens_for
 from werkzeug.middleware.profiler import ProfilerMiddleware
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -66,6 +67,10 @@ init_sentry_sdk()
 
 
 app = Flask(__name__, static_url_path="/static")
+
+SPECIAL_EVENT_COUNTER = Counter(
+    "my_awesome_metric", "Count of times we requested a health endpoint with metrics parameter"
+)
 
 
 def setup_metrics(app_: Flask) -> None:
