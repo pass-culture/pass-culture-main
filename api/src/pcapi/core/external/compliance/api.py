@@ -26,7 +26,6 @@ BACKEND_BY_KEY: typing.Final[dict[str, type[Backend]]] = {
     "ComplianceBackend": ComplianceBackend,
     "DevelopmentBackend": DevelopmentBackend,
     "TestBackend": TestBackend,
-    "pcapi.core.external.compliance_backends.compliance.ComplianceBackend": ComplianceBackend,
 }
 
 logger = logging.getLogger(__name__)
