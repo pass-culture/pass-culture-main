@@ -13,6 +13,7 @@ depends_on: list[str] | None = None
 
 
 def upgrade() -> None:
+    op.execute("select 1 -- squawk:ignore-next-statement")
     op.add_column(
         "product",
         sa.Column(
