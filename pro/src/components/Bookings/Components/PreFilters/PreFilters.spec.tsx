@@ -2,7 +2,9 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { useState } from 'react'
 
+import * as useAnalytics from '@/app/App/analytics/firebase'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { PreFilters, type PreFiltersProps } from './PreFilters'
@@ -93,42 +95,44 @@ describe('filter bookings by bookings period', () => {
   })
 
   it('should allow to select booking status filter', async () => {
+    const user = userEvent.setup()
     renderPreFilters(props)
     const bookingStatusFilterInput = screen.getByDisplayValue(
       'Période de réservation'
     )
 
-    await userEvent.click(bookingStatusFilterInput)
-    await userEvent.click(screen.getByText('Période de validation'))
+    await user.click(bookingStatusFilterInput)
+    await user.click(screen.getByText('Période de validation'))
 
     expect(screen.queryByText('Période de validation')).toBeInTheDocument()
   })
 
   it('should filter with a combination of filters', async () => {
+    const user = userEvent.setup()
     renderPreFilters(props, ['WIP_SWITCH_VENUE'])
 
     const offerEventDateInput = screen.getByLabelText('Date de l’évènement')
-    await userEvent.clear(offerEventDateInput)
-    await userEvent.type(offerEventDateInput, '2020-12-13')
+    await user.clear(offerEventDateInput)
+    await user.type(offerEventDateInput, '2020-12-13')
 
     const offererAddressInput = screen.getByLabelText('Localisation')
-    await userEvent.selectOptions(offererAddressInput, '21')
+    await user.selectOptions(offererAddressInput, '21')
 
     const periodBeginningDateInput = screen.getByLabelText(
       'Début de la période'
     )
     const periodEndingDateInput = screen.getByLabelText('Fin de la période')
 
-    await userEvent.clear(periodBeginningDateInput)
-    await userEvent.type(periodBeginningDateInput, '2020-12-01')
+    await user.clear(periodBeginningDateInput)
+    await user.type(periodBeginningDateInput, '2020-12-01')
 
-    await userEvent.clear(periodEndingDateInput)
-    await userEvent.type(periodEndingDateInput, '2020-12-02')
+    await user.clear(periodEndingDateInput)
+    await user.type(periodEndingDateInput, '2020-12-02')
 
     const select = screen.getByLabelText('Type de période')
-    await userEvent.selectOptions(select, 'reimbursed')
+    await user.selectOptions(select, 'reimbursed')
 
-    await userEvent.click(screen.getByText('Rechercher les réservations'))
+    await user.click(screen.getByText('Rechercher les réservations'))
 
     expect(mockApplyNow).toHaveBeenCalledWith({
       bookingBeginningDate: '2020-12-01',
@@ -143,12 +147,13 @@ describe('filter bookings by bookings period', () => {
   })
 
   it('should be able to filter by offererAddress', async () => {
+    const user = userEvent.setup()
     renderPreFilters(props, ['WIP_SWITCH_VENUE'])
 
     const offererAddressInput = screen.getByLabelText('Localisation')
-    await userEvent.selectOptions(offererAddressInput, '21')
+    await user.selectOptions(offererAddressInput, '21')
 
-    await userEvent.click(screen.getByText('Rechercher les réservations'))
+    await user.click(screen.getByText('Rechercher les réservations'))
 
     expect(mockApplyNow).toHaveBeenCalledWith({
       bookingBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
@@ -173,14 +178,19 @@ describe('filter bookings by bookings period', () => {
 
   it('should enable reset button when there are prefilters and call resetPreFilters', async () => {
     const resetPreFilters = vi.fn()
-    renderPreFilters({ ...props, hasPreFilters: true, resetPreFilters })
+    const user = userEvent.setup()
+    renderPreFilters({
+      ...props,
+      hasPreFilters: true,
+      resetPreFilters,
+    })
 
     const resetButton = screen.getByRole('button', {
       name: /réinitialiser les filtres/i,
     })
     expect(resetButton).toBeEnabled()
 
-    await userEvent.click(resetButton)
+    await user.click(resetButton)
     expect(resetPreFilters).toHaveBeenCalledTimes(1)
   })
 
@@ -223,21 +233,94 @@ describe('filter bookings by bookings period', () => {
   })
 
   it('should reset offerEventDate to default when event date is cleared', async () => {
+    const user = userEvent.setup()
     renderPreFilters(props)
 
     const offerEventDateInput = screen.getByLabelText('Date de l’évènement')
 
-    await userEvent.clear(offerEventDateInput)
-    await userEvent.type(offerEventDateInput, '2020-12-13')
+    await user.clear(offerEventDateInput)
+    await user.type(offerEventDateInput, '2020-12-13')
 
-    await userEvent.clear(offerEventDateInput)
+    await user.clear(offerEventDateInput)
 
-    await userEvent.click(screen.getByText('Rechercher les réservations'))
+    await user.click(screen.getByText('Rechercher les réservations'))
 
     expect(mockApplyNow).toHaveBeenCalledWith(
       expect.objectContaining({
         offerEventDate: DEFAULT_PRE_FILTERS.offerEventDate,
       })
     )
+  })
+
+  describe('tracking', () => {
+    const mockLogEvent = vi.fn()
+    beforeEach(() => {
+      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+        logEvent: mockLogEvent,
+      }))
+    })
+
+    it('should track download clicks on non admin page', async () => {
+      const user = userEvent.setup()
+      renderPreFilters(props)
+
+      await user.click(screen.getByRole('button', { name: 'Télécharger' }))
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.CLICKED_DOWNLOAD_BOOKINGS,
+        { from: '/' }
+      )
+
+      await user.click(
+        screen.getByRole('menuitem', { name: 'Microsoft Excel (.xls)' })
+      )
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.CLICKED_DOWNLOAD_BOOKINGS_XLS,
+        { from: '/' }
+      )
+
+      await user.click(screen.getByRole('button', { name: 'Télécharger' }))
+      await user.click(
+        screen.getByRole('menuitem', { name: 'Fichier CSV (.csv)' })
+      )
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.CLICKED_DOWNLOAD_BOOKINGS_CSV,
+        { from: '/' }
+      )
+    })
+
+    it('should track download clicks on admin page', async () => {
+      const user = userEvent.setup()
+      renderPreFilters({
+        ...props,
+        isAdministrationSpace: true,
+      })
+
+      await user.click(
+        screen.getByRole('button', { name: 'Télécharger les réservations' })
+      )
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.CLICKED_ADMIN_DOWNLOAD_BOOKINGS,
+        { from: '/' }
+      )
+
+      await user.click(
+        screen.getByRole('menuitem', { name: 'Microsoft Excel (.xls)' })
+      )
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.CLICKED_ADMIN_DOWNLOAD_BOOKINGS_XLS,
+        { from: '/' }
+      )
+
+      await user.click(
+        screen.getByRole('button', { name: 'Télécharger les réservations' })
+      )
+      await user.click(
+        screen.getByRole('menuitem', { name: 'Fichier CSV (.csv)' })
+      )
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.CLICKED_ADMIN_DOWNLOAD_BOOKINGS_CSV,
+        { from: '/' }
+      )
+    })
   })
 })

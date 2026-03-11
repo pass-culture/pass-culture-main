@@ -161,7 +161,7 @@ export const Header = forwardRef(
                     icon={isAdminArea ? fullBackIcon : strokeRepaymentIcon}
                     onClick={() => {
                       if (!isAdminArea) {
-                        logEvent(Events.CLICKED_THE_ESPACE_ADMIN_BUTTON, {
+                        logEvent(Events.CLICKED_HEADER_ADMIN_BUTTON, {
                           from: location.pathname,
                         })
                       }

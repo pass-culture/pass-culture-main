@@ -1,6 +1,9 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { useState } from 'react'
+import { useLocation } from 'react-router'
 
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -24,11 +27,17 @@ export const CollectiveOffersDownloadDrawer = ({
   const snackBar = useSnackBar()
   const [isOpenDialog, setIsOpenDialog] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
+  const { logEvent } = useAnalytics()
+  const location = useLocation()
 
-  const downloadHandler = async (type: 'CSV' | 'XLS'): Promise<void> => {
+  const downloadHandler = async (
+    type: 'CSV' | 'XLS',
+    eventToLog: string
+  ): Promise<void> => {
     setIsDownloading(true)
 
     try {
+      logEvent(eventToLog, { from: location.pathname })
       await downloadBookableOffersFile(filters, type)
     } catch {
       snackBar.error(GET_DATA_ERROR_MESSAGE)
@@ -47,6 +56,11 @@ export const CollectiveOffersDownloadDrawer = ({
         <Button
           variant={ButtonVariant.SECONDARY}
           disabled={isDisabled || isDownloading}
+          onClick={() =>
+            logEvent(Events.CLICKED_DOWNLOAD_COLLECTIVE_OFFERS, {
+              from: location.pathname,
+            })
+          }
           label="Télécharger"
         />
       }
@@ -69,14 +83,20 @@ export const CollectiveOffersDownloadDrawer = ({
           <Button
             variant={ButtonVariant.PRIMARY}
             onClick={async () => {
-              await downloadHandler('CSV')
+              await downloadHandler(
+                'CSV',
+                Events.CLICKED_DOWNLOAD_COLLECTIVE_OFFERS_CSV
+              )
             }}
             label="Télécharger format CSV"
           />
           <Button
             variant={ButtonVariant.PRIMARY}
             onClick={async () => {
-              await downloadHandler('XLS')
+              await downloadHandler(
+                'XLS',
+                Events.CLICKED_DOWNLOAD_COLLECTIVE_OFFERS_XLS
+              )
             }}
             label="Télécharger format Excel"
           />

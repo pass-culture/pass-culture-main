@@ -21,9 +21,9 @@ export const useLogExtraProData = (): void => {
     if (
       withSwitchVenueFeature &&
       selectedVenue &&
-      selectedVenue.id !== previousVenue &&
       selectedOffererId &&
-      selectedOffererId !== previousOfferer
+      (selectedVenue.id !== previousVenue ||
+        selectedOffererId !== previousOfferer)
     ) {
       logEvent(Events.EXTRA_PRO_DATA, {
         offerer_id: selectedOffererId,
