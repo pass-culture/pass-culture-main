@@ -16,20 +16,20 @@ from sqlalchemy.orm import joinedload
 import pcapi.core.finance.models as finance_models
 import pcapi.core.users.models as users_models
 from pcapi import settings
-from pcapi.core.achievements.models import AchievementEnum
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.finance.utils import CurrencyEnum
 from pcapi.core.offers import models as offers_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import profile_options
-from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.users import api as users_api
 from pcapi.core.users import eligibility_api
 from pcapi.core.users import young_status
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.routes.native.v1.serialization import achievements as achievements_serialization
+from pcapi.routes.native.v1.serialization import subscription as subscription_serialization
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.shared.price import convert_to_cent
@@ -233,40 +233,8 @@ class UserProfileGetterDict(GetterDict):
         return super().get(key, default)
 
 
-# TODO remove this once UserProfileResponse is migrated to pydantic V2
-# should be entirely deleted as it's use only in SubscriptionMessage below
-class CallToActionMessage(ConfiguredBaseModel):
-    title: str | None = pydantic_v1.Field(None, alias="callToActionTitle")
-    link: str | None = pydantic_v1.Field(None, alias="callToActionLink")
-    icon: subscription_schemas.CallToActionIcon | None = pydantic_v1.Field(None, alias="callToActionIcon")
-
-    class Config:
-        use_enum_values = True
-
-
-# TODO remove this once UserProfileResponse is migrated to pydantic V2
-# Use pcapi.routes.native.serialization.subscription.SubscriptionMessageV2 instead
-class SubscriptionMessage(ConfiguredBaseModel):
-    user_message: str
-    call_to_action: CallToActionMessage | None
-    pop_over_icon: subscription_schemas.PopOverIcon | None
-    updated_at: datetime.datetime | None
-
-    class Config:
-        use_enum_values = True
-
-
-# TODO remove this once UserProfileResponse is migrated to pydantic V2
-# Use pcapi.routes.native.serialization.achievements.AchievementResponse instead
-class AchievementResponseLegacy(ConfiguredBaseModel):
-    id: int
-    name: AchievementEnum
-    seenDate: datetime.datetime | None
-    unlockedDate: datetime.datetime
-
-
 class UserProfileResponse(ConfiguredBaseModel):
-    achievements: list[AchievementResponseLegacy]
+    achievements: list[achievements_serialization.AchievementResponseLegacy]
     activity_id: profile_options.ActivityIdEnum | None
     address: str | None = pydantic_v1.Field(None, alias="street")
     birth_date: datetime.date | None
@@ -299,7 +267,7 @@ class UserProfileResponse(ConfiguredBaseModel):
     roles: list[users_models.UserRole]
     show_eligible_card: bool
     status: YoungStatusResponse
-    subscription_message: SubscriptionMessage | None
+    subscription_message: subscription_serialization.SubscriptionMessage | None
     subscriptions: NotificationSubscriptions  # if we send user.notification_subscriptions, pydantic will take the column and not the property
     qf_bonification_status: subscription_models.QFBonificationStatus | None
 

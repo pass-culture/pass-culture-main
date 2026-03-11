@@ -1,132 +1,164 @@
 import datetime
 
-import pydantic
+from pydantic.v1 import fields
+from pydantic.v1 import validator
 
 from pcapi.core.subscription import profile_options
 from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription import utils as subscription_utils
 from pcapi.core.users import models as users_models
-from pcapi.routes.serialization import HttpBodyModel
-from pcapi.routes.serialization import HttpQueryParamsModel
+from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.serialization.utils import to_camel
+from pcapi.utils.date import format_into_utc_date
 
 
-class CallToActionMessageV2(HttpBodyModel):
-    title: str | None = pydantic.Field(alias="callToActionTitle")
-    link: str | None = pydantic.Field(alias="callToActionLink")
-    icon: subscription_schemas.CallToActionIcon | None = pydantic.Field(alias="callToActionIcon")
+class CallToActionMessage(BaseModel):
+    title: str | None = fields.Field(None, alias="callToActionTitle")
+    link: str | None = fields.Field(None, alias="callToActionLink")
+    icon: subscription_schemas.CallToActionIcon | None = fields.Field(None, alias="callToActionIcon")
 
-    model_config = pydantic.ConfigDict(
-        use_enum_values=True,
-    )
+    class Config:
+        orm_mode = True
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        use_enum_values = True
 
 
-class SubscriptionMessageV2(HttpBodyModel):
+class SubscriptionMessage(BaseModel):
+    user_message: str
+    call_to_action: CallToActionMessage | None
+    pop_over_icon: subscription_schemas.PopOverIcon | None
+    updated_at: datetime.datetime | None
+
+    class Config:
+        orm_mode = True
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        json_encoders = {datetime.datetime: format_into_utc_date}
+        use_enum_values = True
+
+
+class SubscriptionMessageV2(BaseModel):
     user_message: str
     message_summary: str | None = None
-    call_to_action: CallToActionMessageV2 | None = None
-    pop_over_icon: subscription_schemas.PopOverIcon | None = None
-    updated_at: datetime.datetime | None = None
+    call_to_action: CallToActionMessage | None
+    pop_over_icon: subscription_schemas.PopOverIcon | None
+    updated_at: datetime.datetime | None
 
-    model_config = pydantic.ConfigDict(
-        use_enum_values=True,
-    )
+    class Config:
+        orm_mode = True
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        json_encoders = {datetime.datetime: format_into_utc_date}
+        use_enum_values = True
 
 
-class SubscriptionStepDetailsResponse(HttpBodyModel):
+class SubscriptionStepDetailsResponse(BaseModel):
     name: subscription_schemas.SubscriptionStep
     title: subscription_schemas.SubscriptionStepTitle
-    subtitle: str | None = None
+    subtitle: str | None
     completion_state: subscription_schemas.SubscriptionStepCompletionState
 
-    model_config = pydantic.ConfigDict(
-        use_enum_values=True,
-    )
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        use_enum_values = True
 
 
-class SubscriptionStepperResponseV2(HttpBodyModel):
+class SubscriptionStepperResponseV2(BaseModel):
     subscription_steps_to_display: list[SubscriptionStepDetailsResponse]
     allowed_identity_check_methods: list[subscription_schemas.IdentityCheckMethod]
     has_identity_check_pending: bool
-    maintenance_page_type: subscription_schemas.MaintenancePageType | None = None
-    next_subscription_step: subscription_schemas.SubscriptionStep | None = None
+    maintenance_page_type: subscription_schemas.MaintenancePageType | None
+    next_subscription_step: subscription_schemas.SubscriptionStep | None
     title: str
-    subtitle: str | None = None
-    subscription_message: SubscriptionMessageV2 | None = None
+    subtitle: str | None
+    subscription_message: SubscriptionMessageV2 | None
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
 
 
-class ProfileContent(HttpBodyModel):
+class ProfileContent(BaseModel):
     activity: profile_options.ActivityValueEnum
     address: str | None  # Address is nullable for backward compatibility
     city: str
     first_name: str
     last_name: str
     postal_code: str
-    school_type: profile_options.SchoolTypeValueEnum | None = None
+    school_type: profile_options.SchoolTypeValueEnum | None
 
-    model_config = pydantic.ConfigDict(
-        use_enum_values=True,
-    )
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        use_enum_values = True
 
 
-class ProfileResponse(HttpBodyModel):
+class ProfileResponse(BaseModel):
     profile: ProfileContent | None = None
 
 
-class ProfileUpdateRequest(HttpQueryParamsModel):
+class ProfileUpdateRequest(BaseModel):
     activity_id: profile_options.ActivityIdEnum
     address: str
     city: str
     first_name: str
     last_name: str
     postal_code: str
-    school_type_id: profile_options.SchoolTypeIdEnum | None = None
+    school_type_id: profile_options.SchoolTypeIdEnum | None
 
-    @pydantic.field_validator("first_name", "last_name", "address", "city", "postal_code", mode="after")
-    @classmethod
+    class Config:
+        alias_generator = to_camel
+
+    @validator("first_name", "last_name", "address", "city", "postal_code")
     def mandatory_string_fields_cannot_be_empty(cls, v: str) -> str:
         v = v.strip()
         if not v:
             raise ValueError("This field cannot be empty")
         return v
 
-    @pydantic.field_validator("first_name", "last_name", mode="after")
-    @classmethod
+    @validator("first_name", "last_name")
     def string_must_contain_latin_characters(cls, v: str) -> str:
         subscription_utils.validate_name(v)
         return v
 
-    @pydantic.field_validator("city", mode="after")
-    @classmethod
+    @validator("city")
     def city_must_be_valid(cls, v: str) -> str:
         subscription_utils.validate_city(v)
         return v
 
-    @pydantic.field_validator("address", mode="after")
-    @classmethod
+    @validator("address")
     def address_must_be_valid(cls, v: str) -> str:
         subscription_utils.validate_address(v)
         return v
 
 
-class ActivityResponseModel(HttpBodyModel):
+class ActivityResponseModel(BaseModel):
     id: profile_options.ActivityIdEnum
     label: str
-    description: str | None = None
+    description: str | None
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        orm_mode = True
 
 
-class ActivityTypesResponse(HttpBodyModel):
+class ActivityTypesResponse(BaseModel):
     activities: list[ActivityResponseModel]
 
 
-class IdentificationSessionResponse(HttpBodyModel):
+class IdentificationSessionResponse(BaseModel):
     identificationUrl: str
 
 
-class IdentificationSessionRequest(HttpQueryParamsModel):
+class IdentificationSessionRequest(BaseModel):
     redirectUrl: str
 
 
-class BonusCreditRequest(HttpQueryParamsModel):
+class BonusCreditRequest(ConfiguredBaseModel):
     last_name: str
     common_name: str | None = None
     first_names: list[str]
