@@ -24,12 +24,4 @@
     max-width: rem.torem(588px);
     display: block;
   }
-
-  &-back-to-nav-link {
-    margin-left: var(--size-spacing-l);
-
-    &-with-subtitle {
-      margin-bottom: var(--size-spacing-xs);
-    }
-  }
 }

@@ -5,6 +5,7 @@ import { isErrorAPIError } from '@/apiClient/helpers'
 import { useLogExtraProData } from '@/app/App/hook/useLogExtraProData'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { SkipLinksProvider } from '@/components/SkipLinks/SkipLinksContext'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 import { useBeamer } from './analytics/beamer'
@@ -54,7 +55,9 @@ export const App = (): JSX.Element | null => {
           revalidateOnFocus: false,
         }}
       >
-        <Outlet />
+        <SkipLinksProvider>
+          <Outlet />
+        </SkipLinksProvider>
       </SWRConfig>
       <SnackBarContainer />
     </>
