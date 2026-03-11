@@ -372,6 +372,7 @@ export const CollectiveOfferInstitutionScreen = ({
                         })
 
                         setValue('teacherEmail', '')
+                        setValue('teacherName', '')
                       }}
                       disabled={!canEditInstitution}
                       searchInOptions={(options, pattern) =>
