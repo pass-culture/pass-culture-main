@@ -1,1 +1,0 @@
-const o=""+new URL("full-book-nNipR7Zh.svg",import.meta.url).href,l=""+new URL("full-boosted-DtEaeHBM.svg",import.meta.url).href,t=""+new URL("full-thumb-up-DZjizx7o.svg",import.meta.url).href;export{l as a,o as b,t as f};
