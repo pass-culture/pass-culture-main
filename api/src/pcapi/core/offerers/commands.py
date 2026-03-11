@@ -32,7 +32,6 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
     # This command is called from a cron running every day, so that any active offerer is checked every month.
     # Split into 28 blocks to avoid spamming Sirene API for all offerers the same day. Nothing done on 29, 30, 31.
     # Use --day to replay or troubleshooting.
-    codir_report_is_enabled = FeatureToggle.ENABLE_CODIR_OFFERERS_REPORT.is_active()
 
     if day is None:
         day = datetime.date.today().day
@@ -57,7 +56,6 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
         payload = offerers_tasks.CheckOffererSirenRequest(
             siren=offerer.siren,
             close_or_tag_when_inactive=not dry_run,
-            must_fill_in_codir_report=codir_report_is_enabled,
         )
         offerers_tasks.check_offerer_siren_task.delay(payload.model_dump())
 
