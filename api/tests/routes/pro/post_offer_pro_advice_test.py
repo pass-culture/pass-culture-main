@@ -49,7 +49,7 @@ class Returns201Test:
         }
 
         mock_create_pro_advice.assert_called_once_with(
-            offer, "Une super reco.", "Le libraire du coin", user_offerer.user
+            offer, "Une super reco.", "Le libraire du coin", user_offerer.user.id
         )
 
     @patch("pcapi.core.pro_advice.api.create_pro_advice")
@@ -85,7 +85,7 @@ class Returns201Test:
             }
         }
 
-        mock_create_pro_advice.assert_called_once_with(offer, "Une super reco.", None, user_offerer.user)
+        mock_create_pro_advice.assert_called_once_with(offer, "Une super reco.", None, user_offerer.user.id)
 
 
 @pytest.mark.usefixtures("db_session")
