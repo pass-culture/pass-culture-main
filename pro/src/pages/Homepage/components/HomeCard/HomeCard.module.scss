@@ -1,0 +1,37 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.home-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-spacing-l);
+
+  &-header {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &-title {
+    @include fonts.title3;
+
+    margin: 0;
+  }
+
+  &-subtitle {
+    @include fonts.body;
+
+    margin: 0;
+    color: var(--color-text-subtle);
+  }
+
+  &-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-spacing-m);
+  }
+
+  &-footer {
+    display: flex;
+    flex-flow: row wrap;
+    gap: var(--size-spacing-s);
+  }
+}
