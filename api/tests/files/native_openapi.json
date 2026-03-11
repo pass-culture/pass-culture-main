@@ -4861,6 +4861,155 @@
                 "title": "OfferOffererResponseV2",
                 "type": "object"
             },
+            "OfferProAdvice": {
+                "additionalProperties": false,
+                "properties": {
+                    "author": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Author"
+                    },
+                    "content": {
+                        "title": "Content",
+                        "type": "string"
+                    },
+                    "distance": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Distance"
+                    },
+                    "publicationDatetime": {
+                        "format": "date-time",
+                        "title": "Publicationdatetime",
+                        "type": "string"
+                    },
+                    "venueId": {
+                        "title": "Venueid",
+                        "type": "integer"
+                    },
+                    "venueName": {
+                        "title": "Venuename",
+                        "type": "string"
+                    },
+                    "venueThumbUrl": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Venuethumburl"
+                    }
+                },
+                "required": [
+                    "content",
+                    "publicationDatetime",
+                    "venueId",
+                    "venueName"
+                ],
+                "title": "OfferProAdvice",
+                "type": "object"
+            },
+            "OfferProAdviceQuery": {
+                "additionalProperties": false,
+                "properties": {
+                    "latitude": {
+                        "anyOf": [
+                            {
+                                "maximum": 90,
+                                "minimum": -90,
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Latitude"
+                    },
+                    "longitude": {
+                        "anyOf": [
+                            {
+                                "maximum": 180,
+                                "minimum": -180,
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Longitude"
+                    },
+                    "maxContentLength": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Maxcontentlength"
+                    },
+                    "page": {
+                        "default": 1,
+                        "maximum": 20,
+                        "minimum": 1,
+                        "title": "Page",
+                        "type": "integer"
+                    },
+                    "resultsPerPage": {
+                        "default": 20,
+                        "maximum": 50,
+                        "minimum": 1,
+                        "title": "Resultsperpage",
+                        "type": "integer"
+                    }
+                },
+                "title": "OfferProAdviceQuery",
+                "type": "object"
+            },
+            "OfferProAdvices": {
+                "additionalProperties": false,
+                "properties": {
+                    "nbResults": {
+                        "title": "Nbresults",
+                        "type": "integer"
+                    },
+                    "proAdvices": {
+                        "items": {
+                            "$ref": "#/components/schemas/OfferProAdvice"
+                        },
+                        "title": "Proadvices",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "proAdvices",
+                    "nbResults"
+                ],
+                "title": "OfferProAdvices",
+                "type": "object"
+            },
             "OfferResponse": {
                 "additionalProperties": false,
                 "properties": {
@@ -10316,6 +10465,138 @@
                     }
                 },
                 "summary": "get_offer <GET>",
+                "tags": []
+            }
+        },
+        "/native/v1/offer/{offer_id}/advices": {
+            "get": {
+                "description": "",
+                "operationId": "get__native_v1_offer_{offer_id}_advices",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "offer_id",
+                        "required": true,
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "maxContentLength",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "integer"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Maxcontentlength"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "page",
+                        "required": false,
+                        "schema": {
+                            "default": 1,
+                            "maximum": 20,
+                            "minimum": 1,
+                            "title": "Page",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "resultsPerPage",
+                        "required": false,
+                        "schema": {
+                            "default": 20,
+                            "maximum": 50,
+                            "minimum": 1,
+                            "title": "Resultsperpage",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "latitude",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "maximum": 90,
+                                    "minimum": -90,
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Latitude"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "longitude",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "maximum": 180,
+                                    "minimum": -180,
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Longitude"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OfferProAdvices"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "summary": "get_offer_pro_advices <GET>",
                 "tags": []
             }
         },
