@@ -2,11 +2,11 @@ import { screen } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
 import { UserRole } from '@/apiClient/v1'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
-  defaultGetOffererResponseModel,
-  makeVenueListItem,
-} from '@/commons/utils/factories/individualApiFactories'
-import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
+  makeGetVenueResponseModel,
+  makeVenueListItemLiteResponseModel,
+} from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { StoreProvider } from '../StoreProvider'
@@ -26,7 +26,7 @@ vi.mock('@/apiClient/api', () => ({
     listOfferersNames: vi.fn(),
     getOfferer: vi.fn(),
     getVenue: vi.fn(),
-    getVenues: vi.fn(),
+    getVenuesLite: vi.fn(),
   },
 }))
 vi.mock('@/commons/utils/storageAvailable', () => ({
@@ -59,13 +59,11 @@ describe('src | App', () => {
       offerersNamesWithPendingValidation: [],
     }
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue(mockOffererNames)
-
-    vi.spyOn(api, 'getVenues').mockResolvedValue({
+    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
       venues: [
-        makeVenueListItem({
+        makeVenueListItemLiteResponseModel({
           id: 2,
           managingOffererId: 1,
-          name: 'Venue A1',
         }),
       ],
     })
@@ -80,7 +78,7 @@ describe('src | App', () => {
     expect(api.listFeatures).toHaveBeenCalledTimes(1)
     expect(api.getProfile).toHaveBeenCalledTimes(1)
     expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
-    expect(api.getVenues).toHaveBeenCalledTimes(1)
+    expect(api.getVenuesLite).toHaveBeenCalledTimes(1)
     expect(api.getOfferer).toHaveBeenCalledTimes(1)
     expect(api.getVenue).toHaveBeenCalledTimes(1)
   })

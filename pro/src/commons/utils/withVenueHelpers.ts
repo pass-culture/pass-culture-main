@@ -1,10 +1,10 @@
 import type {
   GetVenueResponseModel,
-  VenueListItemResponseModel,
+  VenueListItemLiteResponseModel,
 } from '@/apiClient/v1'
 
 export const withVenueHelpers = <
-  T extends GetVenueResponseModel | VenueListItemResponseModel,
+  T extends GetVenueResponseModel | VenueListItemLiteResponseModel,
 >(
   venue: T
 ) => ({

@@ -4,7 +4,7 @@ import type {
   GetOffererResponseModel,
   GetVenueResponseModel,
   SharedCurrentUserResponseModel,
-  VenueListItemResponseModel,
+  VenueListItemLiteResponseModel,
 } from '@/apiClient/v1'
 
 export type UserAccess = 'no-offerer' | 'no-onboarding' | 'unattached' | 'full'
@@ -16,7 +16,7 @@ type UserState = {
   selectedAdminOfferer: GetOffererResponseModel | null
   // TODO (igabriele, 2026-02-04): Rename that to `selectedPartnerVenue`.
   selectedVenue: GetVenueResponseModel | null
-  venues: VenueListItemResponseModel[] | null
+  venues: VenueListItemLiteResponseModel[] | null
 }
 
 export const initialState: UserState = {
@@ -58,7 +58,7 @@ const userSlice = createSlice({
 
     setVenues(
       state: UserState,
-      action: PayloadAction<VenueListItemResponseModel[] | null>
+      action: PayloadAction<VenueListItemLiteResponseModel[] | null>
     ) {
       state.venues = action.payload
     },

@@ -11,7 +11,10 @@ import {
   makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
-import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
+import {
+  makeGetVenueResponseModel,
+  makeVenueListItemLiteResponseModel,
+} from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -72,19 +75,15 @@ const renderVenueEdition = ({
               publicName: FIRST_VENUE.publicName,
             }),
             venues: [
-              makeVenueListItem({
+              makeVenueListItemLiteResponseModel({
                 id: FIRST_VENUE.id,
                 name: FIRST_VENUE.name,
                 publicName: FIRST_VENUE.publicName,
-                isPermanent: true,
-                hasCreatedOffer: true,
               }),
-              makeVenueListItem({
+              makeVenueListItemLiteResponseModel({
                 id: SECOND_VENUE.id,
                 name: SECOND_VENUE.name,
                 publicName: SECOND_VENUE.publicName,
-                isPermanent: true,
-                hasCreatedOffer: true,
               }),
             ],
           },
@@ -133,6 +132,24 @@ const notValidatedVenue: GetVenueResponseModel = {
 
 describe('VenueEdition', () => {
   beforeEach(() => {
+    vi.spyOn(api, 'getVenues').mockResolvedValue({
+      venues: [
+        makeVenueListItem({
+          id: FIRST_VENUE.id,
+          hasCreatedOffer: true,
+          isPermanent: true,
+          name: FIRST_VENUE.name,
+          publicName: FIRST_VENUE.publicName,
+        }),
+        makeVenueListItem({
+          id: SECOND_VENUE.id,
+          hasCreatedOffer: true,
+          isPermanent: true,
+          name: SECOND_VENUE.name,
+          publicName: SECOND_VENUE.publicName,
+        }),
+      ],
+    })
     vi.spyOn(api, 'getVenue').mockResolvedValue(baseVenue)
     vi.spyOn(api, 'listVenueProviders').mockResolvedValue({
       venueProviders: [defaultVenueProvider],
@@ -223,6 +240,23 @@ describe('VenueEdition', () => {
     })
 
     it('should not let choose an other partner page when there is only one partner page', async () => {
+      vi.spyOn(api, 'getVenues').mockResolvedValue({
+        venues: [
+          makeVenueListItem({
+            id: FIRST_VENUE.id,
+            name: FIRST_VENUE.name,
+            publicName: FIRST_VENUE.publicName,
+          }),
+          makeVenueListItem({
+            id: SECOND_VENUE.id,
+            name: SECOND_VENUE.name,
+            publicName: SECOND_VENUE.publicName,
+            isPermanent: false,
+            hasCreatedOffer: false,
+          }),
+        ],
+      })
+
       const options: RenderWithProvidersOptions = {
         storeOverrides: {
           offerer: {
@@ -234,20 +268,7 @@ describe('VenueEdition', () => {
               name: FIRST_VENUE.name,
               publicName: FIRST_VENUE.publicName,
             }),
-            venues: [
-              makeVenueListItem({
-                id: FIRST_VENUE.id,
-                name: FIRST_VENUE.name,
-                publicName: FIRST_VENUE.publicName,
-              }),
-              makeVenueListItem({
-                id: SECOND_VENUE.id,
-                name: SECOND_VENUE.name,
-                publicName: SECOND_VENUE.publicName,
-                isPermanent: false,
-                hasCreatedOffer: false,
-              }),
-            ],
+            venues: [],
           },
         },
       }
