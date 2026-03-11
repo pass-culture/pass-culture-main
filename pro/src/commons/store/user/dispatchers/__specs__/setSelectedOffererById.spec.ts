@@ -11,16 +11,18 @@ import { configureTestStore } from '@/commons/store/testUtils'
 import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,
-  makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
-import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
+import {
+  makeGetVenueResponseModel,
+  makeVenueListItemLiteResponseModel,
+} from '@/commons/utils/factories/venueFactories'
 
 import * as logoutModule from '../logout'
 import { setSelectedOffererById } from '../setSelectedOffererById'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    getVenues: vi.fn(),
+    getVenuesLite: vi.fn(),
     listOfferersNames: vi.fn(),
     getOfferer: vi.fn(),
     getVenue: vi.fn(),
@@ -46,9 +48,9 @@ describe('setSelectedOffererById', () => {
     offerersNamesWithPendingValidation: [],
   }
   const venuesBase = [
-    makeVenueListItem({ id: 101, managingOffererId: 100 }),
-    makeVenueListItem({ id: 102, managingOffererId: 100 }),
-    makeVenueListItem({ id: 201, managingOffererId: 200 }),
+    makeVenueListItemLiteResponseModel({ id: 101, managingOffererId: 100 }),
+    makeVenueListItemLiteResponseModel({ id: 102, managingOffererId: 100 }),
+    makeVenueListItemLiteResponseModel({ id: 201, managingOffererId: 200 }),
   ]
 
   beforeEach(() => {
@@ -57,7 +59,7 @@ describe('setSelectedOffererById', () => {
   })
 
   it('should early-return when nextCurrentOffererId equals previous currentOfferer id', async () => {
-    const apiGetVenuesSpy = vi.spyOn(api, 'getVenues')
+    const apiGetVenuesSpy = vi.spyOn(api, 'getVenuesLite')
     const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
     const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
 
@@ -106,7 +108,7 @@ describe('setSelectedOffererById', () => {
       isOnboarded: false,
     })
     vi.spyOn(api, 'getVenue').mockResolvedValue(selectedVenueBase)
-    vi.spyOn(api, 'getVenues').mockResolvedValue({
+    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
       venues: venuesBase,
     })
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue(
@@ -139,7 +141,7 @@ describe('setSelectedOffererById', () => {
 
     expect(result).toBe('no-onboarding')
 
-    expect(api.getVenues).toHaveBeenCalledTimes(1)
+    expect(api.getVenuesLite).toHaveBeenCalledTimes(1)
     expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
     expect(api.getVenue).toHaveBeenCalledTimes(1)
     expect(api.getOfferer).toHaveBeenCalledTimes(1)
@@ -160,7 +162,7 @@ describe('setSelectedOffererById', () => {
 
   it('should skip fetching offerers/venues when shouldRefetch=false and set access to full', async () => {
     const apiListOfferersNamesSpy = vi.spyOn(api, 'listOfferersNames')
-    const apiGetVenuesSpy = vi.spyOn(api, 'getVenues')
+    const apiGetVenuesSpy = vi.spyOn(api, 'getVenuesLite')
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 200,
@@ -211,7 +213,7 @@ describe('setSelectedOffererById', () => {
 
   it('should set access to unattached on 403 ApiError and not throw', async () => {
     const apiListOfferersNamesSpy = vi.spyOn(api, 'listOfferersNames')
-    const apiGetVenuesSpy = vi.spyOn(api, 'getVenues')
+    const apiGetVenuesSpy = vi.spyOn(api, 'getVenuesLite')
     vi.spyOn(api, 'getOfferer').mockRejectedValue({
       name: 'ApiError',
       message: 'Forbidden',
@@ -262,7 +264,7 @@ describe('setSelectedOffererById', () => {
   it('should throw when no offerer name matches the selected offerer', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     const apiListOfferersNamesSpy = vi.spyOn(api, 'listOfferersNames')
-    const apiGetVenuesSpy = vi.spyOn(api, 'getVenues')
+    const apiGetVenuesSpy = vi.spyOn(api, 'getVenuesLite')
     const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
     const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
     const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
@@ -311,7 +313,7 @@ describe('setSelectedOffererById', () => {
   it('should handle unknown error without logging out', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     const apiListOfferersNamesSpy = vi.spyOn(api, 'listOfferersNames')
-    const apiGetVenuesSpy = vi.spyOn(api, 'getVenues')
+    const apiGetVenuesSpy = vi.spyOn(api, 'getVenuesLite')
     vi.spyOn(api, 'getOfferer').mockRejectedValue(new Error())
     const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
     const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')

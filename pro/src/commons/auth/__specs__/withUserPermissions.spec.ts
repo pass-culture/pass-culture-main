@@ -4,9 +4,11 @@ import * as reactRouter from 'react-router'
 import * as storeModule from '@/commons/store/store'
 import { configureTestStore } from '@/commons/store/testUtils'
 import type { UserAccess } from '@/commons/store/user/reducer'
-import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
-import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
+import {
+  makeGetVenueResponseModel,
+  makeVenueListItemLiteResponseModel,
+} from '@/commons/utils/factories/venueFactories'
 
 import type { UserPermissions } from '../types'
 import { withUserPermissions } from '../withUserPermissions'
@@ -41,7 +43,7 @@ const setupStore = (options: {
         : null,
       venues: options.hasVenue
         ? [
-            makeVenueListItem({
+            makeVenueListItemLiteResponseModel({
               id: 3,
               managingOffererId: 1,
               name: 'Digital Venue A1',

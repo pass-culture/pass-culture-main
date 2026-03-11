@@ -156,7 +156,7 @@ def get_filtered_venues(
             sa_orm.selectinload(models.Venue.bankAccountLinks).joinedload(models.VenueBankAccountLink.bankAccount)
         )
 
-    return query.order_by(models.Venue.name).all()
+    return query.order_by(models.Venue.publicName).all()
 
 
 def find_offerer_by_siren(siren: str) -> models.Offerer | None:

@@ -4,6 +4,6 @@
 /* eslint-disable */
 import type { GetVenueAddressesWithOffersOption } from './GetVenueAddressesWithOffersOption';
 export type GetVenueAddressesQueryModel = {
-  withOffersOption: (GetVenueAddressesWithOffersOption | null);
+  withOffersOption: GetVenueAddressesWithOffersOption;
 };
 

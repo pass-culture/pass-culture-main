@@ -6,15 +6,14 @@ import { api } from '@/apiClient/api'
 import type {
   GetOffererNameResponseModel,
   GetOffererResponseModel,
-  VenueListItemResponseModel,
 } from '@/apiClient/v1'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
   getOffererNameFactory,
-  makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { currentOffererFactory } from '@/commons/utils/factories/storeFactories'
+import { makeVenueListItemLiteResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -47,13 +46,13 @@ const baseOfferers: GetOffererResponseModel[] = [
     hasValidBankAccount: true,
   },
 ]
-const baseVenues: VenueListItemResponseModel[] = [
-  makeVenueListItem({
+const baseVenues = [
+  makeVenueListItemLiteResponseModel({
     id: 3,
     managingOffererId: 1,
     name: 'Digital Venue A1',
   }),
-  makeVenueListItem({
+  makeVenueListItemLiteResponseModel({
     id: 4,
     managingOffererId: 2,
     name: 'Digital Venue B1',

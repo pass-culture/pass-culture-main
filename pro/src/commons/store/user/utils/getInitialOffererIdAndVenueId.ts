@@ -1,6 +1,6 @@
 import type {
   GetOffererNameResponseModel,
-  VenueListItemResponseModel,
+  VenueListItemLiteResponseModel,
 } from '@/apiClient/v1'
 import {
   LOCAL_STORAGE_KEY,
@@ -10,7 +10,7 @@ import {
 // TODO (igabriele, 2026-01-08): Delete this util once `WIP_SWITCH_VENUE` FF is enabled and removed.
 export const getInitialOffererIdAndVenueId = (
   offerersNames: GetOffererNameResponseModel[],
-  venues: VenueListItemResponseModel[]
+  venues: VenueListItemLiteResponseModel[]
 ): {
   initialOffererId: number | null
   initialVenueId: number | null

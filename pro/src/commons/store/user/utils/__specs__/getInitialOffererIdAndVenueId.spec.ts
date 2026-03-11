@@ -2,13 +2,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type {
   GetOffererNameResponseModel,
-  VenueListItemResponseModel,
+  VenueListItemLiteResponseModel,
 } from '@/apiClient/v1'
 import { getInitialOffererIdAndVenueId } from '@/commons/store/user/utils/getInitialOffererIdAndVenueId'
-import {
-  getOffererNameFactory,
-  makeVenueListItem,
-} from '@/commons/utils/factories/individualApiFactories'
+import { getOffererNameFactory } from '@/commons/utils/factories/individualApiFactories'
+import { makeVenueListItemLiteResponseModel } from '@/commons/utils/factories/venueFactories'
 import { LOCAL_STORAGE_KEY } from '@/commons/utils/localStorageManager'
 
 const makeOffererName = (
@@ -29,7 +27,7 @@ describe('getInitialOffererIdAndVenueId', () => {
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '999')
 
     const offererNames = [makeOffererName({ id: 1 })]
-    const venues = [makeVenueListItem({ id: 2 })]
+    const venues = [makeVenueListItemLiteResponseModel({ id: 2 })]
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
       offererNames,
@@ -45,8 +43,8 @@ describe('getInitialOffererIdAndVenueId', () => {
 
     const offererNames = [makeOffererName({ id: 1 })]
     const venues = [
-      makeVenueListItem({ id: 123 }),
-      makeVenueListItem({ id: 2 }),
+      makeVenueListItemLiteResponseModel({ id: 123 }),
+      makeVenueListItemLiteResponseModel({ id: 2 }),
     ]
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
@@ -63,8 +61,8 @@ describe('getInitialOffererIdAndVenueId', () => {
 
     const offererNames = [makeOffererName({ id: 1 })]
     const venues = [
-      makeVenueListItem({ id: 11 }),
-      makeVenueListItem({ id: 22 }),
+      makeVenueListItemLiteResponseModel({ id: 11 }),
+      makeVenueListItemLiteResponseModel({ id: 22 }),
     ]
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
@@ -80,7 +78,7 @@ describe('getInitialOffererIdAndVenueId', () => {
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '789')
 
     const offererNames = [makeOffererName({ id: 789 })]
-    const venues = [makeVenueListItem({ id: 2 })]
+    const venues = [makeVenueListItemLiteResponseModel({ id: 2 })]
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
       offererNames,
@@ -99,8 +97,8 @@ describe('getInitialOffererIdAndVenueId', () => {
       makeOffererName({ id: 2 }),
     ]
     const venues = [
-      makeVenueListItem({ id: 33 }),
-      makeVenueListItem({ id: 44 }),
+      makeVenueListItemLiteResponseModel({ id: 33 }),
+      makeVenueListItemLiteResponseModel({ id: 44 }),
     ]
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
@@ -115,8 +113,8 @@ describe('getInitialOffererIdAndVenueId', () => {
   it('should fall back to the first venue when no ids are in storage (priority 4)', () => {
     const offererNames = [makeOffererName({ id: 1 })]
     const venues = [
-      makeVenueListItem({ id: 11 }),
-      makeVenueListItem({ id: 22 }),
+      makeVenueListItemLiteResponseModel({ id: 11 }),
+      makeVenueListItemLiteResponseModel({ id: 22 }),
     ]
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
@@ -133,7 +131,7 @@ describe('getInitialOffererIdAndVenueId', () => {
       makeOffererName({ id: 20 }),
       makeOffererName({ id: 21 }),
     ]
-    const venues: VenueListItemResponseModel[] = []
+    const venues: VenueListItemLiteResponseModel[] = []
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
       offererNames,
@@ -146,7 +144,7 @@ describe('getInitialOffererIdAndVenueId', () => {
 
   it('should return null ids when nothing is available (priority 6: new user without offerers nor venues)', () => {
     const offererNames: GetOffererNameResponseModel[] = []
-    const venues: VenueListItemResponseModel[] = []
+    const venues: VenueListItemLiteResponseModel[] = []
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
       offererNames,

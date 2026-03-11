@@ -3,6 +3,8 @@ import type {
   GetVenueAddressResponseModel,
   GetVenueManagingOffererResponseModel,
   GetVenueResponseModel,
+  LocationResponseModelV2,
+  VenueListItemLiteResponseModel,
   VenueTypeResponseModel,
 } from '@/apiClient/v1'
 
@@ -134,5 +136,39 @@ export const venueAddressFactory = (
     departmentCode: '75',
     venueName: 'some venue',
     ...customVenueAddress,
+  }
+}
+
+export const makeVenueListItemLiteResponseModel = <
+  T extends PartialExcept<VenueListItemLiteResponseModel, 'id'>,
+>(
+  override: T
+): Omit<VenueListItemLiteResponseModel, keyof T> & T => {
+  const offererId = override.managingOffererId ?? 1
+  const location: LocationResponseModelV2 = {
+    id: 2,
+    banId: null,
+    city: 'Paris',
+    departmentCode: null,
+    inseeCode: null,
+    isManualEdition: false,
+    isVenueLocation: false,
+    label: null,
+    latitude: 0,
+    longitude: 0,
+    postalCode: '75001',
+    street: null,
+  }
+
+  const fake: VenueListItemLiteResponseModel = {
+    id: override.id,
+    location,
+    managingOffererId: offererId,
+    publicName: `Nom public de la structure ${override.id}`,
+  }
+
+  return {
+    ...fake,
+    ...override,
   }
 }

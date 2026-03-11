@@ -5,18 +5,18 @@ import { api } from '@/apiClient/api'
 import type {
   AggregatedRevenueModel,
   StatisticsModel,
-  VenueListItemResponseModel,
+  VenueListItemLiteResponseModel,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as useActiveFeature from '@/commons/hooks/useActiveFeature'
 import * as useIsCaledonian from '@/commons/hooks/useIsCaledonian'
 import * as convertEuroToPacificFranc from '@/commons/utils/convertEuroToPacificFranc'
-import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { statisticsFactory } from '@/commons/utils/factories/statisticsFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
+import { makeVenueListItemLiteResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { Component as Income } from './Income'
@@ -25,17 +25,17 @@ import { isCollectiveAndIndividualRevenue, isCollectiveRevenue } from './utils'
 
 const MOCK_DATA: {
   selectedOffererId: number
-  venues: VenueListItemResponseModel[]
+  venues: VenueListItemLiteResponseModel[]
 } & StatisticsModel = {
   selectedOffererId: 100,
   venues: [
-    makeVenueListItem({
+    makeVenueListItemLiteResponseModel({
       id: 1,
       managingOffererId: 100,
       isPermanent: true,
       hasCreatedOffer: true,
     }),
-    makeVenueListItem({
+    makeVenueListItemLiteResponseModel({
       id: 2,
       managingOffererId: 100,
       isPermanent: true,
@@ -62,7 +62,7 @@ const LABELS = {
 }
 
 const renderIncome = (
-  venues: VenueListItemResponseModel[] = MOCK_DATA.venues
+  venues: VenueListItemLiteResponseModel[] = MOCK_DATA.venues
 ) => {
   renderWithProviders(<Income />, {
     user: sharedCurrentUserFactory(),

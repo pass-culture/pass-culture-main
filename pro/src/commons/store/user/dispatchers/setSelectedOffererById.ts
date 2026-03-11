@@ -58,7 +58,7 @@ export const setSelectedOffererById = createAsyncThunk<
       assertOrFrontendError(offererNames, '`offererNames` is null.')
 
       const venues = shouldRefetch
-        ? (await api.getVenues()).venues
+        ? (await api.getVenuesLite()).venues
         : ensureVenues(state)
 
       if (shouldRefetch) {

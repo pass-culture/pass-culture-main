@@ -348,13 +348,36 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
         return volunteering_url
 
 
-class VenueListItemLiteResponseModel(BaseModel):
+class VenueListItemLiteResponseModel(HttpBodyModel):
     id: int
-    name: str
+    location: address_serialize.LocationResponseModelV2
+    managingOffererId: int
+    publicName: str
+
+    @classmethod
+    def build(cls, venue: offerers_models.Venue) -> "VenueListItemLiteResponseModel":
+        return cls(
+            id=venue.id,
+            location=cls._build_address(venue),
+            managingOffererId=venue.managingOffererId,
+            publicName=venue.publicName,
+        )
+
+    @classmethod
+    def _build_address(cls, venue: offerers_models.Venue) -> address_serialize.LocationResponseModelV2:
+        return address_serialize.LocationResponseModelV2.build(
+            offerer_address=venue.offererAddress,
+            label=venue.publicName,
+            is_venue_location=True,
+        )
 
 
-class GetVenueListLiteResponseModel(BaseModel):
+class GetVenueListLiteResponseModel(HttpBodyModel):
     venues: list[VenueListItemLiteResponseModel]
+
+    @classmethod
+    def build(cls, venues: list[offerers_models.Venue]) -> "GetVenueListLiteResponseModel":
+        return cls(venues=[VenueListItemLiteResponseModel.build(venue) for venue in venues])
 
 
 class VenueListQueryModel(BaseModel):
@@ -413,7 +436,7 @@ class GetVenueAddressesWithOffersOption(enum.Enum):
 
 
 class GetVenueAddressesQueryModel(HttpBodyModel):
-    withOffersOption: GetVenueAddressesWithOffersOption | None
+    withOffersOption: GetVenueAddressesWithOffersOption
 
 
 class GetVenueAddressResponseModel(HttpBodyModel):
