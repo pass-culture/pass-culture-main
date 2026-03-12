@@ -6,9 +6,14 @@ import { NavLink, useLocation } from 'react-router'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import {
+  TABLET_MEDIA_QUERY,
+  useMediaQuery,
+} from '@/commons/hooks/useMediaQuery'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
+  type ButtonProps,
   ButtonSize,
   ButtonVariant,
   IconPositionEnum,
@@ -29,6 +34,7 @@ type HeaderProps = {
   isLateralPanelOpen?: boolean
   onToggleLateralPanel?: (state: boolean) => void
   focusCloseButton?: () => void
+  disableBurgerMenu?: boolean
   disableHomeLink?: boolean
   isUnauthenticated?: boolean
   isAdminArea?: boolean
@@ -40,6 +46,7 @@ export const Header = forwardRef(
       isLateralPanelOpen = false,
       onToggleLateralPanel,
       focusCloseButton,
+      disableBurgerMenu = false,
       disableHomeLink = false,
       isUnauthenticated = false,
       isAdminArea = false,
@@ -52,10 +59,28 @@ export const Header = forwardRef(
     const { logEvent } = useAnalytics()
     const location = useLocation()
 
+    const showBurgerMenu = !disableBurgerMenu && !disableHomeLink
+
+    const isTablet = useMediaQuery(TABLET_MEDIA_QUERY)
+
+    const adminButtonLabel = isAdminArea
+      ? 'Revenir à l’Espace Partenaire'
+      : 'Espace administration'
+
+    // In mobile mode, we don't use a button label, BUT we must have an aria-label in backup for assistive technologies
+    const adminButtonLabelProps: Pick<ButtonProps, 'label' | 'aria-label'> =
+      isTablet
+        ? {
+            'aria-label': adminButtonLabel,
+          }
+        : {
+            label: adminButtonLabel,
+          }
+
     return (
       <header className={styles['top-menu']}>
         <div className={styles['top-menu-content']}>
-          {!disableHomeLink && (
+          {showBurgerMenu && (
             <div className={styles['burger-icon']}>
               <Button
                 id="header-nav-toggle"
@@ -126,27 +151,16 @@ export const Header = forwardRef(
                   </div>
                 )}
                 {withSwitchVenueFeature && (
-                  <div
-                    className={cn(
-                      styles['tablet-and-above'],
-                      styles['is-switch-venue']
-                    )}
-                  >
-                    <Button
-                      as="a"
-                      variant={ButtonVariant.SECONDARY}
-                      color={ButtonColor.BRAND}
-                      size={ButtonSize.SMALL}
-                      to={isAdminArea ? '/accueil' : '/remboursements'}
-                      iconPosition={IconPositionEnum.LEFT}
-                      icon={isAdminArea ? fullBackIcon : strokeRepaymentIcon}
-                      label={
-                        isAdminArea
-                          ? 'Revenir à l’Espace Partenaire'
-                          : 'Espace administration'
-                      }
-                    />
-                  </div>
+                  <Button
+                    as="a"
+                    variant={ButtonVariant.SECONDARY}
+                    color={ButtonColor.BRAND}
+                    size={ButtonSize.SMALL}
+                    to={isAdminArea ? '/accueil' : '/remboursements'}
+                    iconPosition={IconPositionEnum.LEFT}
+                    icon={isAdminArea ? fullBackIcon : strokeRepaymentIcon}
+                    {...adminButtonLabelProps}
+                  />
                 )}
                 <HeaderDropdown />
               </>

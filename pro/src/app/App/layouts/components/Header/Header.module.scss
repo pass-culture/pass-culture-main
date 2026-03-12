@@ -54,10 +54,7 @@
     height: 100%;
     color: var(--color-text-default);
     width: rem.torem(80px);
-
-    @media (min-width: size.$tablet) {
-      margin-left: var(--size-spacing-l);
-    }
+    margin-left: var(--size-spacing-l);
 
     &:focus-visible {
       @include outline.focus-outline;
@@ -91,9 +88,5 @@
   @media (min-width: size.$tablet) {
     display: flex;
     align-items: center;
-
-    &.is-switch-venue {
-      display: flex;
-    }
   }
 }

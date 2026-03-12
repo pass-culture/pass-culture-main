@@ -24,8 +24,7 @@
 
   @media screen and (min-width: size.$tablet) {
     grid-template-columns: repeat(2, 1fr);
-    overflow-y: scroll;
-    padding-right: var(--size-spacing-l);
+    overflow-y: auto;
   }
 
   @media screen and (min-width: size.$laptop) {
