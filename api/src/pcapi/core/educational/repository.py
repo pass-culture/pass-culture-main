@@ -11,6 +11,7 @@ from sqlalchemy.dialects import postgresql
 from sqlalchemy.sql.expression import extract
 from sqlalchemy.sql.selectable import ScalarSelect
 
+from pcapi.core.educational import constants
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational import schemas
@@ -874,6 +875,41 @@ def list_collective_offers(filters: schemas.CollectiveOffersFilter, offers_limit
     return offers
 
 
+def add_ordering_on_collective_offers_for_home(
+    query: sa_orm.Query[models.CollectiveOffer],
+) -> sa_orm.Query[models.CollectiveOffer]:
+    today = date_utils.get_naive_utc_now()
+    # Sorting logic:
+    # 1. Offers with PREBOOKED or PUBLISHED status and booking limit < 7 days are prioritized by urgency
+    # 2. When same urgency, sorted by CollectiveStock.startDatetime (most recent first)
+    priority_score = sa.case(
+        (
+            sa.and_(
+                # see `filter_collective_offers_by_statuses` for the "PREBOOKED or PUBLISHED" status conditions
+                models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                models.CollectiveOffer.isActive == True,
+                models.CollectiveStock.hasBookingLimitDatetimePassed == False,
+                sa.or_(
+                    models.CollectiveBooking.status == None,
+                    models.CollectiveBooking.status == models.CollectiveBookingStatus.PENDING,
+                ),
+                # here the conditions of expiration within the next 7 days
+                models.CollectiveStock.bookingLimitDatetime.isnot(None),
+                models.CollectiveStock.bookingLimitDatetime <= today + timedelta(days=7),
+            ),
+            sa.extract("day", models.CollectiveStock.bookingLimitDatetime - today),
+        ),
+        else_=constants.BIG_NUMBER_FOR_SORTING_OFFERS,
+    )
+    last_booking_id = get_last_booking_id_subquery()
+
+    return (
+        query.outerjoin(models.CollectiveOffer.collectiveStock)
+        .outerjoin(models.CollectiveBooking, models.CollectiveBooking.id == last_booking_id)
+        .order_by(priority_score, models.CollectiveStock.startDatetime)
+    )
+
+
 def list_collective_offers_for_homepage(
     user_id: int, venue_id: int, offers_limit: int
 ) -> tuple[list[models.CollectiveOffer], bool]:
@@ -888,17 +924,10 @@ def list_collective_offers_for_homepage(
         ],
         period_beginning_date=date_utils.get_naive_utc_now(),
     )
-    query = get_collective_offers_by_filters(filters)
-    offers = (
-        query.order_by(models.CollectiveOffer.dateCreated.desc())
-        .options(
-            sa_orm.joinedload(models.CollectiveOffer.collectiveStock).joinedload(
-                models.CollectiveStock.collectiveBookings
-            )
-        )
-        .limit(offers_limit)
-        .all()
-    )
+    query = add_ordering_on_collective_offers_for_home(get_collective_offers_by_filters(filters)).limit(offers_limit)
+    offers = query.options(
+        sa_orm.joinedload(models.CollectiveOffer.collectiveStock).joinedload(models.CollectiveStock.collectiveBookings)
+    ).all()
 
     all_offers_filters = schemas.CollectiveOffersFilter(user_id=user_id, venue_id=venue_id)
     all_offers_query = get_collective_offers_by_filters(filters=all_offers_filters)
