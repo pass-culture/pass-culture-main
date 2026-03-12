@@ -7,6 +7,7 @@ from pcapi.core.providers import models
 from pcapi.core.providers import repository
 from pcapi.core.providers.clients import cds_serializers
 from pcapi.core.providers.clients.cds_client import CineDigitalServiceAPIClient
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
 
 from .cinema_etl_template import CinemaETLProcessTemplate
@@ -33,6 +34,8 @@ class CDSExtractTransformLoadProcess(
     Integration to import products, offers, stocks & price_categories for a `Venue`
     linked to `CDS`.
     """
+
+    feature_flag = FeatureToggle.ENABLE_CDS_IMPLEMENTATION
 
     def __init__(self, venue_provider: models.VenueProvider):
         """

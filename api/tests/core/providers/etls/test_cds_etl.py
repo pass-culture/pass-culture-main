@@ -12,6 +12,7 @@ import pcapi.core.providers.factories as providers_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.providers.clients import cds_serializers
 from pcapi.core.providers.etls.cds_etl import CDSExtractTransformLoadProcess
+from pcapi.core.providers.etls.cinema_etl_template import ETLStopProcessException
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.search import models as search_models
 from pcapi.models import db
@@ -68,6 +69,15 @@ class CDSExtractTransformLoadProcessTest:
             "https://account_id.cds_api.fake/vouchertype?api_token=fake_token",
             json=cds_fixtures.VOUCHER_TYPES_RESPONSE_JSON,
         )
+
+    @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=False)
+    def test_execute_should_raise_inactive_feature_flag(self, requests_mock):
+        venue_provider = self.setup_cinema_objects()
+        self.setup_requests_mock(requests_mock)
+        etl_process = CDSExtractTransformLoadProcess(venue_provider)
+
+        with pytest.raises(ETLStopProcessException):
+            etl_process.execute()
 
     def test_execute_should_raise_inactive_provider(self):
         venue_provider = self.setup_cinema_objects()

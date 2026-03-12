@@ -6,6 +6,7 @@ from pcapi.core.providers import models
 from pcapi.core.providers.clients import boost_serializers
 from pcapi.core.providers.clients.boost_client import BoostAPIClient
 from pcapi.core.providers.clients.boost_client import get_pcu_pricing_if_exists
+from pcapi.models.feature import FeatureToggle
 
 from .cinema_etl_template import CinemaETLProcessTemplate
 from .cinema_etl_template import LoadableMovie
@@ -31,6 +32,8 @@ class BoostExtractTransformLoadProcess(CinemaETLProcessTemplate[BoostAPIClient, 
         - step 2: Transform data into a format easily loadable in our DB
         - step 3: Load transformed data into our DB
     """
+
+    feature_flag = FeatureToggle.ENABLE_BOOST_API_INTEGRATION
 
     def __init__(self, venue_provider: models.VenueProvider):
         """
