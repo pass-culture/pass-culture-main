@@ -236,7 +236,7 @@ class VenueProAdvicesTest:
                     "content": "Content",
                     "offerId": offer.id,
                     "offerName": offer.name,
-                    "offerSubcategory": offer.subcategoryId,
+                    "offerCategoryLabel": offer.subcategory.app_label,
                     "offerThumbUrl": offer.thumbUrl,
                     "publicationDatetime": date_utils.format_into_utc_date(pro_advice.updatedAt),
                 }

@@ -7959,16 +7959,16 @@
                         "title": "Content",
                         "type": "string"
                     },
+                    "offerCategoryLabel": {
+                        "title": "Offercategorylabel",
+                        "type": "string"
+                    },
                     "offerId": {
                         "title": "Offerid",
                         "type": "integer"
                     },
                     "offerName": {
                         "title": "Offername",
-                        "type": "string"
-                    },
-                    "offerSubcategory": {
-                        "title": "Offersubcategory",
                         "type": "string"
                     },
                     "offerThumbUrl": {
@@ -7994,7 +7994,7 @@
                     "content",
                     "offerId",
                     "offerName",
-                    "offerSubcategory",
+                    "offerCategoryLabel",
                     "publicationDatetime"
                 ],
                 "title": "VenueProAdvice",

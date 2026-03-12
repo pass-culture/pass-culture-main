@@ -132,7 +132,7 @@ class VenueProAdvice(HttpBodyModel):
     content: str
     offer_id: int
     offer_name: str
-    offer_subcategory: str
+    offer_category_label: str
     offer_thumb_url: str | None = None
     publication_datetime: datetime.datetime
 
@@ -147,7 +147,7 @@ class VenueProAdvice(HttpBodyModel):
             content=content,
             offer_id=pro_advice.offer.id,
             offer_name=pro_advice.offer.name,
-            offer_subcategory=pro_advice.offer.subcategoryId,
+            offer_category_label=pro_advice.offer.subcategory.app_label,
             offer_thumb_url=pro_advice.offer.thumbUrl,
             publication_datetime=pro_advice.updatedAt,
         )
