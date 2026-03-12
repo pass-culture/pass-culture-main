@@ -143,6 +143,21 @@ class GetProfileTest:
         assert response.json["profile"]["activity"] == users_models.ActivityEnum.HIGH_SCHOOL_STUDENT.value
         assert response.json["profile"]["schoolType"] == users_models.SchoolTypeEnum.PUBLIC_HIGH_SCHOOL.value
 
+    def test_get_profile_with_legacy_profile_completion_fraud_check(self, client):
+        user = users_factories.BeneficiaryGrant18Factory()
+        fraud_check = subscription_factories.ProfileCompletionFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            dateCreated=date_utils.get_naive_utc_now() - relativedelta(months=1),
+        )
+        del fraud_check.resultContent["address"]
+        del fraud_check.resultContent["postal_code"]
+        fraud_check.resultContent["postalCode"] = "63170"
+
+        client.with_token(user)
+        response = client.get("/native/v1/subscription/profile")
+        assert response.status_code == 200
+
 
 class UpdateProfileTest:
     @pytest.mark.features(ENABLE_UBBLE=True)
