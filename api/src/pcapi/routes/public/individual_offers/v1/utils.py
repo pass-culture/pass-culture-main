@@ -1,5 +1,3 @@
-import logging
-
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
@@ -23,9 +21,6 @@ from pcapi.utils import image_conversion
 
 from . import constants
 from . import serialization
-
-
-logger = logging.getLogger(__name__)
 
 
 def get_venue_with_offerer_address(venue_id: int) -> offerers_models.Venue:
