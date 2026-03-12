@@ -894,6 +894,11 @@ def check_offerer_is_eligible_for_headline_offers(offerer_id: int) -> None:
     # ).count()
     # is superior to 1 (as permanent & virtual venues won't exist anymore)
 
+    # FIXME 2: ogeber 12.03.2026 - while doing the previous fixme, we should also
+    # take care of the move_offer: having headline offer on offerer that has several
+    # venues, we can move offer having a headline offer. We have decided that the
+    # business rule for that will be: remove the headline offer if we move offer's venue
+
     venues = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.managingOffererId == offerer_id).all()
 
     permanent_venues = [v for v in venues if v.isPermanent and not v.isVirtual]
