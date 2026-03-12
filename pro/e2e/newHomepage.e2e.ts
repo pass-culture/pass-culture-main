@@ -60,7 +60,7 @@ test.describe('when I do individual', () => {
       'INCOME_CARD',
       'PARTNER_PAGE_CARD',
       'NEWSLETTER_CARD',
-      'WEBINARS_CARD',
+      'WEBINAR_CARD',
     ])
   })
 })
@@ -133,7 +133,7 @@ test.describe('when I do collective', () => {
       'INCOME_CARD',
       'ADAGE_PAGE_CARD',
       'NEWSLETTER_CARD',
-      'WEBINARS_CARD',
+      'WEBINAR_CARD',
       'DMS_CARD_ACCEPTED_BANNER',
     ])
   })
@@ -169,7 +169,7 @@ test.describe('when I do both individual and collective', () => {
       'INCOME_CARD',
       'PARTNER_PAGE_CARD',
       'NEWSLETTER_CARD',
-      'WEBINARS_CARD',
+      'WEBINAR_CARD',
     ])
 
     await page.getByRole('tab', { name: 'Collectif' }).click()
@@ -180,7 +180,7 @@ test.describe('when I do both individual and collective', () => {
       'INCOME_CARD',
       'ADAGE_PAGE_CARD',
       'NEWSLETTER_CARD',
-      'WEBINARS_CARD',
+      'WEBINAR_CARD',
     ])
   })
 })

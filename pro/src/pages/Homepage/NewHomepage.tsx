@@ -27,8 +27,9 @@ import {
 import { IncomeCard } from './components/IncomeCard/IncomeCard'
 import { NewsletterCard } from './components/NewsletterCard/NewsletterCard'
 import { PartnerPageCard } from './components/PartnerPageCard/PartnerPageCard'
-import { PartnerPageVariant } from './components/types'
+import { HomepageVariant } from './components/types'
 import { VenueValidationBanner } from './components/VenueValidationBanner/VenueValidationBanner'
+import { WebinarCard } from './components/WebinarCard/WebinarCard'
 import styles from './NewHomepage.module.scss'
 
 export const NewHomepage = (): JSX.Element => {
@@ -150,14 +151,10 @@ export const NewHomepage = (): JSX.Element => {
               offererId={selectedVenue.managingOfferer.id}
               venueBannerUrl={selectedVenue.bannerUrl}
               venueBannerMeta={selectedVenue.bannerMeta}
-              variant={PartnerPageVariant.INDIVIDUAL}
+              variant={HomepageVariant.INDIVIDUAL}
             />
             {shouldDisplayWebinarCard && (
-              <div>
-                Participer à nos webinaires sur la part individuelle !
-                <br />
-                <b>Module Webinaire indiv</b>
-              </div>
+              <WebinarCard variant={HomepageVariant.INDIVIDUAL} />
             )}
             <NewsletterCard />
           </div>
@@ -226,14 +223,10 @@ export const NewHomepage = (): JSX.Element => {
                   offererId={selectedVenue.managingOfferer.id}
                   venueBannerUrl={selectedVenue.bannerUrl}
                   venueBannerMeta={selectedVenue.bannerMeta}
-                  variant={PartnerPageVariant.COLLECTIVE}
+                  variant={HomepageVariant.COLLECTIVE}
                 />
                 {shouldDisplayCollectiveWebinarCard && (
-                  <div>
-                    Participer à nos webinaires sur la part collective !
-                    <br />
-                    <b>Module Webinaires collectif</b>
-                  </div>
+                  <WebinarCard variant={HomepageVariant.COLLECTIVE} />
                 )}
                 <NewsletterCard />
               </div>
