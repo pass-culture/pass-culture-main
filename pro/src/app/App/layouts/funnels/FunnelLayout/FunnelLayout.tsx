@@ -2,7 +2,6 @@ import cn from 'classnames'
 import type React from 'react'
 import { useRef, useState } from 'react'
 
-import { LateralPanel } from '@/app/App/layouts/BasicLayout/LateralPanel/LateralPanel'
 import { ConnectedAsAside } from '@/app/App/layouts/components/ConnectedAsAside/ConnectedAsAside'
 import { Header } from '@/app/App/layouts/components/Header/Header'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
@@ -14,7 +13,6 @@ import styles from './FunnelLayout.module.scss'
 
 export interface FunnelLayoutProps {
   children?: React.ReactNode
-  isHubPage?: boolean
   /**
    * Name of the page to display in the main heading.
    * Make sure that only one heading is displayed per page.
@@ -25,7 +23,6 @@ export interface FunnelLayoutProps {
 
 export const FunnelLayout = ({
   children,
-  isHubPage = false,
   mainHeading,
   withFlexContent = false,
 }: FunnelLayoutProps) => {
@@ -33,7 +30,6 @@ export const FunnelLayout = ({
   const [isLateralPanelOpen, setIsLateralPanelOpen] = useState(false)
   const openButtonRef = useRef<HTMLButtonElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
-  const navPanel = useRef<HTMLDivElement>(null)
 
   return (
     <div className={styles.layout}>
@@ -51,17 +47,9 @@ export const FunnelLayout = ({
         }}
         ref={openButtonRef}
         disableHomeLink={!currentUser?.hasUserOfferer}
+        disableBurgerMenu
       />
-      <div className={styles['tablet-and-above']}>
-        <LateralPanel
-          isHubPage={isHubPage}
-          isOpen={isLateralPanelOpen}
-          onToggle={setIsLateralPanelOpen}
-          openButtonRef={openButtonRef}
-          closeButtonRef={closeButtonRef}
-          navPanel={navPanel}
-        />
-      </div>
+
       <div
         className={cn(styles['page-layout'], {
           [styles['page-layout-connect-as']]: currentUser?.isImpersonated,
