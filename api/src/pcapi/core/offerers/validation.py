@@ -10,12 +10,12 @@ from . import models
 
 
 if typing.TYPE_CHECKING:
-    from pcapi.routes.serialization import venues_serialize
+    from pcapi.routes.serialization import venue_serialize
 
 VENUE_BANNER_MAX_SIZE = 10_000_000
 
 
-def check_accessibility_compliance(venue: "venues_serialize.PostVenueBodyModel") -> None:
+def check_accessibility_compliance(venue: "venue_serialize.PostVenueBodyModel") -> None:
     if None in [
         venue.audioDisabilityCompliant,
         venue.mentalDisabilityCompliant,

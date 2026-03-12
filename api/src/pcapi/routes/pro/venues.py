@@ -26,7 +26,11 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.utils import get_or_404
 from pcapi.routes.apis import private_api
-from pcapi.routes.serialization import venues_serialize
+from pcapi.routes.serialization import venue_banners_serialize
+from pcapi.routes.serialization import venue_collective_serialize
+from pcapi.routes.serialization import venue_deprecated_serialization
+from pcapi.routes.serialization import venue_finance_serialize
+from pcapi.routes.serialization import venue_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import date as date_utils
 from pcapi.utils import siren as siren_utils
@@ -41,8 +45,8 @@ from . import blueprint
 @private_api.route("/venues/<int:venue_id>", methods=["GET"])
 @login_required
 @atomic()
-@spectree_serialize(response_model=venues_serialize.GetVenueResponseModel, api=blueprint.pro_private_schema)
-def get_venue(venue_id: int) -> venues_serialize.GetVenueResponseModel:
+@spectree_serialize(response_model=venue_serialize.GetVenueResponseModel, api=blueprint.pro_private_schema)
+def get_venue(venue_id: int) -> venue_serialize.GetVenueResponseModel:
     aliased_venue = sa_orm.aliased(models.Venue)
 
     venue = (
@@ -78,18 +82,18 @@ def get_venue(venue_id: int) -> venues_serialize.GetVenueResponseModel:
         flask.abort(404)
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
-    return venues_serialize.GetVenueResponseModel.from_orm(venue)
+    return venue_serialize.GetVenueResponseModel.from_orm(venue)
 
 
 @private_api.route("/venues", methods=["GET"])
 @login_required
 @atomic()
 @spectree_serialize(
-    response_model=venues_serialize.deprecated.GetVenueListResponseModel,
+    response_model=venue_deprecated_serialization.GetVenueListResponseModel,
     api=blueprint.pro_private_schema,
     deprecated=True,
 )
-def get_venues(query: venues_serialize.VenueListQueryModel) -> venues_serialize.deprecated.GetVenueListResponseModel:
+def get_venues(query: venue_serialize.VenueListQueryModel) -> venue_deprecated_serialization.GetVenueListResponseModel:
     """[deprecated] please use /lite/venues instead
 
     This route loads way too much data.
@@ -112,9 +116,9 @@ def get_venues(query: venues_serialize.VenueListQueryModel) -> venues_serialize.
     # venue_ids = [v.id for v in venue_list]
     # venue_ids_with_non_free_offers = offerers_repository.venues_have_non_free_offers(venue_ids)
     venue_ids_with_non_free_offers: set[int] = set()
-    return venues_serialize.deprecated.GetVenueListResponseModel(
+    return venue_deprecated_serialization.GetVenueListResponseModel(
         venues=[
-            venues_serialize.deprecated.VenueListItemResponseModel.build(
+            venue_deprecated_serialization.VenueListItemResponseModel.build(
                 venue, ids_of_venues_with_offers, venue_ids_with_non_free_offers
             )
             for venue in venue_list
@@ -124,8 +128,8 @@ def get_venues(query: venues_serialize.VenueListQueryModel) -> venues_serialize.
 
 @private_api.route("/lite/venues", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=venues_serialize.GetVenueListLiteResponseModel, api=blueprint.pro_private_schema)
-def get_venues_lite(query: venues_serialize.VenueListQueryModel) -> venues_serialize.GetVenueListLiteResponseModel:
+@spectree_serialize(response_model=venue_serialize.GetVenueListLiteResponseModel, api=blueprint.pro_private_schema)
+def get_venues_lite(query: venue_serialize.VenueListQueryModel) -> venue_serialize.GetVenueListLiteResponseModel:
     venue_list = offerers_repository.get_filtered_venues(
         pro_user_id=current_user.id,
         active_offerers_only=query.active_offerers_only,
@@ -133,16 +137,16 @@ def get_venues_lite(query: venues_serialize.VenueListQueryModel) -> venues_seria
         validated_offerer=query.validated,
     )
 
-    return venues_serialize.GetVenueListLiteResponseModel(
-        venues=[venues_serialize.VenueListItemLiteResponseModel(id=venue.id, name=venue.name) for venue in venue_list]
+    return venue_serialize.GetVenueListLiteResponseModel(
+        venues=[venue_serialize.VenueListItemLiteResponseModel(id=venue.id, name=venue.name) for venue in venue_list]
     )
 
 
 @private_api.route("/venues/<int:venue_id>", methods=["PATCH"])
 @login_required
 @atomic()
-@spectree_serialize(response_model=venues_serialize.GetVenueResponseModel, api=blueprint.pro_private_schema)
-def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venues_serialize.GetVenueResponseModel:
+@spectree_serialize(response_model=venue_serialize.GetVenueResponseModel, api=blueprint.pro_private_schema)
+def edit_venue(venue_id: int, body: venue_serialize.EditVenueBodyModel) -> venue_serialize.GetVenueResponseModel:
     venue = get_or_404(Venue, venue_id)
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
@@ -221,16 +225,16 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
         )
         on_commit(partial(offers_tasks.update_all_venue_offers_email_task.delay, email_payload.model_dump()))
 
-    return venues_serialize.GetVenueResponseModel.from_orm(venue)
+    return venue_serialize.GetVenueResponseModel.from_orm(venue)
 
 
 @private_api.route("/venues/<int:venue_id>/collective-data", methods=["PATCH"])
 @login_required
 @atomic()
-@spectree_serialize(response_model=venues_serialize.GetVenueResponseModel, api=blueprint.pro_private_schema)
+@spectree_serialize(response_model=venue_serialize.GetVenueResponseModel, api=blueprint.pro_private_schema)
 def edit_venue_collective_data(
-    venue_id: int, body: venues_serialize.EditVenueCollectiveDataBodyModel
-) -> venues_serialize.GetVenueResponseModel:
+    venue_id: int, body: venue_collective_serialize.EditVenueCollectiveDataBodyModel
+) -> venue_serialize.GetVenueResponseModel:
     venue = get_or_404(Venue, venue_id)
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
@@ -238,14 +242,14 @@ def edit_venue_collective_data(
     update_venue_attrs = body.dict(exclude_unset=True)
     venue = offerers_api.update_venue_collective_data(venue, **update_venue_attrs)
 
-    return venues_serialize.GetVenueResponseModel.from_orm(venue)
+    return venue_serialize.GetVenueResponseModel.from_orm(venue)
 
 
 @private_api.route("/venues/<int:venue_id>/pricing-point", methods=["POST"])
 @login_required
 @atomic()
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
-def link_venue_to_pricing_point(venue_id: int, body: venues_serialize.LinkVenueToPricingPointBodyModel) -> None:
+def link_venue_to_pricing_point(venue_id: int, body: venue_finance_serialize.LinkVenueToPricingPointBodyModel) -> None:
     venue = get_or_404(Venue, venue_id)
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     try:
@@ -257,14 +261,14 @@ def link_venue_to_pricing_point(venue_id: int, body: venues_serialize.LinkVenueT
 @private_api.route("/venues/<int:venue_id>/banner", methods=["POST"])
 @login_required
 @atomic()
-@spectree_serialize(response_model=venues_serialize.GetVenueResponseModel, on_success_status=201)
-def upsert_venue_banner(venue_id: int) -> venues_serialize.GetVenueResponseModel:
+@spectree_serialize(response_model=venue_serialize.GetVenueResponseModel, on_success_status=201)
+def upsert_venue_banner(venue_id: int) -> venue_serialize.GetVenueResponseModel:
     venue = get_or_404(Venue, venue_id)
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     try:
-        venue_banner = venues_serialize.VenueBannerContentModel.from_request(request)
+        venue_banner = venue_banners_serialize.VenueBannerContentModel.from_request(request)
     except exceptions.InvalidVenueBannerContent as err:
         content = {"code": "INVALID_BANNER_CONTENT", "message": str(err)}
         raise ApiErrors(content, status_code=400)
@@ -284,7 +288,7 @@ def upsert_venue_banner(venue_id: int) -> venues_serialize.GetVenueResponseModel
         crop_params=venue_banner.crop_params,
     )
 
-    return venues_serialize.GetVenueResponseModel.from_orm(venue)
+    return venue_serialize.GetVenueResponseModel.from_orm(venue)
 
 
 @private_api.route("/venues/<int:venue_id>/banner", methods=["DELETE"])
@@ -303,24 +307,24 @@ def delete_venue_banner(venue_id: int) -> None:
 @atomic()
 @spectree_serialize(
     on_success_status=200,
-    response_model=venues_serialize.VenuesEducationalStatusesResponseModel,
+    response_model=venue_collective_serialize.VenuesEducationalStatusesResponseModel,
     api=blueprint.pro_private_schema,
 )
-def get_venues_educational_statuses() -> venues_serialize.VenuesEducationalStatusesResponseModel:
+def get_venues_educational_statuses() -> venue_collective_serialize.VenuesEducationalStatusesResponseModel:
     statuses = offerers_api.get_venues_educational_statuses()
-    return venues_serialize.VenuesEducationalStatusesResponseModel(statuses=statuses)  # type: ignore[arg-type]
+    return venue_collective_serialize.VenuesEducationalStatusesResponseModel(statuses=statuses)  # type: ignore[arg-type]
 
 
 @private_api.route("/venue/<int:venue_id>/offers-statistics", methods=["GET"])
 @atomic()
 @login_required
-@spectree_serialize(response_model=venues_serialize.GetOffersStatsResponseModel, api=blueprint.pro_private_schema)
-def get_offers_statistics(venue_id: int) -> venues_serialize.GetOffersStatsResponseModel:
+@spectree_serialize(response_model=venue_serialize.GetOffersStatsResponseModel, api=blueprint.pro_private_schema)
+def get_offers_statistics(venue_id: int) -> venue_serialize.GetOffersStatsResponseModel:
     venue = get_or_404(models.Venue, venue_id)
     check_user_has_access_to_venues(current_user, [venue_id])
 
     stats = offerers_api.get_offers_stats_by_venue(venue.id)
-    return venues_serialize.GetOffersStatsResponseModel(
+    return venue_serialize.GetOffersStatsResponseModel(
         published_public_offers=stats.published_public_offers,
         published_educational_offers=stats.published_educational_offers,
         pending_public_offers=stats.pending_public_offers,
@@ -333,25 +337,25 @@ def get_offers_statistics(venue_id: int) -> venues_serialize.GetOffersStatsRespo
 @spectree_serialize(
     on_success_status=200,
     api=blueprint.pro_private_schema,
-    response_model=venues_serialize.GetVenueAddressesResponseModel,
+    response_model=venue_serialize.GetVenueAddressesResponseModel,
 )
 def get_venue_addresses(
-    venue_id: int, query: venues_serialize.GetVenueAddressesQueryModel
-) -> venues_serialize.GetVenueAddressesResponseModel:
+    venue_id: int, query: venue_serialize.GetVenueAddressesQueryModel
+) -> venue_serialize.GetVenueAddressesResponseModel:
     check_user_has_access_to_venues(current_user, [venue_id])
 
     model: type[educational_models.CollectiveOfferTemplate | educational_models.CollectiveOffer | offers_models.Offer]
-    if query.withOffersOption == venues_serialize.GetVenueAddressesWithOffersOption.COLLECTIVE_OFFER_TEMPLATES_ONLY:
+    if query.withOffersOption == venue_serialize.GetVenueAddressesWithOffersOption.COLLECTIVE_OFFER_TEMPLATES_ONLY:
         model = educational_models.CollectiveOfferTemplate
-    if query.withOffersOption == venues_serialize.GetVenueAddressesWithOffersOption.COLLECTIVE_OFFERS_ONLY:
+    if query.withOffersOption == venue_serialize.GetVenueAddressesWithOffersOption.COLLECTIVE_OFFERS_ONLY:
         model = educational_models.CollectiveOffer
-    if query.withOffersOption == venues_serialize.GetVenueAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY:
+    if query.withOffersOption == venue_serialize.GetVenueAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY:
         model = offers_models.Offer
 
     results = offerers_repository.get_venue_addresses(venue_id, model)
 
     venue_addresses = [
-        venues_serialize.GetVenueAddressResponseModel(
+        venue_serialize.GetVenueAddressResponseModel(
             id=result.id,
             addressId=result.addressId,
             label=result.label if hasattr(result, "label") and result.label else result.publicName,
@@ -365,4 +369,4 @@ def get_venue_addresses(
         for result in results
     ]
 
-    return venues_serialize.GetVenueAddressesResponseModel(venue_addresses)
+    return venue_serialize.GetVenueAddressesResponseModel(venue_addresses)

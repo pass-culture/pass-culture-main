@@ -8,7 +8,7 @@ from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.models import db
-from pcapi.routes.serialization import venues_serialize
+from pcapi.routes.serialization import venue_finance_serialize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -45,7 +45,7 @@ def test_response_serialization(client):
             "isValidated": venue.managingOfferer.isValidated,
             "isActive": venue.managingOfferer.isActive,
             "hasNonFreeOffers": False,
-            "bankAccountStatus": venues_serialize.SimplifiedBankAccountStatus.VALID.value,
+            "bankAccountStatus": venue_finance_serialize.SimplifiedBankAccountStatus.VALID.value,
             "isVirtual": False,
             "bookingEmail": venue.bookingEmail,
             "withdrawalDetails": venue.withdrawalDetails,
