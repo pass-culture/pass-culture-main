@@ -1,57 +1,30 @@
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/_rem.scss" as rem;
 
-.income-card {
+.income-card-amount {
   display: flex;
   flex-direction: column;
+  gap: var(--size-spacing-xs);
+}
 
-  &-title {
-    @include fonts.title3;
+.income-card-label {
+  @include fonts.body-accent;
+
+  margin: 0;
+}
+
+.income-card-empty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-spacing-m);
+
+  &-icon {
+    color: var(--color-icon-subtle);
   }
 
-  &-subtitle {
+  &-text {
     @include fonts.body;
 
-    margin: 0;
     color: var(--color-text-subtle);
-  }
-
-  &-banner {
-    margin-top: var(--size-spacing-l);
-  }
-
-  &-content {
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-spacing-m);
-  }
-
-  &-amount {
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-spacing-xs);
-  }
-
-  &-label {
-    @include fonts.body-accent;
-
-    margin: 0;
-  }
-
-  &-empty {
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-spacing-m);
-
-    &-icon {
-      color: var(--color-icon-subtle);
-    }
-
-    &-text {
-      @include fonts.body;
-
-      color: var(--color-text-subtle);
-      text-align: left;
-    }
+    text-align: left;
   }
 }
