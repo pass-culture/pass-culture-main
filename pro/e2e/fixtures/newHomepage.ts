@@ -50,7 +50,7 @@ type IndividualModule =
   | 'INCOME_CARD'
   | 'PARTNER_PAGE_CARD'
   | 'NEWSLETTER_CARD'
-  | 'WEBINARS_CARD'
+  | 'WEBINAR_CARD'
 
 export async function expectIndividualModules(
   page: Page,
@@ -81,8 +81,11 @@ export async function expectIndividualModules(
     visibleModules.includes('PARTNER_PAGE_CARD')
   )
   await expectModuleVisibility(
-    page.getByText('Module Webinaire indiv'),
-    visibleModules.includes('WEBINARS_CARD')
+    page.getByRole('heading', {
+      level: 2,
+      name: 'Participer à nos webinaires sur la part individuelle !',
+    }),
+    visibleModules.includes('WEBINAR_CARD')
   )
   await expectModuleVisibility(
     page.getByRole('heading', { level: 2, name: 'Suivez notre actualité !' }),
@@ -99,7 +102,7 @@ type CollectiveModule =
   | 'INCOME_CARD'
   | 'ADAGE_PAGE_CARD'
   | 'NEWSLETTER_CARD'
-  | 'WEBINARS_CARD'
+  | 'WEBINAR_CARD'
 
 export async function expectCollectiveModules(
   page: Page,
@@ -144,7 +147,10 @@ export async function expectCollectiveModules(
   )
 
   await expectModuleVisibility(
-    page.getByText('Module Webinaires collectif'),
-    visibleModules.includes('WEBINARS_CARD')
+    page.getByRole('heading', {
+      level: 2,
+      name: 'Participer à nos webinaires sur la part collective !',
+    }),
+    visibleModules.includes('WEBINAR_CARD')
   )
 }

@@ -15,6 +15,7 @@ import {
 import { PartnerLayout } from '@/layouts/PartnerLayout/PartnerLayout'
 
 import * as utils from './commons/utils'
+import type { HomepageVariant } from './components/types'
 import { NewHomepage } from './NewHomepage'
 
 vi.mock('@/components/CollectiveDmsTimeline/CollectiveDmsTimeline', () => ({
@@ -27,6 +28,13 @@ vi.mock('./components/PartnerPageCard/PartnerPageCard', () => ({
 
 vi.mock('./components/IncomeCard/IncomeCard', () => ({
   IncomeCard: () => <div>Remboursement</div>,
+}))
+
+vi.mock('./components/WebinarCard/WebinarCard', () => ({
+  WebinarCard: ({ variant }: { variant: HomepageVariant }) => {
+    const variantText = variant === 'individual' ? 'individuelle' : 'collective'
+    return <div>Participer à nos webinaires sur la part {variantText} !</div>
+  },
 }))
 
 vi.mock('./components/VenueValidationBanner/VenueValidationBanner', () => ({
@@ -319,7 +327,7 @@ describe('NewHomepage', () => {
         expect(
           screen.getByRole('tabpanel', { description: /indiv/ })
         ).not.toHaveTextContent(
-          /Participer à nos webinaires sur la part indivisuelle !/
+          /Participer à nos webinaires sur la part individuelle !/
         )
       })
     })
