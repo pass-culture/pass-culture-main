@@ -500,8 +500,8 @@ class DeleteProUserTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     @patch("pcapi.routes.backoffice.pro_users.blueprint.mails_api")
-    @patch("pcapi.routes.backoffice.pro_users.blueprint.DeleteBatchUserAttributesRequest", return_value="canary")
-    @patch("pcapi.routes.backoffice.pro_users.blueprint.delete_user_attributes_task")
+    @patch("pcapi.core.external.batch.serialization.DeleteBatchUserAttributesRequest", return_value="canary")
+    @patch("pcapi.tasks.batch_tasks.delete_user_attributes_task")
     def test_delete_pro_user(
         self, delete_user_attributes_task, DeleteBatchUserAttributesRequest, mails_api, authenticated_client
     ):
@@ -528,9 +528,9 @@ class DeleteProUserTest(PostEndpointHelper):
         )
 
     @patch("pcapi.routes.backoffice.pro_users.blueprint.mails_api")
-    @patch("pcapi.routes.backoffice.pro_users.blueprint.DeleteBatchUserAttributesRequest", return_value="canary")
-    @patch("pcapi.routes.backoffice.pro_users.blueprint.delete_user_attributes_task")
-    def test_delete_pro_user_and_keep_email_in_mailing_List(
+    @patch("pcapi.core.external.batch.serialization.DeleteBatchUserAttributesRequest", return_value="canary")
+    @patch("pcapi.tasks.batch_tasks.delete_user_attributes_task")
+    def test_delete_pro_user_and_keep_email_in_mailing_list(
         self, delete_user_attributes_task, DeleteBatchUserAttributesRequest, mails_api, authenticated_client
     ):
         user = users_factories.NonAttachedProFactory()
@@ -556,8 +556,8 @@ class DeleteProUserTest(PostEndpointHelper):
         )
 
     @patch("pcapi.routes.backoffice.pro_users.blueprint.mails_api")
-    @patch("pcapi.routes.backoffice.pro_users.blueprint.DeleteBatchUserAttributesRequest", return_value="canary")
-    @patch("pcapi.routes.backoffice.pro_users.blueprint.delete_user_attributes_task")
+    @patch("pcapi.core.external.batch.serialization.DeleteBatchUserAttributesRequest", return_value="canary")
+    @patch("pcapi.tasks.batch_tasks.delete_user_attributes_task")
     def test_delete_pro_user_mismatch_email(
         self, delete_user_attributes_task, DeleteBatchUserAttributesRequest, mails_api, authenticated_client
     ):
@@ -588,8 +588,8 @@ class DeleteProUserTest(PostEndpointHelper):
         )
 
     @patch("pcapi.routes.backoffice.pro_users.blueprint.mails_api")
-    @patch("pcapi.routes.backoffice.pro_users.blueprint.DeleteBatchUserAttributesRequest", return_value="canary")
-    @patch("pcapi.routes.backoffice.pro_users.blueprint.delete_user_attributes_task")
+    @patch("pcapi.core.external.batch.serialization.DeleteBatchUserAttributesRequest", return_value="canary")
+    @patch("pcapi.tasks.batch_tasks.delete_user_attributes_task")
     def test_delete_pro_user_with_user_offerer(
         self, delete_user_attributes_task, DeleteBatchUserAttributesRequest, mails_api, authenticated_client
     ):
@@ -619,8 +619,8 @@ class DeleteProUserTest(PostEndpointHelper):
         )
 
     @patch("pcapi.routes.backoffice.pro_users.blueprint.mails_api")
-    @patch("pcapi.routes.backoffice.pro_users.blueprint.DeleteBatchUserAttributesRequest", return_value="canary")
-    @patch("pcapi.routes.backoffice.pro_users.blueprint.delete_user_attributes_task")
+    @patch("pcapi.core.external.batch.serialization.DeleteBatchUserAttributesRequest", return_value="canary")
+    @patch("pcapi.tasks.batch_tasks.delete_user_attributes_task")
     @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryFactory, users_factories.AdminFactory])
     def test_delete_pro_user_with_wrong_role(
         self,
@@ -668,8 +668,8 @@ class DeleteProUserTest(PostEndpointHelper):
         assert db.session.query(offers_models.Mediation).one().authorId is None
 
     @patch("pcapi.routes.backoffice.pro_users.blueprint.mails_api")
-    @patch("pcapi.routes.backoffice.pro_users.blueprint.DeleteBatchUserAttributesRequest", return_value="canary")
-    @patch("pcapi.routes.backoffice.pro_users.blueprint.delete_user_attributes_task")
+    @patch("pcapi.core.external.batch.serialization.DeleteBatchUserAttributesRequest", return_value="canary")
+    @patch("pcapi.tasks.batch_tasks.delete_user_attributes_task")
     def test_delete_pro_user_with_beneficiary_dependencies(
         self, delete_user_attributes_task, DeleteBatchUserAttributesRequest, mails_api, authenticated_client
     ):
@@ -689,6 +689,202 @@ class DeleteProUserTest(PostEndpointHelper):
         mails_api.delete_contact.assert_called_once_with(user_email, True)
         DeleteBatchUserAttributesRequest.assert_called_once_with(user_id=user_id)
         delete_user_attributes_task.delay.assert_called_once_with("canary")
+        assert db.session.query(users_models.User).filter(users_models.User.id == user_id).count() == 0
+        assert db.session.query(finance_models.Deposit).filter(finance_models.Deposit.id == deposit_id).count() == 0
+        assert (
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
+            .filter(subscription_models.BeneficiaryFraudCheck.id == beneficiary_fraud_check_id)
+            .count()
+            == 0
+        )
+        assert (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.userId == user_id)
+            .count()
+            == 0
+        )
+        assert (
+            db.session.query(users_models.UserAccountUpdateRequest)
+            .filter(users_models.UserAccountUpdateRequest.id == uaur_id)
+            .one()
+            .userId
+            is None
+        )
+
+
+@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_BATCH=True)
+class DeleteProUserWithCeleryTest(PostEndpointHelper):
+    endpoint = "backoffice_web.pro_user.delete"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+    @patch("pcapi.routes.backoffice.pro_users.blueprint.mails_api")
+    @patch("pcapi.core.external.batch.tasks.delete_user_attributes_task")
+    def test_delete_pro_user(self, delete_user_attributes_task, mails_api, authenticated_client):
+        user = users_factories.NonAttachedProFactory()
+        history_factories.SuspendedUserActionHistoryFactory(user=user)
+        user_id = user.id
+        user_email = user.email
+        form = {"email": user.email}
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user_id, form=form)
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.pro.search_pro")
+
+        mails_api.delete_contact.assert_called_once_with(user_email, True)
+        delete_user_attributes_task.delay.assert_called_once_with({"user_id": user_id})
+        assert db.session.query(users_models.User).filter(users_models.User.id == user_id).count() == 0
+        assert (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.userId == user_id)
+            .count()
+            == 0
+        )
+
+    @patch("pcapi.routes.backoffice.pro_users.blueprint.mails_api")
+    @patch("pcapi.core.external.batch.tasks.delete_user_attributes_task")
+    def test_delete_pro_user_and_keep_email_in_mailing_list(
+        self, delete_user_attributes_task, mails_api, authenticated_client
+    ):
+        user = users_factories.NonAttachedProFactory()
+        offerers_factories.VenueFactory(bookingEmail=user.email)
+        history_factories.SuspendedUserActionHistoryFactory(user=user)
+        user_id = user.id
+        form = {"email": user.email}
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user_id, form=form)
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.pro.search_pro")
+
+        mails_api.delete_contact.assert_not_called()
+        delete_user_attributes_task.delay.assert_called_once_with({"user_id": user_id})
+        assert db.session.query(users_models.User).filter(users_models.User.id == user_id).count() == 0
+        assert (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.userId == user_id)
+            .count()
+            == 0
+        )
+
+    @patch("pcapi.routes.backoffice.pro_users.blueprint.mails_api")
+    @patch("pcapi.core.external.batch.tasks.delete_user_attributes_task")
+    def test_delete_pro_user_mismatch_email(self, delete_user_attributes_task, mails_api, authenticated_client):
+        user = users_factories.NonAttachedProFactory()
+        user_id = user.id
+        history_factories.SuspendedUserActionHistoryFactory(user=user)
+
+        form = {"email": "wrong_email@example.com"}
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form)
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.pro_user.get", user_id=user.id)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data) == "L'email saisi ne correspond pas à celui du compte"
+        )
+
+        mails_api.delete_contact.assert_not_called()
+        delete_user_attributes_task.delay.assert_not_called()
+        assert db.session.query(users_models.User).filter(users_models.User.id == user_id).count() == 1
+        assert (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.userId == user_id)
+            .count()
+            == 1
+        )
+
+    @patch("pcapi.routes.backoffice.pro_users.blueprint.mails_api")
+    @patch("pcapi.core.external.batch.tasks.delete_user_attributes_task")
+    def test_delete_pro_user_with_user_offerer(self, delete_user_attributes_task, mails_api, authenticated_client):
+        user = users_factories.NonAttachedProFactory()
+        offerers_factories.UserOffererFactory(user=user)
+        user_id = user.id
+        history_factories.SuspendedUserActionHistoryFactory(user=user)
+
+        form = {"email": user.email}
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form)
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.pro_user.get", user_id=user.id)
+        redirected_response = authenticated_client.get(response.location)
+        assert html_parser.extract_alert(redirected_response.data) == "Le compte est rattaché à une entité juridique"
+
+        mails_api.delete_contact.assert_not_called()
+        delete_user_attributes_task.delay.assert_not_called()
+        assert db.session.query(users_models.User).filter(users_models.User.id == user_id).count() == 1
+        assert (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.userId == user_id)
+            .count()
+            == 1
+        )
+
+    @patch("pcapi.routes.backoffice.pro_users.blueprint.mails_api")
+    @patch("pcapi.core.external.batch.tasks.delete_user_attributes_task")
+    @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryFactory, users_factories.AdminFactory])
+    def test_delete_pro_user_with_wrong_role(
+        self, delete_user_attributes_task, mails_api, authenticated_client, user_factory
+    ):
+        user = user_factory()
+        user_id = user.id
+        history_factories.SuspendedUserActionHistoryFactory(user=user)
+
+        form = {"email": user.email}
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form)
+
+        assert response.status_code == 404
+
+        mails_api.delete_contact.assert_not_called()
+        delete_user_attributes_task.delay.assert_not_called()
+        assert db.session.query(users_models.User).filter(users_models.User.id == user_id).count() == 1
+        assert (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.userId == user_id)
+            .count()
+            == 1
+        )
+
+    def test_delete_pro_user_with_related_objects(self, authenticated_client):
+        user = users_factories.NonAttachedProFactory()
+        users_factories.FavoriteFactory(user=user)
+        offers_factories.MediationFactory(author=user)
+
+        user_id = user.id
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user_id, form={"email": user.email})
+
+        # ensure that it does not crash
+        assert response.status_code == 303
+
+        assert db.session.query(users_models.User).filter(users_models.User.id == user_id).count() == 0
+        assert db.session.query(users_models.Favorite).filter(users_models.Favorite.userId == user_id).count() == 0
+        assert db.session.query(offers_models.Mediation).one().authorId is None
+
+    @patch("pcapi.routes.backoffice.pro_users.blueprint.mails_api")
+    @patch("pcapi.core.external.batch.tasks.delete_user_attributes_task")
+    def test_delete_pro_user_with_beneficiary_dependencies(
+        self, delete_user_attributes_task, mails_api, authenticated_client
+    ):
+        user = users_factories.BeneficiaryFactory(roles=[users_models.UserRole.NON_ATTACHED_PRO])
+        history_factories.SuspendedUserActionHistoryFactory(user=user)
+        uaur_id = users_factories.LostCredentialsUpdateRequestFactory(user=user).id
+        user_id = user.id
+        deposit_id = user.deposits[0].id
+        beneficiary_fraud_check_id = user.beneficiaryFraudChecks[0].id
+        user_email = user.email
+        form = {"email": user.email}
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user_id, form=form, follow_redirects=True)
+
+        assert response.status_code == 200
+
+        mails_api.delete_contact.assert_called_once_with(user_email, True)
+        delete_user_attributes_task.delay.assert_called_once_with({"user_id": user_id})
         assert db.session.query(users_models.User).filter(users_models.User.id == user_id).count() == 0
         assert db.session.query(finance_models.Deposit).filter(finance_models.Deposit.id == deposit_id).count() == 0
         assert (

@@ -41,6 +41,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.providers.clients.ems_client import EMS_EXTERNAL_BOOKINGS_TO_CANCEL
 from pcapi.core.providers.clients.ems_client import EMSAPIClient
+from pcapi.core.providers.tasks import BookingAction
 from pcapi.core.search.models import IndexationReason
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
@@ -49,7 +50,6 @@ from pcapi.core.users.utils import get_age_at_date
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.utils import date as date_utils
 from pcapi.utils import queue
 from pcapi.utils.repository import transaction
