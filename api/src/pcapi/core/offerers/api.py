@@ -16,6 +16,7 @@ from math import ceil
 import pytz
 import schwifty
 import sqlalchemy as sa
+import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 
 import pcapi.connectors.acceslibre as accessibility_provider
@@ -2854,7 +2855,7 @@ def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = F
 
 
 def synchronize_accessibility_with_acceslibre(
-    dry_run: bool, force_sync: bool, batch_size: int, start_from_batch: int = 1
+    apply: bool, force_sync: bool, batch_size: int, start_from_batch: int = 1
 ) -> None:
     """
     For all venues synchronized with acceslibre, we fetch on a weekly basis the
@@ -2879,7 +2880,7 @@ def synchronize_accessibility_with_acceslibre(
         for venue in venues_list:
             synchronize_accessibility_provider(venue, force_sync)
 
-        if not dry_run:
+        if apply:
             try:
                 db.session.commit()
             except sa.exc.SQLAlchemyError:
@@ -2957,7 +2958,7 @@ def match_venue_with_new_entries(
             db.session.add(venue.accessibilityProvider)
 
 
-def acceslibre_matching(batch_size: int, dry_run: bool, start_from_batch: int, n_days_to_fetch: int = 7) -> None:
+def acceslibre_matching(batch_size: int, apply: bool, start_from_batch: int, n_days_to_fetch: int = 7) -> None:
     """
     For all venues opened to public, we are looking for a match at acceslibre
 
@@ -2983,21 +2984,21 @@ def acceslibre_matching(batch_size: int, dry_run: bool, start_from_batch: int, n
         batch_end = (i + 1) * batch_size
         match_venue_with_new_entries(venues_list[batch_start:batch_end], results_list)
 
-        if not dry_run:
+        if apply:
             try:
                 db.session.commit()
-            except sa.exc.SQLAlchemyError:
+            except sa_exc.SQLAlchemyError:
                 logger.exception("Could not update batch %d", i + 1)
                 db.session.rollback()
     new_match_found = (
         count_open_to_public_venues_with_accessibility_provider() - synchronized_venues_count_before_matching
     )
     logger.info("%d new match found over last %d days", new_match_found, n_days_to_fetch)
-    if dry_run:
+    if apply:
+        logger.info("Matching with acceslibre complete")
+    else:
         logger.info("Matching with acceslibre as dry run complete")
         db.session.rollback()
-    else:
-        logger.info("Matching with acceslibre complete")
 
 
 LocationData = typing.TypedDict(

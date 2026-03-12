@@ -26,10 +26,9 @@ BATCH_SIZE = 1000
 
 
 @blueprint.cli.command("check_active_offerers")
-@click.option("--dry-run", is_flag=True)
 @click.option("--apply", is_flag=True)
 @click.option("--day", type=int, required=False, default=None)
-def check_active_offerers(dry_run: bool = False, apply: bool = True, day: int | None = None) -> None:
+def check_active_offerers(apply: bool = True, day: int | None = None) -> None:
     # This command is called from a cron running every day, so that any active offerer is checked every month.
     # Split into 28 blocks to avoid spamming Sirene API for all offerers the same day. Nothing done on 29, 30, 31.
     # Use --day to replay or troubleshooting.
@@ -56,18 +55,17 @@ def check_active_offerers(dry_run: bool = False, apply: bool = True, day: int | 
     for offerer in offerers:
         payload = offerers_tasks.CheckOffererSirenRequest(
             siren=offerer.siren,
-            close_or_tag_when_inactive=not dry_run,
+            close_or_tag_when_inactive=apply,
         )
         offerers_tasks.check_offerer_siren_task.delay(payload.model_dump())
 
 
 @blueprint.cli.command("check_closed_offerers")
-@click.option("--dry-run", is_flag=True)
 @click.option("--apply", is_flag=True)
 @click.option("--date-closed", type=str, required=False, default=None)
-def check_closed_offerers(dry_run: bool = False, apply: bool = True, date_closed: str | None = None) -> None:
+def check_closed_offerers(apply: bool = True, date_closed: str | None = None) -> None:
     # This command is called everyday from a cron. its goal is to close offerers which have declared closure in the siren API.
-    close_or_tag_when_inactive = not dry_run
+    close_or_tag_when_inactive = apply
     if date_closed:
         query_date = datetime.date.fromisoformat(date_closed)
     else:
@@ -107,12 +105,11 @@ def check_closed_offerers(dry_run: bool = False, apply: bool = True, date_closed
 
 
 @blueprint.cli.command("delete_user_offerers_on_closed_offerers")
-@click.option("--dry-run", is_flag=True)
 @click.option("--apply", is_flag=True)
-def delete_user_offerers_on_closed_offerers(dry_run: bool = False, apply: bool = True) -> None:
+def delete_user_offerers_on_closed_offerers(apply: bool = True) -> None:
     offerers_api.auto_delete_attachments_on_closed_offerers()
 
-    if not dry_run:
+    if apply:
         db.session.commit()
     else:
         db.session.rollback()
@@ -172,61 +169,49 @@ def synchronize_venues_banners_with_google_places(frequency: int = 1) -> None:
 
 
 @blueprint.cli.command("synchronize_accessibility_with_acceslibre")
-@click.option("--dry-run", is_flag=True)
 @click.option("--apply", is_flag=True)
 @click.option("--force-sync", is_flag=True)
 @click.option("--batch-size", type=int, default=BATCH_SIZE, help="Size of venues batches to synchronize")
 @click.option("--start-from-batch", type=int, default=1, help="Start synchronization from batch number")
 def synchronize_accessibility_with_acceslibre(
-    dry_run: bool = False,
-    apply: bool = True,
-    force_sync: bool = False,
-    batch_size: int = BATCH_SIZE,
-    start_from_batch: int = 1,
+    apply: bool = True, force_sync: bool = False, batch_size: int = BATCH_SIZE, start_from_batch: int = 1
 ) -> None:
     offerers_api.synchronize_accessibility_with_acceslibre(
-        dry_run=dry_run, force_sync=force_sync, batch_size=batch_size, start_from_batch=start_from_batch
+        apply=apply, force_sync=force_sync, batch_size=batch_size, start_from_batch=start_from_batch
     )
 
 
 @blueprint.cli.command("acceslibre_matching")
-@click.option("--dry-run", is_flag=True)
 @click.option("--apply", is_flag=True)
 @click.option("--batch-size", type=int, default=BATCH_SIZE, help="Size of venues batches to synchronize")
 @click.option("--start-from-batch", type=int, default=1, help="Start synchronization from batch number")
 @click.option("--n-days-to-fetch", type=int, default=7, help="Number of days to look for new data at acceslibre")
 def acceslibre_matching(
-    dry_run: bool = False,
-    apply: bool = True,
-    batch_size: int = BATCH_SIZE,
-    start_from_batch: int = 1,
-    n_days_to_fetch: int = 7,
+    apply: bool = True, batch_size: int = BATCH_SIZE, start_from_batch: int = 1, n_days_to_fetch: int = 7
 ) -> None:
     offerers_api.acceslibre_matching(
-        batch_size=batch_size, dry_run=dry_run, start_from_batch=start_from_batch, n_days_to_fetch=n_days_to_fetch
+        batch_size=batch_size, apply=apply, start_from_batch=start_from_batch, n_days_to_fetch=n_days_to_fetch
     )
 
 
 @blueprint.cli.command("clean_unused_offerer_address")
-@click.option("--dry-run", is_flag=True)
 @click.option("--apply", is_flag=True)
-def clean_unused_offerer_address(dry_run: bool = False, apply: bool = True) -> None:
+def clean_unused_offerer_address(apply: bool = True) -> None:
     offerers_api.clean_unused_offerer_address()
 
-    if dry_run:
-        db.session.rollback()
-    else:
+    if apply:
         db.session.commit()
+    else:
+        db.session.rollback()
 
 
 @blueprint.cli.command("clean_offerer_invitations")
-@click.option("--dry-run", is_flag=True)
 @click.option("--apply", is_flag=True)
-def clean_offerer_invitations(dry_run: bool = False, apply: bool = True) -> None:
+def clean_offerer_invitations(apply: bool = True) -> None:
     offerers_api.delete_expired_offerer_invitations()
 
-    if dry_run:
+    if apply:
+        db.session.commit()
+    else:
         db.session.rollback()
         logger.info("clean_offerer_invitations was a dry-run -- rollback")
-    else:
-        db.session.commit()
