@@ -2038,6 +2038,20 @@ def move_offer(
             db.session.add(destination_oa)
             offer.offererAddress = destination_oa
 
+        # Delete pro_advice when changing venue
+        if offer.proAdvice is not None:
+            db.session.delete(offer.proAdvice)
+            logger.info(
+                "Pro Advice Deletion",
+                extra={
+                    "analyticsSource": "backoffice",
+                    "offerId": offer.id,
+                    "venueId": offer.venueId,
+                    "Reason": "Offer venue was changed in backoffice",
+                },
+                technical_message_id="pro_advice.deleted",
+            )
+
         offer.venue = destination_venue
         db.session.add(offer)
 
@@ -2132,6 +2146,21 @@ def move_event_offer(
                     label=offer.offererAddress.label,
                 )
                 offer.offererAddress = destination_oa
+
+        # Delete pro_advice when changing venue
+        if offer.proAdvice is not None:
+            db.session.delete(offer.proAdvice)
+            logger.info(
+                "Pro Advice Deletion",
+                extra={
+                    "analyticsSource": "backoffice",
+                    "offerId": offer.id,
+                    "venueId": offer.venueId,
+                    "Reason": "Offer venue was changed in backoffice",
+                },
+                technical_message_id="pro_advice.deleted",
+            )
+
         offer.venue = destination_venue
         db.session.add(offer)
 
