@@ -1,7 +1,7 @@
 import enum
 
 
-class BatchEvent(enum.Enum):
+class BatchEvent(enum.StrEnum):
     RECREDITED_ACCOUNT = "recredited_account"
     USER_DEPOSIT_ACTIVATED = "user_deposit_activated"
     USER_IDENTITY_CHECK_STARTED = "user_identity_check_started"
