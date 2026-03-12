@@ -6,10 +6,13 @@ from datetime import time
 from datetime import timedelta
 from enum import Enum
 
+from pcapi import settings
+from pcapi.connectors.big_query import queries as big_query_queries
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.external.batch import tasks
+from pcapi.core.external.batch.api import send_transactional_notification
 from pcapi.core.external.batch.serialization import TransactionalNotificationData
 from pcapi.core.external.batch.serialization import TransactionalNotificationDataV2
 from pcapi.core.external.batch.serialization import TransactionalNotificationMessage
@@ -183,7 +186,7 @@ def get_soon_expiring_bookings_with_offers_notification_data(booking: Booking) -
     )
 
 
-def get_favorites_not_booked_notification_data(
+def _get_favorites_not_booked_notification_data(
     offer_id: int, offer_name: str, user_ids: list[int]
 ) -> TransactionalNotificationData:
     msg_title = "Ne t’arrête pas en si bon chemin 😮"
@@ -196,3 +199,22 @@ def get_favorites_not_booked_notification_data(
         message=TransactionalNotificationMessage(title=msg_title, body=msg_body),
         extra={"deeplink": offer_app_link(offer_id, utm=utm)},
     )
+
+
+def send_notification_favorites_not_booked() -> None:
+    """
+    Find favorites without a booking and send one notification at most
+    per user in order to encourage him to book it.
+
+    To narrow the number of calls to the Batch api, group by offer.
+    """
+    max_length = settings.BATCH_MAX_USERS_PER_TRANSACTIONAL_NOTIFICATION
+    rows = big_query_queries.FavoritesNotBooked().execute(max_length)
+
+    for row in rows:
+        try:
+            notification_data = _get_favorites_not_booked_notification_data(row.offer_id, row.offer_name, row.user_ids)
+            send_transactional_notification(notification_data)
+        except Exception:
+            log_extra = {"offer": row.offer_id, "users": row.user_ids, "count": len(row.user_ids)}
+            logger.error("Favorites not booked: failed to send notification", extra=log_extra)

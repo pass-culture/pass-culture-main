@@ -9,6 +9,7 @@ from pcapi.core.external.batch.backends.testing import TestingBackend
 from pcapi.core.external.batch.models import BatchEvent
 from pcapi.core.external.batch.serialization import TrackBatchEventRequest
 from pcapi.core.external.batch.serialization import TransactionalNotificationData
+from pcapi.core.external.batch.serialization import TransactionalNotificationDataV2
 
 
 type Backend = BatchBackend | LoggerBackend | TestingBackend
@@ -37,7 +38,8 @@ def update_users_attributes(users_data: list[UserUpdateData], can_be_asynchronou
 
 
 def send_transactional_notification(
-    notification_data: TransactionalNotificationData, can_be_asynchronously_retried: bool = False
+    notification_data: TransactionalNotificationData | TransactionalNotificationDataV2,
+    can_be_asynchronously_retried: bool = False,
 ) -> None:
     _get_backend().send_transactional_notification(
         notification_data, can_be_asynchronously_retried=can_be_asynchronously_retried

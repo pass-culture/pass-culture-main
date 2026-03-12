@@ -9,8 +9,8 @@ from pcapi.core.external.batch.api import update_user_attributes
 from pcapi.core.external.batch.attributes import format_user_attributes
 from pcapi.core.external.batch.backends.batch import BatchAPI
 from pcapi.core.external.batch.backends.batch import BatchBackend
-from pcapi.core.external.batch.transactional_notifications import TransactionalNotificationData
-from pcapi.core.external.batch.transactional_notifications import TransactionalNotificationMessage
+from pcapi.core.external.batch.transactional_notifications import TransactionalNotificationDataV2
+from pcapi.core.external.batch.transactional_notifications import TransactionalNotificationMessageV2
 from pcapi.core.external.batch.utils import batch_length
 from pcapi.core.external.batch.utils import shorten_for_batch
 
@@ -155,10 +155,10 @@ class BatchPushNotificationClientTest:
             ios_post = mock.post("https://api.batch.com/1.1/fake_ios_api_key/transactional/send")
 
             BatchBackend().send_transactional_notification(
-                TransactionalNotificationData(
+                TransactionalNotificationDataV2(
                     group_id="Group_id",
                     user_ids=[1234, 4321],
-                    message=TransactionalNotificationMessage(title="Putsch", body="Notif"),
+                    message=TransactionalNotificationMessageV2(title="Putsch", body="Notif"),
                 )
             )
 
@@ -179,10 +179,10 @@ class BatchPushNotificationClientTest:
             ios_post = mock.post("https://api.batch.com/1.1/fake_ios_api_key/transactional/send")
 
             BatchBackend().send_transactional_notification(
-                TransactionalNotificationData(
+                TransactionalNotificationDataV2(
                     group_id="Group_id",
                     user_ids=[1234, 4321],
-                    message=TransactionalNotificationMessage(title="Putsch", body="Notif"),
+                    message=TransactionalNotificationMessageV2(title="Putsch", body="Notif"),
                 )
             )
 

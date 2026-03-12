@@ -4,6 +4,7 @@ from pcapi.core.external.batch.backends.batch import UserUpdateData
 from pcapi.core.external.batch.backends.logger import LoggerBackend
 from pcapi.core.external.batch.serialization import TrackBatchEventRequest
 from pcapi.core.external.batch.serialization import TransactionalNotificationData
+from pcapi.core.external.batch.serialization import TransactionalNotificationDataV2
 
 
 class TestingBackend(LoggerBackend):
@@ -29,7 +30,9 @@ class TestingBackend(LoggerBackend):
         testing.requests.append(users_data)
 
     def send_transactional_notification(
-        self, notification_data: TransactionalNotificationData, can_be_asynchronously_retried: bool = False
+        self,
+        notification_data: TransactionalNotificationData | TransactionalNotificationDataV2,
+        can_be_asynchronously_retried: bool = False,
     ) -> None:
         super().send_transactional_notification(
             notification_data, can_be_asynchronously_retried=can_be_asynchronously_retried

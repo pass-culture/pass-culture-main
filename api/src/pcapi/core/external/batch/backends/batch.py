@@ -5,6 +5,7 @@ from enum import Enum
 from pcapi import settings
 from pcapi.core.external.batch.serialization import TrackBatchEventRequest
 from pcapi.core.external.batch.serialization import TransactionalNotificationData
+from pcapi.core.external.batch.serialization import TransactionalNotificationDataV2
 from pcapi.utils import requests
 
 
@@ -104,7 +105,9 @@ class BatchBackend:
         make_post_request(BatchAPI.IOS)
 
     def send_transactional_notification(
-        self, notification_data: TransactionalNotificationData, can_be_asynchronously_retried: bool = False
+        self,
+        notification_data: TransactionalNotificationData | TransactionalNotificationDataV2,
+        can_be_asynchronously_retried: bool = False,
     ) -> None:
         def make_post_request(api: BatchAPI) -> None:
             self.handle_request(
