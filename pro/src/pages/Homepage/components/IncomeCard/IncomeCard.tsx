@@ -28,10 +28,10 @@ import {
   isCollectiveAndIndividualRevenue,
   isCollectiveRevenue,
 } from '@/pages/Reimbursements/Income/utils'
-import { Panel } from '@/ui-kit/Panel/Panel'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
+import { HomeCard } from '../HomeCard/HomeCard'
 import styles from './IncomeCard.module.scss'
 
 interface IncomeCardProps {
@@ -117,20 +117,20 @@ export const IncomeCard = ({
 
   if (isIncomeLoading) {
     return (
-      <Panel>
+      <HomeCard>
         <Spinner />
-      </Panel>
+      </HomeCard>
     )
   }
 
   if (incomeApiError) {
     return (
-      <Panel>
+      <HomeCard>
         <Banner
           title="Impossible de charger les données de chiffre d'affaires"
           variant={BannerVariants.ERROR}
         />
-      </Panel>
+      </HomeCard>
     )
   }
 
@@ -170,23 +170,18 @@ export const IncomeCard = ({
       })
 
   const cardHeader = (
-    <header>
-      <h3 className={styles['income-card-title']}>Remboursement</h3>
-      <p className={styles['income-card-subtitle']}>Individuel et collectif</p>
-    </header>
+    <HomeCard.Header title="Remboursement" subtitle="Individuel et collectif" />
   )
 
   return (
-    <Panel>
-      <div className={styles['income-card']}>
-        {!isEmptyState && cardHeader}
+    <HomeCard>
+      {!isEmptyState && cardHeader}
 
-        <div className={styles['income-card-banner']}>
-          <BankAccountBanner
-            venueId={venueId}
-            bankAccountStatus={bankAccountStatus}
-          />
-        </div>
+      <HomeCard.Content>
+        <BankAccountBanner
+          venueId={venueId}
+          bankAccountStatus={bankAccountStatus}
+        />
 
         {isEmptyState && (
           <div className={styles['income-card-empty']}>
@@ -205,24 +200,27 @@ export const IncomeCard = ({
 
         {bankAccountStatus === SimplifiedBankAccountStatus.VALID &&
           total > 0 && (
-            <div className={styles['income-card-content']}>
-              <div className={styles['income-card-amount']}>
-                <p className={styles['income-card-label']}>
-                  Chiffre d'affaire total {currentYear}
-                </p>
-                <Tag variant={TagVariant.SUCCESS} label={formattedTotal} />
-              </div>
-              <Button
-                as="a"
-                to="/remboursements/revenus"
-                variant={ButtonVariant.SECONDARY}
-                color={ButtonColor.NEUTRAL}
-                size={ButtonSize.DEFAULT}
-                label="Accéder à la gestion financière"
-              />
+            <div className={styles['income-card-amount']}>
+              <p className={styles['income-card-label']}>
+                Chiffre d'affaire total {currentYear}
+              </p>
+              <Tag variant={TagVariant.SUCCESS} label={formattedTotal} />
             </div>
           )}
-      </div>
-    </Panel>
+      </HomeCard.Content>
+
+      {bankAccountStatus === SimplifiedBankAccountStatus.VALID && total > 0 && (
+        <HomeCard.Footer>
+          <Button
+            as="a"
+            to="/remboursements/revenus"
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            size={ButtonSize.DEFAULT}
+            label="Accéder à la gestion financière"
+          />
+        </HomeCard.Footer>
+      )}
+    </HomeCard>
   )
 }

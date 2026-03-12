@@ -12,8 +12,8 @@ import {
   ButtonSize,
   ButtonVariant,
 } from '@/design-system/Button/types'
-import { Panel } from '@/ui-kit/Panel/Panel'
 
+import { HomeCard } from '../HomeCard/HomeCard'
 import styles from './PartnerPageCard.module.scss'
 
 type PartnerPageProps = {
@@ -50,9 +50,9 @@ export const PartnerPageCard = ({
   }
 
   return (
-    <Panel>
-      <div className={styles['container']}>
-        <h2 className={styles['title']}>Votre page sur l'application</h2>
+    <HomeCard>
+      <HomeCard.Header title="Votre page sur l'application" titleTag="h2" />
+      <HomeCard.Content>
         <ImageDragAndDropUploader
           onImageUpload={handleOnImageUpload}
           onImageDelete={() => noop}
@@ -62,27 +62,27 @@ export const PartnerPageCard = ({
           onImageDropOrSelected={logButtonAddClick}
         />
         <h3 className={styles['title']}>{venueName}</h3>
-        <div className={styles['buttons']}>
-          <Button
-            label="Compléter ma page"
-            variant={ButtonVariant.SECONDARY}
-            color={ButtonColor.NEUTRAL}
-            size={ButtonSize.SMALL}
-            to={`/structures/${offererId}/lieux/${venueId}/page-partenaire`}
-            as="a"
-          />
-          <Button
-            label="Voir ma page"
-            variant={ButtonVariant.SECONDARY}
-            color={ButtonColor.NEUTRAL}
-            size={ButtonSize.SMALL}
-            isExternal
-            to={venuePreviewLink}
-            as="a"
-            opensInNewTab
-          />
-        </div>
-      </div>
-    </Panel>
+      </HomeCard.Content>
+      <HomeCard.Footer>
+        <Button
+          label="Compléter ma page"
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          size={ButtonSize.SMALL}
+          to={`/structures/${offererId}/lieux/${venueId}/page-partenaire`}
+          as="a"
+        />
+        <Button
+          label="Voir ma page"
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          size={ButtonSize.SMALL}
+          isExternal
+          to={venuePreviewLink}
+          as="a"
+          opensInNewTab
+        />
+      </HomeCard.Footer>
+    </HomeCard>
   )
 }
