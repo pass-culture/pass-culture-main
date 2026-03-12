@@ -47,7 +47,7 @@ const HomeCardFooter = ({ children, className }: HomeCardFooterProps) => (
   <div className={cn(styles['home-card-footer'], className)}>{children}</div>
 )
 
-const HomeCard = ({ children, className }: HomeCardProps) => (
+export const HomeCard = ({ children, className }: HomeCardProps) => (
   <Panel>
     <div className={cn(styles['home-card'], className)}>{children}</div>
   </Panel>
