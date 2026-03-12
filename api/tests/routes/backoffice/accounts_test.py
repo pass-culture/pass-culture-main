@@ -925,6 +925,23 @@ class GetPublicAccountTest(GetEndpointHelper):
             assert expected_badge in badges
         assert "Suspendu" not in badges
 
+    def test_get_public_account_with_legacy_fraud_check_data(self, authenticated_client):
+        user = users_factories.BeneficiaryGrant18Factory()
+        user_id = user.id
+        fraud_check = subscription_factories.ProfileCompletionFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            dateCreated=date_utils.get_naive_utc_now() - relativedelta(months=1),
+        )
+        del fraud_check.resultContent["address"]
+        del fraud_check.resultContent["postal_code"]
+        fraud_check.resultContent["postalCode"] = "63170"
+
+        response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+        assert response.status_code == 200
+        content = html_parser.content_as_text(response.data)
+        assert f"User ID : {user.id} " in content
+
     def test_get_suspended_public_account(self, legit_user, authenticated_client):
         user = users_factories.UserFactory(isActive=False)
         history_factories.ActionHistoryFactory(
