@@ -31,7 +31,7 @@ class CheckActiveOfferersTest:
         )
 
         with time_machine.travel("2024-12-24 23:00:00"):
-            run_command(app, "check_active_offerers")
+            run_command(app, "check_active_offerers", "--apply")
 
         # Only check that the task is called; its behavior is tested in offerers/test_task.py
         mock_get_siren.assert_called_once_with(offerer.siren, with_address=False)
@@ -64,7 +64,7 @@ class CheckClosedOfferersTest:
         offerer3 = offerers_factories.OffererFactory(siren="109599003")
         offerer4 = offerers_factories.OffererFactory(siren="909599004")  # non-diffusible
 
-        run_command(app, "check_closed_offerers")
+        run_command(app, "check_closed_offerers", "--apply")
 
         assert offerer1.tags == offerer2.tags == offerer3.tags == offerer4.tags == [siren_caduc_tag]
 
@@ -80,7 +80,7 @@ class CheckClosedOfferersTest:
     )
     def test_no_known_siren(self, mock_get_siren_closed_at_date, mock_check_offerer_siren_task, app):
         offerer = offerers_factories.OffererFactory(siren="111111112")
-        run_command(app, "check_closed_offerers")
+        run_command(app, "check_closed_offerers", "--apply")
         mock_get_siren_closed_at_date.assert_called_once_with(datetime.date.today() - datetime.timedelta(days=2))
         assert offerer.tags == []
 
@@ -88,7 +88,7 @@ class CheckClosedOfferersTest:
 class DeleteUserOfferersOnClosedOfferersTest:
     @patch("pcapi.core.offerers.api.auto_delete_attachments_on_closed_offerers")
     def test_delete_user_offerers_on_closed_offerers(self, mock_auto_delete_attachments_on_closed_offerers, app):
-        run_command(app, "delete_user_offerers_on_closed_offerers")
+        run_command(app, "delete_user_offerers_on_closed_offerers", "--apply")
 
         mock_auto_delete_attachments_on_closed_offerers.assert_called_once()
 
