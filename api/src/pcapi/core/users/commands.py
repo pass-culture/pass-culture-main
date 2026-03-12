@@ -3,7 +3,6 @@ import logging
 
 import click
 
-import pcapi.connectors.big_query.queries as big_query_queries
 import pcapi.core.chronicles.api as chronicles_api
 import pcapi.core.users.api as users_api
 import pcapi.core.users.constants as users_constants
@@ -14,7 +13,6 @@ from pcapi.connectors.dms.utils import import_ds_applications
 from pcapi.core.external.automations import pro_user as pro_user_automations
 from pcapi.core.external.automations import user as user_automations
 from pcapi.core.external.batch import transactional_notifications
-from pcapi.core.external.batch.api import send_transactional_notification
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.mails.transactional.users import online_event_reminder
 from pcapi.core.users import ds as users_ds
@@ -250,30 +248,7 @@ def sync_ds_deleted_user_account_update_requests() -> None:
 @blueprint.cli.command("send_notification_favorites_not_booked")
 @cron_decorators.log_cron_with_transaction
 def send_notification_favorites_not_booked() -> None:
-    _send_notification_favorites_not_booked()  # useful for tests
-
-
-def _send_notification_favorites_not_booked() -> None:
-    """
-    Find favorites without a booking and send one notification at most
-    per user in order to encourage him to book it.
-
-    To narrow the number of calls to the Batch api, group by offer.
-    """
-    max_length = settings.BATCH_MAX_USERS_PER_TRANSACTIONAL_NOTIFICATION
-    rows = big_query_queries.FavoritesNotBooked().execute(max_length)
-
-    for row in rows:
-        try:
-            notification_data = transactional_notifications.get_favorites_not_booked_notification_data(
-                row.offer_id, row.offer_name, row.user_ids
-            )
-
-            if notification_data:
-                send_transactional_notification(notification_data)
-        except Exception:
-            log_extra = {"offer": row.offer_id, "users": row.user_ids, "count": len(row.user_ids)}
-            logger.error("Favorites not booked: failed to send notification", extra=log_extra)
+    transactional_notifications.send_notification_favorites_not_booked()
 
 
 @blueprint.cli.command("delete_expired_sessions")
