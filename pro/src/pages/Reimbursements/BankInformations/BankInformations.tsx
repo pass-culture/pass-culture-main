@@ -11,11 +11,11 @@ import {
   GET_OFFERER_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { setSelectedVenue } from '@/commons/store/user/reducer'
 import { ReimbursementBankAccount } from '@/components/ReimbursementBankAccount/ReimbursementBankAccount'
 import { Button } from '@/design-system/Button/Button'
@@ -34,15 +34,18 @@ const BankInformations = (): JSX.Element => {
   const { mutate } = useSWRConfig()
   const dispatch = useAppDispatch()
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-  const selectedOfferer = useAppSelector(ensureCurrentOfferer)
+  const currentOfferer = useAppSelector((state) => state.offerer.currentOfferer)
   const adminSelectedOfferer = useAppSelector(
     (store) => store.user.selectedAdminOfferer
   )
   const selectedVenue = useAppSelector((store) => store.user.selectedVenue)
 
-  const offererId = withSwitchVenueFeature
-    ? adminSelectedOfferer?.id
-    : selectedOfferer?.id
+  const selectedOfferer = withSwitchVenueFeature
+    ? adminSelectedOfferer
+    : currentOfferer
+  assertOrFrontendError(selectedOfferer, '`selectedOfferer` is undefined')
+
+  const offererId = selectedOfferer.id
 
   const [showAddBankInformationsDialog, setShowAddBankInformationsDialog] =
     useState(false)
@@ -118,8 +121,8 @@ const BankInformations = (): JSX.Element => {
   return (
     <div className={styles['bank-information']}>
       <div>
-        {selectedOfferer?.hasValidBankAccount ||
-        selectedOfferer?.hasPendingBankAccount ? (
+        {selectedOfferer.hasValidBankAccount ||
+        selectedOfferer.hasPendingBankAccount ? (
           <p>
             Vous pouvez ajouter plusieurs comptes bancaires afin de percevoir
             les remboursements de vos offres. Chaque compte bancaire fera
@@ -146,7 +149,7 @@ const BankInformations = (): JSX.Element => {
           setShowAddBankInformationsDialog(true)
           logEvent(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT, {
             from: location.pathname,
-            offererId: selectedOfferer?.id,
+            offererId: selectedOfferer.id,
           })
         }}
         ref={addBankAccountButtonRef}
@@ -164,7 +167,7 @@ const BankInformations = (): JSX.Element => {
             {selectedOffererBankAccounts.bankAccounts.map((bankAccount) => (
               <ReimbursementBankAccount
                 bankAccount={bankAccount}
-                offererId={selectedOfferer?.id}
+                offererId={selectedOfferer.id}
                 key={bankAccount.id}
                 onUpdateButtonClick={(bankAccountId) => {
                   setSelectedBankAccount(
@@ -188,7 +191,7 @@ const BankInformations = (): JSX.Element => {
         closeDialog={() => {
           setShowAddBankInformationsDialog(false)
         }}
-        offererId={selectedOfferer?.id}
+        offererId={selectedOfferer.id}
         isDialogOpen={showAddBankInformationsDialog}
         dialogTriggerRef={addBankAccountButtonRef}
       />
