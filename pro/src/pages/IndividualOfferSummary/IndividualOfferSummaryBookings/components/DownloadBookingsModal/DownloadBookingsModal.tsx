@@ -1,5 +1,6 @@
+import { yupResolver } from '@hookform/resolvers/yup'
 import * as Dialog from '@radix-ui/react-dialog'
-import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
 import {
@@ -9,8 +10,6 @@ import {
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { FrontendError } from '@/commons/errors/FrontendError'
-import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { FORMAT_DD_MM_YYYY, mapDayToFrench } from '@/commons/utils/date'
@@ -18,6 +17,7 @@ import { downloadFile } from '@/commons/utils/downloadFile'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
 import { RadioButton } from '@/design-system/RadioButton/RadioButton'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import strokeDeskIcon from '@/icons/stroke-desk.svg'
@@ -25,11 +25,17 @@ import { formatDateTime } from '@/pages/CollectiveOffer/CollectiveOfferSummary/c
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import style from './DownloadBookingsModal.module.scss'
+import { validationSchema } from './validationSchema'
 
 interface DownloadBookingsModalProps {
   offerId: number
   priceCategoryAndScheduleCountByDate: EventDatesInfos
   onCloseDialog: () => void
+}
+
+type DownloadBookingsFormValues = {
+  selectedDate: string
+  selectedBookingType: BookingsExportStatusFilter
 }
 
 const daysOfWeek: string[] = [
@@ -47,55 +53,54 @@ export const DownloadBookingsModal = ({
   priceCategoryAndScheduleCountByDate,
   onCloseDialog,
 }: DownloadBookingsModalProps) => {
-  const [selectedBookingType, setSelectedBookingType] =
-    useState<BookingsExportStatusFilter>(BookingsExportStatusFilter.VALIDATED)
-  const [selectedDate, setSelectedDate] = useState<string | undefined>(
-    priceCategoryAndScheduleCountByDate.length === 1
-      ? priceCategoryAndScheduleCountByDate[0].eventDate
-      : undefined
-  )
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
-
   const { logEvent } = useAnalytics()
 
-  async function handleSubmit(
-    event: React.SyntheticEvent<HTMLFormElement, SubmitEvent>
+  const numberOfDates = priceCategoryAndScheduleCountByDate.length
+
+  const form = useForm<DownloadBookingsFormValues>({
+    defaultValues: {
+      selectedDate:
+        numberOfDates === 1
+          ? priceCategoryAndScheduleCountByDate[0].eventDate
+          : undefined,
+      selectedBookingType: BookingsExportStatusFilter.VALIDATED,
+    },
+    resolver: yupResolver(validationSchema),
+  })
+
+  const selectedDate = form.watch('selectedDate')
+
+  async function onSubmit(
+    data: DownloadBookingsFormValues,
+    event?: React.BaseSyntheticEvent
   ) {
-    event.preventDefault()
-    const fileFormat = event.nativeEvent.submitter?.dataset.export
-    if (!selectedDate) {
-      return handleUnexpectedError(
-        new FrontendError('`selectedDate` is undefined'),
-        {
-          userMessage:
-            'Une erreur est survenue lors de la génération du fichier.',
-        }
-      )
-    }
+    const fileFormat = (event?.nativeEvent as SubmitEvent | undefined)
+      ?.submitter?.dataset.export
 
     if (fileFormat === BookingExportType.CSV) {
       downloadFile(
         await api.exportBookingsForOfferAsCsv(
           offerId,
-          selectedBookingType,
-          selectedDate
+          data.selectedBookingType,
+          data.selectedDate
         ),
-        `reservations-${selectedBookingType}-${selectedDate}.csv`
+        `reservations-${data.selectedBookingType}-${data.selectedDate}.csv`
       )
     } else if (fileFormat === BookingExportType.EXCEL) {
       downloadFile(
         await api.exportBookingsForOfferAsExcel(
           offerId,
-          selectedBookingType,
-          selectedDate
+          data.selectedBookingType,
+          data.selectedDate
         ),
-        `reservations-${selectedBookingType}-${selectedDate}.xlsx`
+        `reservations-${data.selectedBookingType}-${data.selectedDate}.xlsx`
       )
     }
 
     logEvent(Events.CLICKED_DOWNLOAD_OFFER_BOOKINGS, {
       format: fileFormat,
-      bookingStatus: selectedBookingType,
+      bookingStatus: data.selectedBookingType,
       offerId,
       offerType: 'individual',
       offererId: selectedOffererId?.toString(),
@@ -118,8 +123,13 @@ export const DownloadBookingsModal = ({
             value={eventDate}
             name="bookings-date-select"
             checked={selectedDate === eventDate}
+            hasError={!!form.formState.errors.selectedDate}
             label={`${day.substring(0, 3)} ${formatDateTime(date.toISOString(), FORMAT_DD_MM_YYYY)}`}
-            onChange={() => setSelectedDate(eventDate)}
+            onChange={() => {
+              form.setValue('selectedDate', eventDate, {
+                shouldValidate: true,
+              })
+            }}
           />
         </td>
         <td className={style['table-column']}>
@@ -134,9 +144,9 @@ export const DownloadBookingsModal = ({
   }
 
   return (
-    <form onSubmit={handleSubmit} className={style['container']}>
+    <form onSubmit={form.handleSubmit(onSubmit)} className={style['container']}>
       <fieldset className={style['date-select-section']}>
-        {priceCategoryAndScheduleCountByDate.length === 1 ? (
+        {numberOfDates === 1 ? (
           <h2 className={style['one-booking-date-section']}>
             Date de votre évènement :{' '}
             {formatDateTime(
@@ -152,12 +162,7 @@ export const DownloadBookingsModal = ({
               <div>Sélectionnez la date :</div>
             </legend>
             <div className={style['bookings-date-count']}>
-              {priceCategoryAndScheduleCountByDate.length}
-              {pluralizeFr(
-                priceCategoryAndScheduleCountByDate.length,
-                'date',
-                'dates'
-              )}
+              {numberOfDates} {pluralizeFr(numberOfDates, 'date', 'dates')}
             </div>
             <hr className={style['horizontal-line']} />
             <table className={style['date-select-table']}>
@@ -185,6 +190,7 @@ export const DownloadBookingsModal = ({
               </tbody>
             </table>
             <hr className={style['horizontal-line']} />
+            <FieldFooter error={form.formState.errors.selectedDate?.message} />
           </>
         )}
       </fieldset>
@@ -193,9 +199,12 @@ export const DownloadBookingsModal = ({
         label="Sélectionnez le type de réservations :"
         name="selectedBookingType"
         onChange={(e) => {
-          setSelectedBookingType(e.target.value as BookingsExportStatusFilter)
+          form.setValue(
+            'selectedBookingType',
+            e.target.value as BookingsExportStatusFilter
+          )
         }}
-        checkedOption={selectedBookingType}
+        checkedOption={form.watch('selectedBookingType')}
         options={[
           {
             label: 'Réservations confirmées et validées uniquement',
