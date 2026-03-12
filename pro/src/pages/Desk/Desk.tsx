@@ -1,24 +1,23 @@
+import { yupResolver } from '@hookform/resolvers/yup'
 import type React from 'react'
-import { useId, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
-import { isErrorAPIError } from '@/apiClient/helpers'
-import type { GetBookingResponse } from '@/apiClient/v1'
+import type { ApiError, GetBookingResponse } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
-import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullLinkIcon from '@/icons/full-link.svg'
+import { Panel } from '@/ui-kit/Panel/Panel'
 
-import { BookingDetails } from './BookingDetails'
-import { ButtonInvalidateToken } from './ButtonInvalidateToken'
+import { BookingDetails } from './BookingDetails/BookingDetails'
+import { ButtonInvalidateToken } from './components/ButtonInvalidateToken'
+import { getBookingFailure } from './components/getBookingFailure'
+import { validationDeskSchema } from './components/validationDeskSchema'
 import styles from './Desk.module.scss'
-import { DeskInputMessage } from './DeskInputMessage/DeskInputMessage'
-import { getBookingFailure } from './getBookingFailure'
-import { type ErrorMessage, MESSAGE_VARIANT } from './types'
-import { validateToken } from './validation'
 
 interface FormValues {
   token: string
@@ -27,163 +26,149 @@ interface FormValues {
 export const Desk = (): JSX.Element => {
   const [isTokenValidated, setIsTokenValidated] = useState(false)
   const [booking, setBooking] = useState<GetBookingResponse | null>(null)
-  const [message, setMessage] = useState<ErrorMessage>({
-    message: 'Saisissez une contremarque',
-  })
+  const snackBar = useSnackBar()
 
   const statusId = useId()
 
   const tokenInputRef = useRef<HTMLInputElement | null>(null)
 
-  const hookForm = useForm({
-    defaultValues: {
-      token: '',
-    },
-    mode: 'onBlur',
+  const hookForm = useForm<FormValues>({
+    mode: 'onChange',
+    defaultValues: { token: '' },
+    resolver: yupResolver(validationDeskSchema),
   })
 
   const {
     register,
     handleSubmit,
-    resetField,
-    getValues,
     setValue,
-    formState: { isSubmitting },
+    setError,
+    watch,
+    resetField,
+    formState: { errors, isSubmitting, isValid },
   } = hookForm
 
-  const onSubmit = async (formValues: FormValues) => {
-    setMessage({ message: 'Validation en cours...' })
+  const token = watch('token')
 
-    try {
-      await api.patchBookingUseByToken(formValues.token)
-
-      setMessage({ message: 'Contremarque validée !' })
-      resetField('token')
+  useEffect(() => {
+    if (!isValid || !token) {
       setBooking(null)
-    } catch (error) {
-      if (isErrorAPIError(error)) {
-        setMessage({
-          message: error.body['global'],
-          variant: MESSAGE_VARIANT.ERROR,
-        })
-      }
+      return
     }
-  }
 
-  const handleOnChangeToken = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const inputValue = event.target.value.toUpperCase()
-    // QRCODE return a prefix that we want to ignore.
-    const token = inputValue.split(':').reverse()[0]
+    let cancelled = false
 
-    setValue('token', token)
-
-    setMessage({
-      message: 'Vérification...',
-    })
-
-    const tokenErrorMessage = validateToken(token)
-
-    if (tokenErrorMessage) {
-      setMessage(tokenErrorMessage)
-      setBooking(null)
-    } else {
-      setMessage({ message: 'Saisissez une contremarque' })
-
+    const fetchBooking = async () => {
       try {
         const response = await api.getBookingByToken(token)
-        setBooking(response)
-        setMessage({
-          message: 'Coupon vérifié, cliquez sur "Valider" pour enregistrer',
-        })
-      } catch (e) {
-        if (isErrorAPIError(e)) {
-          const failure = getBookingFailure(e)
-          setIsTokenValidated(failure.isTokenValidated)
+
+        if (!cancelled) {
+          setBooking(response)
+        }
+      } catch (error) {
+        if (!cancelled) {
+          handleSubmitError(error as ApiError)
           setBooking(null)
-          setMessage({
-            message: failure.message,
-            variant: MESSAGE_VARIANT.ERROR,
-          })
         }
       }
+    }
+
+    fetchBooking()
+
+    return () => {
+      cancelled = true
+    }
+  }, [token, isValid])
+
+  const handleOnChangeToken = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = event.target.value.toUpperCase()
+    const formattedToken = inputValue.split(':').reverse()[0]
+
+    setValue('token', formattedToken, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
+  }
+
+  const handleSubmitValidate = async (formValues: FormValues) => {
+    try {
+      await api.patchBookingUseByToken(formValues.token)
+      snackBar.success('Contremarque validée')
+
+      setBooking(null)
+      resetField('token')
+    } catch (error) {
+      handleSubmitError(error as ApiError)
     }
   }
 
   const handleSubmitInvalidate = async (token: string) => {
-    setMessage({ message: 'Invalidation en cours...' })
-
     try {
       await api.patchBookingKeepByToken(token)
-      setMessage({ message: 'Contremarque invalidée !' })
+      snackBar.success('Contremarque invalidée')
+
       setIsTokenValidated(false)
       resetField('token')
     } catch (error) {
-      if (isErrorAPIError(error)) {
-        const failure = getBookingFailure(error)
-        setIsTokenValidated(failure.isTokenValidated)
-        setMessage({
-          message: failure.message,
-          variant: MESSAGE_VARIANT.ERROR,
-        })
-      }
+      handleSubmitError(error as ApiError)
     } finally {
       tokenInputRef.current?.focus()
     }
   }
-  const tokenRegister = register('token')
+
+  const handleSubmitError = (error: ApiError) => {
+    if (error.status === 503 || error.status === 500) {
+      snackBar.error(
+        error['body']?.global ||
+          'Le service de validation des contremarques est momentanément indisponible. Veuillez réessayer dans quelques instants.'
+      )
+    } else {
+      const failure = getBookingFailure(error)
+      setIsTokenValidated(failure.isTokenValidated)
+      setError('token', { message: failure.message })
+    }
+  }
+
   return (
-    <HeadlineOfferContextProvider>
-      <BasicLayout mainHeading="Guichet">
-        <p className={styles.advice}>
-          Saisissez les contremarques présentées par les bénéficiaires afin de
-          les valider ou de les invalider.
-        </p>
+    <BasicLayout mainHeading="Guichet">
+      <p className={styles['desk-advice']}>
+        Saisissez les contremarques présentées par les bénéficiaires afin de les
+        valider ou de les invalider.
+      </p>
+      <Panel>
         <div className={styles['desk-form-wrapper']}>
-          <div className={styles['desk-form']}>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <div className={styles['desk-form-input']}>
-                <TextInput
-                  {...tokenRegister}
-                  label="Contremarque"
-                  onChange={handleOnChangeToken}
-                  description="Format : 6 caractères alphanumériques en majuscules. Par exemple : AZE123"
-                  describedBy={statusId}
-                  autoComplete="off"
-                  ref={(input) => {
-                    tokenRegister.ref(input)
-                    tokenInputRef.current = input
-                  }}
-                  required
-                  requiredIndicator="explicit"
-                />
-              </div>
+          <form onSubmit={handleSubmit(handleSubmitValidate)}>
+            <div className={styles['desk-form']}>
+              <TextInput
+                {...register('token')}
+                value={token}
+                label="Contremarque"
+                onChange={handleOnChangeToken}
+                description="Caractères alphanumériques en majuscules. Par exemple : AZE123"
+                describedBy={statusId}
+                autoComplete="off"
+                required
+                requiredIndicator="explicit"
+                maxCharactersCount={6}
+                error={errors?.token?.message}
+              />
 
               {booking && <BookingDetails booking={booking} />}
 
-              <div className={styles['desk-button']}>
-                {isTokenValidated ? (
-                  <ButtonInvalidateToken
-                    onConfirm={() => handleSubmitInvalidate(getValues('token'))}
-                  />
-                ) : (
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting || !booking}
-                    label="Valider la contremarque"
-                  />
-                )}
-              </div>
-            </form>
-            {/** biome-ignore lint/a11y/useSemanticElements: We want a `role="status"` here, not an `<output />`. */}
-            <div role="status" id={statusId}>
-              <DeskInputMessage
-                message={message.message}
-                variant={message.variant}
-              />
+              {isTokenValidated ? (
+                <ButtonInvalidateToken
+                  onConfirm={() => handleSubmitInvalidate(token)}
+                />
+              ) : (
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  isLoading={isSubmitting}
+                  label="Valider la contremarque"
+                />
+              )}
             </div>
-          </div>
+          </form>
           <Banner
             actions={[
               {
@@ -199,8 +184,8 @@ export const Desk = (): JSX.Element => {
             description="Les pièces d’identité doivent impérativement être présentées physiquement. Merci de ne pas accepter les pièces d’identité au format numérique."
           />
         </div>
-      </BasicLayout>
-    </HeadlineOfferContextProvider>
+      </Panel>
+    </BasicLayout>
   )
 }
 

@@ -5,7 +5,10 @@ import * as convertEuroToPacificFranc from '@/commons/utils/convertEuroToPacific
 import { defaultGetBookingResponse } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { BookingDetails, type BookingDetailsProps } from '../BookingDetails'
+import {
+  BookingDetails,
+  type BookingDetailsProps,
+} from '../BookingDetails/BookingDetails'
 
 function renderBookingDetails({ booking }: BookingDetailsProps) {
   renderWithProviders(<BookingDetails booking={booking} />)
