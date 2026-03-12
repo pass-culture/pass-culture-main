@@ -28,7 +28,7 @@ from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import offerers_serialize
-from pcapi.routes.serialization import venues_serialize
+from pcapi.routes.serialization import venue_serialize
 from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
 from pcapi.utils import crypto
 from pcapi.utils import date as date_utils
@@ -151,7 +151,7 @@ def _create_pro_user(row: dict) -> User:
     )
 
     # TODO(xordoquy): rename address to location ?
-    venue_creation_info = venues_serialize.PostVenueBodyModel(
+    venue_creation_info = venue_serialize.PostVenueBodyModel(
         activity=offerers_models.Activity.OTHER,
         address=address,
         bookingEmail=offerers_schemas.VenueBookingEmail(user.email),

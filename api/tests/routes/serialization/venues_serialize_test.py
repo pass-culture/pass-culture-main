@@ -2,8 +2,8 @@ import pytest
 
 from pcapi.core.finance.models import BankAccountApplicationStatus
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.routes.serialization.venues_serialize import SimplifiedBankAccountStatus
-from pcapi.routes.serialization.venues_serialize import parse_venue_bank_account_status
+from pcapi.routes.serialization.venue_finance_serialize import SimplifiedBankAccountStatus
+from pcapi.routes.serialization.venue_finance_serialize import parse_venue_bank_account_status
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

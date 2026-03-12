@@ -45,7 +45,7 @@ from pcapi.routes.backoffice.utils import access_control
 from pcapi.routes.backoffice.utils import logs as logs_utils
 from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.routes.serialization import address_serialize
-from pcapi.routes.serialization import venues_serialize
+from pcapi.routes.serialization import venue_serialize
 from pcapi.utils import date as date_utils
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import siren as siren_utils
@@ -1055,7 +1055,7 @@ def create_venue(offerer_id: int) -> response_utils.BackofficeResponse:
         label=None,
     )
 
-    venue_creation_info = venues_serialize.PostVenueBodyModel(
+    venue_creation_info = venue_serialize.PostVenueBodyModel(
         activity=attachment_venue.activity,
         # TODO(xordoquy): rename to location ?
         address=address_body_model,

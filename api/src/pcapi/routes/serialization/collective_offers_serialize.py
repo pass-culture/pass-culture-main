@@ -15,7 +15,7 @@ from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import collective_history_serialize
 from pcapi.routes.serialization import educational_institutions
 from pcapi.routes.serialization import national_programs
-from pcapi.routes.serialization import venues_serialize
+from pcapi.routes.serialization import venue_serialize
 from pcapi.routes.serialization.utils import raise_error_from_location
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.serialization import utils
@@ -83,7 +83,7 @@ class GetCollectiveOfferLocationModelV2(HttpBodyModel):
 class CollectiveOfferResponseModel(HttpBodyModel):
     id: int
     name: str
-    venue: venues_serialize.ListOffersVenueResponseModelV2
+    venue: venue_serialize.ListOffersVenueResponseModelV2
     displayedStatus: models.CollectiveOfferDisplayedStatus
     imageUrl: str | None
     location: GetCollectiveOfferLocationModelV2
@@ -107,7 +107,7 @@ class CollectiveOfferResponseModel(HttpBodyModel):
         return cls(
             id=offer.id,
             name=offer.name,
-            venue=venues_serialize.ListOffersVenueResponseModelV2.build(offer.venue),
+            venue=venue_serialize.ListOffersVenueResponseModelV2.build(offer.venue),
             displayedStatus=offer.displayedStatus,
             allowedActions=offer.allowedActions,
             imageUrl=offer.imageUrl,
@@ -125,7 +125,7 @@ class ListCollectiveOffersResponseModel(pydantic_v2.RootModel):
 class CollectiveOfferTemplateResponseModel(HttpBodyModel):
     id: int
     name: str
-    venue: venues_serialize.ListOffersVenueResponseModelV2
+    venue: venue_serialize.ListOffersVenueResponseModelV2
     displayedStatus: models.CollectiveOfferDisplayedStatus
     imageUrl: str | None
     location: GetCollectiveOfferLocationModelV2
@@ -144,7 +144,7 @@ class CollectiveOfferTemplateResponseModel(HttpBodyModel):
         return cls(
             id=offer.id,
             name=offer.name,
-            venue=venues_serialize.ListOffersVenueResponseModelV2.build(offer.venue),
+            venue=venue_serialize.ListOffersVenueResponseModelV2.build(offer.venue),
             displayedStatus=offer.displayedStatus,
             allowedActions=offer.allowedActions,
             imageUrl=offer.imageUrl,

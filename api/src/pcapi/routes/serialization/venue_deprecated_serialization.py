@@ -5,8 +5,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import address_serialize
-
-from . import utils
+from pcapi.routes.serialization import venue_finance_serialize
 
 
 # TODO(jbaudet - 11/2025): remove once (pro) GET /venues has been
@@ -29,7 +28,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     isCaledonian: bool
     isActive: bool
     isValidated: bool
-    bankAccountStatus: utils.SimplifiedBankAccountStatus | None
+    bankAccountStatus: venue_finance_serialize.SimplifiedBankAccountStatus | None
     hasNonFreeOffers: bool
 
     @classmethod
@@ -53,7 +52,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
             "isCaledonian": venue.is_caledonian,
             "isActive": venue.managingOfferer.isActive,
             "isValidated": venue.managingOfferer.isValidated,
-            "bankAccountStatus": utils.parse_venue_bank_account_status(venue),
+            "bankAccountStatus": venue_finance_serialize.parse_venue_bank_account_status(venue),
             "hasNonFreeOffers": venue.id in venues_with_non_free_offers,
         }
 

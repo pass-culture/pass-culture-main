@@ -20,8 +20,8 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import finance_serialize
-from pcapi.routes.serialization.venues_serialize import BannerMetaModel
-from pcapi.routes.serialization.venues_serialize import DMSApplicationForEAC
+from pcapi.routes.serialization.venue_banners_serialize import BannerMetaModel
+from pcapi.routes.serialization.venue_collective_serialize import DMSApplicationForEAC
 from pcapi.routes.shared import validation
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.email import sanitize_email
