@@ -27,7 +27,7 @@ from pcapi.models import db
 
 logger = logging.getLogger(__name__)
 
-BATCH_SIZE = 1000
+BATCH_SIZE = 10000
 OFFER_ID_HEADER = "offer_id"
 
 
@@ -61,10 +61,10 @@ def process_batch(batch_rows: tuple, commit: bool) -> None:
     for link in artist_offer_links:
         # on récupère le nom et on le normalise
         artist_name = link.custom_name or (link.artist.name if link.artist else "")
-        artist_name_nomalized = strip_accents(artist_name.lower().strip())
+        artist_name_normalized = strip_accents(artist_name.lower().strip())
 
         # je sais pas si c'est la meilleur façon de faire
-        key = (link.offer_id, link.artist_type, artist_name_nomalized)
+        key = (link.offer_id, link.artist_type, artist_name_normalized)
 
         if key in seen_links:
             existing_link = seen_links[key]
@@ -126,7 +126,6 @@ def main(commit: bool, filename: str, start_from_batch: int = 1) -> None:
         process_batch(batch_rows, commit)
 
     if not commit:
-        # que de rollbacks
         db.session.rollback()
         logger.info("Dry run terminé, rollback des données")
     else:
