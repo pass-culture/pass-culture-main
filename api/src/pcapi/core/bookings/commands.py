@@ -9,7 +9,6 @@ import pcapi.core.mails.transactional as transactional_mails
 import pcapi.utils.cron as cron_decorators
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import repository as bookings_repository
-from pcapi.core.bookings.external import booking_notifications
 from pcapi.core.educational.api import booking as educational_booking_api
 from pcapi.core.external.batch import transactional_notifications
 from pcapi.models import db
@@ -158,4 +157,4 @@ def notify_users_bookings_not_retrieved_command() -> None:
     Find soon expiring bookings that will expire in exactly N days and
     send a notification to each user.
     """
-    booking_notifications.notify_users_bookings_not_retrieved()
+    transactional_notifications.notify_users_bookings_not_retrieved()

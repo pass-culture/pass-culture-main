@@ -9,8 +9,8 @@ from pcapi.core.external.batch.api import update_user_attributes
 from pcapi.core.external.batch.attributes import format_user_attributes
 from pcapi.core.external.batch.backends.batch import BatchAPI
 from pcapi.core.external.batch.backends.batch import BatchBackend
-from pcapi.core.external.batch.transactional_notifications import TransactionalNotificationDataV2
-from pcapi.core.external.batch.transactional_notifications import TransactionalNotificationMessageV2
+from pcapi.core.external.batch.serialization import TransactionalNotificationDataV2
+from pcapi.core.external.batch.serialization import TransactionalNotificationMessageV2
 from pcapi.core.external.batch.utils import batch_length
 from pcapi.core.external.batch.utils import shorten_for_batch
 

@@ -1,10 +1,8 @@
 import logging
 
+from pcapi.core.external.batch import serialization
 from pcapi.core.external.batch.backends.batch import BatchAPI
 from pcapi.core.external.batch.backends.batch import UserUpdateData
-from pcapi.core.external.batch.serialization import TrackBatchEventRequest
-from pcapi.core.external.batch.serialization import TransactionalNotificationData
-from pcapi.core.external.batch.serialization import TransactionalNotificationDataV2
 
 
 logger = logging.getLogger(__name__)
@@ -22,6 +20,16 @@ class LoggerBackend:
             extra={"can_be_asynchronously_retried": can_be_asynchronously_retried},
         )
 
+    def update_user_attributes_new(
+        self, user_id: int, attribute_values: dict, can_be_asynchronously_retried: bool = False
+    ) -> None:
+        logger.info(
+            "A request to update user attributes would be sent for user with id=%d with new attributes=%s to both APIs",
+            user_id,
+            attribute_values,
+            extra={"can_be_asynchronously_retried": can_be_asynchronously_retried},
+        )
+
     def update_users_attributes(
         self, users_data: list[UserUpdateData], can_be_asynchronously_retried: bool = False
     ) -> None:
@@ -34,7 +42,7 @@ class LoggerBackend:
 
     def send_transactional_notification(
         self,
-        notification_data: TransactionalNotificationData | TransactionalNotificationDataV2,
+        notification_data: serialization.TransactionalNotificationData | serialization.TransactionalNotificationDataV2,
         can_be_asynchronously_retried: bool = False,
     ) -> None:
         logger.info(
@@ -64,7 +72,9 @@ class LoggerBackend:
         )
 
     def track_event_bulk(
-        self, track_event_data: list[TrackBatchEventRequest], can_be_asynchronously_retried: bool = False
+        self,
+        track_event_data: list[serialization.TrackBatchEventRequest] | list[serialization.TrackBatchEventRequestV2],
+        can_be_asynchronously_retried: bool = False,
     ) -> None:
         user_ids = [data.user_id for data in track_event_data]
         logger.info(
