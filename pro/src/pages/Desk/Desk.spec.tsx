@@ -28,8 +28,6 @@ const renderDesk = () =>
     { initialRouterEntries: ['/guichet'] }
   )
 
-const user = userEvent.setup()
-
 beforeEach(() => {
   vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
     success: snackBarSuccess,
@@ -48,6 +46,7 @@ describe('Desk', () => {
         defaultGetBookingResponse
       )
 
+      const user = userEvent.setup()
       renderDesk()
 
       const input = screen.getByRole('textbox', { name: 'Contremarque' })
@@ -61,6 +60,7 @@ describe('Desk', () => {
         defaultGetBookingResponse
       )
 
+      const user = userEvent.setup()
       renderDesk()
 
       expect(screen.getByText('0/6')).toBeInTheDocument()
@@ -76,6 +76,7 @@ describe('Desk', () => {
         defaultGetBookingResponse
       )
 
+      const user = userEvent.setup()
       renderDesk()
 
       const input = screen.getByRole('textbox', { name: 'Contremarque' })
@@ -101,6 +102,7 @@ describe('Desk', () => {
     })
 
     it('shows error when token shorter than 6 characters', async () => {
+      const user = userEvent.setup()
       renderDesk()
 
       const input = screen.getByRole('textbox', { name: 'Contremarque' })
@@ -118,6 +120,7 @@ describe('Desk', () => {
     })
 
     it('shows invalid format message', async () => {
+      const user = userEvent.setup()
       renderDesk()
 
       const input = screen.getByRole('textbox', { name: 'Contremarque' })
@@ -149,6 +152,7 @@ describe('Desk', () => {
     it('validates token successfully', async () => {
       vi.spyOn(api, 'patchBookingUseByToken').mockResolvedValueOnce()
 
+      const user = userEvent.setup()
       renderDesk()
 
       const input = screen.getByRole('textbox', { name: 'Contremarque' })
@@ -177,6 +181,7 @@ describe('Desk', () => {
         )
       )
 
+      const user = userEvent.setup()
       renderDesk()
 
       const input = screen.getByRole('textbox', { name: 'Contremarque' })
@@ -210,13 +215,14 @@ describe('Desk', () => {
     it('invalidates token successfully', async () => {
       vi.spyOn(api, 'patchBookingKeepByToken').mockResolvedValueOnce()
 
+      const user = userEvent.setup()
       renderDesk()
 
       const input = screen.getByRole('textbox', { name: 'Contremarque' })
       await user.type(input, 'AAAAAA')
 
       await user.click(
-        screen.getByRole('button', { name: 'Invalider la contremarque' })
+        await screen.findByRole('button', { name: 'Invalider la contremarque' })
       )
 
       await user.click(screen.getByRole('button', { name: 'Continuer' }))
@@ -235,13 +241,14 @@ describe('Desk', () => {
         )
       )
 
+      const user = userEvent.setup()
       renderDesk()
 
       const input = screen.getByRole('textbox', { name: 'Contremarque' })
       await user.type(input, 'AAAAAA')
 
       await user.click(
-        screen.getByRole('button', { name: 'Invalider la contremarque' })
+        await screen.findByRole('button', { name: 'Invalider la contremarque' })
       )
       await user.click(screen.getByRole('button', { name: 'Continuer' }))
 
