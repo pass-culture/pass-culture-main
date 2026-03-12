@@ -74,10 +74,7 @@ def _index_all_artists() -> None:
 def _index_all_venues() -> None:
     logger.info("Reindexing venues")
     query = (
-        db.session.query(offerer_models.Venue)
-        .with_entities(offerer_models.Venue.id)
-        .filter(offerer_models.Venue.isPermanent.is_(True))
-        .order_by(offerer_models.Venue.id)
+        db.session.query(offerer_models.Venue).with_entities(offerer_models.Venue.id).order_by(offerer_models.Venue.id)
     )
     search.reindex_venue_ids([venue_id for (venue_id,) in query])
     logger.info("Reindexing done")
