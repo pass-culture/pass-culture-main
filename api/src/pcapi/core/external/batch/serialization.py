@@ -1,4 +1,5 @@
 from pydantic import BaseModel as BaseModelV2
+from pydantic import ConfigDict
 
 from pcapi.routes.serialization import BaseModel
 
@@ -34,6 +35,27 @@ class TransactionalNotificationData(BaseModel):
     user_ids: list[int]
     message: TransactionalNotificationMessage
     extra: dict = {}
+
+
+class UpdateBatchAttributesRequestV2(BaseModelV2):
+    attributes: dict
+    user_id: int
+
+
+class DeleteBatchUserAttributesRequestV2(BaseModelV2):
+    user_id: int
+
+
+class TrackBatchEventRequestV2(BaseModelV2):
+    user_id: int
+    event_name: BatchEvent
+    event_payload: dict
+
+    model_config = ConfigDict(use_enum_values=True)
+
+
+class TrackBatchEventsRequestV2(BaseModelV2):
+    trigger_events: list[TrackBatchEventRequestV2]
 
 
 class TransactionalNotificationMessageV2(BaseModelV2):

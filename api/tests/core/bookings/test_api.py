@@ -1549,7 +1549,7 @@ class CancelByOffererTest:
                 "title": "Commande annulée",
             },
             "user_ids": [booking.userId],
-            "can_be_asynchronously_retried": False,
+            "can_be_asynchronously_retried": True,
         }
 
     def test_raise_if_already_cancelled(self):
