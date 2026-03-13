@@ -1,10 +1,14 @@
 import datetime
+import typing
 
+import pydantic
+import pydantic.types as pydantic_types
 from pydantic.v1 import ConstrainedList
 from pydantic.v1 import ConstrainedStr
 from pydantic.v1 import validator
 
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 
 
 class Hour(ConstrainedStr):
@@ -41,7 +45,27 @@ class OpeningHoursTimespans(ConstrainedList):
     unique_items = True
 
 
-def validate_timespans(timespans: OpeningHoursTimespans | None) -> OpeningHoursTimespans | None:
+# TODO: replace constr with annotated str
+"""defines a time string that matches the HH:MM format"""
+HourV2 = pydantic_types.constr(strict=True, strip_whitespace=True, pattern=r"^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$")
+
+# defines start and end opening hours
+# eg. ["10:00", "18:00"] (from 10:00 to 18:00)
+OpeningHoursV2 = pydantic_types.conset(item_type=HourV2, min_length=2, max_length=2)
+
+
+# defines a whole day's opening hours
+# eg. [["10:00", "13:00"], ["14:00", "18:00"]]
+OpeningHoursTimespansV2 = pydantic_types.conset(
+    item_type=OpeningHoursV2,
+    min_length=1,
+    max_length=2,
+)
+
+
+def validate_timespans(
+    timespans: OpeningHoursTimespans | typing.Annotated[list[list[str]], OpeningHoursTimespansV2] | None,
+) -> OpeningHoursTimespans | typing.Annotated[list[list[str]], OpeningHoursTimespansV2] | None:
     """Check that timespans are well-formed (if any)
 
     -> Each timespan is a (start, end) pair.
@@ -95,3 +119,69 @@ class WeekdayOpeningHoursTimespans(BaseModel):
 
     class Config:
         extra = "forbid"
+
+
+class WeekdayOpeningHoursTimespansV2(HttpBodyModel):
+    MONDAY: (
+        typing.Annotated[
+            list[list[str]],
+            OpeningHoursTimespansV2,
+            # pydantic.AfterValidator(lambda v: sorted(set(tuple(v)))),
+            pydantic.AfterValidator(validate_timespans),
+        ]
+        | None
+    ) = None
+    TUESDAY: (
+        typing.Annotated[
+            list[list[str]],
+            OpeningHoursTimespansV2,
+            # pydantic.AfterValidator(lambda v: sorted(set(tuple(v)))),
+            pydantic.AfterValidator(validate_timespans),
+        ]
+        | None
+    ) = None
+    WEDNESDAY: (
+        typing.Annotated[
+            list[list[str]],
+            OpeningHoursTimespansV2,
+            # pydantic.AfterValidator(lambda v: sorted(set(tuple(v)))),
+            pydantic.AfterValidator(validate_timespans),
+        ]
+        | None
+    ) = None
+    THURSDAY: (
+        typing.Annotated[
+            list[list[str]],
+            OpeningHoursTimespansV2,
+            # pydantic.AfterValidator(lambda v: sorted(set(tuple(v)))),
+            pydantic.AfterValidator(validate_timespans),
+        ]
+        | None
+    ) = None
+    FRIDAY: (
+        typing.Annotated[
+            list[list[str]],
+            OpeningHoursTimespansV2,
+            # pydantic.AfterValidator(lambda v: sorted(set(tuple(v)))),
+            pydantic.AfterValidator(validate_timespans),
+        ]
+        | None
+    ) = None
+    SATURDAY: (
+        typing.Annotated[
+            list[list[str]],
+            OpeningHoursTimespansV2,
+            # pydantic.AfterValidator(lambda v: sorted(set(tuple(v)))),
+            pydantic.AfterValidator(validate_timespans),
+        ]
+        | None
+    ) = None
+    SUNDAY: (
+        typing.Annotated[
+            list[list[str]],
+            OpeningHoursTimespansV2,
+            # pydantic.AfterValidator(lambda v: sorted(set(tuple(v)))),
+            pydantic.AfterValidator(validate_timespans),
+        ]
+        | None
+    ) = None

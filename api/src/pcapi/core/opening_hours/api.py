@@ -97,3 +97,28 @@ def format_opening_hours(
 
     formatted = {day: timespans for day, timespans in formatted.items() if timespans}
     return schemas.WeekdayOpeningHoursTimespans(**formatted)  # type: ignore[arg-type]
+
+
+def format_opening_hours_v2(
+    opening_hours: list[offerers_models.OpeningHours] | None,
+) -> schemas.WeekdayOpeningHoursTimespansV2:
+    """Format DB data to the expected pydantic model format
+
+    From: [NumericRange(600, 720), NumericRange(780, 1200)]
+    To: [["10:00", "12:00"], ["13:00", "20:00"]]
+    """
+    formatted: dict[str, list[tuple[str, str]] | None] = {weekday.value: None for weekday in offerers_models.Weekday}
+    for oh in opening_hours or []:
+        timespans = []
+        for ts in oh.timespan or []:
+            lower = int(ts.lower)
+            upper = int(ts.upper)
+
+            start = time(lower // 60, lower % 60).isoformat(timespec="minutes")
+            end = time(upper // 60, upper % 60).isoformat(timespec="minutes")
+
+            timespans.append((start, end))
+        formatted[oh.weekday.value] = sorted(timespans, key=lambda ts: ts[0])
+
+    formatted = {day: timespans for day, timespans in formatted.items() if timespans}
+    return schemas.WeekdayOpeningHoursTimespansV2(**formatted)
