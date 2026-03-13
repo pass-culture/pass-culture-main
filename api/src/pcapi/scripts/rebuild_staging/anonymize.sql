@@ -165,15 +165,8 @@ SET
 ;
 
 -- Keep those which do not contain personal data
-UPDATE action_history
-SET "jsonData" = '{}'
-WHERE "actionType" IN (
-  'INFO_MODIFIED',
-  'OFFERER_NEW',
-  'USER_OFFERER_NEW',
-  'FRAUD_INFO_MODIFIED'
-)
-;
+TRUNCATE TABLE action_history;
+
 
 -- We probably should anonymize `offer.bookingEmail`
 -- but that would take a very long time.
