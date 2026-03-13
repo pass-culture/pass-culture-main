@@ -9,7 +9,7 @@ import type {
 } from '@/apiClient/v1'
 import type {
   AccessibilityFormValues,
-  AddressFormValues,
+  FlatAddressFormValues,
 } from '@/commons/core/shared/types'
 import { hasProperty } from '@/commons/utils/types'
 
@@ -19,7 +19,8 @@ export type CollectiveOffer =
   | CollectiveOfferTemplateResponseModel
   | CollectiveOfferResponseModel
 
-export interface OfferEducationalFormValues extends Partial<AddressFormValues> {
+export interface OfferEducationalFormValues
+  extends Partial<FlatAddressFormValues> {
   title: string
   description: string
   duration?: string
