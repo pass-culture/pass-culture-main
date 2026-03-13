@@ -357,6 +357,7 @@ class AlgoliaSerializationMixin:
             "email": getattr(venue.contact, "email", None),
             "facebook": social_medias.get("facebook"),
             "has_at_least_one_bookable_offer": has_at_least_one_bookable_offer,
+            "has_volunteering_url": bool(venue.volunteeringUrl),
             "instagram": social_medias.get("instagram"),
             "mental_disability": venue.mentalDisabilityCompliant,
             "motor_disability": venue.motorDisabilityCompliant,
