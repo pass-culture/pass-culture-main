@@ -1,6 +1,8 @@
 import cn from 'classnames'
 import { useMemo, useRef } from 'react'
 
+import type { GetOffererNameResponseModel } from '@/apiClient/v1'
+import type { SelectOption } from '@/commons/custom_types/form'
 import { useOffererNamesQuery } from '@/commons/hooks/swr/useOffererNamesQuery'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -33,14 +35,14 @@ export const Homepage = (): JSX.Element => {
 
   const offererNamesQuery = useOffererNamesQuery()
 
-  const offererNames = offererNamesQuery.data?.offerersNames
+  const offererNamesAttached = offererNamesQuery.data
 
   const offererOptions = sortByLabel(
-    offererNames?.map((item) => ({
+    offererNamesAttached?.map((item: GetOffererNameResponseModel) => ({
       value: item.id.toString(),
       label: item.name,
     })) ?? []
-  )
+  ) as SelectOption[]
 
   const selectedOfferer = useAppSelector(selectCurrentOfferer)
 
@@ -53,7 +55,7 @@ export const Homepage = (): JSX.Element => {
     return physicalVenues.length === 0 && !virtualVenue
   }, [selectedOfferer])
 
-  const isNotReady = offererNamesQuery.isLoading || !offererNames
+  const isNotReady = offererNamesQuery.isLoading || !offererNamesAttached
 
   const areHighlightsEnable = selectedOfferer?.canDisplayHighlights
 

@@ -40,13 +40,22 @@ describe('setSelectedAdminOffererById', () => {
 
       const store = configureTestStore({
         offerer: {
-          offererNames: [getOffererNameFactory({ id: 100 })],
+          offererNamesAttached: [getOffererNameFactory({ id: 100 })],
           currentOfferer: null,
           currentOffererName: null,
+          combinedOffererNames: [getOffererNameFactory({ id: 100 })],
+          offerersNamesWithPendingValidation: null,
         },
       })
 
-      await store.dispatch(setSelectedAdminOffererById(100)).unwrap()
+      await store
+        .dispatch(
+          setSelectedAdminOffererById({
+            offererId: 100,
+            offererNamesAttachedIds: [100],
+          })
+        )
+        .unwrap()
 
       expect(api.getOfferer).toHaveBeenCalledWith(100)
 
@@ -70,13 +79,22 @@ describe('setSelectedAdminOffererById', () => {
 
       const store = configureTestStore({
         offerer: {
-          offererNames: [getOffererNameFactory({ id: 200 })],
+          offererNamesAttached: [getOffererNameFactory({ id: 200 })],
           currentOfferer: null,
           currentOffererName: null,
+          combinedOffererNames: [getOffererNameFactory({ id: 200 })],
+          offerersNamesWithPendingValidation: null,
         },
       })
 
-      await store.dispatch(setSelectedAdminOffererById(offerer)).unwrap()
+      await store
+        .dispatch(
+          setSelectedAdminOffererById({
+            offererId: offerer,
+            offererNamesAttachedIds: [200],
+          })
+        )
+        .unwrap()
 
       expect(apiGetOffererSpy).not.toHaveBeenCalled()
 
@@ -102,13 +120,22 @@ describe('setSelectedAdminOffererById', () => {
 
       const store = configureTestStore({
         offerer: {
-          offererNames: [getOffererNameFactory({ id: 100 })],
+          offererNamesAttached: [getOffererNameFactory({ id: 100 })],
           currentOfferer: null,
           currentOffererName: null,
+          combinedOffererNames: [getOffererNameFactory({ id: 100 })],
+          offerersNamesWithPendingValidation: null,
         },
       })
 
-      await store.dispatch(setSelectedAdminOffererById(100)).unwrap()
+      await store
+        .dispatch(
+          setSelectedAdminOffererById({
+            offererId: 100,
+            offererNamesAttachedIds: [100],
+          })
+        )
+        .unwrap()
 
       expect(handleErrorSpy).toHaveBeenCalledWith(
         expect.objectContaining({ status: 500 }),
@@ -125,19 +152,110 @@ describe('setSelectedAdminOffererById', () => {
 
       const store = configureTestStore({
         offerer: {
-          offererNames: [getOffererNameFactory({ id: 100 })],
+          offererNamesAttached: [getOffererNameFactory({ id: 100 })],
           currentOfferer: null,
           currentOffererName: null,
+          combinedOffererNames: [getOffererNameFactory({ id: 100 })],
+          offerersNamesWithPendingValidation: null,
         },
       })
 
-      await store.dispatch(setSelectedAdminOffererById(100)).unwrap()
+      await store
+        .dispatch(
+          setSelectedAdminOffererById({
+            offererId: 100,
+            offererNamesAttachedIds: [100],
+          })
+        )
+        .unwrap()
 
       expect(handleErrorSpy).toHaveBeenCalledWith(
         expect.any(Error),
         "Une erreur est survenue lors du chargement de l'entité juridique."
       )
       expect(logoutSpy).not.toHaveBeenCalled()
+    })
+
+    it('should allow selecting an offerer with 403 access forbidden', async () => {
+      const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
+      const logoutSpy = vi.spyOn(logoutModule, 'logout')
+      vi.spyOn(api, 'getOfferer').mockRejectedValue({
+        status: 403,
+        message: 'Forbidden',
+        name: 'ApiError',
+      })
+
+      const store = configureTestStore({
+        offerer: {
+          offererNamesAttached: [getOffererNameFactory({ id: 100 })],
+          currentOfferer: null,
+          currentOffererName: null,
+          combinedOffererNames: [getOffererNameFactory({ id: 100 })],
+          offerersNamesWithPendingValidation: null,
+        },
+      })
+
+      await store
+        .dispatch(
+          setSelectedAdminOffererById({
+            offererId: 100,
+            offererNamesAttachedIds: [100],
+          })
+        )
+        .unwrap()
+
+      // Should NOT call handleError or logout on 403
+      expect(handleErrorSpy).not.toHaveBeenCalled()
+      expect(logoutSpy).not.toHaveBeenCalled()
+
+      // Should still update the state with a minimal offerer object
+      const state = store.getState()
+      expect(state.user.selectedAdminOfferer?.id).toBe(100)
+
+      // Should save the offerer ID to localStorage
+      expect(
+        localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID)
+      ).toBe('100')
+    })
+
+    it('should create a minimal offerer without API call when offerer is not attached to display the banners', async () => {
+      const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
+      const getOffererSpy = vi.spyOn(api, 'getOfferer')
+
+      const store = configureTestStore({
+        offerer: {
+          offererNamesAttached: [getOffererNameFactory({ id: 100 })],
+          currentOfferer: null,
+          currentOffererName: null,
+          combinedOffererNames: [
+            getOffererNameFactory({ id: 100 }),
+            getOffererNameFactory({ id: 101 }),
+          ],
+          offerersNamesWithPendingValidation: [
+            getOffererNameFactory({ id: 101 }),
+          ],
+        },
+      })
+
+      await store
+        .dispatch(
+          setSelectedAdminOffererById({
+            offererId: 101,
+            offererNamesAttachedIds: [100],
+          })
+        )
+        .unwrap()
+
+      expect(getOffererSpy).not.toHaveBeenCalled()
+
+      expect(handleErrorSpy).not.toHaveBeenCalled()
+
+      const state = store.getState()
+      expect(state.user.selectedAdminOfferer?.id).toBe(101)
+
+      expect(
+        localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID)
+      ).toBe('101')
     })
   })
 })

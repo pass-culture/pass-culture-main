@@ -8,7 +8,7 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { ensureOffererNames } from '@/commons/store/offerer/selectors'
+import { ensureCombinedOffererNames } from '@/commons/store/offerer/selectors'
 import { logout } from '@/commons/store/user/dispatchers/logout'
 import { setSelectedOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
@@ -38,7 +38,7 @@ export const HeaderDropdown = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const currentUser = useAppSelector(selectCurrentUser)
-  const offererNames = useAppSelector(ensureOffererNames)
+  const combinedOffererNames = useAppSelector(ensureCombinedOffererNames)
   const selectedOffererName = useAppSelector(
     (state) => state.offerer.currentOffererName
   )
@@ -52,7 +52,7 @@ export const HeaderDropdown = () => {
       : -(windowWidth - (16 + (windowWidth >= 380 ? 17 : 0)))
 
   const offererOptions = sortByLabel(
-    offererNames?.map((item) => ({
+    combinedOffererNames?.map((item) => ({
       value: item['id'].toString(),
       label: item['name'],
     })) ?? []

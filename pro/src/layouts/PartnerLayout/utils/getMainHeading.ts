@@ -8,7 +8,7 @@ import { PARTNER_HEADING_OVERRIDES } from '../commons/constants'
 
 export function getMainHeading(
   currentRoute: UIMatch<unknown, CustomRouteHandle | undefined>,
-  selectedVenue: GetVenueResponseModel
+  selectedVenue: GetVenueResponseModel | null
 ) {
   if (currentRoute.pathname === '/accueil' && isNewHomepageEnabled()) {
     return `Votre espace ${selectedVenue?.publicName}`

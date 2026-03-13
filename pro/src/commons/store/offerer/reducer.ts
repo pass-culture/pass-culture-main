@@ -4,19 +4,28 @@ import type { GetOffererNameResponseModel } from '@/apiClient/v1'
 import type { GetOffererResponseModel } from '@/apiClient/v1/models/GetOffererResponseModel'
 
 export type OffererState = {
-  offererNames: GetOffererNameResponseModel[] | null
+  offererNamesAttached: GetOffererNameResponseModel[] | null
   currentOfferer: GetOffererResponseModel | null
   /**
    * Used to display the offerer name in the header when the user is still "unattached" to this offerer
    * because they won't be allowed to access this offerer's details.
    */
   currentOffererName: GetOffererNameResponseModel | null
+  offerersNamesWithPendingValidation: GetOffererNameResponseModel[] | null
+  combinedOffererNames: GetOffererNameResponseModel[] | null
 }
 
 export const initialState: OffererState = {
-  offererNames: null,
+  offererNamesAttached: null,
   currentOfferer: null,
   currentOffererName: null,
+  offerersNamesWithPendingValidation: null,
+  combinedOffererNames: null,
+}
+
+type UpdateOffererNamesPayload = {
+  offerersNames: GetOffererNameResponseModel[] | null
+  offerersNamesWithPendingValidation: GetOffererNameResponseModel[] | null
 }
 
 // TODO (igabriele, 2026-02-04): 1. Move the `offererNames` prop into `userSlice`.
@@ -34,9 +43,15 @@ const offererSlice = createSlice({
 
     updateOffererNames: (
       state: OffererState,
-      action: PayloadAction<GetOffererNameResponseModel[] | null>
+      action: PayloadAction<UpdateOffererNamesPayload>
     ) => {
-      state.offererNames = action.payload
+      state.combinedOffererNames =
+        action.payload.offerersNames?.concat(
+          action.payload.offerersNamesWithPendingValidation ?? []
+        ) ?? null
+      state.offererNamesAttached = action.payload.offerersNames
+      state.offerersNamesWithPendingValidation =
+        action.payload.offerersNamesWithPendingValidation
     },
 
     updateCurrentOfferer: (

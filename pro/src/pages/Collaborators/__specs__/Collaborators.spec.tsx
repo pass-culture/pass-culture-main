@@ -6,11 +6,12 @@ import { ApiError, OffererMemberStatus } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import * as useAnalytics from '@/app/App/analytics/firebase'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
-import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+  type RenderWithProvidersOptions,
+  renderWithProviders,
+} from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 import { Component as Collaborators } from '../Collaborators'
@@ -24,7 +25,15 @@ vi.mock('@/apiClient/api', () => ({
 
 const mockLogEvent = vi.fn()
 
-const renderCollaborators = async () => {
+const offererNamesAttached = [
+  {
+    ...defaultGetOffererResponseModel,
+    id: 1,
+    name: `Offerer 1`,
+  },
+]
+
+const renderCollaborators = async (options?: RenderWithProvidersOptions) => {
   renderWithProviders(
     <>
       <Collaborators />
@@ -35,8 +44,15 @@ const renderCollaborators = async () => {
         user: {
           currentUser: sharedCurrentUserFactory(),
         },
-        offerer: currentOffererFactory(),
+        offerer: {
+          currentOfferer: {
+            ...defaultGetOffererResponseModel,
+          },
+          offererNamesAttached: offererNamesAttached,
+          combinedOffererNames: offererNamesAttached,
+        },
       },
+      ...options,
     }
   )
   await waitFor(() => {
@@ -168,6 +184,25 @@ describe('Collaborators', () => {
         )
       ).toBeInTheDocument()
     })
+  })
+  it('should render non attached banner if offerer is not attached', () => {
+    renderCollaborators({
+      storeOverrides: {
+        offerer: {
+          currentOfferer: {
+            id: 1,
+          },
+          offererNamesAttached: [],
+          combinedOffererNames: offererNamesAttached,
+        },
+      },
+    })
+
+    expect(
+      screen.getByText(
+        'Votre rattachement est en cours de traitement par les équipes du pass Culture'
+      )
+    ).toBeInTheDocument()
   })
 })
 

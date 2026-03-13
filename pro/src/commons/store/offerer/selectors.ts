@@ -13,17 +13,29 @@ export const ensureCurrentOfferer = (state: RootState) => {
   return state.offerer.currentOfferer
 }
 
-export const ensureOffererNames = (state: RootState) => {
+export const ensureOffererNamesAttached = (state: RootState) => {
   assertOrFrontendError(
-    state.offerer.offererNames,
-    '`state.offerer.offererNames` is null.'
+    state.offerer.offererNamesAttached,
+    '`state.offerer.offererNamesAttached` is null.'
   )
 
-  return state.offerer.offererNames
+  return state.offerer.offererNamesAttached
+}
+
+export const ensureCombinedOffererNames = (state: RootState) => {
+  assertOrFrontendError(
+    state.offerer.combinedOffererNames,
+    '`state.offerer.combinedOffererNames` is null.'
+  )
+
+  return state.offerer.combinedOffererNames
 }
 
 export const selectOffererNames = (state: RootState) =>
-  state.offerer.offererNames
+  state.offerer.offererNamesAttached
+
+export const selectOfferersNamesWithPendingValidation = (state: RootState) =>
+  state.offerer.offerersNamesWithPendingValidation
 
 export const selectCurrentOfferer = (state: RootState) =>
   state.offerer.currentOfferer
