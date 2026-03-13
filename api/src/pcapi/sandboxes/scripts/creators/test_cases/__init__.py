@@ -81,6 +81,7 @@ def save_test_cases_sandbox() -> None:
     create_offers_with_same_author()
     create_pro_advices()
     create_roles_with_permissions()
+    create_volunteering_venue()
     create_industrial_offer_price_limitation_rules()
     create_industrial_offer_validation_rules()
     create_industrial_gdpr_users()
@@ -1249,6 +1250,14 @@ def create_pro_advices() -> None:
         offer__name=f"Offre 3 du lieu {venue_6.id}",
     ).offer
     offers_factories.ProAdviceFactory.create(offer=offer_with_advice_3, **pro_advices_mocks.advices["standard2"])
+
+
+def create_volunteering_venue() -> None:
+    venue = offerers_factories.VenueWithVolunteeringUrlFactory(
+        activity=offerers_models.Activity.COMMUNITY_CENTRE, isPermanent=True, name="On cherche des bénévoles"
+    )
+    offer = offers_factories.OfferFactory(name="Le pro cherche des bénévoles", venue=venue)
+    offers_factories.StockFactory(offer=offer)
 
 
 @log_func_duration

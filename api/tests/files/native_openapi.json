@@ -8257,6 +8257,18 @@
                         "title": "Timezone",
                         "type": "string"
                     },
+                    "volunteeringUrl": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Volunteeringurl"
+                    },
                     "withdrawalDetails": {
                         "anyOf": [
                             {

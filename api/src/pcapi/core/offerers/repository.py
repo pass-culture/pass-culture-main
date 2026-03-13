@@ -204,6 +204,7 @@ def get_active_venue_page_data(venue_id: int) -> models.Venue | None:
                     models.Venue.isOpenToPublic,
                     models.Venue.name,
                     models.Venue.publicName,
+                    models.Venue.volunteeringUrl,
                     models.Venue.withdrawalDetails,
                 )
             )
