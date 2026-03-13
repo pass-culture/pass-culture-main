@@ -12,6 +12,7 @@ from pcapi.core.finance import backend as finance_backend
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.finance.backend.base import BaseFinanceBackend
 from pcapi.core.finance.backend.base import SettlementPayload
 from pcapi.core.finance.backend.base import SettlementType
 from pcapi.core.finance.backend.dummy import bank_accounts as dummy_bank_accounts
@@ -243,7 +244,7 @@ class BaseBackendTest:
         cashflow = finance_factories.CashflowFactory(pricings=[pricing])
         invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account)
 
-        backend = finance_backend.BaseFinanceBackend()
+        backend = BaseFinanceBackend()
         invoice_lines = backend.get_invoice_lines(invoice)
         assert len(invoice_lines) == 1
         invoice_line = invoice_lines[0]
@@ -281,7 +282,7 @@ class BaseBackendTest:
         cashflow = finance_factories.CashflowFactory(pricings=[pricing])
         invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account)
 
-        backend = finance_backend.BaseFinanceBackend()
+        backend = BaseFinanceBackend()
         invoice_lines = backend.get_invoice_lines(invoice)
         assert len(invoice_lines) == 1
         invoice_line = invoice_lines[0]
@@ -338,7 +339,7 @@ class BaseBackendTest:
         cashflow = finance_factories.CashflowFactory(pricings=[pricing1, pricing2])
         invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account)
 
-        backend = finance_backend.BaseFinanceBackend()
+        backend = BaseFinanceBackend()
         invoice_lines = backend.get_invoice_lines(invoice)
         assert len(invoice_lines) == 2
         assert {"OCINDGRANT_18", "ORINDGRANT_18"} == {e["product_id"] for e in invoice_lines}
@@ -461,7 +462,7 @@ class BaseBackendTest:
         cashflow = finance_factories.CashflowFactory(pricings=[pricing])
         invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account)
 
-        backend = finance_backend.BaseFinanceBackend()
+        backend = BaseFinanceBackend()
         invoice_lines = backend.get_invoice_lines(invoice)
         assert len(invoice_lines) == 1
         invoice_line = invoice_lines[0]
@@ -516,7 +517,7 @@ class BaseBackendTest:
         cashflow = finance_factories.CashflowFactory(pricings=[pricing])
         invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account)
 
-        backend = finance_backend.BaseFinanceBackend()
+        backend = BaseFinanceBackend()
         invoice_lines = backend.get_invoice_lines(invoice)
         assert len(invoice_lines) == 1
         invoice_line = invoice_lines[0]
@@ -576,7 +577,7 @@ class BaseBackendTest:
         cashflow = finance_factories.CashflowFactory(pricings=[pricing])
         invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account)
 
-        backend = finance_backend.BaseFinanceBackend()
+        backend = BaseFinanceBackend()
         invoice_lines = backend.get_invoice_lines(invoice)
         assert len(invoice_lines) == 1
         invoice_line = invoice_lines[0]
@@ -624,7 +625,7 @@ class BaseBackendTest:
         cashflow = finance_factories.CashflowFactory(pricings=[pricing])
         invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account)
 
-        backend = finance_backend.BaseFinanceBackend()
+        backend = BaseFinanceBackend()
         invoice_lines = backend.get_invoice_lines(invoice)
         assert len(invoice_lines) == 1
         invoice_line = invoice_lines[0]
@@ -655,7 +656,7 @@ class BaseBackendTest:
         cashflow = finance_factories.CashflowFactory(pricings=[pricing])
         invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account)
 
-        backend = finance_backend.BaseFinanceBackend()
+        backend = BaseFinanceBackend()
         invoice_lines = backend.get_invoice_lines(invoice)
         assert len(invoice_lines) == 1
         invoice_line = invoice_lines[0]
@@ -675,7 +676,7 @@ class BaseBackendTest:
         ],
     )
     def test_get_invoice_daterange(self, cutoff_date, expected_start_date, expected_end_date):
-        backend = finance_backend.BaseFinanceBackend()
+        backend = BaseFinanceBackend()
         start_date, end_date = backend._get_invoice_daterange(cutoff_date)
 
         assert start_date == expected_start_date
@@ -688,7 +689,7 @@ class BaseBackendTest:
     CEGID_PASSWORD="",
     CEGID_CLIENT_ID="",
     CEGID_CLIENT_SECRET="",
-    FINANCE_BACKEND="pcapi.core.finance.backend.cegid.CegidFinanceBackend",
+    FINANCE_BACKEND="CegidFinanceBackend",
 )
 class CegidFinanceBackendTest:
     def test_get_backend(self, cegid_config):

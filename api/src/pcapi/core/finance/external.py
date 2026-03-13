@@ -194,6 +194,7 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
             )
             continue
 
+        # Deal with paying payloads
         bill_settlement_payloads = (
             settlement
             for settlement in settlements_by_bank_account_id[bank_account_id]
@@ -214,6 +215,7 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
 
             invoice = invoices_dict[payload.invoice_external_reference]
 
+            # Load, get or create settlement_batch
             if payload.settlement_batch_name:
                 if payload.settlement_batch_name in loaded_settlement_batches:
                     settlement_batch = loaded_settlement_batches[payload.settlement_batch_name]
@@ -233,6 +235,7 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
                 )
                 continue
 
+            # Load, get or create settlement
             if (payload.bank_account_id, payload.external_settlement_id) in loaded_settlements:
                 settlement = loaded_settlements.get((payload.bank_account_id, payload.external_settlement_id))
             else:
@@ -245,6 +248,7 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
                     .one_or_none()
                 )
 
+            # If settlement already exists, just link invoices to it
             if settlement:
                 if invoice not in settlement.invoices:
                     settlement.invoices.append(invoice)
@@ -262,6 +266,7 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
             loaded_settlements[(payload.bank_account_id, payload.external_settlement_id)] = settlement
             db.session.flush()
 
+        # Deal with cancelling payloads
         bill_cancelling_settlement_payloads = (
             settlement
             for settlement in settlements_by_bank_account_id[bank_account_id]
@@ -280,6 +285,7 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
                 )
                 continue
 
+            # Load, get or create settlement
             if (payload.bank_account_id, payload.external_settlement_id) in loaded_settlements:
                 settlement = loaded_settlements.get((payload.bank_account_id, payload.external_settlement_id))
             else:
