@@ -14,6 +14,7 @@ import {
 } from '@/design-system/Button/types'
 import { Panel } from '@/ui-kit/Panel/Panel'
 
+import { PartnerPageVariant } from '../types'
 import styles from './PartnerPageCard.module.scss'
 
 type PartnerPageProps = {
@@ -22,7 +23,7 @@ type PartnerPageProps = {
   offererId: number
   venueBannerUrl?: string | null
   venueBannerMeta?: BannerMetaModel | null
-  variant: 'collective' | 'individual'
+  variant: PartnerPageVariant
 }
 
 export const PartnerPageCard = ({
@@ -42,7 +43,7 @@ export const PartnerPageCard = ({
   const venuePreviewLink = `${WEBAPP_URL}/lieu/${venueId}`
   const baseVenueEditionLink = `/structures/${offererId}/lieux/${venueId}`
   const venueEditionLink =
-    variant === 'individual'
+    variant === PartnerPageVariant.INDIVIDUAL
       ? `${baseVenueEditionLink}/page-partenaire`
       : `${baseVenueEditionLink}/collectif`
 
@@ -57,7 +58,7 @@ export const PartnerPageCard = ({
   }
 
   const cardTitle =
-    variant === 'individual'
+    variant === PartnerPageVariant.INDIVIDUAL
       ? "Votre page sur l'application"
       : 'Votre page sur ADAGE'
 
@@ -83,7 +84,7 @@ export const PartnerPageCard = ({
             to={venueEditionLink}
             as="a"
           />
-          {variant === 'individual' && (
+          {variant === PartnerPageVariant.INDIVIDUAL && (
             <Button
               label="Voir ma page"
               variant={ButtonVariant.SECONDARY}
