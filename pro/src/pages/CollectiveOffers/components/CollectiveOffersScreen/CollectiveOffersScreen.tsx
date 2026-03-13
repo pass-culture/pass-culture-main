@@ -171,7 +171,7 @@ export const CollectiveOffersScreen = ({
         setSelectedFilters={setSelectedFilters}
         searchButtonRef={searchButtonRef}
       />
-      {withSwitchVenueFeature && (
+      {withSwitchVenueFeature && currentPageItems.length > 0 && (
         <div className={styles['downloads-banner']}>
           <DownloadsMovedBanner />
         </div>
