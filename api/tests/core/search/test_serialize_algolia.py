@@ -566,6 +566,7 @@ def test_serialize_venue():
             "snapchat": None,
             "twitter": "https://twitter.com/my.venue",
         },
+        volunteeringUrl="https://volunteering.url",
     )
 
     serialized = algolia.AlgoliaBackend().serialize_venue(venue)
@@ -596,10 +597,19 @@ def test_serialize_venue():
             "lat": float(venue.offererAddress.address.latitude),
         },
         "has_at_least_one_bookable_offer": False,
+        "has_volunteering_url": True,
         "date_created": venue.dateCreated.timestamp(),
         "postalCode": venue.offererAddress.address.postalCode,
         "adress": venue.offererAddress.address.street,
     }
+
+
+@pytest.mark.parametrize("volunteering_url,expected", [("https://volunteering.url", True), ("", False), (None, False)])
+def test_has_volunteering_url(volunteering_url, expected):
+    venue = offerers_factories.VenueFactory(volunteeringUrl=volunteering_url)
+
+    serialized = algolia.AlgoliaBackend().serialize_venue(venue)
+    assert serialized["has_volunteering_url"] is expected
 
 
 def test_serialize_venue_with_one_bookable_offer():
