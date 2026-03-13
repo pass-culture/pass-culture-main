@@ -1101,7 +1101,9 @@ def create_pro_advices() -> None:
     # - ✘ Autres offres
     # - ✘ Avis sur les autres offres
     venue_1 = offerers_factories.VenueFactory.create(
-        name="Lieu avec headlines et advices 1", description="Lieu avec une offre à la une sans avis"
+        name="Lieu avec headlines et advices 1",
+        description="Lieu avec une offre à la une sans avis",
+        activity=offerers_models.Activity.ART_GALLERY,
     )
     headline_offer_1 = offers_factories.StockFactory.create(
         offer__venue=venue_1,
@@ -1116,7 +1118,9 @@ def create_pro_advices() -> None:
     # - ✘ Autres offres
     # - ✘ Avis sur les autres offres
     venue_2 = offerers_factories.VenueFactory.create(
-        name="Lieu avec headlines et advices 2", description="Lieu avec une offre à la une avec un avis sur celle-ci"
+        name="Lieu avec headlines et advices 2",
+        description="Lieu avec une offre à la une avec un avis sur celle-ci",
+        activity=offerers_models.Activity.BOOKSTORE,
     )
     headline_offer_2 = offers_factories.StockFactory.create(
         offer__venue=venue_2,
@@ -1134,6 +1138,7 @@ def create_pro_advices() -> None:
     venue_3 = offerers_factories.VenueFactory.create(
         name="Lieu avec headlines et advices 3",
         description="Lieu avec une offre à la une sans avis, mais avec un avis sur une autre offre",
+        activity=offerers_models.Activity.CINEMA,
     )
     headline_offer_3 = offers_factories.StockFactory.create(
         offer__venue=venue_3,
@@ -1156,6 +1161,7 @@ def create_pro_advices() -> None:
     venue_4 = offerers_factories.VenueFactory.create(
         name="Lieu avec headlines et advices 4",
         description="Lieu avec une offre à la une avec un avis, mais aussi avec d'autres avis sur d'autres offres.",
+        activity=offerers_models.Activity.DISTRIBUTION_STORE,
     )
     headline_offer_4 = offers_factories.StockFactory.create(
         offer__venue=venue_4,
@@ -1191,6 +1197,7 @@ def create_pro_advices() -> None:
     venue_5 = offerers_factories.VenueFactory.create(
         name="Lieu avec headlines et advices 5",
         description="Lieu avec offre à la une sans avis mais avec des avis sur d'autres offres.",
+        activity=offerers_models.Activity.PERFORMANCE_HALL,
     )
     headline_offer_5 = offers_factories.StockFactory.create(
         offer__venue=venue_5,
@@ -1225,6 +1232,7 @@ def create_pro_advices() -> None:
     venue_6 = offerers_factories.VenueFactory.create(
         name="Lieu avec headlines et advices 6",
         description="Lieu sans offre à la une mais avec des avis sur d'autres offres.",
+        activity=offerers_models.Activity.RECORD_STORE,
     )
     offer_with_advice_1 = offers_factories.StockFactory.create(
         offer__venue=venue_6,
