@@ -1,4 +1,5 @@
 import logging
+import re
 
 import flask
 import pydantic
@@ -69,8 +70,12 @@ def get_user_profile() -> serializers.UserProfileResponse:
 def patch_user_profile(body: serializers.UserProfilePatchRequest) -> serializers.UserProfileResponse:
     profile_update_dict = body.dict(exclude_unset=True)
 
-    if profile_update_dict.get("postal_code") in postal_code_utils.INELIGIBLE_POSTAL_CODES:
-        raise api_errors.ApiErrors({"code": "INELIGIBLE_POSTAL_CODE"})
+    if "postal_code" in profile_update_dict:
+        postal_code = profile_update_dict["postal_code"]
+        if postal_code in postal_code_utils.INELIGIBLE_POSTAL_CODES:
+            raise api_errors.ApiErrors({"code": "INELIGIBLE_POSTAL_CODE"})
+        if not re.match(r"^\d{5}$", postal_code):
+            raise api_errors.ApiErrors({"code": "INVALID_POSTAL_CODE"})
 
     if "subscriptions" in profile_update_dict:
         api.update_notification_subscription(current_user, body.subscriptions, body.origin)
