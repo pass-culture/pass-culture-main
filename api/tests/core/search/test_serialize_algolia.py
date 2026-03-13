@@ -566,6 +566,7 @@ def test_serialize_venue():
             "snapchat": None,
             "twitter": "https://twitter.com/my.venue",
         },
+        volunteeringUrl="https://volunteering.url",
     )
 
     serialized = algolia.AlgoliaBackend().serialize_venue(venue)
@@ -590,6 +591,7 @@ def test_serialize_venue():
         "snapchat": None,
         "twitter": "https://twitter.com/my.venue",
         "tags": [],
+        "volunteering_url": "https://volunteering.url",
         "banner_url": venue.bannerUrl,
         "_geoloc": {
             "lng": float(venue.offererAddress.address.longitude),

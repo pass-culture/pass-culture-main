@@ -369,6 +369,7 @@ class AlgoliaSerializationMixin:
             "twitter": social_medias.get("twitter"),
             "venue_type": venue.venueTypeCode.name,
             "visual_disability": venue.visualDisabilityCompliant,
+            "volunteering_url": venue.volunteeringUrl,
             "website": getattr(venue.contact, "website", None),
         }
 
