@@ -688,7 +688,7 @@ class BaseBackendTest:
     CEGID_PASSWORD="",
     CEGID_CLIENT_ID="",
     CEGID_CLIENT_SECRET="",
-    FINANCE_BACKEND="pcapi.core.finance.backend.cegid.CegidFinanceBackend",
+    FINANCE_BACKEND="CegidFinanceBackend",
 )
 class CegidFinanceBackendTest:
     def test_get_backend(self, cegid_config):
