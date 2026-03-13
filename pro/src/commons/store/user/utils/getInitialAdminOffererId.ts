@@ -13,10 +13,10 @@ import {
  * Compute the initially Administration Space selected offerer ID when possible.
  */
 export const getInitialAdminOffererId = ({
-  offererNames,
+  offererNamesAttached,
   selectedVenue,
 }: {
-  offererNames: GetOffererNameResponseModel[]
+  offererNamesAttached: GetOffererNameResponseModel[]
   selectedVenue: GetVenueResponseModel | null
 }): number | null => {
   // ---------------------------------------------------------------------------
@@ -26,7 +26,7 @@ export const getInitialAdminOffererId = ({
     LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID
   )
   if (selectedAdminOffererIdFromLocalStorage) {
-    const selectedOfferer = offererNames.find(
+    const selectedOfferer = offererNamesAttached.find(
       (offerer) => offerer.id === Number(selectedAdminOffererIdFromLocalStorage)
     )
 
@@ -54,7 +54,7 @@ export const getInitialAdminOffererId = ({
   const selectedAdminOffererIdFromSelectedVenue =
     selectedVenue?.managingOfferer.id
   if (selectedAdminOffererIdFromSelectedVenue) {
-    const selectedOfferer = offererNames.find(
+    const selectedOfferer = offererNamesAttached.find(
       (offerer) => offerer.id === selectedVenue.managingOfferer.id
     )
 
@@ -79,5 +79,5 @@ export const getInitialAdminOffererId = ({
   // as the initial Administration Space selected offerer ID,
   // Priority 4: or none if there are no offerers at all (= new user signup).
 
-  return offererNames.at(0)?.id ?? null
+  return offererNamesAttached.at(0)?.id ?? null
 }
