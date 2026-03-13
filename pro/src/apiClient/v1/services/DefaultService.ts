@@ -15,6 +15,7 @@ import type { CheckTokenBodyModel } from '../models/CheckTokenBodyModel';
 import type { CollectiveLocationType } from '../models/CollectiveLocationType';
 import type { CollectiveOfferDisplayedStatus } from '../models/CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferResponseIdModel } from '../models/CollectiveOfferResponseIdModel';
+import type { CollectiveOfferTemplatesHomeResponseModel } from '../models/CollectiveOfferTemplatesHomeResponseModel';
 import type { CollectiveStockCreationBodyModel } from '../models/CollectiveStockCreationBodyModel';
 import type { CollectiveStockEditionBodyModel } from '../models/CollectiveStockEditionBodyModel';
 import type { CollectiveStockResponseModel } from '../models/CollectiveStockResponseModel';
@@ -515,6 +516,27 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/collective/educational-domains',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * get_collective_offer_templates_home <GET>
+   * @param venueId
+   * @returns CollectiveOfferTemplatesHomeResponseModel OK
+   * @throws ApiError
+   */
+  public getCollectiveOfferTemplatesHome(
+    venueId: number,
+  ): CancelablePromise<CollectiveOfferTemplatesHomeResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/collective/home/offers-template',
+      query: {
+        'venueId': venueId,
+      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Content`,
