@@ -53,11 +53,6 @@ export const ButtonImageEdit = ({
     }
   }
 
-  const handleImageDelete = () => {
-    onImageDelete()
-    snackBar.success('Votre image a bien été supprimée')
-  }
-
   function onImageUploadHandler(
     values: OnImageUploadArgs,
     successMessage: string
@@ -71,7 +66,7 @@ export const ButtonImageEdit = ({
     <ModalImageUpsertOrEdit
       mode={mode}
       onImageUpload={onImageUploadHandler}
-      onImageDelete={handleImageDelete}
+      onImageDelete={onImageDelete}
       initialValues={initialValues}
       onOpenChange={setIsModalImageOpen}
       open={isModalImageOpen}

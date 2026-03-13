@@ -14,6 +14,7 @@ import {
 } from '@/design-system/Button/types'
 import { Panel } from '@/ui-kit/Panel/Panel'
 
+import { PartnerPageVariant } from '../types'
 import styles from './PartnerPageCard.module.scss'
 
 type PartnerPageProps = {
@@ -22,6 +23,7 @@ type PartnerPageProps = {
   offererId: number
   venueBannerUrl?: string | null
   venueBannerMeta?: BannerMetaModel | null
+  variant: PartnerPageVariant
 }
 
 export const PartnerPageCard = ({
@@ -30,6 +32,7 @@ export const PartnerPageCard = ({
   offererId,
   venueBannerUrl,
   venueBannerMeta,
+  variant,
 }: PartnerPageProps) => {
   const { logEvent } = useAnalytics()
   const { imageValues, handleOnImageUpload } = useOnVenueImageUpload(
@@ -38,6 +41,11 @@ export const PartnerPageCard = ({
     venueBannerMeta
   )
   const venuePreviewLink = `${WEBAPP_URL}/lieu/${venueId}`
+  const baseVenueEditionLink = `/structures/${offererId}/lieux/${venueId}`
+  const venueEditionLink =
+    variant === PartnerPageVariant.INDIVIDUAL
+      ? `${baseVenueEditionLink}/page-partenaire`
+      : `${baseVenueEditionLink}/collectif`
 
   const logButtonAddClick = () => {
     logEvent(Events.CLICKED_ADD_IMAGE, {
@@ -49,10 +57,15 @@ export const PartnerPageCard = ({
     })
   }
 
+  const cardTitle =
+    variant === PartnerPageVariant.INDIVIDUAL
+      ? "Votre page sur l'application"
+      : 'Votre page sur ADAGE'
+
   return (
     <Panel>
       <div className={styles['container']}>
-        <h2 className={styles['title']}>Votre page sur l'application</h2>
+        <h2 className={styles['title']}>{cardTitle}</h2>
         <ImageDragAndDropUploader
           onImageUpload={handleOnImageUpload}
           onImageDelete={() => noop}
@@ -68,19 +81,21 @@ export const PartnerPageCard = ({
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
             size={ButtonSize.SMALL}
-            to={`/structures/${offererId}/lieux/${venueId}/page-partenaire`}
+            to={venueEditionLink}
             as="a"
           />
-          <Button
-            label="Voir ma page"
-            variant={ButtonVariant.SECONDARY}
-            color={ButtonColor.NEUTRAL}
-            size={ButtonSize.SMALL}
-            isExternal
-            to={venuePreviewLink}
-            as="a"
-            opensInNewTab
-          />
+          {variant === PartnerPageVariant.INDIVIDUAL && (
+            <Button
+              label="Voir ma page"
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              size={ButtonSize.SMALL}
+              isExternal
+              to={venuePreviewLink}
+              as="a"
+              opensInNewTab
+            />
+          )}
         </div>
       </div>
     </Panel>

@@ -9,6 +9,7 @@ import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactor
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
+import { PartnerPageVariant } from '../types'
 import { PartnerPageCard } from './PartnerPageCard'
 
 const mockLogEvent = vi.fn()
@@ -36,6 +37,7 @@ const baseVenue = makeGetVenueResponseModel({
 })
 
 const renderPartnerPageCard = (
+  variant: PartnerPageVariant = PartnerPageVariant.INDIVIDUAL,
   venueOverrides?: Partial<GetVenueResponseModel>
 ) => {
   const venue = makeGetVenueResponseModel({
@@ -49,13 +51,14 @@ const renderPartnerPageCard = (
       offererId={venue.managingOfferer.id}
       venueBannerUrl={venue.bannerUrl}
       venueBannerMeta={venue.bannerMeta}
+      variant={variant}
     />
   )
 }
 
 describe('PartnerPageCard', () => {
   it('should render the partner page module with the venue information', () => {
-    renderPartnerPageCard({
+    renderPartnerPageCard(PartnerPageVariant.INDIVIDUAL, {
       bannerMeta: {
         original_image_url: 'MyFirstImage',
         crop_params: {
@@ -67,7 +70,6 @@ describe('PartnerPageCard', () => {
       },
     })
 
-    expect(screen.getByText("Votre page sur l'application")).toBeVisible()
     expect(screen.getByText('Club Dorothy')).toBeVisible()
     const image = screen.getByAltText('Prévisualisation de l’image')
     expect(image).toHaveAttribute('src', 'MyFirstImage')
@@ -77,26 +79,6 @@ describe('PartnerPageCard', () => {
     renderPartnerPageCard()
 
     expect(screen.getByText('Importez une image')).toBeVisible()
-  })
-
-  it('should render venue edition link', () => {
-    renderPartnerPageCard()
-
-    expect(
-      screen.getByRole('link', { name: 'Compléter ma page' })
-    ).toHaveAttribute(
-      'href',
-      `/structures/${baseVenue.managingOffererId}/lieux/${baseVenue.id}/page-partenaire`
-    )
-  })
-
-  it('should render venue page preview link', () => {
-    renderPartnerPageCard()
-
-    expect(screen.getByRole('link', { name: /Voir ma page/ })).toHaveAttribute(
-      'href',
-      `https://mon-url-de-base/lieu/${baseVenue.id}`
-    )
   })
 
   it('should log CLICKED_ADD_IMAGE on image upload', async () => {
@@ -124,6 +106,60 @@ describe('PartnerPageCard', () => {
         isEdition: true,
         imageCreationStage: 'add image',
       })
+    })
+  })
+
+  describe('individual variant', () => {
+    it('should render the correct title for individual variant', () => {
+      renderPartnerPageCard(PartnerPageVariant.INDIVIDUAL)
+
+      expect(screen.getByText("Votre page sur l'application")).toBeVisible()
+    })
+
+    it('should render venue edition link', () => {
+      renderPartnerPageCard()
+
+      expect(
+        screen.getByRole('link', { name: 'Compléter ma page' })
+      ).toHaveAttribute(
+        'href',
+        `/structures/${baseVenue.managingOffererId}/lieux/${baseVenue.id}/page-partenaire`
+      )
+    })
+
+    it('should render venue page preview link', () => {
+      renderPartnerPageCard()
+
+      expect(
+        screen.getByRole('link', { name: /Voir ma page/ })
+      ).toHaveAttribute('href', `https://mon-url-de-base/lieu/${baseVenue.id}`)
+    })
+  })
+
+  describe('collective variant', () => {
+    it('should render the correct title for collective variant', () => {
+      renderPartnerPageCard(PartnerPageVariant.COLLECTIVE)
+
+      expect(screen.getByText('Votre page sur ADAGE')).toBeVisible()
+    })
+
+    it('should render venue edition link', () => {
+      renderPartnerPageCard(PartnerPageVariant.COLLECTIVE)
+
+      expect(
+        screen.getByRole('link', { name: 'Compléter ma page' })
+      ).toHaveAttribute(
+        'href',
+        `/structures/${baseVenue.managingOffererId}/lieux/${baseVenue.id}/collectif`
+      )
+    })
+
+    it('should not render venue page preview link', () => {
+      renderPartnerPageCard(PartnerPageVariant.COLLECTIVE)
+
+      expect(
+        screen.queryByRole('link', { name: /Voir ma page/ })
+      ).not.toBeInTheDocument()
     })
   })
 })

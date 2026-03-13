@@ -101,19 +101,6 @@ describe('ButtonImageEdit', () => {
     expect(props.onClickButtonImage).toHaveBeenCalledTimes(1)
   })
 
-  it('shows success snackbar when deleting image', async () => {
-    renderButtonImageEdit(props)
-
-    await userEvent.click(
-      screen.getByRole('button', { name: /Supprimer l’image/ })
-    )
-
-    expect(props.onImageDelete).toHaveBeenCalledTimes(1)
-    expect(snackBarSuccess).toHaveBeenCalledWith(
-      'Votre image a bien été supprimée'
-    )
-  })
-
   it('shows success snackbar when uploading image', async () => {
     renderButtonImageEdit(props)
 

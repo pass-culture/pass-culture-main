@@ -26,6 +26,7 @@ import {
 } from './commons/utils'
 import { IncomeCard } from './components/IncomeCard/IncomeCard'
 import { PartnerPageCard } from './components/PartnerPageCard/PartnerPageCard'
+import { PartnerPageVariant } from './components/types'
 import styles from './NewHomepage.module.scss'
 
 export const NewHomepage = (): JSX.Element => {
@@ -152,6 +153,7 @@ export const NewHomepage = (): JSX.Element => {
               offererId={selectedVenue.managingOfferer.id}
               venueBannerUrl={selectedVenue.bannerUrl}
               venueBannerMeta={selectedVenue.bannerMeta}
+              variant={PartnerPageVariant.INDIVIDUAL}
             />
             {shouldDisplayWebinarCard && (
               <div>
@@ -233,11 +235,14 @@ export const NewHomepage = (): JSX.Element => {
                     bankAccountStatus={selectedVenue.bankAccountStatus ?? null}
                   />
                 )}
-                <div>
-                  Votre page sur ADAGE
-                  <br />
-                  <b>Module page partenaire</b>
-                </div>
+                <PartnerPageCard
+                  venueId={selectedVenue.id}
+                  venueName={selectedVenue.name}
+                  offererId={selectedVenue.managingOfferer.id}
+                  venueBannerUrl={selectedVenue.bannerUrl}
+                  venueBannerMeta={selectedVenue.bannerMeta}
+                  variant={PartnerPageVariant.COLLECTIVE}
+                />
                 {shouldDisplayCollectiveWebinarCard && (
                   <div>
                     Participer à nos webinaires sur la part collective !
