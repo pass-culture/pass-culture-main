@@ -742,3 +742,51 @@ class VenueMovieCalendarResponse(HttpBodyModel):
 
 class OffersStocksRequest(BaseModel):
     offer_ids: list[int]
+
+
+class OfferProAdviceQuery(HttpQueryParamsModel):
+    max_content_length: int | None = None
+    page: int = pydantic_v2.Field(default=1, ge=1, le=20)
+    results_per_page: int = pydantic_v2.Field(default=20, ge=1, le=50)
+    latitude: float | None = pydantic_v2.Field(default=None, ge=-90, le=90)
+    longitude: float | None = pydantic_v2.Field(default=None, ge=-180, le=180)
+
+    @pydantic_v2.model_validator(mode="after")
+    def validate_params(self) -> "OfferProAdviceQuery":
+        if (self.latitude and not self.longitude) or (not self.latitude and self.longitude):
+            raise ValueError("Latitude and longitude must be provided together")
+
+        return self
+
+
+class OfferProAdvice(HttpBodyModel):
+    author: str
+    content: str
+    distance: int | None = None
+    publication_datetime: datetime
+    venue_id: int
+    venue_name: str
+    venue_thumb_url: str | None = None
+
+    @classmethod
+    def build(
+        cls, pro_advice: models.ProAdvice, distance: int | None, max_content_length: int | None
+    ) -> "OfferProAdvice":
+        content = pro_advice.content
+        if max_content_length:
+            content = textwrap.shorten(content, width=max_content_length, placeholder="…")
+
+        return cls(
+            author=pro_advice.author or "avis du pro",
+            content=content,
+            distance=distance if pro_advice.venue.isOpenToPublic else None,
+            venue_id=pro_advice.venue.id,
+            venue_name=pro_advice.venue.publicName,
+            venue_thumb_url=pro_advice.venue.thumbUrl,
+            publication_datetime=pro_advice.updatedAt,
+        )
+
+
+class OfferProAdvices(HttpBodyModel):
+    pro_advices: list[OfferProAdvice]
+    nb_results: int

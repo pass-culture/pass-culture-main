@@ -494,6 +494,74 @@ def get_bookable_screenings_from_venue(
     return list(offers)
 
 
+def get_product_pro_advices_count(product_id: int) -> int:
+    query = sa.select(sa.func.count()).where(
+        models.ProAdvice.offerId.in_(sa.select(models.Offer.id).where(models.Offer.productId == product_id))
+    )
+    return db.session.scalar(query) or 0
+
+
+def _get_distance_column(latitude: float, longitude: float) -> sa.ColumnElement:
+    request_location = sa.cast(sa.func.ST_MakePoint(longitude, latitude), Geography(None))
+    address_location = sa.cast(
+        sa.func.ST_MakePoint(
+            sa.cast(geography_models.Address.longitude, sa.DOUBLE_PRECISION),
+            sa.cast(geography_models.Address.latitude, sa.DOUBLE_PRECISION),
+        ),
+        Geography(None),
+    )
+    return sa.func.round(ST_Distance(address_location, request_location).cast(sa.Integer))
+
+
+def get_pro_advices(
+    offer_id: int,
+    product_id: int | None,
+    latitude: float | None,
+    longitude: float | None,
+    offset: int,
+    limit: int | None,
+) -> list[tuple[models.ProAdvice, int | None]]:
+    query = (
+        sa.select(models.ProAdvice)
+        .join(models.ProAdvice.venue)
+        .join(offerers_models.Venue.managingOfferer)
+        .options(
+            sa_orm.contains_eager(models.ProAdvice.venue).load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.isOpenToPublic,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.thumbCount,
+            )
+        )
+        .where(offerers_models.Offerer.isActive.is_(True))
+        .where(offerers_models.Offerer.isValidated.is_(True))
+    )
+    if latitude is None or longitude is None:
+        query = query.add_columns(sa.null().label("distance"))
+    else:
+        distance = _get_distance_column(latitude, longitude).label("distance")
+        query = (
+            query.add_columns(distance)
+            .join(offerers_models.Venue.offererAddress)
+            .join(offerers_models.OffererAddress.address)
+        )
+
+    if not product_id:
+        query = query.where(models.ProAdvice.offerId == offer_id)
+    else:
+        query = (
+            query.join(models.ProAdvice.offer)
+            .where(models.Offer.productId == product_id)
+            .order_by(models.ProAdvice.updatedAt.desc())
+            .offset(offset)
+        )
+        if limit:
+            query = query.limit(limit)
+
+    rows = db.session.execute(query).unique().all()
+    return [(row[0], row[1]) for row in rows]
+
+
 def get_offers_by_filters(
     *,
     user_id: int,
