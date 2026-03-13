@@ -154,6 +154,7 @@ jobs:
           command: |
             cd pro
             yarn generate:api:client:local:no:docker
+            yarn generate:api:client:local:no:docker:next
       - name: "Check if there are changes"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         id: "changes"
@@ -163,7 +164,7 @@ jobs:
             if [[ "${diff}" != "" ]]; then
               echo "Found changes in the API."
               echo "${diff}" | awk '{ print "\t" $0 }'
-              echo "Please run 'yarn generate:api:client:local' and add the changes to the commit(s) that change the API."
+              echo "Please run 'yarn generate:api:client:local' AND 'yarn run generate:api:client:local:no:docker:next' and add the changes to the commit(s) that change the API."
               exit 1
             fi
       - name: 'Show pcapi log when it fails'
