@@ -1410,6 +1410,15 @@ class UserProfileUpdateTest:
         assert "date(u.last_status_update_date)" not in android_batch_attributes
         assert "date(u.last_status_update_date)" not in ios_batch_attributes
 
+    @pytest.mark.parametrize("invalid_postal_code", ["ABC", "63170000000"])
+    def test_check_invalid_postal_code(self, client, invalid_postal_code):
+        user = users_factories.UserFactory(email=self.identifier)
+
+        response = client.with_token(user).patch("/native/v1/profile", json={"postalCode": invalid_postal_code})
+
+        assert response.status_code == 400
+        assert response.json["code"] == "INVALID_POSTAL_CODE"
+
 
 class ResetRecreditAmountToShowTest:
     def test_update_user_profile_reset_recredit_amount_to_show(self, client, app):

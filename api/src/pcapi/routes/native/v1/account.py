@@ -36,7 +36,6 @@ from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.security import authenticated_maybe_inactive_user_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import phone_number as phone_number_utils
-from pcapi.utils import postal_code as postal_code_utils
 from pcapi.utils.transaction_manager import atomic
 
 from .. import blueprint
@@ -68,9 +67,6 @@ def get_user_profile() -> serializers.UserProfileResponse:
 @atomic()
 def patch_user_profile(body: serializers.UserProfilePatchRequest) -> serializers.UserProfileResponse:
     profile_update_dict = body.dict(exclude_unset=True)
-
-    if profile_update_dict.get("postal_code") in postal_code_utils.INELIGIBLE_POSTAL_CODES:
-        raise api_errors.ApiErrors({"code": "INELIGIBLE_POSTAL_CODE"})
 
     if "subscriptions" in profile_update_dict:
         api.update_notification_subscription(current_user, body.subscriptions, body.origin)
