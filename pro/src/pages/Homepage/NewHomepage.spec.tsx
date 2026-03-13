@@ -29,6 +29,10 @@ vi.mock('./components/IncomeCard/IncomeCard', () => ({
   IncomeCard: () => <div>Remboursement</div>,
 }))
 
+vi.mock('./components/VenueValidationBanner/VenueValidationBanner', () => ({
+  VenueValidationBanner: () => <div>Homologation</div>,
+}))
+
 const newHomepageRoutes = [
   {
     path: '/',
@@ -86,6 +90,26 @@ describe('NewHomepage', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
       'Votre espace Nom public de la structure'
     )
+  })
+
+  describe('venue validation banner', () => {
+    it('should not be displayed when the venue is validated', () => {
+      renderNewHomepage({
+        ...defaultGetOffererVenueResponseModel,
+        isValidated: true,
+      })
+
+      expect(screen.queryByText('Homologation')).not.toBeInTheDocument()
+    })
+
+    it('should be displayed if the venue is not validated', () => {
+      renderNewHomepage({
+        ...defaultGetOffererVenueResponseModel,
+        isValidated: false,
+      })
+
+      expect(screen.getByText('Homologation')).toBeVisible()
+    })
   })
 
   describe('Tabs', () => {
@@ -223,35 +247,6 @@ describe('NewHomepage', () => {
      * TODO (mdesquilbet-pass, 2026-02-18): replace text content assertions
      * by mocking components - when all modules are created
      */
-    describe('homologation banner', () => {
-      it('should not be displayed if the venue is validated', () => {
-        renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
-          hasNonDraftOffers: true,
-          isValidated: true,
-        })
-
-        expect(
-          screen.getByRole('tabpanel', { description: /indiv/ })
-        ).not.toHaveTextContent(
-          /Votre structure est en cours de traitement par les équipes du pass Culture/
-        )
-      })
-
-      it('should be displayed if the venue is not validated', () => {
-        renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
-          hasNonDraftOffers: true,
-          isValidated: false,
-        })
-
-        expect(
-          screen.getByRole('tabpanel', { description: /indiv/ })
-        ).toHaveTextContent(
-          /Votre structure est en cours de traitement par les équipes du pass Culture/
-        )
-      })
-    })
 
     describe('income module', () => {
       it('should be displayed if the venue has non free offers', () => {
@@ -354,36 +349,6 @@ describe('NewHomepage', () => {
   })
 
   describe('collective panel', () => {
-    describe('homologation banner', () => {
-      it('should not be displayed when the venue is validated', () => {
-        renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
-          isValidated: true,
-          allowedOnAdage: true,
-        })
-
-        expect(
-          screen.getByRole('tabpanel', { description: /collective/ })
-        ).not.toHaveTextContent(
-          /Votre structure est en cours de traitement par les équipes du pass Culture/
-        )
-      })
-
-      it('should be displayed when the venue is not validated', () => {
-        renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
-          isValidated: false,
-          allowedOnAdage: true,
-        })
-
-        expect(
-          screen.getByRole('tabpanel', { description: /collective/ })
-        ).toHaveTextContent(
-          /Votre structure est en cours de traitement par les équipes du pass Culture/
-        )
-      })
-    })
-
     describe('collective DMS timeline', () => {
       it('should be displayed when venue has a collective DMS application', () => {
         renderNewHomepage({
