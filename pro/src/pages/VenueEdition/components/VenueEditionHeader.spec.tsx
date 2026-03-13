@@ -116,6 +116,8 @@ describe('VenueEditionHeader', () => {
   })
 
   it('should log event on image upload', async () => {
+    const user = userEvent.setup()
+
     const mockFile = Object.assign(new File(['fake img'], 'fake_img.jpg'), {
       width: 100,
       height: 100,
@@ -133,7 +135,7 @@ describe('VenueEditionHeader', () => {
     })
 
     const imageInput = screen.getByLabelText('Importez une image')
-    await userEvent.upload(imageInput, mockFile)
+    await user.upload(imageInput, mockFile)
 
     await waitFor(() => {
       expect(mockLogEvent).toHaveBeenCalledWith(Events.DRAG_OR_SELECTED_IMAGE, {
@@ -241,6 +243,7 @@ describe('VenueEditionHeader', () => {
   })
 
   it('should call delete endpoint and mutate venue when deleting image', async () => {
+    const user = userEvent.setup()
     vi.spyOn(api, 'deleteVenueBanner').mockResolvedValueOnce()
     vi.mocked(apiHelpers.getFileFromURL).mockResolvedValueOnce(
       new File([''], 'mocked_file.jpg', { type: 'image/jpeg' })
@@ -274,26 +277,26 @@ describe('VenueEditionHeader', () => {
     const updateImageButton = screen.getByRole('button', {
       name: 'Modifier l’image',
     })
-    userEvent.click(updateImageButton)
+    await user.click(updateImageButton)
 
     const deleteButton = await screen.findByRole('button', {
       name: 'Supprimer l’image',
     })
-    userEvent.click(deleteButton)
 
-    await waitFor(() => {
-      expect(api.deleteVenueBanner).toHaveBeenCalledWith(defaultGetVenue.id)
-      expect(mockMutate).toHaveBeenCalledWith(
-        [GET_VENUE_QUERY_KEY, String(defaultGetVenue.id)],
-        expect.any(Function)
-      )
-      expect(snackBarSuccess).toHaveBeenCalledWith(
-        'Votre image a bien été supprimée'
-      )
-    })
+    await user.click(deleteButton)
+
+    expect(api.deleteVenueBanner).toHaveBeenCalledWith(defaultGetVenue.id)
+    expect(mockMutate).toHaveBeenCalledWith(
+      [GET_VENUE_QUERY_KEY, String(defaultGetVenue.id)],
+      expect.any(Function)
+    )
+    expect(snackBarSuccess).toHaveBeenCalledWith(
+      'Votre image a bien été supprimée'
+    )
   })
 
   it('should show snackbar error when image deletion fails', async () => {
+    const user = userEvent.setup()
     vi.spyOn(api, 'deleteVenueBanner').mockRejectedValueOnce('Deletion error')
     vi.mocked(apiHelpers.getFileFromURL).mockResolvedValueOnce(
       new File([''], 'mocked_file.jpg', { type: 'image/jpeg' })
@@ -327,17 +330,15 @@ describe('VenueEditionHeader', () => {
     const updateImageButton = screen.getByRole('button', {
       name: 'Modifier l’image',
     })
-    userEvent.click(updateImageButton)
+    await user.click(updateImageButton)
 
     const deleteButton = await screen.findByRole('button', {
       name: 'Supprimer l’image',
     })
-    userEvent.click(deleteButton)
+    await user.click(deleteButton)
 
-    await waitFor(() => {
-      expect(snackBarError).toHaveBeenCalledWith(
-        "Une erreur est survenue lors de la suppression de l'image"
-      )
-    })
+    expect(snackBarError).toHaveBeenCalledWith(
+      "Une erreur est survenue lors de la suppression de l'image"
+    )
   })
 })

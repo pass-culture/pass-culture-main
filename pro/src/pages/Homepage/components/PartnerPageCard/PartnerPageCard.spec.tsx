@@ -70,7 +70,6 @@ describe('PartnerPageCard', () => {
       },
     })
 
-    expect(screen.getByText("Votre page sur l'application")).toBeVisible()
     expect(screen.getByText('Club Dorothy')).toBeVisible()
     const image = screen.getByAltText('Prévisualisation de l’image')
     expect(image).toHaveAttribute('src', 'MyFirstImage')
@@ -111,6 +110,12 @@ describe('PartnerPageCard', () => {
   })
 
   describe('individual variant', () => {
+    it('should render the correct title for individual variant', () => {
+      renderPartnerPageCard(PartnerPageVariant.INDIVIDUAL)
+
+      expect(screen.getByText("Votre page sur l'application")).toBeVisible()
+    })
+
     it('should render venue edition link', () => {
       renderPartnerPageCard()
 
