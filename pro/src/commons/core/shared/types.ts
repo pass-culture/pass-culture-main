@@ -21,7 +21,7 @@ export interface AccessibilityFormValues {
   none: boolean
 }
 
-export interface AddressFormValues {
+export interface FlatAddressFormValues {
   'search-addressAutocomplete': string | null
   addressAutocomplete: string | null
   banId: string | null
@@ -32,6 +32,14 @@ export interface AddressFormValues {
   coords: string
   latitude: string
   longitude: string
+}
+
+export interface AddressFormValues {
+  address: FlatAddressFormValues
+}
+
+export interface LocationFormValues {
+  location: FlatAddressFormValues
 }
 
 export type Currency = 'EUR' | 'XPF'

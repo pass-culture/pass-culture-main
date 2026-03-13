@@ -5,9 +5,9 @@ import type {
   UseFormReturn,
 } from 'react-hook-form'
 
-import type { AddressFormValues } from '@/commons/core/shared/types'
+import type { FlatAddressFormValues } from '@/commons/core/shared/types'
 
-const fieldsNames: Map<keyof AddressFormValues, string | null> = new Map([
+const fieldsNames: Map<keyof FlatAddressFormValues, string | null> = new Map([
   ['street', ''],
   ['postalCode', ''],
   ['city', ''],

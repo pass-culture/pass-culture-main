@@ -10,7 +10,7 @@ import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { OFFER_LOCATION } from '@/pages/IndividualOffer/commons/constants'
-import { AddressManualAdapter } from '@/pages/IndividualOffer/IndividualOfferLocation/components/LocationForm/PhysicalLocationSubform/AddressManualAdapter'
+import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
 
 import { EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES } from '../../../commons/constants'
 import type { LocationFormValues } from '../../../commons/types'
@@ -143,8 +143,9 @@ export const PhysicalLocationSubform = ({
             error={errors.location?.addressAutocomplete?.message}
             onAddressChosen={updateAddressFromAutocomplete}
             renderManual={() => (
-              <AddressManualAdapter
+              <AddressManual
                 readOnlyFields={readOnlyFieldsForAddressManual}
+                prefix="location."
               />
             )}
             manual={isManualEdition}

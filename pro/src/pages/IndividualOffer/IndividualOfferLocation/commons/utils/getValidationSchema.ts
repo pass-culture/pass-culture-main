@@ -8,7 +8,7 @@ import { OFFER_LOCATION } from '../../../commons/constants'
 import type { LocationFormValues, PhysicalAddressSubformValues } from '../types'
 import { isValidUrlWithTemplateStrings } from './isValidUrlWithTemplateStrings'
 
-export const PhysicalLocationValidationSchema = yup
+const PhysicalLocationValidationSchema = yup
   .object<PhysicalAddressSubformValues>()
   .shape({
     addressAutocomplete: nonEmptyStringOrNull().when(
