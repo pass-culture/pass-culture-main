@@ -691,11 +691,11 @@ class CreateOffererTest:
         # Given
         gen_offerer_tags()
         user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_serialize.CreateOffererBodyModel(
             name="Test Offerer",
             siren="777084112",
             street="123 rue de Paris",
-            postalCode="93100",
+            postal_code="93100",
             city="Montreuil",
         )
 
@@ -726,11 +726,11 @@ class CreateOffererTest:
     def test_create_new_offerer_attachment_if_siren_is_already_registered(self):
         # Given
         user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_serialize.CreateOffererBodyModel(
             name="Test Offerer",
             siren="418166096",
             street="123 rue de Paris",
-            postalCode="93100",
+            postal_code="93100",
             city="Montreuil",
         )
         offerer = offerers_factories.OffererFactory(siren=offerer_informations.siren)
@@ -760,11 +760,11 @@ class CreateOffererTest:
     def test_keep_offerer_validation_token_if_siren_is_already_registered_but_not_validated(self):
         # Given
         user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_serialize.CreateOffererBodyModel(
             name="Test Offerer",
             siren="418166096",
             street="123 rue de Paris",
-            postalCode="93100",
+            postal_code="93100",
             city="Montreuil",
         )
         offerer = offerers_factories.PendingOffererFactory(siren=offerer_informations.siren)
@@ -785,11 +785,11 @@ class CreateOffererTest:
     def test_create_offerer_if_siren_was_previously_rejected(self):
         # Given
         user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_serialize.CreateOffererBodyModel(
             name="Test Offerer",
             siren="418166096",
             street="123 rue de Paris",
-            postalCode="93100",
+            postal_code="93100",
             city="Montreuil",
         )
         offerer = offerers_factories.RejectedOffererFactory(
@@ -830,11 +830,11 @@ class CreateOffererTest:
     def test_create_offerer_if_siren_was_previously_rejected_on_user_rejected(self):
         # Given
         user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_serialize.CreateOffererBodyModel(
             name="Test Offerer",
             siren="418166096",
             street="123 rue de Paris",
-            postalCode="93100",
+            postal_code="93100",
             city="Montreuil",
         )
         offerer = offerers_factories.RejectedOffererFactory(
@@ -867,11 +867,11 @@ class CreateOffererTest:
     def test_create_offerer_if_siren_was_previously_rejected_on_user_deleted(self):
         # Given
         user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_serialize.CreateOffererBodyModel(
             name="Test Offerer",
             siren="418166096",
             street="123 rue de Paris",
-            postalCode="93100",
+            postal_code="93100",
             city="Montreuil",
             latitude=48,
             longitude=2,
@@ -906,11 +906,11 @@ class CreateOffererTest:
     def test_create_offerer_on_known_offerer_by_user_rejected(self):
         # Given
         user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_serialize.CreateOffererBodyModel(
             name="Test Offerer",
             siren="418166096",
             street="123 rue de Paris",
-            postalCode="93100",
+            postal_code="93100",
             city="Montreuil",
         )
         offerer = offerers_factories.OffererFactory(siren=offerer_informations.siren)
@@ -939,11 +939,11 @@ class CreateOffererTest:
     def test_create_offerer_on_known_offerer_twice(self):
         # Given
         user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_serialize.CreateOffererBodyModel(
             name="Test Offerer",
             siren="418166096",
             street="123 rue de Paris",
-            postalCode="93100",
+            postal_code="93100",
             city="Montreuil",
         )
         offerer = offerers_factories.OffererFactory(siren=offerer_informations.siren)
@@ -977,11 +977,11 @@ class CreateOffererTest:
     def test_create_new_offerer_twice(self):
         # Given
         user = users_factories.NonAttachedProFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_serialize.CreateOffererBodyModel(
             name="Test Offerer",
             siren="418166096",
             street="123 rue de Paris",
-            postalCode="93100",
+            postal_code="93100",
             city="Montreuil",
         )
 
@@ -1008,11 +1008,11 @@ class CreateOffererTest:
     def test_create_new_offerer_on_known_offerer_by_user_deleted(self):
         # Given
         user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_serialize.CreateOffererBodyModel(
             name="Test Offerer",
             siren="418166096",
             street="123 rue de Paris",
-            postalCode="93100",
+            postal_code="93100",
             city="Montreuil",
         )
         offerer = offerers_factories.OffererFactory(siren=offerer_informations.siren)
@@ -1041,11 +1041,11 @@ class CreateOffererTest:
     def test_create_offerer_auto_tagging_no_error_if_tag_not_in_db(self):
         # Given
         user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_serialize.CreateOffererBodyModel(
             name="Test Offerer",
             siren="777084112",
             street="123 rue de Paris",
-            postalCode="93100",
+            postal_code="93100",
             city="Montreuil",
         )
 
@@ -1062,18 +1062,18 @@ class CreateOffererTest:
         national_partner_tag = offerers_factories.OffererTagFactory(name="partenaire-national")
         not_a_partner_user = users_factories.UserFactory(email="noël.flantier@example.com")
         partner_user = users_factories.UserFactory(email="ssap.erutluc@partner.com")
-        not_a_partner_offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        not_a_partner_offerer_informations = offerers_serialize.CreateOffererBodyModel(
             name="Test Offerer Not Partner",
             siren="777084112",
             street="123 rue de Paris",
-            postalCode="93100",
+            postal_code="93100",
             city="Montreuil",
         )
-        partner_offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        partner_offerer_informations = offerers_serialize.CreateOffererBodyModel(
             name="Test Offerer Partner",
             siren="777084121",
             street="123 rue de Paname",
-            postalCode="93100",
+            postal_code="93100",
             city="Montreuil",
         )
 

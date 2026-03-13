@@ -4,6 +4,6 @@
 /* eslint-disable */
 import type { GetOffererAddressesWithOffersOption } from './GetOffererAddressesWithOffersOption';
 export type GetOffererAddressesQueryModel = {
-  withOffersOption?: GetOffererAddressesWithOffersOption | null;
+  withOffersOption?: (GetOffererAddressesWithOffersOption | null);
 };
 

@@ -19,7 +19,7 @@ import type { CollectiveStockCreationBodyModel } from '../models/CollectiveStock
 import type { CollectiveStockEditionBodyModel } from '../models/CollectiveStockEditionBodyModel';
 import type { CollectiveStockResponseModel } from '../models/CollectiveStockResponseModel';
 import type { CookieConsentRequest } from '../models/CookieConsentRequest';
-import type { CreateOffererQueryModel } from '../models/CreateOffererQueryModel';
+import type { CreateOffererBodyModel } from '../models/CreateOffererBodyModel';
 import type { CreateOfferHighlightRequestBodyModel } from '../models/CreateOfferHighlightRequestBodyModel';
 import type { CreateThumbnailBodyModel } from '../models/CreateThumbnailBodyModel';
 import type { CreateThumbnailResponseModel } from '../models/CreateThumbnailResponseModel';
@@ -1340,7 +1340,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public createOfferer(
-    requestBody: CreateOffererQueryModel,
+    requestBody: CreateOffererBodyModel,
   ): CancelablePromise<PostOffererResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1360,13 +1360,13 @@ export class DefaultService {
    * @throws ApiError
    */
   public listEducationalOfferers(
-    offererId?: number | null,
+    offererId?: (number | null),
   ): CancelablePromise<GetEducationalOfferersResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offerers/educational',
       query: {
-        'offerer_id': offererId,
+        'offererId': offererId,
       },
       errors: {
         403: `Forbidden`,
@@ -1601,7 +1601,7 @@ export class DefaultService {
    */
   public getOffererAddresses(
     offererId: number,
-    withOffersOption?: GetOffererAddressesWithOffersOption | null,
+    withOffersOption?: (GetOffererAddressesWithOffersOption | null),
   ): CancelablePromise<GetOffererAddressesResponseModel> {
     return this.httpRequest.request({
       method: 'GET',

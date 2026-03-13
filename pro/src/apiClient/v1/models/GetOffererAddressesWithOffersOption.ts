@@ -2,9 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-/**
- * An enumeration.
- */
 export enum GetOffererAddressesWithOffersOption {
   INDIVIDUAL_OFFERS_ONLY = 'INDIVIDUAL_OFFERS_ONLY',
   COLLECTIVE_OFFERS_ONLY = 'COLLECTIVE_OFFERS_ONLY',

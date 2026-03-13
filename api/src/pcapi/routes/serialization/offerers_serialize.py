@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Any
 from typing import Iterable
 
+import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
 import sqlalchemy.orm as sa_orm
 from pydantic.v1.utils import GetterDict
@@ -14,16 +15,19 @@ import pcapi.core.offers.models as offers_models
 import pcapi.utils.date as date_utils
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offerers.models import Target
+from pcapi.core.subscription.phone_validation.exceptions import InvalidPhoneNumber
 from pcapi.models import db
-from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
+from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import finance_serialize
 from pcapi.routes.serialization.venues_serialize import BannerMetaModel
 from pcapi.routes.serialization.venues_serialize import DMSApplicationForEAC
 from pcapi.routes.shared import validation
+from pcapi.serialization.exceptions import PydanticError
 from pcapi.serialization.utils import to_camel
+from pcapi.utils import phone_number
 from pcapi.utils.email import sanitize_email
 
 
@@ -164,12 +168,12 @@ class OffererMemberStatus(enum.Enum):
     PENDING = "pending"
 
 
-class GetOffererMemberResponseModel(BaseModel):
+class GetOffererMemberResponseModel(HttpBodyModel):
     email: str
     status: OffererMemberStatus
 
 
-class GetOffererMembersResponseModel(BaseModel):
+class GetOffererMembersResponseModel(HttpBodyModel):
     members: list[GetOffererMemberResponseModel]
 
 
@@ -189,93 +193,99 @@ class GetOfferersNamesResponseModel(HttpBodyModel):
         )
 
 
-class GetOfferersNamesQueryModel(BaseModel):
-    validated: bool | None
-    # If `validated_for_user` is true, we only return offerers with
-    # which the user has a _validated_ `UserOfferer`. Otherwise, we
-    # return all offerers with which the user has a `UserOfferer`, be
-    # it validated or not.
-    validated_for_user: bool | None
-    offerer_id: int | None
-
-    class Config:
-        extra = "forbid"
-
-
-class GetEducationalOffererVenueResponseModelGetterDict(GetterDict):
-    def get(self, key: str, default: Any = None) -> Any:
-        if key in ("city", "postalCode", "street"):
-            return getattr(self._obj.offererAddress.address, key)
-        return super().get(key, default)
-
-
-class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
-    city: str | None
+class GetEducationalOffererVenueResponseModel(HttpBodyModel):
     id: int
     isVirtual: bool
     publicName: str
     name: str
-    postalCode: str | None
-    street: str | None
-    collectiveInterventionArea: list[str] | None
-    collectivePhone: str | None
-    collectiveEmail: str | None
+    collectiveInterventionArea: list[str] | None = None
+    collectivePhone: str | None = None
+    collectiveEmail: str | None = None
+    # address data
+    city: str | None = None
+    postalCode: str | None = None
+    street: str | None = None
+    # accessibility
+    audioDisabilityCompliant: bool | None = None
+    mentalDisabilityCompliant: bool | None = None
+    motorDisabilityCompliant: bool | None = None
+    visualDisabilityCompliant: bool | None = None
 
-    class Config:
-        orm_mode = True
-        getter_dict = GetEducationalOffererVenueResponseModelGetterDict
+    @classmethod
+    def build(cls, venue: offerers_models.Venue) -> "GetEducationalOffererVenueResponseModel":
+        return cls(
+            id=venue.id,
+            isVirtual=venue.isVirtual,
+            publicName=venue.publicName,
+            name=venue.name,
+            collectiveInterventionArea=venue.collectiveInterventionArea,
+            collectivePhone=venue.collectivePhone,
+            collectiveEmail=venue.collectiveEmail,
+            # accessibility
+            audioDisabilityCompliant=venue.audioDisabilityCompliant,
+            mentalDisabilityCompliant=venue.mentalDisabilityCompliant,
+            motorDisabilityCompliant=venue.motorDisabilityCompliant,
+            visualDisabilityCompliant=venue.visualDisabilityCompliant,
+            # data coming from `offererAddress.address`
+            city=venue.offererAddress.address.city,
+            postalCode=venue.offererAddress.address.postalCode,
+            street=venue.offererAddress.address.street,
+        )
 
 
-# TODO(xordoquy): remove GetEducationalOffererResponseGetterDict once the soft delete lib is fixed
-class GetEducationalOffererResponseGetterDict(GetterDict):
-    def get(self, key: str, default: Any = None) -> Any:
-        row = self._obj
-        if key == "managedVenues":
-            return [
-                GetEducationalOffererVenueResponseModel.from_orm(venue)
-                for venue in row.managedVenues
-                if not venue.isSoftDeleted
-            ]
-        return super().get(key, default)
-
-
-class GetEducationalOffererResponseModel(BaseModel):
+class GetEducationalOffererResponseModel(HttpBodyModel):
     id: int
     name: str
     managedVenues: list[GetEducationalOffererVenueResponseModel]
     allowedOnAdage: bool
 
-    class Config:
-        orm_mode = True
-        getter_dict = GetEducationalOffererResponseGetterDict
+    # TODO(xordoquy): remove build once the soft delete lib is fixed
+    @classmethod
+    def build(cls, offerer: offerers_models.Offerer) -> "GetEducationalOffererResponseModel":
+        return cls(
+            id=offerer.id,
+            name=offerer.name,
+            managedVenues=[
+                GetEducationalOffererVenueResponseModel.build(venue)
+                for venue in offerer.managedVenues
+                if not venue.isSoftDeleted
+            ],
+            allowedOnAdage=offerer.allowedOnAdage,
+        )
 
 
-class GetEducationalOfferersResponseModel(BaseModel):
-    educationalOfferers: list[GetEducationalOffererResponseModel]
-
-    class Config:
-        orm_mode = True
+class GetEducationalOfferersResponseModel(HttpBodyModel):
+    educational_offerers: list[GetEducationalOffererResponseModel]
 
 
-class GetEducationalOfferersQueryModel(BaseModel):
-    offerer_id: int | None
-
-    class Config:
-        extra = "forbid"
+class GetEducationalOfferersQueryModel(HttpQueryParamsModel):
+    offerer_id: int | None = None
 
 
-class CreateOffererQueryModel(BaseModel):
-    city: str
-    latitude: float | None
-    longitude: float | None
+class CreateOffererBodyModel(HttpBodyModel):
     name: str
-    postalCode: str
-    inseeCode: str | None
     siren: str
-    street: str | None
-    phoneNumber: str | None
+    phone_number: str | None = None
+    # address data
+    city: str
+    postal_code: str
+    street: str | None = None
+    insee_code: str | None = None
+    longitude: float | None = None
+    latitude: float | None = None
 
-    _validate_phone_number = validation.phone_number_validator("phoneNumber", nullable=True)
+    @pydantic_v2.field_validator("phone_number", mode="before")
+    @classmethod
+    def validate_field(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+
+        try:
+            parsed = phone_number.parse_phone_number(value)
+        except InvalidPhoneNumber:
+            raise PydanticError("Ce numéro de telephone ne semble pas valide")
+
+        return phone_number.get_formatted_phone_number(parsed)
 
 
 class SaveNewOnboardingDataQueryModel(BaseModel):
@@ -394,68 +404,51 @@ class GetVenueStatsResponseModel(BaseModel):
         allow_population_by_field_name = True
 
 
-class LinkVenueToBankAccountBodyModel(BaseModel):
+class LinkVenueToBankAccountBodyModel(HttpBodyModel):
     venues_ids: set[int]
 
 
-class GetOffererV2StatsResponseModel(BaseModel):
-    publishedPublicOffers: int
-    publishedEducationalOffers: int
-    pendingPublicOffers: int
-    pendingEducationalOffers: int
-
-    class Config:
-        orm_mode = True
+class GetOffererV2StatsResponseModel(HttpBodyModel):
+    published_public_offers: int
+    published_educational_offers: int
+    pending_public_offers: int
+    pending_educational_offers: int
 
 
-class OffererAddressGetterDict(GetterDict):
-    def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "label" and not self._obj.label:
-            if self.get("publicName", default) is not None:
-                return self.get("publicName", default)
-        return super().get(key, default)
-
-
-class GetOffererAddressResponseModel(BaseModel):
+class GetOffererAddressResponseModel(HttpBodyModel):
     id: int
-    label: str | None
-    street: str | None
-    postalCode: str
+    label: str | None = None
+    street: str | None = None
+    postal_code: str
     city: str
-    departmentCode: str | None
+    department_code: str | None = None
 
-    class Config:
-        getter_dict = OffererAddressGetterDict
-        orm_mode = True
+    @pydantic_v2.model_validator(mode="before")
+    @classmethod
+    def fill_label(cls, data: Any) -> Any:
+        from sqlalchemy.engine.row import Row
 
+        if isinstance(data, Row):
+            data = dict(data._mapping.items())
+        data["label"] = data["label"] or data["common_name"]
+        return data
 
-class OffererAddressRequestModel(BaseModel):
-    label: str | None
-    inseeCode: str
-    street: str
-
-
-class GetOffererAddressesResponseModel(BaseModel):
-    __root__: list[GetOffererAddressResponseModel]
+    model_config = pydantic_v2.ConfigDict(extra="ignore")
 
 
-class GetOffererAddressesQueryModel(BaseModel):
-    withOffersOption: offerers_schemas.GetOffererAddressesWithOffersOption | None
+class GetOffererAddressesResponseModel(pydantic_v2.RootModel):
+    root: list[GetOffererAddressResponseModel]
 
 
-class PatchOffererAddressRequest(BaseModel):
-    label: str
+class GetOffererAddressesQueryModel(HttpQueryParamsModel):
+    with_offers_option: offerers_schemas.GetOffererAddressesWithOffersOption | None = None
 
 
-class OffererEligibilityResponseModel(BaseModel):
+class OffererEligibilityResponseModel(HttpBodyModel):
     offerer_id: int
-    has_adage_id: bool | None
-    has_ds_application: bool | None
-    is_onboarded: bool | None
-
-    class Config:
-        allow_population_by_field_name = True
-        alias_generator = to_camel
+    has_adage_id: bool | None = None
+    has_ds_application: bool | None = None
+    is_onboarded: bool | None = None
 
 
 class TopOffersByConsultationModel(HttpBodyModel):
