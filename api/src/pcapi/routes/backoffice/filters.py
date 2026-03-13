@@ -1805,16 +1805,18 @@ def format_finance_incident_nature_badge(is_partial: bool) -> str:
     return format_badge("Total", "secondary")
 
 
-def format_finance_incident_status_badge(incident_status: finance_models.IncidentStatus) -> str:
+def format_finance_incident_status_badge(
+    incident_status: finance_models.IncidentStatus, text: str | None = None
+) -> str:
     match incident_status:
         case finance_models.IncidentStatus.CREATED:
-            return format_badge("Créé", "secondary")
+            return format_badge(text or "Créé", "secondary")
         case finance_models.IncidentStatus.CANCELLED:
-            return format_badge("Annulé", "danger")
+            return format_badge(text or "Annulé", "danger")
         case finance_models.IncidentStatus.VALIDATED:
-            return format_badge("Validé", "success")
+            return format_badge(text or "Validé", "success")
         case finance_models.IncidentStatus.INVOICED:
-            return format_badge("Terminé", "secondary")
+            return format_badge(text or "Terminé", "success")
 
 
 def format_finance_incident_type_str(incident_kind: finance_models.IncidentType) -> str:
@@ -2164,6 +2166,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["webapp_venue_link"] = lambda venue: urls.venue_app_link(venue.id)
     app.jinja_env.filters["format_gdpr_date_processed"] = format_gdpr_date_processed
     app.jinja_env.filters["format_finance_incident_nature_badge"] = format_finance_incident_nature_badge
+    app.jinja_env.filters["format_finance_incident_status"] = format_finance_incident_status
     app.jinja_env.filters["format_finance_incident_status_badge"] = format_finance_incident_status_badge
     app.jinja_env.filters["format_finance_incident_type"] = format_finance_incident_type
     app.jinja_env.filters["format_finance_incident_type_str"] = format_finance_incident_type_str

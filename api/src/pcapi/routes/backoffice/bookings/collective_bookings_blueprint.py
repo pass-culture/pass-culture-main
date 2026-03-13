@@ -94,8 +94,13 @@ def _get_collective_bookings_query() -> sa_orm.Query:
             .joinedload(finance_models.Cashflow.batch)
             .load_only(finance_models.CashflowBatch.label),
             sa_orm.joinedload(educational_models.CollectiveBooking.incidents)
+            .load_only(finance_models.BookingFinanceIncident.incidentId)
             .joinedload(finance_models.BookingFinanceIncident.incident)
-            .load_only(finance_models.FinanceIncident.id, finance_models.FinanceIncident.status),
+            .load_only(
+                finance_models.FinanceIncident.id,
+                finance_models.FinanceIncident.kind,
+                finance_models.FinanceIncident.status,
+            ),
         )
     )
 

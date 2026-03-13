@@ -118,8 +118,13 @@ def _get_individual_bookings_query() -> sa_orm.Query:
             .joinedload(finance_models.Cashflow.batch)
             .load_only(finance_models.CashflowBatch.label),
             sa_orm.joinedload(bookings_models.Booking.incidents)
+            .load_only(finance_models.BookingFinanceIncident.incidentId)
             .joinedload(finance_models.BookingFinanceIncident.incident)
-            .load_only(finance_models.FinanceIncident.id, finance_models.FinanceIncident.status),
+            .load_only(
+                finance_models.FinanceIncident.id,
+                finance_models.FinanceIncident.kind,
+                finance_models.FinanceIncident.status,
+            ),
             sa_orm.joinedload(bookings_models.Booking.deposit).load_only(finance_models.Deposit.expirationDate),
             sa_orm.joinedload(bookings_models.Booking.fraudulentBookingTag)
             .joinedload(bookings_models.FraudulentBookingTag.author)

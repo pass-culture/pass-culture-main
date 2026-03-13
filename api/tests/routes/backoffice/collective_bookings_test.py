@@ -110,19 +110,41 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         assert html_parser.count_table_rows(response.data) == 0
 
     @pytest.mark.parametrize(
-        "incident_status, display_alert",
+        "incident_kind, incident_status, expected_text, expected_class",
         [
-            (finance_models.IncidentStatus.INVOICED, True),
-            (finance_models.IncidentStatus.VALIDATED, True),
-            (finance_models.IncidentStatus.CREATED, False),
-            (finance_models.IncidentStatus.CANCELLED, False),
+            (
+                finance_models.IncidentType.COMMERCIAL_GESTURE,
+                finance_models.IncidentStatus.CREATED,
+                "Geste Commercial",
+                "text-secondary",
+            ),
+            (
+                finance_models.IncidentType.OVERPAYMENT,
+                finance_models.IncidentStatus.VALIDATED,
+                "Trop Perçu",
+                "text-success",
+            ),
+            (
+                finance_models.IncidentType.COMMERCIAL_GESTURE,
+                finance_models.IncidentStatus.INVOICED,
+                "Geste Commercial",
+                "text-success",
+            ),
+            (
+                finance_models.IncidentType.OVERPAYMENT,
+                finance_models.IncidentStatus.CANCELLED,
+                "Trop Perçu",
+                "text-danger",
+            ),
         ],
     )
-    def test_display_incident_alert(self, authenticated_client, incident_status, display_alert):
+    def test_display_incident_badge(
+        self, authenticated_client, incident_kind, incident_status, expected_text, expected_class
+    ):
         collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
             incidents=[
                 finance_factories.CollectiveBookingFinanceIncidentFactory(
-                    incident=finance_factories.FinanceIncidentFactory(status=incident_status)
+                    incident=finance_factories.FinanceIncidentFactory(kind=incident_kind, status=incident_status)
                 )
             ]
         )
@@ -132,10 +154,11 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, q=search_query))
             assert response.status_code == 200
 
-        if display_alert:
-            assert "bi-exclamation-triangle-fill" in str(response.data)
-        else:
-            assert "bi-exclamation-triangle-fill" not in str(response.data)
+        soup = html_parser.get_soup(response.data)
+        badges = soup.select("td > a > span.badge")
+        assert len(badges) == 1
+        assert badges[0].text == expected_text
+        assert expected_class in badges[0].attrs["class"]
 
     def test_list_bookings_by_id(self, authenticated_client, collective_bookings):
         searched_id = str(collective_bookings[1].id)
