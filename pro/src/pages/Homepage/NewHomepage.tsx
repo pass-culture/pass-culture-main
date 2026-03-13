@@ -26,6 +26,7 @@ import {
 } from './commons/utils'
 import { IncomeCard } from './components/IncomeCard/IncomeCard'
 import { PartnerPageCard } from './components/PartnerPageCard/PartnerPageCard'
+import { VenueValidationBanner } from './components/VenueValidationBanner/VenueValidationBanner'
 import styles from './NewHomepage.module.scss'
 
 export const NewHomepage = (): JSX.Element => {
@@ -65,7 +66,7 @@ export const NewHomepage = (): JSX.Element => {
   }
 
   // Shared modules display conditions
-  const shouldDisplayHomologationBanner = !selectedVenue.isValidated
+  const shouldDisplayVenueValidationBanner = !selectedVenue.isValidated
   const shouldDisplayIncomeCard = selectedVenue.hasNonFreeOffers
 
   // Individual modules display conditions
@@ -88,6 +89,11 @@ export const NewHomepage = (): JSX.Element => {
 
   return (
     <>
+      {shouldDisplayVenueValidationBanner && (
+        <div className={styles['venue-validation-banner']}>
+          <VenueValidationBanner />
+        </div>
+      )}
       {hasIndividualTab && hasCollectiveTab && (
         <Tabs
           type="tabs"
@@ -112,16 +118,6 @@ export const NewHomepage = (): JSX.Element => {
           >
             Page d'accueil - part individuelle
           </span>
-          <div className={styles['top']}>
-            {shouldDisplayHomologationBanner && (
-              <div>
-                Votre structure est en cours de traitement par les équipes du
-                pass Culture
-                <br />
-                <b>Banner Homologation</b>
-              </div>
-            )}
-          </div>
           <div className={styles['main']}>
             <div>
               Activités sur vos offres individuelles
@@ -184,24 +180,16 @@ export const NewHomepage = (): JSX.Element => {
           >
             Page d'accueil - part collective
           </span>
-          <div className={styles['top']}>
-            {shouldDisplayHomologationBanner && (
-              <div>
-                Votre structure est en cours de traitement par les équipes du
-                pass Culture
-                <br />
-                <b>Banner Homologation</b>
-              </div>
-            )}
-            {collectiveDmsApplication && (
+          {collectiveDmsApplication && (
+            <div className={styles['top']}>
               <CollectiveDmsTimeline
                 collectiveDmsApplication={collectiveDmsApplication}
                 hasAdageId={Boolean(selectedVenue.hasAdageId)}
                 adageInscriptionDate={selectedVenue.adageInscriptionDate}
                 variant={CollectiveDmsTimelineVariant.LITE}
               />
-            )}
-          </div>
+            </div>
+          )}
           {hasRefusedDmsApplication && (
             <div className={styles['main']}>
               <div>

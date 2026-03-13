@@ -42,7 +42,7 @@
   grid-template-areas:
     "top-area top-area"
     "main-area side-area";
-  gap: var(--size-spacing-xl);
+  column-gap: var(--size-spacing-xl);
 
   @media (max-width: size.$tablet) {
     grid-template-columns: 1fr;
@@ -55,6 +55,7 @@
 
 .top {
   grid-area: top-area;
+  margin-bottom: var(--size-spacing-xl);
 }
 
 .main {
@@ -73,4 +74,8 @@
 
 .visually-hidden {
   @include a11y.visually-hidden;
+}
+
+.venue-validation-banner {
+  margin-bottom: var(--size-spacing-xl);
 }
