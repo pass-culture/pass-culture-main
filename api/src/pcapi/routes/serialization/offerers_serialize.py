@@ -415,20 +415,23 @@ class GetOffererV2StatsResponseModel(HttpBodyModel):
     pending_educational_offers: int
 
 
-class GetOffererAddressResponseModel(BaseModel):
+class GetOffererAddressResponseModel(HttpBodyModel):
     id: int
     label: str | None = None
     street: str | None = None
     postal_code: str
     city: str
     department_code: str | None = None
-    # this field won't be returned, it is here only to serve as a fallback
-    # value if label=None
-    common_name: str | None = pydantic_v2.Field(exclude=True, default=None)
 
-    @pydantic_v2.field_serializer("label", mode="plain")
-    def label_or_common_name(self, value: str | None) -> str | None:
-        return value or self.common_name
+    @pydantic_v2.model_validator(mode="before")
+    @classmethod
+    def fill_label(cls, data: Any) -> Any:
+        from sqlalchemy.engine.row import Row
+
+        if isinstance(data, Row):
+            data = dict(data._mapping.items())
+        data["label"] = data["label"] or data["common_name"]
+        return data
 
     model_config = pydantic_v2.ConfigDict(extra="ignore")
 
@@ -457,12 +460,3 @@ class GetVenueOffersStatsModel(HttpBodyModel):
     venueId: int
     totalViews6Months: int
     topOffersByConsultation: list[TopOffersByConsultationModel]
-
-
-class GetOffererNameResponseModel(HttpBodyModel):
-    id: int
-    name: str
-
-
-class GetOfferersNamesResponseModel(HttpBodyModel):
-    offerers_names: list[GetOffererNameResponseModel]
