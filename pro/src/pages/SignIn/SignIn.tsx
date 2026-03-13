@@ -75,6 +75,7 @@ export const SignIn = (): JSX.Element => {
       if (user) {
         await dispatch(initializeUser(user)).unwrap()
         if (withSwitchVenueFeature) {
+          // Re-evaluate routing middleware permissions to automatically redirect the user to its new permissions-allowed default path
           await revalidator.revalidate()
         }
       }
