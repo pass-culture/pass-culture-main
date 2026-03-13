@@ -6,6 +6,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Header } from './Header'
 
 const defaultProps = {
+  hasLateralMenu: false,
   lateralPanelOpen: false,
   setLateralPanelOpen: vi.fn(),
   focusCloseButton: vi.fn(),

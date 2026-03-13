@@ -32,25 +32,27 @@ import { HeaderDropdown } from './components/HeaderDropdown/HeaderDropdown'
 import { HeaderHelpDropdown } from './components/HeaderHelpDropdown/HeaderHelpDropdown'
 import styles from './Header.module.scss'
 
-type HeaderProps = {
+type BaseProps = {
+  isAdminArea?: boolean
+  hasLateralMenu?: boolean
+}
+
+type WithLateralMenu = {
   isLateralPanelOpen?: boolean
   onToggleLateralPanel?: (state: boolean) => void
   focusCloseButton?: () => void
-  disableBurgerMenu?: boolean
-  disableHomeLink?: boolean
-  isUnauthenticated?: boolean
-  isAdminArea?: boolean
 }
+
+type HeaderProps = BaseProps & WithLateralMenu
 
 export const Header = forwardRef(
   (
     {
+      isAdminArea = false,
+      hasLateralMenu = false,
       isLateralPanelOpen = false,
       onToggleLateralPanel,
       focusCloseButton,
-      disableBurgerMenu = false,
-      disableHomeLink = false,
-      isAdminArea = false,
     }: HeaderProps,
     openButtonRef: ForwardedRef<HTMLButtonElement>
   ) => {
@@ -61,8 +63,6 @@ export const Header = forwardRef(
 
     const { logEvent } = useAnalytics()
     const location = useLocation()
-
-    const showBurgerMenu = !disableBurgerMenu && !disableHomeLink
 
     const isTablet = useMediaQuery(TABLET_MEDIA_QUERY)
 
@@ -83,7 +83,7 @@ export const Header = forwardRef(
     return (
       <header className={styles['top-menu']}>
         <div className={styles['top-menu-content']}>
-          {showBurgerMenu && (
+          {hasLateralMenu && (
             <div className={styles['burger-icon']}>
               <Button
                 id="header-nav-toggle"

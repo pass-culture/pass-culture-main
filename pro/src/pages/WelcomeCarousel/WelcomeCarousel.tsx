@@ -10,7 +10,7 @@ export const WelcomeCarousel = (): JSX.Element => {
   return (
     <div className={styles.layout}>
       <SkipLinks />
-      <Header disableHomeLink isUnauthenticated />
+      <Header />
       <div className={styles['page-layout']}>
         {/* biome-ignore lint/correctness/useUniqueElementIds: Layout is used once per page. There cannot be id duplications. */}
         <div id="content-wrapper" className={styles['content-wrapper']}>

@@ -49,9 +49,14 @@ $connect-as-header-height: rem.torem(52px);
 }
 
 .content {
-  flex-flow: column wrap;
-  place-content: center center;
   display: flex;
-  min-width: 60%;
+  flex-direction: column;
   justify-self: center;
+  max-width: 100%;
+  min-height: 0;
+  width: size.$main-content-width;
+
+  @media screen and (min-width: size.$tablet) {
+    flex-grow: 1;
+  }
 }

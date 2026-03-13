@@ -33,7 +33,7 @@ const renderApp = ({
                 onToggle={vi.fn()}
                 openButtonRef={createRef()}
                 closeButtonRef={createRef()}
-                navPanel={createRef()}
+                navPanelRef={createRef()}
               />
             )}
             <div id="content">

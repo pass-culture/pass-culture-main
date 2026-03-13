@@ -17,14 +17,9 @@ export interface FunnelLayoutProps {
    * Make sure that only one heading is displayed per page.
    */
   mainHeading: React.ReactNode
-  withFlexContent?: boolean
 }
 
-export const FunnelLayout = ({
-  children,
-  mainHeading,
-  withFlexContent = false,
-}: FunnelLayoutProps) => {
+export const FunnelLayout = ({ children, mainHeading }: FunnelLayoutProps) => {
   const currentUser = useAppSelector(selectCurrentUser)
 
   return (
@@ -33,7 +28,7 @@ export const FunnelLayout = ({
       {currentUser?.isImpersonated && (
         <ConnectedAsAside currentUser={currentUser} />
       )}
-      <Header disableBurgerMenu />
+      <Header />
 
       <div
         className={cn(styles['page-layout'], {
@@ -41,12 +36,7 @@ export const FunnelLayout = ({
         })}
       >
         {/* biome-ignore lint/correctness/useUniqueElementIds: Layout is used once per page. There cannot be id duplications. */}
-        <div
-          id="content-wrapper"
-          className={cn(styles['content-wrapper'], {
-            [styles['content-wrapper-flex']]: withFlexContent,
-          })}
-        >
+        <div id="content-wrapper" className={styles['content-wrapper']}>
           <div className={styles['content-container']}>
             <main id="content" className={styles['content']} tabIndex={-1}>
               <MainHeading mainHeading={mainHeading} />

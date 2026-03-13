@@ -53,7 +53,7 @@ export const BasicLayout = ({
 
   const openButtonRef = useRef<HTMLButtonElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
-  const navPanel = useRef<HTMLDivElement>(null)
+  const navPanelRef = useRef<HTMLDivElement>(null)
 
   return (
     <div className={styles.layout}>
@@ -62,6 +62,7 @@ export const BasicLayout = ({
         <ConnectedAsAside currentUser={currentUser} />
       )}
       <Header
+        hasLateralMenu={true}
         isLateralPanelOpen={isLateralPanelOpen}
         onToggleLateralPanel={setIsLateralPanelOpen}
         focusCloseButton={() => {
@@ -82,7 +83,7 @@ export const BasicLayout = ({
           onToggle={setIsLateralPanelOpen}
           openButtonRef={openButtonRef}
           closeButtonRef={closeButtonRef}
-          navPanel={navPanel}
+          navPanelRef={navPanelRef}
           isAdminArea={isAdminArea}
         />
         <div id="content-wrapper" className={styles['content-wrapper']}>
