@@ -16,7 +16,7 @@ export const ChoosePreFiltersMessage = () => (
       viewBox="0 0 48 48"
     />
     <p className={styles['no-data-text']}>
-      {`Pour visualiser vos réservations, \nveuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur «${UNBREAKABLE_SPACE}Afficher${UNBREAKABLE_SPACE}»`}
+      {`Pour visualiser vos réservations, \nveuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur «${UNBREAKABLE_SPACE}Rechercher${UNBREAKABLE_SPACE}»`}
     </p>
   </div>
 )

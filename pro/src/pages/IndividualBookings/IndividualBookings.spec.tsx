@@ -174,18 +174,18 @@ describe('components | BookingsRecap | Pro user', () => {
     expect(eventDateFilter).not.toHaveValue()
   })
 
-  it('should ask user to select a pre-filter before clicking on "Afficher"', async () => {
+  it('should ask user to select a pre-filter before clicking on "Rechercher"', async () => {
     renderBookingsRecap()
     await waitForCompleteLoading()
 
     expect(api.getBookingsPro).not.toHaveBeenCalled()
     const choosePreFiltersMessage = screen.getByText(
-      'Pour visualiser vos réservations, veuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur « Afficher »'
+      'Pour visualiser vos réservations, veuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur « Rechercher »'
     )
     expect(choosePreFiltersMessage).toBeInTheDocument()
   })
 
-  it('should request bookings of venue requested by user when user clicks on "Afficher"', async () => {
+  it('should request bookings of venue requested by user when user clicks on "Rechercher"', async () => {
     const bookingRecap = bookingRecapFactory()
     const spyGetBookingsPro = vi
       .spyOn(api, 'getBookingsPro')
@@ -352,7 +352,7 @@ describe('components | BookingsRecap | Pro user', () => {
     })
     expect(
       screen.queryByText(
-        'Pour visualiser vos réservations, veuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur « Afficher »'
+        'Pour visualiser vos réservations, veuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur « Rechercher »'
       )
     ).toBeInTheDocument()
   })
@@ -801,15 +801,45 @@ describe('components | BookingsRecap | Pro user', () => {
     )
   })
   describe('with WIP_SWITCH_VENUE feature flag', () => {
-    it('should render downloads moved banner', async () => {
+    it('should not render downloads moved banner or filters without search', async () => {
       renderBookingsRecap({}, ['WIP_SWITCH_VENUE'])
       await waitForCompleteLoading()
 
       expect(
-        screen.getByText(
+        screen.queryByText(
+          'Télécharger vos réservations dans l’onglet “Données d’activité” de votre Espace Administration accessible en haut à droite.'
+        )
+      ).not.toBeInTheDocument()
+
+      expect(screen.queryByLabelText('Critère')).not.toBeInTheDocument()
+      expect(screen.queryByLabelText('Recherche')).not.toBeInTheDocument()
+    })
+
+    it('should render downloads moved banner and filters after search', async () => {
+      const bookingRecap = bookingRecapFactory()
+      vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
+        page: 1,
+        pages: 1,
+        total: 1,
+        bookingsRecap: [bookingRecap],
+      })
+      renderBookingsRecap({}, ['WIP_SWITCH_VENUE'])
+      await waitForCompleteLoading()
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Rechercher les réservations' })
+      )
+
+      await screen.findAllByText(bookingRecap.stock.offerName)
+
+      expect(
+        screen.queryByText(
           'Télécharger vos réservations dans l’onglet “Données d’activité” de votre Espace Administration accessible en haut à droite.'
         )
       ).toBeInTheDocument()
+
+      expect(screen.queryByLabelText('Critère')).toBeInTheDocument()
+      expect(screen.queryByLabelText('Recherche')).toBeInTheDocument()
     })
 
     it('should not show download dropdown', async () => {

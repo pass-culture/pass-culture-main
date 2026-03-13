@@ -194,17 +194,19 @@ export const IndividualBookings = () => {
         urlParams={urlParams}
         updateUrl={updateUrl}
       />
-      {withSwitchVenueFeature && (
+      {withSwitchVenueFeature && wereBookingsRequested && (
         <div className={styles['downloads-banner']}>
           <DownloadsMovedBanner isIndividual={true} />
         </div>
       )}
-      <FilterByOmniSearch
-        isDisabled={isLoading}
-        keywords={filters.keywords}
-        selectedOmniSearchCriteria={filters.selectedOmniSearchCriteria}
-        updateFilters={updateFilters}
-      />
+      {(!withSwitchVenueFeature || wereBookingsRequested) && (
+        <FilterByOmniSearch
+          isDisabled={isLoading}
+          keywords={filters.keywords}
+          selectedOmniSearchCriteria={filters.selectedOmniSearchCriteria}
+          updateFilters={updateFilters}
+        />
+      )}
       {filteredBookings.length !== 0 && (
         <Header
           bookingsRecapFilteredLength={filteredBookings.length}
