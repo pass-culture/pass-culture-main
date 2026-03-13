@@ -1,5 +1,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.title {
-  @include fonts.title3;
+.venue-name {
+  @include fonts.title4;
+
+  margin: 0;
 }

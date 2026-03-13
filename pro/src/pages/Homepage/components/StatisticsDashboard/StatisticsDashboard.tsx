@@ -5,7 +5,7 @@ import { api } from '@/apiClient/api'
 import type { GetOffererResponseModel } from '@/apiClient/v1'
 import { GET_OFFERER_STATS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import strokeNoBookingIcon from '@/icons/stroke-no-booking.svg'
-import { Panel as HomeCard } from '@/ui-kit/Panel/Panel'
+import { Panel } from '@/ui-kit/Panel/Panel'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { CumulatedViews } from './components/CumulatedViews'
@@ -24,7 +24,7 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
   )
 
   return (
-    <HomeCard>
+    <Panel>
       {isLoading ? (
         <CumulatedViewsSkeleton />
       ) : stats?.jsonData.topOffers.length ||
@@ -56,6 +56,6 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
             : 'Créez vos premières offres grand public pour être visible par les bénéficiaires'}
         </div>
       )}
-    </HomeCard>
+    </Panel>
   )
 }
