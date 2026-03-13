@@ -13,6 +13,12 @@ on:
         required: true
         type: string
 
+      base_ref:
+        # The base ref to tag from.
+        # Can be a branch name, a tag or a commit.
+        required: false
+        type: string
+
 
 jobs:
   build-docker-image:
@@ -20,6 +26,8 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.base_ref }}
 
       - name: Add version to api
         working-directory: api

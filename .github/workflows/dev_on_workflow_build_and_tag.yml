@@ -46,6 +46,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
       image: ${{ matrix.image }}
+      base_ref: ${{ inputs.base_ref }}
       tag: ${{ inputs.tag_number }}
 
   push-images:
