@@ -6,7 +6,7 @@ from pcapi import settings
 from pcapi.connectors.dms import api as dms_api
 from pcapi.connectors.dms import factories as dms_factories
 from pcapi.core.external.batch import testing as notifications_testing
-from pcapi.core.users import commands as users_commands
+from pcapi.core.external.batch import transactional_notifications
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -114,7 +114,7 @@ class SendNotificationFavoritesNotBookedTest:
 
         with patch("pcapi.connectors.big_query.TestingBackend.run_query") as mock_run_query:
             mock_run_query.return_value = rows
-            users_commands._send_notification_favorites_not_booked()
+            transactional_notifications.send_notification_favorites_not_booked()
 
         requests = notifications_testing.requests
         assert len(requests) == 2
@@ -130,7 +130,7 @@ class SendNotificationFavoritesNotBookedTest:
 
         with patch("pcapi.connectors.big_query.TestingBackend.run_query") as mock_run_query:
             mock_run_query.return_value = rows
-            users_commands._send_notification_favorites_not_booked()
+            transactional_notifications.send_notification_favorites_not_booked()
 
         # one request with users 1 and 2
         # another one with users 3 and 4
