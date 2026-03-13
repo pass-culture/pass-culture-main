@@ -184,24 +184,16 @@ export const NewHomepage = (): JSX.Element => {
           >
             Page d'accueil - part collective
           </span>
-          <div className={styles['top']}>
-            {shouldDisplayHomologationBanner && (
-              <div>
-                Votre structure est en cours de traitement par les équipes du
-                pass Culture
-                <br />
-                <b>Banner Homologation</b>
-              </div>
-            )}
-            {collectiveDmsApplication && (
+          {collectiveDmsApplication && (
+            <div className={styles['top']}>
               <CollectiveDmsTimeline
                 collectiveDmsApplication={collectiveDmsApplication}
                 hasAdageId={Boolean(selectedVenue.hasAdageId)}
                 adageInscriptionDate={selectedVenue.adageInscriptionDate}
                 variant={CollectiveDmsTimelineVariant.LITE}
               />
-            )}
-          </div>
+            </div>
+          )}
           {hasRefusedDmsApplication && (
             <div className={styles['main']}>
               <div>
