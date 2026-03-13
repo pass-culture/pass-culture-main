@@ -33,6 +33,42 @@ describe('Button', () => {
     expect(await axe(container)).toHaveNoViolations()
   })
 
+  it('should render without accessibility violations color brand', async () => {
+    const { container } = renderButton({
+      label: 'Button brand',
+      variant: ButtonVariant.PRIMARY,
+      size: ButtonSize.DEFAULT,
+      color: ButtonColor.BRAND,
+      disabled: true,
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('should render without accessibility violations color neutral', async () => {
+    const { container } = renderButton({
+      label: 'Button neutral',
+      variant: ButtonVariant.PRIMARY,
+      size: ButtonSize.DEFAULT,
+      color: ButtonColor.NEUTRAL,
+      disabled: true,
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('should render without accessibility violations color danger', async () => {
+    const { container } = renderButton({
+      label: 'Button danger',
+      variant: ButtonVariant.PRIMARY,
+      size: ButtonSize.DEFAULT,
+      color: ButtonColor.DANGER,
+      disabled: true,
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render a button with a label', () => {
     renderButton({
       label: 'Button Label',
