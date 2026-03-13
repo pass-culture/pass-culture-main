@@ -15,4 +15,5 @@ export interface VenueEditionFormValues {
   openingHours?: WeekdayOpeningHoursTimespans | null
   activity?: ActivityOpenToPublicType | ActivityNotOpenToPublicType | null
   culturalDomains?: string[]
+  volunteeringUrl?: string | null
 }

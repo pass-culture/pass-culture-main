@@ -8,7 +8,7 @@ import { FormLayoutDescription } from './FormLayoutDescription'
 
 interface FormLayoutSubSectionProps {
   title: string
-  description?: string
+  description?: string | JSX.Element
   children: React.ReactNode | React.ReactNode[]
   className?: string
   isNew?: boolean
