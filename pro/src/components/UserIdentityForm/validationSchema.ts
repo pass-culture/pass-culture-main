@@ -1,14 +1,8 @@
-import * as yup from 'yup'
+import { z } from 'zod'
 
-export const validationSchema = yup.object().shape({
-  firstName: yup
-    .string()
-    .max(128, 'Veuillez renseigner moins de 128 caractères')
-    .trim()
-    .required('Veuillez renseigner votre prénom'),
-  lastName: yup
-    .string()
-    .max(128, 'Veuillez renseigner moins de 128 caractères')
-    .trim()
-    .required('Veuillez renseigner votre nom'),
+import { zUserIdentityBodyModel } from '@/apiClient/hey-api/zod.gen'
+
+export const userIdentitySchema = zUserIdentityBodyModel.extend({
+  firstName: z.string().trim().pipe(zUserIdentityBodyModel.shape.firstName),
+  lastName: z.string().trim().pipe(zUserIdentityBodyModel.shape.lastName),
 })
