@@ -7,6 +7,13 @@
   width: 100%;
 }
 
+.highlight-image {
+  width: 100%;
+  height: rem.torem(150px);
+  object-fit: cover;
+  border-radius: var(--size-border-radius-m);
+}
+
 .highlight-title {
   @include fonts.title3;
 }

@@ -12,8 +12,8 @@ import {
   ButtonSize,
   ButtonVariant,
 } from '@/design-system/Button/types'
+import { Card } from '@/ui-kit/Card/Card'
 
-import { HomeCard } from '../HomeCard/HomeCard'
 import styles from './PartnerPageCard.module.scss'
 
 type PartnerPageProps = {
@@ -50,9 +50,9 @@ export const PartnerPageCard = ({
   }
 
   return (
-    <HomeCard>
-      <HomeCard.Header title="Votre page sur l'application" titleTag="h2" />
-      <HomeCard.Content>
+    <Card>
+      <Card.Header title="Votre page sur l'application" titleTag="h2" />
+      <Card.Content>
         <ImageDragAndDropUploader
           onImageUpload={handleOnImageUpload}
           onImageDelete={() => noop}
@@ -62,8 +62,8 @@ export const PartnerPageCard = ({
           onImageDropOrSelected={logButtonAddClick}
         />
         <h3 className={styles['title']}>{venueName}</h3>
-      </HomeCard.Content>
-      <HomeCard.Footer>
+      </Card.Content>
+      <Card.Footer>
         <Button
           label="Compléter ma page"
           variant={ButtonVariant.SECONDARY}
@@ -82,7 +82,7 @@ export const PartnerPageCard = ({
           as="a"
           opensInNewTab
         />
-      </HomeCard.Footer>
-    </HomeCard>
+      </Card.Footer>
+    </Card>
   )
 }
