@@ -26,6 +26,7 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import eligibility_api
 from pcapi.core.users import young_status
 from pcapi.core.users.utils import decode_jwt_token
+from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.native.v1.serialization import achievements as achievements_serialization
@@ -34,6 +35,7 @@ from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.shared.price import convert_to_cent
 from pcapi.utils import date as date_utils
+from pcapi.utils import postal_code as postal_code_utils
 from pcapi.utils.email import sanitize_email
 
 
@@ -291,6 +293,17 @@ class UserProfilePatchRequest(ConfiguredBaseModel):
     phone_number: str | None
     subscriptions: NotificationSubscriptions | None
     origin: str | None
+
+    @validator("postal_code", pre=True)
+    @classmethod
+    def validate_postal_code(cls, postal_code: str | None) -> str | None:
+        if postal_code is None:
+            return postal_code
+        if postal_code in postal_code_utils.INELIGIBLE_POSTAL_CODES:
+            raise api_errors.ApiErrors({"code": "INELIGIBLE_POSTAL_CODE"})
+        if not re.match(r"^\d{5}$", postal_code):
+            raise api_errors.ApiErrors({"code": "INVALID_POSTAL_CODE"})
+        return postal_code
 
 
 class ValidateEmailRequest(ConfiguredBaseModel):
