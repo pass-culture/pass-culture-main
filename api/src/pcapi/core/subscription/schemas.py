@@ -3,13 +3,12 @@ import datetime
 import enum
 import typing
 
+import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
-from pydantic.v1.class_validators import validator
 
 from pcapi.core.subscription.models import BeneficiaryFraudCheck
 from pcapi.core.subscription.models import FraudReasonCode
 from pcapi.core.users import models as users_models
-from pcapi.serialization.utils import to_camel
 from pcapi.utils.string import u_nbsp
 
 
@@ -165,29 +164,32 @@ class FraudItem:
         return self.extra_data.get("duplicate_id")
 
 
-class ProfileCompletionContent(pydantic_v1.BaseModel):
+class ProfileCompletionContent(pydantic_v2.BaseModel):
     activity: (
         users_models.ActivityEnum | str | None
     )  # str for backward compatibility. All new data should be ActivityEnum
-    address: str | None  # Optional because it was not saved up until now
-    city: str | None  # Optional because it was not saved up until now
+    address: str | None = None  # Optional because it was not saved up until now
+    city: str | None = None  # Optional because it was not saved up until now
     first_name: str
     last_name: str
     origin: str  # Where the profile was completed by the user. Can be the APP or DMS
-    postal_code: str | None  # Optional because it was not saved up until now
-    school_type: users_models.SchoolTypeEnum | None
+    postal_code: str | None = pydantic_v2.Field(
+        validation_alias="postalCode"
+    )  # Optional because it was not saved up until now
+    school_type: users_models.SchoolTypeEnum | None = None
 
-    @validator("activity", pre=True)
+    @pydantic_v2.field_validator("activity", mode="before")
+    @classmethod
     def validate_activity(cls, value: users_models.ActivityEnum | str | None) -> users_models.ActivityEnum | str | None:
         # Avoid validation error for old data because of rewording
         if value == "Chômeur":
             return users_models.ActivityEnum.UNEMPLOYED.value
         return value
 
-    class Config:
-        allow_population_by_field_name = True
-        use_enum_values = True
-        alias_generator = to_camel
+    model_config = pydantic_v2.ConfigDict(
+        use_enum_values=True,
+        validate_by_name=True,  # Needed for legacy profile completion fraud checks with `postalCode` field
+    )
 
 
 class IdentityCheckContent(pydantic_v1.BaseModel):

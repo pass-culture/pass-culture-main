@@ -333,11 +333,19 @@
                 "title": "ActivityIdEnum"
             },
             "ActivityResponseModel": {
+                "additionalProperties": false,
                 "properties": {
                     "description": {
-                        "nullable": true,
-                        "title": "Description",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Description"
                     },
                     "id": {
                         "$ref": "#/components/schemas/ActivityIdEnum"
@@ -355,6 +363,7 @@
                 "type": "object"
             },
             "ActivityTypesResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "activities": {
                         "items": {
@@ -581,11 +590,19 @@
                 "type": "object"
             },
             "BonusCreditRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "birthCityCogCode": {
-                        "nullable": true,
-                        "title": "Birthcitycogcode",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Birthcitycogcode"
                     },
                     "birthCountryCogCode": {
                         "title": "Birthcountrycogcode",
@@ -597,9 +614,16 @@
                         "type": "string"
                     },
                     "commonName": {
-                        "nullable": true,
-                        "title": "Commonname",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Commonname"
                     },
                     "firstNames": {
                         "items": {
@@ -2120,6 +2144,48 @@
                 "title": "CallToActionMessage",
                 "type": "object"
             },
+            "CallToActionMessageV2": {
+                "additionalProperties": false,
+                "properties": {
+                    "callToActionIcon": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/CallToActionIcon"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null
+                    },
+                    "callToActionLink": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Calltoactionlink"
+                    },
+                    "callToActionTitle": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Calltoactiontitle"
+                    }
+                },
+                "title": "CallToActionMessageV2",
+                "type": "object"
+            },
             "CategoriesResponseModel": {
                 "additionalProperties": false,
                 "properties": {
@@ -3238,12 +3304,12 @@
                 "type": "object"
             },
             "GenderEnum": {
-                "description": "An enumeration.",
                 "enum": [
                     "M.",
                     "Mme"
                 ],
-                "title": "GenderEnum"
+                "title": "GenderEnum",
+                "type": "string"
             },
             "GenreType": {
                 "enum": [
@@ -3485,6 +3551,7 @@
                 "type": "object"
             },
             "IdentificationSessionRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "redirectUrl": {
                         "title": "Redirecturl",
@@ -3498,6 +3565,7 @@
                 "type": "object"
             },
             "IdentificationSessionResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "identificationUrl": {
                         "title": "Identificationurl",
@@ -3511,12 +3579,12 @@
                 "type": "object"
             },
             "IdentityCheckMethod": {
-                "description": "An enumeration.",
                 "enum": [
                     "educonnect",
                     "ubble"
                 ],
-                "title": "IdentityCheckMethod"
+                "title": "IdentityCheckMethod",
+                "type": "string"
             },
             "InseeCountries": {
                 "additionalProperties": false,
@@ -3554,12 +3622,12 @@
                 "type": "object"
             },
             "MaintenancePageType": {
-                "description": "An enumeration.",
                 "enum": [
                     "with-dms",
                     "without-dms"
                 ],
-                "title": "MaintenancePageType"
+                "title": "MaintenancePageType",
+                "type": "string"
             },
             "MarkAchievementsAsSeenRequest": {
                 "additionalProperties": false,
@@ -6083,6 +6151,7 @@
                 "type": "object"
             },
             "ProfileUpdateRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "activityId": {
                         "$ref": "#/components/schemas/ActivityIdEnum"
@@ -6111,9 +6180,12 @@
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/SchoolTypesIdEnum"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     }
                 },
                 "required": [
@@ -6499,7 +6571,6 @@
                 "type": "object"
             },
             "SchoolTypesIdEnum": {
-                "description": "An enumeration.",
                 "enum": [
                     "AGRICULTURAL_HIGH_SCHOOL",
                     "APPRENTICE_FORMATION_CENTER",
@@ -6511,7 +6582,8 @@
                     "PUBLIC_HIGH_SCHOOL",
                     "PUBLIC_SECONDARY_SCHOOL"
                 ],
-                "title": "SchoolTypesIdEnum"
+                "title": "SchoolTypesIdEnum",
+                "type": "string"
             },
             "Screening": {
                 "additionalProperties": false,
@@ -7105,34 +7177,54 @@
                 "type": "object"
             },
             "SubscriptionMessageV2": {
+                "additionalProperties": false,
                 "properties": {
                     "callToAction": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/CallToActionMessage"
+                                "$ref": "#/components/schemas/CallToActionMessageV2"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "CallToActionMessage"
+                        "default": null
                     },
                     "messageSummary": {
-                        "nullable": true,
-                        "title": "Messagesummary",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Messagesummary"
                     },
                     "popOverIcon": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/PopOverIcon"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     },
                     "updatedAt": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Updatedat",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Updatedat"
                     },
                     "userMessage": {
                         "title": "Usermessage",
@@ -7155,7 +7247,6 @@
                 "title": "SubscriptionStatus"
             },
             "SubscriptionStep": {
-                "description": "An enumeration.",
                 "enum": [
                     "email-validation",
                     "maintenance",
@@ -7164,19 +7255,21 @@
                     "identity-check",
                     "honor-statement"
                 ],
-                "title": "SubscriptionStep"
+                "title": "SubscriptionStep",
+                "type": "string"
             },
             "SubscriptionStepCompletionState": {
-                "description": "An enumeration.",
                 "enum": [
                     "completed",
                     "current",
                     "disabled",
                     "retry"
                 ],
-                "title": "SubscriptionStepCompletionState"
+                "title": "SubscriptionStepCompletionState",
+                "type": "string"
             },
             "SubscriptionStepDetailsResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "completionState": {
                         "$ref": "#/components/schemas/SubscriptionStepCompletionState"
@@ -7185,9 +7278,16 @@
                         "$ref": "#/components/schemas/SubscriptionStep"
                     },
                     "subtitle": {
-                        "nullable": true,
-                        "title": "Subtitle",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Subtitle"
                     },
                     "title": {
                         "$ref": "#/components/schemas/SubscriptionStepTitle"
@@ -7202,21 +7302,23 @@
                 "type": "object"
             },
             "SubscriptionStepTitle": {
-                "description": "An enumeration.",
                 "enum": [
                     "Num\u00e9ro de t\u00e9l\u00e9phone",
                     "Profil",
                     "Identification",
                     "Confirmation"
                 ],
-                "title": "SubscriptionStepTitle"
+                "title": "SubscriptionStepTitle",
+                "type": "string"
             },
             "SubscriptionStepperResponseV2": {
+                "additionalProperties": false,
                 "properties": {
                     "allowedIdentityCheckMethods": {
                         "items": {
                             "$ref": "#/components/schemas/IdentityCheckMethod"
                         },
+                        "title": "Allowedidentitycheckmethods",
                         "type": "array"
                     },
                     "hasIdentityCheckPending": {
@@ -7227,26 +7329,34 @@
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/MaintenancePageType"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     },
                     "nextSubscriptionStep": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/SubscriptionStep"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     },
                     "subscriptionMessage": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/SubscriptionMessageV2"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "SubscriptionMessageV2"
+                        "default": null
                     },
                     "subscriptionStepsToDisplay": {
                         "items": {
@@ -7256,9 +7366,16 @@
                         "type": "array"
                     },
                     "subtitle": {
-                        "nullable": true,
-                        "title": "Subtitle",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Subtitle"
                     },
                     "title": {
                         "title": "Title",
