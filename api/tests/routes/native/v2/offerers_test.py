@@ -24,6 +24,7 @@ class GetVenueTest:
             isOpenToPublic=True,
             name="Legal name",
             publicName="Public name",
+            volunteeringUrl="https://volunteering.url",
         )
         offerers_factories.AccessibilityProviderFactory(
             venue=venue,
@@ -112,6 +113,7 @@ class GetVenueTest:
             "postalCode": venue.offererAddress.address.postalCode,
             "street": venue.offererAddress.address.street,
             "timezone": venue.offererAddress.address.timezone,
+            "volunteeringUrl": "https://volunteering.url",
             "withdrawalDetails": venue.withdrawalDetails,
         }
 

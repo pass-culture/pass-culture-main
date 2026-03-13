@@ -66,6 +66,7 @@ class VenueResponse(HttpBodyModel):
     postal_code: str | None = None
     street: str | None = None
     timezone: str
+    volunteering_url: str | None = None
     withdrawal_details: str | None = None
 
     @classmethod
@@ -119,5 +120,6 @@ class VenueResponse(HttpBodyModel):
             postal_code=venue.offererAddress.address.postalCode,
             street=venue.offererAddress.address.street,
             timezone=venue.offererAddress.address.timezone,
+            volunteering_url=venue.volunteeringUrl,
             withdrawal_details=venue.withdrawalDetails,
         )
