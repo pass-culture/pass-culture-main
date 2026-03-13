@@ -1270,6 +1270,10 @@ export type EditVenueBodyModel = {
      */
     visualDisabilityCompliant?: boolean;
     /**
+     * Volunteeringurl
+     */
+    volunteeringUrl?: string;
+    /**
      * Withdrawaldetails
      */
     withdrawalDetails?: string;
@@ -3153,6 +3157,69 @@ export type GetStocksResponseModel = {
 };
 
 /**
+ * GetVenueAddressResponseModel
+ */
+export type GetVenueAddressResponseModel = {
+    /**
+     * Addressid
+     */
+    addressId: number;
+    /**
+     * City
+     */
+    city: string;
+    /**
+     * Departmentcode
+     */
+    departmentCode: string | null;
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Label
+     */
+    label?: string | null;
+    /**
+     * Postalcode
+     */
+    postalCode: string;
+    /**
+     * Street
+     */
+    street: string | null;
+    /**
+     * Venueid
+     */
+    venueId: number;
+    /**
+     * Venuename
+     */
+    venueName: string | null;
+};
+
+/**
+ * GetVenueAddressesQueryModel
+ */
+export type GetVenueAddressesQueryModel = {
+    withOffersOption: GetVenueAddressesWithOffersOption | null;
+};
+
+/**
+ * GetVenueAddressesResponseModel
+ */
+export type GetVenueAddressesResponseModel = Array<GetVenueAddressResponseModel>;
+
+/**
+ * GetVenueAddressesWithOffersOption
+ */
+export enum GetVenueAddressesWithOffersOption {
+    INDIVIDUAL_OFFERS_ONLY = 'INDIVIDUAL_OFFERS_ONLY',
+    COLLECTIVE_OFFERS_ONLY = 'COLLECTIVE_OFFERS_ONLY',
+    COLLECTIVE_OFFER_TEMPLATES_ONLY = 'COLLECTIVE_OFFER_TEMPLATES_ONLY'
+}
+
+/**
  * GetVenueDomainResponseModel
  */
 export type GetVenueDomainResponseModel = {
@@ -3419,6 +3486,10 @@ export type GetVenueResponseModel = {
      * Visualdisabilitycompliant
      */
     visualDisabilityCompliant?: boolean;
+    /**
+     * Volunteeringurl
+     */
+    volunteeringUrl: string;
     /**
      * Withdrawaldetails
      */
@@ -5007,6 +5078,13 @@ export type PatchOfferPublishBodyModel = {
 };
 
 /**
+ * PatchProAdviceResponseModel
+ */
+export type PatchProAdviceResponseModel = {
+    proAdvice: ProAdviceModel | null;
+};
+
+/**
  * PhoneValidationStatusType
  */
 export enum PhoneValidationStatusType {
@@ -5301,6 +5379,13 @@ export type PostOffererResponseModel = {
 };
 
 /**
+ * PostProAdviceResponseModel
+ */
+export type PostProAdviceResponseModel = {
+    proAdvice: ProAdviceModel | null;
+};
+
+/**
  * PostVenueProviderBody
  */
 export type PostVenueProviderBody = {
@@ -5356,6 +5441,20 @@ export type PriceCategoryResponseModel = {
      * Price
      */
     price: number;
+};
+
+/**
+ * ProAdviceBodyModel
+ */
+export type ProAdviceBodyModel = {
+    /**
+     * Author
+     */
+    author?: string | null;
+    /**
+     * Content
+     */
+    content: string;
 };
 
 /**
@@ -9541,6 +9640,37 @@ export type putOffersByOfferIdPriceCategoriesResponses = {
 
 export type putOffersByOfferIdPriceCategoriesResponse = putOffersByOfferIdPriceCategoriesResponses[keyof putOffersByOfferIdPriceCategoriesResponses];
 
+export type deleteOffersByOfferIdProAdviceData = {
+    body?: never;
+    path: {
+        offer_id: number;
+    };
+    query?: never;
+    url: '/offers/{offer_id}/pro_advice';
+};
+
+export type deleteOffersByOfferIdProAdviceErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type deleteOffersByOfferIdProAdviceError = deleteOffersByOfferIdProAdviceErrors[keyof deleteOffersByOfferIdProAdviceErrors];
+
+export type deleteOffersByOfferIdProAdviceResponses = {
+    /**
+     * No Content
+     */
+    204: void;
+};
+
+export type deleteOffersByOfferIdProAdviceResponse = deleteOffersByOfferIdProAdviceResponses[keyof deleteOffersByOfferIdProAdviceResponses];
+
 export type getOffersByOfferIdProAdviceData = {
     body?: never;
     path: {
@@ -9571,6 +9701,68 @@ export type getOffersByOfferIdProAdviceResponses = {
 };
 
 export type getOffersByOfferIdProAdviceResponse = getOffersByOfferIdProAdviceResponses[keyof getOffersByOfferIdProAdviceResponses];
+
+export type patchOffersByOfferIdProAdviceData = {
+    body: ProAdviceBodyModel;
+    path: {
+        offer_id: number;
+    };
+    query?: never;
+    url: '/offers/{offer_id}/pro_advice';
+};
+
+export type patchOffersByOfferIdProAdviceErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type patchOffersByOfferIdProAdviceError = patchOffersByOfferIdProAdviceErrors[keyof patchOffersByOfferIdProAdviceErrors];
+
+export type patchOffersByOfferIdProAdviceResponses = {
+    /**
+     * OK
+     */
+    200: PatchProAdviceResponseModel;
+};
+
+export type patchOffersByOfferIdProAdviceResponse = patchOffersByOfferIdProAdviceResponses[keyof patchOffersByOfferIdProAdviceResponses];
+
+export type postOffersByOfferIdProAdviceData = {
+    body: ProAdviceBodyModel;
+    path: {
+        offer_id: number;
+    };
+    query?: never;
+    url: '/offers/{offer_id}/pro_advice';
+};
+
+export type postOffersByOfferIdProAdviceErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type postOffersByOfferIdProAdviceError = postOffersByOfferIdProAdviceErrors[keyof postOffersByOfferIdProAdviceErrors];
+
+export type postOffersByOfferIdProAdviceResponses = {
+    /**
+     * Created
+     */
+    201: PostProAdviceResponseModel;
+};
+
+export type postOffersByOfferIdProAdviceResponse = postOffersByOfferIdProAdviceResponses[keyof postOffersByOfferIdProAdviceResponses];
 
 export type getOffersByOfferIdStocksStatsData = {
     body?: never;
@@ -10966,6 +11158,39 @@ export type patchVenuesByVenueIdCollectiveDataResponses = {
 };
 
 export type patchVenuesByVenueIdCollectiveDataResponse = patchVenuesByVenueIdCollectiveDataResponses[keyof patchVenuesByVenueIdCollectiveDataResponses];
+
+export type getVenuesByVenueIdLocationsData = {
+    body?: never;
+    path: {
+        venue_id: number;
+    };
+    query: {
+        withOffersOption: GetVenueAddressesWithOffersOption | null;
+    };
+    url: '/venues/{venue_id}/locations';
+};
+
+export type getVenuesByVenueIdLocationsErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type getVenuesByVenueIdLocationsError = getVenuesByVenueIdLocationsErrors[keyof getVenuesByVenueIdLocationsErrors];
+
+export type getVenuesByVenueIdLocationsResponses = {
+    /**
+     * OK
+     */
+    200: GetVenueAddressesResponseModel;
+};
+
+export type getVenuesByVenueIdLocationsResponse = getVenuesByVenueIdLocationsResponses[keyof getVenuesByVenueIdLocationsResponses];
 
 export type getVenuesByVenueIdOffersStatisticsData = {
     body?: never;
