@@ -28,10 +28,10 @@ import {
   isCollectiveAndIndividualRevenue,
   isCollectiveRevenue,
 } from '@/pages/Reimbursements/Income/utils'
+import { Card } from '@/ui-kit/Card/Card'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
-import { HomeCard } from '../HomeCard/HomeCard'
 import styles from './IncomeCard.module.scss'
 
 interface IncomeCardProps {
@@ -117,20 +117,20 @@ export const IncomeCard = ({
 
   if (isIncomeLoading) {
     return (
-      <HomeCard>
+      <Card>
         <Spinner />
-      </HomeCard>
+      </Card>
     )
   }
 
   if (incomeApiError) {
     return (
-      <HomeCard>
+      <Card>
         <Banner
           title="Impossible de charger les données de chiffre d'affaires"
           variant={BannerVariants.ERROR}
         />
-      </HomeCard>
+      </Card>
     )
   }
 
@@ -170,14 +170,14 @@ export const IncomeCard = ({
       })
 
   const cardHeader = (
-    <HomeCard.Header title="Remboursement" subtitle="Individuel et collectif" />
+    <Card.Header title="Remboursement" subtitle="Individuel et collectif" />
   )
 
   return (
-    <HomeCard>
+    <Card>
       {!isEmptyState && cardHeader}
 
-      <HomeCard.Content>
+      <Card.Content>
         <BankAccountBanner
           venueId={venueId}
           bankAccountStatus={bankAccountStatus}
@@ -207,10 +207,10 @@ export const IncomeCard = ({
               <Tag variant={TagVariant.SUCCESS} label={formattedTotal} />
             </div>
           )}
-      </HomeCard.Content>
+      </Card.Content>
 
       {bankAccountStatus === SimplifiedBankAccountStatus.VALID && total > 0 && (
-        <HomeCard.Footer>
+        <Card.Footer>
           <Button
             as="a"
             to="/remboursements/revenus"
@@ -219,8 +219,8 @@ export const IncomeCard = ({
             size={ButtonSize.DEFAULT}
             label="Accéder à la gestion financière"
           />
-        </HomeCard.Footer>
+        </Card.Footer>
       )}
-    </HomeCard>
+    </Card>
   )
 }

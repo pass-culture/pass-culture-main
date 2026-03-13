@@ -12,7 +12,7 @@ import {
   ButtonSize,
   ButtonVariant,
 } from '@/design-system/Button/types'
-import { Panel } from '@/ui-kit/Panel/Panel'
+import { Card } from '@/ui-kit/Card/Card'
 
 import { PartnerPageVariant } from '../types'
 import styles from './PartnerPageCard.module.scss'
@@ -63,9 +63,9 @@ export const PartnerPageCard = ({
       : 'Votre page sur ADAGE'
 
   return (
-    <Panel>
-      <div className={styles['container']}>
-        <h2 className={styles['title']}>{cardTitle}</h2>
+    <Card>
+      <Card.Header title={cardTitle} />
+      <Card.Content>
         <ImageDragAndDropUploader
           onImageUpload={handleOnImageUpload}
           onImageDelete={() => noop}
@@ -74,30 +74,30 @@ export const PartnerPageCard = ({
           hideActionButtons
           onImageDropOrSelected={logButtonAddClick}
         />
-        <h3 className={styles['title']}>{venueName}</h3>
-        <div className={styles['buttons']}>
+        <h3 className={styles['venue-name']}>{venueName}</h3>
+      </Card.Content>
+      <Card.Footer>
+        <Button
+          label="Compléter ma page"
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          size={ButtonSize.SMALL}
+          to={venueEditionLink}
+          as="a"
+        />
+        {variant === PartnerPageVariant.INDIVIDUAL && (
           <Button
-            label="Compléter ma page"
+            label="Voir ma page"
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
             size={ButtonSize.SMALL}
-            to={venueEditionLink}
+            isExternal
+            to={venuePreviewLink}
             as="a"
+            opensInNewTab
           />
-          {variant === PartnerPageVariant.INDIVIDUAL && (
-            <Button
-              label="Voir ma page"
-              variant={ButtonVariant.SECONDARY}
-              color={ButtonColor.NEUTRAL}
-              size={ButtonSize.SMALL}
-              isExternal
-              to={venuePreviewLink}
-              as="a"
-              opensInNewTab
-            />
-          )}
-        </div>
-      </div>
-    </Panel>
+        )}
+      </Card.Footer>
+    </Card>
   )
 }

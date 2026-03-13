@@ -16,15 +16,13 @@ export const HighlightHome = () => {
 
   return (
     <div className={styles['highlight-home']}>
-      <Card
-        imageSrc={highlightImg}
-        title={
-          <h3 className={styles['highlight-title']}>
-            Valorisez vos évènements en les associant à un temps fort du pass
-            Culture !
-          </h3>
-        }
-        actions={
+      <Card>
+        <Card.Image src={highlightImg} alt="" />
+        <Card.Header
+          title="Valorisez vos évènements en les associant à un temps fort du pass Culture !"
+          subtitle="Un temps fort permet de valoriser vos offres évènements autour d'une thématique."
+        />
+        <Card.Footer>
           <ModalHighlight
             onOpenChange={setIsOpen}
             open={isOpen}
@@ -38,10 +36,7 @@ export const HighlightHome = () => {
               />
             }
           />
-        }
-      >
-        Un temps fort permet de valoriser vos offres évènements autour d’une
-        thématique.
+        </Card.Footer>
       </Card>
     </div>
   )
