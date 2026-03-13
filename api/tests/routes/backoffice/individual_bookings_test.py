@@ -210,17 +210,39 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert set(row["Contremarque"] for row in rows) == {"WTRL00", "ELBEIT", "REIMB3"}
 
     @pytest.mark.parametrize(
-        "incident_status, display_alert",
+        "incident_kind, incident_status, expected_text, expected_class",
         [
-            (finance_models.IncidentStatus.VALIDATED, True),
-            (finance_models.IncidentStatus.CREATED, False),
-            (finance_models.IncidentStatus.CANCELLED, False),
-            (finance_models.IncidentStatus.INVOICED, True),
+            (
+                finance_models.IncidentType.COMMERCIAL_GESTURE,
+                finance_models.IncidentStatus.CREATED,
+                "Geste Commercial",
+                "text-secondary",
+            ),
+            (
+                finance_models.IncidentType.OVERPAYMENT,
+                finance_models.IncidentStatus.VALIDATED,
+                "Trop Perçu",
+                "text-success",
+            ),
+            (
+                finance_models.IncidentType.COMMERCIAL_GESTURE,
+                finance_models.IncidentStatus.INVOICED,
+                "Geste Commercial",
+                "text-success",
+            ),
+            (
+                finance_models.IncidentType.OVERPAYMENT,
+                finance_models.IncidentStatus.CANCELLED,
+                "Trop Perçu",
+                "text-danger",
+            ),
         ],
     )
-    def test_display_incident_alert(self, authenticated_client, incident_status, display_alert):
+    def test_display_incident_badge(
+        self, authenticated_client, incident_kind, incident_status, expected_text, expected_class
+    ):
         booking_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
-            incident=finance_factories.FinanceIncidentFactory(status=incident_status),
+            incident=finance_factories.FinanceIncidentFactory(kind=incident_kind, status=incident_status),
             booking=bookings_factories.ReimbursedBookingFactory(),
         )
         booking_id = booking_finance_incident.booking.id
@@ -229,10 +251,11 @@ class ListIndividualBookingsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, q=booking_id))
             assert response.status_code == 200
 
-        if display_alert:
-            assert "bi-exclamation-triangle-fill" in str(response.data)
-        else:
-            assert "bi-exclamation-triangle-fill" not in str(response.data)
+        soup = html_parser.get_soup(response.data)
+        badges = soup.select("td > a > span.badge")
+        assert len(badges) == 1
+        assert badges[0].text == expected_text
+        assert expected_class in badges[0].attrs["class"]
 
     @pytest.mark.parametrize(
         "query_args",
