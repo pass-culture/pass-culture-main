@@ -340,6 +340,7 @@ def get_venue_addresses(
 ) -> venues_serialize.GetVenueAddressesResponseModel:
     check_user_has_access_to_venues(current_user, [venue_id])
 
+    model: type[educational_models.CollectiveOfferTemplate | educational_models.CollectiveOffer | offers_models.Offer]
     if query.withOffersOption == venues_serialize.GetVenueAddressesWithOffersOption.COLLECTIVE_OFFER_TEMPLATES_ONLY:
         model = educational_models.CollectiveOfferTemplate
     if query.withOffersOption == venues_serialize.GetVenueAddressesWithOffersOption.COLLECTIVE_OFFERS_ONLY:
