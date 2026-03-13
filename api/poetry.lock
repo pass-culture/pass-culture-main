@@ -3773,14 +3773,14 @@ dev = ["codecov (>=1.5.1)", "configobj (>=5.0.6)", "coverage", "pdbpp (>=0.10.3)
 
 [[package]]
 name = "phonenumberslite"
-version = "9.0.24"
+version = "9.0.25"
 description = "Python version of Google's common library for parsing, formatting, storing and validating international phone numbers."
 optional = false
 python-versions = ">=2.5"
 groups = ["main"]
 files = [
-    {file = "phonenumberslite-9.0.24-py2.py3-none-any.whl", hash = "sha256:3a45ce8b3396013a4f38bacfdb6f969a7a0d0e60e7afa95d99a18ebdd3c55328"},
-    {file = "phonenumberslite-9.0.24.tar.gz", hash = "sha256:88760f1e468ad3f293484166600693d2618dbfbe6eedcdfd742d92581ea5c3c1"},
+    {file = "phonenumberslite-9.0.25-py2.py3-none-any.whl", hash = "sha256:a47afda274d951ac5e509d46beb5b5a67a58ab2683a5ad54c19ad61737f24191"},
+    {file = "phonenumberslite-9.0.25.tar.gz", hash = "sha256:403191df8dbc7af3c08f8835f0ed00f8115f7f548c615c42cf5f37a7604dadfc"},
 ]
 
 [[package]]
@@ -4176,6 +4176,9 @@ files = [
     {file = "psycopg-3.2.10-py3-none-any.whl", hash = "sha256:ab5caf09a9ec42e314a21f5216dbcceac528e0e05142e42eea83a3b28b320ac3"},
     {file = "psycopg-3.2.10.tar.gz", hash = "sha256:0bce99269d16ed18401683a8569b2c5abd94f72f8364856d56c0389bcd50972a"},
 ]
+
+[package.dependencies]
+tzdata = {version = "*", markers = "sys_platform == \"win32\""}
 
 [package.extras]
 binary = ["psycopg-binary (==3.2.10) ; implementation_name != \"pypy\""]
@@ -6566,7 +6569,7 @@ files = [
     {file = "tzdata-2025.2-py2.py3-none-any.whl", hash = "sha256:1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8"},
     {file = "tzdata-2025.2.tar.gz", hash = "sha256:b60a638fcc0daffadf82fe0f57e53d06bdec2f36c4df66280ae79bce6bd6f2b9"},
 ]
-markers = {dev = "platform_system == \"Windows\""}
+markers = {dev = "platform_system == \"Windows\" or sys_platform == \"win32\""}
 
 [[package]]
 name = "tzlocal"
@@ -7292,4 +7295,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "7fa13d10040ab3cf7cf7a185561618f8e2dd8c353c2ba9a99039bdfdb49de504"
+content-hash = "ca4c1362ae464a65831e4d0f452215f9a8da0d9a74705d5586c02259cece8339"
