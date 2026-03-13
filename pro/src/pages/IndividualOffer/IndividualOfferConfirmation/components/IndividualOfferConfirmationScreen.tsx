@@ -12,9 +12,6 @@ import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/Displa
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
-import fullValidateIcon from '@/icons/full-validate.svg'
-import fullWaitIcon from '@/icons/full-wait.svg'
-import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './IndividualOfferConfirmationScreen.module.scss'
 
@@ -33,25 +30,6 @@ export const IndividualOfferConfirmationScreen = ({
   return (
     <div className={styles['confirmation-container']}>
       <div>
-        {isPendingOffer ? (
-          <SvgIcon
-            src={fullWaitIcon}
-            alt=""
-            className={styles['pending-icon']}
-          />
-        ) : (
-          <SvgIcon
-            src={fullValidateIcon}
-            alt=""
-            className={styles['validate-icon']}
-          />
-        )}
-        <h2 className={styles['confirmation-title']}>
-          {isPendingOffer
-            ? `Offre en cours de validation`
-            : `Offre créée avec succès !`}
-        </h2>
-
         {isPendingOffer && (
           <p className={styles['confirmation-details']}>
             Nous vérifions actuellement l’éligibilité de votre offre.{' '}

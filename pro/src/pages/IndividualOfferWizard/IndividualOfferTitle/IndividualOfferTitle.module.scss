@@ -1,0 +1,14 @@
+.confirmation-title {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: var(--size-spacing-xs) var(--size-spacing-s);
+  width: 100%; 
+
+  &-icon {
+    display: flex;
+    flex-shrink: 0;
+  }
+}

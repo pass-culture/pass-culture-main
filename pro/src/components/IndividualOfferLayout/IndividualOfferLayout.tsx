@@ -99,7 +99,7 @@ export const IndividualOfferLayout = ({
           ))}
       </div>
 
-      {offer && (
+      {offer && mode !== OFFER_WIZARD_MODE.READ_ONLY && (
         <p className={styles['offer-title']}>
           {offer.name}
           {offer.isHeadlineOffer && (
