@@ -28,7 +28,7 @@ import {
   isCollectiveAndIndividualRevenue,
   isCollectiveRevenue,
 } from '@/pages/Reimbursements/Income/utils'
-import { Panel } from '@/ui-kit/Panel/Panel'
+import { Card } from '@/ui-kit/Card/Card'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
@@ -117,20 +117,20 @@ export const IncomeCard = ({
 
   if (isIncomeLoading) {
     return (
-      <Panel>
+      <Card>
         <Spinner />
-      </Panel>
+      </Card>
     )
   }
 
   if (incomeApiError) {
     return (
-      <Panel>
+      <Card>
         <Banner
           title="Impossible de charger les données de chiffre d'affaires"
           variant={BannerVariants.ERROR}
         />
-      </Panel>
+      </Card>
     )
   }
 
@@ -170,23 +170,18 @@ export const IncomeCard = ({
       })
 
   const cardHeader = (
-    <header>
-      <h3 className={styles['income-card-title']}>Remboursement</h3>
-      <p className={styles['income-card-subtitle']}>Individuel et collectif</p>
-    </header>
+    <Card.Header title="Remboursement" subtitle="Individuel et collectif" />
   )
 
   return (
-    <Panel>
-      <div className={styles['income-card']}>
-        {!isEmptyState && cardHeader}
+    <Card>
+      {!isEmptyState && cardHeader}
 
-        <div className={styles['income-card-banner']}>
-          <BankAccountBanner
-            venueId={venueId}
-            bankAccountStatus={bankAccountStatus}
-          />
-        </div>
+      <Card.Content>
+        <BankAccountBanner
+          venueId={venueId}
+          bankAccountStatus={bankAccountStatus}
+        />
 
         {isEmptyState && (
           <div className={styles['income-card-empty']}>
@@ -205,24 +200,27 @@ export const IncomeCard = ({
 
         {bankAccountStatus === SimplifiedBankAccountStatus.VALID &&
           total > 0 && (
-            <div className={styles['income-card-content']}>
-              <div className={styles['income-card-amount']}>
-                <p className={styles['income-card-label']}>
-                  Chiffre d'affaire total {currentYear}
-                </p>
-                <Tag variant={TagVariant.SUCCESS} label={formattedTotal} />
-              </div>
-              <Button
-                as="a"
-                to="/remboursements/revenus"
-                variant={ButtonVariant.SECONDARY}
-                color={ButtonColor.NEUTRAL}
-                size={ButtonSize.DEFAULT}
-                label="Accéder à la gestion financière"
-              />
+            <div className={styles['income-card-amount']}>
+              <p className={styles['income-card-label']}>
+                Chiffre d'affaire total {currentYear}
+              </p>
+              <Tag variant={TagVariant.SUCCESS} label={formattedTotal} />
             </div>
           )}
-      </div>
-    </Panel>
+      </Card.Content>
+
+      {bankAccountStatus === SimplifiedBankAccountStatus.VALID && total > 0 && (
+        <Card.Footer>
+          <Button
+            as="a"
+            to="/remboursements/revenus"
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            size={ButtonSize.DEFAULT}
+            label="Accéder à la gestion financière"
+          />
+        </Card.Footer>
+      )}
+    </Card>
   )
 }

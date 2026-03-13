@@ -18,14 +18,22 @@ export const OnboardingOffersChoice = () => {
 
   return (
     <div className={styles['card-container']}>
-      <Card
-        imageSrc={individuelle}
-        title={
-          <h3 className={styles['card-title']}>
-            Sur l’application mobile à destination des jeunes
-          </h3>
-        }
-        actions={
+      <Card>
+        <img src={individuelle} alt="" className={styles['card-image']} />
+        <Card.Header
+          title="Sur l’application mobile à destination des jeunes"
+          titleTag="h3"
+        />
+        <Card.Content>
+          <span>
+            Vos offres seront visibles par{' '}
+            <strong className={styles['card-description-highlight']}>
+              + de 4 millions de jeunes{' '}
+            </strong>
+            inscrits sur l’application mobile pass Culture.
+          </span>
+        </Card.Content>
+        <Card.Footer>
           <Button
             as="a"
             variant={ButtonVariant.PRIMARY}
@@ -34,23 +42,22 @@ export const OnboardingOffersChoice = () => {
             fullWidth
             label="Commencer"
           />
-        }
-      >
-        Vos offres seront visibles par{' '}
-        <strong className={styles['card-description-highlight']}>
-          + de 4 millions de jeunes{' '}
-        </strong>
-        inscrits sur l’application mobile pass Culture.
+        </Card.Footer>
       </Card>
 
-      <Card
-        imageSrc={collective}
-        title={
-          <h3 className={styles['card-title']}>
-            Sur ADAGE à destination des enseignants
-          </h3>
-        }
-        actions={
+      <Card>
+        <img src={collective} alt="" className={styles['card-image']} />
+        <Card.Header title="Sur ADAGE à destination des enseignants" />
+        <Card.Content>
+          <span>
+            Vos offres seront visibles{' '}
+            <strong className={styles['card-description-highlight']}>
+              par tous les enseignants
+            </strong>{' '}
+            des collèges et lycées publics et privés sous contrat.
+          </span>
+        </Card.Content>
+        <Card.Footer>
           <Dialog
             title=""
             onCancel={() => setShowModal(false)}
@@ -73,13 +80,7 @@ export const OnboardingOffersChoice = () => {
           >
             <OnboardingCollectiveModal />
           </Dialog>
-        }
-      >
-        Vos offres seront visibles{' '}
-        <strong className={styles['card-description-highlight']}>
-          par tous les enseignants
-        </strong>{' '}
-        des collèges et lycées publics et privés sous contrat.
+        </Card.Footer>
       </Card>
     </div>
   )
