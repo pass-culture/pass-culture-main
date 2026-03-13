@@ -1,24 +1,11 @@
 import type {
   GetOffererAddressesResponseModel,
   GetOffererVenueResponseModel,
-  ListOffersVenueResponseModel,
   LocationResponseModel,
+  VenueListItemLiteResponseModel,
   VenueListItemResponseModel,
 } from '@/apiClient/v1'
 import type { SelectOption } from '@/commons/custom_types/form'
-
-export const computeVenueDisplayName = (
-  venue:
-    | VenueListItemResponseModel
-    | ListOffersVenueResponseModel
-    | GetOffererVenueResponseModel
-): string => {
-  if (venue.isVirtual && 'offererName' in venue) {
-    return `${venue.offererName} - Offre numérique`
-  } else {
-    return venue.publicName
-  }
-}
 
 type MinimalAddressResponseModelToDisplay = Pick<
   LocationResponseModel,
@@ -43,12 +30,16 @@ const sortAlphabeticallyByLabel = (a: SelectOption, b: SelectOption) => {
 }
 
 export const formatAndOrderVenues = (
-  venues: (VenueListItemResponseModel | GetOffererVenueResponseModel)[]
+  venues: (
+    | VenueListItemLiteResponseModel
+    | GetOffererVenueResponseModel
+    | VenueListItemResponseModel
+  )[]
 ) =>
   venues
     .map((venue) => ({
       value: venue.id.toString(),
-      label: computeVenueDisplayName(venue),
+      label: venue.publicName,
     }))
     .sort(sortAlphabeticallyByLabel)
 

@@ -24,10 +24,30 @@ def test_loads_all_venues_ids_and_names(client):
     assert "venues" in response.json
     assert len(response.json["venues"]) == len(venues)
 
-    expected = [{"id": v.id, "name": v.name} for v in venues]
-    expected = sorted(expected, key=lambda item: item["id"])
+    expected = [
+        {
+            "id": venue.id,
+            "managingOffererId": venue.managingOffererId,
+            "publicName": venue.publicName,
+            "location": {
+                "banId": "75102_7560_00001",
+                "city": "Paris",
+                "departmentCode": "75",
+                "id": venue.offererAddress.addressId,
+                "inseeCode": "75102",
+                "isManualEdition": False,
+                "isVenueLocation": True,
+                "label": venue.name,
+                "latitude": 48.87055,
+                "longitude": 2.34765,
+                "postalCode": "75002",
+                "street": venue.offererAddress.address.street,
+            },
+        }
+        for venue in venues
+    ]
 
-    assert expected == sorted(response.json["venues"], key=lambda item: item["id"])
+    assert sorted(response.json["venues"], key=lambda item: item["id"]) == sorted(expected, key=lambda item: item["id"])
 
 
 def test_invalid_offerer_id(client):

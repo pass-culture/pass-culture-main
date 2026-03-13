@@ -520,11 +520,50 @@ class EditVenueCollectiveDataBodyModel(BaseModel):
 
 class VenueListItemLiteResponseModel(BaseModel):
     id: int
-    name: str
+    location: address_serialize.LocationResponseModel | None
+    managingOffererId: int
+    publicName: str
+
+    @classmethod
+    def build(cls, venue: offerers_models.Venue) -> "VenueListItemLiteResponseModel":
+        return cls(
+            id=venue.id,
+            location=cls.build_address(venue),
+            managingOffererId=venue.managingOffererId,
+            publicName=venue.publicName,
+        )
+
+    @classmethod
+    def build_address(cls, venue: offerers_models.Venue) -> address_serialize.LocationResponseModel | None:
+        offerer_address = venue.offererAddress
+        if not offerer_address:
+            return None
+
+        data: dict[str, typing.Any] = {
+            "id": offerer_address.addressId,
+            "id_oa": offerer_address.id,
+            "banId": offerer_address.address.banId,
+            "inseeCode": offerer_address.address.inseeCode,
+            "longitude": offerer_address.address.longitude,
+            "latitude": offerer_address.address.latitude,
+            "postalCode": offerer_address.address.postalCode,
+            "street": offerer_address.address.street,
+            "city": offerer_address.address.city,
+            "label": venue.publicName,
+            "isManualEdition": offerer_address.address.isManualEdition,
+            "departmentCode": offerer_address.address.departmentCode,
+            "isVenueLocation": True,
+        }
+
+        return address_serialize.LocationResponseModel(**data)
 
 
 class GetVenueListLiteResponseModel(BaseModel):
     venues: list[VenueListItemLiteResponseModel]
+
+    @classmethod
+    def build(cls, venues: list[offerers_models.Venue]) -> "GetVenueListLiteResponseModel":
+        return cls(venues=[VenueListItemLiteResponseModel.build(venue) for venue in venues])
 
 
 class VenueListQueryModel(BaseModel):

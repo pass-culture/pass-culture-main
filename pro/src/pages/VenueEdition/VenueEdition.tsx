@@ -3,16 +3,16 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
-import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import {
+  GET_VENUE_QUERY_KEY,
+  GET_VENUES_QUERY_KEY,
+} from '@/commons/config/swrQueryKeys'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { setSelectedPartnerPageId } from '@/commons/store/nav/reducer'
-import {
-  ensureSelectedVenue,
-  ensureVenues,
-} from '@/commons/store/user/selectors'
+import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import { setSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenueId'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -42,7 +42,11 @@ export const VenueEdition = (): JSX.Element | null => {
   const selectedVenueId = withSwitchVenueFeature
     ? selectedVenueFromStore.id
     : selectedVenueIdFromQueryParams
-  const venues = useAppSelector(ensureVenues)
+
+  const venuesQuery = useSWR(
+    withSwitchVenueFeature ? null : [GET_VENUES_QUERY_KEY],
+    () => api.getVenues()
+  )
 
   const venueQuery = useSWR(
     withSwitchVenueFeature ? null : [GET_VENUE_QUERY_KEY, selectedVenueId],
@@ -59,7 +63,9 @@ export const VenueEdition = (): JSX.Element | null => {
       : 'address'
 
   const venuesOptions: SelectOption[] = formatAndOrderVenues(
-    venues.filter((venue) => venue.hasCreatedOffer && venue.isPermanent) ?? []
+    (venuesQuery.data?.venues ?? []).filter(
+      (venue) => venue.hasCreatedOffer && venue.isPermanent
+    )
   ).map((venue) => ({
     value: String(venue.value),
     label: venue.label,

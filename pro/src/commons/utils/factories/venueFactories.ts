@@ -2,6 +2,7 @@ import type {
   GetOfferVenueResponseModel,
   GetVenueManagingOffererResponseModel,
   GetVenueResponseModel,
+  VenueListItemLiteResponseModel,
   VenueTypeResponseModel,
 } from '@/apiClient/v1'
 
@@ -107,6 +108,26 @@ const makeVenueTypeResponseModel = <T extends Partial<VenueTypeResponseModel>>(
     // Auto-generated `VenueTypeCode` enum is completely wrong:
     // real keys are those declared in api/src/pcapi/core/offerers/schemas.py
     value: 'OTHER',
+  }
+
+  return {
+    ...fake,
+    ...override,
+  }
+}
+
+export const makeVenueListItemLiteResponseModel = <
+  T extends PartialExcept<VenueListItemLiteResponseModel, 'id'>,
+>(
+  override: T
+): Omit<VenueListItemLiteResponseModel, keyof T> & T => {
+  const offererId = override.managingOffererId ?? 1
+
+  const fake: VenueListItemLiteResponseModel = {
+    id: override.id,
+    location: null,
+    managingOffererId: offererId,
+    publicName: `Nom public de la structure ${override.id}`,
   }
 
   return {
