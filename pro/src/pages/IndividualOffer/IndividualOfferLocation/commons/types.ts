@@ -1,4 +1,4 @@
-import type { AddressFormValues } from '@/commons/core/shared/types'
+import type { FlatAddressFormValues } from '@/commons/core/shared/types'
 import type { AnyObject } from '@/commons/utils/types'
 
 /**
@@ -12,7 +12,7 @@ export type NullableIfNonBoolean<T extends AnyObject> = {
 }
 
 // TODO (igabriele, 2025-08-25): We can get rid of `isManualEdition` and `offerLocation` to only use `isVenueAddress` + `banId` (Frontend + Backend).
-export interface PhysicalAddressSubformValues extends AddressFormValues {
+export interface PhysicalAddressSubformValues extends FlatAddressFormValues {
   isManualEdition: boolean
   isVenueLocation: boolean
   label: string | null

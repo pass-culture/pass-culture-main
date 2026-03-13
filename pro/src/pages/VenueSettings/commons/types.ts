@@ -1,6 +1,6 @@
-import type { AddressFormValues } from '@/commons/core/shared/types'
+import type { FlatAddressFormValues } from '@/commons/core/shared/types'
 
-export interface VenueSettingsFormValues extends AddressFormValues {
+export interface VenueSettingsFormValues extends FlatAddressFormValues {
   bookingEmail: string
   comment: string
   name: string

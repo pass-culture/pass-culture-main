@@ -5,19 +5,15 @@ import type { AdresseData } from '@/apiClient/adresse/types.ts'
 import type { VenueListItemResponseModel } from '@/apiClient/v1'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
+import { AddressFields } from '@/components/AddressFields/AddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import fullBackIcon from '@/icons/full-back.svg'
-import fullNextIcon from '@/icons/full-next.svg'
 import { OFFER_LOCATION } from '@/pages/IndividualOffer/commons/constants'
-import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
+import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
 
 import { EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES } from '../../../commons/constants'
 import type { LocationFormValues } from '../../../commons/types'
-import { AddressManualAdapter } from './AddressManualAdapter'
 import styles from './PhysicalLocationSubform.module.scss'
 
 export interface PhysicalLocationSubformProps {
@@ -130,7 +126,6 @@ export const PhysicalLocationSubform = ({
           disabled={isDisabled}
         />
       </FormLayout.Row>
-
       {!isVenueAddress && (
         <>
           <FormLayout.Row mdSpaceAfter>
@@ -140,45 +135,22 @@ export const PhysicalLocationSubform = ({
               disabled={isDisabled}
             />
           </FormLayout.Row>
-          <FormLayout.Row mdSpaceAfter>
-            {/*
-              TODO (igabriele, 2025-08-25): Investigate ref issue in `AddressSelect`.
 
-              We can't use `register` here because it produces a warning in console:
-              `Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?`
-            */}
-            <AddressSelect
-              {...register('location.addressAutocomplete')}
-              className={styles['location-field']}
-              disabled={isManualEdition || isDisabled}
-              error={errors.location?.addressAutocomplete?.message}
-              label="Adresse postale"
-              onAddressChosen={updateAddressFromAutocomplete}
-            />
-          </FormLayout.Row>
-
-          <FormLayout.Row>
-            <Button
-              type="button"
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
-              icon={isManualEdition ? fullBackIcon : fullNextIcon}
-              onClick={toggleIsManualEdition}
-              disabled={isDisabled}
-              label={
-                isManualEdition
-                  ? `Revenir à la sélection automatique`
-                  : `Vous ne trouvez pas votre adresse ?`
-              }
-            />
-          </FormLayout.Row>
-
-          {isManualEdition && (
-            // Use adapter to map flat field expectations of AddressManual to nested address.* structure
-            <AddressManualAdapter
-              readOnlyFields={readOnlyFieldsForAddressManual}
-            />
-          )}
+          <AddressFields
+            addressRegister={register('location.addressAutocomplete')}
+            className={styles['location-field']}
+            disabled={isDisabled}
+            error={errors.location?.addressAutocomplete?.message}
+            onAddressChosen={updateAddressFromAutocomplete}
+            renderManual={() => (
+              <AddressManual
+                readOnlyFields={readOnlyFieldsForAddressManual}
+                prefix="location."
+              />
+            )}
+            manual={isManualEdition}
+            onManualChange={toggleIsManualEdition}
+          />
         </>
       )}
     </>
