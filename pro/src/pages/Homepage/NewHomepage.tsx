@@ -26,6 +26,7 @@ import {
 } from './commons/utils'
 import { IncomeCard } from './components/IncomeCard/IncomeCard'
 import { PartnerPageCard } from './components/PartnerPageCard/PartnerPageCard'
+import { PartnerPageVariant } from './components/types'
 import styles from './NewHomepage.module.scss'
 
 export const NewHomepage = (): JSX.Element => {
@@ -152,7 +153,7 @@ export const NewHomepage = (): JSX.Element => {
               offererId={selectedVenue.managingOfferer.id}
               venueBannerUrl={selectedVenue.bannerUrl}
               venueBannerMeta={selectedVenue.bannerMeta}
-              variant="individual"
+              variant={PartnerPageVariant.INDIVIDUAL}
             />
             {shouldDisplayWebinarCard && (
               <div>
@@ -240,7 +241,7 @@ export const NewHomepage = (): JSX.Element => {
                   offererId={selectedVenue.managingOfferer.id}
                   venueBannerUrl={selectedVenue.bannerUrl}
                   venueBannerMeta={selectedVenue.bannerMeta}
-                  variant="collective"
+                  variant={PartnerPageVariant.COLLECTIVE}
                 />
                 {shouldDisplayCollectiveWebinarCard && (
                   <div>

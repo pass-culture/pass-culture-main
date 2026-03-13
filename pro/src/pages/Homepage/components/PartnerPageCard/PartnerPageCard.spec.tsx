@@ -9,6 +9,7 @@ import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactor
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
+import { PartnerPageVariant } from '../types'
 import { PartnerPageCard } from './PartnerPageCard'
 
 const mockLogEvent = vi.fn()
@@ -36,7 +37,7 @@ const baseVenue = makeGetVenueResponseModel({
 })
 
 const renderPartnerPageCard = (
-  variant: 'individual' | 'collective' = 'individual',
+  variant: PartnerPageVariant = PartnerPageVariant.INDIVIDUAL,
   venueOverrides?: Partial<GetVenueResponseModel>
 ) => {
   const venue = makeGetVenueResponseModel({
@@ -57,7 +58,7 @@ const renderPartnerPageCard = (
 
 describe('PartnerPageCard', () => {
   it('should render the partner page module with the venue information', () => {
-    renderPartnerPageCard('individual', {
+    renderPartnerPageCard(PartnerPageVariant.INDIVIDUAL, {
       bannerMeta: {
         original_image_url: 'MyFirstImage',
         crop_params: {
@@ -132,13 +133,13 @@ describe('PartnerPageCard', () => {
 
   describe('collective variant', () => {
     it('should render the correct title for collective variant', () => {
-      renderPartnerPageCard('collective')
+      renderPartnerPageCard(PartnerPageVariant.COLLECTIVE)
 
       expect(screen.getByText('Votre page sur ADAGE')).toBeVisible()
     })
 
     it('should render venue edition link', () => {
-      renderPartnerPageCard('collective')
+      renderPartnerPageCard(PartnerPageVariant.COLLECTIVE)
 
       expect(
         screen.getByRole('link', { name: 'Compléter ma page' })
@@ -149,7 +150,7 @@ describe('PartnerPageCard', () => {
     })
 
     it('should not render venue page preview link', () => {
-      renderPartnerPageCard('collective')
+      renderPartnerPageCard(PartnerPageVariant.COLLECTIVE)
 
       expect(
         screen.queryByRole('link', { name: /Voir ma page/ })
