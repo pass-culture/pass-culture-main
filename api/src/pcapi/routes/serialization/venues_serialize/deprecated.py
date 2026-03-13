@@ -53,7 +53,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
             "isCaledonian": venue.is_caledonian,
             "isActive": venue.managingOfferer.isActive,
             "isValidated": venue.managingOfferer.isValidated,
-            "bankAccountStatus": utils.parse_venue_bank_account_status(venue),
+            "bankAccountStatus": utils.parse_bank_account_status(venue.current_bank_account),
             "hasNonFreeOffers": venue.id in venues_with_non_free_offers,
         }
 

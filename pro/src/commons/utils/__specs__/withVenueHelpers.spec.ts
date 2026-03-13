@@ -4,7 +4,6 @@ import { withVenueHelpers } from '../withVenueHelpers'
 describe('withVenueHelpers', () => {
   const baseLocation = {
     id: 1,
-    id_oa: 1,
     latitude: 1.23,
     longitude: 4.56,
     isManualEdition: false,

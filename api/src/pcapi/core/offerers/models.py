@@ -444,7 +444,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         "AccessibilityProvider", foreign_keys="AccessibilityProvider.venueId", back_populates="venue", uselist=False
     )
 
-    openingHours: sa_orm.Mapped[list["OpeningHours"]] = sa_orm.relationship(
+    openingHours: sa_orm.Mapped[list["OpeningHours"]|None] = sa_orm.relationship(
         "OpeningHours", foreign_keys="OpeningHours.venueId", back_populates="venue", passive_deletes=True
     )
 

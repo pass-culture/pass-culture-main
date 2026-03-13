@@ -91,116 +91,40 @@ class GetVenueResponseGetterDict(pydantic_v1.utils.GetterDict):
     def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
         venue: offerers_models.Venue = self._obj
 
-        if key == "externalAccessibilityData":
-            if not venue.accessibilityProvider:
-                return None
-            accessibility_infos = venue.accessibilityProvider.externalAccessibilityData
-            return acceslibre_serializers.ExternalAccessibilityDataModel.from_accessibility_infos(accessibility_infos)
-        if key == "externalAccessibilityUrl":
-            if not venue.accessibilityProvider:
-                return None
-            return venue.accessibilityProvider.externalAccessibilityUrl
-        if key == "externalAccessibilityId":
-            if not venue.accessibilityProvider:
-                return None
-            return venue.accessibilityProvider.externalAccessibilityId
-
-        if key == "bankAccount":
-            return venue.current_bank_account
-
-        if key == "collectiveLegalStatus":
-            return venue.venueEducationalStatus
-
-        if key == "hasAdageId":
-            return bool(venue.adageId)
-
-        if key == "pricingPoint":
-            now = date_utils.get_naive_utc_now()
-            for pricing_link in venue.pricing_point_links:
-                if pricing_link.timespan.lower <= now and (
-                    not pricing_link.timespan.upper or pricing_link.timespan.upper > now
-                ):
-                    return pricing_link.pricingPoint
-            return None
-
-        if key == "location":
-            offerer_address = venue.offererAddress
-            if not offerer_address:
-                return None
-            return address_serialize.LocationResponseModel(
-                **address_serialize.retrieve_address_info_from_oa(offerer_address),
-                label=venue.publicName,
-                isVenueLocation=True,
-            )
-
-        if key == "collectiveDmsApplications":
-            return [
-                venue_collective_serialize.DMSApplicationForEAC.from_orm(collective_ds_application, venue.id)
-                for collective_ds_application in venue.collectiveDmsApplications
-            ]
-
-        if key == "isCaledonian":
-            return venue.is_caledonian
-
         if key == "openingHours":
             opening_hours = venue.openingHours
             if opening_hours and isinstance(opening_hours, list):
                 return opening_hours_api.format_opening_hours(opening_hours)
             return typing.cast(opening_hours_schemas.WeekdayOpeningHoursTimespans | None, opening_hours)
 
-        if key == "venueType":
-            value = venue.venueTypeCode
-            label = value.value if value else ""
-            return VenueTypeResponseModel(value=value.name if value else "", label=label)
-
-        if key == "isActive":
-            return venue.managingOfferer.isActive
-
-        if key == "isValidated":
-            return venue.managingOfferer.isValidated
-
-        if key == "allowedOnAdage":
-            return venue.managingOfferer.allowedOnAdage
-
-        if key == "bankAccountStatus":
-            return venue_finance_serialize.parse_venue_bank_account_status(venue)
-
-        if key == "hasNonFreeOffers":
-            # avoid some tricky circular import: schemas is not expected
-            # to import a related repository module.
-            # from pcapi.core.offerers.repository import venues_have_non_free_offers
-
-            # return venue.id in venues_have_non_free_offers([venue.id])
-            # FIXME(jbaudet 13/11/2025): use venues_have_non_free_offers once
-            # it has been fixed
-            return True
-
-        if key == "hasPartnerPage":
-            return venue.has_partner_page
-
-        if key == "activity":
-            if not venue.activity or venue.activity == offerers_models.Activity.NOT_ASSIGNED:
-                return None
-            return offerers_models.DisplayableActivity[venue.activity.name]
-
-        if key == "canDisplayHighlights":
-            return venue.can_display_highlights
-
-        if key == "hasNonDraftOffers":
-            return venue.has_non_draft_offers
-
         return super().get(key, default)
 
 
-class GetVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
+# TODO: move this elsewhere
+def get_current_pricing_point(venue: offerers_models.Venue):
+    now = date_utils.get_naive_utc_now()
+    for pricing_link in venue.pricing_point_links:
+        if pricing_link.timespan.lower <= now and (
+            not pricing_link.timespan.upper or pricing_link.timespan.upper > now
+        ):
+            return pricing_link.pricingPoint
+    return None
+
+
+# TODO(PydanticV2): remove after pydantic migration to V2 is finished
+class LocationResponseModel(address_serialize.LocationResponseModelV2):
+    pass
+
+
+class GetVenueResponseModel(HttpBodyModel, AccessibilityComplianceMixin):
     isVirtual: bool
     name: str
     bannerUrl: str | None
     contact: offerers_schemas.VenueContactModel | None
     description: offerers_schemas.VenueDescription | None
-    externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
-    externalAccessibilityUrl: str | None
-    externalAccessibilityId: str | None
+    externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None = None
+    externalAccessibilityUrl: str | None = None
+    externalAccessibilityId: str | None = None
     isOpenToPublic: bool
     isPermanent: bool | None
     publicName: str
@@ -208,19 +132,18 @@ class GetVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     activity: offerers_models.DisplayableActivity | None
     dateCreated: datetime
     id: int
-    bannerMeta: venue_banners_serialize.BannerMetaModel | None
+    # bannerMeta: venue_banners_serialize.BannerMetaModel | None
     bookingEmail: str | None
     comment: str | None
-    managingOfferer: GetVenueManagingOffererResponseModel
+    # managingOfferer: GetVenueManagingOffererResponseModel
     pricingPoint: venue_finance_serialize.GetVenuePricingPointResponseModel | None
     siret: str | None
-    venueType: VenueTypeResponseModel
     collectiveDescription: str | None
     collectiveStudents: list[educational_models.StudentLevels] | None
     collectiveWebsite: str | None
-    collectiveDomains: list[venue_collective_serialize.GetVenueDomainResponseModel]
+    # collectiveDomains: list[venue_collective_serialize.GetVenueDomainResponseModel]
     collectiveInterventionArea: list[str] | None
-    collectiveLegalStatus: venue_collective_serialize.LegalStatusResponseModel | None
+    # collectiveLegalStatus: venue_collective_serialize.LegalStatusResponseModel | None
     collectiveNetwork: list[str] | None
     collectiveAccessInformation: str | None
     collectivePhone: str | None
@@ -229,42 +152,109 @@ class GetVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     hasAdageId: bool
     adageInscriptionDate: datetime | None
     hasOffers: bool
-    location: address_serialize.LocationResponseModel | None
+    location: address_serialize.LocationResponseModelV2
     hasActiveIndividualOffer: bool
-    isCaledonian: bool
-    openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None
+    is_caledonian: bool
+    openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespansV2 | None
     isActive: bool
     isValidated: bool
     allowedOnAdage: bool
     bankAccountStatus: venue_finance_serialize.SimplifiedBankAccountStatus | None
-    hasNonFreeOffers: bool
-    hasPartnerPage: bool
-    canDisplayHighlights: bool
-    hasNonDraftOffers: bool
+    has_non_free_offers: bool = True  # FIXME(jbaudet 13/11/2025): use venues_have_non_free_offers once fixed
+    has_partner_page: bool
+    can_display_highlights: bool
+    has_non_draft_offers: bool
     volunteeringUrl: str | None = pydantic_v1.Field(...)
 
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
-        getter_dict = GetVenueResponseGetterDict
-
-    @validator("bannerMeta")
     @classmethod
-    def validate_banner_meta(
-        cls, meta: venue_banners_serialize.BannerMetaModel | None, values: dict
-    ) -> venue_banners_serialize.BannerMetaModel | None:
-        """
-        Old venues might have a banner url without banner meta, or an
-        incomplete banner meta.
-        """
-        # do not get a default banner meta object if there is no banner
-        if not values["bannerUrl"]:
-            return None
+    def build(cls, venue: offerers_models.Venue):
+        external_accessibility_data = None
+        external_accessibility_url = None
+        external_accessibility_id = None
+        if venue.accessibilityProvider:
+            external_accessibility_data =  acceslibre_serializers.ExternalAccessibilityDataModelV2.from_accessibility_infos(venue.accessibilityProvider.externalAccessibilityData)
+            external_accessibility_url = venue.accessibilityProvider.externalAccessibilityUrl
+            external_accessibility_id = venue.accessibilityProvider.externalAccessibilityId
 
-        if not meta:
-            return venue_banners_serialize.BannerMetaModel()
+        if venue.openingHours and isinstance(venue.openingHours, list):
+            opening_hours = opening_hours_api.format_opening_hours_v2(venue.openingHours)
+        opening_hours = typing.cast(opening_hours_schemas.WeekdayOpeningHoursTimespansV2 | None, venue.openingHours)
 
-        return meta
+        return cls(
+            activity=offerers_models.DisplayableActivity[venue.activity.name],
+            bannerUrl=venue.bannerUrl,
+            isVirtual=venue.isVirtual,
+            name=venue.name,
+            contact=venue.contact,
+            description=venue.description,
+            external_accessibility_data=external_accessibility_data,
+            external_accessibility_url=external_accessibility_url,
+            external_accessibility_id=external_accessibility_id,
+            isOpenToPublic=venue.isOpenToPublic,
+            isPermanent=venue.isPermanent,
+            publicName=venue.publicName,
+            withdrawalDetails=venue.withdrawalDetails,
+            dateCreated=venue.dateCreated,
+            id=venue.id,
+            #=#,
+            bookingEmail=venue.bookingEmail,
+            comment=venue.comment,
+            #=#,
+            pricingPoint=get_current_pricing_point(venue),
+            siret=venue.siret,
+            collectiveDescription=venue.collectiveDescription,
+            collectiveStudents=venue.collectiveStudents,
+            collectiveWebsite=venue.collectiveWebsite,
+            #=#,
+            collectiveInterventionArea=venue.collectiveInterventionArea,
+            # collectiveLegalStatus=venue_collective_serialize.LegalStatusResponseModel(venue.venueEducationalStatus),
+            collectiveNetwork=venue.collectiveNetwork,
+            collectiveAccessInformation=venue.collectiveAccessInformation,
+            collectivePhone=venue.collectivePhone,
+            collectiveEmail=venue.collectiveEmail,
+            collectiveDmsApplications=[
+                venue_collective_serialize.DMSApplicationForEAC.build(collective_ds_application, venue.id)
+                for collective_ds_application in venue.collectiveDmsApplications
+            ],
+            hasAdageId=bool(venue.hasAdageId),
+            adageInscriptionDate=venue.adageInscriptionDate,
+            hasOffers=venue.hasOffers,
+            location=address_serialize.LocationResponseModelV2.build(
+                offerer_address=venue.offererAddress,
+                label=venue.publicName,
+                is_venue_location=True,
+            ),
+            hasActiveIndividualOffer=venue.hasActiveIndividualOffer,
+            is_caledonian=venue.is_caledonian,
+            opening_hours=opening_hours,
+            isActive=venue.managingOfferer.isActive,
+            isValidated=venue.managingOfferer.isValidated,
+            allowedOnAdage=venue.managingOfferer.allowedOnAdage,
+            bankAccountStatus=venue_finance_serialize.parse_bank_account_status(venue.current_bank_account),
+            has_non_free_offers=venue.has_non_free_offers,
+            has_partner_page=venue.has_partner_page,
+            can_display_highlights=venue.can_display_highlights,
+            has_non_draft_offers=venue.has_non_draft_offers,
+            volunteeringUrl=venue.volunteeringUrl,
+        )
+
+    # @validator("bannerMeta")
+    # @classmethod
+    # def validate_banner_meta(
+    #     cls, meta: venue_banners_serialize.BannerMetaModel | None, values: dict
+    # ) -> venue_banners_serialize.BannerMetaModel | None:
+    #     """
+    #     Old venues might have a banner url without banner meta, or an
+    #     incomplete banner meta.
+    #     """
+    #     # do not get a default banner meta object if there is no banner
+    #     if not values["bannerUrl"]:
+    #         return None
+
+    #     if not meta:
+    #         return venue_banners_serialize.BannerMetaModel()
+
+    #     return meta
 
 
 class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
