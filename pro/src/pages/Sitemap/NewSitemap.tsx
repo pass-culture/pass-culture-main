@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router'
 
-import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectSelectedPartnerPageId } from '@/commons/store/nav/selector'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
@@ -171,7 +171,7 @@ export const NewSitemap = () => {
   }
 
   return (
-    <BasicLayout mainHeading="Plan du site" isFullPage={true}>
+    <FullLayout mainHeading="Plan du site">
       <Button
         onClick={() => navigate(-1)}
         color={ButtonColor.NEUTRAL}
@@ -183,7 +183,7 @@ export const NewSitemap = () => {
       <ul className={styles['sitemap-list']} data-testid="sitemap">
         {renderSitemapItems(sitemapLinks)}
       </ul>
-    </BasicLayout>
+    </FullLayout>
   )
 }
 

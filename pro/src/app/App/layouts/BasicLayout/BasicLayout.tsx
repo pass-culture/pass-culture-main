@@ -39,7 +39,6 @@ interface BasicLayoutProps {
   /**
    * Optional: display the Lateral Panel
    */
-  isFullPage?: boolean
 }
 
 export const BasicLayout = ({
@@ -48,7 +47,6 @@ export const BasicLayout = ({
   mainSubHeading,
   isStickyActionBarInChild = false,
   isAdminArea = false,
-  isFullPage = false,
 }: BasicLayoutProps) => {
   const currentUser = useAppSelector(selectCurrentUser)
   const [isLateralPanelOpen, setIsLateralPanelOpen] = useState(false)
@@ -73,32 +71,24 @@ export const BasicLayout = ({
         }}
         ref={openButtonRef}
         isAdminArea={isAdminArea}
-        disableHomeLink={isFullPage}
       />
-
       <div
         className={cn(styles['page-layout'], {
           [styles['page-layout-connect-as']]: currentUser?.isImpersonated,
         })}
       >
-        {!isFullPage && (
-          <LateralPanel
-            isOpen={isLateralPanelOpen}
-            onToggle={setIsLateralPanelOpen}
-            openButtonRef={openButtonRef}
-            closeButtonRef={closeButtonRef}
-            navPanel={navPanel}
-            isAdminArea={isAdminArea}
-          />
-        )}
+        <LateralPanel
+          isOpen={isLateralPanelOpen}
+          onToggle={setIsLateralPanelOpen}
+          openButtonRef={openButtonRef}
+          closeButtonRef={closeButtonRef}
+          navPanel={navPanel}
+          isAdminArea={isAdminArea}
+        />
         <div id="content-wrapper" className={styles['content-wrapper']}>
           <div className={styles['content-container']}>
             <main id="content" tabIndex={-1}>
-              <div
-                className={
-                  isFullPage ? styles['content-no-side-panel'] : styles.content
-                }
-              >
+              <div className={styles.content}>
                 <MainHeading
                   mainHeading={mainHeading}
                   mainSubHeading={mainSubHeading}

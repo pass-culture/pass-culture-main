@@ -6,10 +6,12 @@ import { NavLink, useLocation } from 'react-router'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import {
   TABLET_MEDIA_QUERY,
   useMediaQuery,
 } from '@/commons/hooks/useMediaQuery'
+import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -48,13 +50,14 @@ export const Header = forwardRef(
       focusCloseButton,
       disableBurgerMenu = false,
       disableHomeLink = false,
-      isUnauthenticated = false,
       isAdminArea = false,
     }: HeaderProps,
     openButtonRef: ForwardedRef<HTMLButtonElement>
   ) => {
     const isProFeedbackEnabled = useActiveFeature('ENABLE_PRO_FEEDBACK')
     const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+
+    const isAuthenticated = useAppSelector(selectCurrentUser)
 
     const { logEvent } = useAnalytics()
     const location = useLocation()
@@ -99,7 +102,7 @@ export const Header = forwardRef(
             </div>
           )}
           <div className={styles['nav-brand']}>
-            {disableHomeLink ? (
+            {!isAuthenticated ? (
               <div className={cn(styles.logo, styles['logo-link-disabled'])}>
                 <SvgIcon
                   alt="Pass Culture pro, l’espace des acteurs culturels"
@@ -126,7 +129,7 @@ export const Header = forwardRef(
             )}
           </div>
           <div className={styles['top-right-menu']}>
-            {!isUnauthenticated && (
+            {isAuthenticated && (
               <>
                 {!withSwitchVenueFeature && (
                   <div className={styles['top-right-menu-links']}>
@@ -165,7 +168,7 @@ export const Header = forwardRef(
                 <HeaderDropdown />
               </>
             )}
-            {isUnauthenticated && (
+            {!isAuthenticated && (
               <Button
                 as="a"
                 to="https://aide.passculture.app/hc/fr"
