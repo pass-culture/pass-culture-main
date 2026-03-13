@@ -60,14 +60,16 @@
     {% endif %}
     <td>{{ booking.deposit | format_active_deposit }}</td>
     <td>{{ booking.validationAuthorType | format_booking_validation_author_type }}</td>
-    <td class="text-center">
-      {% if booking.validated_incident_id %}
-        <a href="{{ url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=booking.validated_incident_id) }}"
-           class=""><i class="bi bi-exclamation-triangle-fill text-danger fs-3"
-   data-bs-toggle="tooltip"
-   data-bs-placement="top"
-   data-bs-title="Visualiser l'incident"></i></a>
-      {% endif %}
+    <td>
+      {% for booking_finance_incident in booking.incidents | sort(attribute="incidentId", reverse=True) %}
+        {% set incident = booking_finance_incident.incident %}
+        <a href="{{ url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=incident.id) }}"
+           data-bs-toggle="tooltip"
+           data-bs-placement="top"
+           data-bs-title="{{ incident.status | format_finance_incident_status }}">
+          {{ incident.status | format_finance_incident_status_badge(text=incident.kind | format_finance_incident_type_str) }}
+        </a>
+      {% endfor %}
     </td>
     <td data-pc-sort-table-value="{{ booking.dateCreated.timestamp() }}">
       {{ booking.dateCreated | format_date_time(booking.stock.offer.address) }}

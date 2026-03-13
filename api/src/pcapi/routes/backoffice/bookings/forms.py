@@ -83,7 +83,7 @@ class BaseBookingListForm(FlaskForm):
         endpoint="backoffice_web.autocomplete_cashflow_batches",
     )
     has_incident = fields.PCSelectMultipleField(
-        "Évènement comptable",
+        "Incident comptable",
         choices=(("true", "Avec incident"), ("false", "Sans incident")),
     )
 
