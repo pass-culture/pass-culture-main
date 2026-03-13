@@ -12,6 +12,7 @@ export enum IconPositionEnum {
 export enum ButtonColor {
   BRAND = 'brand',
   NEUTRAL = 'neutral',
+  DANGER = 'danger',
 }
 
 export enum ButtonSize {

@@ -149,24 +149,6 @@
       @include hover-state {
         color: var(--color-text-brand-primary-hover);
       }
-
-      @include disabled-state {
-        color: var(--color-text-disabled);
-      }
-    }
-
-    &.btn-primary,
-    &.btn-secondary {
-      @include disabled-state {
-        background-color: var(--color-background-disabled);
-        color: var(--color-text-disabled);
-
-        @include button-border(var(--color-border-disabled));
-
-        .btn-icon {
-          color: var(--color-icon-disabled);
-        }
-      }
     }
   }
 
@@ -184,10 +166,6 @@
         background-color: var(--color-background-brand-primary-hover);
 
         @include button-border(var(--color-border-brand-primary-hover));
-      }
-
-      @include disabled-state {
-        opacity: 0.4;
       }
     }
 
@@ -210,13 +188,6 @@
           color: var(--color-text-brand-primary-hover);
         }
       }
-
-      @include disabled-state {
-        background-color: var(--color-background-disabled);
-        color: var(--color-text-disabled);
-
-        @include button-border(var(--color-border-disabled));
-      }
     }
 
     &.btn-tertiary {
@@ -228,10 +199,76 @@
       @include hover-state {
         color: var(--color-text-brand-primary-hover);
       }
+    }
+  }
 
-      @include disabled-state {
-        color: var(--color-text-disabled);
+  // =============================================================================
+  // DANGER BUTTONS
+  // =============================================================================
+  &.btn-danger {
+    &.btn-primary {
+      background-color: var(--color-background-danger);
+      color: var(--color-text-inverted);
+
+      @include button-border(var(--color-border-danger));
+
+      @include hover-state {
+        background-color: var(--color-background-danger-hover);
+
+        @include button-border(var(--color-border-danger-hover));
       }
+    }
+
+    &.btn-secondary {
+      background-color: var(--color-background-default);
+      color: var(--color-text-danger);
+
+      @include button-border(var(--color-border-danger));
+
+      &.btn-transparent {
+        background-color: transparent;
+      }
+
+      @include hover-state {
+        @include button-border(var(--color-border-danger-hover));
+
+        color: var(--color-text-danger-hover);
+
+        .btn-icon {
+          color: var(--color-text-danger-hover);
+        }
+      }
+    }
+
+    &.btn-tertiary {
+      background-color: transparent;
+      border: none;
+      color: var(--color-text-danger);
+      padding: 0;
+
+      @include hover-state {
+        color: var(--color-text-danger-hover);
+      }
+    }
+  }
+
+  &.btn-primary,
+  &.btn-secondary {
+    @include disabled-state {
+      background-color: var(--color-background-disabled);
+      color: var(--color-text-disabled);
+
+      @include button-border(var(--color-border-disabled));
+
+      .btn-icon {
+        color: var(--color-icon-disabled);
+      }
+    }
+  }
+
+  &.btn-tertiary {
+    @include disabled-state {
+      color: var(--color-text-disabled);
     }
   }
 }

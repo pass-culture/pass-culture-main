@@ -166,6 +166,16 @@ export const NeutralButtonVariants: Story = {
   ),
 }
 
+export const DangerButtonVariants: Story = {
+  render: () => (
+    <div style={styles}>
+      <Button variant={ButtonVariant.PRIMARY} label='Primary Danger' color={ButtonColor.DANGER} />
+      <Button variant={ButtonVariant.SECONDARY} label="Secondary Danger" color={ButtonColor.DANGER} />
+      <Button variant={ButtonVariant.TERTIARY} label="Tertiary Danger" color={ButtonColor.DANGER} />
+    </div>
+  ),
+}
+
 /**
  * Story for the button sizes
  */
@@ -341,6 +351,24 @@ export const ButtonVariants: Story = {
           <Button label="Tertiary" variant={ButtonVariant.TERTIARY} color={ButtonColor.NEUTRAL} />
           <Button label="Tertiary Hovered" variant={ButtonVariant.TERTIARY} color={ButtonColor.NEUTRAL} hovered />
           <Button label="Tertiary Disabled" variant={ButtonVariant.TERTIARY} color={ButtonColor.NEUTRAL} disabled />
+        </div>
+      </div>
+      <div style={{marginTop: 24}}>
+        <h2 style={titleStyles}>Danger</h2>
+        <div style={columnStyles}>
+          <Button label="Primary" variant={ButtonVariant.PRIMARY} color={ButtonColor.DANGER} />
+          <Button label="Primary Hovered" variant={ButtonVariant.PRIMARY} color={ButtonColor.DANGER} hovered />
+          <Button label="Primary Disabled" variant={ButtonVariant.PRIMARY} color={ButtonColor.DANGER} disabled />
+        </div>
+        <div style={columnStyles}>
+          <Button label="Secondary" variant={ButtonVariant.SECONDARY} color={ButtonColor.DANGER} />
+          <Button label="Secondary Hovered" variant={ButtonVariant.SECONDARY} color={ButtonColor.DANGER} hovered />
+          <Button label="Secondary Disabled" variant={ButtonVariant.SECONDARY} color={ButtonColor.DANGER} disabled />
+        </div>
+        <div style={columnStyles}>
+          <Button label="Tertiary" variant={ButtonVariant.TERTIARY} color={ButtonColor.DANGER} />
+          <Button label="Tertiary Hovered" variant={ButtonVariant.TERTIARY} color={ButtonColor.DANGER} hovered />
+          <Button label="Tertiary Disabled" variant={ButtonVariant.TERTIARY} color={ButtonColor.DANGER} disabled />
         </div>
       </div>
     </>
