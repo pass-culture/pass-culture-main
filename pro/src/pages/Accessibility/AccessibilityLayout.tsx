@@ -1,4 +1,4 @@
-import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { LoggedOutLayout } from '@/app/App/layouts/logged-out/LoggedOutLayout/LoggedOutLayout'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
@@ -27,9 +27,7 @@ export const AccessibilityLayout = ({
   const isUserConnected = !!user
 
   return isUserConnected ? (
-    <BasicLayout mainHeading={mainHeading} isFullPage={true}>
-      {children}
-    </BasicLayout>
+    <FullLayout mainHeading={mainHeading}>{children}</FullLayout>
   ) : (
     <LoggedOutLayout mainHeading={mainHeading}>
       <section className={styles['layout']} data-testid="logged-out-section">

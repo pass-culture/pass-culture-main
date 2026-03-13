@@ -2,7 +2,7 @@ import { type ChangeEvent, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 
 import type { VenueListItemResponseModel } from '@/apiClient/v1'
-import { FunnelLayout } from '@/app/App/layouts/funnels/FunnelLayout/FunnelLayout'
+import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { setSelectedVenueById } from '@/commons/store/user/dispatchers/setSelectedVenueById'
@@ -10,7 +10,6 @@ import { ensureVenues } from '@/commons/store/user/selectors'
 import { normalizeStrForSearch } from '@/commons/utils/normalizeStrForSearch'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
-import { Footer } from '@/components/Footer/Footer'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import { SearchInput } from '@/design-system/SearchInput/SearchInput'
@@ -76,10 +75,7 @@ export const Hub = () => {
   }
 
   return (
-    <FunnelLayout
-      mainHeading="À quelle structure souhaitez-vous accéder ?"
-      withFlexContent
-    >
+    <FullLayout mainHeading="À quelle structure souhaitez-vous accéder ?">
       {venues.length > 4 && (
         <SearchInput
           label="Rechercher une structure"
@@ -144,9 +140,7 @@ export const Hub = () => {
           label="Ajouter une structure"
         />
       </div>
-
-      <Footer layout={'basic'} />
-    </FunnelLayout>
+    </FullLayout>
   )
 }
 

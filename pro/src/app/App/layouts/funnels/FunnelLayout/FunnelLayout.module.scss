@@ -71,17 +71,3 @@ $connect-as-header-height: rem.torem(52px);
     padding-bottom: rem.torem(size.$action-bar-sticky-height);
   }
 }
-
-.content-flex {
-  display: flex;
-  flex-direction: column;
-  margin: 0 auto;
-  max-width: 100%;
-  min-height: 0;
-  padding: size.$main-content-padding size.$main-content-padding 0;
-  width: size.$main-content-width;
-
-  @media screen and (min-width: size.$tablet) {
-    flex-grow: 1;
-  }
-}

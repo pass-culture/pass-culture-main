@@ -68,7 +68,7 @@ export const OnboardingLayout = ({
       {currentUser?.isImpersonated && (
         <ConnectedAsAside currentUser={currentUser} />
       )}
-      <Header disableHomeLink />
+      <Header />
       <div
         className={cn(styles['page-layout'], {
           [styles['page-layout-connect-as']]: currentUser?.isImpersonated,
