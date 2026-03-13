@@ -20,7 +20,6 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import models as finance_models
-from pcapi.core.geography import models as geography_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import transactional as transactional_mails
@@ -128,13 +127,6 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
         .where(offerers_models.Venue.isSoftDeleted.is_(False))
     )
 
-    has_offerer_address_query = (
-        sa.select(1)
-        .select_from(offerers_models.OffererAddress)
-        .where(offerers_models.OffererAddress.offererId == offerers_models.Offerer.id)
-        .correlate(offerers_models.Offerer)
-        .exists()
-    )
     if access_control.has_current_user_permission(perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO):
         has_fraudulent_booking_query: sa.sql.selectable.Exists | sa.sql.elements.Null = (
             sa.select(1)
@@ -152,7 +144,6 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
             offerers_models.Offerer,
             bank_information_query.scalar_subquery().label("bank_information"),
             has_non_virtual_venues_query.label("has_non_virtual_venues"),
-            has_offerer_address_query.label("has_offerer_address"),
             has_fraudulent_booking_query.label("has_fraudulent_booking"),
             adage_query.label("adage_information"),
             users_models.User.phoneNumber.label("creator_phone_number"),
@@ -254,7 +245,6 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         delete_offerer_form=empty_forms.EmptyForm(),
         fraud_form=fraud_form,
         show_subscription_tab=show_subscription_tab,
-        has_offerer_address=row.has_offerer_address,
         has_fraudulent_booking=row.has_fraudulent_booking,
         active_tab=request.args.get("active_tab", "history"),
         connect_as_offerer=connect_as_offerer,
@@ -1084,49 +1074,6 @@ def create_venue(offerer_id: int) -> response_utils.BackofficeResponse:
 
     flash(Markup("Le partenaire culturel <b>{name}</b> a été créé").format(name=venue.publicName), "success")
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
-
-
-@offerer_blueprint.route("/addresses", methods=["GET"])
-def get_offerer_addresses(offerer_id: int) -> response_utils.BackofficeResponse:
-    offerer_addresses = (
-        db.session.query(
-            geography_models.Address.id,
-            geography_models.Address.street,
-            geography_models.Address.postalCode,
-            geography_models.Address.city,
-            geography_models.Address.banId,
-            geography_models.Address.latitude,
-            geography_models.Address.longitude,
-            sa.func.array_agg(
-                sa.func.coalesce(
-                    sa.func.nullif(offerers_models.OffererAddress.label, ""),
-                    sa.func.nullif(offerers_models.Venue.publicName, ""),
-                    offerers_models.Venue.name,
-                )
-            ).label("titles"),
-        )
-        .select_from(geography_models.Address)
-        .join(offerers_models.OffererAddress)
-        .outerjoin(offerers_models.OffererAddress.venue)
-        .filter(offerers_models.OffererAddress.offererId == offerer_id)
-        .group_by(
-            geography_models.Address.id,
-            geography_models.Address.street,
-            geography_models.Address.postalCode,
-            geography_models.Address.city,
-            geography_models.Address.banId,
-            geography_models.Address.latitude,
-            geography_models.Address.longitude,
-        )
-        .order_by(geography_models.Address.street)
-        .all()
-    )
-
-    return render_template(
-        "offerer/get/details/addresses.html",
-        offerer_id=offerer_id,
-        offerer_addresses=offerer_addresses,
-    )
 
 
 @offerer_blueprint.route("/collective-dms-applications", methods=["GET"])

@@ -1463,3 +1463,48 @@ def suspend_reimbursement(venue_id: int) -> response_utils.BackofficeResponse:
 @access_control.permission_required(perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION)
 def unsuspend_reimbursement(venue_id: int) -> response_utils.BackofficeResponse:
     return _suspend_venue_reimbursement(venue_id, False)
+
+
+@venue_blueprint.route("/<int:venue_id>/addresses", methods=["GET"])
+def get_offer_locations(venue_id: int) -> response_utils.BackofficeResponse:
+    offerer_addresses = (
+        db.session.query(
+            geography_models.Address.id,
+            geography_models.Address.street,
+            geography_models.Address.postalCode,
+            geography_models.Address.city,
+            geography_models.Address.banId,
+            geography_models.Address.latitude,
+            geography_models.Address.longitude,
+            sa.func.array_agg(
+                sa.func.coalesce(
+                    sa.func.nullif(offerers_models.OffererAddress.label, ""),
+                    offerers_models.Venue.publicName,
+                )
+            ).label("titles"),
+        )
+        .select_from(geography_models.Address)
+        .join(offerers_models.OffererAddress)
+        .join(offerers_models.OffererAddress.venue)
+        .filter(
+            offerers_models.OffererAddress.venueId == venue_id,
+            offerers_models.OffererAddress.type == offerers_models.LocationType.OFFER_LOCATION,
+        )
+        .group_by(
+            geography_models.Address.id,
+            geography_models.Address.street,
+            geography_models.Address.postalCode,
+            geography_models.Address.city,
+            geography_models.Address.banId,
+            geography_models.Address.latitude,
+            geography_models.Address.longitude,
+        )
+        .order_by(geography_models.Address.street)
+        .all()
+    )
+
+    return render_template(
+        "venue/get/addresses.html",
+        venue_id=venue_id,
+        offerer_addresses=offerer_addresses,
+    )
