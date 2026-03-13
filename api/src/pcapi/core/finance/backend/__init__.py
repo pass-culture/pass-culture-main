@@ -1,4 +1,5 @@
 import datetime
+import typing
 
 from sqlalchemy import orm as sa_orm
 
@@ -11,13 +12,27 @@ from pcapi.core.finance.backend.cegid import CegidFinanceBackend
 from pcapi.core.finance.backend.dummy import DummyFinanceBackend
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
-from pcapi.utils.module_loading import import_string
 
 
-_backends = [
-    DummyFinanceBackend,
-    CegidFinanceBackend,
-]
+type Backend = CegidFinanceBackend | DummyFinanceBackend | BaseFinanceBackend
+
+BACKEND_BY_KEY: typing.Final[dict[str, type[Backend]]] = {
+    "CegidFinanceBackend": CegidFinanceBackend,
+    "DummyFinanceBackend": DummyFinanceBackend,
+    "BaseFinanceBackend": BaseFinanceBackend,
+    "pcapi.core.finance.backend.dummy.DummyFinanceBackend": DummyFinanceBackend,
+    "pcapi.core.finance.backend.cegid.CegidFinanceBackend": CegidFinanceBackend,
+}
+
+
+def _get_backend() -> Backend:
+    backend = BACKEND_BY_KEY[settings.FINANCE_BACKEND]()
+    if not backend.is_configured:
+        backend_name = backend.__class__.__name__
+        raise finance_exceptions.FinanceBackendNotConfigured(
+            f"Finance backend `{backend_name}` not correctly configured"
+        )
+    return backend
 
 
 def push_invoice(invoice_id: int) -> dict | None:
@@ -70,14 +85,3 @@ def check_can_push_invoice() -> bool:
 def get_backend_name() -> str:
     backend = _get_backend()
     return backend.__class__.__name__
-
-
-def _get_backend() -> BaseFinanceBackend:
-    backend_class = import_string(settings.FINANCE_BACKEND)
-    backend = backend_class()
-    if not backend.is_configured:
-        backend_name = backend.__class__.__name__
-        raise finance_exceptions.FinanceBackendNotConfigured(
-            f"Finance backend `{backend_name}` not correctly configured"
-        )
-    return backend
