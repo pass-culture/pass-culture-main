@@ -87,10 +87,14 @@ def _get_user_quotient_familial_response(
 
     seventeenth_birthday = birth_date + relativedelta(years=17)
 
-    all_quotient_familial_responses = []
     MONTHS_IN_A_YEAR = 12
+    api_particulier_cutoff_date = datetime.date.today() - relativedelta(years=2)
+    cutoff_month = api_particulier_cutoff_date.replace(month=1, day=1)
+    all_quotient_familial_responses = []
     for month_offset in range(MONTHS_IN_A_YEAR):
         at_date = seventeenth_birthday + relativedelta(months=month_offset)
+        if at_date < cutoff_month:
+            continue
 
         if settings.ENABLE_PARTICULIER_API_MOCK:
             quotient_familial_at_date = staging_api.get_and_mock_quotient_familial(custodian, at_date, user)
