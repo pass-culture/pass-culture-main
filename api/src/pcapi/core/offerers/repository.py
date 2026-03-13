@@ -1226,6 +1226,40 @@ def get_offerer_addresses(
     return query
 
 
+def get_venue_addresses(
+    venue_id: int,
+    model: type[offers_models.Offer | educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate],
+) -> sa_orm.Query:
+    query = (
+        db.session.query(
+            models.OffererAddress.id,
+            geography_models.Address.id.label("addressId"),
+            models.OffererAddress.label,
+            models.Venue.publicName,
+            models.Venue.id.label("venueId"),
+            geography_models.Address.street,
+            geography_models.Address.postalCode,
+            geography_models.Address.city,
+            geography_models.Address.departmentCode,
+        )
+        .join(models.OffererAddress.address)
+        .join(models.OffererAddress.venue)
+        .filter(models.OffererAddress.venueId == venue_id)
+        .filter(
+            sa.or_(
+                models.OffererAddress.type.is_(None),
+                models.OffererAddress.type == offerers_models.LocationType.OFFER_LOCATION,
+            )
+        )
+    )
+
+    subquery = db.session.query(sa.select(model.id, model.offererAddressId).select_from(model).subquery())
+    query = query.where(subquery.filter(model.offererAddressId == models.OffererAddress.id).exists())
+
+    query = query.order_by(models.OffererAddress.label)
+    return query
+
+
 def get_offerer_headline_offer(offerer_id: int) -> offers_models.Offer:
     return (
         db.session.query(offers_models.Offer)

@@ -11,6 +11,7 @@ from flask_login import login_required
 import pcapi.connectors.entreprise.exceptions as entreprise_exceptions
 from pcapi import settings
 from pcapi.connectors.entreprise import api as entreprise_api
+from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions
@@ -18,6 +19,7 @@ from pcapi.core.offerers import models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers import validation
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import tasks as offers_tasks
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -324,3 +326,42 @@ def get_offers_statistics(venue_id: int) -> venues_serialize.GetOffersStatsRespo
         pending_public_offers=stats.pending_public_offers,
         pending_educational_offers=stats.pending_educational_offers,
     )
+
+
+@private_api.route("/venues/<int:venue_id>/locations", methods=["GET"])
+@login_required
+@spectree_serialize(
+    on_success_status=200,
+    api=blueprint.pro_private_schema,
+    response_model=venues_serialize.GetVenueAddressesResponseModel,
+)
+def get_venue_addresses(
+    venue_id: int, query: venues_serialize.GetVenueAddressesQueryModel
+) -> venues_serialize.GetVenueAddressesResponseModel:
+    check_user_has_access_to_venues(current_user, [venue_id])
+
+    if query.withOffersOption == venues_serialize.GetVenueAddressesWithOffersOption.COLLECTIVE_OFFER_TEMPLATES_ONLY:
+        model = educational_models.CollectiveOfferTemplate
+    if query.withOffersOption == venues_serialize.GetVenueAddressesWithOffersOption.COLLECTIVE_OFFERS_ONLY:
+        model = educational_models.CollectiveOffer
+    if query.withOffersOption == venues_serialize.GetVenueAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY:
+        model = offers_models.Offer
+
+    results = offerers_repository.get_venue_addresses(venue_id, model)
+
+    venue_addresses = [
+        venues_serialize.GetVenueAddressResponseModel(
+            id=result.id,
+            addressId=result.addressId,
+            label=result.label if hasattr(result, "label") and result.label else result.publicName,
+            venueId=result.venueId,
+            venueName=result.publicName,
+            street=result.street,
+            postalCode=result.postalCode,
+            city=result.city,
+            departmentCode=result.departmentCode,
+        )
+        for result in results
+    ]
+
+    return venues_serialize.GetVenueAddressesResponseModel(venue_addresses)

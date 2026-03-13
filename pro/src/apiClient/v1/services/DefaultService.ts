@@ -56,6 +56,8 @@ import type { GetOffersStatsResponseModel } from '../models/GetOffersStatsRespon
 import type { GetProAdviceResponseModel } from '../models/GetProAdviceResponseModel';
 import type { GetProductInformations } from '../models/GetProductInformations';
 import type { GetStocksResponseModel } from '../models/GetStocksResponseModel';
+import type { GetVenueAddressesResponseModel } from '../models/GetVenueAddressesResponseModel';
+import type { GetVenueAddressesWithOffersOption } from '../models/GetVenueAddressesWithOffersOption';
 import type { GetVenueListLiteResponseModel } from '../models/GetVenueListLiteResponseModel';
 import type { GetVenueListResponseModel } from '../models/GetVenueListResponseModel';
 import type { GetVenueResponseModel } from '../models/GetVenueResponseModel';
@@ -3077,6 +3079,32 @@ export class DefaultService {
       },
       body: requestBody,
       mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * get_venue_addresses <GET>
+   * @param venueId
+   * @param withOffersOption
+   * @returns GetVenueAddressesResponseModel OK
+   * @throws ApiError
+   */
+  public getVenueAddresses(
+    venueId: number,
+    withOffersOption: (GetVenueAddressesWithOffersOption | null),
+  ): CancelablePromise<GetVenueAddressesResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/venues/{venue_id}/locations',
+      path: {
+        'venue_id': venueId,
+      },
+      query: {
+        'withOffersOption': withOffersOption,
+      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Content`,

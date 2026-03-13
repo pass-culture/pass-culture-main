@@ -4,7 +4,10 @@ import { formatAndOrderAddresses } from 'repository/venuesService'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import { GetOffererAddressesWithOffersOption } from '@/apiClient/v1'
+import {
+  GetOffererAddressesWithOffersOption,
+  GetVenueAddressesWithOffersOption,
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_BOOKINGS_QUERY_KEY,
@@ -12,6 +15,7 @@ import {
 } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
+import { useVenueAddresses } from '@/commons/hooks/swr/useVenueAddresses'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -72,7 +76,12 @@ export const IndividualBookings = () => {
   const offererAddressQuery = useOffererAddresses(
     GetOffererAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
   )
-  const offererAddresses = formatAndOrderAddresses(offererAddressQuery.data)
+  const venueAddressQuery = useVenueAddresses(
+    GetVenueAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
+  )
+  const offererAddresses = formatAndOrderAddresses(
+    withSwitchVenueFeature ? venueAddressQuery.data : offererAddressQuery.data
+  )
 
   const { data: bookingsQuery, isLoading } = useSWR(
     isEqual(appliedPreFilters, initialAppliedFilters)

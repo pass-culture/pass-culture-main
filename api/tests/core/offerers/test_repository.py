@@ -6,10 +6,12 @@ import sqlalchemy.orm as sa_orm
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models
 from pcapi.core.offerers import repository
 from pcapi.core.offerers import schemas
+from pcapi.core.offers import models as offers_models
 from pcapi.core.users import factories as users_factories
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import date as date_utils
@@ -253,6 +255,40 @@ class GetOffererAddressesTest:
         query = repository.get_offerer_addresses(offerer_id=offerer.id, with_offers_option=None)
         results = query.all()
         assert {item.id for item in results} == {offer_oa.id}
+
+
+class GetVenueAddressesTest:
+    def test_get_venue_addresses_individual_only(self):
+        offer_location = offerers_factories.OfferLocationFactory()
+        offers_factories.OfferFactory(venue=offer_location.venue, offererAddress=offer_location)
+        venue_id = offer_location.venueId
+        query = repository.get_venue_addresses(venue_id=venue_id, model=offers_models.Offer)
+        results = query.all()
+        assert len(results) == 1
+
+    def test_get_venue_addresses_collective_only(self):
+        offer_location = offerers_factories.OfferLocationFactory()
+        educational_factories.CollectiveOfferFactory(
+            venue=offer_location.venue,
+            offererAddress=offer_location,
+            locationType=educational_models.CollectiveLocationType.ADDRESS,
+        )
+        venue_id = offer_location.venueId
+        query = repository.get_venue_addresses(venue_id=venue_id, model=educational_models.CollectiveOffer)
+        results = query.all()
+        assert len(results) == 1
+
+    def test_get_venue_addresses_collective_template(self):
+        offer_location = offerers_factories.OfferLocationFactory()
+        educational_factories.CollectiveOfferTemplateFactory(
+            venue=offer_location.venue,
+            offererAddress=offer_location,
+            locationType=educational_models.CollectiveLocationType.ADDRESS,
+        )
+        venue_id = offer_location.venueId
+        query = repository.get_venue_addresses(venue_id=venue_id, model=educational_models.CollectiveOfferTemplate)
+        results = query.all()
+        assert len(results) == 1
 
 
 class GetOffererHeadlineOfferTest:
