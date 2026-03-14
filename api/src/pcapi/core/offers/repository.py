@@ -349,6 +349,7 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query[models.Offer]:
         .options(sa_orm.selectinload(models.Offer.mediations))
         .options(sa_orm.with_expression(models.Offer.chroniclesCount, get_offer_chronicles_count_subquery()))
         .options(sa_orm.with_expression(models.Offer.likesCount, get_offer_reaction_count_subquery()))
+        .options(sa_orm.with_expression(models.Offer.hasProAdvice, get_offer_has_pro_advice_subquery()))
         .options(
             sa_orm.joinedload(models.Offer.product)
             .load_only(
@@ -360,6 +361,7 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query[models.Offer]:
                 models.Product.durationMinutes,
                 models.Product.chroniclesCount,
                 models.Product.likesCount,
+                models.Product.proAdvicesCount,
             )
             .joinedload(models.Product.productMediations)
         )
@@ -977,6 +979,15 @@ def get_offer_reaction_count_subquery() -> sa.sql.selectable.ScalarSelect:
         .correlate(models.Offer)
         .scalar_subquery()
     )
+
+
+def get_offer_has_pro_advice_subquery() -> sa.sql.selectable.ScalarSelect:
+    return sa.select(
+        sa.select(models.ProAdvice.id)
+        .where(models.ProAdvice.offerId == models.Offer.id)
+        .correlate(models.Offer)
+        .exists()
+    ).scalar_subquery()
 
 
 def get_current_headline_offer(offerer_id: int) -> models.HeadlineOffer | None:
