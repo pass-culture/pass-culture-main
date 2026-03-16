@@ -201,7 +201,7 @@ def get_ineligibility_reasons(
     if article.codesupport == constants.OBJECT_SUPPORT_CODE:
         reasons.append("object")
 
-    # ouvrage "lectorat 18+" (Pornographie / ultra-violence)
+    # Ouvrage "lectorat 18+" (Pornographie / ultra-violence)
     if article.id_lectorat == constants.LECTORAT_EIGHTEEN_ID:
         reasons.append("pornography-or-violence")
 
@@ -222,15 +222,22 @@ def get_ineligibility_reasons(
 
     # ouvrage du rayon parascolaire,
     # code de la route (méthode d'apprentissage + codes basiques), code nautique, code aviation, etc...
-    if gtl_level_01_code == constants.GTL_LEVEL_01_EXTRACURRICULAR:
+    if (
+        gtl_level_01_code == constants.GTL_LEVEL_01_EXTRACURRICULAR
+        or article.id_lectorat in constants.LEARNING_LECTORAT
+    ):
         reasons.append("extracurricular")
 
     # Petite jeunesse (livres pour le bains, peluches, puzzles, etc...)
     gtl_level_02_code = gtl_id[2:4]
-    if gtl_level_01_code == constants.GTL_LEVEL_01_YOUNG and gtl_level_02_code in [
-        constants.GTL_LEVEL_02_BEFORE_3,
-        constants.GTL_LEVEL_02_AFTER_3_AND_BEFORE_6,
-    ]:
+    if (
+        gtl_level_01_code == constants.GTL_LEVEL_01_YOUNG
+        and gtl_level_02_code
+        in [
+            constants.GTL_LEVEL_02_BEFORE_3,
+            constants.GTL_LEVEL_02_AFTER_3_AND_BEFORE_6,
+        ]
+    ) or article.id_lectorat in constants.UNDER_SIX_LECTORAT:
         reasons.append("small-young")
 
     # --- Default categorization ---

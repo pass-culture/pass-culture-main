@@ -572,6 +572,30 @@ GTL_LEVEL_02_BEFORE_3 = "02"
 GTL_LEVEL_02_AFTER_3_AND_BEFORE_6 = "03"
 
 LECTORAT_EIGHTEEN_ID = "45"
+UNDER_SIX_LECTORAT = [
+    "6",  # 5/6 ans
+    "10",  # à partir de 1 AN
+    "11",  # à partir de 2 ANS
+    "12",  # à partir de 3 ANS
+    "13",  # à partir de 4 ANS
+    "14",  # à partir de 5 ANS
+    "24",  # 3/5 ans
+    "25",  # 0/3 ans
+    "29",  # 3/4 ans
+    "33",  # à partir de 18 mois
+    "34",  # 4/5 ans
+    "48",  # 2/3 ans
+    "50",  # 3/6 ans
+]
+LEARNING_LECTORAT = [
+    "1",  # ENSEIGNANTS
+    "2",  # ELEVES
+    "39",  # Public motivé
+    "40",  # Niveau Bac
+    "42",  # Débutants
+    "43",  # Tous niveaux
+    "44",  # Perfectionnement
+]
 
 TOEIC_TEXT = "toeic"
 TOEFL_TEXT = "toefl"
