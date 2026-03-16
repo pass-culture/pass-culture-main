@@ -1,3 +1,5 @@
+/** biome-ignore-all lint/correctness/useUniqueElementIds: Layout is used once per page. There cannot be id duplications. */
+
 import cn from 'classnames'
 import type React from 'react'
 
@@ -6,20 +8,30 @@ import { Header } from '@/app/App/layouts/components/Header/Header'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
+import { Footer } from '@/components/Footer/Footer'
 import { SkipLinks } from '@/components/SkipLinks/SkipLinks'
 
-import styles from './FunnelLayout.module.scss'
+import styles from './FullLayout.module.scss'
 
-export interface FunnelLayoutProps {
+interface FullLayoutProps {
   children?: React.ReactNode
   /**
    * Name of the page to display in the main heading.
    * Make sure that only one heading is displayed per page.
    */
   mainHeading: React.ReactNode
+  /**
+   * Complementary name of the page to display in the main heading,
+   * as a subheading.
+   */
+  mainSubHeading?: string
 }
 
-export const FunnelLayout = ({ children, mainHeading }: FunnelLayoutProps) => {
+export const FullLayout = ({
+  children,
+  mainHeading,
+  mainSubHeading,
+}: FullLayoutProps) => {
   const currentUser = useAppSelector(selectCurrentUser)
 
   return (
@@ -28,6 +40,7 @@ export const FunnelLayout = ({ children, mainHeading }: FunnelLayoutProps) => {
       {currentUser?.isImpersonated && (
         <ConnectedAsAside currentUser={currentUser} />
       )}
+
       <Header />
 
       <div
@@ -35,14 +48,19 @@ export const FunnelLayout = ({ children, mainHeading }: FunnelLayoutProps) => {
           [styles['page-layout-connect-as']]: currentUser?.isImpersonated,
         })}
       >
-        {/* biome-ignore lint/correctness/useUniqueElementIds: Layout is used once per page. There cannot be id duplications. */}
         <div id="content-wrapper" className={styles['content-wrapper']}>
           <div className={styles['content-container']}>
-            <main id="content" className={styles['content']} tabIndex={-1}>
-              <MainHeading mainHeading={mainHeading} />
+            <main id="content" tabIndex={-1}>
+              <div className={styles['content']}>
+                <MainHeading
+                  mainHeading={mainHeading}
+                  mainSubHeading={mainSubHeading}
+                />
 
-              {children}
+                {children}
+              </div>
             </main>
+            <Footer layout={'basic'} />
           </div>
         </div>
       </div>

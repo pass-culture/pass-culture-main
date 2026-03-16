@@ -14,12 +14,10 @@ import {
   ButtonColor,
   ButtonSize,
   ButtonVariant,
-  IconPositionEnum,
 } from '@/design-system/Button/types'
 import fullNextIcon from '@/icons/full-next.svg'
 import logoPassCultureProIcon from '@/icons/logo-pass-culture-pro.svg'
 import strokeCloseIcon from '@/icons/stroke-close.svg'
-import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { AdminSideNavLinks } from './AdminSideNav/AdminSideNav'
@@ -31,22 +29,21 @@ interface LateralPanelProps {
   isAdminArea?: boolean
   isHubPage?: boolean
   isOpen: boolean
-  navPanel: React.RefObject<HTMLDivElement | null>
+  navPanelRef: React.RefObject<HTMLDivElement | null>
   openButtonRef: React.RefObject<HTMLButtonElement | null>
   onToggle: (value: boolean) => void
 }
 
 export const LateralPanel = ({
-  closeButtonRef,
   isAdminArea = false,
-  isHubPage = false,
   isOpen,
-  navPanel,
+  closeButtonRef,
+  navPanelRef,
   openButtonRef,
   onToggle,
 }: LateralPanelProps) => {
   useEffect(() => {
-    const modalElement = navPanel.current
+    const modalElement = navPanelRef.current
     if (!modalElement) {
       return () => noop
     }
@@ -76,7 +73,7 @@ export const LateralPanel = ({
     return () => {
       modalElement.removeEventListener('keydown', handleTabKeyPress)
     }
-  }, [isOpen, navPanel])
+  }, [isOpen, navPanelRef])
 
   const { menuContainer } = useSkipLinksContext()
 
@@ -94,7 +91,7 @@ export const LateralPanel = ({
         [styles['lateral-panel-wrapper']]: true,
         [styles['lateral-panel-wrapper-open']]: isOpen,
       })}
-      ref={navPanel}
+      ref={navPanelRef}
       aria-label="Menu principal"
     >
       {/* Skip link button to access the lateral panel menu (will be injected into the <SkipLinks> component via createPortal) */}
@@ -143,24 +140,10 @@ export const LateralPanel = ({
           </div>
         )}
 
-        {isHubPage && (
-          <div className={styles['back-to-admin']}>
-            <Button
-              as="a"
-              variant={ButtonVariant.SECONDARY}
-              to="/remboursements"
-              iconPosition={IconPositionEnum.LEFT}
-              icon={strokeRepaymentIcon}
-              label="Espace Administration"
-              fullWidth
-            />
-          </div>
-        )}
-        {!isHubPage && (
-          <>
-            {!isAdminArea && <LateralMenu isLateralPanelOpen={isOpen} />}
-            {isAdminArea && <AdminSideNavLinks />}
-          </>
+        {isAdminArea ? (
+          <AdminSideNavLinks />
+        ) : (
+          <LateralMenu isLateralPanelOpen={isOpen} />
         )}
       </div>
     </nav>

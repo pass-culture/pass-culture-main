@@ -1,4 +1,4 @@
-import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { UserProfile } from '@/pages/User/UserProfile/UserProfile'
 
@@ -6,7 +6,7 @@ const Profile = (): JSX.Element => {
   const { currentUser } = useCurrentUser()
 
   return (
-    <BasicLayout mainHeading="Profil" isFullPage={true}>
+    <FullLayout mainHeading="Profil">
       <UserProfile
         userIdentityInitialValues={{
           firstName: currentUser.firstName || '',
@@ -17,7 +17,7 @@ const Profile = (): JSX.Element => {
           email: currentUser.email,
         }}
       />
-    </BasicLayout>
+    </FullLayout>
   )
 }
 
