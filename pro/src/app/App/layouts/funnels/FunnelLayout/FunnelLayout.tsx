@@ -13,6 +13,7 @@ import styles from './FunnelLayout.module.scss'
 
 export interface FunnelLayoutProps {
   children?: React.ReactNode
+  hideAdminButton?: boolean
   /**
    * Name of the page to display in the main heading.
    * Make sure that only one heading is displayed per page.
@@ -23,9 +24,10 @@ export interface FunnelLayoutProps {
 
 export const FunnelLayout = ({
   children,
+  hideAdminButton,
   mainHeading,
   withFlexContent = false,
-}: FunnelLayoutProps) => {
+}: Readonly<FunnelLayoutProps>) => {
   const currentUser = useAppSelector(selectCurrentUser)
   const [isLateralPanelOpen, setIsLateralPanelOpen] = useState(false)
   const openButtonRef = useRef<HTMLButtonElement>(null)
@@ -38,6 +40,7 @@ export const FunnelLayout = ({
         <ConnectedAsAside currentUser={currentUser} />
       )}
       <Header
+        hideAdminButton={hideAdminButton}
         isLateralPanelOpen={isLateralPanelOpen}
         onToggleLateralPanel={setIsLateralPanelOpen}
         focusCloseButton={() => {

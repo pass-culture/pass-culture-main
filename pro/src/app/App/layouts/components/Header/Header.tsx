@@ -30,10 +30,11 @@ import { HeaderDropdown } from './components/HeaderDropdown/HeaderDropdown'
 import { HeaderHelpDropdown } from './components/HeaderHelpDropdown/HeaderHelpDropdown'
 import styles from './Header.module.scss'
 
-type HeaderProps = {
+interface HeaderProps {
   isLateralPanelOpen?: boolean
   onToggleLateralPanel?: (state: boolean) => void
   focusCloseButton?: () => void
+  hideAdminButton?: boolean
   disableBurgerMenu?: boolean
   disableHomeLink?: boolean
   isUnauthenticated?: boolean
@@ -46,11 +47,12 @@ export const Header = forwardRef(
       isLateralPanelOpen = false,
       onToggleLateralPanel,
       focusCloseButton,
+      hideAdminButton = false,
       disableBurgerMenu = false,
       disableHomeLink = false,
       isUnauthenticated = false,
       isAdminArea = false,
-    }: HeaderProps,
+    }: Readonly<HeaderProps>,
     openButtonRef: ForwardedRef<HTMLButtonElement>
   ) => {
     const isProFeedbackEnabled = useActiveFeature('ENABLE_PRO_FEEDBACK')
@@ -150,7 +152,7 @@ export const Header = forwardRef(
                     </div>
                   </div>
                 )}
-                {withSwitchVenueFeature && (
+                {withSwitchVenueFeature && !hideAdminButton && (
                   <Button
                     as="a"
                     variant={ButtonVariant.SECONDARY}
