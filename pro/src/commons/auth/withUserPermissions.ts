@@ -26,7 +26,7 @@ export const withUserPermissions = (
           return redirect('/connexion')
 
         case !hasVenues:
-          return redirect('inscription/structure/recherche')
+          return redirect('/inscription/structure/recherche')
 
         case !userPermissions.hasSelectedVenue:
           return redirect('/hub')
