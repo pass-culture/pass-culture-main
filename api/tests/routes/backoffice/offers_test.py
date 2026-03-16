@@ -4235,6 +4235,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert descriptions["Durée"] == "133 minutes"
         assert descriptions["Description"] == "description"
         assert descriptions["Interprète"] == "John Doe"
+        assert "Recommandation" not in descriptions
 
         accessibility_badges = html_parser.extract_accessibility_badges(response.data)
         assert accessibility_badges["Handicap auditif"] is True
@@ -4677,3 +4678,27 @@ class GetOfferDetailsTest(GetEndpointHelper):
 
         descriptions = html_parser.extract_descriptions(response.data)
         assert descriptions["Entité juridique"] == "Offerer Top Acteur"
+
+    def test_get_offer_details_with_pro_advice(self, authenticated_client):
+        offer = offers_factories.OfferFactory()
+        offers_factories.ProAdviceFactory(offer=offer, content="Une super offre", author="Le libraire du coin")
+
+        url = url_for(self.endpoint, offer_id=offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        descriptions = html_parser.extract_descriptions(response.data)
+        assert descriptions["Recommandation"] == "Une super offre — Le libraire du coin"
+
+    def test_get_offer_details_with_pro_advice_without_author(self, authenticated_client):
+        offer = offers_factories.OfferFactory()
+        offers_factories.ProAdviceFactory(offer=offer, content="Une super offre", author=None)
+
+        url = url_for(self.endpoint, offer_id=offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        descriptions = html_parser.extract_descriptions(response.data)
+        assert descriptions["Recommandation"] == "Une super offre"

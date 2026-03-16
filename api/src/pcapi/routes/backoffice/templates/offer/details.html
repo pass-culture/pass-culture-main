@@ -155,6 +155,15 @@
                  target="_blank">{{ offer.metaData.videoUrl }}</a>
             {% endcall %}
           {% endif %}
+          {% if offer.proAdvice %}
+            {% call description_detail_horizontal("Recommandation") %}
+              {{ offer.proAdvice.content | nl2br }}
+              {% if offer.proAdvice.author %}
+                <br>
+                <small class="text-muted">— {{ offer.proAdvice.author }}</small>
+              {% endif %}
+            {% endcall %}
+          {% endif %}
           <h5>Informations pratiques</h5>
           {% call description_detail_horizontal("Informations de retrait") %}
             {{ offer.withdrawalDetails | empty_string_if_null | nl2br }}
