@@ -264,6 +264,16 @@ class VenueProAdvicesTest:
         last = response.json["proAdvices"][1]
         assert first["publicationDatetime"] > last["publicationDatetime"]
 
+    def test_author_can_be_null(self, client):
+        venue = offerers_factories.VenueFactory()
+        venue_id = venue.id
+        _pro_advice = offers_factories.ProAdviceFactory(offer__venue=venue, author=None)
+        with assert_num_queries(1):
+            response = client.get(f"/native/v1/venue/{venue_id}/advices")
+
+        assert response.status_code == 200
+        assert response.json["proAdvices"][0]["author"] is None
+
     def test_trims_content(self, client):
         venue = offerers_factories.VenueFactory()
         venue_id = venue.id
