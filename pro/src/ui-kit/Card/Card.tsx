@@ -3,25 +3,32 @@ import type { ReactNode } from 'react'
 
 import styles from './Card.module.scss'
 
-export interface CardProps {
+interface CardProps {
   children: ReactNode
   className?: string
+  variant?: 'default' | 'info'
 }
 
-export interface CardHeaderProps {
+interface CardHeaderProps {
   title: string
   subtitle?: string
   className?: string
   titleTag?: 'h2' | 'h3' | 'h4'
 }
 
-export interface CardContentProps {
+interface CardContentProps {
   children: ReactNode
   className?: string
 }
 
-export interface CardFooterProps {
+interface CardFooterProps {
   children: ReactNode
+  className?: string
+}
+
+interface CardImageProps {
+  src: string
+  alt: string
   className?: string
 }
 
@@ -45,10 +52,29 @@ const CardFooter = ({ children, className }: CardFooterProps) => (
   <div className={cn(styles['card-footer'], className)}>{children}</div>
 )
 
-export const Card = ({ children, className }: CardProps) => (
-  <div className={cn(styles['card'], className)}>{children}</div>
+const CardImage = ({ src, alt, className }: CardImageProps) => (
+  <img src={src} alt={alt} className={cn(styles['card-image'], className)} />
+)
+
+export const Card = ({
+  children,
+  className,
+  variant = 'default',
+}: CardProps) => (
+  <div
+    className={cn(
+      styles['card'],
+      {
+        [styles['card-info']]: variant === 'info',
+      },
+      className
+    )}
+  >
+    {children}
+  </div>
 )
 
 Card.Header = CardHeader
 Card.Content = CardContent
 Card.Footer = CardFooter
+Card.Image = CardImage
