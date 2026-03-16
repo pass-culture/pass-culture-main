@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { Card } from './Card'
 import { Button } from '@/design-system/Button/Button'
-import { ButtonVariant } from '@/design-system/Button/types'
+import { ButtonColor, ButtonSize, ButtonVariant } from '@/design-system/Button/types'
 
 import sampleImage from './assets/sample-image-landscape.jpg'
 
@@ -22,11 +22,47 @@ export const Default: Story = {
         subtitle="Sous-titre de la carte"
       />
       <Card.Content>
-        <img src={sampleImage} alt="" height="200" width="300" className="card-content-image" />
         <p>Contenu de la carte avec des informations utiles.</p>
       </Card.Content>
       <Card.Footer>
         <Button label="Action principale" />
+      </Card.Footer>
+    </Card>
+  ),
+}
+
+export const WithImage: Story = {
+  render: () => (
+    <Card>
+      <Card.Image src={sampleImage} alt="Image d'exemple" />
+      <Card.Header
+        title="Carte avec image"
+        subtitle="L'image a des valeurs par défaut"
+      />
+      <Card.Content>
+        <p>Le composant Card.Image gère automatiquement les dimensions et le border-radius.</p>
+      </Card.Content>
+      <Card.Footer>
+        <Button label="En savoir plus" />
+      </Card.Footer>
+    </Card>
+  ),
+}
+
+export const InfoVariant: Story = {
+  render: () => (
+    <Card variant="info">
+      <Card.Header
+        title="Carte avec variant info"
+      />
+      <Card.Content>
+        <p>
+          Le variant "info" utilise un fond coloré et un bouton transparent
+          pour mettre en avant du contenu important.
+        </p>
+      </Card.Content>
+      <Card.Footer>
+        <Button as="a" to="#" isExternal opensInNewTab label="En savoir plus" size={ButtonSize.SMALL} variant={ButtonVariant.SECONDARY} color={ButtonColor.NEUTRAL} transparent/>
       </Card.Footer>
     </Card>
   ),
@@ -39,14 +75,6 @@ export const WithoutSubtitle: Story = {
       <Card.Content>
         <p>Cette carte n'a pas de sous-titre.</p>
       </Card.Content>
-    </Card>
-  ),
-}
-
-export const HeaderOnly: Story = {
-  render: () => (
-    <Card>
-      <Card.Header title="Carte avec titre uniquement" />
     </Card>
   ),
 }

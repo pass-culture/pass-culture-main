@@ -7,8 +7,20 @@
   gap: var(--size-spacing-l);
   border: rem.torem(1px) solid var(--color-border-subtle);
   border-radius: var(--size-border-radius-m);
-  padding: var(--size-spacing-l);
+  padding: var(--size-spacing-xl) var(--size-spacing-l);
   background-color: var(--color-background);
+
+  &-info {
+    background: var(--color-background-info);
+    border: none;
+  }
+
+  &-image {
+    width: 100%;
+    height: rem.torem(150px);
+    object-fit: cover;
+    border-radius: var(--size-border-radius-m);
+  }
 
   &-header {
     display: flex;
@@ -32,11 +44,21 @@
     display: flex;
     flex-direction: column;
     gap: var(--size-spacing-m);
+
+    .card-info & {
+      @include fonts.body-s;
+
+      color: var(--color-text-subtle);
+    }
   }
 
   &-footer {
     display: flex;
     flex-flow: row wrap;
     gap: var(--size-spacing-s);
+
+    .card-info & {
+      width: 100%;
+    }
   }
 }
