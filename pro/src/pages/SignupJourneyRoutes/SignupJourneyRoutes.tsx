@@ -38,7 +38,7 @@ export const SignupJourneyRoutes = () => {
   }, [offerer?.siren, offerer?.siret, location.pathname, navigate, setOfferer])
 
   return (
-    <FunnelLayout mainHeading="Votre structure">
+    <FunnelLayout mainHeading="Votre structure" hideAdminButton>
       <SignupJourneyContextProvider>
         <div className={styles['content-with-stepper']}>
           <SignupJourneyStepper />
