@@ -128,7 +128,7 @@ class VenueProAdviceQuery(HttpQueryParamsModel):
 
 
 class VenueProAdvice(HttpBodyModel):
-    author: str
+    author: str | None = None
     content: str
     offer_id: int
     offer_name: str

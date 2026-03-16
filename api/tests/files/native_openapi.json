@@ -7988,8 +7988,16 @@
                 "additionalProperties": false,
                 "properties": {
                     "author": {
-                        "title": "Author",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Author"
                     },
                     "content": {
                         "title": "Content",
@@ -8026,7 +8034,6 @@
                     }
                 },
                 "required": [
-                    "author",
                     "content",
                     "offerId",
                     "offerName",
