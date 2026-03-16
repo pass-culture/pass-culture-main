@@ -4939,6 +4939,10 @@
                         "title": "Name",
                         "type": "string"
                     },
+                    "proAdvicesCount": {
+                        "title": "Proadvicescount",
+                        "type": "integer"
+                    },
                     "publicationDate": {
                         "anyOf": [
                             {
@@ -4997,6 +5001,7 @@
                     "artists",
                     "bookingAllowedDatetime",
                     "chronicles",
+                    "proAdvicesCount",
                     "expenseDomains",
                     "isDigital",
                     "isDuo",
