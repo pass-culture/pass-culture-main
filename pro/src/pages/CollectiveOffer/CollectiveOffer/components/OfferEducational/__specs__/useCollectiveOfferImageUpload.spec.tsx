@@ -34,15 +34,6 @@ const snackBarError = vi.fn()
 const snackBarSuccess = vi.fn()
 const sendSentryCustomErrorSpy = vi.fn()
 
-vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
-  error: snackBarError,
-  success: snackBarSuccess,
-}))
-
-vi.spyOn(sendSentryCustomError, 'sendSentryCustomError').mockImplementation(
-  sendSentryCustomErrorSpy
-)
-
 const renderUseCollectiveOfferImageUploadWrapper = ({
   offer,
   isTemplate = false,
@@ -64,6 +55,16 @@ const renderUseCollectiveOfferImageUploadWrapper = ({
 }
 
 describe('useCollectiveOfferImageUpload', () => {
+  beforeEach(() => {
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      error: snackBarError,
+      success: snackBarSuccess,
+    }))
+
+    vi.spyOn(sendSentryCustomError, 'sendSentryCustomError').mockImplementation(
+      sendSentryCustomErrorSpy
+    )
+  })
   it('should initialize with current image', () => {
     const offer = getCollectiveOfferFactory()
 

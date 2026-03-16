@@ -33,12 +33,12 @@ describe('OffererSelect', () => {
       useOffererNamesQueryModule,
       'useOffererNamesQuery'
     ).mockReturnValue({
-      data: undefined,
-      error: undefined,
+      offererNames: [],
       isLoading: false,
       isValidating: false,
+      error: undefined,
       mutate: vi.fn(),
-    })
+    } as any)
   })
 
   it('should render select when there are multiple offerers', () => {

@@ -17,31 +17,48 @@ const defaultProps = {
 }
 
 describe('Header', () => {
-  it('should show "Espace administration" button when FF is enabled and isAdminArea is false', () => {
-    renderWithProviders(<Header {...defaultProps} />, {
-      features: ['WIP_SWITCH_VENUE'],
+  describe('with WIP_SWITCH_VENUE feature flag', () => {
+    it('should show "Espace administration" button when isAdminArea is false', () => {
+      renderWithProviders(<Header {...defaultProps} />, {
+        features: ['WIP_SWITCH_VENUE'],
+      })
+      expect(
+        screen.getByRole('link', { name: 'Espace administration' })
+      ).toHaveAttribute('href', '/remboursements')
     })
-    expect(
-      screen.getByRole('link', { name: 'Espace administration' })
-    ).toHaveAttribute('href', '/remboursements')
-  })
 
-  it('should show "Revenir à l’Espace Partenaire" button when FF is enabled and isAdminArea is true', () => {
-    renderWithProviders(<Header {...defaultProps} isAdminArea={true} />, {
-      features: ['WIP_SWITCH_VENUE'],
+    it('should show "Revenir à l’Espace Partenaire" button when isAdminArea is true', () => {
+      renderWithProviders(<Header {...defaultProps} isAdminArea={true} />, {
+        features: ['WIP_SWITCH_VENUE'],
+      })
+      expect(
+        screen.getByRole('link', { name: 'Revenir à l’Espace Partenaire' })
+      ).toHaveAttribute('href', '/accueil')
     })
-    expect(
-      screen.getByRole('link', { name: 'Revenir à l’Espace Partenaire' })
-    ).toHaveAttribute('href', '/accueil')
-  })
 
-  it('should show "Revenir à l’Espace Partenaire" button when FF is enabled and isAdminArea is true', () => {
-    renderWithProviders(<Header {...defaultProps} isAdminArea={true} />, {
-      features: ['WIP_SWITCH_VENUE'],
+    it('should show "Revenir à l’Espace Partenaire" button when isAdminArea is true', () => {
+      renderWithProviders(<Header {...defaultProps} isAdminArea={true} />, {
+        features: ['WIP_SWITCH_VENUE'],
+      })
+      expect(
+        screen.getByRole('link', { name: 'Revenir à l’Espace Partenaire' })
+      ).toHaveAttribute('href', '/accueil')
     })
-    expect(
-      screen.getByRole('link', { name: 'Revenir à l’Espace Partenaire' })
-    ).toHaveAttribute('href', '/accueil')
+
+    it('should hide "Espace administration" button when disableAdminButton is true', () => {
+      const props = {
+        ...defaultProps,
+        disableAdminButton: true,
+      }
+
+      renderWithProviders(<Header {...props} isAdminArea={true} />, {
+        features: ['WIP_SWITCH_VENUE'],
+      })
+
+      expect(
+        screen.queryByRole('link', { name: 'Espace administration' })
+      ).toBeFalsy()
+    })
   })
 
   describe('logEvents', () => {

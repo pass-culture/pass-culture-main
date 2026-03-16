@@ -224,7 +224,7 @@ describe('withUserPermissions', () => {
         guardedLoader(args)
 
         expect(reactRouter.redirect).toHaveBeenCalledWith(
-          'inscription/structure/recherche'
+          '/inscription/structure/recherche'
         )
       })
     })

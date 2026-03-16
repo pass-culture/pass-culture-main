@@ -41,8 +41,11 @@ export const setSelectedVenueById = createAsyncThunk<
     try {
       const state = getState()
 
-      const offererNames = state.offerer.offererNames
-      assertOrFrontendError(offererNames, '`offererNames` is null.')
+      const offererNamesAttached = state.offerer.offererNamesAttached
+      assertOrFrontendError(
+        offererNamesAttached,
+        '`offererNamesAttached` is null.'
+      )
       const previousSelectedVenue = state.user.selectedVenue
       if (nextSelectedVenueId === previousSelectedVenue?.id) {
         return {
@@ -55,7 +58,7 @@ export const setSelectedVenueById = createAsyncThunk<
       const nextSelectedOfferer = await api.getOfferer(
         nextSelectedVenue.managingOfferer.id
       )
-      const nextSelectedOffererName = offererNames.find(
+      const nextSelectedOffererName = offererNamesAttached.find(
         (offerer) => offerer.id === nextSelectedOfferer.id
       )
       assertOrFrontendError(
@@ -71,7 +74,11 @@ export const setSelectedVenueById = createAsyncThunk<
 
       dispatch(updateCurrentOfferer(nextSelectedOfferer))
       if (!shouldSkipSelectedAdminOffererUpdate) {
-        await dispatch(setSelectedAdminOffererById(nextSelectedOfferer))
+        await dispatch(
+          setSelectedAdminOffererById({
+            offererId: nextSelectedOfferer,
+          })
+        )
       }
       // TODO (igabriele, 2026-02-04): Delete this statement once `WIP_SWITCH_VENUE` FF is enabled and removed.
       dispatch(setCurrentOffererName(nextSelectedOffererName))
