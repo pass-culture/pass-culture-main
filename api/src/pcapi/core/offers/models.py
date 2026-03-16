@@ -978,6 +978,12 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
         ),
         sa.Index("ix_offer_offererAddressId", "offererAddressId", postgresql_where='"offererAddressId" IS NOT NULL'),
         sa.Index("ix_offer_venueId_subcategoryId", "venueId", "subcategoryId"),
+        sa.Index(
+            "ix_offer_venueId_publicationDatetime",
+            "venueId",
+            "publicationDatetime",
+            postgresql_where='"publicationDatetime" IS NOT NULL',
+        ),
     )
 
     @property
