@@ -2,6 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { BaseHttpRequest } from '../core/BaseHttpRequest';
+import type { CancelablePromise } from '../core/CancelablePromise';
 import type { ArtistsResponseModel } from '../models/ArtistsResponseModel';
 import type { AttachImageFormModel } from '../models/AttachImageFormModel';
 import type { AttachImageResponseModel } from '../models/AttachImageResponseModel';
@@ -128,8 +130,6 @@ import type { VenueLabelListResponseModel } from '../models/VenueLabelListRespon
 import type { VenueProviderResponse } from '../models/VenueProviderResponse';
 import type { VenuesEducationalStatusesResponseModel } from '../models/VenuesEducationalStatusesResponseModel';
 import type { VideoData } from '../models/VideoData';
-import type { CancelablePromise } from '../core/CancelablePromise';
-import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class DefaultService {
   constructor(public readonly httpRequest: BaseHttpRequest) {}
   /**
@@ -2570,6 +2570,7 @@ export class DefaultService {
   }
   /**
    * post_new_password <POST>
+   * @deprecated This route is deprecated and will soon be removed. Please use the new api instead.
    * @param requestBody
    * @returns void
    * @throws ApiError

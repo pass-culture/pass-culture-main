@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { ResetPassword } from './ResetPassword'
@@ -13,7 +13,7 @@ vi.mock('@/commons/utils/recaptcha', () => ({
 }))
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     getProfile: vi.fn(),
     postNewPassword: vi.fn(),
     postCheckToken: vi.fn(),
@@ -51,7 +51,7 @@ describe('ResetPassword', () => {
   it('should be able to reset the password when token is ok', async () => {
     const url = '/demande-mot-de-passe/ABC'
 
-    vi.spyOn(api, 'postCheckToken').mockResolvedValue()
+    vi.spyOn(apiNew, 'postCheckToken').mockResolvedValue()
 
     renderLostPassword(url)
 
@@ -72,7 +72,7 @@ describe('ResetPassword', () => {
   it('should immediately redirect to login page if token is missing', async () => {
     const url = '/demande-mot-de-passe/toto'
 
-    vi.spyOn(api, 'postCheckToken').mockRejectedValue({
+    vi.spyOn(apiNew, 'postCheckToken').mockRejectedValue({
       token: ['Mauvais token'],
     })
 
@@ -89,7 +89,7 @@ describe('ResetPassword', () => {
   it('should immediately redirect to login page if token is invalid', async () => {
     const url = '/demande-mot-de-passe/ABC'
 
-    vi.spyOn(api, 'postCheckToken').mockRejectedValue({
+    vi.spyOn(apiNew, 'postCheckToken').mockRejectedValue({
       token: ['Votre lien de changement de mot de passe est invalide.'],
     })
 

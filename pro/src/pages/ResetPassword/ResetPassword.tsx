@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { type Params, useNavigate, useParams } from 'react-router'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { SignUpLayout } from '@/app/App/layouts/logged-out/SignUpLayout/SignUpLayout'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
@@ -31,9 +31,13 @@ export const ResetPassword = (): JSX.Element => {
 
   useEffect(() => {
     if (token) {
-      api.postCheckToken({ token }).then(() => {
-        setIsLoading(false)
-      }, invalidTokenHandler)
+      apiNew
+        .postCheckToken({
+          body: {
+            token,
+          },
+        })
+        .then(() => setIsLoading(false), invalidTokenHandler)
     }
   }, [token, invalidTokenHandler])
 
@@ -42,7 +46,12 @@ export const ResetPassword = (): JSX.Element => {
     try {
       // `as string` is used because TS it can be undefined
       // token is always defined as `submitChangePassword` is callable only in that case.
-      await api.postNewPassword({ newPassword, token: token as string })
+      await apiNew.postNewPassword({
+        body: {
+          newPassword: newPassword,
+          token: token as string,
+        },
+      })
 
       snackBar.success('Mot de passe modifié.')
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
