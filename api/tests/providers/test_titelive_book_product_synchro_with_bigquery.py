@@ -293,6 +293,27 @@ class BigQueryTiteliveBookProductSyncTest:
     @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
     @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
     @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
+    def test_does_not_create_product_when_product_is_lectorat_under_six(
+        self, mock_execute, mock_gcp_data, mock_gcp_backend, settings
+    ):
+        providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
+        fixture = build_titelive_one_book_response(
+            ean=self.EAN_TEST, id_lectorat=providers_constants.UNDER_SIX_LECTORAT[0]
+        )
+        bq_product = self._prepare_bq_product_from_fixture(fixture)
+        mock_execute.return_value = iter([bq_product])
+
+        with patch(
+            "pcapi.core.providers.titelive_bq_sync_base.copy_file_between_storage_backends",
+            side_effect=lambda file_id, **kwargs: file_id,
+        ):
+            BigQueryTiteliveBookProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
+
+        assert db.session.query(offers_models.Product).count() == 0
+
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     @pytest.mark.parametrize(
         "level_02_code_gtl",
         [

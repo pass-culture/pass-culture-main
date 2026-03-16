@@ -647,6 +647,21 @@ class TiteliveBookSearchTest:
         # Then
         assert db.session.query(offers_models.Product).count() == 0
 
+    def test_does_not_create_product_when_product_is_lectorat_under_six(self, requests_mock, settings):
+        # Given
+        self.setup_api_response_fixture(
+            requests_mock,
+            settings,
+            fixtures.build_titelive_one_book_response(id_lectorat=providers_constants.UNDER_SIX_LECTORAT[0]),
+        )
+
+        # When
+        sync_date = datetime.date(2022, 12, 1)
+        TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
+
+        # Then
+        assert db.session.query(offers_models.Product).count() == 0
+
     @pytest.mark.parametrize(
         "level_02_code_gtl",
         [
