@@ -50,3 +50,80 @@ def test_patch_user_identity_without_auth(client: Any) -> None:
     assert user.firstName == "jean"
     assert user.lastName == "Tours"
     assert len(user.action_history) == 0
+
+
+@pytest.mark.usefixtures("db_session")
+def test_patch_user_identity_too_long_first_name(client: Any) -> None:
+    user = users_factories.ProFactory(firstName="jean", lastName="Kadre")
+    form_data = {"firstName": "A" * 129, "lastName": "Ere"}
+    client = client.with_session_auth(user.email)
+    response = client.patch("/users/identity", json=form_data)
+
+    assert response.status_code == 400
+    assert user.firstName == "jean"
+    assert user.lastName == "Kadre"
+    assert len(user.action_history) == 0
+
+
+@pytest.mark.usefixtures("db_session")
+def test_patch_user_identity_too_long_last_name(client: Any) -> None:
+    user = users_factories.ProFactory(firstName="jean", lastName="Kadre")
+    form_data = {"firstName": "Axel", "lastName": "E" * 129}
+    client = client.with_session_auth(user.email)
+    response = client.patch("/users/identity", json=form_data)
+
+    assert response.status_code == 400
+    assert user.firstName == "jean"
+    assert user.lastName == "Kadre"
+    assert len(user.action_history) == 0
+
+
+@pytest.mark.usefixtures("db_session")
+def test_patch_user_identity_empty_first_name(client: Any) -> None:
+    user = users_factories.ProFactory(firstName="jean", lastName="Kadre")
+    form_data = {"firstName": "", "lastName": "Ere"}
+    client = client.with_session_auth(user.email)
+    response = client.patch("/users/identity", json=form_data)
+
+    assert response.status_code == 400
+    assert user.firstName == "jean"
+    assert user.lastName == "Kadre"
+    assert len(user.action_history) == 0
+
+
+@pytest.mark.usefixtures("db_session")
+def test_patch_user_identity_empty_last_name(client: Any) -> None:
+    user = users_factories.ProFactory(firstName="jean", lastName="Kadre")
+    form_data = {"firstName": "Axel", "lastName": ""}
+    client = client.with_session_auth(user.email)
+    response = client.patch("/users/identity", json=form_data)
+
+    assert response.status_code == 400
+    assert user.firstName == "jean"
+    assert user.lastName == "Kadre"
+    assert len(user.action_history) == 0
+
+
+@pytest.mark.usefixtures("db_session")
+def test_patch_user_identity_whitespace_only(client: Any) -> None:
+    user = users_factories.ProFactory(firstName="jean", lastName="Kadre")
+    form_data = {"firstName": "   ", "lastName": "Ere"}
+    client = client.with_session_auth(user.email)
+    response = client.patch("/users/identity", json=form_data)
+
+    assert response.status_code == 400
+    assert user.firstName == "jean"
+    assert user.lastName == "Kadre"
+    assert len(user.action_history) == 0
+
+
+@pytest.mark.usefixtures("db_session")
+def test_patch_user_identity_max_length(client: Any) -> None:
+    user = users_factories.ProFactory(firstName="jean", lastName="Kadre")
+    form_data = {"firstName": "A" * 128, "lastName": "B" * 128}
+    client = client.with_session_auth(user.email)
+    response = client.patch("/users/identity", json=form_data)
+
+    assert response.status_code == 200
+    assert user.firstName == "A" * 128
+    assert user.lastName == "B" * 128

@@ -18,8 +18,30 @@ class UserIdentityResponseModel(HttpBodyModel):
 
 
 class UserIdentityBodyModel(HttpBodyModel):
-    first_name: str
-    last_name: str
+    model_config = pydantic_v2.ConfigDict(str_strip_whitespace=True)
+
+    first_name: str = pydantic_v2.Field(
+        ...,
+        min_length=1,
+        max_length=128,
+        json_schema_extra={
+            "x-error-messages": {
+                "min_length": "Veuillez renseigner votre prénom",
+                "max_length": "Veuillez renseigner moins de 128 caractères",
+            }
+        },
+    )
+    last_name: str = pydantic_v2.Field(
+        ...,
+        min_length=1,
+        max_length=128,
+        json_schema_extra={
+            "x-error-messages": {
+                "min_length": "Veuillez renseigner votre nom",
+                "max_length": "Veuillez renseigner moins de 128 caractères",
+            }
+        },
+    )
 
 
 class UserPhoneResponseModel(HttpBodyModel):
