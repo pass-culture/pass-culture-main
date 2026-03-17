@@ -139,11 +139,7 @@ export const FormLocation = ({
                         }
                       />
                     )}
-                    error={
-                      !disableForm && !isManualEdition
-                        ? getFieldState('addressAutocomplete').error?.message
-                        : undefined
-                    }
+                    error={getFieldState('addressAutocomplete').error?.message}
                     disabled={disableForm}
                     className={styles['specific-address-search']}
                     manual={isManualEdition}

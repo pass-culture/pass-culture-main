@@ -29,7 +29,6 @@ export const OffererAuthenticationForm = (): JSX.Element => {
     watch,
     setValue,
     register,
-    getFieldState,
     clearErrors,
     formState: { errors, disabled },
   } = useFormContext<OffererAuthenticationFormValues>()
@@ -144,7 +143,7 @@ export const OffererAuthenticationForm = (): JSX.Element => {
               ? 'Cette adresse postale sera visible.'
               : 'Cette adresse postale ne sera pas visible.'
           }
-          error={getFieldState('addressAutocomplete').error?.message}
+          error={errors.addressAutocomplete?.message}
           manual={manuallySetAddress}
         />
       )}
