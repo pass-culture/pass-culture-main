@@ -2193,7 +2193,7 @@ class ListLlmOffersTest(GetEndpointHelper):
                     "value": query_args["search-2-date"],
                 },
                 {
-                    "column": "venue_departement_code",
+                    "column": "venue_department_code",
                     "operator": "in",
                     "value": [query_args["search-3-department"]],
                 },
