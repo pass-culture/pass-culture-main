@@ -4,6 +4,7 @@ from unittest import mock
 import pytest
 import sqlalchemy.orm as sa_orm
 
+from pcapi import settings
 from pcapi.core.categories import subcategories
 from pcapi.core.external.compliance import api
 from pcapi.core.offers import factories as offers_factories
@@ -16,13 +17,16 @@ from pcapi.utils import requests
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@pytest.mark.settings(COMPLIANCE_BACKEND="ComplianceBackend")
+@pytest.mark.settings(COMPLIANCE_BACKEND="ComplianceBackend", SA_API_COMPLIANCE_IAP="fake_service_account")
 @pytest.mark.usefixtures("db_session")
 class GetDataComplianceScoringTest:
-    @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
-    def test_get_data_compliance_scoring(self, mock_get_id_token_from_google, requests_mock):
+    @mock.patch(
+        "pcapi.core.external.compliance.backends.compliance.ComplianceBackend._get_signed_jwt",
+        return_value="Good token",
+    )
+    def test_get_data_compliance_scoring(self, mock_get_signed_jwt, requests_mock):
         requests_mock.post(
-            "https://compliance.passculture.team/latest/model/compliance/scoring",
+            f"{settings.COMPLIANCE_DOMAIN}/latest/model/compliance/scoring",
             json={"probability_validated": 50, "rejection_main_features": ["stock_price", "offer_description"]},
         )
         offer = offers_factories.OfferFactory(name="Hello la data")
@@ -34,10 +38,13 @@ class GetDataComplianceScoringTest:
         assert offer_compliance.validation_status_prediction is None
         assert offer_compliance.validation_status_prediction_reason is None
 
-    @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
-    def test_upsert_compliance_scoring(self, mock_get_id_token_from_google, requests_mock):
+    @mock.patch(
+        "pcapi.core.external.compliance.backends.compliance.ComplianceBackend._get_signed_jwt",
+        return_value="Good token",
+    )
+    def test_upsert_compliance_scoring(self, mock_get_signed_jwt, requests_mock):
         requests_mock.post(
-            "https://compliance.passculture.team/latest/model/compliance/scoring",
+            f"{settings.COMPLIANCE_DOMAIN}/latest/model/compliance/scoring",
             json={"probability_validated": 50, "rejection_main_features": ["offer_name"]},
         )
         offer = offers_factories.OfferFactory(
@@ -54,10 +61,13 @@ class GetDataComplianceScoringTest:
         assert offer_compliance.validation_status_prediction is None
         assert offer_compliance.validation_status_prediction_reason is None
 
-    @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
-    def test_get_data_compliance_scoring_without_reasons(self, mock_get_id_token_from_google, requests_mock):
+    @mock.patch(
+        "pcapi.core.external.compliance.backends.compliance.ComplianceBackend._get_signed_jwt",
+        return_value="Good token",
+    )
+    def test_get_data_compliance_scoring_without_reasons(self, mock_get_signed_jwt, requests_mock):
         requests_mock.post(
-            "https://compliance.passculture.team/latest/model/compliance/scoring",
+            f"{settings.COMPLIANCE_DOMAIN}/latest/model/compliance/scoring",
             json={"probability_validated": 50, "rejection_main_features": []},
         )
         offer = offers_factories.OfferFactory(name="Hello la data")
@@ -69,9 +79,12 @@ class GetDataComplianceScoringTest:
         assert offer_compliance.validation_status_prediction is None
         assert offer_compliance.validation_status_prediction_reason is None
 
-    @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
-    def test_get_data_compliance_scoring_with_failed_auth_exception(self, mock_requests_post, requests_mock, caplog):
-        requests_mock.post("https://compliance.passculture.team/latest/model/compliance/scoring", status_code=401)
+    @mock.patch(
+        "pcapi.core.external.compliance.backends.compliance.ComplianceBackend._get_signed_jwt",
+        return_value="Good token",
+    )
+    def test_get_data_compliance_scoring_with_failed_auth_exception(self, mock_get_signed_jwt, requests_mock, caplog):
+        requests_mock.post(f"{settings.COMPLIANCE_DOMAIN}/latest/model/compliance/scoring", status_code=401)
         offer = offers_factories.OfferFactory(name="Hello la data")
         payload = api._get_payload_for_compliance_api(offer)
 
@@ -84,9 +97,12 @@ class GetDataComplianceScoringTest:
         assert caplog.records[0].extra == {"status_code": 401}
         assert not db.session.query(offers_models.OfferCompliance).filter_by(offerId=offer.id).count()
 
-    @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
-    def test_get_data_compliance_scoring_with_bad_data_exception(self, mock_requests_post, requests_mock, caplog):
-        requests_mock.post("https://compliance.passculture.team/latest/model/compliance/scoring", status_code=422)
+    @mock.patch(
+        "pcapi.core.external.compliance.backends.compliance.ComplianceBackend._get_signed_jwt",
+        return_value="Good token",
+    )
+    def test_get_data_compliance_scoring_with_bad_data_exception(self, mock_get_signed_jwt, requests_mock, caplog):
+        requests_mock.post(f"{settings.COMPLIANCE_DOMAIN}/latest/model/compliance/scoring", status_code=422)
         offer = offers_factories.OfferFactory(name="Hello la data")
         payload = api._get_payload_for_compliance_api(offer)
 
@@ -99,9 +115,12 @@ class GetDataComplianceScoringTest:
         assert caplog.records[0].extra == {"status_code": 422}
         assert not db.session.query(offers_models.OfferCompliance).filter_by(offerId=offer.id).count()
 
-    @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
-    def test_get_data_compliance_scoring_with_unknown_exception(self, mock_requests_post, requests_mock, caplog):
-        requests_mock.post("https://compliance.passculture.team/latest/model/compliance/scoring", status_code=500)
+    @mock.patch(
+        "pcapi.core.external.compliance.backends.compliance.ComplianceBackend._get_signed_jwt",
+        return_value="Good token",
+    )
+    def test_get_data_compliance_scoring_with_unknown_exception(self, mock_get_signed_jwt, requests_mock, caplog):
+        requests_mock.post(f"{settings.COMPLIANCE_DOMAIN}/latest/model/compliance/scoring", status_code=500)
         offer = offers_factories.OfferFactory(name="Hello la data")
         payload = api._get_payload_for_compliance_api(offer)
 
@@ -121,16 +140,19 @@ class GetDataComplianceScoringTest:
             ("rejected", "L'offre n'est pas conforme car le prix du stock est trop élevé."),
         ),
     )
-    @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
+    @mock.patch(
+        "pcapi.core.external.compliance.backends.compliance.ComplianceBackend._get_signed_jwt",
+        return_value="Good token",
+    )
     def test_get_data_compliance_validation_status_prediction(
         self,
-        mock_get_id_token_from_google,
+        mock_get_signed_jwt,
         requests_mock,
         validation_status_prediction,
         validation_status_prediction_reason,
     ):
         requests_mock.post(
-            "https://compliance.passculture.team/latest/model/compliance/scoring",
+            f"{settings.COMPLIANCE_DOMAIN}/latest/model/compliance/scoring",
             json={
                 "probability_validated": 50,
                 "rejection_main_features": ["stock_price", "offer_description"],

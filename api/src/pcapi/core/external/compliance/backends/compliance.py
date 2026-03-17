@@ -1,7 +1,11 @@
+import datetime
+import json
 import logging
 
+import google.auth
+from google.cloud import iam_credentials_v1
+
 from pcapi import settings
-from pcapi.core.auth import api as auth_api
 from pcapi.core.external.compliance import serialization
 from pcapi.core.external.compliance.backends.base import BaseBackend
 from pcapi.utils import requests
@@ -34,13 +38,23 @@ class ComplianceBackend(BaseBackend):
         return None
 
     def _post(self, route: str, payload: dict) -> dict | None:
-        id_token = self._get_id_token_for_compliance(settings.COMPLIANCE_API_CLIENT_ID)
-        if not id_token:  # only possible in development
+        target_service_account = settings.SA_API_COMPLIANCE_IAP
+        if not target_service_account:
+            logger.warning("SA_API_COMPLIANCE_IAP is not set, cannot call Compliance API")
+            return None
+
+        full_endpoint_url = f"{settings.COMPLIANCE_DOMAIN}{route}"
+        try:
+            id_token = self._get_signed_jwt(
+                target_service_account=target_service_account, resource_url=full_endpoint_url
+            )
+        except Exception as exc:
+            logger.exception("Failed to generate signed JWT for Compliance API", extra={"exc": exc})
             return None
 
         try:
             api_response = requests.post(
-                f"{settings.COMPLIANCE_DOMAIN}{route}",
+                full_endpoint_url,
                 headers={
                     "Authorization": f"Bearer {id_token}",
                     "accept": "application/json",
@@ -59,6 +73,26 @@ class ComplianceBackend(BaseBackend):
 
         return api_response.json()
 
+    def _get_signed_jwt(self, target_service_account: str, resource_url: str) -> str:
+        iat = datetime.datetime.now(tz=datetime.timezone.utc)
+        exp = iat + datetime.timedelta(seconds=3600)
+
+        payload = {
+            "iss": target_service_account,
+            "sub": target_service_account,
+            "aud": resource_url,
+            "iat": int(iat.timestamp()),
+            "exp": int(exp.timestamp()),
+        }
+
+        source_credentials, _ = google.auth.default()
+        iam_client = iam_credentials_v1.IAMCredentialsClient(credentials=source_credentials)
+
+        name = iam_client.service_account_path("-", target_service_account)
+        response = iam_client.sign_jwt(name=name, payload=json.dumps(payload))
+
+        return response.signed_jwt
+
     def _handle_errors(self, api_response: requests.Response) -> None:
         if api_response.status_code in {401, 403}:
             logger.exception(
@@ -68,6 +102,7 @@ class ComplianceBackend(BaseBackend):
             # FIXME (prouzet, 2024-11-29) We experience random HTTP 403 errors (1 to 5 every day), so make them
             #  retryable until the issue is fixed on data team side. Sentry issue: 1613833
             raise requests.ExternalAPIException(is_retryable=(api_response.status_code == 403))
+
         if api_response.status_code == 422:
             error_data = {"status_code": api_response.status_code}
             try:
@@ -86,12 +121,9 @@ class ComplianceBackend(BaseBackend):
             error_data |= api_response.json()
         except requests.exceptions.JSONDecodeError:
             pass
+
         logger.exception(
             "Response from Compliance API is not ok",
             extra=error_data,
         )
         raise requests.ExternalAPIException(is_retryable=True)
-
-    def _get_id_token_for_compliance(self, client_id: str) -> str | None:
-        # overriden in dev
-        return auth_api.get_id_token_from_google(client_id)
