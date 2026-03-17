@@ -216,11 +216,9 @@ describe('SignIn', () => {
     )
 
     expect(apiNew.signin).toHaveBeenCalledExactlyOnceWith({
-      body: {
-        identifier: 'MonPetitEmail@example.com',
-        password: 'fakePassword',
-        captchaToken: 'token',
-      },
+      identifier: 'MonPetitEmail@example.com',
+      password: 'fakePassword',
+      captchaToken: 'token',
     })
     expect(initializeUserSpy).toHaveBeenCalledExactlyOnceWith({})
   })

@@ -65,11 +65,9 @@ export const SignIn = (): JSX.Element => {
     try {
       const captchaToken = await getReCaptchaToken('loginUser')
       const user = await apiNew.signin({
-        body: {
-          identifier: email,
-          password,
-          captchaToken,
-        },
+        identifier: email,
+        password,
+        captchaToken,
       })
 
       if (user) {
