@@ -28,10 +28,10 @@ class GetOrSetCorrelationIdTest:
             assert correlation_id == ""
 
     def test_request_with_header(self, app):
-        headers = {"X-Request-Id": uuid.uuid4().hex}
+        headers = {"X-Cloud-Trace-Context": uuid.uuid4().hex}
         with app.test_request_context(headers=headers):
             correlation_id = get_or_set_correlation_id()
-            assert correlation_id == headers["X-Request-Id"]
+            assert correlation_id == headers["X-Cloud-Trace-Context"]
 
 
 @pytest.mark.usefixtures("db_session")
