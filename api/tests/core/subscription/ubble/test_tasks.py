@@ -1,3 +1,4 @@
+import datetime
 import pathlib
 from io import BytesIO
 from unittest.mock import patch
@@ -97,6 +98,7 @@ class IncompleteUbbleRecoveryTaskTest:
             thirdPartyId="idv_qwerty1234",
             status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
+            updatedAt=datetime.datetime(2026, 1, 1),
         )
 
         ubble_tasks.recover_incomplete_ubble_verification()
@@ -193,6 +195,22 @@ class IncompleteUbbleRecoveryTaskTest:
                 "document_issuing_country": "vietnam",
                 "nationality": "espagnol",
             },
+        )
+
+        ubble_tasks.recover_incomplete_ubble_verification()
+
+        mock_recovery_task.assert_not_called()
+
+    @patch("pcapi.core.subscription.ubble.tasks.recover_incomplete_ubble_verification_task.delay")
+    def test_recovery_command_ignores_recently_updated_partial_identification(self, mock_recovery_task):
+        user = users_factories.UserFactory()
+        BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.UBBLE,
+            thirdPartyId="idv_qwerty1234",
+            status=subscription_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE17_18,
+            updatedAt=datetime.datetime(2026, 12, 12),
         )
 
         ubble_tasks.recover_incomplete_ubble_verification()

@@ -127,6 +127,7 @@ def recover_incomplete_ubble_verification() -> None:
     This function is meant to be called as often as needed by recovery workers.
     """
     page_size = 180
+    cutoff_date = datetime.datetime(2026, 3, 17)
     fraud_check_to_recover_id_stmt = (
         sa.select(subscription_models.BeneficiaryFraudCheck.id)
         .where(
@@ -139,6 +140,7 @@ def recover_incomplete_ubble_verification() -> None:
                 subscription_models.BeneficiaryFraudCheck.resultContent["document_issuing_country"].astext.is_(None),
                 subscription_models.BeneficiaryFraudCheck.resultContent["nationality"].astext.is_(None),
             ),
+            subscription_models.BeneficiaryFraudCheck.updatedAt < cutoff_date,
         )
         .order_by(subscription_models.BeneficiaryFraudCheck.id)
         .limit(page_size)
