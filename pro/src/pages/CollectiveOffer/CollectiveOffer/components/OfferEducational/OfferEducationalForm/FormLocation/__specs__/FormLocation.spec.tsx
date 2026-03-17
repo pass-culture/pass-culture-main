@@ -8,7 +8,7 @@ import {
   type VenueListItemResponseModel,
 } from '@/apiClient/v1'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
-import { venueListItemFactory } from '@/commons/utils/factories/individualApiFactories'
+import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { FormLocation, type FormLocationProps } from '../FormLocation'
@@ -116,7 +116,7 @@ describe('FormLocation', () => {
   }
 
   const venues: VenueListItemResponseModel[] = [
-    venueListItemFactory({ id: 1, location }),
+    makeVenueListItem({ id: 1, location }),
   ]
 
   const props: FormLocationProps = {
@@ -398,5 +398,66 @@ describe('FormLocation', () => {
     await new Promise((r) => setTimeout(r, 10))
 
     expect(scrollIntoViewMock).not.toHaveBeenCalled()
+  })
+
+  it('should populate fields when venue address is selected', async () => {
+    const { getValues } = renderFormLocation(props, initialValues)
+
+    await userEvent.click(screen.getByText('À une adresse précise'))
+
+    const venueOption = screen.getByText(/Venue 1/)
+    await userEvent.click(venueOption)
+
+    const values = getValues()
+
+    expect(values.city).toBe('Paris')
+    expect(values.street).toBe('1 Rue de Paris')
+    expect(values.postalCode).toBe('75001')
+    expect(values.coords).toBe('48.87004, 2.3785')
+  })
+
+  it('should reset address fields when switching away from ADDRESS type', async () => {
+    const { getValues } = renderFormLocation(props, initialValues)
+
+    await userEvent.click(screen.getByLabelText('En établissement scolaire'))
+
+    const values = getValues()
+
+    expect(values.street).toBe('')
+    expect(values.city).toBe('')
+    expect(values.postalCode).toBe('')
+  })
+
+  it('should clear venue address when selecting specific address', async () => {
+    const { getValues } = renderFormLocation(props, initialValues)
+
+    await userEvent.click(screen.getByText('Autre adresse'))
+
+    const values = getValues()
+
+    expect(values.street).toBe('')
+    expect(values.city).toBe('')
+  })
+
+  it('should update RHF flags when enabling manual edition', async () => {
+    const { getValues } = renderFormLocation(props, {
+      ...initialValues,
+      location: {
+        ...initialValues.location,
+        location: {
+          ...initialValues?.location?.location,
+          id: 'SPECIFIC_ADDRESS',
+        },
+      },
+    })
+
+    await userEvent.click(
+      screen.getByText('Vous ne trouvez pas votre adresse ?')
+    )
+
+    const values = getValues()
+
+    expect(values.location.location.isManualEdition).toBe(true)
+    expect(values.location.location.isVenueLocation).toBe(false)
   })
 })
