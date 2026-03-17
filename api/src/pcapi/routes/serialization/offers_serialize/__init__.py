@@ -1,7 +1,6 @@
 import datetime
 import decimal
 import typing
-from types import NoneType
 from typing import Any
 
 import pydantic as pydantic_v2
@@ -16,7 +15,6 @@ from pydantic.v1.utils import GetterDict
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers import validation as offers_validation
@@ -25,6 +23,7 @@ from pcapi.routes.native.v1.serialization.common_models import AccessibilityComp
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import HttpBodyModel
+from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import artist_serialize
 from pcapi.routes.serialization import highlight_serialize
@@ -34,7 +33,6 @@ from pcapi.routes.serialization.address_serialize import VenueAddressInfoGetter
 from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
 from pcapi.serialization.utils import NOW_LITERAL
 from pcapi.serialization.utils import to_camel
-from pcapi.serialization.utils import validate_datetime
 from pcapi.serialization.utils import validate_timezoned_datetime
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
@@ -333,6 +331,42 @@ class ListOffersQueryModel(BaseModel):
         alias_generator = to_camel
         extra = "forbid"
         arbitrary_types_allowed = True
+
+
+class ListOffersHomeQueryModel(HttpQueryParamsModel):
+    venue_id: int
+
+
+class StockHomeResponseModel(HttpBodyModel):
+    beginningDatetime: datetime.datetime | None
+
+
+class OfferHomeResponseModel(HttpBodyModel):
+    id: int
+    name: str
+    status: OfferStatus
+    isEvent: bool
+    thumbUrl: str | None
+    bookingsCount: int
+    stocks: list[StockHomeResponseModel]
+
+    @classmethod
+    def build(cls, offer: offers_models.Offer) -> typing.Self:
+        bookings_count = sum(stock.dnBookedQuantity for stock in offer.stocks)
+
+        return cls(
+            id=offer.id,
+            name=offer.name,
+            status=offer.status,
+            isEvent=offer.isEvent,
+            thumbUrl=offer.thumbUrl,
+            bookingsCount=bookings_count,
+            stocks=[StockHomeResponseModel.model_validate(stock) for stock in offer.activeStocks],
+        )
+
+
+class ListOffersHomeResponseModel(pydantic_v2.RootModel):
+    root: list[OfferHomeResponseModel]
 
 
 class GetOfferStockResponseModel(BaseModel):
