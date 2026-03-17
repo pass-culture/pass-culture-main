@@ -172,7 +172,7 @@ export const Autocomplete = ({
         ...source,
         sourceId: VENUE_SUGGESTIONS_SOURCE_ID,
         async onSelect({ item }) {
-          const venueDisplayName = item.venue.publicName
+          const venueDisplayName = item.venue.publicName ?? item.venue.name
           autocomplete.setQuery('')
           refine('')
           dispatch(setAdageQuery(''))
@@ -249,7 +249,7 @@ export const Autocomplete = ({
             addSuggestionToHistory(item.query)
           }
 
-          void logAutocompleteSuggestionClick(
+          await logAutocompleteSuggestionClick(
             itemId <= 2 ? SuggestionType.OFFER_CATEGORY : SuggestionType.OFFER,
             item.query
           )
