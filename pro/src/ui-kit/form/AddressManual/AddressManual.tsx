@@ -1,6 +1,10 @@
-import { useFormContext } from 'react-hook-form'
+import { type FieldErrors, useFormContext } from 'react-hook-form'
 
-import type { AddressFormValues } from '@/commons/core/shared/types'
+import type {
+  AddressFormValues,
+  FlatAddressFormValues,
+  LocationFormValues,
+} from '@/commons/core/shared/types'
 import { checkCoords, getCoordsType, parseDms } from '@/commons/utils/coords'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
@@ -12,15 +16,41 @@ import styles from './AddressManual.module.scss'
 interface AddressManualProps {
   readOnlyFields?: string[]
   gpsCalloutMessage?: string
+  prefix?: '' | 'location.' | 'address.'
 }
 
+function getError(
+  prefix: string,
+  errors: FieldErrors<
+    FlatAddressFormValues | AddressFormValues | LocationFormValues
+  >,
+  field:
+    | keyof FlatAddressFormValues
+    | keyof AddressFormValues
+    | keyof LocationFormValues
+) {
+  if (prefix === 'location.') {
+    // @ts-expect-error
+    return (errors as FieldErrors<LocationFormValues>)?.location?.[field]
+      ?.message
+  } else if (prefix === 'address.') {
+    // @ts-expect-error
+    return (errors as FieldErrors<AddressFormValues>)?.address?.[field]?.message
+  } else {
+    // @ts-expect-error
+    return errors?.[field]?.message
+  }
+}
 export const AddressManual = ({
   readOnlyFields = [],
   gpsCalloutMessage,
+  prefix = '',
 }: AddressManualProps): JSX.Element => {
-  const methods = useFormContext<AddressFormValues>()
+  const methods = useFormContext<
+    FlatAddressFormValues | AddressFormValues | LocationFormValues
+  >()
 
-  const coords = methods.watch('coords')
+  const coords = methods.watch(`${prefix}coords`)
 
   const onCoordsBlur = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newCoords = event.target.value
@@ -38,8 +68,9 @@ export const AddressManual = ({
         .map((c) => String(parseDms(c)))
     }
 
-    methods.setValue('latitude', latitude)
-    methods.setValue('longitude', longitude)
+    methods.setValue(`${prefix}latitude`, latitude)
+    methods.setValue(`${prefix}longitude`, longitude)
+    methods.trigger(`${prefix}coords`)
   }
 
   return (
@@ -49,8 +80,8 @@ export const AddressManual = ({
           label="Adresse postale"
           maxCharactersCount={200}
           disabled={readOnlyFields.includes('street')}
-          {...methods.register('street')}
-          error={methods.formState.errors.street?.message}
+          {...methods.register(`${prefix}street`)}
+          error={getError(prefix, methods.formState.errors, 'street')}
           required
         />
       </FormLayout.Row>
@@ -60,8 +91,8 @@ export const AddressManual = ({
             label="Code postal"
             maxCharactersCount={5}
             disabled={readOnlyFields.includes('postalCode')}
-            {...methods.register('postalCode')}
-            error={methods.formState.errors.postalCode?.message}
+            {...methods.register(`${prefix}postalCode`)}
+            error={getError(prefix, methods.formState.errors, 'postalCode')}
             required
           />
         </div>
@@ -70,8 +101,8 @@ export const AddressManual = ({
             label="Ville"
             disabled={readOnlyFields.includes('city')}
             maxCharactersCount={50}
-            {...methods.register('city')}
-            error={methods.formState.errors.city?.message}
+            {...methods.register(`${prefix}city`)}
+            error={getError(prefix, methods.formState.errors, 'city')}
             required
           />
         </div>
@@ -82,9 +113,9 @@ export const AddressManual = ({
           type="text"
           description={`Exemple : 48.853320, 2.348979 ou 48°51'12.0"N 2°20'56.3"E`}
           disabled={readOnlyFields.includes('coords')}
-          {...methods.register('coords')}
+          {...methods.register(`${prefix}coords`)}
           onBlur={onCoordsBlur}
-          error={methods.formState.errors.coords?.message}
+          error={getError(prefix, methods.formState.errors, 'coords')}
           required
         />
       </FormLayout.Row>

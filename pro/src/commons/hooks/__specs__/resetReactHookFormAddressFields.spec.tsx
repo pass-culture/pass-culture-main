@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import type { AddressFormValues } from '@/commons/core/shared/types'
+import type { FlatAddressFormValues } from '@/commons/core/shared/types'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 
 describe('resetReactHookFormAddressFields', () => {
@@ -13,7 +13,7 @@ describe('resetReactHookFormAddressFields', () => {
 
     // Expected fields and default values based on your map
     const expectedCalls: [
-      keyof AddressFormValues,
+      keyof FlatAddressFormValues,
       defaultValue: string | null,
     ][] = [
       ['street', ''],
