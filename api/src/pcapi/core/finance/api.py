@@ -3571,7 +3571,7 @@ def are_cashflows_being_generated() -> bool:
     return bool(app.redis_client.exists(conf.REDIS_GENERATE_CASHFLOW_LOCK))
 
 
-def deprecate_venue_bank_account_links(bank_account: models.BankAccount) -> None:
+def deprecate_venue_bank_account_links(bank_account: models.BankAccount, comment: str | None = None) -> None:
     """
     Deprecate all up-to-date link between a bankAccount and a Venue.
     Log that action as well by creating an ActionHistory.
@@ -3583,6 +3583,7 @@ def deprecate_venue_bank_account_links(bank_account: models.BankAccount) -> None
                 venueId=link.venueId,
                 bankAccountId=bank_account.id,
                 actionType=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
+                comment=comment,
             )
             db.session.add_all([link, action_history])
 

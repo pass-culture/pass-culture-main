@@ -320,10 +320,10 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
                 settlement.dateRejected = date_utils.get_naive_utc_now()
                 db.session.flush()
                 loaded_settlements[(payload.bank_account_id, payload.external_settlement_id)] = settlement
+
     # loaded_settlements should contain all settlements involved here
     if loaded_settlements:
         update_settlement_dependent_objects(list((loaded_settlements.values())))
-        # send mails
 
     db.session.commit()
 
@@ -350,5 +350,8 @@ def update_settlement_dependent_objects(settlements: list[finance_models.Settlem
         invoices = [invoice.id for invoice in settlement.invoices]
         if settlement.status == finance_models.SettlementStatus.REJECTED:
             finance_api.revert_invoices_validation(invoices)
+            comment = f"Compte bancaire rejeté suite au rejet bancaire du virement {settlement.batch.name}"
+            finance_api.deprecate_venue_bank_account_links(settlement.bankAccount, comment)
+            # TODO (PC-40443) send transactional mail explaining closed bank account
         else:
             finance_api.validate_invoices(invoices)

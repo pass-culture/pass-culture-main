@@ -114,9 +114,9 @@ class ExternalFinanceTest:
         assert invoice.status == expected_status
 
     def test_get_settlements(self):
-        first_bank_account = finance_factories.BankAccountFactory()
-        second_bank_account = finance_factories.BankAccountFactory()
-        other_bank_account = finance_factories.BankAccountFactory()
+        first_bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount
+        second_bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount
+        other_bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount
         invoice = finance_factories.InvoiceFactory(
             bankAccount=first_bank_account,
             cashflows=[finance_factories.CashflowFactory()],
@@ -132,7 +132,7 @@ class ExternalFinanceTest:
             cashflows=[finance_factories.CashflowFactory()],
             status=finance_models.InvoiceStatus.PENDING_PAYMENT,
         )
-        additional_bank_account = finance_factories.BankAccountFactory()
+        additional_bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount
         additional_invoice = finance_factories.InvoiceFactory(
             bankAccount=additional_bank_account,
             cashflows=[finance_factories.CashflowFactory()],
@@ -243,6 +243,7 @@ class ExternalFinanceTest:
         assert first_settlement.amount == 98280
         assert first_settlement.status == finance_models.SettlementStatus.REJECTED
         assert first_settlement.batch == settlement_batch
+        assert first_bank_account.venueLinks[0].timespan.upper is not None
 
         second_settlement = (
             db.session.query(finance_models.Settlement)
@@ -261,6 +262,7 @@ class ExternalFinanceTest:
         assert second_settlement.status == finance_models.SettlementStatus.ISSUED
         assert second_settlement.batch == settlement_batch
         assert invoice.status == finance_models.InvoiceStatus.PAID
+        assert second_bank_account.venueLinks[0].timespan.upper is None
 
         other_settlement = (
             db.session.query(finance_models.Settlement)
@@ -280,10 +282,12 @@ class ExternalFinanceTest:
         assert other_settlement.batch == settlement_batch
         assert other_invoice.status == finance_models.InvoiceStatus.PAID
         assert another_invoice.status == finance_models.InvoiceStatus.PAID
+        assert other_bank_account.venueLinks[0].timespan.upper is None
 
         assert existing_settlement.dateRejected.timestamp() == pytest.approx(now.timestamp(), rel=1)
         assert existing_settlement.status == finance_models.SettlementStatus.REJECTED
         assert additional_invoice.status == finance_models.InvoiceStatus.PENDING_PAYMENT
+        assert additional_bank_account.venueLinks[0].timespan.upper is not None
 
     def test_get_settlements_ignore_when_no_bank_account_found(self, caplog):
         invoice = finance_factories.InvoiceFactory()

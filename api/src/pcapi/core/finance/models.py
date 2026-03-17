@@ -320,7 +320,7 @@ class BankAccount(PcObject, Model, DeactivableMixin):
 
     @property
     def linked_venues(self) -> list["offerers_models.Venue"]:
-        """Return venues currently linked to venue"""
+        """Return venues currently linked to bank account"""
         now = date_utils.get_naive_utc_now()
         linked_venues = []
 

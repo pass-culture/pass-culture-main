@@ -24,6 +24,7 @@ from pcapi.core.finance import exceptions
 from pcapi.core.finance import factories
 from pcapi.core.finance import models
 from pcapi.core.finance import utils
+from pcapi.core.history import models as history_models
 from pcapi.core.object_storage.testing import recursive_listdir
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import factories as offerers_factories
@@ -5491,6 +5492,51 @@ class RevertInvoicesTest:
         assert collective_booking1.reimbursementDate == None
         assert collective_booking2.status == educational_models.CollectiveBookingStatus.CANCELLED
         assert collective_booking2.reimbursementDate == invoice.date
+
+
+class DeprecateVenueBankAccounLinksTest:
+    def test_deprecate_venue_bank_account_links(self):
+        now = date_utils.get_naive_utc_now()
+        bank_account = factories.BankAccountFactory()
+        venue = offerers_factories.VenueFactory()
+        link = offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue,
+            bankAccount=bank_account,
+            timespan=(now - datetime.timedelta(days=10),),
+        )
+        other_venue = offerers_factories.VenueFactory()
+        other_link = offerers_factories.VenueBankAccountLinkFactory(
+            venue=other_venue,
+            bankAccount=bank_account,
+            timespan=(now - datetime.timedelta(days=15),),
+        )
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue,
+            timespan=(now - datetime.timedelta(days=20), now - datetime.timedelta(days=10)),
+        )
+
+        api.deprecate_venue_bank_account_links(bank_account, "Fini la banque")
+
+        assert link.timespan.upper is not None
+        assert db.session.query(history_models.ActionHistory).count() == 2
+        action = (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.venueId == venue.id)
+            .one()
+        )
+        assert action.bankAccount == bank_account
+        assert action.actionType == history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED
+        assert action.comment == "Fini la banque"
+
+        assert other_link.timespan.upper is not None
+        other_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.venueId == other_venue.id)
+            .one()
+        )
+        assert other_action.bankAccount == bank_account
+        assert other_action.actionType == history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED
+        assert other_action.comment == "Fini la banque"
 
 
 class CreateOffererReimbursementRuleTest:
