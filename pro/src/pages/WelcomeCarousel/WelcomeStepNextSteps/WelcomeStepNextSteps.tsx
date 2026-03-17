@@ -34,12 +34,12 @@ const WelcomeStepNextSteps = (): JSX.Element => {
           <InfoPanel
             surface={InfoPanelSurface.ELEVATED}
             size={InfoPanelSize.SMALL}
-            title="Nos équipes valident votre dossier - 48 heures"
+            title="Nos équipes valident votre inscription - 48 heures"
             stepNumber={2}
           >
             Elles peuvent demander des documents complémentaires. Les offres
-            scolaires nécessitent aussi une validation des équipes externes
-            rattachées à Adage.
+            scolaires nécessitent aussi que votre dossier Adage soit validé par
+            des équipes externes.
           </InfoPanel>
           <InfoPanel
             surface={InfoPanelSurface.ELEVATED}
