@@ -154,8 +154,11 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
 
 
 def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
+    logger.info("Syncing settlements", extra={"from_date": from_date.isoformat(), "to_date": to_date.isoformat()})
+
     try:
         settlement_payloads = finance_backend.get_settlements(from_date, to_date)
+        logger.info("Settlements returned", extra={"count": len(settlement_payloads)})
     except Exception as exc:
         logger.exception(
             "Unable to get settlements",

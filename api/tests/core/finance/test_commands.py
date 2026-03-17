@@ -172,3 +172,43 @@ class ImportDsBankInformationApplicationsTest:
             "procedure_number": int(settings.DS_BANK_ACCOUNT_NC_PROCEDURE_ID),
             "since": datetime.datetime(2024, 1, 1, 0, 0, 0),
         }
+
+
+@pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=True)
+class SyncSettlementsTest:
+    @patch("pcapi.core.finance.external.sync_settlements")
+    def test_sync_settlements(self, mock_sync_settlements, run_command):
+        today = datetime.date.today()
+        finance_factories.SettlementFactory(settlementDate=today - datetime.timedelta(days=6))
+        finance_factories.SettlementFactory(settlementDate=today - datetime.timedelta(days=4))
+
+        run_command("sync_settlements", raise_on_error=True)
+
+        mock_sync_settlements.assert_called_once_with(
+            from_date=today - datetime.timedelta(days=3),
+            to_date=today - datetime.timedelta(days=1),
+        )
+
+    @patch("pcapi.core.finance.external.sync_settlements")
+    def test_sync_settlements_when_table_is_empty(self, mock_sync_settlements, run_command):
+        today = datetime.date.today()
+
+        run_command("sync_settlements", raise_on_error=True)
+
+        mock_sync_settlements.assert_called_once_with(
+            from_date=today - datetime.timedelta(days=1),
+            to_date=today - datetime.timedelta(days=1),
+        )
+
+    @patch("pcapi.core.finance.external.sync_settlements")
+    def test_sync_settlements_since(self, mock_sync_settlements, run_command):
+        today = datetime.date.today()
+        finance_factories.SettlementFactory(settlementDate=today - datetime.timedelta(days=6))
+        finance_factories.SettlementFactory(settlementDate=today - datetime.timedelta(days=4))
+
+        run_command("sync_settlements", "--since", "2026-03-01", raise_on_error=True)
+
+        mock_sync_settlements.assert_called_once_with(
+            from_date=datetime.date(2026, 3, 1),
+            to_date=today - datetime.timedelta(days=1),
+        )

@@ -7,6 +7,7 @@ import time
 import typing
 
 import click
+import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from flask import current_app as app
 
@@ -21,6 +22,7 @@ from pcapi.core.finance import conf
 from pcapi.core.finance import deposit_api
 from pcapi.core.finance import ds
 from pcapi.core.finance import external as finance_external
+from pcapi.core.finance import models as finance_models
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils.blueprint import Blueprint
@@ -231,10 +233,27 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
 
 
 @blueprint.cli.command("sync_settlements")
+@click.option(
+    "--since",
+    help="Force from date to the given date. Use with caution. Format: YYYY-MM-DD. Example: 2026-03-01. Default: None.",
+    type=str,
+)
 @cron_decorators.log_cron
-def sync_settlements() -> None:
-    if not FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS.is_active():
-        logger.info("WIP_ENABLE_FINANCE_SETTLEMENTS feature must be activated to import settlements")
-        return
+@cron_decorators.cron_require_feature(FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS)
+def sync_settlements(since: str | None = None) -> None:
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
-    finance_external.sync_settlements(from_date=yesterday, to_date=yesterday)
+    if since:
+        # Should be used at first sync in production to ensure that data is imported from a chosen date.
+        from_date = datetime.date.fromisoformat(since)
+    else:
+        if last_date := db.session.query(sa.func.max(finance_models.Settlement.settlementDate)).scalar():
+            # Data is synchronized until the day before, so there will be no additional data on last date.
+            from_date = last_date + datetime.timedelta(days=1)
+        else:
+            # Fallback when table is empty -- should not happen in production
+            from_date = yesterday
+
+    if from_date > yesterday:
+        raise ValueError(f"Can't fetch settlements from {from_date.isoformat()}")
+
+    finance_external.sync_settlements(from_date=from_date, to_date=yesterday)
