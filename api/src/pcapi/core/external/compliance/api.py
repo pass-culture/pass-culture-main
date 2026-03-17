@@ -10,7 +10,6 @@ from pcapi.core.categories.genres import show
 from pcapi.core.external.compliance import serialization
 from pcapi.core.external.compliance import tasks
 from pcapi.core.external.compliance.backends.compliance import ComplianceBackend
-from pcapi.core.external.compliance.backends.development import DevelopmentBackend
 from pcapi.core.external.compliance.backends.test import TestBackend
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
@@ -20,15 +19,12 @@ from pcapi.utils.transaction_manager import is_managed_transaction
 logger = logging.getLogger(__name__)
 
 
-type Backend = ComplianceBackend | DevelopmentBackend | TestBackend
+type Backend = ComplianceBackend | TestBackend
 
 BACKEND_BY_KEY: typing.Final[dict[str, type[Backend]]] = {
     "ComplianceBackend": ComplianceBackend,
-    "DevelopmentBackend": DevelopmentBackend,
     "TestBackend": TestBackend,
 }
-
-logger = logging.getLogger(__name__)
 
 
 def _get_backend() -> Backend:
