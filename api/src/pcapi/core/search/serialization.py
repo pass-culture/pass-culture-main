@@ -112,6 +112,7 @@ class AlgoliaSerializationMixin:
     def serialize_artist(cls, artist: artists_models.Artist) -> dict:
         return {
             "objectID": artist.id,
+            "app_search_score": artist.app_search_score,
             "description": artist.description,
             "image": artist.thumbUrl,
             "name": artist.name,
