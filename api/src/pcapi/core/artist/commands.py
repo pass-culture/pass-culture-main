@@ -31,6 +31,8 @@ ARTIST_IMPORTERS: list[AbstractImporter] = [
 
 @blueprint.cli.command("compute_artists_most_relevant_image")
 @click.option("--batch-size", type=int, default=BATCH_SIZE, help="Number of artists to process at a time.")
+@cron_decorators.log_cron
+@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 def _compute_artists_most_relevant_image(batch_size: int = BATCH_SIZE) -> None:
     compute_artists_most_relevant_image(batch_size)
 
