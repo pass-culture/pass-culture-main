@@ -62,29 +62,6 @@ class LegalStatusResponseModel(BaseModel):
         orm_mode = True
 
 
-class GetCollectiveVenueResponseModel(BaseModel):
-    collectiveDescription: str | None
-    collectiveStudents: list[educational_models.StudentLevels] | None
-    collectiveWebsite: str | None
-    collectiveDomains: list[GetVenueDomainResponseModel]
-    collectiveInterventionArea: list[str] | None
-    collectiveLegalStatus: LegalStatusResponseModel | None
-    collectiveNetwork: list[str] | None
-    collectiveAccessInformation: str | None
-    collectivePhone: str | None
-    collectiveEmail: str | None
-    siret: str | None
-
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
-
-    @classmethod
-    def from_orm(cls, venue: offerers_models.Venue) -> "GetCollectiveVenueResponseModel":
-        venue.collectiveLegalStatus = venue.venueEducationalStatus  # type: ignore [attr-defined]
-        return super().from_orm(venue)
-
-
 class EditVenueCollectiveDataBodyModel(BaseModel):
     collectiveDescription: str | None
     collectiveStudents: list[educational_models.StudentLevels] | None
