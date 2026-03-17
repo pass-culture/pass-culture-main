@@ -4,6 +4,7 @@ from typing import NamedTuple
 import pytest
 import time_machine
 
+from pcapi import settings
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import BookingRecreditType
 from pcapi.core.educational import factories as educational_factories
@@ -791,7 +792,7 @@ class CegidFinanceBackendTest:
                     "UOM": {"value": "UNITE"},
                     "UnitCost": {"value": 1199.6},
                     "_links": {
-                        "files:put": "/passculture/entity/eCommerce/23.200.001/files/PX.Objects.AP.APInvoiceEntry/Transactions/8189c293-62bd-ef11-a82c-000d3ae74153/{filename}"
+                        "files:put": f"/passculture/{settings.CEGID_ENDPOINT}/files/PX.Objects.AP.APInvoiceEntry/Transactions/8189c293-62bd-ef11-a82c-000d3ae74153/{{filename}}"
                     },
                     "custom": {},
                     "id": "8189c293-62bd-ef11-a82c-000d3ae74153",
@@ -820,7 +821,7 @@ class CegidFinanceBackendTest:
                     "UOM": {"value": "UNITE"},
                     "UnitCost": {"value": 23.2},
                     "_links": {
-                        "files:put": "/passculture/entity/eCommerce/23.200.001/files/PX.Objects.AP.APInvoiceEntry/Transactions/8689c293-62bd-ef11-a82c-000d3ae74153/{filename}"
+                        "files:put": f"/passculture/{settings.CEGID_ENDPOINT}/files/PX.Objects.AP.APInvoiceEntry/Transactions/8689c293-62bd-ef11-a82c-000d3ae74153/{{filename}}"
                     },
                     "custom": {},
                     "id": "8689c293-62bd-ef11-a82c-000d3ae74153",
@@ -841,8 +842,8 @@ class CegidFinanceBackendTest:
             "Vendor": {"value": "200178"},
             "VendorRef": {"value": "F240000095"},
             "_links": {
-                "files:put": "/passculture/entity/eCommerce/23.200.001/files/PX.Objects.AP.APInvoiceEntry/Document/7b89c293-62bd-ef11-a82c-000d3ae74153/{filename}",
-                "self": "/passculture/entity/eCommerce/23.200.001/Bill/7b89c293-62bd-ef11-a82c-000d3ae74153",
+                "files:put": f"/passculture/{settings.CEGID_ENDPOINT}/files/PX.Objects.AP.APInvoiceEntry/Document/7b89c293-62bd-ef11-a82c-000d3ae74153/{{filename}}",
+                "self": f"/passculture/{settings.CEGID_ENDPOINT}/Bill/7b89c293-62bd-ef11-a82c-000d3ae74153",
             },
             "custom": {},
             "id": "7b89c293-62bd-ef11-a82c-000d3ae74153",
@@ -851,14 +852,14 @@ class CegidFinanceBackendTest:
         }
         request_matcher = requests_mock.register_uri(
             "PUT",
-            f"{cegid_config.CEGID_URL}/entity/eCommerce/23.200.001/Bill",
+            f"{cegid_config.CEGID_URL}/{settings.CEGID_ENDPOINT}/Bill",
             json=response_data,
             status_code=200,
             headers={"content-type": "application/json"},
         )
         set_open_request_matcher = requests_mock.register_uri(
             "POST",
-            f"{cegid_config.CEGID_URL}/entity/eCommerce/23.200.001/Bill/ReleaseBill",
+            f"{cegid_config.CEGID_URL}/{settings.CEGID_ENDPOINT}/Bill/ReleaseBill",
             json={"Entity": {"id": "7b89c293-62bd-ef11-a82c-000d3ae74153"}},
             status_code=202,
             headers={"content-type": "application/json"},
@@ -965,8 +966,8 @@ class CegidFinanceBackendTest:
                 "Vendor": {"value": "200178"},  # BankAccount.id
                 "VendorRef": {"value": "F240000095"},  # Invoice.reference
                 "_links": {
-                    "files:put": "/passculture/entity/eCommerce/23.200.001/files/PX.Objects.AP.APInvoiceEntry/Document/7b89c293-62bd-ef11-a82c-000d3ae74153/{filename}",
-                    "self": "/passculture/entity/eCommerce/23.200.001/Bill/7b89c293-62bd-ef11-a82c-000d3ae74153",
+                    "files:put": f"/passculture/{settings.CEGID_ENDPOINT}/files/PX.Objects.AP.APInvoiceEntry/Document/7b89c293-62bd-ef11-a82c-000d3ae74153/{{filename}}",
+                    "self": f"/passculture/{settings.CEGID_ENDPOINT}/Bill/7b89c293-62bd-ef11-a82c-000d3ae74153",
                 },
                 "custom": {},
                 "id": "7b89c293-62bd-ef11-a82c-000d3ae74153",
@@ -976,7 +977,7 @@ class CegidFinanceBackendTest:
         ]
         request_matcher = requests_mock.register_uri(
             "GET",
-            f"{cegid_config.CEGID_URL}/entity/eCommerce/23.200.001/Bill",
+            f"{cegid_config.CEGID_URL}/{settings.CEGID_ENDPOINT}/Bill",
             json=response_data,
             status_code=200,
             headers={"content-type": "application/json"},
@@ -1052,7 +1053,7 @@ class CegidFinanceBackendTest:
                     "UOM": {"value": "UNITE"},
                     "UnitCost": {"value": 99.6},
                     "_links": {
-                        "files:put": "/passculture/entity/eCommerce/23.200.001/files/PX.Objects.AP.APInvoiceEntry/Transactions/8189c293-62bd-ef11-a82c-000d3ae74153/{filename}"
+                        "files:put": f"/passculture/{settings.CEGID_ENDPOINT}/files/PX.Objects.AP.APInvoiceEntry/Transactions/8189c293-62bd-ef11-a82c-000d3ae74153/{{filename}}"
                     },
                     "custom": {},
                     "id": "8189c293-62bd-ef11-a82c-000d3ae74153",
@@ -1073,8 +1074,8 @@ class CegidFinanceBackendTest:
             "Vendor": {"value": "200178"},
             "VendorRef": {"value": "A250000014"},
             "_links": {
-                "files:put": "/passculture/entity/eCommerce/23.200.001/files/PX.Objects.AP.APInvoiceEntry/Document/7b89c293-62bd-ef11-a82c-000d3ae74153/{filename}",
-                "self": "/passculture/entity/eCommerce/23.200.001/Bill/7b89c293-62bd-ef11-a82c-000d3ae74153",
+                "files:put": f"/passculture/{settings.CEGID_ENDPOINT}/files/PX.Objects.AP.APInvoiceEntry/Document/7b89c293-62bd-ef11-a82c-000d3ae74153/{{filename}}",
+                "self": f"/passculture/{settings.CEGID_ENDPOINT}/Bill/7b89c293-62bd-ef11-a82c-000d3ae74153",
             },
             "custom": {},
             "id": "7b89c293-62bd-ef11-a82c-000d3ae74153",
@@ -1083,14 +1084,14 @@ class CegidFinanceBackendTest:
         }
         request_matcher = requests_mock.register_uri(
             "PUT",
-            f"{cegid_config.CEGID_URL}/entity/eCommerce/23.200.001/Bill",
+            f"{cegid_config.CEGID_URL}/{settings.CEGID_ENDPOINT}/Bill",
             json=response_data,
             status_code=200,
             headers={"content-type": "application/json"},
         )
         set_open_request_matcher = requests_mock.register_uri(
             "POST",
-            f"{cegid_config.CEGID_URL}/entity/eCommerce/23.200.001/Bill/ReleaseBill",
+            f"{cegid_config.CEGID_URL}/{settings.CEGID_ENDPOINT}/Bill/ReleaseBill",
             json={"Entity": {"id": "7b89c293-62bd-ef11-a82c-000d3ae74153"}},
             status_code=202,
             headers={"content-type": "application/json"},
@@ -1137,7 +1138,7 @@ class CegidFinanceBackendTest:
     def test_get_invoice_not_found(self, requests_mock, cegid_config):
         request_matcher = requests_mock.register_uri(
             "GET",
-            f"{cegid_config.CEGID_URL}/entity/eCommerce/23.200.001/Bill",
+            f"{cegid_config.CEGID_URL}/{settings.CEGID_ENDPOINT}/Bill",
             json=[],
             status_code=200,
             headers={"content-type": "application/json"},
@@ -1163,7 +1164,7 @@ class CegidFinanceBackendTest:
 
         request_matcher_get_bank_account = requests_mock.register_uri(
             "GET",
-            f"{cegid_config.CEGID_URL}/entity/eCommerce/23.200.001/Vendor/5",
+            f"{cegid_config.CEGID_URL}/{settings.CEGID_ENDPOINT}/Vendor/5",
             json={},
             status_code=200,
             headers={"content-type": "application/json"},
@@ -1184,7 +1185,7 @@ class CegidFinanceBackendTest:
         redis = app.redis_client
         cache_key = "cache:cegid:token"
         backend = finance_backend.CegidFinanceBackend()
-        url = f"{cegid_config.CEGID_URL}/entity/eCommerce/23.200.001/Vendor/5"
+        url = f"{cegid_config.CEGID_URL}/{settings.CEGID_ENDPOINT}/Vendor/5"
 
         request_matcher_get_bank_account = requests_mock.register_uri(
             "GET",
@@ -1213,7 +1214,7 @@ class CegidFinanceBackendTest:
         assert response_error.call_count == 2
 
     def test_unauthorized_request(self, requests_mock, cegid_config, mock_cegid_auth):
-        url = f"{cegid_config.CEGID_URL}/entity/eCommerce/23.200.001/Vendor/5"
+        url = f"{cegid_config.CEGID_URL}/{settings.CEGID_ENDPOINT}/Vendor/5"
         requests_mock.reset()
         request_matcher = requests_mock.register_uri("GET", url, text="", status_code=401)
         backend = finance_backend.CegidFinanceBackend()
@@ -1300,8 +1301,8 @@ class CegidFinanceBackendTest:
             "VendorName": {"value": bank_account.label},
             "Zonedetaxes": {"value": "EXO"},
             "_links": {
-                "files:put": f"/passculture/entity/eCommerce/23.200.001/files/PX.Objects.AP.VendorMaint/BAccount/{vendor_uuid}/{{filename}}",
-                "self": f"/passculture/entity/eCommerce/23.200.001/Vendor/{vendor_uuid}",
+                "files:put": f"/passculture/{settings.CEGID_ENDPOINT}/files/PX.Objects.AP.VendorMaint/BAccount/{vendor_uuid}/{{filename}}",
+                "self": f"/passculture/{settings.CEGID_ENDPOINT}/Vendor/{vendor_uuid}",
             },
             "custom": {},
             "id": vendor_uuid,
@@ -1311,7 +1312,7 @@ class CegidFinanceBackendTest:
 
         request_matcher_create_vendor = requests_mock.register_uri(
             "PUT",
-            f"{cegid_config.CEGID_URL}/entity/eCommerce/23.200.001/Vendor",
+            f"{cegid_config.CEGID_URL}/{settings.CEGID_ENDPOINT}/Vendor",
             json=response_data,
             status_code=200,
             headers={"content-type": "application/json"},
@@ -1430,8 +1431,8 @@ class CegidFinanceBackendTest:
             "VendorName": {"value": "Compte bancaire avec plein de remboursements #1746462948"},
             "Zonedetaxes": {"value": "EXO"},
             "_links": {
-                "files:put": f"/passculture/entity/eCommerce/23.200.001/files/PX.Objects.AP.VendorMaint/BAccount/{vendor_uuid}/{{filename}}",
-                "self": f"/passculture/entity/eCommerce/23.200.001/Vendor/{vendor_uuid}",
+                "files:put": f"/passculture/{settings.CEGID_ENDPOINT}/files/PX.Objects.AP.VendorMaint/BAccount/{vendor_uuid}/{{filename}}",
+                "self": f"/passculture/{settings.CEGID_ENDPOINT}/Vendor/{vendor_uuid}",
             },
             "custom": {},
             "id": vendor_uuid,
@@ -1441,7 +1442,7 @@ class CegidFinanceBackendTest:
 
         request_matcher_get_vendor = requests_mock.register_uri(
             "GET",
-            f"{cegid_config.CEGID_URL}/entity/eCommerce/23.200.001/Vendor/{bank_account.id}",
+            f"{cegid_config.CEGID_URL}/{settings.CEGID_ENDPOINT}/Vendor/{bank_account.id}",
             json=response_vendor_data,
             status_code=200,
             headers={"content-type": "application/json"},
@@ -1461,7 +1462,7 @@ class CegidFinanceBackendTest:
         }
         request_matcher_get_vendor = requests_mock.register_uri(
             "GET",
-            f"{cegid_config.CEGID_URL}/entity/eCommerce/23.200.001/Vendor/{bank_account.id}",
+            f"{cegid_config.CEGID_URL}/{settings.CEGID_ENDPOINT}/Vendor/{bank_account.id}",
             json=response_not_found_data,
             status_code=500,
             headers={"content-type": "application/json"},
@@ -1576,7 +1577,7 @@ class CegidFinanceBackendTest:
 
         request_matcher_put_payment_status = requests_mock.register_uri(
             "PUT",
-            f"{cegid_config.CEGID_URL}/entity/eCommerce/23.200.001/PaymentStatus",
+            f"{cegid_config.CEGID_URL}/{settings.CEGID_ENDPOINT}/PaymentStatus",
             json=response_data,
             status_code=200,
             headers={"content-type": "application/json"},

@@ -681,7 +681,8 @@ CLICKHOUSE_PASSWORD = secrets_utils.get("CLICKHOUSE_PASSWORD")
 
 
 # CEGID
-CEGID_URL = secrets_utils.get("CEGID_URL")
+CEGID_URL = os.environ.get("CEGID_URL", secrets_utils.get("CEGID_URL"))
+CEGID_ENDPOINT = os.environ.get("CEGID_ENDPOINT", "Entity/INTERFACES/23.200.001")
 CEGID_USERNAME = secrets_utils.get("CEGID_USERNAME")
 CEGID_PASSWORD = secrets_utils.get("CEGID_PASSWORD")
 CEGID_CLIENT_ID = secrets_utils.get("CEGID_CLIENT_ID")
