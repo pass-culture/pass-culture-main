@@ -73,6 +73,25 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
     return offers_serialize.ListOffersResponseModel(__root__=offers_serialize.serialize_capped_offers(paginated_offers))
 
 
+@private_api.route("/offers/home", methods=["GET"])
+@atomic()
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.ListOffersHomeResponseModel,
+    api=blueprint.pro_private_schema,
+)
+def list_offers_home(query: offers_serialize.ListOffersHomeQueryModel) -> offers_serialize.ListOffersHomeResponseModel:
+    rest.check_user_has_access_to_venues(user=current_user, venue_ids=[query.venue_id])
+
+    offers = offers_repository.get_offers_for_homepage(
+        venue_id=query.venue_id, offers_limit=offers_constants.OFFERS_HOMEPAGE_LIMIT
+    )
+
+    return offers_serialize.ListOffersHomeResponseModel(
+        [offers_serialize.OfferHomeResponseModel.build(offer) for offer in offers]
+    )
+
+
 @private_api.route("/offers/<int:offer_id>", methods=["GET"])
 @login_required
 @spectree_serialize(
