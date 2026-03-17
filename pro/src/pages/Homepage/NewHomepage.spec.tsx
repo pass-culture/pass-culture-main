@@ -33,6 +33,10 @@ vi.mock('./components/VenueValidationBanner/VenueValidationBanner', () => ({
   VenueValidationBanner: () => <div>Homologation</div>,
 }))
 
+vi.mock('./components/NewsletterCard/NewsletterCard', () => ({
+  NewsletterCard: () => <div>Newsletter</div>,
+}))
+
 const newHomepageRoutes = [
   {
     path: '/',
@@ -332,7 +336,7 @@ describe('NewHomepage', () => {
 
       expect(
         screen.getByRole('tabpanel', { description: /indiv/ })
-      ).toHaveTextContent(/Suivez notre actualité/)
+      ).toHaveTextContent('Newsletter')
 
       expect(
         screen.getByRole('tabpanel', { description: /indiv/ })
@@ -499,7 +503,7 @@ describe('NewHomepage', () => {
 
         expect(
           screen.getByRole('tabpanel', { description: /collective/ })
-        ).toHaveTextContent(/Suivez notre actualité/)
+        ).toHaveTextContent('Newsletter')
       })
 
       it('should not have the mandatory modules when venue is not allowed on adage', () => {
@@ -523,7 +527,7 @@ describe('NewHomepage', () => {
 
         expect(
           screen.getByRole('tabpanel', { description: /collective/ })
-        ).not.toHaveTextContent(/Suivez notre actualité/)
+        ).not.toHaveTextContent('Newsletter')
       })
     })
 

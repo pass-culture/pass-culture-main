@@ -85,7 +85,7 @@ export async function expectIndividualModules(
     visibleModules.includes('WEBINARS_CARD')
   )
   await expectModuleVisibility(
-    page.getByText('Module Newsletter'),
+    page.getByRole('heading', { level: 2, name: 'Suivez notre actualité !' }),
     visibleModules.includes('NEWSLETTER_CARD')
   )
 }
@@ -139,7 +139,7 @@ export async function expectCollectiveModules(
   )
 
   await expectModuleVisibility(
-    page.getByText('Module Newsletter'),
+    page.getByRole('heading', { level: 2, name: 'Suivez notre actualité !' }),
     visibleModules.includes('NEWSLETTER_CARD')
   )
 

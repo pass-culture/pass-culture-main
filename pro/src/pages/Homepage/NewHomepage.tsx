@@ -25,6 +25,7 @@ import {
   type TabKey,
 } from './commons/utils'
 import { IncomeCard } from './components/IncomeCard/IncomeCard'
+import { NewsletterCard } from './components/NewsletterCard/NewsletterCard'
 import { PartnerPageCard } from './components/PartnerPageCard/PartnerPageCard'
 import { PartnerPageVariant } from './components/types'
 import { VenueValidationBanner } from './components/VenueValidationBanner/VenueValidationBanner'
@@ -158,11 +159,7 @@ export const NewHomepage = (): JSX.Element => {
                 <b>Module Webinaire indiv</b>
               </div>
             )}
-            <div>
-              Suivez notre actualité !
-              <br />
-              <b>Module Newsletter</b>
-            </div>
+            <NewsletterCard />
           </div>
         </div>
       )}
@@ -238,11 +235,7 @@ export const NewHomepage = (): JSX.Element => {
                     <b>Module Webinaires collectif</b>
                   </div>
                 )}
-                <div>
-                  Suivez notre actualité !
-                  <br />
-                  <b>Module Newsletter</b>
-                </div>
+                <NewsletterCard />
               </div>
             </>
           )}
