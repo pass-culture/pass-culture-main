@@ -35,7 +35,7 @@ const WelcomeStepIndividual = (): JSX.Element => {
         <div className={styles['helplink']}>
           <Button
             as="a"
-            to="https://aide.passculture.app/hc/fr/articles/4412007322641--Acteurs-Culturels-A-quoi-ressemblent-vos-offres-sur-l-application-pass-Culture"
+            to="https://aide.passculture.app/hc/fr/articles/25741239847964--Acteurs-culturels-Consulter-des-exemples-d-offres-individuelles"
             label="Exemples d'offres pour les jeunes"
             variant={ButtonVariant.TERTIARY}
             size={ButtonSize.SMALL}
