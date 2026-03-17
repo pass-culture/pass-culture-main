@@ -116,6 +116,7 @@ def update_pending_ubble_applications_cron() -> None:
 
 
 @blueprint.cli.command("archive_past_identifications_automation")
+@cron_decorators.log_cron
 def ubble_archive_past_identifications_automation() -> None:
     # call the archive function on the last 6 months for the statuses "None"
     # (the archive process has never been executed)
@@ -127,10 +128,12 @@ def ubble_archive_past_identifications_automation() -> None:
 
 
 @blueprint.cli.command("recover_started_quotient_familial_applications")
+@cron_decorators.log_cron
 def recover_started_quotient_familial_applications() -> None:
     bonus_tasks.recover_started_quotient_familial_application()
 
 
 @blueprint.cli.command("recover_incomplete_ubble_id_verification")
+@cron_decorators.log_cron
 def recover_incomplete_ubble_id_verification() -> None:
     ubble_tasks.recover_incomplete_ubble_verification()
