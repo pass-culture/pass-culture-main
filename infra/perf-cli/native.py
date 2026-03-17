@@ -13,7 +13,7 @@ def native():
     pass
 
 
-@native.command('offer')
+@native.command('list-offer')
 @click.option('--offer-id','-id',  help='Id of the offer', type=str, multiple=True, default=2748)
 @click.option('--number-of-requests', '-n', help='Number of requests', type=int, default=10,)
 @click.option('--concurrent', '-c', help='Number of concurrent threads', type=int, default=2,)
