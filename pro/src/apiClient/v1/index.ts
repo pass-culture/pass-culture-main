@@ -178,6 +178,8 @@ export type { ListCollectiveOffersQueryModel } from './models/ListCollectiveOffe
 export type { ListCollectiveOffersResponseModel } from './models/ListCollectiveOffersResponseModel';
 export type { ListCollectiveOfferTemplatesResponseModel } from './models/ListCollectiveOfferTemplatesResponseModel';
 export type { ListFeatureResponseModel } from './models/ListFeatureResponseModel';
+export type { ListOffersHomeQueryModel } from './models/ListOffersHomeQueryModel';
+export type { ListOffersHomeResponseModel } from './models/ListOffersHomeResponseModel';
 export type { ListOffersOfferResponseModel } from './models/ListOffersOfferResponseModel';
 export type { ListOffersQueryModel } from './models/ListOffersQueryModel';
 export type { ListOffersResponseModel } from './models/ListOffersResponseModel';
@@ -207,6 +209,7 @@ export type { OffererEligibilityResponseModel } from './models/OffererEligibilit
 export { OffererMemberStatus } from './models/OffererMemberStatus';
 export type { OffererStatsDataModel } from './models/OffererStatsDataModel';
 export type { OffererViewsModel } from './models/OffererViewsModel';
+export type { OfferHomeResponseModel } from './models/OfferHomeResponseModel';
 export type { OfferImage } from './models/OfferImage';
 export type { OfferImageV2 } from './models/OfferImageV2';
 export type { OfferOpeningHoursSchema } from './models/OfferOpeningHoursSchema';
@@ -247,6 +250,7 @@ export type { ShortHighlightResponseModel } from './models/ShortHighlightRespons
 export { SimplifiedBankAccountStatus } from './models/SimplifiedBankAccountStatus';
 export type { StatisticsModel } from './models/StatisticsModel';
 export type { StatisticsQueryModel } from './models/StatisticsQueryModel';
+export type { StockHomeResponseModel } from './models/StockHomeResponseModel';
 export { StocksOrderedBy } from './models/StocksOrderedBy';
 export type { StocksQueryModel } from './models/StocksQueryModel';
 export type { StockStatsResponseModel } from './models/StockStatsResponseModel';

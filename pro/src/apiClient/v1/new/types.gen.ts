@@ -3984,6 +3984,21 @@ export type ListCollectiveOffersResponseModel = Array<CollectiveOfferResponseMod
 export type ListFeatureResponseModel = Array<FeatureResponseModel>;
 
 /**
+ * ListOffersHomeQueryModel
+ */
+export type ListOffersHomeQueryModel = {
+    /**
+     * Venueid
+     */
+    venueId: number;
+};
+
+/**
+ * ListOffersHomeResponseModel
+ */
+export type ListOffersHomeResponseModel = Array<OfferHomeResponseModel>;
+
+/**
  * ListOffersOfferResponseModel
  */
 export type ListOffersOfferResponseModel = {
@@ -4687,6 +4702,37 @@ export type OfferDomain = {
      * Name
      */
     name: string;
+};
+
+/**
+ * OfferHomeResponseModel
+ */
+export type OfferHomeResponseModel = {
+    /**
+     * Bookingscount
+     */
+    bookingsCount: number;
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Isevent
+     */
+    isEvent: boolean;
+    /**
+     * Name
+     */
+    name: string;
+    status: OfferStatus;
+    /**
+     * Stocks
+     */
+    stocks: Array<StockHomeResponseModel>;
+    /**
+     * Thumburl
+     */
+    thumbUrl: string | null;
 };
 
 /**
@@ -5980,6 +6026,16 @@ export type StatisticsQueryModel = {
      * Venueids
      */
     venueIds?: Array<number>;
+};
+
+/**
+ * StockHomeResponseModel
+ */
+export type StockHomeResponseModel = {
+    /**
+     * Beginningdatetime
+     */
+    beginningDatetime: string | null;
 };
 
 /**
@@ -9482,6 +9538,40 @@ export type postOffersDeleteHeadlineResponses = {
 };
 
 export type postOffersDeleteHeadlineResponse = postOffersDeleteHeadlineResponses[keyof postOffersDeleteHeadlineResponses];
+
+export type getOffersHomeData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Venueid
+         */
+        venueId: number;
+    };
+    url: '/offers/home';
+};
+
+export type getOffersHomeErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type getOffersHomeError = getOffersHomeErrors[keyof getOffersHomeErrors];
+
+export type getOffersHomeResponses = {
+    /**
+     * OK
+     */
+    200: ListOffersHomeResponseModel;
+};
+
+export type getOffersHomeResponse = getOffersHomeResponses[keyof getOffersHomeResponses];
 
 export type getOffersMusicTypesData = {
     body?: never;
