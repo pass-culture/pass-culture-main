@@ -110,7 +110,7 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
     },
     "DEPARTMENT": {
         "field": "department",
-        "llm_filter": "venue_departement_code",
+        "llm_filter": "venue_department_code",
         "column": geography_models.Address.departmentCode,
         "facet": "venue.departmentCode",  # FIXME (prouzet, 2025-08-14): user offer address when it is sent to Algolia
         "inner_join": "address",
