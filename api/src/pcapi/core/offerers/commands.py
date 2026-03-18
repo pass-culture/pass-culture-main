@@ -50,14 +50,26 @@ def check_active_offerers(apply: bool = False, day: int | None = None) -> None:
         .all()
     )
 
-    logger.info("check_active_offerers will check %s offerers in celery tasks today", len(offerers))
+    use_celery_tasks = FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CHECK_OFFERERS.is_active()
+    logger.info(
+        "check_active_offerers will check %s offerers in %s tasks today",
+        len(offerers),
+        "celery" if use_celery_tasks else "cloud",
+    )
 
     for offerer in offerers:
-        payload = offerers_tasks.CheckOffererSirenRequest(
-            siren=offerer.siren,
-            close_or_tag_when_inactive=apply,
-        )
-        offerers_tasks.check_offerer_siren_task.delay(payload.model_dump())
+        if use_celery_tasks:
+            payload_v2 = offerers_tasks.CheckOffererSirenRequestV2(
+                siren=offerer.siren,
+                close_or_tag_when_inactive=apply,
+            )
+            offerers_tasks.check_offerer_siren_celery_task.delay(payload_v2.model_dump())
+        else:
+            payload = offerers_tasks.CheckOffererSirenRequest(
+                siren=offerer.siren,
+                close_or_tag_when_inactive=apply,
+            )
+            offerers_tasks.check_offerer_siren_cloud_task.delay(payload)
 
 
 @blueprint.cli.command("check_closed_offerers")
