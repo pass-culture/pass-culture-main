@@ -13,13 +13,20 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
+from pcapi.routes.serialization import BaseModel
+from pcapi.tasks.decorator import task
 from pcapi.utils import siren as siren_utils
 
 
 logger = logging.getLogger(__name__)
 
 
-class CheckOffererSirenRequest(BaseModelV2):
+class CheckOffererSirenRequest(BaseModel):
+    siren: str
+    close_or_tag_when_inactive: bool
+
+
+class CheckOffererSirenRequestV2(BaseModelV2):
     siren: str
     close_or_tag_when_inactive: bool
 
@@ -30,7 +37,16 @@ class CheckOffererSirenRequest(BaseModelV2):
     max_per_time_window=settings.CHECK_OFFERER_RATE_LIMIT_THRESHOLD,
     time_window_size=settings.CHECK_OFFERER_RATE_LIMIT_TIME_WINDOW_SECONDS,
 )
-def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
+def check_offerer_siren_celery_task(payload: CheckOffererSirenRequestV2) -> None:
+    check_offerer_siren(payload)
+
+
+@task(settings.GCP_CHECK_OFFERER_SIREN_QUEUE_NAME, "/offerers/check_offerer", task_request_timeout=3 * 60)
+def check_offerer_siren_cloud_task(payload: CheckOffererSirenRequest) -> None:
+    check_offerer_siren(payload)
+
+
+def check_offerer_siren(payload: CheckOffererSirenRequest | CheckOffererSirenRequestV2) -> None:
     if not siren_utils.is_valid_siren(payload.siren):
         logger.error("Invalid SIREN format in the database", extra={"siren": payload.siren})
         return
