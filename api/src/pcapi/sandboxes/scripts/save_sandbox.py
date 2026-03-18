@@ -19,7 +19,7 @@ def save_sandbox(
     name: tuple[str],
     with_clean: bool = True,
     with_clean_bucket: bool = False,
-    with_index_all_offers: bool = True,
+    with_indexing: bool = True,
     steps_to_skip: typing.Iterable[str] | None = None,
 ) -> None:
     if with_clean:
@@ -37,10 +37,13 @@ def save_sandbox(
             sandbox_module.save_sandbox()
 
     logger.info("Sandbox %s saved", name)
-    if with_index_all_offers:
+    if with_indexing:
         _index_all_offers()
-    _index_all_venues()
-    _index_all_artists()
+        _index_all_venues()
+        _index_all_artists()
+        logger.info("Indexing finished")
+    else:
+        logger.info("Indexing finished (skipped)")
 
 
 # The following functions are rather naive
