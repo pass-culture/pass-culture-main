@@ -36,6 +36,25 @@ class TransactionalNotificationData(BaseModel):
     extra: dict = {}
 
 
+class UpdateBatchAttributesRequestV2(BaseModelV2):
+    attributes: dict
+    user_id: int
+
+
+class DeleteBatchUserAttributesRequestV2(BaseModelV2):
+    user_id: int
+
+
+class TrackBatchEventRequestV2(BaseModelV2):
+    user_id: int
+    event_name: BatchEvent
+    event_payload: dict
+
+
+class TrackBatchEventsRequestV2(BaseModelV2):
+    trigger_events: list[TrackBatchEventRequestV2]
+
+
 class TransactionalNotificationMessageV2(BaseModelV2):
     body: str
     title: str | None = None
