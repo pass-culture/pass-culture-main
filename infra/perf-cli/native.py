@@ -53,6 +53,7 @@ def offer(offer_id, number_of_requests, concurrent, timeout):
             else:
                 failed_count += 1
                 click.echo(f"Offer request failed: {data}")
+
     click.echo(f"Total requests: {len(results)}")
     click.echo(f"Successful requests: {success_count} / {len(results)}")
     click.echo(f"Failed requests: {failed_count} / {len(results)}")

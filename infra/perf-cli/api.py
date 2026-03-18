@@ -1,5 +1,6 @@
-import click
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
+import click
 import requests
 
 from common import get_base_url, get_access_token
@@ -12,29 +13,44 @@ def api():
 
 
 @api.command()
-def health():
+@click.option('--number-of-requests', '-n', help='Number of requests', type=int, default=10,)
+@click.option('--concurrent', '-c', help='Number of concurrent threads', type=int, default=2,)
+@click.option('--timeout', '-t', help='HTTP request timeout', type=int, default=5,)
+def health(number_of_requests, concurrent, timeout):
     """Get the health status of the pcapi instance"""
     url = get_base_url()
     click.echo(f'Check the health status of the pcapi instance with URL=`{url}`')
 
     health_url = f"{url}/health/api"
 
-    try:
-        response = requests.get(health_url, timeout=5)
+    def get_health():
+        try:
+            response = requests.get(health_url, timeout=timeout)
+            version = response.text.split('\n')[0]
+            return response.status_code, version
+        except requests.exceptions.RequestException as e:
+            return None, str(e)
 
-        click.echo(f"Request to: {health_url}")
-        click.echo(f"Status code: {response.status_code}")
+    results = []
+    success_count = 0
+    failed_count = 0
 
-        if response.ok:
-            click.echo("Instance is healthy ✅")
+    with ThreadPoolExecutor(max_workers=concurrent) as executor:
+        futures = [executor.submit(get_health) for _ in range(number_of_requests)]
+        for future in as_completed(futures):
+            status, data = future.result()
+            results.append((status, data))
+            click.echo(f"Status code: {status}")
+            if status == 200:
+                success_count += 1
+                click.echo(f"API is healthy and version is `{data}` ✅")
+            else:
+                failed_count += 1
+                click.echo(f"API health request failed: {data}")
 
-            version = response.text
-            click.echo(f"Current version of the instance is `{version}`")
-        else:
-            click.echo("Instance is NOT healthy ❌")
-
-    except requests.exceptions.RequestException as e:
-        click.echo(f"Request failed: {e}", err=True)
+    click.echo(f"Total requests: {len(results)}")
+    click.echo(f"Successful requests: {success_count} / {len(results)}")
+    click.echo(f"Failed requests: {failed_count} / {len(results)}")
 
 
 @api.command('me')
