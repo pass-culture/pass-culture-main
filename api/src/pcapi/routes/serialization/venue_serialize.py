@@ -27,11 +27,11 @@ from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import venue_banners_serialize
 from pcapi.routes.serialization import venue_collective_serialize
 from pcapi.routes.serialization import venue_finance_serialize
-from pcapi.serialization.utils import string_to_boolean_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import date as date_utils
 
 
+# deja fait
 class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     activity: offerers_models.Activity | None
     address: address_serialize.LocationBodyModel
@@ -61,15 +61,6 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
         return siret
 
 
-class VenueResponseModel(BaseModel):
-    id: int
-
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
-
-
 class GetVenueManagingOffererResponseModel(HttpBodyModel):
     id: int
     isValidated: bool
@@ -94,6 +85,9 @@ class LocationResponseModel(address_serialize.LocationResponseModelV2):
 
 
 class GetVenueResponseModel(HttpBodyModel):
+    # TODO a evaluer
+    model_config = pydantic.ConfigDict(extra="ignore")
+
     isVirtual: bool
     name: str
     bannerUrl: str | None = None
@@ -147,9 +141,6 @@ class GetVenueResponseModel(HttpBodyModel):
     motorDisabilityCompliant: bool | None = None
     visualDisabilityCompliant: bool | None = None
 
-    # TODO: a supprimer
-    model_config = pydantic.ConfigDict(extra="ignore")
-
     @classmethod
     def build(cls, venue: offerers_models.Venue) -> typing.Self:
         external_accessibility_data = None
@@ -171,7 +162,7 @@ class GetVenueResponseModel(HttpBodyModel):
 
         return cls(
             activity=offerers_models.DisplayableActivity[venue.activity.name] if venue.activity else None,
-            bannerUrl=venue.bannerUrl,
+            bannerUrl=venue.bannerUrl or None,
             isVirtual=venue.isVirtual,
             name=venue.name,
             contact=venue.contact,
@@ -229,24 +220,6 @@ class GetVenueResponseModel(HttpBodyModel):
             motorDisabilityCompliant=venue.motorDisabilityCompliant,
             visualDisabilityCompliant=venue.visualDisabilityCompliant,
         )
-
-    # @validator("bannerMeta")
-    # @classmethod
-    # def validate_banner_meta(
-    #     cls, meta: venue_banners_serialize.BannerMetaModel | None, values: dict
-    # ) -> venue_banners_serialize.BannerMetaModel | None:
-    #     """
-    #     Old venues might have a banner url without banner meta, or an
-    #     incomplete banner meta.
-    #     """
-    #     # do not get a default banner meta object if there is no banner
-    #     if not values["bannerUrl"]:
-    #         return None
-
-    #     if not meta:
-    #         return venue_banners_serialize.BannerMetaModel()
-
-    #     return meta
 
 
 class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
@@ -367,17 +340,10 @@ class GetVenueListLiteResponseModel(HttpBodyModel):
         return cls(venues=[VenueListItemLiteResponseModel.build(venue) for venue in venues])
 
 
-class VenueListQueryModel(BaseModel):
-    validated: bool | None
-    active_offerers_only: bool | None
-    offerer_id: int | None
-
-    _string_to_boolean_validated = string_to_boolean_field("validated")
-    _string_to_boolean_active_offerers_only = string_to_boolean_field("active_offerers_only")
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+class VenueListQueryModel(HttpBodyModel):
+    validated: bool | None = None
+    active_offerers_only: bool | None = None
+    offerer_id: int | None = None
 
 
 class GetOffersStatsResponseModel(HttpBodyModel):
@@ -438,5 +404,5 @@ class GetVenueAddressResponseModel(HttpBodyModel):
     departmentCode: str | None
 
 
-class GetVenueAddressesResponseModel(RootModel):
+class (RootModel):
     root: list[GetVenueAddressResponseModel]

@@ -106,31 +106,6 @@ def public_api_before_handler(
         raise api_errors
 
 
-# No functools.partial here as it has no __name__ and therefore is not compatible with pydantic
-def check_string_length_wrapper(length: int) -> typing.Callable:
-    def check_string_length(string: str) -> str:
-        if string and len(string) > length:
-            raise ValueError(f"Le champ doit faire moins de {length} caractères")
-        return string
-
-    return check_string_length
-
-
-def string_to_boolean(string: str) -> bool | None:
-    try:
-        return {"true": True, "false": False}[string]
-    except KeyError:
-        raise ValueError("La valeur reçu doit être soit 'true' soit 'false'")
-
-
-def string_to_boolean_field(field_name: str) -> classmethod:
-    return pydantic_v1.validator(field_name, pre=True, allow_reuse=True)(string_to_boolean)
-
-
-def string_length_validator(field_name: str, *, length: int) -> classmethod:
-    return pydantic_v1.validator(field_name, pre=False, allow_reuse=True)(check_string_length_wrapper(length=length))
-
-
 def as_utc_without_timezone(d: datetime.datetime) -> datetime.datetime:
     # We need this ugly workaround because
     # the api users send us datetimes like "2020-12-03T14:00:00Z"

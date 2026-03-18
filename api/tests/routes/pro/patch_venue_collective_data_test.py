@@ -210,7 +210,7 @@ class Returns400Test:
         response = client.patch(f"/venues/{venue.id}/collective-data", json=venue_data)
 
         assert response.status_code == 400
-        assert response.json == {"collectiveInterventionArea": ["One or more element is not a valid area"]}
+        assert response.json == {"collectiveInterventionArea": ["Value error, One or more element is not a valid area"]}
 
         db.session.refresh(venue)
         assert venue.collectiveInterventionArea == ["01", "02"]

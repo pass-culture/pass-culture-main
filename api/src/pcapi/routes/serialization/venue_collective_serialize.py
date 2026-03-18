@@ -2,16 +2,18 @@ import enum
 import typing
 from datetime import datetime
 
+import typing
 import pydantic.v1 as pydantic_v1
 from pydantic.v1 import validator
-
+import pydantic
+from pydantic import field_validator
+from pcapi.serialization.exceptions import PydanticError
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.constants import ALL_INTERVENTION_AREA
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
-from pcapi.serialization.utils import string_length_validator
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -90,47 +92,46 @@ class LegalStatusResponseModel(HttpBodyModel):
     name: str
 
 
-class EditVenueCollectiveDataBodyModel(BaseModel):
-    collectiveDescription: str | None
-    collectiveStudents: list[educational_models.StudentLevels] | None
-    collectiveWebsite: str | None
-    collectiveDomains: list[int] | None
-    collectiveInterventionArea: list[str] | None
-    venueEducationalStatusId: int | None
-    collectiveNetwork: list[str] | None
-    collectiveAccessInformation: str | None
-    collectivePhone: str | None
-    collectiveEmail: str | None
-    activity: offerers_models.ActivityOpenToPublic | offerers_models.ActivityNotOpenToPublic | None
+class EditVenueCollectiveDataBodyModel(HttpBodyModel):
+    collectiveDescription: typing.Annotated[str | None, pydantic.Field(pre=False, allow_reuse=True, max_length=500)] = (
+        None
+    )
+    collectiveStudents: list[educational_models.StudentLevels] | None = None
+    collectiveWebsite: typing.Annotated[str | None, pydantic.Field(pre=False, allow_reuse=True, max_length=150)] = None
+    collectiveDomains: list[int] | None = None
+    collectiveInterventionArea: list[str] | None = None
+    venueEducationalStatusId: int | None = None
+    collectiveNetwork: list[str] | None = None
+    collectiveAccessInformation: typing.Annotated[
+        str | None, pydantic.Field(pre=False, allow_reuse=True, max_length=500)
+    ] = None
+    collectivePhone: typing.Annotated[str | None, pydantic.Field(pre=False, allow_reuse=True, max_length=50)] = (
+        None  # TODO  bulle why 50?
+    )
+    collectiveEmail: typing.Annotated[str | None, pydantic.Field(pre=False, allow_reuse=True, max_length=150)] = None
+    activity: offerers_models.ActivityOpenToPublic | offerers_models.ActivityNotOpenToPublic | None = None
 
-    _validate_collectiveDescription = string_length_validator("collectiveDescription", length=500)
-    _validate_collectiveWebsite = string_length_validator("collectiveWebsite", length=150)
-    _validate_collectiveAccessInformation = string_length_validator("collectiveAccessInformation", length=500)
-    _validate_collectivePhone = string_length_validator("collectivePhone", length=50)
-    _validate_collectiveEmail = string_length_validator("collectiveEmail", length=150)
-
-    @validator("collectiveStudents")
-    def validate_students(cls, students: list[str]) -> list[educational_models.StudentLevels] | None:
+    @field_validator("collectiveStudents", mode="after")
+    @classmethod
+    def validate_collectiveStudents(cls, students: list[str]) -> list[educational_models.StudentLevels] | None:
         if not students:
             return []
         return shared_offers.validate_students(students)
 
-    @validator("collectiveInterventionArea")
-    def validate_intervention_area(cls, intervention_area: list[str] | None) -> list[str] | None:
+    @field_validator("collectiveInterventionArea", mode="after")
+    @classmethod
+    def validate_collectiveInterventionArea(cls, intervention_area: list[str] | None) -> list[str] | None:
         if intervention_area and any(area not in ALL_INTERVENTION_AREA for area in intervention_area):
             raise ValueError("One or more element is not a valid area")
 
         return intervention_area
 
 
-class VenuesEducationalStatusResponseModel(BaseModel):
+# TODO bulle voir pour simplifier?
+class VenuesEducationalStatusResponseModel(HttpBodyModel):
     id: int
     name: str
 
-    class Config:
-        orm_mode = True
-        extra = pydantic_v1.Extra.forbid
 
-
-class VenuesEducationalStatusesResponseModel(BaseModel):
+class VenuesEducationalStatusesResponseModel(HttpBodyModel):
     statuses: list[VenuesEducationalStatusResponseModel]

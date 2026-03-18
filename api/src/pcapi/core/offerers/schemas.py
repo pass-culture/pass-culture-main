@@ -62,6 +62,8 @@ class LocationModelV2(BaseModelV2):
         return city
 
 
+# TODO bulle replace by typing.Annotated[
+# str | None, pydantic.AfterValidator(lambda x: str.strip(x)), pydantic.Field(min_length=1, max_length=255)] ?
 # Legacy (pydantic V1)
 class RequiredStrippedString(pydantic_v1.ConstrainedStr):
     strip_whitespace = True
@@ -256,7 +258,14 @@ class LocationModel(BaseModel):
 
 
 class BannerMetaModel(typing.TypedDict, total=False):
-    image_credit: VenueImageCredit | None
+    image_credit: (
+        typing.Annotated[
+            str | None,
+            pydantic_v2.AfterValidator(lambda x: str.strip(x)),
+            pydantic_v2.Field(min_length=1, max_length=255),
+        ]
+        | None
+    )  # VenueImageCredit | None
     image_credit_url: str | None
     is_from_google: bool
 

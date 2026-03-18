@@ -34,7 +34,10 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.history.constants import ACTION_HISTORY_ORDER_BY
 from pcapi.core.offerers import constants
+
+# from pcapi.core.offerers.schemas import BannerMetaModel
 from pcapi.core.offerers.schemas import BannerMetaModel
+
 from pcapi.core.offerers.schemas import VenueImageCredit
 from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.models import Model
@@ -552,6 +555,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     @hybrid_property
     def bannerMeta(self) -> dict | None:
         if self._bannerMeta is not None:
+            print("hello", self._bannerMeta)
             return self._bannerMeta
         if self.googlePlacesInfo and self.googlePlacesInfo.bannerMeta:
             # Google Places API returns a list of HTML attributions, formatted like this:
@@ -567,10 +571,18 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
             if match:
                 url, credit = match.groups()
 
-                return typing.cast(
-                    dict,
-                    BannerMetaModel(image_credit=VenueImageCredit(credit), image_credit_url=url, is_from_google=True),
+                # return typing.cast(
+                #     dict,
+                #     BannerMetaModel(image_credit=VenueImageCredit(credit), image_credit_url=url, is_from_google=True),
+                # )
+                print(
+                    BannerMetaModel(
+                        image_credit=VenueImageCredit(credit), image_credit_url=url, is_from_google=True
+                    ).dict()
                 )
+                return BannerMetaModel(
+                    image_credit=VenueImageCredit(credit), image_credit_url=url, is_from_google=True
+                ).dict()
         return None
 
     @bannerMeta.inplace.setter
