@@ -2209,6 +2209,15 @@ class AutoDeleteAttachmentsOnClosedOfferersTest:
             assert user_offerer.isDeleted
         assert pending_user_offerer.isRejected
 
+    def test_without_action_history(self):
+        offerer = offerers_factories.ClosedOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
+
+        offerers_api.auto_delete_attachments_on_closed_offerers()
+
+        assert user_offerer.isDeleted
+        assert len(user_offerer.user.action_history) == 1
+
 
 def test_grant_user_offerer_access():
     offerer = offerers_factories.OffererFactory.build()

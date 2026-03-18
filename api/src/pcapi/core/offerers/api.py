@@ -1469,14 +1469,17 @@ def auto_delete_attachments_on_closed_offerers() -> None:
     )
 
     for row in rows:
-        if row.offererClosedDate <= date_utils.get_naive_utc_now() - timedelta(
+        # closed date may not be found when history has been lost (due to anonymize.sql on staging)
+        if row.offererClosedDate is None or row.offererClosedDate <= date_utils.get_naive_utc_now() - timedelta(
             days=settings.CLOSED_OFFERER_PRO_USER_DELETION_DELAY
         ):
             user_offerer = row.UserOfferer
             comment = (
                 f"Délai de {settings.CLOSED_OFFERER_PRO_USER_DELETION_DELAY} jours expiré "
-                f"après fermeture de l'entité juridique sur la plateforme le {row.offererClosedDate.strftime('%d/%m/%Y')}"
+                "après fermeture de l'entité juridique sur la plateforme"
             )
+            if row.offererClosedDate:
+                comment += f" le {row.offererClosedDate.strftime('%d/%m/%Y')}"
             if user_offerer.isWaitingForValidation:
                 reject_offerer_attachment(user_offerer, author_user=None, comment=comment, send_email=False)
             else:
