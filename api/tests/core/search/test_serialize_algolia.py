@@ -427,6 +427,19 @@ def test_serialize_offer_temporarily_headline():
     assert serialized["offer"]["isHeadlineUntil"] == 1735776000
 
 
+def test_serialize_artist():
+    artist = artists_factories.ArtistFactory(app_search_score=4.2)
+
+    serialized = algolia.AlgoliaBackend().serialize_artist(artist)
+    assert serialized == {
+        "objectID": artist.id,
+        "app_search_score": 4.2,
+        "description": artist.description,
+        "image": artist.thumbUrl,
+        "name": artist.name,
+    }
+
+
 def test_serialize_offer_product_artists():
     artist = artists_factories.ArtistFactory()
     product = offers_factories.ProductFactory()
