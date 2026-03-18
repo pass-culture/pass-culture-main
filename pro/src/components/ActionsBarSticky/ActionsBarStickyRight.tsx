@@ -25,7 +25,6 @@ export const Right = ({
         [style['right-inverse']]: inverseWhenSmallerThanTablet,
       })}
     >
-      {/** biome-ignore lint/a11y/useSemanticElements: We want a `role="status"` here, not an `<output />`. */}
       <div role="status">
         {dirtyForm !== undefined && mode === Mode.CREATION ? (
           !dirtyForm ? (
