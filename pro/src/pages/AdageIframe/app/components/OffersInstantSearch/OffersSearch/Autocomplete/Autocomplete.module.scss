@@ -17,7 +17,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 2;
+      z-index: 4;
       padding: 0 var(--size-spacing-l);
       gap: var(--size-spacing-l);
     }
@@ -57,7 +57,7 @@
   top: rem.torem(-16px);
   right: 0;
   border-radius: var(--size-border-radius-m);
-  z-index: 1;
+  z-index: 3;
   bottom: rem.torem(64px);
   padding-top: var(--size-spacing-xxxl);
 
@@ -117,7 +117,7 @@
 }
 
 .backdrop {
-  z-index: 1;
+  z-index: 2;
   position: fixed;
   inset: 0;
   background-color: var(--color-background-overlay);
