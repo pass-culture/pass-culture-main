@@ -514,10 +514,6 @@ def get_venues_educational_statuses() -> list[models.VenueEducationalStatus]:
     return db.session.query(models.VenueEducationalStatus).order_by(models.VenueEducationalStatus.name).all()
 
 
-def get_venue_by_id(venue_id: int) -> models.Venue | None:
-    return db.session.get(models.Venue, venue_id)
-
-
 def get_venues_by_ids(ids: typing.Collection[int]) -> sa_orm.Query[models.Venue]:
     return (
         db.session.query(models.Venue)
