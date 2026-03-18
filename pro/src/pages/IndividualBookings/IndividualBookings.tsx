@@ -42,7 +42,7 @@ import { IndividualBookingsTable } from '../../components/Bookings/IndividualBoo
 import { getFilteredIndividualBookingsAdapter } from './adapters/getFilteredIndividualBookingsAdapter'
 import styles from './IndividualBookings.module.scss'
 
-const MAX_LOADED_PAGES = 5
+const MAX_LOADED_PAGES = 10
 
 export const IndividualBookings = () => {
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')

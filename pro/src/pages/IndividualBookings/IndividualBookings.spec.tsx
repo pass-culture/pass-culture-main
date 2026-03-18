@@ -644,8 +644,8 @@ describe('components | BookingsRecap | Pro user', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should show notification with information message when there are more than 5 pages', async () => {
-    const bookingsRecap = { pages: 6, bookingsRecap: [], total: 6 }
+  it('should show notification with information message when there are more than 10 pages', async () => {
+    const bookingsRecap = { pages: 11, bookingsRecap: [], total: 11 }
     vi.spyOn(api, 'getBookingsPro')
       .mockResolvedValueOnce({ ...bookingsRecap, page: 1 })
       .mockResolvedValueOnce({ ...bookingsRecap, page: 2 })
@@ -653,6 +653,11 @@ describe('components | BookingsRecap | Pro user', () => {
       .mockResolvedValueOnce({ ...bookingsRecap, page: 4 })
       .mockResolvedValueOnce({ ...bookingsRecap, page: 5 })
       .mockResolvedValueOnce({ ...bookingsRecap, page: 6 })
+      .mockResolvedValueOnce({ ...bookingsRecap, page: 7 })
+      .mockResolvedValueOnce({ ...bookingsRecap, page: 8 })
+      .mockResolvedValueOnce({ ...bookingsRecap, page: 9 })
+      .mockResolvedValueOnce({ ...bookingsRecap, page: 10 })
+      .mockResolvedValueOnce({ ...bookingsRecap, page: 11 })
     renderBookingsRecap()
     await waitForCompleteLoading()
 
@@ -668,17 +673,22 @@ describe('components | BookingsRecap | Pro user', () => {
       'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
     )
     expect(informationalMessage).toBeInTheDocument()
-    expect(api.getBookingsPro).toHaveBeenCalledTimes(5)
+    expect(api.getBookingsPro).toHaveBeenCalledTimes(10)
   })
 
-  it('should not show notification with information message when there are 5 pages or less', async () => {
-    const bookingsRecap = { pages: 5, bookingsRecap: [], total: 5 }
+  it('should not show notification with information message when there are 10 pages or less', async () => {
+    const bookingsRecap = { pages: 10, bookingsRecap: [], total: 10 }
     vi.spyOn(api, 'getBookingsPro')
       .mockResolvedValueOnce({ ...bookingsRecap, page: 1 })
       .mockResolvedValueOnce({ ...bookingsRecap, page: 2 })
       .mockResolvedValueOnce({ ...bookingsRecap, page: 3 })
       .mockResolvedValueOnce({ ...bookingsRecap, page: 4 })
       .mockResolvedValueOnce({ ...bookingsRecap, page: 5 })
+      .mockResolvedValueOnce({ ...bookingsRecap, page: 6 })
+      .mockResolvedValueOnce({ ...bookingsRecap, page: 7 })
+      .mockResolvedValueOnce({ ...bookingsRecap, page: 8 })
+      .mockResolvedValueOnce({ ...bookingsRecap, page: 9 })
+      .mockResolvedValueOnce({ ...bookingsRecap, page: 10 })
     renderBookingsRecap()
     await waitForCompleteLoading()
 
@@ -690,7 +700,7 @@ describe('components | BookingsRecap | Pro user', () => {
       screen.getByRole('button', { name: 'Rechercher les réservations' })
     )
 
-    await waitFor(() => expect(api.getBookingsPro).toHaveBeenCalledTimes(5))
+    await waitFor(() => expect(api.getBookingsPro).toHaveBeenCalledTimes(10))
     const informationalMessage = screen.queryByText(
       'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
     )
