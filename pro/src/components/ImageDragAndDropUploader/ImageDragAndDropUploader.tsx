@@ -83,7 +83,7 @@ export const ImageDragAndDropUploader = ({
     snackBar.success('L’image a bien été supprimée')
   }
 
-  const onImageUploadHandler = (
+  const onImageUploadHandler = async (
     values: OnImageUploadArgs,
     successMessage: string
   ) => {
@@ -91,9 +91,14 @@ export const ImageDragAndDropUploader = ({
     setDraftImage(values.imageFile)
     setDraftCredit(values.credit ?? '')
     setRefToFocusOnClose(updateImageRef)
-    onImageUpload(values)
-
-    snackBar.success(successMessage)
+    try {
+      await Promise.resolve(onImageUpload(values))
+      snackBar.success(successMessage)
+    } catch {
+      snackBar.error(
+        "Une erreur est survenue lors de l'importation de votre image"
+      )
+    }
   }
 
   return (
