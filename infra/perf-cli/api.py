@@ -62,7 +62,7 @@ def describe_me(number_of_requests, concurrent, timeout):
     url = get_base_url()
     access_token = get_access_token()
 
-    click.echo(f'Describe current user')
+    click.echo('Describe current user')
 
     full_url = f"{url}/native/v1/me"
     headers = {"Authorization": f"Bearer {access_token}"}
