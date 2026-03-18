@@ -1888,10 +1888,6 @@ def get_venues_educational_statuses() -> list[offerers_models.VenueEducationalSt
     return offerers_repository.get_venues_educational_statuses()
 
 
-def get_venue_by_id(venue_id: int) -> offerers_models.Venue | None:
-    return offerers_repository.get_venue_by_id(venue_id)
-
-
 def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) -> sa_orm.Query:
     offerers = db.session.query(models.Offerer).options(
         sa_orm.with_expression(
