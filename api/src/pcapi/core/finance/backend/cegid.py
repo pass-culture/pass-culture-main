@@ -102,7 +102,8 @@ class CegidFinanceBackend(BaseFinanceBackend):
                 headers = kwargs.pop("headers", {})
                 token = self._get_token(force_cache_update)
                 headers["Authorization"] = f"Bearer {token}"
-                response = requests.request(method, url, *args, headers=headers, timeout=60, **kwargs)
+                timeout = kwargs.pop("timeout", 60)
+                response = requests.request(method, url, *args, headers=headers, timeout=timeout, **kwargs)
                 if response.status_code != 200:
                     logger.info(
                         "Cegid answered %s's call to url %s with status code %s", method, url, response.status_code
@@ -340,6 +341,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
             url,
             params={"$expand": "PaymentStatusDetails"},
             json={"Date": {"value": from_date_filter}, "EndDate": {"value": to_date_filter}},
+            timeout=180,  # Cegid takes time to collect all lines, a longer timeout is safer.
         )
 
         if response.status_code != 200:
