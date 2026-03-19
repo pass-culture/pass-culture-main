@@ -6,7 +6,7 @@ import {
 } from '@/design-system/Button/types'
 import { Card } from '@/ui-kit/Card/Card'
 
-import newsletter from './assets/newsletter.svg'
+import newsletter from './assets/newsletter.png'
 import styles from './NewsletterCard.module.scss'
 
 export const NewsletterCard = () => {
