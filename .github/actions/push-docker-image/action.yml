@@ -74,7 +74,7 @@ runs:
         service_account: ${{ steps.secrets.outputs.artifact_registry_service_account }}
 
     - name: Docker login
-      uses: docker/login-action@v3
+      uses: docker/login-action@v4
       id: docker-login
       with:
         registry: ${{ inputs.registry }}
