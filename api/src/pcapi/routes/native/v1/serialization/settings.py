@@ -1,17 +1,20 @@
 import decimal
 
+import pydantic as pydantic_v2
+
 import pcapi.core.finance.conf as finance_conf
 from pcapi.core.finance.utils import XPF_TO_EUR_RATE
-from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.shared.price import convert_to_cent
 
 
-class DepositAmountsByAge(BaseModel):
+class DepositAmountsByAge(HttpBodyModel):
     age_15: int
     age_16: int
     age_17: int
     age_18: int
+
+    model_config = pydantic_v2.ConfigDict(alias_generator=None)
 
 
 def _convert_amount(amount: decimal.Decimal | None) -> int:
@@ -30,16 +33,16 @@ def get_deposit_amounts_by_age() -> DepositAmountsByAge:
     )
 
 
-class Rates(BaseModel):
-    pacificFrancToEuro = XPF_TO_EUR_RATE
+class Rates(HttpBodyModel):
+    pacific_franc_to_euro: float = XPF_TO_EUR_RATE
 
 
-class Bonification(BaseModel):
-    qfThreshold: int
-    bonusAmount: int
+class Bonification(HttpBodyModel):
+    qf_threshold: int
+    bonus_amount: int
 
 
-class SettingsResponse(ConfiguredBaseModel):
+class SettingsResponse(HttpBodyModel):
     account_creation_minimum_age: int
     account_unsuspension_limit: int
     app_enable_autocomplete: bool
@@ -53,5 +56,5 @@ class SettingsResponse(ConfiguredBaseModel):
     ineligible_postal_codes: list[str]
     is_recaptcha_enabled: bool
     object_storage_url: str
-    rates = Rates()
+    rates: Rates
     wip_enable_credit_v3: bool
