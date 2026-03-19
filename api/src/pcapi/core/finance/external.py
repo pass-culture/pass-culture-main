@@ -9,6 +9,7 @@ from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import backend as finance_backend
 from pcapi.core.finance import conf
 from pcapi.core.finance import models as finance_models
+from pcapi.core.finance.backend import constants as finance_backend_constants
 from pcapi.core.finance.backend.base import SettlementType
 from pcapi.core.internal_notifications.transactional import notify_invoices_finished
 from pcapi.models import db
@@ -154,15 +155,21 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
 
 
 def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
-    logger.info("Syncing settlements", extra={"from_date": from_date.isoformat(), "to_date": to_date.isoformat()})
-
     try:
         settlement_payloads = finance_backend.get_settlements(from_date, to_date)
-        logger.info("Settlements returned", extra={"count": len(settlement_payloads)})
+        logger.info(
+            "get_settlements called",
+            extra={
+                "count": len(settlement_payloads),
+                "from_date": from_date.isoformat(),
+                "to_date": to_date.isoformat(),
+            },
+        )
     except Exception as exc:
         logger.exception(
             "Unable to get settlements",
-            extra={"exc": str(exc)},
+            exc_info=exc,
+            extra={"exc": str(exc), "from_date": from_date.isoformat(), "to_date": to_date.isoformat()},
         )
         return
 
@@ -206,7 +213,7 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
 
         for payload in bill_settlement_payloads:
             if payload.invoice_external_reference not in invoices_dict:
-                logger.warning(
+                logger.info(
                     "No invoice found on our side for this reference",
                     extra={
                         "invoice_external_reference": payload.invoice_external_reference,
@@ -219,15 +226,7 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
             invoice = invoices_dict[payload.invoice_external_reference]
 
             # Load, get or create settlement_batch
-            if payload.settlement_batch_name:
-                if payload.settlement_batch_name in loaded_settlement_batches:
-                    settlement_batch = loaded_settlement_batches[payload.settlement_batch_name]
-                else:
-                    settlement_batch = get_or_create_settlement_batch(
-                        payload.settlement_batch_name, payload.settlement_batch_label
-                    )
-                    loaded_settlement_batches[payload.settlement_batch_name] = settlement_batch
-            else:
+            if payload.settlement_batch_name == finance_backend_constants.MISSING_BATCH_NAME_VALUE:
                 logger.warning(
                     "No settlement batch in the payload",
                     extra={
@@ -236,7 +235,13 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
                         "settlement_id": payload.external_settlement_id,
                     },
                 )
-                continue
+            if payload.settlement_batch_name in loaded_settlement_batches:
+                settlement_batch = loaded_settlement_batches[payload.settlement_batch_name]
+            else:
+                settlement_batch = get_or_create_settlement_batch(
+                    payload.settlement_batch_name, payload.settlement_batch_label
+                )
+                loaded_settlement_batches[payload.settlement_batch_name] = settlement_batch
 
             # Load, get or create settlement
             if (payload.bank_account_id, payload.external_settlement_id) in loaded_settlements:

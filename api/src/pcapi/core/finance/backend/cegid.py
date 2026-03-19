@@ -1,5 +1,6 @@
 import datetime
 import logging
+import re
 import typing
 
 from pcapi import settings
@@ -12,6 +13,8 @@ from pcapi.core.finance.backend.base import SettlementType
 from pcapi.utils import cache as cache_utils
 from pcapi.utils import date as date_utils
 from pcapi.utils import requests
+
+from . import constants
 
 
 logger = logging.getLogger(__name__)
@@ -348,23 +351,36 @@ class CegidFinanceBackend(BaseFinanceBackend):
             raise exceptions.FinanceBackendUnexpectedResponse(response, "Unexpected response for PaymentStatus query")
 
         response_json = response.json()
-        settlements = [
-            SettlementPayload(
-                bank_account_id=int(settlement_data["VendorID"]["value"]),
-                external_settlement_id=settlement_data["adjgRefNbr"]["value"],
-                invoice_external_reference=settlement_data["RefFournFact"]["value"].split("R-")[-1]
-                if settlement_data["RefFournFact"]["value"].startswith("R-")
-                else settlement_data["RefFournFact"]["value"],
-                settlement_type=SettlementType(settlement_data["AdjgDocType"]["value"]),
-                settlement_batch_name=settlement_data["RefLot"]["value"] if settlement_data["RefLot"] else None,
-                settlement_batch_label=settlement_data["DescLot"]["value"] if settlement_data["DescLot"] else None,
-                settlement_date=datetime.date.fromisoformat(settlement_data["Date"]["value"].split("T")[0]),
-                settlement_creation_date=datetime.datetime.fromisoformat(settlement_data["CreatedDateTime"]["value"]),
-                amount=int(float(settlement_data["Amount"]["value"]) * 100),
-            )
-            for settlement_data in response_json["PaymentStatusDetails"]
-            if settlement_data["AdjgDocType"]["value"] in ("Payment", "Voided Payment")
-        ]
+
+        settlements = []
+        for settlement_data in response_json["PaymentStatusDetails"]:
+            if settlement_data["AdjgDocType"]["value"] in ("Payment", "Voided Payment"):
+                ref_fourn_fact = settlement_data["RefFournFact"].get("value")
+                if not ref_fourn_fact:
+                    continue
+                try:
+                    payload = SettlementPayload(
+                        bank_account_id=int(settlement_data["VendorID"]["value"]),
+                        external_settlement_id=settlement_data["adjgRefNbr"]["value"],
+                        invoice_external_reference=re.sub(r"_R$", "", ref_fourn_fact),
+                        settlement_type=SettlementType(settlement_data["AdjgDocType"]["value"]),
+                        settlement_batch_name=settlement_data.get("RefLot", {}).get(
+                            "value", constants.MISSING_BATCH_NAME_VALUE
+                        ),
+                        settlement_batch_label=settlement_data.get("DescLot", {}).get(
+                            "value", constants.MISSING_BATCH_LABEL_VALUE
+                        ),
+                        settlement_date=datetime.date.fromisoformat(settlement_data["Date"]["value"].split("T")[0]),
+                        settlement_creation_date=datetime.datetime.fromisoformat(
+                            settlement_data["CreatedDateTime"]["value"]
+                        ),
+                        amount=int(float(settlement_data["Amount"]["value"]) * 100),
+                    )
+                    settlements.append(payload)
+                except Exception as exc:
+                    logger.exception("Unsupported settlement data", exc_info=exc, extra={"data": settlement_data})
+                    raise
+
         return settlements
 
     @property

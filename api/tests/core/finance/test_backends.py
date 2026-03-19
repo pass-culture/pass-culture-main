@@ -13,6 +13,7 @@ from pcapi.core.finance import backend as finance_backend
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.finance.backend import constants
 from pcapi.core.finance.backend.base import BaseFinanceBackend
 from pcapi.core.finance.backend.base import SettlementPayload
 from pcapi.core.finance.backend.base import SettlementType
@@ -1526,7 +1527,7 @@ class CegidFinanceBackendTest:
                     "id": some_uuid,
                     "rowNumber": 2,
                     "note": None,
-                    "AdjgDocType": {"value": "Something else"},
+                    "AdjgDocType": {"value": "Something else"},  # Entry ignored because of other type
                     "adjgRefNbr": {"value": "0032594"},
                     "Amount": {"value": 982.8},
                     "APInvoice_RefNbr": {"value": "0038380"},
@@ -1562,12 +1563,36 @@ class CegidFinanceBackendTest:
                     "Ndajustement": {"value": 0},
                     "NumFacFourn": {"value": "0038380"},
                     "PaymentStatus": {"value": "Closed"},
-                    "RefFournFact": {"value": "R-FR123456999"},
+                    "RefFournFact": {"value": "FR123456999_R"},
                     "RefLot": {},
                     "Typededocajust": {"value": "CHK"},
                     "TypeFacFour": {"value": "Bill"},
                     "VendorID": {"value": "13579"},
                     "VendorName": {"value": "Compte bancaire 13579"},
+                    "custom": {},
+                },
+                {
+                    "id": some_uuid,
+                    "rowNumber": 3,
+                    "note": None,
+                    "AdjgDocType": {"value": "Payment"},
+                    "adjgRefNbr": {"value": "0032599"},
+                    "Amount": {"value": 1234.5},
+                    "APInvoice_RefNbr": {"value": "0038381"},
+                    "APInvoiceDocType": {"value": "Credit Adj."},
+                    "CreatedDateTime": {"value": iso_now},
+                    "Date": {"value": iso_now},
+                    "DescLot": {},
+                    "EstAnnule": {"value": False},
+                    "Ndajustement": {"value": 0},
+                    "NumFacFourn": {"value": "0038381"},
+                    "PaymentStatus": {"value": "Closed"},
+                    "RefFournFact": {},  # Entry ignored because of empty reference
+                    "RefLot": {},
+                    "Typededocajust": {"value": "CHK"},
+                    "TypeFacFour": {"value": "Credit Adj."},
+                    "VendorID": {"value": "13580"},
+                    "VendorName": {"value": "Compte bancaire 13580"},
                     "custom": {},
                 },
             ],
@@ -1587,7 +1612,7 @@ class CegidFinanceBackendTest:
         assert request_matcher_put_payment_status.call_count == 1
 
         assert len(settlements_payload) == 2
-        assert (
+        assert settlements_payload == [
             SettlementPayload(
                 bank_account_id=13579,
                 external_settlement_id="0032596",
@@ -1598,20 +1623,16 @@ class CegidFinanceBackendTest:
                 settlement_date=now.date(),
                 settlement_creation_date=now,
                 amount=-98280,
-            )
-            in settlements_payload
-        )
-        assert (
+            ),
             SettlementPayload(
                 bank_account_id=13579,
                 external_settlement_id="0032598",
                 invoice_external_reference="FR123456999",
                 settlement_type=SettlementType.PAYMENT,
-                settlement_batch_name=None,
-                settlement_batch_label=None,
+                settlement_batch_name=constants.MISSING_BATCH_NAME_VALUE,
+                settlement_batch_label=constants.MISSING_BATCH_LABEL_VALUE,
                 settlement_date=now.date(),
                 settlement_creation_date=now,
                 amount=98280,
-            )
-            in settlements_payload
-        )
+            ),
+        ]
