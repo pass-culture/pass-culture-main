@@ -476,17 +476,32 @@
                 "type": "object"
             },
             "AvailableReactionBooking": {
+                "additionalProperties": false,
                 "properties": {
                     "dateUsed": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Dateused",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Dateused"
                     },
                     "image": {
-                        "nullable": true,
-                        "title": "Image",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Image"
                     },
                     "name": {
                         "title": "Name",
@@ -3422,6 +3437,7 @@
                 "type": "object"
             },
             "GetAvailableReactionsResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "bookings": {
                         "items": {
@@ -6289,6 +6305,7 @@
                 "type": "object"
             },
             "PostOneReactionRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "offerId": {
                         "title": "Offerid",
@@ -6306,6 +6323,7 @@
                 "type": "object"
             },
             "PostReactionRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "reactions": {
                         "items": {

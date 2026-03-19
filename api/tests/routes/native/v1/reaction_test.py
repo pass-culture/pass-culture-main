@@ -36,7 +36,7 @@ class PostReactionTest:
         client.with_token(user)
 
         with assert_num_queries(self.num_queries_failure):
-            response = client.post("/native/v1/reaction", json={"offerId": 1, "reactionType": "LIKE"})
+            response = client.post("/native/v1/reaction", json={"reactions": [{"offerId": 1, "reactionType": "LIKE"}]})
             assert response.status_code == 400
 
     def test_post_new_like_reaction(self, client):
@@ -49,7 +49,9 @@ class PostReactionTest:
 
         offer_id = offer.id
         with assert_num_queries(self.num_queries_success):
-            response = client.post("/native/v1/reaction", json={"offerId": offer_id, "reactionType": "LIKE"})
+            response = client.post(
+                "/native/v1/reaction", json={"reactions": [{"offerId": offer_id, "reactionType": "LIKE"}]}
+            )
             assert response.status_code == 204
 
         reaction = user.reactions[0]
@@ -66,7 +68,9 @@ class PostReactionTest:
 
         offer_id = offer.id
         with assert_num_queries(self.num_queries_success):
-            response = client.post("/native/v1/reaction", json={"offerId": offer_id, "reactionType": "DISLIKE"})
+            response = client.post(
+                "/native/v1/reaction", json={"reactions": [{"offerId": offer_id, "reactionType": "DISLIKE"}]}
+            )
             assert response.status_code == 204
 
     def test_edit_reaction(self, client):
@@ -79,7 +83,9 @@ class PostReactionTest:
 
         offer_id = offer.id
         with assert_num_queries(self.num_queries_success):
-            response = client.post("/native/v1/reaction", json={"offerId": offer_id, "reactionType": "LIKE"})
+            response = client.post(
+                "/native/v1/reaction", json={"reactions": [{"offerId": offer_id, "reactionType": "LIKE"}]}
+            )
             assert response.status_code == 204
         reaction = user.reactions[0]
 
@@ -87,7 +93,9 @@ class PostReactionTest:
 
         assert reaction.reactionType == ReactionTypeEnum.LIKE
 
-        response = client.post("/native/v1/reaction", json={"offerId": offer_id, "reactionType": "DISLIKE"})
+        response = client.post(
+            "/native/v1/reaction", json={"reactions": [{"offerId": offer_id, "reactionType": "DISLIKE"}]}
+        )
         reaction = user.reactions[0]
 
         assert response.status_code == 204
@@ -104,12 +112,16 @@ class PostReactionTest:
 
         offer_id = offer.id
         with assert_num_queries(self.num_queries_success_with_product):
-            response = client.post("/native/v1/reaction", json={"offerId": offer_id, "reactionType": "LIKE"})
+            response = client.post(
+                "/native/v1/reaction", json={"reactions": [{"offerId": offer_id, "reactionType": "LIKE"}]}
+            )
             assert response.status_code == 204
 
         assert product.likesCount == 1
 
-        response = client.post("/native/v1/reaction", json={"offerId": offer_id, "reactionType": "DISLIKE"})
+        response = client.post(
+            "/native/v1/reaction", json={"reactions": [{"offerId": offer_id, "reactionType": "DISLIKE"}]}
+        )
         reaction = user.reactions[0]
 
         assert reaction.reactionType == ReactionTypeEnum.DISLIKE
@@ -161,7 +173,9 @@ class PostReactionTest:
 
         offer_id = offer.id
         with assert_num_queries(self.num_queries_failure):
-            response = client.post("/native/v1/reaction", json={"offerId": offer_id, "reactionType": "LIKE"})
+            response = client.post(
+                "/native/v1/reaction", json={"reactions": [{"offerId": offer_id, "reactionType": "LIKE"}]}
+            )
             assert response.status_code == 400
             assert response.json["code"] == "OFFER_NOT_BOOKED"
 
@@ -175,7 +189,9 @@ class PostReactionTest:
 
         offer_id = offer.id
         with assert_num_queries(self.num_queries_failure):
-            response = client.post("/native/v1/reaction", json={"offerId": offer_id, "reactionType": "LIKE"})
+            response = client.post(
+                "/native/v1/reaction", json={"reactions": [{"offerId": offer_id, "reactionType": "LIKE"}]}
+            )
             assert response.status_code == 400
             assert response.json["code"] == "OFFER_NOT_BOOKED"
 
@@ -189,7 +205,9 @@ class PostReactionTest:
 
         offer_id = offer.id
         with assert_num_queries(self.num_queries_failure):
-            response = client.post("/native/v1/reaction", json={"offerId": offer_id, "reactionType": "LIKE"})
+            response = client.post(
+                "/native/v1/reaction", json={"reactions": [{"offerId": offer_id, "reactionType": "LIKE"}]}
+            )
             assert response.status_code == 400
             assert response.json["code"] == "CAN_NOT_REACT"
 
@@ -203,7 +221,9 @@ class PostReactionTest:
 
         offer_id = offer.id
         with assert_num_queries(self.num_queries_failure):
-            response = client.post("/native/v1/reaction", json={"offerId": offer_id, "reactionType": "LIKE"})
+            response = client.post(
+                "/native/v1/reaction", json={"reactions": [{"offerId": offer_id, "reactionType": "LIKE"}]}
+            )
             assert response.status_code == 400
             assert response.json["code"] == "CAN_NOT_REACT"
 
