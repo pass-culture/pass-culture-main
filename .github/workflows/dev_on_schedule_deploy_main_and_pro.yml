@@ -192,6 +192,7 @@ jobs:
       location: europe-west9
       is_new_infra: true
       deploy_api: true
+      continue_on_error: true
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}

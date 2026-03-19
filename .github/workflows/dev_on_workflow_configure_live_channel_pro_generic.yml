@@ -10,6 +10,10 @@ on:
       VERSION:
         type: string
         required: true
+      continue_on_error:
+        type: boolean
+        required: false
+        default: false
     secrets:
       GCP_EHP_SERVICE_ACCOUNT:
         required: true
@@ -24,6 +28,7 @@ jobs:
   deploy_on_firebase:
     permissions: write-all
     runs-on: ubuntu-22.04
+    continue-on-error: ${{ inputs.continue_on_error }}
     if: ${{ github.event.pull_request.user.login != 'dependabot[bot]' }}
     steps:
       - uses: actions/checkout@v6
