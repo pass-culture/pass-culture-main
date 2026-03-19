@@ -455,12 +455,12 @@ def create_venue(
     dms_token = generate_dms_token()
 
     venue = models.Venue()
-    venue_address = offerers_schemas.LocationModel(**venue_data.address.dict())
+    venue_address = offerers_schemas.LocationModel(**venue_data.address.model_dump())
 
     if not address:
         address = create_offerer_address_from_address_api(venue_address)
 
-    data = venue_data.dict(by_alias=True)
+    data = venue_data.model_dump(by_alias=True)
     data["dmsToken"] = dms_token
     if not data["publicName"]:
         data["publicName"] = data["name"]
@@ -496,7 +496,7 @@ def create_venue(
     db.session.flush()
 
     offerer_address = offerers_models.OffererAddress(
-        offererId=venue_data.managingOffererId,
+        offererId=venue_data.managing_offerer_id,
         addressId=address.id,
         type=offerers_models.LocationType.VENUE_LOCATION,
         label=venue_address.label or None,
@@ -506,7 +506,7 @@ def create_venue(
     db.session.flush()
 
     # Deal with cultural domains
-    link_cultural_domains_to_venue(venue_data.culturalDomains, venue)
+    link_cultural_domains_to_venue(venue_data.cultural_domains, venue)
 
     if venue.siret:
         link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
@@ -2167,14 +2167,14 @@ def create_from_onboarding_data(
     # Get name (raison sociale) from Sirene API
     siret_info = find_structure_data(onboarding_data.siret)
     if not siret_info.diffusible:
-        if onboarding_data.publicName:
-            name = onboarding_data.publicName
+        if onboarding_data.public_name:
+            name = onboarding_data.public_name
         else:
             raise exceptions.publicNameRequiredException("missing mandatory value for public name")
     else:
         name = siret_info.name
 
-    link_cultural_domains_to_venue(onboarding_data.culturalDomains, None)
+    link_cultural_domains_to_venue(onboarding_data.cultural_domains, None)
 
     # Create Offerer or attach user to existing Offerer
     offerer_creation_info = offerers_serialize.CreateOffererBodyModel(
@@ -2186,12 +2186,12 @@ def create_from_onboarding_data(
         postal_code=onboarding_data.address.postalCode,
         insee_code=onboarding_data.address.inseeCode,
         siren=onboarding_data.siret[:9],
-        phone_number=onboarding_data.phoneNumber,
+        phone_number=onboarding_data.phone_number,
     )
     new_onboarding_info = NewOnboardingInfo(
         activity=offerers_models.Activity[onboarding_data.activity.name] if onboarding_data.activity else None,
         target=onboarding_data.target,
-        webPresence=onboarding_data.webPresence,
+        webPresence=onboarding_data.web_presence,
     )
     user_offerer = create_offerer(user, offerer_creation_info, new_onboarding_info, insee_data=siret_info)
 
@@ -2199,13 +2199,13 @@ def create_from_onboarding_data(
     venue = offerers_repository.find_venue_by_siret(onboarding_data.siret)
     if (
         venue
-        and onboarding_data.createVenueWithoutSiret
+        and onboarding_data.create_venue_without_siret
         and siret_info.ape_code
         and not APE_TAG_MAPPING.get(siret_info.ape_code, False)
         and FeatureToggle.WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY.is_active()
     ):
         raise exceptions.NotACollectivity()
-    if not venue or onboarding_data.createVenueWithoutSiret:
+    if not venue or onboarding_data.create_venue_without_siret:
         address = onboarding_data.address
         if not address.street:
             address = address.copy(update={"street": "n/d"})
@@ -2213,13 +2213,13 @@ def create_from_onboarding_data(
             activity=offerers_models.Activity[onboarding_data.activity.name] if onboarding_data.activity else None,
             address=address,
             bookingEmail=user.email,
-            culturalDomains=onboarding_data.culturalDomains,
+            culturalDomains=onboarding_data.cultural_domains,
             contact=None,
             description=None,
-            isOpenToPublic=onboarding_data.isOpenToPublic,
+            isOpenToPublic=onboarding_data.is_open_to_public,
             managingOffererId=user_offerer.offererId,
             name=name,
-            publicName=onboarding_data.publicName,
+            publicName=onboarding_data.public_name,
             venueLabelId=None,
             withdrawalDetails=None,
             audioDisabilityCompliant=None,
@@ -2227,7 +2227,7 @@ def create_from_onboarding_data(
             motorDisabilityCompliant=None,
             visualDisabilityCompliant=None,
         )
-        if onboarding_data.createVenueWithoutSiret:
+        if onboarding_data.create_venue_without_siret:
             comment_and_siret = dict(
                 comment="Lieu sans SIRET car dépend du SIRET d'un autre lieu",
                 siret=None,
@@ -2238,7 +2238,7 @@ def create_from_onboarding_data(
                 siret=onboarding_data.siret,
             )
         venue_kwargs = common_kwargs | comment_and_siret
-        venue_creation_info = venue_serialize.PostVenueBodyModel(**venue_kwargs)  # type: ignore[arg-type]
+        venue_creation_info = venue_serialize.PostVenueBodyModel(**venue_kwargs)
         venue = create_venue(venue_creation_info, user)
         create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
 

@@ -4,16 +4,16 @@
 /* eslint-disable */
 import type { ActivityNotOpenToPublic } from './ActivityNotOpenToPublic';
 import type { ActivityOpenToPublic } from './ActivityOpenToPublic';
-import type { LocationBodyModel } from './LocationBodyModel';
+import type { LocationBodyModelV2 } from './LocationBodyModelV2';
 import type { Target } from './Target';
 export type SaveNewOnboardingDataQueryModel = {
   activity: (ActivityOpenToPublic | ActivityNotOpenToPublic);
-  address: LocationBodyModel;
+  address: LocationBodyModelV2;
   createVenueWithoutSiret?: boolean;
-  culturalDomains?: Array<string> | null;
+  culturalDomains?: (Array<string> | null);
   isOpenToPublic: boolean;
-  phoneNumber?: string | null;
-  publicName?: string | null;
+  phoneNumber?: (string | null);
+  publicName?: (string | null);
   siret: string;
   target: Target;
   token: string;

@@ -17,10 +17,10 @@ VENUE_BANNER_MAX_SIZE = 10_000_000
 
 def check_accessibility_compliance(venue: "venue_serialize.PostVenueBodyModel") -> None:
     if None in [
-        venue.audioDisabilityCompliant,
-        venue.mentalDisabilityCompliant,
-        venue.motorDisabilityCompliant,
-        venue.visualDisabilityCompliant,
+        venue.audio_disability_compliant,
+        venue.mental_disability_compliant,
+        venue.motor_disability_compliant,
+        venue.visual_disability_compliant,
     ]:
         raise ApiErrors(errors={"global": ["L'accessibilité du lieu doit être définie."]})
 

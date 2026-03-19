@@ -1,7 +1,7 @@
 import datetime
 import json
 
-import pydantic.v1 as pydantic_v1
+import pydantic
 
 from pcapi import settings
 
@@ -12,21 +12,21 @@ DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE = "stats_display_cum_daily_consult
 TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE = "stats_display_top_3_most_consulted_offers_last_30_days"
 
 
-class OffererViewsModel(pydantic_v1.BaseModel):
+class OffererViewsModel(pydantic.BaseModel):
     eventDate: datetime.date
     numberOfViews: int
 
 
-class TopOffersData(pydantic_v1.BaseModel):
+class TopOffersData(pydantic.BaseModel):
     offerId: int
     numberOfViews: int
 
 
-class OffererTotalViewsLast180Days(pydantic_v1.BaseModel):
+class OffererTotalViewsLast180Days(pydantic.BaseModel):
     offererId: int
     dailyViews: list[OffererViewsModel]
 
-    @pydantic_v1.validator("dailyViews", pre=True)
+    @pydantic.field_validator("dailyViews", mode="before")
     @classmethod
     def validate_daily_views(cls, dailyViews: str) -> list[TopOffersData]:
         return json.loads(dailyViews)
@@ -50,12 +50,12 @@ class OffererDailyViewsLast180Days(BaseQuery):
     model = OffererTotalViewsLast180Days
 
 
-class OffererTopOffersAndTotalViews(pydantic_v1.BaseModel):
+class OffererTopOffersAndTotalViews(pydantic.BaseModel):
     offererId: int
     topOffers: list[TopOffersData]
     totalViews: int | None
 
-    @pydantic_v1.validator("topOffers", pre=True)
+    @pydantic.field_validator("topOffers", mode="before")
     @classmethod
     def validate_top_offers(cls, top_offers: str) -> list[TopOffersData]:
         return json.loads(top_offers)

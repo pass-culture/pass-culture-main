@@ -1,3 +1,4 @@
+import datetime
 import enum
 import re
 import typing
@@ -7,12 +8,14 @@ from decimal import InvalidOperation
 import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
 from pydantic import BaseModel as BaseModelV2
+from pydantic import alias_generators
 from pydantic.v1 import validator
 
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.exceptions import PydanticError
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import phone_number as phone_number_utils
+from pcapi.utils.date import format_into_utc_date
 
 
 MAX_LONGITUDE = 180
@@ -20,6 +23,7 @@ MAX_LATITUDE = 90
 
 SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
 SocialMedias = dict[SocialMedia, pydantic_v1.HttpUrl]
+SocialMediasV2 = dict[SocialMedia, pydantic_v2.HttpUrl]
 
 
 def format_coordinate(value: typing.Any) -> Decimal:
@@ -95,6 +99,33 @@ class VenueContactModel(BaseModel):
         raise ValueError(f"url du site web invalide: {website}")
 
 
+class VenueContactModelV2(BaseModelV2):
+    email: pydantic_v2.EmailStr | None = None
+    website: (
+        typing.Annotated[pydantic_v2.HttpUrl, pydantic_v2.UrlConstraints(max_length=256)] | None
+    )  # TODO: vérifier que ça colle avec la regexp v1
+    phone_number: str | None = None
+    social_medias: SocialMediasV2 | None = None
+
+    @pydantic_v2.field_validator("phone_number", mode="after")
+    def validate_phone_number(cls, phone_number: str) -> str | None:
+        if not phone_number:
+            return None
+        return phone_number_utils.ParsedPhoneNumber(phone_number).phone_number
+
+    # TODO: généraliser et adapter ?
+    model_config = pydantic_v2.ConfigDict(
+        alias_generator=alias_generators.to_camel,
+        from_attributes=True,
+        validate_by_name=True,
+        json_encoders={datetime.datetime: format_into_utc_date},
+        allow_inf_nan=False,
+        str_strip_whitespace=True,
+        url_preserve_empty_path=True,
+        extra="forbid",
+    )
+
+
 class VenueImageCredit(RequiredStrippedString):
     max_length = 255
 
@@ -103,16 +134,25 @@ class VenueName(RequiredStrippedString):
     max_length = 140
 
 
+VenueNameV2 = typing.Annotated[str, pydantic_v2.constr(min_length=1, max_length=140, strip_whitespace=True)]
+
+
 class VenuePublicName(pydantic_v1.ConstrainedStr):
     strip_whitespace = True
     # optional, hence no `min_length`
     max_length = 255
 
 
+VenuePublicNameV2 = typing.Annotated[str, pydantic_v2.constr(max_length=255, strip_whitespace=True)]
+
+
 class VenueDescription(pydantic_v1.ConstrainedStr):
     strip_whitespace = True
     # optional, hence no `min_length`
     max_length = 1000
+
+
+VenueDescriptionV2 = typing.Annotated[str, pydantic_v2.constr(max_length=1000, strip_whitespace=True)]
 
 
 class VenueBookingEmail(pydantic_v1.EmailStr):
@@ -125,6 +165,9 @@ class VenueBookingEmail(pydantic_v1.EmailStr):
         if value == "":
             return value
         return super().validate(value)
+
+
+VenueBookingEmailV2 = typing.Annotated[pydantic_v2.EmailStr, pydantic_v2.constr(max_length=120, strip_whitespace=True)]
 
 
 class VenueAddress(RequiredStrippedString):
@@ -155,16 +198,25 @@ class VenueSiret(RequiredStrippedString):
     max_length = 14
 
 
+VenueSiretV2 = typing.Annotated[str, pydantic_v2.constr(min_length=14, max_length=14, strip_whitespace=True)]
+
+
 class VenueComment(pydantic_v1.ConstrainedStr):
     strip_whitespace = True
     # optional, hence no `min_length`
     max_length = 500
 
 
+VenueCommentV2 = typing.Annotated[str, pydantic_v2.constr(max_length=500, strip_whitespace=True)]
+
+
 class VenueWithdrawalDetails(pydantic_v1.ConstrainedStr):
     strip_whitespace = True
     # optional, hence no `min_length`
     max_length = 500
+
+
+VenueWithdrawalDetailsV2 = typing.Annotated[str, pydantic_v2.constr(max_length=500, strip_whitespace=True)]
 
 
 class LocationOnlyOnVenueModel(BaseModel):

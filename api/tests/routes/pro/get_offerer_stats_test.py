@@ -120,7 +120,7 @@ class OffererStatsTest:
                 "totalViewsLast30Days": 6,
             },
             "offererId": offerer.id,
-            "syncDate": "2021-01-01T00:00:00",
+            "syncDate": "2021-01-01T00:00:00Z",
         }
 
     @time_machine.travel("2021-01-01")
@@ -170,5 +170,5 @@ class OffererStatsTest:
                 "totalViewsLast30Days": 0,
             },
             "offererId": offerer.id,
-            "syncDate": "2021-01-01T00:00:00",
+            "syncDate": "2021-01-01T00:00:00Z",
         }

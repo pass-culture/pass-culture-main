@@ -1,10 +1,10 @@
 import enum
+import typing
 from datetime import datetime
 from typing import Any
 from typing import Iterable
 
 import pydantic as pydantic_v2
-import pydantic.v1 as pydantic_v1
 import sqlalchemy.orm as sa_orm
 from pydantic.v1.utils import GetterDict
 from sqlalchemy.engine import Row
@@ -26,7 +26,6 @@ from pcapi.routes.serialization.venue_banners_serialize import BannerMetaModel
 from pcapi.routes.serialization.venue_collective_serialize import DMSApplicationForEAC
 from pcapi.routes.shared import validation
 from pcapi.serialization.exceptions import PydanticError
-from pcapi.serialization.utils import to_camel
 from pcapi.utils import phone_number
 from pcapi.utils.email import sanitize_email
 
@@ -109,7 +108,7 @@ class GetOffererResponseModel(BaseModel):
     canDisplayHighlights: bool
 
     @classmethod
-    def from_orm(cls, row: Row) -> "GetOffererResponseModel":
+    def from_orm(cls, row: Row) -> typing.Self:
         offerer: offerers_models.Offerer = row.Offerer
         venues = (
             db.session.query(offerers_models.Venue)
@@ -288,31 +287,29 @@ class CreateOffererBodyModel(HttpBodyModel):
         return phone_number.get_formatted_phone_number(parsed)
 
 
-class SaveNewOnboardingDataQueryModel(BaseModel):
+class SaveNewOnboardingDataQueryModel(HttpBodyModel):
     activity: offerers_models.ActivityOpenToPublic | offerers_models.ActivityNotOpenToPublic
-    address: address_serialize.LocationBodyModel
-    culturalDomains: list[str] | None = pydantic_v1.Field(min_items=1)
-    createVenueWithoutSiret: bool = False
-    isOpenToPublic: bool
-    publicName: str | None
+    address: address_serialize.LocationBodyModelV2
+    cultural_domains: list[str] | None = pydantic_v2.Field(min_length=1, default=None)
+    create_venue_without_siret: bool = False
+    is_open_to_public: bool
+    public_name: str | None = None
     siret: str
     target: Target
     token: str
-    webPresence: str
-    phoneNumber: str | None
+    web_presence: str
+    phone_number: str | None = None
 
-    _validate_phone_number = validation.phone_number_validator("phoneNumber", nullable=True)
+    @pydantic_v2.field_validator("phone_number", mode="after")
+    def validate_phone_number(cls, phone_number: str) -> str | None:
+        validation.validate_nullable_phone_number(phone_number)
+        return phone_number
 
-    class Config:
-        extra = "forbid"
-        anystr_strip_whitespace = True
 
-
-class InviteMemberQueryModel(BaseModel):
+class InviteMemberQueryModel(HttpQueryParamsModel):
     email: str
 
-    @pydantic_v1.validator("email")
-    @classmethod
+    @pydantic_v2.field_validator("email")
     def validate_email(cls, email: str) -> str:
         try:
             return sanitize_email(email)
@@ -326,22 +323,21 @@ class GetOffererBankAccountsResponseModel(HttpBodyModel):
     managed_venues: list[finance_serialize.ManagedVenue]
 
 
-class TopOffersResponseData(offerers_models.TopOffersData):
+class TopOffersResponseData(HttpBodyModel):
+    offerId: int
+    numberOfViews: int
     offerName: str
     image: offers_models.OfferImage | None
     isHeadlineOffer: bool
 
-    class Config:
-        alias_generator = to_camel
 
-
-class OffererStatsDataModel(BaseModel):
+class OffererStatsDataModel(HttpBodyModel):
     totalViewsLast30Days: int
     topOffers: list[TopOffersResponseData]
     dailyViews: list[offerers_models.OffererViewsModel]
 
 
-class GetOffererStatsResponseModel(BaseModel):
+class GetOffererStatsResponseModel(HttpBodyModel):
     offererId: int
     syncDate: datetime | None
     jsonData: OffererStatsDataModel
@@ -355,7 +351,7 @@ class GetOffererStatsResponseModel(BaseModel):
         dailyViews: list[dict],  # dicts are serialized from offerers_models.OffererViewsModel
         topOffers: list[dict],  # dicts are serialized from offerers_models.TopOffersData
         total_views_last_30_days: int,
-    ) -> "GetOffererStatsResponseModel":
+    ) -> typing.Self:
         top_offers_response = []
         if topOffers:
             top_offers_response = [
@@ -380,28 +376,20 @@ class GetOffererStatsResponseModel(BaseModel):
         )
 
 
-class VenueMonthlyViewModel(BaseModel):
+class VenueMonthlyViewModel(HttpBodyModel):
     month: int
     views: int
 
 
-class VenueStatsDataModel(BaseModel):
+class VenueStatsDataModel(HttpBodyModel):
     total_views_last_30_days: int
     top_offers: list[TopOffersResponseData]
     monthly_views: list[VenueMonthlyViewModel]
 
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
 
-
-class GetVenueStatsResponseModel(BaseModel):
+class GetVenueStatsResponseModel(HttpBodyModel):
     venue_id: int
     json_data: VenueStatsDataModel
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
 
 
 class LinkVenueToBankAccountBodyModel(HttpBodyModel):
