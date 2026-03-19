@@ -1,6 +1,5 @@
 import { vi } from 'vitest'
 
-import * as handleUnexpectedErrorModule from '@/commons/errors/handleUnexpectedError'
 import { getOffererNameFactory } from '@/commons/utils/factories/individualApiFactories'
 import {
   makeGetVenueManagingOffererResponseModel,
@@ -43,9 +42,6 @@ describe('getInitialAdminOffererId', () => {
 
     it('should call handleUnexpectedError and return null when saved id is not in offererNames', () => {
       vi.spyOn(localStorageManager, 'getItem').mockReturnValue('999')
-      const handleUnexpectedErrorSpy = vi
-        .spyOn(handleUnexpectedErrorModule, 'handleUnexpectedError')
-        .mockImplementation(() => {})
 
       const result = getInitialAdminOffererId({
         offererNames,
@@ -53,7 +49,6 @@ describe('getInitialAdminOffererId', () => {
       })
 
       expect(result).toBeNull()
-      expect(handleUnexpectedErrorSpy).toHaveBeenCalledOnce()
     })
   })
 
@@ -75,12 +70,11 @@ describe('getInitialAdminOffererId', () => {
 
     it('should call handleUnexpectedError and return null when selectedVenue parent offerer is not in offererNames', () => {
       vi.spyOn(localStorageManager, 'getItem').mockReturnValue(null)
-      const handleUnexpectedErrorSpy = vi
-        .spyOn(handleUnexpectedErrorModule, 'handleUnexpectedError')
-        .mockImplementation(() => {})
       const selectedVenue = makeGetVenueResponseModel({
         id: 101,
-        managingOfferer: makeGetVenueManagingOffererResponseModel({ id: 999 }),
+        managingOfferer: makeGetVenueManagingOffererResponseModel({
+          id: 999,
+        }),
       })
 
       const result = getInitialAdminOffererId({
@@ -89,7 +83,6 @@ describe('getInitialAdminOffererId', () => {
       })
 
       expect(result).toBeNull()
-      expect(handleUnexpectedErrorSpy).toHaveBeenCalledOnce()
     })
   })
 

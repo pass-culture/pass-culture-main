@@ -2,8 +2,6 @@ import type {
   GetOffererNameResponseModel,
   GetVenueResponseModel,
 } from '@/apiClient/v1'
-import { FrontendError } from '@/commons/errors/FrontendError'
-import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import {
   LOCAL_STORAGE_KEY,
   localStorageManager,
@@ -33,15 +31,6 @@ export const getInitialAdminOffererId = ({
     if (selectedOfferer) {
       return selectedOfferer.id
     } else {
-      handleUnexpectedError(
-        new FrontendError('`selectedOfferer` is undefined.'),
-        {
-          // This is not a necessarily a critical issue for the user experience
-          // but we need to log it because this is a bug if it happens
-          isSilent: true,
-        }
-      )
-
       return null
     }
   }
@@ -61,15 +50,6 @@ export const getInitialAdminOffererId = ({
     if (selectedOfferer) {
       return selectedOfferer.id
     } else {
-      handleUnexpectedError(
-        new FrontendError('`selectedOfferer` is undefined.'),
-        {
-          // This is not a necessarily a critical issue for the user experience
-          // but we need to log it because this is a bug if it happens
-          isSilent: true,
-        }
-      )
-
       return null
     }
   }
