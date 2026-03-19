@@ -2169,14 +2169,14 @@ def create_from_onboarding_data(
     # Get name (raison sociale) from Sirene API
     siret_info = find_structure_data(onboarding_data.siret)
     if not siret_info.diffusible:
-        if onboarding_data.publicName:
-            name = onboarding_data.publicName
+        if onboarding_data.public_name:
+            name = onboarding_data.public_name
         else:
             raise exceptions.publicNameRequiredException("missing mandatory value for public name")
     else:
         name = siret_info.name
 
-    link_cultural_domains_to_venue(onboarding_data.culturalDomains, None)
+    link_cultural_domains_to_venue(onboarding_data.cultural_domains, None)
 
     # Create Offerer or attach user to existing Offerer
     offerer_creation_info = offerers_serialize.CreateOffererBodyModel(
@@ -2188,12 +2188,12 @@ def create_from_onboarding_data(
         postal_code=onboarding_data.address.postalCode,
         insee_code=onboarding_data.address.inseeCode,
         siren=onboarding_data.siret[:9],
-        phone_number=onboarding_data.phoneNumber,
+        phone_number=onboarding_data.phone_number,
     )
     new_onboarding_info = NewOnboardingInfo(
         activity=offerers_models.Activity[onboarding_data.activity.name] if onboarding_data.activity else None,
         target=onboarding_data.target,
-        webPresence=onboarding_data.webPresence,
+        webPresence=onboarding_data.web_presence,
     )
     user_offerer = create_offerer(user, offerer_creation_info, new_onboarding_info, insee_data=siret_info)
 
@@ -2201,13 +2201,13 @@ def create_from_onboarding_data(
     venue = offerers_repository.find_venue_by_siret(onboarding_data.siret)
     if (
         venue
-        and onboarding_data.createVenueWithoutSiret
+        and onboarding_data.create_venue_without_siret
         and siret_info.ape_code
         and not APE_TAG_MAPPING.get(siret_info.ape_code, False)
         and FeatureToggle.WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY.is_active()
     ):
         raise exceptions.NotACollectivity()
-    if not venue or onboarding_data.createVenueWithoutSiret:
+    if not venue or onboarding_data.create_venue_without_siret:
         address = onboarding_data.address
         if not address.street:
             address = address.copy(update={"street": "n/d"})
@@ -2215,13 +2215,13 @@ def create_from_onboarding_data(
             activity=offerers_models.Activity[onboarding_data.activity.name] if onboarding_data.activity else None,
             address=address,
             booking_email=user.email,
-            cultural_domains=onboarding_data.culturalDomains,
+            cultural_domains=onboarding_data.cultural_domains,
             contact=None,
             description=None,
-            is_open_to_public=onboarding_data.isOpenToPublic,
+            is_open_to_public=onboarding_data.is_open_to_public,
             managing_offerer_id=user_offerer.offererId,
             name=name,
-            public_name=onboarding_data.publicName,
+            public_name=onboarding_data.public_name,
             venue_label_id=None,
             withdrawal_details=None,
             audio_disability_compliant=None,
@@ -2229,7 +2229,7 @@ def create_from_onboarding_data(
             motor_disability_compliant=None,
             visual_disability_compliant=None,
         )
-        if onboarding_data.createVenueWithoutSiret:
+        if onboarding_data.create_venue_without_siret:
             comment_and_siret = dict(
                 comment="Lieu sans SIRET car dépend du SIRET d'un autre lieu",
                 siret=None,

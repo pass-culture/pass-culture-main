@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { OfferImage } from './OfferImage';
 export type TopOffersResponseData = {
-  image?: OfferImage;
+  image: (OfferImage | null);
   isHeadlineOffer: boolean;
   numberOfViews: number;
   offerId: number;
