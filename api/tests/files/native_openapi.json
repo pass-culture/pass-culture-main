@@ -101,7 +101,32 @@
                 "type": "object"
             },
             "AccountRequest": {
+                "additionalProperties": false,
                 "properties": {
+                    "appsFlyerPlatform": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Appsflyerplatform"
+                    },
+                    "appsFlyerUserId": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Appsflyeruserid"
+                    },
                     "birthdate": {
                         "format": "date",
                         "title": "Birthdate",
@@ -113,15 +138,28 @@
                         "type": "string"
                     },
                     "firebasePseudoId": {
-                        "nullable": true,
-                        "title": "Firebasepseudoid",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Firebasepseudoid"
                     },
                     "marketingEmailSubscription": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "default": false,
-                        "nullable": true,
-                        "title": "Marketingemailsubscription",
-                        "type": "boolean"
+                        "title": "Marketingemailsubscription"
                     },
                     "password": {
                         "title": "Password",
@@ -134,11 +172,13 @@
                     "trustedDevice": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/TrustedDevice"
+                                "$ref": "#/components/schemas/DeviceInfo"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "TrustedDevice"
+                        "default": null
                     }
                 },
                 "required": [
@@ -165,7 +205,6 @@
                 "type": "string"
             },
             "AchievementEnum": {
-                "description": "An enumeration.",
                 "enum": [
                     "FIRST_MOVIE_BOOKING",
                     "FIRST_BOOK_BOOKING",
@@ -177,7 +216,8 @@
                     "FIRST_INSTRUMENT_BOOKING",
                     "FIRST_ART_LESSON_BOOKING"
                 ],
-                "title": "AchievementEnum"
+                "title": "AchievementEnum",
+                "type": "string"
             },
             "AchievementResponse": {
                 "additionalProperties": false,
@@ -199,6 +239,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Seendate"
                     },
                     "unlockedDate": {
@@ -210,39 +251,9 @@
                 "required": [
                     "id",
                     "name",
-                    "seenDate",
                     "unlockedDate"
                 ],
                 "title": "AchievementResponse",
-                "type": "object"
-            },
-            "AchievementResponseLegacy": {
-                "properties": {
-                    "id": {
-                        "title": "Id",
-                        "type": "integer"
-                    },
-                    "name": {
-                        "$ref": "#/components/schemas/AchievementEnum"
-                    },
-                    "seenDate": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Seendate",
-                        "type": "string"
-                    },
-                    "unlockedDate": {
-                        "format": "date-time",
-                        "title": "Unlockeddate",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "id",
-                    "name",
-                    "unlockedDate"
-                ],
-                "title": "AchievementResponseLegacy",
                 "type": "object"
             },
             "AchievementsResponse": {
@@ -318,7 +329,6 @@
                 "type": "string"
             },
             "ActivityIdEnum": {
-                "description": "An enumeration.",
                 "enum": [
                     "MIDDLE_SCHOOL_STUDENT",
                     "HIGH_SCHOOL_STUDENT",
@@ -330,7 +340,8 @@
                     "INACTIVE",
                     "UNEMPLOYED"
                 ],
-                "title": "ActivityIdEnum"
+                "title": "ActivityIdEnum",
+                "type": "string"
             },
             "ActivityResponseModel": {
                 "additionalProperties": false,
@@ -2113,37 +2124,13 @@
                 "type": "object"
             },
             "CallToActionIcon": {
-                "description": "An enumeration.",
                 "enum": [
                     "EMAIL",
                     "RETRY",
                     "EXTERNAL"
                 ],
-                "title": "CallToActionIcon"
-            },
-            "CallToActionMessage": {
-                "properties": {
-                    "callToActionIcon": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/CallToActionIcon"
-                            }
-                        ],
-                        "nullable": true
-                    },
-                    "callToActionLink": {
-                        "nullable": true,
-                        "title": "Calltoactionlink",
-                        "type": "string"
-                    },
-                    "callToActionTitle": {
-                        "nullable": true,
-                        "title": "Calltoactiontitle",
-                        "type": "string"
-                    }
-                },
-                "title": "CallToActionMessage",
-                "type": "object"
+                "title": "CallToActionIcon",
+                "type": "string"
             },
             "CallToActionMessageV2": {
                 "additionalProperties": false,
@@ -2281,15 +2268,18 @@
                 "type": "object"
             },
             "ChangeBeneficiaryEmailBody": {
+                "additionalProperties": false,
                 "properties": {
                     "deviceInfo": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/TrustedDevice"
+                                "$ref": "#/components/schemas/DeviceInfo"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "TrustedDevice"
+                        "default": null
                     },
                     "token": {
                         "title": "Token",
@@ -2303,6 +2293,7 @@
                 "type": "object"
             },
             "ChangeBeneficiaryEmailResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "accessToken": {
                         "title": "Accesstoken",
@@ -2587,6 +2578,7 @@
                 "type": "object"
             },
             "Credit": {
+                "additionalProperties": false,
                 "properties": {
                     "initial": {
                         "title": "Initial",
@@ -2784,12 +2776,12 @@
                 "type": "object"
             },
             "CurrencyEnum": {
-                "description": "An enumeration.",
                 "enum": [
                     "EUR",
                     "XPF"
                 ],
-                "title": "CurrencyEnum"
+                "title": "CurrencyEnum",
+                "type": "string"
             },
             "DepositAmountsByAge": {
                 "additionalProperties": false,
@@ -2821,16 +2813,92 @@
                 "type": "object"
             },
             "DepositType": {
-                "description": "An enumeration.",
                 "enum": [
                     "GRANT_17_18",
                     "GRANT_FREE",
                     "GRANT_15_17",
                     "GRANT_18"
                 ],
-                "title": "DepositType"
+                "title": "DepositType",
+                "type": "string"
+            },
+            "DeviceInfo": {
+                "additionalProperties": false,
+                "description": "This serializer has 3 unused fields: font_scale, resolution and screen_zoom_level\nThey are not used by the backend and accepted here just to fit with what's the front is sending.\nIn future API version we might need to remove them.",
+                "properties": {
+                    "deviceId": {
+                        "title": "Deviceid",
+                        "type": "string"
+                    },
+                    "fontScale": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Fontscale"
+                    },
+                    "os": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Os"
+                    },
+                    "resolution": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Resolution"
+                    },
+                    "screenZoomLevel": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Screenzoomlevel"
+                    },
+                    "source": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Source"
+                    }
+                },
+                "required": [
+                    "deviceId"
+                ],
+                "title": "DeviceInfo",
+                "type": "object"
             },
             "DomainsCredit": {
+                "additionalProperties": false,
                 "properties": {
                     "all": {
                         "$ref": "#/components/schemas/Credit"
@@ -2839,19 +2907,23 @@
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/Credit"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "Credit"
+                        "default": null
                     },
                     "physical": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/Credit"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "Credit"
+                        "default": null
                     }
                 },
                 "required": [
@@ -2874,14 +2946,14 @@
                 "type": "object"
             },
             "EligibilityType": {
-                "description": "An enumeration.",
                 "enum": [
                     "age-17-18",
                     "free",
                     "underage",
                     "age-18"
                 ],
-                "title": "EligibilityType"
+                "title": "EligibilityType",
+                "type": "string"
             },
             "EmailChangeConfirmationResponse": {
                 "additionalProperties": false,
@@ -2993,12 +3065,20 @@
                 "type": "object"
             },
             "EmailValidationRemainingResendsResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "counterResetDatetime": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Counterresetdatetime",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Counterresetdatetime"
                     },
                     "remainingResends": {
                         "title": "Remainingresends",
@@ -3019,81 +3099,6 @@
                     "physical"
                 ],
                 "title": "ExpenseDomain"
-            },
-            "ExtentedTrustedDevice": {
-                "additionalProperties": false,
-                "description": "This serializer has all the fields from TrustedDevice/TrustedDeviceV2\nin addition to the last 3 fields (font_scale, resolution and screen_zoom_level)\nthat are not used by the backend.\nThey are accepted here just to fit with what's the front is sending.\nIn future API version we might need to remove them and use TrustedDevice instead.",
-                "properties": {
-                    "deviceId": {
-                        "title": "Deviceid",
-                        "type": "string"
-                    },
-                    "fontScale": {
-                        "anyOf": [
-                            {
-                                "type": "number"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Fontscale"
-                    },
-                    "os": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Os"
-                    },
-                    "resolution": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Resolution"
-                    },
-                    "screenZoomLevel": {
-                        "anyOf": [
-                            {
-                                "type": "integer"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Screenzoomlevel"
-                    },
-                    "source": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Source"
-                    }
-                },
-                "required": [
-                    "deviceId"
-                ],
-                "title": "ExtentedTrustedDevice",
-                "type": "object"
             },
             "ExternalBookingDataResponseV2": {
                 "additionalProperties": false,
@@ -3994,6 +3999,7 @@
                 "type": "object"
             },
             "NotificationSubscriptions": {
+                "additionalProperties": false,
                 "properties": {
                     "marketingEmail": {
                         "title": "Marketingemail",
@@ -4029,7 +4035,7 @@
                     "deviceInfo": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/ExtentedTrustedDevice"
+                                "$ref": "#/components/schemas/DeviceInfo"
                             },
                             {
                                 "type": "null"
@@ -6040,12 +6046,20 @@
                 "type": "object"
             },
             "PhoneValidationRemainingAttemptsRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "counterResetDatetime": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Counterresetdatetime",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Counterresetdatetime"
                     },
                     "remainingAttempts": {
                         "title": "Remainingattempts",
@@ -6262,7 +6276,6 @@
                 "type": "object"
             },
             "PopOverIcon": {
-                "description": "An enumeration.",
                 "enum": [
                     "INFO",
                     "ERROR",
@@ -6271,7 +6284,8 @@
                     "FILE",
                     "MAGNIFYING_GLASS"
                 ],
-                "title": "PopOverIcon"
+                "title": "PopOverIcon",
+                "type": "string"
             },
             "PostFeedbackBody": {
                 "additionalProperties": false,
@@ -6387,7 +6401,6 @@
                 "type": "object"
             },
             "QFBonificationStatus": {
-                "description": "An enumeration.",
                 "enum": [
                     "eligible",
                     "not_eligible",
@@ -6400,7 +6413,8 @@
                     "unknown_ko",
                     "ko"
                 ],
-                "title": "QFBonificationStatus"
+                "title": "QFBonificationStatus",
+                "type": "string"
             },
             "Rates": {
                 "additionalProperties": false,
@@ -6566,7 +6580,6 @@
                 "type": "object"
             },
             "RecreditType": {
-                "description": "An enumeration.",
                 "enum": [
                     "Recredit15",
                     "Recredit16",
@@ -6577,7 +6590,8 @@
                     "PreviousDeposit",
                     "FinanceIncidentRecredit"
                 ],
-                "title": "RecreditType"
+                "title": "RecreditType",
+                "type": "string"
             },
             "RefreshResponse": {
                 "additionalProperties": false,
@@ -6652,6 +6666,7 @@
                 "type": "object"
             },
             "ResendEmailValidationRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "email": {
                         "format": "email",
@@ -6671,7 +6686,7 @@
                     "deviceInfo": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/ExtentedTrustedDevice"
+                                "$ref": "#/components/schemas/DeviceInfo"
                             },
                             {
                                 "type": "null"
@@ -6715,10 +6730,35 @@
                 "type": "object"
             },
             "SSOAccountRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "accountCreationToken": {
                         "title": "Accountcreationtoken",
                         "type": "string"
+                    },
+                    "appsFlyerPlatform": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Appsflyerplatform"
+                    },
+                    "appsFlyerUserId": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Appsflyeruserid"
                     },
                     "birthdate": {
                         "format": "date",
@@ -6726,15 +6766,28 @@
                         "type": "string"
                     },
                     "firebasePseudoId": {
-                        "nullable": true,
-                        "title": "Firebasepseudoid",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Firebasepseudoid"
                     },
                     "marketingEmailSubscription": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "default": false,
-                        "nullable": true,
-                        "title": "Marketingemailsubscription",
-                        "type": "boolean"
+                        "title": "Marketingemailsubscription"
                     },
                     "token": {
                         "title": "Token",
@@ -6743,11 +6796,13 @@
                     "trustedDevice": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/TrustedDevice"
+                                "$ref": "#/components/schemas/DeviceInfo"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "TrustedDevice"
+                        "default": null
                     }
                 },
                 "required": [
@@ -6833,6 +6888,7 @@
                 "type": "object"
             },
             "SendPhoneValidationRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "phoneNumber": {
                         "title": "Phonenumber",
@@ -6984,7 +7040,7 @@
                     "deviceInfo": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/ExtentedTrustedDevice"
+                                "$ref": "#/components/schemas/DeviceInfo"
                             },
                             {
                                 "type": "null"
@@ -7322,42 +7378,6 @@
                 "title": "SubcategoryResponseModelv2",
                 "type": "object"
             },
-            "SubscriptionMessage": {
-                "properties": {
-                    "callToAction": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/CallToActionMessage"
-                            }
-                        ],
-                        "nullable": true,
-                        "title": "CallToActionMessage"
-                    },
-                    "popOverIcon": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/PopOverIcon"
-                            }
-                        ],
-                        "nullable": true
-                    },
-                    "updatedAt": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Updatedat",
-                        "type": "string"
-                    },
-                    "userMessage": {
-                        "title": "Usermessage",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "userMessage"
-                ],
-                "title": "SubscriptionMessage",
-                "type": "object"
-            },
             "SubscriptionMessageV2": {
                 "additionalProperties": false,
                 "properties": {
@@ -7420,13 +7440,13 @@
                 "type": "object"
             },
             "SubscriptionStatus": {
-                "description": "An enumeration.",
                 "enum": [
                     "has_to_complete_subscription",
                     "has_subscription_pending",
                     "has_subscription_issues"
                 ],
-                "title": "SubscriptionStatus"
+                "title": "SubscriptionStatus",
+                "type": "string"
             },
             "SubscriptionStep": {
                 "enum": [
@@ -7574,6 +7594,7 @@
                 "type": "object"
             },
             "SuspendAccountForSuspiciousLoginRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "token": {
                         "title": "Token",
@@ -7686,29 +7707,6 @@
                 "title": "TokenResponse",
                 "type": "object"
             },
-            "TrustedDevice": {
-                "properties": {
-                    "deviceId": {
-                        "title": "Deviceid",
-                        "type": "string"
-                    },
-                    "os": {
-                        "nullable": true,
-                        "title": "Os",
-                        "type": "string"
-                    },
-                    "source": {
-                        "nullable": true,
-                        "title": "Source",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "deviceId"
-                ],
-                "title": "TrustedDevice",
-                "type": "object"
-            },
             "UbbleError": {
                 "description": "An enumeration.",
                 "enum": [
@@ -7723,70 +7721,120 @@
                 "title": "UbbleError"
             },
             "UpdateEmailTokenExpiration": {
+                "additionalProperties": false,
                 "properties": {
                     "expiration": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Expiration",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Expiration"
                     }
                 },
                 "title": "UpdateEmailTokenExpiration",
                 "type": "object"
             },
             "UserProfilePatchRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "activityId": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/ActivityIdEnum"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     },
                     "address": {
-                        "nullable": true,
-                        "title": "Address",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Address"
                     },
                     "city": {
-                        "nullable": true,
-                        "title": "City",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "City"
                     },
                     "origin": {
-                        "nullable": true,
-                        "title": "Origin",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Origin"
                     },
                     "phoneNumber": {
-                        "nullable": true,
-                        "title": "Phonenumber",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Phonenumber"
                     },
                     "postalCode": {
-                        "nullable": true,
-                        "title": "Postalcode",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Postalcode"
                     },
                     "subscriptions": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/NotificationSubscriptions"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "NotificationSubscriptions"
+                        "default": null
                     }
                 },
                 "title": "UserProfilePatchRequest",
                 "type": "object"
             },
             "UserProfileResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "achievements": {
                         "items": {
-                            "$ref": "#/components/schemas/AchievementResponseLegacy"
+                            "$ref": "#/components/schemas/AchievementResponse"
                         },
                         "title": "Achievements",
                         "type": "array"
@@ -7795,15 +7843,25 @@
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/ActivityIdEnum"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     },
                     "birthDate": {
-                        "format": "date",
-                        "nullable": true,
-                        "title": "Birthdate",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Birthdate"
                     },
                     "bookedOffers": {
                         "additionalProperties": {
@@ -7813,76 +7871,133 @@
                         "type": "object"
                     },
                     "city": {
-                        "nullable": true,
-                        "title": "City",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "City"
                     },
                     "currency": {
                         "$ref": "#/components/schemas/CurrencyEnum"
                     },
                     "depositActivationDate": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Depositactivationdate",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Depositactivationdate"
                     },
                     "depositExpirationDate": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Depositexpirationdate",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Depositexpirationdate"
                     },
                     "depositType": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/DepositType"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     },
                     "domainsCredit": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/DomainsCredit"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "DomainsCredit"
+                        "default": null
                     },
                     "eligibility": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/EligibilityType"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     },
                     "eligibilityEndDatetime": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Eligibilityenddatetime",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Eligibilityenddatetime"
                     },
                     "eligibilityStartDatetime": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Eligibilitystartdatetime",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Eligibilitystartdatetime"
                     },
                     "email": {
                         "title": "Email",
                         "type": "string"
                     },
                     "firstDepositActivationDate": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Firstdepositactivationdate",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Firstdepositactivationdate"
                     },
                     "firstName": {
-                        "nullable": true,
-                        "title": "Firstname",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Firstname"
                     },
                     "hasPassword": {
                         "title": "Haspassword",
@@ -7905,49 +8020,90 @@
                         "type": "boolean"
                     },
                     "lastName": {
-                        "nullable": true,
-                        "title": "Lastname",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Lastname"
                     },
                     "needsToFillCulturalSurvey": {
                         "title": "Needstofillculturalsurvey",
                         "type": "boolean"
                     },
                     "phoneNumber": {
-                        "nullable": true,
-                        "title": "Phonenumber",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Phonenumber"
                     },
                     "postalCode": {
-                        "nullable": true,
-                        "title": "Postalcode",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Postalcode"
                     },
                     "qfBonificationStatus": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/QFBonificationStatus"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     },
                     "recreditAmountToShow": {
-                        "nullable": true,
-                        "title": "Recreditamounttoshow",
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Recreditamounttoshow"
                     },
                     "recreditTypeToShow": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/RecreditType"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     },
                     "remainingBonusAttempts": {
-                        "nullable": true,
-                        "title": "Remainingbonusattempts",
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Remainingbonusattempts"
                     },
                     "requiresIdCheck": {
                         "title": "Requiresidcheck",
@@ -7957,6 +8113,7 @@
                         "items": {
                             "$ref": "#/components/schemas/UserRole"
                         },
+                        "title": "Roles",
                         "type": "array"
                     },
                     "showEligibleCard": {
@@ -7967,18 +8124,27 @@
                         "$ref": "#/components/schemas/YoungStatusResponse"
                     },
                     "street": {
-                        "nullable": true,
-                        "title": "Street",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Street"
                     },
                     "subscriptionMessage": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/SubscriptionMessage"
+                                "$ref": "#/components/schemas/SubscriptionMessageV2"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "SubscriptionMessage"
+                        "default": null
                     },
                     "subscriptions": {
                         "$ref": "#/components/schemas/NotificationSubscriptions"
@@ -8005,7 +8171,6 @@
                 "type": "object"
             },
             "UserRole": {
-                "description": "An enumeration.",
                 "enum": [
                     "ADMIN",
                     "ANONYMIZED",
@@ -8016,21 +8181,31 @@
                     "NON_ATTACHED_PRO",
                     "TEST"
                 ],
-                "title": "UserRole"
+                "title": "UserRole",
+                "type": "string"
             },
             "UserSuspensionDateResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "date": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Date",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Date"
                     }
                 },
                 "title": "UserSuspensionDateResponse",
                 "type": "object"
             },
             "UserSuspensionStatusResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "status": {
                         "$ref": "#/components/schemas/AccountState"
@@ -8048,7 +8223,7 @@
                     "deviceInfo": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/ExtentedTrustedDevice"
+                                "$ref": "#/components/schemas/DeviceInfo"
                             },
                             {
                                 "type": "null"
@@ -8087,6 +8262,7 @@
                 "type": "object"
             },
             "ValidatePhoneNumberRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "code": {
                         "title": "Code",
@@ -8749,6 +8925,7 @@
                 "type": "string"
             },
             "YoungStatusResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "statusType": {
                         "$ref": "#/components/schemas/YoungStatusType"
@@ -8757,9 +8934,12 @@
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/SubscriptionStatus"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     }
                 },
                 "required": [
@@ -8769,7 +8949,6 @@
                 "type": "object"
             },
             "YoungStatusType": {
-                "description": "An enumeration.",
                 "enum": [
                     "eligible",
                     "non_eligible",
@@ -8777,7 +8956,8 @@
                     "ex_beneficiary",
                     "suspended"
                 ],
-                "title": "YoungStatusType"
+                "title": "YoungStatusType",
+                "type": "string"
             }
         },
         "securitySchemes": {

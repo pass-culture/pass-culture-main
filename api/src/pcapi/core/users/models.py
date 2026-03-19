@@ -64,9 +64,6 @@ if typing.TYPE_CHECKING:
     from pcapi.models.beneficiary_import import BeneficiaryImport
 
 
-VOID_FIRST_NAME = ""
-
-
 class PhoneValidationStatusType(enum.Enum):
     SKIPPED_BY_SUPPORT = "skipped-by-support"
     UNVALIDATED = "unvalidated"
