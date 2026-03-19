@@ -235,6 +235,8 @@ describe('VenueEditionFormScreen', () => {
       expect(screen.getByText('123')).toBeInTheDocument()
       expect(screen.getByText(/URL de votre site web/)).toBeInTheDocument()
       expect(screen.getByText('site.web')).toBeInTheDocument()
+      expect(screen.getByText('Bénévolat')).toBeInTheDocument()
+      expect(screen.getByText('Nouveau')).toBeInTheDocument()
       expect(screen.getByText('http://coucou.fr')).toBeInTheDocument()
     })
 
@@ -551,6 +553,9 @@ describe('VenueEditionFormScreen', () => {
         },
         { features: ['WIP_VOLUNTEERING'] }
       )
+
+      expect(screen.getByText('Bénévolat')).toBeInTheDocument()
+      expect(screen.getByText('Nouveau')).toBeInTheDocument()
 
       await userEvent.type(
         screen.getByLabelText(/URL de votre page jeveuxaider.gouv/),
