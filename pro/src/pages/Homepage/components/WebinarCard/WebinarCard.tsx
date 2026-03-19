@@ -7,8 +7,8 @@ import {
 import { Card } from '@/ui-kit/Card/Card'
 
 import { HomepageVariant } from '../types'
-import collective from './assets/collective.svg'
-import individual from './assets/individual.svg'
+import collective from './assets/collective.png'
+import individual from './assets/individual.png'
 import styles from './WebinarCard.module.scss'
 
 export const WEBINAR_LINKS = {
