@@ -723,7 +723,6 @@ class AccountCreationTest:
             "email": "John.doe@example.com",
             "password": "Aazflrifaoi6@",
             "birthdate": "1960-12-31",
-            "notifications": True,
             "token": "gnagna",
             "marketingEmailSubscription": True,
             "firebasePseudoId": "firebase_pseudo_id",
@@ -767,7 +766,6 @@ class AccountCreationTest:
             "email": "John.doe@example.com",
             "password": "Aazflrifaoi6@",
             "birthdate": (date_utils.get_naive_utc_now() - relativedelta(years=15, days=-1)).date().isoformat(),
-            "notifications": True,
             "token": "gnagna",
             "marketingEmailSubscription": True,
         }
@@ -783,13 +781,15 @@ class AccountCreationTest:
             "email": "John.doe@example.com",
             "password": "Aazflrifaoi6@",
             "birthdate": "1960-12-31",
-            "notifications": True,
             "token": "gnagna",
             "marketingEmailSubscription": True,
             "trustedDevice": {
                 "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
                 "source": "iPhone 13",
                 "os": "iOS",
+                "fontScale": 1.2,
+                "resolution": "603x783",
+                "screenZoomLevel": 2,
             },
         }
 
@@ -807,7 +807,6 @@ class AccountCreationTest:
             "email": "John.doe@example.com",
             "password": "Aazflrifaoi6@",
             "birthdate": "1960-12-31",
-            "notifications": True,
             "token": "gnagna",
             "marketingEmailSubscription": True,
         }
@@ -821,7 +820,6 @@ class AccountCreationTest:
             "email": "John.doe@example.com",
             "password": "simple_password",
             "birthdate": "1960-12-31",
-            "notifications": False,
             "token": "dummy token",
             "marketingEmailSubscription": False,
         }
@@ -845,7 +843,6 @@ class AccountCreationTest:
             "email": invalid_email,
             "password": "user@AZERTY1234",
             "birthdate": "1960-12-31",
-            "notifications": False,
             "token": "dummy token",
             "marketingEmailSubscription": False,
         }
@@ -864,7 +861,6 @@ class AccountCreationEmailExistsTest:
             "email": self.identifier,
             "password": "Aazflrifaoi6@",
             "birthdate": "1960-12-31",
-            "notifications": True,
             "token": "gnagna",
             "marketingEmailSubscription": True,
         }
@@ -952,7 +948,6 @@ class AccountCreationWithSSOTest:
             json={
                 "accountCreationToken": account_creation_token.encoded_token,
                 "birthdate": "1960-12-31",
-                "notifications": True,
                 "token": "recaptcha token",
                 "marketingEmailSubscription": True,
                 "firebasePseudoId": "firebase_pseudo_id",
@@ -991,7 +986,6 @@ class AccountCreationWithSSOTest:
             json={
                 "accountCreationToken": account_creation_token.encoded_token,
                 "birthdate": (date_utils.get_naive_utc_now() - relativedelta(years=15, days=-1)).date().isoformat(),
-                "notifications": True,
                 "token": "gnagna",
                 "marketingEmailSubscription": True,
             },
@@ -1019,7 +1013,6 @@ class AccountCreationWithSSOTest:
             json={
                 "accountCreationToken": account_creation_token.encoded_token,
                 "birthdate": (date_utils.get_naive_utc_now() - relativedelta(years=15, days=-1)).date().isoformat(),
-                "notifications": True,
                 "token": "gnagna",
                 "marketingEmailSubscription": True,
             },
@@ -1042,7 +1035,6 @@ class AccountCreationWithSSOTest:
             json={
                 "accountCreationToken": account_creation_token.encoded_token,
                 "birthdate": "1960-12-31",
-                "notifications": True,
                 "token": "gnagna",
                 "marketingEmailSubscription": True,
                 "trustedDevice": {
@@ -1073,7 +1065,6 @@ class AccountCreationWithSSOTest:
             json={
                 "accountCreationToken": account_creation_token.encoded_token,
                 "birthdate": "1960-12-31",
-                "notifications": True,
                 "token": "gnagna",
                 "marketingEmailSubscription": True,
             },
@@ -1096,7 +1087,6 @@ class AccountCreationWithSSOTest:
             json={
                 "accountCreationToken": account_creation_token.encoded_token,
                 "birthdate": "1960-12-31",
-                "notifications": True,
                 "token": "gnagna",
                 "marketingEmailSubscription": True,
             },
@@ -1119,7 +1109,6 @@ class AccountCreationWithSSOTest:
             json={
                 "accountCreationToken": account_creation_token.encoded_token,
                 "birthdate": "1960-12-31",
-                "notifications": True,
                 "token": "gnagna",
                 "marketingEmailSubscription": True,
             },
@@ -1141,7 +1130,6 @@ class AccountCreationWithSSOTest:
             json={
                 "accountCreationToken": account_creation_token.encoded_token,
                 "birthdate": "1960-12-31",
-                "notifications": True,
                 "token": "gnagna",
                 "marketingEmailSubscription": True,
             },
@@ -1166,7 +1154,6 @@ class AccountCreationWithSSOTest:
             json={
                 "accountCreationToken": account_creation_token.encoded_token,
                 "birthdate": "1960-12-31",
-                "notifications": True,
                 "token": "gnagna",
                 "marketingEmailSubscription": True,
             },
@@ -2215,7 +2202,6 @@ class AccountSecurityTest:
             "email": "patrick@example.com",
             "marketingEmailSubscription": True,
             "password": "User@AZERTY1234",
-            "postalCode": "",
             "token": "usertoken",
         }
 

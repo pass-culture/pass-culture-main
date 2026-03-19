@@ -10,7 +10,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users.sessions import _native
 from pcapi.core.users.sessions import create_user_jwt_tokens
 from pcapi.models import db
-from pcapi.routes.native.v1.serialization import account as account_serialization
+from pcapi.routes.native.v1.serialization import common_models
 from pcapi.utils.date import get_naive_utc_now
 
 
@@ -33,7 +33,7 @@ class CreateUsetJwtTokensTestTest:
     def should_create_access_token_with_default_lifetime_when_device_is_not_a_trusted_device(self):
         user = users_factories.UserFactory()
         users_factories.TrustedDeviceFactory(user=user)
-        other_device = account_serialization.TrustedDevice(deviceId="other-device-id", os="iOS", source="iPhone 13")
+        other_device = common_models.DeviceInfo(deviceId="other-device-id", os="iOS", source="iPhone 13")
 
         tokens = create_user_jwt_tokens(user=user, device_info=other_device)
         decoded_refresh_token = decode_token(tokens.refresh)
@@ -47,9 +47,7 @@ class CreateUsetJwtTokensTestTest:
     def should_create_access_token_with_extended_lifetime_when_device_is_a_trusted_device(self):
         user = users_factories.UserFactory()
         trusted_device = users_factories.TrustedDeviceFactory(user=user)
-        device_info = account_serialization.TrustedDevice(
-            deviceId=trusted_device.deviceId, os="iOS", source="iPhone 13"
-        )
+        device_info = common_models.DeviceInfo(deviceId=trusted_device.deviceId, os="iOS", source="iPhone 13")
 
         tokens = create_user_jwt_tokens(user=user, device_info=device_info)
         decoded_refresh_token = decode_token(tokens.refresh)
