@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { generatePath, useLocation, useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'
 
@@ -14,6 +15,10 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { setSelectedPartnerPageId } from '@/commons/store/nav/reducer'
 import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
+import {
+  LOCAL_STORAGE_KEY,
+  localStorageManager,
+} from '@/commons/utils/localStorageManager'
 import { setSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenueId'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { CollectiveDataEdition } from '@/pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
@@ -33,6 +38,10 @@ export const VenueEdition = (): JSX.Element | null => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
+  const hasSeenVolunteeringSection =
+    localStorageManager.getItem(
+      LOCAL_STORAGE_KEY.HAS_SEEN_VOLUNTEERING_SECTION
+    ) === 'true'
 
   const { venueId: selectedVenueIdFromQueryParams } = useParams<{
     offererId: string
@@ -61,6 +70,15 @@ export const VenueEdition = (): JSX.Element | null => {
     : location.pathname.includes('page-partenaire')
       ? 'partnerPage'
       : 'address'
+
+  useEffect(() => {
+    if (context === 'partnerPage' && !hasSeenVolunteeringSection) {
+      localStorageManager.setItem(
+        LOCAL_STORAGE_KEY.HAS_SEEN_VOLUNTEERING_SECTION,
+        'true'
+      )
+    }
+  }, [context, hasSeenVolunteeringSection])
 
   const venuesOptions: SelectOption[] = formatAndOrderVenues(
     (venuesQuery.data?.venues ?? []).filter(

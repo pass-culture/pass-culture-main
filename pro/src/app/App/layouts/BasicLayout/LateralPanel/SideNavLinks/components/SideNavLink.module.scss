@@ -40,6 +40,25 @@
   &-without-icon {
     @include fonts.body;
 
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    gap: var(--size-spacing-l);
+    justify-content: flex-start;
+    align-items: center;
     padding-left: rem.torem(28px);
+
+    @media (min-width: size.$tablet) {
+      justify-content: space-between;
+      padding-right: rem.torem(3px);
+    }
+  }
+
+  &-notification {
+    width: rem.torem(12px);
+    min-width: rem.torem(12px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background-color: var(--color-background-brand-primary);
   }
 }
