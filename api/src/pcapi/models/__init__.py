@@ -3,7 +3,9 @@ import json
 import typing
 
 import flask_sqlalchemy
+import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
+from pydantic_core import to_jsonable_python
 from sqlalchemy.orm import DeclarativeBase
 
 from pcapi import settings
@@ -38,8 +40,16 @@ def install_models() -> None:
     import pcapi.models.feature
 
 
+def json_serializer(obj: typing.Any) -> str:
+    if isinstance(obj, pydantic_v2.BaseModel):
+        return to_jsonable_python(obj)
+    else:
+        # TODO(pydantic_v1): remove the pydantic v1 JSON encoder
+        return pydantic_v1.json.pydantic_encoder(obj)
+
+
 _engine_options = {
-    "json_serializer": functools.partial(json.dumps, default=pydantic_v1.json.pydantic_encoder),
+    "json_serializer": functools.partial(json.dumps, default=json_serializer),
     "pool_size": settings.DATABASE_POOL_SIZE,
 }
 

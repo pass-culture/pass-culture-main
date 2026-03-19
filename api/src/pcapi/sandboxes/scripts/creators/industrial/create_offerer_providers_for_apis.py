@@ -119,7 +119,7 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
     # Ex: 1st day of the month, 1 view, 2nd day of the month, 2 views, etc.
     number_of_views = 0
     for i in range(90):
-        date = now - datetime.timedelta(days=i)
+        date = (now - datetime.timedelta(days=i)).date()
         number_of_views += date.day
         daily_views.append(offerers_models.OffererViewsModel(eventDate=date, numberOfViews=number_of_views))
 

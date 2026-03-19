@@ -17,18 +17,21 @@ const MOCKED_PROPS: MostViewedOffersProps = {
       offerId: 1,
       offerName: 'offer 1',
       numberOfViews: 100,
+      image: null,
       isHeadlineOffer: false,
     },
     {
       offerId: 2,
       offerName: 'offer 2',
       numberOfViews: 200,
+      image: null,
       isHeadlineOffer: true,
     },
     {
       offerId: 3,
       offerName: 'offer 3',
       numberOfViews: 300,
+      image: null,
       isHeadlineOffer: false,
     },
   ],
@@ -52,6 +55,7 @@ describe('MostViewedOffers', () => {
       offerId: 4,
       offerName: 'offer 4',
       numberOfViews: 400,
+      image: null,
       isHeadlineOffer: true,
     }
 

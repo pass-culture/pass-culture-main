@@ -6,8 +6,6 @@ export type ClientOptions = {
 
 /**
  * ActivityNotOpenToPublic
- *
- * An enumeration.
  */
 export enum ActivityNotOpenToPublic {
     ARTISTIC_COMPANY = 'ARTISTIC_COMPANY',
@@ -24,8 +22,6 @@ export enum ActivityNotOpenToPublic {
 
 /**
  * ActivityOpenToPublic
- *
- * An enumeration.
  */
 export enum ActivityOpenToPublic {
     ART_GALLERY = 'ART_GALLERY',
@@ -3047,7 +3043,7 @@ export type GetOffererStatsResponseModel = {
     /**
      * Syncdate
      */
-    syncDate?: string;
+    syncDate: string | null;
 };
 
 /**
@@ -4746,7 +4742,7 @@ export type OfferImage = {
     /**
      * Credit
      */
-    credit?: string;
+    credit?: string | null;
     /**
      * Url
      */
@@ -5768,7 +5764,7 @@ export type SaveNewOnboardingDataQueryModel = {
      * Activity
      */
     activity: ActivityOpenToPublic | ActivityNotOpenToPublic;
-    address: LocationBodyModel;
+    address: LocationBodyModelV2;
     /**
      * Createvenuewithoutsiret
      */
@@ -5776,7 +5772,7 @@ export type SaveNewOnboardingDataQueryModel = {
     /**
      * Culturaldomains
      */
-    culturalDomains?: Array<string>;
+    culturalDomains?: Array<string> | null;
     /**
      * Isopentopublic
      */
@@ -5784,11 +5780,11 @@ export type SaveNewOnboardingDataQueryModel = {
     /**
      * Phonenumber
      */
-    phoneNumber?: string;
+    phoneNumber?: string | null;
     /**
      * Publicname
      */
-    publicName?: string;
+    publicName?: string | null;
     /**
      * Siret
      */
@@ -6330,8 +6326,6 @@ export type SubmitReviewRequestModel = {
 
 /**
  * Target
- *
- * An enumeration.
  */
 export enum Target {
     EDUCATIONAL = 'EDUCATIONAL',
@@ -6387,7 +6381,7 @@ export type ThingStocksBulkUpsertBodyModel = {
  * TopOffersResponseData
  */
 export type TopOffersResponseData = {
-    image?: OfferImage;
+    image: OfferImage | null;
     /**
      * Isheadlineoffer
      */

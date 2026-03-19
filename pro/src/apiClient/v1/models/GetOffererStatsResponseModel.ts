@@ -6,6 +6,6 @@ import type { OffererStatsDataModel } from './OffererStatsDataModel';
 export type GetOffererStatsResponseModel = {
   jsonData: OffererStatsDataModel;
   offererId: number;
-  syncDate?: string | null;
+  syncDate: (string | null);
 };
 

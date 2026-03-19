@@ -94,7 +94,7 @@ class Returns200Test:
         client = client.with_session_auth(user.email)
         response = client.post("/offerers/new", json=request_body)
 
-        assert response.status_code == 400
+        assert response.status_code == 400, response.json
         assert "culturalDomains" in response.json
 
     @pytest.mark.parametrize(
@@ -346,7 +346,22 @@ class Returns400Test:
         response = client.post("/offerers/new", json=request_body)
 
         assert response.status_code == 400
-        assert response.json == {"activity": ["Ce champ ne peut pas être nul"]}
+        assert response.json == {
+            "activity.enum[ActivityNotOpenToPublic]": [
+                "Input should be 'ARTISTIC_COMPANY', 'ARTS_EDUCATION', "
+                "'CULTURAL_MEDIATION', 'FESTIVAL', 'OTHER', 'PRESS_OR_MEDIA', "
+                "'PRODUCTION_OR_PROMOTION_COMPANY', 'RADIO_OR_MUSIC_STREAMING', "
+                "'TELEVISION_OR_VIDEO_STREAMING' or 'TRAVELLING_CINEMA'",
+            ],
+            "activity.enum[ActivityOpenToPublic]": [
+                "Input should be 'ART_GALLERY', 'ART_SCHOOL', 'ARTS_CENTRE', "
+                "'BOOKSTORE', 'CINEMA', 'COMMUNITY_CENTRE', 'CREATIVE_ARTS_STORE', "
+                "'CULTURAL_CENTRE', 'DISTRIBUTION_STORE', 'FESTIVAL', 'HERITAGE_SITE', "
+                "'LIBRARY', 'MUSEUM', 'MUSIC_INSTRUMENT_STORE', 'OTHER', "
+                "'PERFORMANCE_HALL', 'RECORD_STORE', 'SCIENCE_CENTRE' or "
+                "'TOURIST_INFORMATION_CENTRE'",
+            ],
+        }
 
 
 class Returns500Test:
