@@ -19,6 +19,7 @@ import fullLinkIcon from '@/icons/full-link.svg'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
 import type { IndividualOfferPracticalInfosFormValues } from '../../commons/types'
+import { CGU_LINK } from './constants'
 import styles from './IndividualOfferPracticalInfosForm.module.scss'
 import { IndividualOfferPracticalInfosFormWithdrawal } from './IndividualOfferPracticalInfosFormWithdrawal/IndividualOfferPracticalInfosFormWithdrawal'
 
@@ -94,7 +95,7 @@ export function IndividualOfferPracticalInfosForm({
               actions={[
                 {
                   label: 'Consulter les conditions Générales d’Utilisation',
-                  href: 'https://pass.culture.fr/cgu-professionnels',
+                  href: CGU_LINK,
                   isExternal: true,
                   icon: fullLinkIcon,
                   iconAlt: 'Nouvelle fenêtre',

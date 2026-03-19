@@ -1,0 +1,39 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.form {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  height: 100%;
+  gap: var(--size-spacing-xxl);
+}
+
+.form-content {
+  padding: var(--size-spacing-xl);
+  overflow-y: auto;
+  background-color: var(--color-background-subtle);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--size-border-radius-m);
+}
+
+.form-cgu {
+   @include fonts.body-s; 
+}
+
+.cgu-link {
+  vertical-align: middle;
+}
+
+.subtitle {
+  @include fonts.body;
+}
+
+.form-delete {
+  margin-top: var(--size-spacing-xxl)
+}
+
+.form-footer {
+  flex-shrink: 0;
+  display: flex;
+  gap: var(--size-spacing-xl);
+}

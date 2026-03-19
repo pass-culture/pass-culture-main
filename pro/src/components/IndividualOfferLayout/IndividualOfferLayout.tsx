@@ -22,6 +22,7 @@ import { IndividualOfferNavigation } from './components/IndividualOfferNavigatio
 import { OfferHighlightBanner } from './components/OfferHighlightBanner/OfferHighlightBanner'
 import { OfferHighlightCard } from './components/OfferHighlightCard/OfferHighlightCard'
 import { OfferPublicationEdition } from './components/OfferPublicationEdition/OfferPublicationEdition'
+import { OfferRecommendationCard } from './components/OfferRecommendationCard/OfferRecommendationCard'
 import { OfferStatusBanner } from './components/OfferStatusBanner/OfferStatusBanner'
 import { Status } from './components/Status/Status'
 import styles from './IndividualOfferLayout.module.scss'
@@ -65,6 +66,12 @@ export const IndividualOfferLayout = ({
       offer.status
     )
 
+  const shouldDisplayRecommendation =
+    !!offer &&
+    ![OfferStatus.PENDING, OfferStatus.REJECTED, OfferStatus.DRAFT].includes(
+      offer.status
+    )
+
   const snackBar = useSnackBar()
   const navigate = useNavigate()
 
@@ -103,7 +110,6 @@ export const IndividualOfferLayout = ({
             </span>
           ))}
       </div>
-
       {offer && mode !== OFFER_WIZARD_MODE.READ_ONLY && (
         <p className={styles['offer-title']}>
           {offer.name}
@@ -112,9 +118,7 @@ export const IndividualOfferLayout = ({
           )}
         </p>
       )}
-
       {offer && <OfferStatusBanner status={offer.status} />}
-
       {hasPublishedOfferWithSameEan && (
         <div className={styles['ean-already-exists-callout']}>
           <Banner
@@ -137,22 +141,33 @@ export const IndividualOfferLayout = ({
           />
         </div>
       )}
-
-      {shouldDisplayHighlightsBanner && (
-        <div className={styles['banner-container']}>
-          {isOfferRecommendationEnabled ? (
-            <OfferHighlightCard
-              offerId={offer.id}
-              highlightRequests={offer.highlightRequests}
-            />
-          ) : (
+      <div className={styles['banner-container']}>
+        {isOfferRecommendationEnabled ? (
+          <>
+            <h2 className={styles['banner-container-title']}>
+              Mises en avant de votre offre
+            </h2>
+            <div className={styles['cards-container']}>
+              {shouldDisplayRecommendation && (
+                <OfferRecommendationCard offerId={offer.id} />
+              )}
+              {shouldDisplayHighlightsBanner && (
+                <OfferHighlightCard
+                  offerId={offer.id}
+                  highlightRequests={offer.highlightRequests}
+                />
+              )}
+            </div>
+          </>
+        ) : (
+          shouldDisplayHighlightsBanner && (
             <OfferHighlightBanner
               offerId={offer.id}
               highlightRequests={offer.highlightRequests}
             />
-          )}
-        </div>
-      )}
+          )
+        )}
+      </div>
 
       {offer?.lastProvider?.name && (
         <div className={styles['banner-container']}>

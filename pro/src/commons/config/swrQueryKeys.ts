@@ -69,3 +69,4 @@ export const GET_HIGHLIGHTS_QUERY_KEY = 'getHighlights'
 export const GET_PRO_ANONYMIZATION_ELIGIBILITY_QUERY_KEY =
   'getProAnonymizationEligibility'
 export const GET_USER_EMAIL_PENDING_VALIDATION = 'getUserEmailPendingValidation'
+export const GET_OFFER_PRO_ADVICE_QUERY_KEY = 'getOfferProAdvice'

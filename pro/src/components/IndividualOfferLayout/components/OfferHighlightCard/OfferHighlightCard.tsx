@@ -6,7 +6,11 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullEditIcon from '@/icons/full-edit.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -78,6 +82,7 @@ export const OfferHighlightCard = ({
               hasHighlights ? ButtonVariant.TERTIARY : ButtonVariant.SECONDARY
             }
             color={ButtonColor.NEUTRAL}
+            size={ButtonSize.SMALL}
             onClick={() => {
               if (hasHighlights) {
                 logEvent(HighlightEvents.HAS_CLICKED_EDIT_HIGHLIGHT, {
