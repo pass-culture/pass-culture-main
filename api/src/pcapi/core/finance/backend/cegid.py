@@ -373,6 +373,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
             bool(e)
             for e in (
                 settings.CEGID_URL,
+                settings.CEGID_ENDPOINT,
                 settings.CEGID_USERNAME,
                 settings.CEGID_PASSWORD,
                 settings.CEGID_CLIENT_ID,
