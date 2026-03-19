@@ -12,6 +12,7 @@ from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.offers.factories import ProductMediationFactory
 from pcapi.core.offers.models import ImageType
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.users.factories import BeneficiaryFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.models import db
 
@@ -106,6 +107,7 @@ class NotifyImportContactsTest:
 
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.settings(BREVO_WEBHOOK_SECRET="secret")
+@pytest.mark.features(WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK=True)
 class GetUserRecommendationsTest:
     headers = {"Authorization": "Bearer secret"}
 
@@ -114,18 +116,51 @@ class GetUserRecommendationsTest:
         return_value=b'{"playlist_recommended_offers": ["1", "2"], "params": {}}',
     )
     def test_get_user_recommendations(self, _get_playlist_mock, client):
-        user_id = UserFactory(id=1).id
+        user = BeneficiaryFactory(id=1)
         product = ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
         ProductMediationFactory(product=product, uuid="12345678", imageType=ImageType.RECTO)
         OfferFactory(id=1, product=product)
         offer_2 = OfferFactory(id=2)
 
-        expected_num_queries = 1  # user
+        user_id = user.id
+        expected_num_queries = 1  # user + deposit
+        expected_num_queries += 1  # bookings
         expected_num_queries += 1  # offers
         with assert_num_queries(expected_num_queries):
             response = client.get(f"/webhooks/brevo/recommendations/{user_id}", headers=self.headers)
 
         assert response.status_code == 200
+        _get_playlist_mock.assert_called_with(
+            user,
+            params={"latitude": 48.87171, "longitude": 2.308289},
+            body={
+                "subcategories": [
+                    "ABO_BIBLIOTHEQUE",
+                    "ABO_CONCERT",
+                    "ABO_MEDIATHEQUE",
+                    "ABO_PRATIQUE_ART",
+                    "ABO_SPECTACLE",
+                    "ATELIER_PRATIQUE_ART",
+                    "CONCERT",
+                    "CONFERENCE",
+                    "DECOUVERTE_METIERS",
+                    "EVENEMENT_MUSIQUE",
+                    "EVENEMENT_PATRIMOINE",
+                    "FESTIVAL_ART_VISUEL",
+                    "FESTIVAL_CINE",
+                    "FESTIVAL_LIVRE",
+                    "FESTIVAL_MUSIQUE",
+                    "FESTIVAL_SPECTACLE",
+                    "MUSEE_VENTE_DISTANCE",
+                    "RENCONTRE",
+                    "SALON",
+                    "SPECTACLE_REPRESENTATION",
+                    "VISITE_GUIDEE",
+                    "VISITE",
+                ],
+                "price_max": 150.0,
+            },
+        )
         assert sorted(response.json["offers"], key=lambda item: item["name"]) == [
             {"image": None, "name": offer_2.name, "url": "https://webapp-v2.example.com/offre/2"},
             {
@@ -160,11 +195,11 @@ class GetUserRecommendationsTest:
         user_id = UserFactory(id=1).id
         response = client.get(f"/webhooks/brevo/recommendations/{user_id}", headers=self.headers)
 
-        assert response.status_code == 502
+        assert response.status_code == 503
 
     @patch("pcapi.connectors.recommendation.get_playlist", side_effect=RecommendationApiTimeoutException)
     def test_fails_on_api_timeout(self, _get_playlist_mock, client):
         user_id = UserFactory(id=1).id
         response = client.get(f"/webhooks/brevo/recommendations/{user_id}", headers=self.headers)
 
-        assert response.status_code == 504
+        assert response.status_code == 503
