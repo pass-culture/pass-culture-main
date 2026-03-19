@@ -9,7 +9,6 @@ import pcapi.utils.cron as cron_decorators
 from pcapi.connectors.big_query.importer.artist import ArtistImporter
 from pcapi.connectors.big_query.importer.artist import ArtistProductLinkImporter
 from pcapi.connectors.big_query.importer.artist_score import ArtistScoresImporter
-from pcapi.connectors.big_query.importer.base import AbstractImporter
 from pcapi.core.artist import api as artist_api
 from pcapi.core.search import async_index_artist_ids
 from pcapi.core.search.models import IndexationReason
@@ -22,11 +21,6 @@ blueprint = Blueprint(__name__, __name__)
 logger = logging.getLogger(__name__)
 
 BATCH_SIZE = 1000
-
-ARTIST_IMPORTERS: list[AbstractImporter] = [
-    ArtistImporter(),
-    ArtistProductLinkImporter(),
-]
 
 
 @blueprint.cli.command("compute_artists_most_relevant_image")
@@ -63,11 +57,12 @@ def compute_artists_most_relevant_image(batch_size: int = BATCH_SIZE) -> None:
 
 
 @blueprint.cli.command("update_artists_from_delta")
+@click.option("--batch-size", type=int, default=100, help="Batch size for updates.")
 @cron_decorators.cron_require_feature(FeatureToggle.SYNCHRONIZE_ARTISTS_FROM_BIGQUERY_TABLES)
-def update_artists_from_delta() -> None:
+def update_artists_from_delta(batch_size: int) -> None:
     logger.info("Starting artists update from delta tables...")
-    for importer in ARTIST_IMPORTERS:
-        importer.run_delta_update()
+    ArtistImporter().run_delta_update(batch_size)
+    ArtistProductLinkImporter().run_delta_update(batch_size)
     logger.info("Artists update from delta tables finished successfully.")
 
 
