@@ -2519,6 +2519,13 @@ allure-js-commons@3.5.0:
   dependencies:
     md5 "^2.3.0"
 
+allure-js-commons@3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/allure-js-commons/-/allure-js-commons-3.6.0.tgz#6f66c3dd514bad9553bb40175a477d7a77299394"
+  integrity sha512-RquIzMlh2l+ZLtq+Uxt+ZpOptxLzyPvLfPGbwU7dtgXo0QfUvhLFFkCljIR7Gjxo7jZ+WVqoto1yOPpXqU/i4g==
+  dependencies:
+    md5 "^2.3.0"
+
 allure-vitest@3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/allure-vitest/-/allure-vitest-3.5.0.tgz#e93e9452fc2fa4a4c5cec331e763d515daf9a4de"
