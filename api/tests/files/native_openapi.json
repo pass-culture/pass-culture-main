@@ -572,6 +572,7 @@
                 "type": "object"
             },
             "Bonification": {
+                "additionalProperties": false,
                 "properties": {
                     "bonusAmount": {
                         "title": "Bonusamount",
@@ -2791,6 +2792,7 @@
                 "title": "CurrencyEnum"
             },
             "DepositAmountsByAge": {
+                "additionalProperties": false,
                 "properties": {
                     "age_15": {
                         "title": "Age 15",
@@ -6401,13 +6403,16 @@
                 "title": "QFBonificationStatus"
             },
             "Rates": {
+                "additionalProperties": false,
                 "properties": {
                     "pacificFrancToEuro": {
-                        "default": 0.00838,
                         "title": "Pacificfranctoeuro",
                         "type": "number"
                     }
                 },
+                "required": [
+                    "pacificFrancToEuro"
+                ],
                 "title": "Rates",
                 "type": "object"
             },
@@ -6843,6 +6848,7 @@
                 "type": "object"
             },
             "SettingsResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "accountCreationMinimumAge": {
                         "title": "Accountcreationminimumage",
@@ -6898,15 +6904,7 @@
                         "type": "string"
                     },
                     "rates": {
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/Rates"
-                            }
-                        ],
-                        "default": {
-                            "pacificFrancToEuro": 0.00838
-                        },
-                        "title": "Rates"
+                        "$ref": "#/components/schemas/Rates"
                     },
                     "wipEnableCreditV3": {
                         "title": "Wipenablecreditv3",
@@ -6927,6 +6925,7 @@
                     "ineligiblePostalCodes",
                     "isRecaptchaEnabled",
                     "objectStorageUrl",
+                    "rates",
                     "wipEnableCreditV3"
                 ],
                 "title": "SettingsResponse",
