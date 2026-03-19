@@ -2,15 +2,15 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_rem.scss" as rem;
 
-.highlight-card {
+.recommendation-card {
   display: flex;
   flex-direction: column;
   gap: var(--size-spacing-l);
   padding: var(--size-spacing-xl);
   border-radius: var(--size-border-radius-m);
-  background: var(--color-background-decorative02);
+  background: var(--color-background-decorative01);
   min-width: 100%;
-
+  
   @media (min-width: size.$tablet) {
     min-width: rem.torem(346px);
     max-width: rem.torem(346px);
@@ -35,11 +35,6 @@
     color: var(--color-brand-primary);
   }
 
-  &-highlights {
-    display: flex;
-    gap: var(--size-spacing-xs);
-  }
-
   &-text {
     @include fonts.body-accent;
 
@@ -47,13 +42,21 @@
     flex: 1;
   }
 
-  &-actions {
-    display: flex;
-    justify-content: center;
-    width: 100%;
+  &-recommendation {
+     @include fonts.body-italic;
 
-    &-edit {
-      justify-content: left;
-    }
+     font-style: italic;
+     margin: 0;
+     overflow: hidden;
+     border-left: 3px var(--color-border-decorative04) solid;
+     padding-left: var(--size-spacing-s);
+
+     &::before {
+      content: "“";
+     }
+
+     &::after {
+      content: "”";
+     }
   }
 }

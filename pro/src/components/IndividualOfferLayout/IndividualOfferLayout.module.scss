@@ -23,10 +23,10 @@
 }
 
 .title-container {
-  position: absolute;
-  top: rem.torem(80px);
+  position: relative;
 
   @media screen and (min-width: size.$tablet) {
+    position: absolute;
     top: 0;
     right: 0;
   }
@@ -39,6 +39,12 @@
 
 .banner-container {
   margin: var(--size-spacing-l) 0;
+}
+
+.cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-spacing-l);
 }
 
 .ean-already-exists-callout {

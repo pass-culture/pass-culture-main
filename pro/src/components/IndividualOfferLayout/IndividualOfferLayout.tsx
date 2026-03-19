@@ -22,6 +22,7 @@ import { IndividualOfferNavigation } from './components/IndividualOfferNavigatio
 import { OfferHighlightBanner } from './components/OfferHighlightBanner/OfferHighlightBanner'
 import { OfferHighlightCard } from './components/OfferHighlightCard/OfferHighlightCard'
 import { OfferPublicationEdition } from './components/OfferPublicationEdition/OfferPublicationEdition'
+import { OfferRecommendationCard } from './components/OfferRecommendationCard/OfferRecommendationCard'
 import { OfferStatusBanner } from './components/OfferStatusBanner/OfferStatusBanner'
 import { Status } from './components/Status/Status'
 import styles from './IndividualOfferLayout.module.scss'
@@ -61,6 +62,12 @@ export const IndividualOfferLayout = ({
   const shouldDisplayHighlightsBanner =
     !!offer &&
     offer.isEvent &&
+    ![OfferStatus.PENDING, OfferStatus.REJECTED, OfferStatus.DRAFT].includes(
+      offer.status
+    )
+
+  const shouldDisplayRecommendation =
+    !!offer &&
     ![OfferStatus.PENDING, OfferStatus.REJECTED, OfferStatus.DRAFT].includes(
       offer.status
     )
@@ -138,21 +145,28 @@ export const IndividualOfferLayout = ({
         </div>
       )}
 
-      {shouldDisplayHighlightsBanner && (
-        <div className={styles['banner-container']}>
-          {isOfferRecommendationEnabled ? (
-            <OfferHighlightCard
-              offerId={offer.id}
-              highlightRequests={offer.highlightRequests}
-            />
-          ) : (
+      <div className={styles['banner-container']}>
+        {isOfferRecommendationEnabled ? (
+          <div className={styles['cards-container']}>
+            {shouldDisplayRecommendation && (
+              <OfferRecommendationCard offerId={offer.id} />
+            )}
+            {shouldDisplayHighlightsBanner && (
+              <OfferHighlightCard
+                offerId={offer.id}
+                highlightRequests={offer.highlightRequests}
+              />
+            )}
+          </div>
+        ) : (
+          shouldDisplayHighlightsBanner && (
             <OfferHighlightBanner
               offerId={offer.id}
               highlightRequests={offer.highlightRequests}
             />
-          )}
-        </div>
-      )}
+          )
+        )}
+      </div>
 
       {offer?.lastProvider?.name && (
         <div className={styles['banner-container']}>

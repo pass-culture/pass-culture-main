@@ -28,6 +28,8 @@ export type IndividualOfferPracticalInfosFormProps = {
   stocks: GetOfferStockResponseModel[]
 }
 
+export const CGU_LINK = 'https://pass.culture.fr/cgu-professionnels'
+
 export function IndividualOfferPracticalInfosForm({
   offer,
   subCategory,
@@ -94,7 +96,7 @@ export function IndividualOfferPracticalInfosForm({
               actions={[
                 {
                   label: 'Consulter les conditions Générales d’Utilisation',
-                  href: 'https://pass.culture.fr/cgu-professionnels',
+                  href: CGU_LINK,
                   isExternal: true,
                   icon: fullLinkIcon,
                   iconAlt: 'Nouvelle fenêtre',
