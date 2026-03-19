@@ -177,6 +177,7 @@ class LocationOnlyOnVenueModel(BaseModel):
         return is_venue_location
 
 
+# /!\ deprecated
 class LocationModel(BaseModel):
     isManualEdition: bool = False
     isVenueLocation: bool = False

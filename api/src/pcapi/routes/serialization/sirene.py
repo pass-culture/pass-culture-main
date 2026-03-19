@@ -1,11 +1,11 @@
-from pcapi.core.offerers.schemas import LocationModel
-from pcapi.routes import serialization
+from pcapi.core.offerers.schemas import LocationModelV2
+from pcapi.routes.serialization import HttpBodyModel
 
 
-class StructureDataBodyModel(serialization.BaseModel):
+class StructureDataBodyModel(HttpBodyModel):
     siret: str
-    siren: str | None
-    name: str | None
-    apeCode: str | None
-    location: LocationModel | None
-    isDiffusible: bool
+    siren: str | None = None
+    name: str | None = None
+    ape_code: str | None = None
+    location: LocationModelV2 | None = None
+    is_diffusible: bool
