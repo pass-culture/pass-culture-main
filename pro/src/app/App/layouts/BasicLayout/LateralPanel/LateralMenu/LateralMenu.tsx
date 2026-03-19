@@ -14,6 +14,10 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { selectSelectedPartnerPageId } from '@/commons/store/nav/selector'
+import {
+  LOCAL_STORAGE_KEY,
+  localStorageManager,
+} from '@/commons/utils/localStorageManager'
 import { getSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenueId'
 import { Button } from '@/design-system/Button/Button'
 import {
@@ -42,13 +46,19 @@ interface SideNavLinksProps {
   isLateralPanelOpen: boolean
 }
 
-function generateNavItems(
+const generateNavItems = (
   selectedOfferer?: GetOffererResponseModel | null,
   selectedPartnerPageVenueId?: string | number,
   venueId?: string | number,
-  isCaledonian?: boolean
-): NavItem[] {
+  isCaledonian?: boolean,
+  isVolunteeringActive?: boolean
+): NavItem[] => {
   const navItems: NavItem[] = []
+
+  const hasSeenVolunteeringSection =
+    localStorageManager.getItem(
+      LOCAL_STORAGE_KEY.HAS_SEEN_VOLUNTEERING_SECTION
+    ) === 'true'
 
   // ===== MAIN LINKS =====
   navItems.push({
@@ -95,6 +105,7 @@ function generateNavItems(
       title: 'Page sur l’application',
       to: `/structures/${selectedOfferer.id}/lieux/${selectedPartnerPageVenueId}/page-partenaire`,
       end: true,
+      showNotification: isVolunteeringActive && !hasSeenVolunteeringSection,
     })
   }
 
@@ -171,6 +182,7 @@ function generateNavItems(
 
 export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+  const isVolunteeringActive = useActiveFeature('WIP_VOLUNTEERING')
   const isCaledonian = useIsCaledonian()
 
   const selectedOfferer = useAppSelector(
@@ -206,7 +218,8 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     selectedOfferer,
     selectedPartnerPageVenueId,
     venueId,
-    isCaledonian
+    isCaledonian,
+    isVolunteeringActive
   )
 
   return (
