@@ -55,7 +55,7 @@ logger = logging.getLogger(__name__)
 )
 @authenticated_and_active_user_required
 def get_user_profile() -> serializers.UserProfileResponse:
-    return serializers.UserProfileResponse.from_orm(current_user)
+    return serializers.UserProfileResponse.model_validate(current_user)
 
 
 @blueprint.native_route("/profile", methods=["POST", "PATCH"])
@@ -107,7 +107,7 @@ def patch_user_profile(body: serializers.UserProfilePatchRequest) -> serializers
 
     api.update_user_info(current_user, author=current_user, **profile_update_dict)
 
-    return serializers.UserProfileResponse.from_orm(current_user)
+    return serializers.UserProfileResponse.model_validate(current_user)
 
 
 @blueprint.native_route("/reset_recredit_amount_to_show", methods=["POST"])
@@ -116,7 +116,7 @@ def patch_user_profile(body: serializers.UserProfilePatchRequest) -> serializers
 def reset_recredit_amount_to_show() -> serializers.UserProfileResponse:
     api.reset_recredit_amount_to_show(current_user)
 
-    return serializers.UserProfileResponse.from_orm(current_user)
+    return serializers.UserProfileResponse.model_validate(current_user)
 
 
 @blueprint.native_route("/profile/email_update/cancel", methods=["POST"])

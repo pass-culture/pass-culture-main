@@ -14,7 +14,7 @@ class MarkAchievementsAsSeenRequest(HttpQueryParamsModel):
 class AchievementResponse(HttpBodyModel):
     id: int
     name: AchievementEnum
-    seenDate: datetime | None
+    seenDate: datetime | None = None
     unlockedDate: datetime
 
 

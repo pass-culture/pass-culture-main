@@ -40,7 +40,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.email import update as email_update
 from pcapi.models import db
-from pcapi.routes.native.v1.serialization import account as account_serialization
+from pcapi.routes.native.v1.serialization import common_models
 from pcapi.routes.serialization import users as users_serialization
 from pcapi.utils import date as date_utils
 
@@ -1535,7 +1535,7 @@ class SearchPublicAccountTest:
 class SaveTrustedDeviceTest:
     def should_not_save_trusted_device_when_no_device_id_provided(self):
         user = users_factories.UserFactory()
-        device_info = account_serialization.TrustedDevice(
+        device_info = common_models.DeviceInfo(
             deviceId="",
             source="iPhone 13",
             os="iOS",
@@ -1547,7 +1547,7 @@ class SaveTrustedDeviceTest:
 
     def test_can_save_trusted_device(self):
         user = users_factories.UserFactory()
-        device_info = account_serialization.TrustedDevice(
+        device_info = common_models.DeviceInfo(
             deviceId="2E429592-2446-425F-9A62-D6983F375B3B",
             source="iPhone 13",
             os="iOS",
@@ -1563,7 +1563,7 @@ class SaveTrustedDeviceTest:
 
     def test_can_access_trusted_devices_from_user(self):
         user = users_factories.UserFactory()
-        device_info = account_serialization.TrustedDevice(
+        device_info = common_models.DeviceInfo(
             deviceId="2E429592-2446-425F-9A62-D6983F375B3B",
             source="iPhone 13",
             os="iOS",
@@ -1577,7 +1577,7 @@ class SaveTrustedDeviceTest:
 
     def should_log_when_no_device_id(self, caplog):
         user = users_factories.UserFactory()
-        device_info = account_serialization.TrustedDevice(
+        device_info = common_models.DeviceInfo(
             deviceId="",
             source="iPhone 13",
             os="iOS",
@@ -1597,7 +1597,7 @@ class SaveTrustedDeviceTest:
 class UpdateLoginDeviceHistoryTest:
     def should_not_save_login_device_when_no_device_id_provided(self):
         user = users_factories.UserFactory()
-        device_info = account_serialization.TrustedDevice(
+        device_info = common_models.DeviceInfo(
             deviceId="",
             source="iPhone 13",
             os="iOS",
@@ -1609,7 +1609,7 @@ class UpdateLoginDeviceHistoryTest:
 
     def test_can_save_login_device(self):
         user = users_factories.UserFactory()
-        device_info = account_serialization.TrustedDevice(
+        device_info = common_models.DeviceInfo(
             deviceId="2E429592-2446-425F-9A62-D6983F375B3B",
             source="iPhone 13",
             os="iOS",
@@ -1626,7 +1626,7 @@ class UpdateLoginDeviceHistoryTest:
 
     def should_return_login_history(self):
         user = users_factories.UserFactory()
-        device_info = account_serialization.TrustedDevice(
+        device_info = common_models.DeviceInfo(
             deviceId="2E429592-2446-425F-9A62-D6983F375B3B",
             source="iPhone 13",
             os="iOS",
@@ -1640,7 +1640,7 @@ class UpdateLoginDeviceHistoryTest:
 
     def test_can_access_login_device_history_from_user(self):
         user = users_factories.UserFactory()
-        device_info = account_serialization.TrustedDevice(
+        device_info = common_models.DeviceInfo(
             deviceId="2E429592-2446-425F-9A62-D6983F375B3B",
             source="iPhone 13",
             os="iOS",
@@ -1654,7 +1654,7 @@ class UpdateLoginDeviceHistoryTest:
 
     def should_log_when_no_device_id(self, caplog):
         user = users_factories.UserFactory()
-        device_info = account_serialization.TrustedDevice(
+        device_info = common_models.DeviceInfo(
             deviceId="",
             source="iPhone 13",
             os="iOS",
@@ -1672,13 +1672,13 @@ class UpdateLoginDeviceHistoryTest:
 
 
 class ShouldSaveLoginDeviceAsTrustedDeviceTest:
-    device_info = account_serialization.TrustedDevice(
+    device_info = common_models.DeviceInfo(
         deviceId="2E429592-2446-425F-9A62-D6983F375B3B", os="iOS", source="iPhone 13"
     )
 
     def should_be_false_when_no_device_id(self):
         user = users_factories.UserFactory()
-        device_without_id = account_serialization.TrustedDevice(deviceId="", os="iOS", source="iPhone 13")
+        device_without_id = common_models.DeviceInfo(deviceId="", os="iOS", source="iPhone 13")
 
         assert users_api.should_save_login_device_as_trusted_device(device_info=device_without_id, user=user) is False
 
@@ -1697,7 +1697,7 @@ class ShouldSaveLoginDeviceAsTrustedDeviceTest:
         user = users_factories.UserFactory()
         users_factories.LoginDeviceHistoryFactory(deviceId=self.device_info.device_id, user=user)
 
-        other_device_info = account_serialization.TrustedDevice(deviceId="other_id", os="iOS", source="iPhone 13")
+        other_device_info = common_models.DeviceInfo(deviceId="other_id", os="iOS", source="iPhone 13")
         assert users_api.should_save_login_device_as_trusted_device(device_info=other_device_info, user=user) is False
 
     def should_be_false_when_device_id_matches_different_user(self):
@@ -1726,7 +1726,7 @@ class ShouldSaveLoginDeviceAsTrustedDeviceTest:
 class IsLoginDeviceTrustedDeviceTest:
     def should_not_be_trusted_when_user_has_no_trusted_device(self):
         user = users_factories.UserFactory()
-        device_info = account_serialization.TrustedDevice(
+        device_info = common_models.DeviceInfo(
             deviceId="2E429592-2446-425F-9A62-D6983F375B3B", os="iOS", source="iPhone 13"
         )
 
@@ -1740,7 +1740,7 @@ class IsLoginDeviceTrustedDeviceTest:
 
     def should_not_be_trusted_when_no_device_id(self):
         user = users_factories.UserFactory()
-        device_without_id = account_serialization.TrustedDevice(deviceId="", os="iOS", source="iPhone 13")
+        device_without_id = common_models.DeviceInfo(deviceId="", os="iOS", source="iPhone 13")
 
         assert users_api.is_login_device_a_trusted_device(device_info=device_without_id, user=user) is False
 
@@ -1748,16 +1748,14 @@ class IsLoginDeviceTrustedDeviceTest:
         user = users_factories.UserFactory()
         trusted_device = users_factories.TrustedDeviceFactory(user=user)
         users_factories.TrustedDeviceFactory(deviceId="3A44812-5776-235D-8E31-G4361H987A1A", user=user)
-        device_info = account_serialization.TrustedDevice(
-            deviceId=trusted_device.deviceId, os="iOS", source="iPhone 13"
-        )
+        device_info = common_models.DeviceInfo(deviceId=trusted_device.deviceId, os="iOS", source="iPhone 13")
 
         assert users_api.is_login_device_a_trusted_device(device_info=device_info, user=user) is True
 
     def should_not_be_trusted_when_device_is_not_a_trusted_device(self):
         user = users_factories.UserFactory()
         users_factories.TrustedDeviceFactory(user=user)
-        device_info = account_serialization.TrustedDevice(deviceId="other-device-id", os="iOS", source="iPhone 13")
+        device_info = common_models.DeviceInfo(deviceId="other-device-id", os="iOS", source="iPhone 13")
 
         assert users_api.is_login_device_a_trusted_device(device_info=device_info, user=user) is False
 

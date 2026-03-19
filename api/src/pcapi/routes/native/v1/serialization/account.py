@@ -1,72 +1,49 @@
 import datetime
+import decimal
 import re
 import typing
 from enum import Enum
 
 import email_validator
-import pydantic.v1 as pydantic_v1
-from jwt import DecodeError
-from jwt import ExpiredSignatureError
-from jwt import InvalidSignatureError
-from jwt import InvalidTokenError
-from pydantic.v1.class_validators import validator
-from pydantic.v1.utils import GetterDict
+import pydantic as pydantic_v2
 from sqlalchemy.orm import joinedload
 
 import pcapi.core.finance.models as finance_models
 import pcapi.core.users.models as users_models
 from pcapi import settings
-from pcapi.core.achievements.models import AchievementEnum
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.finance.utils import CurrencyEnum
 from pcapi.core.offers import models as offers_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import profile_options
-from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.users import api as users_api
 from pcapi.core.users import eligibility_api
 from pcapi.core.users import young_status
-from pcapi.core.users.utils import decode_jwt_token
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.routes.native.v1.serialization import achievements as achievements_serialization
+from pcapi.routes.native.v1.serialization import subscription as subscription_serialization
+from pcapi.routes.native.v1.serialization.common_models import DeviceInfo
 from pcapi.routes.serialization import HttpBodyModel
+from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.routes.shared.price import convert_to_cent
 from pcapi.utils import date as date_utils
 from pcapi.utils.email import sanitize_email
 
 
-class TrustedDeviceV2(HttpBodyModel):
-    device_id: str
-    os: str | None = None
-    source: str | None = None
-
-
-# TODO remove this class and use TrustedDeviceV2 above everywhere.
-# Then rename TrustedDeviceV2 to TrustedDevice once migration is done
-class TrustedDevice(ConfiguredBaseModel):
-    device_id: str
-    os: str | None
-    source: str | None
-
-    class Config:
-        anystr_strip_whitespace = True
-
-
-class BaseAccountRequest(ConfiguredBaseModel):
+class AccountRequest(HttpQueryParamsModel):
     birthdate: datetime.date
     marketing_email_subscription: bool | None = False
     token: str
     firebase_pseudo_id: str | None = None
-    trusted_device: TrustedDevice | None = None
-
-
-class AccountRequest(BaseAccountRequest):
-    email: pydantic_v1.EmailStr
+    trusted_device: DeviceInfo | None = None
+    email: pydantic_v2.EmailStr
     password: str
+    apps_flyer_user_id: str | None = None  # XXX Deprecated. It's here to keep compatibility with older app versions
+    apps_flyer_platform: str | None = None  # XXX Deprecated. It's here to keep compatibility with older app versions
 
-    @validator("email", pre=True)
+    @pydantic_v2.field_validator("email", mode="after")
     @classmethod
     def validate_email(cls, email: str) -> str:
         try:
@@ -85,8 +62,15 @@ class AccountRequest(BaseAccountRequest):
             raise ValueError(email) from e
 
 
-class SSOAccountRequest(BaseAccountRequest):
+class SSOAccountRequest(HttpQueryParamsModel):
+    birthdate: datetime.date
+    marketing_email_subscription: bool | None = False
+    token: str
+    firebase_pseudo_id: str | None = None
+    trusted_device: DeviceInfo | None = None
     account_creation_token: str
+    apps_flyer_user_id: str | None = None  # XXX Deprecated. It's here to keep compatibility with older app versions
+    apps_flyer_platform: str | None = None  # XXX Deprecated. It's here to keep compatibility with older app versions
 
 
 class SSOProvider(Enum):
@@ -94,220 +78,201 @@ class SSOProvider(Enum):
     GOOGLE = "google"
 
 
-class NotificationSubscriptions(ConfiguredBaseModel):
+class NotificationSubscriptions(HttpBodyModel):
     marketing_email: bool
     marketing_push: bool
     subscribed_themes: list[str] = []
 
 
-class Credit(ConfiguredBaseModel):
+class Credit(HttpBodyModel):
     initial: int
     remaining: int
 
-    _convert_initial = validator("initial", pre=True, allow_reuse=True)(convert_to_cent)
-    _convert_remaining = validator("remaining", pre=True, allow_reuse=True)(convert_to_cent)
+    @pydantic_v2.field_validator("initial", "remaining", mode="before")
+    @classmethod
+    def _to_cent(cls, amount: decimal.Decimal | None) -> int | None:
+        return convert_to_cent(amount)
 
 
-class DomainsCredit(ConfiguredBaseModel):
+class DomainsCredit(HttpBodyModel):
     all: Credit
-    digital: Credit | None
-    physical: Credit | None
+    digital: Credit | None = None
+    physical: Credit | None = None
 
 
-class ChangeBeneficiaryEmailBody(ConfiguredBaseModel):
+class ChangeBeneficiaryEmailBody(HttpQueryParamsModel):
     token: str
-    device_info: TrustedDevice | None = None
+    device_info: DeviceInfo | None = None
 
 
-class ChangeBeneficiaryEmailResponse(ConfiguredBaseModel):
+class ChangeBeneficiaryEmailResponse(HttpBodyModel):
     access_token: str
     refresh_token: str
 
 
-class ChangeEmailTokenContent(ConfiguredBaseModel):
-    current_email: pydantic_v1.EmailStr
-    new_email: pydantic_v1.EmailStr
-
-    @validator("current_email", "new_email", pre=True)
-    @classmethod
-    def validate_emails(cls, email: str) -> str:
-        try:
-            return sanitize_email(email)
-        except Exception as e:
-            raise ValueError(email) from e
-
-    @classmethod
-    def from_token(cls, token: str) -> "ChangeEmailTokenContent":
-        try:
-            jwt_payload = decode_jwt_token(token)
-        except (
-            ExpiredSignatureError,
-            InvalidSignatureError,
-            DecodeError,
-            InvalidTokenError,
-        ) as error:
-            raise InvalidTokenError() from error
-
-        if not {"new_email", "current_email"} <= set(jwt_payload):
-            raise InvalidTokenError()
-
-        current_email = jwt_payload["current_email"]
-        new_email = jwt_payload["new_email"]
-        return cls(current_email=current_email, new_email=new_email)
-
-
-class YoungStatusResponse(ConfiguredBaseModel):
+class YoungStatusResponse(HttpBodyModel):
     status_type: young_status.YoungStatusType
-    subscription_status: young_status.SubscriptionStatus | None
+    subscription_status: young_status.SubscriptionStatus | None = None
 
 
-class UserProfileGetterDict(GetterDict):
-    def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
-        user = self._obj
-        if key == "bookedOffers":
-            not_cancelled_bookings = (
-                db.session.query(bookings_models.Booking)
-                .options(
-                    joinedload(bookings_models.Booking.stock)
-                    .joinedload(offers_models.Stock.offer)
-                    .load_only(offers_models.Offer.id)
-                )
-                .filter(
-                    bookings_models.Booking.userId == user.id,
-                    bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
-                )
-            )
-
-            return {booking.stock.offer.id: booking.id for booking in not_cancelled_bookings}
-        if key == "currency":
-            return CurrencyEnum.XPF if user.is_caledonian else CurrencyEnum.EUR
-        if key == "domainsCredit":
-            return users_api.get_domains_credit(user)
-        if key == "eligibilityEndDatetime":
-            return eligibility_api.get_eligibility_end_datetime(user.birth_date, user.departementCode)
-        if key == "eligibilityStartDatetime":
-            first_eligible_registration_date = eligibility_api.get_first_eligible_registration_date(
-                user, user.birth_date
-            )
-            time_marker = first_eligible_registration_date or date_utils.get_naive_utc_now()
-            return eligibility_api.get_eligibility_start_datetime(user.birth_date, time_marker, user.departementCode)
-        if key == "firstDepositActivationDate":
-            return user.first_deposit_activation_date
-        if key == "firstName":
-            return user.firstName if user.firstName != users_models.VOID_FIRST_NAME else None
-        if key == "hasPassword":
-            return user.password is not None
-        if key == "hasProfileExpired":
-            return users_api.has_profile_expired(user)
-        if key == "isBeneficiary":
-            return user.is_beneficiary
-        if key == "isEligibleForBeneficiaryUpgrade":
-            return eligibility_api.is_eligible_for_next_recredit_activation_steps(user)
-        if key == "needsToFillCulturalSurvey":
-            return user.needsToFillCulturalSurvey and user.is_eligible and _is_cultural_survey_active()
-        if key == "requiresIdCheck":
-            return subscription_api.requires_identity_check_step(user)
-        if key == "showEligibleCard":
-            return not user.has_beneficiary_role and user.is_18_or_above_eligible
-        if key == "status":
-            user_subscription_state = subscription_api.get_user_subscription_state(user)
-            return user_subscription_state.young_status
-        if key == "subscriptions":
-            return user.get_notification_subscriptions()
-        if key == "subscriptionMessage":
-            user_subscription_state = subscription_api.get_user_subscription_state(user)
-            return user_subscription_state.subscription_message
-        if key == "activityId":
-            try:
-                activity = users_models.ActivityEnum(user.activity)
-                return profile_options.ActivityIdEnum(activity.name)
-            except ValueError:
-                return None
-        if key == "qfBonificationStatus":
-            return users_api.get_user_qf_bonification_status(user)
-        if key == "recreditTypeToShow":
-            return users_api.get_latest_user_recredit_type(user)
-        if key == "remainingBonusAttempts":
-            return users_api.get_user_remaining_bonus_attempts(user)
-
-        return super().get(key, default)
-
-
-# TODO remove this once UserProfileResponse is migrated to pydantic V2
-# should be entirely deleted as it's use only in SubscriptionMessage below
-class CallToActionMessage(ConfiguredBaseModel):
-    title: str | None = pydantic_v1.Field(None, alias="callToActionTitle")
-    link: str | None = pydantic_v1.Field(None, alias="callToActionLink")
-    icon: subscription_schemas.CallToActionIcon | None = pydantic_v1.Field(None, alias="callToActionIcon")
-
-    class Config:
-        use_enum_values = True
-
-
-# TODO remove this once UserProfileResponse is migrated to pydantic V2
-# Use pcapi.routes.native.serialization.subscription.SubscriptionMessageV2 instead
-class SubscriptionMessage(ConfiguredBaseModel):
-    user_message: str
-    call_to_action: CallToActionMessage | None
-    pop_over_icon: subscription_schemas.PopOverIcon | None
-    updated_at: datetime.datetime | None
-
-    class Config:
-        use_enum_values = True
-
-
-# TODO remove this once UserProfileResponse is migrated to pydantic V2
-# Use pcapi.routes.native.serialization.achievements.AchievementResponse instead
-class AchievementResponseLegacy(ConfiguredBaseModel):
-    id: int
-    name: AchievementEnum
-    seenDate: datetime.datetime | None
-    unlockedDate: datetime.datetime
-
-
-class UserProfileResponse(ConfiguredBaseModel):
-    achievements: list[AchievementResponseLegacy]
-    activity_id: profile_options.ActivityIdEnum | None
-    address: str | None = pydantic_v1.Field(None, alias="street")
-    birth_date: datetime.date | None
+class UserProfileResponse(HttpBodyModel):
+    achievements: list[achievements_serialization.AchievementResponse]
+    activity_id: profile_options.ActivityIdEnum | None = None
+    address: str | None = pydantic_v2.Field(default=None, alias="street")
+    birth_date: datetime.date | None = None
     booked_offers: dict[str, int]
-    city: str | None
+    city: str | None = None
     currency: CurrencyEnum
-    deposit_activation_date: datetime.datetime | None
-    deposit_expiration_date: datetime.datetime | None
-    deposit_type: finance_models.DepositType | None
-    domains_credit: DomainsCredit | None
-    eligibility: users_models.EligibilityType | None
-    eligibility_end_datetime: datetime.datetime | None
-    eligibility_start_datetime: datetime.datetime | None
+    deposit_activation_date: datetime.datetime | None = None
+    deposit_expiration_date: datetime.datetime | None = None
+    deposit_type: finance_models.DepositType | None = None
+    domains_credit: DomainsCredit | None = None
+    eligibility: users_models.EligibilityType | None = None
+    eligibility_end_datetime: datetime.datetime | None = None
+    eligibility_start_datetime: datetime.datetime | None = None
     email: str
-    first_deposit_activation_date: datetime.datetime | None
-    first_name: str | None
+    first_deposit_activation_date: datetime.datetime | None = None
+    first_name: str | None = None
     has_password: bool
     has_profile_expired: bool
     id: int
     is_beneficiary: bool
     is_eligible_for_beneficiary_upgrade: bool
-    last_name: str | None
+    last_name: str | None = None
     needs_to_fill_cultural_survey: bool
-    phone_number: str | None
-    postal_code: str | None
-    recredit_amount_to_show: int | None
-    recredit_type_to_show: finance_models.RecreditType | None
-    remaining_bonus_attempts: int | None
+    phone_number: str | None = None
+    postal_code: str | None = None
+    qf_bonification_status: subscription_models.QFBonificationStatus | None = None
+    recredit_amount_to_show: int | None = None
+    recredit_type_to_show: finance_models.RecreditType | None = None
+    remaining_bonus_attempts: int | None = None
     requires_id_check: bool
     roles: list[users_models.UserRole]
     show_eligible_card: bool
     status: YoungStatusResponse
-    subscription_message: SubscriptionMessage | None
-    subscriptions: NotificationSubscriptions  # if we send user.notification_subscriptions, pydantic will take the column and not the property
-    qf_bonification_status: subscription_models.QFBonificationStatus | None
+    subscription_message: subscription_serialization.SubscriptionMessageV2 | None = None
+    subscriptions: NotificationSubscriptions
 
-    _convert_recredit_amount_to_show = validator("recredit_amount_to_show", pre=True, allow_reuse=True)(convert_to_cent)
+    @staticmethod
+    def _get_activity(user_activity: str | None) -> profile_options.ActivityIdEnum | None:
+        try:
+            activity = users_models.ActivityEnum(user_activity)
+            return profile_options.ActivityIdEnum(activity.name)
+        except ValueError:
+            return None
 
-    class Config:
-        use_enum_values = True
-        getter_dict = UserProfileGetterDict
+    @staticmethod
+    def _get_booked_offers(user_id: int) -> dict[str, int]:
+        not_cancelled_bookings = (
+            db.session.query(bookings_models.Booking)
+            .options(
+                joinedload(bookings_models.Booking.stock)
+                .joinedload(offers_models.Stock.offer)
+                .load_only(offers_models.Offer.id)
+            )
+            .filter(
+                bookings_models.Booking.userId == user_id,
+                bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
+            )
+        )
+        return {str(booking.stock.offer.id): booking.id for booking in not_cancelled_bookings}
+
+    @staticmethod
+    def _get_eligibility_start_datetime(user: users_models.User) -> datetime.datetime | None:
+        first_eligible_registration_date = eligibility_api.get_first_eligible_registration_date(user, user.birth_date)
+        time_marker = first_eligible_registration_date or date_utils.get_naive_utc_now()
+        return eligibility_api.get_eligibility_start_datetime(user.birth_date, time_marker, user.departementCode)
+
+    @staticmethod
+    def _get_status(user: users_models.User) -> YoungStatusResponse:
+        user_subscription_state = subscription_api.get_user_subscription_state(user)
+        status = user_subscription_state.young_status
+        return YoungStatusResponse(
+            status_type=status.status_type,
+            subscription_status=getattr(status, "subscription_status", None),
+        )
+
+    @staticmethod
+    def _get_subscription_message(user: users_models.User) -> subscription_serialization.SubscriptionMessageV2 | None:
+        user_subscription_state = subscription_api.get_user_subscription_state(user)
+        message = user_subscription_state.subscription_message
+        if message is not None:
+            message_call_to_action = message.call_to_action
+            call_to_action = (
+                subscription_serialization.CallToActionMessageV2(
+                    title=message_call_to_action.title,
+                    link=message_call_to_action.link,
+                    icon=message_call_to_action.icon,
+                )
+                if message_call_to_action
+                else None
+            )
+            return subscription_serialization.SubscriptionMessageV2(
+                user_message=message.user_message,
+                message_summary=message.message_summary,
+                call_to_action=call_to_action,
+                pop_over_icon=message.pop_over_icon,
+                updated_at=message.updated_at,
+            )
+        return None
+
+    @pydantic_v2.model_validator(mode="before")
+    @classmethod
+    def _pre_validate(cls, data: typing.Any) -> typing.Any:
+        if isinstance(data, users_models.User):
+            user: users_models.User = data
+            return cls(
+                achievements=[
+                    achievements_serialization.AchievementResponse.model_validate(achievement)
+                    for achievement in user.achievements
+                ],
+                activity_id=cls._get_activity(user.activity),
+                address=user.address,
+                birth_date=user.birth_date,
+                booked_offers=cls._get_booked_offers(user.id),
+                city=user.city,
+                currency=CurrencyEnum.XPF if user.is_caledonian else CurrencyEnum.EUR,
+                deposit_activation_date=user.deposit_activation_date,
+                deposit_expiration_date=user.deposit_expiration_date,
+                deposit_type=user.deposit_type,
+                domains_credit=users_api.get_domains_credit(user),
+                eligibility=user.eligibility,
+                eligibility_end_datetime=eligibility_api.get_eligibility_end_datetime(
+                    user.birth_date, user.departementCode
+                ),
+                eligibility_start_datetime=cls._get_eligibility_start_datetime(user),
+                email=user.email,
+                first_deposit_activation_date=user.first_deposit_activation_date,
+                first_name=user.firstName or None,
+                has_password=user.password is not None,
+                has_profile_expired=users_api.has_profile_expired(user),
+                id=user.id,
+                is_beneficiary=user.is_beneficiary,
+                is_eligible_for_beneficiary_upgrade=eligibility_api.is_eligible_for_next_recredit_activation_steps(
+                    user
+                ),
+                last_name=user.lastName,
+                needs_to_fill_cultural_survey=(
+                    user.needsToFillCulturalSurvey and user.is_eligible and _is_cultural_survey_active()
+                ),
+                phone_number=user.phoneNumber,
+                postal_code=user.postalCode,
+                qf_bonification_status=users_api.get_user_qf_bonification_status(user),
+                recredit_amount_to_show=convert_to_cent(user.recreditAmountToShow),
+                recredit_type_to_show=users_api.get_latest_user_recredit_type(user),
+                remaining_bonus_attempts=users_api.get_user_remaining_bonus_attempts(user),
+                requires_id_check=subscription_api.requires_identity_check_step(user),
+                roles=user.roles,
+                show_eligible_card=not user.has_beneficiary_role and user.is_18_or_above_eligible,
+                status=cls._get_status(user),
+                subscription_message=cls._get_subscription_message(user),
+                subscriptions=user.get_notification_subscriptions(),
+            )
+        return data
+
+    model_config = pydantic_v2.ConfigDict(
+        use_enum_values=True,
+    )
 
 
 def _is_cultural_survey_active() -> bool:
@@ -315,34 +280,24 @@ def _is_cultural_survey_active() -> bool:
     return FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY.is_active() or FeatureToggle.ENABLE_CULTURAL_SURVEY.is_active()
 
 
-class UserProfilePatchRequest(ConfiguredBaseModel):
-    activity_id: profile_options.ActivityIdEnum | None
-    address: str | None
-    city: str | None
-    postal_code: str | None
-    phone_number: str | None
-    subscriptions: NotificationSubscriptions | None
-    origin: str | None
+class UserProfilePatchRequest(HttpQueryParamsModel):
+    activity_id: profile_options.ActivityIdEnum | None = None
+    address: str | None = None
+    city: str | None = None
+    postal_code: str | None = None
+    phone_number: str | None = None
+    subscriptions: NotificationSubscriptions | None = None
+    origin: str | None = None
 
 
-class ValidateEmailRequest(ConfiguredBaseModel):
-    token: str
+class UpdateEmailTokenExpiration(HttpBodyModel):
+    expiration: datetime.datetime | None = None
 
 
-class UpdateEmailTokenExpiration(ConfiguredBaseModel):
-    expiration: datetime.datetime | None
+class ResendEmailValidationRequest(HttpQueryParamsModel):
+    email: pydantic_v2.EmailStr
 
-
-class EmailUpdateStatus(ConfiguredBaseModel):
-    newEmail: str
-    expired: bool
-    status: users_models.EmailHistoryEventTypeEnum
-
-
-class ResendEmailValidationRequest(ConfiguredBaseModel):
-    email: pydantic_v1.EmailStr
-
-    @validator("email", pre=True)
+    @pydantic_v2.field_validator("email", mode="before")
     @classmethod
     def validate_email(cls, email: str) -> str:
         try:
@@ -351,31 +306,31 @@ class ResendEmailValidationRequest(ConfiguredBaseModel):
             raise ValueError(email) from e
 
 
-class EmailValidationRemainingResendsResponse(ConfiguredBaseModel):
+class EmailValidationRemainingResendsResponse(HttpBodyModel):
     remainingResends: int
-    counterResetDatetime: datetime.datetime | None
+    counterResetDatetime: datetime.datetime | None = None
 
 
-class ValidatePhoneNumberRequest(ConfiguredBaseModel):
+class ValidatePhoneNumberRequest(HttpQueryParamsModel):
     code: str
 
 
-class SendPhoneValidationRequest(ConfiguredBaseModel):
+class SendPhoneValidationRequest(HttpQueryParamsModel):
     phoneNumber: str
 
 
-class PhoneValidationRemainingAttemptsRequest(ConfiguredBaseModel):
+class PhoneValidationRemainingAttemptsRequest(HttpBodyModel):
     remainingAttempts: int
-    counterResetDatetime: datetime.datetime | None
+    counterResetDatetime: datetime.datetime | None = None
 
 
-class UserSuspensionDateResponse(ConfiguredBaseModel):
-    date: datetime.datetime | None
+class UserSuspensionDateResponse(HttpBodyModel):
+    date: datetime.datetime | None = None
 
 
-class UserSuspensionStatusResponse(ConfiguredBaseModel):
+class UserSuspensionStatusResponse(HttpBodyModel):
     status: users_models.AccountState
 
 
-class SuspendAccountForSuspiciousLoginRequest(ConfiguredBaseModel):
+class SuspendAccountForSuspiciousLoginRequest(HttpQueryParamsModel):
     token: str

@@ -19,7 +19,7 @@ from . import _common
 
 
 if typing.TYPE_CHECKING:
-    from pcapi.routes.native.v1.serialization import account as account_serialization
+    from pcapi.routes.native.v1.common_models import DeviceInfo
 
 
 @dataclass(frozen=True, slots=True)
@@ -129,7 +129,7 @@ def _delete_jwt_container() -> None:
 
 def create_user_jwt_tokens(
     user: users_models.User,
-    device_info: "account_serialization.TrustedDevice | account_serialization.TrustedDeviceV2 | None" = None,
+    device_info: "DeviceInfo | None" = None,
 ) -> TokensContainer:
     if _is_used_jwt_refresh():
         # TODO regenerate a refresh token when renewing the access token
