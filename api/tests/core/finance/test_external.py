@@ -1,4 +1,5 @@
 import datetime
+import logging
 from unittest.mock import patch
 
 import pytest
@@ -7,6 +8,7 @@ import time_machine
 from pcapi.core.finance import external
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.finance.backend import constants as finance_backend_constants
 from pcapi.core.finance.backend.base import SettlementPayload
 from pcapi.core.finance.backend.base import SettlementType
 from pcapi.core.finance.backend.dummy import DummyFinanceBackend
@@ -339,17 +341,23 @@ class ExternalFinanceTest:
             "pcapi.core.finance.backend.dummy.DummyFinanceBackend.get_settlements",
             return_value=mock_get_settlements_payload,
         ):
-            external.sync_settlements(datetime.date.today(), datetime.date.today())
+            with caplog.at_level(logging.INFO):
+                external.sync_settlements(datetime.date.today(), datetime.date.today())
 
         assert db.session.query(finance_models.Settlement).count() == 0
 
-        assert len(caplog.records) == 1
-        assert caplog.records[0].levelname == "WARNING"
-        assert caplog.records[0].message == "No invoice found on our side for this reference"
+        assert len(caplog.records) == 2
+        assert caplog.records[0].levelname == "INFO"
+        assert caplog.records[0].message == "get_settlements called"
+        assert caplog.records[1].levelname == "INFO"
+        assert caplog.records[1].message == "No invoice found on our side for this reference"
 
     def test_get_settlements_ignore_when_no_batch_found(self, caplog):
         bank_account = finance_factories.BankAccountFactory()
-        invoice = finance_factories.InvoiceFactory(bankAccount=bank_account)
+        invoice = finance_factories.InvoiceFactory(
+            bankAccount=bank_account,
+            cashflows=[finance_factories.CashflowFactory()],
+        )
 
         now = date_utils.get_naive_utc_now()
 
@@ -359,8 +367,8 @@ class ExternalFinanceTest:
                 external_settlement_id="0032597",
                 invoice_external_reference=invoice.reference,
                 settlement_type=SettlementType.PAYMENT,
-                settlement_batch_name=None,
-                settlement_batch_label=None,
+                settlement_batch_name=finance_backend_constants.MISSING_BATCH_NAME_VALUE,
+                settlement_batch_label=finance_backend_constants.MISSING_BATCH_LABEL_VALUE,
                 settlement_date=now.date(),
                 settlement_creation_date=now,
                 amount=30000,
@@ -373,7 +381,7 @@ class ExternalFinanceTest:
         ):
             external.sync_settlements(datetime.date.today(), datetime.date.today())
 
-        assert db.session.query(finance_models.Settlement).count() == 0
+        assert db.session.query(finance_models.Settlement).count() == 1
 
         assert len(caplog.records) == 1
         assert caplog.records[0].levelname == "WARNING"
