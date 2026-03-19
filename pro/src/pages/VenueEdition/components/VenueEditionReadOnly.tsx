@@ -52,7 +52,7 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
       )}
     >
       {isVolunteeringActive && (
-        <SummarySubSection title="Bénévolat" shouldShowDivider={false}>
+        <SummarySubSection title="Bénévolat" shouldShowDivider={false} isNew>
           <SummaryDescriptionList
             descriptions={[
               {
