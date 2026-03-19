@@ -38,7 +38,7 @@ google-cloud-bigquery = "3.40.1"
 google-cloud-iam = "^2.21.0"
 google-cloud-storage = "3.9.0"
 google-cloud-tasks = "2.21.0"
-googleapis-common-protos = "^1.72.0"
+googleapis-common-protos = "^1.73.0"
 googlemaps = "^4.10.0"
 gql = { version = "4.0.0", extras = ["requests"] }
 gunicorn = "24.1.1"
