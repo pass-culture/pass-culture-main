@@ -1,28 +1,16 @@
 import typing
 
-import pydantic as pydantic_v2
-
 from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers import schemas as offerers_schemas
-from pcapi.routes.serialization import HttpBodyModel
+from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
+from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import venue_finance_serialize
 
 
-def parse_venue_type_code(venue_type_code: str | offerers_schemas.VenueTypeCode) -> offerers_schemas.VenueTypeCodeKey:
-    if isinstance(venue_type_code, str):
-        return offerers_schemas.VenueTypeCodeKey[venue_type_code]
-    return offerers_schemas.VenueTypeCodeKey[venue_type_code.name]
-
-
 # TODO(jbaudet - 11/2025): remove once (pro) GET /venues has been
 # migrated (-> minimum information returned)
-class VenueListItemResponseModel(HttpBodyModel):
-    audioDisabilityCompliant: bool | None
-    mentalDisabilityCompliant: bool | None
-    motorDisabilityCompliant: bool | None
-    visualDisabilityCompliant: bool | None
+class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     id: int
     managingOffererId: int
     name: str
@@ -33,11 +21,9 @@ class VenueListItemResponseModel(HttpBodyModel):
     withdrawalDetails: str | None
     siret: str | None
     hasCreatedOffer: bool
-    venueTypeCode: typing.Annotated[
-        offerers_schemas.VenueTypeCodeKey, pydantic_v2.BeforeValidator(parse_venue_type_code)
-    ]
-    externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModelV2 | None
-    location: address_serialize.LocationResponseModelV2 | None
+    venueTypeCode: offerers_models.VenueTypeCode
+    externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
+    location: address_serialize.LocationResponseModel | None
     isPermanent: bool
     isCaledonian: bool
     isActive: bool
@@ -79,24 +65,37 @@ class VenueListItemResponseModel(HttpBodyModel):
     @classmethod
     def build_external_accessibility_data(
         cls, venue: offerers_models.Venue
-    ) -> acceslibre_serializers.ExternalAccessibilityDataModelV2 | None:
+    ) -> acceslibre_serializers.ExternalAccessibilityDataModel | None:
         if not venue.accessibilityProvider:
             return None
-        return acceslibre_serializers.ExternalAccessibilityDataModelV2.from_accessibility_infos(
+        return acceslibre_serializers.ExternalAccessibilityDataModel.from_accessibility_infos(
             venue.accessibilityProvider.externalAccessibilityData
         )
 
     @classmethod
-    def build_address(cls, venue: offerers_models.Venue) -> address_serialize.LocationResponseModelV2 | None:
+    def build_address(cls, venue: offerers_models.Venue) -> address_serialize.LocationResponseModel | None:
         offerer_address = venue.offererAddress
         if not offerer_address:
             return None
-        return address_serialize.LocationResponseModelV2.build(
-            offerer_address, label=venue.publicName, is_venue_location=True
-        )
+        data: dict[str, typing.Any] = {
+            "id": offerer_address.addressId,
+            "id_oa": offerer_address.id,
+            "banId": offerer_address.address.banId,
+            "inseeCode": offerer_address.address.inseeCode,
+            "longitude": offerer_address.address.longitude,
+            "latitude": offerer_address.address.latitude,
+            "postalCode": offerer_address.address.postalCode,
+            "street": offerer_address.address.street,
+            "city": offerer_address.address.city,
+            "label": venue.publicName,
+            "isManualEdition": offerer_address.address.isManualEdition,
+            "departmentCode": offerer_address.address.departmentCode,
+            "isVenueLocation": True,
+        }
+        return address_serialize.LocationResponseModel(**data)
 
 
 # TODO(jbaudet - 11/2025): remove once (pro) GET /venues has been
 # migrated (-> minimum information returned)
-class GetVenueListResponseModel(HttpBodyModel):
+class GetVenueListResponseModel(BaseModel):
     venues: list[VenueListItemResponseModel]
