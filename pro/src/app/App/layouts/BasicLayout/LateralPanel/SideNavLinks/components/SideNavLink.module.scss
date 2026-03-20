@@ -42,4 +42,14 @@
 
     padding-left: rem.torem(28px);
   }
+
+  &-notification {
+    margin-left: auto;
+    margin-right: rem.torem(3px);
+    width: rem.torem(12px);
+    min-width: rem.torem(8px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background-color: var(--color-background-brand-primary);
+  }
 }

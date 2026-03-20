@@ -13,6 +13,9 @@ import type { VenueEditionFormValues } from './types'
 const isOneTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
 
+// ensures the url path is exactly /organisations/{slug} with an optional trailing slash
+const organizationPathRegex = /^\/organisations\/[^/]+\/?$/
+
 const volunteeringUrlSchema: yup.TestConfig<string | null | undefined> = {
   name: 'is-volunteering-url-valid',
   test(value) {
@@ -32,10 +35,7 @@ const volunteeringUrlSchema: yup.TestConfig<string | null | undefined> = {
         })
       }
       const path = parsed.pathname.toLowerCase()
-      if (
-        !path.startsWith('/organisations/') ||
-        path.replace(/\/+$/, '') === '/organisations'
-      ) {
+      if (!organizationPathRegex.test(path)) {
         return this.createError({
           message:
             'Veuillez renseigner l’URL de votre page organisation. Ex : https://www.jeveuxaider.gouv.fr/organisations/exemple',

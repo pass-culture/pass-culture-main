@@ -10,7 +10,10 @@ vi.mock('@/commons/hooks/useMediaQuery', async (importOriginal) => ({
 
 vi.mock('./components/SideNavLink', () => ({
   RenderNavItem: ({ item }: { item: NavItem }) => (
-    <li data-testid="render-nav-item">{item.title}</li>
+    <li data-testid="render-nav-item">
+      {item.title}
+      {item.showNotification && <span data-testid="nav-item-notification" />}
+    </li>
   ),
 }))
 
@@ -41,6 +44,27 @@ describe('SideNavLinks', () => {
     expect(renderedItems).toHaveLength(3)
     expect(screen.getByText('Main 1')).toBeInTheDocument()
     expect(screen.getByText('Main 2')).toBeInTheDocument()
+  })
+
+  it('should pass showNotification to nav items', () => {
+    const itemsWithNotification: NavItem[] = [
+      {
+        key: 'with-notif',
+        group: 'main',
+        type: 'link',
+        title: 'With notification',
+        showNotification: true,
+      },
+    ]
+
+    render(
+      <SideNavLinks
+        navItems={itemsWithNotification}
+        withSwitchVenueFeature={false}
+      />
+    )
+
+    expect(screen.getByTestId('nav-item-notification')).toBeInTheDocument()
   })
 
   it('renders footer nav items when switch venue feature is false', () => {

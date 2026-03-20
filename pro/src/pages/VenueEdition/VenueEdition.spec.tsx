@@ -207,6 +207,9 @@ describe('VenueEdition', () => {
   })
 
   describe('about venue / partner page selection', () => {
+    beforeEach(() => {
+      localStorage.removeItem('PASS_CULTURE_HAS_SEEN_VOLUNTEERING_SECTION')
+    })
     it('should let choose an other partner page', async () => {
       renderVenueEdition({ context: 'partnerPage' })
 
@@ -302,6 +305,16 @@ describe('VenueEdition', () => {
       expect(
         screen.queryByText('Page sur l’application')
       ).not.toBeInTheDocument()
+    })
+
+    it('should set HAS_SEEN_VOLUNTEERING_SECTION to true when visiting the partner page', async () => {
+      renderVenueEdition({ context: 'partnerPage' })
+
+      await waitForElementToBeRemoved(screen.getByTestId('spinner'))
+
+      expect(
+        localStorage.getItem('PASS_CULTURE_HAS_SEEN_VOLUNTEERING_SECTION')
+      ).toBe('true')
     })
   })
 

@@ -15,9 +15,16 @@ interface SideNavLinkProps {
   children: React.ReactNode
   icon?: string
   end?: boolean
+  showNotification?: boolean
 }
 
-const SideNavLink = ({ to, children, icon, end = false }: SideNavLinkProps) => {
+const SideNavLink = ({
+  to,
+  children,
+  icon,
+  end = false,
+  showNotification = false,
+}: SideNavLinkProps) => {
   return (
     <NavLink
       to={to}
@@ -36,6 +43,12 @@ const SideNavLink = ({ to, children, icon, end = false }: SideNavLinkProps) => {
       >
         {children}
       </span>
+      {showNotification && (
+        <span
+          className={styles['nav-links-item-notification']}
+          aria-hidden="true"
+        />
+      )}
     </NavLink>
   )
 }
@@ -48,7 +61,12 @@ export const RenderNavItem = ({ item }: { item: NavItem }) => {
       return (
         <li>
           {item.to && (
-            <SideNavLink to={item.to} icon={item.icon} end={item.end}>
+            <SideNavLink
+              to={item.to}
+              icon={item.icon}
+              end={item.end}
+              showNotification={item.showNotification}
+            >
               {item.title}
             </SideNavLink>
           )}
