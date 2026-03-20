@@ -26,6 +26,10 @@ on:
         type: string
         # TODO check if a default is needed
         default: ""
+      continue_on_error:
+        type: boolean
+        required: false
+        default: false
     secrets:
       GCP_EHP_SERVICE_ACCOUNT:
         required: true
@@ -47,6 +51,7 @@ jobs:
     outputs:
       description: "The pro (firebase) preview URL"
       pro_url: ${{ steps.firebase-deploy.outputs.details_url }}
+    continue-on-error: ${{ inputs.continue_on_error }}
     steps:
       - uses: actions/checkout@v6
         with:
