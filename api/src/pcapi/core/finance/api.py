@@ -2371,7 +2371,7 @@ def _prepare_invoice_context(invoice: models.Invoice, batch: models.CashflowBatc
         total_used_bookings_amount=total_used_bookings_amount,
         total_contribution_amount=total_contribution_amount,
         total_reimbursed_amount=total_reimbursed_amount,
-        invoice_date=invoice_date,  # legacy
+        invoice_date=invoice_date,
         period_start=period_start,
         period_end=period_end,
         reimbursements_by_venue=reimbursements_by_venue,

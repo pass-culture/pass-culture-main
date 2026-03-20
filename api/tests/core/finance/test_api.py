@@ -5025,8 +5025,8 @@ class GenerateDebitNoteHtmlTest:
         # We need to replace Cashflow IDs and dates that were used when generating the expected html
 
         expected_invoice_html = expected_invoice_html.replace(
-            'content: "Relevé n°A240000001";',
-            f'content: "Relevé n°{invoice.reference}";',
+            'content: "Relevé n°A240000001 du 28/01/2024";',
+            f'content: "Relevé n°{invoice.reference} du {cashflows[0].batch.cutoff.strftime("%d/%m/%Y")}";',
         )
         assert expected_invoice_html == invoice_html
 
@@ -5160,8 +5160,8 @@ class GenerateInvoiceHtmlTest:
             f'<td class="cashflow_creation_date">{(invoice.date).strftime("%d/%m/%Y")}</td>',
         )
         expected_invoice_html = expected_invoice_html.replace(
-            'content: "Relevé n°F220000001";',
-            f'content: "Relevé n°{invoice.reference}";',
+            'content: "Relevé n°F220000001 du 01/02/2022";',
+            f'content: "Relevé n°{invoice.reference} du {cashflows[0].batch.cutoff.strftime("%d/%m/%Y")}";',
         )
         start_period, end_period = api.get_invoice_period(cashflows[0].batch.cutoff)
         expected_invoice_html = expected_invoice_html.replace(
