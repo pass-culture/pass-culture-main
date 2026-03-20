@@ -26,6 +26,7 @@ import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
 import { HeadlineOffer } from './components/HeadlineOffer/HeadlineOffer'
 import { getIndividualOfferColumns } from './components/IndividualOfferColumns/IndividualOfferColumns'
+import { IndividualOfferRecommendationBanner } from './components/IndividualOfferRecommendationBanner/IndividualOfferRecommendationBanner'
 import { IndividualOffersActionsBar } from './components/IndividualOffersActionsBar/IndividualOffersActionsBar'
 import { IndividualOffersSearchFilters } from './components/IndividualOffersSearchFilters/IndividualOffersSearchFilters'
 import styles from './IndividualOffersContainer.module.scss'
@@ -55,6 +56,9 @@ export const IndividualOffersContainer = ({
   offers = [],
 }: IndividualOffersContainerProps): JSX.Element => {
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+  const isOfferRecommendationEnabled = useActiveFeature(
+    'WIP_OFFER_RECOMMENDATION_PRO'
+  )
 
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('individual')
   const [selectedOfferIds, setSelectedOfferIds] = useState<
@@ -144,6 +148,7 @@ export const IndividualOffersContainer = ({
 
   return (
     <div>
+      {isOfferRecommendationEnabled && <IndividualOfferRecommendationBanner />}
       <IndividualOffersSearchFilters
         hasFilters={hasFilters}
         applyFilters={applyFilters}
