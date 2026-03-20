@@ -13,7 +13,7 @@ describe('withVenueHelpers', () => {
 
   describe('fullAddressAsString', () => {
     it('should return null when location is nullish', () => {
-      const venue = makeGetVenueResponseModel({ id: 1, location: null })
+      const venue = makeGetVenueResponseModel({ id: 1 })
 
       const venueWithHelpers = withVenueHelpers(venue)
 

@@ -5,7 +5,6 @@ import type {
   GetVenueResponseModel,
   LocationResponseModelV2,
   VenueListItemLiteResponseModel,
-  VenueTypeResponseModelV2,
 } from '@/apiClient/v1'
 
 import type { PartialExcept } from '../types'
@@ -66,6 +65,21 @@ export const makeGetVenueResponseModel = <
       name: offererName,
     })
 
+  const location: LocationResponseModelV2 = {
+    id: 2,
+    banId: null,
+    city: 'Paris',
+    departmentCode: null,
+    inseeCode: null,
+    isManualEdition: false,
+    isVenueLocation: false,
+    label: null,
+    latitude: 0,
+    longitude: 0,
+    postalCode: '75001',
+    street: null,
+  }
+
   const fake: GetVenueResponseModel = {
     id: override.id,
     activity: null,
@@ -105,7 +119,7 @@ export const makeGetVenueResponseModel = <
     isPermanent: false,
     isValidated: false,
     isVirtual: false,
-    location: null,
+    location: location,
     managingOfferer: offerer,
     mentalDisabilityCompliant: false,
     motorDisabilityCompliant: false,
@@ -114,7 +128,6 @@ export const makeGetVenueResponseModel = <
     publicName: `Nom public de la structure ${override.id}`,
     pricingPoint: null,
     siret: null,
-    venueType: makeVenueTypeResponseModel({}),
     visualDisabilityCompliant: false,
     canDisplayHighlights: false,
     hasNonDraftOffers: false,
