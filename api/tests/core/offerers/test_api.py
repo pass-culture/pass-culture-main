@@ -170,6 +170,7 @@ class UpdateVenueTest:
 class CreateVenueTest:
     def base_data(self, offerer):
         return {
+            "activity": offerers_models.Activity.FESTIVAL.name,
             "address": {
                 "street": "rue du test",
                 "city": "Paris",
@@ -178,16 +179,22 @@ class CreateVenueTest:
                 "latitude": 1,
                 "longitude": 2,
             },
-            "managingOffererId": offerer.id,
+            "managing_offerer_id": offerer.id,
             "name": "La Venue",
-            "activity": "CINEMA",
-            "bookingEmail": "venue@example.com",
+            "booking_email": "venue@example.com",
             "siret": offerer.siren + "00000",
-            "isOpenToPublic": False,
-            "audioDisabilityCompliant": True,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": True,
-            "visualDisabilityCompliant": True,
+            "is_open_to_public": False,
+            "audio_disability_compliant": True,
+            "mental_disability_compliant": True,
+            "motor_disability_compliant": True,
+            "visual_disability_compliant": True,
+            "comment": None,
+            "public_name": "La Venue",
+            "venue_label_id": None,
+            "withdrawal_details": None,
+            "contact": None,
+            "description": None,
+            "cultural_domains": None,
         }
 
     def test_basics(self):
@@ -239,7 +246,7 @@ class CreateVenueTest:
         init_data = self.base_data(user_offerer.offerer) | {
             "siret": None,
             "comment": "no siret",
-            "isOpenToPublic": True,
+            "is_open_to_public": True,
         }
         data = venue_serialize.PostVenueBodyModel(**init_data)
         offerers_api.create_venue(data, user_offerer.user)
@@ -249,7 +256,7 @@ class CreateVenueTest:
 
     def test_venue_is_permanent_when_created_with_siret_and_open_to_public(self):
         user_offerer = offerers_factories.UserOffererFactory()
-        init_data = self.base_data(user_offerer.offerer) | {"isOpenToPublic": True}
+        init_data = self.base_data(user_offerer.offerer) | {"is_open_to_public": True}
         data = venue_serialize.PostVenueBodyModel(**init_data)
         offerers_api.create_venue(data, user_offerer.user)
 
@@ -259,7 +266,7 @@ class CreateVenueTest:
     def test_create_venue_closed_to_public_should_be_permanent(self):
         user_offerer = offerers_factories.UserOffererFactory()
         init_data = self.base_data(user_offerer.offerer) | {
-            "isOpenToPublic": False,
+            "is_open_to_public": False,
         }
         data = venue_serialize.PostVenueBodyModel(**init_data)
         offerers_api.create_venue(data, user_offerer.user)
@@ -290,11 +297,11 @@ class CreateVenueTest:
         user_offerer = offerers_factories.UserOffererFactory()
         for domain_name in ["Architecture", "Média et information", "Bande dessinée", "Musique"]:
             educational_factories.EducationalDomainFactory(name=domain_name)
-        data = self.base_data(user_offerer.offerer) | {"culturalDomains": cultural_domains}
+        data = self.base_data(user_offerer.offerer) | {"cultural_domains": cultural_domains}
         if activity:
             data["activity"] = activity.name
         else:
-            del data["activity"]
+            data["activity"] = None
         offerers_api.create_venue(venue_serialize.PostVenueBodyModel(**data), user_offerer.user)
 
         venue = db.session.query(offerers_models.Venue).one()

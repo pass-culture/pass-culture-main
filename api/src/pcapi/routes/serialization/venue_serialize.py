@@ -4,9 +4,11 @@ from datetime import datetime
 from decimal import Decimal
 from urllib.parse import urlparse
 
+import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
 from pydantic import RootModel
 from pydantic.v1 import validator
+from pydantic_core import PydanticCustomError
 
 from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.core.educational import models as educational_models
@@ -31,35 +33,58 @@ from pcapi.serialization.utils import string_to_boolean_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
+from pcapi.utils.siren import SIRET_LENGTH
 
 
-class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
+class PostVenueBodyModel(HttpBodyModel):
     activity: offerers_models.Activity | None
-    address: address_serialize.LocationBodyModel
-    bookingEmail: offerers_schemas.VenueBookingEmail
-    culturalDomains: list[str] | None
-    comment: offerers_schemas.VenueComment | None
-    isOpenToPublic: bool | None
-    managingOffererId: int
-    name: offerers_schemas.VenueName
-    publicName: offerers_schemas.VenuePublicName | None
-    siret: offerers_schemas.VenueSiret | None
-    venueLabelId: int | None
-    withdrawalDetails: offerers_schemas.VenueWithdrawalDetails | None
-    description: offerers_schemas.VenueDescription | None
+    address: address_serialize.LocationBodyModelV2
+    booking_email: typing.Annotated[
+        pydantic_v2.EmailStr, pydantic_v2.StringConstraints(max_length=offerers_schemas.BOOKING_EMAIL_MAX_LENGTH)
+    ]
+    cultural_domains: list[str] | None
+    comment: (
+        typing.Annotated[str, pydantic_v2.StringConstraints(max_length=offerers_schemas.VENUE_COMMENT_MAX_LENGTH)]
+        | None
+    )
+    is_open_to_public: bool | None
+    managing_offerer_id: int
+    name: typing.Annotated[
+        str, pydantic_v2.StringConstraints(min_length=1, max_length=offerers_schemas.VENUE_NAME_MAX_LENGTH)
+    ]
+    public_name: (
+        typing.Annotated[str, pydantic_v2.StringConstraints(max_length=offerers_schemas.VENUE_PUBLIC_NAME_MAX_LENGTH)]
+        | None
+    )
+    siret: (
+        typing.Annotated[
+            str,
+            pydantic_v2.StringConstraints(min_length=SIRET_LENGTH, max_length=SIRET_LENGTH),
+        ]
+        | None
+    )
+    venue_label_id: int | None
+    withdrawal_details: (
+        typing.Annotated[
+            str, pydantic_v2.StringConstraints(max_length=offerers_schemas.VENUE_WITHDRAWAL_DETAILS_MAX_LENGTH)
+        ]
+        | None
+    )
+    description: (
+        typing.Annotated[str, pydantic_v2.StringConstraints(max_length=offerers_schemas.VENUE_DESCRIPTION_MAX_LENGTH)]
+        | None
+    )
     contact: offerers_schemas.VenueContactModel | None
+    audio_disability_compliant: bool | None
+    mental_disability_compliant: bool | None
+    motor_disability_compliant: bool | None
+    visual_disability_compliant: bool | None
 
-    class Config:
-        extra = "forbid"
-
-    @validator("siret", always=True)
-    @classmethod
-    def requires_siret_xor_comment(cls, siret: str | None, values: dict) -> str | None:
-        """siret is defined after comment, so the validator can access the previously validated value of comment"""
-        comment = values.get("comment")
-        if (comment and siret) or (not comment and not siret):
-            raise ValueError("Veuillez saisir soit un SIRET soit un commentaire")
-        return siret
+    @pydantic_v2.model_validator(mode="after")
+    def requires_siret_xor_comment(self) -> typing.Self:
+        if (self.comment and self.siret) or (not self.comment and not self.siret):
+            raise PydanticCustomError("siret_or_comment_required", "Veuillez saisir soit un SIRET soit un commentaire")
+        return self
 
 
 class VenueResponseModel(BaseModel):
