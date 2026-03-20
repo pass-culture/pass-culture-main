@@ -135,6 +135,7 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
         .correlate(offerers_models.Offerer)
         .exists()
     )
+
     if access_control.has_current_user_permission(perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO):
         has_fraudulent_booking_query: sa.sql.selectable.Exists | sa.sql.elements.Null = (
             sa.select(1)
@@ -147,6 +148,19 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
     else:
         has_fraudulent_booking_query = sa.null()
 
+    if access_control.has_current_user_permission(perm_models.Permissions.READ_PRO_REIMBURSEMENT_SUSPENSION):
+        has_reimbursement_suspended: sa.sql.selectable.Exists | sa.sql.elements.Null = (
+            sa.select(1)
+            .select_from(offerers_models.Venue)
+            .where(offerers_models.Venue.managingOffererId == offerers_models.Offerer.id)
+            .where(offerers_models.Venue.isSoftDeleted.is_(False))
+            .where(offerers_models.Venue.isReimbursementSuspended.is_(True))
+            .correlate(offerers_models.Offerer)
+            .exists()
+        )
+    else:
+        has_reimbursement_suspended = sa.null()
+
     offerer_query = (
         db.session.query(
             offerers_models.Offerer,
@@ -154,6 +168,7 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
             has_non_virtual_venues_query.label("has_non_virtual_venues"),
             has_offerer_address_query.label("has_offerer_address"),
             has_fraudulent_booking_query.label("has_fraudulent_booking"),
+            has_reimbursement_suspended.label("has_reimbursement_suspended"),
             adage_query.label("adage_information"),
             users_models.User.phoneNumber.label("creator_phone_number"),
         )
@@ -256,6 +271,7 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         show_subscription_tab=show_subscription_tab,
         has_offerer_address=row.has_offerer_address,
         has_fraudulent_booking=row.has_fraudulent_booking,
+        has_reimbursement_suspended=row.has_reimbursement_suspended,
         active_tab=request.args.get("active_tab", "history"),
         connect_as_offerer=connect_as_offerer,
         connect_as_offer=connect_as_offer,
@@ -936,6 +952,7 @@ def get_managed_venues(offerer_id: int) -> response_utils.BackofficeResponse:
                 offerers_models.Venue.isOpenToPublic,
                 offerers_models.Venue.isVirtual,
                 offerers_models.Venue.managingOffererId,
+                offerers_models.Venue.isReimbursementSuspended,
             ),
             sa_orm.joinedload(offerers_models.Venue.collectiveDmsApplications).load_only(
                 educational_models.CollectiveDmsApplication.state,
