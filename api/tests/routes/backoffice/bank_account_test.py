@@ -1,10 +1,12 @@
 import csv
 import datetime
+from io import BytesIO
 from io import StringIO
 from unittest import mock
 
 import pytest
 from flask import url_for
+from pypdf import PdfReader
 
 from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.core.bookings import factories as bookings_factories
@@ -19,6 +21,8 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
+
+from tests.utils.pdf_creation_test import TEST_FILES_PATH
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -526,6 +530,35 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
         assert rows[1]["Adresse de l'offre"] == booking.stock.offer.offererAddress.address.fullAddress
 
         assert str(response.data).count("Incident") == 3
+
+
+class DownloadInvoicesTest(PostEndpointHelper):
+    endpoint = "backoffice_web.bank_account.download_invoices"
+    endpoint_kwargs = {"bank_account_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
+    def test_download_invoices(self, authenticated_client, requests_mock):
+        bank_account = finance_factories.BankAccountFactory()
+
+        invoice_1 = finance_factories.InvoiceFactory(reference="F260000123", bankAccount=bank_account)
+        invoice_2 = finance_factories.InvoiceFactory(reference="F260000456", bankAccount=bank_account)
+        finance_factories.InvoiceFactory(bankAccount=bank_account)
+
+        # 1 page PDF
+        requests_mock.get(invoice_1.url, content=(TEST_FILES_PATH / "pdf" / "invoice_1_example.pdf").read_bytes())
+        # 2 pages PDF
+        requests_mock.get(invoice_2.url, content=(TEST_FILES_PATH / "pdf" / "invoice_2_example.pdf").read_bytes())
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            bank_account_id=bank_account.id,
+            form={"object_ids": f"{invoice_1.id}, {invoice_2.id}"},
+        )
+        assert response.status_code == 200
+
+        assert response.headers["Content-Type"] == "application/pdf; charset=utf-8;"
+        assert response.headers["Content-Disposition"] == f"attachment; filename=justificatifs_{bank_account.id}.pdf"
+        assert PdfReader(BytesIO(response.data)).get_num_pages() == 3
 
 
 @mock.patch("pcapi.routes.backoffice.bank_account.blueprint.dms_api.get_dms_stats", lambda x: None)

@@ -1,11 +1,8 @@
 import datetime
-from io import BytesIO
 
 import sqlalchemy.orm as sa_orm
 from flask_login import current_user
 from flask_login import login_required
-from pypdf import PdfReader
-from pypdf import PdfWriter
 
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
@@ -16,7 +13,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import finance_serialize
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils import requests
+from pcapi.utils import pdf
 from pcapi.utils import rest
 from pcapi.utils.transaction_manager import atomic
 
@@ -116,20 +113,10 @@ def get_combined_invoices(query: finance_serialize.GetCombinedInvoicesQueryModel
             raise ApiErrors({"offererId": ["Cet utilisateur ne peut pas accéder à cette structure"]})
 
     invoice_pdf_urls = [invoice.url for invoice in invoices]
-    merger = PdfWriter()
-    tmp = BytesIO()
-
-    for invoice_pdf_url in invoice_pdf_urls:
-        try:
-            invoice_pdf = PdfReader(BytesIO(requests.get(invoice_pdf_url).content))
-        except Exception:
-            merger.close()
-            raise ApiErrors({"invoice": f"Failed to fetch invoice PDF from url: {invoice_pdf_url}"}, status_code=424)
-        merger.append(invoice_pdf)
-
-    merger.write(tmp)
-    merger.close()
-    return tmp.getvalue()
+    try:
+        return pdf.merge_pdf_files(invoice_pdf_urls)
+    except FileNotFoundError as exc:
+        raise ApiErrors({"invoice": f"Failed to fetch invoice PDF from url: {exc}"}, status_code=424)
 
 
 @private_api.route("/finance/bank-accounts", methods=["GET"])

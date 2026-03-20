@@ -146,25 +146,33 @@ addonList.push(
     }
 
     #updateHiddenFormIds = (tableMultiSelectId, selectedRowsIds) => {
-      const formId = `form-ids-${tableMultiSelectId}`
-      const idsStr = [...selectedRowsIds].join(',')
-      let $form = document.getElementById(formId)
-      let $input = null
-      if (!$form) {
-        $form = document.createElement("form")
-        $form.classList.add("d-none")
-        $form.innerHTML = this.app.csrfTokenInput
-        $form.id = formId
-        $form.name = formId
-        $input = document.createElement("input")
-        $input.name = "object_ids"
-        $input.type = "hidden"
-        $input.value = idsStr
-        $form.appendChild($input)
-        document.body.append($form)
-      } else {
-        $input = $form.querySelector("[name=object_ids]")
-        $input.value = idsStr
+      let formIds = [`form-ids-${tableMultiSelectId}`]
+      const $table = document.querySelector(
+        `[data-table-multi-select-id=${tableMultiSelectId}]`,
+      );
+      if (!!$table && !!$table.dataset.tableMultiSelectFormIds) {
+        formIds = $table.dataset.tableMultiSelectFormIds.split(" ");
+      }
+      for (const formId of formIds) {
+        const idsStr = [...selectedRowsIds].join(",");
+        let $form = document.getElementById(formId);
+        let $input = null;
+        if (!$form) {
+          $form = document.createElement("form");
+          $form.classList.add("d-none");
+          $form.innerHTML = this.app.csrfTokenInput;
+          $form.id = formId;
+          $form.name = formId;
+          $input = document.createElement("input");
+          $input.name = "object_ids";
+          $input.type = "hidden";
+          $input.value = idsStr;
+          $form.appendChild($input);
+          document.body.append($form);
+        } else {
+          $input = $form.querySelector("[name=object_ids]");
+          $input.value = idsStr;
+        }
       }
     }
   }
