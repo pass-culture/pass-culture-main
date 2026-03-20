@@ -1,6 +1,7 @@
 import typing
 from io import BytesIO
 
+import pydantic
 import pydantic.v1 as pydantic_v1
 from PIL import Image
 from pydantic.v1 import root_validator
@@ -11,8 +12,28 @@ from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
 from pcapi.core.offers.validation import ACCEPTED_THUMBNAIL_FORMATS
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.utils.image_conversion import CropParam
 from pcapi.utils.image_conversion import CropParams
+from pcapi.utils.image_conversion import CropParamsV2
+
+
+class BannerMetaModelV2(HttpBodyModel):
+    original_image_url: str | None = None  # TODO: move to HttpUrl ?
+    crop_params: CropParamsV2 = CropParamsV2()
+
+    model_config = pydantic.ConfigDict(
+        alias_generator=None,
+    )
+
+    # @pydantic.field_validator("crop_params", mode="")
+    # def validate_crop_params(cls, raw_crop_params: CropParamsV2 | None) -> CropParamsV2:
+    #     """
+    #     Old venues might have a crop_params key with a null value
+    #     """
+    #     if not raw_crop_params:
+    #         return CropParamsV2()
+    #     return raw_crop_params
 
 
 class BannerMetaModel(BaseModel):

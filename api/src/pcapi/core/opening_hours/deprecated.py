@@ -24,7 +24,7 @@ def get_venue_openings_hours_updates(opening_hours: schemas.WeekdayOpeningHoursT
 def get_venue_opening_hours_by_weekday(
     venue: offerers_models.Venue, weekday: offerers_models.Weekday
 ) -> offerers_models.OpeningHours:
-    for opening_hours in venue.openingHours:
+    for opening_hours in venue.openingHours or []:
         if opening_hours.weekday == weekday:
             return opening_hours
     return offerers_models.OpeningHours(venue=venue, weekday=weekday)

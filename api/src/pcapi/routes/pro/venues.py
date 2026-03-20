@@ -82,7 +82,7 @@ def get_venue(venue_id: int) -> venue_serialize.GetVenueResponseModel:
         flask.abort(404)
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
-    return venue_serialize.GetVenueResponseModel.from_orm(venue)
+    return venue_serialize.GetVenueResponseModel.build(venue)
 
 
 @private_api.route("/venues", methods=["GET"])

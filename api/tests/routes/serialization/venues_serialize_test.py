@@ -3,7 +3,7 @@ import pytest
 from pcapi.core.finance.models import BankAccountApplicationStatus
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.routes.serialization.venue_finance_serialize import SimplifiedBankAccountStatus
-from pcapi.routes.serialization.venue_finance_serialize import parse_venue_bank_account_status
+from pcapi.routes.serialization.venue_finance_serialize import parse_bank_account_status
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -34,14 +34,14 @@ class ParseVenueBankAccountStatusTest:
     )
     def test_venue_with_bank_account_status_returns_expected_value(self, build_status, expected_status):
         venue = offerers_factories.VenueFactory(bankAccountLinks=[build_bank_account_link(status=build_status)])
-        assert parse_venue_bank_account_status(venue) == expected_status
+        assert parse_bank_account_status(venue.current_bank_account) == expected_status
 
     def test_venue_without_bank_account_returns_none(self):
         venue = offerers_factories.VenueFactory(bankAccountLinks=[])
-        assert not parse_venue_bank_account_status(venue)
+        assert not parse_bank_account_status(venue.current_bank_account)
 
     def test_venue_with_inactive_bank_account_returns_none(self):
         venue = offerers_factories.VenueFactory(
             bankAccountLinks=[build_bank_account_link(status="DRAFT", isActive=False)]
         )
-        assert not parse_venue_bank_account_status(venue)
+        assert not parse_bank_account_status(venue.current_bank_account)
