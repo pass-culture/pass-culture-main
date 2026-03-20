@@ -1,4 +1,5 @@
 from pcapi.core.finance import conf as finance_conf
+from pcapi.core.finance.utils import XPF_TO_EUR_RATE
 from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.users import constants
 from pcapi.models import db
@@ -40,9 +41,10 @@ def get_settings() -> serializers.SettingsResponse:
         account_unsuspension_limit=constants.ACCOUNT_UNSUSPENSION_DELAY,
         app_enable_autocomplete=features[FeatureToggle.APP_ENABLE_AUTOCOMPLETE],
         bonification=serializers.Bonification(
-            qfThreshold=bonus_constants.QUOTIENT_FAMILIAL_THRESHOLD,
-            bonusAmount=convert_to_cent(finance_conf.BONUS_CREDIT_AMOUNT) or 0,
+            qf_threshold=bonus_constants.QUOTIENT_FAMILIAL_THRESHOLD,
+            bonus_amount=convert_to_cent(finance_conf.BONUS_CREDIT_AMOUNT) or 0,
         ),
+        deposit_amounts_by_age=serializers.get_deposit_amounts_by_age(),
         display_dms_redirection=features[FeatureToggle.DISPLAY_DMS_REDIRECTION],
         enable_front_image_resizing=features[FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING],
         enable_native_cultural_survey=features[FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY],
@@ -51,6 +53,6 @@ def get_settings() -> serializers.SettingsResponse:
         ineligible_postal_codes=postal_code.INELIGIBLE_POSTAL_CODES,
         is_recaptcha_enabled=features[FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA],
         object_storage_url=OBJECT_STORAGE_URL,
+        rates=serializers.Rates(pacific_franc_to_euro=XPF_TO_EUR_RATE),
         wip_enable_credit_v3=True,
-        deposit_amounts_by_age=serializers.get_deposit_amounts_by_age(),
     )
