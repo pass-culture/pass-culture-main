@@ -45,7 +45,7 @@
               {% endif %}
             </div>
           </div>
-          <div class="mb-0">{{ build_offerer_badges(offerer, has_fraudulent_booking) }}</div>
+          <div class="mb-0">{{ build_offerer_badges(offerer, has_fraudulent_booking, has_reimbursement_suspended) }}</div>
           <div class="d-flex row-reverse justify-content-end flex-grow-1 gap-1 mt-0">
             {% if has_permission("VALIDATE_OFFERER") %}
               {% if not offerer.isValidated %}
