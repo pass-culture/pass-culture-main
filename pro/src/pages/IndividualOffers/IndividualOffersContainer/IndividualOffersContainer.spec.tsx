@@ -671,4 +671,14 @@ describe('IndividualOffersScreen', () => {
     expect(screen.getByText('Publication')).toBeInTheDocument()
     expect(screen.getByText('Réservations')).toBeInTheDocument()
   })
+
+  it('should display the recommendation banner', () => {
+    renderOffers({ ...props }, { features: ['WIP_OFFER_RECOMMENDATION_PRO'] })
+
+    expect(
+      screen.getByText(
+        'Ajoutez une recommandation pour faire découvrir votre offre'
+      )
+    ).toBeInTheDocument()
+  })
 })
