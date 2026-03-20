@@ -167,6 +167,7 @@ export function StocksCalendar({
   const handleSubmitRecurrenceFormDrawer = async (
     values: RecurrenceFormValues
   ) => {
+    setIsDialogOpen(false)
     const departmentCode = getDepartmentCode(offer)
 
     logEvent(Events.CLICKED_VALIDATE_ADD_RECURRENCE_DATES, {
@@ -178,8 +179,6 @@ export function StocksCalendar({
     await onSubmit(values, departmentCode, offer.id, snackBar, stockQueryKeys)
 
     await mutate([GET_OFFER_QUERY_KEY, offer.id])
-
-    setIsDialogOpen(false)
   }
 
   const stocks = data?.stocks || []
