@@ -72,7 +72,9 @@ const renderHeaderDropdown = (options?: RenderWithProvidersOptions) => {
       storeOverrides: {
         ...options?.storeOverrides,
         offerer: currentOffererFactory({
+          offererNamesValidated: baseOfferersNames,
           offererNames: baseOfferersNames,
+          offerersNamesWithPendingValidation: [],
         }),
         user: {
           ...options?.storeOverrides?.user,
@@ -101,7 +103,7 @@ describe('App', () => {
     })
   })
   describe('with WIP_SWITCH_VENUE feature flag', () => {
-    it('should display not display the switch button', async () => {
+    it('should not display the switch button', async () => {
       const features = ['WIP_SWITCH_VENUE']
       const renderHeaderDropdownWithSwitchVenue = (
         options?: RenderWithProvidersOptions
@@ -112,7 +114,9 @@ describe('App', () => {
             storeOverrides: {
               ...options?.storeOverrides,
               offerer: currentOffererFactory({
+                offererNamesValidated: baseOfferersNames,
                 offererNames: baseOfferersNames,
+                offerersNamesWithPendingValidation: [],
               }),
               user: {
                 ...options?.storeOverrides?.user,
@@ -199,12 +203,19 @@ describe('Switch Offerer', () => {
     const options = {
       storeOverrides: {
         offerer: {
+          offererNamesValidated: [
+            getOffererNameFactory({
+              id: 1,
+              name: 'Mon offerer',
+            }),
+          ],
           offererNames: [
             getOffererNameFactory({
               id: 1,
               name: 'Mon offerer',
             }),
           ],
+          offerersNamesWithPendingValidation: [],
           currentOffererName: getOffererNameFactory({
             id: 1,
             name: 'Mon offerer',

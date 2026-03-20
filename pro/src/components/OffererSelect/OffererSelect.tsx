@@ -11,7 +11,6 @@ export const OffererSelect = (): JSX.Element | null => {
   const dispatch = useAppDispatch()
   const { isLoading } = useOffererNamesQuery()
   const offererNames = useAppSelector(ensureOffererNames)
-
   const selectedAdminOfferer = useAppSelector(
     (store) => store.user.selectedAdminOfferer
   )

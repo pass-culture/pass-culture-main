@@ -29,7 +29,7 @@ describe('getInitialAdminOffererId', () => {
   })
 
   describe('Priority 1: localStorage', () => {
-    it('should return saved offerer id when present in offererNames', () => {
+    it('should return saved offerer id when present in offererNamesValidated', () => {
       vi.spyOn(localStorageManager, 'getItem').mockReturnValue('100')
 
       const result = getInitialAdminOffererId({
@@ -40,7 +40,7 @@ describe('getInitialAdminOffererId', () => {
       expect(result).toBe(100)
     })
 
-    it('should call handleUnexpectedError and return null when saved id is not in offererNames', () => {
+    it('should call handleUnexpectedError and return null when saved id is not in offererNamesValidated', () => {
       vi.spyOn(localStorageManager, 'getItem').mockReturnValue('999')
 
       const result = getInitialAdminOffererId({
@@ -68,7 +68,7 @@ describe('getInitialAdminOffererId', () => {
       expect(result).toBe(100)
     })
 
-    it('should call handleUnexpectedError and return null when selectedVenue parent offerer is not in offererNames', () => {
+    it('should call handleUnexpectedError and return null when selectedVenue parent offerer is not in offererNamesValidated', () => {
       vi.spyOn(localStorageManager, 'getItem').mockReturnValue(null)
       const selectedVenue = makeGetVenueResponseModel({
         id: 101,

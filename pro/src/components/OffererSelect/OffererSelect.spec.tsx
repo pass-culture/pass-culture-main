@@ -1,8 +1,10 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import type { SWRResponse } from 'swr'
 import { expect } from 'vitest'
 
 import { api } from '@/apiClient/api'
+import type { GetOffererNameResponseModel } from '@/apiClient/v1'
 import * as useOffererNamesQueryModule from '@/commons/hooks/swr/useOffererNamesQuery'
 import {
   defaultGetOffererResponseModel,
@@ -29,16 +31,17 @@ const renderOffererSelect = (options: RenderWithProvidersOptions = {}) => {
 describe('OffererSelect', () => {
   beforeEach(() => {
     vi.resetAllMocks()
+    const mockResponse: SWRResponse<GetOffererNameResponseModel[]> = {
+      data: [],
+      error: undefined,
+      mutate: vi.fn(),
+      isValidating: false,
+      isLoading: false,
+    }
     vi.spyOn(
       useOffererNamesQueryModule,
       'useOffererNamesQuery'
-    ).mockReturnValue({
-      data: undefined,
-      error: undefined,
-      isLoading: false,
-      isValidating: false,
-      mutate: vi.fn(),
-    })
+    ).mockReturnValue(mockResponse)
   })
 
   it('should render select when there are multiple offerers', () => {

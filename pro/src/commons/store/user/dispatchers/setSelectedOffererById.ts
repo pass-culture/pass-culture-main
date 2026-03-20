@@ -45,24 +45,33 @@ export const setSelectedOffererById = createAsyncThunk<
     try {
       const state = getState()
 
-      let offererNames: GetOffererNameResponseModel[] =
-        state.offerer.offererNames || []
+      let offererNamesValidated: GetOffererNameResponseModel[] =
+        state.offerer.offererNamesValidated || []
+      let offerersNamesWithPendingValidation: GetOffererNameResponseModel[] =
+        state.offerer.offerersNamesWithPendingValidation || []
       if (shouldRefetch) {
         const response = await api.listOfferersNames()
-        offererNames = response.offerersNames
+        offererNamesValidated = response.offerersNames
         // here we add the offerers with pending validation to the same list, so that the offerer can be selected after a signup journey
-        offererNames = offererNames.concat(
+        offerersNamesWithPendingValidation =
           response.offerersNamesWithPendingValidation
-        )
       }
-      assertOrFrontendError(offererNames, '`offererNames` is null.')
+      const offererNames = offererNamesValidated.concat(
+        offerersNamesWithPendingValidation
+      )
 
       const venues = shouldRefetch
         ? (await api.getVenuesLite()).venues
         : ensureVenues(state)
 
       if (shouldRefetch) {
-        dispatch(updateOffererNames(offererNames))
+        dispatch(
+          updateOffererNames({
+            offerersNames: offererNamesValidated,
+            offerersNamesWithPendingValidation:
+              offerersNamesWithPendingValidation,
+          })
+        )
         dispatch(setVenues(venues))
       }
 

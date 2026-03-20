@@ -127,6 +127,8 @@ export const Validation = (): JSX.Element | undefined => {
         navigate('/accueil')
       } else if (newAccess === 'no-onboarding') {
         navigate('/onboarding')
+      } else if (newAccess === 'unattached') {
+        navigate('/rattachement-en-cours')
       }
     } catch (e: unknown) {
       if (e === RECAPTCHA_ERROR) {

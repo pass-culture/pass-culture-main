@@ -24,6 +24,14 @@ const reimbursementsRoutes = [
   },
 ]
 
+const offererNamesValidated = [
+  {
+    ...defaultGetOffererResponseModel,
+    id: 1,
+    name: `Offerer 1`,
+  },
+]
+
 function renderReimbursements(options?: RenderWithProvidersOptions) {
   renderWithProviders(<Reimbursements />, {
     routes: reimbursementsRoutes,
@@ -35,6 +43,8 @@ function renderReimbursements(options?: RenderWithProvidersOptions) {
         currentOfferer: {
           ...defaultGetOffererResponseModel,
         },
+        offererNamesValidated: offererNamesValidated,
+        offererNames: offererNamesValidated,
       },
     },
     ...options,
@@ -59,8 +69,11 @@ describe('Reimbursement page', () => {
       storeOverrides: {
         offerer: {
           currentOfferer: {
+            id: 1,
             venuesWithNonFreeOffersWithoutBankAccounts: [2],
           },
+          offererNamesValidated: offererNamesValidated,
+          offererNames: offererNamesValidated,
         },
       },
     })
@@ -76,7 +89,7 @@ describe('Reimbursement page', () => {
     })
   })
 
-  it('should render component even if offererNames is empty', () => {
+  it('should render component even if offererNamesValidated is empty', () => {
     vi.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
       offerersNames: [],
       offerersNamesWithPendingValidation: [],
@@ -92,5 +105,26 @@ describe('Reimbursement page', () => {
     renderReimbursements()
 
     expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
+  })
+
+  it('should render non attached banner if offerer is not attached', () => {
+    renderReimbursements({
+      storeOverrides: {
+        offerer: {
+          currentOfferer: {
+            id: 1,
+            venuesWithNonFreeOffersWithoutBankAccounts: [2],
+          },
+          offererNamesValidated: [],
+          offererNames: offererNamesValidated,
+        },
+      },
+    })
+
+    expect(
+      screen.getByText(
+        'Votre rattachement est en cours de traitement par les équipes du pass Culture'
+      )
+    ).toBeInTheDocument()
   })
 })

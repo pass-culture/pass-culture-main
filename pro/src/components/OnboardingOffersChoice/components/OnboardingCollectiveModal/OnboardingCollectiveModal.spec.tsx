@@ -23,7 +23,7 @@ const renderOnboardingCollectiveModal = (
       user: { currentUser: sharedCurrentUserFactory() },
       offerer: {
         currentOfferer: { id: 1, isOnboarded: false },
-        offererNames: [],
+        offererNamesValidated: [],
       },
     },
     user: sharedCurrentUserFactory(),

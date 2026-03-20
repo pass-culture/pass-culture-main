@@ -70,7 +70,9 @@ describe('setSelectedOffererById', () => {
       offerer: {
         currentOfferer: currentOffererBase,
         currentOffererName: currentOffererNameBase,
+        offererNamesValidated: offerersNamesResponseBase.offerersNames,
         offererNames: offerersNamesResponseBase.offerersNames,
+        offerersNamesWithPendingValidation: [],
       },
       user: {
         currentUser: null,
@@ -119,7 +121,9 @@ describe('setSelectedOffererById', () => {
       offerer: {
         currentOfferer: null,
         currentOffererName: null,
+        offererNamesValidated: null,
         offererNames: null,
+        offerersNamesWithPendingValidation: null,
       },
       user: {
         access: null,
@@ -147,7 +151,7 @@ describe('setSelectedOffererById', () => {
     expect(api.getOfferer).toHaveBeenCalledTimes(1)
 
     const state = store.getState()
-    expect(state.offerer.offererNames).toEqual(
+    expect(state.offerer.offererNamesValidated).toEqual(
       offerersNamesResponseBase.offerersNames
     )
     expect(state.user.access).toBe('no-onboarding')
@@ -179,7 +183,9 @@ describe('setSelectedOffererById', () => {
       offerer: {
         currentOfferer: currentOffererBase,
         currentOffererName: currentOffererNameBase,
+        offererNamesValidated: offerersNamesResponseBase.offerersNames,
         offererNames: offerersNamesResponseBase.offerersNames,
+        offerersNamesWithPendingValidation: [],
       },
       user: {
         access: null,
@@ -229,7 +235,9 @@ describe('setSelectedOffererById', () => {
       offerer: {
         currentOfferer: currentOffererBase,
         currentOffererName: currentOffererNameBase,
+        offererNamesValidated: offerersNamesResponseBase.offerersNames,
         offererNames: offerersNamesResponseBase.offerersNames,
+        offerersNamesWithPendingValidation: [],
       },
       user: {
         access: null,
@@ -248,6 +256,8 @@ describe('setSelectedOffererById', () => {
 
     expect(apiListOfferersNamesSpy).not.toHaveBeenCalled()
     expect(apiGetVenuesSpy).not.toHaveBeenCalled()
+    // Now that we check if offerer is attached before calling API,
+    // getOfferer will be called since 200 is in the attached list
     expect(api.getOfferer).toHaveBeenCalledTimes(1)
     expect(apiGetVenueSpy).not.toHaveBeenCalled()
 
@@ -277,7 +287,9 @@ describe('setSelectedOffererById', () => {
       offerer: {
         currentOfferer: currentOffererBase,
         currentOffererName: currentOffererNameBase,
+        offererNamesValidated: offerersNamesResponseBase.offerersNames,
         offererNames: offerersNamesResponseBase.offerersNames,
+        offerersNamesWithPendingValidation: [],
       },
       user: {
         access: null,
@@ -325,7 +337,9 @@ describe('setSelectedOffererById', () => {
       offerer: {
         currentOfferer: currentOffererBase,
         currentOffererName: currentOffererNameBase,
+        offererNamesValidated: offerersNamesResponseBase.offerersNames,
         offererNames: offerersNamesResponseBase.offerersNames,
+        offerersNamesWithPendingValidation: [],
       },
       user: {
         access: null,

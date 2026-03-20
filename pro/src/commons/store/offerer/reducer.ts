@@ -3,20 +3,30 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import type { GetOffererNameResponseModel } from '@/apiClient/v1'
 import type { GetOffererResponseModel } from '@/apiClient/v1/models/GetOffererResponseModel'
 
+// TODO (cmoinier, 2026-03-13): Refactor offererNames / offererNamesValidated / offerersNamesWithPendingValidation into a single array with a 'isAttached' boolean
 export type OffererState = {
-  offererNames: GetOffererNameResponseModel[] | null
+  offererNamesValidated: GetOffererNameResponseModel[] | null
   currentOfferer: GetOffererResponseModel | null
   /**
    * Used to display the offerer name in the header when the user is still "unattached" to this offerer
    * because they won't be allowed to access this offerer's details.
    */
   currentOffererName: GetOffererNameResponseModel | null
+  offerersNamesWithPendingValidation: GetOffererNameResponseModel[] | null
+  offererNames: GetOffererNameResponseModel[] | null
 }
 
 export const initialState: OffererState = {
-  offererNames: null,
+  offererNamesValidated: null,
   currentOfferer: null,
   currentOffererName: null,
+  offerersNamesWithPendingValidation: null,
+  offererNames: null,
+}
+
+type UpdateOffererNamesPayload = {
+  offerersNames: GetOffererNameResponseModel[] | null
+  offerersNamesWithPendingValidation: GetOffererNameResponseModel[] | null
 }
 
 // TODO (igabriele, 2026-02-04): 1. Move the `offererNames` prop into `userSlice`.
@@ -34,9 +44,15 @@ const offererSlice = createSlice({
 
     updateOffererNames: (
       state: OffererState,
-      action: PayloadAction<GetOffererNameResponseModel[] | null>
+      action: PayloadAction<UpdateOffererNamesPayload>
     ) => {
-      state.offererNames = action.payload
+      state.offererNames =
+        action.payload.offerersNames?.concat(
+          action.payload.offerersNamesWithPendingValidation ?? []
+        ) ?? null
+      state.offererNamesValidated = action.payload.offerersNames
+      state.offerersNamesWithPendingValidation =
+        action.payload.offerersNamesWithPendingValidation
     },
 
     updateCurrentOfferer: (

@@ -16,7 +16,6 @@ export const AppRouterGuard = memo(({ children }: AppRouterGuardProps) => {
   const [searchParams] = useSearchParams()
   const currentRoute = findCurrentRoute(location)
   const userAccess = useAppSelector((store) => store.user.access)
-
   if (currentRoute) {
     if (!userAccess && !currentRoute?.meta?.public) {
       // The user is not logged in and tries to access a private page.
