@@ -5,3 +5,4 @@ def install_routes(app: Flask) -> None:
     from . import account
     from . import bookings
     from . import offerers
+    from . import reaction
