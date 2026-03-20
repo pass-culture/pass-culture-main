@@ -1,7 +1,12 @@
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
+import { getVolunteeringUrlError } from '../getVolunteeringUrlError'
 import type { VenueEditionFormValues } from '../types'
 import { getValidationSchema } from '../validationSchema'
+
+vi.mock('../getVolunteeringUrlError', () => ({
+  getVolunteeringUrlError: vi.fn(),
+}))
 
 describe('VenueEditionForm validationSchema', () => {
   const defaultValues: VenueEditionFormValues = {
@@ -17,6 +22,7 @@ describe('VenueEditionForm validationSchema', () => {
     openingHours: null,
     description: 'description',
     activity: 'ART_GALLERY',
+    volunteeringUrl: null,
   }
 
   const cases: {
@@ -119,34 +125,6 @@ describe('VenueEditionForm validationSchema', () => {
       },
       expectedErrors: [],
     },
-    {
-      description: 'invalid host for volunteeringUrl',
-      formValues: {
-        ...defaultValues,
-        volunteeringUrl: 'https://coucou.fr/organisations/yop',
-      },
-      expectedErrors: [
-        'Veuillez renseigner une URL provenant de la plateforme jeveuxaider.gouv',
-      ],
-    },
-    {
-      description: 'invalid path for volunteeringUrl',
-      formValues: {
-        ...defaultValues,
-        volunteeringUrl: 'https://jeveuxaider.gouv.fr/kikou',
-      },
-      expectedErrors: [
-        'Veuillez renseigner l’URL de votre page organisation. Ex : https://www.jeveuxaider.gouv.fr/organisations/exemple',
-      ],
-    },
-    {
-      description: 'valid volunteeringUrl',
-      formValues: {
-        ...defaultValues,
-        volunteeringUrl: 'https://jeveuxaider.gouv.fr/organisations/yop',
-      },
-      expectedErrors: [],
-    },
   ]
 
   cases.forEach(({ description, formValues, expectedErrors }) => {
@@ -193,5 +171,15 @@ describe('VenueEditionForm validationSchema', () => {
     expect(errors).toEqual([
       'Veuillez sélectionner un ou plusieurs domaines d’activité',
     ])
+  })
+
+  it('should call getVolunteeringUrlError to validate volunteeringUrl', async () => {
+    vi.mocked(getVolunteeringUrlError).mockReturnValue('any-error')
+    const errors = await getYupValidationSchemaErrors(getValidationSchema(), {
+      ...defaultValues,
+      volunteeringUrl: 'any-url',
+    })
+    expect(getVolunteeringUrlError).toHaveBeenCalledWith('any-url')
+    expect(errors).toEqual(['any-error'])
   })
 })

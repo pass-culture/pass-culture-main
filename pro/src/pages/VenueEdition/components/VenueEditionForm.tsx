@@ -13,9 +13,11 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getActivities } from '@/commons/mappings/mappings'
 import { setSelectedVenue } from '@/commons/store/user/reducer'
+import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { buildSelectOptions } from '@/commons/utils/buildSelectOptions'
 import { getFormattedAddress } from '@/commons/utils/getFormattedAddress'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
@@ -39,6 +41,7 @@ import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInpu
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
+import { getVolunteeringUrlError } from '../commons/getVolunteeringUrlError'
 import { serializeEditVenueBodyModel } from '../commons/serializers'
 import { setInitialFormValues } from '../commons/setInitialFormValues'
 import type { VenueEditionFormValues } from '../commons/types'
@@ -65,6 +68,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
     useEducationalDomains()
 
   const dispatch = useAppDispatch()
+  const currentUser = useAppSelector(selectCurrentUser)
 
   const initialValues: VenueEditionFormValues = setInitialFormValues(venue)
 
@@ -229,6 +233,21 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                     label="URL de votre page jeveuxaider.gouv"
                     description="Format : https://www.jeveuxaider.gouv.fr/organisations/exemple"
                     error={methods.formState.errors.volunteeringUrl?.message}
+                    onBlur={(event) => {
+                      const value = event.target.value
+                      const error = getVolunteeringUrlError(value)
+                      if (value.trim() && error) {
+                        methods.setError('volunteeringUrl', {
+                          type: 'manual',
+                          message: error,
+                        })
+                        logEvent(Events.VENUE_FORM_VOLUNTEERING_URL_ERROR, {
+                          venueId: venue.id,
+                          userId: currentUser?.id,
+                          volunteeringUrl: value,
+                        })
+                      }
+                    }}
                   />
                 </FormLayout.Row>
               </FormLayout.SubSection>

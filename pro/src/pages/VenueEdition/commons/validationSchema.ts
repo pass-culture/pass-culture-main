@@ -8,6 +8,7 @@ import { getActivities } from '@/commons/mappings/mappings'
 import { emailSchema } from '@/commons/utils/isValidEmail'
 import { objectKeys } from '@/commons/utils/object'
 
+import { getVolunteeringUrlError } from './getVolunteeringUrlError'
 import type { VenueEditionFormValues } from './types'
 
 const isOneTrue = (values: Record<string, boolean>): boolean =>
@@ -16,35 +17,8 @@ const isOneTrue = (values: Record<string, boolean>): boolean =>
 const volunteeringUrlSchema: yup.TestConfig<string | null | undefined> = {
   name: 'is-volunteering-url-valid',
   test(value) {
-    if (!value?.trim()) {
-      return true
-    }
-    try {
-      const parsed = new URL(value)
-      const host = parsed.hostname.toLowerCase()
-      if (
-        host !== 'www.jeveuxaider.gouv.fr' &&
-        host !== 'jeveuxaider.gouv.fr'
-      ) {
-        return this.createError({
-          message:
-            'Veuillez renseigner une URL provenant de la plateforme jeveuxaider.gouv',
-        })
-      }
-      const path = parsed.pathname.toLowerCase()
-      if (
-        !path.startsWith('/organisations/') ||
-        path.replace(/\/+$/, '') === '/organisations'
-      ) {
-        return this.createError({
-          message:
-            'Veuillez renseigner l’URL de votre page organisation. Ex : https://www.jeveuxaider.gouv.fr/organisations/exemple',
-        })
-      }
-      return true
-    } catch {
-      return false
-    }
+    const error = getVolunteeringUrlError(value || '')
+    return error ? this.createError({ message: error }) : true
   },
 }
 
@@ -192,10 +166,6 @@ export const getValidationSchema = (): ObjectSchema<VenueEditionFormValues> => {
             ),
         otherwise: (schema) => schema,
       }),
-    volunteeringUrl: yup
-      .string()
-      .url('Veuillez renseigner une URL valide. Ex : https://exemple.com')
-      .test(volunteeringUrlSchema)
-      .nullable(),
+    volunteeringUrl: yup.string().test(volunteeringUrlSchema).nullable(),
   })
 }
