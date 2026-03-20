@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.8/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.4.5/schema.json",
   // https://biomejs.dev/guides/big-projects/#monorepo
   "root": false,
   "extends": "//",
@@ -50,35 +50,15 @@
   "files": {
     "includes": [
       "**",
-      "!build/*",
-      "!built/*",
-      "!coverage/*",
+      "!build",
+      "!built",
+      "!coverage",
       "!scripts/customRequest.ts",
-
-      // Legacy generated API files
-      "!src/apiClient/adage/core/*",
-      "!src/apiClient/adage/models/*",
-      "!src/apiClient/adage/services/*",
-      "!src/apiClient/adage/*.ts",
-      "!src/apiClient/v1/core/*",
-      "!src/apiClient/v1/models/*",
-      "!src/apiClient/v1/services/*",
-      "!src/apiClient/v1/*.ts",
-
-      // New generated API files
-      "!src/apiClient/adage/new/client/*",
-      "!src/apiClient/adage/new/core/*",
-      "!src/apiClient/adage/new/*.gen.ts",
-      "!src/apiClient/v1/new/client/*",
-      "!src/apiClient/v1/new/core/*",
-      "!src/apiClient/v1/new/*.gen.ts",
-      // We format these index files to avoid massive inline git-related conflicts when after each API update:
-      "src/apiClient/adage/new/index.ts",
-      "src/apiClient/v1/new/index.ts",
-
+      "!src/apiClient/adage",
       "!src/index.html",
+      "!src/apiClient/v1",
       "!**/*.stories.tsx",
-      "!docs-build/*",
+      "!docs-build",
       "!bundleStats.html"
     ],
     "ignoreUnknown": true
