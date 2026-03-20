@@ -161,7 +161,6 @@ class SettlementPayload(BaseModelV2):
     settlement_batch_name: str
     settlement_batch_label: str
     settlement_date: datetime.date
-    settlement_creation_date: datetime.datetime
     amount: int
 
 

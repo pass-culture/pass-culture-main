@@ -1626,7 +1626,6 @@ class CegidFinanceBackendTest:
                 settlement_batch_name="VIR123",
                 settlement_batch_label="VIR123 Label",
                 settlement_date=now.date(),
-                settlement_creation_date=now,
                 amount=-98280,
             ),
             SettlementPayload(
@@ -1638,7 +1637,6 @@ class CegidFinanceBackendTest:
                 settlement_batch_name=constants.MISSING_BATCH_NAME_VALUE,
                 settlement_batch_label=constants.MISSING_BATCH_LABEL_VALUE,
                 settlement_date=now.date(),
-                settlement_creation_date=now,
                 amount=98280,
             ),
         ]
