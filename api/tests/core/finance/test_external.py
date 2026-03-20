@@ -143,6 +143,7 @@ class ExternalFinanceTest:
             amount=30000,
             settlementDate=datetime.date.today() - datetime.timedelta(days=5),
             invoices=[additional_invoice],
+            status=finance_models.SettlementStatus.EXECUTED,
         )
 
         now = date_utils.get_naive_utc_now()
@@ -157,7 +158,6 @@ class ExternalFinanceTest:
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
                 settlement_date=date_utils.get_naive_utc_now().date(),
-                settlement_creation_date=date_utils.get_naive_utc_now(),
                 amount=98280,
             ),
             SettlementPayload(
@@ -169,7 +169,6 @@ class ExternalFinanceTest:
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
                 settlement_date=date_utils.get_naive_utc_now().date(),
-                settlement_creation_date=date_utils.get_naive_utc_now(),
                 amount=-98280,
             ),
             SettlementPayload(
@@ -181,7 +180,6 @@ class ExternalFinanceTest:
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
                 settlement_date=date_utils.get_naive_utc_now().date(),
-                settlement_creation_date=date_utils.get_naive_utc_now(),
                 amount=98280,
             ),
             SettlementPayload(
@@ -193,7 +191,6 @@ class ExternalFinanceTest:
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
                 settlement_date=date_utils.get_naive_utc_now().date(),
-                settlement_creation_date=date_utils.get_naive_utc_now(),
                 amount=45000,
             ),
             SettlementPayload(
@@ -205,7 +202,6 @@ class ExternalFinanceTest:
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
                 settlement_date=date_utils.get_naive_utc_now().date(),
-                settlement_creation_date=date_utils.get_naive_utc_now(),
                 amount=45000,
             ),
             SettlementPayload(
@@ -217,7 +213,6 @@ class ExternalFinanceTest:
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
                 settlement_date=date_utils.get_naive_utc_now().date(),
-                settlement_creation_date=date_utils.get_naive_utc_now(),
                 amount=-30000,
             ),
         ]
@@ -243,7 +238,6 @@ class ExternalFinanceTest:
         )
         assert first_settlement.invoices == [invoice]
         assert first_settlement.settlementDate == datetime.date.today()
-        assert first_settlement.creationDate.timestamp() == pytest.approx(now.timestamp(), rel=1)
         assert first_settlement.dateImported.timestamp() == pytest.approx(now.timestamp(), rel=1)
         assert first_settlement.dateRejected.timestamp() == pytest.approx(now.timestamp(), rel=1)
         assert first_settlement.amount == 98280
@@ -261,13 +255,12 @@ class ExternalFinanceTest:
         )
         assert second_settlement.invoices == [invoice]
         assert second_settlement.settlementDate == datetime.date.today()
-        assert second_settlement.creationDate.timestamp() == pytest.approx(now.timestamp(), rel=1)
         assert second_settlement.dateImported.timestamp() == pytest.approx(now.timestamp(), rel=1)
         assert second_settlement.dateRejected == None
         assert second_settlement.amount == 98280
         assert second_settlement.status == finance_models.SettlementStatus.ISSUED
         assert second_settlement.batch == settlement_batch
-        assert invoice.status == finance_models.InvoiceStatus.PAID
+        assert invoice.status == finance_models.InvoiceStatus.PENDING_PAYMENT
         assert second_bank_account.venueLinks[0].timespan.upper is None
 
         other_settlement = (
@@ -280,14 +273,13 @@ class ExternalFinanceTest:
         )
         assert set(other_settlement.invoices) == {other_invoice, another_invoice}
         assert other_settlement.settlementDate == datetime.date.today()
-        assert other_settlement.creationDate.timestamp() == pytest.approx(now.timestamp(), rel=1)
         assert other_settlement.dateImported.timestamp() == pytest.approx(now.timestamp(), rel=1)
         assert other_settlement.dateRejected == None
         assert other_settlement.amount == 45000
         assert other_settlement.status == finance_models.SettlementStatus.ISSUED
         assert other_settlement.batch == settlement_batch
-        assert other_invoice.status == finance_models.InvoiceStatus.PAID
-        assert another_invoice.status == finance_models.InvoiceStatus.PAID
+        assert other_invoice.status == finance_models.InvoiceStatus.PENDING_PAYMENT
+        assert another_invoice.status == finance_models.InvoiceStatus.PENDING_PAYMENT
         assert other_bank_account.venueLinks[0].timespan.upper is None
 
         assert existing_settlement.dateRejected.timestamp() == pytest.approx(now.timestamp(), rel=1)
@@ -318,7 +310,6 @@ class ExternalFinanceTest:
                     settlement_batch_name="VIR123",
                     settlement_batch_label="VIR123 Label",
                     settlement_date=yesterday_date,
-                    settlement_creation_date=yesterday_datetime,
                     amount=10000,
                 )
             ],
@@ -337,7 +328,7 @@ class ExternalFinanceTest:
         assert settlement.settlementDate == yesterday_date
         assert settlement.batch == settlement_batch
 
-        assert invoice.status == finance_models.InvoiceStatus.PAID
+        assert invoice.status == finance_models.InvoiceStatus.PENDING_PAYMENT
         assert bank_account.venueLinks[0].timespan.upper is None
 
     def test_get_settlements_ignore_when_no_bank_account_found(self, caplog):
@@ -356,7 +347,6 @@ class ExternalFinanceTest:
                 settlement_batch_name=settlement_batch.name,
                 settlement_batch_label=settlement_batch.label,
                 settlement_date=now.date(),
-                settlement_creation_date=now,
                 amount=30000,
             )
         ]
@@ -389,7 +379,6 @@ class ExternalFinanceTest:
                 settlement_batch_name=settlement_batch.name,
                 settlement_batch_label=settlement_batch.label,
                 settlement_date=now.date(),
-                settlement_creation_date=now,
                 amount=30000,
             )
         ]
@@ -428,7 +417,6 @@ class ExternalFinanceTest:
                 settlement_batch_name=finance_backend_constants.MISSING_BATCH_NAME_VALUE,
                 settlement_batch_label=finance_backend_constants.MISSING_BATCH_LABEL_VALUE,
                 settlement_date=now.date(),
-                settlement_creation_date=now,
                 amount=30000,
             )
         ]
@@ -462,7 +450,6 @@ class ExternalFinanceTest:
                 settlement_batch_name=settlement_batch.name,
                 settlement_batch_label=settlement_batch.label,
                 settlement_date=now.date(),
-                settlement_creation_date=now,
                 amount=-30000,
             )
         ]

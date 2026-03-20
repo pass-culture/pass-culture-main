@@ -374,9 +374,6 @@ class CegidFinanceBackend(BaseFinanceBackend):
                             "value", constants.MISSING_BATCH_LABEL_VALUE
                         ),
                         settlement_date=datetime.date.fromisoformat(settlement_data["Date"]["value"].split("T")[0]),
-                        settlement_creation_date=date_utils.to_naive_utc_datetime(
-                            datetime.datetime.fromisoformat(settlement_data["CreatedDateTime"]["value"])
-                        ),
                         amount=int(float(settlement_data["Amount"]["value"]) * 100),
                     )
                     settlements.append(payload)

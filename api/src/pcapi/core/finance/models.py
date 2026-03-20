@@ -1008,9 +1008,10 @@ class Invoice(PcObject, Model):
 
 
 class SettlementStatus(enum.Enum):
-    """A settlement is considered issued if it has never rejected"""
+    """A settlement is issued when imported, then is executed, and eventually rejected"""
 
     ISSUED = "issued"
+    EXECUTED = "executed"
     REJECTED = "rejected"
 
 
@@ -1021,7 +1022,6 @@ class Settlement(PcObject, Model):
     __tablename__ = "settlement"
 
     settlementDate: sa_orm.Mapped[datetime.date] = sa_orm.mapped_column(sa.Date, nullable=False)
-    creationDate: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
     dateImported: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now()
     )

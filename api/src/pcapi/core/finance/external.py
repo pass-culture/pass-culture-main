@@ -195,6 +195,7 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
 
     loaded_settlement_batches: dict[str, finance_models.SettlementBatch] = {}
     loaded_settlements: dict[tuple[int, str], finance_models.Settlement] = {}
+    rejected_settlements: list[finance_models.Settlement] = []
 
     for bank_account_id in settlements_by_bank_account_id:
         if bank_account_id not in bank_account_ids:
@@ -263,7 +264,6 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
             else:
                 settlement = finance_models.Settlement(
                     settlementDate=payload.settlement_date,
-                    creationDate=payload.settlement_creation_date,
                     externalSettlementId=payload.external_settlement_id,
                     bankAccountId=payload.bank_account_id,
                     amount=payload.amount,
@@ -316,14 +316,28 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
                 )
                 continue
             elif settlement.status != finance_models.SettlementStatus.REJECTED:
+                if settlement.status == finance_models.SettlementStatus.ISSUED:
+                    logger.warning(
+                        "Settlement rejected before it was executed by the bank",
+                        extra={
+                            "invoice_external_reference": payload.invoice_external_reference,
+                            "bank_account_id": payload.bank_account_id,
+                            "settlement_id": payload.external_settlement_id,
+                        },
+                    )
                 settlement.status = finance_models.SettlementStatus.REJECTED
                 settlement.dateRejected = date_utils.get_naive_utc_now()
                 db.session.flush()
-                loaded_settlements[(payload.bank_account_id, payload.external_settlement_id)] = settlement
+                rejected_settlements.append(settlement)
 
-    # loaded_settlements should contain all settlements involved here
-    if loaded_settlements:
-        update_settlement_dependent_objects(list((loaded_settlements.values())))
+    if rejected_settlements:
+        invoice_ids = set()
+        for settlement in rejected_settlements:
+            invoice_ids |= {invoice.id for invoice in settlement.invoices}
+            comment = f"Compte bancaire rejeté suite au rejet bancaire du virement {settlement.batch.name}"
+            finance_api.deprecate_venue_bank_account_links(settlement.bankAccount, comment)
+            # TODO (PC-40443) send transactional mail explaining closed bank account
+        finance_api.revert_invoices_validation(list(invoice_ids))
 
     db.session.commit()
 
@@ -340,20 +354,3 @@ def get_or_create_settlement_batch(
         settlement_batch = finance_models.SettlementBatch(externalId=external_id, name=batch_name, label=batch_label)
         db.session.add(settlement_batch)
     return settlement_batch
-
-
-def update_settlement_dependent_objects(settlements: list[finance_models.Settlement]) -> None:
-    """First, we want to revert all objects whose settlement already existed before this day's sync.
-    Then, we validate everything linked to new settlements. And finally we reject the newer settlements.
-    """
-    settlements = sorted(settlements, key=lambda m: m.creationDate)
-
-    for settlement in settlements:
-        invoices = [invoice.id for invoice in settlement.invoices]
-        if settlement.status == finance_models.SettlementStatus.REJECTED:
-            finance_api.revert_invoices_validation(invoices)
-            comment = f"Compte bancaire rejeté suite au rejet bancaire du virement {settlement.batch.name}"
-            finance_api.deprecate_venue_bank_account_links(settlement.bankAccount, comment)
-            # TODO (PC-40443) send transactional mail explaining closed bank account
-        else:
-            finance_api.validate_invoices(invoices)
