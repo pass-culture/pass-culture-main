@@ -7,10 +7,14 @@ import typing
 import urllib.parse
 from dataclasses import dataclass
 from datetime import datetime
+from io import BytesIO
 
 import weasyprint
+from pypdf import PdfReader
+from pypdf import PdfWriter
 
 from pcapi.utils import date as date_utils
+from pcapi.utils import requests
 
 
 PDF_AUTHOR = "Pass Culture"
@@ -97,3 +101,20 @@ def generate_pdf_from_html(html_content: str, metadata: PdfMetadata | None = Non
     document.metadata.title = metadata.title
     document.metadata.description = metadata.description
     return document.write_pdf()
+
+
+def merge_pdf_files(pdf_urls: list[str]) -> bytes:
+    merger = PdfWriter()
+    tmp = BytesIO()
+
+    for pdf_url in pdf_urls:
+        try:
+            pdf_reader = PdfReader(BytesIO(requests.get(pdf_url).content))
+        except Exception:
+            merger.close()
+            raise FileNotFoundError(pdf_url)
+        merger.append(pdf_reader)
+
+    merger.write(tmp)
+    merger.close()
+    return tmp.getvalue()

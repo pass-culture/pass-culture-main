@@ -16,9 +16,22 @@
               class="btn btn-outline-primary"
               data-use-confirmation-modal="false">Téléchargement des détails de remboursements</button>
     </form>
+    <form method="post"
+          id="form-ids-table-container-download-invoices"
+          data-pc-form-opt-out="true"
+          action="{{ url_for('backoffice_web.bank_account.download_invoices', bank_account_id=bank_account_id) }}">
+      <input type="hidden"
+             name="object_ids">
+      {{ csrf_token }}
+      <button disabled
+              type="submit"
+              class="btn btn-outline-primary mx-2"
+              data-use-confirmation-modal="false">Téléchargement des justificatifs</button>
+    </form>
   </div>
   <table class="table table-hover my-4"
-         data-table-multi-select-id="table-container-download-reimbursement-details">
+         data-table-multi-select-id="table-container-download-reimbursement-details"
+         data-table-multi-select-form-ids="form-ids-table-container-download-reimbursement-details form-ids-table-container-download-invoices">
     <thead>
       <tr>
         <th scope="col">
