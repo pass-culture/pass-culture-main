@@ -1,39 +1,31 @@
 import datetime
 import logging
-import typing
 
 from pcapi.core.reactions.models import ReactionTypeEnum
-from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.routes.serialization import HttpBodyModel
 
 
 logger = logging.getLogger(__name__)
 
 
-class PostOneReactionRequest(ConfiguredBaseModel):
+class PostOneReactionRequest(HttpBodyModel):
     offer_id: int
     reaction_type: ReactionTypeEnum
 
 
-class PostReactionRequest(ConfiguredBaseModel):
+class PostReactionRequest(HttpBodyModel):
     reactions: list[PostOneReactionRequest]
 
-    def __init__(self, **kwargs: typing.Any) -> None:
-        # Handle the case where the user sends a single PostOneReactionRequest
-        if "offerId" in kwargs:
-            kwargs["reactions"] = [PostOneReactionRequest(**kwargs)]
-            del kwargs["offerId"]
-            del kwargs["reactionType"]
-        super().__init__(**kwargs)
 
-
-class AvailableReactionBooking(ConfiguredBaseModel):
+class AvailableReactionBooking(HttpBodyModel):
     name: str
     offer_id: int
     subcategory_id: str
-    image: str | None
-    dateUsed: datetime.datetime | None
+    image: str | None = None
+
+    dateUsed: datetime.datetime | None = None
 
 
-class GetAvailableReactionsResponse(ConfiguredBaseModel):
+class GetAvailableReactionsResponse(HttpBodyModel):
     number_of_reactable_bookings: int
     bookings: list[AvailableReactionBooking]
