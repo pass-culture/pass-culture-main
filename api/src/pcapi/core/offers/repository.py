@@ -185,6 +185,97 @@ def get_capped_offers_for_filters(
     return offers
 
 
+def _get_offer_home_score(offer: models.Offer) -> tuple[int, datetime.datetime | None]:
+    # Event under review > Thing under review > Event sold out > Thing sold out > Event (by date) > Thing
+
+    if offer.isEvent:
+        if offer.validation == models.OfferValidationStatus.PENDING:
+            return (1, None)
+        if offer.isSoldOut:
+            return (3, None)
+
+        # for a non pending, non sold out event, also sort by first event date
+        stocks = sorted(offer.activeStocks, key=operator.attrgetter("beginningDatetime"))
+        first_date = stocks[0].beginningDatetime if stocks else None
+        return (5, first_date)
+    else:
+        if offer.validation == models.OfferValidationStatus.PENDING:
+            return (2, None)
+        if offer.isSoldOut:
+            return (4, None)
+        return (6, None)
+
+
+def get_offers_for_homepage(*, venue_id: int, offers_limit: int) -> list[models.Offer]:
+    # filter on venueId and publicationDatetime + order by publicationDatetime
+    # this is possible with the multi index ix_offer_venueId_publicationDatetime
+    now = date_utils.get_naive_utc_now()
+    date_filter = now - datetime.timedelta(days=90)
+    status_values = (
+        offer_mixin.OfferStatus.PENDING,
+        offer_mixin.OfferStatus.PUBLISHED,
+        offer_mixin.OfferStatus.ACTIVE,
+        offer_mixin.OfferStatus.SOLD_OUT,
+    )
+    query = (
+        db.session.query(models.Offer)
+        .filter(
+            models.Offer.venueId == venue_id,
+            # we set a lower publication date bound to limit the number of rows
+            # also set an upper bound to now as we do not want the scheduled offers
+            models.Offer.publicationDatetime.between(date_filter, now),
+            # TODO (jcicurel-pass, 2026-03-17): check if this filter works on a large dataset, if not apply the filter after limiting the result
+            models.Offer.status.in_(status_values),
+        )
+        .order_by(models.Offer.publicationDatetime.desc())
+        .limit(100)
+    )
+
+    # add loading options
+    query = (
+        query.options(
+            sa_orm.load_only(
+                models.Offer.id,
+                models.Offer.name,
+                models.Offer.subcategoryId,
+                models.Offer.validation,
+                models.Offer.publicationDatetime,
+                models.Offer.bookingAllowedDatetime,
+            )
+        )
+        .options(
+            sa_orm.selectinload(models.Offer.stocks).load_only(
+                models.Stock.id,
+                models.Stock.beginningDatetime,
+                models.Stock.bookingLimitDatetime,
+                models.Stock.quantity,
+                models.Stock.dnBookedQuantity,
+                models.Stock.isSoftDeleted,
+            )
+        )
+        # mediations and productMediations are needed for thumbUrl
+        .options(
+            sa_orm.joinedload(models.Offer.mediations).load_only(
+                models.Mediation.id,
+                models.Mediation.credit,
+                models.Mediation.dateCreated,
+                models.Mediation.thumbCount,
+                models.Mediation.isActive,
+            )
+        )
+        .options(
+            sa_orm.joinedload(models.Offer.product)
+            .load_only(models.Product.id, models.Product.thumbCount)
+            .joinedload(models.Product.productMediations)
+        )
+    )
+
+    # sort more precisely the offers and apply the limit
+    offers = sorted(query, key=_get_offer_home_score)[:offers_limit]
+
+    return offers
+
+
 def get_offers_by_date_field_range(
     date_field: str, lower_bound: datetime.datetime, upper_bound: datetime.datetime
 ) -> sa_orm.Query:
@@ -581,7 +672,7 @@ def get_offers_by_filters(
     creation_mode: str | None = None,
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
-) -> sa_orm.Query:
+) -> sa_orm.Query[models.Offer]:
     query = (
         db.session.query(models.Offer)
         .join(models.Offer.venue)

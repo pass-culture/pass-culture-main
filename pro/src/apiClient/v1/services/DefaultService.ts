@@ -78,6 +78,7 @@ import type { ListCollectiveOffersHomeResponseModel } from '../models/ListCollec
 import type { ListCollectiveOffersResponseModel } from '../models/ListCollectiveOffersResponseModel';
 import type { ListCollectiveOfferTemplatesResponseModel } from '../models/ListCollectiveOfferTemplatesResponseModel';
 import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
+import type { ListOffersHomeResponseModel } from '../models/ListOffersHomeResponseModel';
 import type { ListOffersResponseModel } from '../models/ListOffersResponseModel';
 import type { ListProviderResponse } from '../models/ListProviderResponse';
 import type { ListVenueProviderResponse } from '../models/ListVenueProviderResponse';
@@ -1859,6 +1860,27 @@ export class DefaultService {
       url: '/offers/delete_headline',
       body: requestBody,
       mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * list_offers_home <GET>
+   * @param venueId
+   * @returns ListOffersHomeResponseModel OK
+   * @throws ApiError
+   */
+  public listOffersHome(
+    venueId: number,
+  ): CancelablePromise<ListOffersHomeResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/offers/home',
+      query: {
+        'venueId': venueId,
+      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Content`,
