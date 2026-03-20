@@ -117,7 +117,7 @@ export function IndividualOfferPracticalInfosForm({
             {...form.register('externalTicketOfficeUrl')}
             label="URL de votre site ou billetterie"
             type="url"
-            disabled={isFormDisabled}
+            disabled={isOfferDisabled(offer)}
             description="Format : https://exemple.com"
             error={form.formState.errors.externalTicketOfficeUrl?.message}
           />
