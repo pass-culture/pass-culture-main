@@ -10905,6 +10905,7 @@
         },
         "/native/v1/reaction": {
             "post": {
+                "deprecated": true,
                 "description": "",
                 "operationId": "post__native_v1_reaction",
                 "parameters": [],
@@ -10947,6 +10948,7 @@
         },
         "/native/v1/reaction/available": {
             "get": {
+                "deprecated": true,
                 "description": "",
                 "operationId": "get__native_v1_reaction_available",
                 "parameters": [],
@@ -12686,6 +12688,87 @@
                     }
                 ],
                 "summary": "update_user_email <POST>",
+                "tags": []
+            }
+        },
+        "/native/v2/reaction": {
+            "post": {
+                "description": "",
+                "operationId": "post__native_v2_reaction",
+                "parameters": [],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PostReactionRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "post_reaction <POST>",
+                "tags": []
+            }
+        },
+        "/native/v2/reaction/available": {
+            "get": {
+                "description": "",
+                "operationId": "get__native_v2_reaction_available",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetAvailableReactionsResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "get_available_reactions <GET>",
                 "tags": []
             }
         },

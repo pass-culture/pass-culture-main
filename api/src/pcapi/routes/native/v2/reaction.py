@@ -16,8 +16,8 @@ from .. import blueprint
 logger = logging.getLogger(__name__)
 
 
-@blueprint.native_route("/reaction", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_success_status=204, deprecated=True)
+@blueprint.native_route("/reaction", version="v2", methods=["POST"])
+@spectree_serialize(api=blueprint.api, on_success_status=204)
 @authenticated_and_active_user_required
 @atomic()
 def post_reaction(body: serialization.PostReactionRequest) -> None:
@@ -29,8 +29,8 @@ def post_reaction(body: serialization.PostReactionRequest) -> None:
         raise ApiErrors({"code": "CAN_NOT_REACT"})
 
 
-@blueprint.native_route("/reaction/available", methods=["GET"])
-@spectree_serialize(api=blueprint.api, response_model=serialization.GetAvailableReactionsResponse, deprecated=True)
+@blueprint.native_route("/reaction/available", version="v2", methods=["GET"])
+@spectree_serialize(api=blueprint.api, response_model=serialization.GetAvailableReactionsResponse)
 @authenticated_and_active_user_required
 def get_available_reactions() -> serialization.GetAvailableReactionsResponse:
     booking_with_available_reactions = reactions_api.get_bookings_with_available_reactions(current_user.id)
