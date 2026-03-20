@@ -14,6 +14,8 @@ import {
 } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useEducationalDomains from '@/commons/hooks/swr/useEducationalDomains'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -23,6 +25,7 @@ import {
 } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
+import { getVolunteeringUrlError } from '../commons/getVolunteeringUrlError'
 import { VenueEditionFormScreen } from './VenueEditionFormScreen'
 
 const fetchMock = createFetchMock(vi)
@@ -132,6 +135,12 @@ vi.mock('@/commons/core/Venue/siretApiValidate', () => ({
   default: () => Promise.resolve(),
 }))
 
+const mockLogEvent = vi.fn()
+
+vi.mock('@/pages/VenueEdition/commons/getVolunteeringUrlError', () => ({
+  getVolunteeringUrlError: vi.fn(),
+}))
+
 const baseVenue: GetVenueResponseModel = {
   ...defaultGetVenue,
   isPermanent: true,
@@ -141,6 +150,10 @@ describe('VenueEditionFormScreen', () => {
   const useSWRMock = vi.mocked(useSWR)
 
   beforeEach(() => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+    vi.mocked(getVolunteeringUrlError).mockReturnValue(undefined)
     vi.spyOn(useEducationalDomains, 'useEducationalDomains').mockImplementation(
       () => {
         return {
@@ -552,6 +565,28 @@ describe('VenueEditionFormScreen', () => {
           volunteeringUrl:
             'https://www.jeveuxaider.gouv.fr/organisations/exemple',
         })
+      )
+    })
+
+    it('should log an event when the user submit an invalid volunteering url', async () => {
+      vi.mocked(getVolunteeringUrlError).mockReturnValue('any-error')
+
+      renderForm({ ...baseVenue }, { features: ['WIP_VOLUNTEERING'] })
+
+      await userEvent.type(
+        screen.getByLabelText(/URL de votre page jeveuxaider.gouv/),
+        'any-url'
+      )
+
+      await userEvent.tab()
+
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.VENUE_FORM_VOLUNTEERING_URL_ERROR,
+        {
+          venueId: baseVenue.id,
+          userId: expect.any(Number),
+          volunteeringUrl: 'any-url',
+        }
       )
     })
 
