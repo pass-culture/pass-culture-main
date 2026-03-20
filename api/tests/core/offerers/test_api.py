@@ -2667,14 +2667,16 @@ class CreateFromOnboardingDataTest:
                 inseeCode="75101",
                 street=offerers_schemas.VenueAddress("3 RUE DE VALOIS"),
             ),
-            isOpenToPublic=True,
+            is_open_to_public=True,
             siret="85331845900031",
-            publicName="Nom public de mon lieu",
-            createVenueWithoutSiret=create_venue_without_siret,
+            public_name="Nom public de mon lieu",
+            create_venue_without_siret=create_venue_without_siret,
             target=offerers_models.Target.INDIVIDUAL,
             activity=offerers_models.Activity.CINEMA.name,
-            webPresence="https://www.example.com, https://instagram.com/example, https://mastodon.social/@example",
+            web_presence="https://www.example.com, https://instagram.com/example, https://mastodon.social/@example",
             token="token",
+            cultural_domains=None,
+            phone_number="0102030405",
         )
 
     @pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
@@ -2721,7 +2723,7 @@ class CreateFromOnboardingDataTest:
         educational_domains = educational_factories.EducationalDomainFactory.create_batch(3)
 
         onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
-        onboarding_data.culturalDomains = [domain.name for domain in educational_domains]
+        onboarding_data.cultural_domains = [domain.name for domain in educational_domains]
         created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
 
         address = db.session.query(geography_models.Address).one()
@@ -2921,7 +2923,7 @@ class CreateFromOnboardingDataTest:
         user.add_non_attached_pro_role()
 
         onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
-        onboarding_data.isOpenToPublic = isOpenToPublic
+        onboarding_data.is_open_to_public = isOpenToPublic
         created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
 
         # Offerer has been created
@@ -3102,7 +3104,7 @@ class CreateFromOnboardingDataTest:
         assert len(offerer.managedVenues) == 1
         venue = offerer.managedVenues[0]
         assert venue.id not in (rejected_venue_id, rejected_venue_id_without_siret)
-        assert venue.publicName == onboarding_data.publicName
+        assert venue.publicName == onboarding_data.public_name
 
         actions = db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.id).all()
         assert len(actions) == 3
@@ -3145,7 +3147,7 @@ class CreateFromOnboardingDataTest:
         assert len(offerer.managedVenues) == 1
         venue = offerer.managedVenues[0]
         assert venue.id != rejected_venue_id
-        assert venue.publicName == onboarding_data.publicName
+        assert venue.publicName == onboarding_data.public_name
 
         actions = db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.id).all()
         assert len(actions) == 3

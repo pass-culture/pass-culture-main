@@ -2,9 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-/**
- * An enumeration.
- */
 export enum ActivityOpenToPublic {
   ART_GALLERY = 'ART_GALLERY',
   ART_SCHOOL = 'ART_SCHOOL',
