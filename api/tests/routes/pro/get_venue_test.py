@@ -33,6 +33,7 @@ class Returns200Test:
     num_queries += 1  # venue.hasPartnerPage
     num_queries += 1  # venue.canDisplayHighlights
     num_queries += 1  # venue.hasNonDraftOffers
+    num_queries += 1  # venue_has_non_free_offers
 
     num_queries_no_places_info = num_queries - 1
 

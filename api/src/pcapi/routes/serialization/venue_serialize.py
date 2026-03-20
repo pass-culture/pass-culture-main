@@ -82,111 +82,6 @@ class GetVenueManagingOffererResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
-class GetVenueResponseGetterDict(pydantic_v1.utils.GetterDict):
-    def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
-        venue: offerers_models.Venue = self._obj
-
-        if key == "externalAccessibilityData":
-            if not venue.accessibilityProvider:
-                return None
-            accessibility_infos = venue.accessibilityProvider.externalAccessibilityData
-            return acceslibre_serializers.ExternalAccessibilityDataModel.from_accessibility_infos(accessibility_infos)
-        if key == "externalAccessibilityUrl":
-            if not venue.accessibilityProvider:
-                return None
-            return venue.accessibilityProvider.externalAccessibilityUrl
-        if key == "externalAccessibilityId":
-            if not venue.accessibilityProvider:
-                return None
-            return venue.accessibilityProvider.externalAccessibilityId
-
-        if key == "bankAccount":
-            return venue.current_bank_account
-
-        if key == "collectiveLegalStatus":
-            return venue.venueEducationalStatus
-
-        if key == "hasAdageId":
-            return bool(venue.adageId)
-
-        if key == "pricingPoint":
-            now = date_utils.get_naive_utc_now()
-            for pricing_link in venue.pricing_point_links:
-                if pricing_link.timespan.lower <= now and (
-                    not pricing_link.timespan.upper or pricing_link.timespan.upper > now
-                ):
-                    return pricing_link.pricingPoint
-            return None
-
-        if key == "location":
-            offerer_address = venue.offererAddress
-            if not offerer_address:
-                return None
-            return address_serialize.LocationResponseModel(
-                **address_serialize.retrieve_address_info_from_oa(offerer_address),
-                label=venue.publicName,
-                isVenueLocation=True,
-            )
-
-        if key == "collectiveDmsApplications":
-            return [
-                venue_collective_serialize.DMSApplicationForEAC.from_orm(collective_ds_application, venue.id)
-                for collective_ds_application in venue.collectiveDmsApplications
-            ]
-
-        if key == "isCaledonian":
-            return venue.is_caledonian
-
-        if key == "openingHours":
-            opening_hours = venue.openingHours
-            if opening_hours and isinstance(opening_hours, list):
-                return opening_hours_api.format_opening_hours(opening_hours)
-            return typing.cast(opening_hours_schemas.WeekdayOpeningHoursTimespans | None, opening_hours)
-
-        if key == "venueType":
-            value = venue.venueTypeCode
-            label = value.value if value else ""
-            return VenueTypeResponseModel(value=value.name if value else "", label=label)
-
-        if key == "isActive":
-            return venue.managingOfferer.isActive
-
-        if key == "isValidated":
-            return venue.managingOfferer.isValidated
-
-        if key == "allowedOnAdage":
-            return venue.managingOfferer.allowedOnAdage
-
-        if key == "bankAccountStatus":
-            return venue_finance_serialize.parse_venue_bank_account_status(venue)
-
-        if key == "hasNonFreeOffers":
-            # avoid some tricky circular import: schemas is not expected
-            # to import a related repository module.
-            # from pcapi.core.offerers.repository import venues_have_non_free_offers
-
-            # return venue.id in venues_have_non_free_offers([venue.id])
-            # FIXME(jbaudet 13/11/2025): use venues_have_non_free_offers once
-            # it has been fixed
-            return True
-
-        if key == "hasPartnerPage":
-            return venue.has_partner_page
-
-        if key == "activity":
-            if not venue.activity or venue.activity == offerers_models.Activity.NOT_ASSIGNED:
-                return None
-            return offerers_models.DisplayableActivity[venue.activity.name]
-
-        if key == "canDisplayHighlights":
-            return venue.can_display_highlights
-
-        if key == "hasNonDraftOffers":
-            return venue.has_non_draft_offers
-
-        return super().get(key, default)
-
-
 class GetVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     isVirtual: bool
     name: str
@@ -239,9 +134,113 @@ class GetVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     volunteeringUrl: str | None = pydantic_v1.Field(...)
 
     class Config:
-        orm_mode = True
         json_encoders = {datetime: format_into_utc_date}
-        getter_dict = GetVenueResponseGetterDict
+
+    @classmethod
+    def build(
+        cls, venue: offerers_models.Venue, has_non_free_offers: bool = False, **kwargs: typing.Any
+    ) -> "GetVenueResponseModel":
+        model_fields = cls.build_model_fields(venue)
+        computed_fields = cls.build_computed_fields(venue, has_non_free_offers)
+        fields = {**model_fields, **computed_fields, **kwargs}
+        return cls(**fields)
+
+    @classmethod
+    def build_model_fields(cls, venue: offerers_models.Venue) -> dict:
+        # WARNING(jbaudet-03/2026): please note that calling `hasattr`
+        # with a Venue's (hybrid) property might... trigger it for some
+        # unknown reason. Each of these two fields adds a repeated SQL
+        # query.
+        excluded = {"hasOffers", "hasActiveIndividualOffer"}
+        fields = {
+            field: getattr(venue, field)
+            for field in cls.schema()["properties"]
+            # /!\ keep the `hasattr` call at the end (see above)
+            if field not in excluded and hasattr(venue, field)
+        }
+
+        fields["hasOffers"] = venue.hasOffers
+        fields["hasActiveIndividualOffer"] = venue.hasActiveIndividualOffer
+        return fields
+
+    @classmethod
+    def build_computed_fields(cls, venue: offerers_models.Venue, has_non_free_offers: bool = False) -> dict:
+        external_accessibility_data = None
+        if venue.accessibilityProvider:
+            accessibility_infos = venue.accessibilityProvider.externalAccessibilityData
+            external_accessibility_data = (
+                acceslibre_serializers.ExternalAccessibilityDataModel.from_accessibility_infos(accessibility_infos)
+            )
+
+        external_accessibility_url = None
+        if venue.accessibilityProvider:
+            external_accessibility_url = venue.accessibilityProvider.externalAccessibilityUrl
+
+        external_accessibility_id = None
+        if venue.accessibilityProvider:
+            external_accessibility_id = venue.accessibilityProvider.externalAccessibilityId
+
+        pricing_point = None
+        now = date_utils.get_naive_utc_now()
+        for pricing_link in venue.pricing_point_links:
+            if pricing_link.timespan.lower <= now and (
+                not pricing_link.timespan.upper or pricing_link.timespan.upper > now
+            ):
+                pricing_point = pricing_link.pricingPoint
+                break
+
+        location = None
+        offerer_address = venue.offererAddress
+        if offerer_address:
+            location = address_serialize.LocationResponseModel(
+                **address_serialize.retrieve_address_info_from_oa(offerer_address),
+                label=venue.publicName,
+                isVenueLocation=True,
+            )
+
+        collective_dms_applications = [
+            venue_collective_serialize.DMSApplicationForEAC.from_orm(collective_ds_application, venue.id)
+            for collective_ds_application in venue.collectiveDmsApplications
+        ]
+
+        opening_hours = None
+        raw_opening_hours = venue.openingHours
+        if raw_opening_hours and isinstance(raw_opening_hours, list):
+            opening_hours = opening_hours_api.format_opening_hours(raw_opening_hours)
+        else:
+            opening_hours = typing.cast(opening_hours_schemas.WeekdayOpeningHoursTimespans | None, raw_opening_hours)
+
+        value = venue.venueTypeCode
+        label = value.value if value else ""
+        venue_type = VenueTypeResponseModel(value=value.name if value else "", label=label)
+
+        activity = None
+        if venue.activity and venue.activity != offerers_models.Activity.NOT_ASSIGNED:
+            activity = offerers_models.DisplayableActivity[venue.activity.name].value
+
+        return {
+            "externalAccessibilityData": external_accessibility_data,
+            "externalAccessibilityUrl": external_accessibility_url,
+            "externalAccessibilityId": external_accessibility_id,
+            "bankAccount": venue.current_bank_account,
+            "collectiveLegalStatus": venue.venueEducationalStatus,
+            "hasAdageId": bool(venue.adageId),
+            "pricingPoint": pricing_point,
+            "location": location,
+            "collectiveDmsApplications": collective_dms_applications,
+            "isCaledonian": venue.is_caledonian,
+            "openingHours": opening_hours,
+            "venueType": venue_type,
+            "isActive": venue.managingOfferer.isActive,
+            "isValidated": venue.managingOfferer.isValidated,
+            "allowedOnAdage": venue.managingOfferer.allowedOnAdage,
+            "bankAccountStatus": venue_finance_serialize.parse_venue_bank_account_status(venue),
+            "hasNonFreeOffers": has_non_free_offers,
+            "hasPartnerPage": venue.has_partner_page,
+            "activity": activity,
+            "canDisplayHighlights": venue.can_display_highlights,
+            "hasNonDraftOffers": venue.has_non_draft_offers,
+        }
 
     @validator("bannerMeta")
     @classmethod
