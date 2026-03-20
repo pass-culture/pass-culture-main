@@ -1,0 +1,37 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
+
+.recommendation-banner {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-background-info);
+  gap: var(--size-spacing-xl);
+  padding: var(--size-spacing-xl);
+  border-radius: var(--size-border-radius-m);
+  margin-bottom: var(--size-spacing-xxl);
+
+  @media (min-width: size.$laptop) {
+    flex-direction: row;
+  }
+
+  &-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-spacing-m);
+  }
+
+  &-title {
+    @include fonts.title3;
+  }
+
+  &-subtitle {
+    @include fonts.body-s;
+  }
+
+  &-img {
+    max-height: rem.torem(127px);
+    align-self: center;
+    max-width: 100%;
+  }
+}
