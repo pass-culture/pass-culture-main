@@ -4,6 +4,7 @@ from datetime import datetime
 from decimal import Decimal
 from urllib.parse import urlparse
 
+import pydantic
 import pydantic.v1 as pydantic_v1
 from pydantic import RootModel
 from pydantic.v1 import validator
@@ -33,33 +34,32 @@ from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
 
-class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
-    activity: offerers_models.Activity | None
-    address: address_serialize.LocationBodyModel
-    bookingEmail: offerers_schemas.VenueBookingEmail
-    culturalDomains: list[str] | None
-    comment: offerers_schemas.VenueComment | None
-    isOpenToPublic: bool | None
-    managingOffererId: int
-    name: offerers_schemas.VenueName
-    publicName: offerers_schemas.VenuePublicName | None
-    siret: offerers_schemas.VenueSiret | None
-    venueLabelId: int | None
-    withdrawalDetails: offerers_schemas.VenueWithdrawalDetails | None
-    description: offerers_schemas.VenueDescription | None
-    contact: offerers_schemas.VenueContactModel | None
+class PostVenueBodyModel(HttpBodyModel):
+    activity: offerers_models.Activity | None = None
+    address: address_serialize.LocationBodyModelV2
+    booking_email: offerers_schemas.VenueBookingEmailV2
+    cultural_domains: list[str] | None = None
+    comment: offerers_schemas.VenueCommentV2 | None = None
+    is_open_to_public: bool | None = None
+    managing_offerer_id: int
+    name: offerers_schemas.VenueNameV2
+    public_name: offerers_schemas.VenuePublicNameV2 | None = None
+    siret: offerers_schemas.VenueSiretV2 | None = None
+    venue_label_id: int | None = None
+    withdrawal_details: offerers_schemas.VenueWithdrawalDetailsV2 | None = None
+    description: offerers_schemas.VenueDescriptionV2 | None = None
+    contact: offerers_schemas.VenueContactModel | None = None
+    audio_disability_compliant: bool | None = None
+    mental_disability_compliant: bool | None = None
+    motor_disability_compliant: bool | None = None
+    visual_disability_compliant: bool | None = None
 
-    class Config:
-        extra = "forbid"
-
-    @validator("siret", always=True)
-    @classmethod
-    def requires_siret_xor_comment(cls, siret: str | None, values: dict) -> str | None:
+    @pydantic.model_validator(mode="after")
+    def requires_siret_xor_comment(self) -> typing.Self:
         """siret is defined after comment, so the validator can access the previously validated value of comment"""
-        comment = values.get("comment")
-        if (comment and siret) or (not comment and not siret):
+        if (self.comment and self.siret) or (not self.comment and not self.siret):
             raise ValueError("Veuillez saisir soit un SIRET soit un commentaire")
-        return siret
+        return self
 
 
 class VenueResponseModel(BaseModel):
