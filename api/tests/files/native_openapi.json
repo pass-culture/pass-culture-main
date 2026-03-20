@@ -3130,13 +3130,13 @@
                 "type": "object"
             },
             "ExpenseDomain": {
-                "description": "An enumeration.",
                 "enum": [
                     "all",
                     "digital",
                     "physical"
                 ],
-                "title": "ExpenseDomain"
+                "title": "ExpenseDomain",
+                "type": "string"
             },
             "ExternalBookingDataResponseV2": {
                 "additionalProperties": false,
@@ -3212,12 +3212,51 @@
                 "title": "ExternalBookingResponseV2",
                 "type": "object"
             },
+            "FavoriteCoordinates": {
+                "additionalProperties": false,
+                "properties": {
+                    "latitude": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Latitude"
+                    },
+                    "longitude": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Longitude"
+                    }
+                },
+                "title": "FavoriteCoordinates",
+                "type": "object"
+            },
             "FavoriteMediationResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "credit": {
-                        "nullable": true,
-                        "title": "Credit",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Credit"
                     },
                     "url": {
                         "title": "Url",
@@ -3231,32 +3270,55 @@
                 "type": "object"
             },
             "FavoriteOfferResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "bookingAllowedDatetime": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Bookingalloweddatetime",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Bookingalloweddatetime"
                     },
                     "coordinates": {
-                        "$ref": "#/components/schemas/Coordinates"
+                        "$ref": "#/components/schemas/FavoriteCoordinates"
                     },
                     "date": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Date",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Date"
                     },
                     "expenseDomains": {
                         "items": {
                             "$ref": "#/components/schemas/ExpenseDomain"
                         },
+                        "title": "Expensedomains",
                         "type": "array"
                     },
                     "externalTicketOfficeUrl": {
-                        "nullable": true,
-                        "title": "Externalticketofficeurl",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Externalticketofficeurl"
                     },
                     "id": {
                         "title": "Id",
@@ -3266,10 +3328,12 @@
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/FavoriteMediationResponse"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "FavoriteMediationResponse"
+                        "default": null
                     },
                     "isExpired": {
                         "default": false,
@@ -3290,20 +3354,41 @@
                         "type": "string"
                     },
                     "price": {
-                        "nullable": true,
-                        "title": "Price",
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Price"
                     },
                     "startDate": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Startdate",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Startdate"
                     },
                     "startPrice": {
-                        "nullable": true,
-                        "title": "Startprice",
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Startprice"
                     },
                     "subcategoryId": {
                         "$ref": "#/components/schemas/SubcategoryIdEnum"
@@ -3315,17 +3400,18 @@
                 },
                 "required": [
                     "id",
-                    "name",
-                    "subcategoryId",
                     "coordinates",
                     "expenseDomains",
                     "isReleased",
+                    "name",
+                    "subcategoryId",
                     "venueName"
                 ],
                 "title": "FavoriteOfferResponse",
                 "type": "object"
             },
             "FavoriteRequest": {
+                "additionalProperties": false,
                 "properties": {
                     "offerId": {
                         "title": "Offerid",
@@ -3339,6 +3425,7 @@
                 "type": "object"
             },
             "FavoriteResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "id": {
                         "title": "Id",
@@ -6058,6 +6145,7 @@
                 "type": "string"
             },
             "PaginatedFavoritesResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "favorites": {
                         "items": {

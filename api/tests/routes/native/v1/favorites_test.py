@@ -27,16 +27,16 @@ FAVORITES_URL = "/native/v1/me/favorites"
 
 class GetTest:
     class Returns200Test:
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # favorites
+
         def when_user_is_logged_in_but_has_no_favorites(self, client):
             # Given
             user = users_factories.UserFactory()
 
             # When
-            expected_num_queries = 1  # user
-            expected_num_queries += 1  # favorites
-
             client = client.with_token(user)
-            with assert_num_queries(expected_num_queries):
+            with assert_num_queries(self.expected_num_queries):
                 response = client.get(FAVORITES_URL)
                 assert response.status_code == 200
 
@@ -102,9 +102,7 @@ class GetTest:
             client.with_token(user)
 
             # When
-            # 1: Fetch the user for auth
-            # 1: Fetch the favorites
-            with assert_num_queries(2):
+            with assert_num_queries(self.expected_num_queries):
                 response = client.get(FAVORITES_URL)
 
             # Then
@@ -114,6 +112,7 @@ class GetTest:
 
             # We have 2 valid stocks with different dates/prices and one mediation
             assert favorites[5]["id"] == favorite1.id
+            assert favorites[5]["offer"]["id"] == offer1.id
             assert favorites[5]["offer"]["price"] is None
             assert favorites[5]["offer"]["startPrice"] == 2000
             assert favorites[5]["offer"]["date"] is None
@@ -129,6 +128,7 @@ class GetTest:
 
             # Only stock2b is valid and product has a thumb
             assert favorites[4]["id"] == favorite2.id
+            assert favorites[4]["offer"]["id"] == offer2.id
             assert favorites[4]["offer"]["price"] == 5000
             assert favorites[4]["offer"]["startPrice"] is None
             assert favorites[4]["offer"]["date"] == date_utils.format_into_utc_date(day_after_start)
@@ -144,6 +144,7 @@ class GetTest:
 
             # No date
             assert favorites[3]["id"] == favorite3.id
+            assert favorites[3]["offer"]["id"] == offer3.id
             assert favorites[3]["offer"]["price"] == 1000
             assert favorites[3]["offer"]["startPrice"] is None
             assert favorites[3]["offer"]["date"] is None
@@ -155,6 +156,7 @@ class GetTest:
 
             # Offer in the future but past the booking limit
             assert favorites[2]["id"] == favorite4.id
+            assert favorites[2]["offer"]["id"] == offer4.id
             assert favorites[2]["offer"]["price"] is None
             assert favorites[2]["offer"]["startPrice"] is None
             assert favorites[2]["offer"]["date"] is None
@@ -169,6 +171,7 @@ class GetTest:
 
             # Offer in the past, favorite should appear but no price/date are valid
             assert favorites[1]["id"] == favorite5.id
+            assert favorites[1]["offer"]["id"] == offer5.id
             assert favorites[1]["offer"]["price"] is None
             assert favorites[1]["offer"]["startPrice"] is None
             assert favorites[1]["offer"]["date"] is None
@@ -213,9 +216,7 @@ class GetTest:
 
             client = client.with_token(user)
 
-            expected_num_queries = 1  # user
-            expected_num_queries += 1  # favorites
-            with assert_num_queries(expected_num_queries):
+            with assert_num_queries(self.expected_num_queries):
                 response = client.get(FAVORITES_URL)
 
             favorites = response.json["favorites"]
@@ -279,10 +280,7 @@ class GetTest:
             client.with_token(user)
 
             # When
-            # QUERY_COUNT:
-            # 1: Fetch the user for auth
-            # 1: Fetch the favorites
-            with assert_num_queries(2):
+            with assert_num_queries(self.expected_num_queries):
                 response = client.get(FAVORITES_URL)
 
             # Then
@@ -343,11 +341,7 @@ class GetTest:
             # When
 
             client.post(FAVORITES_URL, json={"offerId": offer.id})
-            # 1: Fetch the user for auth
-            # 1: Fetch the favorites
-            num_queries = 1  # Get user
-            num_queries += 1  # Get favorites
-            with assert_num_queries(num_queries):
+            with assert_num_queries(self.expected_num_queries):
                 response = client.get(FAVORITES_URL)
 
             # Then
