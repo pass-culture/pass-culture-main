@@ -45,7 +45,7 @@ from . import blueprint
 @spectree_serialize(response_model=ListBookingsResponseModel, api=blueprint.pro_private_schema)
 def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel:
     page = query.page
-    per_page_limit = 1000
+    per_page_limit = 500
     venue_id = query.venue_id
     offer_id = query.offer_id
     offerer_id = query.offerer_id
