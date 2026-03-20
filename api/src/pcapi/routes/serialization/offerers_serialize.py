@@ -23,7 +23,7 @@ from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import finance_serialize
 from pcapi.routes.serialization.venue_banners_serialize import BannerMetaModel
-from pcapi.routes.serialization.venue_collective_serialize import DMSApplicationForEAC
+from pcapi.routes.serialization.venue_collective_serialize import DMSApplicationForEACv1
 from pcapi.routes.shared import validation
 from pcapi.serialization.exceptions import PydanticError
 from pcapi.serialization.utils import to_camel
@@ -35,7 +35,7 @@ class GetOffererVenueResponseModelGetterDict(GetterDict):
     def get(self, key: str, default: Any = None) -> Any:
         if key == "collectiveDmsApplications":
             return [
-                DMSApplicationForEAC.from_orm(collective_ds_application, self._obj.id)
+                DMSApplicationForEACv1.from_orm(collective_ds_application, self._obj.id)
                 for collective_ds_application in self._obj.collectiveDmsApplications
             ]
         if key == "hasPartnerPage":
@@ -59,7 +59,7 @@ class GetOffererVenueResponseModel(BaseModel):
     venueTypeCode: offerers_models.VenueTypeCode | None
     activity: offerers_models.DisplayableActivity | None
     withdrawalDetails: str | None
-    collectiveDmsApplications: list[DMSApplicationForEAC]
+    collectiveDmsApplications: list[DMSApplicationForEACv1]
     hasPartnerPage: bool
     hasVenueProviders: bool
     isPermanent: bool

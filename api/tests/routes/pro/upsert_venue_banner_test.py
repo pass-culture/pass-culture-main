@@ -34,7 +34,7 @@ class Returns201Test:
 
         client = client.with_session_auth(email=user_offerer.user.email)
         url = f"/venues/{venue.id}/banner"
-        url += "?x_crop_percent=0.0&y_crop_percent=0.0&height_crop_percent=0.6&width_crop_percent=0.9&image_credit=none"
+        url += "?x_crop_percent=0.0&y_crop_percent=0.0&height_crop_percent=0.6&width_crop_percent=0.9&image_credit=Perceval"
 
         # Override storage url otherwise it would be, well, an URL
         # (like http://localhost) and make some checks more difficult.
@@ -52,7 +52,6 @@ class Returns201Test:
 
         original_banner_url_timestamp = 1602720001
         assert response.json["bannerMeta"] == {
-            "image_credit": "none",
             "original_image_url": str(url_prefix / f"{humanize(venue.id)}_{original_banner_url_timestamp}"),
             "crop_params": {
                 "x_crop_percent": 0.0,

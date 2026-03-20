@@ -2,6 +2,7 @@ from pcapi.core.educational.models import StudentLevels
 from pcapi.models.feature import FeatureToggle
 
 
+# TODO bulle ajouter a dpoleance harmonisation des erreurs ?
 def validate_students(student_levels: list[str] | list[StudentLevels] | None) -> list[StudentLevels]:
     if not student_levels:
         raise ValueError("La liste des niveaux scolaires ne peut pas être vide")
