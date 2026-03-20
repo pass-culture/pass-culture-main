@@ -43,6 +43,9 @@ export function IndividualOfferPracticalInfosForm({
   const bookingEmail = form.watch('bookingEmail')
 
   const isFormDisabled = isOfferDisabled(offer) || isOfferSynchronized(offer)
+  const isOfferDisabledOrOnline =
+    isOfferDisabled(offer) ||
+    subCategory?.onlineOfflinePlatform === CATEGORY_STATUS.ONLINE
 
   const hasNonFreeStock = stocks.some((s) => Boolean(s.price))
 
@@ -80,7 +83,7 @@ export function IndividualOfferPracticalInfosForm({
             {...form.register('withdrawalDetails')}
             label="Informations complémentaires"
             maxLength={500}
-            disabled={isFormDisabled}
+            disabled={isOfferDisabledOrOnline}
             description="Ces informations seront communiquées aux jeunes après leur réservation."
           />
         </FormLayout.Row>
@@ -117,7 +120,7 @@ export function IndividualOfferPracticalInfosForm({
             {...form.register('externalTicketOfficeUrl')}
             label="URL de votre site ou billetterie"
             type="url"
-            disabled={isFormDisabled}
+            disabled={isOfferDisabledOrOnline}
             description="Format : https://exemple.com"
             error={form.formState.errors.externalTicketOfficeUrl?.message}
           />
