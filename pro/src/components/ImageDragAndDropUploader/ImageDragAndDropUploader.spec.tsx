@@ -2,7 +2,6 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { forwardRef } from 'react'
 
-import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -10,6 +9,21 @@ import {
   ImageDragAndDropUploader,
   type ImageDragAndDropUploaderProps,
 } from './ImageDragAndDropUploader'
+
+const snackBarSuccess = vi.fn()
+const snackBarError = vi.fn()
+
+const mockImageFile = Object.assign(
+  new File(['test'], 'test-image.jpg', { type: 'image/jpeg' }),
+  { width: 10, height: 10 }
+)
+
+vi.mock('@/commons/hooks/useSnackBar', () => ({
+  useSnackBar: () => ({
+    success: snackBarSuccess,
+    error: snackBarError,
+  }),
+}))
 
 vi.mock('@/components/ImageDragAndDrop/getImageDimensions', () => ({
   getImageDimensions: vi.fn((file) => {
@@ -162,22 +176,6 @@ describe('ImageDragAndDropUploader', () => {
 
   it('should display a success toaster and call onImageUpload, as soon as a file is saved successfully', async () => {
     const mockUpload = vi.fn()
-    const snackBarSuccess = vi.fn()
-    const mockFile = Object.assign(
-      new File(['test'], 'test-image.jpg', { type: 'image/jpeg' }),
-      {
-        width: 10,
-        height: 10,
-      }
-    )
-
-    const snackBarsImport = (await vi.importActual(
-      '@/commons/hooks/useSnackBar'
-    )) as ReturnType<typeof useSnackBar.useSnackBar>
-    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
-      ...snackBarsImport,
-      success: snackBarSuccess,
-    }))
 
     renderImageUploader({
       onImageUpload: mockUpload,
@@ -186,7 +184,7 @@ describe('ImageDragAndDropUploader', () => {
     })
 
     const inputField = screen.getByLabelText('Importez une image')
-    await userEvent.upload(inputField, mockFile)
+    await userEvent.upload(inputField, mockImageFile)
 
     // dialog: crop img
     await waitFor(() => {
@@ -208,17 +206,34 @@ describe('ImageDragAndDropUploader', () => {
     expect(screen.queryByText('Modifier une image')).not.toBeInTheDocument()
   })
 
+  it('should display an error toaster and not success when onImageUpload fails', async () => {
+    renderImageUploader({
+      onImageUpload: () => {
+        throw new Error('Upload failed')
+      },
+      onImageDelete: () => {},
+      mode: UploaderModeEnum.OFFER,
+    })
+
+    const inputField = screen.getByLabelText('Importez une image')
+    await userEvent.upload(inputField, mockImageFile)
+
+    await waitFor(() => {
+      expect(screen.getByText('Modifier une image')).toBeInTheDocument()
+    })
+
+    await userEvent.click(screen.getByText('Importer'))
+
+    await waitFor(() => {
+      expect(snackBarError).toHaveBeenCalledWith(
+        "Une erreur est survenue lors de l'importation de votre image"
+      )
+    })
+    expect(snackBarSuccess).not.toHaveBeenCalled()
+  })
+
   it('should display a toaster and call onImageDelete, as soon as a file is delete successfully', async () => {
     const mockDelete = vi.fn()
-    const snackBarSuccess = vi.fn()
-
-    const snackBarsImport = (await vi.importActual(
-      '@/commons/hooks/useSnackBar'
-    )) as ReturnType<typeof useSnackBar.useSnackBar>
-    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
-      ...snackBarsImport,
-      success: snackBarSuccess,
-    }))
 
     renderImageUploader({
       onImageUpload: () => {},

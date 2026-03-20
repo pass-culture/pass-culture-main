@@ -7,11 +7,12 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { ButtonImageEdit, type ButtonImageEditProps } from '../ButtonImageEdit'
 
 const snackBarSuccess = vi.fn()
+const snackBarError = vi.fn()
 
 vi.mock('@/commons/hooks/useSnackBar', () => ({
   useSnackBar: () => ({
     success: snackBarSuccess,
-    error: vi.fn(),
+    error: snackBarError,
   }),
 }))
 
@@ -110,5 +111,19 @@ describe('ButtonImageEdit', () => {
     expect(snackBarSuccess).toHaveBeenCalledWith(
       'Votre image a bien été importée'
     )
+  })
+
+  it('shows error snackbar and not success when onImageUpload throws', async () => {
+    props.onImageUpload = vi.fn().mockImplementation(() => {
+      throw new Error('Upload failed')
+    })
+    renderButtonImageEdit(props)
+
+    await userEvent.click(screen.getByRole('button', { name: /Importer/ }))
+
+    expect(snackBarError).toHaveBeenCalledWith(
+      "Une erreur est survenue lors de l'importation de votre image"
+    )
+    expect(snackBarSuccess).not.toHaveBeenCalled()
   })
 })

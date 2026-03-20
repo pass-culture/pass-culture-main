@@ -43,7 +43,6 @@ interface ImageDragAndDropProps {
     width?: number
     height?: number
   }
-  isMaxResolutionEnabled?: boolean
 }
 
 export const ImageDragAndDrop = forwardRef(
@@ -55,7 +54,6 @@ export const ImageDragAndDrop = forwardRef(
       onError,
       disabled,
       minSizes,
-      isMaxResolutionEnabled = false,
     }: ImageDragAndDropProps,
     dragAndDropInputRef: ForwardedRef<HTMLInputElement>
   ) => {
@@ -85,10 +83,9 @@ export const ImageDragAndDrop = forwardRef(
             errors.push('file-invalid-dimensions-height')
           }
         }
-        if (isMaxResolutionEnabled) {
-          if (width * height > UPLOAD_IMAGE_MAX_RESOLUTION) {
-            errors.push('file-too-large-dimensions')
-          }
+
+        if (width * height > UPLOAD_IMAGE_MAX_RESOLUTION) {
+          errors.push('file-too-large-dimensions')
         }
 
         if (errors.length > 0) {
@@ -264,14 +261,12 @@ export const ImageDragAndDrop = forwardRef(
             hasError={errors.hasWrongSize}
             errorMessage="Le poids du fichier est trop lourd"
           />
-          {isMaxResolutionEnabled && (
-            <ImageConstraintCheck
-              label="Résolution maximale de l’image"
-              constraint="80 Mégapixels"
-              hasError={errors.hasWrongDimensions}
-              errorMessage="L’image doit comporter au maximum 80 Mégapixels"
-            />
-          )}
+          <ImageConstraintCheck
+            label="Résolution maximale de l’image"
+            constraint="80 Mégapixels"
+            hasError={errors.hasWrongDimensions}
+            errorMessage="L’image doit comporter au maximum 80 Mégapixels"
+          />
           {minSizes?.height && (
             <ImageConstraintCheck
               label="Hauteur minimum"

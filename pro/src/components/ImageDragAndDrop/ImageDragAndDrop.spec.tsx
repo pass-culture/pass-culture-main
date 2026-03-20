@@ -202,7 +202,7 @@ describe('ImageDragAndDrop', () => {
       const data = mockData([file])
 
       const onError = vi.fn()
-      render(<ImageDragAndDrop onError={onError} isMaxResolutionEnabled />)
+      render(<ImageDragAndDrop onError={onError} />)
 
       fireEvent.drop(screen.getByTestId('image-drag-and-drop'), data)
 

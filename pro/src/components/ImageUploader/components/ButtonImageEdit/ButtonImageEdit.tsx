@@ -53,13 +53,19 @@ export const ButtonImageEdit = ({
     }
   }
 
-  function onImageUploadHandler(
+  async function onImageUploadHandler(
     values: OnImageUploadArgs,
     successMessage: string
   ) {
-    onImageUpload(values)
     setIsModalImageOpen(false)
-    snackBar.success(successMessage)
+    try {
+      await Promise.resolve(onImageUpload(values))
+      snackBar.success(successMessage)
+    } catch {
+      snackBar.error(
+        "Une erreur est survenue lors de l'importation de votre image"
+      )
+    }
   }
 
   return (
