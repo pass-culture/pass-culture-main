@@ -49,4 +49,30 @@ export {
   getDataFromAddress,
   getDataFromAddressParts,
 } from '@/apiClient/adresse/apiAdresse'
-export * as apiNew from '@/apiClient/v1/new/sdk.gen'
+
+import * as generated from '@/apiClient/v1/new/sdk.gen'
+
+type EasyApi<T> = {
+  [K in keyof T]: T[K] extends (...args: any[]) => any
+    ? (data?: any) => ReturnType<T[K]>
+    : T[K]
+}
+
+export const apiNew = Object.keys(generated).reduce((acc, key) => {
+  const originalFn = (generated as any)[key]
+
+  if (typeof originalFn === 'function') {
+    acc[key] = (args: any) => {
+      if (!args) {
+        return originalFn()
+      }
+      if (args.body || args.query || args.path) {
+        return originalFn(args)
+      }
+      return originalFn({ body: args })
+    }
+  } else {
+    acc[key] = originalFn
+  }
+  return acc
+}, {} as any) as EasyApi<typeof generated>
