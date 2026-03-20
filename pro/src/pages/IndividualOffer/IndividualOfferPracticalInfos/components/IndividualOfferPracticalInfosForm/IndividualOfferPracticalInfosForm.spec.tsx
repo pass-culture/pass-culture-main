@@ -122,4 +122,16 @@ describe('IndividualOfferPracticalInfosForm', () => {
       )
     ).toBeInTheDocument()
   })
+  it('should allow the user to edit the external url even if the offer is synchronized', () => {
+    renderIndividualOfferPracticalInfosForm({
+      offer: getIndividualOfferFactory({
+        subcategoryId: SubcategoryIdEnum.LIVRE_PAPIER,
+        isEvent: false,
+        lastProvider: { name: 'provider' },
+      }),
+      subCategory: subcategoryFactory({ id: SubcategoryIdEnum.LIVRE_PAPIER }),
+    })
+
+    expect(screen.getByText(/URL de votre site ou billetterie/)).toBeEnabled()
+  })
 })
