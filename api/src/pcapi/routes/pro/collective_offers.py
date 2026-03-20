@@ -13,6 +13,7 @@ from pcapi.core.educational.api import export as api_export
 from pcapi.core.educational.api import offer as api_offer
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
+from pcapi.core.offers import constants as offers_constants
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models.api_errors import ApiErrors
@@ -57,7 +58,7 @@ def get_collective_offers(
     query: collective_offers_serialize.ListCollectiveOffersQueryModel,
 ) -> collective_offers_serialize.ListCollectiveOffersResponseModel:
     filters = _get_filters_from_query(query)
-    offers = repository.list_collective_offers(filters=filters, offers_limit=api_offer.OFFERS_RECAP_LIMIT)
+    offers = repository.list_collective_offers(filters=filters, offers_limit=offers_constants.OFFERS_RECAP_LIMIT)
     offers.sort(key=lambda offer: offer.get_sort_criterion(), reverse=True)
 
     return collective_offers_serialize.ListCollectiveOffersResponseModel(
@@ -99,7 +100,9 @@ def get_collective_offer_templates(
     query: collective_offers_serialize.ListCollectiveOffersQueryModel,
 ) -> collective_offers_serialize.ListCollectiveOfferTemplatesResponseModel:
     filters = _get_filters_from_query(query)
-    offers = repository.list_collective_offer_templates(filters=filters, offers_limit=api_offer.OFFERS_RECAP_LIMIT)
+    offers = repository.list_collective_offer_templates(
+        filters=filters, offers_limit=offers_constants.OFFERS_RECAP_LIMIT
+    )
 
     return collective_offers_serialize.ListCollectiveOfferTemplatesResponseModel(
         [collective_offers_serialize.CollectiveOfferTemplateResponseModel.build(offer) for offer in offers]

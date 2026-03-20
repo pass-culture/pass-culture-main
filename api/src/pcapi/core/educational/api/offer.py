@@ -57,7 +57,6 @@ if typing.TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-OFFERS_RECAP_LIMIT = 101
 OFFERS_HOMEPAGE_LIMIT = 3
 
 
