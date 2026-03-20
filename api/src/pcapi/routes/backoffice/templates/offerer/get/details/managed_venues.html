@@ -1,4 +1,5 @@
-{% from "components/badges.html" import build_fraudulent_booking_badge %}
+{% from "components/badges.html" import build_fraudulent_booking_badge with context %}
+{% from "components/badges.html" import build_reimboursement_supspended_badge with context %}
 {% import "components/links.html" as links with context %}
 {% from "components/connect_as.html" import build_connect_as_link %}
 {% from "components/dynamic/modal.html" import build_lazy_modal with context %}
@@ -29,7 +30,9 @@
       <th scope="col">Offres cibles</th>
       <th scope="col">Compte bancaire associé</th>
       <th scope="col">Partenaire technique</th>
-      {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}<th scope="col">Fraude</th>{% endif %}
+      {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") or has_permission("READ_PRO_REIMBURSEMENT_SUSPENSION") %}
+        <th scope="col">Fraude</th>
+      {% endif %}
     </tr>
   </thead>
   <tbody>
@@ -78,8 +81,11 @@
             {% endif %}
           {% endfor %}
         </td>
-        {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}
-          <td>{{ build_fraudulent_booking_badge(row.has_fraudulent_booking, "Réservations frauduleuses") }}</td>
+        {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") or has_permission("READ_PRO_REIMBURSEMENT_SUSPENSION") %}
+          <td class="d-flex flex-column">
+            {{ build_fraudulent_booking_badge(row.has_fraudulent_booking, "Réservations frauduleuses") }}
+            {{ build_reimboursement_supspended_badge(venue.isReimbursementSuspended) }}
+          </td>
         {% endif %}
       </tr>
     {% endfor %}

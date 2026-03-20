@@ -334,8 +334,21 @@ class GetOffererTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        response_text = html_parser.content_as_text(response.data)
-        assert "Réservations frauduleuses" in response_text
+        badges = html_parser.extract_badges(response.data)
+        assert "Réservations frauduleuses" in badges
+
+    def test_get_offerer_with_reimbursement_suspended(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_factories.VenueFactory(managingOfferer=offerer, isReimbursementSuspended=True)
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        badges = html_parser.extract_badges(response.data)
+        assert "Remboursements gelés" in badges
 
     def test_get_offerer_which_does_not_exist(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint, offerer_id=12345))
@@ -1562,7 +1575,12 @@ class GetOffererVenuesTest(GetEndpointHelper):
         now = date_utils.get_naive_utc_now()
         other_offerer = offerers_factories.OffererFactory()
         venue_1 = offerers_factories.VenueFactory(
-            name="Deuxième", publicName="Second", managingOfferer=offerer, isPermanent=True, isOpenToPublic=True
+            name="Deuxième",
+            publicName="Second",
+            managingOfferer=offerer,
+            isPermanent=True,
+            isOpenToPublic=True,
+            isReimbursementSuspended=True,
         )
         old_bank_account = finance_factories.BankAccountFactory(offerer=offerer, label="Ancien compte")
         bank_account = finance_factories.BankAccountFactory(offerer=offerer, label="Compte actuel")
@@ -1617,7 +1635,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[1]["Offres cibles"] == ""
         assert rows[1]["Compte bancaire associé"] == "Compte actuel"
         assert rows[1]["Partenaire technique"] == ""
-        assert rows[1]["Fraude"] == ""
+        assert rows[1]["Fraude"] == "Remboursements gelés"
 
     def test_get_caledonian_managed_venues(self, authenticated_client):
         offerer = offerers_factories.CaledonianOffererFactory()
@@ -1643,6 +1661,8 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[0]["Présence web"] == ""
         assert rows[0]["Offres cibles"] == ""
         assert rows[0]["Compte bancaire associé"] == "Compte NC"
+        assert rows[0]["Partenaire technique"] == ""
+        assert rows[0]["Fraude"] == ""
 
 
 class GetOffererAddressesTest(GetEndpointHelper):
