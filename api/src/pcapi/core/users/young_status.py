@@ -22,18 +22,14 @@ class SubscriptionStatus(enum.Enum):
 
 @dataclasses.dataclass(frozen=True)
 class YoungStatus:
-    # All subclasses have a the following attribute:
-    #   status_type: YoungStatusType
-    # We cannot define it here, otherwise the definition of `Eligible`
-    # fails with:
-    #     TypeError: non-default argument 'subscription_status' follows default argument
-    pass
+    status_type: YoungStatusType
 
 
 @dataclasses.dataclass(frozen=True)
 class Eligible(YoungStatus):
-    subscription_status: SubscriptionStatus
     status_type: YoungStatusType = YoungStatusType.ELIGIBLE
+    _: dataclasses.KW_ONLY
+    subscription_status: SubscriptionStatus
 
 
 @dataclasses.dataclass(frozen=True)
