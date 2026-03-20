@@ -13,9 +13,11 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import PIL.Image
+import pydantic as pydantic_v2
 from PIL import ImageFile
 from PIL import ImageOps
 from PIL import UnidentifiedImageError
+from pydantic import Field
 from pydantic.v1 import confloat
 
 
@@ -37,6 +39,17 @@ class CropParams:
     @classmethod
     def build(cls, **kwargs: CropParam | None) -> "CropParams":
         return cls(**{k: v for k, v in kwargs.items() if v})
+
+
+# NOTE(jbaudet - 02/2026): please remove this pydantic model
+# once the original CropParams has been migrated to pydantic v2
+# (it's a dataclass, but... it uses a field that is a confloat
+# from pydantic v1).
+class CropParamsV2(pydantic_v2.BaseModel):
+    x_crop_percent: float = Field(0.0, ge=0.0, le=1.0)
+    y_crop_percent: float = Field(0.0, ge=0.0, le=1.0)
+    height_crop_percent: float = Field(1.0, ge=0.0, le=1.0)
+    width_crop_percent: float = Field(1.0, ge=0.0, le=1.0)
 
 
 @dataclass

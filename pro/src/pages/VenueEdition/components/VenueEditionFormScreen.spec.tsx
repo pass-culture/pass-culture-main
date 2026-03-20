@@ -205,6 +205,7 @@ describe('VenueEditionFormScreen', () => {
             phoneNumber: '123',
             email: 'e@mail.fr',
             website: 'site.web',
+            socialMedias: null,
           },
           volunteeringUrl: 'http://coucou.fr',
         },
@@ -266,6 +267,7 @@ describe('VenueEditionFormScreen', () => {
         {
           ...baseVenue,
           collectiveDomains: [],
+          activity: null,
         },
         { initialRouterEntries: ['/'] }
       )
@@ -468,6 +470,12 @@ describe('VenueEditionFormScreen', () => {
             ['09:00', '12:00'],
             ['13:00', '18:00'],
           ],
+          TUESDAY: [],
+          WEDNESDAY: [],
+          THURSDAY: [],
+          FRIDAY: [],
+          SATURDAY: [],
+          SUNDAY: [],
         },
       })
 
@@ -709,6 +717,7 @@ describe('VenueEditionFormScreen', () => {
           visualDisabilityCompliant: null,
           motorDisabilityCompliant: null,
           isOpenToPublic: false,
+          activity: DisplayableActivity.FESTIVAL,
           collectiveDomains: [{ id: 1, name: 'FESTIVAL' }],
         })
 
@@ -900,6 +909,7 @@ describe('VenueEditionFormScreen', () => {
             email: 'email@example.com',
             phoneNumber: '0612345678',
             website: 'http://example.com',
+            socialMedias: null,
           },
           collectiveDomains: [],
           volunteeringUrl: 'coucou.fr',
@@ -946,6 +956,7 @@ describe('VenueEditionFormScreen', () => {
             phoneNumber: '123',
             email: 'e@mail.fr',
             website: 'site.web',
+            socialMedias: null,
           },
           collectiveDomains: [
             { id: 1, name: 'domaine 1' },
@@ -972,6 +983,7 @@ describe('VenueEditionFormScreen', () => {
             phoneNumber: '123',
             email: 'e@mail.fr',
             website: 'site.web',
+            socialMedias: null,
           },
           volunteeringUrl: 'coucou.fr',
         },
@@ -991,6 +1003,7 @@ describe('VenueEditionFormScreen', () => {
             phoneNumber: '123',
             email: 'e@mail.fr',
             website: 'site.web',
+            socialMedias: null,
           },
         },
         {
@@ -1019,6 +1032,7 @@ describe('VenueEditionFormScreen', () => {
             phoneNumber: '123',
             email: 'e@mail.fr',
             website: 'site.web',
+            socialMedias: null,
           },
           collectiveDomains: [{ name: 'domaine 1', id: 1 }],
         },
@@ -1043,6 +1057,7 @@ describe('VenueEditionFormScreen', () => {
             phoneNumber: '123',
             email: 'e@mail.fr',
             website: 'site.web',
+            socialMedias: null,
           },
         },
         {

@@ -74,6 +74,10 @@ def compute_upsert_changes(
     return {weekday: {"old": old_values.get(weekday), "new": timespans} for weekday, timespans in updates.items()}
 
 
+# TODO(jbaudet-pass - 03/2026): deprecated use format_opening_hours_v2
+# instead. Remove once not needed anymore, after the all the related
+# pydantic v1 models have been migrated.
+# NOTE: the docstring is wrong, the From/To part is out of date.
 def format_opening_hours(
     opening_hours: list[offerers_models.OpeningHours] | None,
 ) -> schemas.WeekdayOpeningHoursTimespans:
@@ -97,3 +101,26 @@ def format_opening_hours(
 
     formatted = {day: timespans for day, timespans in formatted.items() if timespans}
     return schemas.WeekdayOpeningHoursTimespans(**formatted)  # type: ignore[arg-type]
+
+
+def format_opening_hours_v2(
+    opening_hours: list[offerers_models.OpeningHours] | None,
+) -> schemas.WeekdayOpeningHoursTimespansV2:
+    """Format DB data to the expected pydantic model format...
+
+    ...where each week day has its opening hours set (=can be None)
+    """
+    formatted: dict[str, list[tuple[str, str]] | None] = {weekday.value: None for weekday in offerers_models.Weekday}
+    for oh in opening_hours or []:
+        timespans = []
+        for ts in oh.timespan or []:
+            lower = int(ts.lower)
+            upper = int(ts.upper)
+
+            start = time(lower // 60, lower % 60).isoformat(timespec="minutes")
+            end = time(upper // 60, upper % 60).isoformat(timespec="minutes")
+
+            timespans.append((start, end))
+        formatted[oh.weekday.value] = sorted(timespans, key=lambda ts: ts[0]) or None
+
+    return schemas.WeekdayOpeningHoursTimespansV2(**formatted)

@@ -12,7 +12,7 @@ import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
-  defaultDMSApplicationForEAC,
+  defaultDMSApplicationForEACV2,
   defaultGetVenue,
 } from '@/commons/utils/factories/collectiveApiFactories'
 import {
@@ -127,7 +127,7 @@ describe('CollectiveDataEdition', () => {
           ...defaultGetVenue,
           id: 1,
           hasAdageId: false,
-          collectiveDmsApplications: [{ ...defaultDMSApplicationForEAC }],
+          collectiveDmsApplications: [{ ...defaultDMSApplicationForEACV2 }],
         },
       })
 

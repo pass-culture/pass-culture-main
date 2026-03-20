@@ -59,6 +59,7 @@ const renderIndividualOfferLocationScreen: RenderComponentFunction<
         longitude: 2.30829,
         postalCode: '75001',
         street: '3 Rue de Valois',
+        departmentCode: '75',
       },
     },
   ]

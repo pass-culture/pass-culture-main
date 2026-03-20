@@ -8,6 +8,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.constants import ALL_INTERVENTION_AREA
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.serialization.utils import string_length_validator
 from pcapi.utils.date import format_into_utc_date
@@ -21,6 +22,8 @@ class DMSApplicationstatus(enum.Enum):
     INSTRUCTING = "en_instruction"
 
 
+# NOTE(jbaudet - 02/2026): deprecated. Please use
+# DMSApplicationForEACV2 instead (pydantic v2 migration)
 class DMSApplicationForEAC(BaseModel):
     venueId: int
     state: DMSApplicationstatus
@@ -46,20 +49,46 @@ class DMSApplicationForEAC(BaseModel):
         return super().from_orm(collective_dms_application)
 
 
-class GetVenueDomainResponseModel(BaseModel):
+class DMSApplicationForEACV2(HttpBodyModel):
+    venueId: int
+    state: DMSApplicationstatus
+    procedure: int
+    application: int
+    lastChangeDate: datetime
+    depositDate: datetime
+    expirationDate: datetime | None
+    buildDate: datetime | None
+    instructionDate: datetime | None
+    processingDate: datetime | None
+    userDeletionDate: datetime | None
+
+    @classmethod
+    def build(
+        cls, application: educational_models.CollectiveDmsApplication, venue: offerers_models.Venue
+    ) -> "DMSApplicationForEACV2":
+        return cls(
+            venueId=venue.id,
+            state=application.state,
+            procedure=application.procedure,
+            application=application.application,
+            lastChangeDate=application.lastChangeDate,
+            depositDate=application.depositDate,
+            expirationDate=application.expirationDate,
+            processingDate=application.processingDate,
+            userDeletionDate=application.userDeletionDate,
+            buildDate=application.buildDate,
+            instructionDate=application.instructionDate,
+        )
+
+
+class GetVenueDomainResponseModel(HttpBodyModel):
     id: int
     name: str
 
-    class Config:
-        orm_mode = True
 
-
-class LegalStatusResponseModel(BaseModel):
+class LegalStatusResponseModel(HttpBodyModel):
     id: int
     name: str
-
-    class Config:
-        orm_mode = True
 
 
 class EditVenueCollectiveDataBodyModel(BaseModel):

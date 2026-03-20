@@ -5,7 +5,6 @@ import type {
   GetVenueResponseModel,
   LocationResponseModelV2,
   VenueListItemLiteResponseModel,
-  VenueTypeResponseModel,
 } from '@/apiClient/v1'
 
 import type { PartialExcept } from '../types'
@@ -66,13 +65,49 @@ export const makeGetVenueResponseModel = <
       name: offererName,
     })
 
+  const location: LocationResponseModelV2 = {
+    id: 2,
+    banId: null,
+    city: 'Paris',
+    departmentCode: null,
+    inseeCode: null,
+    isManualEdition: false,
+    isVenueLocation: false,
+    label: null,
+    latitude: 0,
+    longitude: 0,
+    postalCode: '75001',
+    street: null,
+  }
+
   const fake: GetVenueResponseModel = {
     id: override.id,
-    collectiveDmsApplications: [],
-    audioDisabilityCompliant: false,
+    activity: null,
     allowedOnAdage: false,
+    audioDisabilityCompliant: false,
+    adageInscriptionDate: null,
+    bankAccountStatus: null,
+    bannerMeta: null,
+    bannerUrl: null,
+    bookingEmail: `booking.${override.id}@test.com`,
+    collectiveAccessInformation: null,
+    collectiveDescription: null,
+    collectiveDmsApplications: [],
     collectiveDomains: [],
+    collectiveEmail: null,
+    collectiveInterventionArea: null,
+    collectiveLegalStatus: null,
+    collectiveNetwork: null,
+    collectivePhone: null,
+    collectiveStudents: null,
+    collectiveWebsite: null,
+    comment: null,
+    contact: null,
     dateCreated: new Date().toISOString(),
+    description: 'description',
+    externalAccessibilityData: null,
+    externalAccessibilityId: null,
+    externalAccessibilityUrl: null,
     hasActiveIndividualOffer: false,
     hasAdageId: false,
     hasOffers: false,
@@ -84,16 +119,20 @@ export const makeGetVenueResponseModel = <
     isPermanent: false,
     isValidated: false,
     isVirtual: false,
+    location: location,
     managingOfferer: offerer,
     mentalDisabilityCompliant: false,
     motorDisabilityCompliant: false,
     name: `Nom de la structure ${override.id}`,
+    openingHours: null,
     publicName: `Nom public de la structure ${override.id}`,
-    venueType: makeVenueTypeResponseModel({}),
+    pricingPoint: null,
+    siret: null,
     visualDisabilityCompliant: false,
     canDisplayHighlights: false,
     hasNonDraftOffers: false,
     volunteeringUrl: null,
+    withdrawalDetails: null,
   }
 
   return {
@@ -102,10 +141,12 @@ export const makeGetVenueResponseModel = <
   }
 }
 
-const makeVenueTypeResponseModel = <T extends Partial<VenueTypeResponseModel>>(
+const makeVenueTypeResponseModel = <
+  T extends Partial<VenueTypeResponseModelV2>,
+>(
   override: T
-): Omit<VenueTypeResponseModel, keyof T> & T => {
-  const fake: VenueTypeResponseModel = {
+): Omit<VenueTypeResponseModelV2, keyof T> & T => {
+  const fake: VenueTypeResponseModelV2 = {
     label: 'Autre',
     // Auto-generated `VenueTypeCode` enum is completely wrong:
     // real keys are those declared in api/src/pcapi/core/offerers/schemas.py

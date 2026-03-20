@@ -2,10 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type MotorDisabilityModel = {
-  entrance?: string;
-  exterior?: string;
-  facilities?: string;
-  parking?: string;
+export type VisualDisabilityModelV2 = {
+  audioDescription?: Array<string>;
+  soundBeacon?: string;
 };
 

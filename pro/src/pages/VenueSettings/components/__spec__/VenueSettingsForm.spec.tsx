@@ -67,6 +67,8 @@ const defaultVenue: GetVenueResponseModel = {
     isManualEdition: false,
     latitude: 48.8566,
     longitude: 2.3522,
+    departmentCode: '75',
+    label: 'label',
   },
   venueType: { value: VenueTypeCode.CENTRE_CULTUREL, label: 'Centre culturel' },
   comment: 'Un lieu populaire pour les concerts et les événements',
