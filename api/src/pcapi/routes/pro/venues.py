@@ -130,14 +130,17 @@ def get_venues(query: venue_serialize.VenueListQueryModel) -> venue_deprecated_s
 @login_required
 @spectree_serialize(response_model=venue_serialize.GetVenueListLiteResponseModel, api=blueprint.pro_private_schema)
 def get_venues_lite(query: venue_serialize.VenueListQueryModel) -> venue_serialize.GetVenueListLiteResponseModel:
-    venue_list = offerers_repository.get_filtered_venues(
+    venues = offerers_repository.get_filtered_venues(
         pro_user_id=current_user.id,
         active_offerers_only=query.active_offerers_only,
         offerer_id=query.offerer_id,
         validated_offerer=query.validated,
     )
 
-    return venue_serialize.GetVenueListLiteResponseModel.build(venue_list)
+    venues_with_pending_validation = filter(lambda v: v.managingOfferer.isWaitingForValidation, venues)
+    other_venues = filter(lambda v: not v.managingOfferer.isWaitingForValidation, venues)
+
+    return venue_serialize.GetVenueListLiteResponseModel.build(other_venues, venues_with_pending_validation)
 
 
 @private_api.route("/venues/<int:venue_id>", methods=["PATCH"])
