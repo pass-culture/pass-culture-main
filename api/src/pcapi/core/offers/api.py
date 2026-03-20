@@ -98,8 +98,6 @@ logger = logging.getLogger(__name__)
 
 AnyOffer = educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate | models.Offer
 
-OFFERS_RECAP_LIMIT = 101
-
 
 OFFER_LIKE_MODELS = {
     "Offer",

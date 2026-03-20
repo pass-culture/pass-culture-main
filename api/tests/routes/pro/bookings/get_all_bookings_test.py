@@ -48,7 +48,7 @@ class GetAllBookingsTest:
             offerer_id=None,
             offerer_address_id=None,
             page=3,
-            per_page_limit=1000,
+            per_page_limit=500,
         )
 
     @pytest.mark.usefixtures("db_session")
@@ -73,7 +73,7 @@ class GetAllBookingsTest:
             offerer_id=None,
             offerer_address_id=None,
             page=1,
-            per_page_limit=1000,
+            per_page_limit=500,
         )
 
     @pytest.mark.usefixtures("db_session")
@@ -102,7 +102,7 @@ class GetAllBookingsTest:
             offerer_id=None,
             offerer_address_id=None,
             page=1,
-            per_page_limit=1000,
+            per_page_limit=500,
         )
 
     @pytest.mark.usefixtures("db_session")
@@ -131,7 +131,7 @@ class GetAllBookingsTest:
             offerer_id=None,
             offerer_address_id=None,
             page=1,
-            per_page_limit=1000,
+            per_page_limit=500,
         )
 
 
