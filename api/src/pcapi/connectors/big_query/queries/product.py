@@ -206,7 +206,7 @@ class BigQueryTiteliveMusicProductDeltaQuery(BaseQuery):
     model = BigQueryTiteliveMusicProductModel
 
 
-class TiteLiveBookArticleV2(pydantic_v2.BaseModel):
+class TiteLiveBookArticle(pydantic_v2.BaseModel):
     codesupport: str | None = None
     gencod: str = pydantic_v2.Field(min_length=13, max_length=13)
     gtl: TiteliveGtl | None = None
@@ -228,8 +228,8 @@ class TiteLiveBookArticleV2(pydantic_v2.BaseModel):
         return gtl
 
 
-class TiteLiveBookWorkV2(pydantic_v2.BaseModel):
-    article: list[TiteLiveBookArticleV2]
+class TiteLiveBookWork(pydantic_v2.BaseModel):
+    article: list[TiteLiveBookArticle]
     titre: str
 
     @pydantic_v2.field_validator("article", mode="before")

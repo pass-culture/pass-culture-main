@@ -100,15 +100,11 @@ class FeatureToggle(enum.Enum):
     SYNCHRONIZE_ARTISTS_FROM_BIGQUERY_TABLES = (
         "Permet la synchronisation des artistes via les tables BigQuery fournies par l'équipe Data"
     )
-    SYNCHRONIZE_TITELIVE_PRODUCTS = "Permettre limport journalier du référentiel des livres"
     SYNCHRONIZE_TITELIVE_BOOK_PRODUCTS_FROM_BIGQUERY_TABLES = (
         "Permet la synchronisation des produits livre Titelive via les tables BigQuery fournies par l'équipe Data"
     )
     SYNCHRONIZE_TITELIVE_MUSIC_PRODUCTS_FROM_BIGQUERY_TABLES = (
         "Permet la synchronisation des produits musique de Titelive via les tables BigQuery fournies par l'équipe Data"
-    )
-    SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS = (
-        "Permettre l'import journalier du référentiel de la musique à travers l'API Titelive"
     )
     UPDATE_BOOKING_USED = "Permettre la validation automatique des contremarques 48h après la fin de lévènement"
     ENABLE_VENUE_STRICT_SEARCH = (
@@ -212,7 +208,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_ZENDESK_SELL_CREATION,
     FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC,
     FeatureToggle.SEND_ALL_EMAILS_TO_EHP,
-    FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
     FeatureToggle.VENUE_REGULARIZATION,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CHECK_OFFERERS,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CULTURAL_SURVEY,

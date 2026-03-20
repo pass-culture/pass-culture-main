@@ -14,7 +14,7 @@ from markupsafe import Markup
 from pydantic import TypeAdapter
 from werkzeug.exceptions import NotFound
 
-from pcapi.connectors.big_query.queries.product import TiteLiveBookWorkV2
+from pcapi.connectors.big_query.queries.product import TiteLiveBookWork
 from pcapi.connectors.titelive import GtlIdError
 from pcapi.connectors.titelive import get_by_ean13
 from pcapi.core.categories import subcategories
@@ -25,7 +25,7 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
-from pcapi.core.providers.titelive_book_search import get_ineligibility_reasons
+from pcapi.core.providers.titelive_bq_book_search import get_ineligibility_reasons
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -212,7 +212,7 @@ def get_product_details(product_id: int) -> response_utils.BackofficeResponse:
                 "warning",
             )
         try:
-            data = TypeAdapter(TiteLiveBookWorkV2).validate_python(titelive_data["oeuvre"])
+            data = TypeAdapter(TiteLiveBookWork).validate_python(titelive_data["oeuvre"])
         except Exception:
             pass
         else:
@@ -274,7 +274,7 @@ def get_product_synchronize_with_titelive_form(product_id: int) -> response_util
             ],
         )
     try:
-        data = TypeAdapter(TiteLiveBookWorkV2).validate_python(titelive_data["oeuvre"])
+        data = TypeAdapter(TiteLiveBookWork).validate_python(titelive_data["oeuvre"])
     except Exception:
         ineligibility_reasons = None
     else:
@@ -570,7 +570,7 @@ def search_product() -> response_utils.BackofficeResponse:
                     "warning",
                 )
             try:
-                data = TypeAdapter(TiteLiveBookWorkV2).validate_python(titelive_data["oeuvre"])
+                data = TypeAdapter(TiteLiveBookWork).validate_python(titelive_data["oeuvre"])
             except Exception:
                 titelive_data = {}
                 ineligibility_reason = None

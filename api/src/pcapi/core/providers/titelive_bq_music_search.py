@@ -6,11 +6,11 @@ from pcapi.connectors.big_query.queries.base import BaseQuery
 from pcapi.connectors.big_query.queries.product import BigQueryTiteliveMusicProductDeltaQuery
 from pcapi.connectors.big_query.queries.product import BigQueryTiteliveMusicProductModel
 from pcapi.connectors.titelive import TiteliveBase
-from pcapi.core.providers.titelive_book_search import get_gtl_id
+from pcapi.core.categories import subcategories
+from pcapi.core.categories.genres import music
+from pcapi.core.providers import constants
 from pcapi.core.providers.titelive_bq_sync_base import BigQuerySyncTemplate
-from pcapi.core.providers.titelive_music_search import is_music_codesupport_allowed
-from pcapi.core.providers.titelive_music_search import parse_titelive_music_codesupport
-from pcapi.core.providers.titelive_music_search import parse_titelive_music_genre
+from pcapi.core.providers.titelive_bq_sync_base import get_gtl_id
 
 
 logger = logging.getLogger(__name__)
@@ -77,3 +77,37 @@ class BigQueryTiteliveMusicProductSync(BigQuerySyncTemplate[BigQueryTiteliveMusi
 
         product.extraData = product.extraData or offers_models.OfferExtraData()
         product.extraData.update(typing.cast(offers_models.OfferExtraData, clean_extra_data))
+
+
+def parse_titelive_music_genre(gtl_id: str | None) -> tuple[music.OldMusicType, music.OldMusicSubType]:
+    music_slug = (
+        constants.MUSIC_SLUG_BY_GTL_ID.get(gtl_id, music.OTHER_SHOW_TYPE_SLUG) if gtl_id else music.OTHER_SHOW_TYPE_SLUG
+    )
+    return (
+        music.MUSIC_TYPES_BY_SLUG[music_slug],
+        music.MUSIC_SUB_TYPES_BY_SLUG[music_slug],
+    )
+
+
+def is_music_codesupport_allowed(codesupport: str | None) -> bool:
+    if not codesupport:
+        return False
+
+    support = constants.TITELIVE_MUSIC_SUPPORTS_BY_CODE.get(codesupport)
+    if support is None:
+        logger.warning("received unexpected titelive codesupport %s", codesupport)
+        return False
+
+    return support["is_allowed"]
+
+
+def parse_titelive_music_codesupport(codesupport: str | None) -> subcategories.Subcategory:
+    assert codesupport, "empty code support was not filtered"
+
+    support = constants.TITELIVE_MUSIC_SUPPORTS_BY_CODE.get(codesupport)
+    assert support, f"unexpected codesupport {codesupport} was not filtered"
+
+    is_vinyl = any(not_cd_libelle in support["libelle"] for not_cd_libelle in constants.NOT_CD_LIBELLES)
+    if is_vinyl:
+        return subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE
+    return subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD
