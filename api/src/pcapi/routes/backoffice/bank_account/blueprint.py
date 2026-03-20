@@ -29,6 +29,7 @@ from pcapi.routes.backoffice.utils import access_control
 from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.routes.serialization import reimbursement_csv_serialize
 from pcapi.utils import date as date_utils
+from pcapi.utils import pdf
 from pcapi.utils import urls
 from pcapi.utils.human_ids import humanize
 
@@ -181,14 +182,18 @@ def get_invoices(bank_account_id: int) -> response_utils.BackofficeResponse:
     )
 
 
+def _redirect_to_invoices(bank_account_id: int, code: int = 303) -> response_utils.BackofficeResponse:
+    if request.referrer:
+        return redirect(request.referrer, code)
+    return url_for("backoffice_web.bank_account.get", bank_account_id=bank_account_id, active_tab="invoices")
+
+
 @bank_blueprint.route("/<int:bank_account_id>/reimbursement-details", methods=["POST"])
 def download_reimbursement_details(bank_account_id: int) -> response_utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(
-            request.referrer or url_for("backoffice_web.bank_account.get", bank_account_id=bank_account_id), code=303
-        )
+        return _redirect_to_invoices(bank_account_id)
 
     invoices = (
         db.session.query(finance_models.Invoice).filter(finance_models.Invoice.id.in_(form.object_ids_list)).all()
@@ -204,6 +209,36 @@ def download_reimbursement_details(bank_account_id: int) -> response_utils.Backo
         as_attachment=True,
         download_name=f"details_remboursements_{bank_account_id}_{export_date}.csv",
         mimetype="text/csv",
+    )
+
+
+@bank_blueprint.route("/<int:bank_account_id>/invoices", methods=["POST"])
+def download_invoices(bank_account_id: int) -> response_utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    if not form.validate():
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return _redirect_to_invoices(bank_account_id)
+
+    invoices = (
+        db.session.query(finance_models.Invoice)
+        .filter(finance_models.Invoice.id.in_(form.object_ids_list))
+        .order_by(finance_models.Invoice.date)
+        .all()
+    )
+
+    invoice_pdf_urls = [invoice.url for invoice in invoices]
+
+    try:
+        export_data = pdf.merge_pdf_files(invoice_pdf_urls)
+    except FileNotFoundError as exc:
+        flash(Markup("Échec de téléchargement du justificatif {url}").format(url=exc), "warning")
+        return _redirect_to_invoices(bank_account_id)
+
+    return send_file(
+        BytesIO(export_data),
+        as_attachment=True,
+        download_name=f"justificatifs_{bank_account_id}.pdf",
+        mimetype="application/pdf; charset=utf-8;",
     )
 
 
