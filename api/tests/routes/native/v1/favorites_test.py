@@ -27,16 +27,16 @@ FAVORITES_URL = "/native/v1/me/favorites"
 
 class GetTest:
     class Returns200Test:
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # favorites
+
         def when_user_is_logged_in_but_has_no_favorites(self, client):
             # Given
             user = users_factories.UserFactory()
 
             # When
-            expected_num_queries = 1  # user
-            expected_num_queries += 1  # favorites
-
             client = client.with_token(user)
-            with assert_num_queries(expected_num_queries):
+            with assert_num_queries(self.expected_num_queries):
                 response = client.get(FAVORITES_URL)
                 assert response.status_code == 200
 
@@ -102,9 +102,7 @@ class GetTest:
             client.with_token(user)
 
             # When
-            # 1: Fetch the user for auth
-            # 1: Fetch the favorites
-            with assert_num_queries(2):
+            with assert_num_queries(self.expected_num_queries):
                 response = client.get(FAVORITES_URL)
 
             # Then
@@ -213,9 +211,7 @@ class GetTest:
 
             client = client.with_token(user)
 
-            expected_num_queries = 1  # user
-            expected_num_queries += 1  # favorites
-            with assert_num_queries(expected_num_queries):
+            with assert_num_queries(self.expected_num_queries):
                 response = client.get(FAVORITES_URL)
 
             favorites = response.json["favorites"]
@@ -279,10 +275,7 @@ class GetTest:
             client.with_token(user)
 
             # When
-            # QUERY_COUNT:
-            # 1: Fetch the user for auth
-            # 1: Fetch the favorites
-            with assert_num_queries(2):
+            with assert_num_queries(self.expected_num_queries):
                 response = client.get(FAVORITES_URL)
 
             # Then
@@ -343,11 +336,7 @@ class GetTest:
             # When
 
             client.post(FAVORITES_URL, json={"offerId": offer.id})
-            # 1: Fetch the user for auth
-            # 1: Fetch the favorites
-            num_queries = 1  # Get user
-            num_queries += 1  # Get favorites
-            with assert_num_queries(num_queries):
+            with assert_num_queries(self.expected_num_queries):
                 response = client.get(FAVORITES_URL)
 
             # Then
