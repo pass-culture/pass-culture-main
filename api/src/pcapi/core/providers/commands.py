@@ -1,6 +1,6 @@
 import datetime
+import enum
 import logging
-from time import time
 from typing import Type
 
 import click
@@ -18,7 +18,6 @@ from pcapi.utils.blueprint import Blueprint
 from .etls.boost_etl import BoostExtractTransformLoadProcess
 from .etls.cds_etl import CDSExtractTransformLoadProcess
 from .etls.cgr_etl import CGRExtractTransformLoadProcess
-from .etls.ems_etl import EMSExtractTransformLoadProcess
 from .titelive_book_search import TiteliveBookSearch
 from .titelive_music_search import TiteliveMusicSearch
 from .titelive_utils import generate_titelive_gtl_from_file
@@ -28,109 +27,74 @@ blueprint = Blueprint(__name__, __name__)
 logger = logging.getLogger(__name__)
 
 
+class CinemaProviders(enum.Enum):
+    CGR = enum.auto()
+    CINE_GROUP = enum.auto()
+    CINE_OFFICE = enum.auto()
+
+
 @blueprint.cli.command("synchronize_allocine_products")
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 def synchronize_allocine_products() -> None:
     allocine.synchronize_products()
 
 
-# TODO (tcoudray-pass, 07/10/25): Remove this command once Boost has been migrated to new integration
-@blueprint.cli.command("test_etl_integration")
-@click.option("-vp", "--venue-provider-id", required=True, help="Venue provider id", type=int)
-def test_etl_integration(venue_provider_id: int) -> None:
-    venue_provider: providers_models.VenueProvider = (
-        db.session.query(providers_models.VenueProvider).filter_by(id=venue_provider_id).one()
-    )
+@blueprint.cli.command("synchronize_provider_stocks")
+@cron_decorators.log_cron_with_transaction
+@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
+@click.argument("provider", type=click.Choice(CinemaProviders, case_sensitive=False), required=True)
+def synchronize_provider_stocks(provider: CinemaProviders) -> None:
+    """Fetch & load the cinema sessions of venues linked to given cinema provider"""
+    CINEMA_PROVIDER_MAPPING: dict[
+        CinemaProviders,
+        tuple[
+            str,
+            Type[BoostExtractTransformLoadProcess]
+            | Type[CDSExtractTransformLoadProcess]
+            | Type[CGRExtractTransformLoadProcess],
+        ],
+    ] = {
+        CinemaProviders.CGR: ("CGRStocks", CGRExtractTransformLoadProcess),
+        CinemaProviders.CINE_GROUP: ("BoostStocks", BoostExtractTransformLoadProcess),
+        CinemaProviders.CINE_OFFICE: ("CDSStocks", CDSExtractTransformLoadProcess),
+    }
 
-    local_class_to_etl_mapping: dict[
+    local_class, ETLProcess = CINEMA_PROVIDER_MAPPING[provider]
+
+    venue_providers = providers_repository.get_active_venue_providers_by_provider_local_class(local_class)
+    for venue_provider in venue_providers:
+        ETLProcess(venue_provider).execute()
+
+
+@blueprint.cli.command("synchronize_venue_stocks")
+@click.option("-vp", "--venue-provider-id", required=True, help="Venue provider id", type=int)
+@click.option("--debug", is_flag=True)
+def synchronize_venue_stocks(venue_provider_id: int, debug: bool = False) -> None:
+    """Fetch & load the cinema sessions for given venue_provider"""
+    _LOCAL_CLASS_NAME_TO_ETL_CLASS: dict[
         str,
         Type[BoostExtractTransformLoadProcess]
         | Type[CDSExtractTransformLoadProcess]
-        | Type[CGRExtractTransformLoadProcess]
-        | Type[EMSExtractTransformLoadProcess],
+        | Type[CGRExtractTransformLoadProcess],
     ] = {
         "BoostStocks": BoostExtractTransformLoadProcess,
         "CDSStocks": CDSExtractTransformLoadProcess,
         "CGRStocks": CGRExtractTransformLoadProcess,
-        "EMSStocks": EMSExtractTransformLoadProcess,
     }
 
-    if venue_provider.provider.localClass not in local_class_to_etl_mapping:
-        logger.warning("ETL integration not available for %s", venue_provider.provider.localClass)
+    venue_provider: providers_models.VenueProvider = (
+        db.session.query(providers_models.VenueProvider).filter_by(id=venue_provider_id).one()
+    )
+
+    if venue_provider.provider.localClass not in _LOCAL_CLASS_NAME_TO_ETL_CLASS:
+        logger.info("The given venue provider is not linked to a cinema provider")
         return
 
-    with logging_utils.logging_at_level(logging.getLogger("pcapi"), level=logging.DEBUG):
-        etl_class = local_class_to_etl_mapping[venue_provider.provider.localClass]
-        etl_process = etl_class(venue_provider)
-        etl_process.execute()
+    ETLProcess = _LOCAL_CLASS_NAME_TO_ETL_CLASS[venue_provider.provider.localClass]
 
-
-@blueprint.cli.command("debug_synchronize_venue_provider")
-@click.option("-vp", "--venue-provider-id", required=True, help="Venue provider id", type=int)
-def debug_synchronize_venue_provider(venue_provider_id: int) -> None:
-    """
-    Start synchronize_venue_provider with `pcapi` logger at DEBUG level
-    """
-    with logging_utils.logging_at_level(logging.getLogger("pcapi"), level=logging.DEBUG):
-        venue_provider: providers_models.VenueProvider = (
-            db.session.query(providers_models.VenueProvider).filter_by(id=venue_provider_id).one()
-        )
-
-        if venue_provider.provider.localClass == "EMSStocks":
-            assert venue_provider.venueIdAtOfferProvider  # to make mypy happy
-            ems_cinema_details = providers_repository.get_ems_cinema_details(venue_provider.venueIdAtOfferProvider)
-            target_version = ems_cinema_details.lastVersion - 1  # retry from previous version
-
-            provider_manager.synchronize_ems_venue_provider(
-                venue_provider=venue_provider, target_version=target_version
-            )
-            return
-
-        provider_manager.synchronize_venue_provider(venue_provider=venue_provider)
-
-
-@blueprint.cli.command("update_providables")
-@click.option("-p", "--provider-name", help="Limit update to this provider name")
-@click.option(
-    "-l",
-    "--limit",
-    help="Limit update to n items per providerName/venueId" + " (for test purposes)",
-    type=int,
-    default=None,
-)
-@click.option("-w", "--venue-provider-id", type=int, help="Limit update to this venue provider id")
-def update_providables(provider_name: str, venue_provider_id: int, limit: int) -> None:
-    start = time()
-    logger.info(
-        "Starting update_providables with provider_name=%s and venue_provider_id=%s", provider_name, venue_provider_id
-    )
-
-    if (provider_name and venue_provider_id) or not (provider_name or venue_provider_id):
-        raise ValueError("Call either with provider-name or venue-provider-id")
-
-    if provider_name:
-        provider_manager.synchronize_data_for_provider(provider_name, limit)
-
-    if venue_provider_id:
-        venue_provider = providers_repository.get_venue_provider_by_id(venue_provider_id)
-        provider_manager.synchronize_venue_provider(venue_provider, limit)
-
-    logger.info(
-        "Finished update_providables with provider_name=%s and venue_provider_id=%s elapsed=%.2f",
-        provider_name,
-        venue_provider_id,
-        time() - start,
-    )
-
-
-@blueprint.cli.command("update_providables_by_provider_id")
-@click.option("-p", "--provider-id", required=True, help="Update providables for this provider", type=int)
-@click.option(
-    "-l", "--limit", help="Limit update to n items per venue provider" + " (for test purposes)", type=int, default=None
-)
-def update_providables_by_provider_id(provider_id: int, limit: int | None) -> None:
-    venue_providers = providers_repository.get_active_venue_providers_by_provider(provider_id)
-    provider_manager.synchronize_venue_providers(venue_providers, limit)
+    logging_level = logging.DEBUG if debug else logging.INFO
+    with logging_utils.logging_at_level(logging.getLogger("pcapi"), logging_level):
+        ETLProcess(venue_provider).execute()
 
 
 @blueprint.cli.command("synchronize_allocine_stocks")

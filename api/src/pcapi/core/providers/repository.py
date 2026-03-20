@@ -31,6 +31,17 @@ def get_active_venue_providers_by_provider(provider_id: int) -> list[models.Venu
     return db.session.query(models.VenueProvider).filter_by(providerId=provider_id, isActive=True).all()
 
 
+def get_active_venue_providers_by_provider_local_class(local_class: str) -> list[models.VenueProvider]:
+    return (
+        db.session.query(models.VenueProvider)
+        .join(models.Provider)
+        .filter(models.VenueProvider.isActive == True)
+        .filter(models.Provider.isActive == True)
+        .filter(models.Provider.localClass == local_class)
+        .all()
+    )
+
+
 def get_venue_provider_by_venue_and_provider_ids(venue_id: int, provider_id: int) -> models.VenueProvider | None:
     return db.session.query(models.VenueProvider).filter_by(venueId=venue_id, providerId=provider_id).one_or_none()
 
