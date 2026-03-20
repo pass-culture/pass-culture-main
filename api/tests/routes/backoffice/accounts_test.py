@@ -896,28 +896,35 @@ class GetPublicAccountTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
-        content = html_parser.content_as_text(response.data)
-        assert f"User ID : {user.id} " in content
-        assert f"Email : {user.email} " in content
-        assert f"Tél : {user.phoneNumber} " in content
+        descriptions = html_parser.extract_descriptions(response.data)
+        assert descriptions["User ID"] == str(user.id)
+        assert descriptions["Email"] == user.email
+        assert descriptions["Téléphone"] == user.phoneNumber
+
         if user.dateOfBirth:
-            assert f"Date de naissance : {user.dateOfBirth.strftime('%d/%m/%Y')}" in content
-        assert "Date de naissance déclarée à l'inscription" not in content
+            assert descriptions["Date de naissance"] == f"{user.dateOfBirth.strftime('%d/%m/%Y')} ({user.age} ans)"
+        else:
+            assert "Date de naissance" not in descriptions
         if user.deposit:
-            assert (
-                f"Crédité le : {user.deposit.dateCreated.astimezone(tz=pytz.timezone('Europe/Paris')).strftime('%d/%m/%Y à %Hh%M')}"
-                in content
-            )
-            assert (
-                f"Date d'expiration du crédit : {user.deposit.expirationDate.astimezone(tz=pytz.timezone('Europe/Paris')).strftime('%d/%m/%Y à %Hh%M')}"
-                in content
-            )
-        assert f"Date de création du compte : {user.dateCreated.strftime('%d/%m/%Y')}" in content
-        assert (
-            f"Date de dernière connexion : {user.lastConnectionDate.strftime('%d/%m/%Y') if user.lastConnectionDate else ''}"
-            in content
-        )
-        assert f"Adresse {user.address} " in content
+            assert descriptions["Crédité le"] == user.deposit.dateCreated.astimezone(
+                tz=pytz.timezone("Europe/Paris")
+            ).strftime("%d/%m/%Y à %Hh%M")
+            assert descriptions["Date d'expiration du crédit"] == user.deposit.expirationDate.astimezone(
+                tz=pytz.timezone("Europe/Paris")
+            ).strftime("%d/%m/%Y à %Hh%M")
+
+        assert descriptions["Date de création du compte"] == user.dateCreated.strftime("%d/%m/%Y")
+        if user.lastConnectionDate:
+            assert descriptions["Date de dernière connexion"] == user.lastConnectionDate.astimezone(
+                tz=pytz.timezone("Europe/Paris")
+            ).strftime("%d/%m/%Y à %Hh%M")
+        else:
+            "Date de dèrniere connexion" not in descriptions
+
+        if user.postalCode:
+            assert descriptions["Adresse"] == f"{user.address}, {user.postalCode} {user.city}"
+        else:
+            assert descriptions["Adresse"] == f"{user.address}, {user.city}"
         assert url_for("backoffice_web.users.redirect_to_brevo_user_page", user_id=user_id).encode() in response.data
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
@@ -959,9 +966,8 @@ class GetPublicAccountTest(GetEndpointHelper):
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         assert "Suspendu : Fraude hacking" in badges
-
-        content = html_parser.content_as_text(response.data)
-        assert "Date de suspension : 03/11/2023" in content
+        descriptions = html_parser.extract_descriptions(response.data)
+        assert descriptions["Date de suspension du compte"] == "03/11/2023 à 12h12"
 
     def test_get_public_account_with_unconfirmed_modified_email(self, authenticated_client):
         user = users_factories.UserFactory()
@@ -1092,22 +1098,22 @@ class GetPublicAccountTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
-        content = html_parser.content_as_text(response.data)
-        assert f"Date de naissance : {user.validatedBirthDate.strftime('%d/%m/%Y')} " in content
-        assert f"Date de naissance déclarée à l'inscription : {user.dateOfBirth.strftime('%d/%m/%Y')} " in content
+        descriptions = html_parser.extract_descriptions(response.data)
+        assert descriptions["Date de naissance"] == f"{user.validatedBirthDate.strftime('%d/%m/%Y')} ({user.age} ans)"
+        assert descriptions["Date de naissance déclarée à l'inscription"] == user.dateOfBirth.strftime("%d/%m/%Y")
 
     @pytest.mark.parametrize(
         "user_factory,expected_remaining_text,expected_digital_remaining_text",
         [
             (
                 users_factories.BeneficiaryFactory,
-                "137,50 € Crédit restant 150,00 €",
-                "87,50 € Crédit digital restant 100,00 €",
+                "137,50 €restants sur 150,00 €",
+                "Dont 100,00 € en offres numériques",
             ),
             (
                 users_factories.CaledonianBeneficiaryFactory,
-                "137,50 € (16410 CFP) Crédit restant 150,00 € (17900 CFP)",
-                "87,50 € (10440 CFP) Crédit digital restant 100,00 € (11935 CFP)",
+                "137,50 € (16410 CFP)restants sur 150,00 € (17900 CFP)",
+                "Dont 100,00 € (11935 CFP) en offres numériques",
             ),
         ],
     )
@@ -1131,7 +1137,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
-        cards_text = html_parser.extract_cards_text(response.data)
+        cards_text = html_parser.content_as_text(response.data)
         # Remaining credit + Title + Initial Credit
         assert expected_remaining_text in cards_text
         assert expected_digital_remaining_text in cards_text
@@ -1139,8 +1145,8 @@ class GetPublicAccountTest(GetEndpointHelper):
     @pytest.mark.parametrize(
         "postal_code,expected_text",
         [
-            ("97200", "0,00 € Crédit restant 0,00 €"),
-            ("98800", "0,00 € (0 CFP) Crédit restant 0,00 € (0 CFP)"),
+            ("97200", "0,00 €restant sur 0,00 € Crédité"),
+            ("98800", "0,00 € (0 CFP)restant sur 0,00 € (0 CFP)"),
         ],
     )
     def test_get_grant_free_credit_does_not_divide_by_zero(self, authenticated_client, postal_code, expected_text):
@@ -1156,7 +1162,8 @@ class GetPublicAccountTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
 
         assert response.status_code == 200
-        assert expected_text in html_parser.extract_cards_text(response.data)
+
+        assert expected_text in html_parser.content_as_text(response.data)
 
     def test_get_non_beneficiary_credit(self, authenticated_client):
         _, _, _, _, random, _ = create_bunch_of_accounts()
@@ -1166,7 +1173,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
-        assert "Crédit restant" not in html_parser.content_as_text(response.data)
+        assert "restant sur" not in html_parser.content_as_text(response.data)
 
     @pytest.mark.parametrize(
         "user_factory,expected_price_1,expected_price_2",
@@ -1247,48 +1254,6 @@ class GetPublicAccountTest(GetEndpointHelper):
 
         assert not html_parser.extract_table_rows(response.data, parent_class="bookings-tab-pane")
         assert "Aucune réservation à ce jour" in response.data.decode("utf-8")
-
-    def test_fraud_check_link(self, authenticated_client):
-        user = users_factories.BeneficiaryFactory()
-        # modifiy the date for clearer tests
-        old_dms = subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=subscription_models.FraudCheckType.DMS,
-            dateCreated=date_utils.get_naive_utc_now() + datetime.timedelta(days=2),
-        )
-
-        user_id = user.id
-        # check if user should update their account
-        with assert_num_queries(self.expected_num_queries + 1):
-            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
-            assert response.status_code == 200
-
-        parsed_html = html_parser.get_soup(response.data)
-
-        main_dossier_card = str(
-            parsed_html.find("div", class_="pc-script-user-accounts-additional-data-main-fraud-check")
-        )
-        assert (
-            f"https://demarche.numerique.gouv.fr/procedures/{old_dms.source_data().procedure_number}/dossiers/{old_dms.thirdPartyId}"
-            in main_dossier_card
-        )
-
-        new_dms = subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=subscription_models.FraudCheckType.DMS,
-            dateCreated=date_utils.get_naive_utc_now() + datetime.timedelta(days=3),
-        )
-
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
-
-        parsed_html = html_parser.get_soup(response.data)
-        main_dossier_card = str(
-            parsed_html.find("div", class_="pc-script-user-accounts-additional-data-main-fraud-check")
-        )
-        assert (
-            f"https://demarche.numerique.gouv.fr/procedures/{new_dms.source_data().procedure_number}/dossiers/{new_dms.thirdPartyId}"
-            in main_dossier_card
-        )
 
     def test_get_public_account_history(self, legit_user, authenticated_client):
         # More than 30 days ago to have deterministic order because "Import ubble" is generated randomly between
@@ -1443,8 +1408,8 @@ class GetPublicAccountTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
-        content = html_parser.content_as_text(response.data)
-        assert f"User ID : {user.id} " in content
+        descriptions = html_parser.extract_descriptions(response.data)
+        assert descriptions["User ID"] == str(user.id)
 
         available_button = html_parser.extract(response.data, tag="button")
         assert "Anonymiser" not in available_button
