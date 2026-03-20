@@ -455,12 +455,12 @@ def create_venue(
     dms_token = generate_dms_token()
 
     venue = models.Venue()
-    venue_address = offerers_schemas.LocationModel(**venue_data.address.dict())
+    venue_address = offerers_schemas.LocationModel(**venue_data.address.model_dump())
 
     if not address:
         address = create_offerer_address_from_address_api(venue_address)
 
-    data = venue_data.dict(by_alias=True)
+    data = venue_data.model_dump(by_alias=True)
     data["dmsToken"] = dms_token
     if not data["publicName"]:
         data["publicName"] = data["name"]
@@ -496,7 +496,7 @@ def create_venue(
     db.session.flush()
 
     offerer_address = offerers_models.OffererAddress(
-        offererId=venue_data.managingOffererId,
+        offererId=venue_data.managing_offerer_id,
         addressId=address.id,
         type=offerers_models.LocationType.VENUE_LOCATION,
         label=venue_address.label or None,
@@ -506,7 +506,7 @@ def create_venue(
     db.session.flush()
 
     # Deal with cultural domains
-    link_cultural_domains_to_venue(venue_data.culturalDomains, venue)
+    link_cultural_domains_to_venue(venue_data.cultural_domains, venue)
 
     if venue.siret:
         link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
@@ -2212,20 +2212,20 @@ def create_from_onboarding_data(
         common_kwargs = dict(
             activity=offerers_models.Activity[onboarding_data.activity.name] if onboarding_data.activity else None,
             address=address,
-            bookingEmail=user.email,
-            culturalDomains=onboarding_data.culturalDomains,
+            booking_email=user.email,
+            cultural_domains=onboarding_data.culturalDomains,
             contact=None,
             description=None,
-            isOpenToPublic=onboarding_data.isOpenToPublic,
-            managingOffererId=user_offerer.offererId,
+            is_open_to_public=onboarding_data.isOpenToPublic,
+            managing_offerer_id=user_offerer.offererId,
             name=name,
-            publicName=onboarding_data.publicName,
-            venueLabelId=None,
-            withdrawalDetails=None,
-            audioDisabilityCompliant=None,
-            mentalDisabilityCompliant=None,
-            motorDisabilityCompliant=None,
-            visualDisabilityCompliant=None,
+            public_name=onboarding_data.publicName,
+            venue_label_id=None,
+            withdrawal_details=None,
+            audio_disability_compliant=None,
+            mental_disability_compliant=None,
+            motor_disability_compliant=None,
+            visual_disability_compliant=None,
         )
         if onboarding_data.createVenueWithoutSiret:
             comment_and_siret = dict(
@@ -2238,7 +2238,7 @@ def create_from_onboarding_data(
                 siret=onboarding_data.siret,
             )
         venue_kwargs = common_kwargs | comment_and_siret
-        venue_creation_info = venue_serialize.PostVenueBodyModel(**venue_kwargs)  # type: ignore[arg-type]
+        venue_creation_info = venue_serialize.PostVenueBodyModel(**venue_kwargs)
         venue = create_venue(venue_creation_info, user)
         create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
 

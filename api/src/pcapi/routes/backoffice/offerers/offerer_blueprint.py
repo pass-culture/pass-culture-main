@@ -1063,26 +1063,25 @@ def create_venue(offerer_id: int) -> response_utils.BackofficeResponse:
 
     venue_creation_info = venue_serialize.PostVenueBodyModel(
         activity=attachment_venue.activity,
-        # TODO(xordoquy): rename to location ?
         address=address_body_model,
         comment=offerers_schemas.VenueComment(
             "Partenaire culturel sans SIRET car dépend du SIRET d'un autre partenaire culturel"
         ),
-        culturalDomains=[domain.name for domain in attachment_venue.collectiveDomains],
+        cultural_domains=[domain.name for domain in attachment_venue.collectiveDomains],
         siret=None,
-        bookingEmail=offerers_schemas.VenueBookingEmail(attachment_venue.bookingEmail),
-        managingOffererId=offerer_id,
+        booking_email=offerers_schemas.VenueBookingEmail(attachment_venue.bookingEmail),
+        managing_offerer_id=offerer_id,
         name=offerers_schemas.VenueName(form.public_name.data),
-        publicName=offerers_schemas.VenuePublicName(form.public_name.data),
-        venueLabelId=None,
-        withdrawalDetails=None,
+        public_name=offerers_schemas.VenuePublicName(form.public_name.data),
+        venue_label_id=None,
+        withdrawal_details=None,
         description=None,
         contact=None,
-        audioDisabilityCompliant=None,
-        mentalDisabilityCompliant=None,
-        motorDisabilityCompliant=None,
-        visualDisabilityCompliant=None,
-        isOpenToPublic=False,
+        audio_disability_compliant=None,
+        mental_disability_compliant=None,
+        motor_disability_compliant=None,
+        visual_disability_compliant=None,
+        is_open_to_public=False,
     )
     venue = offerers_api.create_venue(venue_creation_info, current_user, address=attachment_address)
     db.session.add(venue)
