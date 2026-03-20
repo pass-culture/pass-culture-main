@@ -9,14 +9,14 @@ from flask_login import current_user
 from markupsafe import Markup
 from pydantic import TypeAdapter
 
-from pcapi.connectors.big_query.queries.product import TiteLiveBookWorkV2
+from pcapi.connectors.big_query.queries.product import TiteLiveBookWork
 from pcapi.connectors.titelive import GtlIdError
 from pcapi.connectors.titelive import get_by_ean13
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.permissions import models as perm_models
-from pcapi.core.providers.titelive_book_search import get_ineligibility_reasons
+from pcapi.core.providers.titelive_bq_book_search import get_ineligibility_reasons
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice import blueprint as backoffice_blueprint
@@ -64,7 +64,7 @@ def search_titelive() -> response_utils.BackofficeResponse:
         return render_template("titelive/search_result.html", form=form, dst=url_for(".search_titelive")), 400
 
     try:
-        data = TypeAdapter(TiteLiveBookWorkV2).validate_python(json["oeuvre"])
+        data = TypeAdapter(TiteLiveBookWork).validate_python(json["oeuvre"])
     except Exception:
         ineligibility_reasons = None
     else:

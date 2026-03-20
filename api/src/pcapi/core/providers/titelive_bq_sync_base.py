@@ -2,6 +2,8 @@ import abc
 import itertools
 import logging
 import textwrap
+from typing import Protocol
+from typing import cast
 
 import sqlalchemy.orm as sa_orm
 
@@ -15,13 +17,16 @@ from pcapi import settings
 from pcapi.connectors.big_query.queries.base import BaseQuery
 from pcapi.connectors.big_query.queries.product import BigQueryTiteliveBookProductModel
 from pcapi.connectors.big_query.queries.product import BigQueryTiteliveMusicProductModel
+from pcapi.connectors.big_query.queries.product import BigQueryTiteliveProductBaseModel
+from pcapi.connectors.big_query.queries.product import GenreTitelive
+from pcapi.connectors.big_query.queries.product import TiteLiveBookArticle
 from pcapi.connectors.titelive import TiteliveBase
 from pcapi.core.object_storage.backends.gcp import GCPBackend
 from pcapi.core.object_storage.backends.gcp import GCPData
 from pcapi.core.object_storage.backends.utils import copy_file_between_storage_backends
+from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
 from pcapi.core.providers import constants
 from pcapi.core.providers.models import LocalProviderEventType
-from pcapi.core.providers.titelive_api import activate_newly_eligible_product_and_offers
 from pcapi.models import db
 from pcapi.utils import date as date_utils
 from pcapi.utils.repository import transaction
@@ -290,3 +295,29 @@ class BigQuerySyncTemplate[
             activate_newly_eligible_product_and_offers(product)
 
         return product
+
+
+def activate_newly_eligible_product_and_offers(product: offers_models.Product) -> None:
+    is_product_newly_eligible = product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
+    ean = product.ean
+    if ean is None:
+        return
+    if is_product_newly_eligible:
+        try:
+            offers_api.approves_provider_product_and_rejected_offers(ean)
+        except NotUpdateProductOrOffers as exception:
+            logger.error("Product with ean cannot be approved", extra={"ean": ean, "exc": str(exception)})
+
+
+EMPTY_GTL = GenreTitelive(code="".zfill(8), libelle="Empty GTL")
+
+
+class HasCode(Protocol):
+    code: str
+
+
+def get_gtl_id(article: TiteLiveBookArticle | BigQueryTiteliveProductBaseModel) -> str:
+    if not article.gtl or not article.gtl.first:
+        return EMPTY_GTL.code
+    most_precise_genre = max(article.gtl.first.values(), key=lambda gtl: cast(HasCode, gtl).code)
+    return cast(HasCode, most_precise_genre).code

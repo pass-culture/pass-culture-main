@@ -1,4 +1,3 @@
-import datetime
 import logging
 from time import time
 from typing import Type
@@ -19,8 +18,6 @@ from .etls.boost_etl import BoostExtractTransformLoadProcess
 from .etls.cds_etl import CDSExtractTransformLoadProcess
 from .etls.cgr_etl import CGRExtractTransformLoadProcess
 from .etls.ems_etl import EMSExtractTransformLoadProcess
-from .titelive_book_search import TiteliveBookSearch
-from .titelive_music_search import TiteliveMusicSearch
 from .titelive_utils import generate_titelive_gtl_from_file
 
 
@@ -195,61 +192,3 @@ def synchronize_ems_stocks_on_schedule() -> None:
 def update_gtl(file: str) -> None:
     generate_titelive_gtl_from_file(file)
     # TODO we can later automatically reindex only the offers for which the gtl changed
-
-
-@blueprint.cli.command("synchronize_titelive_music_products")
-@click.option(
-    "--from-date",
-    help="sync music products that were modified after from_date (YYYY-MM-DD)",
-    type=click.DateTime(),
-    default=None,
-)
-@click.option(
-    "--to-date",
-    help="sync music products that were modified before to_date (YYYY-MM-DD)",
-    type=click.DateTime(),
-    default=None,
-)
-@click.option(
-    "--from-page",
-    help="page to sync from, defaults to 1",
-    type=int,
-    default=1,
-)
-@cron_decorators.log_cron_with_transaction
-@cron_decorators.cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS)
-def synchronize_titelive_music_products(
-    from_date: datetime.datetime | None, to_date: datetime.datetime | None, from_page: int
-) -> None:
-    TiteliveMusicSearch().synchronize_products(
-        from_date.date() if from_date else None, to_date.date() if to_date else None, from_page
-    )
-
-
-@blueprint.cli.command("synchronize_titelive_book_products")
-@click.option(
-    "--from-date",
-    help="sync book products that were modified after from_date (YYYY-MM-DD)",
-    type=click.DateTime(),
-    default=None,
-)
-@click.option(
-    "--to-date",
-    help="sync music products that were modified before to_date (YYYY-MM-DD)",
-    type=click.DateTime(),
-    default=None,
-)
-@click.option(
-    "--from-page",
-    help="page to sync from, defaults to 1",
-    type=int,
-    default=1,
-)
-@cron_decorators.log_cron_with_transaction
-@cron_decorators.cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS)
-def synchronize_titelive_book_products(
-    from_date: datetime.datetime | None, to_date: datetime.datetime | None, from_page: int
-) -> None:
-    TiteliveBookSearch().synchronize_products(
-        from_date.date() if from_date else None, to_date.date() if to_date else None, from_page
-    )

@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.connectors.serialization.titelive_serializers import _format_gtl_code
+from pcapi.connectors.big_query.queries.product import _format_gtl_code
 from pcapi.core.providers.titelive_gtl import get_gtl
 
 
