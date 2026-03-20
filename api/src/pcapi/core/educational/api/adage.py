@@ -22,6 +22,7 @@ from pcapi.models import db
 from pcapi.utils import date as date_utils
 from pcapi.utils.cache import get_from_cache
 from pcapi.utils.clean_accents import clean_accents
+from pcapi.utils.siren import SIREN_LENGTH
 from pcapi.utils.transaction_manager import atomic
 
 
@@ -293,47 +294,56 @@ def _should_deactivate_offerer(offerer: offerers_models.Offerer) -> bool:
 
 
 def synchronize_adage_ids_on_offerers(partners_from_adage: list[schemas.AdageCulturalPartner]) -> None:
-    adage_sirens: set[str] = {p.siret[:9] for p in partners_from_adage if (p.actif == 1 and p.siret)}
-    existing_sirens: dict[str, bool] = dict(
-        db.session.query(  # type: ignore [arg-type]
-            offerers_models.Offerer.siren,
-            offerers_models.Offerer.allowedOnAdage,
-        ).filter(
-            offerers_models.Offerer.siren != None,
-        )
-    )
-    existing_adage_sirens = {k for k, v in existing_sirens.items() if v}
+    """
+    This logic synchronizes Offerer.allowedOnAdage with the partners status on Adage side
+    This should only be called with the full Adage partners list as input
+    """
 
-    sirens_to_add = adage_sirens - existing_adage_sirens
-    sirens_to_delete = existing_adage_sirens - adage_sirens
+    # compute the diff between adage SIRENs and current allowed Offerers
+    adage_sirens = {p.siret[:SIREN_LENGTH] for p in partners_from_adage if (p.actif == 1 and p.siret)}
+
+    offerers_query = db.session.query(offerers_models.Offerer).options(
+        sa_orm.load_only(offerers_models.Offerer.siren, offerers_models.Offerer.allowedOnAdage)
+    )
+    is_allowed_by_siren = {offerer.siren: offerer.allowedOnAdage for offerer in offerers_query}
+    allowed_sirens = {siren for siren, is_allowed in is_allowed_by_siren.items() if is_allowed}
+    all_sirens = is_allowed_by_siren.keys()
+
+    sirens_to_add = adage_sirens - allowed_sirens
+    sirens_to_delete = allowed_sirens - adage_sirens
 
     # Tricky part here and hopefully this will be removed at some point.
     # We have some weird cases where the SIRET from Adage does not match the SIRET from
     # our linked venue.
 
-    logger.info("SIRENs to add from SIRET: %s", sirens_to_add)
-    logger.info("SIRENs to delete from SIRET: %s", sirens_to_delete)
+    logger.info(
+        "Adage offerers sync - SIRENs to add from SIRET: %s",
+        sirens_to_add & all_sirens,  # do not log unknown SIRENs
+    )
+    logger.info("Adage offerers sync - SIRENs to delete from SIRET: %s", sirens_to_delete)
 
-    # check we don't remove offerers that do have valid venues
-    existing_sirens_from_synchronized_venues: dict[str, bool] = dict(
-        db.session.query(  # type: ignore [arg-type]
-            offerers_models.Offerer.siren,
-            offerers_models.Offerer.allowedOnAdage,
-        )
-        .join(offerers_models.Venue)
-        .filter(
-            offerers_models.Offerer.siren != None,
-            offerers_models.Venue.adageId.is_not(None),
-        )
+    # fetch offerers that have an active venue
+    offerers_with_active_venue_query = (
+        offerers_query.join(offerers_models.Venue)
+        .filter(offerers_models.Venue.adageId.is_not(None))
         # some venues with an adageId are soft-deleted, we need to include them so that the offerer keeps allowedOnAdage=True
         .execution_options(include_deleted=True)
     )
-    sirens_to_delete = sirens_to_delete - set(existing_sirens_from_synchronized_venues)
-    sirens_to_add = sirens_to_add | {k for k, v in existing_sirens_from_synchronized_venues.items() if not v}
+    is_allowed_by_siren_with_active_venue = {
+        offerer.siren: offerer.allowedOnAdage for offerer in offerers_with_active_venue_query
+    }
+    all_sirens_with_active_venue = is_allowed_by_siren_with_active_venue.keys()
 
-    logger.info("SIRENs to add: %s", sirens_to_add)
-    logger.info("SIRENs to delete: %s", sirens_to_delete)
-    logger.info("existing SIRENs from synchronized venues", extra=existing_sirens_from_synchronized_venues)
+    # do not deactivate offerers with an active venue
+    sirens_to_delete = sirens_to_delete - all_sirens_with_active_venue
+    # activate offerers that have an active venue and are not currently allowed
+    sirens_to_add = sirens_to_add | {
+        siren for siren, is_allowed in is_allowed_by_siren_with_active_venue.items() if not is_allowed
+    }
+
+    logger.info("Adage offerers sync - SIRENs to add: %s", sirens_to_add & all_sirens)  # do not log unknown SIRENs
+    logger.info("Adage offerers sync - SIRENs to delete: %s", sirens_to_delete)
+    logger.info("Adage offerers sync - %s SIRENs with synchronized venues", len(all_sirens_with_active_venue))
 
     db.session.query(offerers_models.Offerer).filter(offerers_models.Offerer.siren.in_(list(sirens_to_add))).update(
         {offerers_models.Offerer.allowedOnAdage: True}, synchronize_session=False

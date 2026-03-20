@@ -202,11 +202,10 @@ def synchronize_venues_from_adage_cultural_partners(debug: bool = False, with_ti
 
 
 @blueprint.cli.command("synchronize_offerers_from_adage_cultural_partners")
-@click.option("--with-timestamp", is_flag=True, help="Add timestamp (couple days ago)")
 @cron_decorators.log_cron
-def synchronize_offerers_from_adage_cultural_partners(with_timestamp: bool = False) -> None:
-    # TODO (jcicurel): the Adage cultural partner endpoint has its dateModificationMin parameter required
-    # set a distant past date until the synchronize logic is updated
+def synchronize_offerers_from_adage_cultural_partners() -> None:
+    # the Adage cultural partner endpoint has its dateModificationMin parameter required
+    # set a distant past date to get all adage partners as the offerer sync logic works by computing a full diff with what we have in DB
     since_date = datetime.datetime(year=1970, month=1, day=1)
     adage_cultural_partners = adage_api.get_cultural_partners(since_date=since_date)
 
