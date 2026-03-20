@@ -42,8 +42,10 @@ interface OffererFormValues {
 }
 
 export const Offerer = (): JSX.Element => {
-  const { logEvent } = useAnalytics()
   const isWelcomeCarouselEnabled = useActiveFeature('WIP_PRE_SIGNUP_INFO')
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+
+  const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const navigate = useNavigate()
   const { offerer, setOfferer, setInitialAddress } = useSignupJourneyContext()
@@ -267,9 +269,15 @@ export const Offerer = (): JSX.Element => {
             }
           />
           <ActionBar
-            onClickNext={handleNextStep}
             isDisabled={isSubmitting}
+            onClickPrevious={
+              withSwitchVenueFeature ? () => navigate('/hub') : undefined
+            }
+            onClickNext={handleNextStep}
             nextStepTitle="Continuer"
+            previousStepTitle={
+              withSwitchVenueFeature ? 'Annuler et quitter' : undefined
+            }
           />
         </form>
       </FormLayout>

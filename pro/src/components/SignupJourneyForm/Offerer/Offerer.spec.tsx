@@ -20,8 +20,8 @@ import { structureDataBodyModelFactory } from '@/commons/utils/factories/userOff
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
-import { DEFAULT_OFFERER_FORM_VALUES } from '../constants'
-import { Offerer } from '../Offerer'
+import { DEFAULT_OFFERER_FORM_VALUES } from './constants'
+import { Offerer } from './Offerer'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
@@ -68,6 +68,7 @@ const renderOffererScreen = (
             path="/inscription/structure/rattachement"
             element={<div>Offerers screen</div>}
           />
+          <Route path="/hub" element={<div>Hub screen</div>} />
         </Routes>
       </SignupJourneyContext.Provider>
       <SnackBarContainer />
@@ -873,6 +874,42 @@ describe('Offerer', () => {
       expect(
         screen.queryByText('Êtes-vous un professionnel de la culture ?')
       ).not.toBeInTheDocument()
+    })
+  })
+
+  it('should display a new button but not a previous one', async () => {
+    renderOffererScreen(contextValue)
+
+    expect(
+      await screen.findByRole('button', { name: 'Continuer' })
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Annuler et quitter' })
+    ).not.toBeInTheDocument()
+  })
+
+  describe('with WIP_SWITCH_VENUE feature flag', () => {
+    const features = ['WIP_SWITCH_VENUE']
+
+    it('should display both a new button and a previous one', async () => {
+      renderOffererScreen(contextValue, features)
+
+      expect(
+        await screen.findByRole('button', { name: 'Continuer' })
+      ).toBeInTheDocument()
+      expect(
+        await screen.findByRole('button', { name: 'Annuler et quitter' })
+      ).toBeInTheDocument()
+    })
+
+    it('should navigate to /hub when clicking previous button', async () => {
+      renderOffererScreen(contextValue, features)
+
+      await userEvent.click(
+        await screen.findByRole('button', { name: 'Annuler et quitter' })
+      )
+
+      expect(screen.getByText('Hub screen')).toBeInTheDocument()
     })
   })
 
