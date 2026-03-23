@@ -22,7 +22,6 @@ from pcapi.core.subscription.educonnect import schemas as educonnect_schemas
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils import countries as countries_utils
 from pcapi.utils import date as date_utils
 
@@ -205,7 +204,7 @@ class BeneficiaryFraudCheckFactory(factories.BaseFactory):
         obj: subscription_models.BeneficiaryFraudCheck,
     ) -> users_models.EligibilityType:
         if obj.dateCreated >= settings.CREDIT_V3_DECREE_DATETIME:
-            if FeatureToggle.WIP_FREE_ELIGIBILITY.is_active() and obj.user.age in [15, 16]:
+            if obj.user.age in [15, 16]:
                 return users_models.EligibilityType.FREE
             return users_models.EligibilityType.AGE17_18
         if obj.user.age in users_constants.ELIGIBILITY_UNDERAGE_RANGE:

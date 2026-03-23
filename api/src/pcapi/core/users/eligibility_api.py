@@ -9,7 +9,6 @@ from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
 
 from . import exceptions
@@ -142,7 +141,7 @@ def get_eligibility_at_date(
     if 17 <= age <= 18:
         return users_models.EligibilityType.AGE17_18
 
-    if FeatureToggle.WIP_FREE_ELIGIBILITY.is_active() and 15 <= age <= 16:
+    if 15 <= age <= 16:
         return users_models.EligibilityType.FREE
 
     return None
@@ -155,7 +154,7 @@ def is_datetime_within_eligibility_period(
     if not tz_aware_datetime.tzinfo:
         tz_aware_datetime = tz_aware_datetime.replace(tzinfo=datetime.timezone.utc)
 
-    eligibility_start = get_eligibility_start_datetime(birth_date, at_datetime, department_code)
+    eligibility_start = get_eligibility_start_datetime(birth_date, department_code)
     eligibility_end = get_eligibility_end_datetime(birth_date, department_code)
     if (
         not birth_date
@@ -169,21 +168,15 @@ def is_datetime_within_eligibility_period(
 
 
 def get_eligibility_start_datetime(
-    date_of_birth: datetime.date | datetime.datetime | None,
-    at_datetime: datetime.datetime,
-    department_code: str | None = None,
+    date_of_birth: datetime.date | datetime.datetime | None, department_code: str | None = None
 ) -> datetime.datetime | None:
     if not date_of_birth:
         return None
 
     date_of_birth = date_utils.to_department_midnight(date_of_birth, department_code)
     fifteenth_birthday = date_of_birth + relativedelta(years=constants.ELIGIBILITY_UNDERAGE_RANGE[0])
-    seventeenth_birthday = date_of_birth + relativedelta(years=17)
 
-    if at_datetime < settings.CREDIT_V3_DECREE_DATETIME or FeatureToggle.WIP_FREE_ELIGIBILITY.is_active():
-        return fifteenth_birthday
-
-    return seventeenth_birthday
+    return fifteenth_birthday
 
 
 def get_eligibility_end_datetime(

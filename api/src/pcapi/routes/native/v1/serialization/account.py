@@ -33,7 +33,6 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.shared.price import convert_to_cent
-from pcapi.utils import date as date_utils
 from pcapi.utils.email import sanitize_email
 
 
@@ -186,11 +185,7 @@ class UserProfileGetterDict(GetterDict):
         if key == "eligibilityEndDatetime":
             return eligibility_api.get_eligibility_end_datetime(user.birth_date, user.departementCode)
         if key == "eligibilityStartDatetime":
-            first_eligible_registration_date = eligibility_api.get_first_eligible_registration_date(
-                user, user.birth_date
-            )
-            time_marker = first_eligible_registration_date or date_utils.get_naive_utc_now()
-            return eligibility_api.get_eligibility_start_datetime(user.birth_date, time_marker, user.departementCode)
+            return eligibility_api.get_eligibility_start_datetime(user.birth_date, user.departementCode)
         if key == "firstDepositActivationDate":
             return user.first_deposit_activation_date
         if key == "firstName":

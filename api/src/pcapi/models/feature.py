@@ -138,9 +138,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_FINANCE_SETTLEMENTS = "Active le workflow finance des règlements"
     WIP_ENABLE_NEW_PRO_HOME = "Activer la nouvelle page d'accueil du portail pro"
     WIP_ENABLE_OHO = "Activer la création d'offre individuelle sur plages horaires"
-    WIP_FREE_ELIGIBILITY = (
-        "Activer la nouvelle éligibilité qui permet aux jeunes de 15 à 16 ans de réserver des offres gratuites"
-    )
     WIP_LLM_OFFER_SEARCH = "Activer la recherche par LLM dans le BO"
     WIP_OFFER_ARTISTS = "Active la suggestion d'artistes à la création d'une offre"
     WIP_OFFER_RECOMMENDATION_PRO = "Active les recommandations, côté pro"
