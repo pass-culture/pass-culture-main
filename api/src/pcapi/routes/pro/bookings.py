@@ -9,6 +9,7 @@ from flask_login import login_required
 import pcapi.core.bookings.repository as booking_repository
 import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.bookings import api as bookings_api
+from pcapi.core.bookings import constants as bookings_constants
 from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as bookings_repository
@@ -45,7 +46,7 @@ from . import blueprint
 @spectree_serialize(response_model=ListBookingsResponseModel, api=blueprint.pro_private_schema)
 def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel:
     page = query.page
-    per_page_limit = 1000
+    per_page_limit = bookings_constants.BOOKINGS_PER_PAGE_LIMIT
     venue_id = query.venue_id
     offer_id = query.offer_id
     offerer_id = query.offerer_id

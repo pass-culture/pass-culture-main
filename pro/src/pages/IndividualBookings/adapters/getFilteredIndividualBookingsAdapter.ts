@@ -3,7 +3,7 @@ import type { BookingRecapResponseModel } from '@/apiClient/v1'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { buildBookingsRecapQuery } from '@/commons/core/Bookings/utils'
 
-const MAX_LOADED_PAGES = 5
+const MAX_LOADED_PAGES = 10
 
 export const getFilteredIndividualBookingsAdapter = async (
   apiFilters: PreFiltersParams & { page?: number }

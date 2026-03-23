@@ -8,6 +8,7 @@ from flask_login import login_required
 
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offers.api as offers_api
+import pcapi.core.offers.constants as offers_constants
 import pcapi.core.offers.repository as offers_repository
 import pcapi.core.opening_hours.api as opening_hours_api
 import pcapi.core.pro_advice.api as pro_advice_api
@@ -57,7 +58,7 @@ logger = logging.getLogger(__name__)
 def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serialize.ListOffersResponseModel:
     paginated_offers = offers_repository.get_capped_offers_for_filters(
         user_id=current_user.id,
-        offers_limit=offers_api.OFFERS_RECAP_LIMIT,
+        offers_limit=offers_constants.OFFERS_RECAP_LIMIT,
         offerer_id=query.offerer_id,
         status=query.status.value if query.status else None,
         venue_id=query.venue_id,

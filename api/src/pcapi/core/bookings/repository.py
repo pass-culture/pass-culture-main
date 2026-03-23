@@ -90,7 +90,7 @@ def find_by_pro_user(
     offerer_id: int | None = None,
     offerer_address_id: int | None = None,
     page: int = 1,
-    per_page_limit: int = 1000,
+    per_page_limit: int = constants.BOOKINGS_PER_PAGE_LIMIT,
 ) -> tuple[sa_orm.Query, int]:
     total_bookings_recap = _get_filtered_bookings_count(
         user,
