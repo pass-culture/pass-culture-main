@@ -8,6 +8,15 @@ from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import venue_finance_serialize
 
 
+def displayable_activity_for_venue_list_item(
+    venue: offerers_models.Venue,
+) -> offerers_models.DisplayableActivity | None:
+    """Match GetVenueResponseGetterDict activity handling (GET /venues/{id})."""
+    if not venue.activity or venue.activity == offerers_models.Activity.NOT_ASSIGNED:
+        return None
+    return offerers_models.DisplayableActivity[venue.activity.name]
+
+
 # TODO(jbaudet - 11/2025): remove once (pro) GET /venues has been
 # migrated (-> minimum information returned)
 class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
@@ -22,6 +31,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     siret: str | None
     hasCreatedOffer: bool
     venueTypeCode: offerers_models.VenueTypeCode
+    activity: offerers_models.DisplayableActivity | None
     externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
     location: address_serialize.LocationResponseModel | None
     isPermanent: bool
@@ -54,6 +64,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
             "isValidated": venue.managingOfferer.isValidated,
             "bankAccountStatus": venue_finance_serialize.parse_venue_bank_account_status(venue),
             "hasNonFreeOffers": venue.id in venues_with_non_free_offers,
+            "activity": displayable_activity_for_venue_list_item(venue),
         }
 
         # building a dict and expanding it after using ** is not needed

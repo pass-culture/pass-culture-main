@@ -1,6 +1,7 @@
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core import testing
@@ -17,8 +18,12 @@ pytestmark = pytest.mark.usefixtures("db_session")
 def test_response_serialization(client):
     user_offerer = offerers_factories.UserOffererFactory()
 
-    venue = offerers_factories.VenueBankAccountLinkFactory(venue__managingOfferer=user_offerer.offerer).venue
-    venue_with_accessibility_provider = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+    venue = offerers_factories.VenueBankAccountLinkFactory(
+        venue__managingOfferer=user_offerer.offerer, venue__activity=offerers_models.Activity.BOOKSTORE
+    ).venue
+    venue_with_accessibility_provider = offerers_factories.VenueFactory(
+        managingOfferer=user_offerer.offerer, activity=offerers_models.Activity.CINEMA
+    )
     offerers_factories.AccessibilityProviderFactory(venue=venue_with_accessibility_provider)
 
     client = client.with_session_auth(user_offerer.user.email)
@@ -55,6 +60,7 @@ def test_response_serialization(client):
             "visualDisabilityCompliant": venue.visualDisabilityCompliant,
             "siret": venue.siret,
             "venueTypeCode": venue.venueTypeCode.name,
+            "activity": "BOOKSTORE",
             "hasCreatedOffer": False,
             "externalAccessibilityData": None,
             "location": {
@@ -93,6 +99,7 @@ def test_response_serialization(client):
             "visualDisabilityCompliant": venue_with_accessibility_provider.visualDisabilityCompliant,
             "siret": venue_with_accessibility_provider.siret,
             "venueTypeCode": venue_with_accessibility_provider.venueTypeCode.name,
+            "activity": "CINEMA",
             "hasCreatedOffer": False,
             "externalAccessibilityData": {
                 "isAccessibleMotorDisability": True,

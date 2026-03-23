@@ -11,6 +11,7 @@ import {
   type SubcategoryResponseModel,
   VenueTypeCode,
 } from '@/apiClient/v1'
+import type { DisplayableActivity } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
@@ -718,9 +719,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
             venues: [
               makeVenueListItem({
                 id: 2,
-                // Auto-generated `VenueTypeCode` enum is completely wrong:
-                // real keys are those declared in api/src/pcapi/core/offerers/schemas.py
-                venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
+                activity: 'RECORD_STORE' as DisplayableActivity,
               }),
             ],
           },
@@ -784,7 +783,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
             props: {
               venues: [
                 venueListItemFactory({
-                  venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
+                  activity: 'RECORD_STORE' as DisplayableActivity,
                 }),
               ],
             },
@@ -834,7 +833,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
             props: {
               venues: [
                 venueListItemFactory({
-                  venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
+                  activity: 'RECORD_STORE' as DisplayableActivity,
                 }),
               ],
             },
@@ -887,7 +886,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
             props: {
               venues: [
                 venueListItemFactory({
-                  venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
+                  activity: 'RECORD_STORE' as DisplayableActivity,
                 }),
               ],
             },
@@ -923,7 +922,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
             props: {
               venues: [
                 venueListItemFactory({
-                  venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
+                  activity: 'RECORD_STORE' as DisplayableActivity,
                 }),
               ],
             },

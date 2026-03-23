@@ -7,8 +7,8 @@ import {
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
   type VenueListItemResponseModel,
-  type VenueTypeCode,
 } from '@/apiClient/v1'
+import type { DisplayableActivity } from '@/apiClient/v1/new'
 import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import type { AccessibilityFormValues } from '@/commons/core/shared/types'
@@ -254,7 +254,7 @@ export function getFormReadOnlyFields(
     // To unblock the synchronization of EPNs we, for now,
     // authorize the edition of synchronized offers' name and description
     // when the venue is a MUSEUM
-    if (venue?.venueTypeCode === ('MUSEUM' as VenueTypeCode)) {
+    if (venue?.activity === ('MUSEUM' as DisplayableActivity)) {
       return allFieldsExceptAccessibility.filter(
         (field) => field !== 'name' && field !== 'description'
       )
