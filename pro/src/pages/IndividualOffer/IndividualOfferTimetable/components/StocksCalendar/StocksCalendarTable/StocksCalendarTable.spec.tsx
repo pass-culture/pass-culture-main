@@ -244,7 +244,7 @@ describe('StocksCalendarTable', () => {
 
     expect(
       screen.getByRole('heading', {
-        name: 'Êtes-vous sûr de vouloir supprimer cette date ?',
+        name: "Vous êtes sur le point d'annuler toutes les réservations en cours pour cette date",
       })
     ).toBeInTheDocument()
   })
@@ -268,7 +268,7 @@ describe('StocksCalendarTable', () => {
       screen.getByText((_content, element) => {
         return (
           element?.textContent ===
-          'Elle ne sera plus disponible à la réservation et entraînera l’annulation des réservations en cours et validées !'
+          'En effectuant cette action, les réservations en cours et validées seront automatiquement annulées. L’ensemble des bénéficiaires concernés sera automatiquement averti par email.'
         )
       })
     ).toBeInTheDocument()

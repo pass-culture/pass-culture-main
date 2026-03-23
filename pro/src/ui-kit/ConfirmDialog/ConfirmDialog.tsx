@@ -10,6 +10,7 @@ import styles from './ConfirmDialog.module.scss'
 type ConfirmDialogProps = DialogProps & {
   onConfirm: () => void
   confirmText: string
+  confirmColor?: ButtonColor
   cancelText: string
   isLoading?: boolean
   leftButtonAction?: () => void
@@ -25,6 +26,7 @@ export const ConfirmDialog = ({
   title,
   secondTitle,
   confirmText,
+  confirmColor,
   cancelText,
   children,
   icon,
@@ -58,6 +60,7 @@ export const ConfirmDialog = ({
       isLoading={isLoading}
       disabled={isLoading || confirmButtonDisabled}
       label={confirmText}
+      color={confirmColor}
       data-testid="confirm-dialog-button-confirm"
     />
   )
