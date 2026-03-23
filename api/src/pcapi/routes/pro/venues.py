@@ -265,6 +265,7 @@ def upsert_venue_banner(venue_id: int) -> venue_serialize.GetVenueResponseModel:
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     try:
+        # TODO bdalbianco 23/03/26 switch to v2 once GetVenueResponseModel is migrated
         venue_banner = venue_banners_serialize.VenueBannerContentModel.from_request(request)
     except exceptions.InvalidVenueBannerContent as err:
         content = {"code": "INVALID_BANNER_CONTENT", "message": str(err)}
