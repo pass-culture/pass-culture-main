@@ -28,9 +28,14 @@ export const BankAccountHasPendingCorrectionCallout = ({
   const location = useLocation()
 
   const displayCallout = withSwitchVenueFeature
-    ? venue?.bankAccountStatus ===
-      SimplifiedBankAccountStatus.PENDING_CORRECTIONS
-    : offerer?.hasBankAccountWithPendingCorrections
+    ? venue &&
+      venue?.hasNonFreeOffers &&
+      venue.bankAccountStatus &&
+      venue.bankAccountStatus ===
+        SimplifiedBankAccountStatus.PENDING_CORRECTIONS
+    : offerer &&
+      offerer.venuesWithNonFreeOffersWithoutBankAccounts.length > 0 &&
+      offerer.hasBankAccountWithPendingCorrections
 
   const url =
     '/remboursements/informations-bancaires' +

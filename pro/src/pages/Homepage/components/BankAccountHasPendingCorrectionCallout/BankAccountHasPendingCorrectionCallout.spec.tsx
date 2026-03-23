@@ -15,12 +15,12 @@ import {
 
 const mockLogEvent = vi.fn()
 
-describe('LinkVenueCallout', () => {
+describe('BankAccountHasPendingCorrectionCallout', () => {
   const props: BankAccountHasPendingCorrectionCalloutProps = {
     titleOnly: false,
   }
   describe('With FF disabled', () => {
-    it('should not render LinkVenueCallout if offerer has no pending corrections on their bank account', () => {
+    it('should not render BankAccountHasPendingCorrectionCallout if offerer has no pending corrections on their bank account', () => {
       props.offerer = {
         ...defaultGetOffererResponseModel,
         hasBankAccountWithPendingCorrections: false,
@@ -38,14 +38,35 @@ describe('LinkVenueCallout', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should render LinkVenueCallout if offerer has a bank account with pending corrections', () => {
+    it('should not render BankAccountHasPendingCorrectionCallout if offerer has a bank account with pending corrections and no non free offers', () => {
       props.offerer = {
         ...defaultGetOffererResponseModel,
         hasBankAccountWithPendingCorrections: true,
+        venuesWithNonFreeOffersWithoutBankAccounts: [],
       }
       renderWithProviders(<BankAccountHasPendingCorrectionCallout {...props} />)
 
-      expect(screen.getByText(/Compte bancaire incomplet/)).toBeInTheDocument()
+      expect(
+        screen.queryByText(/Compte bancaire incomplet/)
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', {
+          name: 'Voir les corrections attendues',
+        })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should render BankAccountHasPendingCorrectionCallout if offerer has a bank account with pending corrections and some non free offers', () => {
+      props.offerer = {
+        ...defaultGetOffererResponseModel,
+        hasBankAccountWithPendingCorrections: true,
+        venuesWithNonFreeOffersWithoutBankAccounts: [1],
+      }
+      renderWithProviders(<BankAccountHasPendingCorrectionCallout {...props} />)
+
+      expect(
+        screen.queryByText(/Compte bancaire incomplet/)
+      ).toBeInTheDocument()
       expect(
         screen.getByRole('link', {
           name: 'Voir les corrections attendues',
@@ -61,6 +82,7 @@ describe('LinkVenueCallout', () => {
       props.offerer = {
         ...defaultGetOffererResponseModel,
         hasBankAccountWithPendingCorrections: true,
+        venuesWithNonFreeOffersWithoutBankAccounts: [1],
       }
 
       renderWithProviders(
@@ -87,10 +109,11 @@ describe('LinkVenueCallout', () => {
   })
 
   describe('With FF enabled', () => {
-    it('should not render LinkVenueCallout if venue has a bank account status valid or pending', () => {
+    it('should not render BankAccountHasPendingCorrectionCallout if venue has a bank account status valid or pending and non free offers', () => {
       props.venue = {
         ...defaultGetVenue,
         bankAccountStatus: SimplifiedBankAccountStatus.VALID,
+        hasNonFreeOffers: true,
       }
       renderWithProviders(
         <BankAccountHasPendingCorrectionCallout {...props} />,
@@ -104,10 +127,29 @@ describe('LinkVenueCallout', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should render LinkVenueCallout if venue has a bank account status with pending corrections', () => {
+    it('should not render BankAccountHasPendingCorrectionCallout if venue has a pending corrections bank account and no non free offers', () => {
+      props.venue = {
+        ...defaultGetVenue,
+        bankAccountStatus: SimplifiedBankAccountStatus.VALID,
+        hasNonFreeOffers: false,
+      }
+      renderWithProviders(
+        <BankAccountHasPendingCorrectionCallout {...props} />,
+        {
+          features: ['WIP_SWITCH_VENUE'],
+        }
+      )
+
+      expect(
+        screen.queryByText(/Compte bancaire incomplet/)
+      ).not.toBeInTheDocument()
+    })
+
+    it('should render BankAccountHasPendingCorrectionCallout if venue has a bank account status with pending corrections and non free offers', () => {
       props.venue = {
         ...defaultGetVenue,
         bankAccountStatus: SimplifiedBankAccountStatus.PENDING_CORRECTIONS,
+        hasNonFreeOffers: true,
       }
       renderWithProviders(
         <BankAccountHasPendingCorrectionCallout {...props} />,
