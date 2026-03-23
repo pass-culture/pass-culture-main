@@ -17,7 +17,6 @@ from pcapi.core.bookings import validation as bookings_validation
 from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.core.users import repository as users_repository
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.utils import get_or_404
@@ -35,6 +34,7 @@ from pcapi.routes.serialization.bookings_recap_serialize import UserHasBookingRe
 from pcapi.routes.serialization.bookings_recap_serialize import serialize_bookings
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse
+from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.transaction_manager import atomic
 
 from . import blueprint
@@ -105,8 +105,7 @@ def export_bookings_for_offer_as_csv(offer_id: int, query: BookingsExportQueryMo
     user = current_user._get_current_object()
     offer = get_or_404(Offer, offer_id)
 
-    if not users_repository.has_access(user, offer.venue.managingOffererId):
-        raise api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
+    check_user_has_access_to_offerer(user, offer.venue.managingOffererId)
 
     if query.status == BookingsExportStatusFilter.VALIDATED:
         return cast(
@@ -138,8 +137,7 @@ def export_bookings_for_offer_as_excel(offer_id: int, query: BookingsExportQuery
     user = current_user._get_current_object()
     offer = get_or_404(Offer, offer_id)
 
-    if not users_repository.has_access(user, offer.venue.managingOffererId):
-        raise api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
+    check_user_has_access_to_offerer(user, offer.venue.managingOffererId)
 
     if query.status == BookingsExportStatusFilter.VALIDATED:
         return cast(
@@ -194,8 +192,7 @@ def get_offer_price_categories_and_schedules_by_dates(offer_id: int) -> EventDat
     user = current_user._get_current_object()
     offer = get_or_404(Offer, offer_id)
 
-    if not users_repository.has_access(user, offer.venue.managingOffererId):
-        raise api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
+    check_user_has_access_to_offerer(user, offer.venue.managingOffererId)
 
     stocks = (
         db.session.query(Stock)
