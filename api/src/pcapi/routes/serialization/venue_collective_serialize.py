@@ -1,15 +1,17 @@
 import enum
+import typing
 from datetime import datetime
 
-import pydantic.v1 as pydantic_v1
-from pydantic.v1 import validator
+import pydantic as pydantic_v2
+from pydantic import field_validator
 
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.constants import ALL_INTERVENTION_AREA
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
-from pcapi.serialization.utils import string_length_validator
+from pcapi.serialization.exceptions import PydanticError
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -21,6 +23,7 @@ class DMSApplicationstatus(enum.Enum):
     INSTRUCTING = "en_instruction"
 
 
+# TODO bdalbianco 23/03/2026 delete when getvenueresponsemodel is migrated
 class DMSApplicationForEAC(BaseModel):
     venueId: int
     state: DMSApplicationstatus
@@ -41,11 +44,44 @@ class DMSApplicationForEAC(BaseModel):
     @classmethod
     def from_orm(  # type: ignore[override]
         cls, collective_dms_application: educational_models.CollectiveDmsApplication, venue_id: int
-    ) -> "DMSApplicationForEAC":
+    ) -> typing.Self:
         collective_dms_application.venueId = venue_id  # type: ignore [attr-defined]
         return super().from_orm(collective_dms_application)
 
 
+class DMSApplicationForEACv2(HttpBodyModel):
+    venueId: int
+    state: DMSApplicationstatus
+    procedure: int
+    application: int
+    lastChangeDate: datetime
+    depositDate: datetime
+    expirationDate: datetime | None
+    buildDate: datetime | None
+    instructionDate: datetime | None
+    processingDate: datetime | None
+    userDeletionDate: datetime | None
+
+    @classmethod
+    def build(
+        cls, collective_dms_application: educational_models.CollectiveDmsApplication, venue_id: int
+    ) -> typing.Self:
+        return cls(
+            venueId=venue_id,
+            state=collective_dms_application.state,
+            procedure=collective_dms_application.procedure,
+            application=collective_dms_application.application,
+            lastChangeDate=collective_dms_application.lastChangeDate,
+            depositDate=collective_dms_application.depositDate,
+            expirationDate=collective_dms_application.expirationDate,
+            buildDate=collective_dms_application.buildDate,
+            instructionDate=collective_dms_application.instructionDate,
+            processingDate=collective_dms_application.processingDate,
+            userDeletionDate=collective_dms_application.userDeletionDate,
+        )
+
+
+# TODO bdalbianco 23/03/2026 delete when getvenueresponsemodel is migrated
 class GetVenueDomainResponseModel(BaseModel):
     id: int
     name: str
@@ -54,6 +90,12 @@ class GetVenueDomainResponseModel(BaseModel):
         orm_mode = True
 
 
+class GetVenueDomainResponseModelv2(HttpBodyModel):
+    id: int
+    name: str
+
+
+# TODO bdalbianco 23/03/2026 delete when getvenueresponsemodel is migrated
 class LegalStatusResponseModel(BaseModel):
     id: int
     name: str
@@ -62,47 +104,52 @@ class LegalStatusResponseModel(BaseModel):
         orm_mode = True
 
 
-class EditVenueCollectiveDataBodyModel(BaseModel):
-    collectiveDescription: str | None
-    collectiveStudents: list[educational_models.StudentLevels] | None
-    collectiveWebsite: str | None
-    collectiveDomains: list[int] | None
-    collectiveInterventionArea: list[str] | None
-    venueEducationalStatusId: int | None
-    collectiveNetwork: list[str] | None
-    collectiveAccessInformation: str | None
-    collectivePhone: str | None
-    collectiveEmail: str | None
-    activity: offerers_models.ActivityOpenToPublic | offerers_models.ActivityNotOpenToPublic | None
+class LegalStatusResponseModelv2(HttpBodyModel):
+    id: int
+    name: str
 
-    _validate_collectiveDescription = string_length_validator("collectiveDescription", length=500)
-    _validate_collectiveWebsite = string_length_validator("collectiveWebsite", length=150)
-    _validate_collectiveAccessInformation = string_length_validator("collectiveAccessInformation", length=500)
-    _validate_collectivePhone = string_length_validator("collectivePhone", length=50)
-    _validate_collectiveEmail = string_length_validator("collectiveEmail", length=150)
 
-    @validator("collectiveStudents")
-    def validate_students(cls, students: list[str]) -> list[educational_models.StudentLevels] | None:
+class EditVenueCollectiveDataBodyModel(HttpBodyModel):
+    collectiveDescription: str | None = pydantic_v2.Field(None, max_length=500)
+    collectiveStudents: list[educational_models.StudentLevels] | None = None
+    collectiveWebsite: str | None = pydantic_v2.Field(None, max_length=150)
+    collectiveDomains: list[int] | None = None
+    collectiveInterventionArea: list[str] | None = None
+    venueEducationalStatusId: int | None = None
+    collectiveNetwork: list[str] | None = None
+    collectiveAccessInformation: str | None = pydantic_v2.Field(None, max_length=500)
+    collectivePhone: str | None = pydantic_v2.Field(None, max_length=50)
+    collectiveEmail: str | None = pydantic_v2.Field(None, max_length=150)
+    activity: offerers_models.ActivityOpenToPublic | offerers_models.ActivityNotOpenToPublic | None = None
+
+    @field_validator("collectiveStudents", mode="after")
+    @classmethod
+    def validate_collectiveStudents(
+        cls, students: list[educational_models.StudentLevels] | None
+    ) -> list[educational_models.StudentLevels] | None:
         if not students:
             return []
-        return shared_offers.validate_students(students)
+        try:
+            # TODO (jcicurel-pass, 2026-02-04): refactor validate_students to raise correct error
+            # when all models using it are migrated to v2
+            shared_offers.validate_students(students)
+        except ValueError as ex:
+            raise PydanticError(str(ex))
+        return students
 
-    @validator("collectiveInterventionArea")
-    def validate_intervention_area(cls, intervention_area: list[str] | None) -> list[str] | None:
+    @field_validator("collectiveInterventionArea", mode="after")
+    @classmethod
+    def validate_collectiveInterventionArea(cls, intervention_area: list[str] | None) -> list[str] | None:
         if intervention_area and any(area not in ALL_INTERVENTION_AREA for area in intervention_area):
-            raise ValueError("One or more element is not a valid area")
+            raise PydanticError("One or more element is not a valid area")
 
         return intervention_area
 
 
-class VenuesEducationalStatusResponseModel(BaseModel):
+class VenuesEducationalStatusResponseModel(HttpBodyModel):
     id: int
     name: str
 
-    class Config:
-        orm_mode = True
-        extra = pydantic_v1.Extra.forbid
 
-
-class VenuesEducationalStatusesResponseModel(BaseModel):
+class VenuesEducationalStatusesResponseModel(HttpBodyModel):
     statuses: list[VenuesEducationalStatusResponseModel]

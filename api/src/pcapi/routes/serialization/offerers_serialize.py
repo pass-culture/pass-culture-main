@@ -35,6 +35,7 @@ class GetOffererVenueResponseModelGetterDict(GetterDict):
     def get(self, key: str, default: Any = None) -> Any:
         if key == "collectiveDmsApplications":
             return [
+                # TODO bdalbianco 20/03/26 switch to build when this route is migrated
                 DMSApplicationForEAC.from_orm(collective_ds_application, self._obj.id)
                 for collective_ds_application in self._obj.collectiveDmsApplications
             ]
