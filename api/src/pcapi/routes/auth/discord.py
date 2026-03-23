@@ -207,7 +207,6 @@ def redirect_with_error(error_message: str) -> Response:
     mark_transaction_as_invalid()
     return redirect(f"/auth/discord/signin?error={quote(error_message)}", code=303)
 
-
 def render_retry_template(access_token: str, user_id: str, error_message: str) -> str:
     auth_success_url = flask.url_for("auth.discord_success", access_token=access_token, user_id=user_id)
     return render_template("discord_retry.html", error=error_message, url=auth_success_url)
