@@ -4,7 +4,6 @@ import functools
 from flask_login import current_user
 from flask_login import login_required
 from sqlalchemy.orm import exc as orm_exc
-from werkzeug.exceptions import NotFound
 
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.providers import api
@@ -17,6 +16,7 @@ from pcapi.core.providers.models import VenueProviderCreationPayload
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.models.api_errors import resource_not_found_error
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import venue_provider_serialize
 from pcapi.serialization.decorator import spectree_serialize
@@ -30,14 +30,14 @@ from . import blueprint
 def _get_venue_or_404(venue_id: int) -> offerers_models.Venue:
     venue = db.session.query(offerers_models.Venue).filter_by(id=venue_id).one_or_none()
     if not venue:
-        raise NotFound
+        raise resource_not_found_error()
     return venue
 
 
 def _get_provider_or_404(provider_id: int) -> providers_models.Provider:
     provider = db.session.query(providers_models.Provider).filter_by(id=provider_id).one_or_none()
     if not provider:
-        raise NotFound
+        raise resource_not_found_error()
     return provider
 
 
@@ -156,7 +156,7 @@ def update_venue_provider(
     try:
         venue_provider = providers_repository.get_venue_provider_by_id(venue_provider_id)
     except orm_exc.NoResultFound:
-        raise NotFound()
+        raise resource_not_found_error()
 
     rest.check_user_has_access_to_offerer(current_user, venue_provider.venue.managingOffererId)
 
@@ -172,7 +172,7 @@ def delete_venue_provider(venue_provider_id: int) -> None:
     try:
         venue_provider = providers_repository.get_venue_provider_by_id(venue_provider_id)
     except orm_exc.NoResultFound:
-        raise NotFound()
+        raise resource_not_found_error()
 
     rest.check_user_has_access_to_offerer(current_user, venue_provider.venue.managingOffererId)
 

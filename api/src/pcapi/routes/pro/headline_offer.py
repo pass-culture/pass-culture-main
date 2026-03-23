@@ -33,7 +33,7 @@ def upsert_headline_offer(
     offer = offers_repository.get_offer_by_id(body.offer_id, load_options=["headline_offer", "venue"])
 
     if not offer:
-        raise api_errors.ResourceNotFoundError
+        raise api_errors.resource_not_found_error()
     offerer_id = offer.venue.managingOffererId
 
     rest.check_user_has_access_to_offerer(current_user, offerer_id)
