@@ -5,7 +5,6 @@ import os
 from pathlib import Path
 
 import click
-from flask import current_app
 
 from pcapi.core import search
 from pcapi.core.educational import models
@@ -15,12 +14,12 @@ from pcapi.core.educational.api import institution as institution_api
 from pcapi.core.educational.api import playlists as playlists_api
 from pcapi.core.educational.api.dms import import_dms_applications_for_all_eac_procedures
 from pcapi.core.educational.utils import create_adage_jwt_fake_valid_token
-from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.utils import cron as cron_decorators
 from pcapi.utils import date as date_utils
 from pcapi.utils.blueprint import Blueprint
 from pcapi.utils.transaction_manager import atomic
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -165,25 +164,11 @@ def synchronize_adage_cultural_partners(apply: bool = False) -> None:
         },
     )
 
-    adage_api.synchronize_adage_partners(adage_partners=adage_cultural_partners.partners, apply=apply)
+    with atomic():
+        adage_api.synchronize_adage_partners(adage_partners=adage_cultural_partners.partners, apply=apply)
 
-    # for now set in redis the list of active offerers so that we can compare with the current sync logic, and rollback the session
-    # current sync is (synchronize_venues_from_adage_cultural_partners + synchronize_offerers_from_adage_cultural_partners)
-
-    active_offerer_sirens = db.session.query(offerers_models.Offerer.siren).filter(
-        offerers_models.Offerer.allowedOnAdage.is_(True)
-    )
-    sirens = ",".join(siren for (siren,) in active_offerer_sirens)
-
-    redis_client = current_app.redis_client
-    expiration = 60 * 60 * 12  # 12h
-    redis_client.set(
-        "synchronize_adage_cultural_partners:active_offerer_sirens",
-        sirens,
-        ex=expiration,
-    )
-
-    db.session.rollback()
+        if not apply:
+            mark_transaction_as_invalid()
 
 
 @blueprint.cli.command("synchronize_venues_from_adage_cultural_partners")
@@ -212,32 +197,6 @@ def synchronize_offerers_from_adage_cultural_partners(with_timestamp: bool = Fal
 
     with atomic():
         adage_api.synchronize_adage_ids_on_offerers(adage_cultural_partners.partners)
-
-    # compare the current Offerer allowedOnAdage status with the result of synchronize_adage_cultural_partners stored in redis
-    active_offerer_sirens = db.session.query(offerers_models.Offerer.siren).filter(
-        offerers_models.Offerer.allowedOnAdage.is_(True)
-    )
-    sirens_current_sync = {siren for (siren,) in active_offerer_sirens}
-
-    redis_client = current_app.redis_client
-    active_offerer_sirens_new_sync = redis_client.get("synchronize_adage_cultural_partners:active_offerer_sirens")
-
-    if active_offerer_sirens_new_sync is None:
-        logger.warning("Could not get synchronize_adage_cultural_partners result for compare")
-        return
-
-    sirens_new_sync: set[str] = set(active_offerer_sirens_new_sync.split(","))
-
-    if sirens_new_sync != sirens_current_sync:
-        logger.error(
-            "Adage partners sync - Failed to sync",
-            extra={
-                "new_sync_minus_current": sirens_new_sync - sirens_current_sync,
-                "current_sync_minus_new": sirens_current_sync - sirens_new_sync,
-            },
-        )
-    else:
-        logger.info("Adage partners sync - offerer status is consistant")
 
 
 @blueprint.cli.command("eac_notify_pro_one_day_before")

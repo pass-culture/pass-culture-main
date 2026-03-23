@@ -55,8 +55,6 @@ def test_synchronize_adage_cultural_partners(mock_partners: MagicMock, mock_sync
     mock_partners.assert_called_once()
     mock_sync.assert_called_once_with(adage_partners=adage_partners.partners, apply=False)
 
-    assert app.redis_client.get("synchronize_adage_cultural_partners:active_offerer_sirens") is not None
-
 
 @patch("pcapi.core.educational.api.adage.synchronize_adage_ids_on_offerers")
 @patch("pcapi.core.educational.api.adage.get_cultural_partners")

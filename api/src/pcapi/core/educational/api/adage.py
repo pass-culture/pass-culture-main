@@ -248,12 +248,11 @@ def synchronize_adage_partners(adage_partners: list[schemas.AdageCulturalPartner
         extra={"sirens_to_deactivate": sirens_to_deactivate},
     )
 
-    # TODO(jcicurel-pass): once we have finished migrating to this new sync logic we can set synchronize_session=False
     db.session.query(offerers_models.Offerer).filter(offerers_models.Offerer.siren.in_(sirens_to_activate)).update(
-        {offerers_models.Offerer.allowedOnAdage: True}
+        {offerers_models.Offerer.allowedOnAdage: True}, synchronize_session=False
     )
     db.session.query(offerers_models.Offerer).filter(offerers_models.Offerer.siren.in_(sirens_to_deactivate)).update(
-        {offerers_models.Offerer.allowedOnAdage: False}
+        {offerers_models.Offerer.allowedOnAdage: False}, synchronize_session=False
     )
 
     db.session.flush()
