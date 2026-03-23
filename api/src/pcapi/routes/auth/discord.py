@@ -208,16 +208,6 @@ def redirect_with_error(error_message: str) -> Response:
     return redirect(f"/auth/discord/signin?error={quote(error_message)}", code=303)
 
 
-def handle_http_error(error: requests.exceptions.HTTPError) -> Response:
-    error_message = ""
-    if error.response:
-        error_message = error.response.json().get("error_description")
-        if not error_message:
-            error_message = error.response.text
-    error_message += "Tu peux réessayer ou contacter le support."
-    return redirect_with_error(ERROR_STRING_PREFIX + error_message)
-
-
 def render_retry_template(access_token: str, user_id: str, error_message: str) -> str:
     auth_success_url = flask.url_for("auth.discord_success", access_token=access_token, user_id=user_id)
     return render_template("discord_retry.html", error=error_message, url=auth_success_url)
