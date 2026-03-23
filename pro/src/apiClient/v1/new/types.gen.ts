@@ -1370,44 +1370,47 @@ export type EditVenueCollectiveDataBodyModel = {
     /**
      * Activity
      */
-    activity?: ActivityOpenToPublic | ActivityNotOpenToPublic;
+    activity?: ActivityOpenToPublic | ActivityNotOpenToPublic | null;
     /**
      * Collectiveaccessinformation
      */
-    collectiveAccessInformation?: string;
+    collectiveAccessInformation?: string | null;
     /**
      * Collectivedescription
      */
-    collectiveDescription?: string;
+    collectiveDescription?: string | null;
     /**
      * Collectivedomains
      */
-    collectiveDomains?: Array<number>;
+    collectiveDomains?: Array<number> | null;
     /**
      * Collectiveemail
      */
-    collectiveEmail?: string;
+    collectiveEmail?: string | null;
     /**
      * Collectiveinterventionarea
      */
-    collectiveInterventionArea?: Array<string>;
+    collectiveInterventionArea?: Array<string> | null;
     /**
      * Collectivenetwork
      */
-    collectiveNetwork?: Array<string>;
+    collectiveNetwork?: Array<string> | null;
     /**
      * Collectivephone
      */
-    collectivePhone?: string;
-    collectiveStudents?: Array<StudentLevels>;
+    collectivePhone?: string | null;
+    /**
+     * Collectivestudents
+     */
+    collectiveStudents?: Array<StudentLevels> | null;
     /**
      * Collectivewebsite
      */
-    collectiveWebsite?: string;
+    collectiveWebsite?: string | null;
     /**
      * Venueeducationalstatusid
      */
-    venueEducationalStatusId?: number;
+    venueEducationalStatusId?: number | null;
 };
 
 /**

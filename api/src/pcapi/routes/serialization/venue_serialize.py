@@ -130,6 +130,7 @@ class GetVenueResponseGetterDict(pydantic_v1.utils.GetterDict):
 
         if key == "collectiveDmsApplications":
             return [
+                # TODO bdalbianco 20/03/26 switch to build when this route is migrated
                 venue_collective_serialize.DMSApplicationForEAC.from_orm(collective_ds_application, venue.id)
                 for collective_ds_application in venue.collectiveDmsApplications
             ]
