@@ -9,6 +9,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
 from pcapi.core.testing import assert_num_queries
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
 
 @pytest.mark.usefixtures("db_session")
@@ -91,7 +92,8 @@ class GetCollectiveOfferRequestTest:
         # rollback
         with assert_num_queries(expected_num_queries):
             response = client.get(dst)
-            assert response.status_code == 403
+            assert response.status_code == 404
+            assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
     def test_offer_request_does_not_exist(self, client):
         pro_user = users_factories.ProFactory()
@@ -110,3 +112,4 @@ class GetCollectiveOfferRequestTest:
         with assert_num_queries(4):  #  session + collective_offer_request + rollback + rollback
             response = client.get(dst)
             assert response.status_code == 404
+            assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
