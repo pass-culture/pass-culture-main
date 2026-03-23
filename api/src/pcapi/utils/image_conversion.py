@@ -9,10 +9,12 @@ from the PIL library:
 import enum
 import io
 import math
+import typing
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import PIL.Image
+import pydantic as pydantic_v2
 from PIL import ImageFile
 from PIL import ImageOps
 from PIL import UnidentifiedImageError
@@ -36,6 +38,21 @@ class CropParams:
 
     @classmethod
     def build(cls, **kwargs: CropParam | None) -> "CropParams":
+        return cls(**{k: v for k, v in kwargs.items() if v})
+
+
+CropPercent = typing.Annotated[float, pydantic_v2.Field(ge=0.0, le=1.0)]
+
+
+@dataclass
+class CropParamsV2:
+    x_crop_percent: CropPercent = 0.0
+    y_crop_percent: CropPercent = 0.0
+    height_crop_percent: CropPercent = 1.0
+    width_crop_percent: CropPercent = 1.0
+
+    @classmethod
+    def build(cls, **kwargs: CropParam | None) -> typing.Self:
         return cls(**{k: v for k, v in kwargs.items() if v})
 
 
