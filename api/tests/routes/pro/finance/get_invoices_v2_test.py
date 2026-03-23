@@ -6,6 +6,7 @@ import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -236,8 +237,5 @@ class GetInvoicesTest:
         queries += 1  # rollback
         with testing.assert_num_queries(queries):
             response = client.get("/v2/finance/has-invoice", params=params)
-            assert response.status_code == 403
-
-        assert response.json == {
-            "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
-        }
+            assert response.status_code == 404
+            assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

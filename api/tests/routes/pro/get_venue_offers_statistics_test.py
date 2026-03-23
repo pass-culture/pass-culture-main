@@ -11,6 +11,7 @@ import pcapi.core.users.models as users_models
 from pcapi.core import testing
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.testing import assert_num_queries
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.pro import offerers as routes
 
@@ -113,13 +114,15 @@ class GetVenueOfferStatisticsTest:
 
         client = client.with_session_auth(user_offerer.user.email)
         response = client.get(f"/venues/{another_venue.id}/offers-statistics")
-        assert response.status_code == 403
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
     def test_cannot_view_venue_stats_if_venue_does_not_exist(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         client = client.with_session_auth(user_offerer.user.email)
         response = client.get("/venues/1/offers-statistics")
         assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
 
 class GetOffersWithHeadlinesAndMediationsTest:
@@ -209,7 +212,7 @@ class Return200Test:
         }
 
 
-class Return400Test:
+class Return404Test:
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # check user_offerer exists
     num_queries += 2  # rollback transactions
@@ -223,17 +226,15 @@ class Return400Test:
 
         with testing.assert_num_queries(self.num_queries + 2):  # +2 for the authorization check
             response = client.get(f"/venue/{venue.id}/offers-statistics")
-            assert response.status_code == 403
-
-        assert response.json == {
-            "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
-        }
+            assert response.status_code == 404
+            assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
     def test_get_offers_stats_returns_404_if_venue_is_not_found(self, client):
         pro_user = users_factories.ProFactory(roles=[users_models.UserRole.PRO])
 
         client = client.with_session_auth(pro_user.email)
+
         with testing.assert_num_queries(self.num_queries):
             response = client.get("/venue/888/offers-statistics")
-
-        assert response.status_code == 404
+            assert response.status_code == 404
+            assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

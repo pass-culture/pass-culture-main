@@ -13,6 +13,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils import date as date_utils
@@ -32,7 +33,14 @@ class Returns404Test:
         response = client.with_session_auth("user@example.com").patch(
             "/offers/publish", json={"id": other_stock.offer.id}
         )
-        assert response.status_code == 403
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
+
+    def test_patch_publish_offer_not_found(self, client):
+        offerers_factories.UserOffererFactory(user__email="user@example.com")
+        response = client.with_session_auth("user@example.com").patch("/offers/publish", json={"id": 123456789})
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
 
 now_datetime_with_tz = datetime.datetime.now(datetime.timezone.utc)

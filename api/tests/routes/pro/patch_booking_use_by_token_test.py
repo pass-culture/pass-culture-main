@@ -42,19 +42,6 @@ class Returns401Test:
 
 
 class Returns403Test:
-    def test_when_user_is_not_attached_to_linked_offerer(self, client):
-        booking = bookings_factories.BookingFactory()
-        another_pro_user = offerers_factories.UserOffererFactory().user
-
-        response = client.with_session_auth(another_pro_user.email).patch(f"/bookings/use/token/{booking.token}")
-
-        assert response.status_code == 404
-        assert response.json["global"] == [
-            "La contremarque n'existe pas, ou vous n'avez pas les droits nécessaires pour y accéder."
-        ]
-        booking = db.session.get(Booking, booking.id)
-        assert booking.status == BookingStatus.CONFIRMED
-
     def test_when_offerer_is_closed(self, client):
         offerer = offerers_factories.ClosedOffererFactory()
         booking = bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer)
@@ -69,6 +56,19 @@ class Returns403Test:
 
 
 class Returns404Test:
+    def test_when_user_is_not_attached_to_linked_offerer(self, client):
+        booking = bookings_factories.BookingFactory()
+        another_pro_user = offerers_factories.UserOffererFactory().user
+
+        response = client.with_session_auth(another_pro_user.email).patch(f"/bookings/use/token/{booking.token}")
+
+        assert response.status_code == 404
+        assert response.json["global"] == [
+            "La contremarque n'existe pas, ou vous n'avez pas les droits nécessaires pour y accéder."
+        ]
+        booking = db.session.get(Booking, booking.id)
+        assert booking.status == BookingStatus.CONFIRMED
+
     def test_missing_token(self, client):
         response = client.patch("/bookings/use/token/")
         assert response.status_code == 404

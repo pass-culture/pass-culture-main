@@ -65,7 +65,7 @@ class Returns204Tests:
             assert session_["user_id"] == user.id
 
 
-class Returns400Test:
+class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     @pytest.mark.usefixtures("rsa_keys")
     @mock.patch("pcapi.flask_app.redis.client.Pipeline.execute")

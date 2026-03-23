@@ -4,6 +4,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -95,7 +96,7 @@ class Return200Test:
         ]
 
 
-class Return400Test:
+class Return404Test:
     def test_access_by_unauthorized_pro_user(self, client):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -105,10 +106,12 @@ class Return400Test:
             response = client.get(
                 f"/venues/{venue.id}/locations", params={"withOffersOption": "INDIVIDUAL_OFFERS_ONLY"}
             )
-            assert response.status_code == 403
+            assert response.status_code == 404
+            assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
     def test_get_offerer_addresses_unexistent_venue(self, client):
         pro = users_factories.ProFactory()
         client = client.with_session_auth(email=pro.email)
         response = client.get("/venues/1/locations", params={"withOffersOption": "INDIVIDUAL_OFFERS_ONLY"})
-        assert response.status_code == 403
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

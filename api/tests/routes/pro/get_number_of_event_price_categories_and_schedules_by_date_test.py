@@ -7,6 +7,7 @@ import pcapi.core.bookings.models as bookings_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core import testing
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
 
 @pytest.mark.usefixtures("db_session")
@@ -133,4 +134,5 @@ def test_user_is_forbidden(client):
     queries += 1  # rollback
     with testing.assert_num_queries(queries):
         response = client.get(f"/bookings/dates/{offer_id}")
-        assert response.status_code == 403
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

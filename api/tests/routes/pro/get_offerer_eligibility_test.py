@@ -5,6 +5,7 @@ from pcapi.core import testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -45,7 +46,7 @@ class Return200Test:
                 assert collective_ds_application is None or response.json.get("hasDsApplication")
 
 
-class Return400Test:
+class Return404Test:
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # check user_offerer
     num_queries += 1  # rollback (atomic)
@@ -57,4 +58,5 @@ class Return400Test:
         offerer_id = 0
         with assert_num_queries(self.num_queries):
             response = client.get(f"/offerers/{offerer_id}/eligibility")
-            assert response.status_code == 403
+            assert response.status_code == 404
+            assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

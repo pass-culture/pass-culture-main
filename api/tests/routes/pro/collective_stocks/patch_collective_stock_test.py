@@ -18,6 +18,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils import date as date_utils
 
 
@@ -294,6 +295,24 @@ class Return200Test:
 
 
 class Return403Test:
+    def test_edit_collective_stocks_should_not_be_possible_when_offer_created_by_public_api(self, client):
+        stock = educational_factories.CollectiveStockFactory(
+            collectiveOffer__provider=providers_factories.ProviderFactory()
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
+        )
+
+        stock_edition_payload = {"totalPrice": 1500}
+
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
+
+        assert response.status_code == 403
+        assert response.json == {"global": ["Cette action n'est pas autorisée sur l'offre collective liée à ce stock."]}
+
+
+class Return404Test:
     @time_machine.travel("2020-11-17 15:00:00")
     def test_edit_collective_stocks_should_not_be_possible_when_user_not_linked_to_offerer(self, client):
         stock = educational_factories.CollectiveStockFactory(
@@ -314,26 +333,19 @@ class Return403Test:
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         # Then
-        assert response.status_code == 403
-        assert response.json == {
-            "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
-        }
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
-    def test_edit_collective_stocks_should_not_be_possible_when_offer_created_by_public_api(self, client):
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__provider=providers_factories.ProviderFactory()
-        )
+    def test_edit_collective_stocks_should_not_be_possible_when_stock_does_not_exist(self, client):
         offerers_factories.UserOffererFactory(
-            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
+            user__email="user@example.com",
         )
-
-        stock_edition_payload = {"totalPrice": 1500}
 
         client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
+        response = client.patch("/collective/stocks/123456789", json={})
 
-        assert response.status_code == 403
-        assert response.json == {"global": ["Cette action n'est pas autorisée sur l'offre collective liée à ce stock."]}
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
 
 class Return400Test:
