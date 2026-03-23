@@ -279,6 +279,10 @@ def extract_descriptions(html_content: str) -> dict[str, str]:
     return dict(zip(description_titles, description_details))
 
 
+def extract_details_actions(html_content: str) -> list[str]:
+    return extract(html_content, tag="button", class_="pc-action")
+
+
 def extract_badges(html_content: str) -> list[str]:
     return extract(html_content, "span", class_="badge")
 

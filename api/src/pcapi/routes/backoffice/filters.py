@@ -47,6 +47,7 @@ from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
 from pcapi.routes.backoffice.accounts import serialization as serialization_accounts
 from pcapi.utils import date as date_utils
+from pcapi.utils import postal_code as postal_code_utils
 from pcapi.utils import urls
 from pcapi.utils.csr import Csr
 from pcapi.utils.csr import get_csr
@@ -253,9 +254,14 @@ def format_date(
 
 
 def format_date_time(
-    data: datetime.date | datetime.datetime | None, address: geography_models.Address | None = None
+    data: datetime.date | datetime.datetime | None,
+    address: geography_models.Address | None = None,
+    force_two_lines: bool = False,
 ) -> str:
     local_date_time = format_date(data, strformat="%d/%m/%Y à %Hh%M", address=address)
+
+    if local_date_time and force_two_lines:
+        local_date_time = Markup("{}<br/>{}").format(*local_date_time.split(" ", 1))
 
     if not local_date_time or not address or address.timezone == METROPOLE_TIMEZONE:
         return local_date_time
@@ -295,6 +301,43 @@ def format_timespan(timespan: psycopg2.extras.DateTimeRange) -> str:
     else:
         end = "∞"
     return f"{start} → {end}"
+
+
+def format_time(time: int, unit: str = "seconds") -> str:
+    DAY = 86400
+    HOUR = 3600
+    MINUTE = 60
+
+    def compute_intermediary(output: str, delta_seconds: int, symbole: str, multiplier: int) -> tuple[str, int]:
+        if delta_seconds:
+            if delta_step := delta_seconds // multiplier:
+                if output:
+                    output += f"{str(delta_step).zfill(2)} {symbole}"
+                else:
+                    output += f"{delta_step} {symbole}"
+                output += f"{pluralize(delta_step)} "
+                delta_seconds %= multiplier
+            elif output:
+                output += f"00 {symbole}s "
+        return output, delta_seconds
+
+    match unit:
+        case "seconds":
+            delta_seconds = time
+        case "minutes":
+            delta_seconds = time * MINUTE
+        case "hours":
+            delta_seconds = time * HOUR
+        case "days":
+            delta_seconds = time * DAY
+        case _:
+            raise ValueError(f"Unknown unit {unit}")
+
+    output, delta_seconds = compute_intermediary("", delta_seconds, "jour", DAY)
+    output, delta_seconds = compute_intermediary(output, delta_seconds, "heure", HOUR)
+    output, delta_seconds = compute_intermediary(output, delta_seconds, "minute", MINUTE)
+    output, delta_seconds = compute_intermediary(output, delta_seconds, "seconde", 1)
+    return output
 
 
 def format_datespan(datespan: psycopg2.extras.DateRange) -> str:
@@ -2086,6 +2129,18 @@ def format_last_validation_action_name(status: offer_mixin.OfferValidationStatus
             return status.value
 
 
+def format_postal_code_to_departement_name(postal_code: str | int) -> str:
+    try:
+        return postal_code_utils.PostalCode(str(postal_code)).get_departement_name()
+    except postal_code_utils.DepartementNameNotFound:
+        logger.error("Department name not found for postal code : %s", postal_code)
+        return "Département inconnu"
+
+
+def format_postal_code_to_departement_code(postal_code: str | int) -> str:
+    return postal_code_utils.PostalCode(str(postal_code)).get_departement_code()
+
+
 # Keep consistency with pro/src/commons/mappings/DisplayableActivity.ts
 ACTIVITY_MAPPING = {
     offerers_models.Activity.ART_GALLERY: "Galerie d’art",
@@ -2254,3 +2309,6 @@ def install_template_filters(app: Flask) -> None:
     )
     app.jinja_env.filters["format_filter_status"] = format_filter_status
     app.jinja_env.filters["is_user_offerer_action_type"] = is_user_offerer_action_type
+    app.jinja_env.filters["format_postal_code_to_departement_name"] = format_postal_code_to_departement_name
+    app.jinja_env.filters["format_postal_code_to_departement_code"] = format_postal_code_to_departement_code
+    app.jinja_env.filters["format_time"] = format_time
