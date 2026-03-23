@@ -42,7 +42,7 @@ addonList.push(
     #displayLoadingSpinner = (event) => {
       const modal = bootstrap.Modal.getInstance(`#${PcHtmxManager.LOADING_MODAL_ID}`)
       const targetId = event?.detail?.target?.id
-      if (!!targetId && targetId !== PcFlash.MESSAGES_DIV && modal) {
+      if (!!targetId && targetId !== this.app.pcFlash.MESSAGES_DIV && modal) {
         modal.show()
       }
     }
