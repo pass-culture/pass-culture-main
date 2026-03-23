@@ -130,7 +130,6 @@ describe('offers', () => {
   let adageUser: AuthenticatedResponse
 
   beforeEach(() => {
-    vi.resetAllMocks()
     vi.mock('react-instantsearch', async () => {
       return {
         ...(await vi.importActual('react-instantsearch')),

@@ -105,7 +105,6 @@ const offererId = 1
 
 describe('CollectiveOffers', () => {
   beforeEach(() => {
-    vi.resetAllMocks()
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [],

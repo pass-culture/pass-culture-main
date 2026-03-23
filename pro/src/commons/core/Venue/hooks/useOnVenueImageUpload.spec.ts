@@ -65,7 +65,6 @@ const renderUseOnVenueImageUpload = () => {
 
 describe('useOnVenueImageUpload', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
     vi.mocked(buildInitialVenueImageValues).mockReturnValue(mockInitialValues)
   })
 

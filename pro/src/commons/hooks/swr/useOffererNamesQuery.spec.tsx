@@ -48,10 +48,6 @@ const renderComponent = (
 }
 
 describe('useOffererNamesQuery', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
   it('should invoke API and dispatch if no data is present in the store', async () => {
     const expectedOfferersNamesValidated = [
       { id: 1, name: 'Offerer 1' },

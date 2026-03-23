@@ -110,7 +110,6 @@ describe('IndividualOffersScreen', () => {
   const snackBarError = vi.fn()
   const snackBarSuccess = vi.fn()
   beforeEach(async () => {
-    vi.resetAllMocks()
     window.sessionStorage.clear()
     offersRecap = [listOffersOfferFactory()]
 

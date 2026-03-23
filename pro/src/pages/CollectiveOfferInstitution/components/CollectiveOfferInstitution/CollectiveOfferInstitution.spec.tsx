@@ -149,10 +149,6 @@ describe('CollectiveOfferInstitution', () => {
     }
   })
 
-  afterEach(() => {
-    vi.resetAllMocks()
-  })
-
   it('should show banner if generate from publicApi', () => {
     const offer = getCollectiveOfferFactory({ isPublicApi: true })
 

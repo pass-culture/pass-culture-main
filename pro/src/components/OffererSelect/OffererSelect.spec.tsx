@@ -30,7 +30,6 @@ const renderOffererSelect = (options: RenderWithProvidersOptions = {}) => {
 
 describe('OffererSelect', () => {
   beforeEach(() => {
-    vi.resetAllMocks()
     const mockResponse: SWRResponse<GetOffererNameResponseModel[]> = {
       data: [],
       error: undefined,

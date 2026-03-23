@@ -6,10 +6,6 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { BookingWaitingBanner } from './BookingWaitingBanner'
 
 describe('BookingWaitingBanner', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
   it('should show expiration warning when offer expires within 7 days', () => {
     const inThreeDays = new Date()
     inThreeDays.setDate(inThreeDays.getDate() + 3)

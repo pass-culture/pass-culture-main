@@ -18,10 +18,6 @@ describe('SelectedValuesTags', () => {
     removeOption: removeOptionMock,
   }
 
-  afterEach(() => {
-    vi.clearAllMocks()
-  })
-
   it('should render without accessibility violations', async () => {
     const { container } = render(<SelectedValuesTags {...defaultProps} />)
 

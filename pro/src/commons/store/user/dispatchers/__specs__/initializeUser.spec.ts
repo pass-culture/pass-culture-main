@@ -33,7 +33,6 @@ describe('initializeUser', () => {
   const user = sharedCurrentUserFactory({ email: 'user@pro.fr', id: 1 })
 
   beforeEach(() => {
-    vi.resetAllMocks()
     localStorage.clear()
     sessionStorage.clear()
     window.history.pushState({}, '', '/')

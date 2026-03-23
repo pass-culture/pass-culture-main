@@ -17,10 +17,6 @@ const TestComponent = () => {
 }
 
 describe('useIsElementVisible', () => {
-  beforeEach(() => {
-    vi.clearAllMocks() // Crucial to reset call counts between tests
-  })
-
   it('should instanciate the observer and observe the watched element', () => {
     render(<TestComponent />)
 

@@ -128,7 +128,6 @@ const renderIndividualOffersContext = () => {
 
 describe('HeadlineOfferContext', () => {
   beforeEach(() => {
-    vi.resetAllMocks()
     vi.spyOn(api, 'getOffererHeadlineOffer').mockResolvedValue(
       MOCK_DATA.headlineOffer
     )
@@ -141,7 +140,6 @@ describe('HeadlineOfferContext', () => {
         }),
       ],
     })
-    localStorage.clear()
   })
 
   describe('should tell if headline offer is available as a feature', () => {

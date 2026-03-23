@@ -13,11 +13,6 @@ vi.mock('@/commons/utils/storageAvailable', () => ({
 describe('localStorageManager', () => {
   const key = LOCAL_STORAGE_KEY.SELECTED_VENUE_ID
 
-  beforeEach(() => {
-    vi.resetAllMocks()
-    localStorage.clear()
-  })
-
   it('should delegate all methods to Local Storage when available', () => {
     vi.spyOn(storageAvailableModule, 'storageAvailable').mockReturnValue(true)
 

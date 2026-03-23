@@ -85,10 +85,6 @@ describe('<IndividualOfferLocation />', () => {
     )
   }
 
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
   it('renders spinner when no offer in context', () => {
     // No offer => early return branch
     mockUseSWR.mockReturnValue({ isLoading: false })

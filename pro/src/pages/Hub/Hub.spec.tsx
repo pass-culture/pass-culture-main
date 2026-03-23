@@ -87,10 +87,6 @@ describe('Hub', () => {
     }),
   ]
 
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
   it('should render', async () => {
     const { container } = renderHub({ venues: venuesBase })
 

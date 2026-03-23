@@ -73,17 +73,11 @@ describe('IndividualOfferContextProvider', () => {
     vi.spyOn(api, 'getOffer')
   })
 
-  afterEach(() => {
-    vi.clearAllMocks()
-  })
-
   describe.each([
     ['when there is no offerId in the URL path', {}],
     ['when offerId = "creation" in the URL path', { offerId: 'creation' }],
   ])('%s', (_, pathParams) => {
     beforeEach(() => {
-      vi.clearAllMocks()
-
       vi.mocked(useParams).mockReturnValue(pathParams)
     })
 

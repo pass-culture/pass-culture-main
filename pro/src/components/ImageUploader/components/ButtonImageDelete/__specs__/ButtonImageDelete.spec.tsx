@@ -30,7 +30,6 @@ describe('ButtonImageDelete', () => {
   let props: ButtonImageDeleteProps
 
   beforeEach(() => {
-    vi.clearAllMocks()
     props = {
       onImageDelete: mockOnDelete,
     }

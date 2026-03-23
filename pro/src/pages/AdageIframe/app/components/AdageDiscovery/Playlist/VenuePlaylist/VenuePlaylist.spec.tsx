@@ -41,7 +41,6 @@ describe('VenuePlaylist', () => {
   const snackBarError = vi.fn()
 
   beforeEach(async () => {
-    vi.resetAllMocks()
     vi.spyOn(apiAdage, 'logConsultPlaylistElement')
     vi.spyOn(apiAdage, 'getLocalOfferersPlaylist').mockResolvedValue({
       venues: [mockLocalOfferersPlaylistOffer],

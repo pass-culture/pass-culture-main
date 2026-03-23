@@ -89,8 +89,6 @@ describe('OfferHighlightForm', () => {
   const postHighlightRequestOfferMock = vi.mocked(api.postHighlightRequestOffer)
 
   beforeEach(() => {
-    vi.clearAllMocks()
-    vi.resetAllMocks()
     getHighlightsMock.mockResolvedValue(mockedHighlights)
     postHighlightRequestOfferMock.mockResolvedValue(
       {} as GetIndividualOfferWithAddressResponseModel

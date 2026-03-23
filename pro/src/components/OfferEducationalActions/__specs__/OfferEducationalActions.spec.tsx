@@ -60,7 +60,6 @@ describe('OfferEducationalActions', () => {
   const snackBarSuccess = vi.fn()
 
   beforeEach(async () => {
-    vi.resetAllMocks()
     const snackBarsImport = (await vi.importActual(
       '@/commons/hooks/useSnackBar'
     )) as ReturnType<typeof useSnackBar.useSnackBar>

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 import type { VenueListItemLiteResponseModel } from '@/apiClient/v1'
 import { getInitialPartnerVenueId } from '@/commons/store/user/utils/getInitialPartnerVenueId'
@@ -6,11 +6,6 @@ import { makeVenueListItemLiteResponseModel } from '@/commons/utils/factories/ve
 import { LOCAL_STORAGE_KEY } from '@/commons/utils/localStorageManager'
 
 describe('getInitialPartnerVenueId', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-    localStorage.clear()
-  })
-
   describe('Priority 1: venue ID from local storage', () => {
     it('should return venue ID from local storage when present and valid', () => {
       localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '123')

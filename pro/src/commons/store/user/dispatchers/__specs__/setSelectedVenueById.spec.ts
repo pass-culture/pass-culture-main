@@ -71,9 +71,6 @@ describe('setSelectedVenueById', () => {
   }
 
   beforeEach(() => {
-    vi.resetAllMocks()
-    localStorage.clear()
-
     localStorage.setItem(SAVED_OFFERER_ID_KEY, '200')
     localStorage.setItem(SAVED_VENUE_ID_KEY, '201')
   })

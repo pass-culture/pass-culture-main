@@ -46,8 +46,6 @@ describe('UserAnonymization', () => {
     useUserAnonymizationEligibility
   )
   beforeEach(() => {
-    vi.clearAllMocks()
-
     vi.mocked(api.anonymize).mockResolvedValue()
     useUserAnonymizationEligibilityMock.mockReturnValue({
       isLoading: false,
