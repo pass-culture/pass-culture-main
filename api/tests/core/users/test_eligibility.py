@@ -390,19 +390,10 @@ class EligibilityForNextRecreditActivationStepsTest:
 
 
 class EligibilityDatesTest:
-    @pytest.mark.features(WIP_FREE_ELIGIBILITY=False)
-    def test_eligibility_start_after_decree(self):
-        birth_date = datetime(2008, 1, 1)
-
-        eligibility_start = eligibility_api.get_eligibility_start_datetime(birth_date, date_utils.get_naive_utc_now())
-
-        assert eligibility_start == datetime(2025, 1, 1, tzinfo=ZoneInfo("Europe/Paris"))
-
     def test_eligibility_start(self):
         birth_date = datetime(2008, 1, 1)
 
-        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
-        eligibility_start = eligibility_api.get_eligibility_start_datetime(birth_date, before_decree)
+        eligibility_start = eligibility_api.get_eligibility_start_datetime(birth_date)
 
         assert eligibility_start == datetime(2023, 1, 1, tzinfo=ZoneInfo("Europe/Paris"))
 
