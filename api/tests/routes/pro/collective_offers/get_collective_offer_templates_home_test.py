@@ -59,6 +59,22 @@ class Returns200Test:
             ],
         }
 
+    def test_one_draft_collective_offer_template(self, client: TestClient):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        factories.create_collective_offer_template_by_status(models.CollectiveOfferDisplayedStatus.DRAFT, venue=venue)
+
+        client = client.with_session_auth(user_offerer.user.email)
+        venue_id = venue.id
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"{URL}?venueId={venue_id}")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "hasOffers": False,
+            "offers": [],
+        }
+
     def test_collective_offer_template_user_has_no_access(self, client: TestClient):
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
@@ -122,7 +138,7 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert response.json["hasOffers"] is True
-        # offer withtout dates is last, the rest is ordered by start date
+        # offer without dates is last, the rest is ordered by start date
         assert [offer["id"] for offer in response.json["offers"]] == [offer_2.id, offer_3.id, offer_1.id]
 
     def test_offers_limit(self, client: TestClient):

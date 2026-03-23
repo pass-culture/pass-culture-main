@@ -930,7 +930,10 @@ def list_collective_offers_for_homepage(
     ).all()
 
     all_offers_filters = schemas.CollectiveOffersFilter(user_id=user_id, venue_id=venue_id)
-    all_offers_query = get_collective_offers_by_filters(filters=all_offers_filters)
+    all_offers_query = get_collective_offers_by_filters(filters=all_offers_filters).filter(
+        # exclude draft offers (archived ones included) which are not meaningful for homepage purpose
+        models.CollectiveOffer.validation != offer_mixin.OfferValidationStatus.DRAFT
+    )
     has_offers = db.session.query(all_offers_query.exists()).scalar()
 
     return offers, has_offers
@@ -972,7 +975,10 @@ def get_collective_offer_templates_homepage(
     offers = query.order_by(models.CollectiveOfferTemplate.dateRange.nulls_last()).limit(offers_limit).all()
 
     all_offers_filters = schemas.CollectiveOffersFilter(user_id=user_id, venue_id=venue_id)
-    all_offers_query = get_collective_offers_template_by_filters(filters=all_offers_filters)
+    all_offers_query = get_collective_offers_template_by_filters(filters=all_offers_filters).filter(
+        # exclude draft offers (archived ones included) which are not meaningful for homepage purpose
+        models.CollectiveOfferTemplate.validation != offer_mixin.OfferValidationStatus.DRAFT
+    )
     has_offers = db.session.query(all_offers_query.exists()).scalar()
 
     return offers, has_offers

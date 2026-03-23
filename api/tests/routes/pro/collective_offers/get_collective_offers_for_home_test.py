@@ -62,6 +62,21 @@ class Returns200Test:
             ],
         }
 
+    def test_one_draft_collective_offer(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        factories.DraftCollectiveOfferFactory(venue=venue)
+
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"{URL}?venueId={venue.id}")
+            assert response.status_code == 200
+
+        assert response.json == {
+            "hasOffers": False,
+            "offers": [],
+        }
+
     def test_no_offers(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
