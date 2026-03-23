@@ -1,3 +1,4 @@
+from typing import Callable
 from urllib.parse import urlparse
 
 from flask import Request
@@ -6,6 +7,8 @@ from flask import request
 from flask import url_for
 from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.wrappers import Response as WerkzeugResponse
+
+from .response import BackofficeResponse
 
 
 def get_query_params() -> ImmutableMultiDict[str, str]:
@@ -19,6 +22,12 @@ def get_query_params() -> ImmutableMultiDict[str, str]:
 
 def is_request_from_htmx() -> bool:
     return request.headers.get("hx-request") == "true" and not request.args.get("redirect", False)
+
+
+def redirect_if_not_htmx(route: str, render_function: Callable) -> BackofficeResponse:
+    if is_request_from_htmx():
+        return render_function()
+    return redirect(route, code=303)
 
 
 def safe_redirect_back(request: Request, default_url: str | None = None, *, code: int = 303) -> WerkzeugResponse:

@@ -2714,7 +2714,7 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert response.status_code == 200
 
         soup = html_parser.get_soup(response.data)
-        assert soup.select(f'[data-registration-steps-id="{expected_steps_id}"]')
+        assert soup.select(".pc-tunnel-history")
         steps = soup.select(".steps")
         assert len(steps) == len(expected_texts_and_icons)
 

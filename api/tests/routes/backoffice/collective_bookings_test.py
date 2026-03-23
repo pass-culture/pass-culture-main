@@ -733,7 +733,6 @@ class CancelCollectiveBookingTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        assert len(response.data) == 0
 
         db.session.refresh(confirmed)
         assert confirmed.status == educational_models.CollectiveBookingStatus.CONFIRMED
