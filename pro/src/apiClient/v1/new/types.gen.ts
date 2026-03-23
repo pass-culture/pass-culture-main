@@ -6559,6 +6559,7 @@ export type VenueListItemLiteResponseModel = {
  * VenueListItemResponseModel
  */
 export type VenueListItemResponseModel = {
+    activity?: DisplayableActivity;
     /**
      * Audiodisabilitycompliant
      */

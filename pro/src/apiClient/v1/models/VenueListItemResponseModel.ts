@@ -2,11 +2,13 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { DisplayableActivity } from './DisplayableActivity';
 import type { ExternalAccessibilityDataModel } from './ExternalAccessibilityDataModel';
 import type { LocationResponseModel } from './LocationResponseModel';
 import type { SimplifiedBankAccountStatus } from './SimplifiedBankAccountStatus';
 import type { VenueTypeCode } from './VenueTypeCode';
 export type VenueListItemResponseModel = {
+  activity?: DisplayableActivity | null;
   audioDisabilityCompliant?: boolean | null;
   bankAccountStatus?: SimplifiedBankAccountStatus | null;
   bookingEmail?: string | null;
