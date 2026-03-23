@@ -1830,15 +1830,21 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
     # - fetch session + user (1 query)
     # - fetch CollectiveOffer
     # - _is_collective_offer_price_editable
-    expected_num_queries = 3
+    # - fetch ministry
+    # - fetch last pricing
+    # - fetch last incident
+    expected_num_queries = 6
 
     def test_nominal(self, legit_user, authenticated_client):
         start_date = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
         end_date = start_date + datetime.timedelta(days=28)
         provider = providers_factories.ProviderFactory(name="Cinéma Provider")
+        domain = educational_factories.EducationalDomainFactory()
+        national_program = educational_factories.NationalProgramFactory()
         collective_booking = educational_factories.CollectiveBookingFactory(
             collectiveStock__startDatetime=start_date,
             collectiveStock__endDatetime=end_date,
+            collectiveStock__bookingLimitDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=2),
             collectiveStock__collectiveOffer__durationMinutes=300,
             collectiveStock__collectiveOffer__description="My super offer description",
             collectiveStock__collectiveOffer__teacher=educational_factories.EducationalRedactorFactory(
@@ -1851,31 +1857,38 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
                 name="offre Vito Cortizone pour lieu que l'on ne peut refuser"
             ),
             collectiveStock__collectiveOffer__provider=provider,
+            collectiveStock__collectiveOffer__domains=[domain],
+            collectiveStock__collectiveOffer__nationalProgram=national_program,
         )
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        buttons = html_parser.extract(response.data, "button")
-        assert "Ajuster le prix" in buttons
-
         badges = html_parser.extract_badges(response.data)
         assert "• Validée" in badges
         assert "Cinéma Provider" in badges
 
         descriptions = html_parser.extract_descriptions(response.data)
-        assert "Utilisateur de la dernière validation" not in descriptions
+        buttons = html_parser.extract_details_actions(response.data)
+        # actions
+        assert "Annuler" in buttons
+        assert "Ajuster le prix" in buttons
         # details
-        assert descriptions["Durée"] == "300 minutes"
-        assert descriptions["Établissement"] == "Ecole de Marcinelle"
-        assert descriptions["Enseignant"] == "Pacôme De Champignac"
-        assert descriptions["Description"] == "My super offer description"
         # info
         assert descriptions["Date de l'évènement"] == f"{start_date:%d/%m/%Y} → {end_date:%d/%m/%Y}"
-        assert descriptions["Prix"] == "100,00 € pour 25 élèves"
-        assert descriptions["Informations sur le prix"] == "Prix: 100€ pour 25 tickets"
+        assert descriptions["Date limite de réservation"] == format_date(
+            data=collective_booking.collectiveStock.bookingLimitDatetime,
+            strformat="%d/%m/%Y à %Hh%M",
+        )
         assert descriptions["Lieu"] == "À déterminer"
+        assert descriptions["Participants"] == f"{collective_booking.collectiveStock.numberOfTickets} Personnes"
+        assert descriptions["Durée"] == "300 minutes"
+        assert descriptions["Description"] == "My super offer description"
+        # finance
+        assert descriptions["Montant"] == "100,00 €"
+        assert descriptions["Informations sur le prix"] == "Prix: 100€ pour 25 tickets"
+        assert descriptions["Statut de la réservation"] == "Confirmée"
         # public
         assert descriptions["Niveau scolaire"] == "Lycée - Seconde"
         assert "Accessibilité" in descriptions
@@ -1888,16 +1901,22 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         )
         # column
         # section 1
-        assert descriptions["CollectiveOffer ID"] == str(collective_booking.collectiveStock.collectiveOffer.id)
-        assert descriptions["Statut"] == "Réservée"
+        assert descriptions["ID Offre collective"] == str(collective_booking.collectiveStock.collectiveOffer.id)
         assert descriptions["Format"] == "Projection audiovisuelle"
+        assert descriptions["Domaine artistique"] == domain.name
+        assert descriptions["Dispositif national"] == national_program.name
         # section 2
         assert (
             descriptions["Entité juridique"]
             == collective_booking.collectiveStock.collectiveOffer.venue.managingOfferer.name
         )
         assert descriptions["Partenaire culturel"] == collective_booking.collectiveStock.collectiveOffer.venue.name
+        assert descriptions["Offre vitrine liée"] == "offre Vito Cortizone pour lieu que l'on ne peut refuser"
         # section 3
+        assert descriptions["Établissement"] == "COLLEGE Ecole de Marcinelle"
+        assert descriptions["UAI"] == collective_booking.collectiveStock.collectiveOffer.institution.institutionId
+        assert descriptions["Département de l'établissement"] == "Paris (75)"
+        # section 4
         assert descriptions["Date de création"] == format_date(
             data=collective_booking.collectiveStock.collectiveOffer.dateCreated,
             strformat="%d/%m/%Y à %Hh%M",
@@ -1906,12 +1925,13 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             data=collective_booking.collectiveStock.collectiveOffer.lastValidationDate,
             strformat="%d/%m/%Y à %Hh%M",
         )
-        assert descriptions["Offre vitrine liée"] == "offre Vito Cortizone pour lieu que l'on ne peut refuser"
+        assert "Utilisateur de la dernière validation" not in descriptions
 
     def test_processed_pricing(self, legit_user, authenticated_client):
         pricing = finance_factories.CollectivePricingFactory(
             status=finance_models.PricingStatus.PROCESSED,
             collectiveBooking__collectiveStock__startDatetime=datetime.datetime(1970, 1, 1),
+            collectiveBooking__collectiveStock__collectiveOffer__institution=educational_factories.EducationalInstitutionFactory(),
         )
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
 
@@ -1919,13 +1939,14 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        buttons = html_parser.extract(response.data, "button")
+        buttons = html_parser.extract_details_actions(response.data)
         assert "Ajuster le prix" not in buttons
 
     def test_invoiced_pricing(self, legit_user, authenticated_client):
         pricing = finance_factories.CollectivePricingFactory(
             status=finance_models.PricingStatus.INVOICED,
             collectiveBooking__collectiveStock__startDatetime=datetime.datetime(1970, 1, 1),
+            collectiveBooking__collectiveStock__collectiveOffer__institution=educational_factories.EducationalInstitutionFactory(),
         )
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
 
@@ -1933,25 +1954,24 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        buttons = html_parser.extract(response.data, "button")
+        buttons = html_parser.extract_details_actions(response.data)
         assert "Ajuster le prix" not in buttons
 
     def test_cashflow_pending(self, legit_user, authenticated_client, app):
         pricing = finance_factories.CollectivePricingFactory(
             collectiveBooking__collectiveStock__startDatetime=datetime.datetime(1970, 1, 1),
+            collectiveBooking__collectiveStock__collectiveOffer__institution=educational_factories.EducationalInstitutionFactory(),
         )
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
         app.redis_client.set(finance_conf.REDIS_GENERATE_CASHFLOW_LOCK, "1", 600)
         try:
-            # 1. UserSession + user
-            # 3. CollectiveOffer
-            with assert_num_queries(2):
+            with assert_num_queries(self.expected_num_queries - 1):  #  no _is_collective_offer_price_editable
                 response = authenticated_client.get(url)
                 assert response.status_code == 200
         finally:
             app.redis_client.delete(finance_conf.REDIS_GENERATE_CASHFLOW_LOCK)
 
-        buttons = html_parser.extract(response.data, "button")
+        buttons = html_parser.extract_details_actions(response.data)
         assert "Ajuster le prix" not in buttons
 
     def test_get_validated_offer(self, legit_user, authenticated_client):
@@ -1962,6 +1982,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             collectiveStock__collectiveOffer__lastValidationDate=validation_date,
             collectiveStock__collectiveOffer__validation=offers_models.OfferValidationStatus.APPROVED,
             collectiveStock__collectiveOffer__lastValidationAuthor=legit_user,
+            collectiveStock__collectiveOffer__institution=educational_factories.EducationalInstitutionFactory(),
         )
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
         with assert_num_queries(self.expected_num_queries):
@@ -1981,6 +2002,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             collectiveStock__collectiveOffer__validation=offers_models.OfferValidationStatus.REJECTED,
             collectiveStock__collectiveOffer__lastValidationAuthor=legit_user,
             collectiveStock__collectiveOffer__rejectionReason=educational_models.CollectiveOfferRejectionReason.MISSING_DESCRIPTION,
+            collectiveStock__collectiveOffer__institution=educational_factories.EducationalInstitutionFactory(),
         )
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
         with assert_num_queries(self.expected_num_queries):
@@ -1997,7 +2019,9 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         collective_offer = educational_factories.CollectiveOfferFactory(venue__managingOfferer=rule.offerer)
 
         url = url_for(self.endpoint, collective_offer_id=collective_offer.id)
-        with assert_num_queries(self.expected_num_queries - 1):  # no _is_collective_offer_price_editable
+        expected_num_queries = 1  # retreive user + session
+        expected_num_queries += 1  # retrieve offer+  dependencies
+        with assert_num_queries(expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -2009,7 +2033,9 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         collective_offer = educational_factories.CollectiveOfferFactory(venue=rule.venue)
 
         url = url_for(self.endpoint, collective_offer_id=collective_offer.id)
-        with assert_num_queries(self.expected_num_queries - 1):  # no _is_collective_offer_price_editable
+        expected_num_queries = 1  # retreive user + session
+        expected_num_queries += 1  # retrieve offer+  dependencies
+        with assert_num_queries(expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -2026,7 +2052,9 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, collective_offer_id=collective_offer.id)
-        with assert_num_queries(self.expected_num_queries - 1):  # no _is_collective_offer_price_editable
+        expected_num_queries = 1  # retreive user + session
+        expected_num_queries += 1  # retrieve collective_offer
+        with assert_num_queries(expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -2041,7 +2069,9 @@ class RejectCollectiveOfferFromDetailsButtonTest(button_helpers.ButtonHelper):
 
     @property
     def path(self):
-        stock = educational_factories.CollectiveStockFactory()
+        stock = educational_factories.CollectiveStockFactory(
+            collectiveOffer__validation=OfferValidationStatus.PENDING,
+        )
         return url_for(self.endpoint, collective_offer_id=stock.collectiveOffer.id)
 
 
@@ -2052,5 +2082,7 @@ class ValidateCollectiveOfferFromDetailsButtonTest(button_helpers.ButtonHelper):
 
     @property
     def path(self):
-        stock = educational_factories.CollectiveStockFactory()
+        stock = educational_factories.CollectiveStockFactory(
+            collectiveOffer__validation=OfferValidationStatus.PENDING,
+        )
         return url_for(self.endpoint, collective_offer_id=stock.collectiveOffer.id)

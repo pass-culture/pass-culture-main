@@ -1,14 +1,19 @@
 {% extends "layouts/details.html" %}
-{% from "components/dynamic/modal.html" import build_lazy_modal with context %}
 {% import "components/badges.html" as badges with context %}
 {% import "components/clipboard.html" as clipboard %}
 {% import "components/links.html" as links with context %}
+{% import "components/logo.html" as logo %}
 {% from "components/connect_as.html" import build_connect_as %}
 {% from "components/description.html" import description_detail_horizontal %}
 {% from "components/description.html" import description_detail_vertical %}
+{% from "components/dynamic/modal.html" import build_lazy_modal with context %}
+{% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
+{% from "components/generic_modal.html" import build_simple_modal_form with context %}
+{% from "components/history/tunnel_history.html" import build_tunnel_history %}
 {% from "components/presentation/accessibility.html" import accessibility_indicator %}
 {% from "components/presentation/images.html" import offer_detail_image %}
-{% import "components/logo.html" as logo %}
+{% set collective_stock = collective_offer.collectiveStock %}
+{% set collective_booking = collective_stock.lastBooking %}
 {% block title %}{{ collective_offer.name }}{% endblock %}
 {% block header_extra %}
   <div>
@@ -19,41 +24,103 @@
   </div>
 {% endblock %}
 {% block action_buttons %}
-  {% if is_collective_offer_price_editable and has_permission("ADVANCED_PRO_SUPPORT") %}
-    {{ action_bar_button("pencil-square", "Ajuster le prix", modal_id="#update-collective-offer-price") }}
+  {% if allowed_actions.actions.VALIDATE_BOOKING in allowed_actions.inline_actions %}
+    {{ action_bar_button("check-circle", "Valider la réservation", modal_id="#pc-validate-booking-" + collective_booking.id|string + "-modal") }}
   {% endif %}
-  {% if has_permission("PRO_FRAUD_ACTIONS") %}
+  {% if allowed_actions.actions.CANCEL_BOOKING in allowed_actions.inline_actions %}
+    {{ action_bar_button("x-circle", "Annuler", modal_id="#pc-cancel-booking-" + collective_booking.id|string + "-modal") }}
+  {% endif %}
+  {% if allowed_actions.actions.VALIDATE_OFFER in allowed_actions.inline_actions %}
     {{ action_bar_button("hand-thumbs-up", "Valider", modal_id="#validate-collective-offer-modal-" + collective_offer.id|string) }}
+  {% endif %}
+  {% if allowed_actions.actions.REJECT_OFFER in allowed_actions.inline_actions %}
     {{ action_bar_button("hand-thumbs-down", "Rejeter", modal_id="#reject-collective-offer-modal-" + collective_offer.id|string) }}
   {% endif %}
+  {% if allowed_actions.actions.CREATE_COMMERCIAL_GESTURE in allowed_actions.inline_actions %}
+    {{ action_bar_button("exclamation-triangle", "Créer un geste commercial", modal_id="#commercial-gesture-creation-modal-" + collective_booking.id|string) }}
+  {% endif %}
+  {% if allowed_actions.actions.CREATE_OVERPAYMENT in allowed_actions.inline_actions %}
+    {{ action_bar_button("pencil-square", "Créer un incident", modal_id="#erpayment-creation-modal-" + collective_booking.id|string) }}
+  {% endif %}
+  {% if allowed_actions.actions.ADJUST_PRICE in allowed_actions.inline_actions %}
+    {{ action_bar_button("pencil-square", "Ajuster le prix", modal_id="#update-collective-offer-price") }}
+  {% endif %}
+  <!-- ADDITIONAL BUTTONS TO PUT IN DROPDOWN MENU -->
+  {% if allowed_actions.additional_actions %}
+    <ul class="dropdown-menu">
+      {% if allowed_actions.actions.VALIDATE_BOOKING in allowed_actions.additional_actions %}
+        {{ action_bar_additional_button("check-circle", "Valider la réservation", modal_id="#pc-validate-booking-" + collective_booking.id|string + "-modal") }}
+      {% endif %}
+      {% if allowed_actions.actions.CANCEL_BOOKING in allowed_actions.additional_actions %}
+        {{ action_bar_additional_button("x-circle", "Annuler", modal_id="#pc-cancel-booking-" + collective_booking.id|string + "-modal") }}
+      {% endif %}
+      {% if allowed_actions.actions.VALIDATE_OFFER in allowed_actions.additional_actions %}
+        <li>
+          {{ action_bar_additional_button("hand-thumbs-up", "Valider", modal_id="#validate-collective-offer-modal-" + collective_offer.id|string) }}
+        </li>
+      {% endif %}
+      {% if allowed_actions.actions.REJECT_OFFER in allowed_actions.additional_actions %}
+        <li>
+          {{ action_bar_additional_button("hand-thumbs-down", "Rejeter", modal_id="#reject-collective-offer-modal-" + collective_offer.id|string) }}
+        </li>
+      {% endif %}
+      {% if allowed_actions.actions.CREATE_COMMERCIAL_GESTURE in allowed_actions.additional_actions %}
+        {{ action_bar_button("exclamation-triangle", "Créer un geste commercial", modal_id="#commercial-gesture-creation-modal-" + collective_booking.id|string) }}
+      {% endif %}
+      {% if allowed_actions.actions.CREATE_OVERPAYMENT in allowed_actions.additional_actions %}
+        {{ action_bar_button("pencil-square", "Créer un incident", modal_id="#erpayment-creation-modal-" + collective_booking.id|string) }}
+      {% endif %}
+      {% if allowed_actions.actions.ADJUST_PRICE in allowed_actions.additional_actions %}
+        {{ action_bar_additional_button("pencil-square", "Ajuster le prix", modal_id="#update-collective-offer-price") }}
+      {% endif %}
+    </ul>
+    <button type="button"
+            class="btn btn-outline-primary-subtle-bg d-flex gap-2"
+            data-bs-toggle="dropdown">
+      Plus d'actions
+      <i class="bi bi-three-dots-vertical"></i>
+    </button>
+  {% endif %}
 {% endblock action_buttons %}
-{% block extra_title_bar %}
-  {% call content_navbar("offer-details") %}
-    {{ content_navbar_element('details', 'Détails') }}
-    {{ content_navbar_element('info', 'Informations pratiques') }}
-    {{ content_navbar_element('publics', 'Public concerné') }}
-    {{ content_navbar_element('contact', 'Contact du partenaire culturel') }}
-  {% endcall %}
-{% endblock extra_title_bar %}
 {% block details_container %}
   {% call details_content_wrapper("offer-details") %}
     <!-- DETAILS -->
     {% call nav_section("details", "Détails de l'offre") %}
       <div class="d-flex gap-1">
         <div class="flex-grow-1">
-          {% if collective_offer.institution %}
-            {% call description_detail_horizontal("Établissement") %}
-              {{ collective_offer.institution.name }}
+          {% if collective_stock %}
+            {% call description_detail_horizontal("Date de l'évènement") %}
+              {% set start_date = collective_offer.start | format_date("%d/%m/%Y", collective_offer.address) %}
+              {% set end_date = collective_offer.end | format_date("%d/%m/%Y", collective_offer.address) %}
+              {{ start_date }}
+              {% if end_date and end_date != start_date %}→ {{ end_date }}{% endif %}
+            {% endcall %}
+            {% call description_detail_horizontal("Date limite de réservation") %}
+              {{ collective_stock.bookingLimitDatetime  |format_date_time }}
             {% endcall %}
           {% endif %}
-          {% if collective_offer.teacher %}
-            {% call description_detail_horizontal("Enseignant") %}
-              {{ collective_offer.teacher.full_name }}
+          {% if collective_offer.locationType %}
+            {% call description_detail_horizontal("Lieu") %}
+              {% if collective_offer.locationType.value == 'ADDRESS' %}
+                <div>
+                  <div>{{ collective_offer.offererAddress.address.street }}</div>
+                  <div>{{ collective_offer.offererAddress.address.postalCode }} {{ collective_offer.offererAddress.address.city }}</div>
+                </div>
+              {% elif collective_offer.locationComment %}
+                {{ collective_offer.locationComment | nl2br }}
+              {% else %}
+                {{ collective_offer.locationType | format_collective_location_type }}
+              {% endif %}
+            {% endcall %}
+            {% call description_detail_horizontal("Participants") %}
+              {{ collective_stock.numberOfTickets }} Personnes
             {% endcall %}
           {% endif %}
-          {% call description_detail_horizontal("Durée") %}
-            {% if collective_offer.durationMinutes %}{{ collective_offer.durationMinutes }} minutes{% endif %}
-          {% endcall %}
+          {% if collective_offer.durationMinutes %}
+            {% call description_detail_horizontal("Durée") %}
+              {{ collective_offer.durationMinutes }} minutes
+            {% endcall %}
+          {% endif %}
           {% call description_detail_horizontal("Description") %}
             {{ collective_offer.description | nl2br }}
           {% endcall %}
@@ -61,36 +128,36 @@
         {{ offer_detail_image(collective_offer.imageUrl, collective_offer.imageCredit) }}
       </div>
     {% endcall %}
-    <!-- INFO -->
-    {% call nav_section("info", "Informations pratiques") %}
-      {% call description_detail_horizontal("Date de l'évènement") %}
-        {% if collective_offer.collectiveStock %}
-          {% set start_date = collective_offer.start | format_date("%d/%m/%Y", collective_offer.address) %}
-          {% set end_date = collective_offer.end | format_date("%d/%m/%Y", collective_offer.address) %}
-          {{ start_date }}
-          {% if end_date and end_date != start_date %}→ {{ end_date }}{% endif %}
-        {% endif %}
-      {% endcall %}
-      {% call description_detail_horizontal("Prix") %}
-        {% if collective_offer.collectiveStock %}
-          {{ collective_offer.collectiveStock.price | format_amount }} pour {{ collective_offer.collectiveStock.numberOfTickets }} élèves
-        {% endif %}
-      {% endcall %}
-      {% call description_detail_horizontal("Informations sur le prix") %}
-        {% if collective_offer.collectiveStock %}{{ collective_offer.collectiveStock.priceDetail | nl2br }}{% endif %}
-      {% endcall %}
-      {% if collective_offer.locationType %}
-        {% call description_detail_horizontal("Lieu") %}
-          {% if collective_offer.locationType.value == 'ADDRESS' %}
-            <div>
-              <div>{{ collective_offer.offererAddress.address.street }}</div>
-              <div>{{ collective_offer.offererAddress.address.postalCode }} {{ collective_offer.offererAddress.address.city }}</div>
-            </div>
-          {% elif collective_offer.locationComment %}
-            {{ collective_offer.locationComment | nl2br }}
-          {% else %}
-            {{ collective_offer.locationType | format_collective_location_type }}
+    <!-- FOLLOW -->
+    {% call nav_section("tunnel", "Suivi de la réservation") %}
+      <div class="d-flex gap-1">
+        <div class="flex-grow-1 p-4">{{ build_tunnel_history(history_tunnel) }}</div>
+      </div>
+    {% endcall %}
+    <!-- FINANCE -->
+    {% call nav_section("finance", "Informations financières") %}
+      {% if collective_stock %}
+        {% call description_detail_horizontal("Montant") %}
+          {{ collective_stock.price | format_amount }}
+        {% endcall %}
+        {% call description_detail_horizontal("Informations sur le prix") %}
+          {{ collective_stock.priceDetail | nl2br }}
+        {% endcall %}
+        {% if collective_booking %}
+          {% if last_pricing and last_pricing.cashflow %}
+            {% call description_detail_horizontal("N° de virement") %}
+              {{ collective_booking.cashflow_batch.label }}
+              {{ clipboard.copy_to_clipboard(last_pricing.cashflow.batch.label, "Copier le numéro de virement") }}
+            {% endcall %}
           {% endif %}
+          {% call description_detail_horizontal("Statut de la réservation") %}
+            {{ collective_booking | format_booking_status(with_badge=True) }}
+          {% endcall %}
+        {% endif %}
+      {% endif %}
+      {% if last_incident %}
+        {% call description_detail_horizontal("Incident compatble") %}
+          {{ links.build_finance_incident_to_details_link(last_incident) }} {{ last_incident.kind | format_finance_incident_type }} {{ last_incident.status | format_finance_incident_status_badge }}
         {% endcall %}
       {% endif %}
     {% endcall %}
@@ -140,12 +207,9 @@
     </button>
   {% endcall %}
   <div>
-    {% call description_detail_vertical("CollectiveOffer ID") %}
+    {% call description_detail_vertical("ID Offre collective") %}
       {{ collective_offer.id }}
       {{ clipboard.copy_to_clipboard(collective_offer.id, "Copier l'ID de l'offre") }}
-    {% endcall %}
-    {% call description_detail_vertical("Statut") %}
-      {{ collective_offer.displayedStatus | format_collective_offer_displayed_status }}
     {% endcall %}
     {% set formats_label = collective_offer.formats | length | pluralize("Format", "Formats") %}
     {% call description_detail_vertical(formats_label) %}
@@ -181,6 +245,24 @@
       {% endcall %}
     {% endif %}
     {% if collective_offer.rejectionReason or collective_offer.lastValidationDate or collective_offer.lastValidationAuthor %}<hr />{% endif %}
+    {% if collective_offer.institutionId %}
+      {% call description_detail_vertical("Établissement") %}
+        {{ collective_offer.institution.full_name }}
+      {% endcall %}
+      {% call description_detail_vertical("UAI") %}
+        {{ collective_offer.institution.institutionId }}
+      {% endcall %}
+      {% call description_detail_vertical("Département de l'établissement") %}
+        {{ collective_offer.institution.postalCode | format_postal_code_to_departement_name }}
+        ({{ collective_offer.institution.postalCode | format_postal_code_to_departement_code }})
+      {% endcall %}
+      {% if ministry %}
+        {% call description_detail_vertical("Ministère") %}
+          {{ ministry.value }}
+        {% endcall %}
+      {% endif %}
+      <hr />
+    {% endif %}
     {% if collective_offer.rejectionReason %}
       {% call description_detail_vertical("Raison de rejet") %}
         {{ collective_offer.rejectionReason | format_collective_offer_rejection_reason }}
@@ -202,11 +284,29 @@
   </div>
 {% endblock side_column %}
 {% block extra_main_content %}
-  {% if is_collective_offer_price_editable and has_permission("ADVANCED_PRO_SUPPORT") %}
-    {{ build_lazy_modal(url_for("backoffice_web.collective_offer.get_collective_offer_price_form", collective_offer_id=collective_offer.id) , "update-collective-offer-price") }}
+  {% if allowed_actions.actions.CANCEL_BOOKING in allowed_actions.allowed_actions %}
+    {{ build_simple_modal_form("pc-cancel-booking-" + collective_booking.id |string,
+        url_for('backoffice_web.collective_bookings.mark_booking_as_cancelled', collective_booking_id=collective_booking.id) , cancel_booking_form, "Annuler la réservation" + collective_booking.id |string, "Annuler la réservation")
+    }}
   {% endif %}
-  {% if has_permission("PRO_FRAUD_ACTIONS") %}
+  {% if allowed_actions.actions.VALIDATE_BOOKING in allowed_actions.allowed_actions %}
+    {{ build_simple_modal_form("pc-validate-booking-" + collective_booking.id |string,
+        url_for('backoffice_web.collective_bookings.mark_booking_as_used', collective_booking_id=collective_booking.id) ,mark_as_used_booking_form, "Valider la réservation" + collective_booking.id |string, "Valider la réservation")
+    }}
+  {% endif %}
+  {% if allowed_actions.actions.VALIDATE_OFFER in allowed_actions.allowed_actions %}
     {{ build_lazy_modal(url_for('backoffice_web.collective_offer.get_validate_collective_offer_form', collective_offer_id=collective_offer.id) , "validate-collective-offer-modal-" + collective_offer.id|string) }}
+  {% endif %}
+  {% if allowed_actions.actions.REJECT_OFFER in allowed_actions.allowed_actions %}
     {{ build_lazy_modal(url_for('backoffice_web.collective_offer.get_reject_collective_offer_form', collective_offer_id=collective_offer.id) , "reject-collective-offer-modal-" + collective_offer.id|string) }}
+  {% endif %}
+  {% if allowed_actions.actions.CREATE_OVERPAYMENT in allowed_actions.allowed_actions %}
+    {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_collective_booking_overpayment_creation_form", collective_booking_id=collective_booking.id) , "overpayment-creation-modal-" + collective_booking.id|string) }}
+  {% endif %}
+  {% if allowed_actions.actions.CREATE_COMMERCIAL_GESTURE in allowed_actions.allowed_actions %}
+    {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_collective_booking_commercial_gesture_creation_form", collective_booking_id=collective_booking.id) , "commercial-gesture-creation-modal-" + collective_booking.id|string) }}
+  {% endif %}
+  {% if allowed_actions.actions.ADJUST_PRICE in allowed_actions.allowed_actions %}
+    {{ build_lazy_modal(url_for("backoffice_web.collective_offer.get_collective_offer_price_form", collective_offer_id=collective_offer.id) , "update-collective-offer-price") }}
   {% endif %}
 {% endblock extra_main_content %}

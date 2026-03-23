@@ -1,6 +1,6 @@
 $step-border-width: 1px;
 
-[data-registration-steps-id] {
+[data-registration-steps-id], .pc-tunnel-history{
   & .progress {
     top: 3.4rem;
     left: 0;
@@ -8,8 +8,8 @@ $step-border-width: 1px;
     height: .2rem;
     background: repeating-linear-gradient(
       90deg,
-      $gray-200,
-      $gray-200 5px,
+      $secondary,
+      $secondary 5px,
       #fff 5px,
       #fff 9px
    );
@@ -18,8 +18,8 @@ $step-border-width: 1px;
       height: .2rem;
       background: repeating-linear-gradient(
         90deg,
-        $gray-600,
-        $gray-600 5px,
+        $primary,
+        $primary 5px,
         #fff 5px,
         #fff 9px
      );
@@ -56,7 +56,7 @@ $step-border-width: 1px;
       width: 2.1rem;
       height: 2.1rem;
       left: calc(100% - 1.05rem) !important;
-      top: 28% !important;
+      top: 20% !important;
       background-color: $gray-200;
 
       &.step-success {

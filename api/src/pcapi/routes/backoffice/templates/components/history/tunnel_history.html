@@ -1,0 +1,38 @@
+{% macro build_tunnel_history(tunnel) %}
+  <div class="pc-tunnel-history">
+    <div class="position-relative">
+      {% if tunnel.steps | length > 1 %}
+        <div class="progress position-absolute">
+          <div class="progress-bar"
+               role="progressbar"
+               style="width: {{ tunnel.progress }}%"></div>
+        </div>
+      {% endif %}
+      <ol class="breadcrumb-container position-relative d-flex p-0 justify-content-between">
+        {% for step in tunnel.steps %}
+          <li {%+ if step.tooltip %}
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              data-bs-title="{{ step.tooltip }}"
+              {% endif +%}>
+            <div class="steps" disabled>
+              <div class="step-number d-flex flex-column justify-content-center align-items-center px-2 py-3 position-relative text-center">
+                {{ step.text }}
+                <div class="step-status-icon-container position-absolute translate-middle-y d-flex rounded-circle justify-content-center step-{{ step.status }}">
+                  <i class="bi bi-{{ step.icon }}"></i>
+                </div>
+                <div class="step-text center-smallcontainer pe-none fs-7 text-secondary">
+                  {% if step.datetime %}
+                    {{ step.datetime | format_date_time }}
+                  {% else %}
+                    En attente
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </li>
+        {% endfor %}
+      </ol>
+    </div>
+  </div>
+{% endmacro %}

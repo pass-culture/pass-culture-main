@@ -1,3 +1,4 @@
+import enum
 import logging
 import re
 import typing
@@ -34,7 +35,10 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.routes.backoffice import blueprint as backoffice_blueprint
+from pcapi.routes.backoffice import filters as template_filters
+from pcapi.routes.backoffice.bookings import forms as booking_forms
 from pcapi.routes.backoffice.collective_offers import forms
+from pcapi.routes.backoffice.finance import validation as finance_validation
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.routes.backoffice.utils import access_control
@@ -42,6 +46,9 @@ from pcapi.routes.backoffice.utils import advanced_search
 from pcapi.routes.backoffice.utils import request as request_utils
 from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.routes.backoffice.utils import search as search_utils
+from pcapi.routes.backoffice.utils.details_actions import DetailsActions
+from pcapi.routes.serialization.collective_history_serialize import CollectiveOfferHistory
+from pcapi.routes.serialization.collective_history_serialize import get_collective_offer_history
 from pcapi.utils import date as date_utils
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import urls
@@ -213,6 +220,80 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
         },
     },
 }
+
+
+OFFER_STATUS_DISPLAY = {
+    educational_models.CollectiveOfferDisplayedStatus.PUBLISHED: {
+        "icon": "check-circle",
+        "status": "success",
+        "text": "Offre publiée",
+    },
+    educational_models.CollectiveOfferDisplayedStatus.UNDER_REVIEW: {
+        "icon": "eye",
+        "status": "disabled",
+        "text": "Offre en revue",
+    },
+    educational_models.CollectiveOfferDisplayedStatus.REJECTED: {
+        "icon": "x-circle",
+        "status": "error",
+        "text": "Offre rejetée",
+    },
+    educational_models.CollectiveOfferDisplayedStatus.PREBOOKED: {
+        "icon": "check-circle",
+        "status": "success",
+        "text": "Offre préréservée",
+    },
+    educational_models.CollectiveOfferDisplayedStatus.BOOKED: {
+        "icon": "check-circle",
+        "status": "success",
+        "text": "Offre réservée",
+    },
+    educational_models.CollectiveOfferDisplayedStatus.HIDDEN: {
+        "icon": "eye-slash",
+        "status": "disabled",
+        "text": "Offre cachée",
+    },
+    educational_models.CollectiveOfferDisplayedStatus.EXPIRED: {
+        "icon": "clock-history",
+        "status": "disabled",
+        "text": "Offre expirée",
+    },
+    educational_models.CollectiveOfferDisplayedStatus.ENDED: {
+        "icon": "check-circle",
+        "status": "success",
+        "text": "Offre terminée",
+    },
+    educational_models.CollectiveOfferDisplayedStatus.CANCELLED: {
+        "icon": "x-circle",
+        "status": "error",
+        "text": "Offre annulée",
+    },
+    educational_models.CollectiveOfferDisplayedStatus.REIMBURSED: {
+        "icon": "check-circle",
+        "status": "success",
+        "text": "Offre remboursée",
+    },
+    educational_models.CollectiveOfferDisplayedStatus.ARCHIVED: {
+        "icon": "archive",
+        "status": "disabled",
+        "text": "Offre archivée",
+    },
+    educational_models.CollectiveOfferDisplayedStatus.DRAFT: {
+        "icon": "pencil-square",
+        "status": "disabled",
+        "text": "Offre brouillon",
+    },
+}
+
+
+class CollectiveOfferDetailsActionType(enum.StrEnum):
+    CANCEL_BOOKING = enum.auto()
+    VALIDATE_BOOKING = enum.auto()
+    VALIDATE_OFFER = enum.auto()
+    REJECT_OFFER = enum.auto()
+    CREATE_COMMERCIAL_GESTURE = enum.auto()
+    CREATE_OVERPAYMENT = enum.auto()
+    ADJUST_PRICE = enum.auto()
 
 
 def _get_educational_year_subquery(
@@ -847,6 +928,95 @@ def _is_collective_offer_price_editable(collective_offer: educational_models.Col
     return True
 
 
+def _get_step_update(status: educational_models.CollectiveOfferDisplayedStatus) -> dict[str, typing.Any]:
+    return OFFER_STATUS_DISPLAY.get(
+        status,
+        {"icon": "question-circle", "status": "secondary", "text": str(status)},
+    )
+
+
+def _format_collective_offer_history(
+    raw_history: CollectiveOfferHistory, offer: educational_models.CollectiveOffer
+) -> dict:
+    stock = offer.collectiveStock
+    booking = stock.lastBooking if stock else None
+    progress = 100.0
+    steps: list[dict[str, typing.Any]] = []
+    if len(raw_history.past) + len(raw_history.future) > 1:
+        progress = (len(raw_history.past) - 1) / (len(raw_history.past) + len(raw_history.future) - 1) * 100
+    for past_step in raw_history.past:
+        step = {
+            "datetime": past_step.datetime,
+            "tooltip": "",
+        }
+        step.update(_get_step_update(past_step.status))
+        if past_step.status == educational_models.CollectiveOfferDisplayedStatus.CANCELLED and booking:
+            step["tooltip"] = template_filters.format_booking_cancellation(
+                booking.cancellationReason, booking.cancellationUser
+            )
+        steps.append(step)
+    for future_step in raw_history.future:
+        steps.append(
+            {
+                "datetime": "",
+                "tooltip": "",
+                "icon": "clock",
+                "status": "disabled",
+                "text": _get_step_update(future_step)["text"],
+            }
+        )
+    history = {
+        "steps": steps,
+        "progress": progress,
+    }
+    return history
+
+
+def _get_collective_offer_details_actions(collective_offer: educational_models.CollectiveOffer) -> DetailsActions:
+    allowed_actions = DetailsActions(actions=CollectiveOfferDetailsActionType)
+    collective_stock = collective_offer.collectiveStock
+    collective_booking = collective_stock.lastBooking if collective_stock else None
+
+    if (
+        access_control.has_current_user_permission(perm_models.Permissions.MANAGE_BOOKINGS)
+        and collective_booking
+        and collective_booking.status
+        not in (
+            educational_models.CollectiveBookingStatus.CANCELLED,
+            educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT,
+            educational_models.CollectiveBookingStatus.REIMBURSED,
+        )
+    ):
+        allowed_actions.add_action(CollectiveOfferDetailsActionType.CANCEL_BOOKING)
+    if (
+        access_control.has_current_user_permission(perm_models.Permissions.MANAGE_BOOKINGS)
+        and collective_booking
+        and collective_booking.status == educational_models.CollectiveBookingStatus.CANCELLED
+    ):
+        allowed_actions.add_action(CollectiveOfferDetailsActionType.VALIDATE_BOOKING)
+    if access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
+        if collective_offer.validation == offer_mixin.OfferValidationStatus.PENDING:
+            allowed_actions.add_action(CollectiveOfferDetailsActionType.VALIDATE_OFFER)
+            allowed_actions.add_action(CollectiveOfferDetailsActionType.REJECT_OFFER)
+    if access_control.has_current_user_permission(perm_models.Permissions.CREATE_INCIDENTS) and collective_booking:
+        if (
+            collective_booking.status == educational_models.CollectiveBookingStatus.CANCELLED
+            and finance_validation.check_commercial_gesture_collective_booking(collective_booking)
+        ):
+            allowed_actions.add_action(CollectiveOfferDetailsActionType.CREATE_COMMERCIAL_GESTURE)
+    if access_control.has_current_user_permission(perm_models.Permissions.CREATE_INCIDENTS) and collective_booking:
+        if (
+            collective_booking.status == educational_models.CollectiveBookingStatus.REIMBURSED
+            and finance_validation.check_commercial_gesture_collective_booking(collective_booking)
+        ):
+            allowed_actions.add_action(CollectiveOfferDetailsActionType.CREATE_COMMERCIAL_GESTURE)
+    if access_control.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT) and collective_stock:
+        if _is_collective_offer_price_editable(collective_offer):
+            allowed_actions.add_action(CollectiveOfferDetailsActionType.ADJUST_PRICE)
+
+    return allowed_actions
+
+
 @blueprint.route("/<int:collective_offer_id>/details", methods=["GET"])
 def get_collective_offer_details(collective_offer_id: int) -> response_utils.BackofficeResponse:
     collective_offer_query = (
@@ -880,6 +1050,9 @@ def get_collective_offer_details(collective_offer_id: int) -> response_utils.Bac
             ),
             sa_orm.joinedload(educational_models.CollectiveOffer.institution).load_only(
                 educational_models.EducationalInstitution.name,
+                educational_models.EducationalInstitution.institutionType,
+                educational_models.EducationalInstitution.institutionId,
+                educational_models.EducationalInstitution.postalCode,
             ),
             sa_orm.joinedload(educational_models.CollectiveOffer.template).load_only(
                 educational_models.CollectiveOfferTemplate.name,
@@ -907,24 +1080,104 @@ def get_collective_offer_details(collective_offer_id: int) -> response_utils.Bac
         )
     )
     collective_offer = collective_offer_query.one_or_none()
+
     if not collective_offer:
         flash("Cette offre collective n'existe pas", "warning")
         return redirect(url_for("backoffice_web.collective_offer.list_collective_offers"), code=303)
-
-    is_collective_offer_price_editable = _is_collective_offer_price_editable(collective_offer)
 
     connect_as = get_connect_as(
         object_id=collective_offer.id,
         object_type="collective_offer",
         pc_pro_path=urls.build_pc_pro_offer_path(collective_offer),
     )
-
-    return render_template(
-        "collective_offer/details.html",
-        collective_offer=collective_offer,
-        is_collective_offer_price_editable=is_collective_offer_price_editable,
-        connect_as=connect_as,
+    allowed_actions = _get_collective_offer_details_actions(collective_offer)
+    history_tunnel = _format_collective_offer_history(
+        raw_history=get_collective_offer_history(collective_offer),
+        offer=collective_offer,
     )
+
+    kwargs = {
+        "history_tunnel": history_tunnel,
+        "collective_offer": collective_offer,
+        "allowed_actions": allowed_actions,
+        "connect_as": connect_as,
+    }
+
+    if collective_offer.institutionId:
+        ministry = (
+            db.session.query(
+                educational_models.EducationalDeposit.ministry,
+            )
+            .filter(
+                educational_models.EducationalDeposit.educationalInstitutionId == collective_offer.institutionId,
+                educational_models.EducationalDeposit.educationalYearId
+                == _get_educational_year_subquery(educational_models.CollectiveStock),
+            )
+            .scalar()
+        )
+        kwargs.update({"ministry": ministry})
+
+    if collective_offer.collectiveStock and collective_offer.collectiveStock.lastBooking:
+        last_pricing = (
+            db.session.query(finance_models.Pricing)
+            .filter(
+                finance_models.Pricing.collectiveBookingId == collective_offer.collectiveStock.lastBooking.id,
+                finance_models.Pricing.status.in_(
+                    [
+                        finance_models.PricingStatus.PROCESSED,
+                        finance_models.PricingStatus.INVOICED,
+                    ],
+                ),
+            )
+            .options(
+                sa_orm.joinedload(
+                    finance_models.Pricing.cashflows,  # there can be only one
+                )
+                .joinedload(
+                    finance_models.Cashflow.batch,
+                )
+                .load_only(finance_models.CashflowBatch.label)
+            )
+            .order_by(finance_models.Pricing.id.desc())
+            .limit(1)
+            .one_or_none()
+        )
+        kwargs.update({"last_pricing": last_pricing})
+
+    if access_control.has_current_user_permission(perm_models.Permissions.READ_INCIDENTS):
+        if collective_offer.collectiveStock and collective_offer.collectiveStock.lastBooking:
+            last_incident = (
+                db.session.query(
+                    finance_models.FinanceIncident,
+                )
+                .join(
+                    finance_models.FinanceIncident.booking_finance_incidents,
+                )
+                .filter(
+                    finance_models.BookingFinanceIncident.collectiveBookingId
+                    == collective_offer.collectiveStock.lastBooking.id,
+                )
+                .order_by(finance_models.FinanceIncident.id.desc())
+                .limit(1)
+                .one_or_none()
+            )
+            kwargs.update({"last_incident": last_incident})
+
+    if CollectiveOfferDetailsActionType.VALIDATE_BOOKING in allowed_actions:
+        kwargs.update(
+            {
+                "mark_as_used_booking_form": empty_forms.EmptyForm(),
+            }
+        )
+
+    if CollectiveOfferDetailsActionType.CANCEL_BOOKING in allowed_actions:
+        kwargs.update(
+            {
+                "cancel_booking_form": booking_forms.CancelCollectiveBookingForm(),
+            }
+        )
+
+    return render_template("collective_offer/details.html", **kwargs)
 
 
 @blueprint.route("/<int:collective_offer_id>/update-price", methods=["POST"])
