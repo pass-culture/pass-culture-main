@@ -5,6 +5,9 @@ from pcapi.core.core_exception import ClientError
 from pcapi.core.core_exception import CoreException
 
 
+OBJECT_NOT_FOUND_ERROR_MESSAGE = "L'objet n'existe pas, ou vous n'avez pas les droits nécessaires pour y accéder."
+
+
 class ApiErrors(Exception):
     status_code: int = 400
 
@@ -71,3 +74,7 @@ class UuidCastError(ApiErrors):
 
 class InternalError(ApiErrors):
     status_code = 500
+
+
+def resource_not_found_error() -> ResourceNotFoundError:
+    return ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
