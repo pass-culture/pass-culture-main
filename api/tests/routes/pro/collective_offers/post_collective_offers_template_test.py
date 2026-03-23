@@ -11,6 +11,7 @@ from pcapi.core.educational import testing as educational_testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
@@ -304,15 +305,6 @@ class Returns200Test:
 
 
 class Returns403Test:
-    def test_random_user(self, client, payload):
-        user = offerers_factories.UserOffererFactory().user
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth(user.email).post("/collective/offers-template", json=payload)
-
-        assert response.status_code == 403
-        assert db.session.query(models.CollectiveOfferTemplate).count() == 0
-
     def test_no_adage_offerer(self, pro_client, payload):
         def raise_ac(*args, **kwargs):
             raise educational_exceptions.CulturalPartnerNotFoundException("pouet")
@@ -614,6 +606,16 @@ class InvalidDatesTest:
 
 
 class Returns404Test:
+    def test_random_user(self, client, payload):
+        user = offerers_factories.UserOffererFactory().user
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth(user.email).post("/collective/offers-template", json=payload)
+
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
+        assert db.session.query(models.CollectiveOfferTemplate).count() == 0
+
     def test_unknown_domain(self, pro_client, payload):
         data = {**payload, "domains": [0]}
 
@@ -639,3 +641,4 @@ class Returns404Test:
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

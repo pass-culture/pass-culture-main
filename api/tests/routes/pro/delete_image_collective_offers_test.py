@@ -8,6 +8,7 @@ from pcapi.core.educational import factories
 from pcapi.core.educational import models
 from pcapi.core.educational import testing as educational_testing
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
 import tests
 
@@ -74,7 +75,8 @@ class DeleteImageFromFileTest:
         response = client.with_session_auth(email="user@example.com").delete(f"/collective/offers/{offer2.id}/image")
 
         # then
-        assert response.status_code == 403
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
     @pytest.mark.parametrize("status", educational_testing.STATUSES_NOT_ALLOWING_EDIT_DETAILS)
     def test_delete_image_unallowed_action(self, client, status):
@@ -113,3 +115,4 @@ class DeleteImageFromFileTest:
 
         # then
         assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

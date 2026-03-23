@@ -11,6 +11,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
@@ -805,6 +806,7 @@ class Returns400Test:
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
         assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
     @pytest.mark.parametrize(
         "input_json,expected_json",
@@ -839,7 +841,7 @@ class Returns400Test:
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns403Test:
+class Returns404Test:
     def test_when_user_is_not_attached_to_offerer(self, client):
         users_factories.ProFactory(email="user@example.com")
         venue = offerers_factories.VenueFactory()
@@ -855,7 +857,5 @@ class Returns403Test:
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
-        assert response.status_code == 403
-        assert response.json["global"] == [
-            "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
-        ]
+        assert response.status_code == 404
+        assert response.json["global"] == [OBJECT_NOT_FOUND_ERROR_MESSAGE]

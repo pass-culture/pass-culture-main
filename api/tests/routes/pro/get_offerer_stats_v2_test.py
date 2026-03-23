@@ -1,14 +1,12 @@
-from unittest.mock import patch
-
 import pytest
 
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-import pcapi.core.users.models as users_models
 from pcapi.core import testing
 from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
@@ -159,11 +157,11 @@ class Return200Test:
         }
 
 
-class TestReturn400:
+class Return404Test:
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # check user_offerer exists
 
-    def test_get_offerer_stats_returns_403_if_user_has_no_rights_on_offerer(self, client):
+    def test_get_offerer_stats_returns_404_if_user_has_no_rights_on_offerer(self, client):
         pro_user = users_factories.ProFactory()
         user_offerer = offerers_factories.UserOffererFactory()
 
@@ -171,20 +169,14 @@ class TestReturn400:
         offerer_id = user_offerer.offerer.id
         with testing.assert_num_queries(self.num_queries):
             response = client.get(f"/offerers/{offerer_id}/v2/stats")
-            assert response.status_code == 403
+            assert response.status_code == 404
+            assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
-        assert response.json == {
-            "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
-        }
-
-    @patch("pcapi.utils.rest.check_user_has_access_to_offerer")
-    def test_get_offerer_stats_returns_404_if_offerer_is_not_found(self, check_user_has_access_to_offerer, client):
-        pro_user = users_factories.ProFactory(roles=[users_models.UserRole.PRO, users_models.UserRole.ADMIN])
-
-        check_user_has_access_to_offerer.return_value = True
+    def test_get_offerer_stats_returns_404_if_offerer_is_not_found(self, client):
+        pro_user = users_factories.ProFactory()
 
         client = client.with_session_auth(pro_user.email)
         with testing.assert_num_queries(self.num_queries):
             response = client.get("/offerers/1/v2/stats")
-
-        assert response.status_code == 404
+            assert response.status_code == 404
+            assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
