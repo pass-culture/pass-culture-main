@@ -11,6 +11,7 @@ from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import headline_offer_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import rest
+from pcapi.utils.rest import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils.transaction_manager import atomic
 
 from . import blueprint
@@ -33,7 +34,7 @@ def upsert_headline_offer(
     offer = offers_repository.get_offer_by_id(body.offer_id, load_options=["headline_offer", "venue"])
 
     if not offer:
-        raise api_errors.ResourceNotFoundError
+        raise api_errors.ResourceNotFoundError(errors={"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]})
     offerer_id = offer.venue.managingOffererId
 
     rest.check_user_has_access_to_offerer(current_user, offerer_id)
