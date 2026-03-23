@@ -2,7 +2,6 @@ import dataclasses
 import enum
 from collections import defaultdict
 
-import pydantic.v1 as pydantic_v1
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from flask import flash
@@ -12,9 +11,10 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
+from pydantic import TypeAdapter
 from werkzeug.exceptions import NotFound
 
-from pcapi.connectors.serialization import titelive_serializers
+from pcapi.connectors.big_query.queries.product import TiteLiveBookWorkV2
 from pcapi.connectors.titelive import GtlIdError
 from pcapi.connectors.titelive import get_by_ean13
 from pcapi.core.categories import subcategories
@@ -212,7 +212,7 @@ def get_product_details(product_id: int) -> response_utils.BackofficeResponse:
                 "warning",
             )
         try:
-            data = pydantic_v1.parse_obj_as(titelive_serializers.TiteLiveBookWork, titelive_data["oeuvre"])
+            data = TypeAdapter(TiteLiveBookWorkV2).validate_python(titelive_data["oeuvre"])
         except Exception:
             pass
         else:
@@ -274,7 +274,7 @@ def get_product_synchronize_with_titelive_form(product_id: int) -> response_util
             ],
         )
     try:
-        data = pydantic_v1.parse_obj_as(titelive_serializers.TiteLiveBookWork, titelive_data["oeuvre"])
+        data = TypeAdapter(TiteLiveBookWorkV2).validate_python(titelive_data["oeuvre"])
     except Exception:
         ineligibility_reasons = None
     else:
@@ -570,7 +570,7 @@ def search_product() -> response_utils.BackofficeResponse:
                     "warning",
                 )
             try:
-                data = pydantic_v1.parse_obj_as(titelive_serializers.TiteLiveBookWork, titelive_data["oeuvre"])
+                data = TypeAdapter(TiteLiveBookWorkV2).validate_python(titelive_data["oeuvre"])
             except Exception:
                 titelive_data = {}
                 ineligibility_reason = None
