@@ -1489,7 +1489,7 @@ class CegidFinanceBackendTest:
     @pytest.mark.usefixtures("mock_cegid_auth")
     def test_get_settlements(self, requests_mock, cegid_config, faker):
         some_uuid = str(faker.uuid4())
-        now = datetime.datetime.now(datetime.UTC)
+        now = date_utils.get_naive_utc_now()
         iso_now = now.isoformat()
 
         response_data = {
