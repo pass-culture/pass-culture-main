@@ -1,7 +1,6 @@
 import datetime
 import logging
 import typing
-from typing import Any
 
 import pydantic as pydantic_v2
 
@@ -45,7 +44,7 @@ class GenreTitelive(pydantic_v2.BaseModel):
 
     @pydantic_v2.field_validator("code", mode="before")
     @classmethod
-    def validate_code(cls, code: str) -> str:
+    def validate_code(cls, code: typing.Any) -> str:
         return _format_gtl_code(code)
 
 
@@ -74,26 +73,26 @@ class BigQueryTiteliveProductBaseModel(pydantic_v2.BaseModel):
 
     @pydantic_v2.model_validator(mode="before")
     @classmethod
-    def parse_empty_strings_as_none(cls, data: Any) -> Any:
+    def parse_empty_strings_as_none(cls, data: typing.Any) -> typing.Any:
         if isinstance(data, dict):
             return {k: (None if v == "" else v) for k, v in data.items()}
         return data
 
     @pydantic_v2.field_validator("dateparution", mode="before")
     @classmethod
-    def parse_dates(cls, v: Any) -> Any:
+    def parse_dates(cls, v: typing.Any) -> typing.Any:
         return date_utils.parse_french_date(v)
 
     @pydantic_v2.field_validator("gtl", mode="before")
     @classmethod
-    def validate_gtl(cls, gtl: TiteliveGtl | list) -> TiteliveGtl | None:
+    def validate_gtl(cls, gtl: typing.Any) -> TiteliveGtl | None:
         if isinstance(gtl, list):
             return None
         return gtl
 
     @pydantic_v2.field_validator("has_image", "has_verso_image", mode="before")
     @classmethod
-    def validate_image(cls, image: str | int | None) -> bool:
+    def validate_image(cls, image: typing.Any) -> bool:
         # The API currently sends 0 (int) if no image is available, and "1" (str) if an image is available.
         # Because it has been famously flaky in the past, we are being defensive here and consider:
         # - all forms of 0 and None as False.
@@ -111,7 +110,7 @@ class BigQueryTiteliveBookProductModel(BigQueryTiteliveProductBaseModel):
 
     @pydantic_v2.field_validator("taux_tva", mode="before")
     @classmethod
-    def validate_code_tva(cls, value: typing.Literal[0] | str | None) -> str | None:
+    def validate_code_tva(cls, value: typing.Any) -> str | None:
         if value == 0:
             return None
         return value
@@ -205,3 +204,37 @@ class BigQueryTiteliveMusicProductDeltaQuery(BaseQuery):
     """
 
     model = BigQueryTiteliveMusicProductModel
+
+
+class TiteLiveBookArticleV2(pydantic_v2.BaseModel):
+    codesupport: str | None = None
+    gencod: str = pydantic_v2.Field(min_length=13, max_length=13)
+    gtl: TiteliveGtl | None = None
+    id_lectorat: str | None = None
+    taux_tva: str | None = None
+
+    @pydantic_v2.field_validator("taux_tva", mode="before")
+    @classmethod
+    def validate_code_tva(cls, value: typing.Any) -> str | None:
+        if value == 0:
+            return None
+        return value
+
+    @pydantic_v2.field_validator("gtl", mode="before")
+    @classmethod
+    def validate_gtl(cls, gtl: typing.Any) -> TiteliveGtl | None:
+        if isinstance(gtl, list):
+            return None
+        return gtl
+
+
+class TiteLiveBookWorkV2(pydantic_v2.BaseModel):
+    article: list[TiteLiveBookArticleV2]
+    titre: str
+
+    @pydantic_v2.field_validator("article", mode="before")
+    @classmethod
+    def validate_article_list(cls, article: typing.Any) -> list:
+        if isinstance(article, dict):
+            return list(article.values())
+        return article

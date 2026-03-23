@@ -8,6 +8,7 @@ import pydantic.v1 as pydantic
 import pcapi.core.fraud.models as fraud_models
 from pcapi.connectors.big_query.queries.product import BigQueryTiteliveBookProductModel
 from pcapi.connectors.big_query.queries.product import BigQueryTiteliveProductBaseModel
+from pcapi.connectors.big_query.queries.product import TiteLiveBookArticleV2
 from pcapi.connectors.serialization.titelive_serializers import GenreTitelive
 from pcapi.connectors.serialization.titelive_serializers import TiteLiveBookArticle
 from pcapi.connectors.serialization.titelive_serializers import TiteLiveBookWork
@@ -164,7 +165,7 @@ class HasCode(Protocol):
     code: str
 
 
-def get_gtl_id(article: TiteliveArticle | BigQueryTiteliveProductBaseModel) -> str:
+def get_gtl_id(article: TiteliveArticle | TiteLiveBookArticleV2 | BigQueryTiteliveProductBaseModel) -> str:
     if not article.gtl or not article.gtl.first:
         return EMPTY_GTL.code
     most_precise_genre = max(article.gtl.first.values(), key=lambda gtl: cast(HasCode, gtl).code)
@@ -172,7 +173,7 @@ def get_gtl_id(article: TiteliveArticle | BigQueryTiteliveProductBaseModel) -> s
 
 
 def get_ineligibility_reasons(
-    article: TiteLiveBookArticle | BigQueryTiteliveBookProductModel, title: str
+    article: TiteLiveBookArticle | TiteLiveBookArticleV2 | BigQueryTiteliveBookProductModel, title: str
 ) -> list[str] | None:
     # Ouvrage avec pierres ou encens, jeux de société ou escape game en coffrets,
     # marchandisage : jouets, goodies, peluches, posters, papeterie, etc...

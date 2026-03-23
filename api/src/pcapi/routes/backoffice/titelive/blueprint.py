@@ -1,4 +1,3 @@
-import pydantic.v1 as pydantic_v1
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from flask import flash
@@ -8,8 +7,9 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
+from pydantic import TypeAdapter
 
-from pcapi.connectors.serialization import titelive_serializers
+from pcapi.connectors.big_query.queries.product import TiteLiveBookWorkV2
 from pcapi.connectors.titelive import GtlIdError
 from pcapi.connectors.titelive import get_by_ean13
 from pcapi.core.fraud import models as fraud_models
@@ -64,7 +64,7 @@ def search_titelive() -> response_utils.BackofficeResponse:
         return render_template("titelive/search_result.html", form=form, dst=url_for(".search_titelive")), 400
 
     try:
-        data = pydantic_v1.parse_obj_as(titelive_serializers.TiteLiveBookWork, json["oeuvre"])
+        data = TypeAdapter(TiteLiveBookWorkV2).validate_python(json["oeuvre"])
     except Exception:
         ineligibility_reasons = None
     else:

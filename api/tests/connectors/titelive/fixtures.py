@@ -1158,7 +1158,7 @@ INELIGIBLE_BOOK_BY_EAN_FIXTURE = {
                     "pdfparagraphe": 0,
                     "mp3_count": 0,
                 },
-                "id_lectorat": 0,
+                "id_lectorat": "0",
                 "livre_lu": 0,
                 "grands_caracteres": 0,
                 "multilingue": 0,
