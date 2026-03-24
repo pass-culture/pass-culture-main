@@ -274,10 +274,14 @@ def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> eve
     )
 
     if not offer:
-        raise api_errors.ApiErrors({"event_id": ["The event offer could not be found"]}, status_code=404)
-    utils.check_offer_subcategory(body, offer.subcategoryId)
+        raise api_errors.ResourceNotFoundError({"event_id": ["The event offer could not be found"]})
 
     venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body)
+
+    if venue:
+        authorization.get_venue_provider_or_raise_404(venue.id)
+
+    utils.check_offer_subcategory(body, offer.subcategoryId)
 
     try:
         updates = body.dict(by_alias=True, exclude_unset=True)

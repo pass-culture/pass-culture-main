@@ -70,6 +70,16 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
         response = self.make_request(plain_api_key, {"offer_id": offer.id})
         assert response.status_code == 404
 
+    def test_should_raise_404_because_venue_in_payload_is_not_linked_to_provider(self):
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        venue = self.setup_venue()
+        response = self.make_request(
+            plain_api_key,
+            {"offer_id": offer.id, "location": {"type": "physical", "venue_id": venue.id}},
+        )
+        assert response.status_code == 404
+
     def test_deactivate_offer(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
