@@ -6,6 +6,7 @@ from pydantic import field_validator
 from pydantic import model_validator
 
 from pcapi.core.bookings import models as bookings_models
+from pcapi.core.bookings import utils as bookings_utils
 from pcapi.core.bookings.api import has_email_been_sent
 from pcapi.core.bookings.api import is_external_event_booking_visible
 from pcapi.core.bookings.api import is_voucher_displayed
@@ -260,9 +261,7 @@ def get_ticket_infos(booking: bookings_models.Booking) -> TicketResponse:
         )
 
     voucher = (
-        VoucherResponse(
-            data=getattr(booking, "qrCodeData", None),
-        )
+        VoucherResponse(data=bookings_utils.get_qr_code_data(booking.token))
         if is_voucher_displayed(offer=offer, isExternal=booking.isExternal)
         else None
     )
