@@ -13,7 +13,7 @@ class LocationOnlyOnVenueBodyModelV2(HttpBodyModel):
     isVenueLocation: typing.Literal[True] = True
 
 
-class LocationBodyModelV2(HttpBodyModel, offerers_schema.LocationModelV2):
+class LocationBodyModelV2(HttpBodyModel, offerers_schema.CoreLocationModelV2):
     isVenueLocation: typing.Literal[False] = False
 
 

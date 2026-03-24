@@ -2,13 +2,13 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { LocationModel } from './LocationModel';
+import type { LocationModelV2 } from './LocationModelV2';
 export type StructureDataBodyModel = {
-  apeCode?: string | null;
+  apeCode: (string | null);
   isDiffusible: boolean;
-  location?: LocationModel | null;
-  name?: string | null;
-  siren?: string | null;
+  location: (LocationModelV2 | null);
+  name: (string | null);
+  siren: (string | null);
   siret: string;
 };
 

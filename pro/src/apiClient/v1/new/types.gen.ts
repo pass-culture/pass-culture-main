@@ -4336,13 +4336,13 @@ export type LocationBodyModelV2 = {
 };
 
 /**
- * LocationModel
+ * LocationModelV2
  */
-export type LocationModel = {
+export type LocationModelV2 = {
     /**
      * Banid
      */
-    banId?: string;
+    banId?: string | null;
     /**
      * City
      */
@@ -4350,7 +4350,7 @@ export type LocationModel = {
     /**
      * Inseecode
      */
-    inseeCode?: string;
+    inseeCode?: string | null;
     /**
      * Ismanualedition
      */
@@ -4362,15 +4362,15 @@ export type LocationModel = {
     /**
      * Label
      */
-    label?: string;
+    label?: string | null;
     /**
      * Latitude
      */
-    latitude: number | string;
+    latitude: string;
     /**
      * Longitude
      */
-    longitude: number | string;
+    longitude: string;
     /**
      * Postalcode
      */
@@ -6117,23 +6117,20 @@ export type StructureDataBodyModel = {
     /**
      * Apecode
      */
-    apeCode?: string;
+    apeCode: string | null;
     /**
      * Isdiffusible
      */
     isDiffusible: boolean;
-    /**
-     * LocationModel
-     */
-    location?: LocationModel;
+    location: LocationModelV2 | null;
     /**
      * Name
      */
-    name?: string;
+    name: string | null;
     /**
      * Siren
      */
-    siren?: string;
+    siren: string | null;
     /**
      * Siret
      */
