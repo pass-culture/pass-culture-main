@@ -949,7 +949,7 @@ class GetBookingTest:
                 "display": "voucher",
                 "externalBooking": None,
                 "token": {"data": booking.token},
-                "voucher": {"data": None},
+                "voucher": {"data": f"PASSCULTURE:v3;TOKEN:{booking.token}"},
                 "withdrawal": {"delay": None, "details": None, "type": None},
             },
             "totalAmount": int(booking.amount * 100),
@@ -1034,6 +1034,23 @@ class GetBookingTicketTest:
         }
         assert ticket["voucher"] is None
         assert ticket["activationCode"] is None
+
+    def test_get_booking_voucher_has_qr_code_data(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        booking = booking_factories.BookingFactory(
+            user=user,
+            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
+        )
+
+        client.with_token(user)
+        response = client.get(f"/native/v2/bookings/{booking.id}")
+        assert response.status_code == 200
+
+        ticket = response.json["ticket"]
+        assert ticket["display"] == "voucher"
+        assert ticket["voucher"] is not None
+        assert ticket["voucher"]["data"] is not None
+        assert ticket["voucher"]["data"] == f"PASSCULTURE:v3;TOKEN:{booking.token}"
 
     @pytest.mark.parametrize(
         "withdrawal_delay,delta,display",
