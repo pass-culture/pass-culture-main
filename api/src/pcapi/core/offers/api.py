@@ -704,17 +704,14 @@ def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
 
 
 def remove_headline_offer(headline_offer: offers_models.HeadlineOffer) -> None:
-    try:
-        headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, date_utils.get_naive_utc_now())
-        on_commit(
-            partial(
-                search.async_index_offer_ids,
-                {headline_offer.offerId},
-                reason=IndexationReason.OFFER_REINDEXATION,
-            ),
-        )
-    except sa_exc.IntegrityError:
-        raise exceptions.CannotRemoveHeadlineOffer
+    headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, date_utils.get_naive_utc_now())
+    on_commit(
+        partial(
+            search.async_index_offer_ids,
+            {headline_offer.offerId},
+            reason=IndexationReason.OFFER_REINDEXATION,
+        ),
+    )
 
 
 def _notify_pro_upon_stock_edit_for_event_offer(stock: models.Stock, bookings: list[bookings_models.Booking]) -> None:

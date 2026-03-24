@@ -39,10 +39,6 @@ def upsert_headline_offer(
     rest.check_user_has_access_to_offerer(current_user, offerer_id)
     try:
         headline_offer = offers_api.upsert_headline_offer(offer)
-    except exceptions.CannotRemoveHeadlineOffer:
-        raise api_errors.ApiErrors(
-            errors={"global": ["Une erreur est survenue au moment du retrait de l'offre à la une"]},
-        )
     except exceptions.OffererCanNotHaveHeadlineOffer:
         raise api_errors.ApiErrors(
             errors={
@@ -80,18 +76,13 @@ def upsert_headline_offer(
 def delete_headline_offer(body: headline_offer_serialize.HeadlineOfferDeleteBodyModel) -> None:
     rest.check_user_has_access_to_offerer(current_user, body.offerer_id)
     if active_headline_offer := offers_repository.get_current_headline_offer(body.offerer_id):
-        try:
-            offers_api.remove_headline_offer(active_headline_offer)
-            logger.info(
-                "Headline Offer Deactivation",
-                extra={
-                    "analyticsSource": "app-pro",
-                    "HeadlineOfferId": active_headline_offer.id,
-                    "Reason": "Headline offer has been deactivated by user",
-                },
-                technical_message_id="headline_offer_deactivation",
-            )
-        except exceptions.CannotRemoveHeadlineOffer:
-            raise api_errors.ApiErrors(
-                errors={"global": ["Une erreur est survenue au moment du retrait de l'offre à la une"]},
-            )
+        offers_api.remove_headline_offer(active_headline_offer)
+        logger.info(
+            "Headline Offer Deactivation",
+            extra={
+                "analyticsSource": "app-pro",
+                "HeadlineOfferId": active_headline_offer.id,
+                "Reason": "Headline offer has been deactivated by user",
+            },
+            technical_message_id="headline_offer_deactivation",
+        )
