@@ -1,3 +1,4 @@
+import datetime
 import enum
 import re
 import typing
@@ -7,12 +8,14 @@ from decimal import InvalidOperation
 import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
 from pydantic import BaseModel as BaseModelV2
+from pydantic import alias_generators
 from pydantic.v1 import validator
 
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.exceptions import PydanticError
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import phone_number as phone_number_utils
+from pcapi.utils.date import format_into_utc_date
 
 
 MAX_LONGITUDE = 180
@@ -20,6 +23,7 @@ MAX_LATITUDE = 90
 
 SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
 SocialMedias = dict[SocialMedia, pydantic_v1.HttpUrl]
+SocialMediasV2 = dict[SocialMedia, pydantic_v2.HttpUrl]
 
 
 def format_coordinate(value: typing.Any) -> Decimal:
@@ -93,6 +97,33 @@ class VenueContactModel(BaseModel):
         if website is None or re.match(pattern, website, re.IGNORECASE):
             return website
         raise ValueError(f"url du site web invalide: {website}")
+
+
+class VenueContactModelV2(BaseModelV2):
+    email: pydantic_v2.EmailStr | None = None
+    website: (
+        typing.Annotated[pydantic_v2.HttpUrl, pydantic_v2.UrlConstraints(max_length=256)] | None
+    )  # TODO: vérifier que ça colle avec la regexp v1
+    phone_number: str | None = None
+    social_medias: SocialMediasV2 | None = None
+
+    @pydantic_v2.field_validator("phone_number", mode="after")
+    def validate_phone_number(cls, phone_number: str) -> str | None:
+        if not phone_number:
+            return None
+        return phone_number_utils.ParsedPhoneNumber(phone_number).phone_number
+
+    # TODO: généraliser et adapter ?
+    model_config = pydantic_v2.ConfigDict(
+        alias_generator=alias_generators.to_camel,
+        from_attributes=True,
+        validate_by_name=True,
+        json_encoders={datetime.datetime: format_into_utc_date},
+        allow_inf_nan=False,
+        str_strip_whitespace=True,
+        url_preserve_empty_path=True,
+        extra="forbid",
+    )
 
 
 class VenueImageCredit(RequiredStrippedString):

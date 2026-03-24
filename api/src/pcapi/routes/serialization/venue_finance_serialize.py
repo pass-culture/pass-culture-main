@@ -1,8 +1,10 @@
 import enum
 
+import pydantic
+
 from pcapi.core.finance import models as finance_models
-from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 
 
 class LinkVenueToPricingPointBodyModel(BaseModel):
@@ -12,18 +14,11 @@ class LinkVenueToPricingPointBodyModel(BaseModel):
         extra = "forbid"
 
 
-class GetVenuePricingPointResponseModel(BaseModel):
+class GetVenuePricingPointResponseModel(HttpBodyModel):
     id: int
     siret: str
-    venueName: str
-
-    class Config:
-        orm_mode = True
-
-    @classmethod
-    def from_orm(cls, venue: offerers_models.Venue) -> "GetVenuePricingPointResponseModel":
-        venue.venueName = venue.publicName  # type: ignore [attr-defined]
-        return super().from_orm(venue)
+    # TODO: publicName ou public_name ?
+    venueName: str = pydantic.Field(validation_alias="publicName")
 
 
 class SimplifiedBankAccountStatus(enum.Enum):
@@ -32,9 +27,8 @@ class SimplifiedBankAccountStatus(enum.Enum):
     PENDING_CORRECTIONS = "pending_corrections"
 
 
-def parse_venue_bank_account_status(venue: offerers_models.Venue) -> SimplifiedBankAccountStatus | None:
+def parse_bank_account_status(bank_account: finance_models.BankAccount | None) -> SimplifiedBankAccountStatus | None:
     status_enum = finance_models.BankAccountApplicationStatus
-    bank_account = venue.current_bank_account
 
     # TODO(jbaudet - 10/2025): move this code to a more
     # appropriate api/repository/models module once offerers
