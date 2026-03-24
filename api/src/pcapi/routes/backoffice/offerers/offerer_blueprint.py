@@ -1027,7 +1027,10 @@ def create_venue(offerer_id: int) -> response_utils.BackofficeResponse:
     form = pro_forms.CreateVenueWithoutSIRETForm(offerer)
     if not form.validate():
         mark_transaction_as_invalid()
-        return _render_get_create_venue_without_siret_form(form, offerer_id), 400
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return redirect(
+            url_for("backoffice_web.offerer.get", offerer_id=offerer_id, active_tab="managed_venues"), code=303
+        )
 
     attachment_venue = (
         db.session.query(offerers_models.Venue)
@@ -1039,12 +1042,6 @@ def create_venue(offerer_id: int) -> response_utils.BackofficeResponse:
     )
     if not attachment_venue:
         raise NotFound()
-
-    # TODO: (lmaubert 2026-04): Remove when all Venues have a value for activity and the attribute has been made mandatory
-    if not attachment_venue.activity:
-        mark_transaction_as_invalid()
-        flash(Markup("Merci de renseigner l'activité principale du partenaire culturel existant."), "warning")
-        return _self_redirect(offerer_id, active_tab="managed_venues")
 
     assert attachment_venue.offererAddress
 
@@ -1062,14 +1059,14 @@ def create_venue(offerer_id: int) -> response_utils.BackofficeResponse:
     )
 
     venue_creation_info = venue_serialize.PostVenueBodyModel(
-        activity=attachment_venue.activity,
+        activity=form.activity.data,
         address=address_body_model,
         comment=offerers_schemas.VenueComment(
             "Partenaire culturel sans SIRET car dépend du SIRET d'un autre partenaire culturel"
         ),
-        cultural_domains=[domain.name for domain in attachment_venue.collectiveDomains],
+        cultural_domains=[domain.name for domain in form.cultural_domains.data],
         siret=None,
-        booking_email=offerers_schemas.VenueBookingEmail(attachment_venue.bookingEmail),
+        booking_email=offerers_schemas.VenueBookingEmail(form.booking_email.data),
         managing_offerer_id=offerer_id,
         name=offerers_schemas.VenueName(form.public_name.data),
         public_name=offerers_schemas.VenuePublicName(form.public_name.data),
@@ -1081,7 +1078,7 @@ def create_venue(offerer_id: int) -> response_utils.BackofficeResponse:
         mental_disability_compliant=None,
         motor_disability_compliant=None,
         visual_disability_compliant=None,
-        is_open_to_public=False,
+        is_open_to_public=form.is_open_to_public.data,
     )
     venue = offerers_api.create_venue(venue_creation_info, current_user, address=attachment_address)
     db.session.add(venue)

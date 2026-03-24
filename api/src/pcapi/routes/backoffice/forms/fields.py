@@ -222,6 +222,7 @@ class PCEmailField(wtforms.EmailField):
     widget = partial(widget, template="components/forms/string_field.html")
     can_be_cleared = True
     validators = [
+        validators.DataRequired("Email obligatoire"),  # ensures that flags.required is True
         validators.Email("Email obligatoire"),
         validators.Length(min=3, max=128, message="doit contenir entre %(min)d et %(max)d caractères"),
     ]
