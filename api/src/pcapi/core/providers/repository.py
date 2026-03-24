@@ -1,3 +1,4 @@
+import datetime
 from typing import Iterable
 from typing import Sequence
 
@@ -49,6 +50,19 @@ def get_provider_by_local_class(local_class: str) -> models.Provider | None:
 
 def get_provider_by_name(name: str) -> models.Provider:
     return db.session.query(models.Provider).filter_by(name=name).one()
+
+
+def get_last_successful_synchronization_date(provider: models.Provider) -> datetime.datetime | None:
+    last_sync_event = (
+        db.session.query(models.LocalProviderEvent)
+        .filter(
+            models.LocalProviderEvent.providerId == provider.id,
+            models.LocalProviderEvent.type == models.LocalProviderEventType.SyncEnd,
+        )
+        .order_by(models.LocalProviderEvent.id.desc())
+        .first()
+    )
+    return last_sync_event.date if last_sync_event else None
 
 
 def get_available_providers(venue: Venue) -> sa_orm.Query:

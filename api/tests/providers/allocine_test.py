@@ -13,6 +13,8 @@ from pcapi.core.providers.allocine import get_movie_list
 from pcapi.core.providers.allocine import get_movie_poster
 from pcapi.core.providers.allocine import get_movies_showtimes
 from pcapi.core.providers.allocine import synchronize_products
+from pcapi.core.providers.models import LocalProviderEvent
+from pcapi.core.providers.models import LocalProviderEventType
 from pcapi.core.providers.models import Provider
 from pcapi.models import db
 
@@ -123,6 +125,49 @@ class AllocineMovieListTest:
         # Then
         product = db.session.query(Product).order_by(Product.id).first()
         assert "releaseDate" not in product.extraData
+
+    def test_logs_sync_start_and_end_on_success(self, requests_mock):
+        self._configure_api_responses(requests_mock)
+        allocine_provider = (
+            db.session.query(Provider)
+            .filter(Provider.name == providers_constants.ALLOCINE_PRODUCTS_PROVIDER_NAME)
+            .one()
+        )
+
+        synchronize_products()
+
+        events = (
+            db.session.query(LocalProviderEvent)
+            .filter(LocalProviderEvent.providerId == allocine_provider.id)
+            .order_by(LocalProviderEvent.date)
+            .all()
+        )
+        assert len(events) == 2
+        assert events[0].type == LocalProviderEventType.SyncStart
+        assert events[1].type == LocalProviderEventType.SyncEnd
+
+    @patch("pcapi.core.providers.allocine.get_movie_list")
+    def test_logs_sync_error_on_failure(self, mock_get_movie_list):
+        mock_get_movie_list.side_effect = Exception("Some error")
+        allocine_provider = (
+            db.session.query(Provider)
+            .filter(Provider.name == providers_constants.ALLOCINE_PRODUCTS_PROVIDER_NAME)
+            .one()
+        )
+
+        with pytest.raises(Exception):
+            synchronize_products()
+
+        events = (
+            db.session.query(LocalProviderEvent)
+            .filter(LocalProviderEvent.providerId == allocine_provider.id)
+            .order_by(LocalProviderEvent.date)
+            .all()
+        )
+        assert len(events) == 2
+        assert events[0].type == LocalProviderEventType.SyncStart
+        assert events[1].type == LocalProviderEventType.SyncError
+        assert events[1].payload == "Exception"
 
 
 class GetMovieListFromAllocineTest:
