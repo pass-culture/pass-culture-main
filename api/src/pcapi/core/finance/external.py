@@ -226,7 +226,7 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
             invoice = invoices_dict[payload.invoice_external_reference]
 
             # Load, get or create settlement_batch
-            if payload.settlement_batch_name == finance_backend_constants.MISSING_BATCH_NAME_VALUE:
+            if payload.settlement_batch_external_id == finance_backend_constants.MISSING_BATCH_EXTERNAL_ID_VALUE:
                 logger.warning(
                     "No settlement batch in the payload",
                     extra={
@@ -235,13 +235,13 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
                         "settlement_id": payload.external_settlement_id,
                     },
                 )
-            if payload.settlement_batch_name in loaded_settlement_batches:
-                settlement_batch = loaded_settlement_batches[payload.settlement_batch_name]
+            if payload.settlement_batch_external_id in loaded_settlement_batches:
+                settlement_batch = loaded_settlement_batches[payload.settlement_batch_external_id]
             else:
                 settlement_batch = get_or_create_settlement_batch(
-                    payload.settlement_batch_name, payload.settlement_batch_label
+                    payload.settlement_batch_external_id, payload.settlement_batch_name, payload.settlement_batch_label
                 )
-                loaded_settlement_batches[payload.settlement_batch_name] = settlement_batch
+                loaded_settlement_batches[payload.settlement_batch_external_id] = settlement_batch
 
             # Load, get or create settlement
             if (payload.bank_account_id, payload.external_settlement_id) in loaded_settlements:
@@ -311,7 +311,7 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
                     "No settlement to cancel found",
                     extra={
                         "bank_account_id": payload.bank_account_id,
-                        "settlement_id": payload.external_settlement_id,
+                        "external_settlement_id": payload.external_settlement_id,
                     },
                 )
                 continue
@@ -328,14 +328,16 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
     db.session.commit()
 
 
-def get_or_create_settlement_batch(batch_name: str, batch_label: str) -> finance_models.SettlementBatch:
+def get_or_create_settlement_batch(
+    external_id: str, batch_name: str, batch_label: str
+) -> finance_models.SettlementBatch:
     settlement_batch = (
         db.session.query(finance_models.SettlementBatch)
-        .filter(finance_models.SettlementBatch.name == batch_name)
+        .filter(finance_models.SettlementBatch.externalId == external_id)
         .one_or_none()
     )
     if not settlement_batch:
-        settlement_batch = finance_models.SettlementBatch(name=batch_name, label=batch_label)
+        settlement_batch = finance_models.SettlementBatch(externalId=external_id, name=batch_name, label=batch_label)
         db.session.add(settlement_batch)
     return settlement_batch
 

@@ -364,6 +364,9 @@ class CegidFinanceBackend(BaseFinanceBackend):
                         external_settlement_id=settlement_data["adjgRefNbr"]["value"],
                         invoice_external_reference=re.sub(r"_R$", "", ref_fourn_fact),
                         settlement_type=SettlementType(settlement_data["AdjgDocType"]["value"]),
+                        settlement_batch_external_id=settlement_data.get("BatchNbr", {}).get(
+                            "value", constants.MISSING_BATCH_EXTERNAL_ID_VALUE
+                        ),
                         settlement_batch_name=settlement_data.get("RefLot", {}).get(
                             "value", constants.MISSING_BATCH_NAME_VALUE
                         ),

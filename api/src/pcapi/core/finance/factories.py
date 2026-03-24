@@ -285,6 +285,7 @@ class SettlementBatchFactory(BaseFactory[models.SettlementBatch]):
     class Meta:
         model = models.SettlementBatch
 
+    externalId = factory.Sequence("{:06}".format)
     name = factory.Sequence("VIR{}".format)
     label = factory.Sequence("Libellé VIR{}".format)
 
