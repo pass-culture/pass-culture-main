@@ -14,7 +14,6 @@ import {
   isGetOfferResponse,
   isGetOffersResponse,
   isPatchOffersResponse,
-  isPostEventStocksResponse,
   isPostOfferResponse,
   isPublishOfferResponse,
   isPutPriceCategoriesResponse,
@@ -190,7 +189,7 @@ test.describe('Create individual offers new flow', () => {
 
     checkAccessibility()
     await Promise.all([
-      page.waitForResponse(isPostEventStocksResponse),
+      page.waitForResponse(isGetOfferResponse),
       page.getByText('Valider').click(),
     ])
 
