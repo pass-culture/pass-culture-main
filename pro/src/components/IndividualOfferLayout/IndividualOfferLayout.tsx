@@ -6,6 +6,7 @@ import {
   type GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
 } from '@/apiClient/v1'
+import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
@@ -19,6 +20,7 @@ import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullTrashIcon from '@/icons/full-trash.svg'
 
 import { IndividualOfferNavigation } from './components/IndividualOfferNavigation/IndividualOfferNavigation'
+import { OfferHeadlineCard } from './components/OfferHeadlineCard/OfferHeadlineCard'
 import { OfferHighlightBanner } from './components/OfferHighlightBanner/OfferHighlightBanner'
 import { OfferHighlightCard } from './components/OfferHighlightCard/OfferHighlightCard'
 import { OfferPublicationEdition } from './components/OfferPublicationEdition/OfferPublicationEdition'
@@ -38,6 +40,7 @@ export const IndividualOfferLayout = ({
   offer,
 }: IndividualOfferLayoutProps) => {
   const { hasPublishedOfferWithSameEan } = useIndividualOfferContext()
+  const { isHeadlineOfferAllowedForOfferer } = useHeadlineOfferContext()
   const mode = useOfferWizardMode()
   const isOfferRecommendationEnabled = useActiveFeature(
     'WIP_OFFER_RECOMMENDATION_PRO'
@@ -71,6 +74,20 @@ export const IndividualOfferLayout = ({
     ![OfferStatus.PENDING, OfferStatus.REJECTED, OfferStatus.DRAFT].includes(
       offer.status
     )
+
+  const isProduct = !!offer?.productId
+  const hasImage = !!offer?.thumbUrl
+  // If an offer without an image is product-based, it cannot become
+  // a headline offer since product-based offers cannot have their images
+  // updated & headline offers without images are prohibited.
+  const isNotAProductWithoutImage = !isProduct || hasImage
+
+  const shouldDisplayHeadlineOfferCard =
+    !!offer &&
+    isHeadlineOfferAllowedForOfferer &&
+    !offer.venue.isVirtual &&
+    [OfferStatus.ACTIVE].includes(offer.status) &&
+    isNotAProductWithoutImage
 
   const snackBar = useSnackBar()
   const navigate = useNavigate()
@@ -110,7 +127,7 @@ export const IndividualOfferLayout = ({
             </span>
           ))}
       </div>
-      {offer && mode !== OFFER_WIZARD_MODE.READ_ONLY && (
+      {offer && (
         <p className={styles['offer-title']}>
           {offer.name}
           {offer.isHeadlineOffer && (
@@ -144,7 +161,9 @@ export const IndividualOfferLayout = ({
       <div className={styles['banner-container']}>
         {isOfferRecommendationEnabled ? (
           <>
-            {(shouldDisplayRecommendation || shouldDisplayHighlightsBanner) && (
+            {(shouldDisplayRecommendation ||
+              shouldDisplayHighlightsBanner ||
+              shouldDisplayHeadlineOfferCard) && (
               <h2 className={styles['banner-container-title']}>
                 Mises en avant de votre offre
               </h2>
@@ -157,6 +176,12 @@ export const IndividualOfferLayout = ({
                 <OfferHighlightCard
                   offerId={offer.id}
                   highlightRequests={offer.highlightRequests}
+                />
+              )}
+              {shouldDisplayHeadlineOfferCard && (
+                <OfferHeadlineCard
+                  offerId={offer.id}
+                  hasThumb={!!offer.thumbUrl}
                 />
               )}
             </div>

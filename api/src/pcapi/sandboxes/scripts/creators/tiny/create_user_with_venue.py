@@ -31,6 +31,7 @@ def create_tiny_venue() -> None:
         adageId="123546",
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         collectiveEmail="email@exemple.com",
+        isPermanent=True,
     )
     offer_event = EventOfferFactory.create(
         name="Conférence gesticulée",

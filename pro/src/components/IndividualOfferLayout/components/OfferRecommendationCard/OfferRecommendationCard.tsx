@@ -49,7 +49,13 @@ export const OfferRecommendationCard = ({
       <div className={styles['recommendation-card-top']}>
         {!hasRecommendation && (
           <div className={styles['recommendation-card-icon']}>
-            <SvgIcon src={recoImg} alt="" width="68" viewBox="0 0 68 68" />
+            <SvgIcon
+              src={recoImg}
+              alt=""
+              width="68"
+              viewBox="0 0 68 68"
+              aria-hidden={true}
+            />
           </div>
         )}
         <p className={styles['recommendation-card-text']}>

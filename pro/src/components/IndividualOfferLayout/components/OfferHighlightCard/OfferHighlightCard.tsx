@@ -45,7 +45,13 @@ export const OfferHighlightCard = ({
       <div className={styles['highlight-card-top']}>
         {!hasHighlights && (
           <div className={styles['highlight-card-icon']}>
-            <SvgIcon src={highlightImg} alt="" width="68" viewBox="0 0 68 68" />
+            <SvgIcon
+              src={highlightImg}
+              alt=""
+              width="68"
+              viewBox="0 0 68 68"
+              aria-hidden={true}
+            />
           </div>
         )}
         <p className={styles['highlight-card-text']}>

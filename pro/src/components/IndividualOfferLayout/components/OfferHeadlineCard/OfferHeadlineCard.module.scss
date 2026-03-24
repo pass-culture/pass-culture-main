@@ -1,0 +1,63 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_rem.scss" as rem;
+
+.headline-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-spacing-l);
+  padding: var(--size-spacing-l);
+  border-radius: var(--size-border-radius-m);
+  background: var(--color-background-info);
+  min-width: 100%;
+
+  @media (min-width: size.$laptop) {
+    min-width: rem.torem(346px);
+    max-width: rem.torem(346px);
+  }
+
+  &-edit {
+    background: var(--color-background-default);
+    border: solid 1px var(--color-border-default);
+  }
+
+  &-top {
+    display: flex;
+    align-items: center;
+    gap: var(--size-spacing-m);
+  }
+
+  &-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &-title {
+    @include fonts.body-accent-s;
+
+    margin: 0;
+    flex: 1;
+
+    &-icon {
+      color: var(--color-background-brand-primary);
+    }
+  }
+
+    &-subtitle {
+    @include fonts.body-s;
+
+    color: var(--color-text-subtle);
+  }
+
+  &-actions {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+
+    &-edit {
+      justify-content: left;
+    }
+  }
+}

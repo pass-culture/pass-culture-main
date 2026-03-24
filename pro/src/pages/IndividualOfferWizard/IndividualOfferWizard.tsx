@@ -4,6 +4,7 @@ import { Outlet, useLocation } from 'react-router'
 
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { OnboardingLayout } from '@/app/App/layouts/funnels/OnboardingLayout/OnboardingLayout'
+import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
   IndividualOfferContextProvider,
   useIndividualOfferContext,
@@ -63,7 +64,9 @@ const IndividualOfferWizardConsumer = () => {
 export const IndividualOfferWizard = () => {
   return (
     <IndividualOfferContextProvider>
-      <IndividualOfferWizardConsumer />
+      <HeadlineOfferContextProvider>
+        <IndividualOfferWizardConsumer />
+      </HeadlineOfferContextProvider>
     </IndividualOfferContextProvider>
   )
 }

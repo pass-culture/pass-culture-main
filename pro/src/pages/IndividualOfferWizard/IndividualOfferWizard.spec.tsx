@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 
+import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { IndividualOfferWizard } from '@/pages/IndividualOfferWizard/IndividualOfferWizard'
 
@@ -16,7 +17,14 @@ const renderOffer = (initialRoute = '/') => {
       <Route path="/" element={<IndividualOfferWizard />} />
       <Route path="/onboarding" element={<IndividualOfferWizard />} />
     </Routes>,
-    { initialRouterEntries: [initialRoute] }
+    {
+      initialRouterEntries: [initialRoute],
+      storeOverrides: {
+        user: {
+          selectedVenue: makeVenueListItem({ id: 2 }),
+        },
+      },
+    }
   )
 }
 

@@ -3,7 +3,10 @@ import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import type { ListOffersOfferResponseModel } from '@/apiClient/v1'
-import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import {
+  GET_OFFER_QUERY_KEY,
+  GET_OFFERS_QUERY_KEY,
+} from '@/commons/config/swrQueryKeys'
 import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
@@ -22,14 +25,16 @@ import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 type HeadlineOfferImageDialogsProps = {
   isFirstDialogOpen: boolean
-  offer: ListOffersOfferResponseModel
+  offerId: number
   setIsFirstDialogOpen: (state: boolean) => void
+  isInOfferJourney?: boolean
 }
 
 export const HeadlineOfferImageDialogs = ({
   isFirstDialogOpen,
   setIsFirstDialogOpen,
-  offer,
+  offerId,
+  isInOfferJourney = false,
 }: HeadlineOfferImageDialogsProps) => {
   const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
   const { mutate } = useSWRConfig()
@@ -66,7 +71,7 @@ export const HeadlineOfferImageDialogs = ({
         croppingRectWidth: cropParams?.width,
         croppingRectX: cropParams?.x,
         croppingRectY: cropParams?.y,
-        offerId: offer.id,
+        offerId: offerId,
       }
 
       await mutate(
@@ -75,7 +80,7 @@ export const HeadlineOfferImageDialogs = ({
         {
           populateCache: (updatedThumbnail, offersList = []) => {
             return offersList.map((item: ListOffersOfferResponseModel) =>
-              item.id === offer.id
+              item.id === offerId
                 ? { ...item, thumbUrl: updatedThumbnail.url }
                 : item
             )
@@ -83,9 +88,11 @@ export const HeadlineOfferImageDialogs = ({
           revalidate: false,
         }
       )
-
+      if (isInOfferJourney) {
+        await mutate([GET_OFFER_QUERY_KEY, offerId])
+      }
       await upsertHeadlineOffer({
-        offerId: offer.id,
+        offerId,
         context: {
           actionType: isReplacingHeadlineOffer ? 'replace' : 'add',
           requiredImageUpload: true,
