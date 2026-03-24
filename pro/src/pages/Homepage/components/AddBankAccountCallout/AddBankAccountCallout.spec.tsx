@@ -13,7 +13,19 @@ const mockLogEvent = vi.fn()
 
 describe('AddBankAccountCallout', () => {
   describe('With FF disabled', () => {
-    it(`should not render the add bank account banner when the user has no valid bank account`, () => {
+    it(`should not render the add bank account banner when the user has a valid bank account and no non free offers`, () => {
+      const offerer = {
+        ...defaultGetOffererResponseModel,
+        hasValidBankAccount: true,
+        venuesWithNonFreeOffersWithoutBankAccounts: [],
+      }
+      renderWithProviders(<AddBankAccountCallout offerer={offerer} />)
+
+      expect(
+        screen.queryByText('Compte bancaire manquant')
+      ).not.toBeInTheDocument()
+    })
+    it(`should not render the add bank account banner when the user has no valid bank account and no non free offers`, () => {
       const offerer = {
         ...defaultGetOffererResponseModel,
         hasValidBankAccount: false,
@@ -26,7 +38,7 @@ describe('AddBankAccountCallout', () => {
       ).not.toBeInTheDocument()
     })
 
-    it(`should not render the add bank account banner when the user has a valid bank account and venues with non free offers to link`, () => {
+    it(`should not render the add bank account banner when the user has a valid bank account and venues with non free offers`, () => {
       const offerer = {
         ...defaultGetOffererResponseModel,
         hasValidBankAccount: true,
@@ -39,19 +51,11 @@ describe('AddBankAccountCallout', () => {
       ).not.toBeInTheDocument()
     })
 
-    it.each([
-      {
-        ...defaultGetOffererResponseModel,
-        id: 3,
-        venuesWithNonFreeOffersWithoutBankAccounts: [1],
-        hasPendingBankAccount: true,
-      },
-    ])(`should not render the add bank account banner if the offerer has no valid bank account and some unlinked venues but a pending bank account`, () => {
+    it(`should not render the add bank account banner when the user has a pending bank account`, () => {
       const offerer = {
         ...defaultGetOffererResponseModel,
-        hasValidBankAccount: false,
-        venuesWithNonFreeOffersWithoutBankAccounts: [1],
         hasPendingBankAccount: true,
+        venuesWithNonFreeOffersWithoutBankAccounts: [1],
       }
       renderWithProviders(<AddBankAccountCallout offerer={offerer} />)
 
@@ -60,11 +64,26 @@ describe('AddBankAccountCallout', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should render the add bank account banner if the offerer has no valid bank account and some unlinked venues', () => {
+    it(`should not render the add bank account banner when the user has a pending correction bank account`, () => {
+      const offerer = {
+        ...defaultGetOffererResponseModel,
+        hasBankAccountWithPendingCorrections: true,
+        venuesWithNonFreeOffersWithoutBankAccounts: [1],
+      }
+      renderWithProviders(<AddBankAccountCallout offerer={offerer} />)
+
+      expect(
+        screen.queryByText('Compte bancaire manquant')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should render the add bank account banner if the offerer has no valid bank account, no pending bank account, and some non free offers', () => {
       const offerer = {
         ...defaultGetOffererResponseModel,
         hasValidBankAccount: false,
         venuesWithNonFreeOffersWithoutBankAccounts: [1],
+        hasBankAccountWithPendingCorrections: false,
+        hasPendingBankAccount: false,
       }
       renderWithProviders(<AddBankAccountCallout offerer={offerer} />)
 
@@ -104,10 +123,10 @@ describe('AddBankAccountCallout', () => {
     })
   })
   describe('With FF enabled', () => {
-    it(`should not render the add bank account banner when the venue has no valid bank account`, () => {
+    it(`should not render the add bank account banner when the venue has no bank account and no non free offers`, () => {
       const venue = {
         ...defaultGetVenue,
-        bankAccountStatus: SimplifiedBankAccountStatus.PENDING,
+        bankAccountStatus: null,
         hasNonFreeOffers: false,
       }
       renderWithProviders(<AddBankAccountCallout venue={venue} />, {
@@ -120,7 +139,23 @@ describe('AddBankAccountCallout', () => {
         )
       ).not.toBeInTheDocument()
     })
-    it(`should not render the add bank account banner when the user has a valid bank account and venues with non free offers to link`, () => {
+    it(`should not render the add bank account banner when the venue has a pending corrections bank account and no non free offers`, () => {
+      const venue = {
+        ...defaultGetVenue,
+        bankAccountStatus: SimplifiedBankAccountStatus.PENDING_CORRECTIONS,
+        hasNonFreeOffers: false,
+      }
+      renderWithProviders(<AddBankAccountCallout venue={venue} />, {
+        features: ['WIP_SWITCH_VENUE'],
+      })
+
+      expect(
+        screen.queryByText(
+          'Aucun compte bancaire configuré pour percevoir vos remboursements'
+        )
+      ).not.toBeInTheDocument()
+    })
+    it(`should not render the add bank account banner when the user has a valid bank account and venues with non free offers`, () => {
       const venue = {
         ...defaultGetVenue,
         bankAccountStatus: SimplifiedBankAccountStatus.VALID,
@@ -135,6 +170,22 @@ describe('AddBankAccountCallout', () => {
           'Aucun compte bancaire configuré pour percevoir vos remboursements'
         )
       ).not.toBeInTheDocument()
+    })
+    it(`should render the add bank account banner when the venue has no bank account and some non free offers`, () => {
+      const venue = {
+        ...defaultGetVenue,
+        bankAccountStatus: null,
+        hasNonFreeOffers: true,
+      }
+      renderWithProviders(<AddBankAccountCallout venue={venue} />, {
+        features: ['WIP_SWITCH_VENUE'],
+      })
+
+      expect(
+        screen.queryByText(
+          'Aucun compte bancaire configuré pour percevoir vos remboursements'
+        )
+      ).toBeInTheDocument()
     })
   })
 })

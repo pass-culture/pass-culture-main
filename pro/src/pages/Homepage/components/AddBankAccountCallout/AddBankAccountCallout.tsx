@@ -25,19 +25,13 @@ export const AddBankAccountCallout = ({
   const { logEvent } = useAnalytics()
   const location = useLocation()
 
-  let displayBankAccountBanner: boolean
-
-  if (withSwitchVenueFeature) {
-    displayBankAccountBanner =
-      !!venue?.hasNonFreeOffers && !venue.bankAccountStatus
-  } else {
-    displayBankAccountBanner =
-      !!offerer &&
-      !offerer.hasPendingBankAccount &&
+  const displayBankAccountBanner = withSwitchVenueFeature
+    ? venue && venue?.hasNonFreeOffers && !venue.bankAccountStatus
+    : offerer &&
+      offerer?.venuesWithNonFreeOffersWithoutBankAccounts.length > 0 &&
       !offerer.hasValidBankAccount &&
       !offerer.hasBankAccountWithPendingCorrections &&
-      offerer.venuesWithNonFreeOffersWithoutBankAccounts.length > 0
-  }
+      !offerer.hasPendingBankAccount
 
   if (!displayBankAccountBanner) {
     return null
