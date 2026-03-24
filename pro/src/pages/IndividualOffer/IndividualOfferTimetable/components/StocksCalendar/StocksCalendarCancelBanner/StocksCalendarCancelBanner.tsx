@@ -17,6 +17,6 @@ export const StocksCalendarCancelBanner = () => (
         type: 'link',
       },
     ]}
-    description="Les bénéficiaires peuvent annuler jusqu'à 48h avant l'événement. Pour annuler un événement, supprimez la ligne de stock (action irréversible)."
+    description={`Si vous souhaitez annuler l'ensemble des réservations associées à une date, vous pouvez cliquer sur "Supprimer la date" dans la colonne Actions.`}
   />
 )

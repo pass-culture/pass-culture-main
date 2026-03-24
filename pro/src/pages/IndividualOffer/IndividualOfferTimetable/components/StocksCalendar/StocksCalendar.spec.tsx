@@ -98,7 +98,7 @@ describe('StocksCalendar', () => {
 
     expect(
       screen.getByText(
-        /Les bénéficiaires peuvent annuler jusqu'à 48h avant l'événement/
+        /Si vous souhaitez annuler l'ensemble des réservations associées à une date, vous pouvez cliquer sur "Supprimer la date" dans la colonne Actions./
       )
     ).toBeInTheDocument()
   })
