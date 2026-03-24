@@ -3,13 +3,11 @@ import enum
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 
 
-class LinkVenueToPricingPointBodyModel(BaseModel):
+class LinkVenueToPricingPointBodyModel(HttpBodyModel):
     pricingPointId: int
-
-    class Config:
-        extra = "forbid"
 
 
 class GetVenuePricingPointResponseModel(BaseModel):
