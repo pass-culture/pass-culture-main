@@ -44,11 +44,12 @@
 @media screen and (min-width: size.$tablet) {
   .headline-offer-title-container {
     flex-direction: row;
-    align-items: end;
+    justify-content: flex-start;
+    align-items: center;
     gap: var(--size-spacing-s);
   }
 
-  .headline-offer-container {
+  .headline-offer-block {
     max-width: rem.torem(430px);
   }
 }

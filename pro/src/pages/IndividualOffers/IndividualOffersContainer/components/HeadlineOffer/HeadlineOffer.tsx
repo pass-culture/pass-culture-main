@@ -28,7 +28,7 @@ export function HeadlineOffer() {
         <h2 className={styles['headline-offer-title']}>Votre offre à la une</h2>
         <Button
           as="a"
-          variant={ButtonVariant.SECONDARY}
+          variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
           to={venuePreviewLink}
           isExternal
