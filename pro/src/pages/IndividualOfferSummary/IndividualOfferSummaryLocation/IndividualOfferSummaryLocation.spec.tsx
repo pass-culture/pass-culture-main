@@ -12,7 +12,9 @@ import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividua
 import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
+  makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   type RenderComponentFunction,
   renderWithProviders,
@@ -43,6 +45,12 @@ const renderIndividualOfferSummaryLocation: RenderComponentFunction<
   })
   const options = {
     initialRouterEntries: [path],
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedVenue: makeVenueListItem({ id: 2 }),
+      },
+    },
     ...params.options,
   }
 

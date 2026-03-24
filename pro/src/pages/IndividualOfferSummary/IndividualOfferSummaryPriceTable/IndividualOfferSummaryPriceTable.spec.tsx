@@ -8,6 +8,7 @@ import {
   getIndividualOfferFactory,
   getOfferStockFactory,
   getStocksResponseFactory,
+  makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -58,7 +59,12 @@ const renderIndividualOfferSummaryPriceTable: RenderComponentFunction<
     ...params.contextValues,
   }
   const options: RenderWithProvidersOptions = {
-    user: sharedCurrentUserFactory(),
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedVenue: makeVenueListItem({ id: 2 }),
+      },
+    },
     ...params.options,
   }
 

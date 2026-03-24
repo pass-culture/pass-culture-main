@@ -3,7 +3,8 @@ import userEvent from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
-import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
+import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
+import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
@@ -25,7 +26,14 @@ function renderOfferHighlightCard(props: OfferHighlightCardProps) {
     <>
       <OfferHighlightCard {...props} />
       <SnackBarContainer />
-    </>
+    </>,
+    {
+      storeOverrides: {
+        user: {
+          selectedVenue: makeVenueListItem({ id: 2 }),
+        },
+      },
+    }
   )
 }
 
@@ -59,8 +67,8 @@ describe('OfferHighlightCard', () => {
         screen.getByRole('heading', { name: 'Choisir un temps fort' })
       ).toBeInTheDocument()
       expect(mockLogEvent).toBeCalledWith(
-        HighlightEvents.HAS_CLICKED_CHOOSE_HIGHLIGHT,
-        { offerId: 1 }
+        EngagementEvents.HAS_REQUESTED_HIGHLIGHTS,
+        { offerId: 1, venueId: 2, action: 'started' }
       )
     })
   })
@@ -105,8 +113,8 @@ describe('OfferHighlightCard', () => {
         screen.getByRole('heading', { name: 'Choisir un temps fort' })
       ).toBeInTheDocument()
       expect(mockLogEvent).toBeCalledWith(
-        HighlightEvents.HAS_CLICKED_EDIT_HIGHLIGHT,
-        { offerId: 1, hightlightIds: [666] }
+        EngagementEvents.HAS_REQUESTED_HIGHLIGHTS,
+        { offerId: 1, venueId: 2, action: 'edited' }
       )
     })
   })

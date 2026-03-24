@@ -4,7 +4,10 @@ import userEvent from '@testing-library/user-event'
 import { api } from '@/apiClient/api'
 import { type HeadLineOfferResponseModel, OfferStatus } from '@/apiClient/v1'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
-import { listOffersOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import {
+  listOffersOfferFactory,
+  makeVenueListItem,
+} from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
@@ -98,7 +101,10 @@ const renderTableWithOffer = (
     </HeadlineOfferContextProvider>,
     {
       storeOverrides: {
-        user: { currentUser: sharedCurrentUserFactory() },
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedVenue: makeVenueListItem({ id: 2 }),
+        },
         offerer: currentOffererFactory(),
       },
     }

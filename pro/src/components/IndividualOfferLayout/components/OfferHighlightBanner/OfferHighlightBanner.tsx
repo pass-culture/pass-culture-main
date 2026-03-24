@@ -2,7 +2,9 @@ import { type JSX, type ReactNode, useState } from 'react'
 
 import type { ShortHighlightResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
+import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -24,6 +26,7 @@ export const OfferHighlightBanner = ({
 }: OfferHighlightBannerProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false)
   const { logEvent } = useAnalytics()
+  const selectedVenue = useAppSelector(ensureSelectedVenue)
 
   return (
     <>
@@ -55,11 +58,10 @@ export const OfferHighlightBanner = ({
               variant={ButtonVariant.TERTIARY}
               color={ButtonColor.BRAND}
               onClick={() => {
-                logEvent(HighlightEvents.HAS_CLICKED_EDIT_HIGHLIGHT, {
+                logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
                   offerId,
-                  hightlightIds: highlightRequests.map(
-                    (highlightRequest) => highlightRequest.id
-                  ),
+                  venueId: selectedVenue.id,
+                  action: 'edited',
                 })
                 setIsOpen(true)
               }}
@@ -86,8 +88,10 @@ export const OfferHighlightBanner = ({
             <Button
               variant={ButtonVariant.PRIMARY}
               onClick={() => {
-                logEvent(HighlightEvents.HAS_CLICKED_CHOOSE_HIGHLIGHT, {
+                logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
                   offerId,
+                  venueId: selectedVenue.id,
+                  action: 'started',
                 })
                 setIsOpen(true)
               }}

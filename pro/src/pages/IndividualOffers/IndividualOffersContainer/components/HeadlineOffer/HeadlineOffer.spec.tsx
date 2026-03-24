@@ -9,6 +9,9 @@ import {
 } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
+import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
+import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
+
 import { api } from 'apiClient/api'
 import { HeadlineOffer } from './HeadlineOffer'
 
@@ -41,6 +44,7 @@ describe('HeadlineOffer', () => {
         storeOverrides: {
           user: {
             currentUser: user,
+            selectedVenue: makeVenueListItem({ id: 2 }),
           },
           offerer: currentOffererFactory(),
         },
@@ -54,10 +58,11 @@ describe('HeadlineOffer', () => {
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
       1,
-      'hasClickedViewAppHeadlineOffer',
+      EngagementEvents.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER,
       {
         offerId: 42,
-        userId: 1,
+        venueId: 2,
+        action: 'seeInApp',
       }
     )
   })

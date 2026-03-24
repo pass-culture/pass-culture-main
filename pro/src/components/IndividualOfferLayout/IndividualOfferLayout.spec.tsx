@@ -11,7 +11,10 @@ import {
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
-import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import {
+  getIndividualOfferFactory,
+  makeVenueListItem,
+} from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   type RenderComponentFunction,
@@ -61,8 +64,17 @@ const renderIndividualOfferLayout: RenderComponentFunction<
     offer,
     ...params.contextValues,
   }
+
+  const user = sharedCurrentUserFactory()
+
   const options: RenderWithProvidersOptions = {
-    user: sharedCurrentUserFactory(),
+    user,
+    storeOverrides: {
+      user: {
+        currentUser: user,
+        selectedVenue: makeVenueListItem({ id: 2 }),
+      },
+    },
     ...params.options,
   }
   const props: IndividualOfferLayoutProps = {

@@ -4,10 +4,15 @@ import { expect, vi } from 'vitest'
 
 import { apiNew } from '@/apiClient/api'
 import type { ProAdviceModel } from '@/apiClient/v1'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
+import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import { OfferRecommendationForm } from './OfferRecommendationForm'
+
+const mockLogEvent = vi.fn()
 
 vi.mock('@/apiClient/api', () => ({
   apiNew: {
@@ -43,7 +48,14 @@ function renderOfferRecommendationForm({
         onClose={onClose}
         proAdvice={proAdvice}
       />
-    </DialogBuilder>
+    </DialogBuilder>,
+    {
+      storeOverrides: {
+        user: {
+          selectedVenue: makeVenueListItem({ id: 2 }),
+        },
+      },
+    }
   )
 }
 
@@ -57,7 +69,10 @@ describe('OfferRecommendationForm', () => {
     ).toBeInTheDocument()
   })
 
-  it('should call apiNew.createOfferProAdvice when submitting a new recommendation', async () => {
+  it('should call createOfferProAdvice when submitting a new recommendation', async () => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
     const createOfferProAdviceMock = vi.mocked(apiNew.createOfferProAdvice)
     createOfferProAdviceMock.mockResolvedValueOnce({
       proAdvice: { content: 'test', author: 'test', updatedAt: '' },
@@ -82,9 +97,13 @@ describe('OfferRecommendationForm', () => {
     expect(snackBarSuccess).toHaveBeenCalledWith(
       'Votre recommandation a bien été ajoutée'
     )
+    expect(mockLogEvent).toBeCalledWith(
+      EngagementEvents.HAS_MADE_RECOMMENDATION,
+      { offerId: 1, venueId: 2, action: 'validated' }
+    )
   })
 
-  it('should call apiNew.updateOfferProAdvice when updating an existing recommendation', async () => {
+  it('should call updateOfferProAdvice when updating an existing recommendation', async () => {
     const updateOfferProAdviceMock = vi.mocked(apiNew.updateOfferProAdvice)
     updateOfferProAdviceMock.mockResolvedValueOnce({
       proAdvice: { content: 'new content', author: 'Jean-Mi', updatedAt: '' },
@@ -114,7 +133,10 @@ describe('OfferRecommendationForm', () => {
     )
   })
 
-  it('should call apiNew.deleteOfferProAdvice when clicking delete', async () => {
+  it('should call deleteOfferProAdvice when clicking delete', async () => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
     const deleteOfferProAdviceMock = vi.mocked(apiNew.deleteOfferProAdvice)
     deleteOfferProAdviceMock.mockResolvedValueOnce({} as any)
 
@@ -132,6 +154,10 @@ describe('OfferRecommendationForm', () => {
     })
     expect(snackBarSuccess).toHaveBeenCalledWith(
       'Votre recommandation a bien été supprimée'
+    )
+    expect(mockLogEvent).toBeCalledWith(
+      EngagementEvents.HAS_MADE_RECOMMENDATION,
+      { offerId: 1, venueId: 2, action: 'deleted' }
     )
   })
 

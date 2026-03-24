@@ -12,7 +12,8 @@ import type {
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { GET_HIGHLIGHTS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
-import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
+import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
+import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
@@ -79,7 +80,14 @@ function renderOfferHighlightForm({
         onSuccess={onSuccess}
         highlightRequests={highlightRequests}
       />
-    </DialogBuilder>
+    </DialogBuilder>,
+    {
+      storeOverrides: {
+        user: {
+          selectedVenue: makeVenueListItem({ id: 2 }),
+        },
+      },
+    }
   )
 }
 
@@ -189,8 +197,12 @@ describe('OfferHighlightForm', () => {
       highlight_ids: [1],
     })
     expect(mockLogEvent).toBeCalledWith(
-      HighlightEvents.HAS_VALIDATED_HIGHLIGHT,
-      { offerId: 1, highlightIds: [1] }
+      EngagementEvents.HAS_REQUESTED_HIGHLIGHTS,
+      {
+        offerId: 1,
+        venueId: 2,
+        action: 'validated',
+      }
     )
   })
 

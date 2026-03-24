@@ -1,7 +1,9 @@
 import { useState } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
+import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import { Card } from '@/ui-kit/Card/Card'
@@ -13,6 +15,7 @@ import { ModalHighlight } from './ModalHighlight/ModalHighlight'
 export const HighlightHome = () => {
   const [isOpen, setIsOpen] = useState(false)
   const { logEvent } = useAnalytics()
+  const selectedVenue = useAppSelector(ensureSelectedVenue)
 
   return (
     <div className={styles['highlight-home']}>
@@ -30,7 +33,10 @@ export const HighlightHome = () => {
               <Button
                 variant={ButtonVariant.SECONDARY}
                 onClick={() =>
-                  logEvent(HighlightEvents.HAS_CLICKED_DISCOVER_HIGHLIGHT)
+                  logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
+                    venueId: selectedVenue.id,
+                    action: 'discover',
+                  })
                 }
                 label="Parcourir les temps forts"
               />

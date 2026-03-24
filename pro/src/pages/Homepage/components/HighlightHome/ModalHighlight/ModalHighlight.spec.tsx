@@ -4,7 +4,8 @@ import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
-import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
+import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
+import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { ModalHighlight } from './ModalHighlight'
@@ -25,7 +26,13 @@ describe('ModalHighlight', () => {
       },
     ])
 
-    const { container } = renderWithProviders(<ModalHighlight open />)
+    const { container } = renderWithProviders(<ModalHighlight open />, {
+      storeOverrides: {
+        user: {
+          selectedVenue: makeVenueListItem({ id: 2 }),
+        },
+      },
+    })
 
     expect(
       await screen.findByRole('heading', {
@@ -68,26 +75,44 @@ describe('ModalHighlight', () => {
       },
     ])
 
-    renderWithProviders(<ModalHighlight open />)
+    renderWithProviders(<ModalHighlight open />, {
+      storeOverrides: {
+        user: {
+          selectedVenue: makeVenueListItem({ id: 2 }),
+        },
+      },
+    })
 
     await userEvent.click(
       screen.getByText('En savoir plus sur les temps forts')
     )
 
     expect(mockLogEvent).toBeCalledWith(
-      HighlightEvents.HAS_CLICKED_MORE_INFO_HIGHLIGHT
+      EngagementEvents.HAS_REQUESTED_HIGHLIGHTS,
+      {
+        venueId: 2,
+        action: 'seeMoreInfo',
+      }
     )
 
     await userEvent.click(screen.getByText('Voir tout le calendrier'))
 
     expect(mockLogEvent).toBeCalledWith(
-      HighlightEvents.HAS_CLICKED_CALENDAR_HIGHLIGHT
+      EngagementEvents.HAS_REQUESTED_HIGHLIGHTS,
+      {
+        venueId: 2,
+        action: 'seeCalendar',
+      }
     )
 
     await userEvent.click(screen.getByText('Accéder à mes offres'))
 
     expect(mockLogEvent).toBeCalledWith(
-      HighlightEvents.HAS_CLICKED_ALL_OFFER_HIGHLIGHT
+      EngagementEvents.HAS_REQUESTED_HIGHLIGHTS,
+      {
+        venueId: 2,
+        action: 'goToOffersList',
+      }
     )
   })
 })
