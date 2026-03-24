@@ -24,7 +24,7 @@ import {
 } from '@/design-system/Button/types'
 import fullEditIcon from '@/icons/full-edit.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import strokeTrashIcon from '@/icons/stroke-trash.svg'
+import strokeWarningIcon from '@/icons/stroke-warning.svg'
 import { getPriceCategoryName } from '@/pages/IndividualOffer/commons/getPriceCategoryOptions'
 import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
@@ -285,25 +285,19 @@ export function StocksCalendarTable({
           }
           setStockBeingDeleted(null)
         }}
-        title="Êtes-vous sûr de vouloir supprimer cette date ?"
+        title="Vous êtes sur le point d'annuler toutes les réservations en cours pour cette date"
         confirmText="Confirmer la suppression"
         cancelText="Annuler"
-        icon={strokeTrashIcon}
+        icon={strokeWarningIcon}
         open={Boolean(stockBeingDeleted)}
+        confirmColor={ButtonColor.DANGER}
       >
         {stockBeingDeleted?.bookingsQuantity &&
         stockBeingDeleted.bookingsQuantity > 0 ? (
           <>
-            <p className={styles['delete-warning-block']}>
-              {'Elle ne sera plus disponible à la réservation et '}
-              <strong>
-                entraînera l’annulation des réservations en cours et validées !
-              </strong>
-            </p>
-            <p>
-              L’ensemble des utilisateurs concernés sera automatiquement averti
-              par email.
-            </p>
+            En effectuant cette action, les réservations en cours et validées
+            seront automatiquement annulées. L’ensemble des bénéficiaires
+            concernés sera automatiquement averti par email.
           </>
         ) : null}
       </ConfirmDialog>
