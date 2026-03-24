@@ -15,7 +15,10 @@ import {
 import { PartnerLayout } from '@/layouts/PartnerLayout/PartnerLayout'
 
 import * as utils from './commons/utils'
-import type { HomepageVariant } from './components/types'
+import {
+  type HomepageVariant,
+  OffersEmptyStateCardVariant,
+} from './components/types'
 import { NewHomepage } from './NewHomepage'
 
 vi.mock('@/components/CollectiveDmsTimeline/CollectiveDmsTimeline', () => ({
@@ -43,6 +46,20 @@ vi.mock('./components/VenueValidationBanner/VenueValidationBanner', () => ({
 
 vi.mock('./components/NewsletterCard/NewsletterCard', () => ({
   NewsletterCard: () => <div>Newsletter</div>,
+}))
+
+vi.mock('./components/OffersEmptyStateCard/OffersEmptyStateCard', () => ({
+  OffersEmptyStateCard: ({
+    variant,
+  }: {
+    variant: OffersEmptyStateCardVariant
+  }) => {
+    const variantText =
+      variant === OffersEmptyStateCardVariant.INDIVIDUAL
+        ? 'individuelle'
+        : 'collective'
+    return <div>créer une offre {variantText}</div>
+  },
 }))
 
 const newHomepageRoutes = [
@@ -400,9 +417,7 @@ describe('NewHomepage', () => {
 
         expect(
           screen.getByRole('tabpanel', { description: /collective/ })
-        ).toHaveTextContent(
-          /Proposer vos offres aux jeunes sur l’application mobile pass Culture/
-        )
+        ).toHaveTextContent(/créer une offre individuelle/)
       })
 
       it('should be displayed when venue has a "sans suite" DMS application', () => {
@@ -418,9 +433,7 @@ describe('NewHomepage', () => {
 
         expect(
           screen.getByRole('tabpanel', { description: /collective/ })
-        ).toHaveTextContent(
-          /Proposer vos offres aux jeunes sur l’application mobile pass Culture/
-        )
+        ).toHaveTextContent(/créer une offre individuelle/)
       })
 
       it('should not be displayed when venue has a pending DMS application', () => {
@@ -431,9 +444,7 @@ describe('NewHomepage', () => {
 
         expect(
           screen.getByRole('tabpanel', { description: /collective/ })
-        ).not.toHaveTextContent(
-          /Proposer vos offres aux jeunes sur l’application mobile pass Culture/
-        )
+        ).not.toHaveTextContent(/créer une offre individuelle/)
       })
 
       it('should not be displayed when venue has no DMS application', () => {
@@ -445,9 +456,7 @@ describe('NewHomepage', () => {
 
         expect(
           screen.getByRole('tabpanel', { description: /collective/ })
-        ).not.toHaveTextContent(
-          /Proposer vos offres aux jeunes sur l’application mobile pass Culture/
-        )
+        ).not.toHaveTextContent(/créer une offre individuelle/)
       })
     })
 
