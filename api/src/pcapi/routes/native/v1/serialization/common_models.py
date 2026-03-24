@@ -40,4 +40,4 @@ class DeviceInfo(HttpBodyModel):
     # TODO remove the following fields in future api version
     font_scale: float | None = None
     resolution: str | None = None
-    screen_zoom_level: int | None = None
+    screen_zoom_level: float | None = None
