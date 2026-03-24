@@ -26,8 +26,12 @@ import {
 } from './commons/utils'
 import { IncomeCard } from './components/IncomeCard/IncomeCard'
 import { NewsletterCard } from './components/NewsletterCard/NewsletterCard'
+import { OffersEmptyStateCard } from './components/OffersEmptyStateCard/OffersEmptyStateCard'
 import { PartnerPageCard } from './components/PartnerPageCard/PartnerPageCard'
-import { HomepageVariant } from './components/types'
+import {
+  HomepageVariant,
+  OffersEmptyStateCardVariant,
+} from './components/types'
 import { VenueValidationBanner } from './components/VenueValidationBanner/VenueValidationBanner'
 import { WebinarCard } from './components/WebinarCard/WebinarCard'
 import styles from './NewHomepage.module.scss'
@@ -188,12 +192,9 @@ export const NewHomepage = (): JSX.Element => {
           )}
           {hasRefusedDmsApplication && (
             <div className={styles['main']}>
-              <div>
-                Proposer vos offres aux jeunes sur l’application mobile pass
-                Culture
-                <br />
-                <b>Empty state offres indivs</b>
-              </div>
+              <OffersEmptyStateCard
+                variant={OffersEmptyStateCardVariant.INDIVIDUAL}
+              />
             </div>
           )}
           {selectedVenue.allowedOnAdage && (
