@@ -1,14 +1,18 @@
 import logging
 from typing import Iterator
 
+import pcapi.core.providers.repository as providers_repository
 from pcapi.connectors import api_allocine
+from pcapi.connectors.big_query.queries.allocine import AllocineMovieQuery
 from pcapi.connectors.serialization import allocine_serializers
 from pcapi.core.offers.models import Movie
 from pcapi.core.offers.models import OfferExtraData
 from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers.models import Provider
+from pcapi.core.providers.utils import log_provider_synchronization
 from pcapi.models import db
 from pcapi.utils.repository import transaction
+from pcapi.utils.transaction_manager import atomic
 
 
 logger = logging.getLogger(__name__)
@@ -16,6 +20,11 @@ logger = logging.getLogger(__name__)
 MOVIE_SPECIAL_EVENT = "SPECIAL_EVENT"
 
 
+def get_allocine_products_provider() -> Provider:
+    return db.session.query(Provider).filter(Provider.name == providers_constants.ALLOCINE_PRODUCTS_PROVIDER_NAME).one()
+
+
+@log_provider_synchronization(providers_constants.ALLOCINE_PRODUCTS_PROVIDER_NAME)
 def synchronize_products() -> None:
     from pcapi.core.offers.api import upsert_movie_product_from_provider
 
@@ -23,6 +32,21 @@ def synchronize_products() -> None:
     allocine_products_provider = get_allocine_products_provider()
     with transaction():
         for movie in movies:
+            generic_movie = create_generic_movie(movie)
+            upsert_movie_product_from_provider(generic_movie, allocine_products_provider)
+
+
+@log_provider_synchronization(providers_constants.ALLOCINE_PRODUCTS_PROVIDER_NAME)
+def synchronize_products_with_bigquery() -> None:
+    from pcapi.core.offers.api import upsert_movie_product_from_provider
+
+    allocine_products_provider = get_allocine_products_provider()
+    last_sync_date = providers_repository.get_last_successful_synchronization_date(allocine_products_provider)
+    with atomic():
+        for movie in AllocineMovieQuery(updated_since=last_sync_date).execute():
+            logger.info(
+                "Allocine movie returned by data", extra={"allocine_id": movie.internalId, "title": movie.title}
+            )
             generic_movie = create_generic_movie(movie)
             upsert_movie_product_from_provider(generic_movie, allocine_products_provider)
 
@@ -96,10 +120,6 @@ def _exclude_empty_movies_and_special_events(
         for movie_showtimes in movies_showtimes
         if movie_showtimes.movie and movie_showtimes.movie.type != MOVIE_SPECIAL_EVENT
     ]
-
-
-def get_allocine_products_provider() -> Provider:
-    return db.session.query(Provider).filter(Provider.name == providers_constants.ALLOCINE_PRODUCTS_PROVIDER_NAME).one()
 
 
 def build_movie_data(movie: allocine_serializers.AllocineMovie) -> OfferExtraData:

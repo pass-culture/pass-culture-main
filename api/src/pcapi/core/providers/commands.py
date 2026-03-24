@@ -26,9 +26,17 @@ logger = logging.getLogger(__name__)
 
 
 @blueprint.cli.command("synchronize_allocine_products")
+@cron_decorators.log_cron_with_transaction
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 def synchronize_allocine_products() -> None:
     allocine.synchronize_products()
+
+
+@blueprint.cli.command("synchronize_allocine_products_with_bigquery")
+@cron_decorators.log_cron_with_transaction
+@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
+def synchronize_allocine_products_with_bigquery() -> None:
+    allocine.synchronize_products_with_bigquery()
 
 
 # TODO (tcoudray-pass, 07/10/25): Remove this command once Boost has been migrated to new integration
