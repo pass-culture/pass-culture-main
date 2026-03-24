@@ -4,6 +4,7 @@ import { addDays } from 'date-fns'
 
 import { api } from '@/apiClient/api'
 import { OfferStatus } from '@/apiClient/v1'
+import * as HeadlineOfferContext from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
@@ -15,7 +16,10 @@ import {
   getIndividualOfferFactory,
   makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import {
+  currentOffererFactory,
+  sharedCurrentUserFactory,
+} from '@/commons/utils/factories/storeFactories'
 import {
   type RenderComponentFunction,
   type RenderWithProvidersOptions,
@@ -43,6 +47,9 @@ vi.mock('react-router', async () => ({
 vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
   useOfferWizardMode: vi.fn(),
 }))
+
+const mockUpsertHeadlineOffer = vi.fn()
+const mockRemoveHeadlineOffer = vi.fn()
 
 const renderIndividualOfferLayout: RenderComponentFunction<
   IndividualOfferLayoutProps,
@@ -74,6 +81,7 @@ const renderIndividualOfferLayout: RenderComponentFunction<
         currentUser: user,
         selectedVenue: makeVenueListItem({ id: 2 }),
       },
+      offerer: currentOffererFactory({}),
     },
     ...params.options,
   }
@@ -326,6 +334,38 @@ describe('IndividualOfferLayout', () => {
         })
         expect(
           screen.getByRole('button', { name: 'Ajouter une recommandation' })
+        ).toBeInTheDocument()
+      })
+
+      it('should display the headline card', async () => {
+        vi.spyOn(
+          HeadlineOfferContext,
+          'useHeadlineOfferContext'
+        ).mockReturnValue({
+          headlineOffer: null,
+          upsertHeadlineOffer: mockUpsertHeadlineOffer,
+          removeHeadlineOffer: mockRemoveHeadlineOffer,
+          isHeadlineOfferAllowedForOfferer: true,
+        } as any)
+
+        const offer = getIndividualOfferFactory({
+          status: OfferStatus.ACTIVE,
+          isEvent: true,
+        })
+
+        renderIndividualOfferLayout({
+          props: { offer },
+          options: { features: ['WIP_OFFER_RECOMMENDATION_PRO'] },
+        })
+        await waitFor(() => {
+          expect(
+            screen.getByText(
+              'Ne laissez pas votre offre passer inaperçue : passez-la à la une'
+            )
+          ).toBeInTheDocument()
+        })
+        expect(
+          screen.getByRole('button', { name: 'Mettre l’offre à la une' })
         ).toBeInTheDocument()
       })
     })

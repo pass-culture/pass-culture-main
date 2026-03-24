@@ -189,7 +189,7 @@ export const IndividualActionsCells = ({
         refToFocusOnClose={dropdownTriggerRef}
       />
       <HeadlineOfferImageDialogs
-        offer={offer}
+        offerId={offer.id}
         isFirstDialogOpen={isDialogForHeadlineOfferWithoutImageOpen}
         setIsFirstDialogOpen={setIsDialogForHeadlineOfferWithoutImageOpen}
       />

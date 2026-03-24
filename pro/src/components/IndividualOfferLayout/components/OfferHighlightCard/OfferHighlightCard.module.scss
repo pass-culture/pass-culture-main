@@ -11,7 +11,7 @@
   background: var(--color-background-decorative02);
   min-width: 100%;
 
-  @media (min-width: size.$tablet) {
+  @media (min-width: size.$laptop) {
     min-width: rem.torem(346px);
     max-width: rem.torem(346px);
   }
@@ -32,7 +32,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-brand-primary);
   }
 
   &-highlights {
