@@ -3,10 +3,14 @@ import re
 import typing
 import urllib.parse
 
+import sqlalchemy.orm as sa_orm
 import wtforms
 from flask_wtf import FlaskForm
 
+from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
+from pcapi.models import db
+from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import search as search_forms
 from pcapi.routes.backoffice.forms import utils
@@ -66,6 +70,10 @@ class CompactProSearchForm(ProSearchForm):
     departments = fields.PCSelectMultipleField("Départements", choices=area_choices, search_inline=True)
 
 
+def _get_educational_domains_query() -> sa_orm.Query:
+    return db.session.query(educational_models.EducationalDomain).order_by(educational_models.EducationalDomain.name)
+
+
 class CreateVenueWithoutSIRETForm(FlaskForm):
     public_name = fields.PCStringField(
         "Nom d'usage du partenaire culturel",
@@ -76,6 +84,26 @@ class CreateVenueWithoutSIRETForm(FlaskForm):
     )
     attachement_venue = fields.PCSelectWithPlaceholderValueField("SIRET de rattachement", choices=[], coerce=int)
 
+    is_open_to_public = fields.PCSwitchBooleanField("Accueil du public", full_row=True)
+
+    activity = fields.PCSelectWithPlaceholderValueField(
+        "Activité principale",
+        choices=utils.choices_from_enum(
+            offerers_models.Activity,
+            formatter=filters.format_activity,
+            exclude_opts=offerers_models.DEPRECATED_ACTIVITIES,
+        ),
+    )
+
+    cultural_domains = fields.PCQuerySelectMultipleField(
+        "Domaine(s) d'activité",
+        query_factory=_get_educational_domains_query,
+        get_pk=lambda educational_domain: educational_domain.id,
+        get_label=lambda educational_domain: educational_domain.name,
+    )
+
+    booking_email = fields.PCEmailField("Email (notifications de réservation)")
+
     def __init__(self, offerer: offerers_models.Offerer, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
         self.attachement_venue.choices = [
@@ -83,6 +111,15 @@ class CreateVenueWithoutSIRETForm(FlaskForm):
             for offerer_venue in offerer.managedVenues
             if offerer_venue.siret
         ]
+
+    def validate_activity(
+        self, activity: fields.PCSelectWithPlaceholderValueField
+    ) -> fields.PCSelectWithPlaceholderValueField:
+        is_open_to_public = self._fields["is_open_to_public"].data
+        if is_open_to_public and activity.data not in offerers_models.ActivityOpenToPublic:
+            raise wtforms.ValidationError("L'activité sélectionnée n'est pas compatible avec l'accueil du public")
+
+        return activity
 
 
 class ConnectAsForm(FlaskForm):

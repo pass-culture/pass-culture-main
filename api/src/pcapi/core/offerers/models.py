@@ -225,6 +225,15 @@ class Activity(enum.Enum):
     TRAVELLING_CINEMA = "TRAVELLING_CINEMA"
 
 
+# Activities which must not be selected at venue creation
+DEPRECATED_ACTIVITIES = {
+    Activity.GAMES_CENTRE,
+    Activity.NOT_ASSIGNED,
+    Activity.PRESS,
+    Activity.STREAMING_PLATFORM,
+}
+
+
 ActivityOpenToPublic: enum.EnumType = enum.Enum(  # type: ignore[misc]
     "ActivityOpenToPublic",
     {

@@ -2084,12 +2084,52 @@ def format_last_validation_action_name(status: offer_mixin.OfferValidationStatus
             return status.value
 
 
+# Keep consistency with pro/src/commons/mappings/DisplayableActivity.ts
+ACTIVITY_MAPPING = {
+    offerers_models.Activity.ART_GALLERY: "Galerie d’art",
+    offerers_models.Activity.ART_SCHOOL: "Conservatoire ou école d’arts",
+    offerers_models.Activity.ARTISTIC_COMPANY: "Compagnie artistique",
+    offerers_models.Activity.ARTS_CENTRE: "Centre d’arts",
+    offerers_models.Activity.ARTS_EDUCATION: "Formation ou enseignement artistique",
+    offerers_models.Activity.BOOKSTORE: "Librairie",
+    offerers_models.Activity.CINEMA: "Cinéma",
+    offerers_models.Activity.COMMUNITY_CENTRE: "Centre socio-culturel",
+    offerers_models.Activity.CREATIVE_ARTS_STORE: "Magasin d’arts créatifs",
+    offerers_models.Activity.CULTURAL_CENTRE: "Centre culturel pluridisciplinaire",
+    offerers_models.Activity.CULTURAL_MEDIATION: "Médiation culturelle",
+    offerers_models.Activity.DISTRIBUTION_STORE: "Magasin de distribution de produits culturels",
+    offerers_models.Activity.FESTIVAL: "Festival",
+    offerers_models.Activity.GAMES_CENTRE: "Espace ludique",
+    offerers_models.Activity.HERITAGE_SITE: "Site patrimonial, historique ou touristique",
+    offerers_models.Activity.LIBRARY: "Bibliothèque ou médiathèque",
+    offerers_models.Activity.MUSEUM: "Musée",
+    offerers_models.Activity.MUSIC_INSTRUMENT_STORE: "Magasin d’instruments de musique",
+    offerers_models.Activity.OTHER: "Autre",
+    offerers_models.Activity.PERFORMANCE_HALL: "Salle de spectacles",
+    offerers_models.Activity.PRESS: "Presse",
+    offerers_models.Activity.PRESS_OR_MEDIA: "Presse ou média",
+    offerers_models.Activity.PRODUCTION_OR_PROMOTION_COMPANY: "Société de production, tourneur ou label",
+    offerers_models.Activity.RADIO_OR_MUSIC_STREAMING: "Radio ou streaming musical",
+    offerers_models.Activity.RECORD_STORE: "Disquaire",
+    offerers_models.Activity.SCIENCE_CENTRE: "Centre de culture scientifique, technique et industrielle",
+    offerers_models.Activity.STREAMING_PLATFORM: "Plateforme de streaming musique ou vidéo",
+    offerers_models.Activity.TELEVISION_OR_VIDEO_STREAMING: "Télévision ou streaming vidéo",
+    offerers_models.Activity.TOURIST_INFORMATION_CENTRE: "Office de tourisme",
+    offerers_models.Activity.TRAVELLING_CINEMA: "Cinéma itinérant",
+}
+
+
+def format_activity(activity: offerers_models.Activity) -> str:
+    return ACTIVITY_MAPPING.get(activity, activity.name)
+
+
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
     app.jinja_env.filters["any"] = any
     app.jinja_env.filters["empty_string_if_null"] = empty_string_if_null
     app.jinja_env.filters["format_action_type"] = format_action_type
+    app.jinja_env.filters["format_activity"] = format_activity
     app.jinja_env.filters["format_amount"] = format_amount
     app.jinja_env.filters["format_count"] = format_count
     app.jinja_env.filters["format_badge"] = format_badge

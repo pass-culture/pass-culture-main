@@ -3740,7 +3740,7 @@ class InviteUserTest(PostEndpointHelper):
         assert response.status_code == 200  # after redirect
         assert (
             html_parser.extract_alert(response.data)
-            == "Les données envoyées comportent des erreurs. Adresse email : Email obligatoire, doit contenir entre 3 et 128 caractères ;"
+            == "Les données envoyées comportent des erreurs. Adresse email : Email obligatoire ;"
         )
         assert db.session.query(offerers_models.OffererInvitation).count() == 0
 
@@ -5088,9 +5088,19 @@ class CreateVenueTest(PostEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.CREATE_PRO_ENTITY
 
-    def test_create_venue(self, authenticated_client):
-        venue = offerers_factories.VenueFactory()
-        form_data = {"public_name": "Public Name", "attachement_venue": venue.id}
+    @pytest.mark.parametrize("form_switch_value, boolean_switch_value", [("on", True), ("", False)])
+    def test_create_venue(self, authenticated_client, form_switch_value, boolean_switch_value):
+        venue = offerers_factories.VenueFactory(activity=offerers_models.Activity.MUSEUM)
+        domains = educational_factories.EducationalDomainFactory.create_batch(3)
+
+        form_data = {
+            "public_name": "Public Name",
+            "attachement_venue": venue.id,
+            "is_open_to_public": form_switch_value,
+            "activity": offerers_models.Activity.BOOKSTORE.name,
+            "cultural_domains": [domains[0].id, domains[1].id],
+            "booking_email": "bookings@example.com",
+        }
         response = self.post_to_endpoint(authenticated_client, offerer_id=venue.managingOffererId, form=form_data)
         assert response.status_code == 303
 
@@ -5099,10 +5109,35 @@ class CreateVenueTest(PostEndpointHelper):
         )
         assert new_venue.name == form_data["public_name"]
         assert new_venue.publicName == form_data["public_name"]
-        assert new_venue.activity == venue.activity
-        assert new_venue.isOpenToPublic is False
+        assert new_venue.activity == offerers_models.Activity.BOOKSTORE
+        assert new_venue.bookingEmail == form_data["booking_email"]
+        assert new_venue.collectiveDomains == domains[:2]
+        assert new_venue.isOpenToPublic is boolean_switch_value
         assert new_venue.isPermanent is True
         assert new_venue.offererAddress.address == venue.offererAddress.address
         assert new_venue.offererAddress != venue.offererAddress
 
         assert response.location == url_for("backoffice_web.venue.get", venue_id=new_venue.id)
+
+    def test_create_venue_with_activity_not_open_to_public(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+
+        form_data = {
+            "public_name": "Streaming Platform",
+            "attachement_venue": venue.id,
+            "activity": offerers_models.Activity.STREAMING_PLATFORM.name,
+            "is_open_to_public": "on",
+            "cultural_domains": "",
+            "booking_email": "",
+        }
+        response = self.post_to_endpoint(authenticated_client, offerer_id=venue.managingOffererId, form=form_data)
+        assert response.status_code == 303
+
+        assert db.session.query(offerers_models.Venue).one() == venue
+
+        assert response.location == url_for(
+            "backoffice_web.offerer.get", offerer_id=venue.managingOffererId, active_tab="managed_venues"
+        )
+        assert "L'activité sélectionnée n'est pas compatible avec l'accueil du public" in html_parser.extract_alert(
+            authenticated_client.get(response.location).data
+        )
