@@ -3316,7 +3316,7 @@ def find_structure_data(search_input: str) -> sirene_models.SiretInfo:
 
 def find_ban_address_from_insee_address(
     diffusible: bool, insee_address: sirene_models.SireneAddress
-) -> offerers_schemas.LocationModel | None:
+) -> offerers_schemas.CoreLocationModelV2 | None:
     try:
         is_manual_address = False
         if diffusible:
@@ -3351,7 +3351,7 @@ def find_ban_address_from_insee_address(
         return (
             None
             if ban_address is None
-            else offerers_schemas.LocationModel(
+            else offerers_schemas.CoreLocationModelV2(
                 isManualEdition=is_manual_address,
                 banId=offerers_schemas.VenueBanId(ban_address.id) if not is_manual_address else None,
                 city=offerers_schemas.VenueCity(ban_address.city),

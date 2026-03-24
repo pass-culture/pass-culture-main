@@ -37,7 +37,7 @@ def format_coordinate(value: typing.Any) -> Decimal:
 CoordinateField = typing.Annotated[Decimal, pydantic_v2.BeforeValidator(format_coordinate)]
 
 
-class LocationModelV2(BaseModelV2):
+class CoreLocationModelV2(BaseModelV2):
     isManualEdition: bool = False
     isVenueLocation: bool = False
     banId: str | None = None
