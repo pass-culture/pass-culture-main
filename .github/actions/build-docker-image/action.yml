@@ -46,7 +46,7 @@ runs:
         docker save "$IMAGE:$TAG" > "$IMAGE-$TAG.tar"
 
     - name: Upload built image to github artifact
-      uses: actions/upload-artifact@v7
+      uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
       with:
         name: ${{ inputs.image }}-${{ inputs.tag }}.tar
         path: ${{ inputs.artifact_path }}
