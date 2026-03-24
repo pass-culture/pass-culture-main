@@ -3,7 +3,9 @@ import { type JSX, useState } from 'react'
 
 import type { ShortHighlightResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
+import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { Button } from '@/design-system/Button/Button'
 import {
@@ -30,6 +32,7 @@ export const OfferHighlightCard = ({
 }: OfferHighlightCardProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false)
   const { logEvent } = useAnalytics()
+  const selectedVenue = useAppSelector(ensureSelectedVenue)
 
   const hasHighlights = highlightRequests.length > 0
 
@@ -85,13 +88,16 @@ export const OfferHighlightCard = ({
             size={ButtonSize.SMALL}
             onClick={() => {
               if (hasHighlights) {
-                logEvent(HighlightEvents.HAS_CLICKED_EDIT_HIGHLIGHT, {
+                logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
                   offerId,
-                  hightlightIds: highlightRequests.map((r) => r.id),
+                  venueId: selectedVenue.id,
+                  action: 'edited',
                 })
               } else {
-                logEvent(HighlightEvents.HAS_CLICKED_CHOOSE_HIGHLIGHT, {
+                logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
                   offerId,
+                  venueId: selectedVenue.id,
+                  action: 'started',
                 })
               }
               setIsOpen(true)

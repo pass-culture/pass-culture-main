@@ -29,9 +29,6 @@ export enum Events {
   CLICKED_HELP_CENTER = 'hasClickedHelpCenter',
   CLICKED_HOME = 'hasClickedHome',
   CLICKED_LOGOUT = 'hasClickedLogout',
-  CLICKED_CONFIRMED_ADD_HEADLINE_OFFER = 'hasClickedConfirmedAddHeadlineOffer',
-  CLICKED_DISCOVERED_HEADLINE_OFFER = 'hasClickedDiscoveredHeadlineOffer',
-  CLICKED_VIEW_APP_HEADLINE_OFFER = 'hasClickedViewAppHeadlineOffer',
   CLICKED_OFFER = 'hasClickedOffer',
   CLICKED_OFFER_FORM_NAVIGATION = 'hasClickedOfferFormNavigation',
   CLICKED_ONBOARDING_FORM_NAVIGATION = 'HasClickedOnboardingFormNavigation',
@@ -147,14 +144,10 @@ export const OnboardingDidacticEvents = {
     'hasClickedSubmitCollectiveCaseDidacticOnboarding',
 }
 
-export enum HighlightEvents {
-  HAS_CLICKED_DISCOVER_HIGHLIGHT = 'hasClickedDiscoverHighlight',
-  HAS_CLICKED_MORE_INFO_HIGHLIGHT = 'hasClickedMoreInfoHighlight',
-  HAS_CLICKED_CALENDAR_HIGHLIGHT = 'hasClickedCalendarHighlight',
-  HAS_CLICKED_ALL_OFFER_HIGHLIGHT = 'hasClickedAllOfferHighlight',
-  HAS_CLICKED_CHOOSE_HIGHLIGHT = 'hasClickedChooseHighlight',
-  HAS_CLICKED_EDIT_HIGHLIGHT = 'hasClickedEditHighlight',
-  HAS_VALIDATED_HIGHLIGHT = 'hasValidatedHighlight',
+export enum EngagementEvents {
+  HAS_REQUESTED_HIGHLIGHTS = 'hasRequestedHighlights',
+  CLICKED_CONFIRMED_ADD_HEADLINE_OFFER = 'hasClickedConfirmedAddHeadlineOffer',
+  HAS_MADE_RECOMMENDATION = 'hasMadeRecommendation',
 }
 
 export enum WelcomeCarouselEvents {

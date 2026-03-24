@@ -3,7 +3,11 @@ import { type JSX, useState } from 'react'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
+import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFER_PRO_ADVICE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -25,6 +29,8 @@ export const OfferRecommendationCard = ({
   offerId,
 }: OfferRecommendationCardProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false)
+  const { logEvent } = useAnalytics()
+  const selectedVenue = useAppSelector(ensureSelectedVenue)
 
   const { data: proAdviceResponse } = useSWR(
     [GET_OFFER_PRO_ADVICE_QUERY_KEY, offerId],
@@ -72,7 +78,20 @@ export const OfferRecommendationCard = ({
             }
             color={ButtonColor.NEUTRAL}
             size={ButtonSize.SMALL}
-            onClick={() => setIsOpen(true)}
+            onClick={() => {
+              hasRecommendation
+                ? logEvent(EngagementEvents.HAS_MADE_RECOMMENDATION, {
+                    offerId,
+                    venueId: selectedVenue.id,
+                    action: 'edited',
+                  })
+                : logEvent(EngagementEvents.HAS_MADE_RECOMMENDATION, {
+                    offerId,
+                    venueId: selectedVenue.id,
+                    action: 'started',
+                  })
+              setIsOpen(true)
+            }}
             icon={hasRecommendation ? fullEditIcon : undefined}
             label={
               hasRecommendation ? 'Modifier' : 'Ajouter une recommandation'

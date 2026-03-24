@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
-import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { currentOffererFactory } from '@/commons/utils/factories/storeFactories'
@@ -120,6 +120,9 @@ const renderIndividualOffersContext = () => {
     </HeadlineOfferContextProvider>,
     {
       storeOverrides: {
+        user: {
+          selectedVenue: makeVenueListItem({ id: 2 }),
+        },
         offerer: MOCK_DATA.offerer,
       },
     }
@@ -313,10 +316,10 @@ describe('HeadlineOfferContext', () => {
       await userEvent.click(upsertButton)
 
       expect(logEvent).toHaveBeenCalledWith(
-        Events.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER,
+        EngagementEvents.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER,
         {
-          from: '/',
-          actionType: 'add',
+          venueId: 2,
+          action: 'add',
           requiredImageUpload: false,
         }
       )
@@ -394,10 +397,10 @@ describe('HeadlineOfferContext', () => {
       await userEvent.click(removeButton)
 
       expect(logEvent).toHaveBeenCalledWith(
-        Events.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER,
+        EngagementEvents.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER,
         {
-          from: '/',
-          actionType: 'delete',
+          venueId: 2,
+          action: 'deleted',
         }
       )
     })

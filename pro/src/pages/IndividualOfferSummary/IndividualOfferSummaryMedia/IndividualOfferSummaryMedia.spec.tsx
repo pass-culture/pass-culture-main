@@ -1,7 +1,10 @@
 import { screen } from '@testing-library/react'
 
 import { IndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
-import { individualOfferContextValuesFactory } from '@/commons/utils/factories/individualApiFactories'
+import {
+  individualOfferContextValuesFactory,
+  makeVenueListItem,
+} from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { Component as IndividualOfferSummaryMedia } from './IndividualOfferSummaryMedia'
@@ -12,7 +15,14 @@ const renderIndividualOfferSummaryScreen = () => {
   renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
       <IndividualOfferSummaryMedia />
-    </IndividualOfferContext.Provider>
+    </IndividualOfferContext.Provider>,
+    {
+      storeOverrides: {
+        user: {
+          selectedVenue: makeVenueListItem({ id: 2 }),
+        },
+      },
+    }
   )
 }
 

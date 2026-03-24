@@ -10,8 +10,10 @@ import {
   GET_HIGHLIGHTS_QUERY_KEY,
   GET_OFFER_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
-import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
+import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { HighlightDatespanTag } from '@/components/HighlightDatespanTag/HighlightDatespanTag'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
@@ -37,6 +39,7 @@ export function OfferHighlightForm({
   const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
   const { logEvent } = useAnalytics()
+  const selectedVenue = useAppSelector(ensureSelectedVenue)
 
   const defaultValues = {
     highlightIds: highlightRequests.map((request) => request.id),
@@ -67,9 +70,10 @@ export function OfferHighlightForm({
         }),
         { revalidate: false }
       )
-      logEvent(HighlightEvents.HAS_VALIDATED_HIGHLIGHT, {
+      logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
         offerId,
-        highlightIds: values.highlightIds,
+        venueId: selectedVenue.id,
+        action: 'validated',
       })
       onSuccess()
       if (isDirty) {

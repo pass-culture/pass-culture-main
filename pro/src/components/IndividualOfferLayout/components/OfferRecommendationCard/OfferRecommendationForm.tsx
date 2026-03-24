@@ -7,8 +7,12 @@ import * as yup from 'yup'
 
 import { apiNew } from '@/apiClient/api'
 import type { ProAdviceModel } from '@/apiClient/v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFER_PRO_ADVICE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -53,6 +57,8 @@ export function OfferRecommendationForm({
 }: Readonly<OfferRecommendationFormProps>): JSX.Element {
   const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
+  const { logEvent } = useAnalytics()
+  const selectedVenue = useAppSelector(ensureSelectedVenue)
 
   const defaultValues: OfferRecommendationFormValues = {
     content: proAdvice?.content ?? '',
@@ -91,6 +97,11 @@ export function OfferRecommendationForm({
       }
 
       await mutate([GET_OFFER_PRO_ADVICE_QUERY_KEY, offerId])
+      logEvent(EngagementEvents.HAS_MADE_RECOMMENDATION, {
+        offerId,
+        venueId: selectedVenue.id,
+        action: 'validated',
+      })
       snackBar.success('Votre recommandation a bien été ajoutée')
       onClose()
     } catch {
@@ -105,6 +116,11 @@ export function OfferRecommendationForm({
       })
       await mutate([GET_OFFER_PRO_ADVICE_QUERY_KEY, offerId])
       snackBar.success('Votre recommandation a bien été supprimée')
+      logEvent(EngagementEvents.HAS_MADE_RECOMMENDATION, {
+        offerId,
+        venueId: selectedVenue.id,
+        action: 'deleted',
+      })
       onClose()
     } catch {
       snackBar.error('Une erreur est survenue lors de la suppression')

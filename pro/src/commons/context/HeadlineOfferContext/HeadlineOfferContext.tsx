@@ -1,5 +1,4 @@
 import { createContext, useContext } from 'react'
-import { useLocation } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -9,10 +8,11 @@ import {
   GET_OFFERER_HEADLINE_OFFER_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
-import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { noopAsync } from '@/commons/utils/noop'
 
 type UpsertHeadlineOfferParams = {
@@ -50,7 +50,7 @@ export function HeadlineOfferContextProvider({
   const { mutate } = useSWRConfig()
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
-  const location = useLocation()
+  const selectedVenue = useAppSelector(ensureSelectedVenue)
 
   const { data } = useSWR([GET_VENUES_QUERY_KEY, selectedOffererId], () =>
     api.getVenues(null, null, selectedOffererId)
@@ -100,10 +100,10 @@ export function HeadlineOfferContextProvider({
       )
 
       snackBar.success('Votre offre a été mise à la une !')
-      logEvent(Events.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
-        from: location.pathname,
-        actionType: context.actionType,
+      logEvent(EngagementEvents.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
+        action: context.actionType,
         requiredImageUpload: !!context.requiredImageUpload,
+        venueId: selectedVenue.id,
       })
     } catch {
       snackBar.error(
@@ -126,9 +126,9 @@ export function HeadlineOfferContextProvider({
         )
 
         snackBar.success('Votre offre n’est plus à la une')
-        logEvent(Events.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
-          from: location.pathname,
-          actionType: 'delete',
+        logEvent(EngagementEvents.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
+          action: 'deleted',
+          venueId: selectedVenue.id,
         })
       } catch {
         snackBar.error(

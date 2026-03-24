@@ -5,6 +5,7 @@ import { IndividualOfferContextProvider } from '@/commons/context/IndividualOffe
 import {
   getIndividualOfferFactory,
   getStocksResponseFactory,
+  makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -25,7 +26,14 @@ const renderIndividualOfferMedia = () => {
     <IndividualOfferContextProvider>
       <IndividualOfferPracticalInfos />
     </IndividualOfferContextProvider>,
-    { storeOverrides: { user: { currentUser: sharedCurrentUserFactory() } } }
+    {
+      storeOverrides: {
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedVenue: makeVenueListItem({ id: 2 }),
+        },
+      },
+    }
   )
 }
 

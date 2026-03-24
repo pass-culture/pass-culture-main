@@ -62,8 +62,14 @@ const renderIndividualOfferDescription: RenderComponentFunction<
     ...individualOfferContextValuesFactory(),
     ...params.contextValues,
   }
+  const user = sharedCurrentUserFactory()
   const options: RenderWithProvidersOptions = {
-    user: sharedCurrentUserFactory(),
+    storeOverrides: {
+      user: {
+        currentUser: user,
+        selectedVenue: makeVenueListItem({ id: 2 }),
+      },
+    },
     ...params.options,
   }
 
@@ -156,11 +162,14 @@ describe('<IndividualOfferDescription />', () => {
     }
     const options = {
       storeOverrides: {
-        offerer: {
-          currentOfferer: {
-            id: 1,
-          } as GetOffererResponseModel,
+        user: {
+          selectedVenue: makeVenueListItem({ id: 2 }),
         },
+      },
+      offerer: {
+        currentOfferer: {
+          id: 1,
+        } as GetOffererResponseModel,
       },
     }
 

@@ -12,6 +12,7 @@ import {
   getOfferVenueFactory,
   getStocksResponseFactory,
   individualOfferContextValuesFactory,
+  makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -31,7 +32,14 @@ const renderIndividualOfferTimetable = (
     <IndividualOfferContext.Provider value={contextValue}>
       <IndividualOfferTimetable />
     </IndividualOfferContext.Provider>,
-    { features: features }
+    {
+      features: features,
+      storeOverrides: {
+        user: {
+          selectedVenue: makeVenueListItem({ id: 2 }),
+        },
+      },
+    }
   )
 }
 

@@ -4,7 +4,8 @@ import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
-import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
+import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
+import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { HighlightHome } from './HighlightHome'
@@ -15,7 +16,13 @@ describe('HighlightHome', () => {
   it('should render and pass accessibility checks', async () => {
     vi.spyOn(api, 'getHighlights').mockResolvedValue([])
 
-    const { container } = renderWithProviders(<HighlightHome />)
+    const { container } = renderWithProviders(<HighlightHome />, {
+      storeOverrides: {
+        user: {
+          selectedVenue: makeVenueListItem({ id: 2 }),
+        },
+      },
+    })
 
     expect(
       await screen.findByRole('heading', {
@@ -37,7 +44,13 @@ describe('HighlightHome', () => {
     }))
     vi.spyOn(api, 'getHighlights').mockResolvedValue([])
 
-    renderWithProviders(<HighlightHome />)
+    renderWithProviders(<HighlightHome />, {
+      storeOverrides: {
+        user: {
+          selectedVenue: makeVenueListItem({ id: 2 }),
+        },
+      },
+    })
 
     await userEvent.click(screen.getByText('Parcourir les temps forts'))
 
@@ -47,7 +60,11 @@ describe('HighlightHome', () => {
       })
     ).toBeInTheDocument()
     expect(mockLogEvent).toBeCalledWith(
-      HighlightEvents.HAS_CLICKED_DISCOVER_HIGHLIGHT
+      EngagementEvents.HAS_REQUESTED_HIGHLIGHTS,
+      {
+        venueId: 2,
+        action: 'discover',
+      }
     )
   })
 })

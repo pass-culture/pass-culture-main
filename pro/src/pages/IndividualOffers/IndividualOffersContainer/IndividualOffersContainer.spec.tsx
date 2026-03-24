@@ -18,6 +18,7 @@ import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   listOffersOfferFactory,
+  makeVenueListItem,
   venueListItemFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
@@ -54,6 +55,7 @@ const renderOffers = (
       storeOverrides: {
         user: {
           currentUser: user,
+          selectedVenue: makeVenueListItem({ id: 2 }),
         },
         offerer: currentOffererFactory(),
       },

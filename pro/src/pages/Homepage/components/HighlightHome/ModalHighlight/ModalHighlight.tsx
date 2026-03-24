@@ -5,7 +5,9 @@ import useSWR from 'swr'
 import { api } from '@/apiClient/api'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_HIGHLIGHTS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
-import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
+import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { HighlightDatespanTag } from '@/components/HighlightDatespanTag/HighlightDatespanTag'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
@@ -29,6 +31,7 @@ export const ModalHighlight = ({
   const { data, isLoading } = useSWR([GET_HIGHLIGHTS_QUERY_KEY], () =>
     api.getHighlights()
   )
+  const selectedVenue = useAppSelector(ensureSelectedVenue)
 
   return (
     <DialogBuilder
@@ -100,7 +103,10 @@ export const ModalHighlight = ({
           isExternal
           opensInNewTab
           onClick={() =>
-            logEvent(HighlightEvents.HAS_CLICKED_MORE_INFO_HIGHLIGHT)
+            logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
+              venueId: selectedVenue.id,
+              action: 'seeMoreInfo',
+            })
           }
           label="En savoir plus sur les temps forts"
           variant={ButtonVariant.TERTIARY}
@@ -112,7 +118,10 @@ export const ModalHighlight = ({
           isExternal
           opensInNewTab
           onClick={() =>
-            logEvent(HighlightEvents.HAS_CLICKED_CALENDAR_HIGHLIGHT)
+            logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
+              venueId: selectedVenue.id,
+              action: 'seeCalendar',
+            })
           }
           label="Voir tout le calendrier"
           variant={ButtonVariant.TERTIARY}
@@ -133,7 +142,10 @@ export const ModalHighlight = ({
             to="/offres"
             variant={ButtonVariant.PRIMARY}
             onClick={() =>
-              logEvent(HighlightEvents.HAS_CLICKED_ALL_OFFER_HIGHLIGHT)
+              logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
+                venueId: selectedVenue.id,
+                action: 'goToOffersList',
+              })
             }
             label="Accéder à mes offres"
           />

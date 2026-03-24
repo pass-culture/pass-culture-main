@@ -8,6 +8,7 @@ import {
 import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
+  makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -32,8 +33,14 @@ const renderIndividualOfferSummary: RenderComponentFunction<
     ...individualOfferContextValuesFactory(),
     ...params.contextValues,
   }
+  const user = sharedCurrentUserFactory()
   const options: RenderWithProvidersOptions = {
-    user: sharedCurrentUserFactory(),
+    storeOverrides: {
+      user: {
+        currentUser: user,
+        selectedVenue: makeVenueListItem({ id: 2 }),
+      },
+    },
     ...params.options,
   }
 

@@ -3,17 +3,29 @@ import userEvent from '@testing-library/user-event'
 import { expect, vi } from 'vitest'
 
 import { api } from '@/apiClient/api'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
+import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 import { OfferRecommendationCard } from './OfferRecommendationCard'
+
+const mockLogEvent = vi.fn()
 
 function renderOfferRecommendationCard() {
   return renderWithProviders(
     <>
       <OfferRecommendationCard offerId={769} />
       <SnackBarContainer />
-    </>
+    </>,
+    {
+      storeOverrides: {
+        user: {
+          selectedVenue: makeVenueListItem({ id: 2 }),
+        },
+      },
+    }
   )
 }
 
@@ -60,13 +72,13 @@ describe('OfferRecommendationCard', () => {
     })
   })
 
-  it('should open the modal when clicking the button', async () => {
+  it('should open the modal when clicking the creation button', async () => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+
     vi.spyOn(api, 'getOfferProAdvice').mockResolvedValue({
-      proAdvice: {
-        content: 'C’est génial !',
-        author: 'Jean-Mi',
-        updatedAt: '',
-      },
+      proAdvice: null,
     })
 
     renderOfferRecommendationCard()
@@ -77,5 +89,37 @@ describe('OfferRecommendationCard', () => {
     expect(
       screen.getByRole('heading', { name: 'Ajouter votre recommandation' })
     ).toBeInTheDocument()
+    expect(mockLogEvent).toBeCalledWith(
+      EngagementEvents.HAS_MADE_RECOMMENDATION,
+      { offerId: 769, venueId: 2, action: 'started' }
+    )
+  })
+
+  it('should open the modal when clicking the edition button', async () => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+
+    vi.spyOn(api, 'getOfferProAdvice').mockResolvedValue({
+      proAdvice: {
+        content: 'C’est génial !',
+        author: 'Jean-Mi',
+        updatedAt: '',
+      },
+    })
+
+    renderOfferRecommendationCard()
+    const editButton = await screen.findByRole('button', { name: 'Modifier' })
+    await userEvent.click(editButton)
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: 'Ajouter votre recommandation' })
+      ).toBeInTheDocument()
+    })
+    expect(mockLogEvent).toBeCalledWith(
+      EngagementEvents.HAS_MADE_RECOMMENDATION,
+      { offerId: 769, venueId: 2, action: 'edited' }
+    )
   })
 })
