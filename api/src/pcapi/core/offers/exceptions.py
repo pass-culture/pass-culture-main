@@ -211,11 +211,6 @@ class OfferWithoutImageCanNotBeHeadline(Exception):
         super().__init__("headlineOffer", "Offers without images can not be set to the headline")
 
 
-class CannotRemoveHeadlineOffer(Exception):
-    def __init__(self) -> None:
-        super().__init__("headlineOffer", "Error during removal of this headline offer")
-
-
 class HighlightException(Exception):
     pass
 
