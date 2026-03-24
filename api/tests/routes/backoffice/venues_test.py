@@ -626,7 +626,10 @@ class GetVenueStatsTest(GetEndpointHelper):
             in response_text[0]
         )
         assert "Réservations 876 individuelles 678 collectives" in response_text[1]
-        assert "Chiffre d'affaires 70,48 € Plus de détails" in response_text[2]
+        # 22.12 x 4 past years x 2 (indiv and collective)
+        # + 13.12 for current year x 2 (indiv and collective)
+        total_ca = "203,20"
+        assert f"Chiffre d'affaires {total_ca} € Plus de détails" in response_text[2]
 
     def test_get_venue_not_found(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint, venue_id=1))

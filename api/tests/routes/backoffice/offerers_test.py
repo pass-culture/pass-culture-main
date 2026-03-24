@@ -850,6 +850,12 @@ class UpdateForFraudTest(PostEndpointHelper):
         assert len(offerer.action_history) == 0
 
 
+# 22.12 x 4 past years x 2 (indiv and collective)
+# + 13.12 for current year x 2 (indiv and collective)
+TOTAL_CA = "203,20"
+TOTAL_CA_XPF = 24250
+
+
 class GetOffererStatsTest(GetEndpointHelper):
     endpoint = "backoffice_web.offerer.get_stats"
     endpoint_kwargs = {"offerer_id": 1}
@@ -863,8 +869,8 @@ class GetOffererStatsTest(GetEndpointHelper):
     @pytest.mark.parametrize(
         "venue_factory,expected_revenue_text",
         [
-            (offerers_factories.VenueFactory, "Chiffre d'affaires 70,48 €"),
-            (offerers_factories.CaledonianVenueFactory, "Chiffre d'affaires 70,48 € (8410 CFP)"),
+            (offerers_factories.VenueFactory, f"Chiffre d'affaires {TOTAL_CA} €"),
+            (offerers_factories.CaledonianVenueFactory, f"Chiffre d'affaires {TOTAL_CA} € ({TOTAL_CA_XPF} CFP)"),
         ],
     )
     def test_get_stats(self, authenticated_client, venue_factory, expected_revenue_text):

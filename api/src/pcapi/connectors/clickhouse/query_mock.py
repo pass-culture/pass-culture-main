@@ -1,3 +1,4 @@
+import datetime
 import json
 from dataclasses import dataclass
 from decimal import Decimal
@@ -67,6 +68,35 @@ AGGREGATED_VENUE_REVENUE_WITH_NO_INCOME = [
         expected_collective=Decimal("0"),
     ),
 ]
+
+
+def get_aggregated_revenues(
+    only_collective: bool = False, only_individual: bool = False
+) -> list[MockAggregatedRevenueQueryResult]:
+    """Generate revenues for current year + 4 last years"""
+
+    current_year = datetime.date.today().year
+    results = [
+        MockAggregatedRevenueQueryResult(
+            year=current_year, only_collective=only_collective, only_individual=only_individual
+        )
+    ]
+
+    for delta in range(1, 5):
+        year = current_year - delta
+        results.append(
+            MockAggregatedRevenueQueryResult(
+                year,
+                Decimal("22.12"),
+                Decimal("22.12"),
+                Decimal("22.12"),
+                Decimal("22.12"),
+                only_collective=only_collective,
+                only_individual=only_individual,
+            )
+        )
+
+    return results
 
 
 class MockTotalExpectedRevenueQueryResult:
