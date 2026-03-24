@@ -288,10 +288,10 @@ class GetOffererTest:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue_with_collective_offer = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_with_collective_offer = offerers_factories.VenueFactory(managingOfferer=offerer, publicName="A")
         collective_factories.CollectiveStockFactory(collectiveOffer__venue=venue_with_collective_offer)
 
-        offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_factories.VenueFactory(managingOfferer=offerer, publicName="B")
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
@@ -330,10 +330,10 @@ class GetOffererTest:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue_with_collective_offer = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_with_collective_offer = offerers_factories.VenueFactory(managingOfferer=offerer, publicName="A")
         collective_factories.CollectiveStockFactory(collectiveOffer__venue=venue_with_collective_offer, price=0)
 
-        offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_factories.VenueFactory(managingOfferer=offerer, publicName="B")
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
