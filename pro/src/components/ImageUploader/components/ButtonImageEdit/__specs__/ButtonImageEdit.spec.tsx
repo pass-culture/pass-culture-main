@@ -57,7 +57,6 @@ const renderButtonImageEdit = (props: ButtonImageEditProps) =>
 describe('ButtonImageEdit', () => {
   let props: ButtonImageEditProps
   beforeEach(() => {
-    vi.clearAllMocks()
     props = {
       mode: UploaderModeEnum.OFFER,
       onImageUpload: vi.fn(),

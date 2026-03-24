@@ -72,10 +72,6 @@ describe('apiAdresse', () => {
     global.fetch = vi.fn()
   })
 
-  afterEach(() => {
-    vi.resetAllMocks()
-  })
-
   describe('getDataFromAddressParts', () => {
     it('should return formatted address data when address is found', async () => {
       ;(global.fetch as Mock).mockResolvedValueOnce({

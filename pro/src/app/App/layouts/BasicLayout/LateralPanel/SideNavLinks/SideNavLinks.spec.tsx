@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { type NavItem, SideNavLinks } from './SideNavLinks'
 
@@ -29,10 +29,6 @@ const navItems: NavItem[] = [
 ]
 
 describe('SideNavLinks', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
   it('renders main nav items', () => {
     render(<SideNavLinks navItems={navItems} withSwitchVenueFeature={false} />)
 

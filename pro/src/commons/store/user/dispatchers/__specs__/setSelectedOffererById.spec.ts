@@ -53,11 +53,6 @@ describe('setSelectedOffererById', () => {
     makeVenueListItemLiteResponseModel({ id: 201, managingOffererId: 200 }),
   ]
 
-  beforeEach(() => {
-    vi.resetAllMocks()
-    localStorage.clear()
-  })
-
   it('should early-return when nextCurrentOffererId equals previous currentOfferer id', async () => {
     const apiGetVenuesSpy = vi.spyOn(api, 'getVenuesLite')
     const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')

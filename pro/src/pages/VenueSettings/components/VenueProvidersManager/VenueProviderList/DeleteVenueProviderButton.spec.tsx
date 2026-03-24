@@ -49,7 +49,6 @@ const renderDeleteVenueProviderButton = () => {
 
 describe('DeleteVenueProviderButton', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
     vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
       success: vi.fn(),
       error: snackBarError,

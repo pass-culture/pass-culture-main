@@ -24,10 +24,6 @@ describe('getInitialAdminOffererId', () => {
     getOffererNameFactory({ id: 200 }),
   ]
 
-  beforeEach(() => {
-    vi.resetAllMocks()
-  })
-
   describe('Priority 1: localStorage', () => {
     it('should return saved offerer id when present in offererNamesValidated', () => {
       vi.spyOn(localStorageManager, 'getItem').mockReturnValue('100')

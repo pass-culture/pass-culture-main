@@ -32,7 +32,6 @@ const mockInvoice: InvoiceResponseV2Model = {
 }
 
 beforeEach(() => {
-  vi.clearAllMocks()
   vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
     success: vi.fn(),
     error: snackBarError,

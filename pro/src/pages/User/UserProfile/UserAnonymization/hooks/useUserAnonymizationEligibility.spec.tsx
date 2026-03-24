@@ -17,10 +17,6 @@ vi.mock('@/apiClient/api', () => ({
 describe('useUserAnonymizationEligibility', () => {
   const useSWRMock = vi.mocked(useSWR)
 
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
   it('should return false while loading eligibility', () => {
     useSWRMock.mockReturnValue({
       data: undefined,

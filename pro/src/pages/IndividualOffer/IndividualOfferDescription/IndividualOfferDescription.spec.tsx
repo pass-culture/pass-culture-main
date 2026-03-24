@@ -78,10 +78,6 @@ const renderIndividualOfferDescription: RenderComponentFunction<
 describe('<IndividualOfferDescription />', () => {
   const useSWRMock = vi.mocked(useSWR)
 
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
   it('should render spinner when venues are loading', () => {
     useSWRMock.mockReturnValue({
       isLoading: true,

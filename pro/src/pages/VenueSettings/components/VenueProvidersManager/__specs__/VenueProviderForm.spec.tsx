@@ -62,8 +62,6 @@ const renderVenueProviderForm = (
 
 describe('VenueProviderForm', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-
     vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
       success: snackBarSuccess,
       error: snackBarError,

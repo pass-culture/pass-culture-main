@@ -9,10 +9,6 @@ vi.mock('react-router', async () => ({
 }))
 
 describe('useQueryCollectiveSearchFilters', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
   it('should return status as an array if status is a string in the URL', () => {
     // @ts-expect-error
     reactRouter.useLocation.mockReturnValue({

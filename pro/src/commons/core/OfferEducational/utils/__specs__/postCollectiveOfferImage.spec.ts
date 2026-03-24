@@ -49,12 +49,7 @@ describe('postCollectiveOfferImage', () => {
   })
 
   beforeEach(() => {
-    vi.clearAllMocks()
     global.fetch = vi.fn()
-  })
-
-  afterEach(() => {
-    vi.resetAllMocks()
   })
 
   it('should show error when fetch fails', async () => {

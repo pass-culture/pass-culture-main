@@ -18,10 +18,6 @@ function getLocalStorageManagerMock(initialValue?: Record<string, unknown>) {
 const CURRENT_VENUE_ID = 12
 const OTHER_VENUE_ID = 34
 
-beforeEach(() => {
-  vi.resetAllMocks()
-})
-
 describe('getInitialTab', () => {
   it('should not use localStorage if venue only does either individual or collective', () => {
     const localStorageManagerMock = getLocalStorageManagerMock()

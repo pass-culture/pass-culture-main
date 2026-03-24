@@ -46,11 +46,6 @@ describe('PartnerPages', () => {
     })
   })
 
-  afterEach(() => {
-    vi.spyOn(api, 'getVenue').mockReset()
-    localStorage.clear()
-  })
-
   describe('when the user has only one venue', () => {
     it('should not display select', async () => {
       renderPartnerPages({

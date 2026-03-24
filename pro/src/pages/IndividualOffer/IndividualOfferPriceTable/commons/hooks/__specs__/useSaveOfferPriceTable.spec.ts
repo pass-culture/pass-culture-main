@@ -85,8 +85,6 @@ describe('useSaveOfferPriceTable', () => {
   const snackBarSuccess = vi.fn()
 
   beforeEach(async () => {
-    vi.clearAllMocks()
-
     const snackBarsImport = (await vi.importActual(
       '@/commons/hooks/useSnackBar'
     )) as ReturnType<typeof useSnackBar.useSnackBar>

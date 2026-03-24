@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { axe } from 'vitest-axe'
 
 import { type Column, Table, TableVariant } from './Table'
@@ -72,10 +72,6 @@ function renderTable(
 }
 
 describe('<Table />', () => {
-  beforeEach(() => {
-    vi.resetAllMocks()
-  })
-
   it('renders loading skeletons when isLoading is true', () => {
     renderTable({ data: [], isLoading: true })
     expect(

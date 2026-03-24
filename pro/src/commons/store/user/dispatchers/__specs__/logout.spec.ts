@@ -19,9 +19,6 @@ describe('logout', () => {
   const windowLocationHrefMock = vi.fn()
 
   beforeEach(() => {
-    vi.resetAllMocks()
-    localStorage.clear()
-
     vi.spyOn(window, 'location', 'get').mockReturnValue({
       ...window.location,
       get href() {

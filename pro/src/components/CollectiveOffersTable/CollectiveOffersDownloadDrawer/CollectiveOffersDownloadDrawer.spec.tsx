@@ -53,10 +53,6 @@ const renderCollectiveOffersDownloadDrawer = ({
 }
 
 describe('CollectiveOffersDownloadDrawer', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
   it('should render download button with drawer action', async () => {
     const { user } = renderCollectiveOffersDownloadDrawer()
 

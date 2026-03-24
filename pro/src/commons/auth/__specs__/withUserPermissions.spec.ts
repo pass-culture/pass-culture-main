@@ -62,10 +62,6 @@ const createMockLoaderArgs = (url: string): LoaderFunctionArgs =>
   }) as LoaderFunctionArgs
 
 describe('withUserPermissions', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
   describe('without WIP_SWITCH_VENUE feature flag', () => {
     it('should execute the original loader without permission check', () => {
       setupStore({ isFeatureActive: false })

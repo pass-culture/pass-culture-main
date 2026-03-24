@@ -28,7 +28,6 @@ describe('handleError', () => {
 
   afterEach(() => {
     rootStore.dispatch(clearList())
-    vi.clearAllMocks()
   })
 
   it('dispatches a notification, logs to Sentry & console', () => {

@@ -244,10 +244,6 @@ describe('IndividualOfferSummaryScreen', () => {
     )
   })
 
-  afterEach(() => {
-    vi.clearAllMocks()
-  })
-
   const expectOfferFields = async () => {
     expect(await screen.findByText('Description')).toBeInTheDocument()
     expect(screen.getByText('Type d’offre')).toBeInTheDocument()

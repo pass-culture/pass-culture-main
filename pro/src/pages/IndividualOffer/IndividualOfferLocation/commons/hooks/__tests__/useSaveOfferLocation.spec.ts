@@ -56,7 +56,6 @@ describe('useSaveOfferLocation', () => {
   let notificationMock: ReturnType<typeof useSnackBar>
 
   beforeEach(() => {
-    vi.clearAllMocks()
     vi.mocked(api.patchOffer).mockResolvedValue(offerBase)
     vi.mocked(getIndividualOfferUrl).mockReturnValue('/mock-url')
     vi.mocked(useLocation).mockReturnValue({

@@ -13,8 +13,6 @@ const mockFocus = vi.fn()
 
 describe('DisplayOfferInAppLink', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-
     vi.spyOn(window, 'open').mockReturnValue({
       focus: mockFocus,
     } as unknown as Window)

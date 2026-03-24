@@ -24,11 +24,6 @@ vi.mock('@/commons/errors/handleError', () => ({
 }))
 
 describe('setSelectedAdminOffererById', () => {
-  beforeEach(() => {
-    vi.resetAllMocks()
-    localStorage.clear()
-  })
-
   describe('when called with an offerer ID', () => {
     it('should fetch the offerer and update the state', async () => {
       const offerer = {

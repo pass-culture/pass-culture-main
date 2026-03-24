@@ -67,10 +67,6 @@ const LABEL = {
 }
 
 describe('StocksCalendar', () => {
-  afterEach(() => {
-    vi.resetAllMocks()
-  })
-
   it('should display a button to add calendar infos when there are no stocks yet', async () => {
     renderStocksCalendar([], {
       offer: getIndividualOfferFactory({
