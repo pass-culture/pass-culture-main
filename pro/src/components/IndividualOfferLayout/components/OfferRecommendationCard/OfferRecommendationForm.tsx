@@ -118,70 +118,76 @@ export function OfferRecommendationForm({
         className={styles['form']}
         noValidate
       >
-        <p className={styles['subtitle']}>
-          Les jeunes sont sensibles aux recommandations de professionnels. En
-          ajoutant la vôtre, votre offre augmente ses chances d’être visualisée.
-        </p>
-        <div className={styles['form-content']}>
-          <TextArea
-            {...register('content')}
-            label="Recommandation"
-            required
-            maxLength={800}
-            error={errors.content?.message}
-          />
-
-          <TextInput
-            {...register('author')}
-            label="Recommandée par :"
-            maxCharactersCount={20}
-            error={errors.author?.message}
-          />
-          <p className={styles['form-cgu']}>
-            En publiant cette recommandation, vous acceptez qu’elle soit
-            diffusée sur l’application conformément à nos{' '}
-            <span className={styles['cgu-link']}>
-              <Button
-                as="a"
-                variant={ButtonVariant.TERTIARY}
-                isExternal
-                opensInNewTab
-                to={CGU_LINK}
-                color={ButtonColor.NEUTRAL}
-                size={ButtonSize.SMALL}
-                label={'conditions générales d’utilisation.'}
+        <div className={styles['form-subcontainer']}>
+          <div className={styles['form-content-container']}>
+            <p className={styles['subtitle']}>
+              Les jeunes sont sensibles aux recommandations de professionnels.
+              En ajoutant la vôtre, votre offre augmente ses chances d’être
+              visualisée.
+            </p>
+            <div className={styles['form-content']}>
+              <TextArea
+                {...register('content')}
+                label="Recommandation"
+                required
+                maxLength={800}
+                error={errors.content?.message}
               />
-            </span>
-          </p>
+
+              <TextInput
+                {...register('author')}
+                label="Recommandée par :"
+                maxCharactersCount={20}
+                error={errors.author?.message}
+              />
+              <p className={styles['form-cgu']}>
+                En publiant cette recommandation, vous acceptez qu’elle soit
+                diffusée sur l’application conformément à nos{' '}
+                <span className={styles['cgu-link']}>
+                  <Button
+                    as="a"
+                    variant={ButtonVariant.TERTIARY}
+                    isExternal
+                    opensInNewTab
+                    to={CGU_LINK}
+                    color={ButtonColor.NEUTRAL}
+                    size={ButtonSize.SMALL}
+                    label={'conditions générales d’utilisation.'}
+                  />
+                </span>
+              </p>
+            </div>
+            {proAdvice && (
+              <div className={styles['form-delete']}>
+                <Button
+                  variant={ButtonVariant.TERTIARY}
+                  color={ButtonColor.NEUTRAL}
+                  onClick={onDelete}
+                  label="Supprimer la recommandation"
+                  icon={fullTrashIcon}
+                />
+              </div>
+            )}
+          </div>
+          <div className={styles['form-footer-container']}>
+            <DialogBuilder.Footer>
+              <div className={styles['form-footer']}>
+                <Dialog.Close asChild>
+                  <Button
+                    variant={ButtonVariant.SECONDARY}
+                    color={ButtonColor.NEUTRAL}
+                    label="Fermer"
+                  />
+                </Dialog.Close>
+                <Button
+                  type="submit"
+                  isLoading={isSubmitting}
+                  label="Enregistrer la recommandation"
+                />
+              </div>
+            </DialogBuilder.Footer>
+          </div>
         </div>
-        {proAdvice && (
-          <div className={styles['form-delete']}>
-            <Button
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
-              onClick={onDelete}
-              label="Supprimer la recommandation"
-              icon={fullTrashIcon}
-            />
-          </div>
-        )}
-
-        <DialogBuilder.Footer>
-          <div className={styles['form-footer']}>
-            <Dialog.Close asChild>
-              <Button
-                variant={ButtonVariant.SECONDARY}
-                color={ButtonColor.NEUTRAL}
-                label="Fermer"
-              />
-            </Dialog.Close>
-            <Button
-              type="submit"
-              isLoading={isSubmitting}
-              label="Enregistrer la recommandation"
-            />
-          </div>
-        </DialogBuilder.Footer>
       </form>
     </FormProvider>
   )
