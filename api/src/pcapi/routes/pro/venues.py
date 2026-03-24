@@ -1,6 +1,7 @@
 from functools import partial
 
 import flask
+import pydantic
 import pydantic.v1 as pydantic_v1
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -82,7 +83,7 @@ def get_venue(venue_id: int) -> venue_serialize.GetVenueResponseModel:
         flask.abort(404)
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
-    return venue_serialize.GetVenueResponseModel.from_orm(venue)
+    return venue_serialize.GetVenueResponseModel.build(venue)
 
 
 @private_api.route("/venues", methods=["GET"])
@@ -240,7 +241,7 @@ def edit_venue_collective_data(
     update_venue_attrs = body.dict(exclude_unset=True)
     venue = offerers_api.update_venue_collective_data(venue, **update_venue_attrs)
 
-    return venue_serialize.GetVenueResponseModel.from_orm(venue)
+    return venue_serialize.GetVenueResponseModel.build(venue)
 
 
 @private_api.route("/venues/<int:venue_id>/pricing-point", methods=["POST"])
@@ -265,6 +266,7 @@ def upsert_venue_banner(venue_id: int) -> venue_serialize.GetVenueResponseModel:
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
+    # TODO bulle doleances erreurs propres? pk reecrire? ou alors integrer direct dans serialization?
     try:
         venue_banner = venue_banners_serialize.VenueBannerContentModel.from_request(request)
     except exceptions.InvalidVenueBannerContent as err:
@@ -273,7 +275,8 @@ def upsert_venue_banner(venue_id: int) -> venue_serialize.GetVenueResponseModel:
     except exceptions.VenueBannerTooBig as err:
         content = {"code": "BANNER_TOO_BIG", "message": str(err)}
         raise ApiErrors(content, status_code=400)
-    except pydantic_v1.ValidationError as err:
+    # except pydantic_v1.ValidationError as err:
+    except pydantic.ValidationError as err:
         locations = ", ".join(str(loc) for e in err.errors() for loc in e["loc"])
         content = {"code": "INVALID_BANNER_PARAMS", "message": locations}
         raise ApiErrors(content, status_code=400)
@@ -286,7 +289,7 @@ def upsert_venue_banner(venue_id: int) -> venue_serialize.GetVenueResponseModel:
         crop_params=venue_banner.crop_params,
     )
 
-    return venue_serialize.GetVenueResponseModel.from_orm(venue)
+    return venue_serialize.GetVenueResponseModel.build(venue)
 
 
 @private_api.route("/venues/<int:venue_id>/banner", methods=["DELETE"])

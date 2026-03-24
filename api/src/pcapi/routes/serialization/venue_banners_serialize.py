@@ -1,6 +1,8 @@
 import typing
 from io import BytesIO
 
+import pydantic
+from pydantic import model_validator
 import pydantic.v1 as pydantic_v1
 from PIL import Image
 from pydantic.v1 import root_validator
@@ -11,8 +13,31 @@ from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
 from pcapi.core.offers.validation import ACCEPTED_THUMBNAIL_FORMATS
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.utils.image_conversion import CropParam
+from pcapi.utils.image_conversion import CropPercent
 from pcapi.utils.image_conversion import CropParams
+from pcapi.utils.image_conversion import CropParamsV2
+
+
+class BannerMetaModelV2(HttpBodyModel):
+    # TODO bulle: a supprimer
+    original_image_url: str | None = None  # TODO: move to HttpUrl ?
+    crop_params: CropParamsV2 = CropParamsV2()
+
+    model_config = pydantic.ConfigDict(
+        alias_generator=None,
+        extra="ignore",
+    )
+
+    # @pydantic.field_validator("crop_params", mode="")
+    # def validate_crop_params(cls, raw_crop_params: CropParamsV2 | None) -> CropParamsV2:
+    #     """
+    #     Old venues might have a crop_params key with a null value
+    #     """
+    #     if not raw_crop_params:
+    #         return CropParamsV2()
+    #     return raw_crop_params
 
 
 class BannerMetaModel(BaseModel):
@@ -31,25 +56,29 @@ class BannerMetaModel(BaseModel):
         return raw_crop_params
 
 
-class VenueBannerContentModel(BaseModel):
-    if typing.TYPE_CHECKING:  # https://github.com/pydantic/pydantic/issues/156
-        content: bytes
-    else:
-        content: pydantic_v1.conbytes(min_length=2, max_length=VENUE_BANNER_MAX_SIZE)
-    image_credit: offerers_schemas.VenueImageCredit | None
+# TODO bulle chgt de banniere recoit toue la venue juste pour une image, normal?
+class VenueBannerContentModel(HttpBodyModel):
+    # TODO bulle: a supprimer?
+    model_config = pydantic.ConfigDict(extra="ignore")
+    content: typing.Annotated[
+        bytes,
+        pydantic.Field(min_length=2, max_length=VENUE_BANNER_MAX_SIZE),
+    ]
+    image_credit: (
+        typing.Annotated[
+            str, pydantic.AfterValidator(lambda x: str.strip(x)), pydantic.Field(min_length=1, max_length=255)
+        ]
+        | None
+    ) = None
 
     # cropping parameters must be a % (between 0 and 1) of the original
     # bottom right corner and the original height
-    x_crop_percent: CropParam
-    y_crop_percent: CropParam
-    height_crop_percent: CropParam
-    width_crop_percent: CropParam
+    x_crop_percent: CropPercent = 0.0
+    y_crop_percent: CropPercent = 0.0
+    height_crop_percent: CropPercent = 1.0
+    width_crop_percent: CropPercent = 1.0
 
-    class Config:
-        extra = pydantic_v1.Extra.forbid
-        anystr_strip_whitespace = True
-
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     @classmethod
     def validate_banner(cls, values: dict) -> dict:
         """
@@ -72,24 +101,9 @@ class VenueBannerContentModel(BaseModel):
 
     @classmethod
     def from_request(cls, request: typing.Any) -> "VenueBannerContentModel":
-        cls.validate_request(request)
-
-        file = request.files["banner"]
-        return VenueBannerContentModel(
-            content=file.read(VENUE_BANNER_MAX_SIZE),
-            image_credit=request.args.get("image_credit"),
-            x_crop_percent=request.args.get("x_crop_percent"),
-            y_crop_percent=request.args.get("y_crop_percent"),
-            height_crop_percent=request.args.get("height_crop_percent"),
-            width_crop_percent=request.args.get("width_crop_percent"),
-        )
-
-    @classmethod
-    def validate_request(cls, request: typing.Any) -> typing.Any:
         """
         If the request has a content_lenght information, use directly to
-        avoid reading the whole content to check its size. If not, do not
-        consider this a an error: it will be checked later.
+        avoid reading the whole content to check its size.
         """
         try:
             file = request.files["banner"]
@@ -99,14 +113,21 @@ class VenueBannerContentModel(BaseModel):
         if file.content_length and file.content_length > VENUE_BANNER_MAX_SIZE:
             raise exceptions.VenueBannerTooBig(f"Image trop grande, max: {VENUE_BANNER_MAX_SIZE / 1_000}Ko")
 
-        return request
+        return VenueBannerContentModel(
+            content=file.read(VENUE_BANNER_MAX_SIZE),
+            image_credit=request.args.get("image_credit"),
+            x_crop_percent=request.args.get("x_crop_percent"),
+            y_crop_percent=request.args.get("y_crop_percent"),
+            height_crop_percent=request.args.get("height_crop_percent"),
+            width_crop_percent=request.args.get("width_crop_percent"),
+        )
 
     @property
-    def crop_params(self) -> CropParams | None:
+    def crop_params(self) -> CropParamsV2 | None:
         if {self.x_crop_percent, self.y_crop_percent, self.height_crop_percent, self.width_crop_percent} == {None}:
             return None
 
-        return CropParams(
+        return CropParamsV2(
             x_crop_percent=self.x_crop_percent,
             y_crop_percent=self.y_crop_percent,
             height_crop_percent=self.height_crop_percent,
