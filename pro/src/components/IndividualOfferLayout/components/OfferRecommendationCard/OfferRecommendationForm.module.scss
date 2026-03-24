@@ -3,9 +3,6 @@
 .form {
   display: flex;
   flex: 1;
-  flex-direction: column;
-  height: 100%;
-  gap: var(--size-spacing-xxl);
 }
 
 .form-content {
@@ -33,7 +30,24 @@
 }
 
 .form-footer {
-  flex-shrink: 0;
   display: flex;
   gap: var(--size-spacing-xl);
+}
+
+.form-subcontainer {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.form-content-container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  height: 100%;
+  gap: var(--size-spacing-xxl);
+}
+
+.form-footer-container {
+  flex: 0;
 }
