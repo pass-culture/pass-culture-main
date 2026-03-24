@@ -2869,7 +2869,7 @@
                     "screenZoomLevel": {
                         "anyOf": [
                             {
-                                "type": "integer"
+                                "type": "number"
                             },
                             {
                                 "type": "null"

@@ -789,11 +789,13 @@ class AccountCreationTest:
                 "os": "iOS",
                 "fontScale": 1.2,
                 "resolution": "603x783",
-                "screenZoomLevel": 2,
+                "screenZoomLevel": 2.2,
             },
         }
 
-        client.post("/native/v1/account", json=data)
+        response = client.post("/native/v1/account", json=data)
+
+        assert response.status_code == 204, response.json
 
         trusted_device = db.session.query(users_models.TrustedDevice).one()
 
