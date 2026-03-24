@@ -153,6 +153,7 @@ class ExternalFinanceTest:
                 external_settlement_id="0032596",
                 invoice_external_reference=invoice.reference,
                 settlement_type=SettlementType.PAYMENT,
+                settlement_batch_external_id=existing_settlement.batch.externalId,
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
                 settlement_date=date_utils.get_naive_utc_now().date(),
@@ -164,6 +165,7 @@ class ExternalFinanceTest:
                 external_settlement_id="0032596",
                 invoice_external_reference=invoice.reference,
                 settlement_type=SettlementType.VOIDED_PAYMENT,
+                settlement_batch_external_id=existing_settlement.batch.externalId,
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
                 settlement_date=date_utils.get_naive_utc_now().date(),
@@ -175,6 +177,7 @@ class ExternalFinanceTest:
                 external_settlement_id="0032598",
                 invoice_external_reference=invoice.reference,
                 settlement_type=SettlementType.PAYMENT,
+                settlement_batch_external_id=existing_settlement.batch.externalId,
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
                 settlement_date=date_utils.get_naive_utc_now().date(),
@@ -186,6 +189,7 @@ class ExternalFinanceTest:
                 external_settlement_id="0052634",
                 invoice_external_reference=other_invoice.reference,
                 settlement_type=SettlementType.PAYMENT,
+                settlement_batch_external_id=existing_settlement.batch.externalId,
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
                 settlement_date=date_utils.get_naive_utc_now().date(),
@@ -197,6 +201,7 @@ class ExternalFinanceTest:
                 external_settlement_id="0052634",
                 invoice_external_reference=another_invoice.reference,
                 settlement_type=SettlementType.PAYMENT,
+                settlement_batch_external_id=existing_settlement.batch.externalId,
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
                 settlement_date=date_utils.get_naive_utc_now().date(),
@@ -208,6 +213,7 @@ class ExternalFinanceTest:
                 external_settlement_id=existing_settlement.externalSettlementId,
                 invoice_external_reference=additional_invoice.reference,
                 settlement_type=SettlementType.VOIDED_PAYMENT,
+                settlement_batch_external_id=existing_settlement.batch.externalId,
                 settlement_batch_name=existing_settlement.batch.name,
                 settlement_batch_label=existing_settlement.batch.label,
                 settlement_date=date_utils.get_naive_utc_now().date(),
@@ -289,6 +295,48 @@ class ExternalFinanceTest:
         assert additional_invoice.status == finance_models.InvoiceStatus.PENDING_PAYMENT
         assert additional_bank_account.venueLinks[0].timespan.upper is not None
 
+    def test_get_settlements_create_new_batch(self):
+        bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount
+        invoice = finance_factories.InvoiceFactory(
+            bankAccount=bank_account,
+            cashflows=[finance_factories.CashflowFactory()],
+            status=finance_models.InvoiceStatus.PENDING_PAYMENT,
+        )
+        yesterday_datetime = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
+        yesterday_date = yesterday_datetime.date()
+
+        with patch(
+            "pcapi.core.finance.backend.dummy.DummyFinanceBackend.get_settlements",
+            return_value=[
+                SettlementPayload(
+                    bank_account_id=bank_account.id,
+                    external_settlement_id="0032596",
+                    invoice_external_reference=invoice.reference,
+                    settlement_type=SettlementType.PAYMENT,
+                    settlement_batch_external_id="123456",
+                    settlement_batch_name="VIR123",
+                    settlement_batch_label="VIR123 Label",
+                    settlement_date=yesterday_date,
+                    settlement_creation_date=yesterday_datetime,
+                    amount=10000,
+                )
+            ],
+        ):
+            external.sync_settlements(yesterday_date, yesterday_date)
+
+        settlement_batch = db.session.query(finance_models.SettlementBatch).one()
+        assert settlement_batch.externalId == "123456"
+        assert settlement_batch.name == "VIR123"
+        assert settlement_batch.label == "VIR123 Label"
+
+        settlement = db.session.query(finance_models.Settlement).one()
+        assert settlement.invoices == [invoice]
+        assert settlement.settlementDate == yesterday_date
+        assert settlement.batch == settlement_batch
+
+        assert invoice.status == finance_models.InvoiceStatus.PAID
+        assert bank_account.venueLinks[0].timespan.upper is None
+
     def test_get_settlements_ignore_when_no_bank_account_found(self, caplog):
         invoice = finance_factories.InvoiceFactory()
         settlement_batch = finance_factories.SettlementBatchFactory()
@@ -301,6 +349,7 @@ class ExternalFinanceTest:
                 external_settlement_id="0032596",
                 invoice_external_reference=invoice.reference,
                 settlement_type=SettlementType.PAYMENT,
+                settlement_batch_external_id=settlement_batch.externalId,
                 settlement_batch_name=settlement_batch.name,
                 settlement_batch_label=settlement_batch.label,
                 settlement_date=now.date(),
@@ -333,6 +382,7 @@ class ExternalFinanceTest:
                 external_settlement_id="0032597",
                 invoice_external_reference="FINCONNUE",
                 settlement_type=SettlementType.PAYMENT,
+                settlement_batch_external_id=settlement_batch.externalId,
                 settlement_batch_name=settlement_batch.name,
                 settlement_batch_label=settlement_batch.label,
                 settlement_date=now.date(),
@@ -371,6 +421,7 @@ class ExternalFinanceTest:
                 external_settlement_id="0032597",
                 invoice_external_reference=invoice.reference,
                 settlement_type=SettlementType.PAYMENT,
+                settlement_batch_external_id=finance_backend_constants.MISSING_BATCH_EXTERNAL_ID_VALUE,
                 settlement_batch_name=finance_backend_constants.MISSING_BATCH_NAME_VALUE,
                 settlement_batch_label=finance_backend_constants.MISSING_BATCH_LABEL_VALUE,
                 settlement_date=now.date(),
@@ -404,6 +455,7 @@ class ExternalFinanceTest:
                 external_settlement_id="0032597",
                 invoice_external_reference=invoice.reference,
                 settlement_type=SettlementType.VOIDED_PAYMENT,
+                settlement_batch_external_id=settlement_batch.externalId,
                 settlement_batch_name=settlement_batch.name,
                 settlement_batch_label=settlement_batch.label,
                 settlement_date=now.date(),

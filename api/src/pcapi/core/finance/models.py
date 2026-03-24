@@ -1057,8 +1057,9 @@ class Settlement(PcObject, Model):
 
 class SettlementBatch(PcObject, Model):
     __tablename__ = "settlement_batch"
-    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, unique=True)
-    label: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, unique=True)
+    externalId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, index=True, unique=True)
+    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+    label: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
     settlements: sa_orm.Mapped[list["Cashflow"]] = sa_orm.relationship(
         "Settlement", foreign_keys="Settlement.batchId", back_populates="batch"
     )
