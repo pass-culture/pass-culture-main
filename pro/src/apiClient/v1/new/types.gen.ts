@@ -182,16 +182,6 @@ export type AttachImageResponseModel = {
 };
 
 /**
- * AudioDisabilityModel
- */
-export type AudioDisabilityModel = {
-    /**
-     * Deafandhardofhearing
-     */
-    deafAndHardOfHearing?: Array<string>;
-};
-
-/**
  * AudioDisabilityModelV2
  */
 export type AudioDisabilityModelV2 = {
@@ -1663,44 +1653,6 @@ export type EventStocksBulkUpdateBodyModel = {
      * Stocks
      */
     stocks: Array<EventStockUpdateBodyModel>;
-};
-
-/**
- * ExternalAccessibilityDataModel
- */
-export type ExternalAccessibilityDataModel = {
-    /**
-     * Audiodisability
-     */
-    audioDisability?: AudioDisabilityModel;
-    /**
-     * Isaccessibleaudiodisability
-     */
-    isAccessibleAudioDisability?: boolean;
-    /**
-     * Isaccessiblementaldisability
-     */
-    isAccessibleMentalDisability?: boolean;
-    /**
-     * Isaccessiblemotordisability
-     */
-    isAccessibleMotorDisability?: boolean;
-    /**
-     * Isaccessiblevisualdisability
-     */
-    isAccessibleVisualDisability?: boolean;
-    /**
-     * Mentaldisability
-     */
-    mentalDisability?: MentalDisabilityModel;
-    /**
-     * Motordisability
-     */
-    motorDisability?: MotorDisabilityModel;
-    /**
-     * Visualdisability
-     */
-    visualDisability?: VisualDisabilityModel;
 };
 
 /**
@@ -4453,16 +4405,6 @@ export type ManagedVenue = {
 };
 
 /**
- * MentalDisabilityModel
- */
-export type MentalDisabilityModel = {
-    /**
-     * Trainedpersonnel
-     */
-    trainedPersonnel?: string;
-};
-
-/**
  * MentalDisabilityModelV2
  */
 export type MentalDisabilityModelV2 = {
@@ -4522,28 +4464,6 @@ export type MinimalPostOfferBodyModel = {
      * Visualdisabilitycompliant
      */
     visualDisabilityCompliant: boolean;
-};
-
-/**
- * MotorDisabilityModel
- */
-export type MotorDisabilityModel = {
-    /**
-     * Entrance
-     */
-    entrance?: string;
-    /**
-     * Exterior
-     */
-    exterior?: string;
-    /**
-     * Facilities
-     */
-    facilities?: string;
-    /**
-     * Parking
-     */
-    parking?: string;
 };
 
 /**
@@ -6525,20 +6445,17 @@ export type VenueListItemLiteResponseModel = {
  * VenueListItemResponseModel
  */
 export type VenueListItemResponseModel = {
-    activity?: DisplayableActivity;
+    activity: DisplayableActivity | null;
     /**
      * Audiodisabilitycompliant
      */
-    audioDisabilityCompliant?: boolean;
-    bankAccountStatus?: SimplifiedBankAccountStatus;
+    audioDisabilityCompliant: boolean | null;
+    bankAccountStatus: SimplifiedBankAccountStatus | null;
     /**
      * Bookingemail
      */
-    bookingEmail?: string;
-    /**
-     * ExternalAccessibilityDataModel
-     */
-    externalAccessibilityData?: ExternalAccessibilityDataModel;
+    bookingEmail: string | null;
+    externalAccessibilityData: ExternalAccessibilityDataModelV2 | null;
     /**
      * Hascreatedoffer
      */
@@ -6571,10 +6488,7 @@ export type VenueListItemResponseModel = {
      * Isvirtual
      */
     isVirtual: boolean;
-    /**
-     * LocationResponseModel
-     */
-    location?: LocationResponseModel;
+    location: LocationResponseModelV2 | null;
     /**
      * Managingoffererid
      */
@@ -6582,11 +6496,11 @@ export type VenueListItemResponseModel = {
     /**
      * Mentaldisabilitycompliant
      */
-    mentalDisabilityCompliant?: boolean;
+    mentalDisabilityCompliant: boolean | null;
     /**
      * Motordisabilitycompliant
      */
-    motorDisabilityCompliant?: boolean;
+    motorDisabilityCompliant: boolean | null;
     /**
      * Name
      */
@@ -6602,15 +6516,15 @@ export type VenueListItemResponseModel = {
     /**
      * Siret
      */
-    siret?: string;
+    siret: string | null;
     /**
      * Visualdisabilitycompliant
      */
-    visualDisabilityCompliant?: boolean;
+    visualDisabilityCompliant: boolean | null;
     /**
      * Withdrawaldetails
      */
-    withdrawalDetails?: string;
+    withdrawalDetails: string | null;
 };
 
 /**
@@ -6780,20 +6694,6 @@ export type VideoMetatdataQueryModel = {
      * Videourl
      */
     videoUrl: string;
-};
-
-/**
- * VisualDisabilityModel
- */
-export type VisualDisabilityModel = {
-    /**
-     * Audiodescription
-     */
-    audioDescription?: Array<string>;
-    /**
-     * Soundbeacon
-     */
-    soundBeacon?: string;
 };
 
 /**
