@@ -145,6 +145,30 @@ describe('DownloadBookingModal', () => {
     })
   })
 
+  it('should display an error when submitting without selecting a date', async () => {
+    render([
+      {
+        eventDate: '2022-01-01',
+        scheduleCount: 1,
+        priceCategoriesCount: 1,
+      },
+      {
+        eventDate: '2022-01-02',
+        scheduleCount: 5,
+        priceCategoriesCount: 3,
+      },
+    ])
+
+    const downloadCsvButton = screen.getByRole('button', {
+      name: 'Télécharger format CSV',
+    })
+    await userEvent.click(downloadCsvButton)
+
+    expect(
+      await screen.findByText('Vous devez sélectionner une date')
+    ).toBeInTheDocument()
+  })
+
   it('should download all bookings as Excel', async () => {
     vi.spyOn(api, 'exportBookingsForOfferAsExcel').mockResolvedValueOnce({})
     vi.spyOn(useAnalytics, 'useAnalytics').mockReturnValue({
