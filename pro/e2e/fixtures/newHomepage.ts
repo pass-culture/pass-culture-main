@@ -103,6 +103,8 @@ type CollectiveModule =
   | 'DMS_CARD_ACCEPTED_BANNER'
   | 'COLLECTIVE_OFFER_TEMPLATES_CARD'
   | 'COLLECTIVE_OFFERS_CARD'
+  | 'COLLECTIVE_OFFER_TEMPLATES_EMPTY_STATE_CARD'
+  | 'COLLECTIVE_OFFERS_EMPTY_STATE_CARD'
   | 'INCOME_CARD'
   | 'ADAGE_PAGE_CARD'
   | 'NEWSLETTER_CARD'
@@ -126,13 +128,29 @@ export async function expectCollectiveModules(
   )
 
   await expectModuleVisibility(
-    page.getByText('Module gestion offres vitrines'),
+    page.getByText(/offres vitrines/),
     visibleModules.includes('COLLECTIVE_OFFER_TEMPLATES_CARD')
   )
 
   await expectModuleVisibility(
-    page.getByText('Module gestion offres réservables'),
+    page.getByText(/offres réservables/),
     visibleModules.includes('COLLECTIVE_OFFERS_CARD')
+  )
+
+  await expectModuleVisibility(
+    page.getByRole('heading', {
+      level: 2,
+      name: 'Rendre vos offres visibles à tous les établissements scolaires sur ADAGE',
+    }),
+    visibleModules.includes('COLLECTIVE_OFFER_TEMPLATES_EMPTY_STATE_CARD')
+  )
+
+  await expectModuleVisibility(
+    page.getByRole('heading', {
+      level: 2,
+      name: 'Adresser une offre réservable à un établissement scolaire',
+    }),
+    visibleModules.includes('COLLECTIVE_OFFERS_EMPTY_STATE_CARD')
   )
 
   await expectModuleVisibility(

@@ -3,30 +3,6 @@
 @use "styles/mixins/_a11y.scss" as a11y;
 @use "styles/mixins/_rem.scss" as rem;
 
-/**
- * TODO (mdesquilbet-pass, 2026-02-16): clean tmp style
- *      (used to display tmp cards while waiting for real ones)
- */
-.container > * {
-  width: 100%;
-}
-
-.top > * {
-  height: auto;
-}
-
-.main > * {
-  width: 100%;
-  min-width: 300px;
-  min-height: 200px;
-}
-
-.side > * {
-  width: 100%;
-  min-width: 200px;
-  min-height: 150px;
-}
-
 /*
  * The real styling starts here
  */
@@ -57,6 +33,10 @@
   display: flex;
   flex-direction: column;
   gap: var(--size-spacing-xl);
+
+  @media (max-width: size.$tablet) {
+    margin-bottom: var(--size-spacing-xl);
+  }
 }
 
 .side {

@@ -128,7 +128,7 @@ test.describe('when I do collective', () => {
     await expect.soft(page.getByRole('tablist')).not.toBeVisible()
 
     await expectCollectiveModules(page, [
-      'COLLECTIVE_OFFER_TEMPLATES_CARD',
+      'COLLECTIVE_OFFER_TEMPLATES_EMPTY_STATE_CARD',
       'COLLECTIVE_OFFERS_CARD',
       'INCOME_CARD',
       'ADAGE_PAGE_CARD',
@@ -175,8 +175,8 @@ test.describe('when I do both individual and collective', () => {
     await page.getByRole('tab', { name: 'Collectif' }).click()
 
     await expectCollectiveModules(page, [
-      'COLLECTIVE_OFFER_TEMPLATES_CARD',
-      'COLLECTIVE_OFFERS_CARD',
+      'COLLECTIVE_OFFER_TEMPLATES_EMPTY_STATE_CARD',
+      'COLLECTIVE_OFFERS_EMPTY_STATE_CARD',
       'INCOME_CARD',
       'ADAGE_PAGE_CARD',
       'NEWSLETTER_CARD',

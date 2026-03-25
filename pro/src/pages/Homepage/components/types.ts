@@ -8,3 +8,8 @@ export enum OffersEmptyStateCardVariant {
   BOOKABLE = 'bookable',
   INDIVIDUAL = 'individual',
 }
+
+export enum CollectiveOffersCardVariant {
+  TEMPLATE = 'template',
+  BOOKABLE = 'bookable',
+}
