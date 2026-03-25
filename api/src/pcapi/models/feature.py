@@ -97,6 +97,10 @@ class FeatureToggle(enum.Enum):
         "Envoyer tous les emails en testing et staging. À activer temporairement lors de phase de test"
     )
     SYNCHRONIZE_ALLOCINE = "Permettre la synchronisation journalière avec Allociné"
+    SYNCHRONIZE_ALLOCINE_PRODUCTS = "Permettre la synchronisation des produits/films Allociné via leur API"
+    SYNCHRONIZE_ALLOCINE_PRODUCTS_FROM_BIGQUERY_TABLES = (
+        "Permet la synchronisation des films Allociné via les tables BigQuery fournies par l'équipe Data"
+    )
     SYNCHRONIZE_ARTISTS_FROM_BIGQUERY_TABLES = (
         "Permet la synchronisation des artistes via les tables BigQuery fournies par l'équipe Data"
     )
@@ -205,6 +209,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_ZENDESK_SELL_CREATION,
     FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC,
     FeatureToggle.SEND_ALL_EMAILS_TO_EHP,
+    FeatureToggle.SYNCHRONIZE_ALLOCINE_PRODUCTS_FROM_BIGQUERY_TABLES,
     FeatureToggle.VENUE_REGULARIZATION,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CHECK_OFFERERS,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CULTURAL_SURVEY,
