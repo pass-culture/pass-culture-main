@@ -1710,7 +1710,6 @@ def generate_minimal_beneficiary():
     user = users_models.User(
         dateCreated=now,
         email="empty@example.com",
-        hasSeenProTutorials=False,
         hasSeenProRgs=False,
         needsToFillCulturalSurvey=False,
         notificationSubscriptions=None,

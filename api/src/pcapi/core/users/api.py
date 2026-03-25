@@ -858,7 +858,6 @@ def create_pro_user(pro_user: users_serialization.ProUserCreationBodyV2Model) ->
 
 
 def set_pro_tuto_as_seen(user: models.User) -> None:
-    user.hasSeenProTutorials = True
     db.session.add(user)
     db.session.commit()
 
