@@ -302,7 +302,8 @@ class ExternalFinanceTest:
             cashflows=[finance_factories.CashflowFactory()],
             status=finance_models.InvoiceStatus.PENDING_PAYMENT,
         )
-        yesterday_datetime = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
+        now = date_utils.get_naive_utc_now()
+        yesterday_datetime = now - datetime.timedelta(days=1)
         yesterday_date = yesterday_datetime.date()
 
         with patch(
@@ -328,6 +329,8 @@ class ExternalFinanceTest:
         assert settlement_batch.externalId == "123456"
         assert settlement_batch.name == "VIR123"
         assert settlement_batch.label == "VIR123 Label"
+        assert settlement_batch.dateImported.timestamp() == pytest.approx(now.timestamp(), rel=1)
+        assert settlement_batch.dateValidated is None
 
         settlement = db.session.query(finance_models.Settlement).one()
         assert settlement.invoices == [invoice]

@@ -1063,6 +1063,10 @@ class SettlementBatch(PcObject, Model):
     settlements: sa_orm.Mapped[list["Cashflow"]] = sa_orm.relationship(
         "Settlement", foreign_keys="Settlement.batchId", back_populates="batch"
     )
+    dateImported: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now()
+    )
+    dateValidated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
 
 # "Payment", "PaymentStatus" and "PaymentMessage" are deprecated. They
