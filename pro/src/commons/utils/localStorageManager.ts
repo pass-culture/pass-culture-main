@@ -17,6 +17,14 @@ export enum LOCAL_STORAGE_KEY {
 
 export const PASS_CULTURE_PREFIX = 'PASS_CULTURE_'
 
+/**
+ * Keys that should persist across logout.
+ */
+const PERSISTENT_KEYS = new Set<string>([
+  // TODO (tpommellet, 2026-05-01): Remove this key once volunteering GTM period is over.
+  LOCAL_STORAGE_KEY.HAS_SEEN_VOLUNTEERING_SECTION,
+])
+
 export const localStorageManager = {
   getItem: (key: LOCAL_STORAGE_KEY): string | null => {
     if (!storageAvailable('localStorage')) {
@@ -48,7 +56,10 @@ export const localStorageManager = {
     }
 
     Object.keys(localStorage)
-      .filter((key) => key.startsWith(PASS_CULTURE_PREFIX))
+      .filter(
+        (key) =>
+          key.startsWith(PASS_CULTURE_PREFIX) && !PERSISTENT_KEYS.has(key)
+      )
       .forEach((key) => {
         localStorage.removeItem(key)
       })

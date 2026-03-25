@@ -67,4 +67,16 @@ describe('localStorageManager', () => {
     expect(localStorage.getItem('homepageSelectedOffererId')).toBe('42')
     expect(localStorage.getItem('someOtherKey')).toBe('value')
   })
+
+  it('should preserve persistent keys when calling clearPassCultureKeys', () => {
+    vi.spyOn(storageAvailableModule, 'storageAvailable').mockReturnValue(true)
+
+    localStorage.setItem('PASS_CULTURE_HAS_SEEN_VOLUNTEERING_SECTION', 'true')
+
+    localStorageManager.clearPassCultureKeys()
+
+    expect(
+      localStorage.getItem('PASS_CULTURE_HAS_SEEN_VOLUNTEERING_SECTION')
+    ).toBe('true')
+  })
 })
