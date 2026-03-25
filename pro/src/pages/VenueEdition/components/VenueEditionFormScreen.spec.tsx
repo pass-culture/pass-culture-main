@@ -278,6 +278,7 @@ describe('VenueEditionFormScreen', () => {
       renderForm(
         {
           ...baseVenue,
+          activity: null,
           collectiveDomains: [],
         },
         { initialRouterEntries: ['/'] }
@@ -739,6 +740,7 @@ describe('VenueEditionFormScreen', () => {
         const editVenueSpy = vi.spyOn(api, 'editVenue')
         renderForm({
           ...baseVenue,
+          activity: undefined,
           audioDisabilityCompliant: null,
           mentalDisabilityCompliant: null,
           visualDisabilityCompliant: null,

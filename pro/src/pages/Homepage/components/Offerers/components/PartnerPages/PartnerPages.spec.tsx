@@ -4,6 +4,7 @@ import { beforeEach, expect } from 'vitest'
 
 import { api } from '@/apiClient/api'
 import { VenueTypeCode } from '@/apiClient/v1'
+import { DisplayableActivity } from '@/apiClient/v1/new'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
@@ -31,7 +32,7 @@ describe('PartnerPages', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getVenue').mockResolvedValue({
       ...defaultGetVenue,
-      venueType: { value: VenueTypeCode.FESTIVAL, label: 'Festival' },
+      activity: DisplayableActivity.FESTIVAL,
       bannerUrl: 'MyFirstImage',
       name: 'first venue',
       bannerMeta: {

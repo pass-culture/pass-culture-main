@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { VenueTypeCode } from '@/apiClient/v1'
+import { DisplayableActivity } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
@@ -48,7 +48,7 @@ describe('PartnerPages', () => {
     renderPartnerPages({
       venue: {
         ...defaultGetVenue,
-        venueType: { value: VenueTypeCode.FESTIVAL, label: 'Festival' },
+        activity: DisplayableActivity.FESTIVAL,
       },
     })
 
@@ -68,7 +68,7 @@ describe('PartnerPages', () => {
     renderPartnerPages({
       venue: {
         ...defaultGetVenue,
-        venueType: { value: VenueTypeCode.FESTIVAL, label: 'Festival' },
+        activity: DisplayableActivity.FESTIVAL,
         bannerUrl: 'https://www.example.com/image.png',
         bannerMeta: {
           original_image_url: 'https://www.example.com/image.png',

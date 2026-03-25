@@ -53,7 +53,6 @@ describe('toFormValues', () => {
       venueSiret: '',
       publicName: 'Adresse de la venue',
       siret: '',
-      venueType: 'Centre culturel',
       withdrawalDetails: '',
     }
 

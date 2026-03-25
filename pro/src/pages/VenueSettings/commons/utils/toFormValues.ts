@@ -32,7 +32,6 @@ export const toFormValues = ({
     siret: venue.isCaledonian
       ? unhumanizeRidet(venue.siret || '', false, false)
       : humanizeSiret(venue.siret || ''),
-    venueType: venue.venueType.value,
     withdrawalDetails: venue.withdrawalDetails || '',
   }
 }

@@ -30,7 +30,6 @@ describe('toBody', () => {
       venueSiret: '',
       publicName: 'Adresse de la venue',
       siret: '418 166 096 00069',
-      venueType: 'Centre culturel',
       withdrawalDetails: 'Details for withdraw',
     }
 

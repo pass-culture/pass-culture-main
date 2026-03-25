@@ -28,6 +28,7 @@ import {
   StudentLevels,
   VenueTypeCode,
 } from '@/apiClient/v1'
+import { DisplayableActivity } from '@/apiClient/v1/new'
 
 let offerId = 1
 let stockId = 1
@@ -317,7 +318,8 @@ export const defaultGetVenue: GetVenueResponseModel = {
   motorDisabilityCompliant: false,
   name: 'Nom de la structure',
   publicName: 'Nom public de la structure',
-  venueType: { value: VenueTypeCode.CENTRE_CULTUREL, label: 'Centre culturel' },
+  activity: DisplayableActivity.CULTURAL_CENTRE,
+  venueType: { value: VenueTypeCode.CENTRE_CULTUREL, label: 'Centre culturel' }, // deprecated field (use ".activity" instead), but still required by the model
   visualDisabilityCompliant: true,
   openingHours: null,
   isCaledonian: false,
