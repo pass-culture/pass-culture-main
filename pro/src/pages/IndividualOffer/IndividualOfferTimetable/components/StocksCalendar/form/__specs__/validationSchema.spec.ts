@@ -1,3 +1,6 @@
+import { addDays, format } from 'date-fns'
+
+import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
 import {
@@ -48,6 +51,7 @@ describe('validationSchema', () => {
           new Date().setMonth(new Date().getMonth() + 1)
         ).toISOString(),
         monthlyOption: MonthlyOption.BY_LAST_DAY,
+        bookingLimitDateInterval: null,
       },
       expectedErrors: [],
     },
@@ -130,6 +134,7 @@ describe('validationSchema', () => {
       formValues: {
         ...baseValidForm,
         startingDate: '2000-01-01',
+        bookingLimitDateInterval: null,
       },
       expectedErrors: ['L’évènement doit être à venir'],
     },
@@ -144,6 +149,15 @@ describe('validationSchema', () => {
       expectedErrors: [
         'Veuillez indiquer une date postérieure à la date de début',
       ],
+    },
+    {
+      description: 'limit date is incoherent with starting date',
+      formValues: {
+        ...baseValidForm,
+        startingDate: format(addDays(new Date(), 2), FORMAT_ISO_DATE_ONLY),
+        bookingLimitDateInterval: 3,
+      },
+      expectedErrors: ['La date limite de réservation est dans le passé'],
     },
   ]
 

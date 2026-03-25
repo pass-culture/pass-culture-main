@@ -53,7 +53,7 @@ describe('RecurrenceForm', () => {
 
     await userEvent.type(
       screen.getByLabelText('Date de l’évènement *'),
-      format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
+      format(addDays(new Date(), 2), FORMAT_ISO_DATE_ONLY)
     )
     await userEvent.type(screen.getByLabelText(/Horaire 1/), '12:00')
     await userEvent.type(
@@ -67,7 +67,7 @@ describe('RecurrenceForm', () => {
       screen.getByLabelText('Nombre de jours avant le début de l’évènement', {
         exact: false,
       }),
-      '2'
+      '1'
     )
 
     await userEvent.click(screen.getByText('Valider'))
@@ -221,6 +221,28 @@ describe('RecurrenceForm', () => {
     await userEvent.click(screen.getByLabelText('Tous les jours'))
 
     expect(mockLogEvent).not.toHaveBeenCalled()
+  })
+
+  it('should not allow the form validation when the limit date is after the start date', async () => {
+    renderRecurrenceForm(defaultProps)
+
+    await userEvent.type(
+      screen.getByLabelText('Date de l’évènement *'),
+      format(addDays(new Date(), 3), FORMAT_ISO_DATE_ONLY)
+    )
+    await userEvent.type(screen.getByLabelText(/Horaire 1/), '12:00')
+    await userEvent.type(
+      screen.getByLabelText('Nombre de jours avant le début de l’évènement', {
+        exact: false,
+      }),
+      '5'
+    )
+
+    await userEvent.click(screen.getByText('Valider'))
+    expect(
+      screen.getByText(/La date limite de réservation est dans le passé/i)
+    ).toBeInTheDocument()
+    expect(mockSubmit).not.toHaveBeenCalled()
   })
 
   it('should handle error message for hour and minute', async () => {
