@@ -5,8 +5,8 @@ import type {
   GetVenueResponseModel,
   LocationResponseModelV2,
   VenueListItemLiteResponseModel,
-  VenueTypeResponseModel,
 } from '@/apiClient/v1'
+import { DisplayableActivity } from '@/apiClient/v1/new'
 
 import type { PartialExcept } from '../types'
 
@@ -89,27 +89,12 @@ export const makeGetVenueResponseModel = <
     motorDisabilityCompliant: false,
     name: `Nom de la structure ${override.id}`,
     publicName: `Nom public de la structure ${override.id}`,
-    venueType: makeVenueTypeResponseModel({}),
+    activity: DisplayableActivity.OTHER,
+    venueType: { label: 'Autre', value: 'OTHER' }, // deprecated field (use ".activity" instead), but still required by the model
     visualDisabilityCompliant: false,
     canDisplayHighlights: false,
     hasNonDraftOffers: false,
     volunteeringUrl: null,
-  }
-
-  return {
-    ...fake,
-    ...override,
-  }
-}
-
-const makeVenueTypeResponseModel = <T extends Partial<VenueTypeResponseModel>>(
-  override: T
-): Omit<VenueTypeResponseModel, keyof T> & T => {
-  const fake: VenueTypeResponseModel = {
-    label: 'Autre',
-    // Auto-generated `VenueTypeCode` enum is completely wrong:
-    // real keys are those declared in api/src/pcapi/core/offerers/schemas.py
-    value: 'OTHER',
   }
 
   return {

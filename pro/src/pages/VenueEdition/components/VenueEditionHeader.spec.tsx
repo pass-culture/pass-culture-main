@@ -4,7 +4,7 @@ import { forwardRef } from 'react'
 
 import { api } from '@/apiClient/api'
 import * as apiHelpers from '@/apiClient/helpers'
-import { VenueTypeCode } from '@/apiClient/v1'
+import { DisplayableActivity } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -107,7 +107,7 @@ describe('VenueEditionHeader', () => {
     renderPartnerPages({
       venue: {
         ...defaultGetVenue,
-        venueType: { value: VenueTypeCode.FESTIVAL, label: 'Festival' },
+        activity: DisplayableActivity.FESTIVAL,
       },
     })
 
@@ -130,7 +130,7 @@ describe('VenueEditionHeader', () => {
     renderPartnerPages({
       venue: {
         ...defaultGetVenue,
-        venueType: { value: VenueTypeCode.FESTIVAL, label: 'Festival' },
+        activity: DisplayableActivity.FESTIVAL,
       },
     })
 
@@ -160,7 +160,7 @@ describe('VenueEditionHeader', () => {
     renderPartnerPages({
       venue: {
         ...defaultGetVenue,
-        venueType: { value: VenueTypeCode.FESTIVAL, label: 'Festival' },
+        activity: DisplayableActivity.FESTIVAL,
         bannerUrl: 'https://www.example.com/image.png',
         bannerMeta: {
           original_image_url: 'https://www.example.com/image.png',
@@ -185,7 +185,7 @@ describe('VenueEditionHeader', () => {
     renderPartnerPages({
       venue: {
         ...defaultGetVenue,
-        venueType: { value: VenueTypeCode.FESTIVAL, label: '' },
+        activity: DisplayableActivity.FESTIVAL,
         isPermanent: true,
       },
     })
@@ -198,7 +198,7 @@ describe('VenueEditionHeader', () => {
       {
         venue: {
           ...defaultGetVenue,
-          venueType: { value: VenueTypeCode.FESTIVAL, label: '' },
+          activity: DisplayableActivity.FESTIVAL,
         },
       },
       {

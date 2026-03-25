@@ -9,21 +9,10 @@ import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 
 import type {
-  PartialBy,
   VenueSettingsFormContext,
   VenueSettingsFormValues,
 } from '../types'
 import { saveVenueSettings } from '../utils/saveVenueSettings'
-
-const removeVenueTypeFieldIf =
-  (condition: boolean) =>
-  (formValues: PartialBy<VenueSettingsFormValues, 'venueType'>) => {
-    const { venueType: _, ...props } = formValues
-    if (condition) {
-      return props
-    }
-    return formValues
-  }
 
 export const useSaveVenueSettings = ({
   form,
@@ -38,24 +27,11 @@ export const useSaveVenueSettings = ({
   const { logEvent } = useAnalytics()
 
   const saveAndContinue = async (
-    formValues: PartialBy<VenueSettingsFormValues, 'venueType'>,
+    formValues: VenueSettingsFormValues,
     formContext: VenueSettingsFormContext
   ) => {
     try {
-      /*
-        If WIP_VENUE_ACTIVITY is activated, then the "venueType" field is made conditional.
-        Condition is:
-          If venue is `openToPublic`, then the "venueType" field isn't handled in this form anymore,
-          so we need to EXPLICITLY ignore the value here.
-
-        (Else, We still update the "venueType" in this form)
-      */
-
-      const filteredFormValues = removeVenueTypeFieldIf(venue.isOpenToPublic)(
-        formValues
-      )
-
-      await saveVenueSettings(filteredFormValues, formContext, { venue })
+      await saveVenueSettings(formValues, formContext, { venue })
 
       navigate(getVenuePagePathToNavigateTo(venue.managingOfferer.id, venue.id))
 

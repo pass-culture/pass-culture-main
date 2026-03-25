@@ -7,7 +7,6 @@ export interface VenueSettingsFormValues extends FlatAddressFormValues {
   publicName: string
   siret: string
   venueSiret: number | ''
-  venueType: string
   withdrawalDetails: string
   manuallySetAddress?: boolean
 }
@@ -18,5 +17,3 @@ export type VenueSettingsFormContext = {
   siren: string | null
   withSiret: boolean
 }
-
-export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>

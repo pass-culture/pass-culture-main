@@ -6,6 +6,7 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useOnVenueImageUpload } from '@/commons/core/Venue/hooks/useOnVenueImageUpload'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { getActivityLabel } from '@/commons/mappings/mappings'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { noop } from '@/commons/utils/noop'
@@ -67,7 +68,9 @@ export const PartnerPage = ({
           onClickButtonImageAdd={logButtonAddClick}
         />
         <div className={styles['venue']}>
-          <div className={styles['venue-type']}>{venue.venueType.label}</div>
+          <div className={styles['venue-type']}>
+            {venue.activity && getActivityLabel(venue.activity)}
+          </div>
           <h3 className={styles['venue-name']}>{venue.publicName}</h3>
 
           {venue.location && (

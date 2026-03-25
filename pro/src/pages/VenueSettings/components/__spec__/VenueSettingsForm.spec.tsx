@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
 import { api } from '@/apiClient/api'
-import { type GetVenueResponseModel, VenueTypeCode } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultVenueProvider } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -68,7 +68,6 @@ const defaultVenue: GetVenueResponseModel = {
     latitude: 48.8566,
     longitude: 2.3522,
   },
-  venueType: { value: VenueTypeCode.CENTRE_CULTUREL, label: 'Centre culturel' },
   comment: 'Un lieu populaire pour les concerts et les événements',
   bookingEmail: 'contact@lieuexemple.com',
   withdrawalDetails:

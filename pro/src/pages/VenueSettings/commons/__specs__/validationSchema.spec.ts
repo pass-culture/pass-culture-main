@@ -22,7 +22,6 @@ describe('VenueSettingsValidationSchema', () => {
     publicName: 'Venue Public Name',
     siret: '12345678901234',
     venueSiret: 12345678901234,
-    venueType: 'Théâtre',
     withdrawalDetails:
       "Les retraits sont autorisés jusqu'à 24 heures avant l'événement.",
     manuallySetAddress: false,

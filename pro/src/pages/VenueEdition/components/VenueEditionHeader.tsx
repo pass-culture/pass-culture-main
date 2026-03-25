@@ -10,6 +10,7 @@ import { buildInitialVenueImageValues } from '@/commons/core/Venue/utils/buildIn
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { getActivityLabel } from '@/commons/mappings/mappings'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { setSelectedVenue } from '@/commons/store/user/reducer'
 import { WEBAPP_URL } from '@/commons/utils/config'
@@ -92,7 +93,9 @@ export const VenueEditionHeader = ({
 
       <div className={styles['venue-details']}>
         <div className={styles['venue-details-main']}>
-          <div className={styles['venue-type']}>{venue.venueType.label}</div>
+          <div className={styles['venue-type']}>
+            {venue.activity && getActivityLabel(venue.activity)}
+          </div>
           <h2 className={styles['venue-name']}>
             {venue.isVirtual
               ? `${venue.managingOfferer.name} (Offre numérique)`

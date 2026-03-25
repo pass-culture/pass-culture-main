@@ -50,9 +50,5 @@ export const venueSettingsValidationSchema = yup
     name: yup
       .string()
       .required(`Veuillez renseigner la raison sociale de votre lieu`),
-
-    venueType: yup
-      .string()
-      .required('Veuillez sélectionner une activité principale'),
   })
   .concat(SiretOrCommentValidationSchema)
