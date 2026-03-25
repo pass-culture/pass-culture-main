@@ -51,7 +51,6 @@ class SettingsResponse(HttpBodyModel):
     display_dms_redirection: bool
     enable_front_image_resizing: bool
     enable_native_cultural_survey: bool
-    enable_phone_validation: bool
     id_check_address_autocompletion: bool
     ineligible_postal_codes: list[str]
     is_recaptcha_enabled: bool

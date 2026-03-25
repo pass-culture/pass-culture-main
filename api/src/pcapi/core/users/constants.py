@@ -14,7 +14,6 @@ EMAIL_VALIDATION_TOKEN_LIFE_TIME = datetime.timedelta(minutes=30)
 EMAIL_VALIDATION_TOKEN_FOR_PRO_LIFE_TIME = datetime.timedelta(days=90)
 EMAIL_VALIDATION_TOKEN_UPON_MANUAL_CREATION_LIFE_TIME = datetime.timedelta(days=1)
 EMAIL_CHANGE_TOKEN_LIFE_TIME = datetime.timedelta(seconds=settings.EMAIL_CHANGE_TOKEN_LIFE_TIME)
-PHONE_VALIDATION_TOKEN_LIFE_TIME = datetime.timedelta(hours=12)
 SUSPICIOUS_LOGIN_EMAIL_TOKEN_LIFE_TIME = datetime.timedelta(weeks=1)
 PASSWORDLESS_TOKEN_LIFE_TIME = datetime.timedelta(hours=8)
 

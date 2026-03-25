@@ -955,15 +955,6 @@ class SubscriptionItemTest:
             == subscription_schemas.SubscriptionItemStatus.TODO
         )
 
-    @pytest.mark.features(ENABLE_PHONE_VALIDATION=True)
-    def test_phone_validation_item_with_eligible_user_validation_todo(self):
-        user = users_factories.UserFactory(age=18)
-        assert (
-            subscription_api.get_phone_validation_subscription_item(user, users_models.EligibilityType.AGE17_18).status
-            == subscription_schemas.SubscriptionItemStatus.TODO
-        )
-
-    @pytest.mark.features(ENABLE_PHONE_VALIDATION=False)
     def test_phone_validation_item_with_eligible_user_done_without_validation(self):
         user = users_factories.UserFactory(age=18, _phoneNumber="0123456789")
         assert (

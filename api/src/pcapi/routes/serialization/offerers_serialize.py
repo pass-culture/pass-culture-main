@@ -15,7 +15,6 @@ import pcapi.core.offers.models as offers_models
 import pcapi.utils.date as date_utils
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offerers.models import Target
-from pcapi.core.subscription.phone_validation.exceptions import InvalidPhoneNumber
 from pcapi.models import db
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
@@ -27,7 +26,7 @@ from pcapi.routes.serialization.venue_collective_serialize import DMSApplication
 from pcapi.routes.shared import validation
 from pcapi.serialization.exceptions import PydanticError
 from pcapi.serialization.utils import to_camel
-from pcapi.utils import phone_number
+from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.email import sanitize_email
 
 
@@ -282,11 +281,11 @@ class CreateOffererBodyModel(HttpBodyModel):
             return None
 
         try:
-            parsed = phone_number.parse_phone_number(value)
-        except InvalidPhoneNumber:
+            parsed = phone_number_utils.parse_phone_number(value)
+        except phone_number_utils.InvalidPhoneNumber:
             raise PydanticError("Ce numéro de telephone ne semble pas valide")
 
-        return phone_number.get_formatted_phone_number(parsed)
+        return phone_number_utils.get_formatted_phone_number(parsed)
 
 
 class SaveNewOnboardingDataQueryModel(BaseModel):

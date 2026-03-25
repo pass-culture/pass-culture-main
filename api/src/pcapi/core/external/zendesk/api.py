@@ -16,7 +16,6 @@ from markupsafe import Markup
 from pcapi import settings
 from pcapi.core.external.attributes import api as attributes_api
 from pcapi.core.external.attributes import models as attributes_models
-from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
@@ -80,7 +79,7 @@ def _format_user_attributes(email: str, attributes: attributes_models.UserAttrib
     try:
         parsed_phone_number = phone_number_utils.parse_phone_number(attributes.phone_number)
         phone_number = phone_number_utils.get_formatted_phone_number(parsed_phone_number)
-    except phone_validation_exceptions.InvalidPhoneNumber:
+    except phone_number_utils.InvalidPhoneNumber:
         phone_number = None
 
     if attributes.is_active:

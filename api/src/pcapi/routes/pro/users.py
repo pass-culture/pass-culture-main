@@ -18,7 +18,6 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import transactional as transactional_mails
-from pcapi.core.subscription.phone_validation import exceptions as phone_exceptions
 from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import api as users_api
@@ -47,6 +46,7 @@ from pcapi.routes.serialization.password_serialize import NewPasswordBodyModel
 from pcapi.routes.serialization.password_serialize import ResetPasswordBodyModel
 from pcapi.routes.shared.cookies_consent import CookieConsentRequest
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import on_commit
@@ -74,9 +74,9 @@ def signup_pro(body: users_serializers.ProUserCreationBodyV2Model) -> None:
     try:
         pro_user = users_api.create_pro_user(body)
         users_api.create_and_send_signup_email_confirmation(pro_user)
-    except phone_exceptions.InvalidPhoneNumber:
+    except phone_number_utils.InvalidPhoneNumber:
         raise ApiErrors(errors={"phoneNumber": ["Le numéro de téléphone est invalide"]})
-    except phone_exceptions.RequiredPhoneNumber:
+    except phone_number_utils.RequiredPhoneNumber:
         raise ApiErrors(errors={"phoneNumber": ["Le numéro de téléphone est requis"]})
     except users_exceptions.UserAlreadyExistsException:
         raise ApiErrors(errors={"email": ["l'email existe déjà"]})

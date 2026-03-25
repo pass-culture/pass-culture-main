@@ -31,7 +31,6 @@ def get_settings() -> serializers.SettingsResponse:
         FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING,
         FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA,
         FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY,
-        FeatureToggle.ENABLE_PHONE_VALIDATION,
         FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
         FeatureToggle.APP_ENABLE_AUTOCOMPLETE,
     )
@@ -48,7 +47,6 @@ def get_settings() -> serializers.SettingsResponse:
         display_dms_redirection=features[FeatureToggle.DISPLAY_DMS_REDIRECTION],
         enable_front_image_resizing=features[FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING],
         enable_native_cultural_survey=features[FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY],
-        enable_phone_validation=features[FeatureToggle.ENABLE_PHONE_VALIDATION],
         id_check_address_autocompletion=features[FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION],
         ineligible_postal_codes=postal_code.INELIGIBLE_POSTAL_CODES,
         is_recaptcha_enabled=features[FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA],

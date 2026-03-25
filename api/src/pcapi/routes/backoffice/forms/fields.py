@@ -14,8 +14,7 @@ from wtforms import validators
 
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import validation as offers_validation
-from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
-from pcapi.utils import phone_number
+from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils import siren as siren_utils
 from pcapi.utils import string as string_utils
 
@@ -31,8 +30,8 @@ class PhoneNumberValidator:
         value = field.data
         if value:
             try:
-                phone_number.parse_phone_number(value)
-            except phone_validation_exceptions.InvalidPhoneNumber:
+                phone_number_utils.parse_phone_number(value)
+            except phone_number_utils.InvalidPhoneNumber:
                 raise validators.ValidationError("Numéro de téléphone invalide")
 
 
