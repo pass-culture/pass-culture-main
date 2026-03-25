@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 @blueprint.cli.command("synchronize_allocine_products")
 @cron_decorators.log_cron_with_transaction
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
+@cron_decorators.cron_require_feature(FeatureToggle.SYNCHRONIZE_ALLOCINE_PRODUCTS)
 def synchronize_allocine_products() -> None:
     allocine.synchronize_products()
 
@@ -35,6 +36,7 @@ def synchronize_allocine_products() -> None:
 @blueprint.cli.command("synchronize_allocine_products_with_bigquery")
 @cron_decorators.log_cron_with_transaction
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
+@cron_decorators.cron_require_feature(FeatureToggle.SYNCHRONIZE_ALLOCINE_PRODUCTS_FROM_BIGQUERY_TABLES)
 def synchronize_allocine_products_with_bigquery() -> None:
     allocine.synchronize_products_with_bigquery()
 
