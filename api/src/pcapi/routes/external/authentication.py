@@ -119,3 +119,18 @@ def compute_signature(ts: bytes, payload: bytes) -> str:
         digestmod=hashlib.sha256,
     ).hexdigest()
     return signature
+
+
+def require_zendesk_webhook_api_key(route_function: Callable[..., Any]) -> Callable:
+    @functools.wraps(route_function)
+    def validate_zendesk_webhook_api_key(*args: Any, **kwargs: Any) -> flask.Response:
+        api_key = flask.request.headers.get("X-Api-Key", "")
+        if not api_key:
+            raise UnauthorizedError()
+
+        if api_key != settings.ZENDESK_WEBHOOK_API_KEY:
+            raise ForbiddenError()
+
+        return route_function(*args, **kwargs)
+
+    return validate_zendesk_webhook_api_key
