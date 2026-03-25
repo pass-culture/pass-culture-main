@@ -106,6 +106,20 @@ def _build_cast(raw_cast_str: str | None, backlink: dict[str, str]) -> dict[str,
     }
 
 
+def _extract_poster_uuid(poster_gcs_path: str | None) -> str | None:
+    """
+    Extracts the UUID (filename) from a GCS path string.
+
+    Input format: "gs://bucket-name/folder/subfolder/uuid"
+    Output format: "uuid"
+
+    If the input is None or empty, returns None.
+    """
+    if not poster_gcs_path:
+        return None
+    return poster_gcs_path.split("/")[-1]
+
+
 class AllocineMovieBQ(AllocineMovie):
     """
     Pydantic model that transforms a flat BigQuery row
@@ -144,6 +158,7 @@ class AllocineMovieBQ(AllocineMovie):
                 "productionYear": int(production_year) if production_year else None,
             },
             "poster": {"url": data.get("poster_url")} if data.get("poster_url") else None,
+            "poster_uuid": _extract_poster_uuid(data.get("poster_gcs_path")),
             "releases": json.loads(data.get("releases")),
             "credits": _build_credits(data.get("credits_normalized")),
             "cast": _build_cast(data.get("cast_normalized"), backlink),
@@ -192,6 +207,7 @@ class AllocineMovieQuery(BaseQuery):
                 runtime,
                 synopsis,
                 poster_url,
+                poster_gcs_path,
                 backlink_url,
                 backlink_label,
                 data_eidr,

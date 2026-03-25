@@ -1767,6 +1767,7 @@ class Movie:
     visa: str | None
     title: str
     extra_data: OfferExtraData | None
+    poster_uuid: str | None = None
 
 
 class ComplianceValidationStatusPrediction(enum.Enum):
