@@ -16,6 +16,7 @@ import { PartnerLayout } from '@/layouts/PartnerLayout/PartnerLayout'
 
 import * as utils from './commons/utils'
 import {
+  CollectiveOffersCardVariant,
   type HomepageVariant,
   OffersEmptyStateCardVariant,
 } from './components/types'
@@ -59,6 +60,20 @@ vi.mock('./components/OffersEmptyStateCard/OffersEmptyStateCard', () => ({
         ? 'individuelle'
         : 'collective'
     return <div>créer une offre {variantText}</div>
+  },
+}))
+
+vi.mock('./components/CollectiveOffersCard/CollectiveOffersCard', () => ({
+  CollectiveOffersCard: ({
+    variant,
+  }: {
+    variant: CollectiveOffersCardVariant
+  }) => {
+    const variantText =
+      variant === CollectiveOffersCardVariant.TEMPLATE
+        ? 'vitrine'
+        : 'réservable'
+    return <div>gestion des offres - {variantText}</div>
   },
 }))
 
@@ -508,11 +523,11 @@ describe('NewHomepage', () => {
 
         expect(
           screen.getByRole('tabpanel', { description: /collective/ })
-        ).toHaveTextContent(/Activités vos offres vitrines/)
+        ).toHaveTextContent(/gestion des offres - réservable/)
 
         expect(
           screen.getByRole('tabpanel', { description: /collective/ })
-        ).toHaveTextContent(/Activités vos offres réservables/)
+        ).toHaveTextContent(/gestion des offres - vitrine/)
 
         expect(
           screen.getByRole('tabpanel', { description: /collective/ })

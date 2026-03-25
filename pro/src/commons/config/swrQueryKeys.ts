@@ -10,8 +10,11 @@ export const GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY =
   'getCollectiveOfferTemplate'
 export const GET_COLLECTIVE_OFFER_TEMPLATES_QUERY_KEY =
   'getCollectiveOfferTemplates'
+export const GET_COLLECTIVE_OFFER_TEMPLATES_HOME_QUERY_KEY =
+  'getCollectiveOfferTemplatesHome'
 export const GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY =
   'getCollectiveOffersBookable'
+export const GET_COLLECTIVE_OFFERS_HOME_QUERY_KEY = 'getCollectiveOffersHome'
 export const GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY =
   'getCollectiveOffersTemplate'
 export const GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY =

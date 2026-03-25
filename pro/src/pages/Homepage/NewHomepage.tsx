@@ -24,11 +24,13 @@ import {
   TABS,
   type TabKey,
 } from './commons/utils'
+import { CollectiveOffersCard } from './components/CollectiveOffersCard/CollectiveOffersCard'
 import { IncomeCard } from './components/IncomeCard/IncomeCard'
 import { NewsletterCard } from './components/NewsletterCard/NewsletterCard'
 import { OffersEmptyStateCard } from './components/OffersEmptyStateCard/OffersEmptyStateCard'
 import { PartnerPageCard } from './components/PartnerPageCard/PartnerPageCard'
 import {
+  CollectiveOffersCardVariant,
   HomepageVariant,
   OffersEmptyStateCardVariant,
 } from './components/types'
@@ -200,16 +202,14 @@ export const NewHomepage = (): JSX.Element => {
           {selectedVenue.allowedOnAdage && (
             <>
               <div className={styles['main']}>
-                <div>
-                  Activités vos offres vitrines
-                  <br />
-                  <b>Module gestion offres vitrines</b>
-                </div>
-                <div>
-                  Activités vos offres réservables
-                  <br />
-                  <b>Module gestion offres réservables</b>
-                </div>
+                <CollectiveOffersCard
+                  venueId={selectedVenue.id}
+                  variant={CollectiveOffersCardVariant.TEMPLATE}
+                />
+                <CollectiveOffersCard
+                  venueId={selectedVenue.id}
+                  variant={CollectiveOffersCardVariant.BOOKABLE}
+                />
               </div>
               <div className={styles['side']}>
                 {shouldDisplayIncomeCard && (
