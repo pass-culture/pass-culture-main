@@ -22,7 +22,6 @@ import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.subscription.fraud_check_api as fraud_api
-import pcapi.core.subscription.phone_validation.exceptions as phone_validation_exceptions
 import pcapi.core.subscription.repository as subscription_repository
 import pcapi.core.subscription.schemas as subscription_schemas
 import pcapi.core.users.repository as users_repository
@@ -91,22 +90,6 @@ def create_recently_reset_password_token(user: models.User) -> token_utils.Token
         constants.RESET_PASSWORD_TOKEN_LIFE_TIME,
         user.id,
     )
-
-
-def create_phone_validation_token(
-    user: models.User,
-    phone_number: str,
-) -> token_utils.SixDigitsToken:
-    return token_utils.SixDigitsToken.create(
-        type_=token_utils.TokenType.PHONE_VALIDATION,
-        user_id=user.id,
-        ttl=constants.PHONE_VALIDATION_TOKEN_LIFE_TIME,
-        data={"phone_number": phone_number},
-    )
-
-
-def delete_all_users_phone_validation_tokens(user: models.User) -> None:
-    token_utils.Token.delete(token_utils.TokenType.PHONE_VALIDATION, user.id)
 
 
 def create_account(
@@ -966,7 +949,7 @@ def _filter_user_accounts(accounts: sa_orm.Query, search_term: str) -> sa_orm.Qu
     try:
         parsed_phone_number = phone_number_utils.parse_phone_number(search_term)
         term_as_phone_number = phone_number_utils.get_formatted_phone_number(parsed_phone_number)
-    except phone_validation_exceptions.InvalidPhoneNumber:
+    except phone_number_utils.InvalidPhoneNumber:
         pass  # term can't be a phone number
     else:
         term_filters.append(models.User.phoneNumber == term_as_phone_number)

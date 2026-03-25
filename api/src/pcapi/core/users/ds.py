@@ -12,7 +12,6 @@ from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.permissions import models as perm_models
-from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository
 from pcapi.core.users.repository import find_user_by_email
@@ -27,7 +26,7 @@ logger = logging.getLogger(__name__)
 # Avoid connection timeout when DS takes time to respond in daily or hourly cloud tasks (not in synchronous requests)
 LONG_TIMEOUT = 60
 
-# Sometimes BO users have timeout when accepting, which causes unconsistent data between DS and the backend
+# Sometimes BO users have timeout when accepting, which causes inconsistent data between DS and the backend
 UPDATE_STATE_TIMEOUT = 30
 
 
@@ -375,7 +374,7 @@ def _sync_ds_application(
                     if value:  # was not mandatory
                         try:
                             data["newPhoneNumber"] = phone_number_utils.ParsedPhoneNumber(value).phone_number
-                        except phone_validation_exceptions.InvalidPhoneNumber:
+                        except phone_number_utils.InvalidPhoneNumber:
                             data["newPhoneNumber"] = value
                             data["flags"].add(users_models.UserAccountUpdateFlag.INVALID_VALUE)
                     else:

@@ -9,7 +9,6 @@ import pydantic.v1 as pydantic_v1
 from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
-from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
@@ -79,7 +78,7 @@ class VenueContactModel(offerers_schemas.VenueContactModel):
 
         try:
             return phone_number_utils.ParsedPhoneNumber(phone_number).phone_number
-        except phone_validation_exceptions.InvalidPhoneNumber:
+        except phone_number_utils.InvalidPhoneNumber:
             # This is a workaround to avoid errors if the phone number is not valid
             # In the GET endpoint, we don't want to raise an exception if the phone number is not valid
             logger.exception("An error occurred while parsing the phone number", extra={"phone_number": phone_number})

@@ -8,9 +8,9 @@ import sqlalchemy as sa
 
 from pcapi.connectors import typeform
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.subscription.phone_validation.exceptions import InvalidPhoneNumber
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.utils.phone_number import InvalidPhoneNumber
 from pcapi.utils.phone_number import ParsedPhoneNumber
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid

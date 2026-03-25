@@ -28,7 +28,6 @@ from pcapi.core.mails.transactional.users.update_request_identity_theft import (
     send_beneficiary_update_request_identity_theft,
 )
 from pcapi.core.permissions import models as perm_models
-from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import ds as users_ds
@@ -114,7 +113,7 @@ def _get_filtered_account_update_requests(form: account_forms.AccountUpdateReque
         try:
             parsed_phone_number = phone_number_utils.parse_phone_number(search_query)
             term_as_phone_number = phone_number_utils.get_formatted_phone_number(parsed_phone_number)
-        except phone_validation_exceptions.InvalidPhoneNumber:
+        except phone_number_utils.InvalidPhoneNumber:
             pass  # term can't be a phone number
         else:
             term_filters.append(

@@ -1,6 +1,5 @@
 import pytest
 
-from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.utils import phone_number as phone_number_utils
 
 
@@ -63,5 +62,5 @@ def test_parse_phone_number(raw, region, formatted):
     ),
 )
 def test_parse_invalid_phone_number(raw, region):
-    with pytest.raises(phone_validation_exceptions.InvalidPhoneNumber):
+    with pytest.raises(phone_number_utils.InvalidPhoneNumber):
         phone_number_utils.parse_phone_number(raw, region)

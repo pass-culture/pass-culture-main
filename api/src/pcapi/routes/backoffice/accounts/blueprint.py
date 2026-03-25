@@ -42,8 +42,6 @@ from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.bonus import fraud_check_api as bonus_fraud_api
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.subscription.bonus import tasks as bonus_tasks
-from pcapi.core.subscription.phone_validation import api as phone_validation_api
-from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import eligibility_api
@@ -68,6 +66,7 @@ from pcapi.routes.backoffice.utils import search as search_utils
 from pcapi.routes.backoffice.utils.details_actions import DetailsActions
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
+from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from pcapi.utils.transaction_manager import on_commit
@@ -1632,7 +1631,7 @@ def update_public_account(user_id: int) -> response_utils.BackofficeResponse:
                 marketing_email_subscription=form.marketing_email_subscription.data,
             )
             db.session.flush()
-    except phone_validation_exceptions.InvalidPhoneNumber:
+    except phone_number_utils.InvalidPhoneNumber:
         flash("Le numéro de téléphone est invalide", "warning")
         return render_public_account_details(user_id, form), 400
     except sa.exc.IntegrityError as exc:
@@ -1699,91 +1698,6 @@ def resend_validation_email(user_id: int) -> response_utils.BackofficeResponse:
     else:
         users_api.request_email_confirmation(user)
         flash("L'email de validation a été envoyé", "success")
-
-    return redirect(get_public_account_link(user_id), code=303)
-
-
-@public_accounts_blueprint.route("/<int:user_id>/validate-phone-number", methods=["POST"])
-@access_control.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
-def manually_validate_phone_number(user_id: int) -> response_utils.BackofficeResponse:
-    user = (
-        db.session.query(users_models.User)
-        .filter_by(id=user_id)
-        .populate_existing()
-        .with_for_update(key_share=True)
-        .one_or_none()
-    )
-    if not user:
-        raise NotFound()
-
-    if not user.phoneNumber:
-        flash("L'utilisateur n'a pas de numéro de téléphone", "warning")
-        return redirect(get_public_account_link(user_id), code=303)
-
-    user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
-    db.session.add(user)
-    history_api.add_action(history_models.ActionType.USER_PHONE_VALIDATED, author=current_user, user=user)
-    db.session.flush()
-
-    try:
-        subscription_api.activate_beneficiary_if_no_missing_step(user)
-    except (subscription_exceptions.SubscriptionException, users_exceptions.InvalidEligibilityTypeException) as exc:
-        mark_transaction_as_invalid()
-        flash(
-            Markup("Une erreur s'est produite : {message}").format(message=str(exc) or exc.__class__.__name__),
-            "warning",
-        )
-    else:
-        users_api.delete_all_users_phone_validation_tokens(user)
-        flash("Le numéro de téléphone a été validé", "success")
-
-    return redirect(get_public_account_link(user_id), code=303)
-
-
-@public_accounts_blueprint.route("/<int:user_id>/send-validation-code", methods=["POST"])
-@access_control.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
-def send_validation_code(user_id: int) -> response_utils.BackofficeResponse:
-    user = (
-        db.session.query(users_models.User)
-        .filter_by(id=user_id)
-        .populate_existing()
-        .with_for_update(key_share=True)
-        .one_or_none()
-    )
-    if not user:
-        raise NotFound()
-
-    if not user.phoneNumber:
-        flash("L'utilisateur n'a pas de numéro de téléphone", "warning")
-        return redirect(get_public_account_link(user_id), code=303)
-
-    try:
-        phone_validation_api.send_phone_validation_code(
-            user,
-            user.phoneNumber,
-            ignore_limit=True,
-        )
-
-    except phone_validation_exceptions.UserPhoneNumberAlreadyValidated:
-        flash("Le numéro de téléphone est déjà validé", "warning")
-
-    except phone_validation_exceptions.InvalidPhoneNumber:
-        flash("Le numéro de téléphone est invalide", "warning")
-
-    except phone_validation_exceptions.UserAlreadyBeneficiary:
-        flash("L'utilisateur est déjà bénéficiaire", "warning")
-
-    except phone_validation_exceptions.UnvalidatedEmail:
-        flash("L'email de l'utilisateur n'est pas encore validé", "warning")
-
-    except phone_validation_exceptions.PhoneAlreadyExists:
-        flash("Un compte est déjà associé à ce numéro", "warning")
-
-    except phone_validation_exceptions.PhoneVerificationException:
-        flash("L'envoi du code a échoué", "warning")
-
-    else:
-        flash("Le code a été envoyé", "success")
 
     return redirect(get_public_account_link(user_id), code=303)
 
