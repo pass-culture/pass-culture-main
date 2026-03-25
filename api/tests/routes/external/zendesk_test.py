@@ -47,8 +47,8 @@ class ZendeskWebhookTest:
                 "/webhooks/zendesk/ticket_notification",
                 json={
                     "is_new_ticket": True,
-                    "ticket_id": 123,
-                    "requester_id": 456,
+                    "ticket_id": "123",
+                    "requester_id": "456",
                     "requester_email": user.email,
                     "requester_phone": None,
                 },
@@ -290,8 +290,8 @@ class ZendeskWebhookTest:
             "/webhooks/zendesk/ticket_notification",
             json={
                 "is_new_ticket": is_new_ticket,
-                "ticket_id": 123,
-                "requester_id": 456,
+                "ticket_id": "123",
+                "requester_id": "456",
                 "requester_email": "me@example.com",
                 "requester_phone": None,
             },
@@ -309,6 +309,43 @@ class ZendeskWebhookTest:
         )
 
         assert response.status_code == 400
+        assert response.json["requester_id"] == ["Ce champ est obligatoire"]
+        assert len(users_testing.zendesk_requests) == 0
+
+    def test_webhook_non_integer_requester_id(self, client):
+        user = users_factories.BeneficiaryGrant18Factory()
+
+        response = client.post(
+            "/webhooks/zendesk/ticket_notification",
+            json={
+                "is_new_ticket": True,
+                "ticket_id": "123",
+                "requester_id": "test",
+                "requester_email": user.email,
+                "requester_phone": None,
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json["requester_id.constrained-str"] == ["String should match pattern '^\\d+$'"]
+        assert len(users_testing.zendesk_requests) == 0
+
+    def test_webhook_non_integer_ticket_id(self, client):
+        user = users_factories.BeneficiaryGrant18Factory()
+
+        response = client.post(
+            "/webhooks/zendesk/ticket_notification",
+            json={
+                "is_new_ticket": True,
+                "ticket_id": "test",
+                "requester_id": "456",
+                "requester_email": user.email,
+                "requester_phone": None,
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json["ticket_id.constrained-str"] == ["String should match pattern '^\\d+$'"]
         assert len(users_testing.zendesk_requests) == 0
 
     def test_webhook_missing_email_or_phone(self, client):
@@ -324,4 +361,5 @@ class ZendeskWebhookTest:
         )
 
         assert response.status_code == 400
+        assert response.json["requester_phone"] == ["L'email ou le numéro de téléphone est obligatoire"]
         assert len(users_testing.zendesk_requests) == 0

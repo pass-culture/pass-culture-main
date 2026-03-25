@@ -1,7 +1,14 @@
-import pydantic.v1 as pydantic_v1
+from typing import Annotated
+
+import pydantic as pydantic_v2
+
+from pcapi.serialization.exceptions import PydanticError
 
 
-class WebhookRequest(pydantic_v1.BaseModel):
+IdField = Annotated[str, pydantic_v2.Field(pattern=r"^\d+$")] | int
+
+
+class WebhookRequest(pydantic_v2.BaseModel):
     """
     JSON body in Zendesk configuration for the new ticket trigger:
     {
@@ -17,13 +24,14 @@ class WebhookRequest(pydantic_v1.BaseModel):
     """
 
     is_new_ticket: bool
-    ticket_id: str
-    requester_id: str
-    requester_email: pydantic_v1.EmailStr | None
+    ticket_id: IdField
+    requester_id: IdField
+    requester_email: pydantic_v2.EmailStr | None
     requester_phone: str | None
 
-    @pydantic_v1.validator("requester_phone")
-    def check_email_or_phone(cls, requester_phone: str | None, values: dict) -> str | None:
-        if not values.get("requester_email") and not requester_phone:
-            raise ValueError("L'email ou le numéro de téléphone est obligatoire")
+    @pydantic_v2.field_validator("requester_phone")
+    @classmethod
+    def check_email_or_phone(cls, requester_phone: str | None, info: pydantic_v2.ValidationInfo) -> str | None:
+        if not info.data.get("requester_email") and not requester_phone:
+            raise PydanticError("L'email ou le numéro de téléphone est obligatoire")
         return requester_phone
