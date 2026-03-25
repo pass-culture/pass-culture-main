@@ -354,7 +354,10 @@ class Stock(PcObject, Model, SoftDeletableMixin):
     ]
 
     activationCodes: sa_orm.Mapped[list["ActivationCode"]] = sa_orm.relationship(
-        "ActivationCode", foreign_keys="ActivationCode.stockId", back_populates="stock"
+        "ActivationCode",
+        foreign_keys="ActivationCode.stockId",
+        back_populates="stock",
+        cascade="all, delete-orphan",
     )
     beginningDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
     bookingLimitDatetime = sa_orm.mapped_column(sa.DateTime, nullable=True)
