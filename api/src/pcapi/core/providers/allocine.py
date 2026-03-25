@@ -1,10 +1,18 @@
 import logging
+import traceback
 from typing import Iterator
 
+import sqlalchemy as sa
+
 import pcapi.core.providers.repository as providers_repository
+from pcapi import settings
 from pcapi.connectors import api_allocine
 from pcapi.connectors.big_query.queries.allocine import AllocineMovieQuery
 from pcapi.connectors.serialization import allocine_serializers
+from pcapi.core.object_storage.backends.gcp import GCPBackend
+from pcapi.core.object_storage.backends.gcp import GCPData
+from pcapi.core.object_storage.backends.utils import copy_file_between_storage_backends
+from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.models import Movie
 from pcapi.core.offers.models import OfferExtraData
 from pcapi.core.providers import constants as providers_constants
@@ -48,7 +56,9 @@ def synchronize_products_with_bigquery() -> None:
                 "Allocine movie returned by data", extra={"allocine_id": movie.internalId, "title": movie.title}
             )
             generic_movie = create_generic_movie(movie)
-            upsert_movie_product_from_provider(generic_movie, allocine_products_provider)
+            product = upsert_movie_product_from_provider(generic_movie, allocine_products_provider)
+            if product and generic_movie.poster_uuid:
+                _synchronize_movie_poster(product, allocine_products_provider, generic_movie.poster_uuid)
 
 
 def create_generic_movie(movie: allocine_serializers.AllocineMovie) -> Movie:
@@ -59,9 +69,69 @@ def create_generic_movie(movie: allocine_serializers.AllocineMovie) -> Movie:
         duration=movie.runtime,
         extra_data=movie_data,
         poster_url=movie_data["posterUrl"],
+        poster_uuid=movie.poster_uuid,
         title=movie.title,
         visa=movie_data["visa"],
     )
+
+
+def _synchronize_movie_poster(product: offers_models.Product, provider: Provider, poster_uuid: str) -> None:
+    """
+    Synchronizes the movie poster from the Data bucket to the Backend bucket.
+
+    This function checks if the product already has a poster mediation with the given UUID.
+    If not, it copies the image file from the Data bucket to the Backend bucket and updates the ProductMediation.
+    """
+    existing_poster_mediation = db.session.scalar(
+        sa.select(offers_models.ProductMediation).where(
+            offers_models.ProductMediation.productId == product.id,
+            offers_models.ProductMediation.imageType == offers_models.ImageType.POSTER,
+        )
+    )
+
+    if existing_poster_mediation and existing_poster_mediation.uuid == poster_uuid:
+        return
+
+    try:
+        gcp_data = GCPData()
+        gcp_backend = GCPBackend()
+
+        copied_file_id = copy_file_between_storage_backends(
+            source_storage=gcp_data,
+            destination_storage=gcp_backend,
+            source_folder=settings.DATA_ALLOCINE_POSTERS_FOLDER_NAME,
+            destination_folder=settings.THUMBS_FOLDER_NAME,
+            file_id=poster_uuid,
+        )
+
+        if copied_file_id:
+            with atomic():
+                db.session.execute(
+                    sa.delete(offers_models.ProductMediation).where(
+                        offers_models.ProductMediation.productId == product.id,
+                        offers_models.ProductMediation.imageType == offers_models.ImageType.POSTER,
+                    )
+                )
+
+                mediation = offers_models.ProductMediation(
+                    productId=product.id,
+                    lastProvider=provider,
+                    imageType=offers_models.ImageType.POSTER,
+                    uuid=poster_uuid,
+                )
+                db.session.add(mediation)
+
+    except Exception as err:
+        logger.warning(
+            "Could not synchronize movie poster from GCS",
+            extra={
+                "product_id": product.id,
+                "allocine_id": product.extraData.get("allocineId") if product.extraData else None,
+                "mediation_uuid": poster_uuid,
+                "error": str(err),
+                "traceback": traceback.format_exc(),
+            },
+        )
 
 
 def get_movie_list() -> list[allocine_serializers.AllocineMovie]:

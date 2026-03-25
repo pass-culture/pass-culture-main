@@ -4,7 +4,11 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.connectors.serialization import allocine_serializers
+from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers.models import ImageType
+from pcapi.core.offers.models import OfferExtraData
 from pcapi.core.offers.models import Product
+from pcapi.core.offers.models import ProductMediation
 from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers.allocine import synchronize_products_with_bigquery
 from pcapi.core.providers.models import LocalProviderEvent
@@ -151,3 +155,104 @@ class AllocineSynchronizeProductsWithBigQueryTest:
 
         product = db.session.query(Product).order_by(Product.id).first()
         assert "releaseDate" not in product.extraData
+
+    @patch("pcapi.core.providers.allocine.copy_file_between_storage_backends")
+    @patch("pcapi.core.providers.allocine.GCPBackend")
+    @patch("pcapi.core.providers.allocine.AllocineMovieQuery")
+    def test_synchronize_products_synchronizes_poster(self, MockAllocineMovieQuery, MockGCPBackend, MockCopyFile):
+        movie_data = copy.deepcopy(fixtures.ALLOCINE_MOVIE_LIST_PAGE_1["movieList"]["edges"][0]["node"])
+        movie_data["poster_uuid"] = "test-uuid"
+        movie = allocine_serializers.AllocineMovie.model_validate(movie_data)
+        mock_query_instance = MockAllocineMovieQuery.return_value
+        mock_query_instance.execute.return_value = [movie]
+        MockCopyFile.return_value = "test-uuid"
+
+        synchronize_products_with_bigquery()
+
+        MockCopyFile.assert_called_once()
+        _, kwargs = MockCopyFile.call_args
+        assert kwargs["file_id"] == "test-uuid"
+        product = db.session.query(Product).one()
+        mediation = (
+            db.session.query(ProductMediation)
+            .filter(
+                ProductMediation.productId == product.id,
+                ProductMediation.imageType == ImageType.POSTER,
+            )
+            .one()
+        )
+        assert mediation.uuid == "test-uuid"
+
+    @patch("pcapi.core.providers.allocine.copy_file_between_storage_backends")
+    @patch("pcapi.core.providers.allocine.GCPBackend")
+    @patch("pcapi.core.providers.allocine.AllocineMovieQuery")
+    def test_synchronize_products_does_not_update_poster_if_same_uuid(
+        self, MockAllocineMovieQuery, MockGCPBackend, MockCopyFile
+    ):
+        movie_data = copy.deepcopy(fixtures.ALLOCINE_MOVIE_LIST_PAGE_1["movieList"]["edges"][0]["node"])
+        movie_data["poster_uuid"] = "test-uuid"
+        movie = allocine_serializers.AllocineMovie.model_validate(movie_data)
+        mock_query_instance = MockAllocineMovieQuery.return_value
+        mock_query_instance.execute.return_value = [movie]
+        MockCopyFile.return_value = "test-uuid"
+
+        # First run to create
+        synchronize_products_with_bigquery()
+        MockCopyFile.reset_mock()
+
+        # Second run with same uuid
+        synchronize_products_with_bigquery()
+        MockCopyFile.assert_not_called()
+
+    @patch("pcapi.core.providers.allocine.copy_file_between_storage_backends")
+    @patch("pcapi.core.providers.allocine.GCPBackend")
+    @patch("pcapi.core.providers.allocine.AllocineMovieQuery")
+    def test_synchronize_products_updates_poster_when_uuid_changes(
+        self, MockAllocineMovieQuery, MockGCPBackend, MockCopyFile
+    ):
+        allocine_id = fixtures.ALLOCINE_MOVIE_LIST_PAGE_1["movieList"]["edges"][0]["node"]["internalId"]
+        extra_data = OfferExtraData(allocineId=allocine_id)
+        product = offers_factories.ProductFactory(
+            lastProviderId=self.allocine_provider.id,
+            extraData=extra_data,
+        )
+        old_mediation = offers_factories.ProductMediationFactory(
+            product=product,
+            lastProviderId=self.allocine_provider.id,
+            imageType=ImageType.POSTER,
+            uuid="old-uuid",
+        )
+        old_mediation_id = old_mediation.id
+        movie_data = copy.deepcopy(fixtures.ALLOCINE_MOVIE_LIST_PAGE_1["movieList"]["edges"][0]["node"])
+        movie_data["poster_uuid"] = "new-uuid"
+        movie = allocine_serializers.AllocineMovie.model_validate(movie_data)
+        mock_query_instance = MockAllocineMovieQuery.return_value
+        mock_query_instance.execute.return_value = [movie]
+        MockCopyFile.return_value = "new-uuid"
+
+        synchronize_products_with_bigquery()
+
+        MockCopyFile.assert_called_once()
+        _, kwargs = MockCopyFile.call_args
+        assert kwargs["file_id"] == "new-uuid"
+        new_mediation = (
+            db.session.query(ProductMediation)
+            .filter(
+                ProductMediation.productId == product.id,
+                ProductMediation.imageType == ImageType.POSTER,
+            )
+            .one()
+        )
+        assert new_mediation.uuid == "new-uuid"
+        assert new_mediation.id != old_mediation_id
+
+        # Verify there's only one mediation (old one was deleted)
+        all_mediations = (
+            db.session.query(ProductMediation)
+            .filter(
+                ProductMediation.productId == product.id,
+                ProductMediation.imageType == ImageType.POSTER,
+            )
+            .all()
+        )
+        assert len(all_mediations) == 1

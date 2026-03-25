@@ -302,6 +302,7 @@ class AllocineMovie(pydantic.BaseModel):
     type: str
     runtime: int | None
     poster: AllocineMoviePoster | None
+    poster_uuid: str | None = None
     synopsis: str
     releases: list[AllocineMovieRelease]
     credits: list[AllocineMovieCredit]
