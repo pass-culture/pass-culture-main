@@ -29,7 +29,7 @@ runs:
         driver: docker
 
     - name: Build docker image
-      uses: docker/build-push-action@v6
+      uses: docker/build-push-action@v7
       with:
         push: false
         context: ${{ inputs.context }}
