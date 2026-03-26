@@ -4,7 +4,10 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { GetOffererNameResponseModel } from '@/apiClient/v1'
+import type {
+  GetOffererNameResponseModel,
+  VenueListItemLiteResponseModel,
+} from '@/apiClient/v1'
 import {
   SAVED_OFFERER_ID_KEY,
   SAVED_VENUE_ID_KEY,
@@ -60,11 +63,9 @@ export const setSelectedOffererById = createAsyncThunk<
         offerersNamesWithPendingValidation
       )
 
-      const venues = shouldRefetch
-        ? (await api.getVenuesLite()).venues
-        : ensureVenues(state)
-
+      let venues: VenueListItemLiteResponseModel[]
       if (shouldRefetch) {
+        const venuesResponse = await api.getVenuesLite()
         dispatch(
           updateOffererNames({
             offerersNames: offererNamesValidated,
@@ -72,7 +73,12 @@ export const setSelectedOffererById = createAsyncThunk<
               offerersNamesWithPendingValidation,
           })
         )
-        dispatch(setVenues(venues))
+        dispatch(setVenues(venuesResponse))
+        venues = venuesResponse.venues.concat(
+          venuesResponse.venuesWithPendingValidation
+        )
+      } else {
+        venues = ensureVenues(state)
       }
 
       const previousSelectedOfferer = state.offerer.currentOfferer

@@ -44,8 +44,9 @@ describe('setSelectedVenueById', () => {
       offererNames: [
         getOffererNameFactory({ id: 100 }),
         getOffererNameFactory({ id: 200 }),
+        getOffererNameFactory({ id: 300 }),
       ],
-      offerersNamesWithPendingValidation: [],
+      offerersNamesWithPendingValidation: [getOffererNameFactory({ id: 300 })],
     },
     user: {
       access: null,
@@ -65,6 +66,18 @@ describe('setSelectedVenueById', () => {
           id: 201,
           name: 'V2',
           managingOffererId: 200,
+        }),
+        makeVenueListItemLiteResponseModel({
+          id: 301,
+          name: 'V3',
+          managingOffererId: 300,
+        }),
+      ],
+      venuesWithPendingValidation: [
+        makeVenueListItemLiteResponseModel({
+          id: 301,
+          name: 'V3',
+          managingOffererId: 300,
         }),
       ],
     },
@@ -152,7 +165,27 @@ describe('setSelectedVenueById', () => {
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('101')
   })
 
-  it('should throw when offererNamesValidated is null', async () => {
+  it('should not call getVenue, getOfferer, and set access to unattached when offerer is not attached', async () => {
+    const store = configureTestStore(storeDataBase)
+
+    await store
+      .dispatch(setSelectedVenueById({ nextSelectedVenueId: 301 }))
+      .unwrap()
+
+    expect(api.getVenue).toHaveBeenCalledTimes(0)
+    expect(api.getOfferer).toHaveBeenCalledTimes(0)
+
+    const state = store.getState()
+    expect(state.user.access).toBe('unattached')
+    expect(state.offerer.currentOfferer?.id).toBe(300)
+    expect(state.offerer.currentOffererName?.id).toBe(300)
+    expect(state.user.selectedVenue?.id).toBe(301)
+
+    expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBe('300')
+    expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('301')
+  })
+
+  it('should throw when offererNames is null', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
     const logoutSpy = vi.spyOn(logoutModule, 'logout')
@@ -161,7 +194,7 @@ describe('setSelectedVenueById', () => {
       ...storeDataBase,
       offerer: {
         ...storeDataBase.offerer!,
-        offererNamesValidated: null,
+        offererNames: null,
       },
     })
 
@@ -229,6 +262,7 @@ describe('setSelectedVenueById', () => {
             managingOffererId: 200,
           }),
         ],
+        venuesWithPendingValidation: null,
       },
     })
 

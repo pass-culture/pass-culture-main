@@ -21,6 +21,7 @@ type UserState = {
   // TODO (igabriele, 2026-02-04): Rename that to `selectedPartnerVenue`.
   selectedVenue: GetVenueResponseModel | null
   venues: VenueListItemLiteResponseModel[] | null
+  venuesWithPendingValidation: VenueListItemLiteResponseModel[] | null
 }
 
 export const initialState: UserState = {
@@ -29,6 +30,12 @@ export const initialState: UserState = {
   selectedAdminOfferer: null,
   selectedVenue: null,
   venues: null,
+  venuesWithPendingValidation: null,
+}
+
+type UpdateVenuesPayload = {
+  venues: VenueListItemLiteResponseModel[] | null
+  venuesWithPendingValidation: VenueListItemLiteResponseModel[] | null
 }
 
 const userSlice = createSlice({
@@ -64,11 +71,13 @@ const userSlice = createSlice({
       state.selectedVenue = action.payload
     },
 
-    setVenues(
-      state: UserState,
-      action: PayloadAction<VenueListItemLiteResponseModel[] | null>
-    ) {
-      state.venues = action.payload
+    setVenues(state: UserState, action: PayloadAction<UpdateVenuesPayload>) {
+      state.venues =
+        action.payload.venues?.concat(
+          action.payload.venuesWithPendingValidation ?? []
+        ) ?? null
+      state.venuesWithPendingValidation =
+        action.payload.venuesWithPendingValidation
     },
   },
 })
