@@ -313,7 +313,7 @@ jobs:
       # (the same key is not enough - cf https://github.com/actions/cache/blob/main/README.md#cache-version).
       - name: Restore test durations
         id: restore-test-durations
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: /tests/.test_durations
           key: tests-durations-${{ steps.get-date.outputs.date }}
