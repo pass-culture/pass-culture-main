@@ -1,15 +1,17 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { useRevalidator, useSearchParams } from 'react-router'
+import { useNavigate, useSearchParams } from 'react-router'
 
 import { apiNew } from '@/apiClient/api'
 import { HTTP_STATUS, isErrorAPIError } from '@/apiClient/helpers'
 import { SignUpLayout } from '@/app/App/layouts/logged-out/SignUpLayout/SignUpLayout'
+import { getUserDefaultPath } from '@/app/AppRouter/utils/getUserDefaultPath'
 import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
@@ -38,7 +40,7 @@ export const SignIn = (): JSX.Element => {
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
   const snackBar = useSnackBar()
-  const revalidator = useRevalidator()
+  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const [hasApiError, setHasApiError] = useState(false)
   const dispatch = useAppDispatch()
@@ -72,12 +74,11 @@ export const SignIn = (): JSX.Element => {
         },
       })
 
-      if (user) {
-        await dispatch(initializeUser(user)).unwrap()
-        if (withSwitchVenueFeature) {
-          // Re-evaluate routing middleware permissions to automatically redirect the user to its new permissions-allowed default path
-          await revalidator.revalidate()
-        }
+      assertOrFrontendError(user, '`user` is undefined.')
+      await dispatch(initializeUser(user)).unwrap()
+
+      if (withSwitchVenueFeature) {
+        navigate(getUserDefaultPath())
       }
     } catch (error) {
       if (isErrorAPIError(error) || error === RECAPTCHA_ERROR) {

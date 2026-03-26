@@ -3,6 +3,7 @@ import { type LoaderFunctionArgs, redirect } from 'react-router'
 import { isFeatureActive } from '@/commons/store/features/selectors'
 import { rootStore } from '@/commons/store/store'
 
+import { getUserDefaultPath } from '../../app/AppRouter/utils/getUserDefaultPath'
 import { getCurrentUserPermissions } from './getCurrentUserPermissions'
 import type { UserPermissions } from './types'
 
@@ -18,28 +19,8 @@ export const withUserPermissions = (
     }
 
     const userPermissions = getCurrentUserPermissions()
-    const hasVenues = state.user.venues && state.user.venues.length > 0
-
     if (!requireUserPermissions(userPermissions)) {
-      switch (true) {
-        case !userPermissions.isAuthenticated:
-          return redirect('/connexion')
-
-        case !hasVenues:
-          return redirect('/inscription/structure/recherche')
-
-        case !userPermissions.hasSelectedVenue:
-          return redirect('/hub')
-
-        case !userPermissions.isSelectedVenueAssociated:
-          return redirect('/rattachement-en-cours')
-
-        case !userPermissions.isOnboarded:
-          return redirect('/onboarding')
-
-        default:
-          return redirect('/accueil')
-      }
+      throw redirect(getUserDefaultPath())
     }
 
     return loader?.(args) ?? null

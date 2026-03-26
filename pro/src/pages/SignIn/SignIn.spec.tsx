@@ -43,6 +43,10 @@ vi.mock('@/commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(),
 }))
 
+vi.mock('@/app/AppRouter/utils/getUserDefaultPath', () => ({
+  getUserDefaultPath: vi.fn(() => '/accueil'),
+}))
+
 const mockLogEvent = vi.fn()
 
 const renderSignIn = (options?: RenderWithProvidersOptions) => {
@@ -221,6 +225,34 @@ describe('SignIn', () => {
       },
     })
     expect(initializeUserSpy).toHaveBeenCalledExactlyOnceWith({})
+  })
+
+  it('should navigate to user default path on successful login with WIP_SWITCH_VENUE', async () => {
+    const mockNavigate = vi.fn()
+    vi.spyOn(await import('react-router'), 'useNavigate').mockReturnValue(
+      mockNavigate
+    )
+    const mockThunk: any = () => {
+      const promise = Promise.resolve() as any
+      promise.unwrap = () => Promise.resolve()
+      return promise
+    }
+    vi.spyOn(initializeUserModule, 'initializeUser').mockReturnValueOnce(
+      mockThunk
+    )
+
+    renderSignIn({ features: ['API_SIRENE_AVAILABLE', 'WIP_SWITCH_VENUE'] })
+
+    await userEvent.type(
+      screen.getByRole('textbox', { name: 'Adresse email' }),
+      'email@example.com'
+    )
+    await userEvent.type(screen.getByLabelText('Mot de passe'), 'fakePassword')
+    await userEvent.click(screen.getByRole('button', { name: 'Se connecter' }))
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('/accueil')
+    })
   })
 
   it('should display errors message and focus email input when login failed', async () => {
