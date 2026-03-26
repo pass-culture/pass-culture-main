@@ -89,7 +89,7 @@ jobs:
         env:
           PCAPI_UID: 1000
           PCAPI_GID: 1000
-      - uses: KengoTODA/actions-setup-docker-compose@v1
+      - uses: KengoTODA/actions-setup-docker-compose@477353946803dd64eaa44008b865b6bfc88cab4e # v1.2.4
         with:
           version: '2.40.3'
       - name: "Run API"
