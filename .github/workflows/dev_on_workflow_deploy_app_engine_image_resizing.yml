@@ -72,7 +72,7 @@ jobs:
         uses: "google-github-actions/setup-gcloud@v3"
       - name: "Get Secret"
         id: "secrets"
-        uses: "google-github-actions/get-secretmanager-secrets@v3"
+        uses: google-github-actions/get-secretmanager-secrets@bc9c54b29fdffb8a47776820a7d26e77b379d262 # v3.0.0
         with:
           secrets: |-
             APP_ENGINE_WORKLOAD_IDENTITY_PROVIDER:${{ inputs.workload_identity_provider_secret_name }}
