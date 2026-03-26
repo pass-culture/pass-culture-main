@@ -82,9 +82,11 @@
           {% endfor %}
         </td>
         {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") or has_permission("READ_PRO_REIMBURSEMENT_SUSPENSION") %}
-          <td class="d-flex flex-column">
-            {{ build_fraudulent_booking_badge(row.has_fraudulent_booking, "Réservations frauduleuses") }}
-            {{ build_reimboursement_supspended_badge(venue.isReimbursementSuspended) }}
+          <td>
+            <div class="d-flex flex-column">
+              {{ build_fraudulent_booking_badge(row.has_fraudulent_booking, "Réservations frauduleuses") }}
+              {{ build_reimboursement_supspended_badge(venue.isReimbursementSuspended) }}
+            </div>
           </td>
         {% endif %}
       </tr>
