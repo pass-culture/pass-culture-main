@@ -64,7 +64,7 @@ jobs:
         run: echo "image_name=$IMAGE:$TAG" | tee -a "${GITHUB_OUTPUT}"
       - name: "Download artifact"
         if: ${{ inputs.tag != 'latest' }}
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           name: ${{ inputs.image }}-${{ inputs.tag }}.tar
           path: ${{ runner.temp }}
