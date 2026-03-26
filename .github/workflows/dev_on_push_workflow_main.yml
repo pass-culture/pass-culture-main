@@ -21,7 +21,7 @@ jobs:
       push-tags: ${{ steps.pcapi-tags.outputs.push-tags }}
       checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
           fetch-tags: false
@@ -89,7 +89,7 @@ jobs:
       maintenance-site-changed: ${{ steps.check-maintenance-site-changes.outputs.any_modified }}
       db-migrations-changed: ${{ steps.check-db-migrations-changes.outputs.any_modified }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
           fetch-tags: false
@@ -220,7 +220,7 @@ jobs:
       GIT_CONFIG_NAME: ${{ github.actor }}
     steps:
       - name: Checkout ref
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         
       - name: Configure git author
         run: |
