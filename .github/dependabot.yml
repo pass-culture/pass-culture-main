@@ -163,10 +163,6 @@ updates:
     cooldown:
       # The property 'semver-major-days' is not supported for the package ecosystem 'github-actions'.
       default-days: 14
-    ignore:
-      - dependency-name: 'flask'
-        update-types:
-          - "version-update:semver-major"
     groups:
       not-ours:
         # Open PRs for each major and minor versions
