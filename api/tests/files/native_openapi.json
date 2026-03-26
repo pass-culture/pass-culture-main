@@ -2897,6 +2897,44 @@
                 "title": "DeviceInfo",
                 "type": "object"
             },
+            "DeviceInfoV2": {
+                "additionalProperties": false,
+                "properties": {
+                    "deviceId": {
+                        "title": "Deviceid",
+                        "type": "string"
+                    },
+                    "os": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Os"
+                    },
+                    "source": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Source"
+                    }
+                },
+                "required": [
+                    "deviceId"
+                ],
+                "title": "DeviceInfoV2",
+                "type": "object"
+            },
             "DomainsCredit": {
                 "additionalProperties": false,
                 "properties": {
@@ -7030,6 +7068,41 @@
                 "title": "SigninRequest",
                 "type": "object"
             },
+            "SigninRequestV2": {
+                "additionalProperties": false,
+                "properties": {
+                    "deviceInfo": {
+                        "$ref": "#/components/schemas/DeviceInfoV2"
+                    },
+                    "identifier": {
+                        "title": "Identifier",
+                        "type": "string"
+                    },
+                    "password": {
+                        "title": "Password",
+                        "type": "string"
+                    },
+                    "token": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Token"
+                    }
+                },
+                "required": [
+                    "identifier",
+                    "password",
+                    "deviceInfo"
+                ],
+                "title": "SigninRequestV2",
+                "type": "object"
+            },
             "SigninResponse": {
                 "additionalProperties": false,
                 "properties": {
@@ -7051,6 +7124,29 @@
                     "accountState"
                 ],
                 "title": "SigninResponse",
+                "type": "object"
+            },
+            "SigninResponseV2": {
+                "additionalProperties": false,
+                "properties": {
+                    "accessToken": {
+                        "title": "Accesstoken",
+                        "type": "string"
+                    },
+                    "accountState": {
+                        "$ref": "#/components/schemas/AccountState"
+                    },
+                    "refreshToken": {
+                        "title": "Refreshtoken",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "refreshToken",
+                    "accessToken",
+                    "accountState"
+                ],
+                "title": "SigninResponseV2",
                 "type": "object"
             },
             "SimilarOffersRequestQuery": {
@@ -12763,6 +12859,56 @@
                     }
                 ],
                 "summary": "get_available_reactions <GET>",
+                "tags": []
+            }
+        },
+        "/native/v2/signin": {
+            "post": {
+                "description": "",
+                "operationId": "post__native_v2_signin",
+                "parameters": [],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SigninRequestV2"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SigninResponseV2"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "summary": "signin <POST>",
                 "tags": []
             }
         },
