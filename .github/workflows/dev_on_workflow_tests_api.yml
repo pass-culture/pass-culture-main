@@ -541,7 +541,7 @@ jobs:
       # Finally, we cache the new test durations. This file will be restored in next CI execution
       # (see step "Restore test durations" above).
       - name: Cache final test durations
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: ${{ runner.temp }}/.test_durations
           key: tests-durations-${{ steps.get-date.outputs.date }}-${{ github.run_id }}
