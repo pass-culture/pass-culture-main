@@ -1161,12 +1161,12 @@
   resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.9.tgz#50dea3616bc8191fb8e112283b49eaff03e78429"
   integrity sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg==
 
-"@hey-api/codegen-core@0.7.1":
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/@hey-api/codegen-core/-/codegen-core-0.7.1.tgz#c83dd7e9bdf4225ed4560cb5198780f8cfb13686"
-  integrity sha512-X5qG+rr/BJvr+pEGcoW6l2azoZGrVuxsviEIhuf+3VwL9bk0atfubT65Xwo+4jDxXvjbhZvlwS0Ty3I7mLE2fg==
+"@hey-api/codegen-core@0.7.4":
+  version "0.7.4"
+  resolved "https://registry.yarnpkg.com/@hey-api/codegen-core/-/codegen-core-0.7.4.tgz#58ba500653ee0675c67f7199e1dadf1ac9b0230d"
+  integrity sha512-DGd9yeSQzflOWO3Y5mt1GRXkXH9O/yIMgbxPjwLI3jwu/3nAjoXXD26lEeFb6tclYlg0JAqTIs5d930G/qxHeA==
   dependencies:
-    "@hey-api/types" "0.1.3"
+    "@hey-api/types" "0.1.4"
     ansi-colors "4.1.3"
     c12 "3.3.3"
     color-support "1.1.3"
@@ -1180,36 +1180,37 @@
     "@types/json-schema" "7.0.15"
     js-yaml "4.1.1"
 
-"@hey-api/openapi-ts@0.94.0":
-  version "0.94.0"
-  resolved "https://registry.yarnpkg.com/@hey-api/openapi-ts/-/openapi-ts-0.94.0.tgz#ec82117127f9e20a812cd98818d3cca98c53f5cf"
-  integrity sha512-dbg3GG+v7sg9/Ahb7yFzwzQIJwm151JAtsnh9KtFyqiN0rGkMGA3/VqogEUq1kJB9XWrlMQwigwzhiEQ33VCSg==
+"@hey-api/openapi-ts@0.94.3":
+  version "0.94.3"
+  resolved "https://registry.yarnpkg.com/@hey-api/openapi-ts/-/openapi-ts-0.94.3.tgz#7a94968ca1813a6841cc4b3d942f2c77921c9a5c"
+  integrity sha512-aq6dEbS3IkCEV+lBueFYrQyWc21lonb+AKJcmiAmStmxCkbwq4bu3Ro51Nmuqp5Ske5T4FdaOvwWTH0BdJj9ZQ==
   dependencies:
-    "@hey-api/codegen-core" "0.7.1"
+    "@hey-api/codegen-core" "0.7.4"
     "@hey-api/json-schema-ref-parser" "1.3.1"
-    "@hey-api/shared" "0.2.2"
-    "@hey-api/types" "0.1.3"
+    "@hey-api/shared" "0.2.5"
+    "@hey-api/types" "0.1.4"
     ansi-colors "4.1.3"
     color-support "1.1.3"
     commander "14.0.3"
+    get-tsconfig "4.13.6"
 
-"@hey-api/shared@0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@hey-api/shared/-/shared-0.2.2.tgz#b3aefc2798e3918744b094476e9fc514e1b4fb77"
-  integrity sha512-vMqCS+j7F9xpWoXC7TBbqZkaelwrdeuSB+s/3elu54V5iq++S59xhkSq5rOgDIpI1trpE59zZQa6dpyUxItOgw==
+"@hey-api/shared@0.2.5":
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/@hey-api/shared/-/shared-0.2.5.tgz#0bbe7558bebc2206842939c43ad9aa37024c9377"
+  integrity sha512-NS57dHXxhwBtenPWAzljA0I493ZxzjcZZtr8KFr8SsLboofdjcAbVRFAfOQ0iv2JMhOe9oyiWEEc1QOJ/9WWaw==
   dependencies:
-    "@hey-api/codegen-core" "0.7.1"
+    "@hey-api/codegen-core" "0.7.4"
     "@hey-api/json-schema-ref-parser" "1.3.1"
-    "@hey-api/types" "0.1.3"
+    "@hey-api/types" "0.1.4"
     ansi-colors "4.1.3"
     cross-spawn "7.0.6"
     open "11.0.0"
     semver "7.7.3"
 
-"@hey-api/types@0.1.3":
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/@hey-api/types/-/types-0.1.3.tgz#4bd16f4e6eb27a0bd1f0da8a96e8b991b92b99c4"
-  integrity sha512-mZaiPOWH761yD4GjDQvtjS2ZYLu5o5pI1TVSvV/u7cmbybv51/FVtinFBeaE1kFQCKZ8OQpn2ezjLBJrKsGATw==
+"@hey-api/types@0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@hey-api/types/-/types-0.1.4.tgz#d73731c8ffb5d5b898c01288ca7dfbc367b561ea"
+  integrity sha512-thWfawrDIP7wSI9ioT13I5soaaqB5vAPIiZmgD8PbeEVKNrkonc0N/Sjj97ezl7oQgusZmaNphGdMKipPO6IBg==
 
 "@hookform/devtools@4.4.0":
   version "4.4.0"
@@ -3655,7 +3656,7 @@ get-proto@^1.0.1:
     dunder-proto "^1.0.1"
     es-object-atoms "^1.0.0"
 
-get-tsconfig@^4.13.1:
+get-tsconfig@4.13.6, get-tsconfig@^4.13.1:
   version "4.13.6"
   resolved "https://registry.yarnpkg.com/get-tsconfig/-/get-tsconfig-4.13.6.tgz#2fbfda558a98a691a798f123afd95915badce876"
   integrity sha512-shZT/QMiSHc/YBLxxOkMtgSid5HFoauqCE3/exfsEcwg1WkeqjG+V40yBbBrsD+jW2HDXcs28xOfcbm2jI8Ddw==
