@@ -65,7 +65,7 @@ This action submits an Argo Workflow using the template `wfw-pcapi-full-deploy` 
 This action depends on several external actions and tools:
 - `azure/setup-kubectl@v4` - For installing kubectl
 - `google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0` - For GCP authentication
-- `google-github-actions/get-gke-credentials@v3` - For GKE cluster authentication
+- `google-github-actions/get-gke-credentials@3da1e46a907576cefaa90c484278bb5b259dd395 # v3.0.0` - For GKE cluster authentication
 - Argo Workflows CLI v3.6.5 - Downloaded and installed during execution
 
 ## Namespace
