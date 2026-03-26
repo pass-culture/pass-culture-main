@@ -69,7 +69,7 @@ jobs:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Set up Cloud SDK"
-        uses: "google-github-actions/setup-gcloud@v3"
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
       - name: "Get Secret"
         id: "secrets"
         uses: google-github-actions/get-secretmanager-secrets@bc9c54b29fdffb8a47776820a7d26e77b379d262 # v3.0.0
@@ -84,7 +84,7 @@ jobs:
           workload_identity_provider: ${{ steps.secrets.outputs.APP_ENGINE_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ steps.secrets.outputs.APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT }}
       - name: "Set up Cloud SDK ${{ inputs.environment }} App Engine"
-        uses: "google-github-actions/setup-gcloud@v3"
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
       - name: "Add sha to image-resizing"
         if: inputs.environment == 'testing'
         working-directory: app-engine/image-resizing
