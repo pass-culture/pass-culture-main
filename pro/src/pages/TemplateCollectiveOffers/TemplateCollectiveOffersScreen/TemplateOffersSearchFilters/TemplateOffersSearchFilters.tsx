@@ -78,7 +78,7 @@ export const TemplateOffersSearchFilters = ({
     GetOffererAddressesWithOffersOption.COLLECTIVE_OFFER_TEMPLATES_ONLY
   )
   const venueAddressQuery = useVenueAddresses(
-    GetVenueAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
+    GetVenueAddressesWithOffersOption.COLLECTIVE_OFFER_TEMPLATES_ONLY
   )
   const offererAddresses = formatAndOrderAddresses(
     withSwitchVenueFeature ? venueAddressQuery.data : offererAddressQuery.data
