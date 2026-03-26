@@ -3,7 +3,6 @@ import * as reactRouter from 'react-router'
 
 import * as storeModule from '@/commons/store/store'
 import { configureTestStore } from '@/commons/store/testUtils'
-import type { UserAccess } from '@/commons/store/user/reducer'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
@@ -21,8 +20,11 @@ vi.mock('react-router', async () => {
   }
 })
 
+vi.mock('@/app/AppRouter/utils/getUserDefaultPath', () => ({
+  getUserDefaultPath: vi.fn(() => '/mocked-default-path'),
+}))
+
 const setupStore = (options: {
-  access?: UserAccess | null
   hasUser?: boolean
   hasVenueSelected?: boolean
   isFeatureActive?: boolean
@@ -35,7 +37,7 @@ const setupStore = (options: {
         : [],
     },
     user: {
-      access: options.access ?? null,
+      access: null,
       currentUser: options.hasUser ? sharedCurrentUserFactory() : null,
       selectedAdminOfferer: null,
       selectedVenue: options.hasVenueSelected
@@ -97,7 +99,6 @@ describe('withUserPermissions', () => {
           isFeatureActive: true,
           hasUser: true,
           hasVenueSelected: true,
-          access: 'full',
           hasVenue: true,
         })
         const mockLoader = vi.fn(() => 'loader result')
@@ -116,7 +117,6 @@ describe('withUserPermissions', () => {
           isFeatureActive: true,
           hasUser: true,
           hasVenueSelected: true,
-          access: 'full',
           hasVenue: true,
         })
         const permissionCheck = (_: UserPermissions) => true
@@ -130,100 +130,16 @@ describe('withUserPermissions', () => {
     })
 
     describe('when user is not allowed', () => {
-      it('should redirect to /connexion when not authenticated', () => {
+      it('should redirect to the user default path', () => {
         setupStore({ isFeatureActive: true, hasUser: false })
         const permissionCheck = (_: UserPermissions) => false
         const args = createMockLoaderArgs('http://localhost/some-page')
 
         const guardedLoader = withUserPermissions(permissionCheck)
-        guardedLoader(args)
 
-        expect(reactRouter.redirect).toHaveBeenCalledWith('/connexion')
-      })
-
-      it('should redirect to /hub when authenticated but no venue selected', () => {
-        setupStore({
-          isFeatureActive: true,
-          hasUser: true,
-          hasVenueSelected: false,
-          hasVenue: true,
-        })
-        const permissionCheck = (_: UserPermissions) => false
-        const args = createMockLoaderArgs('http://localhost/some-page')
-
-        const guardedLoader = withUserPermissions(permissionCheck)
-        guardedLoader(args)
-
-        expect(reactRouter.redirect).toHaveBeenCalledWith('/hub')
-      })
-
-      it('should redirect to /rattachement-en-cours when venue is unattached', () => {
-        setupStore({
-          isFeatureActive: true,
-          hasUser: true,
-          hasVenueSelected: true,
-          access: 'unattached',
-          hasVenue: true,
-        })
-        const permissionCheck = (_: UserPermissions) => false
-        const args = createMockLoaderArgs('http://localhost/some-page')
-
-        const guardedLoader = withUserPermissions(permissionCheck)
-        guardedLoader(args)
-
+        expect(() => guardedLoader(args)).toThrow()
         expect(reactRouter.redirect).toHaveBeenCalledWith(
-          '/rattachement-en-cours'
-        )
-      })
-
-      it('should redirect to /onboarding when user is not onboarded', () => {
-        setupStore({
-          isFeatureActive: true,
-          hasUser: true,
-          hasVenueSelected: true,
-          access: 'no-onboarding',
-          hasVenue: true,
-        })
-        const permissionCheck = (_: UserPermissions) => false
-        const args = createMockLoaderArgs('http://localhost/some-page')
-
-        const guardedLoader = withUserPermissions(permissionCheck)
-        guardedLoader(args)
-
-        expect(reactRouter.redirect).toHaveBeenCalledWith('/onboarding')
-      })
-
-      it('should redirect to /accueil when user has full access but is not allowed', () => {
-        setupStore({
-          isFeatureActive: true,
-          hasUser: true,
-          hasVenueSelected: true,
-          access: 'full',
-          hasVenue: true,
-        })
-        const permissionCheck = (_: UserPermissions) => false
-        const args = createMockLoaderArgs('http://localhost/some-page')
-
-        const guardedLoader = withUserPermissions(permissionCheck)
-        guardedLoader(args)
-
-        expect(reactRouter.redirect).toHaveBeenCalledWith('/accueil')
-      })
-      it('should redirect to inscription/structure/recherche when user has no venues', () => {
-        setupStore({
-          isFeatureActive: true,
-          hasUser: true,
-          hasVenue: false,
-          access: 'full',
-        })
-        const permissionCheck = (_: UserPermissions) => false
-        const args = createMockLoaderArgs('http://localhost/some-page')
-
-        const guardedLoader = withUserPermissions(permissionCheck)
-        guardedLoader(args)
-
-        expect(reactRouter.redirect).toHaveBeenCalledWith(
-          '/inscription/structure/recherche'
+          '/mocked-default-path'
         )
       })
     })
