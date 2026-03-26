@@ -143,6 +143,9 @@ class FeatureToggle(enum.Enum):
     WIP_PRE_SIGNUP_INFO = (
         "Activer le nouveau sas d'information avant inscription des partenaires culturels sur le portail pro"
     )
+    WIP_PRE_SIGNUP_SIMULATION = (
+        "Activer le parcours de simulation de documents avant inscription des partenaires culturels sur le portail pro"
+    )
     WIP_PRO_AUTONOMOUS_ANONYMIZATION = (
         "Activer la fonctionnalité d'anonymisation autonome des données personnelles depuis le portail pro"
     )
@@ -219,6 +222,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_OFFER_ARTISTS,
     FeatureToggle.WIP_OFFER_RECOMMENDATION_PRO,
     FeatureToggle.WIP_PRE_SIGNUP_INFO,
+    FeatureToggle.WIP_PRE_SIGNUP_SIMULATION,
     FeatureToggle.WIP_PRO_AUTONOMOUS_ANONYMIZATION,
     FeatureToggle.WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY,
     FeatureToggle.WIP_SWITCH_VENUE,
