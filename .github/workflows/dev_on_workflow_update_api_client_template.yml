@@ -78,7 +78,7 @@ jobs:
           echo "::notice:: Running update api client template with $IMAGE:$TAG"
       - name: "Download artifact"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           name: ${{ inputs.image }}-${{ inputs.PCAPI_DOCKER_TAG }}.tar
           path: ${{ runner.temp }}
