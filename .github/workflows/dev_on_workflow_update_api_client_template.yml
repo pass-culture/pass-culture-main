@@ -56,7 +56,7 @@ jobs:
             echo "should-run-cache=false" | tee -a "$GITHUB_OUTPUT"
           fi
         shell: bash
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         with:
           node-version-file: "pro/package.json"
