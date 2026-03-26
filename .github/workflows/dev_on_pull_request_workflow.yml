@@ -49,7 +49,7 @@ jobs:
         uses: pass-culture/common-workflows/actions/actionlint-check@5f7b7837d099ddbb8e4f2e15400434d41d78c51b
       - name: "Check api folder changes"
         id: check-api-changes
-        uses: tj-actions/changed-files@v47
+        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
         with:
           files: |
             api/**
@@ -60,18 +60,18 @@ jobs:
             !api/src/pcapi/scripts/**/main.sql
       - name: "Check api documentation folder changes"
         id: check-api-documentation-changes
-        uses: tj-actions/changed-files@v47
+        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
         with:
           files: api/documentation/**
       - name: "Check api script test folder changes"
         id: check-api-script-test-changes
-        uses: tj-actions/changed-files@v47
+        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
         with:
           files: |
             api/tests/scripts/**/test_main.py
       - name: "Check pro folder changes"
         id: check-pro-changes
-        uses: tj-actions/changed-files@v47
+        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
         with:
           files: |
             .github/workflows/dev_on_pull_request_workflow.yml
@@ -80,14 +80,14 @@ jobs:
             pro/**
       - name: "Check changes in dependencies (frontend + backend)"
         id: check-dependencies-changes
-        uses: tj-actions/changed-files@v47
+        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
         with:
           files: |
             api/poetry.lock
             pro/yarn.lock
       - name: "Check changes in .github"
         id: check-github-changes
-        uses: tj-actions/changed-files@v47
+        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
         with:
           files: |
             .github/**
