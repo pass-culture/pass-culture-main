@@ -59,7 +59,7 @@ jobs:
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version-file: "pro/package.json"
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@5f7b7837d099ddbb8e4f2e15400434d41d78c51b
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
       - name: "OpenID Connect Authentication"
         id: "openid-auth"
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0

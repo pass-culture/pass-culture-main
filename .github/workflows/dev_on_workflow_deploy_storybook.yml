@@ -15,7 +15,7 @@ jobs:
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version-file: "pro/package.json"
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@5f7b7837d099ddbb8e4f2e15400434d41d78c51b
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
       - name: "Install dependencies"
         working-directory: pro
         # we cannot use an action like nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2 along with `working-directory`
