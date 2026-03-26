@@ -7,6 +7,7 @@ export enum LOCAL_STORAGE_KEY {
   SELECTED_VENUE_ID = 'PASS_CULTURE_SELECTED_VENUE_ID',
   SELECTED_ADMIN_OFFERER_ID = 'PASS_CULTURE_SELECTED_ADMIN_OFFERER_ID',
   LAST_VISITED_HOMEPAGE_TABS = 'PASS_CULTURE_LAST_VISITED_HOMEPAGE_TABS',
+  HAS_SEEN_VOLUNTEERING_SECTION = 'PASS_CULTURE_HAS_SEEN_VOLUNTEERING_SECTION',
 
   // Legacy keys (will be removed in the future)
   // TODO (igabriele, 2026-02-04): Move this key to a `LOCAL_STORAGE_KEY_TO_PRUNE` once `WIP_SWITCH_VENUE` FF is enabled and removed.
@@ -15,6 +16,14 @@ export enum LOCAL_STORAGE_KEY {
 }
 
 export const PASS_CULTURE_PREFIX = 'PASS_CULTURE_'
+
+/**
+ * Keys that should persist across logout.
+ */
+const PERSISTENT_KEYS = new Set<string>([
+  // TODO (tpommellet, 2026-05-01): Remove this key once volunteering GTM period is over.
+  LOCAL_STORAGE_KEY.HAS_SEEN_VOLUNTEERING_SECTION,
+])
 
 export const localStorageManager = {
   getItem: (key: LOCAL_STORAGE_KEY): string | null => {
@@ -47,7 +56,10 @@ export const localStorageManager = {
     }
 
     Object.keys(localStorage)
-      .filter((key) => key.startsWith(PASS_CULTURE_PREFIX))
+      .filter(
+        (key) =>
+          key.startsWith(PASS_CULTURE_PREFIX) && !PERSISTENT_KEYS.has(key)
+      )
       .forEach((key) => {
         localStorage.removeItem(key)
       })

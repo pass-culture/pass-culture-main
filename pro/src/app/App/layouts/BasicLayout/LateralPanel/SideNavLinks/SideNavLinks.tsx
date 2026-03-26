@@ -20,6 +20,7 @@ export interface NavItem {
   to?: string
   end?: boolean
   children?: NavItem[]
+  showNotification?: boolean
 }
 
 export const SideNavLinks = ({
