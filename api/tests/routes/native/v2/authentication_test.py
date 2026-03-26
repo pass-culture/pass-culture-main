@@ -67,7 +67,7 @@ class SigninTest:
         response = client.post("/native/v2/signin", json=data)
 
         assert response.status_code == 400
-        assert response.json["code"] == "ACCOUNT_ANONYMIZED"
+        assert response.json == {"general": ["Identifiant ou Mot de passe incorrect"]}
 
     def test_account_suspended_by_user_for_suspicious_login_account_state(self, client):
         data = {
@@ -110,7 +110,7 @@ class SigninTest:
 
         response = client.post("/native/v2/signin", json=data)
         assert response.status_code == 400
-        assert response.json["code"] == "ACCOUNT_DELETED"
+        assert response.json == {"general": ["Identifiant ou Mot de passe incorrect"]}
 
     def test_allow_inactive_user_sign(self, client):
         data = {
