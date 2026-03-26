@@ -59,7 +59,7 @@ pycountry = "26.2.16"
 pydantic = { version = "2.12.5", extras = ["email"] }
 pyjwt = { version = "2.12.1", extras = ["crypto"] }
 pyopenssl = "26.0.0"
-pypdf = "6.9.1"
+pypdf = "6.9.2"
 pyproj = "3.7.2"
 pysaml2 = "^7.5.0"
 pyshp = "^3.0.3"        # Used for iris importation
