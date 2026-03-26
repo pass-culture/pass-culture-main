@@ -17,6 +17,7 @@ describe('getCurrentUserPermissions', () => {
           selectedAdminOfferer: null,
           selectedVenue: null,
           venues: null,
+          venuesWithPendingValidation: null,
         },
       })
       vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
@@ -42,6 +43,7 @@ describe('getCurrentUserPermissions', () => {
           selectedAdminOfferer: null,
           selectedVenue: null,
           venues: null,
+          venuesWithPendingValidation: null,
         },
       })
       vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
@@ -60,6 +62,7 @@ describe('getCurrentUserPermissions', () => {
             selectedAdminOfferer: null,
             selectedVenue: null,
             venues: null,
+            venuesWithPendingValidation: null,
           },
         })
         vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
@@ -84,6 +87,7 @@ describe('getCurrentUserPermissions', () => {
             },
             selectedVenue: null,
             venues: null,
+            venuesWithPendingValidation: null,
           },
         })
         vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
@@ -103,6 +107,7 @@ describe('getCurrentUserPermissions', () => {
             selectedAdminOfferer: null,
             selectedVenue: makeGetVenueResponseModel({ id: 1 }),
             venues: null,
+            venuesWithPendingValidation: null,
           },
         })
         vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
@@ -121,6 +126,7 @@ describe('getCurrentUserPermissions', () => {
               selectedAdminOfferer: null,
               selectedVenue: makeGetVenueResponseModel({ id: 1 }),
               venues: null,
+              venuesWithPendingValidation: null,
             },
           })
           vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
@@ -141,6 +147,7 @@ describe('getCurrentUserPermissions', () => {
               selectedAdminOfferer: null,
               selectedVenue: makeGetVenueResponseModel({ id: 1 }),
               venues: null,
+              venuesWithPendingValidation: null,
             },
           })
           vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
@@ -161,6 +168,7 @@ describe('getCurrentUserPermissions', () => {
               selectedAdminOfferer: null,
               selectedVenue: makeGetVenueResponseModel({ id: 1 }),
               venues: null,
+              venuesWithPendingValidation: null,
             },
           })
           vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)

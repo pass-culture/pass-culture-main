@@ -75,6 +75,7 @@ describe('setSelectedOffererById', () => {
         selectedAdminOfferer: null,
         selectedVenue: selectedVenueBase,
         venues: venuesBase,
+        venuesWithPendingValidation: null,
       },
     })
 
@@ -127,6 +128,7 @@ describe('setSelectedOffererById', () => {
         selectedAdminOfferer: null,
         selectedVenue: null,
         venues: [],
+        venuesWithPendingValidation: null,
       },
     })
 
@@ -189,6 +191,7 @@ describe('setSelectedOffererById', () => {
         selectedAdminOfferer: null,
         selectedVenue: selectedVenueBase,
         venues: venuesBase,
+        venuesWithPendingValidation: null,
       },
     })
 
@@ -241,6 +244,7 @@ describe('setSelectedOffererById', () => {
         selectedAdminOfferer: null,
         selectedVenue: selectedVenueBase,
         venues: venuesBase,
+        venuesWithPendingValidation: null,
       },
     })
 
@@ -293,6 +297,7 @@ describe('setSelectedOffererById', () => {
         selectedAdminOfferer: null,
         selectedVenue: selectedVenueBase,
         venues: venuesBase,
+        venuesWithPendingValidation: null,
       },
     })
 
@@ -343,6 +348,7 @@ describe('setSelectedOffererById', () => {
         selectedAdminOfferer: null,
         selectedVenue: selectedVenueBase,
         venues: venuesBase,
+        venuesWithPendingValidation: null,
       },
     })
 

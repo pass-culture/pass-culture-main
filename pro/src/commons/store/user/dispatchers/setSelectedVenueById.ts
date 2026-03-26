@@ -2,7 +2,10 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import type {
+  GetOffererResponseModel,
+  GetVenueResponseModel,
+} from '@/apiClient/v1'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleError } from '@/commons/errors/handleError'
@@ -41,11 +44,8 @@ export const setSelectedVenueById = createAsyncThunk<
     try {
       const state = getState()
 
-      const offererNamesValidated = state.offerer.offererNamesValidated
-      assertOrFrontendError(
-        offererNamesValidated,
-        '`offererNamesValidated` is null.'
-      )
+      const offererNames = state.offerer.offererNames
+      assertOrFrontendError(offererNames, '`offererNames` is null.')
       const previousSelectedVenue = state.user.selectedVenue
       if (nextSelectedVenueId === previousSelectedVenue?.id) {
         return {
@@ -54,32 +54,55 @@ export const setSelectedVenueById = createAsyncThunk<
         }
       }
 
-      const nextSelectedVenue = await api.getVenue(nextSelectedVenueId)
-      const nextSelectedOfferer = await api.getOfferer(
-        nextSelectedVenue.managingOfferer.id
-      )
-      const nextSelectedOffererName = offererNamesValidated.find(
+      const venuesWithPendingValidationIds =
+        state.user.venuesWithPendingValidation?.map((v) => v.id)
+      let nextSelectedVenue: GetVenueResponseModel
+      let nextSelectedOfferer: GetOffererResponseModel
+      let nextUserAccess: UserAccess
+      if (
+        venuesWithPendingValidationIds?.length &&
+        venuesWithPendingValidationIds.includes(nextSelectedVenueId)
+      ) {
+        const venue = state.user.venuesWithPendingValidation?.find(
+          (venue) => venue.id === nextSelectedVenueId
+        )
+        nextSelectedVenue = {
+          id: nextSelectedVenueId,
+          managingOfferer: { id: venue?.managingOffererId },
+        } as GetVenueResponseModel
+        nextSelectedOfferer = {
+          id: venue?.managingOffererId,
+        } as GetOffererResponseModel
+
+        // TODO (igabriele, 2026-02-04): Delete those 2 statements once `WIP_SWITCH_VENUE` FF is enabled and removed.
+        nextUserAccess = 'unattached'
+        dispatch(updateUserAccess(nextUserAccess))
+      } else {
+        nextSelectedVenue = await api.getVenue(nextSelectedVenueId)
+        nextSelectedOfferer = await api.getOfferer(
+          nextSelectedVenue.managingOfferer.id
+        )
+
+        // TODO (igabriele, 2026-02-04): Delete those 2 statements once `WIP_SWITCH_VENUE` FF is enabled and removed.
+        nextUserAccess = nextSelectedOfferer.isOnboarded
+          ? 'full'
+          : 'no-onboarding'
+        dispatch(updateUserAccess(nextUserAccess))
+      }
+
+      dispatch(updateCurrentOfferer(nextSelectedOfferer))
+
+      if (!shouldSkipSelectedAdminOffererUpdate) {
+        await dispatch(setSelectedAdminOffererById(nextSelectedOfferer))
+      }
+
+      const nextSelectedOffererName = offererNames.find(
         (offerer) => offerer.id === nextSelectedOfferer.id
       )
       assertOrFrontendError(
         nextSelectedOffererName,
         '`nextSelectedOffererName` is undefined.'
       )
-
-      // TODO (igabriele, 2026-02-04): Delete those 2 statements once `WIP_SWITCH_VENUE` FF is enabled and removed.
-      const nextUserAccess: UserAccess = nextSelectedOfferer.isOnboarded
-        ? 'full'
-        : 'no-onboarding'
-      dispatch(updateUserAccess(nextUserAccess))
-
-      dispatch(updateCurrentOfferer(nextSelectedOfferer))
-      if (!shouldSkipSelectedAdminOffererUpdate) {
-        await dispatch(setSelectedAdminOffererById(nextSelectedOfferer))
-      }
-      // TODO (igabriele, 2026-02-04): Delete this statement once `WIP_SWITCH_VENUE` FF is enabled and removed.
-      dispatch(setCurrentOffererName(nextSelectedOffererName))
-      dispatch(setSelectedVenue(nextSelectedVenue))
-
       localStorageManager.setItem(
         LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID,
         String(nextSelectedOfferer.id)
@@ -88,7 +111,9 @@ export const setSelectedVenueById = createAsyncThunk<
         LOCAL_STORAGE_KEY.SELECTED_VENUE_ID,
         String(nextSelectedVenue.id)
       )
-
+      // TODO (igabriele, 2026-02-04): Delete this statement once `WIP_SWITCH_VENUE` FF is enabled and removed.
+      dispatch(setCurrentOffererName(nextSelectedOffererName))
+      dispatch(setSelectedVenue(nextSelectedVenue))
       return {
         selectedVenue: nextSelectedVenue,
         newUserAccess: nextUserAccess,

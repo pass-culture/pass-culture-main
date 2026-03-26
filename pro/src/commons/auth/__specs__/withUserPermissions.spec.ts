@@ -50,6 +50,7 @@ const setupStore = (options: {
             }),
           ]
         : null,
+      venuesWithPendingValidation: null,
     },
   })
   vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)

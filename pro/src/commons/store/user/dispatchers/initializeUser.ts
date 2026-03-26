@@ -35,17 +35,20 @@ export const initializeUser = createAsyncThunk<
     const offererNames = offererNamesResponse.offerersNames.concat(
       offererNamesResponse.offerersNamesWithPendingValidation
     )
+    const allVenues = venuesResponse.venues.concat(
+      venuesResponse.venuesWithPendingValidation
+    )
     dispatch(updateOffererNames(offererNamesResponse))
-    dispatch(setVenues(venuesResponse.venues))
+    dispatch(setVenues(venuesResponse))
     dispatch(updateUser(user))
 
     const { initialOffererId, initialVenueId } = withSwitchVenueFeature
       ? {
           // TODO (igabriele, 2025-10-28): Delete this prop once `WIP_SWITCH_VENUE` FF is enabled and removed.
           initialOffererId: null,
-          initialVenueId: getInitialPartnerVenueId(venuesResponse.venues),
+          initialVenueId: getInitialPartnerVenueId(allVenues),
         }
-      : getInitialOffererIdAndVenueId(offererNames, venuesResponse.venues)
+      : getInitialOffererIdAndVenueId(offererNames, allVenues)
 
     // Initialize the Partner Space selected venue if any
     const { selectedVenue } = initialVenueId
