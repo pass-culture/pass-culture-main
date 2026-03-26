@@ -19,7 +19,7 @@ jobs:
     name: "Add labels to PR"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - id: label-pr
         uses: actions/labeler@v6
@@ -42,7 +42,7 @@ jobs:
       push-tags: ${{ steps.pcapi-tags.outputs.push-tags }}
       checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-tags: false
       - name: "Run actionlint"
@@ -92,7 +92,7 @@ jobs:
           files: |
             .github/**
       # checkout source branch of the pull request
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
