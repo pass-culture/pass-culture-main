@@ -6,6 +6,7 @@ import type { ArtistsResponseModel } from '../models/ArtistsResponseModel';
 import type { AttachImageFormModel } from '../models/AttachImageFormModel';
 import type { AttachImageResponseModel } from '../models/AttachImageResponseModel';
 import type { BookingExportType } from '../models/BookingExportType';
+import type { BookingRecapStatus } from '../models/BookingRecapStatus';
 import type { BookingsExportStatusFilter } from '../models/BookingsExportStatusFilter';
 import type { BookingStatusFilter } from '../models/BookingStatusFilter';
 import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
@@ -167,6 +168,11 @@ export class DefaultService {
    * @param bookingPeriodEndingDate
    * @param offererAddressId
    * @param exportType
+   * @param offerName
+   * @param beneficiaryNameOrEmail
+   * @param offerEan
+   * @param bookingToken
+   * @param bookingStatus
    * @returns any OK
    * @throws ApiError
    */
@@ -181,6 +187,11 @@ export class DefaultService {
     bookingPeriodEndingDate?: (string | null),
     offererAddressId?: (number | null),
     exportType?: (BookingExportType | null),
+    offerName?: (string | null),
+    beneficiaryNameOrEmail?: (string | null),
+    offerEan?: (string | null),
+    bookingToken?: (string | null),
+    bookingStatus?: (Array<BookingRecapStatus> | null),
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
@@ -196,6 +207,11 @@ export class DefaultService {
         'bookingPeriodEndingDate': bookingPeriodEndingDate,
         'offererAddressId': offererAddressId,
         'exportType': exportType,
+        'offerName': offerName,
+        'beneficiaryNameOrEmail': beneficiaryNameOrEmail,
+        'offerEan': offerEan,
+        'bookingToken': bookingToken,
+        'bookingStatus': bookingStatus,
       },
       errors: {
         403: `Forbidden`,
@@ -236,6 +252,11 @@ export class DefaultService {
    * @param bookingPeriodEndingDate
    * @param offererAddressId
    * @param exportType
+   * @param offerName
+   * @param beneficiaryNameOrEmail
+   * @param offerEan
+   * @param bookingToken
+   * @param bookingStatus
    * @returns any OK
    * @throws ApiError
    */
@@ -250,6 +271,11 @@ export class DefaultService {
     bookingPeriodEndingDate?: (string | null),
     offererAddressId?: (number | null),
     exportType?: (BookingExportType | null),
+    offerName?: (string | null),
+    beneficiaryNameOrEmail?: (string | null),
+    offerEan?: (string | null),
+    bookingToken?: (string | null),
+    bookingStatus?: (Array<BookingRecapStatus> | null),
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
@@ -265,6 +291,11 @@ export class DefaultService {
         'bookingPeriodEndingDate': bookingPeriodEndingDate,
         'offererAddressId': offererAddressId,
         'exportType': exportType,
+        'offerName': offerName,
+        'beneficiaryNameOrEmail': beneficiaryNameOrEmail,
+        'offerEan': offerEan,
+        'bookingToken': bookingToken,
+        'bookingStatus': bookingStatus,
       },
       errors: {
         403: `Forbidden`,
@@ -365,6 +396,11 @@ export class DefaultService {
    * @param bookingPeriodEndingDate
    * @param offererAddressId
    * @param exportType
+   * @param offerName
+   * @param beneficiaryNameOrEmail
+   * @param offerEan
+   * @param bookingToken
+   * @param bookingStatus
    * @returns ListBookingsResponseModel OK
    * @throws ApiError
    */
@@ -379,6 +415,11 @@ export class DefaultService {
     bookingPeriodEndingDate?: (string | null),
     offererAddressId?: (number | null),
     exportType?: (BookingExportType | null),
+    offerName?: (string | null),
+    beneficiaryNameOrEmail?: (string | null),
+    offerEan?: (string | null),
+    bookingToken?: (string | null),
+    bookingStatus?: (Array<BookingRecapStatus> | null),
   ): CancelablePromise<ListBookingsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
@@ -394,6 +435,11 @@ export class DefaultService {
         'bookingPeriodEndingDate': bookingPeriodEndingDate,
         'offererAddressId': offererAddressId,
         'exportType': exportType,
+        'offerName': offerName,
+        'beneficiaryNameOrEmail': beneficiaryNameOrEmail,
+        'offerEan': offerEan,
+        'bookingToken': bookingToken,
+        'bookingStatus': bookingStatus,
       },
       errors: {
         403: `Forbidden`,

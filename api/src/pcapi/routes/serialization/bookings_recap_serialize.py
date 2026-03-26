@@ -109,6 +109,11 @@ class ListBookingsQueryModel(HttpQueryParamsModel):
     booking_period_ending_date: date | None = None
     offerer_address_id: int | None = None
     export_type: BookingExportType | None = None
+    offer_name: str | None = None
+    beneficiary_name_or_email: str | None = None
+    offer_ean: str | None = None
+    booking_token: str | None = None
+    booking_status: list[BookingStatus] | None = None
 
     @pydantic_v2.model_validator(mode="before")
     @classmethod

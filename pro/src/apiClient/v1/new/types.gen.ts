@@ -3851,6 +3851,10 @@ export type LinkedVenue = {
  */
 export type ListBookingsQueryModel = {
     /**
+     * Beneficiarynameoremail
+     */
+    beneficiaryNameOrEmail?: string | null;
+    /**
      * Bookingperiodbeginningdate
      */
     bookingPeriodBeginningDate?: string | null;
@@ -3858,16 +3862,32 @@ export type ListBookingsQueryModel = {
      * Bookingperiodendingdate
      */
     bookingPeriodEndingDate?: string | null;
+    /**
+     * Bookingstatus
+     */
+    bookingStatus?: Array<BookingRecapStatus> | null;
     bookingStatusFilter?: BookingStatusFilter | null;
+    /**
+     * Bookingtoken
+     */
+    bookingToken?: string | null;
     /**
      * Eventdate
      */
     eventDate?: string | null;
     exportType?: BookingExportType | null;
     /**
+     * Offerean
+     */
+    offerEan?: string | null;
+    /**
      * Offerid
      */
     offerId?: number | null;
+    /**
+     * Offername
+     */
+    offerName?: string | null;
     /**
      * Offereraddressid
      */
@@ -7080,6 +7100,26 @@ export type getBookingsCsvData = {
          */
         offererAddressId?: number | null;
         exportType?: BookingExportType | null;
+        /**
+         * Offername
+         */
+        offerName?: string | null;
+        /**
+         * Beneficiarynameoremail
+         */
+        beneficiaryNameOrEmail?: string | null;
+        /**
+         * Offerean
+         */
+        offerEan?: string | null;
+        /**
+         * Bookingtoken
+         */
+        bookingToken?: string | null;
+        /**
+         * Bookingstatus
+         */
+        bookingStatus?: Array<BookingRecapStatus> | null;
     };
     url: '/bookings/csv';
 };
@@ -7173,6 +7213,26 @@ export type getBookingsExcelData = {
          */
         offererAddressId?: number | null;
         exportType?: BookingExportType | null;
+        /**
+         * Offername
+         */
+        offerName?: string | null;
+        /**
+         * Beneficiarynameoremail
+         */
+        beneficiaryNameOrEmail?: string | null;
+        /**
+         * Offerean
+         */
+        offerEan?: string | null;
+        /**
+         * Bookingtoken
+         */
+        bookingToken?: string | null;
+        /**
+         * Bookingstatus
+         */
+        bookingStatus?: Array<BookingRecapStatus> | null;
     };
     url: '/bookings/excel';
 };
@@ -7344,6 +7404,26 @@ export type getBookingsProData = {
          */
         offererAddressId?: number | null;
         exportType?: BookingExportType | null;
+        /**
+         * Offername
+         */
+        offerName?: string | null;
+        /**
+         * Beneficiarynameoremail
+         */
+        beneficiaryNameOrEmail?: string | null;
+        /**
+         * Offerean
+         */
+        offerEan?: string | null;
+        /**
+         * Bookingtoken
+         */
+        bookingToken?: string | null;
+        /**
+         * Bookingstatus
+         */
+        bookingStatus?: Array<BookingRecapStatus> | null;
     };
     url: '/bookings/pro';
 };
