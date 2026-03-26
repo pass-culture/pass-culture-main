@@ -76,7 +76,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "4.11.1",
-    "@biomejs/biome": "2.4.6",
+    "@biomejs/biome": "2.4.8",
     "@hey-api/openapi-ts": "0.94.3",
     "@hookform/devtools": "4.4.0",
     "@playwright/test": "1.58.2",
