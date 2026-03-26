@@ -105,9 +105,9 @@ class VenueContactModel(BaseModel):
 
 class VenueContactModelV2(BaseModelV2):
     email: pydantic_v2.EmailStr | None = None
-    website: (
-        typing.Annotated[pydantic_v2.HttpUrl, pydantic_v2.UrlConstraints(host_required=True, max_length=256)] | None
-    ) = pydantic_v2.Field(pattern=COMPILED_WEBSITE_URL_REGEX)
+    website: typing.Annotated[str, pydantic_v2.StringConstraints(max_length=256)] | None = pydantic_v2.Field(
+        pattern=COMPILED_WEBSITE_URL_REGEX
+    )
     phone_number: str | None = None
     social_medias: SocialMediasV2 | None = None
 
