@@ -46,7 +46,7 @@ runs:
   using: composite
   steps:
     - name: "Install kubectl"
-      uses: azure/setup-kubectl@v4
+      uses: azure/setup-kubectl@776406bce94f63e41d621b960d78ee25c8b76ede # v4.0.1
 
     - name: "Setup ArgoWF CLI"
       shell: bash
