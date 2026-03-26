@@ -109,7 +109,7 @@ jobs:
           grep -E '"version": "[0-9]+.[0-9]+.[0-9]+"' package.json | grep -Eo '[0-9]+.[0-9]+.[0-9]+' > build/version.txt
       - name: "Create SaaS Sentry release"
         if: ${{ inputs.PUSH_RELEASE_TO_SENTRY }}
-        uses: getsentry/action-release@v3
+        uses: getsentry/action-release@dab6548b3c03c4717878099e43782cf5be654289 # v3.5.0
         env:
           SENTRY_AUTH_TOKEN: ${{ steps.secrets.outputs.SAAS_SENTRY_TOKEN }}
           SENTRY_ORG: pass-culture
