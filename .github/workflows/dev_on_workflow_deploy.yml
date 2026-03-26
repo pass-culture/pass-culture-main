@@ -146,7 +146,7 @@ jobs:
           secrets: |-
             FIREBASE_TOKEN:passculture-metier-ehp/pc_doc_api_${{ inputs.environment }}_firebase_json
 
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+      - uses: FirebaseExtended/action-hosting-deploy@e2eda2e106cfa35cdbcf4ac9ddaf6c4756df2c8c # v0.10.0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ steps.secrets.outputs.FIREBASE_TOKEN }}"

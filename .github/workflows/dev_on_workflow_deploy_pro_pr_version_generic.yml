@@ -119,7 +119,7 @@ jobs:
           working_directory: pro
           version: ${{ inputs.CHANNEL }}
           url_prefix: "~"
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+      - uses: FirebaseExtended/action-hosting-deploy@e2eda2e106cfa35cdbcf4ac9ddaf6c4756df2c8c # v0.10.0
         id: firebase-deploy
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
