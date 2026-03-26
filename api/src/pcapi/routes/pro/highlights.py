@@ -23,8 +23,8 @@ logger = logging.getLogger(__name__)
 @atomic()
 def get_highlights() -> highlight_serialize.HighlightsResponseModel:
     return highlight_serialize.HighlightsResponseModel(
-        __root__=[
-            highlight_serialize.HighlightResponseModel.from_orm(highlight)
+        [
+            highlight_serialize.HighlightResponseModel.build(highlight)
             for highlight in highlight_repository.get_available_highlights()
         ]
     )

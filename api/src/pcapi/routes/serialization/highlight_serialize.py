@@ -1,35 +1,26 @@
+import typing
 from datetime import date
 from datetime import timedelta
-from typing import Any
 
 import psycopg2.extras
-import pydantic.v1 as pydantic_v1
+from pydantic import RootModel
 
+from pcapi.core.highlights import models as highlights_models
 from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.routes.serialization import HttpBodyModel
 
 
 def get_inclusive_daterange_tuple_from_exclusive_daterange(daterange: psycopg2.extras.DateRange) -> tuple:
     return daterange.lower, daterange.upper - timedelta(days=1)
 
 
-class HighlightGetterDict(pydantic_v1.utils.GetterDict):
-    def get(self, key: str, default: Any = None) -> Any:
-        highlight = self._obj
-        if key == "availability_datespan":
-            return get_inclusive_daterange_tuple_from_exclusive_daterange(highlight.availability_datespan)
-        if key == "highlight_datespan":
-            return get_inclusive_daterange_tuple_from_exclusive_daterange(highlight.highlight_datespan)
-        if key == "mediation_url":
-            return highlight.mediation_url or ""
-        return super().get(key, default)
-
-
+# TODO (tpommellet) migrate to HttpBodyModel when ListOffersOfferResponseModel is migrated
 class ShortHighlightResponseModel(ConfiguredBaseModel):
     id: int
     name: str
 
 
-class HighlightResponseModel(ConfiguredBaseModel):
+class HighlightResponseModel(HttpBodyModel):
     id: int
     availability_datespan: list[date]
     description: str
@@ -38,10 +29,24 @@ class HighlightResponseModel(ConfiguredBaseModel):
     mediation_url: str
     name: str
 
-    class Config:
-        from_attributes = True
-        getter_dict = HighlightGetterDict
+    @classmethod
+    def build(cls, highlight: highlights_models.Highlight) -> typing.Self:
+        availability_start, availability_end = get_inclusive_daterange_tuple_from_exclusive_daterange(
+            highlight.availability_datespan
+        )
+        highlight_start, highlight_end = get_inclusive_daterange_tuple_from_exclusive_daterange(
+            highlight.highlight_datespan
+        )
+        return cls(
+            id=highlight.id,
+            availability_datespan=[availability_start, availability_end],
+            description=highlight.description,
+            highlight_datespan=[highlight_start, highlight_end],
+            communication_date=highlight.communication_date,
+            mediation_url=highlight.mediation_url,
+            name=highlight.name,
+        )
 
 
-class HighlightsResponseModel(ConfiguredBaseModel):
-    __root__: list[HighlightResponseModel]
+class HighlightsResponseModel(RootModel):
+    root: list[HighlightResponseModel]
