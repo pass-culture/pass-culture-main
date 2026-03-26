@@ -17,6 +17,7 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { getOffererData } from '@/commons/utils/offererStoreHelper'
@@ -52,6 +53,7 @@ export const IndividualOfferSummaryScreen = ({
   const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
   const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
+  const { syncVenue } = useSyncVenueCache()
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
@@ -94,6 +96,9 @@ export const IndividualOfferSummaryScreen = ({
             : undefined,
       })
       await mutate([GET_OFFER_QUERY_KEY, offer.id])
+
+      // Sync venue data between SWR cache and Redux store to update the homepage
+      await syncVenue(offer.venue.id)
 
       const shouldDisplayRedirectDialog =
         isOnboarding ||

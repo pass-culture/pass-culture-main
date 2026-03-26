@@ -10,6 +10,7 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import { getSuccessMessage } from '@/pages/IndividualOffer/commons/getSuccessMessage'
 
 import { FAILED_PATCH_OFFER_USER_MESSAGE } from '../constants'
@@ -28,6 +29,7 @@ export const useSaveOfferPriceTable = ({
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const snackBar = useSnackBar()
+  const { syncVenue } = useSyncVenueCache()
 
   const isOnboarding = pathname.indexOf('onboarding') !== -1
 
@@ -65,6 +67,8 @@ export const useSaveOfferPriceTable = ({
           })
         }
       }
+
+      await syncVenue(offer.venue.id)
 
       if (mode === OFFER_WIZARD_MODE.EDITION) {
         snackBar.success(getSuccessMessage(mode))

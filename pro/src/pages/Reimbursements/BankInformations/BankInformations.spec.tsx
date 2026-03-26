@@ -8,7 +8,6 @@ import {
   type BankAccountResponseModel,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
-import { GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import {
   defaultBankAccount,
@@ -21,14 +20,6 @@ import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactor
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 import { Component as BankInformations } from '@/pages/Reimbursements/BankInformations/BankInformations'
-
-const mockMutate = vi.fn()
-vi.mock('swr', async () => ({
-  ...(await vi.importActual('swr')),
-  useSWRConfig: vi.fn(() => ({
-    mutate: mockMutate,
-  })),
-}))
 
 const defaultBankAccountResponseModel: BankAccountResponseModel = {
   dateCreated: '2020-05-07',
@@ -345,11 +336,13 @@ describe('BankInformations page', () => {
   it('should update displayed link venue after closing link venue dialog', async () => {
     const user = userEvent.setup()
     vi.spyOn(api, 'linkVenueToBankAccount').mockResolvedValue()
-    vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
-      id: 1,
-      bankAccounts: [{ ...defaultBankAccount }],
-      managedVenues: [{ ...defaultManagedVenue }],
-    })
+    const getOffererBankAccountsSpy = vi
+      .spyOn(api, 'getOffererBankAccountsAndAttachedVenues')
+      .mockResolvedValue({
+        id: 1,
+        bankAccounts: [{ ...defaultBankAccount }],
+        managedVenues: [{ ...defaultManagedVenue }],
+      })
 
     renderBankInformations({
       hasValidBankAccount: true,
@@ -362,10 +355,7 @@ describe('BankInformations page', () => {
     await user.click(screen.getByRole('button', { name: 'Enregistrer' }))
     await user.click(screen.getByRole('button', { name: 'Confirmer' }))
 
-    expect(mockMutate).toHaveBeenNthCalledWith(1, [
-      GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
-      1,
-    ])
+    expect(getOffererBankAccountsSpy).toHaveBeenLastCalledWith(1)
   })
 
   it('should refresh the selected venue in the Redux store after linking a venue to a bank account', async () => {
