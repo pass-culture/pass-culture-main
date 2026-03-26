@@ -10,7 +10,7 @@ import { selectCurrentUser } from '@/commons/store/user/selectors'
 
 type Params = { token: string }
 
-// TODO (igabriele, 2025-10-21): Not sure we need this component and its logic, the new auth flow should able to handle that automtically.
+// TODO (igabriele, 2026-03-26): Delete this component once `WIP_SWITCH_VENUE` FF is enabled and removed.
 export const SignupValidation = (): JSX.Element | null => {
   const { token } = useParams<Params>()
   const currentUser = useAppSelector(selectCurrentUser)
