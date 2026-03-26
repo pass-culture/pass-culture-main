@@ -13,10 +13,9 @@ import {
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { setSelectedVenue } from '@/commons/store/user/reducer'
+import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import { ReimbursementBankAccount } from '@/components/ReimbursementBankAccount/ReimbursementBankAccount'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
@@ -32,7 +31,7 @@ const BankInformations = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
   const { mutate } = useSWRConfig()
-  const dispatch = useAppDispatch()
+  const { syncVenue } = useSyncVenueCache()
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
   const currentOfferer = useAppSelector((state) => state.offerer.currentOfferer)
   const adminSelectedOfferer = useAppSelector(
@@ -82,17 +81,13 @@ const BankInformations = (): JSX.Element => {
     }
   }
 
-  async function closeDialog(update?: boolean) {
+  const closeDialog = async (update?: boolean) => {
     if (offererId) {
       if (update) {
         await updateOfferer(offererId)
 
         if (selectedVenue) {
-          // Direct API call without SWR mutate because no useSWR(GET_VENUE_QUERY_KEY)
-          // is mounted on this page, so mutate(key) would not trigger any
-          // revalidation (see https://swr.vercel.app/docs/mutation#global-mutate)
-          const updatedVenue = await api.getVenue(selectedVenue.id)
-          dispatch(setSelectedVenue(updatedVenue))
+          await syncVenue(selectedVenue.id)
         }
       }
       setSelectedBankAccount(null)

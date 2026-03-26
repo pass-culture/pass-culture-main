@@ -1,18 +1,14 @@
-import { useSWRConfig } from 'swr'
-
 import { api } from '@/apiClient/api'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useOnVenueImageUpload } from '@/commons/core/Venue/hooks/useOnVenueImageUpload'
 import { buildInitialVenueImageValues } from '@/commons/core/Venue/utils/buildInitialVenueImageValues'
-import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import { getActivityLabel } from '@/commons/mappings/mappings'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
-import { setSelectedVenue } from '@/commons/store/user/reducer'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
@@ -39,9 +35,9 @@ export const VenueEditionHeader = ({
   context,
 }: VenueEditionHeaderProps) => {
   const { logEvent } = useAnalytics()
-  const { mutate } = useSWRConfig()
+  const { syncVenue } = useSyncVenueCache()
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
-  const dispatch = useAppDispatch()
+
   const snackBar = useSnackBar()
 
   const { imageValues, setImageValues, handleOnImageUpload } =
@@ -51,14 +47,8 @@ export const VenueEditionHeader = ({
     try {
       await api.deleteVenueBanner(venue.id)
       setImageValues(buildInitialVenueImageValues(null, null))
+      await syncVenue(venue.id)
 
-      const updatedVenue = await mutate(
-        [GET_VENUE_QUERY_KEY, String(venue.id)],
-        () => api.getVenue(venue.id)
-      )
-      if (updatedVenue) {
-        dispatch(setSelectedVenue(updatedVenue))
-      }
       snackBar.success('Votre image a bien été supprimée')
     } catch {
       snackBar.error(

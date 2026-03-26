@@ -1,10 +1,8 @@
 import { act, renderHook } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { mutate } from 'swr'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { configureTestStore } from '@/commons/store/testUtils'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { postImageToVenue } from '@/repository/pcapi/pcapi'
@@ -12,7 +10,12 @@ import { postImageToVenue } from '@/repository/pcapi/pcapi'
 import { buildInitialVenueImageValues } from '../utils/buildInitialVenueImageValues'
 import { useOnVenueImageUpload } from './useOnVenueImageUpload'
 
-vi.mock('swr', () => ({ mutate: vi.fn() }))
+const mockSyncVenueWithData = vi.fn()
+vi.mock('@/commons/hooks/useSyncVenueCache', () => ({
+  useSyncVenueCache: () => ({
+    syncVenueWithData: mockSyncVenueWithData,
+  }),
+}))
 vi.mock('@/repository/pcapi/pcapi', () => ({ postImageToVenue: vi.fn() }))
 vi.mock('../utils/buildInitialVenueImageValues', () => ({
   buildInitialVenueImageValues: vi.fn(),
@@ -110,6 +113,9 @@ describe('useOnVenueImageUpload', () => {
       mockEditedVenue.bannerMeta
     )
     expect(result.current.imageValues).toEqual(mockUpdatedValues)
-    expect(mutate).toHaveBeenCalledWith([GET_VENUE_QUERY_KEY, String(venue.id)])
+    expect(mockSyncVenueWithData).toHaveBeenCalledWith(
+      venue.id,
+      mockEditedVenue
+    )
   })
 })

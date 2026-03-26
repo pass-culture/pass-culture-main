@@ -37,6 +37,12 @@ vi.mock('../../utils/saveNonEventOfferPriceTable', () => ({
 vi.mock('@/commons/hooks/useActiveFeature', () => ({
   useActiveFeature: vi.fn(),
 }))
+vi.mock('@/commons/hooks/useSyncVenueCache', () => ({
+  useSyncVenueCache: () => ({
+    syncVenue: vi.fn(),
+    syncVenueWithData: vi.fn(),
+  }),
+}))
 
 const renderUseSaveOfferPriceTable = (params: {
   offer: ReturnType<typeof getIndividualOfferFactory>
