@@ -27,7 +27,7 @@ jobs:
           fetch-tags: false
       - name: "Check api folder changes"
         id: check-api-changes
-        uses: tj-actions/changed-files@v47
+        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
         with:
           files: |
             api/**
@@ -36,12 +36,12 @@ jobs:
             !api/src/pcapi/scripts/**/main.sql
       - name: "Check api documentation folder changes"
         id: check-api-documentation-changes
-        uses: tj-actions/changed-files@v47
+        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
         with:
           files: api/documentation/**
       - name: "Check pro folder changes"
         id: check-pro-changes
-        uses: tj-actions/changed-files@v47
+        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
         with:
           files: |
             .github/workflows/dev_on_push_workflow.yml
@@ -50,14 +50,14 @@ jobs:
             pro/**
       - name: "Check changes in dependencies (frontend + backend)"
         id: check-dependencies-changes
-        uses: tj-actions/changed-files@v47
+        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
         with:
           files: |
             api/poetry.lock
             pro/yarn.lock
       - name: "Check changes in Algolia configuration"
         id: check-algolia-config-changes
-        uses: tj-actions/changed-files@v47
+        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
         with:
           files: |
             api/src/pcapi/algolia_settings_collective_offers.json
@@ -95,12 +95,12 @@ jobs:
           fetch-tags: false
       - name: "Check maintenance-site folder changes"
         id: check-maintenance-site-changes
-        uses: tj-actions/changed-files@v47
+        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
         with:
           files: maintenance-site/**
       - name: "Check db migration folder changes"
         id: check-db-migrations-changes
-        uses: tj-actions/changed-files@v47
+        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
         with:
           files: |-
             api/src/pcapi/alembic/versions/**
