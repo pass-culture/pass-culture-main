@@ -144,9 +144,11 @@ export const IndividualOfferLayout = ({
       <div className={styles['banner-container']}>
         {isOfferRecommendationEnabled ? (
           <>
-            <h2 className={styles['banner-container-title']}>
-              Mises en avant de votre offre
-            </h2>
+            {(shouldDisplayRecommendation || shouldDisplayHighlightsBanner) && (
+              <h2 className={styles['banner-container-title']}>
+                Mises en avant de votre offre
+              </h2>
+            )}
             <div className={styles['cards-container']}>
               {shouldDisplayRecommendation && (
                 <OfferRecommendationCard offerId={offer.id} />
