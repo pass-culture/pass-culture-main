@@ -18,11 +18,12 @@ class AppleSignInException(Exception):
     pass
 
 
-def get_apple_user(authorization_code: str) -> users_schemas.SSOUser:
-    client_secret = _generate_client_secret()
+def get_apple_user(authorization_code: str, is_web: bool) -> users_schemas.SSOUser:
+    client_id = settings.APPLE_WEB_CLIENT_ID if is_web else settings.APPLE_MOBILE_CLIENT_ID
+    client_secret = _generate_client_secret(client_id)
 
     try:
-        id_token = _fetch_identity_token(client_secret, authorization_code)
+        id_token = _fetch_identity_token(client_id, client_secret, authorization_code)
     except Exception as e:
         raise AppleSignInException("Could not fetch identity token from Apple") from e
 
@@ -39,7 +40,7 @@ def get_apple_user(authorization_code: str) -> users_schemas.SSOUser:
             id_token,
             signing_key.key,
             algorithms=["RS256"],
-            audience=settings.APPLE_CLIENT_ID,
+            audience=client_id,
             issuer=settings.APPLE_ISSUER_URL,
             options=jwt.types.Options(verify_signature=True),
         )
@@ -50,7 +51,7 @@ def get_apple_user(authorization_code: str) -> users_schemas.SSOUser:
     return _parse_identity_token(token_payload)
 
 
-def _generate_client_secret() -> str:
+def _generate_client_secret(client_id: str) -> str:
     # Doc on how to generate a client secret: https://developer.apple.com/documentation/AccountOrganizationalDataSharing/creating-a-client-secret
     now = int(time.time())
     payload = {
@@ -58,15 +59,15 @@ def _generate_client_secret() -> str:
         "iat": now,
         "exp": now + 3600,
         "aud": settings.APPLE_ISSUER_URL,
-        "sub": settings.APPLE_CLIENT_ID,
+        "sub": client_id,
     }
     headers = {"alg": "ES256", "kid": settings.APPLE_KEY_ID}
     return jwt.encode(payload, settings.APPLE_PRIVATE_KEY, headers=headers)
 
 
-def _fetch_identity_token(client_secret: str, authorization_code: str) -> str:
+def _fetch_identity_token(client_id: str, client_secret: str, authorization_code: str) -> str:
     payload = {
-        "client_id": settings.APPLE_CLIENT_ID,
+        "client_id": client_id,
         "client_secret": client_secret,
         "code": authorization_code,
         "grant_type": "authorization_code",

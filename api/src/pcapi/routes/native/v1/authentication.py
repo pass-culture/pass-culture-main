@@ -1,5 +1,6 @@
 import logging
 
+from flask import request
 from flask_login import current_user
 
 import pcapi.core.token as token_utils
@@ -213,13 +214,14 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) ->
         ) from e
     oauth_state_token.expire()
 
+    is_web = request.headers.get("platform") == "web"
     if sso_provider == "apple":
         try:
-            sso_user = apple_oauth.get_apple_user(body.authorization_code)
+            sso_user = apple_oauth.get_apple_user(body.authorization_code, is_web)
         except apple_oauth.AppleSignInException:
             raise ApiErrors({"code": "SSO_ERROR", "general": "L'authentification a échoué"}, status_code=401)
     elif sso_provider == "google":
-        sso_user = google_oauth.get_google_user(body.authorization_code)
+        sso_user = google_oauth.get_google_user(body.authorization_code, is_web)
 
     if not sso_user.email_verified:
         raise ApiErrors({"code": "SSO_EMAIL_NOT_VALIDATED", "general": ["L'email n'a pas été validé."]})

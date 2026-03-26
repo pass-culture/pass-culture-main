@@ -17,7 +17,7 @@ def test_get_apple_user(mocker, requests_mock):
     )
     requests_mock.post("https://appleid.apple.com/auth/token", status_code=200, json={"id_token": "eyEncodedIDToken"})
 
-    user = get_apple_user("valid_auth_code")
+    user = get_apple_user("valid_auth_code", is_web=True)
 
     assert user.sub == "appleUserId"
     assert user.email == "mail@example.com"
@@ -35,7 +35,7 @@ def test_logs_and_raises_on_fetch_id_token_bad_request(mocker, requests_mock, ca
 
     with caplog.at_level(logging.ERROR):
         with pytest.raises(AppleSignInException):
-            get_apple_user("valid_auth_code")
+            get_apple_user("valid_auth_code", is_web=True)
 
     assert caplog.records[0].extra["status_code"] == 400
     assert "Bad request" in caplog.records[0].extra["response"]
@@ -52,7 +52,7 @@ def test_logs_and_raises_on_fetch_id_token_network_error(mocker, caplog):
 
     with caplog.at_level(logging.ERROR):
         with pytest.raises(AppleSignInException):
-            get_apple_user("valid_auth_code")
+            get_apple_user("valid_auth_code", is_web=True)
 
     assert "Network error" in caplog.records[0].message
 
@@ -67,7 +67,7 @@ def test_logs_and_raises_on_fetch_id_token_bad_response(mocker, caplog):
 
     with caplog.at_level(logging.ERROR):
         with pytest.raises(AppleSignInException):
-            get_apple_user("valid_auth_code")
+            get_apple_user("valid_auth_code", is_web=True)
 
     assert "Malformed response" in caplog.records[0].message
 
@@ -82,7 +82,7 @@ def test_logs_and_raises_on_get_signing_key_error(mocker, requests_mock, caplog)
 
     with caplog.at_level(logging.ERROR):
         with pytest.raises(AppleSignInException):
-            get_apple_user("valid_auth_code")
+            get_apple_user("valid_auth_code", is_web=True)
 
     assert caplog.records[0].extra["error"] == "The JWKS endpoint did not return a JSON object"
 
@@ -95,7 +95,7 @@ def test_logs_and_raises_on_id_token_decoding_error(mocker, requests_mock, caplo
 
     with caplog.at_level(logging.ERROR):
         with pytest.raises(AppleSignInException):
-            get_apple_user("valid_auth_code")
+            get_apple_user("valid_auth_code", is_web=True)
 
     assert caplog.records[0].extra["error_type"] == "InvalidSignatureError"
     assert caplog.records[0].extra["error"] == "Signature verification failed"

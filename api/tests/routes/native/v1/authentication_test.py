@@ -562,6 +562,26 @@ class SSOSigninTest:
 
         assert authorization_response.status_code == 200, authorization_response.json
 
+    @pytest.mark.parametrize("header,is_web", [("web", True), ("", False), ("other", False)])
+    @patch("pcapi.connectors.google_oauth.get_google_user")
+    def test_get_platform_from_request_headers(self, mocked_google_oauth, client, header, is_web):
+        users_factories.SingleSignOnFactory(
+            ssoUserId=self.valid_sso_user.sub, user__email=self.valid_sso_user.email, user__isActive=True
+        )
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        mocked_google_oauth.return_value = self.valid_sso_user
+
+        response = client.post(
+            "/native/v1/oauth/google/authorize",
+            json={"authorizationCode": "4/google_code", "oauthStateToken": oauth_state_token.encoded_token},
+            headers={"platform": header},
+        )
+
+        assert response.status_code == 200, response.json
+        mocked_google_oauth.assert_called_with("4/google_code", is_web)
+
 
 class TrustedDeviceFeatureTest:
     @pytest.mark.parametrize(

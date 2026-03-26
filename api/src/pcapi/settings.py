@@ -449,7 +449,8 @@ APPLE_KEYS_URL = os.environ.get("APPLE_ISSUER_URL", "https://appleid.apple.com/a
 APPLE_ISSUER_URL = os.environ.get("APPLE_ISSUER_URL", "https://appleid.apple.com")
 APPLE_TOKEN_ENDPOINT = os.environ.get("APPLE_TOKEN_ENDPOINT", "https://appleid.apple.com/auth/token")
 APPLE_KEY_ID = secrets_utils.get("APPLE_KEY_ID", "")
-APPLE_CLIENT_ID = secrets_utils.get("APPLE_CLIENT_ID", "")
+APPLE_WEB_CLIENT_ID = secrets_utils.get("APPLE_WEB_CLIENT_ID", "")
+APPLE_MOBILE_CLIENT_ID = secrets_utils.get("APPLE_MOBILE_CLIENT_ID", "")
 APPLE_PRIVATE_KEY = secrets_utils.get("APPLE_PRIVATE_KEY", "")
 
 # Native app Google SSO
