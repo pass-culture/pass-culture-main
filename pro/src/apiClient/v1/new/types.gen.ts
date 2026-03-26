@@ -372,6 +372,17 @@ export enum BookingRecapStatus {
 }
 
 /**
+ * BookingStatus
+ */
+export enum BookingStatus {
+    CONFIRMED = 'CONFIRMED',
+    USED = 'USED',
+    CANCELLED = 'CANCELLED',
+    PENDING_REIMBURSEMENT = 'PENDING_REIMBURSEMENT',
+    REIMBURSED = 'REIMBURSED'
+}
+
+/**
  * BookingStatusFilter
  */
 export enum BookingStatusFilter {
@@ -3865,7 +3876,7 @@ export type ListBookingsQueryModel = {
     /**
      * Bookingstatus
      */
-    bookingStatus?: Array<BookingRecapStatus> | null;
+    bookingStatus?: Array<BookingStatus> | null;
     bookingStatusFilter?: BookingStatusFilter | null;
     /**
      * Bookingtoken
@@ -7119,7 +7130,7 @@ export type getBookingsCsvData = {
         /**
          * Bookingstatus
          */
-        bookingStatus?: Array<BookingRecapStatus> | null;
+        bookingStatus?: Array<BookingStatus> | null;
     };
     url: '/bookings/csv';
 };
@@ -7232,7 +7243,7 @@ export type getBookingsExcelData = {
         /**
          * Bookingstatus
          */
-        bookingStatus?: Array<BookingRecapStatus> | null;
+        bookingStatus?: Array<BookingStatus> | null;
     };
     url: '/bookings/excel';
 };
@@ -7423,7 +7434,7 @@ export type getBookingsProData = {
         /**
          * Bookingstatus
          */
-        bookingStatus?: Array<BookingRecapStatus> | null;
+        bookingStatus?: Array<BookingStatus> | null;
     };
     url: '/bookings/pro';
 };

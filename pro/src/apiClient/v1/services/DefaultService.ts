@@ -6,8 +6,8 @@ import type { ArtistsResponseModel } from '../models/ArtistsResponseModel';
 import type { AttachImageFormModel } from '../models/AttachImageFormModel';
 import type { AttachImageResponseModel } from '../models/AttachImageResponseModel';
 import type { BookingExportType } from '../models/BookingExportType';
-import type { BookingRecapStatus } from '../models/BookingRecapStatus';
 import type { BookingsExportStatusFilter } from '../models/BookingsExportStatusFilter';
+import type { BookingStatus } from '../models/BookingStatus';
 import type { BookingStatusFilter } from '../models/BookingStatusFilter';
 import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
 import type { ChangePasswordBodyModel } from '../models/ChangePasswordBodyModel';
@@ -191,7 +191,7 @@ export class DefaultService {
     beneficiaryNameOrEmail?: (string | null),
     offerEan?: (string | null),
     bookingToken?: (string | null),
-    bookingStatus?: (Array<BookingRecapStatus> | null),
+    bookingStatus?: (Array<BookingStatus> | null),
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
@@ -275,7 +275,7 @@ export class DefaultService {
     beneficiaryNameOrEmail?: (string | null),
     offerEan?: (string | null),
     bookingToken?: (string | null),
-    bookingStatus?: (Array<BookingRecapStatus> | null),
+    bookingStatus?: (Array<BookingStatus> | null),
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
@@ -419,7 +419,7 @@ export class DefaultService {
     beneficiaryNameOrEmail?: (string | null),
     offerEan?: (string | null),
     bookingToken?: (string | null),
-    bookingStatus?: (Array<BookingRecapStatus> | null),
+    bookingStatus?: (Array<BookingStatus> | null),
   ): CancelablePromise<ListBookingsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',

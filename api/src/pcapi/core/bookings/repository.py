@@ -91,6 +91,11 @@ def find_by_pro_user(
     offerer_address_id: int | None = None,
     page: int = 1,
     per_page_limit: int = constants.BOOKINGS_PER_PAGE_LIMIT,
+    offer_name: str | None = None,
+    beneficiary_name_or_email: str | None = None,
+    offer_ean: str | None = None,
+    booking_token: str | None = None,
+    booking_status: list[models.BookingStatus] | None = None,
 ) -> tuple[sa_orm.Query, int]:
     total_bookings_recap = _get_filtered_bookings_count(
         user,
@@ -101,6 +106,11 @@ def find_by_pro_user(
         offer_id=offer_id,
         offerer_id=offerer_id,
         offerer_address_id=offerer_address_id,
+        offer_name=offer_name,
+        beneficiary_name_or_email=beneficiary_name_or_email,
+        offer_ean=offer_ean,
+        booking_token=booking_token,
+        booking_status=booking_status,
     )
 
     bookings_query = _get_filtered_booking_pro(
@@ -112,6 +122,11 @@ def find_by_pro_user(
         offer_id=offer_id,
         offerer_id=offerer_id,
         offerer_address_id=offerer_address_id,
+        offer_name=offer_name,
+        beneficiary_name_or_email=beneficiary_name_or_email,
+        offer_ean=offer_ean,
+        booking_token=booking_token,
+        booking_status=booking_status,
     )
     bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
     bookings_query = (
@@ -421,6 +436,11 @@ def _get_filtered_bookings_query(
     offer_id: int | None = None,
     offerer_address_id: int | None = None,
     extra_joins: tuple[tuple[typing.Any, ...], ...] = (),
+    offer_name: str | None = None,
+    beneficiary_name_or_email: str | None = None,
+    offer_ean: str | None = None,
+    booking_token: str | None = None,
+    booking_status: list[str] | None = None,
 ) -> sa_orm.Query[models.Booking]:
     VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
     VenueAddress = sa_orm.aliased(Address)
@@ -436,6 +456,7 @@ def _get_filtered_bookings_query(
         .outerjoin(offerers_models.OffererAddress.address)
         .join(VenueOffererAddress, offerers_models.Venue.offererAddress)
         .join(VenueAddress, VenueOffererAddress.address)
+        .outerjoin(models.Booking.user)
     )
     timezone_column = sa.func.coalesce(Address.timezone, VenueAddress.timezone)
     for join_key, *join_conditions in extra_joins:
@@ -492,6 +513,33 @@ def _get_filtered_bookings_query(
         )
     if offerer_address_id:
         bookings_query = bookings_query.filter(offerers_models.OffererAddress.id == offerer_address_id)
+
+    if offer_name:
+        bookings_query = bookings_query.filter(
+            sa.func.immutable_unaccent(offers_models.Offer.name).ilike(f"%{offer_name}%")
+        )
+
+    if beneficiary_name_or_email:
+        term = f"%{beneficiary_name_or_email}%"
+        bookings_query = bookings_query.filter(
+            sa.or_(
+                sa.func.immutable_unaccent(User.firstName).ilike(term),
+                sa.func.immutable_unaccent(User.lastName).ilike(term),
+                User.email.ilike(term),
+                sa.func.immutable_unaccent(sa.func.concat(User.firstName, " ", User.lastName)).ilike(term),
+                sa.func.immutable_unaccent(sa.func.concat(User.lastName, " ", User.firstName)).ilike(term),
+            )
+        )
+
+    if offer_ean:
+        bookings_query = bookings_query.filter(offers_models.Offer.ean.ilike(f"%{offer_ean}%"))
+
+    if booking_token:
+        bookings_query = bookings_query.filter(models.Booking.token.ilike(f"%{booking_token}%"))
+
+    if booking_status:
+        bookings_query = bookings_query.filter(models.Booking.status.in_(booking_status))
+
     return bookings_query
 
 
@@ -505,6 +553,11 @@ def _get_filtered_bookings_count(
     offer_id: int | None = None,
     offerer_id: int | None = None,
     offerer_address_id: int | None = None,
+    offer_name: str | None = None,
+    beneficiary_name_or_email: str | None = None,
+    offer_ean: str | None = None,
+    booking_token: str | None = None,
+    booking_status: list[models.BookingStatus] | None = None,
 ) -> int:
     bookings = (
         _get_filtered_bookings_query(
@@ -516,6 +569,11 @@ def _get_filtered_bookings_count(
             offer_id=offer_id,
             offerer_id=offerer_id,
             offerer_address_id=offerer_address_id,
+            offer_name=offer_name,
+            beneficiary_name_or_email=beneficiary_name_or_email,
+            offer_ean=offer_ean,
+            booking_token=booking_token,
+            booking_status=booking_status,
         )
         .with_entities(models.Booking.id, models.Booking.quantity)
         .distinct(models.Booking.id)
@@ -591,7 +649,6 @@ def _get_filtered_booking_report(
             offerer_address_id=offerer_address_id,
             extra_joins=(
                 (offers_models.Stock.offer,),
-                (models.Booking.user,),
                 (offers_models.Offer.offererAddress,),
                 (offerers_models.OffererAddress.address,),
                 (VenueOffererAddress, offerers_models.Venue.offererAddress),
@@ -615,6 +672,11 @@ def _get_filtered_booking_pro(
     offer_id: int | None = None,
     offerer_id: int | None = None,
     offerer_address_id: int | None = None,
+    offer_name: str | None = None,
+    beneficiary_name_or_email: str | None = None,
+    offer_ean: str | None = None,
+    booking_token: str | None = None,
+    booking_status: list[models.BookingStatus] | None = None,
 ) -> sa_orm.Query:
     VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
     VenueAddress = sa_orm.aliased(Address)
@@ -657,12 +719,16 @@ def _get_filtered_booking_pro(
             offerer_address_id=offerer_address_id,
             extra_joins=(
                 (offers_models.Stock.offer,),
-                (models.Booking.user,),
                 (offers_models.Offer.offererAddress,),
                 (offerers_models.OffererAddress.address,),
                 (VenueOffererAddress, offerers_models.Venue.offererAddress),
                 (VenueAddress, VenueOffererAddress.address),
             ),
+            offer_name=offer_name,
+            beneficiary_name_or_email=beneficiary_name_or_email,
+            offer_ean=offer_ean,
+            booking_token=booking_token,
+            booking_status=booking_status,
         )
         .with_entities(*with_entities)
         .distinct(models.Booking.id)

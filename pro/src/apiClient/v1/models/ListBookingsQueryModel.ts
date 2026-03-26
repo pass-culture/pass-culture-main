@@ -3,13 +3,13 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { BookingExportType } from './BookingExportType';
-import type { BookingRecapStatus } from './BookingRecapStatus';
+import type { BookingStatus } from './BookingStatus';
 import type { BookingStatusFilter } from './BookingStatusFilter';
 export type ListBookingsQueryModel = {
   beneficiaryNameOrEmail?: (string | null);
   bookingPeriodBeginningDate?: (string | null);
   bookingPeriodEndingDate?: (string | null);
-  bookingStatus?: (Array<BookingRecapStatus> | null);
+  bookingStatus?: (Array<BookingStatus> | null);
   bookingStatusFilter?: (BookingStatusFilter | null);
   bookingToken?: (string | null);
   eventDate?: (string | null);
