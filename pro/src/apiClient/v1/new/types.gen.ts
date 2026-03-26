@@ -252,6 +252,15 @@ export type BannerMetaModel = {
 };
 
 /**
+ * BookingEventType
+ */
+export enum BookingEventType {
+    BOOKED = 'booked',
+    VALIDATED = 'validated',
+    REIMBURSED = 'reimbursed'
+}
+
+/**
  * BookingExportType
  */
 export enum BookingExportType {
@@ -380,15 +389,6 @@ export enum BookingStatus {
     CANCELLED = 'CANCELLED',
     PENDING_REIMBURSEMENT = 'PENDING_REIMBURSEMENT',
     REIMBURSED = 'REIMBURSED'
-}
-
-/**
- * BookingStatusFilter
- */
-export enum BookingStatusFilter {
-    BOOKED = 'booked',
-    VALIDATED = 'validated',
-    REIMBURSED = 'reimbursed'
 }
 
 /**
@@ -3877,7 +3877,6 @@ export type ListBookingsQueryModel = {
      * Bookingstatus
      */
     bookingStatus?: Array<BookingStatus> | null;
-    bookingStatusFilter?: BookingStatusFilter | null;
     /**
      * Bookingtoken
      */
@@ -3886,6 +3885,7 @@ export type ListBookingsQueryModel = {
      * Eventdate
      */
     eventDate?: string | null;
+    eventType?: BookingEventType | null;
     exportType?: BookingExportType | null;
     /**
      * Offerean
@@ -7097,7 +7097,7 @@ export type getBookingsCsvData = {
          * Eventdate
          */
         eventDate?: string | null;
-        bookingStatusFilter?: BookingStatusFilter | null;
+        eventType?: BookingEventType | null;
         /**
          * Bookingperiodbeginningdate
          */
@@ -7210,7 +7210,7 @@ export type getBookingsExcelData = {
          * Eventdate
          */
         eventDate?: string | null;
-        bookingStatusFilter?: BookingStatusFilter | null;
+        eventType?: BookingEventType | null;
         /**
          * Bookingperiodbeginningdate
          */
@@ -7401,7 +7401,7 @@ export type getBookingsProData = {
          * Eventdate
          */
         eventDate?: string | null;
-        bookingStatusFilter?: BookingStatusFilter | null;
+        eventType?: BookingEventType | null;
         /**
          * Bookingperiodbeginningdate
          */

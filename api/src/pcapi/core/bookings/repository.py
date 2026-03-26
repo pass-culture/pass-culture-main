@@ -44,10 +44,10 @@ BOOKING_STATUS_LABELS = {
     "confirmed": "confirmé",
 }
 
-BOOKING_DATE_STATUS_MAPPING: dict[models.BookingStatusFilter, sa_orm.InstrumentedAttribute] = {
-    models.BookingStatusFilter.BOOKED: models.Booking.dateCreated,
-    models.BookingStatusFilter.VALIDATED: models.Booking.dateUsed,
-    models.BookingStatusFilter.REIMBURSED: models.Booking.reimbursementDate,
+BOOKING_DATE_STATUS_MAPPING: dict[models.BookingEventType, sa_orm.InstrumentedAttribute] = {
+    models.BookingEventType.BOOKED: models.Booking.dateCreated,
+    models.BookingEventType.VALIDATED: models.Booking.dateUsed,
+    models.BookingEventType.REIMBURSED: models.Booking.reimbursementDate,
 }
 
 BOOKING_EXPORT_HEADER = [
@@ -83,7 +83,7 @@ def find_by_pro_user(
     user: User,
     *,
     booking_period: tuple[date, date] | None = None,
-    status_filter: models.BookingStatusFilter | None = None,
+    event_type: models.BookingEventType | None = None,
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
@@ -100,7 +100,7 @@ def find_by_pro_user(
     total_bookings_recap = _get_filtered_bookings_count(
         user,
         period=booking_period,
-        status_filter=status_filter,
+        event_type=event_type,
         event_date=event_date,
         venue_id=venue_id,
         offer_id=offer_id,
@@ -116,7 +116,7 @@ def find_by_pro_user(
     bookings_query = _get_filtered_booking_pro(
         pro_user=user,
         period=booking_period,
-        status_filter=status_filter,
+        event_type=event_type,
         event_date=event_date,
         venue_id=venue_id,
         offer_id=offer_id,
@@ -391,7 +391,7 @@ def get_export(
     user: User,
     *,
     booking_period: tuple[date, date] | None = None,
-    status_filter: models.BookingStatusFilter | None = models.BookingStatusFilter.BOOKED,
+    event_type: models.BookingEventType | None = models.BookingEventType.BOOKED,
     event_date: date | None = None,
     offerer_id: int | None = None,
     venue_id: int | None = None,
@@ -402,7 +402,7 @@ def get_export(
     bookings_query = _get_filtered_booking_report(
         pro_user=user,
         period=booking_period,
-        status_filter=status_filter,
+        event_type=event_type,
         event_date=event_date,
         offerer_id=offerer_id,
         venue_id=venue_id,
@@ -429,7 +429,7 @@ def _get_filtered_bookings_query(
     pro_user: User,
     *,
     period: tuple[date, date] | None = None,
-    status_filter: models.BookingStatusFilter | None = None,
+    event_type: models.BookingEventType | None = None,
     event_date: date | None = None,
     offerer_id: int | None = None,
     venue_id: int | None = None,
@@ -471,7 +471,7 @@ def _get_filtered_bookings_query(
     bookings_query = bookings_query.filter(offerers_models.UserOfferer.isValidated)
 
     if period:
-        date_column_to_filter_on = BOOKING_DATE_STATUS_MAPPING[status_filter or models.BookingStatusFilter.BOOKED]
+        date_column_to_filter_on = BOOKING_DATE_STATUS_MAPPING[event_type or models.BookingEventType.BOOKED]
 
         datetime_period_by_timezones = offerers_repository.convert_date_period_to_datetime_period_for_timezones(
             period,
@@ -547,7 +547,7 @@ def _get_filtered_bookings_count(
     pro_user: User,
     *,
     period: tuple[date, date] | None = None,
-    status_filter: models.BookingStatusFilter | None = None,
+    event_type: models.BookingEventType | None = None,
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
@@ -563,7 +563,7 @@ def _get_filtered_bookings_count(
         _get_filtered_bookings_query(
             pro_user,
             period=period,
-            status_filter=status_filter,
+            event_type=event_type,
             event_date=event_date,
             venue_id=venue_id,
             offer_id=offer_id,
@@ -588,7 +588,7 @@ def _get_filtered_booking_report(
     pro_user: User,
     *,
     period: tuple[date, date] | None,
-    status_filter: models.BookingStatusFilter | None,
+    event_type: models.BookingEventType | None,
     event_date: date | None = None,
     offerer_id: int | None = None,
     venue_id: int | None = None,
@@ -641,7 +641,7 @@ def _get_filtered_booking_report(
         _get_filtered_bookings_query(
             pro_user,
             period=period,
-            status_filter=status_filter,
+            event_type=event_type,
             event_date=event_date,
             offerer_id=offerer_id,
             venue_id=venue_id,
@@ -666,7 +666,7 @@ def _get_filtered_booking_pro(
     pro_user: User,
     *,
     period: tuple[date, date] | None = None,
-    status_filter: models.BookingStatusFilter | None = None,
+    event_type: models.BookingEventType | None = None,
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
@@ -711,7 +711,7 @@ def _get_filtered_booking_pro(
         _get_filtered_bookings_query(
             pro_user,
             period=period,
-            status_filter=status_filter,
+            event_type=event_type,
             event_date=event_date,
             venue_id=venue_id,
             offer_id=offer_id,

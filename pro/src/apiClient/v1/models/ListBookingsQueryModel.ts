@@ -2,17 +2,17 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { BookingEventType } from './BookingEventType';
 import type { BookingExportType } from './BookingExportType';
 import type { BookingStatus } from './BookingStatus';
-import type { BookingStatusFilter } from './BookingStatusFilter';
 export type ListBookingsQueryModel = {
   beneficiaryNameOrEmail?: (string | null);
   bookingPeriodBeginningDate?: (string | null);
   bookingPeriodEndingDate?: (string | null);
   bookingStatus?: (Array<BookingStatus> | null);
-  bookingStatusFilter?: (BookingStatusFilter | null);
   bookingToken?: (string | null);
   eventDate?: (string | null);
+  eventType?: (BookingEventType | null);
   exportType?: (BookingExportType | null);
   offerEan?: (string | null);
   offerId?: (number | null);

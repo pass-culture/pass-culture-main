@@ -130,7 +130,7 @@ class BaseBookingListForm(FlaskForm):
                 else from_date - datetime.timedelta(days=30)
             )
             output = (
-                f"?page=1&bookingBeginningDate={str(from_date)}&bookingEndingDate={str(to_date)}&bookingStatusFilter=booked"
+                f"?page=1&bookingBeginningDate={str(from_date)}&bookingEndingDate={str(to_date)}&eventType=booked"
                 f"&offerType=all&offerVenueId={self.venue.data[0]}"
             )
         return output

@@ -150,7 +150,7 @@ export const PreFilters = ({
                 selectedPreFilters.bookingBeginningDate
               }
               selectedBookingEndingDate={selectedPreFilters.bookingEndingDate}
-              selectedBookingFilter={selectedPreFilters.bookingStatusFilter}
+              selectedEventType={selectedPreFilters.eventType}
               updateFilters={updateSelectedFilters}
             />
 

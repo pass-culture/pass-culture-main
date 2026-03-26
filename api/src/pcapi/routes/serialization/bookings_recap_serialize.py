@@ -6,9 +6,9 @@ from enum import Enum
 import pydantic as pydantic_v2
 
 from pcapi.core.bookings import schemas
+from pcapi.core.bookings.models import BookingEventType
 from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.bookings.models import BookingStatusFilter
 from pcapi.core.bookings.repository import get_booking_token
 from pcapi.core.bookings.utils import _apply_departement_timezone
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
@@ -104,7 +104,7 @@ class ListBookingsQueryModel(HttpQueryParamsModel):
     venue_id: int | None = None
     offer_id: int | None = None
     event_date: date | None = None
-    booking_status_filter: BookingStatusFilter | None = None
+    event_type: BookingEventType | None = None
     booking_period_beginning_date: date | None = None
     booking_period_ending_date: date | None = None
     offerer_address_id: int | None = None

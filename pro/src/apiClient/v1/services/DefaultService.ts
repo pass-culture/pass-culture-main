@@ -5,10 +5,10 @@
 import type { ArtistsResponseModel } from '../models/ArtistsResponseModel';
 import type { AttachImageFormModel } from '../models/AttachImageFormModel';
 import type { AttachImageResponseModel } from '../models/AttachImageResponseModel';
+import type { BookingEventType } from '../models/BookingEventType';
 import type { BookingExportType } from '../models/BookingExportType';
 import type { BookingsExportStatusFilter } from '../models/BookingsExportStatusFilter';
 import type { BookingStatus } from '../models/BookingStatus';
-import type { BookingStatusFilter } from '../models/BookingStatusFilter';
 import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
 import type { ChangePasswordBodyModel } from '../models/ChangePasswordBodyModel';
 import type { ChangeProEmailBody } from '../models/ChangeProEmailBody';
@@ -163,7 +163,7 @@ export class DefaultService {
    * @param venueId
    * @param offerId
    * @param eventDate
-   * @param bookingStatusFilter
+   * @param eventType
    * @param bookingPeriodBeginningDate
    * @param bookingPeriodEndingDate
    * @param offererAddressId
@@ -182,7 +182,7 @@ export class DefaultService {
     venueId?: (number | null),
     offerId?: (number | null),
     eventDate?: (string | null),
-    bookingStatusFilter?: (BookingStatusFilter | null),
+    eventType?: (BookingEventType | null),
     bookingPeriodBeginningDate?: (string | null),
     bookingPeriodEndingDate?: (string | null),
     offererAddressId?: (number | null),
@@ -202,7 +202,7 @@ export class DefaultService {
         'venueId': venueId,
         'offerId': offerId,
         'eventDate': eventDate,
-        'bookingStatusFilter': bookingStatusFilter,
+        'eventType': eventType,
         'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
         'bookingPeriodEndingDate': bookingPeriodEndingDate,
         'offererAddressId': offererAddressId,
@@ -247,7 +247,7 @@ export class DefaultService {
    * @param venueId
    * @param offerId
    * @param eventDate
-   * @param bookingStatusFilter
+   * @param eventType
    * @param bookingPeriodBeginningDate
    * @param bookingPeriodEndingDate
    * @param offererAddressId
@@ -266,7 +266,7 @@ export class DefaultService {
     venueId?: (number | null),
     offerId?: (number | null),
     eventDate?: (string | null),
-    bookingStatusFilter?: (BookingStatusFilter | null),
+    eventType?: (BookingEventType | null),
     bookingPeriodBeginningDate?: (string | null),
     bookingPeriodEndingDate?: (string | null),
     offererAddressId?: (number | null),
@@ -286,7 +286,7 @@ export class DefaultService {
         'venueId': venueId,
         'offerId': offerId,
         'eventDate': eventDate,
-        'bookingStatusFilter': bookingStatusFilter,
+        'eventType': eventType,
         'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
         'bookingPeriodEndingDate': bookingPeriodEndingDate,
         'offererAddressId': offererAddressId,
@@ -391,7 +391,7 @@ export class DefaultService {
    * @param venueId
    * @param offerId
    * @param eventDate
-   * @param bookingStatusFilter
+   * @param eventType
    * @param bookingPeriodBeginningDate
    * @param bookingPeriodEndingDate
    * @param offererAddressId
@@ -410,7 +410,7 @@ export class DefaultService {
     venueId?: (number | null),
     offerId?: (number | null),
     eventDate?: (string | null),
-    bookingStatusFilter?: (BookingStatusFilter | null),
+    eventType?: (BookingEventType | null),
     bookingPeriodBeginningDate?: (string | null),
     bookingPeriodEndingDate?: (string | null),
     offererAddressId?: (number | null),
@@ -430,7 +430,7 @@ export class DefaultService {
         'venueId': venueId,
         'offerId': offerId,
         'eventDate': eventDate,
-        'bookingStatusFilter': bookingStatusFilter,
+        'eventType': eventType,
         'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
         'bookingPeriodEndingDate': bookingPeriodEndingDate,
         'offererAddressId': offererAddressId,
