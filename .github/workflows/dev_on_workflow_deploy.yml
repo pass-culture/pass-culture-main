@@ -117,7 +117,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v3"
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -135,7 +135,7 @@ jobs:
         working-directory: "${{ inputs.doc-api-entrypoint }}"
       - name: "OpenID Connect Authentication"
         id: "openid-auth"
-        uses: "google-github-actions/auth@v3"
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -211,7 +211,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v3"
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -237,7 +237,7 @@ jobs:
             DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/${{ inputs.workload_identity_provider_secret_name }}
 
       - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v3"
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
         with:
           service_account: ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
           workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
@@ -296,7 +296,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: "Authentification to Google with SA infra"
-        uses: "google-github-actions/auth@v3"
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
         with:
           workload_identity_provider: ${{ secrets.NEW_INFRA_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.NEW_INFRA_PCAPI_DEPLOYER_SERVICE_ACCOUNT }}
