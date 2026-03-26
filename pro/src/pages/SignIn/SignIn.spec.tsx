@@ -4,9 +4,6 @@ import { Route, Routes } from 'react-router'
 
 import { api, apiNew } from '@/apiClient/api'
 import { HTTP_STATUS } from '@/apiClient/helpers'
-import { ApiError } from '@/apiClient/v1'
-import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import type { SharedLoginUserResponseModel } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -15,6 +12,7 @@ import {
   RECAPTCHA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
 import * as initializeUserModule from '@/commons/store/user/dispatchers/initializeUser'
+import { makeApiError } from '@/commons/utils/factories/errorFactories'
 import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,
@@ -234,15 +232,10 @@ describe('SignIn', () => {
     await userEvent.type(password, 'fakePassword')
 
     vi.spyOn(apiNew, 'signin').mockRejectedValueOnce(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          url: '',
-          body: { identifier: ['password is invalid'] },
-          status: 401,
-        } as ApiResult,
-        ''
-      )
+      makeApiError({
+        body: { identifier: ['password is invalid'] },
+        status: 401,
+      })
     )
 
     await userEvent.click(
@@ -269,18 +262,13 @@ describe('SignIn', () => {
     await userEvent.type(password, 'password123')
 
     vi.spyOn(apiNew, 'signin').mockRejectedValueOnce(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          url: '',
-          body: {
-            email: ['Email invalide'],
-            password: ['Mot de passe invalide'],
-          },
-          status: 400,
-        } as ApiResult,
-        ''
-      )
+      makeApiError({
+        body: {
+          email: ['Email invalide'],
+          password: ['Mot de passe invalide'],
+        },
+        status: 400,
+      })
     )
 
     await userEvent.click(
@@ -304,19 +292,14 @@ describe('SignIn', () => {
     await userEvent.type(password, 'fakePassword')
 
     vi.spyOn(apiNew, 'signin').mockRejectedValueOnce(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          url: '',
-          body: {
-            identifier: [
-              'Nombre de tentatives de connexion dépassé, veuillez réessayer dans une minute',
-            ],
-          },
-          status: HTTP_STATUS.TOO_MANY_REQUESTS,
-        } as ApiResult,
-        ''
-      )
+      makeApiError({
+        body: {
+          identifier: [
+            'Nombre de tentatives de connexion dépassé, veuillez réessayer dans une minute',
+          ],
+        },
+        status: HTTP_STATUS.TOO_MANY_REQUESTS,
+      })
     )
 
     await userEvent.click(
@@ -360,15 +343,10 @@ describe('SignIn', () => {
     await userEvent.type(password, 'fakePassword')
 
     vi.spyOn(apiNew, 'signin').mockRejectedValueOnce(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          url: '',
-          body: { identifier: ['password is invalid'] },
-          status: 401,
-        } as ApiResult,
-        ''
-      )
+      makeApiError({
+        body: { identifier: ['password is invalid'] },
+        status: 401,
+      })
     )
 
     await userEvent.click(
