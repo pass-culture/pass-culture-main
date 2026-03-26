@@ -237,7 +237,7 @@ jobs:
           password: "${{ steps.google-auth.outputs.access_token }}"
 
       - name: "Setup helmfile"
-        uses: mamezou-tech/setup-helmfile@v2.2.0
+        uses: mamezou-tech/setup-helmfile@c04e83ec7650bf2ec910864bcb409479cf56d8e6 # v2.2.0
         with:
           helmfile-version: "v1.1.3"
 
