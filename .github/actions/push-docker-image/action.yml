@@ -94,7 +94,7 @@ runs:
         echo "target_image_name=${{ inputs.registry }}/${{ inputs.project_id }}/${{ inputs.repository }}/${{ inputs.image }}" | tee -a ${GITHUB_OUTPUT}
 
     - name: Download artifact
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
       with:
         name: ${{ inputs.image }}-${{ inputs.tag }}.tar
         path: ${{ runner.temp }}
