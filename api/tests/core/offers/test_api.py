@@ -1220,7 +1220,9 @@ class UpsertOfferThingStocksTest:
         )
         db.session.refresh(offer)
 
-        deleted_stock = db.session.get(models.Stock, stock_to_be_deleted.id)
+        deleted_stock = db.session.execute(
+            sa.select(models.Stock).where(models.Stock.id == stock_to_be_deleted.id)
+        ).one_or_none()
         assert not deleted_stock
 
         udpated_stock = db.session.get(models.Stock, stock_to_be_updated.id)
@@ -1228,6 +1230,36 @@ class UpsertOfferThingStocksTest:
         created_stocks = [s for s in offer.activeStocks if s.id not in (stock_to_be_updated.id, stock_to_be_deleted.id)]
         assert len(created_stocks) == 1
         assert {ac.code for ac in created_stocks[0].activationCodes} == set(activation_codes)
+
+    def test_delete_stock_with_existing_activation_codes_and_no_bookings(self):
+        offer = factories.DigitalOfferFactory()
+        stock_to_be_deleted = factories.ThingStockFactory(offer=offer, quantity=3, price=decimal.Decimal("0"))
+        factories.ActivationCodeFactory(stock=stock_to_be_deleted, code="OLD_CODE_1")
+
+        new_activation_codes = ["NEW_CODE_1"]
+        booking_limit_datetime = datetime.now() + timedelta(days=7)
+        activation_codes_expiration_datetime = booking_limit_datetime + timedelta(days=14)
+        api.upsert_offer_thing_stocks(
+            offer,
+            [
+                offers_schemas.ThingStockUpsertInput(
+                    {
+                        "id": None,
+                        "activation_codes": new_activation_codes,
+                        "activation_codes_expiration_datetime": activation_codes_expiration_datetime,
+                        "booking_limit_datetime": booking_limit_datetime,
+                        "price": decimal.Decimal("0"),
+                        "quantity": None,
+                    }
+                ),
+            ],
+        )
+        db.session.refresh(offer)
+
+        deleted_stock = db.session.execute(
+            sa.select(models.Stock).where(models.Stock.id == stock_to_be_deleted.id)
+        ).one_or_none()
+        assert not deleted_stock
 
 
 class CreateMediationV2Test:
