@@ -97,6 +97,7 @@ jobs:
     needs: prepare-variables
     uses: ./.github/workflows/dev_on_workflow_build_and_tag.yml
     secrets:
+      WORKLOAD_IDENTITY_PRD: ${{ secrets.WORKLOAD_IDENTITY_PRD }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
