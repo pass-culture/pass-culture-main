@@ -1,0 +1,44 @@
+name: Install passdirector CLI
+description: An action to install passdirector CLI onto the runner
+inputs:
+  version:
+    description: The passdirector version
+    default: v0.1.0
+    required: false
+  github_app_id:
+    description: The application ID to use to clone passdirector
+    required: true
+  github_app_private_key:
+    description: The application private key to use to clone passdirector
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Install uv
+      uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
+    - name: Authenticate through github app ghactionci
+      uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      id: github-token
+      with:
+        app-id: ${{ inputs.github_app_id }}
+        private-key: ${{ inputs.github_app_private_key }}
+        owner: ${{ github.repository_owner }}
+        repositories: |
+          passdirector
+        permission-contents: read
+    - name: Register the personal access token
+      shell: bash
+      env:
+        TOKEN: ${{ steps.github-token.outputs.token }}
+      run: echo "${TOKEN}" | gh auth login --with-token
+    - name: Configure the Git credential helper
+      run: gh auth setup-git
+      shell: bash
+    - name: Install passdirector
+      shell: bash
+      env:
+        VERSION: ${{ inputs.version }}
+        GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+      run: |
+        uv tool install --from "git+https://github.com/pass-culture/passdirector@${VERSION}" passdirector
