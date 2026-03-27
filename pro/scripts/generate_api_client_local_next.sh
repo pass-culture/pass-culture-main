@@ -9,4 +9,7 @@ echo "Generating v1 (Pro) API client from http://${PCAPI_HOST}/pro/openapi.json.
 echo "Generating adage API client from http://${PCAPI_HOST}/adage-iframe/openapi.json..."
 ./node_modules/.bin/openapi-ts -f config/openapi-ts.adage.config.ts
 
+echo "Formatting generated index files..."
+node scripts/format_generated_index_exports.js src/apiClient/v1/new/index.ts src/apiClient/adage/new/index.ts
+
 echo "Done."
