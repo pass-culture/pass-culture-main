@@ -379,20 +379,19 @@ export const CollectiveDmsTimeline = ({
         )
       }
       if (!hasAdageIdForMoreThan30Days) {
-        if (variant === CollectiveDmsTimelineVariant.LITE) {
-          return shouldShowSuccessDMSBanner && successDMSBanner
-        }
         return (
           <>
             {shouldShowSuccessDMSBanner && successDMSBanner}
-            <Timeline
-              steps={[
-                successSubmittedStep,
-                successInstructionStep,
-                successDoneReferencement,
-                successAdageStep,
-              ]}
-            />
+            {variant !== CollectiveDmsTimelineVariant.LITE && (
+              <Timeline
+                steps={[
+                  successSubmittedStep,
+                  successInstructionStep,
+                  successDoneReferencement,
+                  successAdageStep,
+                ]}
+              />
+            )}
           </>
         )
       }

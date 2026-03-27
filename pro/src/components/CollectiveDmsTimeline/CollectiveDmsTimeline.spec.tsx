@@ -51,9 +51,10 @@ interface TestCaseProps {
 }
 
 describe('CollectiveDmsTimeline', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    const originalModule = await vi.importActual('@/app/App/analytics/firebase')
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-      ...vi.importActual('@/app/App/analytics/firebase'),
+      ...originalModule,
       logEvent: mockLogEvent,
     }))
   })
