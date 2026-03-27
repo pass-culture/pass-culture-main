@@ -240,5 +240,25 @@ describe('CollectiveDmsTimeline', () => {
         )
       ).not.toBeInTheDocument()
     })
+
+    it('should still display the timeline when the DMS application has been accepted but no adageId has been given yet.', () => {
+      renderCollectiveDmsTimeline({
+        collectiveDmsApplication: {
+          ...defaultDMSApplicationForEAC,
+          state: DMSApplicationstatus.ACCEPTE,
+        },
+        hasAdageId: false,
+        variant: CollectiveDmsTimelineVariant.LITE,
+      })
+
+      expect(
+        screen.getByText(/Votre demande de référencement a été acceptée/)
+      ).toBeVisible()
+      expect(
+        screen.getByText(
+          /Votre structure doit encore être référencée dans ADAGE/
+        )
+      ).toBeVisible()
+    })
   })
 })

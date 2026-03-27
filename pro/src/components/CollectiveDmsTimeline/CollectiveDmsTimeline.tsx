@@ -364,9 +364,6 @@ export const CollectiveDmsTimeline = ({
       )
     case DMSApplicationstatus.ACCEPTE:
       if (!hasAdageId) {
-        if (variant === CollectiveDmsTimelineVariant.LITE) {
-          return shouldShowSuccessDMSBanner && successDMSBanner
-        }
         return (
           <>
             {shouldShowSuccessDMSBanner && successDMSBanner}
