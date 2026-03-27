@@ -6,6 +6,7 @@ import { OffersEmptyStateCardVariant } from '../types'
 import bookableOffers from './assets/bookable-offers.png'
 import individualOffers from './assets/individual-offers.png'
 import templateOffers from './assets/template-offers.png'
+import styles from './OffersEmptyStateCard.module.scss'
 
 const EMPTY_STATE_CONFIG = {
   [OffersEmptyStateCardVariant.BOOKABLE]: {
@@ -43,7 +44,11 @@ export const OffersEmptyStateCard = ({
   const cardContent = EMPTY_STATE_CONFIG[variant]
   return (
     <Card>
-      <Card.Image src={cardContent.imageSrc} alt="" />
+      <Card.Image
+        src={cardContent.imageSrc}
+        alt=""
+        className={styles['image']}
+      />
       <Card.Header title={cardContent.title} />
       <Card.Content>
         <p>{cardContent.description}</p>
