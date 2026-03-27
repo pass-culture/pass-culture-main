@@ -75,7 +75,7 @@ describe('initializeUser', () => {
 
       const store = configureTestStore()
 
-      await store.dispatch(initializeUser(user)).unwrap()
+      await store.dispatch(initializeUser({ user })).unwrap()
 
       const state = store.getState()
       expect(state.user.access).toBe('full')
@@ -135,7 +135,7 @@ describe('initializeUser', () => {
 
       const store = configureTestStore()
 
-      await store.dispatch(initializeUser(user)).unwrap()
+      await store.dispatch(initializeUser({ user })).unwrap()
 
       const state = store.getState()
       expect(state.user.access).toBe('full')
@@ -194,7 +194,7 @@ describe('initializeUser', () => {
 
       const store = configureTestStore()
 
-      await store.dispatch(initializeUser(user)).unwrap()
+      await store.dispatch(initializeUser({ user })).unwrap()
 
       const state = store.getState()
       expect(state.user.access).toBe('full')
@@ -250,7 +250,7 @@ describe('initializeUser', () => {
 
       const store = configureTestStore()
 
-      await store.dispatch(initializeUser(user)).unwrap()
+      await store.dispatch(initializeUser({ user })).unwrap()
 
       const state = store.getState()
       expect(state.user.access).toBe('no-onboarding')
@@ -279,7 +279,7 @@ describe('initializeUser', () => {
 
       const store = configureTestStore()
 
-      await store.dispatch(initializeUser(user)).unwrap()
+      await store.dispatch(initializeUser({ user })).unwrap()
 
       expect(apiGetOffererSpy).not.toHaveBeenCalled()
       expect(apiGetVenueSpy).not.toHaveBeenCalled()
@@ -306,7 +306,7 @@ describe('initializeUser', () => {
       const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
 
       const store = configureTestStore()
-      await store.dispatch(initializeUser(user)).unwrap()
+      await store.dispatch(initializeUser({ user })).unwrap()
 
       expect(apiGetVenueSpy).not.toHaveBeenCalled()
 
@@ -369,7 +369,7 @@ describe('initializeUser', () => {
 
       const store = configureStoreWithSwitchVenueFeature()
 
-      await store.dispatch(initializeUser(user)).unwrap()
+      await store.dispatch(initializeUser({ user })).unwrap()
 
       const state = store.getState()
       expect(state.user.access).toBe('full')
@@ -411,7 +411,7 @@ describe('initializeUser', () => {
 
       const store = configureStoreWithSwitchVenueFeature()
 
-      await store.dispatch(initializeUser(user)).unwrap()
+      await store.dispatch(initializeUser({ user })).unwrap()
 
       const state = store.getState()
       expect(state.user.access).toBe('full')
@@ -446,7 +446,7 @@ describe('initializeUser', () => {
 
       const store = configureStoreWithSwitchVenueFeature()
 
-      await store.dispatch(initializeUser(user)).unwrap()
+      await store.dispatch(initializeUser({ user })).unwrap()
 
       expect(apiGetVenueSpy).not.toHaveBeenCalled()
 
@@ -474,7 +474,7 @@ describe('initializeUser', () => {
 
       const store = configureStoreWithSwitchVenueFeature()
 
-      await store.dispatch(initializeUser(user)).unwrap()
+      await store.dispatch(initializeUser({ user })).unwrap()
 
       expect(apiGetVenueSpy).not.toHaveBeenCalled()
 
@@ -496,13 +496,119 @@ describe('initializeUser', () => {
 
       const store = configureStoreWithSwitchVenueFeature()
 
-      await store.dispatch(initializeUser(user)).unwrap()
+      await store.dispatch(initializeUser({ user })).unwrap()
 
       expect(apiGetOffererSpy).not.toHaveBeenCalled()
       expect(apiGetVenueSpy).not.toHaveBeenCalled()
 
       const state = store.getState()
       expect(state.user.access).toBeNull()
+    })
+
+    it('should auto-select single venue and set admin offerer when newOffererId is provided', async () => {
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+        offerersNamesWithPendingValidation: [],
+        offerersNames: [getOffererNameFactory({ id: 100 })],
+      })
+      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+        venues: [
+          makeVenueListItemLiteResponseModel({
+            id: 101,
+            managingOffererId: 100,
+          }),
+        ],
+        venuesWithPendingValidation: [],
+      })
+      vi.spyOn(api, 'getVenue').mockResolvedValue(
+        makeGetVenueResponseModel({
+          id: 101,
+          managingOfferer: makeGetVenueManagingOffererResponseModel({
+            id: 100,
+          }),
+        })
+      )
+      vi.spyOn(api, 'getOfferer').mockResolvedValue({
+        ...defaultGetOffererResponseModel,
+        id: 100,
+        isOnboarded: true,
+      })
+
+      const store = configureStoreWithSwitchVenueFeature()
+
+      await store.dispatch(initializeUser({ newOffererId: 100, user })).unwrap()
+
+      const state = store.getState()
+      expect(state.user.selectedVenue?.id).toBe(101)
+      expect(state.user.selectedAdminOfferer?.id).toBe(100)
+    })
+
+    it('should unset venue and set admin offerer when newOffererId has multiple venues', async () => {
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+        offerersNamesWithPendingValidation: [],
+        offerersNames: [getOffererNameFactory({ id: 100 })],
+      })
+      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+        venues: [
+          makeVenueListItemLiteResponseModel({
+            id: 101,
+            managingOffererId: 100,
+          }),
+          makeVenueListItemLiteResponseModel({
+            id: 102,
+            managingOffererId: 100,
+          }),
+        ],
+        venuesWithPendingValidation: [],
+      })
+      vi.spyOn(api, 'getOfferer').mockResolvedValue({
+        ...defaultGetOffererResponseModel,
+        id: 100,
+        isOnboarded: true,
+      })
+
+      const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
+
+      localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '101')
+
+      const store = configureStoreWithSwitchVenueFeature()
+
+      await store.dispatch(initializeUser({ newOffererId: 100, user })).unwrap()
+
+      expect(apiGetVenueSpy).not.toHaveBeenCalled()
+
+      const state = store.getState()
+      expect(state.user.selectedVenue).toBeNull()
+      expect(state.user.selectedAdminOfferer?.id).toBe(100)
+      expect(
+        localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)
+      ).toBeNull()
+    })
+
+    it('should set admin offerer from newOffererId even when venue is not selected', async () => {
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+        offerersNamesWithPendingValidation: [],
+        offerersNames: [
+          getOffererNameFactory({ id: 100 }),
+          getOffererNameFactory({ id: 200 }),
+        ],
+      })
+      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+        venues: [],
+        venuesWithPendingValidation: [],
+      })
+      vi.spyOn(api, 'getOfferer').mockResolvedValue({
+        ...defaultGetOffererResponseModel,
+        id: 200,
+        isOnboarded: false,
+      })
+
+      const store = configureStoreWithSwitchVenueFeature()
+
+      await store.dispatch(initializeUser({ newOffererId: 200, user })).unwrap()
+
+      const state = store.getState()
+      expect(state.user.selectedVenue).toBeNull()
+      expect(state.user.selectedAdminOfferer?.id).toBe(200)
     })
 
     it('should ignore invalid venue id from localStorage and return early', async () => {
@@ -533,7 +639,7 @@ describe('initializeUser', () => {
 
       const store = configureStoreWithSwitchVenueFeature()
 
-      await store.dispatch(initializeUser(user)).unwrap()
+      await store.dispatch(initializeUser({ user })).unwrap()
 
       const state = store.getState()
       expect(state.user.access).toBeNull()
@@ -577,7 +683,7 @@ describe('initializeUser', () => {
 
       const store = configureTestStore()
 
-      await store.dispatch(initializeUser(user)).unwrap()
+      await store.dispatch(initializeUser({ user })).unwrap()
 
       expect(
         localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)
@@ -597,7 +703,7 @@ describe('initializeUser', () => {
 
       const store = configureTestStore()
 
-      await store.dispatch(initializeUser(user)).unwrap()
+      await store.dispatch(initializeUser({ user })).unwrap()
 
       expect(logoutSpy).toHaveBeenCalledTimes(1)
 

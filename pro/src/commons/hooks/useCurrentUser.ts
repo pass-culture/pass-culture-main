@@ -13,6 +13,8 @@ interface UseCurrentUserReturn {
   selectedOffererId: number | null
 }
 
+/** @deprecated Use `useAppSelector(ensureCurrentUser())` instead. */
+// TODO(igabriele, 2026-03-23): Replace this hook once `WIP_SWITCH_VENUE` FF is enabled and removed.
 export const useCurrentUser = (): UseCurrentUserReturn => {
   const currentUser = useAppSelector(selectCurrentUser)
   const selectedOffererId = useAppSelector(selectCurrentOffererId)

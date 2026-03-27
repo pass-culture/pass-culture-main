@@ -224,7 +224,7 @@ describe('SignIn', () => {
         captchaToken: 'token',
       },
     })
-    expect(initializeUserSpy).toHaveBeenCalledExactlyOnceWith({})
+    expect(initializeUserSpy).toHaveBeenCalledExactlyOnceWith({ user: {} })
   })
 
   it('should navigate to user default path on successful login with WIP_SWITCH_VENUE', async () => {

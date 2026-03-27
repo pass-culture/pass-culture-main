@@ -75,7 +75,7 @@ export const SignIn = (): JSX.Element => {
       })
 
       assertOrFrontendError(user, '`user` is undefined.')
-      await dispatch(initializeUser(user)).unwrap()
+      await dispatch(initializeUser({ user })).unwrap()
 
       if (withSwitchVenueFeature) {
         navigate(getUserDefaultPath())

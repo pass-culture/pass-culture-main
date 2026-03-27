@@ -24,7 +24,7 @@ export const validateSignupActivation = async (
   try {
     await api.validateUser(token)
     const user = await api.getProfile()
-    await rootStore.dispatch(initializeUser(user)).unwrap()
+    await rootStore.dispatch(initializeUser({ user })).unwrap()
 
     rootStore.dispatch(
       addSnackBar({

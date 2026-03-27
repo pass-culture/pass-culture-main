@@ -155,7 +155,7 @@ describe('SignupValidation', () => {
 
     // … and the user is initialized
     await waitFor(() =>
-      expect(initializeUser).toHaveBeenCalledExactlyOnceWith(user)
+      expect(initializeUser).toHaveBeenCalledExactlyOnceWith({ user })
     )
 
     // … and we should be redirected to the homepage

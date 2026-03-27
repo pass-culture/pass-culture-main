@@ -43,6 +43,17 @@ vi.mock('@/commons/store/user/dispatchers/setSelectedOffererById', () => ({
   },
 }))
 
+const initializeUserMock = vi.hoisted(() => vi.fn())
+vi.mock('@/commons/store/user/dispatchers/initializeUser', () => ({
+  initializeUser: (args: unknown) => {
+    return () => initializeUserMock(args)
+  },
+}))
+
+vi.mock('@/app/AppRouter/utils/getUserDefaultPath', () => ({
+  getUserDefaultPath: vi.fn(() => '/accueil'),
+}))
+
 const addressInformations: Address = {
   street: '3 Rue de Valois',
   city: 'Paris',
@@ -108,6 +119,7 @@ describe('ValidationScreen', () => {
       setInitialAddress: noop,
     }
     setSelectedOffererByIdMock.mockReset()
+    initializeUserMock.mockReset()
   })
 
   it('should redirect to authentification if no offerer is selected', async () => {
@@ -388,6 +400,60 @@ describe('ValidationScreen', () => {
         'Domaine II',
         'Domaine C',
       ])
+    })
+  })
+
+  describe('with WIP_SWITCH_VENUE', () => {
+    beforeEach(() => {
+      contextValue = {
+        activity: {
+          activity: 'MUSEUM',
+          socialUrls: ['url1', 'url2'],
+          targetCustomer: Target.EDUCATIONAL,
+          phoneNumber: '',
+          culturalDomains: undefined,
+        },
+        offerer: {
+          name: 'nom',
+          publicName: 'nom public',
+          siret: '123123123',
+          hasVenueWithSiret: false,
+          isDiffusible: true,
+          ...addressInformations,
+        },
+        setActivity: () => {},
+        setOfferer: () => {},
+        initialAddress: null,
+        setInitialAddress: noop,
+      }
+    })
+
+    it('should call initializeUser with newOffererId and navigate to user default path', async () => {
+      const createdOfferer = { id: 42 } as PostOffererResponseModel
+      vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(createdOfferer)
+      vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
+        remove: vi.fn(),
+      } as unknown as HTMLScriptElement)
+      vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
+      const initPromise = Promise.resolve({
+        type: 'user/initializeUser/fulfilled',
+      }) as any
+      initPromise.unwrap = () => Promise.resolve()
+      initializeUserMock.mockReturnValue(initPromise)
+
+      renderValidationScreen(contextValue, {
+        features: ['WIP_SWITCH_VENUE'],
+      })
+
+      await userEvent.click(screen.getByText('Valider et créer ma structure'))
+
+      await waitFor(() => {
+        expect(initializeUserMock).toHaveBeenCalledWith(
+          expect.objectContaining({ newOffererId: 42 })
+        )
+      })
+      expect(screen.getByText('accueil')).toBeInTheDocument()
+      expect(setSelectedOffererByIdMock).not.toHaveBeenCalled()
     })
   })
 
