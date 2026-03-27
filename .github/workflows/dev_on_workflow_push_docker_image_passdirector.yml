@@ -1,0 +1,87 @@
+# Ideally this would be an action and not a worklow since we could probably reuse the environment
+# and not reinstall everything everytime. But this does not fit the architecture of our CI well for now
+name: '3 [on_workflow] push docker image with passdirector'
+on:
+  workflow_call:
+    inputs:
+      image:
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string
+      tag:
+        required: true
+        type: string
+      tag_latest:
+        required: false
+        default: false
+        type: boolean 
+    secrets:
+      WORKLOAD_IDENTITY_PRD:
+        description: 'Workload Identity Provider for fetching secrets in Secret Manager'
+        required: true
+      PASSCULTURE_GITHUB_ACTION_APP_ID:
+        required: true
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY:
+        required: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  push-images:
+    runs-on: ubuntu-22.04
+    environment: 
+      name: ${{ inputs.environment }}
+      deployment: false
+    steps:
+      - name: Checkout ref
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Authentification to Google
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PRD }}
+          service_account: ${{ vars.PCAPI_CI_SERVICE_ACCOUNT }}
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
+        with:
+          cosign-release: "v3.0.5"
+      - name: Install passdirector
+        uses: ./.github/actions/setup-passdirector
+        with: 
+          version: IC-1020-docker-push 
+          github_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID}}
+          github_app_private_key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY}}
+      - name: Download artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: ${{ inputs.image }}-${{ inputs.tag }}.tar
+          path: ${{ runner.temp }}
+      - name: Load docker image from artifact
+        shell: bash
+        env:
+          IMAGE: ${{ inputs.image }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          docker load --input "${{ runner.temp }}/${IMAGE}-${TAG}.tar"
+          docker images
+      - name: Push image using passdirector
+        shell: bash
+        if: inputs.tag_latest == false
+        env:
+          IMAGE: ${{ inputs.image }}
+          TAG: ${{ inputs.tag }}
+          REGISTRY: europe-docker.pkg.dev/pc-infra-prd/pass-culture-artifact-registry
+        run: |
+          passdirector docker push -s "${IMAGE}:${TAG}" -d "${REGISTRY}/${IMAGE}" -t "${TAG}"
+      - name: Push image with latest tag using passdirector
+        shell: bash
+        if: inputs.tag_latest == true
+        env:
+          IMAGE: ${{ inputs.image }}
+          TAG: ${{ inputs.tag }}
+          REGISTRY: europe-docker.pkg.dev/pc-infra-prd/pass-culture-artifact-registry
+        run: |
+          passdirector docker push -s "${IMAGE}:${TAG}" -d "${REGISTRY}/${IMAGE}" -t "${TAG}" --tag-latest

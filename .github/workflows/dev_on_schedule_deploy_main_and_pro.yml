@@ -117,29 +117,29 @@ jobs:
       - build-pcapi
       - pcapi-init-job
     if: needs.pcapi-init-job.outputs.pcapi-exists == 'false'
-    uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
+    uses: ./.github/workflows/dev_on_workflow_push_docker_image_passdirector.yml
     with:
       image: pcapi
       tag: ${{ github.sha }}
+      environment: pcapi-tst
       tag_latest: true
     secrets:
-      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      WORKLOAD_IDENTITY_PRD: ${{ secrets.WORKLOAD_IDENTITY_PRD }}
 
   push-pcapi-console:
     name: Push pcapi-console docker image to artifact registry
     needs:
       - build-pcapi-console
       - pcapi-init-job
-    uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
+    uses: ./.github/workflows/dev_on_workflow_push_docker_image_passdirector.yml
     if: needs.pcapi-init-job.outputs.pcapi-console-exists == 'false'
     with:
       image: pcapi-console
       tag: ${{ github.sha }}
+      environment: pcapi-tst
       tag_latest: true
     secrets:
-      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      WORKLOAD_IDENTITY_PRD: ${{ secrets.WORKLOAD_IDENTITY_PRD }}
 
   deploy-to-testing:
     name: Deploy to testing
