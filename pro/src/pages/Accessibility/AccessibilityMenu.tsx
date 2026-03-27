@@ -24,10 +24,7 @@ export function AccessibilityMenu() {
   }
 
   return (
-    <AccessibilityLayout
-      mainHeading="Informations d’accessibilité"
-      showBackToSignInButton
-    >
+    <AccessibilityLayout mainHeading="Informations d'accessibilité">
       <div className={styles['page-content']}>
         <Button
           onClick={() => backToDefault()}
@@ -54,7 +51,7 @@ export function AccessibilityMenu() {
             color={ButtonColor.NEUTRAL}
             icon={strokeRigthIcon}
             iconPosition={IconPositionEnum.RIGHT}
-            label="Déclaration d’accessibilité"
+            label="Déclaration d'accessibilité"
           />
           <Button
             as="a"

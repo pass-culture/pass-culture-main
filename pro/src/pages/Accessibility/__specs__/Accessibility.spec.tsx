@@ -24,8 +24,11 @@ describe('Statement of Accessibility page', () => {
   it('should display Accessibility information message', () => {
     renderAccessibilityMenu({})
 
-    expect(screen.getByText('Informations d’accessibilité')).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: "Informations d'accessibilité" })
+    ).toBeVisible()
   })
+
   it('should display the back button and return to home on click if logged in', async () => {
     renderAccessibilityMenu({
       options: {
@@ -39,6 +42,7 @@ describe('Statement of Accessibility page', () => {
     await userEvent.click(retourBtn)
     expect(mockNavigate).toHaveBeenCalledWith('/accueil')
   })
+
   it('should display the back button and return to connexion page on click if logged out', async () => {
     renderAccessibilityMenu({
       options: {
