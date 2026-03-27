@@ -1,0 +1,65 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
+
+.heading2 {
+  @include fonts.title2;
+}
+
+.heading3 {
+  @include fonts.title3;
+}
+
+.body-accent {
+  @include fonts.body-accent;
+}
+
+.heading2,
+.heading3,
+.body-accent,
+.paragraph {
+  margin-bottom: var(--size-spacing-l);
+}
+
+.list-item {
+  list-style: disc;
+  margin-left: var(--size-spacing-l);
+}
+
+.list-item-spaced {
+  list-style: disc;
+  margin-left: var(--size-spacing-l);
+  margin-bottom: var(--size-spacing-l);
+}
+
+.back-link {
+  margin-bottom: var(--size-spacing-xxl);
+}
+
+.page-content {
+  margin-bottom: var(--size-spacing-xxl);
+  justify-self: center;
+  max-width: 80%;
+}
+
+.download-button {
+  margin-bottom: var(--size-spacing-xxl);
+  margin-top: var(--size-spacing-l);
+}
+
+.criteria-list {
+  margin-bottom: var(--size-spacing-xxl);
+}
+
+.accordion-button {
+  margin-bottom: 8px;
+
+  > * {
+    text-align: left;
+    align-items: flex-start;
+  }
+}
+
+.non-validated-button-closed {
+  margin-bottom: var(--size-spacing-xxl);
+}

@@ -11,6 +11,7 @@ import { parse } from '@/commons/utils/query-string'
 import { administrationRouteGroup } from './routes/administrationRouteGroup'
 import { partnerRouteGroup } from './routes/partnerRouteGroup'
 import { reimbursementsRouteGroup } from './routes/reimbursementsRouteGroup'
+import { routesEcoDesign } from './subroutesEcoDesignMap'
 import {
   routesIndividualOfferWizard,
   routesOnboardingIndividualOfferWizard,
@@ -485,6 +486,13 @@ export const routes: CustomRouteTree = [
     path: '/accessibilite/schema-pluriannuel',
     title: 'Schéma pluriannuel',
     meta: { public: true, canBeLoggedIn: true },
+  },
+  {
+    loader: noop,
+    path: '/ecoconception',
+    title: 'Déclaration d’écoconception de l’espace partenaires',
+    meta: { public: true, canBeLoggedIn: true },
+    children: routesEcoDesign,
   },
   {
     lazy: () => import('@/pages/Collaborators/Collaborators'),
