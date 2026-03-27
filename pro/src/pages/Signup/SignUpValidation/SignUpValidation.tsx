@@ -29,7 +29,7 @@ export const SignupValidation = (): JSX.Element | null => {
           tokenConsumed.current = true
           await api.validateUser(token)
           const user = await api.getProfile()
-          await dispatch(initializeUser(user)).unwrap()
+          await dispatch(initializeUser({ user })).unwrap()
           setUrlToRedirect('/')
         } catch (error) {
           if (isErrorAPIError(error)) {

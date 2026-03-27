@@ -9,6 +9,7 @@ import {
   Target,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
+import { getUserDefaultPath } from '@/app/AppRouter/utils/getUserDefaultPath'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -16,14 +17,16 @@ import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getActivityLabel } from '@/commons/mappings/mappings'
+import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
 import { setSelectedOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
 import { updateUser } from '@/commons/store/user/reducer'
+import { ensureCurrentUser } from '@/commons/store/user/selectors'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
@@ -42,17 +45,19 @@ import { ActionBar } from '../ActionBar/ActionBar'
 import styles from './Validation.module.scss'
 
 export const Validation = (): JSX.Element | undefined => {
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+
   const [loading, setLoading] = useState(false)
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const navigate = useNavigate()
-  const userAccess = useAppSelector((store) => store.user.access)
+  const currentUser = useAppSelector(ensureCurrentUser)
+  const userAccess = useAppSelector((state) => state.user.access)
 
   const { activity, offerer } = useSignupJourneyContext()
   useInitReCaptcha()
 
   const dispatch = useAppDispatch()
-  const { currentUser } = useCurrentUser()
 
   const targetCustomerLabel = {
     [Target.INDIVIDUAL]: 'Au grand public',
@@ -114,7 +119,22 @@ export const Validation = (): JSX.Element | undefined => {
       }
       const createdOfferer = await api.saveNewOnboardingData(data)
 
-      // TODO (igabriele, 202-10-20): Must be further DRYed via a proper decicaded dispatcher (see `Offerer.tsx`).
+      if (withSwitchVenueFeature) {
+        await dispatch(
+          initializeUser({
+            newOffererId: createdOfferer.id,
+            user: {
+              ...currentUser,
+              hasUserOfferer: true,
+            },
+          })
+        ).unwrap()
+
+        navigate(getUserDefaultPath())
+
+        return
+      }
+
       dispatch(updateUser({ ...currentUser, hasUserOfferer: true }))
       const newAccess = await dispatch(
         setSelectedOffererById({

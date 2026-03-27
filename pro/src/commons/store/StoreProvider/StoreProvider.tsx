@@ -46,7 +46,7 @@ export const StoreProvider = ({
         const user = await getUser()
         dispatch(updateUser(user))
         if (user) {
-          await dispatch(initializeUser(user)).unwrap()
+          await dispatch(initializeUser({ user })).unwrap()
         }
       }
 

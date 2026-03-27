@@ -15,10 +15,12 @@ import {
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
-import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
 import { setSelectedOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
 import { updateUser } from '@/commons/store/user/reducer'
+import { ensureCurrentUser } from '@/commons/store/user/selectors'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -34,11 +36,13 @@ import { ActionBar } from '../ActionBar/ActionBar'
 import styles from './Offerers.module.scss'
 
 export const Offerers = (): JSX.Element => {
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const { currentUser } = useCurrentUser()
+  const currentUser = useAppSelector(ensureCurrentUser)
 
   const [isVenueListOpen, setIsVenueListOpen] = useState<boolean>(false)
   const [showLinkDialog, setShowLinkDialog] = useState<boolean>(false)
@@ -113,14 +117,25 @@ export const Offerers = (): JSX.Element => {
       }
       const createdOfferer = await api.createOfferer(request)
 
-      // TODO (igabriele, 202-10-20): Must be further DRYed via a proper decicaded dispatcher (see `Validation.tsx`).
-      dispatch(updateUser({ ...currentUser, hasUserOfferer: true }))
-      await dispatch(
-        setSelectedOffererById({
-          nextSelectedOffererId: createdOfferer.id,
-          shouldRefetch: true,
-        })
-      ).unwrap()
+      if (withSwitchVenueFeature) {
+        await dispatch(
+          initializeUser({
+            newOffererId: createdOfferer.id,
+            user: {
+              ...currentUser,
+              hasUserOfferer: true,
+            },
+          })
+        ).unwrap()
+      } else {
+        dispatch(updateUser({ ...currentUser, hasUserOfferer: true }))
+        await dispatch(
+          setSelectedOffererById({
+            nextSelectedOffererId: createdOfferer.id,
+            shouldRefetch: true,
+          })
+        ).unwrap()
+      }
 
       navigate('/inscription/structure/rattachement/confirmation')
     } catch (e) {
