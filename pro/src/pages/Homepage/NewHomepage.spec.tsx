@@ -16,8 +16,7 @@ import { PartnerLayout } from '@/layouts/PartnerLayout/PartnerLayout'
 
 import * as utils from './commons/utils'
 import {
-  CollectiveOffersCardVariant,
-  type HomepageVariant,
+  HomepageVariant,
   OffersEmptyStateCardVariant,
 } from './components/types'
 import { NewHomepage } from './NewHomepage'
@@ -36,7 +35,8 @@ vi.mock('./components/IncomeCard/IncomeCard', () => ({
 
 vi.mock('./components/WebinarCard/WebinarCard', () => ({
   WebinarCard: ({ variant }: { variant: HomepageVariant }) => {
-    const variantText = variant === 'individual' ? 'individuelle' : 'collective'
+    const variantText =
+      variant === HomepageVariant.INDIVIDUAL ? 'individuelle' : 'collective'
     return <div>Participer à nos webinaires sur la part {variantText} !</div>
   },
 }))
@@ -63,19 +63,17 @@ vi.mock('./components/OffersEmptyStateCard/OffersEmptyStateCard', () => ({
   },
 }))
 
-vi.mock('./components/CollectiveOffersCard/CollectiveOffersCard', () => ({
-  CollectiveOffersCard: ({
-    variant,
-  }: {
-    variant: CollectiveOffersCardVariant
-  }) => {
-    const variantText =
-      variant === CollectiveOffersCardVariant.TEMPLATE
-        ? 'vitrine'
-        : 'réservable'
-    return <div>gestion des offres - {variantText}</div>
-  },
-}))
+vi.mock(
+  './components/CollectiveOffersCardsContainer/CollectiveOffersCardsContainer',
+  () => ({
+    CollectiveOffersCardsContainer: () => (
+      <>
+        <div>gestion des offres - vitrines</div>
+        <div>gestion des offres - réservables</div>
+      </>
+    ),
+  })
+)
 
 const newHomepageRoutes = [
   {
@@ -523,11 +521,11 @@ describe('NewHomepage', () => {
 
         expect(
           screen.getByRole('tabpanel', { description: /collective/ })
-        ).toHaveTextContent(/gestion des offres - réservable/)
+        ).toHaveTextContent(/gestion des offres - réservables/)
 
         expect(
           screen.getByRole('tabpanel', { description: /collective/ })
-        ).toHaveTextContent(/gestion des offres - vitrine/)
+        ).toHaveTextContent(/gestion des offres - vitrines/)
 
         expect(
           screen.getByRole('tabpanel', { description: /collective/ })
