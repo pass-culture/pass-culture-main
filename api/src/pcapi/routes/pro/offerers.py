@@ -12,6 +12,7 @@ import pcapi.core.finance.repository as finance_repository
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.exceptions as offerers_exceptions
 import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offerers.repository as offerers_repository
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.repository as offers_repository
@@ -88,7 +89,17 @@ def get_offerer(offerer_id: int) -> offerers_serialize.GetOffererResponseModel:
     row = repository.get_offerer_and_extradata(offerer_id)
     if not row:
         raise ResourceNotFoundError()
-    return offerers_serialize.GetOffererResponseModel.from_orm(row)  # type: ignore [arg-type]
+    ids_of_venues_with_offers = offerers_repository.get_ids_of_venues_with_offers([row.Offerer.id])
+    has_digital_venue_at_least_one_offer = offerers_repository.has_digital_venue_with_at_least_one_offer(row.Offerer.id)
+    venues_with_non_free_offers_without_bank_accounts = (
+        offerers_repository.get_venues_with_non_free_offers_without_bank_accounts(row.Offerer.id)
+    )
+    return offerers_serialize.GetOffererResponseModel.build(
+        row,
+        ids_of_venues_with_offers,
+        has_digital_venue_at_least_one_offer,
+        venues_with_non_free_offers_without_bank_accounts,
+    )
 
 
 @private_api.route("/offerers/<int:offerer_id>/invite", methods=["POST"])

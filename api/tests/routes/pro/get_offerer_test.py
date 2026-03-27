@@ -51,7 +51,6 @@ class GetOffererTest:
             adageId="123",
             adageInscriptionDate=date_utils.get_naive_utc_now(),
             activity=offerers_models.Activity.FESTIVAL,
-            venueTypeCode=None,
         )
         collective_factories.CollectiveDmsApplicationFactory(
             venue=venue_3,
@@ -108,7 +107,6 @@ class GetOffererTest:
                     "name": venue.name,
                     "publicName": venue.publicName,
                     "siret": venue.siret,
-                    "venueTypeCode": venue.venueTypeCode.name if venue.venueTypeCode else None,
                     "withdrawalDetails": venue.withdrawalDetails,
                 }
                 for venue in sorted(offerer.managedVenues, key=lambda v: v.publicName)

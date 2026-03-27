@@ -1,6 +1,9 @@
 import { addDays, isBefore } from 'date-fns'
 
-import { type DMSApplicationForEAC, DMSApplicationstatus } from '@/apiClient/v1'
+import {
+  type DMSApplicationForEACv2,
+  DMSApplicationstatus,
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
@@ -21,7 +24,7 @@ export const CollectiveDmsTimeline = ({
   adageInscriptionDate,
   variant = CollectiveDmsTimelineVariant.DEFAULT,
 }: {
-  collectiveDmsApplication: DMSApplicationForEAC
+  collectiveDmsApplication: DMSApplicationForEACv2
   hasAdageId: boolean
   adageInscriptionDate?: string | null
   variant?: CollectiveDmsTimelineVariant

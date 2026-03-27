@@ -20,7 +20,7 @@ export type GetOffererResponseModel = {
   isCaledonian: boolean;
   isOnboarded: boolean;
   isValidated: boolean;
-  managedVenues?: Array<GetOffererVenueResponseModel>;
+  managedVenues: Array<GetOffererVenueResponseModel>;
   name: string;
   siren: string;
   venuesWithNonFreeOffersWithoutBankAccounts: Array<number>;

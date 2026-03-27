@@ -164,6 +164,7 @@ describe('VenueEditionHeader', () => {
         activity: DisplayableActivity.FESTIVAL,
         bannerUrl: 'https://www.example.com/image.png',
         bannerMeta: {
+          image_credit: null,
           original_image_url: 'https://www.example.com/image.png',
           crop_params: {
             x_crop_percent: 0,
@@ -263,6 +264,7 @@ describe('VenueEditionHeader', () => {
         ...defaultGetVenue,
         bannerUrl: 'https://www.example.com/image.png',
         bannerMeta: {
+          image_credit: null,
           original_image_url: 'https://www.example.com/image.png',
           crop_params: {
             x_crop_percent: 0,
@@ -316,6 +318,7 @@ describe('VenueEditionHeader', () => {
         ...defaultGetVenue,
         bannerUrl: 'https://www.example.com/image.png',
         bannerMeta: {
+          image_credit: null,
           original_image_url: 'https://www.example.com/image.png',
           crop_params: {
             x_crop_percent: 0,

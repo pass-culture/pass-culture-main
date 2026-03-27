@@ -1,7 +1,10 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { type DMSApplicationForEAC, DMSApplicationstatus } from '@/apiClient/v1'
+import {
+  type DMSApplicationForEACv2,
+  DMSApplicationstatus,
+} from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { defaultDMSApplicationForEAC } from '@/commons/utils/factories/collectiveApiFactories'
@@ -16,7 +19,7 @@ import { CollectiveDmsTimelineVariant } from './types'
 const mockLogEvent = vi.fn()
 
 interface CollectiveDmsTimelineProps {
-  collectiveDmsApplication: DMSApplicationForEAC
+  collectiveDmsApplication: DMSApplicationForEACv2
   hasAdageId?: boolean
   adageInscriptionDate?: string | null
   offererId?: number
@@ -44,7 +47,7 @@ const renderCollectiveDmsTimeline = (
 }
 
 interface TestCaseProps {
-  collectiveDmsApplication: DMSApplicationForEAC
+  collectiveDmsApplication: DMSApplicationForEACv2
   hasAdageId?: boolean
   adageInscriptionDate?: string
   expectedLabel: string
@@ -162,6 +165,8 @@ describe('CollectiveDmsTimeline', () => {
       procedure: 123,
       state: DMSApplicationstatus.ACCEPTE,
       venueId: 33,
+      userDeletionDate: null,
+      expirationDate: null,
     }
 
     renderCollectiveDmsTimeline({

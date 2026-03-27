@@ -60,6 +60,7 @@ describe('PartnerPageCard', () => {
   it('should render the partner page module with the venue information', () => {
     renderPartnerPageCard(HomepageVariant.INDIVIDUAL, {
       bannerMeta: {
+        image_credit: null,
         original_image_url: 'MyFirstImage',
         crop_params: {
           height_crop_percent: 12,

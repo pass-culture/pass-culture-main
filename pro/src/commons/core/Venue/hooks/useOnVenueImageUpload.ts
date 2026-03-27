@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import type { BannerMetaModel } from '@/apiClient/v1'
+import type { BannerMetaModelV2 } from '@/apiClient/v1'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import type { UploadImageValues } from '@/commons/utils/imageUploadTypes'
 import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
@@ -11,7 +11,7 @@ import { buildInitialVenueImageValues } from '../utils/buildInitialVenueImageVal
 export const useOnVenueImageUpload = (
   venueId: number,
   venueBannerUrl?: string | null,
-  venueBannerMeta?: BannerMetaModel | null
+  venueBannerMeta?: BannerMetaModelV2 | null
 ) => {
   const { syncVenueWithData } = useSyncVenueCache()
   const initialValues = buildInitialVenueImageValues(

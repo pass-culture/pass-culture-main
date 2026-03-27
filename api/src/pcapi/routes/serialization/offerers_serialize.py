@@ -1,114 +1,111 @@
 import enum
 import typing
 from datetime import datetime
-from typing import Any
 from typing import Iterable
 
 import pydantic as pydantic_v2
 import sqlalchemy.orm as sa_orm
-from pydantic.v1.utils import GetterDict
 from sqlalchemy.engine import Row
 
 import pcapi.core.offerers.models as offerers_models
-import pcapi.core.offerers.repository as offerers_repository
 import pcapi.core.offers.models as offers_models
-import pcapi.utils.date as date_utils
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offerers.models import Target
 from pcapi.models import db
-from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import finance_serialize
-from pcapi.routes.serialization.venue_banners_serialize import BannerMetaModel
-from pcapi.routes.serialization.venue_collective_serialize import DMSApplicationForEAC
+from pcapi.routes.serialization import venue_collective_serialize
+from pcapi.routes.serialization.venue_banners_serialize import BannerMetaModelV2
 from pcapi.routes.shared import validation
 from pcapi.serialization.exceptions import PydanticError
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.email import sanitize_email
 
 
-class GetOffererVenueResponseModelGetterDict(GetterDict):
-    def get(self, key: str, default: Any = None) -> Any:
-        if key == "collectiveDmsApplications":
-            return [
-                # TODO bdalbianco 20/03/26 switch to build when this route is migrated
-                DMSApplicationForEAC.from_orm(collective_ds_application, self._obj.id)
-                for collective_ds_application in self._obj.collectiveDmsApplications
-            ]
-        if key == "hasPartnerPage":
-            return self._obj._has_partner_page
-        if key == "activity":
-            if not self._obj.activity or self._obj.activity == offerers_models.Activity.NOT_ASSIGNED:
-                return None
-            return offerers_models.DisplayableActivity[self._obj.activity.name]
-        return super().get(key, default)
-
-
-class GetOffererVenueResponseModel(BaseModel):
-    bookingEmail: str | None
-    hasCreatedOffer: bool
-    hasAdageId: bool
-    isVirtual: bool
+class GetOffererVenueResponseModel(HttpBodyModel):
+    booking_email: str | None
+    has_created_offer: bool
+    has_adage_id: bool
+    is_virtual: bool
     name: str
     id: int
-    publicName: str
+    public_name: str
     siret: str | None
-    venueTypeCode: offerers_models.VenueTypeCode | None
     activity: offerers_models.DisplayableActivity | None
-    withdrawalDetails: str | None
-    collectiveDmsApplications: list[DMSApplicationForEAC]
-    hasPartnerPage: bool
-    hasVenueProviders: bool
-    isPermanent: bool
-    bannerUrl: str | None
-    bannerMeta: BannerMetaModel | None
+    withdrawal_details: str | None
+    collective_dms_applications: list[venue_collective_serialize.DMSApplicationForEACv2]
+    has_partner_page: bool
+    has_venue_providers: bool
+    is_permanent: bool
+    banner_url: str | None
+    banner_meta: BannerMetaModelV2 | None
 
     @classmethod
-    def from_orm(
+    def build(
         cls,
         venue: offerers_models.Venue,
         ids_of_venues_with_offers: Iterable[int] = (),
     ) -> "GetOffererVenueResponseModel":
-        venue.hasCreatedOffer = venue.id in ids_of_venues_with_offers  # type: ignore [attr-defined]
-        venue.hasAdageId = bool(venue.adageId)  # type: ignore [attr-defined]
-        venue.hasVenueProviders = bool(venue.venueProviders)  # type: ignore [attr-defined]
-        return super().from_orm(venue)
-
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime: date_utils.format_into_utc_date}
-        getter_dict = GetOffererVenueResponseModelGetterDict
+        activity = None
+        if venue.activity and venue.activity != offerers_models.Activity.NOT_ASSIGNED:
+            activity = offerers_models.DisplayableActivity[venue.activity.name]
+        return cls(
+            activity=activity,
+            banner_meta=venue.bannerMeta,
+            banner_url=venue.bannerUrl,
+            booking_email=venue.bookingEmail,
+            collective_dms_applications=[
+                venue_collective_serialize.DMSApplicationForEACv2.build(application, venue.id)
+                for application in venue.collectiveDmsApplications
+            ],
+            has_adage_id=bool(venue.adageId),
+            has_created_offer=venue.id in ids_of_venues_with_offers,
+            has_partner_page=venue._has_partner_page,
+            has_venue_providers=bool(venue.venueProviders),
+            id=venue.id,
+            is_permanent=venue.isPermanent,
+            is_virtual=venue.isVirtual,
+            name=venue.name,
+            public_name=venue.publicName,
+            siret=venue.siret,
+            withdrawal_details=venue.withdrawalDetails,
+        )
 
 
 # GetOffererResponseModel includes sensitive information and can be returned only if authenticated user has a validated
 # access to the offerer. During subscription process, use PostOffererResponseModel
-class GetOffererResponseModel(BaseModel):
-    hasAvailablePricingPoints: bool
-    hasDigitalVenueAtLeastOneOffer: bool
-    isValidated: bool
-    isActive: bool
-    # see end of `from_orm()`
-    managedVenues: list[GetOffererVenueResponseModel] = []
+class GetOffererResponseModel(HttpBodyModel):
+    has_available_pricing_points: bool
+    has_digital_venue_at_least_one_offer: bool
+    is_validated: bool
+    is_active: bool
+    managed_venues: list[GetOffererVenueResponseModel]
     name: str
     id: int
     siren: str
-    hasValidBankAccount: bool
-    hasPendingBankAccount: bool
-    hasNonFreeOffer: bool
-    venuesWithNonFreeOffersWithoutBankAccounts: list[int]
-    hasActiveOffer: bool
-    allowedOnAdage: bool
-    hasBankAccountWithPendingCorrections: bool
-    isOnboarded: bool
-    hasHeadlineOffer: bool
-    hasPartnerPage: bool
-    isCaledonian: bool
-    canDisplayHighlights: bool
+    has_valid_bank_account: bool
+    has_pending_bank_account: bool
+    has_non_free_offer: bool
+    venues_with_non_free_offers_without_bank_accounts: list[int]
+    has_active_offer: bool
+    allowed_on_adage: bool
+    has_bank_account_with_pending_corrections: bool
+    is_onboarded: bool
+    has_headline_offer: bool
+    has_partner_page: bool
+    is_caledonian: bool
+    can_display_highlights: bool
 
     @classmethod
-    def from_orm(cls, row: Row) -> typing.Self:
+    def build(
+        cls,
+        row: Row,
+        ids_of_venues_with_offers: Iterable[int],
+        has_digital_venue_at_least_one_offer: bool,
+        venues_with_non_free_offers_without_bank_accounts: list[int],
+    ) -> typing.Self:
         offerer: offerers_models.Offerer = row.Offerer
         venues = (
             db.session.query(offerers_models.Venue)
@@ -120,41 +117,29 @@ class GetOffererResponseModel(BaseModel):
             .all()
         )
 
-        offerer.hasDigitalVenueAtLeastOneOffer = offerers_repository.has_digital_venue_with_at_least_one_offer(  # type: ignore [attr-defined]
-            offerer.id
+        return cls(
+            allowed_on_adage=offerer.allowedOnAdage,
+            can_display_highlights=row.canDisplayHighlights,
+            has_active_offer=row.hasActiveOffer,
+            has_available_pricing_points=any(venue.siret for venue in venues),
+            has_bank_account_with_pending_corrections=row.hasBankAccountWithPendingCorrections,
+            has_digital_venue_at_least_one_offer=has_digital_venue_at_least_one_offer,
+            has_headline_offer=row.hasHeadlineOffer,
+            has_non_free_offer=row.hasNonFreeOffer,
+            has_partner_page=row.hasPartnerPage,
+            has_pending_bank_account=row.hasPendingBankAccount,
+            has_valid_bank_account=row.hasValidBankAccount,
+            id=offerer.id,
+            is_active=offerer.isActive and not offerer.isClosed,
+            is_caledonian=offerer.is_caledonian,
+            is_onboarded=row.isOnboarded,
+            # Behavior in PC Pro for a closed offerer should be the same as for a suspended validated offerer
+            is_validated=offerer.isValidated or offerer.isClosed,  # do now show "en attente de traitement"
+            managed_venues=[GetOffererVenueResponseModel.build(venue, ids_of_venues_with_offers) for venue in venues],
+            name=offerer.name,
+            siren=offerer.siren,
+            venues_with_non_free_offers_without_bank_accounts=venues_with_non_free_offers_without_bank_accounts,
         )
-        offerer.hasAvailablePricingPoints = any(venue.siret for venue in venues)  # type: ignore [attr-defined]
-        offerer.venuesWithNonFreeOffersWithoutBankAccounts = (  # type: ignore [attr-defined]
-            offerers_repository.get_venues_with_non_free_offers_without_bank_accounts(offerer.id)
-        )
-        offerer.hasValidBankAccount = row.hasValidBankAccount  # type: ignore [attr-defined]
-        offerer.hasPendingBankAccount = row.hasPendingBankAccount  # type: ignore [attr-defined]
-        offerer.hasNonFreeOffer = row.hasNonFreeOffer  # type: ignore [attr-defined]
-        offerer.hasActiveOffer = row.hasActiveOffer  # type: ignore [attr-defined]
-        offerer.hasBankAccountWithPendingCorrections = row.hasBankAccountWithPendingCorrections  # type: ignore [attr-defined]
-        offerer.isOnboarded = row.isOnboarded  # type: ignore [attr-defined]
-        offerer.hasHeadlineOffer = row.hasHeadlineOffer  # type: ignore [attr-defined]
-        offerer.hasPartnerPage = row.hasPartnerPage  # type: ignore [attr-defined]
-        offerer.isCaledonian = offerer.is_caledonian  # type: ignore [attr-defined]
-        offerer.canDisplayHighlights = row.canDisplayHighlights  # type: ignore [attr-defined]
-        # We would like the response attribute to be called
-        # `managedVenues` but we don't want to use the
-        # `Offerer.managedVenues` relationship which does not
-        # join-load what we want.
-        res = super().from_orm(offerer)
-        ids_of_venues_with_offers = offerers_repository.get_ids_of_venues_with_offers([offerer.id])
-
-        res.managedVenues = [
-            GetOffererVenueResponseModel.from_orm(venue, ids_of_venues_with_offers) for venue in venues
-        ]
-        # Behavior in PC Pro for a closed offerer should be the same as for a suspended validated offerer
-        res.isValidated = offerer.isValidated or offerer.isClosed  # do now show "en attente de traitement"
-        res.isActive = offerer.isActive and not offerer.isClosed
-        return res
-
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime: date_utils.format_into_utc_date}
 
 
 class GetOffererNameResponseModel(HttpBodyModel):

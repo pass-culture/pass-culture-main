@@ -137,6 +137,9 @@ class VenueContactModelV2(BaseModelV2):
     )
 
 
+VENUE_IMAGE_CREDIT_MAX_LENGTH = 255
+
+
 class VenueImageCredit(RequiredStrippedString):
     max_length = 255
 

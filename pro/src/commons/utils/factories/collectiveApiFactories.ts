@@ -11,7 +11,6 @@ import {
   type CollectiveOfferResponseModel,
   CollectiveOfferTemplateAllowedAction,
   type CollectiveOfferTemplateResponseModel,
-  type DMSApplicationForEAC,
   type DMSApplicationForEACv2,
   DMSApplicationstatus,
   type EducationalInstitutionResponseModel,
@@ -288,11 +287,16 @@ export const defaultEducationalRedactor: EducationalRedactorResponseModel = {
   lastName: 'Dupont',
 }
 
-export const defaultDMSApplicationForEAC: DMSApplicationForEAC = {
+export const defaultDMSApplicationForEAC: DMSApplicationForEACv2 = {
   application: 123,
+  buildDate: null,
   depositDate: new Date().toISOString(),
+  expirationDate: null,
+  instructionDate: null,
   lastChangeDate: new Date().toISOString(),
   procedure: 456,
+  processingDate: null,
+  userDeletionDate: null,
   state: DMSApplicationstatus.EN_CONSTRUCTION,
   venueId: 1,
 }
