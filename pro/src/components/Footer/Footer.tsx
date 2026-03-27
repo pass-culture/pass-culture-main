@@ -89,6 +89,16 @@ export const Footer = ({ layout }: FooterProps) => {
             label="Accessibilité : non conforme"
           />
         </li>
+        <li className={styles['footer-list-item']}>
+          <Button
+            as="a"
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
+            size={ButtonSize.SMALL}
+            to="/ecoconception"
+            label="Déclaration d’écoconception"
+          />
+        </li>
         {currentUser && (
           <li className={styles['footer-list-item']}>
             <Button
