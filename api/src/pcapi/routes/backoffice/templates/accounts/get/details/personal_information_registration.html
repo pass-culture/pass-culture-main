@@ -1,3 +1,4 @@
+{% import "components/clipboard.html" as clipboard with context %}
 {% macro build_idcheck_histories(fraud_actions) %}
   {% set can_see_bonus_credit_details = has_permission("READ_BENEFICIARY_BONUS_CREDIT") %}
   <div class="table-responsive">
@@ -25,7 +26,18 @@
               <td>
                 <time datetime="{{ fraud_action['creationDate'] }}">{{ fraud_action['creationDate'] | format_date_time }}</time>
               </td>
-              <td>{{ fraud_action['techId'] }}</td>
+              <td>
+                {% if fraud_action['type'] in ('dms', 'educonnect', 'ubble') %}
+                  <span class="text-nowrap">
+                    {% if fraud_action['techId'] | length < 10 %}
+                      {{ fraud_action['techId'] }}
+                    {% else %}
+                      {{ fraud_action['techId'][:3] }}…{{ fraud_action['techId'][-3:] }}
+                    {% endif %}
+                    {{ clipboard.copy_to_clipboard(fraud_action['techId'], "Copier l'ID technique :\n" + fraud_action['techId']) }}
+                  </span>
+                {% endif %}
+              </td>
               <td>
                 {% if fraud_action | format_fraud_action_dict_url %}
                   <a href="{{ fraud_action | format_fraud_action_dict_url }}"

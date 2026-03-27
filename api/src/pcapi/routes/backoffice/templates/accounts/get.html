@@ -287,6 +287,8 @@
   {% if allowed_actions.actions.BREVO in allowed_actions %}
     <form name="brevo-link"
           action="{{ url_for('backoffice_web.users.redirect_to_brevo_user_page', user_id=user.id) }}"
+          target="_blank"
+          rel="noopener noreferrer"
           method="get">
     </form>
   {% endif %}
