@@ -22,6 +22,13 @@ from pcapi.utils.image_conversion import CropPercent
 
 
 class BannerMetaModelV2(HttpBodyModel):
+    image_credit: (
+        typing.Annotated[
+            str,
+            pydantic_v2.Field(max_length=offerers_schemas.VENUE_IMAGE_CREDIT_MAX_LENGTH),
+        ]
+        | None
+    )
     original_image_url: str | None = None  # TODO: move to HttpUrl ?
     crop_params: CropParamsV2 = CropParamsV2()
 

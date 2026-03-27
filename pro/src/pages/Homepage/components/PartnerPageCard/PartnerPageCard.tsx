@@ -1,4 +1,4 @@
-import type { BannerMetaModel } from '@/apiClient/v1'
+import type { BannerMetaModelV2 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useOnVenueImageUpload } from '@/commons/core/Venue/hooks/useOnVenueImageUpload'
@@ -22,7 +22,7 @@ type PartnerPageProps = {
   venueName: string
   offererId: number
   venueBannerUrl?: string | null
-  venueBannerMeta?: BannerMetaModel | null
+  venueBannerMeta?: BannerMetaModelV2 | null
   variant: HomepageVariant
 }
 

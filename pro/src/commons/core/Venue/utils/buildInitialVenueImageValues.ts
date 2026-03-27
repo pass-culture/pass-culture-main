@@ -1,9 +1,9 @@
-import type { BannerMetaModel } from '@/apiClient/v1'
+import type { BannerMetaModelV2 } from '@/apiClient/v1'
 import type { UploadImageValues } from '@/commons/utils/imageUploadTypes'
 
 export const buildInitialVenueImageValues = (
   bannerUrl?: string | null,
-  bannerMeta?: BannerMetaModel | null
+  bannerMeta?: BannerMetaModelV2 | null
 ): UploadImageValues => {
   let cropParams:
     | {

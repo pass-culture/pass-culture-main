@@ -1,4 +1,7 @@
-import { type DMSApplicationForEAC, DMSApplicationstatus } from '@/apiClient/v1'
+import {
+  type DMSApplicationForEACv2,
+  DMSApplicationstatus,
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { getLastCollectiveDmsApplication } from '@/commons/utils/getLastCollectiveDmsApplication'
@@ -10,7 +13,7 @@ import fullNextIcon from '@/icons/full-next.svg'
 import styles from './PartnerPage.module.scss'
 
 export type PartnerPageCollectiveSectionProps = {
-  collectiveDmsApplications: DMSApplicationForEAC[]
+  collectiveDmsApplications: DMSApplicationForEACv2[]
   venueId: number
   offererId: number
   venueName: string

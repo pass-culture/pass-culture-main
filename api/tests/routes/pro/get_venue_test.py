@@ -187,6 +187,7 @@ class Returns200Test:
                     "x_crop_percent": 0.0,
                     "y_crop_percent": 0.0,
                 },
+                "image_credit": None,
                 "original_image_url": None,
             },
             "id": venue.id,
@@ -308,6 +309,7 @@ class Returns200Test:
                 "height_crop_percent": 0.42,
                 "width_crop_percent": 0.42,
             },
+            "image_credit": None,
             "original_image_url": None,
         }
 
@@ -370,6 +372,7 @@ class Returns200Test:
                 "height_crop_percent": DO_NOT_CROP.height_crop_percent,
                 "width_crop_percent": DO_NOT_CROP.width_crop_percent,
             },
+            "image_credit": None,
             "original_image_url": "http://example.com/original_image.png",
         }
 
@@ -402,6 +405,7 @@ class Returns200Test:
                 "height_crop_percent": 0.42,
                 "width_crop_percent": 0.42,
             },
+            "image_credit": None,
             "original_image_url": None,
         }
 

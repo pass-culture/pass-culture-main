@@ -26,8 +26,9 @@ import {
   type SubcategoryResponseModel,
   type VenueListItemResponseModel,
   type VenueProviderResponse,
-  VenueTypeCode,
+  type VenueTypeCode,
 } from '@/apiClient/v1'
+import { DisplayableActivity } from '@/apiClient/v1/new'
 import type { IndividualOfferContextValues } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
 import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
@@ -423,6 +424,7 @@ export const defaultGetOffererResponseModel: GetOffererResponseModel = {
 
 export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
   {
+    activity: DisplayableActivity.OTHER,
     collectiveDmsApplications: [],
     hasAdageId: false,
     hasCreatedOffer: false,
@@ -430,12 +432,14 @@ export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
     name: 'Nom de la structure',
     publicName: 'Nom public de la structure',
     id: 1,
-    venueTypeCode: VenueTypeCode.AUTRE,
     hasVenueProviders: false,
     isPermanent: true,
     bannerUrl: null,
     bannerMeta: null,
     hasPartnerPage: true,
+    siret: null,
+    bookingEmail: null,
+    withdrawalDetails: null,
   }
 
 export const defaultGetVenueResponseModel: GetVenueResponseModel = {

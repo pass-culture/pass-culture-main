@@ -201,11 +201,12 @@ class GetVenueResponseModel(HttpBodyModel):
                     crop_params = venue_banners_serialize.CropParamsV2()
 
                 banner_meta = venue_banners_serialize.BannerMetaModelV2(
+                    image_credit=None,
                     original_image_url=venue.bannerMeta.get("original_image_url"),
                     crop_params=crop_params,
                 )
             else:
-                banner_meta = venue_banners_serialize.BannerMetaModelV2(original_image_url=None)
+                banner_meta = venue_banners_serialize.BannerMetaModelV2(image_credit=None, original_image_url=None)
 
         if venue.venueTypeCode:
             venue_type = VenueTypeResponseModelV2(value=venue.venueTypeCode.name, label=venue.venueTypeCode.name)

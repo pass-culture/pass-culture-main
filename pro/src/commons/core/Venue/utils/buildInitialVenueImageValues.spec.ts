@@ -38,6 +38,7 @@ describe('buildInitialVenueImageValues', () => {
   it('should return default values when bannerMeta is provided without crop_params and image_credit', () => {
     const bannerUrl = 'https://example.com/banner.jpg'
     const bannerMeta = {
+      image_credit: null,
       original_image_url: 'https://example.com/original.jpg',
     }
 

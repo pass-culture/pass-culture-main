@@ -244,28 +244,14 @@ export type BankAccountResponseModel = {
 };
 
 /**
- * BannerMetaModel
- */
-export type BannerMetaModel = {
-    /**
-     * Crop Params
-     */
-    crop_params?: CropParams;
-    /**
-     * Image Credit
-     */
-    image_credit?: string;
-    /**
-     * Original Image Url
-     */
-    original_image_url?: string;
-};
-
-/**
  * BannerMetaModelV2
  */
 export type BannerMetaModelV2 = {
     crop_params?: CropParamsV2;
+    /**
+     * Image Credit
+     */
+    image_credit: string | null;
     /**
      * Original Image Url
      */
@@ -1081,28 +1067,6 @@ export type CreateThumbnailResponseModel = {
 };
 
 /**
- * CropParams
- */
-export type CropParams = {
-    /**
-     * Height Crop Percent
-     */
-    height_crop_percent?: number;
-    /**
-     * Width Crop Percent
-     */
-    width_crop_percent?: number;
-    /**
-     * X Crop Percent
-     */
-    x_crop_percent?: number;
-    /**
-     * Y Crop Percent
-     */
-    y_crop_percent?: number;
-};
-
-/**
  * CropParamsV2
  */
 export type CropParamsV2 = {
@@ -1122,53 +1086,6 @@ export type CropParamsV2 = {
      * Y Crop Percent
      */
     y_crop_percent?: number;
-};
-
-/**
- * DMSApplicationForEAC
- */
-export type DMSApplicationForEAC = {
-    /**
-     * Application
-     */
-    application: number;
-    /**
-     * Builddate
-     */
-    buildDate?: string;
-    /**
-     * Depositdate
-     */
-    depositDate: string;
-    /**
-     * Expirationdate
-     */
-    expirationDate?: string;
-    /**
-     * Instructiondate
-     */
-    instructionDate?: string;
-    /**
-     * Lastchangedate
-     */
-    lastChangeDate: string;
-    /**
-     * Procedure
-     */
-    procedure: number;
-    /**
-     * Processingdate
-     */
-    processingDate?: string;
-    state: DMSApplicationstatus;
-    /**
-     * Userdeletiondate
-     */
-    userDeletionDate?: string;
-    /**
-     * Venueid
-     */
-    venueId: number;
 };
 
 /**
@@ -1220,8 +1137,6 @@ export type DMSApplicationForEACv2 = {
 
 /**
  * DMSApplicationstatus
- *
- * An enumeration.
  */
 export enum DMSApplicationstatus {
     ACCEPTE = 'accepte',
@@ -1267,8 +1182,6 @@ export type DeleteStockListBody = {
 
 /**
  * DisplayableActivity
- *
- * An enumeration.
  */
 export enum DisplayableActivity {
     ART_GALLERY = 'ART_GALLERY',
@@ -3132,7 +3045,7 @@ export type GetOffererResponseModel = {
     /**
      * Managedvenues
      */
-    managedVenues?: Array<GetOffererVenueResponseModel>;
+    managedVenues: Array<GetOffererVenueResponseModel>;
     /**
      * Name
      */
@@ -3188,23 +3101,20 @@ export type GetOffererV2StatsResponseModel = {
  * GetOffererVenueResponseModel
  */
 export type GetOffererVenueResponseModel = {
-    activity?: DisplayableActivity;
-    /**
-     * BannerMetaModel
-     */
-    bannerMeta?: BannerMetaModel;
+    activity: DisplayableActivity | null;
+    bannerMeta: BannerMetaModelV2 | null;
     /**
      * Bannerurl
      */
-    bannerUrl?: string;
+    bannerUrl: string | null;
     /**
      * Bookingemail
      */
-    bookingEmail?: string;
+    bookingEmail: string | null;
     /**
      * Collectivedmsapplications
      */
-    collectiveDmsApplications: Array<DMSApplicationForEAC>;
+    collectiveDmsApplications: Array<DMSApplicationForEACv2>;
     /**
      * Hasadageid
      */
@@ -3244,12 +3154,11 @@ export type GetOffererVenueResponseModel = {
     /**
      * Siret
      */
-    siret?: string;
-    venueTypeCode?: VenueTypeCode;
+    siret: string | null;
     /**
      * Withdrawaldetails
      */
-    withdrawalDetails?: string;
+    withdrawalDetails: string | null;
 };
 
 /**
