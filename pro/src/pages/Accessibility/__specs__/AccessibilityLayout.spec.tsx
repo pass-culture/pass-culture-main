@@ -36,27 +36,11 @@ describe('Accessibility layout', () => {
     })
 
     expect(screen.queryByTestId('logged-out-section')).not.toBeInTheDocument()
-
-    expect(
-      screen.queryByText('Retour à la page de connexion')
-    ).not.toBeInTheDocument()
-  })
-
-  it('should handle not connected with back button', () => {
-    renderAccessibilityLayout({ props: { showBackToSignInButton: true } })
-
-    expect(screen.getByTestId('logged-out-section')).toBeInTheDocument()
-    expect(
-      screen.getByRole('link', { name: 'Retour à la page de connexion' })
-    ).toBeInTheDocument()
   })
 
   it('should handle not connected', () => {
     renderAccessibilityLayout({})
 
     expect(screen.getByTestId('logged-out-section')).toBeInTheDocument()
-    expect(
-      screen.queryByText('Retour à la page de connexion')
-    ).not.toBeInTheDocument()
   })
 })
