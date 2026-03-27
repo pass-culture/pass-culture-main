@@ -12,6 +12,7 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.testing import assert_num_queries
 from pcapi.utils import date as date_utils
+from pcapi.utils.date import default_timezone_to_local_datetime
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.mailing import get_event_datetime
@@ -75,18 +76,15 @@ class CancelCollectiveBookingTest:
 
 
 class CancelExpiredCollectiveBookingsTest:
-    def test_should_cancel_pending_dated_collective_booking_when_confirmation_limit_date_has_passed(self, app) -> None:
-        # Given
+    def test_should_cancel_pending_dated_collective_booking_when_confirmation_limit_date_has_passed(self) -> None:
         now = date_utils.get_naive_utc_now()
         yesterday = now - datetime.timedelta(days=1)
         expired_pending_collective_booking: educational_models.CollectiveBooking = (
             educational_factories.PendingCollectiveBookingFactory(confirmationLimitDate=yesterday)
         )
 
-        # When
         educational_booking_api._cancel_expired_collective_bookings()
 
-        # Then
         assert expired_pending_collective_booking.status == educational_models.CollectiveBookingStatus.CANCELLED
         assert expired_pending_collective_booking.cancellationDate.timestamp() == pytest.approx(
             date_utils.get_naive_utc_now().timestamp(), rel=1
@@ -96,40 +94,31 @@ class CancelExpiredCollectiveBookingsTest:
             == educational_models.CollectiveBookingCancellationReasons.EXPIRED
         )
 
-    def test_should_not_cancel_confirmed_dated_collective_booking_when_confirmation_limit_date_has_passed(
-        self, app
-    ) -> None:
-        # Given
+    def test_should_not_cancel_confirmed_dated_collective_booking_when_confirmation_limit_date_has_passed(self) -> None:
         now = date_utils.get_naive_utc_now()
         yesterday = now - datetime.timedelta(days=1)
         confirmed_collective_booking: educational_models.CollectiveBooking = (
             educational_factories.CollectiveBookingFactory(confirmationLimitDate=yesterday)
         )
 
-        # When
         educational_booking_api._cancel_expired_collective_bookings()
 
-        # Then
         assert confirmed_collective_booking.status == educational_models.CollectiveBookingStatus.CONFIRMED
 
     def test_should_not_cancel_pending_dated_collective_booking_when_confirmation_limit_date_has_not_passed(
-        self, app
+        self,
     ) -> None:
-        # Given
         now = date_utils.get_naive_utc_now()
         tomorrow = now + datetime.timedelta(days=1)
         pending_collective_booking: educational_models.CollectiveBooking = (
             educational_factories.PendingCollectiveBookingFactory(confirmationLimitDate=tomorrow)
         )
 
-        # When
         educational_booking_api._cancel_expired_collective_bookings()
 
-        # Then
         assert pending_collective_booking.status == educational_models.CollectiveBookingStatus.PENDING
 
-    def test_handle_expired_bookings_should_cancel_expired_collective_bookings(self, app) -> None:
-        # Given
+    def test_handle_expired_bookings_should_cancel_expired_collective_bookings(self) -> None:
         now = date_utils.get_naive_utc_now()
         yesterday = now - datetime.timedelta(days=1)
         tomorrow = now + datetime.timedelta(days=1)
@@ -141,14 +130,12 @@ class CancelExpiredCollectiveBookingsTest:
             educational_factories.PendingCollectiveBookingFactory(confirmationLimitDate=tomorrow)
         )
 
-        # When
         educational_booking_api.handle_expired_collective_bookings()
 
-        # Then
         assert expired_pending_collective_booking.status == educational_models.CollectiveBookingStatus.CANCELLED
         assert non_expired_pending_collective_booking.status == educational_models.CollectiveBookingStatus.PENDING
 
-    def test_queries_performance_collective_bookings(self, app) -> None:
+    def test_queries_performance_collective_bookings(self) -> None:
         now = date_utils.get_naive_utc_now()
         yesterday = now - datetime.timedelta(days=1)
         educational_factories.PendingCollectiveBookingFactory.create_batch(size=10, confirmationLimitDate=yesterday)
@@ -209,12 +196,22 @@ class NotifyOfferersOfExpiredBookingsTest:
         assert mails_testing.outbox[0]["To"] == "test@mail.com"
         assert mails_testing.outbox[0]["Bcc"] == "test2@mail.com"
 
+        start = default_timezone_to_local_datetime(
+            stock_one.startDatetime, stock_one.collectiveOffer.venue.offererAddress.address.timezone
+        )
+        end = default_timezone_to_local_datetime(
+            stock_one.endDatetime, stock_one.collectiveOffer.venue.offererAddress.address.timezone
+        )
         assert mails_testing.outbox[0]["params"] == {
             "OFFER_NAME": "Ma première offre expirée",
             "EDUCATIONAL_INSTITUTION_NAME": institution.name,
             "VENUE_NAME": stock_one.collectiveOffer.venue.name,
-            "EVENT_DATE": get_date_formatted_for_email(get_event_datetime(first_expired_booking.collectiveStock)),
-            "EVENT_HOUR": get_time_formatted_for_email(get_event_datetime(first_expired_booking.collectiveStock)),
+            "EVENT_DATE": get_date_formatted_for_email(get_event_datetime(stock_one)),
+            "EVENT_HOUR": get_time_formatted_for_email(get_event_datetime(stock_one)),
+            "START_DATE": get_date_formatted_for_email(start),
+            "START_HOUR": get_time_formatted_for_email(start),
+            "END_DATE": get_date_formatted_for_email(end),
+            "END_HOUR": get_time_formatted_for_email(end),
             "REDACTOR_FIRSTNAME": redactor.firstName,
             "REDACTOR_LASTNAME": redactor.lastName,
             "REDACTOR_EMAIL": redactor.email,
@@ -226,6 +223,12 @@ class NotifyOfferersOfExpiredBookingsTest:
             "COLLECTIVE_OFFER_ADDRESS": "À déterminer avec l'enseignant",
         }
 
+        start = default_timezone_to_local_datetime(
+            stock_two.startDatetime, stock_two.collectiveOffer.venue.offererAddress.address.timezone
+        )
+        end = default_timezone_to_local_datetime(
+            stock_two.endDatetime, stock_two.collectiveOffer.venue.offererAddress.address.timezone
+        )
         second_educational_institution = second_expired_booking.educationalInstitution
         assert mails_testing.outbox[1]["To"] == "new_test@mail.com"
         assert mails_testing.outbox[1]["Bcc"] == "newer_test@mail.com"
@@ -233,8 +236,12 @@ class NotifyOfferersOfExpiredBookingsTest:
             "OFFER_NAME": "Ma deuxième offre expirée",
             "EDUCATIONAL_INSTITUTION_NAME": second_educational_institution.name,
             "VENUE_NAME": stock_two.collectiveOffer.venue.name,
-            "EVENT_DATE": get_date_formatted_for_email(get_event_datetime(second_expired_booking.collectiveStock)),
-            "EVENT_HOUR": get_time_formatted_for_email(get_event_datetime(second_expired_booking.collectiveStock)),
+            "EVENT_DATE": get_date_formatted_for_email(get_event_datetime(stock_two)),
+            "EVENT_HOUR": get_time_formatted_for_email(get_event_datetime(stock_two)),
+            "START_DATE": get_date_formatted_for_email(start),
+            "START_HOUR": get_time_formatted_for_email(start),
+            "END_DATE": get_date_formatted_for_email(end),
+            "END_HOUR": get_time_formatted_for_email(end),
             "REDACTOR_FIRSTNAME": redactor.firstName,
             "REDACTOR_LASTNAME": redactor.lastName,
             "REDACTOR_EMAIL": redactor.email,

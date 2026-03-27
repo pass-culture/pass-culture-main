@@ -1,10 +1,9 @@
-from unittest.mock import patch
-
 import pytest
 import time_machine
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models
+from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.educational.eac_booking_cancellation import send_eac_booking_cancellation_email
 from pcapi.core.offerers import factories as offerers_factories
 
@@ -12,8 +11,7 @@ from pcapi.core.offerers import factories as offerers_factories
 @pytest.mark.usefixtures("db_session")
 class SendEducationeBookingCancellationByInstitutionEmailTest:
     @time_machine.travel("2024-11-26 18:29:20")
-    @patch("pcapi.core.mails.transactional.educational.eac_booking_cancellation.mails")
-    def test_with_collective_booking(self, mails):
+    def test_with_collective_booking(self):
         venue = offerers_factories.VenueFactory()
         booking = educational_factories.CollectiveBookingFactory(
             cancellationReason=models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE,
@@ -25,13 +23,17 @@ class SendEducationeBookingCancellationByInstitutionEmailTest:
 
         send_eac_booking_cancellation_email(booking)
 
-        mails.send.assert_called_once()
-        assert mails.send.call_args.kwargs["data"].params == {
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["params"] == {
             "OFFER_NAME": booking.collectiveStock.collectiveOffer.name,
             "EDUCATIONAL_INSTITUTION_NAME": booking.educationalInstitution.name,
             "VENUE_NAME": booking.collectiveStock.collectiveOffer.venue.name,
             "EVENT_DATE": "mercredi 27 novembre 2024",
             "EVENT_HOUR": "19h29",
+            "START_DATE": "mercredi 27 novembre 2024",
+            "START_HOUR": "19h29",
+            "END_DATE": "mercredi 27 novembre 2024",
+            "END_HOUR": "19h29",
             "REDACTOR_FIRSTNAME": booking.educationalRedactor.firstName,
             "REDACTOR_LASTNAME": booking.educationalRedactor.lastName,
             "REDACTOR_EMAIL": booking.educationalRedactor.email,

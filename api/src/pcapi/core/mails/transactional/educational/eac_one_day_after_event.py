@@ -5,6 +5,7 @@ from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
+from pcapi.utils.mailing import get_collective_datetimes
 from pcapi.utils.mailing import get_event_datetime
 
 
@@ -24,6 +25,7 @@ def get_eac_one_day_after_event_data(
 ) -> models.TransactionalEmailData:
     stock = booking.collectiveStock
     offer = stock.collectiveOffer
+    start, end = get_collective_datetimes(stock)
 
     return models.TransactionalEmailData(
         template=TransactionalEmail.EAC_ONE_DAY_AFTER_EVENT.value,
@@ -32,6 +34,10 @@ def get_eac_one_day_after_event_data(
             "VENUE_NAME": offer.venue.publicName,
             "EVENT_DATE": get_date_formatted_for_email(get_event_datetime(stock)),
             "EVENT_HOUR": get_time_formatted_for_email(get_event_datetime(stock)),
+            "START_DATE": get_date_formatted_for_email(start),
+            "START_HOUR": get_time_formatted_for_email(start),
+            "END_DATE": get_date_formatted_for_email(end),
+            "END_HOUR": get_time_formatted_for_email(end),
             "EDUCATIONAL_INSTITUTION_NAME": booking.educationalInstitution.name,
             "COLLECTIVE_OFFER_ADDRESS": get_collective_offer_full_address(offer),
         },

@@ -17,6 +17,7 @@ from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api import institution as institution_api
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.educational.api import stock as educational_api_stock
+from pcapi.core.mails import testing as mails_testing
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.serialization import collective_stock_serialize
@@ -108,7 +109,7 @@ class UnindexExpiredOffersTest:
     @pytest.mark.settings(ALGOLIA_DELETING_COLLECTIVE_OFFERS_CHUNK_SIZE=3)
     @mock.patch("pcapi.core.search.unindex_collective_offer_template_ids")
     def test_default_run_template(self, mock_unindex_collective_offer_template_ids) -> None:
-        # Given
+
         # Expired template offer
         collective_offer_template_1 = factories.CollectiveOfferTemplateFactory(
             dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=9),
@@ -145,10 +146,9 @@ class UnindexExpiredOffersTest:
                 end=date_utils.get_naive_utc_now() + datetime.timedelta(days=3),
             ),
         )
-        # When
+
         educational_api_offer.unindex_expired_or_archived_collective_offers_template()
 
-        # Then
         assert mock_unindex_collective_offer_template_ids.mock_calls == [
             mock.call([collective_offer_template_1.id, collective_offer_template_2.id, collective_offer_template_3.id]),
         ]
@@ -156,14 +156,11 @@ class UnindexExpiredOffersTest:
 
 class GetCulturalPartnersTest:
     def test_cultural_partners_no_cache(self) -> None:
-        # given
         redis_client = current_app.redis_client
         redis_client.delete("api:adage_cultural_partner:cache")
 
-        # when
         result = educational_api_adage.get_cultural_partners()
 
-        # then
         assert json.loads(result.json()) == {
             "partners": [
                 {
@@ -228,7 +225,6 @@ class GetCulturalPartnersTest:
         }
 
     def test_cultural_partners_get_cache(self) -> None:
-        # given
         redis_client = current_app.redis_client
         data = [
             {
@@ -263,10 +259,8 @@ class GetCulturalPartnersTest:
         ]
         redis_client.set("api:adage_cultural_partner:cache", json.dumps(data).encode("utf-8"))
 
-        # when
         result = educational_api_adage.get_cultural_partners()
 
-        # then
         assert json.loads(result.json()) == {
             "partners": [
                 {
@@ -302,7 +296,7 @@ class GetCulturalPartnersTest:
         }
 
     def test_cultural_partners_force_update(self) -> None:
-        # given
+
         redis_client = current_app.redis_client
         data = [
             {
@@ -337,11 +331,8 @@ class GetCulturalPartnersTest:
         ]
         redis_client.set("api:adage_cultural_partner:cache", json.dumps(data).encode("utf-8"))
 
-        # when
         result = educational_api_adage.get_cultural_partners(force_update=True)
 
-        # then
-        # then
         assert json.loads(result.json()) == {
             "partners": [
                 {
@@ -409,10 +400,7 @@ class GetCulturalPartnersTest:
 @pytest.mark.usefixtures("db_session")
 class EACPendingBookingWithConfirmationLimitDate3DaysTest:
     @time_machine.travel("2022-11-26 18:29")
-    @mock.patch(
-        "pcapi.core.mails.transactional.educational.eac_pending_booking_confirmation_limit_date_in_3_days.mails.send"
-    )
-    def test_with_pending_booking_limit_date_in_3_days(self, mock_mail_sender) -> None:
+    def test_with_pending_booking_limit_date_in_3_days(self) -> None:
         booking = factories.PendingCollectiveBookingFactory(
             confirmationLimitDate="2022-11-29 18:29",
             collectiveStock__collectiveOffer__bookingEmails=["pouet@example.com", "plouf@example.com"],
@@ -421,11 +409,15 @@ class EACPendingBookingWithConfirmationLimitDate3DaysTest:
 
         educational_api_booking.notify_pro_pending_booking_confirmation_limit_in_3_days()
 
-        mock_mail_sender.assert_called_once()
-        assert mock_mail_sender.call_args.kwargs["data"].params == {
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["params"] == {
             "OFFER_NAME": booking.collectiveStock.collectiveOffer.name,
             "VENUE_NAME": booking.collectiveStock.collectiveOffer.venue.name,
             "EVENT_DATE": "dimanche 27 novembre 2022",
+            "START_DATE": "dimanche 27 novembre 2022",
+            "START_HOUR": "19h29",
+            "END_DATE": "dimanche 27 novembre 2022",
+            "END_HOUR": "19h29",
             "USER_FIRSTNAME": booking.educationalRedactor.firstName,
             "USER_LASTNAME": booking.educationalRedactor.lastName,
             "USER_EMAIL": booking.educationalRedactor.email,
@@ -435,11 +427,7 @@ class EACPendingBookingWithConfirmationLimitDate3DaysTest:
             "COLLECTIVE_OFFER_ADDRESS": "En établissement scolaire",
         }
 
-    @mock.patch(
-        "pcapi.core.mails.transactional.educational.eac_pending_booking_confirmation_limit_date_in_3_days.mails.send"
-    )
-    def test_with_pending_booking_limit_date_in_less_or_more_than_3_days(self, mock_mail_sender) -> None:
-        # given
+    def test_with_pending_booking_limit_date_in_less_or_more_than_3_days(self) -> None:
         factories.PendingCollectiveBookingFactory(
             confirmationLimitDate="2022-11-28 18:29",
             collectiveStock__collectiveOffer__bookingEmails=["pouet@example.com", "plouf@example.com"],
@@ -450,34 +438,26 @@ class EACPendingBookingWithConfirmationLimitDate3DaysTest:
             collectiveStock__collectiveOffer__bookingEmails=["pouet@example.com", "plouf@example.com"],
         )
 
-        # when
         educational_api_booking.notify_pro_pending_booking_confirmation_limit_in_3_days()
 
-        # then
-        mock_mail_sender.assert_not_called()
+        assert len(mails_testing.outbox) == 0
 
-    @mock.patch(
-        "pcapi.core.mails.transactional.educational.eac_pending_booking_confirmation_limit_date_in_3_days.mails.send"
-    )
-    def test_with_confirmed_booking_confirmation_limit_date_in_3_days(self, mock_mail_sender) -> None:
-        # given
+    def test_with_confirmed_booking_confirmation_limit_date_in_3_days(self) -> None:
+
         factories.CollectiveBookingFactory(
             confirmationLimitDate="2022-11-29 18:29",
             collectiveStock__collectiveOffer__bookingEmails=["pouet@example.com", "plouf@example.com"],
         )
 
-        # when
         educational_api_booking.notify_pro_pending_booking_confirmation_limit_in_3_days()
 
-        # then
-        mock_mail_sender.assert_not_called()
+        assert len(mails_testing.outbox) == 0
 
 
 @pytest.mark.usefixtures("db_session")
 class NotifyProUserOneDayTest:
     @time_machine.travel("2020-01-05 10:00:00")
-    @mock.patch("pcapi.core.mails.transactional.educational.eac_one_day_before_event.mails.send")
-    def test_notify_pro_users_one_day_before(self, mock_mail_sender) -> None:
+    def test_notify_pro_users_one_day_before(self) -> None:
         # should send email
         booking1 = factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking1",
@@ -529,15 +509,20 @@ class NotifyProUserOneDayTest:
             status=models.CollectiveBookingStatus.CONFIRMED,
         )
         educational_api_booking.notify_pro_users_one_day_before()
-        assert mock_mail_sender.call_count == 2
-        for args in mock_mail_sender.call_args_list:
-            data = args.kwargs["data"]
-            assert data.params["OFFER_NAME"] in ("booking1", "booking3")
-            if data.params["OFFER_NAME"] == booking1.collectiveStock.collectiveOffer.name:
-                assert data.params == {
+        assert len(mails_testing.outbox) == 2
+
+        for mail in mails_testing.outbox:
+            params = mail["params"]
+            assert params["OFFER_NAME"] in ("booking1", "booking3")
+            if params["OFFER_NAME"] == booking1.collectiveStock.collectiveOffer.name:
+                assert params == {
                     "OFFER_NAME": booking1.collectiveStock.collectiveOffer.name,
                     "VENUE_NAME": booking1.collectiveStock.collectiveOffer.venue.name,
                     "EVENT_HOUR": "01h00",
+                    "START_DATE": "lundi 6 janvier 2020",
+                    "START_HOUR": "01h00",
+                    "END_DATE": "lundi 6 janvier 2020",
+                    "END_HOUR": "01h00",
                     "QUANTITY": 1,
                     "PRICE": str(booking1.collectiveStock.price),
                     "FORMATTED_PRICE": "100 €",
@@ -547,13 +532,18 @@ class NotifyProUserOneDayTest:
                     "EDUCATIONAL_INSTITUTION_NAME": booking1.educationalInstitution.name,
                     "COLLECTIVE_OFFER_ADDRESS": "À déterminer avec l'enseignant",
                 }
-                assert args.kwargs["recipients"] == [booking1.collectiveStock.collectiveOffer.bookingEmails[0]]
-                assert args.kwargs["bcc_recipients"] == booking1.collectiveStock.collectiveOffer.bookingEmails[1:]
-            elif data.params["OFFER_NAME"] == booking3.collectiveStock.collectiveOffer.name:
-                assert data.params == {
+                assert mail["To"] == booking1.collectiveStock.collectiveOffer.bookingEmails[0]
+                assert mail["Bcc"] == booking1.collectiveStock.collectiveOffer.bookingEmails[1]
+
+            elif params["OFFER_NAME"] == booking3.collectiveStock.collectiveOffer.name:
+                assert params == {
                     "OFFER_NAME": booking3.collectiveStock.collectiveOffer.name,
                     "VENUE_NAME": booking3.collectiveStock.collectiveOffer.venue.name,
                     "EVENT_HOUR": "01h00",
+                    "START_DATE": "lundi 6 janvier 2020",
+                    "START_HOUR": "01h00",
+                    "END_DATE": "lundi 6 janvier 2020",
+                    "END_HOUR": "01h00",
                     "QUANTITY": 1,
                     "PRICE": str(booking3.collectiveStock.price),
                     "FORMATTED_PRICE": "100 €",
@@ -563,15 +553,14 @@ class NotifyProUserOneDayTest:
                     "EDUCATIONAL_INSTITUTION_NAME": booking3.educationalInstitution.name,
                     "COLLECTIVE_OFFER_ADDRESS": "À déterminer avec l'enseignant",
                 }
-                assert args.kwargs["recipients"] == [booking3.collectiveStock.collectiveOffer.bookingEmails[0]]
-                assert args.kwargs["bcc_recipients"] == booking3.collectiveStock.collectiveOffer.bookingEmails[1:]
+                assert mail["To"] == booking3.collectiveStock.collectiveOffer.bookingEmails[0]
+                assert mail["Bcc"] == booking3.collectiveStock.collectiveOffer.bookingEmails[1]
 
 
 @pytest.mark.usefixtures("db_session")
 class NotifyProUserOneDayAfterTest:
     @time_machine.travel("2020-01-07 10:00:00")
-    @mock.patch("pcapi.core.mails.transactional.educational.eac_one_day_after_event.mails.send")
-    def test_notify_pro_users_one_day_after(self, mock_mail_sender) -> None:
+    def test_notify_pro_users_one_day_after(self) -> None:
         # should send email
         booking1 = factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking1",
@@ -640,32 +629,42 @@ class NotifyProUserOneDayAfterTest:
         )
 
         educational_api_booking.notify_pro_users_one_day_after()
-        assert mock_mail_sender.call_count == 2
-        for args in mock_mail_sender.call_args_list:
-            data = args.kwargs["data"]
-            assert data.params["OFFER_NAME"] in ("booking1", "booking3")
-            if data.params["OFFER_NAME"] == booking1.collectiveStock.collectiveOffer.name:
-                assert data.params == {
+        assert len(mails_testing.outbox) == 2
+
+        for mail in mails_testing.outbox:
+            params = mail["params"]
+            assert params["OFFER_NAME"] in ("booking1", "booking3")
+            if params["OFFER_NAME"] == booking1.collectiveStock.collectiveOffer.name:
+                assert params == {
                     "OFFER_NAME": booking1.collectiveStock.collectiveOffer.name,
                     "VENUE_NAME": booking1.collectiveStock.collectiveOffer.venue.name,
                     "EVENT_HOUR": "01h00",
                     "EVENT_DATE": "lundi 6 janvier 2020",
+                    "START_DATE": "lundi 6 janvier 2020",
+                    "START_HOUR": "01h00",
+                    "END_DATE": "lundi 6 janvier 2020",
+                    "END_HOUR": "01h00",
                     "EDUCATIONAL_INSTITUTION_NAME": booking1.educationalInstitution.name,
                     "COLLECTIVE_OFFER_ADDRESS": "À déterminer avec l'enseignant",
                 }
-                assert args.kwargs["recipients"] == [booking1.collectiveStock.collectiveOffer.bookingEmails[0]]
-                assert args.kwargs["bcc_recipients"] == booking1.collectiveStock.collectiveOffer.bookingEmails[1:]
-            elif data.params["OFFER_NAME"] == booking3.collectiveStock.collectiveOffer.name:
-                assert data.params == {
+                assert mail["To"] == booking1.collectiveStock.collectiveOffer.bookingEmails[0]
+                assert mail["Bcc"] == booking1.collectiveStock.collectiveOffer.bookingEmails[1]
+
+            elif params["OFFER_NAME"] == booking3.collectiveStock.collectiveOffer.name:
+                assert params == {
                     "OFFER_NAME": booking3.collectiveStock.collectiveOffer.name,
                     "VENUE_NAME": booking3.collectiveStock.collectiveOffer.venue.name,
                     "EVENT_HOUR": "01h00",
                     "EVENT_DATE": "lundi 6 janvier 2020",
+                    "START_DATE": "lundi 6 janvier 2020",
+                    "START_HOUR": "01h00",
+                    "END_DATE": "lundi 6 janvier 2020",
+                    "END_HOUR": "01h00",
                     "EDUCATIONAL_INSTITUTION_NAME": booking3.educationalInstitution.name,
                     "COLLECTIVE_OFFER_ADDRESS": "À déterminer avec l'enseignant",
                 }
-                assert args.kwargs["recipients"] == [booking3.collectiveStock.collectiveOffer.bookingEmails[0]]
-                assert args.kwargs["bcc_recipients"] == booking3.collectiveStock.collectiveOffer.bookingEmails[1:]
+                assert mail["To"] == booking3.collectiveStock.collectiveOffer.bookingEmails[0]
+                assert mail["Bcc"] == booking3.collectiveStock.collectiveOffer.bookingEmails[1]
 
 
 @pytest.mark.usefixtures("db_session")

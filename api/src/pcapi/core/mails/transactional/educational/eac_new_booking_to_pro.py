@@ -6,6 +6,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.mails.transactional.utils import format_price
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
+from pcapi.utils.mailing import get_collective_datetimes
 from pcapi.utils.mailing import get_event_datetime
 
 
@@ -25,6 +26,7 @@ def get_eac_new_booking_to_pro_email_data(booking: CollectiveBooking) -> models.
     price = f"{stock.price} €" if stock.price > 0 else "Gratuit"
     educational_redactor = booking.educationalRedactor
     educational_institution = booking.educationalInstitution
+    start, end = get_collective_datetimes(stock)
 
     return models.TransactionalEmailData(
         template=TransactionalEmail.EAC_NEW_BOOKING_TO_PRO.value,
@@ -33,6 +35,10 @@ def get_eac_new_booking_to_pro_email_data(booking: CollectiveBooking) -> models.
             "VENUE_NAME": offer.venue.publicName,
             "EVENT_DATE": get_date_formatted_for_email(get_event_datetime(stock)),
             "EVENT_HOUR": get_time_formatted_for_email(get_event_datetime(stock)),
+            "START_DATE": get_date_formatted_for_email(start),
+            "START_HOUR": get_time_formatted_for_email(start),
+            "END_DATE": get_date_formatted_for_email(end),
+            "END_HOUR": get_time_formatted_for_email(end),
             "QUANTITY": 1,  #  business rule: It must always be 1
             "PRICE": price,
             "FORMATTED_PRICE": format_price(stock.price, offer.venue),
