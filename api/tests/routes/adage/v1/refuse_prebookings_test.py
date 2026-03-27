@@ -11,7 +11,6 @@ from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveLocationType
-from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers.factories import VenueFactory
@@ -28,9 +27,10 @@ class Returns200Test:
             lastName="Doudou",
             email="jean.doux@example.com",
         )
-        collective_stock: CollectiveStock = CollectiveStockFactory(
+        collective_stock = CollectiveStockFactory(
             collectiveOffer__bookingEmails=["test_collective@mail.com", "test2_collective@mail.com"],
             startDatetime=datetime(2020, 1, 1, 12, 53, 00),
+            endDatetime=datetime(2020, 1, 2, 13, 53, 00),
         )
         collective_booking = CollectiveBookingFactory(
             status=CollectiveBookingStatus.PENDING,
@@ -69,6 +69,10 @@ class Returns200Test:
             "VENUE_NAME": collective_offer.venue.name,
             "EVENT_DATE": "mercredi 1er janvier 2020",
             "EVENT_HOUR": "13h53",
+            "START_DATE": "mercredi 1er janvier 2020",
+            "START_HOUR": "13h53",
+            "END_DATE": "jeudi 2 janvier 2020",
+            "END_HOUR": "14h53",
             "REDACTOR_FIRSTNAME": redactor.firstName,
             "REDACTOR_LASTNAME": redactor.lastName,
             "REDACTOR_EMAIL": redactor.email,

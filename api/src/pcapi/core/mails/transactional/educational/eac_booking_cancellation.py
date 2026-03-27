@@ -5,6 +5,7 @@ from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
+from pcapi.utils.mailing import get_collective_datetimes
 from pcapi.utils.mailing import get_event_datetime
 
 
@@ -13,6 +14,7 @@ def get_education_booking_cancellation_email_data(booking: CollectiveBooking) ->
     offer = stock.collectiveOffer
     institution = booking.educationalInstitution
     redactor = booking.educationalRedactor
+    start, end = get_collective_datetimes(stock)
 
     return models.TransactionalEmailData(
         template=TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION.value,
@@ -22,6 +24,10 @@ def get_education_booking_cancellation_email_data(booking: CollectiveBooking) ->
             "VENUE_NAME": offer.venue.publicName,
             "EVENT_DATE": get_date_formatted_for_email(get_event_datetime(stock)),
             "EVENT_HOUR": get_time_formatted_for_email(get_event_datetime(stock)),
+            "START_DATE": get_date_formatted_for_email(start),
+            "START_HOUR": get_time_formatted_for_email(start),
+            "END_DATE": get_date_formatted_for_email(end),
+            "END_HOUR": get_time_formatted_for_email(end),
             "REDACTOR_FIRSTNAME": redactor.firstName,
             "REDACTOR_LASTNAME": redactor.lastName,
             "REDACTOR_EMAIL": redactor.email,

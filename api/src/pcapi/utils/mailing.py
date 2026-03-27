@@ -14,6 +14,17 @@ def build_pc_pro_reset_password_link(token_value: str) -> str:
     return f"{settings.PRO_URL}/demande-mot-de-passe/{token_value}"
 
 
+def get_collective_datetimes(collective_stock: CollectiveStock) -> tuple[datetime, datetime]:
+    department_code = collective_stock.collectiveOffer.venue.offererAddress.address.departmentCode
+
+    return (
+        utc_datetime_to_department_timezone(collective_stock.startDatetime, department_code),
+        utc_datetime_to_department_timezone(collective_stock.endDatetime, department_code),
+    )
+
+
+# TODO (jcicurel-pass, 2026-03-27): once the email templates do not use get_event_datetime for collective stocks
+# we can remove the CollectiveStock logic in get_event_datetime
 def get_event_datetime(stock: CollectiveStock | Stock) -> datetime:
     start_value = stock.startDatetime if isinstance(stock, CollectiveStock) else stock.beginningDatetime
 
