@@ -3,16 +3,18 @@
 @use "styles/mixins/_a11y.scss" as a11y;
 @use "styles/mixins/_rem.scss" as rem;
 
-/*
- * The real styling starts here
- */
 .container {
   display: grid;
   grid-template-columns: 2fr 1fr;
   grid-template-areas:
     "top-area top-area"
     "main-area side-area";
-  column-gap: var(--size-spacing-xl);
+  gap: var(--size-spacing-xl);
+
+  &:has(.top:empty),
+  &:not(:has(.top)) {
+    grid-template-areas: "main-area side-area";
+  }
 
   @media (max-width: size.$tablet) {
     grid-template-columns: 1fr;
@@ -20,12 +22,18 @@
       "top-area"
       "main-area"
       "side-area";
+
+    &:has(.top:empty),
+    &:not(:has(.top)) {
+      grid-template-areas:
+        "main-area"
+        "side-area";
+    }
   }
 }
 
 .top {
   grid-area: top-area;
-  margin-bottom: var(--size-spacing-xl);
 }
 
 .main {
@@ -33,10 +41,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--size-spacing-xl);
-
-  @media (max-width: size.$tablet) {
-    margin-bottom: var(--size-spacing-xl);
-  }
 }
 
 .side {

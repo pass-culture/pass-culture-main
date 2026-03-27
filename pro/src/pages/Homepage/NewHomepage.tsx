@@ -126,6 +126,7 @@ export const NewHomepage = (): JSX.Element => {
           >
             Page d'accueil - part individuelle
           </span>
+
           <div className={styles['main']}>
             <div>
               Activités sur vos offres individuelles
@@ -143,6 +144,7 @@ export const NewHomepage = (): JSX.Element => {
               <b>Module Edito</b>
             </div>
           </div>
+
           <div className={styles['side']}>
             {shouldDisplayIncomeCard && (
               <IncomeCard
@@ -181,29 +183,32 @@ export const NewHomepage = (): JSX.Element => {
           >
             Page d'accueil - part collective
           </span>
-          {collectiveDmsApplication && (
-            <div className={styles['top']}>
+
+          <div className={styles['top']}>
+            {collectiveDmsApplication && (
               <CollectiveDmsTimeline
                 collectiveDmsApplication={collectiveDmsApplication}
                 hasAdageId={Boolean(selectedVenue.hasAdageId)}
                 adageInscriptionDate={selectedVenue.adageInscriptionDate}
                 variant={CollectiveDmsTimelineVariant.LITE}
               />
-            </div>
-          )}
-          {hasRefusedDmsApplication && (
-            <div className={styles['main']}>
+            )}
+          </div>
+
+          <div className={styles['main']}>
+            {hasRefusedDmsApplication && (
               <OffersEmptyStateCard
                 variant={OffersEmptyStateCardVariant.INDIVIDUAL}
               />
-            </div>
-          )}
-          {selectedVenue.allowedOnAdage && (
-            <>
-              <div className={styles['main']}>
-                <CollectiveOffersCardsContainer venueId={selectedVenue.id} />
-              </div>
-              <div className={styles['side']}>
+            )}
+            {selectedVenue.allowedOnAdage && (
+              <CollectiveOffersCardsContainer venueId={selectedVenue.id} />
+            )}
+          </div>
+
+          <div className={styles['side']}>
+            {selectedVenue.allowedOnAdage && (
+              <>
                 {shouldDisplayIncomeCard && (
                   <IncomeCard
                     venueId={selectedVenue.id}
@@ -222,9 +227,9 @@ export const NewHomepage = (): JSX.Element => {
                   <WebinarCard variant={HomepageVariant.COLLECTIVE} />
                 )}
                 <NewsletterCard />
-              </div>
-            </>
-          )}
+              </>
+            )}
+          </div>
         </div>
       )}
     </>
