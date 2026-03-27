@@ -15,3 +15,12 @@ class SigninResponseV2(HttpBodyModel):
     refresh_token: str
     access_token: str
     account_state: AccountState
+
+
+class RefreshResponseV2(HttpBodyModel):
+    access_token: str
+    refresh_token: str
+
+
+class RefreshRequestV2(HttpBodyModel):
+    device_info: DeviceInfoV2

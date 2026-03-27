@@ -303,7 +303,7 @@ class RefreshAccessTokenTest:
         refresh_token = create_refresh_token(identity=user.email)
 
         client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
-        refresh_response = client.post("/native/v1/refresh_access_token")
+        refresh_response = client.post("/native/v2/refresh_access_token", json={"device_info": self.device_info})
         assert refresh_response.status_code == 200
 
         assert user.lastConnectionDate == datetime(2020, 3, 15)
@@ -337,9 +337,10 @@ class RefreshAccessTokenTest:
 
         # Ensure the refresh token can generate a new access token
         client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
-        response = client.post("/native/v1/refresh_access_token", json={})
+        response = client.post("/native/v2/refresh_access_token", json={"device_info": self.device_info})
         assert response.status_code == 200, response.json
         assert response.json["accessToken"]
+        assert response.json["refreshToken"]
         access_token = response.json["accessToken"]
 
         # Ensure the new access token is valid
@@ -350,3 +351,29 @@ class RefreshAccessTokenTest:
         # Ensure the new access token contains user.id
         decoded = decode_token(access_token)
         assert decoded["user_claims"]["user_id"] == user.id
+
+    def test_device_info_required(self, client):
+        data = {
+            "identifier": "user@test.com",
+            "password": settings.TEST_DEFAULT_PASSWORD,
+            "device_info": self.device_info,
+        }
+        users_factories.UserFactory(email=data["identifier"], password=data["password"])
+
+        # Get the refresh
+        response = client.post("/native/v2/signin", json=data)
+        assert response.status_code == 200
+        assert response.json["refreshToken"]
+        assert response.json["accessToken"]
+
+        refresh_token = response.json["refreshToken"]
+
+        # Ensure the device_info is needed for access token refresh
+        client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
+        response = client.post("/native/v2/refresh_access_token", json={})
+        assert response.status_code == 400, response.json
+
+        # Ensure the device_id is mandatory for access token refresh
+        client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
+        response = client.post("/native/v2/refresh_access_token", json={"device_info": {"os": "iOS", "source": "app"}})
+        assert response.status_code == 400, response.json

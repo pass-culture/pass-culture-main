@@ -1,3 +1,5 @@
+from flask_login import current_user
+
 from pcapi.connectors import api_recaptcha
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
@@ -6,8 +8,10 @@ from pcapi.core.users import repository as users_repo
 from pcapi.core.users.sessions import create_user_jwt_tokens
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
+from pcapi.routes.native.security import authenticated_with_refresh_token
 from pcapi.routes.native.v2.serialization import authentication
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.transaction_manager import atomic
 
 from .. import blueprint
 
@@ -47,3 +51,16 @@ def signin(body: authentication.SigninRequestV2) -> authentication.SigninRespons
         refresh_token=tokens.refresh,
         account_state=user.account_state,
     )
+
+
+@blueprint.native_route("/refresh_access_token", version="v2", methods=["POST"])
+@authenticated_with_refresh_token
+@spectree_serialize(response_model=authentication.RefreshResponseV2, api=blueprint.api, on_error_statuses=[401])
+@atomic()
+def refresh(body: authentication.RefreshRequestV2) -> authentication.RefreshResponseV2:
+    users_api.update_last_connection_date(current_user)
+    tokens = create_user_jwt_tokens(
+        user=current_user,
+        device_info=body.device_info,
+    )
+    return authentication.RefreshResponseV2(access_token=tokens.access, refresh_token=tokens.refresh)
