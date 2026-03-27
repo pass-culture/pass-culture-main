@@ -1,15 +1,12 @@
-name: "[DEVOPS][TEST][on_dispatch] Deploy OPS"
+name: "9 [test] deploy ops"
 
 on:
   workflow_dispatch:
     inputs:
       pcapi_image_tag:
         description: pcapi image tag to deploy
-        required: true
-      deploy_new_infra:
-        description: Deploy ops to new infra
-        type: boolean
-        default: true
+        required: false 
+        default: latest 
 
 permissions: write-all
 
@@ -26,7 +23,7 @@ jobs:
       app_cluster_name: gke-backend-tst-eu9
       app_project_id: pc-backend-tst
       location: europe-west9
-      is_new_infra: ${{ inputs.deploy_new_infra }}
+      is_new_infra: true
       workload_identity_provider_secret_name: gcp_metier_ops_workload_identity_provider # to delete after migration
       deploy_api: true
     secrets:
@@ -35,4 +32,3 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       NEW_INFRA_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PRD }}
-      NEW_INFRA_PCAPI_DEPLOYER_SERVICE_ACCOUNT: ${{ secrets.PCAPI_CI_SERVICE_ACCOUNT_OPSV2 }}
