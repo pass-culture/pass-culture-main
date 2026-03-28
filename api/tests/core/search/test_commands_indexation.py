@@ -3,6 +3,7 @@ from unittest import mock
 
 import pytest
 
+from pcapi import settings
 from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
@@ -122,7 +123,10 @@ def test_partially_index_collective_offer_templates(app):
     )
     # fmt: on
 
-    assert set(search_testing.search_store["collective-offers-templates"].keys()) == expected_to_be_reindexed
+    assert (
+        set(search_testing.search_store[settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME].keys())
+        == expected_to_be_reindexed
+    )
 
 
 @pytest.mark.usefixtures("clean_database")
