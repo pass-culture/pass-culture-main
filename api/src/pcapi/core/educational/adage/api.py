@@ -38,7 +38,7 @@ def notify_booking_cancellation_by_offerer(data: schemas.EducationalBookingRespo
     _get_backend().notify_booking_cancellation_by_offerer(data=data)
 
 
-def get_cultural_partners(since_date: datetime.datetime | None = None) -> list[dict[str, str | int | float | None]]:
+def get_cultural_partners(since_date: datetime.datetime) -> list[schemas.AdageCulturalPartner]:
     result = _get_backend().get_cultural_partners(since_date=since_date)
     return result
 

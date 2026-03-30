@@ -8,7 +8,6 @@ from flask import Flask
 from pcapi.core.educational import models
 from pcapi.core.educational.adage.backends.logger import BASE_ADAGE_PARTNER
 from pcapi.core.educational.api.institution import ImportDepositPeriodOption
-from pcapi.core.educational.schemas import AdageCulturalPartners
 
 from tests.test_utils import run_command
 
@@ -45,24 +44,24 @@ def test_import_deposit_csv(mock_import: MagicMock, app: Flask):
 
 
 @patch("pcapi.core.educational.api.adage.synchronize_adage_partners")
-@patch("pcapi.core.educational.api.adage.get_cultural_partners")
+@patch("pcapi.core.educational.adage.api.get_cultural_partners")
 def test_synchronize_adage_cultural_partners(mock_partners: MagicMock, mock_sync: MagicMock, app: Flask):
-    adage_partners = AdageCulturalPartners(partners=[BASE_ADAGE_PARTNER])
+    adage_partners = [BASE_ADAGE_PARTNER]
     mock_partners.return_value = adage_partners
 
     run_command(app, "synchronize_adage_cultural_partners", raise_on_error=True)
 
     mock_partners.assert_called_once()
-    mock_sync.assert_called_once_with(adage_partners=adage_partners.partners, apply=False)
+    mock_sync.assert_called_once_with(adage_partners=adage_partners, apply=False)
 
 
 @patch("pcapi.core.educational.api.adage.synchronize_adage_ids_on_offerers")
-@patch("pcapi.core.educational.api.adage.get_cultural_partners")
+@patch("pcapi.core.educational.adage.api.get_cultural_partners")
 def test_synchronize_offerers_from_adage_cultural_partners(mock_partners: MagicMock, mock_sync: MagicMock, app: Flask):
-    adage_partners = AdageCulturalPartners(partners=[BASE_ADAGE_PARTNER])
+    adage_partners = [BASE_ADAGE_PARTNER]
     mock_partners.return_value = adage_partners
 
     run_command(app, "synchronize_offerers_from_adage_cultural_partners", raise_on_error=True)
 
     mock_partners.assert_called_once()
-    mock_sync.assert_called_once_with(adage_partners.partners)
+    mock_sync.assert_called_once_with(adage_partners)

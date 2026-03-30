@@ -2,12 +2,10 @@ import json
 import logging
 import typing
 from dataclasses import dataclass
-from datetime import datetime
 from functools import partial
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
-from pydantic.v1 import parse_obj_as
 
 from pcapi.core.educational import models
 from pcapi.core.educational import schemas
@@ -27,36 +25,6 @@ from pcapi.utils.transaction_manager import atomic
 
 
 logger = logging.getLogger(__name__)
-
-
-def get_cultural_partners(
-    *, since_date: datetime | None = None, force_update: bool = False
-) -> schemas.AdageCulturalPartners:
-    # TODO (jcicurel): once we have updated the adage ids sync logic, we do not need the cache anymore
-    # and we can move the parsing as AdageCulturalPartners in the adage client directly
-
-    CULTURAL_PARTNERS_CACHE_KEY = "api:adage_cultural_partner:cache"
-    CULTURAL_PARTNERS_CACHE_TIMEOUT = 24 * 60 * 60  # 24h in seconds
-
-    def _get_cultural_partners() -> str:
-        adage_data = adage_client.get_cultural_partners()
-        return json.dumps(adage_data)
-
-    if not since_date:
-        cultural_partners_json = get_from_cache(
-            key_template=CULTURAL_PARTNERS_CACHE_KEY,
-            retriever=_get_cultural_partners,
-            expire=CULTURAL_PARTNERS_CACHE_TIMEOUT,
-            return_type=str,
-            force_update=force_update,
-        )
-    else:
-        adage_data = adage_client.get_cultural_partners(since_date)
-        cultural_partners_json = json.dumps(adage_data)
-
-    cultural_partners_json = typing.cast(str, cultural_partners_json)
-    cultural_partners = json.loads(cultural_partners_json)
-    return parse_obj_as(schemas.AdageCulturalPartners, {"partners": cultural_partners})
 
 
 def get_venue_by_siret_for_adage_iframe(

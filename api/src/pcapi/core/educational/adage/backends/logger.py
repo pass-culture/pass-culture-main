@@ -60,41 +60,41 @@ class AdageLoggerClient(AdageClient):
             "Adage has been notified at %s, with payload: %s", f"{self.base_url}/v1/prereservation-annule", data
         )
 
-    def get_cultural_partners(
-        self, since_date: datetime.datetime | None = None
-    ) -> list[dict[str, str | int | float | None]]:
+    def get_cultural_partners(self, since_date: datetime.datetime) -> list[schemas.AdageCulturalPartner]:
         logger.info("Adage has been called at %s", f"{self.base_url}/v1/partenaire-culturel")
         return [
-            {**BASE_ADAGE_PARTNER},
-            {
-                "id": 2,
-                "venueId": 13,
-                "siret": 65498732000011,
-                "regionId": 3,
-                "academieId": "un id d'academie",
-                "statutId": 3,
-                "labelId": 1,
-                "typeId": 1,
-                "communeId": "une comune",
-                "libelle": "un libelle",
-                "adresse": "1 impasse d'une ville lointaine",
-                "siteWeb": 0,
-                "latitude": 0,
-                "longitude": 0,
-                "statutLibelle": "entreprise privée",
-                "labelLibelle": "sans label",
-                "typeIcone": "film",
-                "typeLibelle": "maison",
-                "communeLibelle": "une commune libelle",
-                "communeDepartement": "corse du sud",
-                "academieLibelle": "Lille",
-                "regionLibelle": "Corse",
-                "domaines": "d'autres domaines",
-                "domaineIds": "1",
-                "actif": 0,
-                "dateModification": "2022-06-27T08:52:27.597Z",
-                "synchroPass": 1,
-            },
+            schemas.AdageCulturalPartner.parse_obj(BASE_ADAGE_PARTNER),
+            schemas.AdageCulturalPartner.parse_obj(
+                {
+                    "id": 2,
+                    "venueId": 13,
+                    "siret": 65498732000011,
+                    "regionId": 3,
+                    "academieId": "un id d'academie",
+                    "statutId": 3,
+                    "labelId": 1,
+                    "typeId": 1,
+                    "communeId": "une comune",
+                    "libelle": "un libelle",
+                    "adresse": "1 impasse d'une ville lointaine",
+                    "siteWeb": 0,
+                    "latitude": 0,
+                    "longitude": 0,
+                    "statutLibelle": "entreprise privée",
+                    "labelLibelle": "sans label",
+                    "typeIcone": "film",
+                    "typeLibelle": "maison",
+                    "communeLibelle": "une commune libelle",
+                    "communeDepartement": "corse du sud",
+                    "academieLibelle": "Lille",
+                    "regionLibelle": "Corse",
+                    "domaines": "d'autres domaines",
+                    "domaineIds": "1",
+                    "actif": 0,
+                    "dateModification": "2022-06-27T08:52:27.597Z",
+                    "synchroPass": 1,
+                }
+            ),
         ]
 
     def notify_institution_association(self, data: schemas.AdageCollectiveOffer) -> None:
