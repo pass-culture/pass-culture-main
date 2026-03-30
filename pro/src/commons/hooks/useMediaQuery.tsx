@@ -28,8 +28,8 @@ function getInitialValue(query: string, initialValue?: boolean) {
     return initialValue
   }
 
-  if (typeof window !== 'undefined' && 'matchMedia' in window) {
-    return window.matchMedia(query).matches
+  if (typeof globalThis !== 'undefined' && 'matchMedia' in globalThis) {
+    return globalThis.matchMedia(query).matches
   }
 
   return false
@@ -38,18 +38,17 @@ function getInitialValue(query: string, initialValue?: boolean) {
 export function useMediaQuery(
   query: string,
   initialValue?: boolean,
-  { getInitialValueInEffect }: UseMediaQueryOptions = {
-    getInitialValueInEffect: true,
-  }
+  options?: UseMediaQueryOptions
 ) {
+  const { getInitialValueInEffect = true } = options ?? {}
   const [matches, setMatches] = useState(
     getInitialValueInEffect ? initialValue : getInitialValue(query)
   )
   const queryRef = useRef<MediaQueryList>(undefined)
 
   useEffect(() => {
-    if ('matchMedia' in window) {
-      queryRef.current = window.matchMedia(query)
+    if ('matchMedia' in globalThis) {
+      queryRef.current = globalThis.matchMedia(query)
       setMatches(queryRef.current.matches)
       return attachMediaListener(queryRef.current, (event) =>
         setMatches(event.matches)

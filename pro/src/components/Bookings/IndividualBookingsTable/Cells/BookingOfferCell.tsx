@@ -44,6 +44,18 @@ export const BookingOfferCell = ({
     convertEuroToPacificFranc(booking.bookingAmount)
   )
 
+  const formattedPrice = isCaledonian
+    ? formattedPacificFrancPrice
+    : formatPrice(booking.bookingAmount)
+
+  const formattedPriceWithoutCategoryLabel = isCaledonian
+    ? formattedPacificFrancPrice
+    : formatPrice(booking.bookingAmount, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+        trailingZeroDisplay: 'stripIfInteger',
+      })
+
   return (
     <div className={styles['offer-details-wrapper']}>
       <div>
@@ -58,18 +70,8 @@ export const BookingOfferCell = ({
           ))}
         <div className={styles['tarif']}>
           {booking.bookingPriceCategoryLabel
-            ? `${booking.bookingPriceCategoryLabel} - ${
-                isCaledonian
-                  ? formattedPacificFrancPrice
-                  : formatPrice(booking.bookingAmount)
-              }`
-            : isCaledonian
-              ? formattedPacificFrancPrice
-              : formatPrice(booking.bookingAmount, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                  trailingZeroDisplay: 'stripIfInteger',
-                })}
+            ? `${booking.bookingPriceCategoryLabel} - ${formattedPrice}`
+            : formattedPriceWithoutCategoryLabel}
         </div>
       </div>
       {booking.bookingIsDuo && (

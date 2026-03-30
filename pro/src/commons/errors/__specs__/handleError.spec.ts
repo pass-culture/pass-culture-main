@@ -17,6 +17,7 @@ const mockedSentry = vi.hoisted(() => {
 
   return { setExtrasMock, captureException, withScopeMock }
 })
+
 vi.mock('@sentry/browser', () => ({
   withScope: mockedSentry.withScopeMock,
   captureException: mockedSentry.captureException,

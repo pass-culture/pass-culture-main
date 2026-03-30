@@ -18,13 +18,13 @@ export const hasSearchFilters = ({
 }: HasSearchFiltersParams): boolean => {
   // Those "filters" are ignored because none are to be interpreted
   // as such by the user.
-  const finalIgnore = ['offererId', 'page', ...ignore]
+  const finalIgnore = new Set(['offererId', 'page', ...ignore])
 
   return lookup.some(
     (filterName) =>
       searchFilters[filterName] &&
       searchFilters[filterName] !== { ...DEFAULT_SEARCH_FILTERS }[filterName] &&
-      !finalIgnore.includes(filterName)
+      !finalIgnore.has(filterName)
   )
 }
 
@@ -44,7 +44,7 @@ export const hasCollectiveSearchFilters = ({
 }: HasCollectiveSearchFiltersParams): boolean => {
   // Those "filters" are ignored because none are to be interpreted
   // as such by the user.
-  const finalIgnore = ['offererId', 'page', ...ignore]
+  const finalIgnore = new Set(['offererId', 'page', ...ignore])
 
   return lookup.some(
     (filterName) =>
@@ -57,7 +57,7 @@ export const hasCollectiveSearchFilters = ({
             searchFilters[filterName],
             defaultFilters[filterName]
           ))) &&
-      !finalIgnore.includes(filterName)
+      !finalIgnore.has(filterName)
   )
 }
 

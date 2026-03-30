@@ -54,7 +54,7 @@ const renderIndividualOfferSummaryPriceTable: RenderComponentFunction<
     isEvent: params.offer?.isEvent ?? null,
     offer: params.offer,
     offerId: params.offer?.id ?? params.offerId ?? null,
-    setIsEvent: vi.fn(),
+    setIsControlledEvent: vi.fn(),
     subCategories: MOCKED_SUBCATEGORIES,
     ...params.contextValues,
   }

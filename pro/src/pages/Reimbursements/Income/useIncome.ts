@@ -7,7 +7,9 @@ import { GET_STATISTICS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 export const useIncome = (selectedVenues: string[]) => {
   // Sorting venues makes sure passed query keys are always the same
   // so SWR can cache the data correctly.
-  const selectedVenuesAsNumbers = selectedVenues.map(Number).sort()
+  const selectedVenuesAsNumbers = selectedVenues
+    .map(Number)
+    .sort((a, b) => a - b)
   const {
     data,
     error: incomeApiError,

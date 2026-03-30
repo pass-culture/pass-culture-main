@@ -76,7 +76,7 @@ describe('computeInitialValuesFromOffer', () => {
 
   it('should pre-set todays dates for a template offer creation initial values', () => {
     expect(
-      computeInitialValuesFromOffer(null, true, venues, undefined).beginningDate
+      computeInitialValuesFromOffer(null, true, venues).beginningDate
     ).toEqual(formatShortDateForInput(new Date()))
   })
 

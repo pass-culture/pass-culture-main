@@ -2,9 +2,10 @@ import { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/t
 import { SortingMode } from '@/commons/hooks/useColumnSorting'
 
 const sortByDate = (dateA: string, dateB: string, mode: SortingMode) => {
+  const compareDates = dateA > dateB ? -1 : 1
+
   return (
-    (dateA === dateB ? 0 : dateA > dateB ? -1 : 1) *
-    (mode === SortingMode.ASC ? -1 : 1)
+    (dateA === dateB ? 0 : compareDates) * (mode === SortingMode.ASC ? -1 : 1)
   )
 }
 

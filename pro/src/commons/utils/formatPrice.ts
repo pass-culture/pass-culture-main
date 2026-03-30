@@ -5,7 +5,7 @@ import { isError } from '@/apiClient/helpers'
 import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
 
 export type ResolvedNumberFormatOptions = Intl.NumberFormatOptions & {
-  roundingPriority?: 'auto' | 'morePrecision' | 'lessPrecision' | undefined
+  roundingPriority?: 'auto' | 'morePrecision' | 'lessPrecision'
   roundingIncrement?:
     | 1
     | 2
@@ -22,7 +22,6 @@ export type ResolvedNumberFormatOptions = Intl.NumberFormatOptions & {
     | 2000
     | 2500
     | 5000
-    | undefined
   roundingMode?:
     | 'ceil'
     | 'floor'
@@ -33,8 +32,7 @@ export type ResolvedNumberFormatOptions = Intl.NumberFormatOptions & {
     | 'halfExpand'
     | 'halfTrunc'
     | 'halfEven'
-    | undefined
-  trailingZeroDisplay?: 'auto' | 'stripIfInteger' | undefined
+  trailingZeroDisplay?: 'auto' | 'stripIfInteger'
 }
 
 export function formatPrice(
@@ -58,7 +56,7 @@ export function formatPrice(
     ) {
       formattedPrice = `${price
         .toFixed(2)
-        .replace(/\d(?=(\d{3})+\.)/g, '$& ') // space after each group of 3
+        .replaceAll(/\d(?=(\d{3})+\.)/g, '$& ') // space after each group of 3
         .replace('.', ',')} €`
     } else {
       sendSentryCustomError(e)

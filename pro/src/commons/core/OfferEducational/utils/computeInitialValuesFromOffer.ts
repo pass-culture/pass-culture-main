@@ -29,9 +29,7 @@ const computeDurationString = (
   const hours = Math.floor(durationMinutes / 60)
   const minutes = durationMinutes % 60
 
-  return `${hours > 9 ? hours : `0${hours}`}:${
-    minutes > 9 ? minutes : `0${minutes}`
-  }`
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
 }
 
 const getInitialOffererId = (
@@ -170,6 +168,18 @@ export const computeInitialValuesFromOffer = (
   const offerAddress = offer.location?.location
   const address = isVenueAddress ? venueAddress : offerAddress
 
+  const permanentOrSpecificDates = offer.dates ? 'specific_dates' : 'permanent'
+
+  const getDateType = isCollectiveOfferTemplate(offer)
+    ? permanentOrSpecificDates
+    : undefined
+
+  let contactFormType: OfferEducationalFormValues['contactFormType']
+
+  if (isCollectiveOfferTemplate(offer)) {
+    contactFormType = offer.contactUrl ? 'url' : 'form'
+  }
+
   return {
     title: offer.name,
     description: offer.description,
@@ -226,11 +236,6 @@ export const computeInitialValuesFromOffer = (
     'search-interventionArea': '',
     nationalProgramId: offer.nationalProgram?.id.toString() || '',
     isTemplate: Boolean(offer.isTemplate),
-    datesType: isCollectiveOfferTemplate(offer)
-      ? offer.dates
-        ? 'specific_dates'
-        : 'permanent'
-      : undefined,
     beginningDate:
       isCollectiveOfferTemplate(offer) && offer.dates
         ? formatShortDateForInput(toDateStrippedOfTimezone(offer.dates.start))
@@ -243,6 +248,7 @@ export const computeInitialValuesFromOffer = (
       isCollectiveOfferTemplate(offer) && offer.dates
         ? formatTimeForInput(toDateStrippedOfTimezone(offer.dates.start))
         : defaultEducationalFormValues.hour,
+    datesType: getDateType,
     formats: offer.formats,
     contactOptions: isCollectiveOfferTemplate(offer)
       ? {
@@ -255,11 +261,7 @@ export const computeInitialValuesFromOffer = (
           phone: false,
           form: false,
         },
-    contactFormType: isCollectiveOfferTemplate(offer)
-      ? offer.contactUrl
-        ? 'url'
-        : 'form'
-      : undefined,
+    contactFormType,
     contactUrl:
       isCollectiveOfferTemplate(offer) && offer.contactUrl
         ? offer.contactUrl

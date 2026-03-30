@@ -195,7 +195,7 @@ export const individualOfferContextValuesFactory = (
     hasPublishedOfferWithSameEan: false,
     subCategories: [],
     isEvent: null,
-    setIsEvent: () => {},
+    setIsControlledEvent: () => {},
     ...customIndividualOfferContextValues,
   }
 }

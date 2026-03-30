@@ -35,7 +35,7 @@ export const RowWithInfo = ({
       </Row>
       <div className={style['form-layout-row-info-info']}>
         <div className={style['form-layout-row-info-info-inner']}>
-          {sideComponent && sideComponent}
+          {sideComponent}
         </div>
       </div>
     </Row>

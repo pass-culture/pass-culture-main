@@ -19,32 +19,34 @@ export const Right = ({
   dirtyForm,
   mode,
 }: ActionsBarStickyRightProps): JSX.Element | null => {
+  const draftIndicator = dirtyForm ? (
+    <span className={style['draft-indicator']}>
+      <div className={style['draft-not-saved-icon']} />
+      Brouillon non enregistré
+    </span>
+  ) : (
+    <span className={style['draft-indicator']}>
+      <SvgIcon
+        src={fullValidateIcon}
+        alt=""
+        width="16"
+        className={style['draft-saved-icon']}
+      />
+      Brouillon enregistré
+    </span>
+  )
+
   return children ? (
     <div
       className={cn(style['right'], {
         [style['right-inverse']]: inverseWhenSmallerThanTablet,
       })}
     >
-      <div role="status">
-        {dirtyForm !== undefined && mode === Mode.CREATION ? (
-          !dirtyForm ? (
-            <span className={style['draft-indicator']}>
-              <SvgIcon
-                src={fullValidateIcon}
-                alt=""
-                width="16"
-                className={style['draft-saved-icon']}
-              />
-              Brouillon enregistré
-            </span>
-          ) : (
-            <span className={style['draft-indicator']}>
-              <div className={style['draft-not-saved-icon']} />
-              Brouillon non enregistré
-            </span>
-          )
-        ) : null}
-      </div>
+      <output>
+        {dirtyForm !== undefined && mode === Mode.CREATION
+          ? draftIndicator
+          : null}
+      </output>
       {children}
     </div>
   ) : null

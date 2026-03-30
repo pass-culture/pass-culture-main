@@ -35,7 +35,7 @@ export function OfferHighlightForm({
   offerId,
   onSuccess,
   highlightRequests,
-}: OfferHighlightFormProps): JSX.Element {
+}: Readonly<OfferHighlightFormProps>): JSX.Element {
   const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
   const { logEvent } = useAnalytics()
@@ -149,7 +149,7 @@ export function OfferHighlightForm({
                   const next = e.target.checked
                     ? [
                         ...new Set([...selectedHighlightIds, highlight.id]),
-                      ].sort()
+                      ].sort((a, b) => a - b)
                     : selectedHighlightIds.filter((id) => id !== highlight.id)
                   setValue('highlightIds', next, { shouldDirty: true })
                 },

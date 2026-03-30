@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react'
+import { createContext, useCallback, useContext, useMemo } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -45,7 +45,7 @@ type HeadlineOfferContextProviderProps = { children: React.ReactNode }
 
 export function HeadlineOfferContextProvider({
   children,
-}: HeadlineOfferContextProviderProps) {
+}: Readonly<HeadlineOfferContextProviderProps>) {
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
   const { mutate } = useSWRConfig()
   const snackBar = useSnackBar()
@@ -88,31 +88,31 @@ export function HeadlineOfferContextProvider({
   // by different means that didn't trigger a mutation (e.g. the offer has 0 stock, is deactivated).
   const headlineOffer = error ? null : (rawHeadlineOffer ?? null)
 
-  const upsertHeadlineOffer = async ({
-    offerId,
-    context,
-  }: UpsertHeadlineOfferParams) => {
-    try {
-      await mutate(
-        [GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, selectedOffererId],
-        api.upsertHeadlineOffer({ offerId }),
-        { populateCache: true, revalidate: false, throwOnError: true }
-      )
+  const upsertHeadlineOffer = useCallback(
+    async ({ offerId, context }: UpsertHeadlineOfferParams) => {
+      try {
+        await mutate(
+          [GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, selectedOffererId],
+          api.upsertHeadlineOffer({ offerId }),
+          { populateCache: true, revalidate: false, throwOnError: true }
+        )
 
-      snackBar.success('Votre offre a été mise à la une !')
-      logEvent(EngagementEvents.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
-        action: context.actionType,
-        requiredImageUpload: !!context.requiredImageUpload,
-        venueId: selectedPartnerVenue.id,
-      })
-    } catch {
-      snackBar.error(
-        'Une erreur s’est produite lors de l’ajout de votre offre à la une'
-      )
-    }
-  }
+        snackBar.success('Votre offre a été mise à la une !')
+        logEvent(EngagementEvents.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
+          action: context.actionType,
+          requiredImageUpload: !!context.requiredImageUpload,
+          venueId: selectedPartnerVenue.id,
+        })
+      } catch {
+        snackBar.error(
+          'Une erreur s’est produite lors de l’ajout de votre offre à la une'
+        )
+      }
+    },
+    [selectedOffererId, selectedPartnerVenue.id, snackBar, logEvent, mutate]
+  )
 
-  const removeHeadlineOffer = async () => {
+  const removeHeadlineOffer = useCallback(async () => {
     if (selectedOffererId) {
       try {
         await mutate(
@@ -136,16 +136,24 @@ export function HeadlineOfferContextProvider({
         )
       }
     }
-  }
+  }, [selectedOffererId, selectedPartnerVenue.id, snackBar, logEvent, mutate])
 
   return (
     <HeadlineOfferContext.Provider
-      value={{
-        headlineOffer,
-        upsertHeadlineOffer,
-        removeHeadlineOffer,
-        isHeadlineOfferAllowedForOfferer,
-      }}
+      value={useMemo(
+        () => ({
+          headlineOffer,
+          upsertHeadlineOffer,
+          removeHeadlineOffer,
+          isHeadlineOfferAllowedForOfferer,
+        }),
+        [
+          headlineOffer,
+          upsertHeadlineOffer,
+          removeHeadlineOffer,
+          isHeadlineOfferAllowedForOfferer,
+        ]
+      )}
     >
       {children}
     </HeadlineOfferContext.Provider>

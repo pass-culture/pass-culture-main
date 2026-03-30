@@ -26,6 +26,8 @@ import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/Adag
 
 import { Offers, type OffersProps } from './Offers'
 
+const mockRefinePagination = vi.fn()
+
 vi.mock('react-router', async () => ({
   ...(await vi.importActual('react-router')),
   useParams: () => ({
@@ -132,8 +134,6 @@ const otherFakeSearchResult = {
   __queryID: 'queryId',
   __position: 0,
 }
-
-const mockRefinePagination = vi.fn()
 
 const renderOffers = (
   props: OffersProps,
