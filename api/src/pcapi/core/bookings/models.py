@@ -83,6 +83,15 @@ class BookingStatus(enum.Enum):
     REIMBURSED = "REIMBURSED"
 
 
+class BookingRecapStatus(enum.Enum):
+    booked = "booked"
+    validated = "validated"
+    cancelled = "cancelled"
+    reimbursed = "reimbursed"
+    confirmed = "confirmed"
+    pending = "pending"
+
+
 class BookingEventType(enum.Enum):
     BOOKED = "booked"
     VALIDATED = "validated"

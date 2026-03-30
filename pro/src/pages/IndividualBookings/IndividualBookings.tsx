@@ -4,6 +4,7 @@ import { formatAndOrderAddresses } from 'repository/venuesService'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
+import type { BookingRecapStatus } from '@/apiClient/v1'
 import {
   GetOffererAddressesWithOffersOption,
   GetVenueAddressesWithOffersOption,
@@ -62,6 +63,9 @@ const buildOmniSearch = (filters: BookingsFilters): OmniSearchParams => {
   }
   if (filters.bookingToken && filters.bookingToken !== EMPTY_FILTER_VALUE) {
     result.bookingToken = filters.bookingToken.trim().toLowerCase()
+  }
+  if (filters.bookingStatus.length > 0) {
+    result.bookingStatus = filters.bookingStatus as BookingRecapStatus[]
   }
   return result
 }
@@ -164,7 +168,10 @@ export const IndividualBookings = () => {
   )
 
   const updateGlobalFilters = (updatedFilters: Partial<BookingsFilters>) => {
-    setFilters((prev) => ({ ...prev, ...updatedFilters }))
+    const newFilters = { ...filters, ...updatedFilters }
+    setFilters(newFilters)
+    setOmniSearchInput(buildOmniSearch(newFilters))
+    setPage(1)
   }
 
   const updateFilters = (

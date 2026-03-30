@@ -164,7 +164,6 @@ export {
   type BookingRecapResponseModel,
   type BookingRecapResponseStockModel,
   BookingRecapStatus,
-  BookingStatus,
   type BookingsExportQueryModel,
   BookingsExportStatusFilter,
   type CategoriesResponseModel,

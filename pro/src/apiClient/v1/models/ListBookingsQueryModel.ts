@@ -4,12 +4,12 @@
 /* eslint-disable */
 import type { BookingEventType } from './BookingEventType';
 import type { BookingExportType } from './BookingExportType';
-import type { BookingStatus } from './BookingStatus';
+import type { BookingRecapStatus } from './BookingRecapStatus';
 export type ListBookingsQueryModel = {
   beneficiaryNameOrEmail?: (string | null);
   bookingPeriodBeginningDate?: (string | null);
   bookingPeriodEndingDate?: (string | null);
-  bookingStatus?: (Array<BookingStatus> | null);
+  bookingStatus?: (Array<BookingRecapStatus> | null);
   bookingToken?: (string | null);
   eventDate?: (string | null);
   eventType?: (BookingEventType | null);
