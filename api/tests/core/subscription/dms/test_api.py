@@ -1368,9 +1368,6 @@ class RunIntegrationTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
     def test_phone_not_validated_create_beneficiary_with_phone_to_validate(self, get_applications_with_details):
-        """
-        Test that an imported user without a validated phone number, and the
-        """
         date_of_birth = self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S")
 
         # Create a user that has validated its email and phone number, meaning it
@@ -1416,7 +1413,10 @@ class RunIntegrationTest:
 
         assert not user.is_beneficiary
         assert not user.deposit
-        assert get_user_subscription_state(user).next_step == subscription_schemas.SubscriptionStep.PHONE_VALIDATION
+        assert (
+            get_user_subscription_state(user, phone_validation_state_enabled=True).next_step
+            == subscription_schemas.SubscriptionStep.PHONE_VALIDATION
+        )
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["template"]["id_prod"] == 679  # complete subscription
@@ -1430,13 +1430,12 @@ class RunIntegrationTest:
         date_of_birth = self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S")
         dms_validated_birth_date = datetime.date.today() - relativedelta(years=18)
 
-        # Create a user that has validated its email and phone number, meaning it
+        # Create a user that has validated its email, meaning it
         # should become beneficiary.
         user = users_factories.UserFactory(
             email=self.EMAIL,
             isEmailValidated=True,
             dateOfBirth=date_of_birth,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
 
@@ -1495,13 +1494,12 @@ class RunIntegrationTest:
     def test_import_makes_user_beneficiary_after_19_birthday(self, get_applications_with_details):
         date_of_birth = (date_utils.get_naive_utc_now() - relativedelta(years=19)).strftime("%Y-%m-%dT%H:%M:%S")
 
-        # Create a user that has validated its email and phone number, meaning it
+        # Create a user that has validated its email, meaning it
         # should become beneficiary.
         user = users_factories.UserFactory(
             email=self.EMAIL,
             isEmailValidated=True,
             dateOfBirth=date_of_birth,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
         get_applications_with_details.return_value = [
@@ -1713,9 +1711,7 @@ class RunIntegrationTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
     def test_dms_application_without_city_does_not_validate_profile(self, get_applications_with_details):
-        # instanciate user with validated phone number
         user = users_factories.UserFactory(
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             dateOfBirth=self.BENEFICIARY_BIRTH_DATE,
             city=None,
         )
@@ -1732,9 +1728,8 @@ class RunIntegrationTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
     def test_complete_dms_application_also_validates_profile(self, get_applications_with_details, client):
-        # instanciate user with validated phone number
+        # instanciate user
         user = users_factories.UserFactory(
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             dateOfBirth=self.BENEFICIARY_BIRTH_DATE,
             city=None,
         )
@@ -1789,7 +1784,6 @@ class GraphQLSourceProcessApplicationTest:
     def test_process_accepted_application_user_registered_at_18(self, get_applications_with_details):
         user = users_factories.UserFactory(
             dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
 
@@ -1869,7 +1863,6 @@ class GraphQLSourceProcessApplicationTest:
     def test_process_accepted_application_user_not_eligible(self, get_applications_with_details):
         user = users_factories.UserFactory(
             dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=19, months=4),
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
 
         get_applications_with_details.return_value = [

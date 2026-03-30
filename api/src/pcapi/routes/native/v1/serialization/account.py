@@ -22,8 +22,8 @@ from pcapi.core.users import young_status
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.native.v1.serialization import achievements as achievements_serialization
-from pcapi.routes.native.v1.serialization import subscription as subscription_serialization
 from pcapi.routes.native.v1.serialization.common_models import DeviceInfo
+from pcapi.routes.native.v2.serialization import subscription as subscription_serialization
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.routes.shared.price import convert_to_cent
