@@ -413,7 +413,9 @@ def update_venue_collective_data(
     return venue
 
 
-def upsert_venue_contact(venue: models.Venue, contact_data: offerers_schemas.VenueContactModel) -> models.Venue:
+def upsert_venue_contact(
+    venue: models.Venue, contact_data: offerers_schemas.VenueContactModel | offerers_schemas.VenueContactModelV2
+) -> models.Venue:
     """
     Create and attach a VenueContact to a Venue if it has none.
     Update (replace) an existing VenueContact otherwise.
