@@ -3,6 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
+import { OfferStatus } from '@/apiClient/v1'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
@@ -233,23 +234,35 @@ describe('<IndividualOfferLocationScreen />', () => {
         }
 
         beforeEach(async () => {
+          assert(offlineOfferWithPendingBookings.status === OfferStatus.ACTIVE)
+
           vi.spyOn(api, 'patchOffer').mockResolvedValue(
             offlineOfferWithPendingBookings
           )
+
+          assert(offlineOfferWithPendingBookings.status === OfferStatus.ACTIVE)
 
           renderIndividualOfferLocationScreen({
             props: { offer: offlineOfferWithPendingBookings },
           })
 
+          assert(offlineOfferWithPendingBookings.status === OfferStatus.ACTIVE)
+
           await userEvent.click(
             screen.getByRole('radio', { name: LABELS.options.otherAddress })
           )
+
+          assert(offlineOfferWithPendingBookings.status === OfferStatus.ACTIVE)
+
           await userEvent.type(
             screen.getByRole('textbox', {
               name: LABELS.fields.addressLocationLabel,
             }),
             'Etiquette de lieu modifié'
           )
+
+          assert(offlineOfferWithPendingBookings.status === OfferStatus.ACTIVE)
+
           await userEvent.click(
             screen.getByRole('button', { name: LABELS.buttons.saveAndGoBack })
           )
