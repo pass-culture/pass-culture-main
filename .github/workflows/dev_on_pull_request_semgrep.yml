@@ -16,4 +16,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Perform Semgrep Analysis
-        run: semgrep scan --config=p/security-audit --baseline-commit HEAD~
+        run: |
+          branch="$(git rev-parse --abbrev-ref HEAD)"
+          base_commit="$(git merge-base master "$branch")"
+          semgrep scan --config=p/security-audit --baseline-commit "$base_commit"
