@@ -78,6 +78,8 @@ describe('CollectiveOffersCard', () => {
       ],
     })
 
-    expect(await screen.findByText('offres vitrines')).toBeVisible()
+    expect(
+      await screen.findByRole('heading', { level: 2, name: 'offres vitrines' })
+    ).toBeVisible()
   })
 })
