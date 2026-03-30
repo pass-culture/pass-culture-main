@@ -472,7 +472,7 @@ def create_venue(
         setattr(venue, key, value)
 
     if venue_data.contact:
-        upsert_venue_contact(venue, venue_data.contact)
+        upsert_venue_contact(venue, offerers_schemas.VenueContactModel(**venue_data.contact.model_dump()))
 
     if settings.IS_INTEGRATION:
         # Always enable collective features for new venues in integration
