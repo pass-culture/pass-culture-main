@@ -41,16 +41,18 @@ logger = logging.getLogger(__name__)
 )
 @authenticated_and_active_user_required
 def get_subscription_stepper() -> serializers.SubscriptionStepperResponseV2:
-    user_subscription_state = subscription_api.get_user_subscription_state(current_user)
+    user_subscription_state = subscription_api.get_user_subscription_state(
+        current_user, phone_validation_state_enabled=True
+    )
     subscription_message = user_subscription_state.subscription_message
     stepper_header = subscription_messages.get_stepper_title_and_subtitle(current_user, user_subscription_state)
     subscription_steps_to_display = subscription_messages.get_subscription_steps_to_display(
-        current_user, user_subscription_state
+        current_user, user_subscription_state, phone_validation_step_enabled=True
     )
 
     return serializers.SubscriptionStepperResponseV2(
         subscription_steps_to_display=[
-            serializers.SubscriptionStepDetailsResponse(
+            serializers.SubscriptionStepDetailsResponseV2(
                 title=step.title,
                 subtitle=step.subtitle,
                 completion_state=step.completion_state,

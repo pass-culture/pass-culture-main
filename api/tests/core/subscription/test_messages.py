@@ -184,7 +184,6 @@ class StepperTest:
     def test_get_stepper_title_18_yo_retrying_ubble(self):
         user = users_factories.EligibleGrant18Factory(
             isEmailValidated=True,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -207,10 +206,14 @@ class StepperTest:
             subtitle=None,
         )
 
-    def test_get_subscription_steps_to_display_for_18yo_has_not_started(self):
+    def test_get_subscription_steps_to_display_for_18yo_has_not_started_with_phone_validation_step_enabled(self):
         user = users_factories.EligibleGrant18Factory()
 
-        steps = messages.get_subscription_steps_to_display(user, subscription_api.get_user_subscription_state(user))
+        steps = messages.get_subscription_steps_to_display(
+            user,
+            subscription_api.get_user_subscription_state(user, phone_validation_state_enabled=True),
+            phone_validation_step_enabled=True,
+        )
 
         assert steps == [
             self.get_step(
@@ -231,24 +234,42 @@ class StepperTest:
             ),
         ]
 
-    def test_get_subscription_steps_to_display_for_18yo_has_validated_phone(self):
+    def test_get_subscription_steps_to_display_for_18yo_has_validated_phone_with_phone_validation_step_enabled(self):
         user = users_factories.EligibleGrant18Factory(
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
         )
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            eligibilityType=users_models.EligibilityType.AGE18,
-            status=subscription_models.FraudCheckStatus.OK,
-            type=subscription_models.FraudCheckType.PHONE_VALIDATION,
-        )
 
-        steps = messages.get_subscription_steps_to_display(user, subscription_api.get_user_subscription_state(user))
+        steps = messages.get_subscription_steps_to_display(
+            user,
+            subscription_api.get_user_subscription_state(user, phone_validation_state_enabled=True),
+            phone_validation_step_enabled=True,
+        )
 
         assert steps == [
             self.get_step(
                 subscription_schemas.SubscriptionStep.PHONE_VALIDATION,
                 subscription_schemas.SubscriptionStepCompletionState.COMPLETED,
             ),
+            self.get_step(
+                subscription_schemas.SubscriptionStep.PROFILE_COMPLETION,
+                subscription_schemas.SubscriptionStepCompletionState.CURRENT,
+            ),
+            self.get_step(
+                subscription_schemas.SubscriptionStep.IDENTITY_CHECK,
+                subscription_schemas.SubscriptionStepCompletionState.DISABLED,
+            ),
+            self.get_step(
+                subscription_schemas.SubscriptionStep.HONOR_STATEMENT,
+                subscription_schemas.SubscriptionStepCompletionState.DISABLED,
+            ),
+        ]
+
+    def test_get_subscription_steps_to_display_for_18yo_has_not_started(self):
+        user = users_factories.EligibleGrant18Factory()
+
+        steps = messages.get_subscription_steps_to_display(user, subscription_api.get_user_subscription_state(user))
+
+        assert steps == [
             self.get_step(
                 subscription_schemas.SubscriptionStep.PROFILE_COMPLETION,
                 subscription_schemas.SubscriptionStepCompletionState.CURRENT,
@@ -264,15 +285,7 @@ class StepperTest:
         ]
 
     def test_get_subscription_steps_to_display_for_18yo_has_completed_profile(self):
-        user = users_factories.EligibleGrant18Factory(
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
-        )
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            eligibilityType=users_models.EligibilityType.AGE18,
-            status=subscription_models.FraudCheckStatus.OK,
-            type=subscription_models.FraudCheckType.PHONE_VALIDATION,
-        )
+        user = users_factories.EligibleGrant18Factory()
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.AGE18,
@@ -283,10 +296,6 @@ class StepperTest:
         steps = messages.get_subscription_steps_to_display(user, subscription_api.get_user_subscription_state(user))
 
         assert steps == [
-            self.get_step(
-                subscription_schemas.SubscriptionStep.PHONE_VALIDATION,
-                subscription_schemas.SubscriptionStepCompletionState.COMPLETED,
-            ),
             self.get_step(
                 subscription_schemas.SubscriptionStep.PROFILE_COMPLETION,
                 subscription_schemas.SubscriptionStepCompletionState.COMPLETED,
@@ -302,15 +311,7 @@ class StepperTest:
         ]
 
     def test_get_subscription_steps_to_display_for_18yo_has_ubble_issue(self):
-        user = users_factories.EligibleGrant18Factory(
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
-        )
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            eligibilityType=users_models.EligibilityType.AGE18,
-            status=subscription_models.FraudCheckStatus.OK,
-            type=subscription_models.FraudCheckType.PHONE_VALIDATION,
-        )
+        user = users_factories.EligibleGrant18Factory()
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.AGE18,
@@ -329,10 +330,6 @@ class StepperTest:
 
         assert steps == [
             self.get_step(
-                subscription_schemas.SubscriptionStep.PHONE_VALIDATION,
-                subscription_schemas.SubscriptionStepCompletionState.COMPLETED,
-            ),
-            self.get_step(
                 subscription_schemas.SubscriptionStep.PROFILE_COMPLETION,
                 subscription_schemas.SubscriptionStepCompletionState.COMPLETED,
             ),
@@ -348,15 +345,7 @@ class StepperTest:
         ]
 
     def test_get_subscription_steps_to_display_for_18yo_has_completed_id_check(self):
-        user = users_factories.EligibleGrant18Factory(
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
-        )
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            eligibilityType=users_models.EligibilityType.AGE18,
-            status=subscription_models.FraudCheckStatus.OK,
-            type=subscription_models.FraudCheckType.PHONE_VALIDATION,
-        )
+        user = users_factories.EligibleGrant18Factory()
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.AGE18,
@@ -374,10 +363,6 @@ class StepperTest:
 
         assert steps == [
             self.get_step(
-                subscription_schemas.SubscriptionStep.PHONE_VALIDATION,
-                subscription_schemas.SubscriptionStepCompletionState.COMPLETED,
-            ),
-            self.get_step(
                 subscription_schemas.SubscriptionStep.PROFILE_COMPLETION,
                 subscription_schemas.SubscriptionStepCompletionState.COMPLETED,
             ),
@@ -392,15 +377,7 @@ class StepperTest:
         ]
 
     def test_get_subscription_steps_to_display_for_18yo_has_completed_everything(self):
-        user = users_factories.EligibleGrant18Factory(
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
-        )
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            eligibilityType=users_models.EligibilityType.AGE18,
-            status=subscription_models.FraudCheckStatus.OK,
-            type=subscription_models.FraudCheckType.PHONE_VALIDATION,
-        )
+        user = users_factories.EligibleGrant18Factory()
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.AGE18,
@@ -423,10 +400,6 @@ class StepperTest:
         steps = messages.get_subscription_steps_to_display(user, subscription_api.get_user_subscription_state(user))
 
         assert steps == [
-            self.get_step(
-                subscription_schemas.SubscriptionStep.PHONE_VALIDATION,
-                subscription_schemas.SubscriptionStepCompletionState.COMPLETED,
-            ),
             self.get_step(
                 subscription_schemas.SubscriptionStep.PROFILE_COMPLETION,
                 subscription_schemas.SubscriptionStepCompletionState.COMPLETED,
@@ -452,12 +425,8 @@ class StepperTest:
 
         assert steps == [
             self.get_step(
-                subscription_schemas.SubscriptionStep.PHONE_VALIDATION,
-                subscription_schemas.SubscriptionStepCompletionState.CURRENT,
-            ),
-            self.get_step(
                 subscription_schemas.SubscriptionStep.PROFILE_COMPLETION,
-                subscription_schemas.SubscriptionStepCompletionState.DISABLED,
+                subscription_schemas.SubscriptionStepCompletionState.CURRENT,
                 subtitle=subscription_schemas.PROFILE_COMPLETION_STEP_EXISTING_DATA_SUBTITLE,
             ),
             self.get_step(

@@ -200,7 +200,9 @@ class BannerTest:
         assert user.age == 18
 
         client.with_token(user)
-        with assert_num_queries(self.expected_num_queries_without_subscription_check):
+        # beneficiary_fraud_check + 1
+        # action_history + 1
+        with assert_num_queries(self.expected_num_queries_without_subscription_check + 1 + 1):
             response = client.get("/native/v1/banner")
             assert response.status_code == 200
 

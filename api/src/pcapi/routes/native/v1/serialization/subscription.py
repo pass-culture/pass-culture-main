@@ -33,7 +33,7 @@ class SubscriptionMessageV2(HttpBodyModel):
     )
 
 
-class SubscriptionStepDetailsResponse(HttpBodyModel):
+class SubscriptionStepDetailsResponseV2(HttpBodyModel):
     name: subscription_schemas.SubscriptionStep
     title: subscription_schemas.SubscriptionStepTitle
     subtitle: str | None = None
@@ -45,7 +45,7 @@ class SubscriptionStepDetailsResponse(HttpBodyModel):
 
 
 class SubscriptionStepperResponseV2(HttpBodyModel):
-    subscription_steps_to_display: list[SubscriptionStepDetailsResponse]
+    subscription_steps_to_display: list[SubscriptionStepDetailsResponseV2]
     allowed_identity_check_methods: list[subscription_schemas.IdentityCheckMethod]
     has_identity_check_pending: bool
     maintenance_page_type: subscription_schemas.MaintenancePageType | None = None

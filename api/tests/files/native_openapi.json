@@ -2174,6 +2174,48 @@
                 "title": "CallToActionMessageV2",
                 "type": "object"
             },
+            "CallToActionMessageV3": {
+                "additionalProperties": false,
+                "properties": {
+                    "callToActionIcon": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/CallToActionIcon"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null
+                    },
+                    "callToActionLink": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Calltoactionlink"
+                    },
+                    "callToActionTitle": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Calltoactiontitle"
+                    }
+                },
+                "title": "CallToActionMessageV3",
+                "type": "object"
+            },
             "CategoriesResponseModel": {
                 "additionalProperties": false,
                 "properties": {
@@ -7521,6 +7563,67 @@
                 "title": "SubscriptionMessageV2",
                 "type": "object"
             },
+            "SubscriptionMessageV3": {
+                "additionalProperties": false,
+                "properties": {
+                    "callToAction": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/CallToActionMessageV3"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null
+                    },
+                    "messageSummary": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Messagesummary"
+                    },
+                    "popOverIcon": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/PopOverIcon"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null
+                    },
+                    "updatedAt": {
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Updatedat"
+                    },
+                    "userMessage": {
+                        "title": "Usermessage",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "userMessage"
+                ],
+                "title": "SubscriptionMessageV3",
+                "type": "object"
+            },
             "SubscriptionStatus": {
                 "enum": [
                     "has_to_complete_subscription",
@@ -7552,7 +7655,7 @@
                 "title": "SubscriptionStepCompletionState",
                 "type": "string"
             },
-            "SubscriptionStepDetailsResponse": {
+            "SubscriptionStepDetailsResponseV2": {
                 "additionalProperties": false,
                 "properties": {
                     "completionState": {
@@ -7582,7 +7685,40 @@
                     "title",
                     "completionState"
                 ],
-                "title": "SubscriptionStepDetailsResponse",
+                "title": "SubscriptionStepDetailsResponseV2",
+                "type": "object"
+            },
+            "SubscriptionStepDetailsResponseV3": {
+                "additionalProperties": false,
+                "properties": {
+                    "completionState": {
+                        "$ref": "#/components/schemas/SubscriptionStepCompletionState"
+                    },
+                    "name": {
+                        "$ref": "#/components/schemas/SubscriptionStep"
+                    },
+                    "subtitle": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Subtitle"
+                    },
+                    "title": {
+                        "$ref": "#/components/schemas/SubscriptionStepTitle"
+                    }
+                },
+                "required": [
+                    "name",
+                    "title",
+                    "completionState"
+                ],
+                "title": "SubscriptionStepDetailsResponseV3",
                 "type": "object"
             },
             "SubscriptionStepTitle": {
@@ -7644,7 +7780,7 @@
                     },
                     "subscriptionStepsToDisplay": {
                         "items": {
-                            "$ref": "#/components/schemas/SubscriptionStepDetailsResponse"
+                            "$ref": "#/components/schemas/SubscriptionStepDetailsResponseV2"
                         },
                         "title": "Subscriptionstepstodisplay",
                         "type": "array"
@@ -7673,6 +7809,86 @@
                     "title"
                 ],
                 "title": "SubscriptionStepperResponseV2",
+                "type": "object"
+            },
+            "SubscriptionStepperResponseV3": {
+                "additionalProperties": false,
+                "properties": {
+                    "allowedIdentityCheckMethods": {
+                        "items": {
+                            "$ref": "#/components/schemas/IdentityCheckMethod"
+                        },
+                        "title": "Allowedidentitycheckmethods",
+                        "type": "array"
+                    },
+                    "hasIdentityCheckPending": {
+                        "title": "Hasidentitycheckpending",
+                        "type": "boolean"
+                    },
+                    "maintenancePageType": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/MaintenancePageType"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null
+                    },
+                    "nextSubscriptionStep": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/SubscriptionStep"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null
+                    },
+                    "subscriptionMessage": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/SubscriptionMessageV3"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null
+                    },
+                    "subscriptionStepsToDisplay": {
+                        "items": {
+                            "$ref": "#/components/schemas/SubscriptionStepDetailsResponseV3"
+                        },
+                        "title": "Subscriptionstepstodisplay",
+                        "type": "array"
+                    },
+                    "subtitle": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Subtitle"
+                    },
+                    "title": {
+                        "title": "Title",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "subscriptionStepsToDisplay",
+                    "allowedIdentityCheckMethods",
+                    "hasIdentityCheckPending",
+                    "title"
+                ],
+                "title": "SubscriptionStepperResponseV3",
                 "type": "object"
             },
             "SuspendAccountForSuspiciousLoginRequest": {
@@ -13123,6 +13339,45 @@
                     }
                 },
                 "summary": "get_offer_v3 <GET>",
+                "tags": []
+            }
+        },
+        "/native/v3/subscription/stepper": {
+            "get": {
+                "description": "",
+                "operationId": "get__native_v3_subscription_stepper",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SubscriptionStepperResponseV3"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "get_subscription_stepper <GET>",
                 "tags": []
             }
         }

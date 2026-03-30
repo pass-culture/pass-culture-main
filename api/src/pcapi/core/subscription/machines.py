@@ -220,7 +220,7 @@ class FreeSubscriptionStateMachine(SubscriptionStateMachineTemplate):
         )
 
 
-class UnderageSubscriptionStateMachine(SubscriptionStateMachineTemplate):
+class DefaultSubscriptionStateMachine(SubscriptionStateMachineTemplate):
     excluded_states = [SubscriptionStates.PHONE_VALIDATION, SubscriptionStates.FAILED_PHONE_VALIDATION]
 
     def __init__(self, user: users_models.User):
@@ -229,7 +229,7 @@ class UnderageSubscriptionStateMachine(SubscriptionStateMachineTemplate):
         self.machine = transitions.Machine(
             model=self,
             states=[
-                state for state in SubscriptionStates if state not in UnderageSubscriptionStateMachine.excluded_states
+                state for state in SubscriptionStates if state not in DefaultSubscriptionStateMachine.excluded_states
             ],
             initial=SubscriptionStates.EMAIL_VALIDATION,
             model_override=True,
@@ -324,10 +324,11 @@ class UnderageSubscriptionStateMachine(SubscriptionStateMachineTemplate):
             SubscriptionStates.HONOR_STATEMENT,
             SubscriptionStates.SUBSCRIPTION_COMPLETED_BUT_NOT_BENEFICIARY_YET,
             conditions=["has_completed_honor_statement", "is_identity_check_ok"],
+            unless="requires_manual_review_before_activation",
         )
 
 
-class EighteenSubscriptionStateMachine(SubscriptionStateMachineTemplate):
+class WithPhoneValidationSubscriptionStateMachine(SubscriptionStateMachineTemplate):
     def __init__(self, user: users_models.User):
         super().__init__(user)
 
@@ -442,15 +443,21 @@ class EighteenSubscriptionStateMachine(SubscriptionStateMachineTemplate):
         )
 
 
-def create_state_machine_to_current_state(user: users_models.User) -> SubscriptionStateMachineTemplate:
-    state_machine = _create_user_relevant_state_machine(user)
+def create_state_machine_to_current_state(
+    user: users_models.User, phone_validation_state_enabled: bool = False
+) -> SubscriptionStateMachineTemplate:
+    state_machine = _create_user_relevant_state_machine(user, phone_validation_state_enabled)
     state_machine.proceed_to_current_state()
     return state_machine
 
 
-def _create_user_relevant_state_machine(user: users_models.User) -> SubscriptionStateMachineTemplate:
+def _create_user_relevant_state_machine(
+    user: users_models.User, phone_validation_state_enabled: bool
+) -> SubscriptionStateMachineTemplate:
     if user.is_18_or_above_eligible:
-        return EighteenSubscriptionStateMachine(user)
+        if phone_validation_state_enabled:
+            return WithPhoneValidationSubscriptionStateMachine(user)
+        return DefaultSubscriptionStateMachine(user)
     if user.is_underage_eligible:
-        return UnderageSubscriptionStateMachine(user)
+        return DefaultSubscriptionStateMachine(user)
     return FreeSubscriptionStateMachine(user)

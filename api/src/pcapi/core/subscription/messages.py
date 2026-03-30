@@ -104,22 +104,25 @@ def get_subscription_message(
 
 
 def get_subscription_steps_to_display(
-    user: users_models.User, user_subscription_state: subscription_schemas.UserSubscriptionState
+    user: users_models.User,
+    user_subscription_state: subscription_schemas.UserSubscriptionState,
+    phone_validation_step_enabled: bool = False,
 ) -> list[subscription_schemas.SubscriptionStepDetails]:
     """
     return the list of steps to complete to subscribe to the pass Culture
     the steps are ordered
     """
-    ordered_steps = _get_ordered_steps(user)
+    ordered_steps = _get_ordered_steps(user, phone_validation_step_enabled)
     return _get_steps_details(user, ordered_steps, user_subscription_state)
 
 
-def _get_ordered_steps(user: users_models.User) -> list[subscription_schemas.SubscriptionStep]:
+def _get_ordered_steps(
+    user: users_models.User, phone_validation_step_enabled: bool
+) -> list[subscription_schemas.SubscriptionStep]:
     from pcapi.core.subscription.api import requires_identity_check_step
 
     ordered_steps = []
-    should_fill_phone = user.is_18_or_above_eligible
-    if should_fill_phone:
+    if phone_validation_step_enabled and user.is_18_or_above_eligible:
         ordered_steps.append(subscription_schemas.SubscriptionStep.PHONE_VALIDATION)
     ordered_steps.append(subscription_schemas.SubscriptionStep.PROFILE_COMPLETION)
     if requires_identity_check_step(user):

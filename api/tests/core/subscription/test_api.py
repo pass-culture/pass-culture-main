@@ -224,7 +224,6 @@ class NextSubscriptionStepTest:
                 age=17,
                 city="Zanzibar",
                 activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
-                phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             )
             subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
             subscription_factories.BeneficiaryFraudCheckFactory(
@@ -243,7 +242,34 @@ class NextSubscriptionStepTest:
 
             assert next_step is None
 
-        def test_eighteen_year_old_subscription_finished(self):
+        def test_next_subscription_step_subscription_18_finished(self):
+            user = users_factories.UserFactory(
+                age=18,
+                address="3 rue du quai",
+                activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
+            )
+            subscription_factories.ProfileCompletionFraudCheckFactory(
+                user=user, eligibilityType=users_models.EligibilityType.AGE17_18
+            )
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                type=subscription_models.FraudCheckType.UBBLE,
+                status=subscription_models.FraudCheckStatus.PENDING,
+                eligibilityType=users_models.EligibilityType.AGE17_18,
+            )
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+                resultContent=None,
+                user=user,
+                status=subscription_models.FraudCheckStatus.OK,
+                eligibilityType=users_models.EligibilityType.AGE17_18,
+            )
+
+            next_step = subscription_api.get_user_subscription_state(user).next_step
+
+            assert next_step is None
+
+        def test_next_subscription_step_with_phone_validation_subscription_18_finished(self):
             user = users_factories.UserFactory(
                 age=18,
                 phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
@@ -267,7 +293,9 @@ class NextSubscriptionStepTest:
                 eligibilityType=users_models.EligibilityType.AGE17_18,
             )
 
-            next_step = subscription_api.get_user_subscription_state(user).next_step
+            next_step = subscription_api.get_user_subscription_state(
+                user, phone_validation_state_enabled=True
+            ).next_step
 
             assert next_step is None
 
@@ -296,12 +324,6 @@ class NextSubscriptionStepTest:
             assert user.is_beneficiary
 
             with time_machine.travel(datetime.now() + relativedelta(years=1)):
-                next_step = subscription_api.get_user_subscription_state(user).next_step
-                assert next_step == subscription_schemas.SubscriptionStep.PHONE_VALIDATION
-
-                subscription_factories.PhoneValidationFraudCheckFactory(user=user)
-                user.phoneNumber = "+33606060606"
-
                 subscription_api.activate_beneficiary_if_no_missing_step(user)  # should not activate yet
                 next_step = subscription_api.get_user_subscription_state(user).next_step
                 assert next_step == subscription_schemas.SubscriptionStep.PROFILE_COMPLETION
@@ -345,11 +367,6 @@ class NextSubscriptionStepTest:
 
             # They should be able to finish the subscription steps
             assert user.age == 18
-            next_step = subscription_api.get_user_subscription_state(user).next_step
-            assert next_step == subscription_schemas.SubscriptionStep.PHONE_VALIDATION
-
-            subscription_factories.PhoneValidationFraudCheckFactory(user=user)
-            user.phoneNumber = "+33606060606"
 
             subscription_api.activate_beneficiary_if_no_missing_step(user)  # should not activate yet
             next_step = subscription_api.get_user_subscription_state(user).next_step
@@ -395,11 +412,6 @@ class NextSubscriptionStepTest:
             with time_machine.travel(datetime.now() + relativedelta(years=1)):
                 # They should be able to finish the subscription steps
                 assert user.age == 18
-                next_step = subscription_api.get_user_subscription_state(user).next_step
-                assert next_step == subscription_schemas.SubscriptionStep.PHONE_VALIDATION
-
-                subscription_factories.PhoneValidationFraudCheckFactory(user=user)
-                user.phoneNumber = "+33606060606"
 
                 subscription_api.activate_beneficiary_if_no_missing_step(user)  # should not activate yet
                 next_step = subscription_api.get_user_subscription_state(user).next_step
@@ -422,17 +434,26 @@ class NextSubscriptionStepTest:
                 assert user.is_beneficiary
 
     class NextStepPhoneValidationTest:
-        def test_next_subscription_step_phone_validation(self):
+        def test_next_step_phone_validation_for_18_with_phone_validation_step_enabled(self):
             user = users_factories.UserFactory(age=18)
             assert (
-                subscription_api.get_user_subscription_state(user).next_step
+                subscription_api.get_user_subscription_state(user, phone_validation_state_enabled=True).next_step
                 == subscription_schemas.SubscriptionStep.PHONE_VALIDATION
+            )
+
+        def test_no_phone_validation_step_for_18_if_phone_validation_step_disabled(self):
+            user = users_factories.UserFactory(age=18)
+            assert (
+                subscription_api.get_user_subscription_state(user, phone_validation_state_enabled=False).next_step
+                != subscription_schemas.SubscriptionStep.PHONE_VALIDATION
             )
 
         def test_no_phone_validation_step_for_underage(self):
             user = users_factories.UserFactory(age=17)
 
-            next_step = subscription_api.get_user_subscription_state(user).next_step
+            next_step = subscription_api.get_user_subscription_state(
+                user, phone_validation_state_enabled=True
+            ).next_step
 
             assert next_step != subscription_schemas.SubscriptionStep.PHONE_VALIDATION
 
@@ -440,7 +461,9 @@ class NextSubscriptionStepTest:
             user = users_factories.UserFactory(
                 age=18, phoneValidationStatus=users_models.PhoneValidationStatusType.SKIPPED_BY_SUPPORT
             )
-            assert subscription_api.get_user_subscription_state(user).next_step in (
+            assert subscription_api.get_user_subscription_state(
+                user, phone_validation_state_enabled=True
+            ).next_step in (
                 subscription_schemas.SubscriptionStep.PROFILE_COMPLETION,
                 subscription_schemas.SubscriptionStep.IDENTITY_CHECK,
                 subscription_schemas.SubscriptionStep.HONOR_STATEMENT,
@@ -456,13 +479,13 @@ class NextSubscriptionStepTest:
                     status=subscription_models.FraudCheckStatus.KO,
                 )
             assert (
-                subscription_api.get_user_subscription_state(user).next_step
+                subscription_api.get_user_subscription_state(user, phone_validation_state_enabled=True).next_step
                 == subscription_schemas.SubscriptionStep.PHONE_VALIDATION
             )
 
         @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME + relativedelta(years=2))
         @pytest.mark.parametrize("age", [19, 20])
-        def test_step_phone_validation_for_old_user_that_registered_at_18(self, age):
+        def test_next_step_phone_validation_for_old_user_that_registered_at_18(self, age):
             birth_date = date.today() - relativedelta(years=age, months=1)
             user = users_factories.UserFactory(dateOfBirth=birth_date)
             date_when_user_was_eighteen = birth_date + relativedelta(years=18, months=1)
@@ -473,11 +496,20 @@ class NextSubscriptionStepTest:
                 dateCreated=date_when_user_was_eighteen,
             )
 
-            next_step = subscription_api.get_user_subscription_state(user).next_step
+            next_step = subscription_api.get_user_subscription_state(
+                user, phone_validation_state_enabled=True
+            ).next_step
 
             assert next_step == subscription_schemas.SubscriptionStep.PHONE_VALIDATION
 
     class NextStepProfileCompletionTest:
+        def test_next_subscription_step_free_profile_completion(self):
+            user = users_factories.UserFactory(age=16, city=None)
+            assert (
+                subscription_api.get_user_subscription_state(user).next_step
+                == subscription_schemas.SubscriptionStep.PROFILE_COMPLETION
+            )
+
         def test_next_subscription_step_underage_profile_completion(self):
             user = users_factories.UserFactory(age=17, city=None)
             assert (
@@ -486,6 +518,22 @@ class NextSubscriptionStepTest:
             )
 
         def test_next_subscription_step_18_profile_completion(self):
+            user = users_factories.UserFactory(age=18, city=None)
+            year_when_user_was_seventeen = date_utils.get_naive_utc_now() - relativedelta(years=1, months=1)
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+                status=subscription_models.FraudCheckStatus.OK,
+                eligibilityType=users_models.EligibilityType.AGE17_18,
+                resultContent=subscription_factories.ProfileCompletionContentFactory(),
+                dateCreated=year_when_user_was_seventeen,
+            )
+
+            next_step = subscription_api.get_user_subscription_state(user).next_step
+
+            assert next_step == subscription_schemas.SubscriptionStep.PROFILE_COMPLETION
+
+        def test_next_subscription_step_18_profile_completion_with_phone_validation_step_enabled(self):
             user = users_factories.UserFactory(
                 age=18, phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED, city=None
             )
@@ -499,7 +547,9 @@ class NextSubscriptionStepTest:
                 dateCreated=year_when_user_was_seventeen,
             )
 
-            next_step = subscription_api.get_user_subscription_state(user).next_step
+            next_step = subscription_api.get_user_subscription_state(
+                user, phone_validation_state_enabled=True
+            ).next_step
 
             assert next_step == subscription_schemas.SubscriptionStep.PROFILE_COMPLETION
 
@@ -1187,7 +1237,7 @@ class NeedsToPerformeIdentityCheckTest:
 
         assert (
             subscription_api.get_user_subscription_state(user).next_step
-            == subscription_schemas.SubscriptionStep.PHONE_VALIDATION
+            != subscription_schemas.SubscriptionStep.IDENTITY_CHECK
         )
 
     def test_ubble_underage_eligible_18_does_not_need_to_redo(self):
@@ -1335,12 +1385,6 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         )
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=subscription_models.FraudCheckType.PHONE_VALIDATION,
-            status=subscription_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.AGE18,
-        )
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
             type=subscription_models.FraudCheckType.HONOR_STATEMENT,
             status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE18,
@@ -1374,12 +1418,6 @@ class ActivateBeneficiaryIfNoMissingStepTest:
             status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE18,
             resultContent=None,
-        )
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=subscription_models.FraudCheckType.PHONE_VALIDATION,
-            status=subscription_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.AGE18,
         )
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -1420,12 +1458,6 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         )
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=subscription_models.FraudCheckType.PHONE_VALIDATION,
-            status=subscription_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.AGE18,
-        )
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
             type=subscription_models.FraudCheckType.HONOR_STATEMENT,
             status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE18,
@@ -1454,12 +1486,6 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=subscription_models.FraudCheckType.UBBLE,
-            status=subscription_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.AGE18,
-        )
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=subscription_models.FraudCheckType.PHONE_VALIDATION,
             status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
@@ -1497,12 +1523,6 @@ class ActivateBeneficiaryIfNoMissingStepTest:
             resultContent=subscription_factories.UbbleContentFactory(
                 first_name=first_name, last_name=last_name, birth_date=birth_date.date().isoformat()
             ),
-            eligibilityType=users_models.EligibilityType.AGE18,
-        )
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=subscription_models.FraudCheckType.PHONE_VALIDATION,
-            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
         subscription_factories.BeneficiaryFraudCheckFactory(
@@ -1630,12 +1650,6 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         )
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=subscription_models.FraudCheckType.PHONE_VALIDATION,
-            status=subscription_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.AGE18,
-        )
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
             type=subscription_models.FraudCheckType.HONOR_STATEMENT,
             status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE18,
@@ -1678,12 +1692,6 @@ class ActivateBeneficiaryIfNoMissingStepTest:
                 last_name=identity_lastname,
                 birth_date=identity_birth_date.isoformat(),
             ),
-        )
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=subscription_models.FraudCheckType.PHONE_VALIDATION,
-            status=subscription_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.AGE18,
         )
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
