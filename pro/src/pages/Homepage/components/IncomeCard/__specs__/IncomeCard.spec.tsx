@@ -3,6 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
 import { SimplifiedBankAccountStatus } from '@/apiClient/v1'
+import { CancelablePromise } from '@/apiClient/v1/core/CancelablePromise'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import * as useIsCaledonian from '@/commons/hooks/useIsCaledonian'
@@ -54,6 +55,16 @@ describe('IncomeCard', () => {
   beforeEach(() => {
     vi.spyOn(useIsCaledonian, 'useIsCaledonian').mockReturnValue(false)
     vi.spyOn(api, 'getStatistics').mockResolvedValue(MOCK_STATISTICS)
+  })
+
+  it('should display a skeleton while income data is loading', () => {
+    vi.spyOn(api, 'getStatistics').mockReturnValue(
+      new CancelablePromise(() => {})
+    )
+
+    renderIncomeCard()
+
+    expect(screen.getByTestId('skeleton')).toBeVisible()
   })
 
   it('should display an error banner when the API call fails', async () => {
