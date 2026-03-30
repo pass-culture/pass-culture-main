@@ -1,30 +1,30 @@
-import type {
-  CollectiveOfferHomeResponseModel,
-  CollectiveOfferTemplateHomeResponseModel,
-} from '@/apiClient/v1/new'
 import { Skeleton } from '@/ui-kit/Skeleton/Skeleton'
 
+import { CollectiveOffersBookableCard } from '../CollectiveOffersBookableCard/CollectiveOffersBookableCard'
 import { OffersEmptyStateCard } from '../OffersEmptyStateCard/OffersEmptyStateCard'
 import { OffersRetentionCard } from '../OffersRetentionCard/OffersRetentionCard'
-import { CollectiveOffersCardVariant, OffersCardVariant } from '../types'
+import {
+  CollectiveOffersCardVariant,
+  type CollectiveOffersVariantMap,
+  OffersCardVariant,
+} from '../types'
 
-type OffersHomeResponseModel =
-  | CollectiveOfferHomeResponseModel[]
-  | CollectiveOfferTemplateHomeResponseModel[]
-
-type CollectiveOffersCardConfig = {
+type CollectiveOffersCardConfig<T> = {
   emptyStateVariant: OffersCardVariant
-  renderOffers: (offers: OffersHomeResponseModel) => React.ReactNode
+  renderOffers: (offers: T) => React.ReactNode
 }
 
-const COLLECTIVE_OFFERS_CARD_CONFIG: Record<
-  CollectiveOffersCardVariant,
-  CollectiveOffersCardConfig
-> = {
+type CollectiveOffersCardConfigs = {
+  [K in CollectiveOffersCardVariant]: CollectiveOffersCardConfig<
+    CollectiveOffersVariantMap[K][]
+  >
+}
+
+const COLLECTIVE_OFFERS_CARD_CONFIG: CollectiveOffersCardConfigs = {
   [CollectiveOffersCardVariant.BOOKABLE]: {
     emptyStateVariant: OffersCardVariant.BOOKABLE,
     // TODO (ahello - 26/03/25) implement component in https://passculture.atlassian.net/browse/PC-40063
-    renderOffers: (_offers) => <h2>offres réservables</h2>,
+    renderOffers: (offers) => <CollectiveOffersBookableCard offers={offers} />,
   },
   [CollectiveOffersCardVariant.TEMPLATE]: {
     emptyStateVariant: OffersCardVariant.TEMPLATE,
@@ -33,21 +33,19 @@ const COLLECTIVE_OFFERS_CARD_CONFIG: Record<
   },
 }
 
-interface CollectiveOffersCardProps {
-  variant: CollectiveOffersCardVariant
-  offersToDisplay:
-    | CollectiveOfferHomeResponseModel[]
-    | CollectiveOfferTemplateHomeResponseModel[]
+interface CollectiveOffersCardProps<T extends CollectiveOffersCardVariant> {
+  variant: T
+  offersToDisplay: CollectiveOffersVariantMap[T][]
   hasOffers: boolean
   isLoading: boolean
 }
 
-export const CollectiveOffersCard = ({
+export const CollectiveOffersCard = <K extends CollectiveOffersCardVariant>({
   variant,
   offersToDisplay,
   hasOffers,
   isLoading,
-}: CollectiveOffersCardProps) => {
+}: CollectiveOffersCardProps<K>) => {
   const { emptyStateVariant, renderOffers } =
     COLLECTIVE_OFFERS_CARD_CONFIG[variant]
 

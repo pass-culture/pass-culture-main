@@ -1,0 +1,5 @@
+.offer-list {
+  display: grid;
+  grid-template-columns: max-content 1fr auto max-content;
+  gap: var(--size-spacing-l);
+}
