@@ -61,6 +61,7 @@ class ParseBeneficiaryInformationTest:
         assert content.procedure_number == settings.DMS_ENROLLMENT_PROCEDURE_ID_FR
         assert content.department is None
         assert content.birth_date == date(2004, 12, 19)
+        assert content.birth_place == "Paris"
         assert content.phone == "0601010101"
         assert content.postal_code == "92700"
         assert content.activity == "Employé"
@@ -78,6 +79,7 @@ class ParseBeneficiaryInformationTest:
         assert content.procedure_number == settings.DMS_ENROLLMENT_PROCEDURE_ID_ET
         assert content.department is None
         assert content.birth_date == date(2006, 5, 12)
+        assert content.birth_place == "Berlin"
         assert content.phone == "0601010101"
         assert content.postal_code == "92700"
         assert content.activity == "Employé"
@@ -101,6 +103,7 @@ class ParseBeneficiaryInformationTest:
         assert content.procedure_number == settings.DMS_ENROLLMENT_PROCEDURE_ID_ET
         assert content.department is None
         assert content.birth_date == date(2006, 5, 12)
+        assert content.birth_place == "Berlin"
         assert content.phone == "0601010101"
         assert content.postal_code == "92700"
         assert content.activity == "Employé"
@@ -169,6 +172,25 @@ class ParseBeneficiaryInformationTest:
                 "id_piece_number": "numéro de la pièce ?",
                 "postal_code": "code postal ?",
                 "phone_number": "numéro de téléphone ?",
+            },
+        )
+
+        base_content = dms_serializer.parse_beneficiary_information_graphql(
+            dms_models.DmsApplicationResponse(**base_raw_data)
+        )
+        labels_edited_content = dms_serializer.parse_beneficiary_information_graphql(
+            dms_models.DmsApplicationResponse(**labels_edited_raw_data)
+        )
+
+        assert base_content == labels_edited_content
+
+    def test_serializer_is_backward_compatible(self):
+        base_raw_data = fixtures.make_graphql_application(1, "accepte")
+        labels_edited_raw_data = fixtures.make_graphql_application(
+            1,
+            "accepte",
+            labels={
+                "birth_place": "Quel est ton lieu de naissance ?",
             },
         )
 

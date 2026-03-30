@@ -112,7 +112,10 @@ def parse_beneficiary_information_graphql(
                 )
                 logger.error("Could not parse birth date %s for DMS application %s", value, application_number)
 
-        elif dms_models.FieldLabelKeyword.BIRTH_PLACE.value in label:
+        elif (
+            dms_models.FieldLabelKeyword.BIRTH_PLACE.value in label
+            or dms_models.FieldLabelKeyword.BIRTH_CITY.value in label
+        ):
             birth_place = value
 
         elif dms_models.FieldLabelKeyword.ID_PIECE_NUMBER.value in label:
