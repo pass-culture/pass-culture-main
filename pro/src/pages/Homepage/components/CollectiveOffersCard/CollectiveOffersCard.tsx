@@ -26,12 +26,12 @@ const COLLECTIVE_OFFERS_CARD_CONFIG: Record<
   [CollectiveOffersCardVariant.BOOKABLE]: {
     emptyStateVariant: OffersEmptyStateCardVariant.BOOKABLE,
     // TODO (ahello - 26/03/25) implement component in https://passculture.atlassian.net/browse/PC-40063
-    renderOffers: (_offers) => <div>offres réservables</div>,
+    renderOffers: (_offers) => <h2>offres réservables</h2>,
   },
   [CollectiveOffersCardVariant.TEMPLATE]: {
     emptyStateVariant: OffersEmptyStateCardVariant.TEMPLATE,
     // TODO (ahello - 26/03/25) implement component in https://passculture.atlassian.net/browse/PC-40065
-    renderOffers: (_offers) => <div>offres vitrines</div>,
+    renderOffers: (_offers) => <h2>offres vitrines</h2>,
   },
 }
 
