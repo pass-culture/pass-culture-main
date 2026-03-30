@@ -1,5 +1,5 @@
 import { api } from '@/apiClient/api'
-import type { BookingStatus } from '@/apiClient/v1'
+import type { BookingRecapStatus } from '@/apiClient/v1'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { buildBookingsRecapQuery } from '@/commons/core/Bookings/utils'
 
@@ -8,7 +8,7 @@ export type OmniSearchParams = {
   beneficiaryNameOrEmail?: string
   offerEan?: string
   bookingToken?: string
-  bookingStatus?: BookingStatus[]
+  bookingStatus?: BookingRecapStatus[]
 }
 
 export const getFilteredIndividualBookingsAdapter = async (

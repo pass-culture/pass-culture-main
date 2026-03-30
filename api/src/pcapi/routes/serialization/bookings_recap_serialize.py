@@ -8,6 +8,7 @@ import pydantic as pydantic_v2
 from pcapi.core.bookings import schemas
 from pcapi.core.bookings.models import BookingEventType
 from pcapi.core.bookings.models import BookingExportType
+from pcapi.core.bookings.models import BookingRecapStatus
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.repository import get_booking_token
 from pcapi.core.bookings.utils import _apply_departement_timezone
@@ -16,15 +17,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.serialization.exceptions import PydanticError
-
-
-class BookingRecapStatus(Enum):
-    booked = "booked"
-    validated = "validated"
-    cancelled = "cancelled"
-    reimbursed = "reimbursed"
-    confirmed = "confirmed"
-    pending = "pending"
+from pcapi.serialization.utils import ArgsAsListBeforeValidator
 
 
 class BookingsExportStatusFilter(Enum):
@@ -113,7 +106,7 @@ class ListBookingsQueryModel(HttpQueryParamsModel):
     beneficiary_name_or_email: str | None = None
     offer_ean: str | None = None
     booking_token: str | None = None
-    booking_status: list[BookingStatus] | None = None
+    booking_status: typing.Annotated[list[BookingRecapStatus] | None, ArgsAsListBeforeValidator] = None
 
     @pydantic_v2.model_validator(mode="before")
     @classmethod

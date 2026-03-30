@@ -43,7 +43,9 @@ from . import blueprint
 @private_api.route("/bookings/pro", methods=["GET"])
 @atomic()
 @login_required
-@spectree_serialize(response_model=ListBookingsResponseModel, api=blueprint.pro_private_schema)
+@spectree_serialize(
+    response_model=ListBookingsResponseModel, api=blueprint.pro_private_schema, query_params_as_list=["bookingStatus"]
+)
 def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel:
     page = query.page
     per_page_limit = bookings_constants.BOOKINGS_PER_PAGE_LIMIT

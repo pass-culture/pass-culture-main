@@ -95,7 +95,7 @@ def find_by_pro_user(
     beneficiary_name_or_email: str | None = None,
     offer_ean: str | None = None,
     booking_token: str | None = None,
-    booking_status: list[models.BookingStatus] | None = None,
+    booking_status: list[models.BookingRecapStatus] | None = None,
 ) -> tuple[sa_orm.Query, int]:
     total_bookings_recap = _get_filtered_bookings_count(
         user,
@@ -440,7 +440,7 @@ def _get_filtered_bookings_query(
     beneficiary_name_or_email: str | None = None,
     offer_ean: str | None = None,
     booking_token: str | None = None,
-    booking_status: list[str] | None = None,
+    booking_status: list[models.BookingRecapStatus] | None = None,
 ) -> sa_orm.Query[models.Booking]:
     VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
     VenueAddress = sa_orm.aliased(Address)
@@ -538,7 +538,35 @@ def _get_filtered_bookings_query(
         bookings_query = bookings_query.filter(models.Booking.token.ilike(f"%{booking_token}%"))
 
     if booking_status:
-        bookings_query = bookings_query.filter(models.Booking.status.in_(booking_status))
+        exclude_conditions = []
+        for status in booking_status:
+            match status:
+                case models.BookingRecapStatus.reimbursed:
+                    exclude_conditions.append(models.Booking.status != models.BookingStatus.REIMBURSED)
+                case models.BookingRecapStatus.cancelled:
+                    exclude_conditions.append(models.Booking.status != models.BookingStatus.CANCELLED)
+                case models.BookingRecapStatus.validated:
+                    exclude_conditions.append(models.Booking.status != models.BookingStatus.USED)
+                case models.BookingRecapStatus.confirmed:
+                    exclude_conditions.append(
+                        sa.or_(
+                            models.Booking.status.notin_(
+                                [models.BookingStatus.CONFIRMED, models.BookingStatus.PENDING_REIMBURSEMENT]
+                            ),
+                            ~models.Booking.isConfirmed,
+                        )
+                    )
+                case models.BookingRecapStatus.booked:
+                    exclude_conditions.append(
+                        sa.or_(
+                            models.Booking.status.notin_(
+                                [models.BookingStatus.CONFIRMED, models.BookingStatus.PENDING_REIMBURSEMENT]
+                            ),
+                            models.Booking.isConfirmed,
+                        )
+                    )
+        if exclude_conditions:
+            bookings_query = bookings_query.filter(sa.and_(*exclude_conditions))
 
     return bookings_query
 
@@ -557,7 +585,7 @@ def _get_filtered_bookings_count(
     beneficiary_name_or_email: str | None = None,
     offer_ean: str | None = None,
     booking_token: str | None = None,
-    booking_status: list[models.BookingStatus] | None = None,
+    booking_status: list[models.BookingRecapStatus] | None = None,
 ) -> int:
     bookings = (
         _get_filtered_bookings_query(
@@ -676,7 +704,7 @@ def _get_filtered_booking_pro(
     beneficiary_name_or_email: str | None = None,
     offer_ean: str | None = None,
     booking_token: str | None = None,
-    booking_status: list[models.BookingStatus] | None = None,
+    booking_status: list[models.BookingRecapStatus] | None = None,
 ) -> sa_orm.Query:
     VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
     VenueAddress = sa_orm.aliased(Address)
