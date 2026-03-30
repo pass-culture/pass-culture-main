@@ -153,7 +153,10 @@ class GetQuotientFamilialTest:
 
         assert len(mocked_get_quotient_familial.mock_calls) == 12
         mocked_get_quotient_familial.assert_has_calls(
-            [call(custodian, birth_date + relativedelta(years=17, months=offset)) for offset in range(12)],
+            [
+                call(custodian, birth_date + relativedelta(years=17) + relativedelta(months=offset))
+                for offset in range(12)
+            ],
             any_order=True,
         )
 
