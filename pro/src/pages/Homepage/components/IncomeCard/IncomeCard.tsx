@@ -29,7 +29,7 @@ import {
   isCollectiveRevenue,
 } from '@/pages/Reimbursements/Income/utils'
 import { Card } from '@/ui-kit/Card/Card'
-import { Spinner } from '@/ui-kit/Spinner/Spinner'
+import { Skeleton } from '@/ui-kit/Skeleton/Skeleton'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './IncomeCard.module.scss'
@@ -116,11 +116,7 @@ export const IncomeCard = ({
   ])
 
   if (isIncomeLoading) {
-    return (
-      <Card>
-        <Spinner />
-      </Card>
-    )
+    return <Skeleton height="14rem" width="100%" />
   }
 
   if (incomeApiError) {
