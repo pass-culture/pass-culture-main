@@ -1,0 +1,19 @@
+name: Semgrep
+
+on:
+  pull_request: {}
+
+jobs:
+  semgrep_scan:
+    name: semgrep/ci
+    runs-on: ubuntu-latest
+    container:
+      image: returntocorp/semgrep
+    if: (github.actor != 'dependabot[bot]')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Perform Semgrep Analysis
+        run: semgrep scan --config auto . --baseline-commit HEAD~

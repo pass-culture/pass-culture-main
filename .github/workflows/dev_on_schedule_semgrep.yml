@@ -1,0 +1,39 @@
+name: Semgrep
+
+on:
+  schedule: 
+    - cron: 12 8 * * *
+
+  workflow_dispatch: {}
+
+jobs:
+  semgrep_scan:
+    name: semgrep/ci
+    runs-on: ubuntu-latest
+    container:
+      image: returntocorp/semgrep
+    if: (github.actor != 'dependabot[bot]')
+    permissions:
+      security-events: write
+      # only required for workflows in private repositories
+      # actions: read
+      # contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Perform Semgrep Analysis
+        run: semgrep scan --config auto . --sarif-output=semgrep-results.sarif
+
+      - name: Save SARIF results as artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: semgrep-scan-results
+          path: semgrep-results.sarif
+
+      - name: Upload SARIF result to the GitHub Security Dashboard
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: semgrep-results.sarif
+        if: always()
