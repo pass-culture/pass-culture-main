@@ -103,6 +103,18 @@ class BookingExportType(enum.Enum):
     EXCEL = "excel"
 
 
+class BookingSortableColumn(enum.Enum):
+    OFFER = "offer"
+    BENEFICIARY = "beneficiary"
+    BOOKING_DATE = "bookingDate"
+    BOOKING_TOKEN = "bookingToken"
+
+
+class SortOrder(enum.Enum):
+    ASC = "asc"
+    DESC = "desc"
+
+
 class BookingValidationAuthorType(enum.Enum):
     OFFERER = "OFFERER"
     BACKOFFICE = "BACKOFFICE"

@@ -66,6 +66,7 @@ interface TableProps<T extends { id: string | number }> {
   noResult: NoResultProps
   noData: EmptyStateProps
   pagination?: PaginationProps
+  onSortChange?: (column: string | null, order: SortingMode) => void
 }
 
 function getValue<T>(
@@ -108,6 +109,7 @@ export function Table<
   getFullRowContent,
   isRowSelectable,
   pagination,
+  onSortChange,
 }: TableProps<T>) {
   const fullScope = allData ?? data
 
@@ -131,8 +133,13 @@ export function Table<
     onSelectionChange?.(fullScope.filter((r) => newSelectedIds.has(r.id)))
   }
 
-  function sortTableColumn(col: unknown) {
-    onColumnHeaderClick(col)
+  function sortTableColumn(col: string) {
+    const newOrder = onColumnHeaderClick(col)
+    if (newOrder === SortingMode.NONE) {
+      onSortChange?.(null, newOrder)
+    } else {
+      onSortChange?.(col, newOrder)
+    }
   }
 
   const selectableRowsAll = useMemo(

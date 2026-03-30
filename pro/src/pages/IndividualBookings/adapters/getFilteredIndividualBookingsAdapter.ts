@@ -1,5 +1,5 @@
 import { api } from '@/apiClient/api'
-import type { BookingRecapStatus } from '@/apiClient/v1'
+import type { BookingRecapStatus, BookingSortableColumn, SortOrder } from '@/apiClient/v1'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { buildBookingsRecapQuery } from '@/commons/core/Bookings/utils'
 
@@ -9,6 +9,8 @@ export type OmniSearchParams = {
   offerEan?: string
   bookingToken?: string
   bookingStatus?: BookingRecapStatus[]
+  sortBy?: BookingSortableColumn
+  sortOrder?: SortOrder
 }
 
 export const getFilteredIndividualBookingsAdapter = async (
@@ -42,7 +44,9 @@ export const getFilteredIndividualBookingsAdapter = async (
     apiFilters.beneficiaryNameOrEmail,
     apiFilters.offerEan,
     apiFilters.bookingToken,
-    apiFilters.bookingStatus
+    apiFilters.bookingStatus,
+    apiFilters.sortBy,
+    apiFilters.sortOrder,
   )
 
   return {

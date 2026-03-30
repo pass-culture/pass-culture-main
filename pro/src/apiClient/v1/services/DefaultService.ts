@@ -9,6 +9,7 @@ import type { BookingEventType } from '../models/BookingEventType';
 import type { BookingExportType } from '../models/BookingExportType';
 import type { BookingRecapStatus } from '../models/BookingRecapStatus';
 import type { BookingsExportStatusFilter } from '../models/BookingsExportStatusFilter';
+import type { BookingSortableColumn } from '../models/BookingSortableColumn';
 import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
 import type { ChangePasswordBodyModel } from '../models/ChangePasswordBodyModel';
 import type { ChangeProEmailBody } from '../models/ChangeProEmailBody';
@@ -114,6 +115,7 @@ import type { ResetPasswordBodyModel } from '../models/ResetPasswordBodyModel';
 import type { SaveNewOnboardingDataQueryModel } from '../models/SaveNewOnboardingDataQueryModel';
 import type { SharedCurrentUserResponseModel } from '../models/SharedCurrentUserResponseModel';
 import type { SharedLoginUserResponseModel } from '../models/SharedLoginUserResponseModel';
+import type { SortOrder } from '../models/SortOrder';
 import type { StatisticsModel } from '../models/StatisticsModel';
 import type { StocksOrderedBy } from '../models/StocksOrderedBy';
 import type { StockStatsResponseModel } from '../models/StockStatsResponseModel';
@@ -173,6 +175,8 @@ export class DefaultService {
    * @param offerEan
    * @param bookingToken
    * @param bookingStatus
+   * @param sortBy
+   * @param sortOrder
    * @returns any OK
    * @throws ApiError
    */
@@ -192,6 +196,8 @@ export class DefaultService {
     offerEan?: (string | null),
     bookingToken?: (string | null),
     bookingStatus?: (Array<BookingRecapStatus> | null),
+    sortBy?: (BookingSortableColumn | null),
+    sortOrder?: (SortOrder | null),
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
@@ -212,6 +218,8 @@ export class DefaultService {
         'offerEan': offerEan,
         'bookingToken': bookingToken,
         'bookingStatus': bookingStatus,
+        'sortBy': sortBy,
+        'sortOrder': sortOrder,
       },
       errors: {
         403: `Forbidden`,
@@ -257,6 +265,8 @@ export class DefaultService {
    * @param offerEan
    * @param bookingToken
    * @param bookingStatus
+   * @param sortBy
+   * @param sortOrder
    * @returns any OK
    * @throws ApiError
    */
@@ -276,6 +286,8 @@ export class DefaultService {
     offerEan?: (string | null),
     bookingToken?: (string | null),
     bookingStatus?: (Array<BookingRecapStatus> | null),
+    sortBy?: (BookingSortableColumn | null),
+    sortOrder?: (SortOrder | null),
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
@@ -296,6 +308,8 @@ export class DefaultService {
         'offerEan': offerEan,
         'bookingToken': bookingToken,
         'bookingStatus': bookingStatus,
+        'sortBy': sortBy,
+        'sortOrder': sortOrder,
       },
       errors: {
         403: `Forbidden`,
@@ -401,6 +415,8 @@ export class DefaultService {
    * @param offerEan
    * @param bookingToken
    * @param bookingStatus
+   * @param sortBy
+   * @param sortOrder
    * @returns ListBookingsResponseModel OK
    * @throws ApiError
    */
@@ -420,6 +436,8 @@ export class DefaultService {
     offerEan?: (string | null),
     bookingToken?: (string | null),
     bookingStatus?: (Array<BookingRecapStatus> | null),
+    sortBy?: (BookingSortableColumn | null),
+    sortOrder?: (SortOrder | null),
   ): CancelablePromise<ListBookingsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
@@ -440,6 +458,8 @@ export class DefaultService {
         'offerEan': offerEan,
         'bookingToken': bookingToken,
         'bookingStatus': bookingStatus,
+        'sortBy': sortBy,
+        'sortOrder': sortOrder,
       },
       errors: {
         403: `Forbidden`,
