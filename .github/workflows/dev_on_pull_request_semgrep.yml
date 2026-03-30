@@ -16,4 +16,4 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Perform Semgrep Analysis
-        run: semgrep scan --config=p/security-audit . --baseline-commit HEAD~
+        run: semgrep scan --config=p/security-audit --baseline-commit HEAD~
