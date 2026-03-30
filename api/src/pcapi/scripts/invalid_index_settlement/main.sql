@@ -1,0 +1,1 @@
+REINDEX INDEX CONCURRENTLY "ix_settlement_batch_externalId";
