@@ -7,6 +7,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Mediation
 from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils.human_ids import humanize
 
 
@@ -55,7 +56,8 @@ class OfferMediationTest:
         client = client.with_session_auth(email="user@example.com")
         response = client.delete(f"/offers/thumbnails/{offer.id}")
 
-        assert response.status_code == 403
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
     def test_number_id_offer(self, client):
         offerers_factories.UserOffererFactory(user__email="user@example.com")
@@ -64,6 +66,7 @@ class OfferMediationTest:
         response = client.delete("/offers/thumbnails/123445678")
 
         assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
     def test_unkown_offer(self, client):
         offer = offerers_factories.UserOffererFactory(user__email="user@example.com")
@@ -72,4 +75,4 @@ class OfferMediationTest:
         response = client.delete(f"/offers/thumbnails/{offer.id + 1}")
 
         assert response.status_code == 404
-        assert response.json == {}
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

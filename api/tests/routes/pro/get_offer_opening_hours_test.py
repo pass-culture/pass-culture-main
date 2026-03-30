@@ -7,6 +7,7 @@ import pcapi.core.offers.models as offers_models
 from pcapi.core.offers import factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils.date import timespan_str_to_numrange
 
 
@@ -28,18 +29,16 @@ class Returns401Test:
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns403Test:
+class Returns404Test:
     def test_authenticated_user_but_with_no_rights_on_offer_gets_an_error(self, client):
         auth_client, _ = setup_auth_client_and_offer(client)
         offer = factories.ThingOfferFactory()
 
         url = f"/offers/{offer.id}/opening-hours"
         response = auth_client.get(url)
-        assert response.status_code == 403
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns404Test:
     def test_unknown_offer_returns_an_error(self, client):
         auth_client, _ = setup_auth_client_and_offer(client, ignore_offer=True)
         max_offer_id = db.session.query(sa.func.max(offers_models.Offer.id)).scalar()
@@ -48,6 +47,7 @@ class Returns404Test:
         url = f"/offers/{unknown_offer_id}/opening-hours"
         response = auth_client.get(url)
         assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
 
 @pytest.mark.usefixtures("db_session")

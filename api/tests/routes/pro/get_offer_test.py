@@ -15,13 +15,14 @@ from pcapi.core.artist import factories as artist_factories
 from pcapi.core.artist import models as artist_models
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.models import WithdrawalTypeEnum
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 from pcapi.utils.human_ids import humanize
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns403Test:
+class Returns404Test:
     # get user_session + user
     # get offer
     # get artist
@@ -38,7 +39,8 @@ class Returns403Test:
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{offer_id}")
-            assert response.status_code == 403
+            assert response.status_code == 404
+            assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
     def test_access_by_unauthorized_pro_user(self, client):
         pro_user = users_factories.ProFactory()
@@ -48,7 +50,15 @@ class Returns403Test:
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{offer_id}")
-            assert response.status_code == 403
+            assert response.status_code == 404
+            assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
+
+    def test_offer_not_found(self, client):
+        pro_user = users_factories.ProFactory()
+        auth_client = client.with_session_auth(email=pro_user.email)
+        response = auth_client.get("/offers/123456789")
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
 
 @pytest.mark.usefixtures("db_session")

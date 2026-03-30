@@ -1,9 +1,9 @@
 import pytest
-from werkzeug.exceptions import NotFound
 
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.models.api_errors import ApiErrors
 from pcapi.models.utils import first_or_404
 
 
@@ -22,5 +22,5 @@ class FirstOr404Test:
         obj = users_factories.UserFactory(firstName="Alice")
         db.session.add(obj)
 
-        with pytest.raises(NotFound):
+        with pytest.raises(ApiErrors):
             first_or_404(db.session.query(users_models.User).filter(users_models.User.firstName == "Bob"))

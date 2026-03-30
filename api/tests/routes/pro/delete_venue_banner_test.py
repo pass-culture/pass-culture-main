@@ -5,6 +5,7 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi import settings
 from pcapi.core.search.models import IndexationReason
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils.human_ids import humanize
 
 
@@ -82,6 +83,7 @@ class VenueBannerTest:
 
         response = client.delete("/venues/1234/banner")
         assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
     @patch("pcapi.core.offerers.api.delete_venue_banner")
     def test_no_access_rights(self, mock_delete_venue_banner, client):
@@ -91,6 +93,7 @@ class VenueBannerTest:
         client = client.with_session_auth(email=user.user.email)
 
         response = client.delete(f"/venues/{venue.id}/banner")
-        assert response.status_code == 403
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
         mock_delete_venue_banner.assert_not_called()

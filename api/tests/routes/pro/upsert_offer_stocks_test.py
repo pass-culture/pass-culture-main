@@ -8,6 +8,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
@@ -165,7 +166,7 @@ class Returns401Test:
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns403Test:
+class Returns404Test:
     def test_user_without_rights(self, client):
         offer = offers_factories.ThingOfferFactory()
         unauthorized_pro = users_factories.ProFactory()
@@ -174,14 +175,9 @@ class Returns403Test:
         payload = {"stocks": []}
         response = client.with_session_auth(unauthorized_pro.email).patch(f"/offers/{offer.id}/stocks/", json=payload)
 
-        assert response.status_code == 403
-        assert response.json == {
-            "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
-        }
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns404Test:
     def test_offer_not_found(self, client):
         user = users_factories.UserFactory()
         offerers_factories.UserOffererFactory(user=user)
@@ -190,4 +186,4 @@ class Returns404Test:
         response = client.with_session_auth(user.email).patch("/offers/999999/stocks/", json=payload)
 
         assert response.status_code == 404
-        assert response.json == {"global": "No offer found for this id"}
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

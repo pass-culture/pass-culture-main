@@ -41,7 +41,7 @@ class Returns401Test:
         assert response.status_code == 401
 
 
-class Returns403Test:
+class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_user_is_not_attached_to_linked_offerer(self, client):
         booking = bookings_factories.UsedBookingFactory()
@@ -58,8 +58,6 @@ class Returns403Test:
         ]
         assert booking.status == BookingStatus.USED
 
-
-class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def test_missing_token(self, client):
         user = users_factories.ProFactory()

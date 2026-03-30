@@ -11,6 +11,7 @@ from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils import date as date_utils
 
@@ -88,7 +89,7 @@ class Return200Test:
         assert created_stock.endDatetime == datetime.datetime(2022, 1, 18, 18, 0, 0)
 
 
-class Return400Test:
+class Return404Test:
     @time_machine.travel("2020-11-17 15:00:00")
     def test_create_collective_stocks_should_not_be_available_if_user_not_linked_to_offerer(self, client):
         offer = factories.CollectiveOfferFactory()
@@ -107,11 +108,31 @@ class Return400Test:
         client.with_session_auth("user@example.com")
         response = client.post("/collective/stocks/", json=stock_payload)
 
-        assert response.status_code == 403
-        assert response.json == {
-            "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
+
+    @time_machine.travel("2020-11-17 15:00:00")
+    def test_create_collective_stocks_should_not_be_available_if_offer_not_found(self, client):
+        offerers_factories.UserOffererFactory(user__email="user@example.com")
+
+        stock_payload = {
+            "offerId": 123456789,
+            "startDatetime": "2022-01-17T22:00:00Z",
+            "endDatetime": "2022-01-17T22:00:00Z",
+            "bookingLimitDatetime": "2021-12-31T20:00:00Z",
+            "totalPrice": 1500,
+            "numberOfTickets": 38,
+            "educationalPriceDetail": "Détail du prix",
         }
 
+        client.with_session_auth("user@example.com")
+        response = client.post("/collective/stocks/", json=stock_payload)
+
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
+
+
+class Return400Test:
     @time_machine.travel("2020-11-17 15:00:00")
     def test_missing_end_datetime(self, client):
         offer = factories.CollectiveOfferFactory()

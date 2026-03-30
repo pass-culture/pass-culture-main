@@ -8,6 +8,7 @@ from pcapi.core.bookings import factories as booking_factory
 from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.models import db
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
 
 @pytest.mark.usefixtures("db_session")
@@ -102,7 +103,7 @@ class Returns401Test:
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns403Test:
+class Returns404Test:
     def test_delete_stocks_when_current_user_has_no_rights_on_offer(self, client):
         # given
         offer = offers_factories.OfferFactory()
@@ -116,4 +117,13 @@ class Returns403Test:
         response = client.with_session_auth(pro.email).post(f"/offers/{offer.id}/stocks/delete", json=data)
 
         # then
-        assert response.status_code == 403
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
+
+    def test_delete_stocks_when_offer_not_found(self, client):
+        pro = users_factories.ProFactory()
+        response = client.with_session_auth(pro.email).post(
+            "/offers/123456789/stocks/delete", json={"ids_to_delete": []}
+        )
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

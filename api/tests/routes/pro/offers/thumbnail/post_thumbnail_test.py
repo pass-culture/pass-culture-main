@@ -9,6 +9,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers import exceptions
 from pcapi.core.offers.models import Mediation
 from pcapi.models import db
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils.human_ids import humanize
 
 import tests
@@ -121,4 +122,4 @@ class CreateThumbnailFromFileTest:
         response = client.post("/offers/thumbnails", form=data)
 
         assert response.status_code == 404
-        assert response.json["global"] == ["Aucun objet ne correspond à cet identifiant dans notre base de données"]
+        assert response.json["global"] == [OBJECT_NOT_FOUND_ERROR_MESSAGE]

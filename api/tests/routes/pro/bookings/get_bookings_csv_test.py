@@ -9,6 +9,7 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils import date as date_utils
 
 
@@ -46,8 +47,8 @@ class Returns200Test:
             )
 
 
-class Returns401Test:
-    def test_return_403_if_user_is_not_authorized(self, client):
+class Returns404Test:
+    def test_return_404_if_user_is_not_authorized(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         # authorized offer
         offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
@@ -57,6 +58,5 @@ class Returns401Test:
         expected_num_queries = 7  # offer + session + offer + venue + SELECT EXISTS user_offerer + rollback + rollback
         with assert_num_queries(expected_num_queries):
             response = client.get(f"/bookings/offer/{offer_unauthorized.id}/csv?event_date=2021-01-01&status=all")
-            assert response.status_code == 403
-
-        assert response.json == {"global": "You are not allowed to access this offer"}
+            assert response.status_code == 404
+            assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

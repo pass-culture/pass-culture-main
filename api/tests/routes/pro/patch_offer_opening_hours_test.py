@@ -17,6 +17,7 @@ import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers import factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -145,20 +146,20 @@ class Returns401Test:
         assert response.status_code == 401
 
 
-class Returns403Test:
+class Returns404Test:
     def test_authenticated_user_but_with_no_rights_on_offer_gets_an_error(self, client):
         auth_client, _ = setup_auth_client_and_offer(client)
         offer = factories.ThingOfferFactory()
 
         url = f"/offers/{offer.id}/opening-hours"
         response = auth_client.patch(url, json={"openingHours": {"MONDAY": [["10:00", "18:00"]]}})
-        assert response.status_code == 403
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
-
-class Returns404Test:
     def test_unknown_offer_returns_an_error(self, client):
         auth_client, _ = setup_auth_client_and_offer(client)
 
-        url = "/offers/-1/opening-hours"
+        url = "/offers/123456789/opening-hours"
         response = auth_client.patch(url, json={"openingHours": {"MONDAY": [["10:00", "18:00"]]}})
         assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

@@ -7,6 +7,7 @@ from pcapi.core.offerers import schemas
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -230,7 +231,7 @@ class Return200Test:
             ]
 
 
-class Return400Test:
+class Return404Test:
     def test_access_by_unauthorized_pro_user(self, client):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -238,4 +239,12 @@ class Return400Test:
         offerer_id = offerer.id
         with assert_num_queries(2):
             response = client.get(f"/offerers/{offerer_id}/offerer_addresses")
-            assert response.status_code == 403
+            assert response.status_code == 404
+            assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
+
+    def test_offerer_not_found(self, client):
+        pro = users_factories.ProFactory()
+        client = client.with_session_auth(email=pro.email)
+        response = client.get("/offerers/123456789/offerer_addresses")
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

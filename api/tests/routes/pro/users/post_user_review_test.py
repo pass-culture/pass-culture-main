@@ -6,6 +6,7 @@ import pytest
 from pcapi.connectors.harvestr import HaverstrRequester
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -98,7 +99,8 @@ class PostUserReviewTest:
         with caplog.at_level(logging.INFO):
             response = client.post("/users/log-user-review", json=data)
 
-        assert response.status_code == 403
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
         assert "User submitting review" not in caplog.messages
         harvestr_create_message.assert_not_called()
 
