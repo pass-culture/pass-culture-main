@@ -58,6 +58,25 @@ Ces fonctions ne doivent pas contenir :
 - Des règles de gestion ;
 - Des appels à des web services.
 
+Note sur le typing de `db.session.query` :
+
+```python
+# offerer est bien typé Offerer ✅
+for offerer in db.session.query(Offerer):
+    ...
+
+# idem pour .first() / .one(), offerer est correctement typé ✅
+offerer = db.session.query(Offerer).first()
+
+# ici en revanche, name et siren sont typés Any 🥺
+for name, siren in db.session.query(Offerer.name, Offerer.siren):
+    ...
+
+# ajouter .tuples() pour avoir un typing correct ✅
+for name, siren in db.session.query(Offerer.name, Offerer.siren).tuples():
+    ...
+```
+
 ### Tests
 
 Pour que les données ne persistent pas en base de données après un test, la fixture `db_session`
