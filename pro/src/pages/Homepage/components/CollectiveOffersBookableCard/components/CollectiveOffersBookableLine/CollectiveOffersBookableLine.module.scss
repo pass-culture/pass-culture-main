@@ -1,0 +1,69 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.offer-line {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  gap: var(--size-spacing-s);
+  align-items: center;
+
+  &-name {
+    @include fonts.body-accent;
+
+    display: flex;
+    flex-direction: column;
+
+    &-title {
+      @include fonts.body-accent-s;
+
+      margin-top: var(--size-spacing-s);
+    }
+
+    &-subtitle {
+      @include fonts.body-xs;
+
+      color: var(--color-text-subtle);
+    }
+  }
+
+  // CTA button
+  & > *:last-child {
+    grid-column: 4;
+    justify-self: stretch;
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: size.$tablet) {
+  .offer-line {
+    min-width: rem.torem(150px);
+
+    &-with-thumb {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      min-width: rem.torem(240px);
+    }
+  }
+}
+
+@media screen and (max-width: size.$tablet) {
+  .offer-line {
+    &-with-thumb {
+      align-items: end;
+    }
+
+    &-name {
+      @include fonts.body-accent;
+
+      display: flex;
+      flex-direction: column;
+      overflow-wrap: anywhere;
+      text-align: right;
+      align-items: end;
+    }
+  }
+}
