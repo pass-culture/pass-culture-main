@@ -50,6 +50,8 @@ from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational import schemas as educational_schemas
+from pcapi.core.educational.adage import api as adage_client
 from pcapi.core.educational.api import booking as educational_booking_api
 from pcapi.core.educational.api import dms as dms_api
 from pcapi.core.external.attributes import api as external_attributes_api
@@ -3290,8 +3292,10 @@ def update_offerer_address(offerer_address_id: int, address_id: int, label: str 
 
 def synchronize_from_adage_and_check_registration(offerer_id: int) -> bool:
     since_date = date_utils.get_naive_utc_now() - timedelta(days=2)
-    adage_cultural_partners = adage_api.get_cultural_partners(force_update=True, since_date=since_date)
-    adage_api.synchronize_adage_ids_on_venues(adage_cultural_partners)
+    adage_cultural_partners = adage_client.get_cultural_partners(since_date=since_date)
+    adage_api.synchronize_adage_ids_on_venues(
+        educational_schemas.AdageCulturalPartners(partners=adage_cultural_partners)
+    )
     return offerers_repository.offerer_has_venue_with_adage_id(offerer_id)
 
 

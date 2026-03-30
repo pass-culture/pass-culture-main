@@ -9,10 +9,11 @@ import pytest
 import requests_mock
 from pydantic.v1 import parse_obj_as
 
-import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.educational.adage import api as adage_client
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.schemas import AdageCulturalPartners
 from pcapi.core.history import models as history_models
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers.repository import get_emails_by_venue
 from pcapi.models import db
 from pcapi.utils import date as date_utils
@@ -96,8 +97,10 @@ def test_synchronize_adage_ids_on_venues(db_session):
             ],
         )
         with patch("pcapi.core.educational.api.adage.send_eac_offerer_activation_email") as mock_activation_mail:
-            adage_cultural_partners = educational_api_adage.get_cultural_partners()
-            educational_api_adage.synchronize_adage_ids_on_venues(adage_cultural_partners)
+            adage_cultural_partners = adage_client.get_cultural_partners(since_date=date_utils.get_naive_utc_now())
+            educational_api_adage.synchronize_adage_ids_on_venues(
+                AdageCulturalPartners(partners=adage_cultural_partners)
+            )
 
     db.session.refresh(venue1)
     db.session.refresh(venue2)
@@ -183,8 +186,10 @@ def test_synchronize_adage_ids_on_venues_with_unknown_venue(db_session):
             json=[venue_data, venue_extra_data, venue2_data],
         )
         with patch("pcapi.core.educational.api.adage.send_eac_offerer_activation_email"):
-            adage_cultural_partners = educational_api_adage.get_cultural_partners()
-            educational_api_adage.synchronize_adage_ids_on_venues(adage_cultural_partners)
+            adage_cultural_partners = adage_client.get_cultural_partners(since_date=date_utils.get_naive_utc_now())
+            educational_api_adage.synchronize_adage_ids_on_venues(
+                AdageCulturalPartners(partners=adage_cultural_partners)
+            )
 
     db.session.refresh(venue)
 
@@ -229,8 +234,10 @@ def test_synchronize_adage_ids_on_venues_with_venue_id_missing(db_session, caplo
         )
         with patch("pcapi.core.educational.api.adage.send_eac_offerer_activation_email"):
             with caplog.at_level(logging.WARNING):
-                adage_cultural_partners = educational_api_adage.get_cultural_partners()
-                educational_api_adage.synchronize_adage_ids_on_venues(adage_cultural_partners)
+                adage_cultural_partners = adage_client.get_cultural_partners(since_date=date_utils.get_naive_utc_now())
+                educational_api_adage.synchronize_adage_ids_on_venues(
+                    AdageCulturalPartners(partners=adage_cultural_partners)
+                )
 
                 assert "is not present in Adage" in caplog.records[0].message
 
@@ -409,13 +416,10 @@ def test_synchronize_adage_ids_on_venues_with_date_filter(mock_send_eac_email, d
     venue2 = offerers_factories.VenueFactory(adageId="11", adageInscriptionDate=date_utils.get_naive_utc_now())
 
     adage_id1 = 128028
-    adage_id2 = 128029
 
     yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).isoformat()
-    a_month_ago = (datetime.now(timezone.utc) - timedelta(days=31)).isoformat()
 
     venue1_data = {**BASE_DATA, "id": adage_id1, "venueId": venue1.id, "dateModification": yesterday}
-    venue2_data = {**BASE_DATA, "id": adage_id2, "venueId": venue2.id, "dateModification": a_month_ago}
 
     with requests_mock.Mocker() as request_mock:
         request_mock.get(
@@ -424,20 +428,10 @@ def test_synchronize_adage_ids_on_venues_with_date_filter(mock_send_eac_email, d
                 "X-omogen-api-key": "adage-api-key",
             },
             status_code=200,
-            json=[venue1_data, venue2_data],
+            json=[venue1_data],
         )
-
-        from pcapi.core.educational.adage.backends.adage import AdageHttpClient
-
-        orig_get_cultural_partners = AdageHttpClient().get_cultural_partners
-        rows = orig_get_cultural_partners()
-        mocked_cultural_partners = [next(row for row in rows if row["venueId"] == venue1.id)]
-
-        mock_path = "pcapi.core.educational.api.adage.adage_client"
-        with patch(mock_path) as mock_adage_client:
-            mock_adage_client.get_cultural_partners.return_value = mocked_cultural_partners
-            adage_cultural_partners = educational_api_adage.get_cultural_partners()
-            educational_api_adage.synchronize_adage_ids_on_venues(adage_cultural_partners)
+        adage_cultural_partners = adage_client.get_cultural_partners(since_date=date_utils.get_naive_utc_now())
+        educational_api_adage.synchronize_adage_ids_on_venues(AdageCulturalPartners(partners=adage_cultural_partners))
 
     db.session.refresh(venue1)
     db.session.refresh(venue2)
@@ -456,8 +450,8 @@ def test_synchronize_adage_ids_on_venues_with_since_date():
     since_date = datetime(2024, 3, 20, 16, 0, 0)
     expected_datetime = "2024-03-20 16:00:00"
 
-    adage_cultural_partners = educational_api_adage.get_cultural_partners(since_date=since_date)
-    educational_api_adage.synchronize_adage_ids_on_venues(adage_cultural_partners)
+    adage_cultural_partners = adage_client.get_cultural_partners(since_date=since_date)
+    educational_api_adage.synchronize_adage_ids_on_venues(AdageCulturalPartners(partners=adage_cultural_partners))
 
     from pcapi.core.educational.testing import adage_requests
 

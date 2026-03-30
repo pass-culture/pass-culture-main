@@ -8,6 +8,8 @@ import click
 
 from pcapi.core import search
 from pcapi.core.educational import models
+from pcapi.core.educational import schemas
+from pcapi.core.educational.adage import api as adage_client
 from pcapi.core.educational.api import adage as adage_api
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api import institution as institution_api
@@ -153,19 +155,19 @@ def check_deposit_csv(path: str) -> None:
 @cron_decorators.log_cron
 def synchronize_adage_cultural_partners(apply: bool = False) -> None:
     since_date = date_utils.get_naive_utc_now() - datetime.timedelta(days=2)
-    adage_cultural_partners = adage_api.get_cultural_partners(since_date=since_date)
+    adage_cultural_partners = adage_client.get_cultural_partners(since_date=since_date)
 
     logger.info(
         "Adage partners sync - start",
         extra={
             "since_date": since_date.isoformat(),
-            "number_of_partners": len(adage_cultural_partners.partners),
+            "number_of_partners": len(adage_cultural_partners),
             "apply": apply,
         },
     )
 
     with atomic():
-        adage_api.synchronize_adage_partners(adage_partners=adage_cultural_partners.partners, apply=apply)
+        adage_api.synchronize_adage_partners(adage_partners=adage_cultural_partners, apply=apply)
 
         if not apply:
             mark_transaction_as_invalid()
@@ -181,9 +183,9 @@ def synchronize_adage_cultural_partners(apply: bool = False) -> None:
 @cron_decorators.log_cron
 def synchronize_venues_from_adage_cultural_partners(debug: bool = False, with_timestamp: bool = False) -> None:
     since_date = date_utils.get_naive_utc_now() - datetime.timedelta(days=2)
-    adage_cultural_partners = adage_api.get_cultural_partners(since_date=since_date)
+    adage_cultural_partners = adage_client.get_cultural_partners(since_date=since_date)
 
-    adage_api.synchronize_adage_ids_on_venues(adage_cultural_partners)
+    adage_api.synchronize_adage_ids_on_venues(schemas.AdageCulturalPartners(partners=adage_cultural_partners))
 
 
 @blueprint.cli.command("synchronize_offerers_from_adage_cultural_partners")
@@ -192,10 +194,10 @@ def synchronize_offerers_from_adage_cultural_partners() -> None:
     # the Adage cultural partner endpoint has its dateModificationMin parameter required
     # set a distant past date to get all adage partners as the offerer sync logic works by computing a full diff with what we have in DB
     since_date = datetime.datetime(year=1970, month=1, day=1)
-    adage_cultural_partners = adage_api.get_cultural_partners(since_date=since_date)
+    adage_cultural_partners = adage_client.get_cultural_partners(since_date=since_date)
 
     with atomic():
-        adage_api.synchronize_adage_ids_on_offerers(adage_cultural_partners.partners)
+        adage_api.synchronize_adage_ids_on_offerers(adage_cultural_partners)
 
 
 @blueprint.cli.command("eac_notify_pro_one_day_before")
