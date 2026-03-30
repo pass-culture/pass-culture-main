@@ -131,7 +131,7 @@ def update_venue(
     author: users_models.User,
     *,
     opening_hours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None = None,
-    contact_data: offerers_schemas.VenueContactModel | None = None,
+    contact_data: offerers_schemas.VenueContactModelV2 | None = None,
     criteria: list[criteria_models.Criterion] | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     external_accessibility_url: str | None | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     cultural_domains: list[str] | None = None,
@@ -413,7 +413,7 @@ def update_venue_collective_data(
     return venue
 
 
-def upsert_venue_contact(venue: models.Venue, contact_data: offerers_schemas.VenueContactModel) -> models.Venue:
+def upsert_venue_contact(venue: models.Venue, contact_data: offerers_schemas.VenueContactModelV2) -> models.Venue:
     """
     Create and attach a VenueContact to a Venue if it has none.
     Update (replace) an existing VenueContact otherwise.

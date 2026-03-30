@@ -74,7 +74,7 @@ class PostVenueBodyModel(HttpBodyModel):
         typing.Annotated[str, pydantic_v2.StringConstraints(max_length=offerers_schemas.VENUE_DESCRIPTION_MAX_LENGTH)]
         | None
     )
-    contact: offerers_schemas.VenueContactModel | None
+    contact: offerers_schemas.VenueContactModelV2 | None
     audio_disability_compliant: bool | None
     mental_disability_compliant: bool | None
     motor_disability_compliant: bool | None
