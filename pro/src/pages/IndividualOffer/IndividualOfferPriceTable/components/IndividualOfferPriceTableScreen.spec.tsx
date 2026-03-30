@@ -47,7 +47,7 @@ const renderPriceTableScreen: RenderComponentFunction<
     categories: [],
     hasPublishedOfferWithSameEan: false,
     isEvent: null,
-    setIsEvent: vi.fn(),
+    setIsControlledEvent: vi.fn(),
     subCategories: MOCKED_SUBCATEGORIES,
     offer,
     offerId: offer.id,

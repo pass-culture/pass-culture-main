@@ -4,11 +4,11 @@ export const getVenuePagePathToNavigateTo = (
   subPath: '' | '/edition' | '/parametres' = ''
 ) => {
   const basePath = `/structures/${offererId}/lieux/${venueId}`
-  const context = location.pathname.includes('collectif')
-    ? '/collectif'
-    : location.pathname.includes('page-partenaire')
-      ? '/page-partenaire'
-      : ''
+  const isCollectif = location.pathname.includes('collectif')
+  const whenIsPagePartenaire = location.pathname.includes('page-partenaire')
+    ? '/page-partenaire'
+    : ''
+  const context = isCollectif ? '/collectif' : whenIsPagePartenaire
 
   return `${basePath}${context}${subPath}`
 }

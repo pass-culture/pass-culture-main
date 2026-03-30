@@ -6,5 +6,5 @@ export const downloadFile = (data: Blob, filename: string) => {
 
   document.body.appendChild(fakeLink)
   fakeLink.click()
-  document.body.removeChild(fakeLink)
+  fakeLink.remove()
 }

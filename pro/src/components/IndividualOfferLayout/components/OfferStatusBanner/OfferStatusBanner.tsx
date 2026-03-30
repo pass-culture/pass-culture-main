@@ -38,8 +38,8 @@ export const OfferStatusBanner = ({ status }: OfferStatusBannerProps) => {
           description={
             <>
               La vérification d'éligibilité peut prendre jusqu'à 72h. Vous
-              recevrez un e-mail de confirmation une fois validée.
-              <b> Aucune modification n'est possible pendant ce délai.</b>
+              recevrez un e-mail de confirmation une fois votre offre validée.{' '}
+              <b>Aucune modification n'est possible pendant ce délai.</b>
             </>
           }
         />

@@ -64,7 +64,7 @@ const renderIndividualOfferLayout: RenderComponentFunction<
     hasPublishedOfferWithSameEan: false,
     isEvent: null,
     offerId: offer?.id ?? null,
-    setIsEvent: vi.fn(),
+    setIsControlledEvent: vi.fn(),
     subCategories: MOCKED_SUBCATEGORIES,
     offer,
     ...params.contextValues,

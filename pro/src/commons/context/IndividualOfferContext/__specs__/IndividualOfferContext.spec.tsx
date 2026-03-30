@@ -96,7 +96,7 @@ describe('IndividualOfferContextProvider', () => {
       expect(result.current.subCategories.length).toBeGreaterThan(0)
     })
 
-    it('should control isEvent via setIsEvent', async () => {
+    it('should control isControlledEvent via setIsControlledEvent', async () => {
       vi.mocked(useParams).mockReturnValue({
         offerId: 'creation',
       } as unknown as ReturnType<typeof useParams>)
@@ -106,7 +106,7 @@ describe('IndividualOfferContextProvider', () => {
       expect(result.current.isEvent).toBeNull()
       expect(result.current.offerId).toBeNull()
 
-      await act(() => result.current.setIsEvent(true))
+      act(() => result.current.setIsControlledEvent(true))
 
       expect(result.current.isEvent).toBe(true)
       expect(result.current.offerId).toBeNull()
@@ -187,12 +187,12 @@ describe('IndividualOfferContextProvider', () => {
       expect(result.current.hasPublishedOfferWithSameEan).toBe(false)
     })
 
-    it('should both expose isEvent from offer and ignore any setIsEvent override', async () => {
+    it('should both expose isEvent from offer and ignore any setIsControlledEvent override', async () => {
       const { result } = await renderUseIndividualOfferContext()
 
       expect(result.current.isEvent).toBe(false)
 
-      await act(() => result.current.setIsEvent(true))
+      act(() => result.current.setIsControlledEvent(true))
 
       expect(result.current.isEvent).toBe(false)
     })

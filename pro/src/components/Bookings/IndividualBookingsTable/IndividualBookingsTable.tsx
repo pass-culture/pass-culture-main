@@ -48,7 +48,7 @@ export const IndividualBookingsTable = ({
 
   const toggle = (i: string | number) =>
     setExpanded((prev) => {
-      const numeric = typeof i === 'string' ? parseInt(i, 10) : i
+      const numeric = typeof i === 'string' ? Number.parseInt(i, 10) : i
       const next = new Set(prev)
       next.has(numeric) ? next.delete(numeric) : next.add(numeric)
       return next

@@ -51,7 +51,7 @@ const renderIndividualOfferSummaryPriceTableScreen: RenderComponentFunction<
     isEvent: params.offer.isEvent,
     offer: params.offer,
     offerId: params.offer.id,
-    setIsEvent: vi.fn(),
+    setIsControlledEvent: vi.fn(),
     ...params.contextValues,
   }
   const props = {

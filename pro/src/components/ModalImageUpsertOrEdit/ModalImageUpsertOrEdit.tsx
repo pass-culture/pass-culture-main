@@ -56,6 +56,8 @@ export interface ModalImageUpsertOrEditProps
   initialValues?: UploadImageValues
 }
 
+const AppPreviewCollectiveOffer = () => <></>
+
 export const ModalImageUpsertOrEdit = ({
   mode,
   onImageUpload,
@@ -127,7 +129,7 @@ export const ModalImageUpsertOrEdit = ({
   const AppPreview = {
     [UploaderModeEnum.VENUE]: AppPreviewVenue,
     [UploaderModeEnum.OFFER]: AppPreviewOffer,
-    [UploaderModeEnum.OFFER_COLLECTIVE]: () => <></>,
+    [UploaderModeEnum.OFFER_COLLECTIVE]: AppPreviewCollectiveOffer,
   }[mode]
 
   useEffect(() => {
@@ -208,9 +210,9 @@ export const ModalImageUpsertOrEdit = ({
           cropParams: croppedRect,
           credit: credit,
         },
-        !previouslyUploadedImageUrl
-          ? 'Votre image a bien été importée'
-          : 'Vos modifications ont bien été prises en compte'
+        previouslyUploadedImageUrl
+          ? 'Vos modifications ont bien été prises en compte'
+          : 'Votre image a bien été importée'
       )
     }
   }
@@ -362,14 +364,15 @@ export const ModalImageUpsertOrEdit = ({
           {!isLoadingImage && !image && (
             <ImageDragAndDrop
               onDropOrSelected={onImageReplacementDropOrSelected}
-              {...(mode !== UploaderModeEnum.OFFER
-                ? {
+              {...(mode === UploaderModeEnum.OFFER ||
+              mode === UploaderModeEnum.OFFER_COLLECTIVE
+                ? {}
+                : {
                     minSizes: {
                       width: 600,
                       height: 400,
                     },
-                  }
-                : {})}
+                  })}
             />
           )}
         </div>

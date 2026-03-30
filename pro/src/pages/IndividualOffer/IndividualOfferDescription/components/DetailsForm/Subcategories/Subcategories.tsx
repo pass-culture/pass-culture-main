@@ -39,7 +39,7 @@ export function Subcategories({
     resetField,
     formState: { errors },
   } = useFormContext<DetailsFormValues>()
-  const { setIsEvent } = useIndividualOfferContext()
+  const { setIsControlledEvent } = useIndividualOfferContext()
 
   const categoryId = watch('categoryId')
   const subcategoryId = watch('subcategoryId')
@@ -69,7 +69,7 @@ export function Subcategories({
       shouldValidate: true,
     })
 
-    setIsEvent(nextSubcategory.isEvent)
+    setIsControlledEvent(nextSubcategory.isEvent)
   }
 
   const handleCategoryChange = (event: ChangeEvent<HTMLSelectElement>) => {

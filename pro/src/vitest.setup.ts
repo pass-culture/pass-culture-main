@@ -10,32 +10,38 @@ expect.extend(matchers)
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 fetchMock.mockResponse((req) => {
-  // eslint-disable-next-line
-  console.error(`
+  // eslint-disable-next-line no-console
+  console.error(String.raw`
   ----------------------------------------------------------------------------
-  /!\\ UNMOCKED FETCH CALL TO :  [${req.method}] ${req.url}
+  /!\ UNMOCKED FETCH CALL TO :  [${req.method}] ${req.url}
   ----------------------------------------------------------------------------
   `)
 
   // We do not await this Promise so that Vitest considers it as
   // an unhandled rejection and thus fails the test
   // (otherwise the console.error will appear but not fail the test)
-  void Promise.reject('Unmocked fetch call')
+  void Promise.reject(new Error('Unmocked fetch call'))
 
   // And now return a Promise so that fetchMock is happy
-  return Promise.reject('Unmocked fetch call')
+  return Promise.reject(new Error('Unmocked fetch call'))
 })
 
 // Mock the ResizeObserver for Charts
 class ResizeObserver {
-  observe() {}
+  observe() {
+    // Mock implementation
+  }
 
-  unobserve() {}
+  unobserve() {
+    // Mock implementation
+  }
 
-  disconnect() {}
+  disconnect() {
+    // Mock implementation
+  }
 }
 
-window.ResizeObserver = ResizeObserver
+globalThis.ResizeObserver = ResizeObserver
 
 const IntersectionObserverMock = vi.fn(
   class {

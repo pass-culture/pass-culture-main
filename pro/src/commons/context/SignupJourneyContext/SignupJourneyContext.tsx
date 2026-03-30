@@ -1,5 +1,5 @@
 import type React from 'react'
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useMemo, useState } from 'react'
 
 import type { Target } from '@/apiClient/v1'
 import { noop } from '@/commons/utils/noop'
@@ -65,7 +65,7 @@ interface SignupJourneyContextProviderProps {
 
 export function SignupJourneyContextProvider({
   children,
-}: SignupJourneyContextProviderProps) {
+}: Readonly<SignupJourneyContextProviderProps>) {
   const [activity, setActivity] = useState<ActivityContext | null>(
     DEFAULT_ACTIVITY_VALUES
   )
@@ -78,17 +78,20 @@ export function SignupJourneyContextProvider({
     DEFAULT_ADDRESS_FORM_VALUES
   )
 
+  const contextValue = useMemo(
+    () => ({
+      activity,
+      setActivity,
+      offerer,
+      setOfferer,
+      initialAddress,
+      setInitialAddress,
+    }),
+    [activity, offerer, initialAddress]
+  )
+
   return (
-    <SignupJourneyContext.Provider
-      value={{
-        activity,
-        setActivity,
-        offerer,
-        setOfferer,
-        initialAddress,
-        setInitialAddress,
-      }}
-    >
+    <SignupJourneyContext.Provider value={contextValue}>
       {children}
     </SignupJourneyContext.Provider>
   )

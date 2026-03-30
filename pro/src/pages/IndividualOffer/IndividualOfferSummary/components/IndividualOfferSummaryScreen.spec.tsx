@@ -110,7 +110,7 @@ const renderIndividualOfferSummaryScreen: RenderComponentFunction<
     isEvent: false,
     offer,
     offerId: offer.id,
-    setIsEvent: vi.fn(),
+    setIsControlledEvent: vi.fn(),
     subCategories: MOCKED_SUBCATEGORIES,
     ...params.contextValues,
   }
@@ -204,7 +204,7 @@ describe('IndividualOfferSummaryScreen', () => {
     isEvent: false,
     offer: offerBase,
     offerId: offerBase.id,
-    setIsEvent: vi.fn(),
+    setIsControlledEvent: vi.fn(),
     subCategories: MOCKED_SUBCATEGORIES,
   }
 

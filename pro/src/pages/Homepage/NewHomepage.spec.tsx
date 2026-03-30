@@ -71,6 +71,11 @@ vi.mock('@/app/AppRouter/utils', async () => ({
   isNewHomepageEnabled: () => true,
 }))
 
+vi.mock('@/app/AppRouter/utils', async () => ({
+  ...(await vi.importActual('@/app/AppRouter/utils')),
+  isNewHomepageEnabled: () => true,
+}))
+
 const newHomepageRoutes = [
   {
     path: '/',

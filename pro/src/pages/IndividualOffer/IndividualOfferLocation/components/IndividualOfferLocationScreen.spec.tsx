@@ -8,7 +8,7 @@ import {
   type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
-import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import * as useOfferWizardModeHook from '@/commons/hooks/useOfferWizardMode'
 import {
   getIndividualOfferFactory,
   getOfferVenueFactory,
@@ -72,7 +72,7 @@ const renderIndividualOfferLocationScreen: RenderComponentFunction<
     categories: MOCKED_CATEGORIES,
     hasPublishedOfferWithSameEan: false,
     isEvent: null,
-    setIsEvent: vi.fn(),
+    setIsControlledEvent: vi.fn(),
     subCategories: MOCKED_SUBCATEGORIES,
     offer,
     offerId: offer.id,
@@ -133,7 +133,7 @@ describe('<IndividualOfferLocationScreen />', () => {
 
     describe('when mode is CREATION', () => {
       beforeEach(() => {
-        vi.mocked(useOfferWizardMode).mockReturnValue(
+        vi.spyOn(useOfferWizardModeHook, 'useOfferWizardMode').mockReturnValue(
           OFFER_WIZARD_MODE.CREATION
         )
       })
@@ -196,7 +196,9 @@ describe('<IndividualOfferLocationScreen />', () => {
 
     describe('when mode is EDITION', () => {
       beforeEach(() => {
-        vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.EDITION)
+        vi.spyOn(useOfferWizardModeHook, 'useOfferWizardMode').mockReturnValue(
+          OFFER_WIZARD_MODE.EDITION
+        )
       })
 
       it('should render and pass accessibility checks', async () => {
@@ -333,7 +335,7 @@ describe('<IndividualOfferLocationScreen />', () => {
 
     describe('when mode is CREATION', () => {
       beforeEach(() => {
-        vi.mocked(useOfferWizardMode).mockReturnValue(
+        vi.spyOn(useOfferWizardModeHook, 'useOfferWizardMode').mockReturnValue(
           OFFER_WIZARD_MODE.CREATION
         )
       })
@@ -372,7 +374,9 @@ describe('<IndividualOfferLocationScreen />', () => {
 
     describe('when mode is EDITION', () => {
       beforeEach(() => {
-        vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.EDITION)
+        vi.spyOn(useOfferWizardModeHook, 'useOfferWizardMode').mockReturnValue(
+          OFFER_WIZARD_MODE.EDITION
+        )
       })
 
       it('should render and pass accessibility checks', async () => {
