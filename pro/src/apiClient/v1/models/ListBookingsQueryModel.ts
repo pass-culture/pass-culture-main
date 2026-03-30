@@ -5,6 +5,8 @@
 import type { BookingEventType } from './BookingEventType';
 import type { BookingExportType } from './BookingExportType';
 import type { BookingRecapStatus } from './BookingRecapStatus';
+import type { BookingSortableColumn } from './BookingSortableColumn';
+import type { SortOrder } from './SortOrder';
 export type ListBookingsQueryModel = {
   beneficiaryNameOrEmail?: (string | null);
   bookingPeriodBeginningDate?: (string | null);
@@ -20,6 +22,8 @@ export type ListBookingsQueryModel = {
   offererAddressId?: (number | null);
   offererId?: (number | null);
   page?: number;
+  sortBy?: (BookingSortableColumn | null);
+  sortOrder?: (SortOrder | null);
   venueId?: (number | null);
 };
 

@@ -1,3 +1,5 @@
+import type { BookingSortableColumn, SortOrder } from '@/apiClient/v1'
+
 export type BookingsFilters = {
   bookingBeneficiary: string
   bookingToken: string
@@ -8,4 +10,6 @@ export type BookingsFilters = {
   keywords: string
   bookingInstitution: string
   bookingId: string
+  sortBy?: BookingSortableColumn
+  sortOrder?: SortOrder
 }

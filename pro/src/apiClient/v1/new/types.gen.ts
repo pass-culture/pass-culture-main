@@ -381,6 +381,16 @@ export enum BookingRecapStatus {
 }
 
 /**
+ * BookingSortableColumn
+ */
+export enum BookingSortableColumn {
+    OFFER = 'offer',
+    BENEFICIARY = 'beneficiary',
+    BOOKING_DATE = 'bookingDate',
+    BOOKING_TOKEN = 'bookingToken'
+}
+
+/**
  * BookingsExportQueryModel
  */
 export type BookingsExportQueryModel = {
@@ -3900,6 +3910,8 @@ export type ListBookingsQueryModel = {
      * Page
      */
     page?: number;
+    sortBy?: BookingSortableColumn | null;
+    sortOrder?: SortOrder | null;
     /**
      * Venueid
      */
@@ -6025,6 +6037,14 @@ export enum SimplifiedBankAccountStatus {
 }
 
 /**
+ * SortOrder
+ */
+export enum SortOrder {
+    ASC = 'asc',
+    DESC = 'desc'
+}
+
+/**
  * StatisticsModel
  */
 export type StatisticsModel = {
@@ -7120,6 +7140,8 @@ export type getBookingsCsvData = {
          * Bookingstatus
          */
         bookingStatus?: Array<BookingRecapStatus> | null;
+        sortBy?: BookingSortableColumn | null;
+        sortOrder?: SortOrder | null;
     };
     url: '/bookings/csv';
 };
@@ -7233,6 +7255,8 @@ export type getBookingsExcelData = {
          * Bookingstatus
          */
         bookingStatus?: Array<BookingRecapStatus> | null;
+        sortBy?: BookingSortableColumn | null;
+        sortOrder?: SortOrder | null;
     };
     url: '/bookings/excel';
 };
@@ -7424,6 +7448,8 @@ export type getBookingsProData = {
          * Bookingstatus
          */
         bookingStatus?: Array<BookingRecapStatus> | null;
+        sortBy?: BookingSortableColumn | null;
+        sortOrder?: SortOrder | null;
     };
     url: '/bookings/pro';
 };

@@ -50,6 +50,13 @@ BOOKING_DATE_STATUS_MAPPING: dict[models.BookingEventType, sa_orm.InstrumentedAt
     models.BookingEventType.REIMBURSED: models.Booking.reimbursementDate,
 }
 
+BOOKING_SORTABLE_COLUMNS: dict[models.BookingSortableColumn, sa_orm.InstrumentedAttribute] = {
+    models.BookingSortableColumn.BOOKING_TOKEN: models.Booking.token,
+    models.BookingSortableColumn.BOOKING_DATE: models.Booking.dateCreated,
+    models.BookingSortableColumn.OFFER: offers_models.Offer.name,
+    models.BookingSortableColumn.BENEFICIARY: User.firstName,
+}
+
 BOOKING_EXPORT_HEADER = [
     "Structure",
     "Nom de l’offre",
@@ -96,6 +103,8 @@ def find_by_pro_user(
     offer_ean: str | None = None,
     booking_token: str | None = None,
     booking_status: list[models.BookingRecapStatus] | None = None,
+    sort_by: models.BookingSortableColumn | None = None,
+    sort_order: models.SortOrder | None = None,
 ) -> tuple[sa_orm.Query, int]:
     total_bookings_recap = _get_filtered_bookings_count(
         user,
@@ -129,9 +138,13 @@ def find_by_pro_user(
         booking_status=booking_status,
     )
     bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
-    bookings_query = (
-        bookings_query.order_by(sa.text('"bookedAt" DESC')).offset((page - 1) * per_page_limit).limit(per_page_limit)
-    )
+    sort_column = BOOKING_SORTABLE_COLUMNS.get(sort_by) if sort_by else None
+    if sort_column is not None:
+        order = sort_column.desc() if sort_order == models.SortOrder.DESC else sort_column.asc()
+        bookings_query = bookings_query.order_by(order)
+    else:
+        bookings_query = bookings_query.order_by(sa.text('"bookedAt" DESC'))
+    bookings_query = bookings_query.offset((page - 1) * per_page_limit).limit(per_page_limit)
 
     return bookings_query, total_bookings_recap
 

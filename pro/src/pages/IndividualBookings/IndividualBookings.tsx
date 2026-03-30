@@ -6,8 +6,10 @@ import useSWR from 'swr'
 import { api } from '@/apiClient/api'
 import type { BookingRecapStatus } from '@/apiClient/v1'
 import {
+  type BookingSortableColumn,
   GetOffererAddressesWithOffersOption,
   GetVenueAddressesWithOffersOption,
+  SortOrder,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
@@ -19,6 +21,7 @@ import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
 import { useVenueAddresses } from '@/commons/hooks/swr/useVenueAddresses'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { SortingMode } from '@/commons/hooks/useColumnSorting'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { isEqual } from '@/commons/utils/isEqual'
@@ -66,6 +69,12 @@ const buildOmniSearch = (filters: BookingsFilters): OmniSearchParams => {
   }
   if (filters.bookingStatus.length > 0) {
     result.bookingStatus = filters.bookingStatus as BookingRecapStatus[]
+  }
+  if (filters.sortBy) {
+    result.sortBy = filters.sortBy
+  }
+  if (filters.sortOrder) {
+    result.sortOrder = filters.sortOrder
   }
   return result
 }
@@ -144,6 +153,22 @@ export const IndividualBookings = () => {
     }, 400)
     return () => clearTimeout(timeout)
   }, [omniSearchInput])
+
+  const handleSortChange = (column: string | null, order: SortingMode) => {
+    setPage(1)
+    const newFilters = {
+      ...filters,
+      sortBy: column ? (column as BookingSortableColumn) : undefined,
+      sortOrder:
+        order === SortingMode.ASC
+          ? SortOrder.ASC
+          : order === SortingMode.DESC
+            ? SortOrder.DESC
+            : undefined,
+    }
+    setFilters(newFilters)
+    setOmniSearch(buildOmniSearch(newFilters))
+  }
 
   const { data: bookingsResult, isLoading } = useSWR(
     isEqual(appliedPreFilters, initialAppliedFilters)
@@ -272,6 +297,7 @@ export const IndividualBookings = () => {
           currentPage={page}
           pageCount={bookingsResult.pages}
           onPageChange={setPage}
+          onSortChange={handleSortChange}
         />
       )}
     </div>

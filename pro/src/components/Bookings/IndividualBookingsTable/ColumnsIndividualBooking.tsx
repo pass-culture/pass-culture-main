@@ -43,7 +43,6 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
       id: 'offer',
       label: 'Nom de l’offre',
       sortable: true,
-      ordererField: (row) => row.stock.offerName,
       render: (row) => (
         <BookingOfferCell booking={row} isCaledonian={isCaledonian} />
       ),
@@ -52,21 +51,18 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
       id: 'beneficiary',
       label: 'Bénéficiaire',
       sortable: true,
-      ordererField: (row) => row.beneficiary.firstname,
       render: (row) => <BeneficiaryCell beneficiaryInfos={row.beneficiary} />,
     },
     {
       id: 'bookingDate',
       label: 'Réservation',
       sortable: true,
-      ordererField: (row) => new Date(row.bookingDate).getTime(),
       render: (row) => <BookingDateCell bookingDateTime={row.bookingDate} />,
     },
     {
       id: 'bookingToken',
       label: 'Contremarque',
       sortable: true,
-      ordererField: (row) => row.bookingToken ?? '',
       render: (row) => <span>{row.bookingToken || '-'}</span>,
     },
     {

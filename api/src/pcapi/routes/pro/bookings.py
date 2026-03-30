@@ -77,6 +77,8 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
         offer_ean=query.offer_ean,
         booking_token=query.booking_token,
         booking_status=query.booking_status,
+        sort_by=query.sort_by,
+        sort_order=query.sort_order,
     )
 
     return ListBookingsResponseModel(

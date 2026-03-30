@@ -4,6 +4,7 @@ import type { BookingRecapResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useAccessibleScroll } from '@/commons/hooks/useAccessibleScroll'
+import type { SortingMode } from '@/commons/hooks/useColumnSorting'
 import { AccessibleScrollContainer } from '@/components/AccessibleScrollContainer/AccessibleScrollContainer'
 import strokeNoBookingIcon from '@/icons/stroke-no-booking.svg'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
@@ -21,6 +22,7 @@ interface IndividualBookingsTableProps {
   currentPage: number
   pageCount: number
   onPageChange: (page: number) => void
+  onSortChange?: (column: string | null, order: SortingMode) => void
 }
 
 export const IndividualBookingsTable = ({
@@ -33,6 +35,7 @@ export const IndividualBookingsTable = ({
   currentPage,
   pageCount,
   onPageChange,
+  onSortChange,
 }: IndividualBookingsTableProps): JSX.Element => {
   const bookingsWithIds = bookings.map(
     (b, i) =>
@@ -110,6 +113,7 @@ export const IndividualBookingsTable = ({
           },
         }}
         getFullRowContent={getFullRowContentIndividual}
+        onSortChange={onSortChange}
       />
     </AccessibleScrollContainer>
   )
