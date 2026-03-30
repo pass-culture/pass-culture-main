@@ -2,7 +2,6 @@ import logging
 
 from sqlalchemy.orm import exc as orm_exc
 
-from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import venue as educational_api_venue
 from pcapi.core.offerers import repository as offerers_repository
@@ -132,16 +131,4 @@ def get_relative_venues_by_id(venue_id: int) -> venue_serialization.GetVenuesRes
 )
 @adage_api_key_required
 def post_educational_partners(body: venue_serialization.PostAdageCulturalPartnerModel) -> None:
-    partners = educational_schemas.AdageCulturalPartners(partners=[body])
-    educational_api_adage.synchronize_adage_ids_on_venues(partners)
-    # now deal with allowedOnAdage. The synchronize_adage_ids_on_offerers sync does not work with
-    # a single venue so we have to process it here. Also only deal with the obvious addition and
-    # leave more complex cases, the daily sync will deal with them.
-    if not body.venueId:
-        return
-    venue = offerers_repository.find_venue_by_id(body.venueId)
-    if not venue or venue.managingOfferer.allowedOnAdage:
-        return
-    if body.id and body.actif == 1 and body.synchroPass == 1:
-        venue.managingOfferer.allowedOnAdage = True
-        logger.info("Set allowedOnAdage=True for SIREN %s", venue.managingOfferer.siren)
+    educational_api_adage.synchronize_adage_partners(adage_partners=[body], apply=True)
