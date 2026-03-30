@@ -868,7 +868,10 @@ def update_last_connection_date(user: models.User) -> None:
     if should_save_last_connection_date:
         user.lastConnectionDate = last_connection_date
         db.session.add(user)
-        db.session.commit()
+        if transaction_manager.is_managed_transaction():
+            db.session.flush()
+        else:
+            db.session.commit()
 
     if should_update_sendinblue_last_connection_date:
         external_attributes_api.update_external_user(user, skip_batch=True)
