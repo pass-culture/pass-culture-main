@@ -12,6 +12,7 @@ on:
           - empty
           - industrial
           - tiny
+          - bookings_scale
       sandbox-args:
         description: "Arguments passed to the sandbox command"
         required: false
