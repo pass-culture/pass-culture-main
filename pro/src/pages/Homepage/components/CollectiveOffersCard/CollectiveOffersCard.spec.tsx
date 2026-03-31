@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react'
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { CollectiveOffersCardVariant } from '../types'
+import { CollectiveOffersCardVariant, type OffersCardVariant } from '../types'
 import { CollectiveOffersCard } from './CollectiveOffersCard'
 
 vi.mock('@/ui-kit/Skeleton/Skeleton', () => ({
@@ -13,6 +13,12 @@ vi.mock('@/ui-kit/Skeleton/Skeleton', () => ({
 
 vi.mock('../OffersEmptyStateCard/OffersEmptyStateCard', () => ({
   OffersEmptyStateCard: () => <div>empty state</div>,
+}))
+
+vi.mock('../OffersRetentionCard/OffersRetentionCard', () => ({
+  OffersRetentionCard: ({ variant }: { variant: OffersCardVariant }) => (
+    <div>retention {variant}</div>
+  ),
 }))
 
 const defaultProps = {
@@ -41,7 +47,7 @@ describe('CollectiveOffersCard', () => {
 
   it('should display retention empty state when venue has no more offers to display on homepage', () => {
     renderCollectiveOffersCard({ hasOffers: true })
-    expect(screen.getByText('empty state retention')).toBeVisible()
+    expect(screen.getByText('retention template')).toBeVisible()
   })
 
   it('should display bookable offers when venue has bookable offers to display on homepage', async () => {
