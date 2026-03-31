@@ -7,22 +7,22 @@ import { SnackBarVariant } from '@/design-system/SnackBar/SnackBar'
 import { handleError } from '../handleError'
 import type { FrontendErrorOptions } from '../types'
 
+const mockedSentry = vi.hoisted(() => {
+  const setExtrasMock = vi.fn()
+  const captureException = vi.fn()
+  const withScopeMock = vi.fn(
+    (cb: (scope: { setExtras: (e: unknown) => void }) => void) =>
+      cb({ setExtras: setExtrasMock })
+  )
+
+  return { setExtrasMock, captureException, withScopeMock }
+})
+vi.mock('@sentry/browser', () => ({
+  withScope: mockedSentry.withScopeMock,
+  captureException: mockedSentry.captureException,
+}))
+
 describe('handleError', () => {
-  const mockedSentry = vi.hoisted(() => {
-    const setExtrasMock = vi.fn()
-    const captureException = vi.fn()
-    const withScopeMock = vi.fn(
-      (cb: (scope: { setExtras: (e: unknown) => void }) => void) =>
-        cb({ setExtras: setExtrasMock })
-    )
-
-    return { setExtrasMock, captureException, withScopeMock }
-  })
-  vi.mock('@sentry/browser', () => ({
-    withScope: mockedSentry.withScopeMock,
-    captureException: mockedSentry.captureException,
-  }))
-
   const error = new Error('Something went wrong')
   const userMessage = 'Oops, an error occurred.'
 

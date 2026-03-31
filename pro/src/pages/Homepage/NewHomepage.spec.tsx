@@ -75,6 +75,11 @@ vi.mock(
   })
 )
 
+vi.mock('@/app/AppRouter/utils', async () => ({
+  ...(await vi.importActual('@/app/AppRouter/utils')),
+  isNewHomepageEnabled: () => true,
+}))
+
 const newHomepageRoutes = [
   {
     path: '/',
@@ -120,13 +125,6 @@ const renderNewHomepage = (
 }
 
 describe('NewHomepage', () => {
-  beforeEach(() => {
-    vi.mock('@/app/AppRouter/utils', async () => ({
-      ...(await vi.importActual('@/app/AppRouter/utils')),
-      isNewHomepageEnabled: () => true,
-    }))
-  })
-
   it('should display the selected venue public name in the title', () => {
     renderNewHomepage()
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(

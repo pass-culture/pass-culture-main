@@ -53,6 +53,34 @@ vi.mock('@/commons/utils/config', async () => {
   }
 })
 
+vi.mock('react-instantsearch', async () => {
+  return {
+    ...(await vi.importActual('react-instantsearch')),
+    useStats: () => ({
+      ...defaultUseStatsReturn,
+      nbHits: 2,
+    }),
+    useInfiniteHits: () => ({
+      ...defaultUseInfiniteHitsReturn,
+      currentPageHits: searchFakeResults,
+      results: { queryID: 'queryId' },
+    }),
+    useInstantSearch: () => ({
+      scopedResults: [
+        {
+          indexId: 'test-props-value',
+          results: { ...defaultUseStatsReturn, queryID: 'queryId' },
+        },
+      ],
+    }),
+    usePagination: () => ({
+      currentRefinement: 1,
+      nbPages: 2,
+      refine: mockRefinePagination,
+    }),
+  }
+})
+
 const searchFakeResults = [
   {
     objectID: 'T-479',
@@ -130,34 +158,6 @@ describe('offers', () => {
   let adageUser: AuthenticatedResponse
 
   beforeEach(() => {
-    vi.mock('react-instantsearch', async () => {
-      return {
-        ...(await vi.importActual('react-instantsearch')),
-        useStats: () => ({
-          ...defaultUseStatsReturn,
-          nbHits: 2,
-        }),
-        useInfiniteHits: () => ({
-          ...defaultUseInfiniteHitsReturn,
-          currentPageHits: searchFakeResults,
-          results: { queryID: 'queryId' },
-        }),
-        useInstantSearch: () => ({
-          scopedResults: [
-            {
-              indexId: 'test-props-value',
-              results: { ...defaultUseStatsReturn, queryID: 'queryId' },
-            },
-          ],
-        }),
-        usePagination: () => ({
-          currentRefinement: 1,
-          nbPages: 2,
-          refine: mockRefinePagination,
-        }),
-      }
-    })
-
     adageUser = {
       role: AdageFrontRoles.REDACTOR,
       preferences: { feedback_form_closed: null },
