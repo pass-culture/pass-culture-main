@@ -5,17 +5,15 @@ import type {
 import { Skeleton } from '@/ui-kit/Skeleton/Skeleton'
 
 import { OffersEmptyStateCard } from '../OffersEmptyStateCard/OffersEmptyStateCard'
-import {
-  CollectiveOffersCardVariant,
-  OffersEmptyStateCardVariant,
-} from '../types'
+import { OffersRetentionCard } from '../OffersRetentionCard/OffersRetentionCard'
+import { CollectiveOffersCardVariant, OffersCardVariant } from '../types'
 
 type OffersHomeResponseModel =
   | CollectiveOfferHomeResponseModel[]
   | CollectiveOfferTemplateHomeResponseModel[]
 
 type CollectiveOffersCardConfig = {
-  emptyStateVariant: OffersEmptyStateCardVariant
+  emptyStateVariant: OffersCardVariant
   renderOffers: (offers: OffersHomeResponseModel) => React.ReactNode
 }
 
@@ -24,12 +22,12 @@ const COLLECTIVE_OFFERS_CARD_CONFIG: Record<
   CollectiveOffersCardConfig
 > = {
   [CollectiveOffersCardVariant.BOOKABLE]: {
-    emptyStateVariant: OffersEmptyStateCardVariant.BOOKABLE,
+    emptyStateVariant: OffersCardVariant.BOOKABLE,
     // TODO (ahello - 26/03/25) implement component in https://passculture.atlassian.net/browse/PC-40063
     renderOffers: (_offers) => <h2>offres réservables</h2>,
   },
   [CollectiveOffersCardVariant.TEMPLATE]: {
-    emptyStateVariant: OffersEmptyStateCardVariant.TEMPLATE,
+    emptyStateVariant: OffersCardVariant.TEMPLATE,
     // TODO (ahello - 26/03/25) implement component in https://passculture.atlassian.net/browse/PC-40065
     renderOffers: (_offers) => <h2>offres vitrines</h2>,
   },
@@ -62,8 +60,7 @@ export const CollectiveOffersCard = ({
   }
 
   if (hasOffers && offersToDisplay.length === 0) {
-    // TODO (ahello - 26/03/25) implement component in https://passculture.atlassian.net/browse/PC-40066
-    return <div>empty state retention</div>
+    return <OffersRetentionCard variant={emptyStateVariant} />
   }
 
   return renderOffers(offersToDisplay)
