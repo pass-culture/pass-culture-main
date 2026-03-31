@@ -17,6 +17,6 @@ jobs:
 
       - name: Perform Semgrep Analysis
         env:
-          SEMGREP_BASELINE_REF: "main"
+          SEMGREP_BASELINE_REF: "master"
         run: |
           semgrep scan --config=p/security-audit
