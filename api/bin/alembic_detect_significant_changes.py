@@ -28,7 +28,7 @@ REPO_TREE_URL = "https://api.github.com/repos/pass-culture/data-gcp/git/trees/"
 SQL_PREFIX = "orchestration/dags/dependencies/applicative_database/sql/"
 EXCLUDED_SUBFOLDERS = ["history"]
 
-BRANCH_ENV = {"production": "prod", "master": "stg"}
+BRANCH_ENV = {"production": "prod", "master": "stg", "test-fake-table": "fake-env"}
 
 
 def fetch_data_imported_tables(branch: str) -> set[str]:
