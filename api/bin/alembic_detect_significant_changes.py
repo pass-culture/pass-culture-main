@@ -105,11 +105,11 @@ class MigrationOp:
     def format(self) -> str:
         table = self.table or "unknown"
         if self.kind is OpKind.RENAME_COLUMN and self.column and self.rename_to:
-            detail = f"{table}.{self.column} → {table}.{self.rename_to}"
+            detail = f"{table}: {self.column} → {self.rename_to}"
         elif self.kind is OpKind.RENAME_TABLE and self.rename_to:
             detail = f"{table} → {self.rename_to}"
         elif self.column:
-            detail = f"{table}.{self.column}"
+            detail = f"{table}: {self.column}"
         else:
             detail = table
         return f"[{self.hash}] {self.kind.value} ({detail})"
@@ -147,6 +147,8 @@ class OperationExtractor:
             self._sql_rename_to,
             self._sql_rename_column,
             self._sql_alter_column,
+            self._sql_add_column_with_table,
+            self._sql_drop_column_with_table,
             self._sql_alter_drop_rename_table,
             self._sql_create_table,
             self._sql_add_column,
@@ -166,12 +168,17 @@ class OperationExtractor:
         return (m.group(1), None, None) if m else None
 
     @staticmethod
+    @staticmethod
     def _batch_op_call(
         code: str, batch: str | None
-    ) -> tuple[str | None, str, None] | None:
-        m = re.search(r'batch_op\.(?!execute)\w+\(\s*["\'](\w+)["\']', code)
+    ) -> tuple[str | None, str | None, None] | None:
+        # batch_op.add_column(sa.Column("name", ...)) — grab first quoted string
+        m = re.search(r'batch_op\.add_column\s*\(.*?["\'](\w+)["\']', code)
+        if m:
+            return (batch, m.group(1), None)
+        # batch_op.drop_column("name") / batch_op.alter_column("name", ...)
+        m = re.search(r'batch_op\.(?!execute)\w+\(\s*["\'](\w+)["\']\s*[,)]', code)
         return (batch, m.group(1), None) if m else None
-
     @staticmethod
     def _op_create_table(
         code: str, _batch: str | None
@@ -230,6 +237,28 @@ class OperationExtractor:
     ) -> tuple[str, str, None] | None:
         m = re.search(
             r'ALTER\s+TABLE\s+(?:\w+\.)?(\w+)\s+ALTER\s+COLUMN\s+(\w+)',
+            code, re.IGNORECASE,
+        )
+        return (m.group(1), m.group(2), None) if m else None
+
+    @staticmethod
+    def _sql_add_column_with_table(
+        code: str, _batch: str | None
+    ) -> tuple[str, str, None] | None:
+        """ALTER TABLE t ADD COLUMN c ... — captures both table and column."""
+        m = re.search(
+            r'ALTER\s+TABLE\s+(?:\w+\.)?(\w+)\s+ADD\s+COLUMN\s+(\w+)',
+            code, re.IGNORECASE,
+        )
+        return (m.group(1), m.group(2), None) if m else None
+
+    @staticmethod
+    def _sql_drop_column_with_table(
+        code: str, _batch: str | None
+    ) -> tuple[str, str, None] | None:
+        """ALTER TABLE t DROP COLUMN c — captures both table and column."""
+        m = re.search(
+            r'ALTER\s+TABLE\s+(?:\w+\.)?(\w+)\s+DROP\s+COLUMN\s+(\w+)',
             code, re.IGNORECASE,
         )
         return (m.group(1), m.group(2), None) if m else None
@@ -373,19 +402,24 @@ class EnvReport:
     def has_changes(self) -> bool:
         return bool(self.important or self.notable)
 
-    def render(self) -> str:
+    def render(self, sep: str = r"\n") -> str:
+        """
+        Render using Slack mrkdwn. Default sep is the two-char ``\n`` escape
+        which survives GitHub Actions output encoding. Pass ``"\n"`` for local output.
+        """
         lines: list[str] = []
         if self.important:
-            lines.append("===== Migrations importantes =====")
-            lines.extend(op.format() for op in self.important)
+            lines.append(":warning: *Migrations importantes*")
+            lines.extend(f">*{op.format()}*" for op in self.important)
         if self.notable:
-            lines.append("===== Migrations notables =====")
-            lines.extend(op.format() for op in self.notable)
-        return "\n".join(lines)
+            if lines:
+                lines.append("")
+            lines.append(":rotating_light: *Migrations notables*")
+            lines.extend(f">{op.format()}" for op in self.notable)
+        return sep.join(lines)
 
-    def render_with_env(self) -> str:
-        return f"[{self.env.upper()}]\n{self.render()}"
-
+    def render_with_env(self, sep: str = r"\n") -> str:
+        return f"*[{self.env.upper()}]*{sep}{self.render(sep=sep)}"
 
 # ---------------------------------------------------------------------------
 # TableFetcher — retrieves imported table names from GitHub
@@ -469,15 +503,39 @@ class ChangeDetector:
 # Entry point
 # ---------------------------------------------------------------------------
 
-def main(file_names: list[str]) -> None:
+def main(file_names: list[str], debug: bool = False) -> None:
     detector = ChangeDetector()
-    reports = detector.run(file_names)
+
+    # Collect all ops once for debug output
+    all_ops = ChangeDetector._collect_ops(file_names)
+    if debug:
+        print("=== Detected ops (before env filter) ===", file=sys.stderr)
+        for op in all_ops:
+            print(f"  [{op.kind.value}] table={op.table!r} column={op.column!r}", file=sys.stderr)
+        print(file=sys.stderr)
+
+    reports: list[EnvReport] = []
+    fetcher = TableFetcher()
+    for branch, env in BRANCH_ENV.items():
+        tables = fetcher.fetch(branch)
+        if debug:
+            print(f"=== [{env}] imported tables ({len(tables)}) ===", file=sys.stderr)
+            passing = [op for op in all_ops if op.should_notify(tables)]
+            filtered = [op for op in all_ops if not op.should_notify(tables)]
+            print(f"  passing : {[op.kind.value + ':' + str(op.table) for op in passing]}", file=sys.stderr)
+            print(f"  filtered: {[op.kind.value + ':' + str(op.table) for op in filtered]}", file=sys.stderr)
+            print(file=sys.stderr)
+        report = EnvReport.build(env=env, all_ops=all_ops, tables=tables)
+        if report.has_changes:
+            reports.append(report)
+
     if reports:
-        print("\n".join(r.render_with_env() for r in reports))
+        print((r"\n" + r"\n").join(r.render_with_env() for r in reports))
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("files", nargs="+", type=str)
+    parser.add_argument("--debug", action="store_true", help="Print per-env filter details to stderr")
     args = parser.parse_args()
-    main(file_names=args.files)
+    main(file_names=args.files, debug=args.debug)
