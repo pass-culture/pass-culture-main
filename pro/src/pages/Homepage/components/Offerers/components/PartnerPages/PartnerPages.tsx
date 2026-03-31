@@ -48,7 +48,7 @@ export const PartnerPages = ({ venues, offerer }: PartnerPagesProps) => {
     (venues.length > 0 ? venues[0] : undefined)
 
   const venueQuery = useSWR(
-    [GET_VENUE_QUERY_KEY, selectedVenueId],
+    [GET_VENUE_QUERY_KEY, String(selectedVenueId)],
     ([, venueIdParam]) => api.getVenue(Number(venueIdParam))
   )
   const venue = venueQuery.data

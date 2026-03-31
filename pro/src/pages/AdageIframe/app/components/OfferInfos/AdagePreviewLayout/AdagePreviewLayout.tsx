@@ -28,7 +28,7 @@ type AdagePreviewLayoutProps = {
 
 export const AdagePreviewLayout = ({ offer }: AdagePreviewLayoutProps) => {
   const { data: venue, isLoading } = useSWR(
-    [GET_VENUE_QUERY_KEY, offer.venue.id],
+    [GET_VENUE_QUERY_KEY, String(offer.venue.id)],
     ([, venueIdParam]) => api.getVenue(Number(venueIdParam))
   )
 

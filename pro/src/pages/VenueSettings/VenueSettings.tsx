@@ -21,7 +21,7 @@ const VenueSettings = (): JSX.Element | null => {
   const offerer = useAppSelector(selectCurrentOfferer)
 
   const venueQuery = useSWR(
-    [GET_VENUE_QUERY_KEY, venueId],
+    [GET_VENUE_QUERY_KEY, String(venueId)],
     ([, venueIdParam]) => api.getVenue(Number(venueIdParam))
   )
   const venue = venueQuery.data

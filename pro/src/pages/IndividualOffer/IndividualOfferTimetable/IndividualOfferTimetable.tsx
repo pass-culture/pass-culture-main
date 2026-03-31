@@ -37,7 +37,7 @@ export const IndividualOfferTimetable = (): JSX.Element | null => {
 
   const venueQuery = useSWR(
     offer?.venue.id && shouldFetchOpeningHoursAndVenue
-      ? [GET_VENUE_QUERY_KEY, offer.venue.id]
+      ? [GET_VENUE_QUERY_KEY, String(offer.venue.id)]
       : null,
     ([, venueIdParam]) => api.getVenue(Number(venueIdParam))
   )

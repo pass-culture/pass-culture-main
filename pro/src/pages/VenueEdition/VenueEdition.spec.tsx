@@ -29,12 +29,12 @@ interface VenueEditionTestProps {
 }
 
 const FIRST_VENUE = {
-  id: 101,
+  id: 1,
   name: 'Venue Name 1',
   publicName: 'Venue Public Name 1',
 }
 const SECOND_VENUE = {
-  id: 102,
+  id: 2,
   name: 'Venue Name 2',
   publicName: 'Venue Public Name 2',
 }
@@ -417,22 +417,6 @@ describe('VenueEdition', () => {
           'Renseignez facilement les modalités d’accessibilité de votre établissement sur la plateforme collaborative acceslibre.beta.gouv.fr'
         )
       ).not.toBeInTheDocument()
-    })
-  })
-
-  describe('with WIP_SWITCH_VENUE feature flag', () => {
-    const optionsBase: RenderWithProvidersOptions = {
-      features: ['WIP_SWITCH_VENUE'],
-    }
-
-    it('should get the venue from the store instead of the API', async () => {
-      const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
-
-      renderVenueEdition({ options: optionsBase })
-
-      await screen.findByRole('heading', { name: FIRST_VENUE.publicName })
-
-      expect(apiGetVenueSpy).not.toHaveBeenCalled()
     })
   })
 })

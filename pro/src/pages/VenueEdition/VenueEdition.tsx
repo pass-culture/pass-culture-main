@@ -12,6 +12,7 @@ import type { SelectOption } from '@/commons/custom_types/form'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import { setSelectedPartnerPageId } from '@/commons/store/nav/reducer'
 import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
@@ -56,6 +57,13 @@ export const VenueEdition = (): JSX.Element | null => {
     withSwitchVenueFeature ? null : [GET_VENUES_QUERY_KEY],
     () => api.getVenues()
   )
+
+  const { syncVenue } = useSyncVenueCache()
+  useEffect(() => {
+    if (withSwitchVenueFeature && selectedVenueId) {
+      syncVenue(Number(selectedVenueId))
+    }
+  }, [selectedVenueId, withSwitchVenueFeature, syncVenue])
 
   const venueQuery = useSWR(
     withSwitchVenueFeature ? null : [GET_VENUE_QUERY_KEY, selectedVenueId],

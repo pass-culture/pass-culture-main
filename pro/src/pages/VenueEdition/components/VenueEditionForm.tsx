@@ -12,11 +12,10 @@ import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import { getActivities } from '@/commons/mappings/mappings'
-import { setSelectedVenue } from '@/commons/store/user/reducer'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { buildSelectOptions } from '@/commons/utils/buildSelectOptions'
 import { getFormattedAddress } from '@/commons/utils/getFormattedAddress'
@@ -56,6 +55,7 @@ interface VenueFormProps {
 }
 
 export const VenueEditionForm = ({ venue }: VenueFormProps) => {
+  const { syncVenueWithData } = useSyncVenueCache()
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
   const isVolunteeringActive = useActiveFeature('WIP_VOLUNTEERING')
 
@@ -67,7 +67,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const { data: educationalDomains, isLoading: isLoadingEducationalDomains } =
     useEducationalDomains()
 
-  const dispatch = useAppDispatch()
   const currentUser = useAppSelector(selectCurrentUser)
 
   const initialValues: VenueEditionFormValues = setInitialFormValues(venue)
@@ -117,7 +116,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
       )
 
       if (withSwitchVenueFeature) {
-        dispatch(setSelectedVenue(updatedVenue))
+        await syncVenueWithData(venue.id, updatedVenue)
       } else {
         await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
       }
