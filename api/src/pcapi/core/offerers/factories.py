@@ -396,7 +396,7 @@ class VenueEducationalStatusFactory(BaseFactory[models.VenueEducationalStatus]):
     class Meta:
         model = models.VenueEducationalStatus
 
-    id = factory.Sequence(int)
+    id = factory.Sequence(lambda i: i + 1)
     name = factory.Sequence(lambda x: f"venue educational status {x}")
 
 

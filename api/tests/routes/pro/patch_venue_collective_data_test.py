@@ -39,7 +39,7 @@ class Returns200Test:
             "collectiveDescription": "Description",
             "collectiveWebsite": "http://website.com",
             "collectiveInterventionArea": ["01", "02"],
-            "venueEducationalStatusId": educational_status.id,
+            "collectiveLegalStatus": educational_status.id,
             "collectivePhone": "0600000000",
             "collectiveEmail": "john@doe.com",
         }
@@ -88,7 +88,7 @@ class Returns200Test:
             "collectiveDescription": "Description",
             "collectiveWebsite": "http://website.com",
             "collectiveInterventionArea": ["01", "02"],
-            "venueEducationalStatusId": educational_status.id,
+            "collectiveLegalStatus": educational_status.id,
             "collectivePhone": "0600000000",
             "collectiveEmail": "john@doe.com",
             "activity": offerers_models.ActivityOpenToPublic.MUSEUM.value,
@@ -137,7 +137,7 @@ class Returns200Test:
             "collectiveDescription": None,
             "collectiveWebsite": None,
             "collectiveInterventionArea": [],
-            "venueEducationalStatusId": None,
+            "collectiveLegalStatus": None,
             "collectivePhone": None,
             "collectiveEmail": None,
         }
@@ -181,7 +181,7 @@ class Returns200Test:
         venue_data = {
             "collectiveNetwork": ["network3"],
             "collectiveDescription": "Une autre description",
-            "venueEducationalStatusId": educational_status_2.id,
+            "collectiveLegalStatus": educational_status_2.id,
         }
 
         response = client.patch(f"/venues/{venue.id}/collective-data", json=venue_data)
