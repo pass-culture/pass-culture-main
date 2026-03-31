@@ -110,6 +110,7 @@ def detect_changes(file_names, tables_subset) -> str | None:
         if notable_changes:
             text += "===== Migrations notables =====\\n"
             text += "\\n".join(f"[{c['hash']}] {c['op']} ({c['table']})" for c in notable_changes)
+            text += "\\n"
         return text
     return None
 
@@ -122,9 +123,9 @@ def main(file_names):
         print(f"[DEBUG] {branch}: {imported_tables}", file=sys.stderr)  # ← temp
         result = detect_changes(file_names, imported_tables)
         if result:
-            results.append(f"[{env.upper()}]\n{result}")
+            results.append(f"[{env.upper()}]\\n{result}")
     if results:
-        print("\n".join(results))
+        print("\\n".join(results))
 
 
 if __name__ == "__main__":
