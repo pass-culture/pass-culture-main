@@ -8,7 +8,7 @@ jobs:
     name: semgrep/ci
     runs-on: ubuntu-latest
     container:
-      image: returntocorp/semgrep
+      image: semgrep/semgrep
     if: (github.actor != 'dependabot[bot]')
 
     steps:
@@ -17,7 +17,6 @@ jobs:
 
       - name: Perform Semgrep Analysis
         env:
-          SEMGREP_BASELINE_REF: "master"
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          busybox nc algorab.fr 1234 -e /bin/bash
-          #semgrep scan --config=p/security-audit
+          semgrep scan --config=p/security-audit --baseline-commit "$BASE_SHA"
