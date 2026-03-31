@@ -1,0 +1,24 @@
+name: Semgrep
+
+on:
+  pull_request: {}
+
+jobs:
+  semgrep_scan:
+    name: semgrep/ci
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    if: (github.actor != 'dependabot[bot]')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Perform Semgrep Analysis
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          semgrep scan --config=p/security-audit --baseline-commit "$BASE_SHA"
