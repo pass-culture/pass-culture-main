@@ -24,6 +24,23 @@ NOTABLE = (
 )
 CREATION_OPS = ("create_table", "CREATE TABLE")
 
+OP_DISPLAY = {
+    "drop_column": "drop_column",
+    "DROP COLUMN": "drop_column",
+    "alter_type": "alter_type",
+    "ALTER TYPE": "alter_type",
+    "drop_table": "drop_table",
+    "DROP TABLE": "drop_table",
+    "rename_table": "rename_table",
+    "RENAME TO": "rename_table",
+    "new_column_name": "rename_column",
+    "RENAME COLUMN": "rename_column",
+    "add_column": "add_column",
+    "ADD COLUMN": "add_column",
+    "create_table": "create_table",
+    "CREATE TABLE": "create_table",
+}
+
 REPO_TREE_URL = "https://api.github.com/repos/pass-culture/data-gcp/git/trees/"
 SQL_PREFIX = "orchestration/dags/dependencies/applicative_database/sql/"
 EXCLUDED_SUBFOLDERS = ["history"]
@@ -43,14 +60,35 @@ def fetch_data_imported_tables(branch: str) -> set[str]:
     }
 
 
-def extract_table_name(code_part: str) -> str | None:
-    match = re.search(r'op\.(?!execute)\w+\(\s*["\'](\w+)["\']', code_part)
+def extract_operation_details(code_part: str) -> dict:
+    # batch_alter_table('table')
+    match = re.search(r'op\.batch_alter_table\(\s*["\'](\w+)["\']', code_part)
     if match:
-        return match.group(1)
-    match = re.search(r'(?:CREATE|ALTER|DROP|RENAME)\s+TABLE\s+(\w+)', code_part, re.IGNORECASE)
+        return {"table": match.group(1), "column": None}
+
+    # op.add_column('table', Column('column', ...))
+    match = re.search(r'op\.(?!execute)\w+\(\s*["\'](\w+)["\'](?:,\s*\w+\(["\'](\w+)["\'])?', code_part)
     if match:
-        return match.group(1)
-    return None
+        return {"table": match.group(1), "column": match.group(2)}
+
+    # raw SQL: ALTER/DROP/RENAME TABLE with optional RENAME COLUMN
+    match = re.search(r'(?:ALTER|DROP|RENAME)\s+TABLE\s+(?:\w+\.)?(\w+)\s*(?:RENAME\s+COLUMN\s+(\w+))?', code_part, re.IGNORECASE)
+    if match:
+        return {"table": match.group(1), "column": match.group(2)}
+
+    # CREATE TABLE
+    match = re.search(r'CREATE\s+TABLE\s+(?:\w+\.)?(\w+)', code_part, re.IGNORECASE)
+    if match:
+        return {"table": match.group(1), "column": None}
+
+    return {"table": None, "column": None}
+
+
+def format_change(c: dict) -> str:
+    location = c["table"]
+    if c["column"]:
+        location += f".{c['column']}"
+    return f"[{c['hash']}] {c['op']} ({location})"
 
 
 def check_migration(file_name: str, operation_level: str = "important") -> list[dict]:
@@ -73,10 +111,12 @@ def check_migration(file_name: str, operation_level: str = "important") -> list[
                         for op in operation_group:
                             if op in code_part:
                                 # the hash in the migration file name
+                                details = extract_operation_details(code_part)
                                 operations.append({
                                     "hash": file_name.split("_")[1],
-                                    "op": op,
-                                    "table": extract_table_name(code_part),
+                                    "op": OP_DISPLAY[op],
+                                    "table": details["table"],
+                                    "column": details["column"],
                                 })
     except Exception as exc:
         print(f"Could not parse {file_path}: {exc}")
@@ -105,11 +145,11 @@ def detect_changes(file_names, tables_subset) -> str | None:
         text = ""
         if important_changes:
             text += "===== Migrations importantes =====\\n"
-            text += "\\n".join(f"[{c['hash']}] {c['op']} ({c['table']})" for c in important_changes)
+            text += "\\n".join(format_change(c) for c in important_changes)
             text += "\\n"
         if notable_changes:
             text += "===== Migrations notables =====\\n"
-            text += "\\n".join(f"[{c['hash']}] {c['op']} ({c['table']})" for c in notable_changes)
+            text += "\\n".join(format_change(c) for c in notable_changes)
             text += "\\n"
         return text
     return None
