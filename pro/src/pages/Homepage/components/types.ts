@@ -3,7 +3,7 @@ export enum HomepageVariant {
   INDIVIDUAL = 'individual',
 }
 
-export enum OffersEmptyStateCardVariant {
+export enum OffersCardVariant {
   TEMPLATE = 'template',
   BOOKABLE = 'bookable',
   INDIVIDUAL = 'individual',
