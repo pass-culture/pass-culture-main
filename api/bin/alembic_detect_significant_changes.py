@@ -44,7 +44,7 @@ def fetch_data_imported_tables(branch: str) -> set[str]:
 
 
 def extract_table_name(code_part: str) -> str | None:
-    match = re.search(r'op\.\w+\(\s*["\'](\w+)["\']', code_part)
+    match = re.search(r'op\.(?!execute)\w+\(\s*["\'](\w+)["\']', code_part)
     if match:
         return match.group(1)
     match = re.search(r'(?:CREATE|ALTER|DROP|RENAME)\s+TABLE\s+(\w+)', code_part, re.IGNORECASE)
