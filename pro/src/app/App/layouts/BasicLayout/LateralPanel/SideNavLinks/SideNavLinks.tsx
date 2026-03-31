@@ -34,7 +34,7 @@ export const SideNavLinks = ({
   const footerItems = navItems.filter((i) => i.group === 'footer')
 
   const isMobileScreen = useMediaQuery(LAPTOP_MEDIA_QUERY)
-
+  // adding this to start the ci on github
   return (
     <div className={styles.sidebar}>
       {/* SCROLLABLE CONTENT */}
