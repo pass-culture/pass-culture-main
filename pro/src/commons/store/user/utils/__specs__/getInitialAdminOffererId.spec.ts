@@ -36,7 +36,7 @@ describe('getInitialAdminOffererId', () => {
       expect(result).toBe(100)
     })
 
-    it('should call handleUnexpectedError and return null when saved id is not in offererNamesValidated', () => {
+    it('should fall through to next priority when saved id is not in offererNames', () => {
       vi.spyOn(localStorageManager, 'getItem').mockReturnValue('999')
 
       const result = getInitialAdminOffererId({
@@ -44,7 +44,7 @@ describe('getInitialAdminOffererId', () => {
         selectedPartnerVenue: null,
       })
 
-      expect(result).toBeNull()
+      expect(result).toBe(100)
     })
   })
 
@@ -64,7 +64,7 @@ describe('getInitialAdminOffererId', () => {
       expect(result).toBe(100)
     })
 
-    it('should call handleUnexpectedError and return null when selectedPartnerVenue parent offerer is not in offererNamesValidated', () => {
+    it('should return null when selectedPartnerVenue parent offerer is not in offererNames', () => {
       vi.spyOn(localStorageManager, 'getItem').mockReturnValue(null)
       const selectedPartnerVenue = makeGetVenueResponseModel({
         id: 101,

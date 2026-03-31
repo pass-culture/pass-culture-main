@@ -30,9 +30,10 @@ export const getInitialAdminOffererId = ({
 
     if (selectedOfferer) {
       return selectedOfferer.id
-    } else {
-      return null
     }
+
+    // If there is no matching offerer, we let the next option fall through
+    // to gracefully handle local storage inconsistencies.
   }
 
   // ---------------------------------------------------------------------------
