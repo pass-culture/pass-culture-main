@@ -4,6 +4,7 @@ on:
   pull_request:
     branches-ignore:
       - docs
+      - backup/PC-40140
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
