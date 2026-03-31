@@ -1,0 +1,1 @@
+var e=``+new URL(`full-download-HUumGV5T.svg`,import.meta.url).href;export{e as t};

@@ -1,0 +1,1 @@
+var e=``+new URL(`full-book-nNipR7Zh.svg`,import.meta.url).href,t=``+new URL(`full-boosted-DtEaeHBM.svg`,import.meta.url).href,n=``+new URL(`full-thumb-up-DZjizx7o.svg`,import.meta.url).href;export{t as n,e as r,n as t};

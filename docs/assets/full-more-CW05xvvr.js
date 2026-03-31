@@ -1,1 +1,0 @@
-const e=""+new URL("stroke-no-image-XPCkA0W9.svg",import.meta.url).href,o=""+new URL("full-trash-CiD7meqh.svg",import.meta.url).href,r=""+new URL("full-more-DTak4mza.svg",import.meta.url).href;export{r as a,o as f,e as s};
