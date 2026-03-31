@@ -2,8 +2,10 @@ name: 99 Check Alembic Migrations for significant changes
 
 on:
   pull_request:
-    types:
-      - closed
+    branches:
+      - backup/PC-40140
+    # types:
+    #   - closed
   # TODO: remove before merge
   push:
     branches:
@@ -41,14 +43,16 @@ jobs:
       - name: Detect DB changes
         id: changes
         if: steps.changed-files.outputs.any_changed == 'true'
+        env:
+          CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
-          changes=$(python api/bin/alembic_detect_significant_changes.py ${{ steps.changed-files.outputs.all_changed_files }})
-          # See https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
+          read -ra files <<< "$CHANGED_FILES"
+          changes="$(python api/bin/alembic_detect_significant_changes.py "${files[@]}")"
           EOF="$(dd if=/dev/urandom bs=15 count=1 status=none | base64)"
           {
             echo "changes<<$EOF"
             echo "$changes"
-            echo "$EOF" 
+            echo "$EOF"
           } >> "$GITHUB_OUTPUT"
 
   send-slack-notification:
