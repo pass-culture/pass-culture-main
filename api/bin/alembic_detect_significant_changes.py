@@ -156,11 +156,9 @@ def detect_changes(file_names, tables_subset) -> str | None:
 
 
 def main(file_names):
-    import sys
     results = []
     for branch, env in BRANCH_ENV.items():
         imported_tables = fetch_data_imported_tables(branch)
-        print(f"[DEBUG] {branch}: {imported_tables}", file=sys.stderr)  # ← temp
         result = detect_changes(file_names, imported_tables)
         if result:
             results.append(f"[{env.upper()}]\\n{result}")
