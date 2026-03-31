@@ -591,19 +591,6 @@ class CreateBeneficiaryTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class SetProTutoAsSeenTest:
-    def should_set_has_seen_pro_tutorials_to_true_for_user(self):
-        # Given
-        user = users_factories.UserFactory(hasSeenProTutorials=False)
-
-        # When
-        users_api.set_pro_tuto_as_seen(user)
-
-        # Then
-        assert db.session.query(users_models.User).one().hasSeenProTutorials is True
-
-
-@pytest.mark.usefixtures("db_session")
 class SetProRgsAsSeenTest:
     def should_set_has_seen_pro_rgs_to_true_for_user(self):
         # Given

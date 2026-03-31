@@ -19,7 +19,6 @@ class Returns200Test:
         user = users_factories.BaseUserFactory(
             isEmailValidated=True,
             roles=[users_models.UserRole.PRO],
-            hasSeenProTutorials=True,
         )
 
         url = flask.url_for("Private API.get_profile")
@@ -65,7 +64,6 @@ class Returns200Test:
             "email": "toto@example.com",
             "externalIds": {},
             "firstName": "Jean",
-            "hasSeenProTutorials": True,
             "hasUserOfferer": False,
             "id": user.id,
             "idPieceNumber": None,

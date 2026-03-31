@@ -16,7 +16,6 @@ export type SharedCurrentUserResponseModel = {
   email: string;
   externalIds?: (Record<string, any> | null);
   firstName?: (string | null);
-  hasSeenProTutorials?: (boolean | null);
   hasUserOfferer?: (boolean | null);
   id: number;
   idPieceNumber?: (string | null);
