@@ -399,19 +399,22 @@ class SSOSigninTest:
             token_utils.TokenType.ACCOUNT_CREATION, decoded_account_creation_token.key_suffix
         )
 
+    @pytest.mark.parametrize("sso_provider", ("apple", "google"))
     @patch("pcapi.connectors.google_oauth.get_google_user")
-    def test_updates_single_sign_on_email_change(self, mocked_google_oauth, client):
+    @patch("pcapi.connectors.apple_oauth.get_apple_user")
+    def test_updates_single_sign_on_email_change(self, mocked_apple_oauth, mocked_google_oauth, sso_provider, client):
         user = users_factories.UserFactory(isActive=True)
-        google_sso = users_factories.SingleSignOnFactory(user=user, ssoUserId="old google id")
+        google_sso = users_factories.SingleSignOnFactory(user=user, ssoUserId="old id", ssoProvider=sso_provider)
         oauth_state_token = token_utils.UUIDToken.create(
             token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
         )
+        mocked_apple_oauth.return_value = self.valid_sso_user
         mocked_google_oauth.return_value = self.valid_sso_user
         user.email = self.valid_sso_user.email
 
         response = client.post(
-            "/native/v1/oauth/google/authorize",
-            json={"authorizationCode": "4/google_code", "oauthStateToken": oauth_state_token.encoded_token},
+            f"/native/v1/oauth/{sso_provider}/authorize",
+            json={"authorizationCode": "fakeAuthCode", "oauthStateToken": oauth_state_token.encoded_token},
         )
 
         assert response.status_code == 200
@@ -471,19 +474,24 @@ class SSOSigninTest:
         assert user.isEmailValidated
         assert user.password is None
 
+    @pytest.mark.parametrize("sso_provider", ("apple", "google"))
     @patch("pcapi.connectors.google_oauth.get_google_user")
-    def test_single_sign_on_does_not_duplicate_ssos(self, mocked_google_oauth, client):
+    @patch("pcapi.connectors.apple_oauth.get_apple_user")
+    def test_single_sign_on_does_not_duplicate_ssos(
+        self, mocked_apple_oauth, mocked_google_oauth, sso_provider, client
+    ):
         single_sign_on = users_factories.SingleSignOnFactory(
-            user__email=self.valid_sso_user.email, ssoUserId=self.valid_sso_user.sub
+            user__email=self.valid_sso_user.email, ssoUserId=self.valid_sso_user.sub, ssoProvider=sso_provider
         )
         oauth_state_token = token_utils.UUIDToken.create(
             token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
         )
+        mocked_apple_oauth.return_value = self.valid_sso_user
         mocked_google_oauth.return_value = self.valid_sso_user
 
         response = client.post(
-            "/native/v1/oauth/google/authorize",
-            json={"authorizationCode": "4/google_code", "oauthStateToken": oauth_state_token.encoded_token},
+            f"/native/v1/oauth/{sso_provider}/authorize",
+            json={"authorizationCode": "fakeAuthCode", "oauthStateToken": oauth_state_token.encoded_token},
         )
 
         assert response.status_code == 200
