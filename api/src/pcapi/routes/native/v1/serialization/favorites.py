@@ -1,95 +1,86 @@
-import typing
-from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
 
+from pydantic.v1.class_validators import validator
+
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offers.api import get_expense_domains
+from pcapi.core.offers.models import Offer
 from pcapi.core.users.models import ExpenseDomain
-from pcapi.core.users.models import Favorite
-from pcapi.routes.serialization import HttpBodyModel
+from pcapi.routes.serialization import BaseModel
 from pcapi.routes.shared.price import convert_to_cent
+from pcapi.utils.date import format_into_utc_date
 
 
-@dataclass
-class FavoriteData:
-    date: datetime | None
-    favorite: Favorite
-    is_expired: bool
-    price: Decimal | None
-    start_date: datetime | None
-    start_price: Decimal | None
+class Coordinates(BaseModel):
+    latitude: Decimal | None
+    longitude: Decimal | None
 
 
-class FavoriteCoordinates(HttpBodyModel):
-    latitude: float | None = None
-    longitude: float | None = None
-
-
-class FavoriteMediationResponse(HttpBodyModel):
-    credit: str | None = None
+class FavoriteMediationResponse(BaseModel):
+    credit: str | None
     url: str
 
+    class Config:
+        orm_mode = True
 
-class FavoriteOfferResponse(HttpBodyModel):
+
+class FavoriteOfferResponse(BaseModel):
     id: int
-    booking_allowed_datetime: datetime | None = None
-    coordinates: FavoriteCoordinates
-    date: datetime | None = None
-    expense_domains: list[ExpenseDomain]
-    external_ticket_office_url: str | None = None
-    image: FavoriteMediationResponse | None = None
-    is_expired: bool = False
-    is_released: bool
-    is_sold_out: bool = False
     name: str
+    subcategoryId: SubcategoryIdEnum
+    externalTicketOfficeUrl: str | None
+    image: FavoriteMediationResponse | None
+    bookingAllowedDatetime: datetime | None = None
+    coordinates: Coordinates
     price: int | None = None
-    start_date: datetime | None = None
-    start_price: int | None = None
-    subcategory_id: SubcategoryIdEnum
-    venue_name: str
+    startPrice: int | None = None
+    date: datetime | None = None
+    startDate: datetime | None = None
+    isExpired: bool = False
+    expenseDomains: list[ExpenseDomain]
+    isReleased: bool
+    isSoldOut: bool = False
+    venueName: str
+
+    _convert_price = validator("price", pre=True, allow_reuse=True)(convert_to_cent)
+    _convert_start_price = validator("startPrice", pre=True, allow_reuse=True)(convert_to_cent)
+
+    class Config:
+        orm_mode = True
 
     @classmethod
-    def build(cls, favorite_data: FavoriteData) -> typing.Self:
-        offer = favorite_data.favorite.offer
-        address = offer.venue.offererAddress.address
-        venue_name = offer.venue.managingOfferer.name if offer.isDigital else offer.venue.publicName
+    def from_orm(cls, offer: Offer) -> "FavoriteOfferResponse":
+        default_venue_name = offer.venue.managingOfferer.name if offer.isDigital else offer.venue.publicName
 
         if offer.offererAddress:
             address = offer.offererAddress.address
-            if offer.offererAddress.label:
-                venue_name = offer.offererAddress.label
+            offer.venueName = offer.offererAddress.label or default_venue_name  # type: ignore [attr-defined]
+        else:
+            address = offer.venue.offererAddress.address
+            offer.venueName = default_venue_name  # type: ignore [attr-defined]
 
-        return cls(
-            id=favorite_data.favorite.id,
-            booking_allowed_datetime=offer.bookingAllowedDatetime,
-            coordinates=FavoriteCoordinates(latitude=float(address.latitude), longitude=float(address.longitude)),
-            date=favorite_data.date,
-            expense_domains=get_expense_domains(offer),
-            external_ticket_office_url=offer.externalTicketOfficeUrl,
-            image=FavoriteMediationResponse(credit=offer.image.credit, url=offer.image.url) if offer.image else None,
-            is_expired=favorite_data.is_expired,
-            is_released=offer.isReleased,
-            is_sold_out=offer.isSoldOut,
-            name=offer.name,
-            price=convert_to_cent(favorite_data.price),
-            start_date=favorite_data.start_date,
-            start_price=convert_to_cent(favorite_data.start_price),
-            subcategory_id=offer.subcategoryId,
-            venue_name=venue_name,
-        )
+        offer.coordinates = {"latitude": address.latitude, "longitude": address.longitude}  # type: ignore [attr-defined]
+        offer.expenseDomains = get_expense_domains(offer)  # type: ignore [attr-defined]
+        return super().from_orm(offer)
 
 
-class FavoriteResponse(HttpBodyModel):
+class FavoriteResponse(BaseModel):
     id: int
     offer: FavoriteOfferResponse
 
+    class Config:
+        orm_mode = True
 
-class PaginatedFavoritesResponse(HttpBodyModel):
+
+class PaginatedFavoritesResponse(BaseModel):
     page: int
-    nb_favorites: int
+    nbFavorites: int
     favorites: list[FavoriteResponse]
 
+    class Config:
+        json_encoders = {datetime: format_into_utc_date}
 
-class FavoriteRequest(HttpBodyModel):
-    offer_id: int
+
+class FavoriteRequest(BaseModel):
+    offerId: int
