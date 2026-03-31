@@ -47,6 +47,7 @@ export const SummaryDescriptionList = ({
     <ul data-testid={listDataTestId}>
       {descriptions.map(({ text, title }, index) => (
         <li
+          // biome-ignore lint/suspicious/noArrayIndexKey: Can't use anything else
           key={`${index + 1}`}
           className={cn(style['summary-layout-row'], className)}
         >

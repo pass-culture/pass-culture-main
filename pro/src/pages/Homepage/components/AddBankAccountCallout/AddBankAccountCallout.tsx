@@ -26,7 +26,7 @@ export const AddBankAccountCallout = ({
   const location = useLocation()
 
   const displayBankAccountBanner = withSwitchVenueFeature
-    ? venue && venue?.hasNonFreeOffers && !venue.bankAccountStatus
+    ? venue?.hasNonFreeOffers && !venue.bankAccountStatus
     : offerer &&
       offerer?.venuesWithNonFreeOffersWithoutBankAccounts.length > 0 &&
       !offerer.hasValidBankAccount &&

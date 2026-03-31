@@ -68,10 +68,13 @@ export function Tooltip({ children, content, className }: TooltipProps) {
 
   return (
     <div className={styles['tooltip-container']}>
+      {/** biome-ignore lint/a11y/noStaticElementInteractions: Ignore for tooltip */}
       <div
         className={styles['tooltip']}
         onMouseOver={tooltipProps.onMouseOver}
+        onFocus={tooltipProps.onMouseOver}
         onMouseOut={tooltipProps.onMouseOut}
+        onBlur={tooltipProps.onMouseOut}
       >
         <div
           className={classNames(styles['tooltip-trigger'], {

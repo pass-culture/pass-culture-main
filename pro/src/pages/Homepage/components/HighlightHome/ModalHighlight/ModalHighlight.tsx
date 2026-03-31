@@ -77,7 +77,7 @@ export const ModalHighlight = ({
                   communicationDate,
                   highlightDatespan,
                 }) => (
-                  // biome-ignore lint/a11y/noRedundantRoles: idem
+                  // biome-ignore lint/a11y/noRedundantRoles: correct voiceover bug with list displayed with flex
                   <li key={id} role="listitem">
                     <HighlightCard
                       imageSrc={mediationUrl}

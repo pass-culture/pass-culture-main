@@ -459,6 +459,7 @@ export const Autocomplete = ({
                     <ul {...autocomplete.getListProps()}>
                       {recentSearchesItems.map((item, index) => (
                         <li
+                          // biome-ignore lint/suspicious/noArrayIndexKey: Can't use anything else
                           key={`item-${index}`}
                           className={styles['dialog-panel-autocomplete-item']}
                           {...autocomplete.getItemProps({
@@ -486,6 +487,7 @@ export const Autocomplete = ({
                     <ul {...autocomplete.getListProps()}>
                       {venuesSuggestionsItems.map((item, index) => (
                         <li
+                          // biome-ignore lint/suspicious/noArrayIndexKey: Can't use anything else
                           key={`item-venue-${index}`}
                           className={styles['dialog-panel-autocomplete-item']}
                           {...autocomplete.getItemProps({
@@ -535,6 +537,7 @@ export const Autocomplete = ({
 
                         return (
                           <li
+                            // biome-ignore lint/suspicious/noArrayIndexKey: Can't use anything else
                             key={`item-keyword-${index}`}
                             className={styles['dialog-panel-autocomplete-item']}
                             {...autocomplete.getItemProps({

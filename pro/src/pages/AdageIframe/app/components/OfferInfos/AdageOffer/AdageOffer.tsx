@@ -44,6 +44,7 @@ export const AdageOffer = ({
   const { pathname, state, search } = useLocation()
   const params = new URLSearchParams(search)
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Track once
   useEffect(() => {
     if (!isPreview) {
       trackConsultOffer()

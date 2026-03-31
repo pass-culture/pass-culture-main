@@ -177,6 +177,7 @@ export const Timeline = ({ steps }: TimelineProps): JSX.Element => {
         const nextStepType = steps[index + 1]?.type
         const isLast = index === steps.length - 1
         return (
+          // biome-ignore lint/suspicious/noArrayIndexKey: can't use anything else
           <li key={`${step.type}-${index}`} className={styles['step']}>
             <div className={styles['icon-line-container']}>
               <div className={styles['icon-container']}>
