@@ -34,7 +34,7 @@ export const OfferHeadlineCard = ({
   hasThumb,
 }: OfferHeadlineCardProps): JSX.Element | undefined => {
   const { logEvent } = useAnalytics()
-  const selectedVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const [
     isConfirmDialogReplaceHeadlineOfferOpen,
     setIsConfirmDialogReplaceHeadlineOfferOpen,
@@ -113,7 +113,7 @@ export const OfferHeadlineCard = ({
               removeHeadlineOffer()
               logEvent(EngagementEvents.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
                 offerId,
-                venueId: selectedVenue.id,
+                venueId: selectedPartnerVenue.id,
                 action: 'deleted',
               })
             } else if (hasHeadlineOffer && hasThumb) {

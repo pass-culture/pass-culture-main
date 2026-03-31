@@ -63,7 +63,7 @@ export const VenueEdition = (): JSX.Element | null => {
     if (withSwitchVenueFeature && selectedVenueId) {
       syncVenue(Number(selectedVenueId))
     }
-  }, [selectedVenueId, withSwitchVenueFeature, syncVenue])
+  }, [selectedVenueId, withSwitchVenueFeature])
 
   const venueQuery = useSWR(
     withSwitchVenueFeature ? null : [GET_VENUE_QUERY_KEY, selectedVenueId],
