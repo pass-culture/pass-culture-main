@@ -12,6 +12,7 @@ gh workflow run on_dispatch_pcapi_console_job.yaml \
 
 """
 
+import argparse
 import csv
 import datetime
 import logging
@@ -22,6 +23,8 @@ from dataclasses import dataclass
 from pcapi.app import app
 from pcapi.core.educational.adage.client import get_cultural_partners
 from pcapi.core.educational.schemas import AdageCulturalPartner
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
@@ -115,7 +118,7 @@ def get_result(adage_id: str, venues: list[VenueData], partner_by_adage_id: dict
     return result
 
 
-def main() -> None:
+def main(clear_duplicates: bool) -> None:
     venues_with_adage_id = (
         db.session.query(
             offerers_models.Venue.id,
@@ -203,6 +206,28 @@ def main() -> None:
                 result.comment += "Offerer of Venue with adageId to remove has no other Venue with adageId, and no Adage partner was found with this SIREN"
                 result.siren_to_deactivate = siren_to_check
 
+    # clear the adageId
+    if clear_duplicates:
+        for result in results:
+            venue_to_clear = (
+                db.session.query(offerers_models.Venue)
+                .filter(offerers_models.Venue.id == result.venue_id_with_adage_id_to_remove)
+                .one()
+            )
+
+            logger.info("Revove adageId %s from venue with id %s", venue_to_clear.adageId, venue_to_clear.id)
+            history_api.add_action(
+                history_models.ActionType.INFO_MODIFIED,
+                author=None,
+                venue=venue_to_clear,
+                comment="Nettoyage des doublons adageId",
+                modified_info={"adageId": {"old_info": venue_to_clear.adageId, "new_info": None}},
+            )
+            venue_to_clear.adageId = None
+            venue_to_clear.adageInscriptionDate = None
+
+    db.session.flush()
+
     with open(f"{os.environ.get('OUTPUT_DIRECTORY')}/duplicate_adage_ids.csv", "w") as f:
         writer = csv.DictWriter(f, fieldnames=list(Result.__dataclass_fields__))
         writer.writeheader()
@@ -212,6 +237,16 @@ def main() -> None:
 if __name__ == "__main__":
     app.app_context().push()
 
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--clear-duplicates", action="store_true")
+    parser.add_argument("--apply", action="store_true")
+    args = parser.parse_args()
 
-    logger.info("Finished")
+    main(args.clear_duplicates)
+
+    if args.apply:
+        logger.info("Finished")
+        db.session.commit()
+    else:
+        logger.info("Finished dry run, rollback")
+        db.session.rollback()
