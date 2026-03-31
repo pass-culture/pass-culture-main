@@ -24,7 +24,7 @@
     @include forms.input-theme-error;
   }
 
-  &::placeholder:not(:disabled) {
+  &:not(:disabled)::placeholder {
     color: var(--color-text-default);
   }
 
