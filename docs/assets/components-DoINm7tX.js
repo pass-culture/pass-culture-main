@@ -1,1 +1,0 @@
-import{P as e}from"./components-ClnytO4s.js";export{e as createCopyToClipboardFunction};
