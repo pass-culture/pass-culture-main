@@ -165,11 +165,14 @@ def detect_changes(file_names, tables_subset) -> str | None:
     return None
 
 
+
 def main(file_names):
+    import sys
     results = []
     for branch, env in BRANCH_ENV.items():
         imported_tables = fetch_data_imported_tables(branch)
         result = detect_changes(file_names, imported_tables)
+        print(f"Checked against {env} imported tables: {imported_tables}", file=sys.stderr)
         if result:
             results.append(f"[{env.upper()}]\\n{result}")
     if results:
