@@ -15,7 +15,7 @@ import {
   ensureCurrentOfferer,
   selectCurrentOfferer,
 } from '@/commons/store/offerer/selectors'
-import { ensureSelectedVenue } from '@/commons/store/user/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 
 import { ActionsBar } from '../ActionsBar/ActionsBar'
@@ -30,7 +30,7 @@ export const OfferTypeScreen = () => {
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
   const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
-  const selectedVenue = useAppSelector(ensureSelectedVenue)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const queryVenueId = queryParams.get('lieu')
 
   const snackBar = useSnackBar()
@@ -65,7 +65,7 @@ export const OfferTypeScreen = () => {
         ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
         offererId: selectedOffererId.toString(),
         venueId: withSwitchVenueFeature
-          ? selectedVenue.id.toString()
+          ? selectedPartnerVenue.id.toString()
           : (queryVenueId ?? undefined),
       }
       const {

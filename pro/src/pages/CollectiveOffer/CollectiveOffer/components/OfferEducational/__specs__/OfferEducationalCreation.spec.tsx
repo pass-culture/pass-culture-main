@@ -49,7 +49,9 @@ function renderComponent(props: OfferEducationalProps, route?: string) {
     storeOverrides: {
       user: {
         currentUser: user,
-        selectedVenue: makeGetVenueResponseModel({ id: props.venues[0].id }),
+        selectedPartnerVenue: makeGetVenueResponseModel({
+          id: props.venues[0].id,
+        }),
         venues: [
           ...props.venues.map((venue) =>
             makeVenueListItemLiteResponseModel({ id: venue.id })

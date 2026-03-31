@@ -30,7 +30,7 @@ describe('getInitialAdminOffererId', () => {
 
       const result = getInitialAdminOffererId({
         offererNames,
-        selectedVenue: null,
+        selectedPartnerVenue: null,
       })
 
       expect(result).toBe(100)
@@ -41,32 +41,32 @@ describe('getInitialAdminOffererId', () => {
 
       const result = getInitialAdminOffererId({
         offererNames,
-        selectedVenue: null,
+        selectedPartnerVenue: null,
       })
 
       expect(result).toBeNull()
     })
   })
 
-  describe('Priority 2: selectedVenue parent offerer', () => {
-    it('should return selectedVenue parent offerer id when no localStorage and venue is selected', () => {
+  describe('Priority 2: selectedPartnerVenue parent offerer', () => {
+    it('should return selectedPartnerVenue parent offerer id when no localStorage and venue is selected', () => {
       vi.spyOn(localStorageManager, 'getItem').mockReturnValue(null)
-      const selectedVenue = makeGetVenueResponseModel({
+      const selectedPartnerVenue = makeGetVenueResponseModel({
         id: 101,
         managingOfferer: makeGetVenueManagingOffererResponseModel({ id: 100 }),
       })
 
       const result = getInitialAdminOffererId({
         offererNames,
-        selectedVenue,
+        selectedPartnerVenue,
       })
 
       expect(result).toBe(100)
     })
 
-    it('should call handleUnexpectedError and return null when selectedVenue parent offerer is not in offererNamesValidated', () => {
+    it('should call handleUnexpectedError and return null when selectedPartnerVenue parent offerer is not in offererNamesValidated', () => {
       vi.spyOn(localStorageManager, 'getItem').mockReturnValue(null)
-      const selectedVenue = makeGetVenueResponseModel({
+      const selectedPartnerVenue = makeGetVenueResponseModel({
         id: 101,
         managingOfferer: makeGetVenueManagingOffererResponseModel({
           id: 999,
@@ -75,7 +75,7 @@ describe('getInitialAdminOffererId', () => {
 
       const result = getInitialAdminOffererId({
         offererNames,
-        selectedVenue,
+        selectedPartnerVenue,
       })
 
       expect(result).toBeNull()
@@ -83,12 +83,12 @@ describe('getInitialAdminOffererId', () => {
   })
 
   describe('Priority 3: first offerer', () => {
-    it('should return first offerer id when no localStorage and no selectedVenue', () => {
+    it('should return first offerer id when no localStorage and no selectedPartnerVenue', () => {
       vi.spyOn(localStorageManager, 'getItem').mockReturnValue(null)
 
       const result = getInitialAdminOffererId({
         offererNames,
-        selectedVenue: null,
+        selectedPartnerVenue: null,
       })
 
       expect(result).toBe(100)
@@ -101,7 +101,7 @@ describe('getInitialAdminOffererId', () => {
 
       const result = getInitialAdminOffererId({
         offererNames: [],
-        selectedVenue: null,
+        selectedPartnerVenue: null,
       })
 
       expect(result).toBeNull()

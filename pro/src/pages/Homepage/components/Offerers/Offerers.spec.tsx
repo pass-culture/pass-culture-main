@@ -154,7 +154,7 @@ describe('<Offerers />', () => {
       const managingOfferer = makeGetVenueManagingOffererResponseModel({
         id: 7,
       })
-      const selectedVenue = makeGetVenueResponseModel({
+      const selectedPartnerVenue = makeGetVenueResponseModel({
         id: 42,
         managingOfferer,
         name: 'My venue',
@@ -172,7 +172,7 @@ describe('<Offerers />', () => {
       renderOfferers(props, {
         ...options,
         storeOverrides: {
-          user: { selectedVenue },
+          user: { selectedPartnerVenue },
         },
       })
 
@@ -180,7 +180,7 @@ describe('<Offerers />', () => {
         screen.getByRole('link', { name: 'Paramètres généraux' })
       ).toHaveAttribute(
         'href',
-        `/structures/${managingOfferer.id}/lieux/${selectedVenue.id}/parametres`
+        `/structures/${managingOfferer.id}/lieux/${selectedPartnerVenue.id}/parametres`
       )
 
       expect(
@@ -192,7 +192,7 @@ describe('<Offerers />', () => {
       const managingOfferer = makeGetVenueManagingOffererResponseModel({
         id: 5,
       })
-      const selectedVenue = makeGetVenueResponseModel({
+      const selectedPartnerVenue = makeGetVenueResponseModel({
         id: 99,
         managingOfferer,
         name: 'Partner Venue',
@@ -211,7 +211,7 @@ describe('<Offerers />', () => {
       renderOfferers(props, {
         ...options,
         storeOverrides: {
-          user: { selectedVenue },
+          user: { selectedPartnerVenue },
         },
       })
 
@@ -235,7 +235,7 @@ describe('<Offerers />', () => {
       renderOfferers(props, {
         ...options,
         storeOverrides: {
-          user: { selectedVenue: null },
+          user: { selectedPartnerVenue: null },
         },
       })
 

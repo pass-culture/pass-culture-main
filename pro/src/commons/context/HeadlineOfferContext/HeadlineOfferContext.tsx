@@ -12,7 +12,7 @@ import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
-import { ensureSelectedVenue } from '@/commons/store/user/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { noopAsync } from '@/commons/utils/noop'
 
 type UpsertHeadlineOfferParams = {
@@ -50,7 +50,7 @@ export function HeadlineOfferContextProvider({
   const { mutate } = useSWRConfig()
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
-  const selectedVenue = useAppSelector(ensureSelectedVenue)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const { data } = useSWR([GET_VENUES_QUERY_KEY, selectedOffererId], () =>
     api.getVenues(null, null, selectedOffererId)
@@ -103,7 +103,7 @@ export function HeadlineOfferContextProvider({
       logEvent(EngagementEvents.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
         action: context.actionType,
         requiredImageUpload: !!context.requiredImageUpload,
-        venueId: selectedVenue.id,
+        venueId: selectedPartnerVenue.id,
       })
     } catch {
       snackBar.error(
@@ -128,7 +128,7 @@ export function HeadlineOfferContextProvider({
         snackBar.success('Votre offre n’est plus à la une')
         logEvent(EngagementEvents.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
           action: 'deleted',
-          venueId: selectedVenue.id,
+          venueId: selectedPartnerVenue.id,
         })
       } catch {
         snackBar.error(

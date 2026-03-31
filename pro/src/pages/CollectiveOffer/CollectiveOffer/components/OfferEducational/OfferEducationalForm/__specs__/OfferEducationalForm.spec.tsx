@@ -266,7 +266,7 @@ describe('OfferEducationalForm', () => {
       storeOverrides: {
         user: {
           currentUser: sharedCurrentUserFactory(),
-          selectedVenue: makeGetVenueResponseModel({ id: 10 }),
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 10 }),
         },
       },
     }

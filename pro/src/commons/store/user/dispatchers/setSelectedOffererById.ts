@@ -1,4 +1,4 @@
-// TODO (igabriele, 2025-10-16): Delete this file once `WIP_SWITCH_VENUE` is enabled in production (that's why `setSelectedOffererById` is not DRYed with `setSelectedVenueById`).
+// TODO (igabriele, 2025-10-16): Delete this file once `WIP_SWITCH_VENUE` is enabled in production (that's why `setSelectedOffererById` is not DRYed with `setSelectedPartnerVenueById`).
 
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
@@ -23,7 +23,7 @@ import {
 } from '../../offerer/reducer'
 import type { AppThunkApiConfig } from '../../store'
 import {
-  setSelectedVenue,
+  setSelectedPartnerVenue,
   setVenues,
   type UserAccess,
   updateUserAccess,
@@ -115,7 +115,7 @@ export const setSelectedOffererById = createAsyncThunk<
         : 'no-onboarding'
       dispatch(updateUserAccess(nextUserAccess))
       dispatch(setCurrentOffererName(nextCurrentOffererName))
-      dispatch(setSelectedVenue(nextSelectedVenue))
+      dispatch(setSelectedPartnerVenue(nextSelectedVenue))
 
       localStorage.setItem(SAVED_OFFERER_ID_KEY, String(nextSelectedOffererId))
       localStorage.setItem(SAVED_VENUE_ID_KEY, String(nextSelectedVenue.id))
@@ -131,7 +131,7 @@ export const setSelectedOffererById = createAsyncThunk<
         dispatch(updateCurrentOfferer(null))
         // but we need the offerer name to show it in the header dropdown
         dispatch(setCurrentOffererName(nextCurrentOffererName))
-        dispatch(setSelectedVenue(null))
+        dispatch(setSelectedPartnerVenue(null))
 
         // The new offerer id is also persisted here
         // to ensure the user to persist their selected offerer even when their selected venue is "unattached"

@@ -18,8 +18,7 @@ type UserState = {
   // TODO (igabriele, 2025-02-04): Delete this prop once `WIP_SWITCH_VENUE` FF is enabled and removed.
   access: null | UserAccess
   selectedAdminOfferer: GetOffererResponseModel | null
-  // TODO (igabriele, 2026-02-04): Rename that to `selectedPartnerVenue`.
-  selectedVenue: GetVenueResponseModel | null
+  selectedPartnerVenue: GetVenueResponseModel | null
   venues: VenueListItemLiteResponseModel[] | null
   venuesWithPendingValidation: VenueListItemLiteResponseModel[] | null
 }
@@ -28,7 +27,7 @@ export const initialState: UserState = {
   currentUser: null,
   access: null,
   selectedAdminOfferer: null,
-  selectedVenue: null,
+  selectedPartnerVenue: null,
   venues: null,
   venuesWithPendingValidation: null,
 }
@@ -64,11 +63,11 @@ const userSlice = createSlice({
       state.selectedAdminOfferer = action.payload
     },
 
-    setSelectedVenue(
+    setSelectedPartnerVenue(
       state: UserState,
       action: PayloadAction<GetVenueResponseModel | null>
     ) {
-      state.selectedVenue = action.payload
+      state.selectedPartnerVenue = action.payload
     },
 
     setVenues(state: UserState, action: PayloadAction<UpdateVenuesPayload>) {
@@ -88,6 +87,6 @@ export const {
   updateUser,
   updateUserAccess,
   setSelectedAdminOfferer,
-  setSelectedVenue,
+  setSelectedPartnerVenue,
   setVenues,
 } = userSlice.actions

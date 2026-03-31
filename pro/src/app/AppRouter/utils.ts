@@ -8,19 +8,24 @@ export const mustBeAuthenticated = (userPermissions: UserPermissions) =>
 export const mustBeUnauthenticated = (userPermissions: UserPermissions) =>
   !userPermissions.isAuthenticated
 
-export const mustOnboardedWithSelectedVenue = (
+export const mustBeOnboardedWithSelectedPartnerVenue = (
   userPermissions: UserPermissions
-) => mustHaveSelectedVenue(userPermissions) && userPermissions.isOnboarded
+) =>
+  mustHaveSelectedPartnerVenue(userPermissions) && userPermissions.isOnboarded
 
-export const mustHaveSelectedVenue = (userPermissions: UserPermissions) =>
-  userPermissions.isAuthenticated && userPermissions.isSelectedVenueAssociated
+export const mustHaveSelectedPartnerVenue = (
+  userPermissions: UserPermissions
+) =>
+  userPermissions.isAuthenticated &&
+  userPermissions.isSelectedPartnerVenueAssociated
 
 export const mustHaveSelectedAdminOfferer = (
   userPermissions: UserPermissions
 ) => userPermissions.isAuthenticated && userPermissions.hasSelectedAdminOfferer
 
-export const mustNotBeOnboarded = (userPermissions: UserPermissions) =>
-  userPermissions.isAuthenticated && !userPermissions.isOnboarded
+export const mustNotBeOnboardedWithSelectedPartnerVenue = (
+  userPermissions: UserPermissions
+) => userPermissions.isAuthenticated && !userPermissions.isOnboarded
 
 export const isNewHomepageEnabled = () => {
   const state = rootStore.getState()
@@ -29,6 +34,7 @@ export const isNewHomepageEnabled = () => {
   )
 }
 
+// TODO (igabriele, 2026-03-31): Delete this helper once `WIP_SWITCH_VENUE` FF is enabled and removed.
 export const isSwitchVenueEnabled = () => {
   const state = rootStore.getState()
   return isFeatureActive(state, 'WIP_SWITCH_VENUE')

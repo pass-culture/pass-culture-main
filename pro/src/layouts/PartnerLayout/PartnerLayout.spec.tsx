@@ -39,7 +39,7 @@ const renderPartnerLayout = (
     storeOverrides: {
       user: {
         currentUser: user,
-        selectedVenue: defaultGetOffererVenueResponseModel,
+        selectedPartnerVenue: defaultGetOffererVenueResponseModel,
       },
     },
   })

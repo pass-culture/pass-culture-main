@@ -14,7 +14,7 @@ import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import { setSelectedPartnerPageId } from '@/commons/store/nav/reducer'
-import { ensureSelectedVenue } from '@/commons/store/user/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import {
   LOCAL_STORAGE_KEY,
@@ -48,9 +48,9 @@ export const VenueEdition = (): JSX.Element | null => {
     offererId: string
     venueId: string
   }>()
-  const selectedVenueFromStore = useAppSelector(ensureSelectedVenue)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const selectedVenueId = withSwitchVenueFeature
-    ? selectedVenueFromStore.id
+    ? selectedPartnerVenue.id
     : selectedVenueIdFromQueryParams
 
   const venuesQuery = useSWR(
@@ -69,9 +69,7 @@ export const VenueEdition = (): JSX.Element | null => {
     withSwitchVenueFeature ? null : [GET_VENUE_QUERY_KEY, selectedVenueId],
     ([, venueIdParam]) => api.getVenue(Number(venueIdParam))
   )
-  const venue = withSwitchVenueFeature
-    ? selectedVenueFromStore
-    : venueQuery.data
+  const venue = withSwitchVenueFeature ? selectedPartnerVenue : venueQuery.data
 
   const context = location.pathname.includes('collectif')
     ? 'collective'

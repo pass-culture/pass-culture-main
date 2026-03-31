@@ -19,7 +19,7 @@ import {
 } from '@/commons/utils/factories/venueFactories'
 
 import * as logoutModule from '../logout'
-import { setSelectedVenueById } from '../setSelectedVenueById'
+import { setSelectedPartnerVenueById } from '../setSelectedPartnerVenueById'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -32,7 +32,7 @@ vi.mock('@/commons/errors/handleError', () => ({
   handleError: vi.fn(),
 }))
 
-describe('setSelectedVenueById', () => {
+describe('setSelectedPartnerVenueById', () => {
   const storeDataBase: Partial<RootState> = {
     offerer: {
       currentOfferer: { ...defaultGetOffererResponseModel, id: 200 },
@@ -52,7 +52,7 @@ describe('setSelectedVenueById', () => {
       access: null,
       currentUser: null,
       selectedAdminOfferer: null,
-      selectedVenue: makeGetVenueResponseModel({
+      selectedPartnerVenue: makeGetVenueResponseModel({
         id: 201,
         managingOffererId: 200,
       }),
@@ -92,7 +92,9 @@ describe('setSelectedVenueById', () => {
     const store = configureTestStore(storeDataBase)
 
     await store
-      .dispatch(setSelectedVenueById({ nextSelectedVenueId: 201 }))
+      .dispatch(
+        setSelectedPartnerVenueById({ nextSelectedPartnerVenueId: 201 })
+      )
       .unwrap()
 
     expect(api.getOfferer).not.toHaveBeenCalled()
@@ -101,13 +103,13 @@ describe('setSelectedVenueById', () => {
     const state = store.getState()
     expect(state.offerer.currentOfferer?.id).toBe(200)
     expect(state.offerer.currentOffererName?.id).toBe(200)
-    expect(state.user.selectedVenue?.id).toBe(201)
+    expect(state.user.selectedPartnerVenue?.id).toBe(201)
 
     expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBe('200')
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('201')
   })
 
-  it('should compute nextSelectedVenue, fetch its offerer, update user access and persist it', async () => {
+  it('should compute nextSelectedPartnerVenue, fetch its offerer, update user access and persist it', async () => {
     vi.spyOn(api, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({ id: 101, managingOffererId: 100 })
     )
@@ -120,7 +122,9 @@ describe('setSelectedVenueById', () => {
     const store = configureTestStore(storeDataBase)
 
     await store
-      .dispatch(setSelectedVenueById({ nextSelectedVenueId: 101 }))
+      .dispatch(
+        setSelectedPartnerVenueById({ nextSelectedPartnerVenueId: 101 })
+      )
       .unwrap()
 
     expect(api.getVenue).toHaveBeenCalledTimes(1)
@@ -128,7 +132,7 @@ describe('setSelectedVenueById', () => {
 
     const state = store.getState()
     expect(state.user.access).toBe('full')
-    expect(state.user.selectedVenue?.id).toBe(101)
+    expect(state.user.selectedPartnerVenue?.id).toBe(101)
     expect(state.offerer.currentOfferer?.id).toBe(100)
     expect(state.offerer.currentOffererName?.id).toBe(100)
 
@@ -149,7 +153,9 @@ describe('setSelectedVenueById', () => {
     const store = configureTestStore(storeDataBase)
 
     await store
-      .dispatch(setSelectedVenueById({ nextSelectedVenueId: 101 }))
+      .dispatch(
+        setSelectedPartnerVenueById({ nextSelectedPartnerVenueId: 101 })
+      )
       .unwrap()
 
     expect(api.getVenue).toHaveBeenCalledTimes(1)
@@ -159,7 +165,7 @@ describe('setSelectedVenueById', () => {
     expect(state.user.access).toBe('no-onboarding')
     expect(state.offerer.currentOfferer?.id).toBe(100)
     expect(state.offerer.currentOffererName?.id).toBe(100)
-    expect(state.user.selectedVenue?.id).toBe(101)
+    expect(state.user.selectedPartnerVenue?.id).toBe(101)
 
     expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBe('100')
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('101')
@@ -169,7 +175,9 @@ describe('setSelectedVenueById', () => {
     const store = configureTestStore(storeDataBase)
 
     await store
-      .dispatch(setSelectedVenueById({ nextSelectedVenueId: 301 }))
+      .dispatch(
+        setSelectedPartnerVenueById({ nextSelectedPartnerVenueId: 301 })
+      )
       .unwrap()
 
     expect(api.getVenue).toHaveBeenCalledTimes(0)
@@ -179,7 +187,7 @@ describe('setSelectedVenueById', () => {
     expect(state.user.access).toBe('unattached')
     expect(state.offerer.currentOfferer?.id).toBe(300)
     expect(state.offerer.currentOffererName?.id).toBe(300)
-    expect(state.user.selectedVenue?.id).toBe(301)
+    expect(state.user.selectedPartnerVenue?.id).toBe(301)
 
     expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBe('300')
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('301')
@@ -199,7 +207,9 @@ describe('setSelectedVenueById', () => {
     })
 
     await store
-      .dispatch(setSelectedVenueById({ nextSelectedVenueId: 101 }))
+      .dispatch(
+        setSelectedPartnerVenueById({ nextSelectedPartnerVenueId: 101 })
+      )
       .unwrap()
 
     expect(console.error).toHaveBeenCalledWith(expect.any(FrontendError))
@@ -248,7 +258,7 @@ describe('setSelectedVenueById', () => {
         access: null,
         currentUser: null,
         selectedAdminOfferer: null,
-        selectedVenue: makeGetVenueResponseModel({
+        selectedPartnerVenue: makeGetVenueResponseModel({
           id: 201,
           managingOffererId: 200,
         }),
@@ -267,7 +277,9 @@ describe('setSelectedVenueById', () => {
     })
 
     await store
-      .dispatch(setSelectedVenueById({ nextSelectedVenueId: 101 }))
+      .dispatch(
+        setSelectedPartnerVenueById({ nextSelectedPartnerVenueId: 101 })
+      )
       .unwrap()
 
     expect(console.error).toHaveBeenCalledExactlyOnceWith(
@@ -295,7 +307,9 @@ describe('setSelectedVenueById', () => {
     const store = configureTestStore(storeDataBase)
 
     await store
-      .dispatch(setSelectedVenueById({ nextSelectedVenueId: 101 }))
+      .dispatch(
+        setSelectedPartnerVenueById({ nextSelectedPartnerVenueId: 101 })
+      )
       .unwrap()
 
     expect(handleErrorSpy).toHaveBeenCalledExactlyOnceWith(
@@ -311,7 +325,7 @@ describe('setSelectedVenueById', () => {
     expect(state.user.access).toBeNull()
     expect(state.offerer.currentOfferer?.id).toBe(200)
     expect(state.offerer.currentOffererName?.id).toBe(200)
-    expect(state.user.selectedVenue?.id).toBe(201)
+    expect(state.user.selectedPartnerVenue?.id).toBe(201)
 
     expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBe('200')
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('201')

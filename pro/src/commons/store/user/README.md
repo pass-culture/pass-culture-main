@@ -42,7 +42,7 @@ A1 --> FUNCTION2
 B1 --> FUNCTION2
 B0 ==> STEP3
 
-FUNCTION2("setSelectedVenueById()")
+FUNCTION2("setSelectedPartnerVenueById()")
 --- C{"📛 Est-ce que l'ENTITÉ PARENTE à cette structure<br>indique l'utilisateur comme onboardé ?"}
 C -->|Oui| C1["📛 L'accès utilisateur est FULL"]
 C -->|Non| C0["📛 L'accès utilisateur est NO-ONBOARDING"]

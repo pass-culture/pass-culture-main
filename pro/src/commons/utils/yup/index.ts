@@ -13,7 +13,6 @@ type ItemType<T> =
 
 declare module 'yup' {
   // Match Yup v1.x ArraySchema generic arity to avoid mismatches (omit constraints/defaults)
-  /* biome-ignore lint/correctness/noUnusedVariables: module augmentation must mirror Yup's generic params */
   interface ArraySchema<TIn, TContext, TDefault, TFlags> {
     /**
      * Ensure all items in the array are unique by a given key or computed key.

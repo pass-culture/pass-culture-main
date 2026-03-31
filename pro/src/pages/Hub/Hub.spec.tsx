@@ -46,7 +46,7 @@ const renderHub: RenderComponentFunction<
       user: {
         access: 'full',
         currentUser: sharedCurrentUserFactory(),
-        selectedVenue: null,
+        selectedPartnerVenue: null,
         venues,
       },
     },
@@ -138,7 +138,7 @@ describe('Hub', () => {
     expect(screen.getByText('123 Rue de Test, 75001 Paris')).toBeInTheDocument()
   })
 
-  it('should call setSelectedVenueById when clicking on any venue', async () => {
+  it('should call setSelectedPartnerVenueById when clicking on any venue', async () => {
     vi.spyOn(api, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: 102,

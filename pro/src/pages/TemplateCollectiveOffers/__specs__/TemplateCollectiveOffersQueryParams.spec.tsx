@@ -86,7 +86,7 @@ const renderOffers = async (
       storeOverrides: {
         user: {
           currentUser: user,
-          selectedVenue: makeVenueListItem({ id: 2 }),
+          selectedPartnerVenue: makeVenueListItem({ id: 2 }),
         },
         offerer: currentOffererFactory(),
       },

@@ -108,7 +108,7 @@ const renderBookingsRecap = (
     storeOverrides: {
       user: {
         currentUser: user,
-        selectedVenue: defaultGetOffererVenueResponseModel,
+        selectedPartnerVenue: defaultGetOffererVenueResponseModel,
       },
       offerer: currentOffererFactory(),
       ...overrides,

@@ -7,19 +7,19 @@ import {
   isNewHomepageEnabled,
   isSwitchVenueEnabled,
   mustBeAuthenticated,
+  mustBeOnboardedWithSelectedPartnerVenue,
   mustBeUnauthenticated,
   mustHaveSelectedAdminOfferer,
-  mustNotBeOnboarded,
-  mustOnboardedWithSelectedVenue,
+  mustNotBeOnboardedWithSelectedPartnerVenue,
 } from '../utils'
 
 const makeUserPermissions = (
   overrides: Partial<UserPermissions> = {}
 ): UserPermissions => ({
   isAuthenticated: false,
-  hasSelectedVenue: false,
+  hasSelectedPartnerVenue: false,
   isOnboarded: false,
-  isSelectedVenueAssociated: false,
+  isSelectedPartnerVenueAssociated: false,
   hasSelectedAdminOfferer: false,
   ...overrides,
 })
@@ -53,56 +53,56 @@ describe('utils', () => {
     })
   })
 
-  describe('mustHaveSelectedVenue', () => {
+  describe('mustBeOnboardedWithSelectedPartnerVenue', () => {
     it('should return true when user is authenticated, onboarded, and has associated venue', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: true,
         isOnboarded: true,
-        isSelectedVenueAssociated: true,
+        isSelectedPartnerVenueAssociated: true,
       })
 
-      expect(mustOnboardedWithSelectedVenue(permissions)).toBe(true)
+      expect(mustBeOnboardedWithSelectedPartnerVenue(permissions)).toBe(true)
     })
 
     it('should return false when user is not authenticated', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: false,
         isOnboarded: true,
-        isSelectedVenueAssociated: true,
+        isSelectedPartnerVenueAssociated: true,
       })
 
-      expect(mustOnboardedWithSelectedVenue(permissions)).toBe(false)
+      expect(mustBeOnboardedWithSelectedPartnerVenue(permissions)).toBe(false)
     })
 
     it('should return false when user is not onboarded', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: true,
         isOnboarded: false,
-        isSelectedVenueAssociated: true,
+        isSelectedPartnerVenueAssociated: true,
       })
 
-      expect(mustOnboardedWithSelectedVenue(permissions)).toBe(false)
+      expect(mustBeOnboardedWithSelectedPartnerVenue(permissions)).toBe(false)
     })
 
     it('should return false when venue is not associated', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: true,
         isOnboarded: true,
-        isSelectedVenueAssociated: false,
+        isSelectedPartnerVenueAssociated: false,
       })
 
-      expect(mustOnboardedWithSelectedVenue(permissions)).toBe(false)
+      expect(mustBeOnboardedWithSelectedPartnerVenue(permissions)).toBe(false)
     })
   })
 
-  describe('mustNotBeOnboarded', () => {
+  describe('mustNotBeOnboardedWithSelectedPartnerVenue', () => {
     it('should return true when user is authenticated but not onboarded', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: true,
         isOnboarded: false,
       })
 
-      expect(mustNotBeOnboarded(permissions)).toBe(true)
+      expect(mustNotBeOnboardedWithSelectedPartnerVenue(permissions)).toBe(true)
     })
 
     it('should return false when user is not authenticated', () => {
@@ -111,7 +111,9 @@ describe('utils', () => {
         isOnboarded: false,
       })
 
-      expect(mustNotBeOnboarded(permissions)).toBe(false)
+      expect(mustNotBeOnboardedWithSelectedPartnerVenue(permissions)).toBe(
+        false
+      )
     })
 
     it('should return false when user is onboarded', () => {
@@ -120,7 +122,9 @@ describe('utils', () => {
         isOnboarded: true,
       })
 
-      expect(mustNotBeOnboarded(permissions)).toBe(false)
+      expect(mustNotBeOnboardedWithSelectedPartnerVenue(permissions)).toBe(
+        false
+      )
     })
   })
 
@@ -176,6 +180,7 @@ describe('utils', () => {
       expect(isNewHomepageEnabled()).toBe(expectedRes)
     })
   })
+
   describe('isSwitchVenueEnabled', () => {
     it.each([
       [false, undefined],

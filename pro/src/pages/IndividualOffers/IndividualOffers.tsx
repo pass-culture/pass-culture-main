@@ -24,7 +24,7 @@ import { useVenueAddresses } from '@/commons/hooks/swr/useVenueAddresses'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
-import { ensureSelectedVenue } from '@/commons/store/user/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { sortByLabel } from '@/commons/utils/strings'
 import { getStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 
@@ -34,14 +34,16 @@ import { computeIndividualApiFilters } from './utils/computeIndividualApiFilters
 export const IndividualOffers = (): JSX.Element => {
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
-  const selectedVenue = useAppSelector(ensureSelectedVenue)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const urlSearchFilters = useQuerySearchFilters()
   const { storedFilters } = getStoredFilterConfig('individual')
   const finalSearchFilters = {
     ...urlSearchFilters,
     ...(storedFilters as Partial<IndividualSearchFiltersParams>),
-    ...(withSwitchVenueFeature ? { venueId: selectedVenue.id.toString() } : {}),
+    ...(withSwitchVenueFeature
+      ? { venueId: selectedPartnerVenue.id.toString() }
+      : {}),
   }
 
   const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE

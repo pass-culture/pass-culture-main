@@ -8,10 +8,12 @@ import { getMainHeading } from './utils/getMainHeading'
 
 export const PartnerLayout = () => {
   const currentRoute = useCurrentRoute()
-  // TODO (cmoinier): ensureSelectedVenue when WIP_SWITCH_VENUE is activated
-  const selectedVenue = useAppSelector((state) => state.user.selectedVenue)
+  // TODO (cmoinier): ensureSelectedPartnerVenue once WIP_SWITCH_VENUE is activated
+  const selectedPartnerVenue = useAppSelector(
+    (state) => state.user.selectedPartnerVenue
+  )
 
-  const mainHeading = getMainHeading(currentRoute, selectedVenue)
+  const mainHeading = getMainHeading(currentRoute, selectedPartnerVenue)
 
   return (
     <BasicLayout mainHeading={mainHeading}>

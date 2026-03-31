@@ -392,7 +392,7 @@ describe('BankInformations page', () => {
         storeOverrides: {
           user: {
             currentUser: sharedCurrentUserFactory(),
-            selectedVenue: venue,
+            selectedPartnerVenue: venue,
           },
           offerer: {
             currentOfferer: {

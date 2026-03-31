@@ -188,14 +188,16 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const selectedOfferer = useAppSelector(
     (state) => state.offerer.currentOfferer
   )
-  const selectedVenue = useAppSelector((state) => state.user.selectedVenue)
+  const selectedPartnerVenue = useAppSelector(
+    (state) => state.user.selectedPartnerVenue
+  )
 
   const permanentVenues =
     selectedOfferer?.managedVenues?.filter((v) => v.isPermanent) ?? []
   const hasPartnerPageVenues =
     selectedOfferer?.managedVenues?.filter((v) => v.hasPartnerPage) ?? []
   const venueId = withSwitchVenueFeature
-    ? selectedVenue?.id
+    ? selectedPartnerVenue?.id
     : permanentVenues[0]?.id
 
   const reduxStoredPartnerPageId = useAppSelector(selectSelectedPartnerPageId)
@@ -249,16 +251,16 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
             [styles['nav-links-group']]: !withSwitchVenueFeature,
           })}
         >
-          {withSwitchVenueFeature && selectedVenue && (
+          {withSwitchVenueFeature && selectedPartnerVenue && (
             <div className={styles['nav-links-switch-venue-button']}>
               <Button
                 as="a"
-                aria-label={`Changer de structure (actuellement sélectionnée : ${selectedVenue.publicName})`}
+                aria-label={`Changer de structure (actuellement sélectionnée : ${selectedPartnerVenue.publicName})`}
                 variant={ButtonVariant.SECONDARY}
                 color={ButtonColor.NEUTRAL}
                 icon={fullLeftIcon}
                 to="/hub"
-                label={selectedVenue.publicName}
+                label={selectedPartnerVenue.publicName}
                 fullWidth
                 fullHeight
               />

@@ -170,12 +170,12 @@ const renderDetailsScreen = ({
     venues: props.venues || MOCK_DATA.venues,
     ...props,
   }
-  const controlledOptions = {
+  const controlledOptions: RenderWithProvidersOptions = {
     initialRouterEntries: [path],
     storeOverrides: {
       user: {
         currentUser: sharedCurrentUserFactory(),
-        selectedVenue: makeGetVenueResponseModel({ id: 189 }),
+        selectedPartnerVenue: makeGetVenueResponseModel({ id: 189 }),
       },
       offerer: currentOffererFactory(),
     },
@@ -1196,7 +1196,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
   })
 
   describe('with WIP_SWITCH_VENUE feature flag', () => {
-    it('should use selectedVenue from Redux store for initial values on creation', () => {
+    it('should use selectedPartnerVenue from Redux store for initial values on creation', () => {
       renderDetailsScreen({
         contextValue,
         options: {
@@ -1204,7 +1204,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
           storeOverrides: {
             user: {
               currentUser: sharedCurrentUserFactory(),
-              selectedVenue: makeGetVenueResponseModel({
+              selectedPartnerVenue: makeGetVenueResponseModel({
                 id: 777,
                 audioDisabilityCompliant: true,
                 mentalDisabilityCompliant: false,

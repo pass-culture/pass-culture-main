@@ -20,7 +20,7 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
-import { ensureSelectedVenue } from '@/commons/store/user/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { isEqual } from '@/commons/utils/isEqual'
 import { ChoosePreFiltersMessage } from '@/components/Bookings/Components/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import { DownloadsMovedBanner } from '@/components/DownloadsMovedBanner/DownloadsMovedBanner'
@@ -51,7 +51,7 @@ export const IndividualBookings = () => {
   const location = useLocation()
 
   const selectedOfferer = useAppSelector(ensureCurrentOfferer)
-  const selectedVenue = useAppSelector(ensureSelectedVenue)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const {
     initialAppliedFilters,
@@ -69,7 +69,7 @@ export const IndividualBookings = () => {
     updateUrl,
   } = useBookingsFilters(
     withSwitchVenueFeature
-      ? { offerVenueId: selectedVenue.id.toString() }
+      ? { offerVenueId: selectedPartnerVenue.id.toString() }
       : { offererId: selectedOfferer.id.toString() }
   )
 

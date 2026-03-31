@@ -41,7 +41,6 @@ export const Footer = ({ layout }: FooterProps) => {
     >
       {footerContainer &&
         createPortal(
-          // biome-ignore lint/correctness/useUniqueElementIds: Go to footer link is used once per page. There cannot be id duplications.
           <Button
             as="a"
             to="#pied-de-page"

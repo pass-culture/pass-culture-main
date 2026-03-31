@@ -5,7 +5,7 @@ import type { VenueListItemLiteResponseModel } from '@/apiClient/v1'
 import { FunnelLayout } from '@/app/App/layouts/funnels/FunnelLayout/FunnelLayout'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { setSelectedVenueById } from '@/commons/store/user/dispatchers/setSelectedVenueById'
+import { setSelectedPartnerVenueById } from '@/commons/store/user/dispatchers/setSelectedPartnerVenueById'
 import { ensureVenues } from '@/commons/store/user/selectors'
 import { normalizeStrForSearch } from '@/commons/utils/normalizeStrForSearch'
 import { pluralizeFr } from '@/commons/utils/pluralize'
@@ -62,7 +62,11 @@ export const Hub = () => {
     nextSelectedVenueId: number
   ) => {
     setIsLoading(true)
-    await dispatch(setSelectedVenueById({ nextSelectedVenueId })).unwrap()
+    await dispatch(
+      setSelectedPartnerVenueById({
+        nextSelectedPartnerVenueId: nextSelectedVenueId,
+      })
+    ).unwrap()
 
     navigate('/accueil')
   }
@@ -91,7 +95,6 @@ export const Hub = () => {
 
       {/* Hidden helper text for screen readers */}
       {
-        // biome-ignore lint/a11y/useSemanticElements: We want a `role="status"` here, not an `<output />`.
         <div
           className={styles['sr-only']}
           role="status"

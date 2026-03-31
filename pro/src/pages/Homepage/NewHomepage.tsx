@@ -6,7 +6,7 @@ import {
   type GetVenueResponseModel,
 } from '@/apiClient/v1'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { ensureSelectedVenue } from '@/commons/store/user/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getToday } from '@/commons/utils/date'
 import { getLastCollectiveDmsApplication } from '@/commons/utils/getLastCollectiveDmsApplication'
 import { CollectiveDmsTimeline } from '@/components/CollectiveDmsTimeline/CollectiveDmsTimeline'
@@ -38,19 +38,20 @@ import { WebinarCard } from './components/WebinarCard/WebinarCard'
 import styles from './NewHomepage.module.scss'
 
 export const NewHomepage = (): JSX.Element => {
-  const selectedVenue: GetVenueResponseModel =
-    useAppSelector(ensureSelectedVenue)
-
-  const collectiveDmsApplication = getLastCollectiveDmsApplication(
-    selectedVenue.collectiveDmsApplications ?? []
+  const selectedPartnerVenue: GetVenueResponseModel = useAppSelector(
+    ensureSelectedPartnerVenue
   )
 
-  const hasIndividualTab = !!selectedVenue.hasNonDraftOffers
+  const collectiveDmsApplication = getLastCollectiveDmsApplication(
+    selectedPartnerVenue.collectiveDmsApplications ?? []
+  )
+
+  const hasIndividualTab = !!selectedPartnerVenue.hasNonDraftOffers
   const hasCollectiveTab =
-    selectedVenue.allowedOnAdage || !!collectiveDmsApplication
+    selectedPartnerVenue.allowedOnAdage || !!collectiveDmsApplication
 
   const [selectedTab, setSelectedTab] = useState(
-    getInitialTab(selectedVenue.id, hasIndividualTab, hasCollectiveTab)
+    getInitialTab(selectedPartnerVenue.id, hasIndividualTab, hasCollectiveTab)
   )
   const individualId = useId()
   const collectiveId = useId()
@@ -70,17 +71,17 @@ export const NewHomepage = (): JSX.Element => {
 
   const handleTabChange = (newSelectedTab: TabKey) => {
     setSelectedTab(newSelectedTab)
-    onNewTabSelected(newSelectedTab, selectedVenue.id)
+    onNewTabSelected(newSelectedTab, selectedPartnerVenue.id)
   }
 
   // Shared modules display conditions
-  const shouldDisplayVenueValidationBanner = !selectedVenue.isValidated
-  const shouldDisplayIncomeCard = selectedVenue.hasNonFreeOffers
+  const shouldDisplayVenueValidationBanner = !selectedPartnerVenue.isValidated
+  const shouldDisplayIncomeCard = selectedPartnerVenue.hasNonFreeOffers
 
   // Individual modules display conditions
   const shouldDisplayWebinarCard = isBefore(
     getToday(),
-    addDays(selectedVenue.dateCreated, 31)
+    addDays(selectedPartnerVenue.dateCreated, 31)
   )
 
   // Collective modules display conditions
@@ -89,7 +90,8 @@ export const NewHomepage = (): JSX.Element => {
     collectiveDmsApplication?.state === DMSApplicationstatus.SANS_SUITE
 
   const collectiveActivationDate =
-    selectedVenue.adageInscriptionDate ?? selectedVenue.dateCreated
+    selectedPartnerVenue.adageInscriptionDate ??
+    selectedPartnerVenue.dateCreated
   const shouldDisplayCollectiveWebinarCard = isBefore(
     getToday(),
     addDays(collectiveActivationDate, 31)
@@ -148,16 +150,18 @@ export const NewHomepage = (): JSX.Element => {
           <div className={styles['side']}>
             {shouldDisplayIncomeCard && (
               <IncomeCard
-                venueId={selectedVenue.id}
-                bankAccountStatus={selectedVenue.bankAccountStatus ?? null}
+                venueId={selectedPartnerVenue.id}
+                bankAccountStatus={
+                  selectedPartnerVenue.bankAccountStatus ?? null
+                }
               />
             )}
             <PartnerPageCard
-              venueId={selectedVenue.id}
-              venueName={selectedVenue.name}
-              offererId={selectedVenue.managingOfferer.id}
-              venueBannerUrl={selectedVenue.bannerUrl}
-              venueBannerMeta={selectedVenue.bannerMeta}
+              venueId={selectedPartnerVenue.id}
+              venueName={selectedPartnerVenue.name}
+              offererId={selectedPartnerVenue.managingOfferer.id}
+              venueBannerUrl={selectedPartnerVenue.bannerUrl}
+              venueBannerMeta={selectedPartnerVenue.bannerMeta}
               variant={HomepageVariant.INDIVIDUAL}
             />
             {shouldDisplayWebinarCard && (
@@ -188,8 +192,8 @@ export const NewHomepage = (): JSX.Element => {
             {collectiveDmsApplication && (
               <CollectiveDmsTimeline
                 collectiveDmsApplication={collectiveDmsApplication}
-                hasAdageId={Boolean(selectedVenue.hasAdageId)}
-                adageInscriptionDate={selectedVenue.adageInscriptionDate}
+                hasAdageId={Boolean(selectedPartnerVenue.hasAdageId)}
+                adageInscriptionDate={selectedPartnerVenue.adageInscriptionDate}
                 variant={CollectiveDmsTimelineVariant.LITE}
               />
             )}
@@ -201,26 +205,30 @@ export const NewHomepage = (): JSX.Element => {
                 variant={OffersEmptyStateCardVariant.INDIVIDUAL}
               />
             )}
-            {selectedVenue.allowedOnAdage && (
-              <CollectiveOffersCardsContainer venueId={selectedVenue.id} />
+            {selectedPartnerVenue.allowedOnAdage && (
+              <CollectiveOffersCardsContainer
+                venueId={selectedPartnerVenue.id}
+              />
             )}
           </div>
 
           <div className={styles['side']}>
-            {selectedVenue.allowedOnAdage && (
+            {selectedPartnerVenue.allowedOnAdage && (
               <>
                 {shouldDisplayIncomeCard && (
                   <IncomeCard
-                    venueId={selectedVenue.id}
-                    bankAccountStatus={selectedVenue.bankAccountStatus ?? null}
+                    venueId={selectedPartnerVenue.id}
+                    bankAccountStatus={
+                      selectedPartnerVenue.bankAccountStatus ?? null
+                    }
                   />
                 )}
                 <PartnerPageCard
-                  venueId={selectedVenue.id}
-                  venueName={selectedVenue.name}
-                  offererId={selectedVenue.managingOfferer.id}
-                  venueBannerUrl={selectedVenue.bannerUrl}
-                  venueBannerMeta={selectedVenue.bannerMeta}
+                  venueId={selectedPartnerVenue.id}
+                  venueName={selectedPartnerVenue.name}
+                  offererId={selectedPartnerVenue.managingOfferer.id}
+                  venueBannerUrl={selectedPartnerVenue.bannerUrl}
+                  venueBannerMeta={selectedPartnerVenue.bannerMeta}
                   variant={HomepageVariant.COLLECTIVE}
                 />
                 {shouldDisplayCollectiveWebinarCard && (

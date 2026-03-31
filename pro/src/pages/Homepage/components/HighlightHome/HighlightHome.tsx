@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { ensureSelectedVenue } from '@/commons/store/user/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import { Card } from '@/ui-kit/Card/Card'
@@ -15,7 +15,7 @@ import { ModalHighlight } from './ModalHighlight/ModalHighlight'
 export const HighlightHome = () => {
   const [isOpen, setIsOpen] = useState(false)
   const { logEvent } = useAnalytics()
-  const selectedVenue = useAppSelector(ensureSelectedVenue)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   return (
     <div className={styles['highlight-home']}>
@@ -34,7 +34,7 @@ export const HighlightHome = () => {
                 variant={ButtonVariant.SECONDARY}
                 onClick={() =>
                   logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
-                    venueId: selectedVenue.id,
+                    venueId: selectedPartnerVenue.id,
                     action: 'discover',
                   })
                 }

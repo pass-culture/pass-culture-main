@@ -23,7 +23,7 @@ function renderCollectiveOfferSelectionDuplication() {
   renderWithProviders(<CollectiveOfferSelectionDuplication />, {
     storeOverrides: {
       user: {
-        selectedVenue: makeVenueListItem({ id: 2 }),
+        selectedPartnerVenue: makeVenueListItem({ id: 2 }),
       },
       offerer: {
         currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },

@@ -46,7 +46,9 @@ export const Homepage = (): JSX.Element => {
 
   const selectedOfferer = useAppSelector(selectCurrentOfferer)
 
-  const selectedVenue = useAppSelector((state) => state.user.selectedVenue)
+  const selectedPartnerVenue = useAppSelector(
+    (state) => state.user.selectedPartnerVenue
+  )
 
   const hasNoVenueVisible = useMemo(() => {
     const physicalVenues = getPhysicalVenuesFromOfferer(selectedOfferer)
@@ -68,12 +70,12 @@ export const Homepage = (): JSX.Element => {
       <div className={styles['reimbursements-banners']}>
         <AddBankAccountCallout
           offerer={selectedOfferer}
-          venue={selectedVenue}
+          venue={selectedPartnerVenue}
         />
         <LinkVenueCallout offerer={selectedOfferer} />
         <BankAccountHasPendingCorrectionCallout
           offerer={selectedOfferer}
-          venue={selectedVenue}
+          venue={selectedPartnerVenue}
         />
       </div>
       {selectedOfferer && <OffererBanners offerer={selectedOfferer} />}
@@ -90,8 +92,8 @@ export const Homepage = (): JSX.Element => {
               [styles['container-stats-with-highlights']]: areHighlightsEnable,
             })}
           >
-            {withSwitchVenueFeature && selectedVenue ? (
-              <VenueStatisticsDashboard venue={selectedVenue} />
+            {withSwitchVenueFeature && selectedPartnerVenue ? (
+              <VenueStatisticsDashboard venue={selectedPartnerVenue} />
             ) : (
               <StatisticsDashboard offerer={selectedOfferer} />
             )}
