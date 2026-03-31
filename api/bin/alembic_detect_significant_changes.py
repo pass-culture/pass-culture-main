@@ -64,31 +64,40 @@ def extract_operation_details(code_part: str) -> dict:
     # batch_alter_table('table')
     match = re.search(r'op\.batch_alter_table\(\s*["\'](\w+)["\']', code_part)
     if match:
-        return {"table": match.group(1), "column": None}
+        return {"table": match.group(1), "column": None, "rename_to": None}
 
-    # op.add_column('table', Column('column', ...))
-    match = re.search(r'op\.(?!execute)\w+\(\s*["\'](\w+)["\'](?:,\s*\w+\(["\'](\w+)["\'])?', code_part)
+    # op.add_column('table', sa.Column('column', ...))
+    match = re.search(r'op\.(?!execute)\w+\(\s*["\'](\w+)["\'](?:,\s*(?:\w+\.)*\w+\(["\'](\w+)["\'])?', code_part)
     if match:
-        return {"table": match.group(1), "column": match.group(2)}
+        return {"table": match.group(1), "column": match.group(2), "rename_to": None}
 
-    # raw SQL: ALTER/DROP/RENAME TABLE with optional RENAME COLUMN
-    match = re.search(r'(?:ALTER|DROP|RENAME)\s+TABLE\s+(?:\w+\.)?(\w+)\s*(?:RENAME\s+COLUMN\s+(\w+))?', code_part, re.IGNORECASE)
+    # raw SQL: ALTER TABLE table RENAME COLUMN old TO new
+    match = re.search(r'(?:ALTER|DROP|RENAME)\s+TABLE\s+(?:\w+\.)?(\w+)\s*(?:RENAME\s+COLUMN\s+(\w+)\s+TO\s+(\w+))?', code_part, re.IGNORECASE)
     if match:
-        return {"table": match.group(1), "column": match.group(2)}
+        return {"table": match.group(1), "column": match.group(2), "rename_to": match.group(3)}
 
     # CREATE TABLE
     match = re.search(r'CREATE\s+TABLE\s+(?:\w+\.)?(\w+)', code_part, re.IGNORECASE)
     if match:
-        return {"table": match.group(1), "column": None}
+        return {"table": match.group(1), "column": None, "rename_to": None}
 
-    return {"table": None, "column": None}
+    return {"table": None, "column": None, "rename_to": None}
 
 
 def format_change(c: dict) -> str:
-    location = c["table"]
-    if c["column"]:
-        location += f".{c['column']}"
-    return f"[{c['hash']}] {c['op']} ({location})"
+    table = c["table"] or "unknown"
+    op = c["op"]
+    col = c["column"]
+    rename_to = c["rename_to"]
+
+    if op == "rename_column" and col and rename_to:
+        detail = f"{table}.{col} → {table}.{rename_to}"
+    elif col:
+        detail = f"{table}.{col}"
+    else:
+        detail = table
+
+    return f"[{c['hash']}] {op} ({detail})"
 
 
 def check_migration(file_name: str, operation_level: str = "important") -> list[dict]:
@@ -117,6 +126,7 @@ def check_migration(file_name: str, operation_level: str = "important") -> list[
                                     "op": OP_DISPLAY[op],
                                     "table": details["table"],
                                     "column": details["column"],
+                                    "rename_to": details["rename_to"],
                                 })
     except Exception as exc:
         print(f"Could not parse {file_path}: {exc}")
