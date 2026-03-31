@@ -1,12 +1,11 @@
-/** biome-ignore-all lint/suspicious/noConsole: <explanation> */
 import { fileURLToPath, URL } from 'node:url'
 import { fontPreloads } from '@pass-culture/design-system/lib/global/font-preloads'
 import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
-import { defineConfig, type PluginOption } from 'vite'
+import { defineConfig } from 'vite'
 import { createHtmlPlugin } from 'vite-plugin-html'
-import tsconfigPaths from 'vite-tsconfig-paths'
 import { configDefaults, coverageConfigDefaults } from 'vitest/config'
+import type { VerboseReporter } from 'vitest/reporters'
 
 export default defineConfig(({ mode }) => {
   return {
@@ -21,15 +20,15 @@ export default defineConfig(({ mode }) => {
       alias: {
         styles: fileURLToPath(new URL('./src/styles', import.meta.url)),
       },
+      tsconfigPaths: true,
     },
     plugins: [
       react(),
-      tsconfigPaths(),
       createHtmlPlugin({
         minify: true,
         inject: { data: { mode } },
       }),
-      visualizer({ filename: 'bundleStats.html' }) as PluginOption,
+      visualizer({ filename: 'bundleStats.html' }),
       htmlPlugin(),
     ],
     server: { port: 3001 },
@@ -48,7 +47,7 @@ export default defineConfig(({ mode }) => {
         : [
             'verbose',
             {
-              onTestRunEnd(testModules, unhandledErrors, reason) {
+              onTestRunEnd: ((testModules) => {
                 // Reporter to print slowest tests
                 const tests = testModules
                   .flatMap((m) => [...m.children.allTests()])
@@ -60,8 +59,8 @@ export default defineConfig(({ mode }) => {
                 )
                 tests.reverse()
                 if (tests.length > 1) {
-                  console.log('Slow tests')
-                  console.log(
+                  console.info('Slow tests')
+                  console.info(
                     Object.fromEntries(
                       tests.map((t) => {
                         const date = new Date(t.diagnostic()?.duration ?? 0)
@@ -73,7 +72,7 @@ export default defineConfig(({ mode }) => {
                     )
                   )
                 }
-              },
+              }) satisfies VerboseReporter['onTestRunEnd'],
             },
           ],
       mockReset: true,
@@ -113,8 +112,9 @@ export default defineConfig(({ mode }) => {
       devSourcemap: true,
       preprocessorOptions: {
         scss: {
+          // TODO (igabriele, 2026-03-31): Investigate if that's not useless now or comment it to explain what it does.
           api: 'modern',
-        },
+        } as any,
       },
     },
   }
