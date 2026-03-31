@@ -36,7 +36,7 @@ const renderIndividualOfferTimetable = (
       features: features,
       storeOverrides: {
         user: {
-          selectedVenue: makeVenueListItem({ id: 2 }),
+          selectedPartnerVenue: makeVenueListItem({ id: 2 }),
         },
       },
     }

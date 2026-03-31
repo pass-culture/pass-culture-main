@@ -22,7 +22,7 @@ import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
-import { ensureSelectedVenue } from '@/commons/store/user/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
@@ -67,7 +67,7 @@ export const IndividualOfferDescriptionScreen = ({
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
   const mode = useOfferWizardMode()
-  const selectedVenue = useAppSelector(ensureSelectedVenue)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const {
     categories,
@@ -86,7 +86,7 @@ export const IndividualOfferDescriptionScreen = ({
   const getInitialValues = () => {
     return isNewOfferDraft
       ? withSwitchVenueFeature
-        ? getInitialValuesFromVenue(selectedVenue)
+        ? getInitialValuesFromVenue(selectedPartnerVenue)
         : getInitialValuesFromVenues(availableVenues)
       : getInitialValuesFromOffer({
           offer: initialOffer,

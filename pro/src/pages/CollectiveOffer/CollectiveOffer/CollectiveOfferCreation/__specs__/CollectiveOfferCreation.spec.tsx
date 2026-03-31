@@ -34,7 +34,9 @@ const renderCollectiveOfferCreation = (
     storeOverrides: {
       user: {
         currentUser: sharedCurrentUserFactory(),
-        selectedVenue: managedVenueFactory({ id: props.offer?.venue?.id ?? 1 }),
+        selectedPartnerVenue: managedVenueFactory({
+          id: props.offer?.venue?.id ?? 1,
+        }),
         venues: [
           makeVenueListItemLiteResponseModel({
             id: props.offer?.venue?.id ?? 1,

@@ -4,7 +4,7 @@ import type { ShortHighlightResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { ensureSelectedVenue } from '@/commons/store/user/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -26,7 +26,7 @@ export const OfferHighlightBanner = ({
 }: OfferHighlightBannerProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false)
   const { logEvent } = useAnalytics()
-  const selectedVenue = useAppSelector(ensureSelectedVenue)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   return (
     <>
@@ -60,7 +60,7 @@ export const OfferHighlightBanner = ({
               onClick={() => {
                 logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
                   offerId,
-                  venueId: selectedVenue.id,
+                  venueId: selectedPartnerVenue.id,
                   action: 'edited',
                 })
                 setIsOpen(true)
@@ -90,7 +90,7 @@ export const OfferHighlightBanner = ({
               onClick={() => {
                 logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
                   offerId,
-                  venueId: selectedVenue.id,
+                  venueId: selectedPartnerVenue.id,
                   action: 'started',
                 })
                 setIsOpen(true)

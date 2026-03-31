@@ -54,7 +54,7 @@ describe('LateralMenu', () => {
     const features = ['WIP_SWITCH_VENUE']
 
     it('should display switch venue button with selected venue name', () => {
-      const selectedVenuePublicName = 'Nom public de la structure'
+      const selectedPartnerVenuePublicName = 'Nom public de la structure'
 
       renderSideNavLinks({
         storeOverrides: {
@@ -64,19 +64,24 @@ describe('LateralMenu', () => {
             },
           },
           user: {
-            selectedVenue: { id: 123, publicName: selectedVenuePublicName },
+            selectedPartnerVenue: {
+              id: 123,
+              publicName: selectedPartnerVenuePublicName,
+            },
           },
         },
         features,
       })
 
       const switchVenueButton = screen.getByRole('link', {
-        name: `Changer de structure (actuellement sélectionnée : ${selectedVenuePublicName})`,
+        name: `Changer de structure (actuellement sélectionnée : ${selectedPartnerVenuePublicName})`,
       })
       expect(switchVenueButton).toBeInTheDocument()
       expect(switchVenueButton).toHaveAttribute('href', '/hub')
       expect(
-        screen.getByRole('link', { name: new RegExp(selectedVenuePublicName) })
+        screen.getByRole('link', {
+          name: new RegExp(selectedPartnerVenuePublicName),
+        })
       ).toBeInTheDocument()
     })
 
@@ -89,7 +94,7 @@ describe('LateralMenu', () => {
             },
           },
           user: {
-            selectedVenue: null,
+            selectedPartnerVenue: null,
           },
         },
         features,
@@ -110,7 +115,7 @@ describe('LateralMenu', () => {
           },
         },
         user: {
-          selectedVenue: { id: 123, name: 'Test Venue' },
+          selectedPartnerVenue: { id: 123, name: 'Test Venue' },
         },
       },
       features: [],

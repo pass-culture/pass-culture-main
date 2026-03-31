@@ -2,7 +2,7 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { ensureSelectedVenue } from '@/commons/store/user/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -12,7 +12,7 @@ import styles from './HeadlineOffer.module.scss'
 
 export function HeadlineOffer() {
   const { logEvent } = useAnalytics()
-  const selectedVenue = useAppSelector(ensureSelectedVenue)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const { isHeadlineOfferAllowedForOfferer, headlineOffer } =
     useHeadlineOfferContext()
@@ -38,7 +38,7 @@ export function HeadlineOffer() {
             logEvent(EngagementEvents.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
               offerId: headlineOffer.id,
               action: 'seeInApp',
-              venueId: selectedVenue.id,
+              venueId: selectedPartnerVenue.id,
             })
           }}
           label="Visualiser dans l’application"

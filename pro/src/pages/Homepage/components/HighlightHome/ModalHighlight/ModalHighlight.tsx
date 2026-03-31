@@ -7,7 +7,7 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_HIGHLIGHTS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { ensureSelectedVenue } from '@/commons/store/user/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { HighlightDatespanTag } from '@/components/HighlightDatespanTag/HighlightDatespanTag'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
@@ -31,7 +31,7 @@ export const ModalHighlight = ({
   const { data, isLoading } = useSWR([GET_HIGHLIGHTS_QUERY_KEY], () =>
     api.getHighlights()
   )
-  const selectedVenue = useAppSelector(ensureSelectedVenue)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   return (
     <DialogBuilder
@@ -66,8 +66,7 @@ export const ModalHighlight = ({
             <h2 className={styles['highlight-title']}>
               Les prochains temps forts :{' '}
             </h2>
-            {/* biome-ignore lint/a11y/useSemanticElements: correct voiceover bug with list displayed with flex
-            biome-ignore lint/a11y/noRedundantRoles: idem */}
+            {/* biome-ignore lint/a11y/noRedundantRoles: correct voiceover bug with list displayed with flex */}
             <ul className={styles['cards-container']} role="list">
               {data?.map(
                 ({
@@ -78,7 +77,6 @@ export const ModalHighlight = ({
                   communicationDate,
                   highlightDatespan,
                 }) => (
-                  // biome-ignore lint/a11y/useSemanticElements: correct voiceover bug with list displayed with flex
                   // biome-ignore lint/a11y/noRedundantRoles: idem
                   <li key={id} role="listitem">
                     <HighlightCard
@@ -104,7 +102,7 @@ export const ModalHighlight = ({
           opensInNewTab
           onClick={() =>
             logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
-              venueId: selectedVenue.id,
+              venueId: selectedPartnerVenue.id,
               action: 'seeMoreInfo',
             })
           }
@@ -119,7 +117,7 @@ export const ModalHighlight = ({
           opensInNewTab
           onClick={() =>
             logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
-              venueId: selectedVenue.id,
+              venueId: selectedPartnerVenue.id,
               action: 'seeCalendar',
             })
           }
@@ -143,7 +141,7 @@ export const ModalHighlight = ({
             variant={ButtonVariant.PRIMARY}
             onClick={() =>
               logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
-                venueId: selectedVenue.id,
+                venueId: selectedPartnerVenue.id,
                 action: 'goToOffersList',
               })
             }

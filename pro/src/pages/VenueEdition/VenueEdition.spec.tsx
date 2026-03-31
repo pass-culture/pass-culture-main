@@ -69,7 +69,7 @@ const renderVenueEdition = ({
             currentOfferer: { ...defaultGetOffererResponseModel, id: 100 },
           },
           user: {
-            selectedVenue: makeGetVenueResponseModel({
+            selectedPartnerVenue: makeGetVenueResponseModel({
               id: FIRST_VENUE.id,
               name: FIRST_VENUE.name,
               publicName: FIRST_VENUE.publicName,
@@ -266,7 +266,7 @@ describe('VenueEdition', () => {
             currentOfferer: { ...defaultGetOffererResponseModel, id: 100 },
           },
           user: {
-            selectedVenue: makeGetVenueResponseModel({
+            selectedPartnerVenue: makeGetVenueResponseModel({
               id: FIRST_VENUE.id,
               name: FIRST_VENUE.name,
               publicName: FIRST_VENUE.publicName,

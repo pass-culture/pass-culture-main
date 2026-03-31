@@ -45,14 +45,14 @@ flowchart TB
 
 Dans la mesure du possible, chaque responsabilité globale ou transverse doit être gérée par **une et une seule fonction** (util, composant, hook, etc).
 
-| Scope | Rôle | Fonction |
-| - | - | - |
-| User | (Re-)Charger l'ensemble des entités et structures,<br>ce qui (re-)sélectionne automatiquement la bonne entité et structure pour chaque espace. | `initializeUser()` |
-| User | Quelle est l'ID de l'entité à sélectionner pour l'espace d'administration selon l'état actuel de l'application ? | `getInitialAdminOffererId()` |
-| User | Quelle est l'ID de la structure à sélectionner pour l'espace partenaire selon l'état actuel de l'application ? | `getInitialPartnerVenueId()` |
-| User | Changer d'entité pour l'espace d'administration. | `setSelectedAdminOffererById()` |
-| User | Changer de structure pour l'espace partenaire. | `setSelectedVenueById()` |
-| User | Quelles sont les permissions de l'utilisateur ? | `getCurrentUserPermissions()` |
+| Scope         | Rôle | Fonction |
+| ------------- | ---- | -------- |
+| User          | (Re-)Charger l'ensemble des entités et structures,<br>ce qui (re-)sélectionne automatiquement la bonne entité et structure pour chaque espace. | `initializeUser()` |
+| User          | Quelle est l'ID de l'entité à sélectionner pour l'espace d'administration selon l'état actuel de l'application ? | `getInitialAdminOffererId()` |
+| User          | Quelle est l'ID de la structure à sélectionner pour l'espace partenaire selon l'état actuel de l'application ? | `getInitialPartnerVenueId()` |
+| User          | Changer d'entité pour l'espace d'administration. | `setSelectedAdminOffererById()` |
+| User          | Changer de structure pour l'espace partenaire. | `setSelectedPartnerVenueById()` |
+| User          | Quelles sont les permissions de l'utilisateur ? | `getCurrentUserPermissions()` |
 | Routing, User | Quel est le chemin de sa page par défault ? | `getUserDefaultPath()` |
 
 ## Permissions
@@ -62,8 +62,8 @@ Les permissions sont calculées à partir du state Redux par la fonction `getCur
 | Flag                               | Description métier                                                                                         |
 | ---------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | `isAuthenticated`                  | Est-il authentifié ?                                                                                       |
-| `hasSelectedVenue`                 | A-t-il une structure séléctionnée (espace partenaire) ?                                                    |
-| `isSelectedVenueAssociated`        | La structure sélectionnée est-elle rattachée à ce compte (= le rattachement a-t-il été validé) ?           |
+| `hasSelectedParnerVenue`           | A-t-il une structure séléctionnée (espace partenaire) ?                                                    |
+| `isSelectedPartnerVenueAssociated` | La structure sélectionnée est-elle rattachée à ce compte (= le rattachement a-t-il été validé) ?           |
 | `hasSelectedAdminOfferer`          | A-t-il un entité séléctionnée (espace d'administration) ?                                                  |
 | `isSelectedAdminOffererAssociated` | L'entité sélectionnée est-elle rattachée à ce compte (= le rattachement a-t-il été validé) ?               |
 | `isOnboarded`                      | Une offre a-t-elle déjà été créée sur une des structures de l'entité parenet à la structure sélectionnée ? |

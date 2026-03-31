@@ -29,7 +29,7 @@ describe('ModalHighlight', () => {
     const { container } = renderWithProviders(<ModalHighlight open />, {
       storeOverrides: {
         user: {
-          selectedVenue: makeVenueListItem({ id: 2 }),
+          selectedPartnerVenue: makeVenueListItem({ id: 2 }),
         },
       },
     })
@@ -78,7 +78,7 @@ describe('ModalHighlight', () => {
     renderWithProviders(<ModalHighlight open />, {
       storeOverrides: {
         user: {
-          selectedVenue: makeVenueListItem({ id: 2 }),
+          selectedPartnerVenue: makeVenueListItem({ id: 2 }),
         },
       },
     })

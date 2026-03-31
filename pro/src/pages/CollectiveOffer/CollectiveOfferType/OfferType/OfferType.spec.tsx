@@ -67,7 +67,7 @@ const renderOfferTypes = (
       storeOverrides: {
         user: {
           currentUser: sharedCurrentUserFactory(),
-          selectedVenue: makeVenueListItem({ id: 2 }),
+          selectedPartnerVenue: makeVenueListItem({ id: 2 }),
         },
         offerer: {
           currentOfferer: {

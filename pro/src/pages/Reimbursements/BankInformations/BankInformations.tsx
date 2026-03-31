@@ -37,7 +37,9 @@ const BankInformations = (): JSX.Element => {
   const adminSelectedOfferer = useAppSelector(
     (store) => store.user.selectedAdminOfferer
   )
-  const selectedVenue = useAppSelector((store) => store.user.selectedVenue)
+  const selectedPartnerVenue = useAppSelector(
+    (store) => store.user.selectedPartnerVenue
+  )
 
   const selectedOfferer = withSwitchVenueFeature
     ? adminSelectedOfferer
@@ -86,8 +88,8 @@ const BankInformations = (): JSX.Element => {
       if (update) {
         await updateOfferer(offererId)
 
-        if (selectedVenue) {
-          await syncVenue(selectedVenue.id)
+        if (selectedPartnerVenue) {
+          await syncVenue(selectedPartnerVenue.id)
         }
       }
       setSelectedBankAccount(null)

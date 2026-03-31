@@ -12,7 +12,7 @@ import { GET_OFFER_PRO_ADVICE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { ensureSelectedVenue } from '@/commons/store/user/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -58,7 +58,7 @@ export function OfferRecommendationForm({
   const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
   const { logEvent } = useAnalytics()
-  const selectedVenue = useAppSelector(ensureSelectedVenue)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const defaultValues: OfferRecommendationFormValues = {
     content: proAdvice?.content ?? '',
@@ -99,7 +99,7 @@ export function OfferRecommendationForm({
       await mutate([GET_OFFER_PRO_ADVICE_QUERY_KEY, offerId])
       logEvent(EngagementEvents.HAS_MADE_RECOMMENDATION, {
         offerId,
-        venueId: selectedVenue.id,
+        venueId: selectedPartnerVenue.id,
         action: 'validated',
       })
       snackBar.success('Votre recommandation a bien été ajoutée')
@@ -118,7 +118,7 @@ export function OfferRecommendationForm({
       snackBar.success('Votre recommandation a bien été supprimée')
       logEvent(EngagementEvents.HAS_MADE_RECOMMENDATION, {
         offerId,
-        venueId: selectedVenue.id,
+        venueId: selectedPartnerVenue.id,
         action: 'deleted',
       })
       onClose()

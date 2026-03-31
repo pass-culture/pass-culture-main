@@ -7,6 +7,7 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 
+// TODO (igabriele, 2026-03-31): Remove this hook and integrate its logic directly within dispatchers + Check adpatation for WIP_SWITCH_VENUE FF with data team.
 export const useLogExtraProData = (): void => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
@@ -15,24 +16,26 @@ export const useLogExtraProData = (): void => {
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
-  const selectedVenue = useAppSelector((state) => state.user.selectedVenue)
+  const selectedPartnerVenue = useAppSelector(
+    (state) => state.user.selectedPartnerVenue
+  )
 
   useEffect(() => {
     if (
       withSwitchVenueFeature &&
-      selectedVenue &&
+      selectedPartnerVenue &&
       selectedOffererId &&
-      (selectedVenue.id !== previousVenue ||
+      (selectedPartnerVenue.id !== previousVenue ||
         selectedOffererId !== previousOfferer)
     ) {
       logEvent(Events.EXTRA_PRO_DATA, {
         offerer_id: selectedOffererId,
-        venue_id: selectedVenue.id,
+        venue_id: selectedPartnerVenue.id,
         from: location.pathname,
       })
 
       setPreviousOfferer(selectedOffererId)
-      setPreviousVenue(selectedVenue.id)
+      setPreviousVenue(selectedPartnerVenue.id)
     } else if (selectedOffererId && selectedOffererId !== previousOfferer) {
       logEvent(Events.EXTRA_PRO_DATA, {
         offerer_id: selectedOffererId,
@@ -43,10 +46,12 @@ export const useLogExtraProData = (): void => {
     }
   }, [
     selectedOffererId,
+    selectedPartnerVenue,
     logEvent,
     location.pathname,
     previousOfferer,
-    selectedVenue?.id,
+    previousVenue,
+    selectedPartnerVenue?.id,
     withSwitchVenueFeature,
   ])
 }

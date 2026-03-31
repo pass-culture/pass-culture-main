@@ -19,7 +19,7 @@ const renderNewSitemap = (options: RenderWithProvidersOptions = {}) => {
     storeOverrides: {
       user: {
         currentUser: sharedCurrentUserFactory(),
-        selectedVenue: {
+        selectedPartnerVenue: {
           id: 123,
           name: 'Test Venue',
           allowedOnAdage: true,

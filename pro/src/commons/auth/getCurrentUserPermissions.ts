@@ -3,32 +3,35 @@ import { rootStore } from '@/commons/store/store'
 import type { UserPermissions } from './types'
 
 export const getCurrentUserPermissions = (): UserPermissions => {
-  const { access, currentUser, selectedAdminOfferer, selectedVenue } =
+  const { access, currentUser, selectedAdminOfferer, selectedPartnerVenue } =
     rootStore.getState().user
 
   if (!currentUser) {
     return {
-      hasSelectedVenue: false,
+      hasSelectedPartnerVenue: false,
       isAuthenticated: false,
       isOnboarded: false,
-      isSelectedVenueAssociated: false,
+      isSelectedPartnerVenueAssociated: false,
       hasSelectedAdminOfferer: false,
     }
   }
 
   const hasSelectedAdminOfferer = !!selectedAdminOfferer
-  const hasSelectedVenue = !!selectedVenue
-  // TODO (igabriele, 2026-02-04): Replace `access !== 'unattached'` with `selectedVenue.isAssociated` as soon as the prop is available.
-  const isSelectedVenueAssociated = hasSelectedVenue && access !== 'unattached'
-  // TODO (igabriele, 2026-02-04): Replace `access !== 'no-onboarding'` with `selectedVenue.isOnboarded` as soon as the prop is available.
+  const hasSelectedPartnerVenue = !!selectedPartnerVenue
+  // TODO (igabriele, 2026-02-04): Replace `access !== 'unattached'` with `selectedPartnerVenue.isAssociated` as soon as the prop is available (WIP_SWITCH_VENUE FF).
+  const isSelectedPartnerVenueAssociated =
+    hasSelectedPartnerVenue && access !== 'unattached'
+  // TODO (igabriele, 2026-02-04): Replace `access !== 'no-onboarding'` with `selectedPartnerVenue.isOnboarded` as soon as the prop is available (WIP_SWITCH_VENUE FF).
   const isOnboarded =
-    hasSelectedVenue && isSelectedVenueAssociated && access !== 'no-onboarding'
+    hasSelectedPartnerVenue &&
+    isSelectedPartnerVenueAssociated &&
+    access !== 'no-onboarding'
 
   return {
-    hasSelectedVenue,
+    hasSelectedPartnerVenue: hasSelectedPartnerVenue,
     isAuthenticated: true,
     isOnboarded,
-    isSelectedVenueAssociated,
+    isSelectedPartnerVenueAssociated,
     hasSelectedAdminOfferer,
   }
 }

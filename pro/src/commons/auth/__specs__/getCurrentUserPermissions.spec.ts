@@ -15,7 +15,7 @@ describe('getCurrentUserPermissions', () => {
           access: null,
           currentUser: null,
           selectedAdminOfferer: null,
-          selectedVenue: null,
+          selectedPartnerVenue: null,
           venues: null,
           venuesWithPendingValidation: null,
         },
@@ -26,10 +26,10 @@ describe('getCurrentUserPermissions', () => {
 
       expect(result).toEqual({
         hasSelectedAdminOfferer: false,
-        hasSelectedVenue: false,
+        hasSelectedPartnerVenue: false,
         isAuthenticated: false,
         isOnboarded: false,
-        isSelectedVenueAssociated: false,
+        isSelectedPartnerVenueAssociated: false,
       })
     })
   })
@@ -41,7 +41,7 @@ describe('getCurrentUserPermissions', () => {
           access: null,
           currentUser: sharedCurrentUserFactory(),
           selectedAdminOfferer: null,
-          selectedVenue: null,
+          selectedPartnerVenue: null,
           venues: null,
           venuesWithPendingValidation: null,
         },
@@ -54,13 +54,13 @@ describe('getCurrentUserPermissions', () => {
     })
 
     describe('without selected venue', () => {
-      it('should return hasSelectedVenue as false', () => {
+      it('should return hasSelectedPartnerVenue as false', () => {
         const store = configureTestStore({
           user: {
             access: null,
             currentUser: sharedCurrentUserFactory(),
             selectedAdminOfferer: null,
-            selectedVenue: null,
+            selectedPartnerVenue: null,
             venues: null,
             venuesWithPendingValidation: null,
           },
@@ -69,8 +69,8 @@ describe('getCurrentUserPermissions', () => {
 
         const result = getCurrentUserPermissions()
 
-        expect(result.hasSelectedVenue).toBe(false)
-        expect(result.isSelectedVenueAssociated).toBe(false)
+        expect(result.hasSelectedPartnerVenue).toBe(false)
+        expect(result.isSelectedPartnerVenueAssociated).toBe(false)
         expect(result.isOnboarded).toBe(false)
       })
     })
@@ -85,7 +85,7 @@ describe('getCurrentUserPermissions', () => {
               ...defaultGetOffererResponseModel,
               id: 100,
             },
-            selectedVenue: null,
+            selectedPartnerVenue: null,
             venues: null,
             venuesWithPendingValidation: null,
           },
@@ -99,13 +99,13 @@ describe('getCurrentUserPermissions', () => {
     })
 
     describe('with selected venue', () => {
-      it('should return hasSelectedVenue as true', () => {
+      it('should return hasSelectedPartnerVenue as true', () => {
         const store = configureTestStore({
           user: {
             access: null,
             currentUser: sharedCurrentUserFactory(),
             selectedAdminOfferer: null,
-            selectedVenue: makeGetVenueResponseModel({ id: 1 }),
+            selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
             venues: null,
             venuesWithPendingValidation: null,
           },
@@ -114,17 +114,17 @@ describe('getCurrentUserPermissions', () => {
 
         const result = getCurrentUserPermissions()
 
-        expect(result.hasSelectedVenue).toBe(true)
+        expect(result.hasSelectedPartnerVenue).toBe(true)
       })
 
       describe('when access is unattached', () => {
-        it('should return isSelectedVenueAssociated as false', () => {
+        it('should return isSelectedPartnerVenueAssociated as false', () => {
           const store = configureTestStore({
             user: {
               access: 'unattached' as UserAccess,
               currentUser: sharedCurrentUserFactory(),
               selectedAdminOfferer: null,
-              selectedVenue: makeGetVenueResponseModel({ id: 1 }),
+              selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
               venues: null,
               venuesWithPendingValidation: null,
             },
@@ -133,19 +133,19 @@ describe('getCurrentUserPermissions', () => {
 
           const result = getCurrentUserPermissions()
 
-          expect(result.isSelectedVenueAssociated).toBe(false)
+          expect(result.isSelectedPartnerVenueAssociated).toBe(false)
           expect(result.isOnboarded).toBe(false)
         })
       })
 
       describe('when access is no-onboarding', () => {
-        it('should return isSelectedVenueAssociated as true but isOnboarded as false', () => {
+        it('should return isSelectedPartnerVenueAssociated as true but isOnboarded as false', () => {
           const store = configureTestStore({
             user: {
               access: 'no-onboarding' as UserAccess,
               currentUser: sharedCurrentUserFactory(),
               selectedAdminOfferer: null,
-              selectedVenue: makeGetVenueResponseModel({ id: 1 }),
+              selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
               venues: null,
               venuesWithPendingValidation: null,
             },
@@ -154,7 +154,7 @@ describe('getCurrentUserPermissions', () => {
 
           const result = getCurrentUserPermissions()
 
-          expect(result.isSelectedVenueAssociated).toBe(true)
+          expect(result.isSelectedPartnerVenueAssociated).toBe(true)
           expect(result.isOnboarded).toBe(false)
         })
       })
@@ -166,7 +166,7 @@ describe('getCurrentUserPermissions', () => {
               access: 'full' as UserAccess,
               currentUser: sharedCurrentUserFactory(),
               selectedAdminOfferer: null,
-              selectedVenue: makeGetVenueResponseModel({ id: 1 }),
+              selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
               venues: null,
               venuesWithPendingValidation: null,
             },
@@ -177,10 +177,10 @@ describe('getCurrentUserPermissions', () => {
 
           expect(result).toEqual({
             hasSelectedAdminOfferer: false,
-            hasSelectedVenue: true,
+            hasSelectedPartnerVenue: true,
             isAuthenticated: true,
             isOnboarded: true,
-            isSelectedVenueAssociated: true,
+            isSelectedPartnerVenueAssociated: true,
           })
         })
       })

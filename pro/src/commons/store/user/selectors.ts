@@ -23,13 +23,13 @@ export const ensureSelectedAdminOfferer = (state: RootState) => {
   return state.user.selectedAdminOfferer
 }
 
-export const ensureSelectedVenue = (state: RootState) => {
+export const ensureSelectedPartnerVenue = (state: RootState) => {
   assertOrFrontendError(
-    state.user.selectedVenue,
-    '`state.user.selectedVenue` is null.'
+    state.user.selectedPartnerVenue,
+    '`state.user.selectedPartnerVenue` is null.'
   )
 
-  return state.user.selectedVenue
+  return state.user.selectedPartnerVenue
 }
 
 export const ensureVenues = (state: RootState) => {

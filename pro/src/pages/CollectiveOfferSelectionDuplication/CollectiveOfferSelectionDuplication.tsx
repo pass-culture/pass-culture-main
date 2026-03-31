@@ -16,7 +16,7 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
-import { ensureSelectedVenue } from '@/commons/store/user/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { Button } from '@/design-system/Button/Button'
@@ -51,7 +51,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
 
   const queryParams = new URLSearchParams(location.search)
   const currentOffererId = useAppSelector(ensureCurrentOfferer).id
-  const selectedVenue = useAppSelector(ensureSelectedVenue)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const queryVenueId = queryParams.get('lieu')
 
   const {
@@ -69,7 +69,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
     name: searchedOfferName,
     offererId: currentOffererId.toString(),
     venueId: withSwitchVenueFeature
-      ? selectedVenue.id.toString()
+      ? selectedPartnerVenue.id.toString()
       : (queryVenueId ?? undefined),
     status: [
       CollectiveOfferDisplayedStatus.PUBLISHED,
@@ -150,7 +150,6 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
               <SkeletonLoader />
             ) : (
               <>
-                {/** biome-ignore lint/a11y/useSemanticElements: We want a `role="status"` here, not an `<output />`. */}
                 <p className={styles['visually-hidden']} role="status">
                   {offers && (
                     <>

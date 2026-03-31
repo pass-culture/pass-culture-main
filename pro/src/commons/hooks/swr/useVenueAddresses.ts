@@ -9,10 +9,12 @@ import { useAppSelector } from '../useAppSelector'
 export const useVenueAddresses = (
   venueOption: GetVenueAddressesWithOffersOption
 ) => {
-  const selectedVenue = useAppSelector((state) => state.user.selectedVenue)
+  const selectedPartnerVenue = useAppSelector(
+    (state) => state.user.selectedPartnerVenue
+  )
 
   return useSWR(
-    [GET_VENUE_ADDRESS_QUERY_KEY, selectedVenue?.id, venueOption],
+    [GET_VENUE_ADDRESS_QUERY_KEY, selectedPartnerVenue?.id, venueOption],
     ([, venueIdParam]) =>
       venueIdParam ? api.getVenueAddresses(venueIdParam, venueOption) : [],
     { fallbackData: [] }

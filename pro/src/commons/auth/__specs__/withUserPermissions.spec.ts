@@ -40,7 +40,7 @@ const setupStore = (options: {
       access: null,
       currentUser: options.hasUser ? sharedCurrentUserFactory() : null,
       selectedAdminOfferer: null,
-      selectedVenue: options.hasVenueSelected
+      selectedPartnerVenue: options.hasVenueSelected
         ? makeGetVenueResponseModel({ id: 1 })
         : null,
       venues: options.hasVenue

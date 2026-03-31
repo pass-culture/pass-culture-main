@@ -27,14 +27,14 @@ export const getInitialPartnerVenueId = (
   // ---------------------------------------------------------------------------
   // Priority 2: If available, get the venue ID from local storage.
 
-  const selectedVenueIdFromLocalStorage = Number(
+  const selectedPartnerVenueIdFromLocalStorage = Number(
     localStorageManager.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)
   )
   if (
-    selectedVenueIdFromLocalStorage &&
-    venues.some((venue) => venue.id === selectedVenueIdFromLocalStorage)
+    selectedPartnerVenueIdFromLocalStorage &&
+    venues.some((venue) => venue.id === selectedPartnerVenueIdFromLocalStorage)
   ) {
-    return selectedVenueIdFromLocalStorage
+    return selectedPartnerVenueIdFromLocalStorage
   }
 
   // ---------------------------------------------------------------------------

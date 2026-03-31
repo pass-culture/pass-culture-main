@@ -17,6 +17,7 @@ import {
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   type RenderComponentFunction,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
@@ -43,12 +44,12 @@ const renderIndividualOfferSummaryLocation: RenderComponentFunction<
     offer,
     ...params.contextValues,
   })
-  const options = {
+  const options: RenderWithProvidersOptions = {
     initialRouterEntries: [path],
     storeOverrides: {
       user: {
         currentUser: sharedCurrentUserFactory(),
-        selectedVenue: makeVenueListItem({ id: 2 }),
+        selectedPartnerVenue: makeVenueListItem({ id: 2 }),
       },
     },
     ...params.options,

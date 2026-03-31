@@ -18,8 +18,8 @@ import { getInitialOffererIdAndVenueId } from '../utils/getInitialOffererIdAndVe
 import { getInitialPartnerVenueId } from '../utils/getInitialPartnerVenueId'
 import { logout } from './logout'
 import { setSelectedOffererById } from './setSelectedOffererById'
-import { setSelectedVenueById } from './setSelectedVenueById'
-import { unsetSelectedPartnerVenue } from './unsetSelectedVenue'
+import { setSelectedPartnerVenueById } from './setSelectedPartnerVenueById'
+import { unsetSelectedPartnerVenue } from './unsetSelectedPartnerVenue'
 
 export const initializeUser = createAsyncThunk<
   void,
@@ -76,10 +76,10 @@ export const initializeUser = createAsyncThunk<
         : getInitialOffererIdAndVenueId(offererNames, allVenues)
 
       // Initialize the Partner Space selected venue if any
-      const { selectedVenue } = initialVenueId
+      const { selectedPartnerVenue } = initialVenueId
         ? await dispatch(
-            setSelectedVenueById({
-              nextSelectedVenueId: initialVenueId,
+            setSelectedPartnerVenueById({
+              nextSelectedPartnerVenueId: initialVenueId,
               // If the user has a `selectedAdminOffererId` in the Local Storage
               // that doesn't match the computed initial Venue parent Offerer ID,
               // we don't want to override it to keep it consistent with their last session.
@@ -87,7 +87,7 @@ export const initializeUser = createAsyncThunk<
             })
           ).unwrap()
         : {
-            selectedVenue: null,
+            selectedPartnerVenue: null,
           }
 
       if (withSwitchVenueFeature) {
@@ -99,7 +99,7 @@ export const initializeUser = createAsyncThunk<
         const initialAdminOffererId =
           newOffererId ??
           getInitialAdminOffererId({
-            selectedVenue,
+            selectedPartnerVenue,
             offererNames: offererNames,
           })
 

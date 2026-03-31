@@ -114,7 +114,7 @@ const renderNewHomepage = (
     storeOverrides: {
       user: {
         currentUser: user,
-        selectedVenue: {
+        selectedPartnerVenue: {
           ...defaultVenue,
           ...venueOverrides,
         },

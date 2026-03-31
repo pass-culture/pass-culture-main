@@ -21,7 +21,7 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getActivities } from '@/commons/mappings/mappings'
-import { setSelectedVenue } from '@/commons/store/user/reducer'
+import { setSelectedPartnerVenue } from '@/commons/store/user/reducer'
 import { buildSelectOptions } from '@/commons/utils/buildSelectOptions'
 import { selectInterventionAreas } from '@/commons/utils/selectInterventionAreas'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -99,7 +99,7 @@ export const CollectiveDataForm = ({
       })
 
       if (withSwitchVenueFeature) {
-        dispatch(setSelectedVenue(updatedVenue))
+        dispatch(setSelectedPartnerVenue(updatedVenue))
       } else {
         await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
       }

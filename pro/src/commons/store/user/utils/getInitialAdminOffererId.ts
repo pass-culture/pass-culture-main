@@ -12,10 +12,10 @@ import {
  */
 export const getInitialAdminOffererId = ({
   offererNames,
-  selectedVenue,
+  selectedPartnerVenue,
 }: {
   offererNames: GetOffererNameResponseModel[]
-  selectedVenue: GetVenueResponseModel | null
+  selectedPartnerVenue: GetVenueResponseModel | null
 }): number | null => {
   // ---------------------------------------------------------------------------
   // Priority 1: If available, get the Administration Space selected offerer ID from the Local Storage.
@@ -40,11 +40,11 @@ export const getInitialAdminOffererId = ({
   // use its parent offerer ID as the initial Administration Space selected offerer ID.
 
   // Deliberately non-DRY for clarity
-  const selectedAdminOffererIdFromSelectedVenue =
-    selectedVenue?.managingOfferer.id
-  if (selectedAdminOffererIdFromSelectedVenue) {
+  const selectedAdminOffererIdFromSelectedPartnerVenue =
+    selectedPartnerVenue?.managingOfferer.id
+  if (selectedAdminOffererIdFromSelectedPartnerVenue) {
     const selectedOfferer = offererNames.find(
-      (offerer) => offerer.id === selectedVenue.managingOfferer.id
+      (offerer) => offerer.id === selectedPartnerVenue.managingOfferer.id
     )
 
     if (selectedOfferer) {

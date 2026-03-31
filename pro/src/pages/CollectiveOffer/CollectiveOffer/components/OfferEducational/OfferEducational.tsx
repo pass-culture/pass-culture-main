@@ -32,7 +32,7 @@ import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { ensureSelectedVenue } from '@/commons/store/user/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
 import { OfferEducationalActions } from '@/components/OfferEducationalActions/OfferEducationalActions'
 import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
@@ -76,7 +76,7 @@ export const OfferEducational = ({
 
   const isMarseilleEnabled = useActiveFeature('ENABLE_MARSEILLE')
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-  const selectedVenue = useAppSelector(ensureSelectedVenue)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const { mutate } = useSWRConfig()
 
   const { lieu: venueId, requete: requestId } = queryParamsFromOfferer(location)
@@ -86,7 +86,7 @@ export const OfferEducational = ({
     isTemplate,
     venues,
     offer,
-    withSwitchVenueFeature ? selectedVenue.id.toString() : venueId,
+    withSwitchVenueFeature ? selectedPartnerVenue.id.toString() : venueId,
     isMarseilleEnabled
   )
   const isOfferCreated = offer !== undefined

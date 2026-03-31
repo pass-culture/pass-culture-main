@@ -14,7 +14,7 @@ import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/seria
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
-import { ensureSelectedVenue } from '@/commons/store/user/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 
 import { CollectiveOffersScreen } from './components/CollectiveOffersScreen/CollectiveOffersScreen'
@@ -32,7 +32,7 @@ export const CollectiveOffers = () => {
   const navigate = useNavigate()
 
   const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
-  const selectedVenue = useAppSelector(ensureSelectedVenue)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
 
@@ -56,7 +56,9 @@ export const CollectiveOffers = () => {
     ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
     ...finalSearchFilters,
     ...{ offererId: selectedOffererId.toString() },
-    ...(withSwitchVenueFeature ? { venueId: selectedVenue.id.toString() } : {}),
+    ...(withSwitchVenueFeature
+      ? { venueId: selectedPartnerVenue.id.toString() }
+      : {}),
   }
   delete apiFilters.page
 

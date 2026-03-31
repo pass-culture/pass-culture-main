@@ -78,7 +78,7 @@ describe('useLogExtraProData', () => {
   it('should log an event on page load with FF WIP_SWITCH_VENUE and a venue', async () => {
     await renderLogExtraProData(['WIP_SWITCH_VENUE'], {
       user: {
-        selectedVenue: { id: 123, publicName: 'toto' },
+        selectedPartnerVenue: { id: 123, publicName: 'toto' },
       },
     })
 

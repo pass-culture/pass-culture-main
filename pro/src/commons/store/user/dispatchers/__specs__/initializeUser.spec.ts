@@ -81,7 +81,7 @@ describe('initializeUser', () => {
       expect(state.user.access).toBe('full')
       expect(state.offerer.currentOfferer?.id).toBe(200)
       expect(state.offerer.currentOffererName?.id).toBe(200)
-      expect(state.user.selectedVenue?.id).toBe(201)
+      expect(state.user.selectedPartnerVenue?.id).toBe(201)
 
       expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)).toBe(
         '200'
@@ -141,7 +141,7 @@ describe('initializeUser', () => {
       expect(state.user.access).toBe('full')
       expect(state.offerer.currentOfferer?.id).toBe(200)
       expect(state.offerer.currentOffererName?.id).toBe(200)
-      expect(state.user.selectedVenue?.id).toBe(201)
+      expect(state.user.selectedPartnerVenue?.id).toBe(201)
 
       expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)).toBe(
         '200'
@@ -199,7 +199,7 @@ describe('initializeUser', () => {
       const state = store.getState()
       expect(state.user.access).toBe('full')
       expect(state.offerer.currentOfferer?.id).toBe(200)
-      expect(state.user.selectedVenue?.id).toBe(201)
+      expect(state.user.selectedPartnerVenue?.id).toBe(201)
 
       expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)).toBe(
         '200'
@@ -255,7 +255,7 @@ describe('initializeUser', () => {
       const state = store.getState()
       expect(state.user.access).toBe('no-onboarding')
       expect(state.offerer.currentOfferer?.id).toBe(100)
-      expect(state.user.selectedVenue?.id).toBe(101)
+      expect(state.user.selectedPartnerVenue?.id).toBe(101)
 
       expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)).toBe(
         '100'
@@ -314,7 +314,7 @@ describe('initializeUser', () => {
       expect(state.user.access).toBe('unattached')
       expect(state.offerer.currentOfferer).toBeNull()
       expect(state.offerer.currentOffererName?.id).toBe(100)
-      expect(state.user.selectedVenue).toBeNull()
+      expect(state.user.selectedPartnerVenue).toBeNull()
 
       expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)).toBe(
         '100'
@@ -373,7 +373,7 @@ describe('initializeUser', () => {
 
       const state = store.getState()
       expect(state.user.access).toBe('full')
-      expect(state.user.selectedVenue?.id).toBe(101)
+      expect(state.user.selectedPartnerVenue?.id).toBe(101)
       expect(state.offerer.currentOfferer?.id).toBe(100)
 
       expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBe(
@@ -415,7 +415,7 @@ describe('initializeUser', () => {
 
       const state = store.getState()
       expect(state.user.access).toBe('full')
-      expect(state.user.selectedVenue?.id).toBe(101)
+      expect(state.user.selectedPartnerVenue?.id).toBe(101)
     })
 
     it('should return early without selection when user has multiple venues and no localStorage selection', async () => {
@@ -452,7 +452,7 @@ describe('initializeUser', () => {
 
       const state = store.getState()
       expect(state.user.access).toBeNull()
-      expect(state.user.selectedVenue).toBeNull()
+      expect(state.user.selectedPartnerVenue).toBeNull()
     })
 
     it('should return early without selection when user has no venues', async () => {
@@ -538,7 +538,7 @@ describe('initializeUser', () => {
       await store.dispatch(initializeUser({ newOffererId: 100, user })).unwrap()
 
       const state = store.getState()
-      expect(state.user.selectedVenue?.id).toBe(101)
+      expect(state.user.selectedPartnerVenue?.id).toBe(101)
       expect(state.user.selectedAdminOfferer?.id).toBe(100)
     })
 
@@ -577,7 +577,7 @@ describe('initializeUser', () => {
       expect(apiGetVenueSpy).not.toHaveBeenCalled()
 
       const state = store.getState()
-      expect(state.user.selectedVenue).toBeNull()
+      expect(state.user.selectedPartnerVenue).toBeNull()
       expect(state.user.selectedAdminOfferer?.id).toBe(100)
       expect(
         localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)
@@ -607,7 +607,7 @@ describe('initializeUser', () => {
       await store.dispatch(initializeUser({ newOffererId: 200, user })).unwrap()
 
       const state = store.getState()
-      expect(state.user.selectedVenue).toBeNull()
+      expect(state.user.selectedPartnerVenue).toBeNull()
       expect(state.user.selectedAdminOfferer?.id).toBe(200)
     })
 
@@ -643,7 +643,7 @@ describe('initializeUser', () => {
 
       const state = store.getState()
       expect(state.user.access).toBeNull()
-      expect(state.user.selectedVenue).toBeNull()
+      expect(state.user.selectedPartnerVenue).toBeNull()
     })
   })
 
@@ -713,7 +713,7 @@ describe('initializeUser', () => {
       expect(state.offerer.currentOfferer).toBeNull()
       expect(state.offerer.currentOffererName).toBeNull()
       expect(state.offerer.offererNamesValidated).toBeNull()
-      expect(state.user.selectedVenue).toBeNull()
+      expect(state.user.selectedPartnerVenue).toBeNull()
       expect(state.user.venues).toBeNull()
 
       expect(

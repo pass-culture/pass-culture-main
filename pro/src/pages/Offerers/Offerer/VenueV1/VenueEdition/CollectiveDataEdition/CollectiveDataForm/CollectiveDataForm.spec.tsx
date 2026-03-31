@@ -144,7 +144,7 @@ describe('CollectiveDataForm', () => {
     expect(activityField).toHaveValue('')
   })
 
-  it('should dispatch setSelectedVenue when WIP_SWITCH_VENUE is enabled', async () => {
+  it('should dispatch setSelectedPartnerVenue when WIP_SWITCH_VENUE is enabled', async () => {
     mockMutate.mockClear()
     const updatedVenue = {
       ...defaultGetVenue,
@@ -167,9 +167,9 @@ describe('CollectiveDataForm', () => {
     })
 
     await waitFor(() => {
-      expect(store.getState().user?.selectedVenue?.collectiveDescription).toBe(
-        'Updated'
-      )
+      expect(
+        store.getState().user?.selectedPartnerVenue?.collectiveDescription
+      ).toBe('Updated')
     })
 
     expect(mockMutate).not.toHaveBeenCalled()

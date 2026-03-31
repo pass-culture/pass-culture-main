@@ -49,7 +49,7 @@ describe('screens | OfferEducational: edition', () => {
     renderWithProviders(<OfferEducational {...props} />, {
       storeOverrides: {
         user: {
-          selectedVenue: makeVenueListItem({ id: 1 }),
+          selectedPartnerVenue: makeVenueListItem({ id: 1 }),
         },
       },
     })

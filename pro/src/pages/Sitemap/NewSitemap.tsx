@@ -25,7 +25,9 @@ export const NewSitemap = () => {
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
   const navigate = useNavigate()
   const reduxStoredPartnerPageId = useAppSelector(selectSelectedPartnerPageId)
-  const selectedVenue = useAppSelector((state) => state.user.selectedVenue)
+  const selectedPartnerVenue = useAppSelector(
+    (state) => state.user.selectedPartnerVenue
+  )
 
   const sitemapLinks: SitemapLink[] = [
     {
@@ -52,7 +54,7 @@ export const NewSitemap = () => {
             {
               title: "Page sur l'application (si offre individuelle créée)",
               path: `/structures/${selectedOffererId}/lieux/${reduxStoredPartnerPageId}/page-partenaire`,
-              hidden: !selectedVenue?.hasPartnerPage,
+              hidden: !selectedPartnerVenue?.hasPartnerPage,
               children: [],
             },
           ],
@@ -73,8 +75,8 @@ export const NewSitemap = () => {
             },
             {
               title: 'Page sur ADAGE (si validé ADAGE)',
-              path: `/structures/${selectedOffererId}/lieux/${selectedVenue?.id}/collectif`,
-              hidden: !selectedVenue?.allowedOnAdage,
+              path: `/structures/${selectedOffererId}/lieux/${selectedPartnerVenue?.id}/collectif`,
+              hidden: !selectedPartnerVenue?.allowedOnAdage,
               children: [],
             },
           ],
@@ -127,7 +129,7 @@ export const NewSitemap = () => {
     },
     {
       title: 'Paramètres généraux',
-      path: `/structures/${selectedOffererId}/lieux/${selectedVenue?.id}/parametres`,
+      path: `/structures/${selectedOffererId}/lieux/${selectedPartnerVenue?.id}/parametres`,
       children: [],
     },
     {

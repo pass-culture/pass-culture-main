@@ -36,7 +36,7 @@ vi.mock('@/commons/errors/handleError', () => ({
 describe('setSelectedOffererById', () => {
   const currentOffererBase = { ...defaultGetOffererResponseModel, id: 100 }
   const currentOffererNameBase = getOffererNameFactory({ id: 100 })
-  const selectedVenueBase = makeGetVenueResponseModel({
+  const selectedPartnerVenueBase = makeGetVenueResponseModel({
     id: 101,
     managingOffererId: 100,
   })
@@ -73,7 +73,7 @@ describe('setSelectedOffererById', () => {
         currentUser: null,
         access: null,
         selectedAdminOfferer: null,
-        selectedVenue: selectedVenueBase,
+        selectedPartnerVenue: selectedPartnerVenueBase,
         venues: venuesBase,
         venuesWithPendingValidation: null,
       },
@@ -93,19 +93,19 @@ describe('setSelectedOffererById', () => {
     const state = store.getState()
     expect(state.offerer.currentOfferer?.id).toBe(100)
     expect(state.offerer.currentOffererName?.id).toBe(100)
-    expect(state.user.selectedVenue?.id).toBe(101)
+    expect(state.user.selectedPartnerVenue?.id).toBe(101)
 
     expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBe('100')
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('101')
   })
 
-  it('should refetch offerers/venues, set access, currentOfferer, selectedVenue and persist ids', async () => {
+  it('should refetch offerers/venues, set access, currentOfferer, selectedPartnerVenue and persist ids', async () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
       isOnboarded: false,
     })
-    vi.spyOn(api, 'getVenue').mockResolvedValue(selectedVenueBase)
+    vi.spyOn(api, 'getVenue').mockResolvedValue(selectedPartnerVenueBase)
     vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
       venues: venuesBase,
       venuesWithPendingValidation: [],
@@ -126,7 +126,7 @@ describe('setSelectedOffererById', () => {
         access: null,
         currentUser: null,
         selectedAdminOfferer: null,
-        selectedVenue: null,
+        selectedPartnerVenue: null,
         venues: [],
         venuesWithPendingValidation: null,
       },
@@ -155,7 +155,7 @@ describe('setSelectedOffererById', () => {
     expect(state.user.access).toBe('no-onboarding')
     expect(state.offerer.currentOfferer?.id).toBe(100)
     expect(state.offerer.currentOffererName?.id).toBe(100)
-    expect(state.user.selectedVenue?.id).toBe(101)
+    expect(state.user.selectedPartnerVenue?.id).toBe(101)
     expect(state.user.venues).toEqual(venuesBase)
 
     expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBe('100')
@@ -189,7 +189,7 @@ describe('setSelectedOffererById', () => {
         access: null,
         currentUser: null,
         selectedAdminOfferer: null,
-        selectedVenue: selectedVenueBase,
+        selectedPartnerVenue: selectedPartnerVenueBase,
         venues: venuesBase,
         venuesWithPendingValidation: null,
       },
@@ -209,7 +209,7 @@ describe('setSelectedOffererById', () => {
     const state = store.getState()
     expect(state.offerer.currentOfferer?.id).toBe(200)
     expect(state.offerer.currentOffererName?.id).toBe(200)
-    expect(state.user.selectedVenue?.id).toBe(201)
+    expect(state.user.selectedPartnerVenue?.id).toBe(201)
     expect(state.user.access).toBe('full')
 
     expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBe('200')
@@ -242,7 +242,7 @@ describe('setSelectedOffererById', () => {
         access: null,
         currentUser: null,
         selectedAdminOfferer: null,
-        selectedVenue: selectedVenueBase,
+        selectedPartnerVenue: selectedPartnerVenueBase,
         venues: venuesBase,
         venuesWithPendingValidation: null,
       },
@@ -265,7 +265,7 @@ describe('setSelectedOffererById', () => {
     expect(state.user.access).toBe('unattached')
     expect(state.offerer.currentOfferer).toBeNull()
     expect(state.offerer.currentOffererName?.id).toBe(200)
-    expect(state.user.selectedVenue).toBeNull()
+    expect(state.user.selectedPartnerVenue).toBeNull()
 
     expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBe('200')
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBeNull()
@@ -295,7 +295,7 @@ describe('setSelectedOffererById', () => {
         access: null,
         currentUser: null,
         selectedAdminOfferer: null,
-        selectedVenue: selectedVenueBase,
+        selectedPartnerVenue: selectedPartnerVenueBase,
         venues: venuesBase,
         venuesWithPendingValidation: null,
       },
@@ -346,7 +346,7 @@ describe('setSelectedOffererById', () => {
         access: null,
         currentUser: null,
         selectedAdminOfferer: null,
-        selectedVenue: selectedVenueBase,
+        selectedPartnerVenue: selectedPartnerVenueBase,
         venues: venuesBase,
         venuesWithPendingValidation: null,
       },
@@ -372,7 +372,7 @@ describe('setSelectedOffererById', () => {
     expect(state.user.access).toBeNull()
     expect(state.offerer.currentOfferer?.id).toBe(100)
     expect(state.offerer.currentOffererName?.id).toBe(100)
-    expect(state.user.selectedVenue?.id).toBe(101)
+    expect(state.user.selectedPartnerVenue?.id).toBe(101)
 
     expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBe('100')
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('101')

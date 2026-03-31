@@ -14,10 +14,10 @@ export const getUserDefaultPath = () => {
     case !hasVenues:
       return '/inscription/structure/recherche'
 
-    case !userPermissions.hasSelectedVenue:
+    case !userPermissions.hasSelectedPartnerVenue:
       return '/hub'
 
-    case !userPermissions.isSelectedVenueAssociated:
+    case !userPermissions.isSelectedPartnerVenueAssociated:
       return '/rattachement-en-cours'
 
     case !userPermissions.isOnboarded:

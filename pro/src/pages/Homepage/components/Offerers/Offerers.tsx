@@ -20,7 +20,9 @@ export const Offerers = ({
 }: OfferersProps) => {
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
-  const selectedVenue = useAppSelector((store) => store.user.selectedVenue)
+  const selectedPartnerVenue = useAppSelector(
+    (store) => store.user.selectedPartnerVenue
+  )
 
   const isOffererSoftDeleted = selectedOfferer && !selectedOfferer.isActive
   const userHasOfferers = offererOptions.length > 0
@@ -39,11 +41,11 @@ export const Offerers = ({
           )}
         </>
       )}
-      {withSwitchVenueFeature && selectedOfferer && selectedVenue && (
+      {withSwitchVenueFeature && selectedOfferer && selectedPartnerVenue && (
         <PartnerPage
           offerer={selectedOfferer}
-          venue={selectedVenue}
-          venueHasPartnerPage={selectedVenue.hasPartnerPage}
+          venue={selectedPartnerVenue}
+          venueHasPartnerPage={selectedPartnerVenue.hasPartnerPage}
         />
       )}
       {isOffererSoftDeleted && <SoftDeletedOffererWarning />}

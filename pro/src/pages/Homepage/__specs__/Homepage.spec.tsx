@@ -94,7 +94,7 @@ const renderHomePage = (options?: RenderWithProvidersOptions) => {
     storeOverrides: {
       user: {
         currentUser: user,
-        selectedVenue: defaultGetOffererVenueResponseModel,
+        selectedPartnerVenue: defaultGetOffererVenueResponseModel,
       },
       offerer: { currentOfferer: baseOfferers[0] },
       ...storeOverrides,

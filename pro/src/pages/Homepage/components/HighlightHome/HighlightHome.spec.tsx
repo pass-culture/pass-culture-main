@@ -19,7 +19,7 @@ describe('HighlightHome', () => {
     const { container } = renderWithProviders(<HighlightHome />, {
       storeOverrides: {
         user: {
-          selectedVenue: makeVenueListItem({ id: 2 }),
+          selectedPartnerVenue: makeVenueListItem({ id: 2 }),
         },
       },
     })
@@ -47,7 +47,7 @@ describe('HighlightHome', () => {
     renderWithProviders(<HighlightHome />, {
       storeOverrides: {
         user: {
-          selectedVenue: makeVenueListItem({ id: 2 }),
+          selectedPartnerVenue: makeVenueListItem({ id: 2 }),
         },
       },
     })
