@@ -8,6 +8,7 @@ import {
   type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import {
   getIndividualOfferFactory,
   getOfferVenueFactory,
@@ -34,6 +35,10 @@ vi.mock('@/apiClient/api', () => ({
   api: {
     patchOffer: vi.fn(),
   },
+}))
+
+vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
+  useOfferWizardMode: vi.fn(),
 }))
 
 const renderIndividualOfferLocationScreen: RenderComponentFunction<
@@ -127,9 +132,9 @@ describe('<IndividualOfferLocationScreen />', () => {
 
     describe('when mode is CREATION', () => {
       beforeEach(() => {
-        vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
-          useOfferWizardMode: vi.fn(() => OFFER_WIZARD_MODE.CREATION),
-        }))
+        vi.mocked(useOfferWizardMode).mockReturnValue(
+          OFFER_WIZARD_MODE.CREATION
+        )
       })
 
       it('should render and pass accessibility checks', async () => {
@@ -190,9 +195,7 @@ describe('<IndividualOfferLocationScreen />', () => {
 
     describe('when mode is EDITION', () => {
       beforeEach(() => {
-        vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
-          useOfferWizardMode: vi.fn(() => OFFER_WIZARD_MODE.EDITION),
-        }))
+        vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.EDITION)
       })
 
       it('should render and pass accessibility checks', async () => {
@@ -329,9 +332,9 @@ describe('<IndividualOfferLocationScreen />', () => {
 
     describe('when mode is CREATION', () => {
       beforeEach(() => {
-        vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
-          useOfferWizardMode: vi.fn(() => OFFER_WIZARD_MODE.CREATION),
-        }))
+        vi.mocked(useOfferWizardMode).mockReturnValue(
+          OFFER_WIZARD_MODE.CREATION
+        )
       })
 
       it('should render and pass accessibility checks', async () => {
@@ -368,9 +371,7 @@ describe('<IndividualOfferLocationScreen />', () => {
 
     describe('when mode is EDITION', () => {
       beforeEach(() => {
-        vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
-          useOfferWizardMode: vi.fn(() => OFFER_WIZARD_MODE.EDITION),
-        }))
+        vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.EDITION)
       })
 
       it('should render and pass accessibility checks', async () => {

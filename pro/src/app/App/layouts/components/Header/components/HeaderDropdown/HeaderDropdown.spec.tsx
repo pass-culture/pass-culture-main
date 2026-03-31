@@ -22,6 +22,13 @@ import { locallyStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 
 import { HeaderDropdown } from './HeaderDropdown'
 
+vi.mock('@/apiClient/api', () => ({
+  api: {
+    getOfferer: vi.fn(),
+    signout: vi.fn(),
+  },
+}))
+
 const baseOfferers: GetOffererResponseModel[] = [
   {
     ...defaultGetOffererResponseModel,
@@ -138,13 +145,6 @@ describe('App', () => {
 })
 describe('Switch Offerer', () => {
   beforeEach(() => {
-    vi.mock('@/apiClient/api', () => ({
-      api: {
-        getOfferer: vi.fn(),
-        signout: vi.fn(),
-      },
-    }))
-
     vi.spyOn(api, 'getOfferer').mockResolvedValue(
       defaultGetOffererResponseModel
     )

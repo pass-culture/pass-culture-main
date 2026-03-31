@@ -8,22 +8,22 @@ import { FrontendError } from '../FrontendError'
 import { handleUnexpectedError } from '../handleUnexpectedError'
 import type { FrontendErrorOptions } from '../types'
 
+const mockedSentry = vi.hoisted(() => {
+  const setContextMock = vi.fn()
+  const setExtrasMock = vi.fn()
+  const captureException = vi.fn()
+  const withScopeMock = vi.fn((cb) =>
+    cb({ setContext: setContextMock, setExtras: setExtrasMock })
+  )
+
+  return { setContextMock, setExtrasMock, captureException, withScopeMock }
+})
+vi.mock('@sentry/browser', () => ({
+  withScope: mockedSentry.withScopeMock,
+  captureException: mockedSentry.captureException,
+}))
+
 describe('handleUnexpectedError', () => {
-  const mockedSentry = vi.hoisted(() => {
-    const setContextMock = vi.fn()
-    const setExtrasMock = vi.fn()
-    const captureException = vi.fn()
-    const withScopeMock = vi.fn((cb) =>
-      cb({ setContext: setContextMock, setExtras: setExtrasMock })
-    )
-
-    return { setContextMock, setExtrasMock, captureException, withScopeMock }
-  })
-  vi.mock('@sentry/browser', () => ({
-    withScope: mockedSentry.withScopeMock,
-    captureException: mockedSentry.captureException,
-  }))
-
   const error = new FrontendError('An internal error message.')
 
   afterEach(() => {

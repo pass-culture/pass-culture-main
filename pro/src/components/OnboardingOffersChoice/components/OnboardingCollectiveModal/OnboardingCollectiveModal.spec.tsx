@@ -15,6 +15,17 @@ import {
 
 import { OnboardingCollectiveModal } from './OnboardingCollectiveModal'
 
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual('react-router')),
+  useNavigate: vi.fn(),
+}))
+
+vi.mock('@/apiClient/api', () => ({
+  api: {
+    getOffererEligibility: vi.fn(),
+  },
+}))
+
 const renderOnboardingCollectiveModal = (
   options?: RenderWithProvidersOptions
 ) => {
@@ -61,17 +72,6 @@ describe('<OnboardingCollectiveModal />', () => {
   })
 
   describe('API calls', () => {
-    vi.mock('react-router', async () => ({
-      ...(await vi.importActual('react-router')),
-      useNavigate: vi.fn(),
-    }))
-
-    vi.mock('@/apiClient/api', () => ({
-      api: {
-        getOffererEligibility: vi.fn(),
-      },
-    }))
-
     it('should request the API when clicking on "J’ai déposé un dossier"', async () => {
       renderOnboardingCollectiveModal()
 
