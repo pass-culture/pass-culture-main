@@ -93,7 +93,7 @@ export const CollectiveDataForm = ({
           | ActivityOpenToPublic
           | ActivityNotOpenToPublic,
         collectiveDomains: values.collectiveDomains?.map(Number),
-        venueEducationalStatusId: values.collectiveLegalStatus
+        collectiveLegalStatus: values.collectiveLegalStatus
           ? Number(values.collectiveLegalStatus)
           : null,
       })

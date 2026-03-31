@@ -115,7 +115,7 @@ class EditVenueCollectiveDataBodyModel(HttpBodyModel):
     collectiveWebsite: str | None = pydantic_v2.Field(None, max_length=150)
     collectiveDomains: list[int] | None = None
     collectiveInterventionArea: list[str] | None = None
-    venueEducationalStatusId: int | None = None
+    collectiveLegalStatus: int | None = None
     collectiveNetwork: list[str] | None = None
     collectiveAccessInformation: str | None = pydantic_v2.Field(None, max_length=500)
     collectivePhone: str | None = pydantic_v2.Field(None, max_length=50)

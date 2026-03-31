@@ -1388,6 +1388,10 @@ export type EditVenueCollectiveDataBodyModel = {
      */
     collectiveInterventionArea?: Array<string> | null;
     /**
+     * Collectivelegalstatus
+     */
+    collectiveLegalStatus?: number | null;
+    /**
      * Collectivenetwork
      */
     collectiveNetwork?: Array<string> | null;
@@ -1403,10 +1407,6 @@ export type EditVenueCollectiveDataBodyModel = {
      * Collectivewebsite
      */
     collectiveWebsite?: string | null;
-    /**
-     * Venueeducationalstatusid
-     */
-    venueEducationalStatusId?: number | null;
 };
 
 /**
