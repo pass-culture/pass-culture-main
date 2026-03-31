@@ -7,6 +7,7 @@ import { createRegularOnboardedProUser } from '../helpers/sandbox'
 export const test = base.extend<{
   callSandbox: (ctx: APIRequestContext) => Promise<any>
 }>({
+  // biome-ignore lint/correctness/noUnusedFunctionParameters: Needed by Playwright
   callSandbox: async ({ browser }, use) => {
     const callSandbox = (ctx: APIRequestContext): Promise<any> => {
       return createRegularOnboardedProUser(ctx)

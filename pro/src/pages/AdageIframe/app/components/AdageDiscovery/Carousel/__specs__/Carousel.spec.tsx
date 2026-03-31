@@ -11,6 +11,7 @@ vi.mock('@/commons/hooks/useIsElementVisible', () => ({
 
 const mockCarouselElements = Array(20)
   .fill(null)
+  // biome-ignore lint/suspicious/noArrayIndexKey: Ignore for the test
   .map((_el, i) => <div key={i}>Element {i}</div>)
 
 describe('Carousel', () => {

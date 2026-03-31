@@ -86,6 +86,7 @@ export const QuantityInput = ({
     }
   }, [isUnlimited])
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: We do not want to retrigger
   useEffect(() => {
     if (isUnlimited !== isEmptyValue) {
       setIsUnlimited(isEmptyValue)

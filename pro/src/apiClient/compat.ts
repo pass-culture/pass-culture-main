@@ -88,8 +88,10 @@ export class CancelablePromise<T> extends Promise<T> {
       onCancel?: OnCancel
     ) => void
   ) {
-    super((resolve, reject) => executor(resolve, reject, () => {}))
+    super((resolve, reject) => executor(resolve, reject, () => null))
   }
 
-  cancel() {}
+  cancel() {
+    return
+  }
 }

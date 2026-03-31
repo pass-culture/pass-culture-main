@@ -106,7 +106,7 @@ export function Carousel({
             const lastRef =
               i === elements.length - 1 ? lastElementRef : undefined
             return (
-              <li key={i} ref={firstRef ?? lastRef}>
+              <li key={el.key} ref={firstRef ?? lastRef}>
                 {el}
               </li>
             )

@@ -34,7 +34,7 @@ async function expectOffersOrBookingsAreFound(
 ): Promise<void> {
   const expectedLength = expectedResults.length - 1
   const regexExpectedCount = new RegExp(
-    expectedLength + ' ' + countLabel + (expectedLength > 1 ? 's' : ''),
+    `${expectedLength} ${countLabel}${expectedLength > 1 ? 's' : ''}`,
     'g'
   )
 

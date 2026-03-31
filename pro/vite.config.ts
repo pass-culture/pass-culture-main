@@ -54,8 +54,8 @@ export default defineConfig(({ mode }) => {
                   .filter((t) => (t.diagnostic()?.duration ?? 0) >= 1000)
                 tests.sort(
                   (x, y) =>
-                    // biome-ignore lint/suspicious/noNonNullAssertedOptionalChain: <explanation>
-                    x.diagnostic()?.duration! - y.diagnostic()?.duration!
+                    (x.diagnostic()?.duration ?? 0) -
+                    (y.diagnostic()?.duration ?? 0)
                 )
                 tests.reverse()
                 if (tests.length > 1) {

@@ -7,6 +7,7 @@ export const SkeletonLoader = () => {
     <div data-testid="skeleton-loader">
       <Skeleton height="1rem" width="30%" />
       {Array.from({ length: bigSkeletonCount }).map((_, i) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: Ignore for skeleton
         <Skeleton key={i} height="5rem" width="100%" />
       ))}
     </div>

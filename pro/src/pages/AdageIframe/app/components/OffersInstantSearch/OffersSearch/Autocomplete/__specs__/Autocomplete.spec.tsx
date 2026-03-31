@@ -106,6 +106,7 @@ vi.mock('@algolia/autocomplete-plugin-query-suggestions', () => {
   return {
     ...vi.importActual('@algolia/autocomplete-plugin-query-suggestions'),
     createQuerySuggestionsPlugin: vi.fn(
+      // biome-ignore lint/complexity/noBannedTypes: ignore for mock
       (options?: { transformSource?: Function }) => {
         const baseSource = {
           sourceId: mockSourceId,

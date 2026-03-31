@@ -271,7 +271,12 @@ export function Table<
         <tbody>
           {isLoading &&
             Array.from({ length: 8 }).map((_, index) => (
-              <tr key={`loading-row-${columns.length}-${index}`}>
+              <tr
+                key={`loading-row-${columns.length}-${
+                  // biome-ignore lint/suspicious/noArrayIndexKey: ignore for Skeleton
+                  index
+                }`}
+              >
                 <td colSpan={columns.length + 1}>
                   <Skeleton height="7rem" width="100%" />
                 </td>
@@ -324,7 +329,7 @@ export function Table<
                     </td>
                   )}
 
-                  {columns.map((col, index) => {
+                  {columns.map((col) => {
                     if (col.bodyHidden) {
                       return null
                     }
@@ -340,7 +345,7 @@ export function Table<
                           [styles['table-collapse-cell']]:
                             variant === TableVariant.COLLAPSE,
                         })}
-                        key={`col-${col.id}-${index}`}
+                        key={`col-${col.id}-${col.label}`}
                         data-label={col.label}
                       >
                         {value}

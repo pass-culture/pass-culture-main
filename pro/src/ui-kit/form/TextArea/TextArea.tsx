@@ -147,12 +147,12 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         const scrollHeight = textAreaRef.current.scrollHeight
         textAreaRef.current.style.height = `${hasTemplateButton ? scrollHeight + 92 : scrollHeight}px`
       }
-    }, [])
+    }, [hasTemplateButton])
 
     useEffect(() => {
       // Set the textarea height after the first render to fit the initial content
       updateTextAreaHeight()
-    }, [textValue, updateTextAreaHeight])
+    }, [updateTextAreaHeight])
 
     // Constructing aria-describedby attribute
     const describedBy = [charactersCountId, errorId]

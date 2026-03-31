@@ -28,8 +28,7 @@ export const BankAccountHasPendingCorrectionCallout = ({
   const location = useLocation()
 
   const displayCallout = withSwitchVenueFeature
-    ? venue &&
-      venue?.hasNonFreeOffers &&
+    ? venue?.hasNonFreeOffers &&
       venue.bankAccountStatus &&
       venue.bankAccountStatus ===
         SimplifiedBankAccountStatus.PENDING_CORRECTIONS

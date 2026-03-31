@@ -8,7 +8,7 @@ const customFetch: typeof fetch = async (input, init) => {
 
   if (response.status === 503) {
     window.location.assign(URL_FOR_MAINTENANCE)
-    return new Promise<Response>(() => {})
+    return new Promise<Response>(() => null)
   }
 
   if (response.status === 401) {
@@ -25,7 +25,7 @@ const customFetch: typeof fetch = async (input, init) => {
       !url.includes('/users/signin')
     ) {
       await logout()
-      return new Promise<Response>(() => {})
+      return new Promise<Response>(() => null)
     }
   }
 
