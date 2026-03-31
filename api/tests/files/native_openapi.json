@@ -10631,7 +10631,7 @@
                         "description": "Unprocessable Content"
                     }
                 },
-                "summary": "google_oauth_state <GET>",
+                "summary": "sso_oauth_state <GET>",
                 "tags": []
             }
         },
