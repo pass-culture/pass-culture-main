@@ -8,7 +8,7 @@ jobs:
     name: semgrep/ci
     runs-on: ubuntu-latest
     container:
-      image: semgrep/semgrep@sha256:a3d49dc967b8534a6a76628e50c51cbfe33eb7195dc2feab1fdc0f100852c8ef
+      image: semgrep/semgrep@sha256:a3d49dc967b8534a6a76628e50c51cbfe33eb7195dc2feab1fdc0f100852c8ef # v1.156.0
     if: (github.actor != 'dependabot[bot]')
 
     steps:
