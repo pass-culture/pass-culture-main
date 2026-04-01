@@ -642,7 +642,30 @@ class NextSubscriptionStepTest:
 
             assert next_step == subscription_schemas.SubscriptionStep.HONOR_STATEMENT
 
-        def test_underage_ubble_already_performed(self):
+        def test_underage_ubble_pending(self):
+            user = users_factories.UserFactory(
+                age=18,
+                phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+                city="Zanzibar",
+                activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
+            )
+            subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                type=subscription_models.FraudCheckType.UBBLE,
+                status=subscription_models.FraudCheckStatus.PENDING,
+            )
+
+            assert (
+                subscription_api.get_user_subscription_state(user).next_step
+                == subscription_schemas.SubscriptionStep.HONOR_STATEMENT
+            )
+
+        @pytest.mark.parametrize(
+            "eligibility_type",
+            [users_models.EligibilityType.UNDERAGE, users_models.EligibilityType.AGE17_18],
+        )
+        def test_underage_ubble_already_performed(self, eligibility_type):
             user = users_factories.UserFactory(
                 age=18,
                 phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
@@ -654,7 +677,7 @@ class NextSubscriptionStepTest:
                 user=user,
                 type=subscription_models.FraudCheckType.UBBLE,
                 status=subscription_models.FraudCheckStatus.OK,
-                eligibilityType=users_models.EligibilityType.UNDERAGE,
+                eligibilityType=eligibility_type,
             )
 
             assert (
@@ -662,7 +685,49 @@ class NextSubscriptionStepTest:
                 == subscription_schemas.SubscriptionStep.HONOR_STATEMENT
             )
 
-        def test_underage_dms_alread_performed(self):
+        def test_underage_dms_started(self):
+            user = users_factories.UserFactory(
+                age=18,
+                phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+                city="Zanzibar",
+                activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
+            )
+            subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                type=subscription_models.FraudCheckType.DMS,
+                status=subscription_models.FraudCheckStatus.STARTED,
+            )
+
+            assert (
+                subscription_api.get_user_subscription_state(user).next_step
+                == subscription_schemas.SubscriptionStep.HONOR_STATEMENT
+            )
+
+        def test_underage_dms_pending(self):
+            user = users_factories.UserFactory(
+                age=18,
+                phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+                city="Zanzibar",
+                activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
+            )
+            subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                type=subscription_models.FraudCheckType.DMS,
+                status=subscription_models.FraudCheckStatus.PENDING,
+            )
+
+            assert (
+                subscription_api.get_user_subscription_state(user).next_step
+                == subscription_schemas.SubscriptionStep.HONOR_STATEMENT
+            )
+
+        @pytest.mark.parametrize(
+            "eligibility_type",
+            [users_models.EligibilityType.UNDERAGE, users_models.EligibilityType.AGE17_18],
+        )
+        def test_underage_dms_alread_performed(self, eligibility_type):
             user = users_factories.UserFactory(
                 age=18,
                 phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
@@ -674,7 +739,7 @@ class NextSubscriptionStepTest:
                 user=user,
                 type=subscription_models.FraudCheckType.DMS,
                 status=subscription_models.FraudCheckStatus.OK,
-                eligibilityType=users_models.EligibilityType.UNDERAGE,
+                eligibilityType=eligibility_type,
             )
 
             assert (
@@ -703,6 +768,11 @@ class NextSubscriptionStepTest:
             )
 
     class NextStepIdentityCheckTest:
+        def get_date_of_birth_to_be_eligible(self, eligibility_type):
+            return date_utils.get_naive_utc_now() - relativedelta(
+                years=17 if eligibility_type == users_models.EligibilityType.UNDERAGE else 18
+            )
+
         def test_next_subscription_step_identity_check(self):
             user = users_factories.UserFactory(
                 age=18,
@@ -711,17 +781,159 @@ class NextSubscriptionStepTest:
                 activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
             )
             subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+
+            assert (
+                subscription_api.get_user_subscription_state(user).next_step
+                == subscription_schemas.SubscriptionStep.IDENTITY_CHECK
+            )
+
+        def test_next_subscription_step_underage_identity_check(self):
+            user = users_factories.UserFactory(
+                age=17,
+                phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+                city="Zanzibar",
+                activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
+            )
+            subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+
+            assert (
+                subscription_api.get_user_subscription_state(user).next_step
+                == subscription_schemas.SubscriptionStep.IDENTITY_CHECK
+            )
+
+        def test_next_step_identity_check_18_with_educonnect_already_performed(self):
+            user = users_factories.UserFactory(age=18, roles=[users_models.UserRole.UNDERAGE_BENEFICIARY])
             subscription_factories.BeneficiaryFraudCheckFactory(
                 user=user,
-                type=subscription_models.FraudCheckType.UBBLE,
-                status=subscription_models.FraudCheckStatus.STARTED,
-                eligibilityType=users_models.EligibilityType.AGE18,
+                eligibilityType=users_models.EligibilityType.AGE17_18,
+                type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+                status=subscription_models.FraudCheckStatus.OK,
+            )
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+                type=subscription_models.FraudCheckType.EDUCONNECT,
+                status=subscription_models.FraudCheckStatus.OK,
             )
 
             assert (
                 subscription_api.get_user_subscription_state(user).next_step
                 == subscription_schemas.SubscriptionStep.IDENTITY_CHECK
             )
+
+        @pytest.mark.parametrize(
+            "eligibility_type", [users_models.EligibilityType.UNDERAGE, users_models.EligibilityType.AGE17_18]
+        )
+        def test_educonnect_started(self, eligibility_type):
+            user = users_factories.UserFactory(age=17)
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                eligibilityType=eligibility_type,
+                type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+                status=subscription_models.FraudCheckStatus.OK,
+            )
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                eligibilityType=eligibility_type,
+                type=subscription_models.FraudCheckType.EDUCONNECT,
+                status=subscription_models.FraudCheckStatus.STARTED,
+            )
+
+            assert (
+                subscription_api.get_user_subscription_state(user).next_step
+                == subscription_schemas.SubscriptionStep.IDENTITY_CHECK
+            )
+
+        @pytest.mark.parametrize(
+            "eligibility_type", [users_models.EligibilityType.UNDERAGE, users_models.EligibilityType.AGE17_18]
+        )
+        def test_underage_ubble_started(self, eligibility_type):
+            user = users_factories.UserFactory(age=17)
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                eligibilityType=eligibility_type,
+                type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+                status=subscription_models.FraudCheckStatus.OK,
+            )
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                eligibilityType=eligibility_type,
+                type=subscription_models.FraudCheckType.UBBLE,
+                status=subscription_models.FraudCheckStatus.STARTED,
+            )
+
+            assert (
+                subscription_api.get_user_subscription_state(user).next_step
+                == subscription_schemas.SubscriptionStep.IDENTITY_CHECK
+            )
+
+        @pytest.mark.parametrize(
+            "eligibility_type", [users_models.EligibilityType.AGE18, users_models.EligibilityType.AGE17_18]
+        )
+        def test_18_ubble_started(self, eligibility_type):
+            user = users_factories.UserFactory(age=18)
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                eligibilityType=eligibility_type,
+                type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+                status=subscription_models.FraudCheckStatus.OK,
+            )
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                eligibilityType=eligibility_type,
+                type=subscription_models.FraudCheckType.UBBLE,
+                status=subscription_models.FraudCheckStatus.STARTED,
+            )
+
+            assert (
+                subscription_api.get_user_subscription_state(user).next_step
+                == subscription_schemas.SubscriptionStep.IDENTITY_CHECK
+            )
+
+        @pytest.mark.parametrize(
+            "eligibility",
+            [
+                users_models.EligibilityType.UNDERAGE,
+                users_models.EligibilityType.AGE18,
+                users_models.EligibilityType.AGE17_18,
+            ],
+        )
+        @pytest.mark.parametrize(
+            "fraud_check_type",
+            [
+                subscription_models.FraudCheckType.EDUCONNECT,
+                subscription_models.FraudCheckType.UBBLE,
+            ],
+        )
+        @pytest.mark.parametrize(
+            "fraud_check_status",
+            [
+                subscription_models.FraudCheckStatus.SUSPICIOUS,
+                subscription_models.FraudCheckStatus.KO,
+            ],
+        )
+        def test_id_check_retry(self, eligibility, fraud_check_type, fraud_check_status):
+            user = users_factories.UserFactory(
+                dateOfBirth=self.get_date_of_birth_to_be_eligible(eligibility),
+                phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            )
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                eligibilityType=eligibility,
+                status=subscription_models.FraudCheckStatus.OK,
+                type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            )
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                eligibilityType=eligibility,
+                status=fraud_check_status,
+                type=fraud_check_type,
+                reasonCodes=[subscription_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE],
+            )
+
+            user_subscription_state = subscription_api.get_user_subscription_state(user)
+
+            assert user_subscription_state.fraud_status == subscription_schemas.SubscriptionItemStatus.TODO
 
         @pytest.mark.parametrize(
             "feature_flags,user_age,expected_result",
@@ -1204,112 +1416,6 @@ class IdentityCheckSubscriptionStatusTest:
         )
 
         assert age18_status == subscription_schemas.SubscriptionItemStatus.TODO
-
-
-@pytest.mark.usefixtures("db_session")
-class NeedsToPerformeIdentityCheckTest:
-    AGE16_ELIGIBLE_BIRTH_DATE = date_utils.get_naive_utc_now() - relativedelta(years=16, months=4)
-    AGE18_ELIGIBLE_BIRTH_DATE = date_utils.get_naive_utc_now() - relativedelta(years=18, months=4)
-    AGE20_ELIGIBLE_BIRTH_DATE = date_utils.get_naive_utc_now() - relativedelta(years=20, months=4)
-
-    def test_not_eligible(self):
-        user = users_factories.UserFactory(dateOfBirth=self.AGE20_ELIGIBLE_BIRTH_DATE)
-
-        assert (
-            subscription_api.get_identity_check_fraud_status(
-                user,
-                user.eligibility,
-                subscription_repository.get_relevant_identity_fraud_check(user, user.eligibility),
-            )
-            == subscription_schemas.SubscriptionItemStatus.VOID
-        )
-
-    def test_ex_underage_eligible_18(self):
-        user = users_factories.UserFactory(
-            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE, roles=[users_models.UserRole.UNDERAGE_BENEFICIARY]
-        )
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            eligibilityType=users_models.EligibilityType.UNDERAGE,
-            type=subscription_models.FraudCheckType.EDUCONNECT,
-            status=subscription_models.FraudCheckStatus.OK,
-        )
-
-        assert (
-            subscription_api.get_user_subscription_state(user).next_step
-            != subscription_schemas.SubscriptionStep.IDENTITY_CHECK
-        )
-
-    def test_ubble_underage_eligible_18_does_not_need_to_redo(self):
-        user = users_factories.UserFactory(
-            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE, roles=[users_models.UserRole.UNDERAGE_BENEFICIARY]
-        )
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            eligibilityType=users_models.EligibilityType.UNDERAGE,
-            type=subscription_models.FraudCheckType.UBBLE,
-            status=subscription_models.FraudCheckStatus.OK,
-        )
-
-        assert (
-            subscription_api.get_identity_check_fraud_status(
-                user,
-                user.eligibility,
-                subscription_repository.get_relevant_identity_fraud_check(user, user.eligibility),
-            )
-            == subscription_schemas.SubscriptionItemStatus.OK
-        )
-
-    def test_ubble_started(self):
-        user = users_factories.UserFactory(
-            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-        )
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            eligibilityType=users_models.EligibilityType.UNDERAGE,
-            type=subscription_models.FraudCheckType.UBBLE,
-            status=subscription_models.FraudCheckStatus.STARTED,
-        )
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            eligibilityType=users_models.EligibilityType.AGE18,
-            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
-            status=subscription_models.FraudCheckStatus.OK,
-        )
-
-        assert (
-            subscription_api.get_user_subscription_state(user).next_step
-            == subscription_schemas.SubscriptionStep.IDENTITY_CHECK
-        )
-
-    def test_dms_started(self):
-        user = users_factories.UserFactory(dateOfBirth=self.AGE16_ELIGIBLE_BIRTH_DATE)
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            eligibilityType=users_models.EligibilityType.UNDERAGE,
-            type=subscription_models.FraudCheckType.DMS,
-            status=subscription_models.FraudCheckStatus.STARTED,
-        )
-
-        assert (
-            not subscription_api.get_user_subscription_state(user).next_step
-            == subscription_schemas.SubscriptionStep.IDENTITY_CHECK
-        )
-
-    def test_educonnect_ok(self):
-        user = users_factories.UserFactory(dateOfBirth=self.AGE16_ELIGIBLE_BIRTH_DATE)
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            eligibilityType=users_models.EligibilityType.UNDERAGE,
-            type=subscription_models.FraudCheckType.EDUCONNECT,
-            status=subscription_models.FraudCheckStatus.OK,
-        )
-
-        assert (
-            not subscription_api.get_user_subscription_state(user).next_step
-            == subscription_schemas.SubscriptionStep.IDENTITY_CHECK
-        )
 
 
 @pytest.mark.usefixtures("db_session")
@@ -2503,57 +2609,21 @@ class GetStatusFromFraudCheckTest:
         ],
     )
     @pytest.mark.parametrize(
-        "fraud_check_status",
-        [
-            subscription_models.FraudCheckStatus.SUSPICIOUS,
-            subscription_models.FraudCheckStatus.KO,
-        ],
-    )
-    def should_be_todo_when_check_retryable(self, eligibility, fraud_check_type, fraud_check_status):
-        user = users_factories.UserFactory(
-            dateOfBirth=self.get_date_of_birth_to_be_eligible(eligibility),
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-        )
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            eligibilityType=eligibility,
-            status=subscription_models.FraudCheckStatus.OK,
-            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
-        )
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            eligibilityType=eligibility,
-            status=fraud_check_status,
-            type=fraud_check_type,
-            reasonCodes=[subscription_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE],
-        )
-
-        user_subscription_state = subscription_api.get_user_subscription_state(user)
-
-        assert user_subscription_state.fraud_status == subscription_schemas.SubscriptionItemStatus.TODO
-
-    @pytest.mark.parametrize(
-        "eligibility",
-        [
-            users_models.EligibilityType.UNDERAGE,
-            users_models.EligibilityType.AGE18,
-            users_models.EligibilityType.AGE17_18,
-        ],
-    )
-    @pytest.mark.parametrize(
         "fraud_check_status, expected_status",
         [
             (subscription_models.FraudCheckStatus.SUSPICIOUS, subscription_schemas.SubscriptionItemStatus.SUSPICIOUS),
             (subscription_models.FraudCheckStatus.KO, subscription_schemas.SubscriptionItemStatus.KO),
         ],
     )
-    def should_ko_or_suspicious_when_ubble_check_not_retryable(self, eligibility, fraud_check_status, expected_status):
+    def should_ko_or_suspicious_when_ubble_check_not_retryable(
+        self, eligibility, fraud_check_type, fraud_check_status, expected_status
+    ):
         user = users_factories.UserFactory(dateOfBirth=self.get_date_of_birth_to_be_eligible(eligibility))
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=eligibility,
             status=fraud_check_status,
-            type=subscription_models.FraudCheckType.UBBLE,
+            type=fraud_check_type,
             reasonCodes=[subscription_models.FraudReasonCode.AGE_TOO_OLD],
         )
 
@@ -2584,28 +2654,6 @@ class GetStatusFromFraudCheckTest:
             )
             == subscription_schemas.SubscriptionItemStatus.PENDING
         )
-
-    def should_be_todo_if_educonnect_for_age_18(self):
-        user = users_factories.UserFactory(
-            dateOfBirth=self.get_date_of_birth_to_be_eligible(users_models.EligibilityType.AGE18),
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-        )
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            eligibilityType=users_models.EligibilityType.AGE18,
-            status=subscription_models.FraudCheckStatus.OK,
-            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
-        )
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            eligibilityType=users_models.EligibilityType.AGE18,
-            status=subscription_models.FraudCheckStatus.KO,
-            type=subscription_models.FraudCheckType.EDUCONNECT,
-        )
-
-        user_subscription_state = subscription_api.get_user_subscription_state(user)
-
-        assert user_subscription_state.fraud_status == subscription_schemas.SubscriptionItemStatus.TODO
 
     @pytest.mark.parametrize(
         "eligibility",
