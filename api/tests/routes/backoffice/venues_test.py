@@ -432,7 +432,7 @@ class GetVenueTest(GetEndpointHelper):
     def test_get_venue_with_provider(self, authenticated_client):
         venue_provider = providers_factories.AllocineVenueProviderFactory(lastSyncDate=datetime(2024, 1, 5, 12, 0))
         venue_id = venue_provider.venue.id
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries, expire_session=False):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
             assert response.status_code == 200
 

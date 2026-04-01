@@ -1058,7 +1058,7 @@ class PriceEventTest:
         queries += 1  # update status of FinanceEvent
         queries += 1  # insert 1 Pricing
         queries += 1  # insert 2 PricingLine
-        with assert_num_queries(queries):
+        with assert_num_queries(queries, expire_session=False):
             api.price_event(event)
 
     def test_pricing_full_offerer_contribution(self):
