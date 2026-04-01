@@ -15,7 +15,7 @@ import { CollectiveOffersBookableCTA } from '../CollectiveOffersBookableCTA/Coll
 import { CollectiveOffersBookableTag } from '../CollectiveOffersBookableTag/CollectiveOffersBookableTag'
 import styles from './CollectiveOffersBookableLine.module.scss'
 
-type CollectiveOffersBookableLineProps = {
+export type CollectiveOffersBookableLineProps = {
   offer: CollectiveOffersVariantMap[CollectiveOffersCardVariant.BOOKABLE]
 }
 
@@ -42,7 +42,8 @@ export const CollectiveOffersBookableLine = ({
   return (
     <div key={offer.id} className={styles['offer-line']}>
       <Link className={styles['offer-line-thumb']} to={offerLink}>
-        <Thumb url={offer.imageUrl} />
+        <Thumb url={offer.imageUrl} alt={`Thumbnail for ${offer.name}`} />
+        <span className={styles['visually-hidden']}>Voir l'offre</span>
       </Link>
       <Link className={styles['offer-line-content']} to={offerLink}>
         {offer.collectiveStock && (
