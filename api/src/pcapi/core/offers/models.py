@@ -146,6 +146,8 @@ class ImageType(enum.Enum):
 class ProductMediation(PcObject, Model):
     __tablename__ = "product_mediation"
 
+    __table_args__ = (sa.Index("ix_product_mediation_productId_uuid", "productId", "uuid", unique=True),)
+
     dateModifiedAtLastProvider: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(
         sa.DateTime, nullable=True, default=date_utils.get_naive_utc_now
     )
@@ -164,7 +166,7 @@ class ProductMediation(PcObject, Model):
         foreign_keys=[productId],
         back_populates="productMediations",
     )
-    uuid: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, unique=True)
+    uuid: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
 
     @property
     def url(self) -> str:
