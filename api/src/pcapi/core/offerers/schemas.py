@@ -25,10 +25,9 @@ MAX_LATITUDE = 90
 
 SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
 
-# NOTE(jbaudet - 02/2026): deprecated. Please use SocialMediasV2.
 SocialMedias = dict[SocialMedia, pydantic_v1.HttpUrl]
-
-SocialMediasV2 = dict[SocialMedia, pydantic_v2.HttpUrl]
+HttpUrlString = typing.Annotated[pydantic_v2.HttpUrl, pydantic_v2.AfterValidator(str)]
+SocialMediasV2 = dict[SocialMedia, HttpUrlString]
 
 
 def format_coordinate(value: typing.Any) -> Decimal:
