@@ -114,7 +114,7 @@ class VenueContactModel(BaseModel):
 class VenueContactModelV2(BaseModelV2):
     email: pydantic_v2.EmailStr | None = None
     website: typing.Annotated[str, pydantic_v2.StringConstraints(max_length=256)] | None = pydantic_v2.Field(
-        pattern=COMPILED_WEBSITE_URL_REGEX
+        pattern=COMPILED_WEBSITE_URL_REGEX, default=None
     )
     phone_number: str | None = None
     social_medias: SocialMediasV2 | None = None
@@ -184,17 +184,21 @@ class VenueBookingEmail(pydantic_v1.EmailStr):
         return super().validate(value)
 
 
+VENUE_ADDRESS_MAX_LENGTH = 200
+
+
 class VenueAddress(RequiredStrippedString):
     max_length = 200
 
 
-class VenueBanId(pydantic_v1.ConstrainedStr):
-    strip_whitespace = True
-    max_length = 50
+VENUE_BAN_ID_MAX_LENGTH = 50
+
+
+VENUE_CITY_MAX_LENGTH = 200
 
 
 class VenueCity(RequiredStrippedString):
-    max_length = 200
+    max_length = VENUE_CITY_MAX_LENGTH
 
 
 class VenueInseeCode(RequiredStrippedString):
@@ -202,9 +206,13 @@ class VenueInseeCode(RequiredStrippedString):
     max_length = 5
 
 
+VENUE_POSTAL_CODE_MIN_LENGTH = 5
+VENUE_POSTAL_CODE_MAX_LENGTH = 5
+
+
 class VenuePostalCode(RequiredStrippedString):
-    min_length = 5
-    max_length = 5
+    min_length = VENUE_POSTAL_CODE_MIN_LENGTH
+    max_length = VENUE_POSTAL_CODE_MAX_LENGTH
 
 
 class VenueSiret(RequiredStrippedString):
@@ -222,12 +230,6 @@ class VenueComment(pydantic_v1.ConstrainedStr):
 
 
 VENUE_WITHDRAWAL_DETAILS_MAX_LENGTH = 500
-
-
-class VenueWithdrawalDetails(pydantic_v1.ConstrainedStr):
-    strip_whitespace = True
-    # optional, hence no `min_length`
-    max_length = VENUE_WITHDRAWAL_DETAILS_MAX_LENGTH
 
 
 class LocationOnlyOnVenueModel(BaseModel):

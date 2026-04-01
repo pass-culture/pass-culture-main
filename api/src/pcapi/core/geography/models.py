@@ -4,6 +4,7 @@ from decimal import Decimal
 
 import sqlalchemy as sa
 from geoalchemy2 import Geometry
+from pydantic import alias_generators
 from sqlalchemy import orm as sa_orm
 
 from pcapi.core.geography.constants import WGS_SPATIAL_REFERENCE_IDENTIFIER
@@ -49,6 +50,7 @@ class Address(PcObject, Model):
         return f"{self.street} {self.postalCode} {self.city}" if self.street else f"{self.postalCode} {self.city}"
 
     def field_exists_and_has_changed(self, field: str, value: typing.Any) -> typing.Any:
+        field = alias_generators.to_camel(field)  # Required to be able to use snake case with Pydantic
         if field in ("latitude", "longitude"):
             # Rounding to five digits to keep consistency with the columns definitions
             # We don’t want to consider coordinates has changed if actually the rounded value is the same

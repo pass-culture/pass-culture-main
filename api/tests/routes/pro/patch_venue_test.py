@@ -26,8 +26,8 @@ venue_malformed_test_data = [
     ({"contact": {"email": "not_an_email"}}, "contact.email"),
     ({"contact": {"website": "not_an_url"}}, "contact.website"),
     ({"contact": {"phoneNumber": "not_a_phone_number"}}, "contact.phoneNumber"),
-    ({"contact": {"social_medias": {"a": "b"}}}, "contact.socialMedias.__key__"),
-    ({"contact": {"social_medias": {"facebook": "not_an_url"}}}, "contact.socialMedias.facebook"),
+    ({"contact": {"socialMedias": {"a": "b"}}}, "contact.socialMedias.a.[key]"),
+    ({"contact": {"socialMedias": {"facebook": "not_an_url"}}}, "contact.socialMedias.facebook"),
 ]
 
 
@@ -866,7 +866,6 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
 
         venue_data = {
-            "departementCode": venue.offererAddress.address.departmentCode,
             "city": venue.offererAddress.address.city,
             "motorDisabilityCompliant": venue.motorDisabilityCompliant,
             "contact": {
@@ -880,7 +879,7 @@ class Returns200Test:
         venue_id = venue.id
 
         response = http_client.patch(f"/venues/{venue_id}", json=venue_data)
-        assert response.status_code == 200
+        assert response.status_code == 200, response.json
 
         assert db.session.query(history_models.ActionHistory).count() == 0
 
@@ -1110,7 +1109,9 @@ class Returns400Test:
         response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
 
         assert response.status_code == 400
-        assert response.json["comment"] == ["ensure this value has at most 500 characters"]
+        assert response.json["comment"] == [
+            "Cette chaîne de caractères doit avoir une taille maximum de 500 caractères"
+        ]
 
     def test_raises_if_withdrawal_details_too_long(self, client) -> None:
         venue = offerers_factories.VenueFactory()
@@ -1123,7 +1124,9 @@ class Returns400Test:
         response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
 
         assert response.status_code == 400
-        assert response.json["withdrawalDetails"] == ["ensure this value has at most 500 characters"]
+        assert response.json["withdrawalDetails"] == [
+            "Cette chaîne de caractères doit avoir une taille maximum de 500 caractères"
+        ]
 
     def test_with_inactive_siret(self, client):
         venue = offerers_factories.VenueFactory()
@@ -1222,7 +1225,7 @@ class Returns400Test:
         response = client.with_session_auth(email=user.email).patch(f"/venues/{venue.id}", json=venue_data)
 
         assert response.status_code == 400
-        assert "Le format d'email est incorrect." in response.json["bookingEmail"]
+        assert response.json["bookingEmail"] == ["Saisissez un email valide"]
 
     def test_update_with_invalid_activity(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory(
@@ -1278,7 +1281,9 @@ class Returns400Test:
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
 
         assert response.status_code == 400
-        assert response.json == {"contact.website": ["ensure this value has at most 256 characters"]}
+        assert response.json == {
+            "contact.website": ["Cette chaîne de caractères doit avoir une taille maximum de 256 caractères"]
+        }
 
     def test_update_with_wrong_volunteering_url_protocol(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
@@ -1292,7 +1297,7 @@ class Returns400Test:
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
 
         assert response.status_code == 400
-        assert response.json == {"volunteeringUrl": ['L\'URL doit commencer par "http://" ou "https://"']}
+        assert response.json == {"volunteeringUrl": ["Input should be a valid URL, relative URL without a base"]}
 
     def test_update_with_wrong_volunteering_url_domain(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()

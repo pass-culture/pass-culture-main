@@ -12,6 +12,7 @@ import sqlalchemy as sa
 import sqlalchemy.dialects.postgresql as sa_psql
 import sqlalchemy.orm as sa_orm
 import sqlalchemy.sql.functions as sa_func
+from pydantic import alias_generators
 from sqlalchemy.dialects.postgresql.json import JSONB
 from sqlalchemy.ext import mutable as sa_mutable
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -751,6 +752,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         return self.managingOfferer.isActive and self.managingOfferer.isValidated
 
     def field_exists_and_has_changed(self, field: str, value: typing.Any) -> typing.Any:
+        field = alias_generators.to_camel(field)  # Required to be able to use snake case with Pydantic
         if field not in type(self).__table__.columns:
             raise ValueError(f"Unknown field {field} for model {type(self)}")
         if isinstance(getattr(self, field), decimal.Decimal):

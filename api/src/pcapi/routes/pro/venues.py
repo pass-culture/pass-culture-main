@@ -160,7 +160,7 @@ def edit_venue(venue_id: int, body: venue_serialize.EditVenueBodyModel) -> venue
         "openingHours",
         "culturalDomains",
     }
-    update_venue_attrs = body.dict(exclude=not_venue_fields, exclude_unset=True)
+    update_venue_attrs = body.model_dump(exclude=not_venue_fields, exclude_unset=True, by_alias=True)
 
     accessibility_fields = [
         "audioDisabilityCompliant",
