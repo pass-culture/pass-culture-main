@@ -539,7 +539,7 @@ class GetVenueTest(GetEndpointHelper):
         "bo_role, has_fraudulent_booking_badge, has_reimbursement_suspended_badge",
         [
             # Depend on permissions set in conftest.py
-            (perm_models.Roles.FRAUDE_CONFORMITE, True, True),
+            (perm_models.Roles.FRAUDE_PRO, True, True),
             (perm_models.Roles.SUPPORT_PRO, True, True),
             (perm_models.Roles.DAF, False, True),
             (perm_models.Roles.CHARGE_DEVELOPPEMENT, False, False),
