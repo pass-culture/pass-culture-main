@@ -2,68 +2,76 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_fonts.scss" as fonts;
 
+/**
+ * We setup mobile display by default
+ *   (cf the following min-width in media queries)
+ *
+ * It allows us to limit overrides and code complexity.
+ *
+ * @see ../../CollectiveOffersBookableCard/CollectiveOffersBookableCard.module.scss
+ */
 .offer-line {
   display: grid;
-  grid-column: 1 / -1;
-  grid-template-columns: subgrid;
-  gap: var(--size-spacing-s);
   align-items: center;
+  gap: var(--size-spacing-s);
+  grid-template-columns: max-content 1fr;
 
-  &-name {
+  &-thumb {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    align-items: start;
+    justify-content: start;
+    height: 100%;
+  }
+
+  &-content {
     @include fonts.body-accent;
 
+    grid-column: 2;
+    grid-row: 1;
     display: flex;
     flex-direction: column;
 
-    &-title {
+    &-primary {
       @include fonts.body-accent-s;
 
       margin-top: var(--size-spacing-s);
     }
 
-    &-subtitle {
+    &-secondary {
       @include fonts.body-xs;
 
       color: var(--color-text-subtle);
     }
   }
 
+  &-status {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
   // CTA button
   & > *:last-child {
-    grid-column: 4;
-    justify-self: stretch;
+    grid-column: 1 / span 2;
+    grid-row: 3;
     width: 100%;
+    justify-self: stretch;
   }
-}
 
-@media screen and (min-width: size.$tablet) {
-  .offer-line {
-    min-width: rem.torem(150px);
+  @media screen and (min-width: size.$tablet) {
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
 
-    &-with-thumb {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: flex-start;
-      min-width: rem.torem(240px);
-    }
-  }
-}
-
-@media screen and (max-width: size.$tablet) {
-  .offer-line {
-    &-with-thumb {
-      align-items: end;
+    &-thumb,
+    &-content,
+    &-status {
+      grid-column: auto;
+      grid-row: auto;
     }
 
-    &-name {
-      @include fonts.body-accent;
-
-      display: flex;
-      flex-direction: column;
-      overflow-wrap: anywhere;
-      text-align: right;
-      align-items: end;
+    & > *:last-child {
+      grid-column: 4;
+      grid-row: 1;
     }
   }
 }

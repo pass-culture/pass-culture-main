@@ -1,5 +1,24 @@
+@use "styles/mixins/_size.scss" as size;
+
+/**
+ * We setup mobile display by default
+ *   (cf the following min-width in media queries)
+ *
+ * It allows us to limit overrides and code complexity.
+ *
+ * @see ./components/CollectiveOffersBookableLine/CollectiveOffersBookableLine.module.scss
+ */
 .offer-list {
+  // We prefer grid to flex here to be consistent with tablet and desktop displays
   display: grid;
-  grid-template-columns: max-content 1fr auto max-content;
+  grid-template-columns: 1fr;
   gap: var(--size-spacing-l);
+
+  @media screen and (min-width: size.$tablet) {
+    grid-template-columns: max-content 2fr auto 1fr;
+  }
+
+  @media screen and (min-width: size.$desktop) {
+    grid-template-columns: max-content 1fr auto max-content;
+  }
 }
