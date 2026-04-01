@@ -8,11 +8,8 @@ import type {
   CollectiveOffersVariantMap,
 } from '../../../types'
 
-type Stock =
-  CollectiveOffersVariantMap[CollectiveOffersCardVariant.BOOKABLE]['collectiveStock']
-
 type CollectiveOffersBookableCTAProps = {
-  stock: Stock
+  stock: CollectiveOffersVariantMap[CollectiveOffersCardVariant.BOOKABLE]['collectiveStock']
   offerId: number
   offerLink: string
 }
