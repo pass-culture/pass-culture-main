@@ -657,5 +657,5 @@ def autocomplete_cities() -> AutocompleteResponse:
 
     results = api_geo.search_city(name=query_string, limit=NUM_RESULTS)
     return AutocompleteResponse(
-        items=[AutocompleteItem(id=result.insee_code, text=_get_city_choice_label(result)) for result in results]
+        items=[AutocompleteStrIdItem(id=result.insee_code, text=_get_city_choice_label(result)) for result in results]
     )
