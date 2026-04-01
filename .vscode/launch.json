@@ -36,6 +36,28 @@
                 "run"
             ]
         },
+        // Use this configuration to run a celery worker (without docker)
+        // args should match what we have in start-celery-worker.sh
+        // `--pool solo` is needed to avoid and error 'signal 11 (SIGSEGV)'
+        {
+            "name": "Celery worker",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "celery",
+            "cwd": "${workspaceFolder}/api",
+            "justMyCode": false,
+            "args": [
+                "-A",
+                "pcapi.celery_tasks.celery_worker",
+                "worker",
+                "-Q",
+                "celery.external_calls.priority,celery.internal_calls.priority,celery.internal_calls.default,celery.external_calls.default",
+                "--loglevel",
+                "INFO",
+                "--pool",
+                "solo"
+            ]
+        },
         // Use these two configurations to attach to a running server
         // You will need the env var DEBUG_ACTIVATED=1
         {
@@ -107,7 +129,9 @@
             "name": "Attach to Vitest",
             "port": 9229,
             "restart": true,
-            "skipFiles": ["<node_internals>/**"]
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
         }
     ],
     "inputs": [
