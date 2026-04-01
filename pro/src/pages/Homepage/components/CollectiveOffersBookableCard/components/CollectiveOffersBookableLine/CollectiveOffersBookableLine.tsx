@@ -30,35 +30,33 @@ export const CollectiveOffersBookableLine = ({
   const offerLink =
     draftOfferLink || `/offre/${offerId}/collectif/recapitulatif`
 
-  let nameSubtitle = ''
+  let secondaryContent = ''
   if (offer.collectiveStock) {
     const { date: startDate } = formatDateTimeParts(
       offer.collectiveStock.startDatetime
     )
     const numberOfTickets = offer.collectiveStock.numberOfTickets
-    nameSubtitle = `Prévu le ${startDate} - ${numberOfTickets} ${pluralizeFr(numberOfTickets, 'participant', 'participants')}`
+    secondaryContent = `Prévu le ${startDate} - ${numberOfTickets} ${pluralizeFr(numberOfTickets, 'participant', 'participants')}`
   }
 
   return (
     <div key={offer.id} className={styles['offer-line']}>
-      <Link to={offerLink}>
+      <Link className={styles['offer-line-thumb']} to={offerLink}>
         <Thumb url={offer.imageUrl} />
       </Link>
-      <Link to={offerLink}>
-        <div className={styles['offer-line-name']}>
-          {offer.collectiveStock && (
-            <CollectiveOffersBookableTag
-              displayedStatus={offer.displayedStatus}
-              stock={offer.collectiveStock}
-            />
-          )}
-          <div className={styles['offer-line-name-title']}>{offer.name}</div>
-          <div className={styles['offer-line-name-subtitle']}>
-            {nameSubtitle}
-          </div>
+      <Link className={styles['offer-line-content']} to={offerLink}>
+        {offer.collectiveStock && (
+          <CollectiveOffersBookableTag
+            displayedStatus={offer.displayedStatus}
+            stock={offer.collectiveStock}
+          />
+        )}
+        <div className={styles['offer-line-content-primary']}>{offer.name}</div>
+        <div className={styles['offer-line-content-secondary']}>
+          {secondaryContent}
         </div>
       </Link>
-      <Link to={offerLink}>
+      <Link className={styles['offer-line-status']} to={offerLink}>
         <CollectiveStatusLabel offerDisplayedStatus={offer.displayedStatus} />
       </Link>
       <CollectiveOffersBookableCTA
