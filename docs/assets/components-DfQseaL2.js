@@ -1,0 +1,1 @@
+import{P as e}from"./components-Cjsdt6kw.js";export{e as createCopyToClipboardFunction};
