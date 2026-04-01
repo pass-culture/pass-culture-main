@@ -60,6 +60,29 @@
 
   @media screen and (min-width: size.$tablet) {
     grid-column: 1 / -1;
+    grid-row: auto / span 2;
+    grid-template-columns: subgrid;
+
+    &-thumb {
+      grid-column: auto;
+      grid-row: 1 / span 2;
+    }
+
+    &-content,
+    &-status {
+      grid-column: 2;
+      grid-row: auto;
+    }
+
+    & > *:last-child {
+      grid-column: 4;
+      grid-row: 1 / span 2;
+    }
+  }
+
+  @media screen and (min-width: size.$desktop) {
+    grid-column: 1 / -1;
+    grid-row: auto;
     grid-template-columns: subgrid;
 
     &-thumb,
@@ -71,7 +94,7 @@
 
     & > *:last-child {
       grid-column: 4;
-      grid-row: 1;
+      grid-row: auto;
     }
   }
 }
