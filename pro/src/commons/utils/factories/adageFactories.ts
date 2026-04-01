@@ -10,6 +10,12 @@ import {
   type EducationalInstitutionBudgetResponseModel,
 } from '@/apiClient/adage'
 import { StudentLevels } from '@/apiClient/v1'
+import {
+  CollectiveOfferAllowedAction,
+  CollectiveOfferDisplayedStatus,
+  type CollectiveOfferHomeResponseModel,
+  type CollectiveStockHomeResponseModel,
+} from '@/apiClient/v1/new'
 
 export const defaultCollectiveTemplateOffer: CollectiveOfferTemplateResponseModel =
   {
@@ -157,3 +163,43 @@ export const defaultUseInfiniteHitsReturn = {
   bindEvent: vi.fn(),
   currentPageHits: [hit],
 }
+
+export function buildCollectiveStock(
+  bookingDateDaysFromToday: number,
+  startDateDaysFromToday: number,
+  numberOfTickets: number = 100
+): CollectiveStockHomeResponseModel {
+  const today = new Date()
+  return {
+    bookingLimitDatetime: addDays(
+      today,
+      bookingDateDaysFromToday
+    ).toISOString(),
+    startDatetime: addDays(today, startDateDaysFromToday).toISOString(),
+    endDatetime: addDays(today, startDateDaysFromToday + 1).toISOString(),
+    numberOfTickets,
+  }
+}
+
+export const buildCollectiveOfferHome = (
+  bookingDateDaysFromToday: number = 10,
+  startDateDaysFromToday: number = 11,
+  displayedStatus: CollectiveOfferDisplayedStatus = CollectiveOfferDisplayedStatus.PUBLISHED
+): CollectiveOfferHomeResponseModel => ({
+  id: 435,
+  name: 'Mon offre réservable 435',
+  displayedStatus: displayedStatus,
+  imageUrl:
+    'http://localhost:5001/storage/thumbs/collectiveoffer/00000004357405842.jpg',
+  allowedActions: [
+    CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+    CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+    CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+    CollectiveOfferAllowedAction.CAN_DUPLICATE,
+    CollectiveOfferAllowedAction.CAN_ARCHIVE,
+  ],
+  collectiveStock: buildCollectiveStock(
+    bookingDateDaysFromToday,
+    startDateDaysFromToday
+  ),
+})
