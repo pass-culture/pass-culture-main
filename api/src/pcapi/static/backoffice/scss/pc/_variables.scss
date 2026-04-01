@@ -11,7 +11,7 @@ $purple: #320096;
 
 // scss-docs-start theme-color-variables
 $primary:   $purple;
-$secondary: $gray-900;
+$secondary: $gray-600;
 $old-secondary: #320096;
 $success:   $green-700;
 $info:      $blue-700;
@@ -31,7 +31,7 @@ $border-radius-pill:          50rem;
 // scss-docs-end border-radius-variables
 
 // scss-docs-start theme-text-variables
-$primary-text-emphasis:   shade-color($primary, 60%);
+$primary-text-emphasis:   $purple-400;
 $secondary-text-emphasis: shade-color($secondary, 60%);
 $success-text-emphasis:   shade-color($success, 60%);
 $info-text-emphasis:      shade-color($info, 60%);
