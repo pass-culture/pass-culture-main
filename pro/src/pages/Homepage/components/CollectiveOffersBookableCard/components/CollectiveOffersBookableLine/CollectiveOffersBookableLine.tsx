@@ -19,6 +19,17 @@ type CollectiveOffersBookableLineProps = {
   offer: CollectiveOffersVariantMap[CollectiveOffersCardVariant.BOOKABLE]
 }
 
+function getSecondaryContent(
+  collectiveStock: CollectiveOffersVariantMap['BOOKABLE']['collectiveStock']
+): string {
+  if (!collectiveStock) {
+    return ''
+  }
+  const { date: startDate } = formatDateTimeParts(collectiveStock.startDatetime)
+  const numberOfTickets = collectiveStock.numberOfTickets
+  return `Prévu le ${startDate} - ${numberOfTickets} ${pluralizeFr(numberOfTickets, 'participant', 'participants')}`
+}
+
 export const CollectiveOffersBookableLine = ({
   offer,
 }: CollectiveOffersBookableLineProps): JSX.Element => {
@@ -30,14 +41,7 @@ export const CollectiveOffersBookableLine = ({
   const offerLink =
     draftOfferLink || `/offre/${offerId}/collectif/recapitulatif`
 
-  let secondaryContent = ''
-  if (offer.collectiveStock) {
-    const { date: startDate } = formatDateTimeParts(
-      offer.collectiveStock.startDatetime
-    )
-    const numberOfTickets = offer.collectiveStock.numberOfTickets
-    secondaryContent = `Prévu le ${startDate} - ${numberOfTickets} ${pluralizeFr(numberOfTickets, 'participant', 'participants')}`
-  }
+  const secondaryContent = getSecondaryContent(offer.collectiveStock)
 
   return (
     <div key={offer.id} className={styles['offer-line']}>
