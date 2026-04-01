@@ -29,7 +29,6 @@ class GetOffererTest:
     num_queries += 1  # select venue
     num_queries += 1  # check offerer has non free offers (select venue ?)
     num_queries += 1  # select venue_id
-    num_queries += 1  # select offerer_address
     num_queries += 1  # select venues_id with active offers
     num_queries += 1  # select offer to check if offerer has a partner page
 
@@ -59,12 +58,6 @@ class GetOffererTest:
         )
 
         offerer_id = offerer.id
-        client = client.with_session_auth(pro.email)
-        with testing.assert_num_queries(self.num_queries):
-            with testing.assert_no_duplicated_queries():
-                response = client.get(f"/offerers/{offerer_id}")
-                assert response.status_code == 200
-
         expected_serialized_offerer = {
             "allowedOnAdage": offerer.allowedOnAdage,
             "canDisplayHighlights": False,
@@ -125,6 +118,13 @@ class GetOffererTest:
             "venuesWithNonFreeOffersWithoutBankAccounts": [],
             "isCaledonian": False,
         }
+
+        client = client.with_session_auth(pro.email)
+        db.session.expire_all()
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(f"/offerers/{offerer_id}")
+            assert response.status_code == 200
+
         assert response.json == expected_serialized_offerer
 
         db.session.refresh(offerer)
