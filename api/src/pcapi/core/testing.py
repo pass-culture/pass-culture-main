@@ -10,7 +10,6 @@ import flask
 import pytest
 import sqlalchemy.engine
 import sqlalchemy.event
-import sqlalchemy.orm
 
 from pcapi import settings
 from pcapi.models import db
@@ -57,7 +56,9 @@ def assert_no_duplicated_queries() -> collections.abc.Generator[None, None, None
 
 
 @contextlib.contextmanager
-def assert_num_queries(expected_n_queries: int) -> collections.abc.Generator[None, None, None]:
+def assert_num_queries(
+    expected_n_queries: int, expire_session: bool = True
+) -> collections.abc.Generator[None, None, None]:
     """A context manager that verifies that we do not perform unexpected
     SQL queries.
 
@@ -75,6 +76,11 @@ def assert_num_queries(expected_n_queries: int) -> collections.abc.Generator[Non
     """
     # Ensures we won't get any extra query from pending data within the sqlalchemy session
     db.session.flush()
+
+    # expire the session to prevent pre-loaded items (e.g from factories) from hiding additional queries
+    if expire_session:
+        db.session.expire_all()
+
     # Flask gracefully provides a global. Flask-SQLAlchemy uses it for
     # the same purpose. Let's do the same.
     flask.g._query_logger = []

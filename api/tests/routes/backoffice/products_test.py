@@ -750,7 +750,7 @@ class GetTagOffersFormTest(GetEndpointHelper):
         offers_factories.OfferFactory.create(productId=None, isActive=False, **identifier_props)
 
         url = url_for(self.endpoint, product_id=product.id)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries, expire_session=False):
             response = authenticated_client.get(url)
 
         assert response.status_code == 200

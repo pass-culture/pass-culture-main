@@ -243,7 +243,7 @@ class AccountTest:
         expected_num_queries += 1  # recredit
 
         client.with_token(user)
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(expected_num_queries, expire_session=False):
             me_response = client.get("/native/v1/me")
 
         assert user.age == 17
@@ -379,7 +379,7 @@ class AccountTest:
         n_queries = 1  # get user
         n_queries += 1  # get bookings
 
-        with assert_num_queries(n_queries):
+        with assert_num_queries(n_queries, expire_session=False):
             response = client.get("/native/v1/me")
 
     def test_num_queries_beneficiary(self, client):
@@ -415,9 +415,10 @@ class AccountTest:
         user = sso.user
         user.password = None
 
+        client.with_token(user)
         expected_num_queries = 5  # user + achievements + bookings + deposit + fraud check
         with assert_num_queries(expected_num_queries):
-            response = client.with_token(user).get("/native/v1/me")
+            response = client.get("/native/v1/me")
             assert response.status_code == 200, response.json
 
         assert response.json["hasPassword"] == False
