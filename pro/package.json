@@ -126,7 +126,8 @@
   },
   "resolutions": {
     "string-width": "4.2.3",
-    "vite-plugin-html/ejs/jake/minimatch": "3.1.4"
+    "vite-plugin-html/ejs/jake/minimatch": "3.1.4",
+    "picomatch": "2.3.2"
   },
   "engines": {
     "node": "24.8"
