@@ -6,6 +6,7 @@ import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFie
 import { AddressFields } from '@/components/AddressFields/AddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OpenToPublicToggle } from '@/components/OpenToPublicToggle/OpenToPublicToggle'
+import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
 
@@ -47,106 +48,112 @@ export const OffererAuthenticationForm = (): JSX.Element => {
     watch('isOpenToPublic') === 'true' || offerer?.isDiffusible
 
   return (
-    <FormLayout.Section>
-      <FormLayout.Row mdSpaceAfter>
-        <TextInput
-          {...register('siret')}
-          label="Numéro de SIRET"
-          type="text"
-          required={true}
-          disabled
-        />
-      </FormLayout.Row>
-      {offerer?.isDiffusible ? (
+    <>
+      <ScrollToFirstHookFormErrorAfterSubmit />
+      <FormLayout.Section>
         <FormLayout.Row mdSpaceAfter>
           <TextInput
-            {...register('name')}
-            label="Raison sociale"
+            {...register('siret')}
+            label="Numéro de SIRET"
             type="text"
-            required
+            required={true}
             disabled
           />
         </FormLayout.Row>
-      ) : (
-        <FormLayout.Row mdSpaceAfter inline>
+        {offerer?.isDiffusible ? (
+          <FormLayout.Row mdSpaceAfter>
+            <TextInput
+              {...register('name')}
+              label="Raison sociale"
+              type="text"
+              required
+              disabled
+            />
+          </FormLayout.Row>
+        ) : (
+          <FormLayout.Row mdSpaceAfter inline>
+            <TextInput
+              value={offerer?.postalCode}
+              name="initial-postalCode"
+              label="Code postal"
+              disabled
+            />
+            <TextInput
+              name="initial-city"
+              label="Ville"
+              disabled
+              value={offerer?.city}
+            />
+          </FormLayout.Row>
+        )}
+        <FormLayout.Row mdSpaceAfter>
           <TextInput
-            value={offerer?.postalCode}
-            name="initial-postalCode"
-            label="Code postal"
-            disabled
-          />
-          <TextInput
-            name="initial-city"
-            label="Ville"
-            disabled
-            value={offerer?.city}
+            {...register('publicName')}
+            label="Nom public"
+            required={!offerer?.isDiffusible}
+            description={
+              offerer?.isDiffusible
+                ? 'À remplir si le nom de votre structure est différent de la raison sociale. C’est ce nom qui sera visible du public.'
+                : ''
+            }
+            error={errors.publicName?.message}
           />
         </FormLayout.Row>
-      )}
-      <FormLayout.Row mdSpaceAfter>
-        <TextInput
-          {...register('publicName')}
-          label="Nom public"
-          required={!offerer?.isDiffusible}
-          description={
-            offerer?.isDiffusible
-              ? 'À remplir si le nom de votre structure est différent de la raison sociale. C’est ce nom qui sera visible du public.'
-              : ''
-          }
-          error={errors.publicName?.message}
-        />
-      </FormLayout.Row>
-      <FormLayout.Row mdSpaceAfter className={styles['open-to-public-toggle']}>
-        <OpenToPublicToggle
-          error={errors.isOpenToPublic?.message}
-          onChange={(e) => {
-            clearErrors('isOpenToPublic')
-            if (!offerer?.isDiffusible) {
-              if (e.target.value === 'true') {
-                // We reset the address fields when the user toggles the open to public toggle when they aren't diffusible
-                resetReactHookFormAddressFields<OffererAuthenticationFormValues>(
-                  (name, defaultValue) => setValue(name, defaultValue)
-                )
-              } else {
-                // We init the address fields as the default ones when the user untoggle the open to public toggle when they are not diffusible
-                if (initialAddress) {
-                  resetReactHookFormAddressFields((name, _) => {
-                    // @ts-expect-error Type is right since it's gotten from the defaultValues
-                    setValue(name, initialAddress[name])
-                  })
+        <FormLayout.Row
+          mdSpaceAfter
+          className={styles['open-to-public-toggle']}
+        >
+          <OpenToPublicToggle
+            error={errors.isOpenToPublic?.message}
+            onChange={(e) => {
+              clearErrors('isOpenToPublic')
+              if (!offerer?.isDiffusible) {
+                if (e.target.value === 'true') {
+                  // We reset the address fields when the user toggles the open to public toggle when they aren't diffusible
+                  resetReactHookFormAddressFields<OffererAuthenticationFormValues>(
+                    (name, defaultValue) => setValue(name, defaultValue)
+                  )
+                } else {
+                  // We init the address fields as the default ones when the user untoggle the open to public toggle when they are not diffusible
+                  if (initialAddress) {
+                    resetReactHookFormAddressFields((name, _) => {
+                      // @ts-expect-error Type is right since it's gotten from the defaultValues
+                      setValue(name, initialAddress[name])
+                    })
+                  }
                 }
               }
+              setValue('isOpenToPublic', e.target.value)
+            }}
+            isOpenToPublic={watch('isOpenToPublic')}
+            overrideDescription="Sélectionnez une des options."
+          />
+        </FormLayout.Row>
+        {shouldDisplayAddress && (
+          <AddressFields
+            addressRegister={register('addressAutocomplete')}
+            disabled={disabled}
+            onAddressChosen={(addressData) => {
+              setValue('street', addressData.address)
+              setValue('postalCode', addressData.postalCode)
+              setValue('city', addressData.city)
+              setValue('latitude', addressData.latitude)
+              setValue('longitude', addressData.longitude)
+              setValue('banId', addressData.id)
+              setValue('inseeCode', addressData.inseeCode)
+            }}
+            onManualChange={toggleManuallySetAddress}
+            renderManual={() => <AddressManual />}
+            description={
+              watch('isOpenToPublic') === 'true'
+                ? 'Cette adresse postale sera visible.'
+                : 'Cette adresse postale ne sera pas visible.'
             }
-            setValue('isOpenToPublic', e.target.value)
-          }}
-          isOpenToPublic={watch('isOpenToPublic')}
-          overrideDescription="Sélectionnez une des options."
-        />
-      </FormLayout.Row>
-      {shouldDisplayAddress && (
-        <AddressFields
-          addressRegister={register('addressAutocomplete')}
-          disabled={disabled}
-          onAddressChosen={(addressData) => {
-            setValue('street', addressData.address)
-            setValue('postalCode', addressData.postalCode)
-            setValue('city', addressData.city)
-            setValue('latitude', addressData.latitude)
-            setValue('longitude', addressData.longitude)
-            setValue('banId', addressData.id)
-            setValue('inseeCode', addressData.inseeCode)
-          }}
-          onManualChange={toggleManuallySetAddress}
-          renderManual={() => <AddressManual />}
-          description={
-            watch('isOpenToPublic') === 'true'
-              ? 'Cette adresse postale sera visible.'
-              : 'Cette adresse postale ne sera pas visible.'
-          }
-          error={errors.addressAutocomplete?.message}
-          manual={manuallySetAddress}
-        />
-      )}
-    </FormLayout.Section>
+            error={errors.addressAutocomplete?.message}
+            manual={manuallySetAddress}
+          />
+        )}
+      </FormLayout.Section>
+    </>
   )
 }

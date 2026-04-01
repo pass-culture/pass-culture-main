@@ -9,6 +9,7 @@ import { getActivities } from '@/commons/mappings/mappings'
 import { buildSelectOptions } from '@/commons/utils/buildSelectOptions'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
@@ -33,7 +34,7 @@ export interface ActivityFormValues {
     educational: boolean
   }
   phoneNumber: string
-  culturalDomains: string[] | undefined
+  culturalDomains?: string[]
 }
 
 export const ActivityForm = (): JSX.Element => {
@@ -73,137 +74,140 @@ export const ActivityForm = (): JSX.Element => {
   }, [educationalDomains, formState.defaultValues])
 
   return (
-    <FormLayout.Section>
-      <FormLayout.Row mdSpaceAfter>
-        <Select
-          options={[
-            {
-              value: '',
-              label: 'Sélectionnez votre activité principale',
-            },
-            ...mainActivityOptions,
-          ]}
-          {...register('activity')}
-          error={formState.errors.activity?.message}
-          label="Activité principale"
-          required
-        />
-      </FormLayout.Row>
-
-      {!isLoadingEducationalDomains && (
+    <>
+      <ScrollToFirstHookFormErrorAfterSubmit />
+      <FormLayout.Section>
         <FormLayout.Row mdSpaceAfter>
-          <MultiSelect
-            name="culturalDomains"
-            options={educationalDomains.map((educationalDomain) => ({
-              id: String(educationalDomain.id),
-              label: educationalDomain.name,
-            }))}
-            defaultOptions={defaultCulturalDomain}
-            error={formState.errors.culturalDomains?.message}
-            label="Domaine(s) d’activité"
-            required={offerer?.isOpenToPublic === 'false'}
-            onSelectedOptionsChanged={(selectedOptions, _y, _z) => {
-              setValue(
-                'culturalDomains',
-                selectedOptions.length > 0
-                  ? selectedOptions.map((opt) => opt.label)
-                  : undefined
-              )
-            }}
-            buttonLabel={
-              (watch('culturalDomains') ?? []).length > 0
-                ? pluralizeFr(
-                    (watch('culturalDomains') ?? []).length,
-                    'domaine sélectionné',
-                    'domaines sélectionnés'
-                  )
-                : 'Sélectionnez un ou plusieurs domaines d’activité'
-            }
+          <Select
+            options={[
+              {
+                value: '',
+                label: 'Sélectionnez votre activité principale',
+              },
+              ...mainActivityOptions,
+            ]}
+            {...register('activity')}
+            error={formState.errors.activity?.message}
+            label="Activité principale"
+            required
           />
         </FormLayout.Row>
-      )}
 
-      <FormLayout.Row mdSpaceAfter>
-        <PhoneNumberInput
-          {...register('phoneNumber')}
-          error={formState.errors.phoneNumber?.message}
-          label={'Téléphone (utilisé uniquement par le pass Culture)'}
-          required
-        />
-      </FormLayout.Row>
-
-      <FormLayout.Row mdSpaceAfter className={styles['url-list']}>
-        {fields.map((field, index) => (
-          <FormLayout.Row key={field.id}>
-            <TextInput
-              {...register(`socialUrls.${index}.url`)}
-              label="Site internet, réseau social"
-              description="Format : https://www.siteinternet.com"
-              type="url"
-              error={formState.errors.socialUrls?.[index]?.url?.message}
-              extension={
-                watchSocialUrls.length > 1 && (
-                  <div
-                    data-error={
-                      formState.errors.socialUrls?.[index] ? 'true' : 'false'
-                    }
-                  >
-                    <Button
-                      variant={ButtonVariant.SECONDARY}
-                      color={ButtonColor.NEUTRAL}
-                      icon={fullTrashIcon}
-                      onClick={() => {
-                        remove(index)
-                        setFocus(`socialUrls.${index - 1}.url`)
-                      }}
-                      disabled={watchSocialUrls.length <= 1}
-                      tooltip={'Supprimer l’url'}
-                    />
-                  </div>
+        {!isLoadingEducationalDomains && (
+          <FormLayout.Row mdSpaceAfter>
+            <MultiSelect
+              name="culturalDomains"
+              options={educationalDomains.map((educationalDomain) => ({
+                id: String(educationalDomain.id),
+                label: educationalDomain.name,
+              }))}
+              defaultOptions={defaultCulturalDomain}
+              error={formState.errors.culturalDomains?.message}
+              label="Domaine(s) d’activité"
+              required={offerer?.isOpenToPublic === 'false'}
+              onSelectedOptionsChanged={(selectedOptions, _y, _z) => {
+                setValue(
+                  'culturalDomains',
+                  selectedOptions.length > 0
+                    ? selectedOptions.map((opt) => opt.label)
+                    : undefined
                 )
+              }}
+              buttonLabel={
+                (watch('culturalDomains') ?? []).length > 0
+                  ? pluralizeFr(
+                      (watch('culturalDomains') ?? []).length,
+                      'domaine sélectionné',
+                      'domaines sélectionnés'
+                    )
+                  : 'Sélectionnez un ou plusieurs domaines d’activité'
               }
             />
           </FormLayout.Row>
-        ))}
+        )}
 
-        <Button
-          variant={ButtonVariant.TERTIARY}
-          icon={fullMoreIcon}
-          onClick={() => {
-            append({ url: '' })
-          }}
-          label="Ajouter un lien"
-        />
-      </FormLayout.Row>
+        <FormLayout.Row mdSpaceAfter>
+          <PhoneNumberInput
+            {...register('phoneNumber')}
+            error={formState.errors.phoneNumber?.message}
+            label={'Téléphone (utilisé uniquement par le pass Culture)'}
+            required
+          />
+        </FormLayout.Row>
 
-      <FormLayout.Row className={styles['target-customer-row']}>
-        <CheckboxGroup
-          label="À qui souhaitez-vous destiner vos offres sur le pass Culture ? Cette information est collectée à titre informatif."
-          description="Sélectionnez au moins une option"
-          options={[
-            {
-              label: 'Au grand public',
-              sizing: 'fill',
-              checked: watch('targetCustomer.individual'),
-              onChange: async (e) => {
-                setValue('targetCustomer.individual', e.target.checked)
-                await trigger('targetCustomer')
+        <FormLayout.Row mdSpaceAfter className={styles['url-list']}>
+          {fields.map((field, index) => (
+            <FormLayout.Row key={field.id}>
+              <TextInput
+                {...register(`socialUrls.${index}.url`)}
+                label="Site internet, réseau social"
+                description="Format : https://www.siteinternet.com"
+                type="url"
+                error={formState.errors.socialUrls?.[index]?.url?.message}
+                extension={
+                  watchSocialUrls.length > 1 && (
+                    <div
+                      data-error={
+                        formState.errors.socialUrls?.[index] ? 'true' : 'false'
+                      }
+                    >
+                      <Button
+                        variant={ButtonVariant.SECONDARY}
+                        color={ButtonColor.NEUTRAL}
+                        icon={fullTrashIcon}
+                        onClick={() => {
+                          remove(index)
+                          setFocus(`socialUrls.${index - 1}.url`)
+                        }}
+                        disabled={watchSocialUrls.length <= 1}
+                        tooltip={'Supprimer l’url'}
+                      />
+                    </div>
+                  )
+                }
+              />
+            </FormLayout.Row>
+          ))}
+
+          <Button
+            variant={ButtonVariant.TERTIARY}
+            icon={fullMoreIcon}
+            onClick={() => {
+              append({ url: '' })
+            }}
+            label="Ajouter un lien"
+          />
+        </FormLayout.Row>
+
+        <FormLayout.Row className={styles['target-customer-row']}>
+          <CheckboxGroup
+            label="À qui souhaitez-vous destiner vos offres sur le pass Culture ? Cette information est collectée à titre informatif."
+            description="Sélectionnez au moins une option"
+            options={[
+              {
+                label: 'Au grand public',
+                sizing: 'fill',
+                checked: watch('targetCustomer.individual'),
+                onChange: async (e) => {
+                  setValue('targetCustomer.individual', e.target.checked)
+                  await trigger('targetCustomer')
+                },
               },
-            },
-            {
-              label: 'À des groupes scolaires',
-              sizing: 'fill',
-              checked: watch('targetCustomer.educational'),
-              onChange: async (e) => {
-                setValue('targetCustomer.educational', e.target.checked)
-                await trigger('targetCustomer')
+              {
+                label: 'À des groupes scolaires',
+                sizing: 'fill',
+                checked: watch('targetCustomer.educational'),
+                onChange: async (e) => {
+                  setValue('targetCustomer.educational', e.target.checked)
+                  await trigger('targetCustomer')
+                },
               },
-            },
-          ]}
-          variant="detailed"
-          error={formState.errors.targetCustomer?.message}
-        />
-      </FormLayout.Row>
-    </FormLayout.Section>
+            ]}
+            variant="detailed"
+            error={formState.errors.targetCustomer?.message}
+          />
+        </FormLayout.Row>
+      </FormLayout.Section>
+    </>
   )
 }

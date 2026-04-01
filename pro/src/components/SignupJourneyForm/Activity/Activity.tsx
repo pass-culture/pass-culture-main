@@ -42,7 +42,7 @@ export const Activity = () => {
     }
   }
 
-  const methods = useForm({
+  const methods = useForm<ActivityFormValues>({
     defaultValues: activity
       ? serializeActivityContext(activity)
       : defaultActivityFormValues,
@@ -68,7 +68,7 @@ export const Activity = () => {
     }
   }
 
-  const onSubmit = (formValues: any) => {
+  const onSubmit = (formValues: ActivityFormValues) => {
     setActivity(serializeActivityFormToSubmit(formValues))
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/inscription/structure/confirmation')
