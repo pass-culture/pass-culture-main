@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { act, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import type { RouteObject } from 'react-router'
 
@@ -51,7 +51,7 @@ const routes: RouteObject[] = [
   },
 ]
 
-const renderIndividualActivityData = () => {
+const renderIndividualActivityData = () =>
   renderWithProviders(null, {
     routes,
     initialRouterEntries: ['/administration/donnees-activite/individuel'],
@@ -67,7 +67,6 @@ const renderIndividualActivityData = () => {
       },
     },
   })
-}
 
 describe('IndividualActivityData', () => {
   beforeEach(() => {
@@ -123,6 +122,44 @@ describe('IndividualActivityData', () => {
     expect(api.getBookingsCsv).toHaveBeenCalledWith(
       1,
       defaultGetOffererResponseModel.id,
+      null,
+      null,
+      null,
+      DEFAULT_PRE_FILTERS.bookingStatusFilter,
+      DEFAULT_PRE_FILTERS.bookingBeginningDate,
+      DEFAULT_PRE_FILTERS.bookingEndingDate,
+      null
+    )
+  })
+
+  it('should use updated offerer ID after admin offerer ID changes', async () => {
+    vi.spyOn(api, 'getBookingsCsv').mockResolvedValue({})
+
+    const newOfferer = {
+      ...defaultGetOffererResponseModel,
+      id: 99,
+      name: 'Autre entité',
+    }
+    const { store } = renderIndividualActivityData()
+
+    act(() => {
+      store.dispatch({
+        type: 'user/setSelectedAdminOfferer',
+        payload: newOfferer,
+      })
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Télécharger les réservations' })
+    )
+    const downloadSubButton = await screen.findByRole('menuitem', {
+      name: 'Fichier CSV (.csv)',
+    })
+    await userEvent.click(downloadSubButton)
+
+    expect(api.getBookingsCsv).toHaveBeenCalledWith(
+      1,
+      99,
       null,
       null,
       null,
