@@ -197,3 +197,5 @@ def parse_args_as_list(args: typing.Any) -> list[typing.Any] | None:
 
 # use this validator for a query parameter that we need to parse as a list
 ArgsAsListBeforeValidator = pydantic_v2.BeforeValidator(parse_args_as_list)
+
+HttpUrlString = typing.Annotated[pydantic_v2.HttpUrl, pydantic_v2.AfterValidator(str)]

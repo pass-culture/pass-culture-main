@@ -6,6 +6,6 @@ export type VenueContactModelV2 = {
   email?: (string | null);
   phoneNumber?: (string | null);
   socialMedias?: (Record<string, string> | null);
-  website: (string | null);
+  website?: (string | null);
 };
 

@@ -10,13 +10,14 @@ import pydantic.v1 as pydantic_v1
 from pydantic import BaseModel as BaseModelV2
 from pydantic import alias_generators
 from pydantic.v1 import validator
+from pydantic_core import PydanticCustomError
 
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.exceptions import PydanticError
+from pcapi.serialization.utils import HttpUrlString
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.date import format_into_utc_date
-from pcapi.utils.siren import SIRET_LENGTH
 
 
 MAX_LONGITUDE = 180
@@ -26,7 +27,6 @@ MAX_LATITUDE = 90
 SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
 
 SocialMedias = dict[SocialMedia, pydantic_v1.HttpUrl]
-HttpUrlString = typing.Annotated[pydantic_v2.HttpUrl, pydantic_v2.AfterValidator(str)]
 SocialMediasV2 = dict[SocialMedia, HttpUrlString]
 
 
@@ -113,7 +113,7 @@ class VenueContactModel(BaseModel):
 class VenueContactModelV2(BaseModelV2):
     email: pydantic_v2.EmailStr | None = None
     website: typing.Annotated[str, pydantic_v2.StringConstraints(max_length=256)] | None = pydantic_v2.Field(
-        pattern=COMPILED_WEBSITE_URL_REGEX
+        pattern=COMPILED_WEBSITE_URL_REGEX, default=None
     )
     phone_number: str | None = None
     social_medias: SocialMediasV2 | None = None
@@ -122,7 +122,10 @@ class VenueContactModelV2(BaseModelV2):
     def validate_phone_number(cls, phone_number: str | None) -> str | None:
         if not phone_number:
             return None
-        return phone_number_utils.ParsedPhoneNumber(phone_number).phone_number
+        try:
+            return phone_number_utils.ParsedPhoneNumber(phone_number).phone_number
+        except phone_number_utils.InvalidPhoneNumber:
+            raise PydanticCustomError("invalid_phone_number", "Phone number is not recognized")
 
     model_config = pydantic_v2.ConfigDict(
         alias_generator=alias_generators.to_camel,
@@ -136,97 +139,53 @@ class VenueContactModelV2(BaseModelV2):
     )
 
 
+VENUE_INSEE_CODE_MAX_LENGTH = 5
+VENUE_INSEE_CODE_MIN_LENGTH = 5
+BOOKING_EMAIL_MAX_LENGTH = 120
+VENUE_ADDRESS_MAX_LENGTH = 200
+VENUE_BAN_ID_MAX_LENGTH = 50
+VENUE_CITY_MAX_LENGTH = 200
+VENUE_COMMENT_MAX_LENGTH = 500
+VENUE_DESCRIPTION_MAX_LENGTH = 1000
 VENUE_IMAGE_CREDIT_MAX_LENGTH = 255
+VENUE_NAME_MAX_LENGTH = 140
+VENUE_POSTAL_CODE_MAX_LENGTH = 5
+VENUE_POSTAL_CODE_MIN_LENGTH = 5
+VENUE_PUBLIC_NAME_MAX_LENGTH = 255
+VENUE_WITHDRAWAL_DETAILS_MAX_LENGTH = 500
 
 
+# TODO(pydantic_v2): remove after BannerMetaModel and native's VenueResponse are migrated
 class VenueImageCredit(RequiredStrippedString):
     max_length = 255
 
 
-VENUE_NAME_MAX_LENGTH = 140
-
-
-class VenueName(RequiredStrippedString):
-    max_length = VENUE_NAME_MAX_LENGTH
-
-
-VENUE_PUBLIC_NAME_MAX_LENGTH = 255
-
-
-class VenuePublicName(pydantic_v1.ConstrainedStr):
-    strip_whitespace = True
-    # optional, hence no `min_length`
-    max_length = VENUE_PUBLIC_NAME_MAX_LENGTH
-
-
-VENUE_DESCRIPTION_MAX_LENGTH = 1000
-
-
+# TODO(pydantic_v2): remove after native's VenueResponse is migrated
 class VenueDescription(pydantic_v1.ConstrainedStr):
     strip_whitespace = True
     # optional, hence no `min_length`
     max_length = VENUE_DESCRIPTION_MAX_LENGTH
 
 
-BOOKING_EMAIL_MAX_LENGTH = 120
-
-
-class VenueBookingEmail(pydantic_v1.EmailStr):
-    strip_whitespace = True
-    # optional, hence no `min_length`
-    max_length = BOOKING_EMAIL_MAX_LENGTH
-
-    @classmethod
-    def validate(cls, value: str) -> str:
-        if value == "":
-            return value
-        return super().validate(value)
-
-
+# TODO(pydantic_v2): remove once LocationModel in the file is removed
 class VenueAddress(RequiredStrippedString):
     max_length = 200
 
 
-class VenueBanId(pydantic_v1.ConstrainedStr):
-    strip_whitespace = True
-    max_length = 50
-
-
+# TODO(pydantic_v2): remove once LocationModel in the file is removed
 class VenueCity(RequiredStrippedString):
-    max_length = 200
+    max_length = VENUE_CITY_MAX_LENGTH
 
 
+# TODO(pydantic_v2): remove once LocationModel in the file is removed
 class VenueInseeCode(RequiredStrippedString):
-    min_length = 5
-    max_length = 5
+    min_length = VENUE_INSEE_CODE_MIN_LENGTH
+    max_length = VENUE_INSEE_CODE_MAX_LENGTH
 
 
 class VenuePostalCode(RequiredStrippedString):
-    min_length = 5
-    max_length = 5
-
-
-class VenueSiret(RequiredStrippedString):
-    min_length = SIRET_LENGTH
-    max_length = SIRET_LENGTH
-
-
-VENUE_COMMENT_MAX_LENGTH = 500
-
-
-class VenueComment(pydantic_v1.ConstrainedStr):
-    strip_whitespace = True
-    # optional, hence no `min_length`
-    max_length = VENUE_COMMENT_MAX_LENGTH
-
-
-VENUE_WITHDRAWAL_DETAILS_MAX_LENGTH = 500
-
-
-class VenueWithdrawalDetails(pydantic_v1.ConstrainedStr):
-    strip_whitespace = True
-    # optional, hence no `min_length`
-    max_length = VENUE_WITHDRAWAL_DETAILS_MAX_LENGTH
+    min_length = VENUE_POSTAL_CODE_MIN_LENGTH
+    max_length = VENUE_POSTAL_CODE_MAX_LENGTH
 
 
 class LocationOnlyOnVenueModel(BaseModel):
@@ -239,6 +198,7 @@ class LocationOnlyOnVenueModel(BaseModel):
         return is_venue_location
 
 
+# Use CoreLocationModelV2 for pydantic V2.
 class LocationModel(BaseModel):
     isManualEdition: bool = False
     isVenueLocation: bool = False

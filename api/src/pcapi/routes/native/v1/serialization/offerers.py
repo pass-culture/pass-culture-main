@@ -68,6 +68,7 @@ class VenueResponseGetterDict(pydantic_v1.utils.GetterDict):
         return super().get(key, default)
 
 
+# TODO(pydantic_v2): once migrated, offerers_schemas.VenueContactModel should be removed
 class VenueContactModel(offerers_schemas.VenueContactModel):
     phone_number: str | None
 

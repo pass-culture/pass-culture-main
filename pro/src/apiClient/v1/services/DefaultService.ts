@@ -2941,9 +2941,9 @@ export class DefaultService {
    * @throws ApiError
    */
   public getVenues(
-    validated?: boolean | null,
-    activeOfferersOnly?: boolean | null,
-    offererId?: number | null,
+    validated?: (boolean | null),
+    activeOfferersOnly?: (boolean | null),
+    offererId?: (number | null),
   ): CancelablePromise<GetVenueListResponseModel> {
     return this.httpRequest.request({
       method: 'GET',

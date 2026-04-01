@@ -16,7 +16,9 @@ from . import schemas
 MappedWeekdayOpeningHours = typing.Mapping[offerers_models.Weekday, schemas.OpeningHoursTimespans | None]
 
 
-def get_venue_openings_hours_updates(opening_hours: schemas.WeekdayOpeningHoursTimespans) -> MappedWeekdayOpeningHours:
+def get_venue_openings_hours_updates(
+    opening_hours: schemas.WeekdayOpeningHoursTimespans | schemas.WeekdayOpeningHoursTimespansV2,
+) -> MappedWeekdayOpeningHours:
     updates = opening_hours.dict(exclude_unset=True) if opening_hours else {}
     return {offerers_models.Weekday[weekday]: timespans for weekday, timespans in updates.items()}
 
