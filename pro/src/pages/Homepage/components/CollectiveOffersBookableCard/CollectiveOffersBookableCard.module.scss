@@ -14,7 +14,7 @@
   grid-template-columns: 1fr;
   gap: var(--size-spacing-l);
 
-  @media screen and (min-width: size.$tablet) {
+  @media screen and (min-width: size.$laptop) {
     grid-template-columns: max-content 1fr max-content;
   }
 
