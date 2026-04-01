@@ -404,7 +404,6 @@ export {
   UserRole,
   type ValidationError,
   type ValidationErrorElement,
-  type VenueContactModel,
   type VenueContactModelV2,
   type VenueDailyViewModel,
   type VenueLabelListResponseModel,

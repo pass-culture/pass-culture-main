@@ -136,12 +136,12 @@ OpeningHoursTimespansV2 = Annotated[list[OpeningHoursV2], BeforeValidator(valida
 
 
 class WeekdayOpeningHoursTimespansV2(pydantic_v2.BaseModel):
-    MONDAY: OpeningHoursTimespansV2 | None
-    TUESDAY: OpeningHoursTimespansV2 | None
-    WEDNESDAY: OpeningHoursTimespansV2 | None
-    THURSDAY: OpeningHoursTimespansV2 | None
-    FRIDAY: OpeningHoursTimespansV2 | None
-    SATURDAY: OpeningHoursTimespansV2 | None
-    SUNDAY: OpeningHoursTimespansV2 | None
+    MONDAY: OpeningHoursTimespansV2 | None = None
+    TUESDAY: OpeningHoursTimespansV2 | None = None
+    WEDNESDAY: OpeningHoursTimespansV2 | None = None
+    THURSDAY: OpeningHoursTimespansV2 | None = None
+    FRIDAY: OpeningHoursTimespansV2 | None = None
+    SATURDAY: OpeningHoursTimespansV2 | None = None
+    SUNDAY: OpeningHoursTimespansV2 | None = None
 
     model_config = pydantic_v2.ConfigDict(extra="forbid")

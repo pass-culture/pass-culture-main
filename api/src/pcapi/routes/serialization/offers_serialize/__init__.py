@@ -245,6 +245,7 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
         return super().get(key, default)
 
 
+# TODO(pydantic_v2): delete ListOffersVenueResponseModel once this is migrated
 class ListOffersOfferResponseModel(BaseModel):
     hasBookingLimitDatetimesPassed: bool
     id: int

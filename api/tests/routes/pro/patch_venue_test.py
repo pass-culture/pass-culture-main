@@ -26,8 +26,8 @@ venue_malformed_test_data = [
     ({"contact": {"email": "not_an_email"}}, "contact.email"),
     ({"contact": {"website": "not_an_url"}}, "contact.website"),
     ({"contact": {"phoneNumber": "not_a_phone_number"}}, "contact.phoneNumber"),
-    ({"contact": {"social_medias": {"a": "b"}}}, "contact.socialMedias.__key__"),
-    ({"contact": {"social_medias": {"facebook": "not_an_url"}}}, "contact.socialMedias.facebook"),
+    ({"contact": {"socialMedias": {"a": "b"}}}, "contact.socialMedias.a.[key]"),
+    ({"contact": {"socialMedias": {"facebook": "not_an_url"}}}, "contact.socialMedias.facebook"),
 ]
 
 
@@ -304,7 +304,6 @@ class Returns200Test:
             city="Millau",
             latitude=44.10061,
             longitude=3.07889,
-            departmentCode="12",
             inseeCode="12145",
         )
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, offererAddress__address=address)
@@ -653,7 +652,19 @@ class Returns200Test:
 
     def test_should_update_open_to_public_venue_opening_hours(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, isOpenToPublic=True)
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            isOpenToPublic=True,
+        )
+        assert venue.opening_hours["MONDAY"] == [{"open": "14:00", "close": "19:30"}]
+        assert venue.opening_hours["TUESDAY"] == [
+            {"open": "10:00", "close": "13:00"},
+            {"open": "14:00", "close": "19:30"},
+        ]
+        assert venue.opening_hours["FRIDAY"] == [
+            {"open": "10:00", "close": "13:00"},
+            {"open": "14:00", "close": "19:30"},
+        ]
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_data = populate_missing_data_from_venue(
@@ -670,11 +681,12 @@ class Returns200Test:
         )
 
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
-        assert response.status_code == 200
+        assert response.status_code == 200, response.json
         assert len(venue.action_history) == 1
 
-        tuesday_opening_hours = response.json["openingHours"].get("TUESDAY")
-        assert tuesday_opening_hours == [["10:00", "13:00"], ["14:00", "19:30"]]
+        assert response.json["openingHours"]["MONDAY"] == [["10:00", "13:00"], ["14:00", "19:30"]]
+        assert response.json["openingHours"]["TUESDAY"] == [["10:00", "13:00"], ["14:00", "19:30"]]
+        assert response.json["openingHours"]["FRIDAY"] == None
 
         assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
         assert venue.action_history[0].extraData == {
@@ -701,7 +713,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert len(venue.action_history) == 0
 
-    def test_should_not_update_opening_hours_with_lower_case_weekday(self, client):
+    def test_should_not_update_opening_hours_when_they_do_not_change(self, client):
         user_offerer = offerers_factories.UserOffererFactory(
             user__email="user.pro@test.com",
         )
@@ -714,20 +726,24 @@ class Returns200Test:
             weekday=offerers_models.Weekday("TUESDAY"),
             timespan=timespan_str_to_numrange([("10:00", "13:00")]),
         )
+        assert venue.opening_hours["TUESDAY"] == [
+            {"open": "10:00", "close": "13:00"},
+        ]
         venue_data = populate_missing_data_from_venue(
             {
                 "contact": {"website": "https://www.venue.com"},
                 # Even if weekday is in lower case, it doesn't modify opening hours and must
                 # not appear in history
-                "weekday": "tuesday",
-                "timespan": [["10:00", "13:00"]],
+                "openingHours": {
+                    "TUESDAY": [["10:00", "13:00"]],
+                },
             },
             venue,
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
-        assert response.status_code == 200
+        assert response.status_code == 200, response.json
 
         assert venue.action_history[0].extraData == {
             "modified_info": {
@@ -866,7 +882,6 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
 
         venue_data = {
-            "departementCode": venue.offererAddress.address.departmentCode,
             "city": venue.offererAddress.address.city,
             "motorDisabilityCompliant": venue.motorDisabilityCompliant,
             "contact": {
@@ -880,7 +895,7 @@ class Returns200Test:
         venue_id = venue.id
 
         response = http_client.patch(f"/venues/{venue_id}", json=venue_data)
-        assert response.status_code == 200
+        assert response.status_code == 200, response.json
 
         assert db.session.query(history_models.ActionHistory).count() == 0
 
@@ -935,7 +950,6 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
 
         venue_data = {
-            "departmentCode": venue.offererAddress.address.departmentCode,
             "city": venue.offererAddress.address.city,
             "contact": {"email": None, "phone_number": None, "social_medias": None, "website": None},
         }
@@ -953,7 +967,6 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
 
         venue_data = {
-            "departmentCode": venue.offererAddress.address.departmentCode,
             "city": venue.offererAddress.address.city,
             "contact": {
                 "email": "added@venue.com",
@@ -963,7 +976,9 @@ class Returns200Test:
             },
         }
         http_client = client.with_session_auth(email=user.email)
-        http_client.patch(f"/venues/{venue.id}", json=venue_data)
+        response = http_client.patch(f"/venues/{venue.id}", json=venue_data)
+
+        assert response.status_code == 200, response.json
 
         assert venue.contact
         assert venue.contact.email == venue_data["contact"]["email"]
@@ -1024,7 +1039,7 @@ class Returns200Test:
         }
         http_client = client.with_session_auth(email=user_offerer.user.email)
         response = http_client.patch(f"/venues/{venue.id}", json=data)
-        assert response.status_code == 200
+        assert response.status_code == 200, response.json
         db.session.refresh(venue)
         assert venue.bookingEmail is None
 
@@ -1110,7 +1125,9 @@ class Returns400Test:
         response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
 
         assert response.status_code == 400
-        assert response.json["comment"] == ["ensure this value has at most 500 characters"]
+        assert response.json["comment"] == [
+            "Cette chaîne de caractères doit avoir une taille maximum de 500 caractères"
+        ]
 
     def test_raises_if_withdrawal_details_too_long(self, client) -> None:
         venue = offerers_factories.VenueFactory()
@@ -1123,7 +1140,9 @@ class Returns400Test:
         response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
 
         assert response.status_code == 400
-        assert response.json["withdrawalDetails"] == ["ensure this value has at most 500 characters"]
+        assert response.json["withdrawalDetails"] == [
+            "Cette chaîne de caractères doit avoir une taille maximum de 500 caractères"
+        ]
 
     def test_with_inactive_siret(self, client):
         venue = offerers_factories.VenueFactory()
@@ -1192,9 +1211,9 @@ class Returns400Test:
 
         response = client.with_session_auth(email=user.email).patch(f"/venues/{venue.id}", json=venue_data)
 
-        assert response.status_code == 400
-        assert "La latitude doit être un nombre" in response.json["latitude"]
-        assert "La longitude doit être un nombre" in response.json["longitude"]
+        assert response.status_code == 400, response.json
+        assert "Format incorrect" in response.json["latitude"]
+        assert "Format incorrect" in response.json["longitude"]
 
     def test_raises_if_coordinates_are_out_of_bonds(self, client) -> None:
         user = users_factories.UserFactory()
@@ -1208,9 +1227,9 @@ class Returns400Test:
 
         response = client.with_session_auth(email=user.email).patch(f"/venues/{venue.id}", json=venue_data)
 
-        assert response.status_code == 400
-        assert "La latitude doit être comprise entre -90 et +90" in response.json["latitude"]
-        assert "La longitude doit être comprise entre -180 et +180" in response.json["longitude"]
+        assert response.status_code == 400, response.json
+        assert "Saisissez un nombre inférieur à 90" in response.json["latitude"]
+        assert "Saisissez un nombre supérieur à -180" in response.json["longitude"]
 
     def test_raise_if_invalid_booking_email(self, client) -> None:
         user = users_factories.UserFactory()
@@ -1222,7 +1241,7 @@ class Returns400Test:
         response = client.with_session_auth(email=user.email).patch(f"/venues/{venue.id}", json=venue_data)
 
         assert response.status_code == 400
-        assert "Le format d'email est incorrect." in response.json["bookingEmail"]
+        assert response.json["bookingEmail"] == ["Saisissez un email valide"]
 
     def test_update_with_invalid_activity(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory(
@@ -1278,7 +1297,9 @@ class Returns400Test:
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
 
         assert response.status_code == 400
-        assert response.json == {"contact.website": ["ensure this value has at most 256 characters"]}
+        assert response.json == {
+            "contact.website": ["Cette chaîne de caractères doit avoir une taille maximum de 256 caractères"]
+        }
 
     def test_update_with_wrong_volunteering_url_protocol(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
@@ -1292,7 +1313,7 @@ class Returns400Test:
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
 
         assert response.status_code == 400
-        assert response.json == {"volunteeringUrl": ['L\'URL doit commencer par "http://" ou "https://"']}
+        assert response.json == {"volunteeringUrl": ["Input should be a valid URL, relative URL without a base"]}
 
     def test_update_with_wrong_volunteering_url_domain(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()

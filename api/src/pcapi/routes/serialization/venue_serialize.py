@@ -1,35 +1,31 @@
 import enum
 import typing
 from datetime import datetime
-from decimal import Decimal
 from urllib.parse import urlparse
 
 import pydantic as pydantic_v2
-import pydantic.v1 as pydantic_v1
 from pydantic import RootModel
-from pydantic.v1 import validator
 from pydantic_core import PydanticCustomError
 
 from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.core.educational import models as educational_models
-from pcapi.core.geography import utils as geography_utils
 from pcapi.core.geography.constants import MAX_LATITUDE
 from pcapi.core.geography.constants import MAX_LONGITUDE
-from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offerers.constants import JE_VEUX_AIDER_GOUV_BASE_URL
 from pcapi.core.opening_hours import api as opening_hours_api
 from pcapi.core.opening_hours import schemas as opening_hours_schemas
-from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
+from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import venue_banners_serialize
 from pcapi.routes.serialization import venue_collective_serialize
 from pcapi.routes.serialization import venue_finance_serialize
-from pcapi.serialization.utils import string_to_boolean_field
-from pcapi.serialization.utils import to_camel
+from pcapi.serialization.exceptions import PydanticError
+from pcapi.serialization.utils import HttpUrlString
+from pcapi.serialization.utils import string_to_boolean
 from pcapi.utils import date as date_utils
 from pcapi.utils.siren import SIRET_LENGTH
 
@@ -157,7 +153,7 @@ class GetVenueResponseModel(HttpBodyModel):
     has_partner_page: bool
     can_display_highlights: bool
     has_non_draft_offers: bool
-    volunteeringUrl: str | None
+    volunteeringUrl: HttpUrlString | None
     audioDisabilityCompliant: bool | None = None
     mentalDisabilityCompliant: bool | None = None
     motorDisabilityCompliant: bool | None = None
@@ -261,90 +257,80 @@ class GetVenueResponseModel(HttpBodyModel):
         )
 
 
-class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
-    activity: offerers_models.ActivityOpenToPublic | offerers_models.ActivityNotOpenToPublic | None
-    culturalDomains: list[str] | None
-    name: offerers_schemas.VenueName | None
-    street: offerers_schemas.VenueAddress | None
-    banId: offerers_schemas.VenueBanId | None
-    siret: offerers_schemas.VenueSiret | None
-    latitude: Decimal | None
-    longitude: Decimal | None
-    bookingEmail: offerers_schemas.VenueBookingEmail | None
-    postalCode: offerers_schemas.VenuePostalCode | None
-    inseeCode: str | None
-    city: offerers_schemas.VenueCity | None
-    publicName: offerers_schemas.VenuePublicName | None
-    comment: offerers_schemas.VenueComment | None
-    venueLabelId: int | None
-    withdrawalDetails: offerers_schemas.VenueWithdrawalDetails | None
-    isAccessibilityAppliedOnAllOffers: bool | None
-    isManualEdition: bool | None
-    description: offerers_schemas.VenueDescription | None
-    contact: offerers_schemas.VenueContactModel | None
-    openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None
-    isOpenToPublic: bool | None
-    volunteeringUrl: pydantic_v1.HttpUrl | None = pydantic_v1.Field(
-        example="https://www.jeveuxaider.gouv.fr/organisations/structure-name"
+def validate_volunteering_url(volunteering_url: str | None) -> str | None:
+    if not volunteering_url:
+        return None
+
+    parsed = urlparse(str(volunteering_url))
+
+    if parsed.netloc.replace("www.", "") != JE_VEUX_AIDER_GOUV_BASE_URL:
+        raise PydanticError("Veuillez renseigner une URL provenant de la plateforme jeveuxaider.gouv")
+
+    if not parsed.path.startswith("/organisations"):
+        raise PydanticError(
+            "Veuillez renseigner l’URL de votre page organisation. Ex : https://www.jeveuxaider.gouv.fr/organisations/exemple"
+        )
+
+    return volunteering_url
+
+
+def empty_to_null(value: str | None, handler: pydantic_v2.ValidatorFunctionWrapHandler) -> str | None:
+    if value == "":
+        return None
+    return handler(value)
+
+
+class EditVenueBodyModel(HttpBodyModel):
+    activity: offerers_models.ActivityOpenToPublic | offerers_models.ActivityNotOpenToPublic | None = None
+    culturalDomains: list[str] | None = None
+    name: str | None = pydantic_v2.Field(min_length=1, max_length=offerers_schemas.VENUE_NAME_MAX_LENGTH, default=None)
+    street: str | None = pydantic_v2.Field(max_length=offerers_schemas.VENUE_ADDRESS_MAX_LENGTH, default=None)
+    banId: str | None = pydantic_v2.Field(max_length=offerers_schemas.VENUE_BAN_ID_MAX_LENGTH, default=None)
+    siret: str | None = pydantic_v2.Field(min_length=SIRET_LENGTH, max_length=SIRET_LENGTH, default=None)
+    latitude: offerers_schemas.CoordinateField | None = pydantic_v2.Field(
+        gt=-MAX_LATITUDE, lt=MAX_LATITUDE, default=None
     )
-
-    # TODO: move and rationalize Venue validation after serialization refactoring
-    @validator("latitude", pre=True)
-    @classmethod
-    def check_and_format_latitude(cls, raw_latitude: typing.Any) -> Decimal | None:
-        if raw_latitude is None:
-            return raw_latitude
-        try:
-            latitude = geography_utils.format_coordinate(raw_latitude)
-        except ValueError:
-            raise ValueError("La latitude doit être un nombre")
-        if not -MAX_LATITUDE < latitude < MAX_LATITUDE:
-            raise ValueError(f"La latitude doit être comprise entre -{MAX_LATITUDE} et +{MAX_LATITUDE}")
-        return latitude
-
-    @validator("longitude", pre=True)
-    @classmethod
-    def check_and_format_longitude(cls, raw_longitude: typing.Any) -> Decimal | None:
-        if raw_longitude is None:
-            return raw_longitude
-        try:
-            longitude = geography_utils.format_coordinate(raw_longitude)
-        except ValueError:
-            raise ValueError("La longitude doit être un nombre")
-        if not -MAX_LONGITUDE < longitude < MAX_LONGITUDE:
-            raise ValueError(f"La longitude doit être comprise entre -{MAX_LONGITUDE} et +{MAX_LONGITUDE}")
-        return longitude
-
-    @validator("bookingEmail", always=True)
-    @classmethod
-    def validate_booking_email(cls, booking_email: str | None) -> str | None:
-        if booking_email == "":
-            return None
-        return booking_email
-
-    @validator("volunteeringUrl")
-    @classmethod
-    def validate_volunteering_url(cls, volunteering_url: pydantic_v1.HttpUrl | None) -> pydantic_v1.HttpUrl | None:
-        if not volunteering_url:
-            return None
-
-        parsed = urlparse(volunteering_url)
-
-        if parsed.netloc.replace("www.", "") != JE_VEUX_AIDER_GOUV_BASE_URL:
-            raise exceptions.OffererException(
-                {"volunteeringUrl": ["Veuillez renseigner une URL provenant de la plateforme jeveuxaider.gouv"]}
-            )
-
-        if not parsed.path.startswith("/organisations"):
-            raise exceptions.OffererException(
-                {
-                    "volunteeringUrl": [
-                        "Veuillez renseigner l’URL de votre page organisation. Ex : https://www.jeveuxaider.gouv.fr/organisations/exemple"
-                    ]
-                }
-            )
-
-        return volunteering_url
+    longitude: offerers_schemas.CoordinateField | None = pydantic_v2.Field(
+        gt=-MAX_LONGITUDE, lt=MAX_LONGITUDE, default=None
+    )
+    bookingEmail: (
+        typing.Annotated[
+            pydantic_v2.EmailStr,
+            pydantic_v2.StringConstraints(max_length=offerers_schemas.BOOKING_EMAIL_MAX_LENGTH),
+            pydantic_v2.WrapValidator(empty_to_null),
+        ]
+        | None
+    ) = None
+    postalCode: str | None = pydantic_v2.Field(
+        min_length=offerers_schemas.VENUE_POSTAL_CODE_MIN_LENGTH,
+        max_length=offerers_schemas.VENUE_POSTAL_CODE_MAX_LENGTH,
+        default=None,
+    )
+    inseeCode: str | None = pydantic_v2.Field(
+        min_length=offerers_schemas.VENUE_INSEE_CODE_MIN_LENGTH,
+        max_length=offerers_schemas.VENUE_INSEE_CODE_MAX_LENGTH,
+        default=None,
+    )
+    city: str | None = pydantic_v2.Field(max_length=offerers_schemas.VENUE_CITY_MAX_LENGTH, default=None)
+    publicName: str | None = pydantic_v2.Field(max_length=offerers_schemas.VENUE_PUBLIC_NAME_MAX_LENGTH, default=None)
+    comment: str | None = pydantic_v2.Field(max_length=offerers_schemas.VENUE_COMMENT_MAX_LENGTH, default=None)
+    venueLabelId: int | None = None
+    withdrawalDetails: str | None = pydantic_v2.Field(
+        max_length=offerers_schemas.VENUE_WITHDRAWAL_DETAILS_MAX_LENGTH, default=None
+    )
+    isAccessibilityAppliedOnAllOffers: bool | None = None
+    isManualEdition: bool | None = None
+    description: str | None = pydantic_v2.Field(max_length=offerers_schemas.VENUE_DESCRIPTION_MAX_LENGTH, default=None)
+    contact: offerers_schemas.VenueContactModelV2 | None = None
+    openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespansV2 | None = None
+    isOpenToPublic: bool | None = None
+    volunteeringUrl: typing.Annotated[HttpUrlString, pydantic_v2.AfterValidator(validate_volunteering_url)] | None = (
+        None
+    )
+    audioDisabilityCompliant: bool | None = None
+    mentalDisabilityCompliant: bool | None = None
+    motorDisabilityCompliant: bool | None = None
+    visualDisabilityCompliant: bool | None = None
 
 
 class VenueListItemLiteResponseModel(HttpBodyModel):
@@ -389,17 +375,10 @@ class GetVenueListLiteResponseModel(HttpBodyModel):
         )
 
 
-class VenueListQueryModel(BaseModel):
-    validated: bool | None
-    active_offerers_only: bool | None
-    offerer_id: int | None
-
-    _string_to_boolean_validated = string_to_boolean_field("validated")
-    _string_to_boolean_active_offerers_only = string_to_boolean_field("active_offerers_only")
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+class VenueListQueryModel(HttpQueryParamsModel):
+    validated: typing.Annotated[bool, pydantic_v2.BeforeValidator(string_to_boolean)] | None = None
+    active_offerers_only: typing.Annotated[bool, pydantic_v2.BeforeValidator(string_to_boolean)] | None = None
+    offerer_id: int | None = None
 
 
 class GetOffersStatsResponseModel(HttpBodyModel):
@@ -409,6 +388,7 @@ class GetOffersStatsResponseModel(HttpBodyModel):
     pending_educational_offers: int
 
 
+# TODO(pydantic_v2): remove this serializer once ListOffersOfferResponseModel is migrated
 class ListOffersVenueResponseModel(BaseModel):
     id: int
     isVirtual: bool

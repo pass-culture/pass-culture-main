@@ -27,7 +27,6 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
-from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
@@ -1032,11 +1031,11 @@ def create_venue(offerer_id: int) -> response_utils.BackofficeResponse:
 
     attachment_address = attachment_venue.offererAddress.address
 
-    address_body_model = address_serialize.LocationBodyModel(
-        street=offerers_schemas.VenueAddress(attachment_address.street),
-        city=offerers_schemas.VenueCity(attachment_address.city),
-        postalCode=offerers_schemas.VenuePostalCode(attachment_address.postalCode),
-        inseeCode=offerers_schemas.VenueInseeCode(attachment_address.inseeCode),
+    address_body_model = address_serialize.LocationBodyModelV2(
+        street=attachment_address.street,
+        city=attachment_address.city,
+        postalCode=attachment_address.postalCode,
+        inseeCode=attachment_address.inseeCode,
         latitude=float(attachment_address.latitude),
         longitude=float(attachment_address.longitude),
         banId=attachment_address.banId,
@@ -1046,15 +1045,13 @@ def create_venue(offerer_id: int) -> response_utils.BackofficeResponse:
     venue_creation_info = venue_serialize.PostVenueBodyModel(
         activity=form.activity.data,
         address=address_body_model,
-        comment=offerers_schemas.VenueComment(
-            "Partenaire culturel sans SIRET car dépend du SIRET d'un autre partenaire culturel"
-        ),
+        comment="Partenaire culturel sans SIRET car dépend du SIRET d'un autre partenaire culturel",
         cultural_domains=[domain.name for domain in form.cultural_domains.data],
         siret=None,
-        booking_email=offerers_schemas.VenueBookingEmail(form.booking_email.data),
+        booking_email=form.booking_email.data,
         managing_offerer_id=offerer_id,
-        name=offerers_schemas.VenueName(form.public_name.data),
-        public_name=offerers_schemas.VenuePublicName(form.public_name.data),
+        name=form.public_name.data,
+        public_name=form.public_name.data,
         venue_label_id=None,
         withdrawal_details=None,
         description=None,

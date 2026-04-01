@@ -46,6 +46,7 @@ from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venue_serialize
 from pcapi.utils import date as date_utils
@@ -2661,15 +2662,15 @@ class CreateFromOnboardingDataTest:
         self, create_venue_without_siret: bool
     ) -> offerers_serialize.SaveNewOnboardingDataQueryModel:
         return offerers_serialize.SaveNewOnboardingDataQueryModel(
-            address=offerers_schemas.LocationModel(
+            address=address_serialize.LocationBodyModelV2(
                 label="",
                 banId="75101_9575_00003",
-                city=offerers_schemas.VenueCity("Paris"),
+                city="Paris",
                 latitude=2.30829,
                 longitude=48.87171,
-                postalCode=offerers_schemas.VenuePostalCode("75001"),
+                postalCode="75001",
                 inseeCode="75101",
-                street=offerers_schemas.VenueAddress("3 RUE DE VALOIS"),
+                street="3 RUE DE VALOIS",
             ),
             is_open_to_public=True,
             siret="85331845900031",

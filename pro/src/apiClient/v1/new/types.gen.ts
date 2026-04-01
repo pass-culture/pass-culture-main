@@ -1255,111 +1255,105 @@ export type EditVenueBodyModel = {
     /**
      * Activity
      */
-    activity?: ActivityOpenToPublic | ActivityNotOpenToPublic;
+    activity?: ActivityOpenToPublic | ActivityNotOpenToPublic | null;
     /**
      * Audiodisabilitycompliant
      */
-    audioDisabilityCompliant?: boolean;
+    audioDisabilityCompliant?: boolean | null;
     /**
      * Banid
      */
-    banId?: string;
+    banId?: string | null;
     /**
      * Bookingemail
      */
-    bookingEmail?: string;
+    bookingEmail?: string | null;
     /**
      * City
      */
-    city?: string;
+    city?: string | null;
     /**
      * Comment
      */
-    comment?: string;
-    /**
-     * VenueContactModel
-     */
-    contact?: VenueContactModel;
+    comment?: string | null;
+    contact?: VenueContactModelV2 | null;
     /**
      * Culturaldomains
      */
-    culturalDomains?: Array<string>;
+    culturalDomains?: Array<string> | null;
     /**
      * Description
      */
-    description?: string;
+    description?: string | null;
     /**
      * Inseecode
      */
-    inseeCode?: string;
+    inseeCode?: string | null;
     /**
      * Isaccessibilityappliedonalloffers
      */
-    isAccessibilityAppliedOnAllOffers?: boolean;
+    isAccessibilityAppliedOnAllOffers?: boolean | null;
     /**
      * Ismanualedition
      */
-    isManualEdition?: boolean;
+    isManualEdition?: boolean | null;
     /**
      * Isopentopublic
      */
-    isOpenToPublic?: boolean;
+    isOpenToPublic?: boolean | null;
     /**
      * Latitude
      */
-    latitude?: number;
+    latitude?: number | string | null;
     /**
      * Longitude
      */
-    longitude?: number;
+    longitude?: number | string | null;
     /**
      * Mentaldisabilitycompliant
      */
-    mentalDisabilityCompliant?: boolean;
+    mentalDisabilityCompliant?: boolean | null;
     /**
      * Motordisabilitycompliant
      */
-    motorDisabilityCompliant?: boolean;
+    motorDisabilityCompliant?: boolean | null;
     /**
      * Name
      */
-    name?: string;
-    /**
-     * WeekdayOpeningHoursTimespans
-     */
-    openingHours?: WeekdayOpeningHoursTimespans;
+    name?: string | null;
+    openingHours?: WeekdayOpeningHoursTimespansV2 | null;
     /**
      * Postalcode
      */
-    postalCode?: string;
+    postalCode?: string | null;
     /**
      * Publicname
      */
-    publicName?: string;
+    publicName?: string | null;
     /**
      * Siret
      */
-    siret?: string;
+    siret?: string | null;
     /**
      * Street
      */
-    street?: string;
+    street?: string | null;
     /**
      * Venuelabelid
      */
-    venueLabelId?: number;
+    venueLabelId?: number | null;
     /**
      * Visualdisabilitycompliant
      */
-    visualDisabilityCompliant?: boolean;
+    visualDisabilityCompliant?: boolean | null;
     /**
      * Volunteeringurl
      */
-    volunteeringUrl?: string;
+    volunteeringUrl?: string | null;
     /**
      * Withdrawaldetails
      */
-    withdrawalDetails?: string;
+    withdrawalDetails?: string | null;
 };
 
 /**
@@ -6531,30 +6525,6 @@ export type ValidationErrorElement = {
 };
 
 /**
- * VenueContactModel
- */
-export type VenueContactModel = {
-    /**
-     * Email
-     */
-    email?: string;
-    /**
-     * Phonenumber
-     */
-    phoneNumber?: string;
-    /**
-     * Socialmedias
-     */
-    socialMedias?: {
-        [key: string]: string;
-    };
-    /**
-     * Website
-     */
-    website?: string;
-};
-
-/**
  * VenueContactModelV2
  */
 export type VenueContactModelV2 = {
@@ -6575,7 +6545,7 @@ export type VenueContactModelV2 = {
     /**
      * Website
      */
-    website: string | null;
+    website?: string | null;
 };
 
 /**
@@ -6729,15 +6699,15 @@ export type VenueListQueryModel = {
     /**
      * Activeofferersonly
      */
-    activeOfferersOnly?: boolean;
+    activeOfferersOnly?: boolean | null;
     /**
      * Offererid
      */
-    offererId?: number;
+    offererId?: number | null;
     /**
      * Validated
      */
-    validated?: boolean;
+    validated?: boolean | null;
 };
 
 /**
@@ -6981,31 +6951,31 @@ export type WeekdayOpeningHoursTimespansV2 = {
     /**
      * Friday
      */
-    FRIDAY: Array<Array<string>> | null;
+    FRIDAY?: Array<Array<string>> | null;
     /**
      * Monday
      */
-    MONDAY: Array<Array<string>> | null;
+    MONDAY?: Array<Array<string>> | null;
     /**
      * Saturday
      */
-    SATURDAY: Array<Array<string>> | null;
+    SATURDAY?: Array<Array<string>> | null;
     /**
      * Sunday
      */
-    SUNDAY: Array<Array<string>> | null;
+    SUNDAY?: Array<Array<string>> | null;
     /**
      * Thursday
      */
-    THURSDAY: Array<Array<string>> | null;
+    THURSDAY?: Array<Array<string>> | null;
     /**
      * Tuesday
      */
-    TUESDAY: Array<Array<string>> | null;
+    TUESDAY?: Array<Array<string>> | null;
     /**
      * Wednesday
      */
-    WEDNESDAY: Array<Array<string>> | null;
+    WEDNESDAY?: Array<Array<string>> | null;
 };
 
 /**
@@ -11116,15 +11086,15 @@ export type getVenuesData = {
         /**
          * Validated
          */
-        validated?: boolean;
+        validated?: boolean | null;
         /**
          * Activeofferersonly
          */
-        activeOfferersOnly?: boolean;
+        activeOfferersOnly?: boolean | null;
         /**
          * Offererid
          */
-        offererId?: number;
+        offererId?: number | null;
     };
     url: '/venues';
 };

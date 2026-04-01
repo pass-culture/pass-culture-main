@@ -18,7 +18,6 @@ from pcapi.core.history import models as history_models
 from pcapi.core.internal_notifications.transactional import import_test_user_failure
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users.models import EligibilityType
@@ -140,28 +139,27 @@ def _create_pro_user(row: dict) -> User:
     # Most of offerers are not validated on staging without this commit() - TODO: is this related to atomic? oa?
     db.session.commit()
 
-    address = address_serialize.LocationBodyModel(
-        street=offerers_schemas.VenueAddress(offerer_creation_info.street),
-        city=offerers_schemas.VenueCity(offerer_creation_info.city),
-        postalCode=offerers_schemas.VenuePostalCode(offerer_creation_info.postal_code),
-        inseeCode=offerers_schemas.VenueInseeCode("75101"),
+    address = address_serialize.LocationBodyModelV2(
+        street=offerer_creation_info.street,
+        city=offerer_creation_info.city,
+        postalCode=offerer_creation_info.postal_code,
+        inseeCode="75101",
         latitude=gps[0],
         longitude=gps[1],
-        banId=offerers_schemas.VenueBanId("75101_2259_00001"),  # 1 place de la Concorde
+        banId="75101_2259_00001",  # 1 place de la Concorde
         label=None,
     )
 
-    # TODO(xordoquy): rename address to location ?
     venue_creation_info = venue_serialize.PostVenueBodyModel(
         activity=offerers_models.Activity.OTHER,
         address=address,
-        booking_email=offerers_schemas.VenueBookingEmail(user.email),
+        booking_email=user.email,
         comment=None,
         cultural_domains=[],
         managing_offerer_id=offerer.id,
-        name=offerers_schemas.VenueName(f"Structure {row['Prénom']} {row['Nom']}"),
+        name=f"Structure {row['Prénom']} {row['Nom']}",
         public_name=None,
-        siret=offerers_schemas.VenueSiret(siret),
+        siret=siret,
         venue_label_id=None,
         withdrawal_details=None,
         description=None,

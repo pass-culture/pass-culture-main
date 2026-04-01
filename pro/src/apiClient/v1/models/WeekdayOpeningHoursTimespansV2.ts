@@ -3,12 +3,12 @@
 /* tslint:disable */
 /* eslint-disable */
 export type WeekdayOpeningHoursTimespansV2 = {
-  FRIDAY: (Array<Array<string>> | null);
-  MONDAY: (Array<Array<string>> | null);
-  SATURDAY: (Array<Array<string>> | null);
-  SUNDAY: (Array<Array<string>> | null);
-  THURSDAY: (Array<Array<string>> | null);
-  TUESDAY: (Array<Array<string>> | null);
-  WEDNESDAY: (Array<Array<string>> | null);
+  FRIDAY?: (Array<Array<string>> | null);
+  MONDAY?: (Array<Array<string>> | null);
+  SATURDAY?: (Array<Array<string>> | null);
+  SUNDAY?: (Array<Array<string>> | null);
+  THURSDAY?: (Array<Array<string>> | null);
+  TUESDAY?: (Array<Array<string>> | null);
+  WEDNESDAY?: (Array<Array<string>> | null);
 };
 

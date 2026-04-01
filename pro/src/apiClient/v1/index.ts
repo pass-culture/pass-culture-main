@@ -275,7 +275,6 @@ export type { UserResetEmailBodyModel } from './models/UserResetEmailBodyModel';
 export { UserRole } from './models/UserRole';
 export type { ValidationError } from './models/ValidationError';
 export type { ValidationErrorElement } from './models/ValidationErrorElement';
-export type { VenueContactModel } from './models/VenueContactModel';
 export type { VenueContactModelV2 } from './models/VenueContactModelV2';
 export type { VenueDailyViewModel } from './models/VenueDailyViewModel';
 export type { VenueLabelListResponseModel } from './models/VenueLabelListResponseModel';
