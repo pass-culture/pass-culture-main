@@ -802,7 +802,14 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
         )
         .filter(models.Offerer.id == offerer_id)
         .options(
-            sa_orm.load_only(models.Offerer.id, models.Offerer.name),
+            sa_orm.load_only(
+                models.Offerer.id,
+                models.Offerer.name,
+                models.Offerer.siren,
+                models.Offerer.validationStatus,
+                models.Offerer.isActive,
+                models.Offerer.allowedOnAdage,
+            ),
             sa_orm.selectinload(models.Offerer.managedVenues).with_expression(
                 models.Venue._has_partner_page, models.Venue.has_partner_page
             ),
