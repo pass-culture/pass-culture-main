@@ -18,9 +18,13 @@ function isBookingStatusFilter(
   )
 }
 
-export function useBookingsFilters(
-  params: { offererId?: string; offerVenueId?: string } = {}
-) {
+export function useBookingsFilters({
+  offererId,
+  venueId,
+}: {
+  offererId?: string
+  venueId?: string
+}) {
   const navigate = useNavigate()
   const location = useLocation()
   const currentRoute = useCurrentRoute()
@@ -28,12 +32,10 @@ export function useBookingsFilters(
   const initialAppliedFilters: PreFiltersParams = useMemo(
     () => ({
       ...DEFAULT_PRE_FILTERS,
-      ...(params.offererId ? { offererId: params.offererId } : undefined),
-      ...(params.offerVenueId
-        ? { offerVenueId: params.offerVenueId }
-        : undefined),
+      ...(offererId ? { offererId: offererId } : undefined),
+      ...(venueId ? { offerVenueId: venueId } : undefined),
     }),
-    [params.offererId, params.offerVenueId]
+    [offererId, venueId]
   )
 
   const [appliedPreFilters, setAppliedPreFilters] = useState<PreFiltersParams>(
@@ -47,6 +49,14 @@ export function useBookingsFilters(
   const [urlParams, setUrlParams] = useState<PreFiltersParams>(
     initialAppliedFilters
   )
+
+  // On day, we'll need to rewrite the entire filters logic to massively simplify their logic, but in the meantime,
+  // this useEffect ensures initial filters state are reset when `offererId` or `venueId` changes
+  useEffect(() => {
+    setAppliedPreFilters(initialAppliedFilters)
+    setSelectedPreFilters(initialAppliedFilters)
+    setWereBookingsRequested(false)
+  }, [initialAppliedFilters])
 
   useEffect(() => {
     const urlSearchParams = new URLSearchParams(location.search)
