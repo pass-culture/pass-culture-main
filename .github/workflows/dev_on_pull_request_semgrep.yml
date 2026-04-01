@@ -8,12 +8,12 @@ jobs:
     name: semgrep/ci
     runs-on: ubuntu-latest
     container:
-      image: semgrep/semgrep
+      image: semgrep/semgrep@sha256:a3d49dc967b8534a6a76628e50c51cbfe33eb7195dc2feab1fdc0f100852c8ef
     if: (github.actor != 'dependabot[bot]')
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
         with:
           fetch-depth: 0
 
