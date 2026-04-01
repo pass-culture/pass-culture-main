@@ -195,7 +195,7 @@ class GetPayloadForComplianceApiTest:
             .one()
         )
 
-        with assert_num_queries(0):  # everything is already loaded in the query
+        with assert_num_queries(0, expire_session=False):  # everything is already loaded in the query
             payload = api._get_payload_for_compliance_api(offer_in_db)
 
         assert payload.offer_id == str(offer.id)

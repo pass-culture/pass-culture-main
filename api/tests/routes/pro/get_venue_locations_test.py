@@ -101,9 +101,10 @@ class Return400Test:
         offerer = offerers_factories.OffererFactory()
         client = client.with_session_auth(email=pro.email)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_id = venue.id
         with assert_num_queries(2):
             response = client.get(
-                f"/venues/{venue.id}/locations", params={"withOffersOption": "INDIVIDUAL_OFFERS_ONLY"}
+                f"/venues/{venue_id}/locations", params={"withOffersOption": "INDIVIDUAL_OFFERS_ONLY"}
             )
             assert response.status_code == 403
 

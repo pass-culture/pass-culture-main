@@ -29,7 +29,7 @@ class Returns200Test:
 
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
-        with assert_num_queries(self.num_queries):
+        with assert_num_queries(self.num_queries, expire_session=False):
             response = client.get(f"/collective/offers-template/{offer_id}")
             assert response.status_code == 200
 
@@ -119,7 +119,7 @@ class Returns200Test:
 
         offer_id = offer.id
         ban_id = venue.offererAddress.address.banId
-        with assert_num_queries(self.num_queries):
+        with assert_num_queries(self.num_queries, expire_session=False):
             response = client.get(f"/collective/offers-template/{offer_id}")
             assert response.status_code == 200
 
@@ -143,7 +143,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
 
         offer_id = offer.id
-        with assert_num_queries(self.num_queries):
+        with assert_num_queries(self.num_queries, expire_session=False):
             response = client.get(f"/collective/offers-template/{offer_id}")
             assert response.status_code == 200
 
@@ -170,7 +170,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
 
         offer_id = offer.id
-        with assert_num_queries(self.num_queries_with_location):
+        with assert_num_queries(self.num_queries_with_location, expire_session=False):
             response = client.get(f"/collective/offers-template/{offer_id}")
             assert response.status_code == 200
 
@@ -223,7 +223,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
 
         offer_id = offer.id
-        with assert_num_queries(self.num_queries):
+        with assert_num_queries(self.num_queries, expire_session=False):
             response = client.get(f"/collective/offers-template/{offer_id}")
             assert response.status_code == 200
 
@@ -240,7 +240,7 @@ class Returns200Test:
 
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
-        with assert_num_queries(self.num_queries):
+        with assert_num_queries(self.num_queries, expire_session=False):
             with testing.assert_no_duplicated_queries():
                 client.get(f"/collective/offers-template/{offer_id}")
 

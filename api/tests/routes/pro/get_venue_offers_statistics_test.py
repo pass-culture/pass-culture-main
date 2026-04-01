@@ -197,8 +197,9 @@ class Return200Test:
 
         client = client.with_session_auth(user_offerer.user.email)
 
+        venue_id = venue.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/venue/{venue.id}/offers-statistics")
+            response = client.get(f"/venue/{venue_id}/offers-statistics")
             assert response.status_code == 200
 
         assert response.json == {
