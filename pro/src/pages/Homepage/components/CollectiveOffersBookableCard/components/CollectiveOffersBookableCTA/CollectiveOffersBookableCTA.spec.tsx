@@ -1,28 +1,12 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { addDays } from 'date-fns'
 import { useParams } from 'react-router'
 import { axe } from 'vitest-axe'
 
+import { buildCollectiveStock } from '@/commons/utils/factories/adageFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { CollectiveOffersBookableCTA } from './CollectiveOffersBookableCTA'
-
-function getStock(
-  bookingDateDaysFromToday: number,
-  startDateDaysFromToday: number
-): React.ComponentProps<typeof CollectiveOffersBookableCTA>['stock'] {
-  const today = new Date()
-  return {
-    bookingLimitDatetime: addDays(
-      today,
-      bookingDateDaysFromToday
-    ).toISOString(),
-    startDatetime: addDays(today, startDateDaysFromToday).toISOString(),
-    endDatetime: addDays(today, startDateDaysFromToday + 1).toISOString(),
-    numberOfTickets: 100,
-  }
-}
 
 const renderCollectiveOffersBookableCTA = (
   stock?: React.ComponentProps<typeof CollectiveOffersBookableCTA>['stock']
@@ -31,7 +15,7 @@ const renderCollectiveOffersBookableCTA = (
   const props = {
     offerId: 12,
     offerLink: '/lien/vers/mon/offre/12',
-    stock: stock ?? getStock(1, 1),
+    stock: stock ?? buildCollectiveStock(1, 1),
   }
 
   const FakeOfferDetailComponent = () => {
@@ -73,7 +57,7 @@ describe('<CollectiveOffersBookableCTA />', () => {
   })
 
   it('should render a CTA to update the booking limit if offer is going to expire', async () => {
-    const stock = getStock(1, 2)
+    const stock = buildCollectiveStock(1, 2)
     const { user } = renderCollectiveOffersBookableCTA(stock)
 
     const cta = screen.getByRole('link', { name: 'Modifier la date limite' })
@@ -87,7 +71,7 @@ describe('<CollectiveOffersBookableCTA />', () => {
   })
 
   it('should render a CTA to see the offer details otherwise', async () => {
-    const stock = getStock(8, 9)
+    const stock = buildCollectiveStock(8, 9)
     const { user } = renderCollectiveOffersBookableCTA(stock)
 
     const cta = screen.getByRole('link', { name: "Voir l'offre" })
