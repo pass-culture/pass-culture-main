@@ -1,6 +1,10 @@
 import dataclasses
 import datetime
+import decimal
 import enum
+import typing
+
+from dateutil.relativedelta import relativedelta
 
 import pcapi.core.subscription.models as subscription_models
 import pcapi.core.users.factories as users_factories
@@ -30,20 +34,34 @@ class GeneratedSubscriptionStep(enum.Enum):
 
 @dataclasses.dataclass
 class GenerateUserData:
-    age: int = users_constants.ELIGIBILITY_AGE_18
+    age: int | None = None
+    birthdate: datetime.date | None = None
+    credit: decimal.Decimal | None = None
     id_provider: GeneratedIdProvider = GeneratedIdProvider.UBBLE
     step: GeneratedSubscriptionStep = GeneratedSubscriptionStep.EMAIL_VALIDATION
     transition_17_18: bool = False
-    date_created: datetime.datetime = date_utils.get_naive_utc_now()
+    date_created: datetime.datetime | None = None
     postal_code: str | None = None
 
+    def get_age(self) -> int:
+        if self.transition_17_18:
+            return 18
+        if self.age is not None:
+            return self.age
+        if self.birthdate is None:
+            return 18
+        return relativedelta(datetime.date.today(), self.birthdate).years
 
-def _get_activity_from_age(age: int) -> users_models.ActivityEnum:
-    if age < 18:  # 15, 16, 17
-        return users_models.ActivityEnum.HIGH_SCHOOL_STUDENT
-    elif age < 20:  # 18, 19
-        return users_models.ActivityEnum.STUDENT
-    return users_models.ActivityEnum.APPRENTICE_STUDENT  # 20
+    def get_date_created(self) -> datetime.datetime:
+        return date_utils.get_naive_utc_now() if self.date_created is None else self.date_created
+
+    def get_activty(self) -> users_models.ActivityEnum:
+        age = self.get_age()
+        if age < 18:  # 15, 16, 17
+            return users_models.ActivityEnum.HIGH_SCHOOL_STUDENT
+        elif age < 20:  # 18, 19
+            return users_models.ActivityEnum.STUDENT
+        return users_models.ActivityEnum.APPRENTICE_STUDENT  # 20
 
 
 def generate_user(user_data: GenerateUserData) -> users_models.User:
@@ -55,19 +73,19 @@ def generate_user(user_data: GenerateUserData) -> users_models.User:
         )
         raise generation_exception
 
-    if user_data.transition_17_18:
-        user_data.age = 18
-
     Factory = _get_user_factory(user_data)
     # ensure that postal code is set only for ProfileCompletedUserFactory or a factory that is a descendant of it
-    factory_has_postal_code = users_factories.ProfileCompletedUserFactory in Factory.mro()
+    factory_kwargs: dict[str, typing.Any] = {}
+    if users_factories.ProfileCompletedUserFactory in Factory.mro() and user_data.postal_code:
+        factory_kwargs["postalCode"] = user_data.postal_code
+    if user_data.credit is not None:
+        factory_kwargs["deposit__amount"] = user_data.credit
     return Factory.create(
-        age=user_data.age,
+        age=user_data.get_age(),
         beneficiaryFraudChecks__type=user_data.id_provider.value,
-        beneficiaryFraudChecks__dateCreated=user_data.date_created,
-        dateCreated=user_data.date_created,
-        activity=_get_activity_from_age(user_data.age).value,
-        **({"postalCode": user_data.postal_code} if (user_data.postal_code and factory_has_postal_code) else {}),
+        beneficiaryFraudChecks__dateCreated=user_data.get_date_created(),
+        activity=user_data.get_activty().value,
+        **factory_kwargs,
     )
 
 
@@ -76,7 +94,7 @@ def _get_user_factory(user_data: GenerateUserData) -> type[users_factories.BaseU
         return users_factories.Transition1718Factory
 
     Factory = users_factories.BaseUserFactory
-    if user_data.age in users_constants.ELIGIBILITY_FREE_RANGE:
+    if user_data.get_age() in users_constants.ELIGIBILITY_FREE_RANGE:
         match user_data.step:
             case GeneratedSubscriptionStep.EMAIL_VALIDATION:
                 Factory = users_factories.EmailValidatedUserFactory

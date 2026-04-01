@@ -33,6 +33,7 @@
                    target="_blank">
                   <div class="mb-1">
                     <span class="fw-bold">Aller sur l'app en tant que {{ user.full_name }}</span>
+                    <span class="ms-1">{{ clipboard.copy_to_clipboard(link_to_app, "Copier le lien") }}</span>
                   </div>
                 </a>
               {% endif %}
@@ -81,6 +82,10 @@
                 <p class="mb-1">
                   <span class="fw-bold">Crédité le :</span> {{
                   user.deposit_activation_date | format_date }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Credit restant :</span>
+                  {{ user.wallet_balance | format_amount(user) }}
                 </p>
                 <p class="mb-1">
                   <span class="fw-bold">Date de création du compte :</span> {{

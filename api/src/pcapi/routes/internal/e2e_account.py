@@ -50,6 +50,8 @@ def generate_account() -> tuple[dict, int]:
     raw_date_created = form.date_created.data
     user_data = users_generator.GenerateUserData(
         age=form.age.data,
+        birthdate=form.birthdate.data,
+        credit=form.credit.data,
         id_provider=users_generator.GeneratedIdProvider[form.id_provider.data],
         step=users_generator.GeneratedSubscriptionStep[form.step.data],
         transition_17_18=form.transition_17_18.data,

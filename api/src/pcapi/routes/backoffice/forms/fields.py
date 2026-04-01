@@ -23,6 +23,58 @@ from pcapi.utils import string as string_utils
 MAX_IMAGE_SIZE = 3_000_000
 MIN_IMAGE_WIDTH = 270
 MIN_IMAGE_HEIGHT = 90
+DEFAULT_MAX_DATE = datetime.date(2100, 1, 1)
+DEFAULT_MIN_DATE = datetime.date(1900, 1, 1)
+
+
+class DateRangeValidator:
+    def __init__(
+        self,
+        message: str | None = None,
+        min: datetime.date | typing.Callable | None = None,
+        max: datetime.date | typing.Callable | None = None,
+    ) -> None:
+        self.message = message
+        self._min = min
+        self._max = max
+
+    @property
+    def min(self) -> datetime.date | None:
+        return self._min() if callable(self._min) else self._min
+
+    @property
+    def max(self) -> datetime.date | None:
+        return self._max() if callable(self._max) else self._max
+
+    @property
+    def field_flags(self) -> dict[str, datetime.date]:
+        res: dict[str, datetime.date] = {}
+        if self.min is not None:
+            res["min"] = self.min
+        if self.max is not None:
+            res["max"] = self.max
+        return res
+
+    def __call__(self, form: wtforms.Form, field: wtforms.Field) -> None:
+        if (
+            field.data is not None
+            and isinstance(field.data, datetime.date)
+            and (self.min is None or field.data >= self.min)
+            and (self.max is None or field.data <= self.max)
+        ):
+            return
+
+        max = f"{self.max:%d/%m/%Y}" if self.max is not None else ""
+        min = f"{self.min:%d/%m/%Y}" if self.min is not None else ""
+        if self.message is not None:
+            message = self.message
+        elif self.max is None:
+            message = field.gettext("La date doit être après %(min)s")
+        elif self.min is None:
+            message = field.gettext("La date doit être avant %(max)s")
+        else:
+            message = field.gettext("La date doit être comprise entre %(min)s et %(max)s")
+        raise validators.ValidationError(message % {"min": min, "max": max})
 
 
 class PhoneNumberValidator:
@@ -276,6 +328,7 @@ class PCDateTimeField(wtforms.DateTimeField):
 class PCOptDateTimeField(PCDateTimeField):
     validators = [
         validators.Optional(""),
+        DateRangeValidator(min=DEFAULT_MIN_DATE, max=DEFAULT_MAX_DATE),
     ]
 
 
@@ -284,6 +337,7 @@ class PCDateField(wtforms.DateField):
     input_type = "date"
     validators = [
         validators.DataRequired("Information obligatoire"),
+        DateRangeValidator(min=DEFAULT_MIN_DATE, max=DEFAULT_MAX_DATE),
     ]
 
     def gettext(self, string: str) -> str:
@@ -292,11 +346,6 @@ class PCDateField(wtforms.DateField):
                 return "Date invalide"
             case _:
                 return string
-
-    def pre_validate(self, form: wtforms.Form) -> None:
-        if self.data and self.data < datetime.date(1900, 1, 1):
-            super().pre_validate(form)
-            raise ValidationError("La date doit être après le 01/01/1900.")
 
 
 class PCOptDateField(PCDateField):
