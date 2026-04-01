@@ -46,8 +46,8 @@ class BaseBookingListForm(FlaskForm):
         max_date=datetime.date.today(),
         reset_to_blank=True,
     )
-    event_from_date = fields.PCDateField("Évènement du", validators=(wtforms.validators.Optional(),))
-    event_to_date = fields.PCDateField("Évènement jusqu'au", validators=(wtforms.validators.Optional(),))
+    event_from_date = fields.PCOptDateField("Évènement du")
+    event_to_date = fields.PCOptDateField("Évènement jusqu'au")
     limit = fields.PCLimitField(
         "Nombre maximum de résultats",
         choices=(

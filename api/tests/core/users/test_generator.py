@@ -1,3 +1,5 @@
+import decimal
+
 import pytest
 from dateutil.relativedelta import relativedelta
 
@@ -247,3 +249,24 @@ class UserGeneratorTest:
         assert user.has_free_beneficiary_role
         assert user.deposit.type == finance_models.DepositType.GRANT_FREE
         assert user.deposit.amount == 0
+
+    def test_generate_with_birth_date(self):
+        birth_date = date_utils.get_naive_utc_now().date() - relativedelta(years=19)
+        user_data = users_generator.GenerateUserData(
+            birth_date=birth_date,
+            step=users_generator.GeneratedSubscriptionStep.BENEFICIARY,
+        )
+        user = users_generator.generate_user(user_data)
+
+        assert user.age == 19
+        assert user.dateOfBirth.date() == birth_date
+
+    def test_generate_with_credit(self):
+        user_data = users_generator.GenerateUserData(
+            credit=decimal.Decimal("134.6"),
+            step=users_generator.GeneratedSubscriptionStep.BENEFICIARY,
+        )
+        user = users_generator.generate_user(user_data)
+
+        assert user.deposit.type == finance_models.DepositType.GRANT_17_18
+        assert user.deposit.amount == decimal.Decimal("134.6")
