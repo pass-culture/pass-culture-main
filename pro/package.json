@@ -93,7 +93,7 @@
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@types/react-instantsearch-dom": "6.12.9",
-    "@vitejs/plugin-react": "5.2.0",
+    "@vitejs/plugin-react": "6.0.1",
     "@vitest/coverage-istanbul": "4.1.0",
     "@vitest/runner": "4.1.1",
     "allure-js-commons": "3.6.0",
