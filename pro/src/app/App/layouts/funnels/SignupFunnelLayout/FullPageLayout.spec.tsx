@@ -1,12 +1,11 @@
+import { FullPageLayout } from 'app/App/layouts/funnels/SignupFunnelLayout/FullPageLayout'
 import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { SignupFunnelLayout } from './SignupFunnelLayout'
-
-describe('<SignupFunnelLayout />', () => {
+describe('<FullPageLayout />', () => {
   it('should render without accessibility violations', async () => {
-    const { container } = renderWithProviders(<SignupFunnelLayout />)
+    const { container } = renderWithProviders(<FullPageLayout />)
 
     expect(await axe(container)).toHaveNoViolations()
   })
