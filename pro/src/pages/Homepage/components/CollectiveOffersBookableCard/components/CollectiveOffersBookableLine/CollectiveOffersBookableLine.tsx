@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
 
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
+import { getCollectiveOfferLink } from '@/commons/core/OfferEducational/utils/getCollectiveOfferLink'
 import { formatDateTimeParts } from '@/commons/utils/date'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { CollectiveStatusLabel } from '@/components/CollectiveStatusLabel/CollectiveStatusLabel'
@@ -20,12 +20,7 @@ export const CollectiveOffersBookableLine = ({
   offer,
 }: CollectiveOffersBookableLineProps): JSX.Element => {
   const offerId = computeURLCollectiveOfferId(offer.id)
-  const draftOfferLink =
-    offer.displayedStatus === CollectiveOfferDisplayedStatus.DRAFT &&
-    `/offre/collectif/${offerId}/creation`
-
-  const offerLink =
-    draftOfferLink || `/offre/${offerId}/collectif/recapitulatif`
+  const offerLink = getCollectiveOfferLink(offerId, offer.displayedStatus)
 
   let secondaryContent = ''
   if (offer.collectiveStock) {
