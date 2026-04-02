@@ -117,7 +117,7 @@ const renderNewHomepage = (
 
 describe('NewHomepage', () => {
   it('should display the selected venue public name in the title', () => {
-    renderNewHomepage()
+    renderNewHomepage({ hasNonDraftOffers: true })
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
       'Votre espace Nom public de la structure'
     )
@@ -246,7 +246,6 @@ describe('NewHomepage', () => {
         scenario             | hasIndividual | hasCollective | initialTab
         ${'only collective'} | ${false}      | ${true}       | ${'tab-collective'}
         ${'only individual'} | ${true}       | ${false}      | ${'tab-individual'}
-        ${'nothing'}         | ${false}      | ${false}      | ${'tab-individual'}
       `(
         'when other scenarii > should handle the $scenario case.',
         ({ hasIndividual, hasCollective, initialTab }) => {
@@ -269,6 +268,20 @@ describe('NewHomepage', () => {
           // it's done in tabManagement module
           expect(utils.onNewTabSelected).not.toHaveBeenCalled()
         }
+      )
+    })
+
+    it('should display unavailable page when venue has no tab', () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {})
+
+      renderNewHomepage({
+        ...defaultGetVenueResponseModel,
+        allowedOnAdage: false,
+        hasNonDraftOffers: false,
+      })
+
+      expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
+        'Page indisponible'
       )
     })
   })
