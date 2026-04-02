@@ -1,11 +1,11 @@
 import { Link } from 'react-router'
 
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import {
   type CollectiveOffer,
   isCollectiveOfferBookable,
 } from '@/commons/core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
+import { getCollectiveOfferLink } from '@/commons/core/OfferEducational/utils/getCollectiveOfferLink'
 import { Tag } from '@/design-system/Tag/Tag'
 import { Thumb } from '@/ui-kit/Thumb/Thumb'
 
@@ -19,12 +19,7 @@ export const OfferNameCell = ({ offer }: OfferNameCellProps) => {
   const isTemplateTable = !isCollectiveOfferBookable(offer)
 
   const offerId = computeURLCollectiveOfferId(offer.id, isTemplateTable)
-  const draftOfferLink =
-    offer.displayedStatus === CollectiveOfferDisplayedStatus.DRAFT &&
-    `/offre/collectif/${offerId}/creation`
-
-  const offerLink =
-    draftOfferLink || `/offre/${offerId}/collectif/recapitulatif`
+  const offerLink = getCollectiveOfferLink(offerId, offer.displayedStatus)
 
   return (
     <Link className={styles['title-column-with-thumb']} to={offerLink}>

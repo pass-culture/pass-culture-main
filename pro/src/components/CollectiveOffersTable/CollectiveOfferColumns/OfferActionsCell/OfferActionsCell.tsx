@@ -6,7 +6,6 @@ import { api } from '@/apiClient/api'
 import { getErrorCode, isErrorAPIError } from '@/apiClient/helpers'
 import {
   CollectiveOfferAllowedAction,
-  CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
   type CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
@@ -22,6 +21,7 @@ import {
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
+import { getCollectiveOfferLink } from '@/commons/core/OfferEducational/utils/getCollectiveOfferLink'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getCollectiveOffersSwrKeys'
@@ -92,12 +92,11 @@ export const OfferActionsCell = ({
   const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
 
   const offerId = computeURLCollectiveOfferId(offer.id, isTemplateTable)
-  const draftOfferLink =
-    offer.displayedStatus === CollectiveOfferDisplayedStatus.DRAFT &&
-    `/offre/collectif/${offerId}/creation`
-
-  const editionOfferLink =
-    draftOfferLink || `/offre/${offerId}/collectif/edition`
+  const editionOfferLink = getCollectiveOfferLink(
+    offerId,
+    offer.displayedStatus,
+    true
+  )
 
   const onDialogConfirm = async (shouldNotDisplayModalAgain: boolean) => {
     logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
