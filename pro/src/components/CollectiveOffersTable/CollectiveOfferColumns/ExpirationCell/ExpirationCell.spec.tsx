@@ -57,7 +57,7 @@ describe('ExpirationCell', () => {
 
     renderExpirationCell(offerExpiringIn5Days)
 
-    expect(screen.getByText('expire dans 5 jours')).toBeInTheDocument()
+    expect(screen.getByText('Expire dans 5 jours')).toBeInTheDocument()
   })
 
   it('should display a banner when it expires today', () => {
@@ -72,7 +72,7 @@ describe('ExpirationCell', () => {
 
     renderExpirationCell(offerExpiringToday)
 
-    expect(screen.getByText('expire aujourd’hui')).toBeInTheDocument()
+    expect(screen.getByText("Expire aujourd'hui")).toBeInTheDocument()
   })
 
   it('should display a banner saying that the offer needs to be booked if it is already pre-booked', () => {
@@ -143,7 +143,7 @@ describe('ExpirationCell', () => {
     expect(container.querySelector('.banner-expires-soon')).toBeInTheDocument()
   })
 
-  it('should display "expire aujourd’hui" if expiration date is in the past (defensive)', () => {
+  it('should display "Expire aujourd\'hui" if expiration date is in the past (defensive)', () => {
     const yesterday = new Date()
     yesterday.setDate(yesterday.getDate() - 1)
 
@@ -155,6 +155,6 @@ describe('ExpirationCell', () => {
       },
     })
 
-    expect(screen.getByText('expire aujourd’hui')).toBeInTheDocument()
+    expect(screen.getByText("Expire aujourd'hui")).toBeInTheDocument()
   })
 })
