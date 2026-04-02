@@ -1067,8 +1067,9 @@ class ListOffersTest(GetEndpointHelper):
 
     def test_list_offers_has_provider(self, authenticated_client):
         provider = providers_factories.ProviderFactory()
-        offers_factories.OfferFactory(name="good", idAtProvider="pouet", lastProvider=provider)
-        offers_factories.OfferFactory(name="bad")
+        offers_factories.OfferFactory(name="with idAtProvider", idAtProvider="pouet", lastProvider=provider)
+        offers_factories.OfferFactory(name="without idAtProvider", idAtProvider=None, lastProvider=provider)
+        offers_factories.OfferFactory(name="not synchronized")
         query_args = {
             "search-0-search_field": "SYNCHRONIZED",
             "search-0-operator": "NULLABLE",
@@ -1079,8 +1080,8 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == 1
-        assert rows[0]["Nom de l'offre"] == "good"
+        assert len(rows) == 2
+        assert {row["Nom de l'offre"] for row in rows} == {"with idAtProvider", "without idAtProvider"}
 
     def test_list_offers_has_no_provider(self, authenticated_client):
         provider = providers_factories.ProviderFactory()
