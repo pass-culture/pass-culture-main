@@ -100,7 +100,7 @@
     "allure-vitest": "3.6.0",
     "axe-core": "4.11.1",
     "check-unused-css": "^0.2.7",
-    "jsdom": "28.1.0",
+    "jsdom": "29.0.0",
     "mustache": "4.2.0",
     "node-fetch": "3.3.2",
     "openapi-typescript-codegen": "0.29.0",
