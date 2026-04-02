@@ -3,18 +3,19 @@ import { useState } from 'react'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import {
+  type BookingRecapStatus,
+  type BookingSortableColumn,
+  type GetIndividualOfferResponseModel,
+  SortOrder,
+} from '@/apiClient/v1'
 import {
   GET_BOOKINGS_QUERY_KEY,
   GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DATE_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
-import {
-  DEFAULT_PRE_FILTERS,
-  EMPTY_FILTER_VALUE,
-} from '@/commons/core/Bookings/constants'
+import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
+import { SortingMode } from '@/commons/hooks/useColumnSorting'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
-import { DEFAULT_OMNISEARCH_CRITERIA } from '@/components/Bookings/Components/Filters/constants'
-import { filterBookingsRecap } from '@/components/Bookings/Components/utils/filterBookingsRecap'
 import { IndividualBookingsTable } from '@/components/Bookings/IndividualBookingsTable/IndividualBookingsTable'
 import { Button } from '@/design-system/Button/Button'
 import { getFilteredIndividualBookingsAdapter } from '@/pages/IndividualBookings/adapters/getFilteredIndividualBookingsAdapter'
@@ -30,9 +31,12 @@ interface IndividualOfferSummaryBookingsScreenProps {
 export const IndividualOfferSummaryBookingsScreen = ({
   offer,
 }: IndividualOfferSummaryBookingsScreenProps) => {
-  const [bookingsStatusFilters, setBookingsStatusFilters] = useState<string[]>(
-    []
-  )
+  const [bookingsStatusFilters, setBookingsStatusFilters] = useState<
+    BookingRecapStatus[]
+  >([])
+  const [page, setPage] = useState(1)
+  const [sortBy, setSortBy] = useState<BookingSortableColumn | undefined>()
+  const [sortOrder, setSortOrder] = useState<SortOrder | undefined>()
 
   const [isDownloadBookingModalOpen, setIsDownloadBookingModalOpen] =
     useState(false)
@@ -43,35 +47,44 @@ export const IndividualOfferSummaryBookingsScreen = ({
     { fallbackData: [] }
   )
 
-  const { data: bookings, isLoading: bookingsIsLoading } = useSWR(
-    [GET_BOOKINGS_QUERY_KEY],
+  const handleSortChange = (column: string | null, order: SortingMode) => {
+    setPage(1)
+    setSortBy(column ? (column as BookingSortableColumn) : undefined)
+    setSortOrder(
+      order === SortingMode.ASC
+        ? SortOrder.ASC
+        : order === SortingMode.DESC
+          ? SortOrder.DESC
+          : undefined
+    )
+  }
+
+  const { data: bookingsResult, isLoading: bookingsIsLoading } = useSWR(
+    [
+      GET_BOOKINGS_QUERY_KEY,
+      offer.id,
+      page,
+      sortBy,
+      sortOrder,
+      bookingsStatusFilters,
+    ],
     async () => {
-      const { bookings } = await getFilteredIndividualBookingsAdapter({
+      return await getFilteredIndividualBookingsAdapter({
         ...DEFAULT_PRE_FILTERS,
         offerId: String(offer.id),
         bookingBeginningDate: '2015-01-01',
         bookingEndingDate: format(new Date(), FORMAT_ISO_DATE_ONLY),
+        page,
+        sortBy,
+        sortOrder,
+        bookingStatus:
+          bookingsStatusFilters.length > 0 ? bookingsStatusFilters : undefined,
       })
-      return bookings
     },
-    { fallbackData: [] }
+    {
+      fallbackData: { bookings: [], pages: 0, total: 0, currentPage: 1 },
+    }
   )
-
-  const filteredBookings = filterBookingsRecap(bookings ?? [], {
-    bookingStatus: bookingsStatusFilters,
-    // TODO Improve the filtering of the base bookings page, it is a mess
-    // because it mixes backend and frontend filtering in weird ways.
-    // Thus I must reuse this function with lots of empty values
-    // to filter by booking status
-    bookingBeneficiary: EMPTY_FILTER_VALUE,
-    bookingToken: EMPTY_FILTER_VALUE,
-    offerISBN: EMPTY_FILTER_VALUE,
-    offerName: EMPTY_FILTER_VALUE,
-    selectedOmniSearchCriteria: DEFAULT_OMNISEARCH_CRITERIA,
-    keywords: EMPTY_FILTER_VALUE,
-    bookingInstitution: EMPTY_FILTER_VALUE,
-    bookingId: EMPTY_FILTER_VALUE,
-  })
 
   return (
     <>
@@ -79,7 +92,7 @@ export const IndividualOfferSummaryBookingsScreen = ({
         <h2 className={styles['header-title']}>Réservations</h2>
         {!stockSchedulesAndPricesByDateQuery.isLoading &&
           offer.isEvent &&
-          !!bookings?.length && (
+          !!bookingsResult.total && (
             <DialogBuilder
               variant="drawer"
               onOpenChange={setIsDownloadBookingModalOpen}
@@ -98,14 +111,24 @@ export const IndividualOfferSummaryBookingsScreen = ({
           )}
       </div>
       <IndividualBookingsTable
-        bookings={filteredBookings}
+        bookings={bookingsResult.bookings}
         bookingStatuses={bookingsStatusFilters}
         updateGlobalFilters={({ bookingStatus }) => {
-          setBookingsStatusFilters(bookingStatus ?? [])
+          setPage(1)
+          setBookingsStatusFilters(
+            (bookingStatus ?? []) as BookingRecapStatus[]
+          )
         }}
-        resetFilters={() => setBookingsStatusFilters([])}
+        resetFilters={() => {
+          setPage(1)
+          setBookingsStatusFilters([])
+        }}
         isLoading={bookingsIsLoading}
-        hasNoBooking={bookings.length === 0}
+        hasNoBooking={bookingsResult.total === 0}
+        currentPage={page}
+        pageCount={bookingsResult.pages}
+        onPageChange={setPage}
+        onSortChange={handleSortChange}
       />
     </>
   )
