@@ -234,17 +234,6 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         pc_pro_path=urls.build_pc_pro_offerer_link(offerer),
     )
 
-    connect_as_offer = get_connect_as(
-        object_type="offerer",
-        object_id=offerer_id,
-        pc_pro_path=urls.build_pc_pro_offers_for_offerer_path(offerer),
-    )
-    connect_as_collective_offer = get_connect_as(
-        object_type="offerer",
-        object_id=offerer_id,
-        pc_pro_path=urls.build_pc_pro_collective_offers_for_offerer_path(offerer),
-    )
-
     return render_template(
         "offerer/get.html",
         search_form=search_form,
@@ -263,8 +252,6 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         has_reimbursement_suspended=row.has_reimbursement_suspended,
         active_tab=request.args.get("active_tab", "history"),
         connect_as_offerer=connect_as_offerer,
-        connect_as_offer=connect_as_offer,
-        connect_as_collective_offer=connect_as_collective_offer,
         zendesk_sell_synchronisation_form=(
             empty_forms.EmptyForm()
             if row.has_non_virtual_venues
@@ -939,8 +926,6 @@ def get_managed_venues(offerer_id: int) -> response_utils.BackofficeResponse:
                 offerers_models.Venue.venueTypeCode,
                 offerers_models.Venue.isPermanent,
                 offerers_models.Venue.isOpenToPublic,
-                offerers_models.Venue.isVirtual,
-                offerers_models.Venue.managingOffererId,
                 offerers_models.Venue.isReimbursementSuspended,
             ),
             sa_orm.joinedload(offerers_models.Venue.collectiveDmsApplications).load_only(
