@@ -1,0 +1,1 @@
+import{P as e}from"./components-DJ-de-sW.js";export{e as createCopyToClipboardFunction};
