@@ -1,0 +1,1 @@
+import{P as e}from"./components-DnjdLvbz.js";export{e as createCopyToClipboardFunction};
