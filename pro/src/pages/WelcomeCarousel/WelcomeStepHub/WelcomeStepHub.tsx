@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { WelcomeCarouselEvents } from '@/commons/core/FirebaseEvents/constants'
+import { AlreadyHasAccount } from '@/components/AlreadyHasAccount/AlreadyHasAccount'
 import { Button } from '@/design-system/Button/Button'
 import { Icon } from '@/design-system/Button/components/Icon/Icon'
 import { ButtonVariant } from '@/design-system/Button/types'
@@ -153,6 +154,9 @@ export const WelcomeStepHub = (): JSX.Element => {
               variant={ButtonVariant.PRIMARY}
               label="Continuer"
             />
+          </div>
+          <div className={styles['already-have-account']}>
+            <AlreadyHasAccount />
           </div>
         </>
       )}
