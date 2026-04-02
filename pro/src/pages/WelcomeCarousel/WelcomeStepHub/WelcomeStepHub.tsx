@@ -21,6 +21,7 @@ export const WelcomeStepHub = (): JSX.Element => {
   const { logEvent } = useAnalytics()
 
   const [selectedValue, setSelectedValue] = useState('')
+  const [error, setError] = useState('')
   const [showErrorContainer, setShowErrorContainer] = useState(false)
   return (
     <>
@@ -114,8 +115,10 @@ export const WelcomeStepHub = (): JSX.Element => {
               variant="detailed"
               display="vertical"
               onChange={(event) => {
+                setError('')
                 setSelectedValue(event.target.value)
               }}
+              error={error}
             />
           </div>
           <div
@@ -125,11 +128,12 @@ export const WelcomeStepHub = (): JSX.Element => {
             )}
           >
             <Button
-              disabled={!selectedValue}
               onClick={() => {
-                logEvent(WelcomeCarouselEvents.HAS_CLICKED_USER_TYPE, {
-                  target: selectedValue,
-                })
+                if (selectedValue) {
+                  logEvent(WelcomeCarouselEvents.HAS_CLICKED_USER_TYPE, {
+                    target: selectedValue,
+                  })
+                }
                 switch (selectedValue) {
                   case 'partenaire-culturel':
                     navigate('/bienvenue/publics')
@@ -140,6 +144,9 @@ export const WelcomeStepHub = (): JSX.Element => {
                     break
                   case 'enseignant':
                     setShowErrorContainer(true)
+                    break
+                  default:
+                    setError('Veuillez sélectionner un profil pour continuer')
                     break
                 }
               }}
