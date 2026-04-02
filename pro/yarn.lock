@@ -2247,12 +2247,27 @@
   dependencies:
     tinyrainbow "^3.0.3"
 
+"@vitest/pretty-format@4.1.1":
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/@vitest/pretty-format/-/pretty-format-4.1.1.tgz#ec0e5e7c1def39c5fac037429166278ef2f85de8"
+  integrity sha512-GM+TEQN5WhOygr1lp7skeVjdLPqqWMHsfzXrcHAqZJi/lIVh63H0kaRCY8MDhNWikx19zBUK8ceaLB7X5AH9NQ==
+  dependencies:
+    tinyrainbow "^3.0.3"
+
 "@vitest/runner@4.1.0":
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/@vitest/runner/-/runner-4.1.0.tgz#4e12c0f086eb3a4ae3fae84d9d68b22d02942cbf"
   integrity sha512-Duvx2OzQ7d6OjchL+trw+aSrb9idh7pnNfxrklo14p3zmNL4qPCDeIJAK+eBKYjkIwG96Bc6vYuxhqDXQOWpoQ==
   dependencies:
     "@vitest/utils" "4.1.0"
+    pathe "^2.0.3"
+
+"@vitest/runner@4.1.1":
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/@vitest/runner/-/runner-4.1.1.tgz#bedc6eef9f932788a0253c97f7bee82c0b52334c"
+  integrity sha512-f7+FPy75vN91QGWsITueq0gedwUZy1fLtHOCMeQpjs8jTekAHeKP80zfDEnhrleviLHzVSDXIWuCIOFn3D3f8A==
+  dependencies:
+    "@vitest/utils" "4.1.1"
     pathe "^2.0.3"
 
 "@vitest/snapshot@4.1.0":
@@ -2292,6 +2307,15 @@
   integrity sha512-XfPXT6a8TZY3dcGY8EdwsBulFCIw+BeeX0RZn2x/BtiY/75YGh8FeWGG8QISN/WhaqSrE2OrlDgtF8q5uhOTmw==
   dependencies:
     "@vitest/pretty-format" "4.1.0"
+    convert-source-map "^2.0.0"
+    tinyrainbow "^3.0.3"
+
+"@vitest/utils@4.1.1":
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/@vitest/utils/-/utils-4.1.1.tgz#1c8b1f3405008a10bc2cf74eb8ba1b32c1dbc789"
+  integrity sha512-cNxAlaB3sHoCdL6pj6yyUXv9Gry1NHNg0kFTXdvSIZXLHsqKH7chiWOkwJ5s5+d/oMwcoG9T0bKU38JZWKusrQ==
+  dependencies:
+    "@vitest/pretty-format" "4.1.1"
     convert-source-map "^2.0.0"
     tinyrainbow "^3.0.3"
 
