@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import {
   LAPTOP_MEDIA_QUERY,
   useMediaQuery,
@@ -15,7 +17,7 @@ export interface NavItem {
   key: string
   group: NavGroup
   type: string
-  title?: string
+  title: string
   icon?: string
   to?: string
   end?: boolean
@@ -34,13 +36,52 @@ export const SideNavLinks = ({
   const footerItems = navItems.filter((i) => i.group === 'footer')
 
   const isMobileScreen = useMediaQuery(LAPTOP_MEDIA_QUERY)
+  const [sectionStatus, setSectionStatus] = useState<Record<string, boolean>>(
+    {}
+  )
+
+  const isSectionActive = (item: NavItem) => {
+    if (item.type !== 'section') {
+      return false
+    }
+
+    const userDefinedState = sectionStatus[item.key]
+
+    if (userDefinedState !== undefined) {
+      return userDefinedState
+    }
+
+    return !isMobileScreen
+  }
+
+  const handleExpandSection = (sectionKey: string) => {
+    setSectionStatus((prev) => {
+      const currentIsActive = prev[sectionKey] ?? !isMobileScreen
+
+      const nextValue = !currentIsActive
+
+      if (isMobileScreen) {
+        return nextValue ? { [sectionKey]: true } : {}
+      }
+
+      return {
+        ...prev,
+        [sectionKey]: nextValue,
+      }
+    })
+  }
 
   return (
     <div className={styles.sidebar}>
       {/* SCROLLABLE CONTENT */}
       <ul>
         {mainItems.map((item) => (
-          <RenderNavItem key={item.key} item={item} />
+          <RenderNavItem
+            key={item.key}
+            item={item}
+            isOpen={isSectionActive(item)}
+            onToggleButtonClick={() => handleExpandSection(item.key)}
+          />
         ))}
       </ul>
 
