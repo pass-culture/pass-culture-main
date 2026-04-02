@@ -1,6 +1,9 @@
 import collections
 import contextlib
+import functools
 import math
+import os
+import traceback
 import typing
 
 import flask
@@ -12,10 +15,13 @@ import sqlalchemy.orm
 from pcapi import settings
 from pcapi.models import db
 from pcapi.models.feature import Feature
+from pcapi.utils import date as date_utils
 
 
 # 1. SELECT the user session and the user.
 AUTHENTICATION_QUERIES = 1
+
+STACKS_FOLDER = "stacks"
 
 
 @contextlib.contextmanager
@@ -74,13 +80,54 @@ def assert_num_queries(expected_n_queries: int) -> collections.abc.Generator[Non
     flask.g._query_logger = []
     yield
     queries = flask.g._query_logger.copy()
+    del flask.g._query_logger
 
     if len(queries) != expected_n_queries:
         details = "\n".join(_format_sql_query(query, i, len(queries)) for i, query in enumerate(queries, start=1))
+        if file_name := _save_traces(queries):
+            details += f"\n\n Queries stack traces saved in file {file_name}"
+        else:
+            details += "\n\n To save each query stack trace call the test with the flag --sql-trace"
         pytest.fail(
             f"{len(queries)} queries executed, {expected_n_queries} expected\nCaptured queries were:\n{details}"
         )
-    del flask.g._query_logger
+
+
+def _save_traces(queries: list[dict]) -> str:
+    stacks = [query["stack"] for query in queries if query.get("stack")]
+
+    if not stacks:
+        return ""
+
+    os.makedirs(STACKS_FOLDER, exist_ok=True)
+
+    first_frame, name = _extract_test_meta(stacks)
+    file_name = f"{STACKS_FOLDER}/{date_utils.get_naive_utc_now().strftime('%Y%m%d%H%M%S')}-{name}.stack"
+
+    with open(file_name, mode="w") as fp:
+        for i, stack in enumerate(stacks, start=1):
+            # remove sqlalchemy internal at the end of the stack
+            for last_frame in range(len(stack) - 1, first_frame, -1):
+                if "/site-packages/sqlalchemy/" not in stack[last_frame]:
+                    break
+
+            if i != 1:
+                fp.write(f"\n\n{'+' * 120}\n\n")
+            fp.write(f"{i}.\n")
+            fp.write("".join(stack[first_frame : last_frame + 1]))
+
+    return file_name
+
+
+def _extract_test_meta(stacks: list[str]) -> tuple[int, str]:
+    """removes pytest overhead and extracts the test's name"""
+    for i in range(len(stacks[0])):
+        frame = stacks[0][i]
+        if "/api/tests/" not in frame:
+            continue
+        name = frame.split("\n")[0].split(" ")[-1]
+        return i, name
+    return 0, "error"
 
 
 def _format_sql_query(query: dict, i: int, total: int) -> str:
@@ -96,7 +143,7 @@ def _format_sql_query(query: dict, i: int, total: int) -> str:
     return f"{i}. {sql}"
 
 
-def _record_end_of_query(statement: str, parameters: dict, **kwargs: dict) -> None:
+def _record_end_of_query(statement: str, parameters: dict, _with_trace: bool = False, **kwargs: dict) -> None:
     """Event handler that records SQL queries for assert_num_queries
     fixture.
     """
@@ -112,15 +159,19 @@ def _record_end_of_query(statement: str, parameters: dict, **kwargs: dict) -> No
         {
             "statement": statement,
             "parameters": parameters,
+            "stack": traceback.format_stack()[:-1] if _with_trace else None,
         }
     )
 
 
-def register_event_for_query_logger() -> None:
+def register_event_for_query_logger(with_trace: bool = False) -> None:
     sqlalchemy.event.listen(
         sqlalchemy.engine.Engine,
         "after_cursor_execute",
-        _record_end_of_query,
+        functools.partial(
+            _record_end_of_query,
+            _with_trace=with_trace,
+        ),
         named=True,
     )
 
