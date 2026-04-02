@@ -1,1 +1,0 @@
-import{P as e}from"./components-DaMvtb5l.js";export{e as createCopyToClipboardFunction};
