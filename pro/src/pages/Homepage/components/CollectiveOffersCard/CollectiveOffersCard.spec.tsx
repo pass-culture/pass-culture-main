@@ -50,7 +50,7 @@ describe('CollectiveOffersCard', () => {
     expect(screen.getByText('retention template')).toBeVisible()
   })
 
-  it('should display bookable offers when venue has bookable offers to display on homepage', async () => {
+  it('should display bookable offers when venue has bookable offers to display on homepage', () => {
     renderCollectiveOffersCard({
       variant: CollectiveOffersCardVariant.BOOKABLE,
       hasOffers: true,
@@ -66,7 +66,12 @@ describe('CollectiveOffersCard', () => {
       ],
     })
 
-    expect(await screen.findByText('offres réservables')).toBeVisible()
+    expect(
+      screen.getByRole('heading', {
+        level: 2,
+        name: 'Offres réservables',
+      })
+    ).toBeVisible()
   })
 
   it('should display template offers when venue has active template offers', async () => {
