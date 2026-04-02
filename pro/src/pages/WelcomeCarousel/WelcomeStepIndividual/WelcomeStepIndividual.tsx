@@ -1,6 +1,9 @@
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import strokeEventsIcon from 'icons/stroke-events.svg'
+import { useLocation } from 'react-router'
 
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { WelcomeCarouselEvents } from '@/commons/core/FirebaseEvents/constants'
 import { BubbleStepper } from '@/components/BubbleStepper/BubbleStepper'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonSize, ButtonVariant } from '@/design-system/Button/types'
@@ -10,6 +13,8 @@ import { CardInfo } from '../components/CardInfo'
 import styles from './WelcomeStepIndividual.module.scss'
 
 const WelcomeStepIndividual = (): JSX.Element => {
+  const { logEvent } = useAnalytics()
+  const location = useLocation()
   return (
     <>
       <h1 className={commonStyles.title}>
@@ -37,6 +42,11 @@ const WelcomeStepIndividual = (): JSX.Element => {
             as="a"
             to="https://aide.passculture.app/hc/fr/articles/25741239847964--Acteurs-culturels-Consulter-des-exemples-d-offres-individuelles"
             label="Exemples d'offres pour les jeunes"
+            onClick={() => {
+              logEvent(WelcomeCarouselEvents.CLICKED_SEE_INDIV_OFFERS, {
+                from: location.pathname,
+              })
+            }}
             variant={ButtonVariant.TERTIARY}
             size={ButtonSize.SMALL}
             isExternal
