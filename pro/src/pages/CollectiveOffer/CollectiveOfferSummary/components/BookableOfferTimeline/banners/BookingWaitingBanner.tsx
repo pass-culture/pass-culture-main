@@ -1,8 +1,8 @@
 import { differenceInCalendarDays } from 'date-fns'
 
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
+import { getExpirationText } from '@/commons/core/OfferEducational/utils/getExpirationText'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
-import { pluralizeFr } from '@/commons/utils/pluralize'
 import {
   Banner,
   type BannerLink,
@@ -36,15 +36,8 @@ export const BookingWaitingBanner = ({
     new Date()
   )
 
-  const isExpiringSoon = daysCountBeforeExpiration <= 7
-
-  const expiringSoon = isExpiringSoon
-    ? `Expire ${
-        daysCountBeforeExpiration > 0
-          ? `dans ${daysCountBeforeExpiration} ${pluralizeFr(daysCountBeforeExpiration, 'jour', 'jours')}`
-          : 'aujourd’hui'
-      }`
-    : undefined
+  const expirationText = getExpirationText(daysCountBeforeExpiration)
+  const isExpiringSoon = !!expirationText
 
   const description =
     offerStatus === CollectiveOfferDisplayedStatus.PUBLISHED
@@ -84,7 +77,7 @@ export const BookingWaitingBanner = ({
         <Banner
           title="Informations"
           variant={BannerVariants.WARNING}
-          description={`${expiringSoon}.\n ${description}`}
+          description={`${expirationText}.\n ${description}`}
           actions={actions}
         />
       ) : (

@@ -1,6 +1,7 @@
 import { differenceInCalendarDays } from 'date-fns'
 
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
+import { getExpirationText } from '@/commons/core/OfferEducational/utils/getExpirationText'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import calendarIcon from '@/icons/full-calendar.svg'
@@ -26,15 +27,15 @@ export const CollectiveOffersBookableTag = ({
       new Date(stock.bookingLimitDatetime),
       new Date()
     )
+    const expirationText = getExpirationText(daysCountBeforeExpiration)
 
-    if (daysCountBeforeExpiration <= 7) {
-      const tagLabel = `Expire ${
-        daysCountBeforeExpiration > 0
-          ? `dans ${daysCountBeforeExpiration} ${pluralizeFr(daysCountBeforeExpiration, 'jour', 'jours')}`
-          : "aujourd'hui"
-      }`
+    if (expirationText) {
       return (
-        <Tag variant={TagVariant.WARNING} icon={waitIcon} label={tagLabel} />
+        <Tag
+          variant={TagVariant.WARNING}
+          icon={waitIcon}
+          label={expirationText}
+        />
       )
     }
   }
