@@ -9,7 +9,7 @@ import pytest
 import requests_mock
 from pydantic.v1 import parse_obj_as
 
-from pcapi.core.educational.adage import api as adage_client
+from pcapi.core.educational.adage import client as adage_client
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.schemas import AdageCulturalPartners
 from pcapi.core.history import models as history_models
