@@ -44,7 +44,7 @@ def test_import_deposit_csv(mock_import: MagicMock, app: Flask):
 
 
 @patch("pcapi.core.educational.api.adage.synchronize_adage_partners")
-@patch("pcapi.core.educational.adage.api.get_cultural_partners")
+@patch("pcapi.core.educational.adage.client.get_cultural_partners")
 def test_synchronize_adage_cultural_partners(mock_partners: MagicMock, mock_sync: MagicMock, app: Flask):
     adage_partners = [BASE_ADAGE_PARTNER]
     mock_partners.return_value = adage_partners
@@ -56,7 +56,7 @@ def test_synchronize_adage_cultural_partners(mock_partners: MagicMock, mock_sync
 
 
 @patch("pcapi.core.educational.api.adage.synchronize_adage_ids_on_offerers")
-@patch("pcapi.core.educational.adage.api.get_cultural_partners")
+@patch("pcapi.core.educational.adage.client.get_cultural_partners")
 def test_synchronize_offerers_from_adage_cultural_partners(mock_partners: MagicMock, mock_sync: MagicMock, app: Flask):
     adage_partners = [BASE_ADAGE_PARTNER]
     mock_partners.return_value = adage_partners

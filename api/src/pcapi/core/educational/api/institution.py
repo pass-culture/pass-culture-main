@@ -15,7 +15,7 @@ from pcapi.core.educational import models
 from pcapi.core.educational import repository
 from pcapi.core.educational import schemas
 from pcapi.core.educational import utils
-from pcapi.core.educational.adage import api as adage_client
+from pcapi.core.educational.adage import client as adage_client
 from pcapi.core.educational.constants import INSTITUTION_TYPES
 from pcapi.models import db
 from pcapi.utils import date as date_utils
