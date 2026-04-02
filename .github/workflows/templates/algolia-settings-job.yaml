@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: set-algolia-settings-${DATE}
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 300
+  activeDeadlineSeconds: 1800
+  template:
+    spec:
+      serviceAccountName: ${SERVICE_ACCOUNT_NAME}
+      containers:
+      - name: pcapi-algolia-settings
+        image: ${IMAGE}
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 500m
+          limits:
+            memory: 512Mi
+        envFrom:
+        - configMapRef:
+            name: ${ENV}-pcapi-api
+        - configMapRef:
+            name: ${ENV}-pcapi-api-specific
+            optional: true
+        - secretRef:
+            name: ${ENV}-pcapi
+        command:
+          - "/bin/bash"
+        args:
+          - "-c"
+          - |
+            set -e
+            flask set_algolia_settings artists --apply
+            flask set_algolia_settings offers --apply
+            flask set_algolia_settings collective_offers --apply
+            flask set_algolia_settings venues --apply
+      restartPolicy: Never
