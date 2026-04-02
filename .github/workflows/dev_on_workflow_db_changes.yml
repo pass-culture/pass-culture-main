@@ -1,13 +1,27 @@
-name: 99 Check Alembic Migrations for significant changes
+name: 99 Check Alembic Migrations for significant changes that impact data team
 
 on:
   workflow_call:
+    inputs:
+      ping_data_team:
+        required: false
+        type: boolean
+        default: true
+    outputs:
+      changes:
+        description: "Detected significant changes"
+        value: ${{ jobs.check-significant-changes.outputs.changes }}
+  workflow_dispatch:
+    inputs:
+      ping_data_team:
+        required: false
+        type: boolean
+        default: false
 
 permissions: write-all
 
 jobs:
   check-significant-changes:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     outputs:
       changes: ${{ steps.changes.outputs.changes }}
@@ -30,25 +44,17 @@ jobs:
         if: steps.changed-files.outputs.any_changed == 'true'
         env:
           CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+          PING_DATA_TEAM: ${{ inputs.ping_data_team }}
         run: |
           read -ra files <<< "$CHANGED_FILES"
-          changes="$(python api/bin/alembic_detect_significant_changes.py "${files[@]}")"
-          EOF="$(dd if=/dev/urandom bs=15 count=1 status=none | base64)"
+          no_ping_flag=""
+          if [[ "$PING_DATA_TEAM" != "true" ]]; then
+            no_ping_flag="--no-ping"
+          fi
+          changes="$(python api/bin/alembic_detect_significant_changes.py $no_ping_flag "${files[@]}")"
+          EOF="$(dd if=/dev/urandom bs=15 count=1 status=none  | base64)"
           {
             echo "changes<<$EOF"
             echo "$changes"
             echo "$EOF"
           } >> "$GITHUB_OUTPUT"
-
-  send-slack-notification:
-    name: "Send DB changes notification"
-    needs: check-significant-changes
-    if: needs.check-significant-changes.outputs.changes != ''
-    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
-    with:
-      channel: ${{vars.SLACK_DB_CHANGES_CHANNEL_ID}}
-      color: "#008080"  # teal
-      message: "Cette <${{ github.event.pull_request.html_url }}|PR> contient:\\n ${{ needs.check-significant-changes.outputs.changes }}"
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}

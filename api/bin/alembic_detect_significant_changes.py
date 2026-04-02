@@ -541,42 +541,44 @@ class EnvReport:
             return ""
         return " ".join(team.fmt_slack_mention() for team in teams)
 
-    def render(self, sep: str = r"\n") -> str:
+    def render(self, sep: str = r"\n", no_ping: bool = False) -> str:
         """Render this report as a Slack mrkdwn-formatted string.
 
         Args:
             sep: Line separator. Defaults to the two-character literal ``\\n``
                  which survives GitHub Actions output encoding. Pass ``"\\n"``
                  (actual newline) for local/terminal output.
+            no_ping: When True, disable Slack team mentions in output.
 
         Returns:
             A Slack-formatted multi-line string, or an empty string if no changes.
         """
         lines: list[str] = []
         if self.important:
-            mentions = self._get_team_mentions("important")
+            mentions = "" if no_ping else self._get_team_mentions("important")
             ping = f" {mentions}" if mentions else ""
             lines.append(f":warning: *Migrations importantes*{ping}")
             lines.extend(f">*{op.format()}*" for op in self.important)
         if self.notable:
             if lines:
                 lines.append("")
-            mentions = self._get_team_mentions("notable")
+            mentions = "" if no_ping else self._get_team_mentions("notable")
             ping = f" {mentions}" if mentions else ""
             lines.append(f":rotating_light: *Migrations notables*{ping}")
             lines.extend(f">{op.format()}" for op in self.notable)
         return sep.join(lines)
 
-    def render_with_env(self, sep: str = r"\n") -> str:
+    def render_with_env(self, sep: str = r"\n", no_ping: bool = False) -> str:
         """Render this report prefixed with a bold environment label.
 
         Args:
             sep: Line separator forwarded to render(). See render() for details.
+            no_ping: When True, disable Slack team mentions in output.
 
         Returns:
             A Slack-formatted string with an environment header prepended.
         """
-        return f"*[{self.env.upper()}]*{sep}{self.render(sep=sep)}"
+        return f"*[{self.env.upper()}]*{sep}{self.render(sep=sep, no_ping=no_ping)}"
 
 
 # ---------------------------------------------------------------------------
@@ -701,12 +703,13 @@ class ChangeDetector:
 # Entry point
 # ---------------------------------------------------------------------------
 
-def main(file_names: list[str], debug: bool = False) -> None:
+def main(file_names: list[str], debug: bool = False, no_ping: bool = False) -> None:
     """Run change detection and print Slack-formatted alerts for changed environments.
 
     Args:
         file_names: Paths to Alembic migration .py files to analyse.
         debug:      When True, print per-environment filter details to stderr.
+        no_ping:    When True, disable Slack team mentions in output.
     """
     all_ops = ChangeDetector._collect_ops(file_names)
 
@@ -735,7 +738,7 @@ def main(file_names: list[str], debug: bool = False) -> None:
             reports.append(report)
 
     if reports:
-        print((r"\n" + r"\n").join(r.render_with_env() for r in reports))
+        print((r"\n" + r"\n").join(r.render_with_env(no_ping=no_ping) for r in reports))
 
 
 if __name__ == "__main__":
@@ -744,5 +747,7 @@ if __name__ == "__main__":
     )
     parser.add_argument("files", nargs="+", type=str, help="Alembic migration .py files to analyse")
     parser.add_argument("--debug", action="store_true", help="Print per-env filter details to stderr")
+    parser.add_argument("--no-ping", dest="no_ping", action="store_false", help="Disable Slack team mentions in output")
+    parser.set_defaults(no_ping=False)
     args = parser.parse_args()
-    main(file_names=args.files, debug=args.debug)
+    main(file_names=args.files, debug=args.debug, no_ping=args.no_ping)
