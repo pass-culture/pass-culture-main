@@ -4,51 +4,48 @@ on:
   pull_request:
     types:
       - closed
+  pull_request_review:
+    types:
+      - submitted
 
 permissions: write-all
 
 jobs:
-  check-significant-changes:
-    if: github.event.pull_request.merged == true
-    runs-on: ubuntu-latest
-    outputs:
-      changes: ${{ steps.changes.outputs.changes }}
+  detect-significant-changes-for-data-team:
+    if: |
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true) ||
+      (github.event_name == 'pull_request_review' && github.event.review.state == 'approved')
+    uses: my-org/my-repo/.github/workflows/99_check_alembic_migrations.yml
+    with:
+      ping_data_team: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true && true || false }}
+    secrets: inherit
 
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          fetch-depth: 0
-
-      - id: changed-files
-        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
-        with:
-          files: |
-            api/src/pcapi/alembic/versions/**
-
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-
-      - name: Detect DB changes
-        id: changes
-        if: steps.changed-files.outputs.any_changed == 'true'
-        run: |
-          changes="$(python api/bin/alembic_detect_significant_changes.py ${{ steps.changed-files.outputs.all_changed_files }})"
-          # See https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
-          EOF="$(dd if=/dev/urandom bs=15 count=1 status=none | base64)"
-          {
-            echo "changes<<$EOF"
-            echo "$changes"
-            echo "$EOF" 
-          } >> "$GITHUB_OUTPUT"
-
-  send-slack-notification:
-    name: "Send DB changes notification"
-    needs: check-significant-changes
-    if: needs.check-significant-changes.outputs.changes != ''
+  send-slack-notification-approved:
+    needs: detect-significant-changes-for-data-team
+    if: |
+      github.event_name == 'pull_request_review' &&
+      github.event.review.state == 'approved' &&
+      needs.detect-significant-changes-for-data-team.outputs.changes != ''
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
-      channel: ${{vars.SLACK_DB_CHANGES_CHANNEL_ID}}
-      color: "#008080"  # teal
-      message: "Cette <${{ github.event.pull_request.html_url }}|PR> contient:\\n ${{ needs.check-significant-changes.outputs.changes }}"
+      channel: ${{ vars.SLACK_DB_CHANGES_CHANNEL_ID }}
+      color: "#008080"
+      message: "La <${{ github.event.pull_request.html_url }}|PR> a été approuvée et contient:\\n ${{ needs.detect-significant-changes-for-data-team.outputs.changes }}\\n @${{ github.event.pull_request.user.login }} merci de te synchroniser avec l'équipe data engineering avant de merger."
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+  send-slack-notification-merged:
+    needs: detect-significant-changes-for-data-team
+    if: |
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.merged == true &&
+      needs.detect-significant-changes-for-data-team.outputs.changes != ''
+    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    with:
+      channel: ${{ vars.SLACK_DB_CHANGES_CHANNEL_ID }}
+      color: "#008080"
+      message: "La <${{ github.event.pull_request.html_url }}|PR> a été mergée et contient:\\n ${{ needs.detect-significant-changes-for-data-team.outputs.changes }}\\n veuiller synchroniser les jobs d'import et les schemas des tables concernées."
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}

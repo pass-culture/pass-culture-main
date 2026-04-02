@@ -1,0 +1,60 @@
+name: 99 Check Alembic Migrations for significant changes that impact data team
+
+on:
+  workflow_call:
+    inputs:
+      ping_data_team:
+        required: false
+        type: boolean
+        default: true
+    outputs:
+      changes:
+        description: "Detected significant changes"
+        value: ${{ jobs.check-significant-changes.outputs.changes }}
+  workflow_dispatch:
+    inputs:
+      ping_data_team:
+        required: false
+        type: boolean
+        default: false
+
+permissions: write-all
+
+jobs:
+  check-significant-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      changes: ${{ steps.changes.outputs.changes }}
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - id: changed-files
+        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
+        with:
+          files: |
+            api/src/pcapi/alembic/versions/**
+
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+
+      - name: Detect DB changes
+        id: changes
+        if: steps.changed-files.outputs.any_changed == 'true'
+        env:
+          CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+          PING_DATA_TEAM: ${{ inputs.ping_data_team }}
+        run: |
+          read -ra files <<< "$CHANGED_FILES"
+          no_ping_flag=""
+          if [[ "$PING_DATA_TEAM" != "true" ]]; then
+            no_ping_flag="--no-ping"
+          fi
+          changes="$(python api/bin/alembic_detect_significant_changes.py $no_ping_flag "${files[@]}")"
+          EOF="$(dd if=/dev/urandom bs=15 count=1 status=none  | base64)"
+          {
+            echo "changes<<$EOF"
+            echo "$changes"
+            echo "$EOF"
+          } >> "$GITHUB_OUTPUT"
