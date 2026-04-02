@@ -25,7 +25,7 @@ describe('BookingWaitingBanner', () => {
     expect(banner.className).toMatch(/warning/)
   })
 
-  it('should show "expire aujourd’hui" when offer expires today', () => {
+  it('should show "Expire aujourd\'hui" when offer expires today', () => {
     const today = new Date()
 
     renderWithProviders(
@@ -37,7 +37,7 @@ describe('BookingWaitingBanner', () => {
       />
     )
 
-    expect(screen.getByText(/Expire aujourd’hui/)).toBeInTheDocument()
+    expect(screen.getByText(/Expire aujourd'hui/)).toBeInTheDocument()
   })
 
   it('should not show expiration warning when offer expires in more than 7 days', () => {
