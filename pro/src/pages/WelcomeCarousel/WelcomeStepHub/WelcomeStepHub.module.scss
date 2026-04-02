@@ -11,3 +11,10 @@
   color: var(--color-icon-brand-primary);
   margin-bottom: var(--size-spacing-xxl);
 }
+
+.already-have-account {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--size-spacing-xxl);
+  text-align: center;
+}
