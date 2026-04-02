@@ -2,14 +2,11 @@ import { screen } from '@testing-library/react'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { OffersCardVariant } from '../types'
 import { OffersRetentionCard } from './OffersRetentionCard'
 
 describe('OffersRetentionCard', () => {
   it('should display template retention card', () => {
-    renderWithProviders(
-      <OffersRetentionCard variant={OffersCardVariant.TEMPLATE} />
-    )
+    renderWithProviders(<OffersRetentionCard variant="TEMPLATE" />)
 
     expect(
       screen.getByRole('heading', {
@@ -28,9 +25,7 @@ describe('OffersRetentionCard', () => {
   })
 
   it('should display bookable retention card', () => {
-    renderWithProviders(
-      <OffersRetentionCard variant={OffersCardVariant.BOOKABLE} />
-    )
+    renderWithProviders(<OffersRetentionCard variant="BOOKABLE" />)
 
     expect(
       screen.getByRole('heading', {
@@ -49,9 +44,7 @@ describe('OffersRetentionCard', () => {
   })
 
   it('should display individual retention card', () => {
-    renderWithProviders(
-      <OffersRetentionCard variant={OffersCardVariant.INDIVIDUAL} />
-    )
+    renderWithProviders(<OffersRetentionCard variant="INDIVIDUAL" />)
 
     expect(
       screen.getByRole('heading', {

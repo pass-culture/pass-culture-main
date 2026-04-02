@@ -3,13 +3,10 @@ import { differenceInCalendarDays } from 'date-fns'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 
-import type {
-  CollectiveOffersCardVariant,
-  CollectiveOffersVariantMap,
-} from '../../../types'
+import type { CollectiveOffersVariantMap } from '../../../types'
 
 type CollectiveOffersBookableCTAProps = {
-  stock: CollectiveOffersVariantMap[CollectiveOffersCardVariant.BOOKABLE]['collectiveStock']
+  stock: CollectiveOffersVariantMap['BOOKABLE']['collectiveStock']
   offerId: number
   offerLink: string
 }

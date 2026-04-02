@@ -6,16 +6,11 @@ import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import calendarIcon from '@/icons/full-calendar.svg'
 import waitIcon from '@/icons/full-wait.svg'
 
-import type {
-  CollectiveOffersCardVariant,
-  CollectiveOffersVariantMap,
-} from '../../../types'
+import type { CollectiveOffersVariantMap } from '../../../types'
 
 type CollectiveOffersBookableTagProps = {
-  stock: NonNullable<
-    CollectiveOffersVariantMap[CollectiveOffersCardVariant.BOOKABLE]['collectiveStock']
-  >
-  displayedStatus: CollectiveOffersVariantMap[CollectiveOffersCardVariant.BOOKABLE]['displayedStatus']
+  stock: NonNullable<CollectiveOffersVariantMap['BOOKABLE']['collectiveStock']>
+  displayedStatus: CollectiveOffersVariantMap['BOOKABLE']['displayedStatus']
 }
 
 export const CollectiveOffersBookableTag = ({

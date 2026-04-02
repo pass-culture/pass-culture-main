@@ -29,7 +29,7 @@ import { IncomeCard } from './components/IncomeCard/IncomeCard'
 import { NewsletterCard } from './components/NewsletterCard/NewsletterCard'
 import { OffersEmptyStateCard } from './components/OffersEmptyStateCard/OffersEmptyStateCard'
 import { PartnerPageCard } from './components/PartnerPageCard/PartnerPageCard'
-import { HomepageVariant, OffersCardVariant } from './components/types'
+import { HomepageVariant } from './components/types'
 import { VenueValidationBanner } from './components/VenueValidationBanner/VenueValidationBanner'
 import { WebinarCard } from './components/WebinarCard/WebinarCard'
 import styles from './NewHomepage.module.scss'
@@ -198,7 +198,7 @@ export const NewHomepage = (): JSX.Element => {
 
           <div className={styles['main']}>
             {hasRefusedDmsApplication && (
-              <OffersEmptyStateCard variant={OffersCardVariant.INDIVIDUAL} />
+              <OffersEmptyStateCard variant="INDIVIDUAL" />
             )}
             {selectedPartnerVenue.allowedOnAdage && (
               <CollectiveOffersCardsContainer

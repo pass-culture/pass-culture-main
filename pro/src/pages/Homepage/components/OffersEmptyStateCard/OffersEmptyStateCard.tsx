@@ -2,14 +2,14 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Card } from '@/ui-kit/Card/Card'
 
-import { OffersCardVariant } from '../types'
+import type { OffersCardVariant } from '../types'
 import bookableOffers from './assets/bookable-offers.png'
 import individualOffers from './assets/individual-offers.png'
 import templateOffers from './assets/template-offers.png'
 import styles from './OffersEmptyStateCard.module.scss'
 
 const EMPTY_STATE_CONFIG = {
-  [OffersCardVariant.BOOKABLE]: {
+  BOOKABLE: {
     title: 'Adresser une offre réservable à un établissement scolaire',
     description:
       'L’offre réservable, datée et tarifée, est destinée à un seul établissement scolaire pour que le projet que vous avez co-construit ensemble puisse se réaliser.',
@@ -17,7 +17,7 @@ const EMPTY_STATE_CONFIG = {
     to: '/offre/creation/collectif',
     imageSrc: bookableOffers,
   },
-  [OffersCardVariant.TEMPLATE]: {
+  TEMPLATE: {
     title:
       'Rendre vos offres visibles à tous les établissements scolaires sur ADAGE',
     description:
@@ -26,7 +26,7 @@ const EMPTY_STATE_CONFIG = {
     to: '/offre/creation/collectif/vitrine',
     imageSrc: templateOffers,
   },
-  [OffersCardVariant.INDIVIDUAL]: {
+  INDIVIDUAL: {
     title: 'Proposer vos offres sur l’application mobile pass Culture',
     description:
       "Les offres individuelles vous permettent de présenter vos propositions culturelles sur l'application.",
@@ -34,7 +34,7 @@ const EMPTY_STATE_CONFIG = {
     to: '/offre/individuelle/creation/description',
     imageSrc: individualOffers,
   },
-}
+} satisfies Record<OffersCardVariant, unknown>
 
 export const OffersEmptyStateCard = ({
   variant,

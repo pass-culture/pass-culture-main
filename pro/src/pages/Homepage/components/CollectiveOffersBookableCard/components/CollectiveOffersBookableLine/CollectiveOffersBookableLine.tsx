@@ -7,16 +7,13 @@ import { pluralizeFr } from '@/commons/utils/pluralize'
 import { CollectiveStatusLabel } from '@/components/CollectiveStatusLabel/CollectiveStatusLabel'
 import { Thumb } from '@/ui-kit/Thumb/Thumb'
 
-import type {
-  CollectiveOffersCardVariant,
-  CollectiveOffersVariantMap,
-} from '../../../types'
+import type { CollectiveOffersVariantMap } from '../../../types'
 import { CollectiveOffersBookableCTA } from '../CollectiveOffersBookableCTA/CollectiveOffersBookableCTA'
 import { CollectiveOffersBookableTag } from '../CollectiveOffersBookableTag/CollectiveOffersBookableTag'
 import styles from './CollectiveOffersBookableLine.module.scss'
 
 export type CollectiveOffersBookableLineProps = {
-  offer: CollectiveOffersVariantMap[CollectiveOffersCardVariant.BOOKABLE]
+  offer: CollectiveOffersVariantMap['BOOKABLE']
 }
 
 export const CollectiveOffersBookableLine = ({

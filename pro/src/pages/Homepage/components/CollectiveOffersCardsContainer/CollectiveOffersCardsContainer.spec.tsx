@@ -19,7 +19,7 @@ vi.mock('../CollectiveOffersCard/CollectiveOffersCard', () => ({
     variant,
   }: {
     variant: CollectiveOffersCardVariant
-  }) => <div data-testid={`card-${variant}`}>offres</div>,
+  }) => <div data-testid={`card-${variant.toLowerCase()}`}>offres</div>,
 }))
 
 describe('CollectiveOffersCardsContainer', () => {

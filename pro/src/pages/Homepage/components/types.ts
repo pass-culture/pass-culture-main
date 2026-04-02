@@ -8,18 +8,11 @@ export enum HomepageVariant {
   INDIVIDUAL = 'individual',
 }
 
-export enum OffersCardVariant {
-  TEMPLATE = 'template',
-  BOOKABLE = 'bookable',
-  INDIVIDUAL = 'individual',
-}
-
-export enum CollectiveOffersCardVariant {
-  TEMPLATE = 'template',
-  BOOKABLE = 'bookable',
-}
-
 export interface CollectiveOffersVariantMap {
-  [CollectiveOffersCardVariant.BOOKABLE]: CollectiveOfferHomeResponseModel
-  [CollectiveOffersCardVariant.TEMPLATE]: CollectiveOfferTemplateHomeResponseModel
+  BOOKABLE: CollectiveOfferHomeResponseModel
+  TEMPLATE: CollectiveOfferTemplateHomeResponseModel
 }
+
+export type CollectiveOffersCardVariant = keyof CollectiveOffersVariantMap
+
+export type OffersCardVariant = CollectiveOffersCardVariant | 'INDIVIDUAL'
