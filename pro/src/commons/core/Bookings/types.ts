@@ -1,4 +1,4 @@
-import type { BookingStatusFilter } from '@/apiClient/v1'
+import type { BookingEventType } from '@/apiClient/v1'
 
 export type PreFiltersParams = {
   offererId: string
@@ -7,7 +7,7 @@ export type PreFiltersParams = {
   offerEventDate: string
   bookingBeginningDate: string
   bookingEndingDate: string
-  bookingStatusFilter: BookingStatusFilter
+  eventType: BookingEventType
   offerId?: string
 }
 
@@ -18,7 +18,7 @@ export type APIFilters = {
   eventDate: string
   bookingPeriodBeginningDate: string
   bookingPeriodEndingDate: string
-  bookingStatusFilter: BookingStatusFilter
+  eventType: BookingEventType
   offerId?: string
   page: number
 }

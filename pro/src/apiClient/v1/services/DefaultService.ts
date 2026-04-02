@@ -5,9 +5,11 @@
 import type { ArtistsResponseModel } from '../models/ArtistsResponseModel';
 import type { AttachImageFormModel } from '../models/AttachImageFormModel';
 import type { AttachImageResponseModel } from '../models/AttachImageResponseModel';
+import type { BookingEventType } from '../models/BookingEventType';
 import type { BookingExportType } from '../models/BookingExportType';
+import type { BookingRecapStatus } from '../models/BookingRecapStatus';
 import type { BookingsExportStatusFilter } from '../models/BookingsExportStatusFilter';
-import type { BookingStatusFilter } from '../models/BookingStatusFilter';
+import type { BookingSortableColumn } from '../models/BookingSortableColumn';
 import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
 import type { ChangePasswordBodyModel } from '../models/ChangePasswordBodyModel';
 import type { ChangeProEmailBody } from '../models/ChangeProEmailBody';
@@ -113,6 +115,7 @@ import type { ResetPasswordBodyModel } from '../models/ResetPasswordBodyModel';
 import type { SaveNewOnboardingDataQueryModel } from '../models/SaveNewOnboardingDataQueryModel';
 import type { SharedCurrentUserResponseModel } from '../models/SharedCurrentUserResponseModel';
 import type { SharedLoginUserResponseModel } from '../models/SharedLoginUserResponseModel';
+import type { SortOrder } from '../models/SortOrder';
 import type { StatisticsModel } from '../models/StatisticsModel';
 import type { StocksOrderedBy } from '../models/StocksOrderedBy';
 import type { StockStatsResponseModel } from '../models/StockStatsResponseModel';
@@ -162,11 +165,18 @@ export class DefaultService {
    * @param venueId
    * @param offerId
    * @param eventDate
-   * @param bookingStatusFilter
+   * @param eventType
    * @param bookingPeriodBeginningDate
    * @param bookingPeriodEndingDate
    * @param offererAddressId
    * @param exportType
+   * @param offerName
+   * @param beneficiaryNameOrEmail
+   * @param offerEan
+   * @param bookingToken
+   * @param bookingStatus
+   * @param sortBy
+   * @param sortOrder
    * @returns any OK
    * @throws ApiError
    */
@@ -176,11 +186,18 @@ export class DefaultService {
     venueId?: (number | null),
     offerId?: (number | null),
     eventDate?: (string | null),
-    bookingStatusFilter?: (BookingStatusFilter | null),
+    eventType?: (BookingEventType | null),
     bookingPeriodBeginningDate?: (string | null),
     bookingPeriodEndingDate?: (string | null),
     offererAddressId?: (number | null),
     exportType?: (BookingExportType | null),
+    offerName?: (string | null),
+    beneficiaryNameOrEmail?: (string | null),
+    offerEan?: (string | null),
+    bookingToken?: (string | null),
+    bookingStatus?: (Array<BookingRecapStatus> | null),
+    sortBy?: (BookingSortableColumn | null),
+    sortOrder?: (SortOrder | null),
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
@@ -191,11 +208,18 @@ export class DefaultService {
         'venueId': venueId,
         'offerId': offerId,
         'eventDate': eventDate,
-        'bookingStatusFilter': bookingStatusFilter,
+        'eventType': eventType,
         'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
         'bookingPeriodEndingDate': bookingPeriodEndingDate,
         'offererAddressId': offererAddressId,
         'exportType': exportType,
+        'offerName': offerName,
+        'beneficiaryNameOrEmail': beneficiaryNameOrEmail,
+        'offerEan': offerEan,
+        'bookingToken': bookingToken,
+        'bookingStatus': bookingStatus,
+        'sortBy': sortBy,
+        'sortOrder': sortOrder,
       },
       errors: {
         403: `Forbidden`,
@@ -231,11 +255,18 @@ export class DefaultService {
    * @param venueId
    * @param offerId
    * @param eventDate
-   * @param bookingStatusFilter
+   * @param eventType
    * @param bookingPeriodBeginningDate
    * @param bookingPeriodEndingDate
    * @param offererAddressId
    * @param exportType
+   * @param offerName
+   * @param beneficiaryNameOrEmail
+   * @param offerEan
+   * @param bookingToken
+   * @param bookingStatus
+   * @param sortBy
+   * @param sortOrder
    * @returns any OK
    * @throws ApiError
    */
@@ -245,11 +276,18 @@ export class DefaultService {
     venueId?: (number | null),
     offerId?: (number | null),
     eventDate?: (string | null),
-    bookingStatusFilter?: (BookingStatusFilter | null),
+    eventType?: (BookingEventType | null),
     bookingPeriodBeginningDate?: (string | null),
     bookingPeriodEndingDate?: (string | null),
     offererAddressId?: (number | null),
     exportType?: (BookingExportType | null),
+    offerName?: (string | null),
+    beneficiaryNameOrEmail?: (string | null),
+    offerEan?: (string | null),
+    bookingToken?: (string | null),
+    bookingStatus?: (Array<BookingRecapStatus> | null),
+    sortBy?: (BookingSortableColumn | null),
+    sortOrder?: (SortOrder | null),
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
@@ -260,11 +298,18 @@ export class DefaultService {
         'venueId': venueId,
         'offerId': offerId,
         'eventDate': eventDate,
-        'bookingStatusFilter': bookingStatusFilter,
+        'eventType': eventType,
         'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
         'bookingPeriodEndingDate': bookingPeriodEndingDate,
         'offererAddressId': offererAddressId,
         'exportType': exportType,
+        'offerName': offerName,
+        'beneficiaryNameOrEmail': beneficiaryNameOrEmail,
+        'offerEan': offerEan,
+        'bookingToken': bookingToken,
+        'bookingStatus': bookingStatus,
+        'sortBy': sortBy,
+        'sortOrder': sortOrder,
       },
       errors: {
         403: `Forbidden`,
@@ -360,11 +405,18 @@ export class DefaultService {
    * @param venueId
    * @param offerId
    * @param eventDate
-   * @param bookingStatusFilter
+   * @param eventType
    * @param bookingPeriodBeginningDate
    * @param bookingPeriodEndingDate
    * @param offererAddressId
    * @param exportType
+   * @param offerName
+   * @param beneficiaryNameOrEmail
+   * @param offerEan
+   * @param bookingToken
+   * @param bookingStatus
+   * @param sortBy
+   * @param sortOrder
    * @returns ListBookingsResponseModel OK
    * @throws ApiError
    */
@@ -374,11 +426,18 @@ export class DefaultService {
     venueId?: (number | null),
     offerId?: (number | null),
     eventDate?: (string | null),
-    bookingStatusFilter?: (BookingStatusFilter | null),
+    eventType?: (BookingEventType | null),
     bookingPeriodBeginningDate?: (string | null),
     bookingPeriodEndingDate?: (string | null),
     offererAddressId?: (number | null),
     exportType?: (BookingExportType | null),
+    offerName?: (string | null),
+    beneficiaryNameOrEmail?: (string | null),
+    offerEan?: (string | null),
+    bookingToken?: (string | null),
+    bookingStatus?: (Array<BookingRecapStatus> | null),
+    sortBy?: (BookingSortableColumn | null),
+    sortOrder?: (SortOrder | null),
   ): CancelablePromise<ListBookingsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
@@ -389,11 +448,18 @@ export class DefaultService {
         'venueId': venueId,
         'offerId': offerId,
         'eventDate': eventDate,
-        'bookingStatusFilter': bookingStatusFilter,
+        'eventType': eventType,
         'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
         'bookingPeriodEndingDate': bookingPeriodEndingDate,
         'offererAddressId': offererAddressId,
         'exportType': exportType,
+        'offerName': offerName,
+        'beneficiaryNameOrEmail': beneficiaryNameOrEmail,
+        'offerEan': offerEan,
+        'bookingToken': bookingToken,
+        'bookingStatus': bookingStatus,
+        'sortBy': sortBy,
+        'sortOrder': sortOrder,
       },
       errors: {
         403: `Forbidden`,

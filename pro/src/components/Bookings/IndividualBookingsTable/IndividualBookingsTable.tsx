@@ -4,7 +4,7 @@ import type { BookingRecapResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useAccessibleScroll } from '@/commons/hooks/useAccessibleScroll'
-import { usePagination } from '@/commons/hooks/usePagination'
+import type { SortingMode } from '@/commons/hooks/useColumnSorting'
 import { AccessibleScrollContainer } from '@/components/AccessibleScrollContainer/AccessibleScrollContainer'
 import strokeNoBookingIcon from '@/icons/stroke-no-booking.svg'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
@@ -12,7 +12,6 @@ import { Table, TableVariant } from '@/ui-kit/Table/Table'
 import type { BookingsFilters } from '../Components/types'
 import { useBookingsTableColumnsByIndex } from './ColumnsIndividualBooking'
 
-const BOOKINGS_PER_PAGE = 20
 interface IndividualBookingsTableProps {
   bookings: BookingRecapResponseModel[]
   bookingStatuses: string[]
@@ -20,6 +19,10 @@ interface IndividualBookingsTableProps {
   resetFilters: () => void
   isLoading: boolean
   hasNoBooking: boolean
+  currentPage: number
+  pageCount: number
+  onPageChange: (page: number) => void
+  onSortChange?: (column: string | null, order: SortingMode) => void
 }
 
 export const IndividualBookingsTable = ({
@@ -29,17 +32,16 @@ export const IndividualBookingsTable = ({
   resetFilters,
   isLoading,
   hasNoBooking,
+  currentPage,
+  pageCount,
+  onPageChange,
+  onSortChange,
 }: IndividualBookingsTableProps): JSX.Element => {
   const bookingsWithIds = bookings.map(
     (b, i) =>
       ({ ...(b as object), id: i }) as BookingRecapResponseModel & {
         id: number
       }
-  )
-
-  const { page, pageCount, setPage, currentPageItems } = usePagination(
-    bookingsWithIds,
-    BOOKINGS_PER_PAGE
   )
 
   const { logEvent } = useAnalytics()
@@ -70,11 +72,11 @@ export const IndividualBookingsTable = ({
   return (
     <AccessibleScrollContainer
       containerRef={contentWrapperRef}
-      liveMessage={`Page ${page} sur ${pageCount}`}
+      liveMessage={`Page ${currentPage} sur ${pageCount}`}
     >
       <Table
         columns={columns}
-        data={currentPageItems}
+        data={bookingsWithIds}
         isLoading={isLoading}
         variant={TableVariant.COLLAPSE}
         noResult={{
@@ -93,12 +95,10 @@ export const IndividualBookingsTable = ({
           },
         }}
         pagination={{
-          currentPage: page,
+          currentPage: currentPage,
           pageCount: pageCount,
           onPageClick: (newPage) => {
-            const currentPage = page
-
-            setPage(newPage)
+            onPageChange(newPage)
             scrollToContentWrapper()
 
             if (currentPage + 1 === newPage) {
@@ -113,6 +113,7 @@ export const IndividualBookingsTable = ({
           },
         }}
         getFullRowContent={getFullRowContentIndividual}
+        onSortChange={onSortChange}
       />
     </AccessibleScrollContainer>
   )

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 
-import { BookingStatusFilter } from '@/apiClient/v1'
+import { BookingEventType } from '@/apiClient/v1'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { useCurrentRoute } from '@/commons/hooks/useCurrentRoute'
@@ -9,12 +9,10 @@ import { isDateValid } from '@/commons/utils/date'
 import { isEqual } from '@/commons/utils/isEqual'
 import { stringify } from '@/commons/utils/query-string'
 
-function isBookingStatusFilter(
-  value: string | null
-): value is BookingStatusFilter {
+function isBookingEventType(value: string | null): value is BookingEventType {
   return (
     value !== null &&
-    Object.values(BookingStatusFilter).includes(value as BookingStatusFilter)
+    Object.values(BookingEventType).includes(value as BookingEventType)
   )
 }
 
@@ -63,7 +61,7 @@ export function useBookingsFilters({
 
     if (
       urlSearchParams.has('offerVenueId') ||
-      urlSearchParams.has('bookingStatusFilter') ||
+      urlSearchParams.has('eventType') ||
       urlSearchParams.has('bookingBeginningDate') ||
       urlSearchParams.has('bookingEndingDate') ||
       urlSearchParams.has('offerType') ||
@@ -78,11 +76,11 @@ export function useBookingsFilters({
         offererAddressId:
           urlSearchParams.get('offererAddressId') ??
           DEFAULT_PRE_FILTERS.offererAddressId,
-        bookingStatusFilter: (() => {
-          const param = urlSearchParams.get('bookingStatusFilter')
-          return isBookingStatusFilter(param)
+        eventType: (() => {
+          const param = urlSearchParams.get('eventType')
+          return isBookingEventType(param)
             ? param
-            : initialAppliedFilters.bookingStatusFilter
+            : initialAppliedFilters.eventType
         })(),
         bookingBeginningDate:
           urlSearchParams.get('bookingBeginningDate') ??
@@ -153,7 +151,7 @@ export function useBookingsFilters({
 
   const updateUrl = (filter: PreFiltersParams) => {
     const partialUrlInfo = {
-      bookingStatusFilter: filter.bookingStatusFilter,
+      eventType: filter.eventType,
       ...(filter.offerEventDate && filter.offerEventDate !== 'all'
         ? { offerEventDate: filter.offerEventDate }
         : {}),

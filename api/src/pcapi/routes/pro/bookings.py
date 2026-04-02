@@ -43,7 +43,9 @@ from . import blueprint
 @private_api.route("/bookings/pro", methods=["GET"])
 @atomic()
 @login_required
-@spectree_serialize(response_model=ListBookingsResponseModel, api=blueprint.pro_private_schema)
+@spectree_serialize(
+    response_model=ListBookingsResponseModel, api=blueprint.pro_private_schema, query_params_as_list=["bookingStatus"]
+)
 def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel:
     page = query.page
     per_page_limit = bookings_constants.BOOKINGS_PER_PAGE_LIMIT
@@ -52,7 +54,6 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
     offerer_id = query.offerer_id
     offerer_address_id = query.offerer_address_id
     event_date = query.event_date
-    booking_status = query.booking_status_filter
     booking_period = None
     if query.booking_period_beginning_date and query.booking_period_ending_date:
         booking_period = (
@@ -63,7 +64,7 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
     bookings_query, total = booking_repository.find_by_pro_user(
         user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
         booking_period=booking_period,
-        status_filter=booking_status,
+        event_type=query.event_type,
         event_date=event_date,
         venue_id=venue_id,
         offer_id=offer_id,
@@ -71,6 +72,13 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
         offerer_address_id=offerer_address_id,
         page=int(page),
         per_page_limit=per_page_limit,
+        offer_name=query.offer_name,
+        beneficiary_name_or_email=query.beneficiary_name_or_email,
+        offer_ean=query.offer_ean,
+        booking_token=query.booking_token,
+        booking_status=query.booking_status,
+        sort_by=query.sort_by,
+        sort_order=query.sort_order,
     )
 
     return ListBookingsResponseModel(
@@ -252,12 +260,10 @@ def _create_booking_export_file(query: ListBookingsQueryModel, export_type: Book
             query.booking_period_beginning_date,
             query.booking_period_ending_date,
         )
-    booking_status = query.booking_status_filter
-
     export_data = booking_repository.get_export(
         user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
         booking_period=booking_period,
-        status_filter=booking_status,
+        event_type=query.event_type,
         event_date=event_date,
         offerer_id=offerer_id,
         venue_id=venue_id,

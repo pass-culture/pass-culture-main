@@ -83,7 +83,16 @@ class BookingStatus(enum.Enum):
     REIMBURSED = "REIMBURSED"
 
 
-class BookingStatusFilter(enum.Enum):
+class BookingRecapStatus(enum.Enum):
+    booked = "booked"
+    validated = "validated"
+    cancelled = "cancelled"
+    reimbursed = "reimbursed"
+    confirmed = "confirmed"
+    pending = "pending"
+
+
+class BookingEventType(enum.Enum):
     BOOKED = "booked"
     VALIDATED = "validated"
     REIMBURSED = "reimbursed"
@@ -92,6 +101,18 @@ class BookingStatusFilter(enum.Enum):
 class BookingExportType(enum.Enum):
     CSV = "csv"
     EXCEL = "excel"
+
+
+class BookingSortableColumn(enum.Enum):
+    OFFER = "offer"
+    BENEFICIARY = "beneficiary"
+    BOOKING_DATE = "bookingDate"
+    BOOKING_TOKEN = "bookingToken"
+
+
+class SortOrder(enum.Enum):
+    ASC = "asc"
+    DESC = "desc"
 
 
 class BookingValidationAuthorType(enum.Enum):

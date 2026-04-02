@@ -1,55 +1,58 @@
 import { api } from '@/apiClient/api'
-import type { BookingRecapResponseModel } from '@/apiClient/v1'
+import type { BookingRecapStatus, BookingSortableColumn, SortOrder } from '@/apiClient/v1'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { buildBookingsRecapQuery } from '@/commons/core/Bookings/utils'
 
-const MAX_LOADED_PAGES = 10
+export type OmniSearchParams = {
+  offerName?: string
+  beneficiaryNameOrEmail?: string
+  offerEan?: string
+  bookingToken?: string
+  bookingStatus?: BookingRecapStatus[]
+  sortBy?: BookingSortableColumn
+  sortOrder?: SortOrder
+}
 
 export const getFilteredIndividualBookingsAdapter = async (
-  apiFilters: PreFiltersParams & { page?: number }
+  apiFilters: PreFiltersParams & { page: number } & OmniSearchParams
 ) => {
-  let allBookings: BookingRecapResponseModel[] = []
-  let currentPage = 0
-  let pages: number
+  const {
+    venueId,
+    offererId,
+    offererAddressId,
+    offerId,
+    eventDate,
+    bookingPeriodBeginningDate,
+    bookingPeriodEndingDate,
+    eventType,
+    page,
+  } = buildBookingsRecapQuery(apiFilters)
 
-  do {
-    currentPage += 1
-    const nextPageFilters = {
-      ...apiFilters,
-      page: currentPage,
-    }
-    const {
-      venueId,
-      offererId,
-      offererAddressId,
-      offerId,
-      eventDate,
-      bookingPeriodBeginningDate,
-      bookingPeriodEndingDate,
-      bookingStatusFilter,
-      page,
-    } = buildBookingsRecapQuery(nextPageFilters)
-
-    const bookings = await api.getBookingsPro(
-      page,
-      // @ts-expect-error api expect number
-      offererId,
-      venueId,
-      offerId,
-      eventDate,
-      bookingStatusFilter,
-      bookingPeriodBeginningDate,
-      bookingPeriodEndingDate,
-      offererAddressId
-    )
-    pages = bookings.pages
-
-    allBookings = [...allBookings, ...bookings.bookingsRecap]
-  } while (currentPage < Math.min(pages, MAX_LOADED_PAGES))
+  const bookings = await api.getBookingsPro(
+    page,
+    // @ts-expect-error api expect number
+    offererId,
+    venueId,
+    offerId,
+    eventDate,
+    eventType,
+    bookingPeriodBeginningDate,
+    bookingPeriodEndingDate,
+    offererAddressId,
+    undefined,
+    apiFilters.offerName,
+    apiFilters.beneficiaryNameOrEmail,
+    apiFilters.offerEan,
+    apiFilters.bookingToken,
+    apiFilters.bookingStatus,
+    apiFilters.sortBy,
+    apiFilters.sortOrder,
+  )
 
   return {
-    bookings: allBookings,
-    pages,
-    currentPage,
+    bookings: bookings.bookingsRecap,
+    pages: bookings.pages,
+    total: bookings.total,
+    currentPage: bookings.page,
   }
 }

@@ -1,12 +1,15 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
 import { formatAndOrderAddresses } from 'repository/venuesService'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
+import type { BookingRecapStatus } from '@/apiClient/v1'
 import {
+  type BookingSortableColumn,
   GetOffererAddressesWithOffersOption,
   GetVenueAddressesWithOffersOption,
+  SortOrder,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
@@ -18,10 +21,11 @@ import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
 import { useVenueAddresses } from '@/commons/hooks/swr/useVenueAddresses'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { SortingMode } from '@/commons/hooks/useColumnSorting'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { isEqual } from '@/commons/utils/isEqual'
+import { sanitizeBookingSearchTerm } from '@/commons/utils/sanitizeBookingSearchTerm'
 import { ChoosePreFiltersMessage } from '@/components/Bookings/Components/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import { DownloadsMovedBanner } from '@/components/DownloadsMovedBanner/DownloadsMovedBanner'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
@@ -37,16 +41,46 @@ import { Header } from '../../components/Bookings/Components/Header/Header'
 import { PreFilters } from '../../components/Bookings/Components/PreFilters/PreFilters'
 import type { BookingsFilters } from '../../components/Bookings/Components/types'
 import { useBookingsFilters } from '../../components/Bookings/Components/useBookingsFilters'
-import { filterBookingsRecap } from '../../components/Bookings/Components/utils/filterBookingsRecap'
 import { IndividualBookingsTable } from '../../components/Bookings/IndividualBookingsTable/IndividualBookingsTable'
-import { getFilteredIndividualBookingsAdapter } from './adapters/getFilteredIndividualBookingsAdapter'
+import {
+  getFilteredIndividualBookingsAdapter,
+  type OmniSearchParams,
+} from './adapters/getFilteredIndividualBookingsAdapter'
 import styles from './IndividualBookings.module.scss'
 
-const MAX_LOADED_PAGES = 10
+const buildOmniSearch = (filters: BookingsFilters): OmniSearchParams => {
+  const result: OmniSearchParams = {}
+  if (filters.offerName && filters.offerName !== EMPTY_FILTER_VALUE) {
+    result.offerName = sanitizeBookingSearchTerm(filters.offerName)
+  }
+  if (
+    filters.bookingBeneficiary &&
+    filters.bookingBeneficiary !== EMPTY_FILTER_VALUE
+  ) {
+    result.beneficiaryNameOrEmail = sanitizeBookingSearchTerm(
+      filters.bookingBeneficiary
+    )
+  }
+  if (filters.offerISBN && filters.offerISBN !== EMPTY_FILTER_VALUE) {
+    result.offerEan = filters.offerISBN.trim()
+  }
+  if (filters.bookingToken && filters.bookingToken !== EMPTY_FILTER_VALUE) {
+    result.bookingToken = filters.bookingToken.trim().toLowerCase()
+  }
+  if (filters.bookingStatus.length > 0) {
+    result.bookingStatus = filters.bookingStatus as BookingRecapStatus[]
+  }
+  if (filters.sortBy) {
+    result.sortBy = filters.sortBy
+  }
+  if (filters.sortOrder) {
+    result.sortOrder = filters.sortOrder
+  }
+  return result
+}
 
 export const IndividualBookings = () => {
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-  const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   const location = useLocation()
 
@@ -83,33 +117,14 @@ export const IndividualBookings = () => {
     withSwitchVenueFeature ? venueAddressQuery.data : offererAddressQuery.data
   )
 
-  const { data: bookingsQuery, isLoading } = useSWR(
-    isEqual(appliedPreFilters, initialAppliedFilters)
-      ? null
-      : [GET_BOOKINGS_QUERY_KEY, appliedPreFilters],
-    async ([, filterParams]) => {
-      setWereBookingsRequested(true)
-      const { bookings, pages, currentPage } =
-        await getFilteredIndividualBookingsAdapter({ ...filterParams })
-
-      if (currentPage === MAX_LOADED_PAGES && currentPage < pages) {
-        snackBar.success(
-          'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
-        )
-      }
-
-      return bookings
-    },
-    { fallbackData: [] }
-  )
-
-  // Omni-search state
   const queryParams = new URLSearchParams(location.search)
   const [defaultBookingId, setDefaultBookingId] = useState(
     queryParams.get('bookingId') || EMPTY_FILTER_VALUE
   )
 
-  const baseOmniFilters: BookingsFilters = {
+  const [page, setPage] = useState(1)
+
+  const [filters, setFilters] = useState<BookingsFilters>({
     bookingBeneficiary: EMPTY_FILTER_VALUE,
     bookingToken: EMPTY_FILTER_VALUE,
     offerISBN: EMPTY_FILTER_VALUE,
@@ -118,29 +133,70 @@ export const IndividualBookings = () => {
     bookingStatus: location.state?.statuses?.length
       ? location.state.statuses
       : [...ALL_BOOKING_STATUS],
-    keywords: '',
-    selectedOmniSearchCriteria: DEFAULT_OMNISEARCH_CRITERIA,
-    bookingId: EMPTY_FILTER_VALUE,
-  }
-
-  const [filters, setFilters] = useState<BookingsFilters>({
-    ...baseOmniFilters,
-    // initialize from query if present
+    keywords: defaultBookingId,
     selectedOmniSearchCriteria: defaultBookingId
       ? bookingIdOmnisearchFilter.value
       : DEFAULT_OMNISEARCH_CRITERIA,
-    keywords: defaultBookingId,
     bookingId: defaultBookingId,
   })
 
-  // Derive filtered list
-  const filteredBookings = useMemo(
-    () => filterBookingsRecap(bookingsQuery, filters),
-    [bookingsQuery, filters]
+  const [omniSearchInput, setOmniSearchInput] = useState<OmniSearchParams>(
+    buildOmniSearch(filters)
+  )
+  const [omniSearch, setOmniSearch] = useState<OmniSearchParams>(
+    buildOmniSearch(filters)
+  )
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setOmniSearch(omniSearchInput)
+    }, 400)
+    return () => clearTimeout(timeout)
+  }, [omniSearchInput])
+
+  const handleSortChange = (column: string | null, order: SortingMode) => {
+    setPage(1)
+    const newFilters = {
+      ...filters,
+      sortBy: column ? (column as BookingSortableColumn) : undefined,
+      sortOrder:
+        order === SortingMode.ASC
+          ? SortOrder.ASC
+          : order === SortingMode.DESC
+            ? SortOrder.DESC
+            : undefined,
+    }
+    setFilters(newFilters)
+    setOmniSearch(buildOmniSearch(newFilters))
+  }
+
+  const { data: bookingsResult, isLoading } = useSWR(
+    isEqual(appliedPreFilters, initialAppliedFilters)
+      ? null
+      : [GET_BOOKINGS_QUERY_KEY, appliedPreFilters, page, omniSearch],
+    async ([, filterParams, currentPage, search]) => {
+      setWereBookingsRequested(true)
+      return await getFilteredIndividualBookingsAdapter({
+        ...filterParams,
+        page: currentPage as number,
+        ...(search as OmniSearchParams),
+      })
+    },
+    {
+      fallbackData: {
+        bookings: [],
+        pages: 0,
+        total: 0,
+        currentPage: 1,
+      },
+    }
   )
 
   const updateGlobalFilters = (updatedFilters: Partial<BookingsFilters>) => {
-    setFilters((prev) => ({ ...prev, ...updatedFilters }))
+    const newFilters = { ...filters, ...updatedFilters }
+    setFilters(newFilters)
+    setOmniSearchInput(buildOmniSearch(newFilters))
+    setPage(1)
   }
 
   const updateFilters = (
@@ -154,12 +210,25 @@ export const IndividualBookings = () => {
     if (selectedOmniSearchCriteria === bookingIdOmnisearchFilter.value) {
       setDefaultBookingId('')
     }
-    setFilters((prev) => ({
-      ...prev,
+    const newFilters = {
+      ...filters,
       ...updatedFilter,
       keywords,
       selectedOmniSearchCriteria,
-    }))
+    }
+    setFilters(newFilters)
+    setOmniSearchInput(buildOmniSearch(newFilters))
+    setPage(1)
+  }
+
+  const applyFilters = () => {
+    setPage(1)
+    applyNow()
+  }
+
+  const resetFilters = () => {
+    setPage(1)
+    resetAndApplyPreFilters()
   }
 
   const { data: hasBookingsQuery, isLoading: hasBookingsQueryLoading } = useSWR(
@@ -183,10 +252,10 @@ export const IndividualBookings = () => {
         updateSelectedFilters={updateSelectedFilters}
         hasPreFilters={hasPreFilters}
         isRefreshRequired={isRefreshRequired}
-        applyNow={applyNow}
+        applyNow={applyFilters}
         resetPreFilters={resetPreFiltersWithLog}
         wereBookingsRequested={wereBookingsRequested}
-        hasResult={(bookingsQuery ?? []).length > 0}
+        hasResult={isLoading || bookingsResult.total > 0}
         isFiltersDisabled={!hasBookingsQuery.hasBookings}
         isLocalLoading={offererAddressQuery.isLoading}
         isTableLoading={isLoading}
@@ -201,30 +270,34 @@ export const IndividualBookings = () => {
       )}
       {(!withSwitchVenueFeature || wereBookingsRequested) && (
         <FilterByOmniSearch
-          isDisabled={isLoading}
+          isDisabled={false}
           keywords={filters.keywords}
           selectedOmniSearchCriteria={filters.selectedOmniSearchCriteria}
           updateFilters={updateFilters}
         />
       )}
-      {filteredBookings.length !== 0 && (
+      {(isLoading || bookingsResult.total > 0) && (
         <Header
-          bookingsRecapFilteredLength={filteredBookings.length}
+          bookingsRecapFilteredLength={bookingsResult.total}
           isLoading={isLoading}
           queryBookingId={defaultBookingId}
-          resetBookings={resetAndApplyPreFilters}
+          resetBookings={resetFilters}
         />
       )}
       {hasBookingsQuery.hasBookings && !wereBookingsRequested ? (
         <ChoosePreFiltersMessage />
       ) : (
         <IndividualBookingsTable
-          bookings={filteredBookings}
+          bookings={bookingsResult.bookings}
           bookingStatuses={filters.bookingStatus}
           updateGlobalFilters={updateGlobalFilters}
-          resetFilters={resetAndApplyPreFilters}
+          resetFilters={resetFilters}
           isLoading={isLoading}
           hasNoBooking={!hasBookingsQuery.hasBookings}
+          currentPage={page}
+          pageCount={bookingsResult.pages}
+          onPageChange={setPage}
+          onSortChange={handleSortChange}
         />
       )}
     </div>

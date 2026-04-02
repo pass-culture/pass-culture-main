@@ -20,7 +20,7 @@ export const downloadIndividualBookingsCSVFile = async (
       isDateValid(filters.offerEventDate)
       ? filters.offerEventDate
       : null,
-    filters.bookingStatusFilter,
+    filters.eventType,
     isDateValid(filters.bookingBeginningDate)
       ? filters.bookingBeginningDate
       : null,

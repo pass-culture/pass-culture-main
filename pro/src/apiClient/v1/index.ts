@@ -25,6 +25,7 @@ export type { AudioDisabilityModel } from './models/AudioDisabilityModel';
 export { BankAccountApplicationStatus } from './models/BankAccountApplicationStatus';
 export type { BankAccountResponseModel } from './models/BankAccountResponseModel';
 export type { BannerMetaModel } from './models/BannerMetaModel';
+export { BookingEventType } from './models/BookingEventType';
 export { BookingExportType } from './models/BookingExportType';
 export { BookingOfferType } from './models/BookingOfferType';
 export type { BookingRecapResponseBeneficiaryModel } from './models/BookingRecapResponseBeneficiaryModel';
@@ -34,7 +35,7 @@ export type { BookingRecapResponseStockModel } from './models/BookingRecapRespon
 export { BookingRecapStatus } from './models/BookingRecapStatus';
 export type { BookingsExportQueryModel } from './models/BookingsExportQueryModel';
 export { BookingsExportStatusFilter } from './models/BookingsExportStatusFilter';
-export { BookingStatusFilter } from './models/BookingStatusFilter';
+export { BookingSortableColumn } from './models/BookingSortableColumn';
 export type { CategoriesResponseModel } from './models/CategoriesResponseModel';
 export type { CategoryResponseModel } from './models/CategoryResponseModel';
 export type { ChangePasswordBodyModel } from './models/ChangePasswordBodyModel';
@@ -248,6 +249,7 @@ export type { SharedCurrentUserResponseModel } from './models/SharedCurrentUserR
 export type { SharedLoginUserResponseModel } from './models/SharedLoginUserResponseModel';
 export type { ShortHighlightResponseModel } from './models/ShortHighlightResponseModel';
 export { SimplifiedBankAccountStatus } from './models/SimplifiedBankAccountStatus';
+export { SortOrder } from './models/SortOrder';
 export type { StatisticsModel } from './models/StatisticsModel';
 export type { StatisticsQueryModel } from './models/StatisticsQueryModel';
 export type { StockHomeResponseModel } from './models/StockHomeResponseModel';

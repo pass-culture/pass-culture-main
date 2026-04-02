@@ -11,7 +11,7 @@ export const buildBookingsRecapQuery = ({
   offerEventDate = DEFAULT_PRE_FILTERS.offerEventDate,
   bookingBeginningDate = DEFAULT_PRE_FILTERS.bookingBeginningDate,
   bookingEndingDate = DEFAULT_PRE_FILTERS.bookingEndingDate,
-  bookingStatusFilter = DEFAULT_PRE_FILTERS.bookingStatusFilter,
+  eventType = DEFAULT_PRE_FILTERS.eventType,
   offerId,
   page,
 }: Partial<PreFiltersParams> & { page?: number }): APIFilters => {
@@ -42,7 +42,7 @@ export const buildBookingsRecapQuery = ({
     params.offerId = offerId
   }
 
-  params.bookingStatusFilter = bookingStatusFilter
+  params.eventType = eventType
 
   return params
 }

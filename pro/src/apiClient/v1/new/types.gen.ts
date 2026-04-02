@@ -252,6 +252,15 @@ export type BannerMetaModel = {
 };
 
 /**
+ * BookingEventType
+ */
+export enum BookingEventType {
+    BOOKED = 'booked',
+    VALIDATED = 'validated',
+    REIMBURSED = 'reimbursed'
+}
+
+/**
  * BookingExportType
  */
 export enum BookingExportType {
@@ -372,12 +381,13 @@ export enum BookingRecapStatus {
 }
 
 /**
- * BookingStatusFilter
+ * BookingSortableColumn
  */
-export enum BookingStatusFilter {
-    BOOKED = 'booked',
-    VALIDATED = 'validated',
-    REIMBURSED = 'reimbursed'
+export enum BookingSortableColumn {
+    OFFER = 'offer',
+    BENEFICIARY = 'beneficiary',
+    BOOKING_DATE = 'bookingDate',
+    BOOKING_TOKEN = 'bookingToken'
 }
 
 /**
@@ -3851,6 +3861,10 @@ export type LinkedVenue = {
  */
 export type ListBookingsQueryModel = {
     /**
+     * Beneficiarynameoremail
+     */
+    beneficiaryNameOrEmail?: string | null;
+    /**
      * Bookingperiodbeginningdate
      */
     bookingPeriodBeginningDate?: string | null;
@@ -3858,16 +3872,32 @@ export type ListBookingsQueryModel = {
      * Bookingperiodendingdate
      */
     bookingPeriodEndingDate?: string | null;
-    bookingStatusFilter?: BookingStatusFilter | null;
+    /**
+     * Bookingstatus
+     */
+    bookingStatus?: Array<BookingRecapStatus> | null;
+    /**
+     * Bookingtoken
+     */
+    bookingToken?: string | null;
     /**
      * Eventdate
      */
     eventDate?: string | null;
+    eventType?: BookingEventType | null;
     exportType?: BookingExportType | null;
+    /**
+     * Offerean
+     */
+    offerEan?: string | null;
     /**
      * Offerid
      */
     offerId?: number | null;
+    /**
+     * Offername
+     */
+    offerName?: string | null;
     /**
      * Offereraddressid
      */
@@ -3880,6 +3910,8 @@ export type ListBookingsQueryModel = {
      * Page
      */
     page?: number;
+    sortBy?: BookingSortableColumn | null;
+    sortOrder?: SortOrder | null;
     /**
      * Venueid
      */
@@ -6005,6 +6037,14 @@ export enum SimplifiedBankAccountStatus {
 }
 
 /**
+ * SortOrder
+ */
+export enum SortOrder {
+    ASC = 'asc',
+    DESC = 'desc'
+}
+
+/**
  * StatisticsModel
  */
 export type StatisticsModel = {
@@ -7066,7 +7106,7 @@ export type getBookingsCsvData = {
          * Eventdate
          */
         eventDate?: string | null;
-        bookingStatusFilter?: BookingStatusFilter | null;
+        eventType?: BookingEventType | null;
         /**
          * Bookingperiodbeginningdate
          */
@@ -7080,6 +7120,28 @@ export type getBookingsCsvData = {
          */
         offererAddressId?: number | null;
         exportType?: BookingExportType | null;
+        /**
+         * Offername
+         */
+        offerName?: string | null;
+        /**
+         * Beneficiarynameoremail
+         */
+        beneficiaryNameOrEmail?: string | null;
+        /**
+         * Offerean
+         */
+        offerEan?: string | null;
+        /**
+         * Bookingtoken
+         */
+        bookingToken?: string | null;
+        /**
+         * Bookingstatus
+         */
+        bookingStatus?: Array<BookingRecapStatus> | null;
+        sortBy?: BookingSortableColumn | null;
+        sortOrder?: SortOrder | null;
     };
     url: '/bookings/csv';
 };
@@ -7159,7 +7221,7 @@ export type getBookingsExcelData = {
          * Eventdate
          */
         eventDate?: string | null;
-        bookingStatusFilter?: BookingStatusFilter | null;
+        eventType?: BookingEventType | null;
         /**
          * Bookingperiodbeginningdate
          */
@@ -7173,6 +7235,28 @@ export type getBookingsExcelData = {
          */
         offererAddressId?: number | null;
         exportType?: BookingExportType | null;
+        /**
+         * Offername
+         */
+        offerName?: string | null;
+        /**
+         * Beneficiarynameoremail
+         */
+        beneficiaryNameOrEmail?: string | null;
+        /**
+         * Offerean
+         */
+        offerEan?: string | null;
+        /**
+         * Bookingtoken
+         */
+        bookingToken?: string | null;
+        /**
+         * Bookingstatus
+         */
+        bookingStatus?: Array<BookingRecapStatus> | null;
+        sortBy?: BookingSortableColumn | null;
+        sortOrder?: SortOrder | null;
     };
     url: '/bookings/excel';
 };
@@ -7330,7 +7414,7 @@ export type getBookingsProData = {
          * Eventdate
          */
         eventDate?: string | null;
-        bookingStatusFilter?: BookingStatusFilter | null;
+        eventType?: BookingEventType | null;
         /**
          * Bookingperiodbeginningdate
          */
@@ -7344,6 +7428,28 @@ export type getBookingsProData = {
          */
         offererAddressId?: number | null;
         exportType?: BookingExportType | null;
+        /**
+         * Offername
+         */
+        offerName?: string | null;
+        /**
+         * Beneficiarynameoremail
+         */
+        beneficiaryNameOrEmail?: string | null;
+        /**
+         * Offerean
+         */
+        offerEan?: string | null;
+        /**
+         * Bookingtoken
+         */
+        bookingToken?: string | null;
+        /**
+         * Bookingstatus
+         */
+        bookingStatus?: Array<BookingRecapStatus> | null;
+        sortBy?: BookingSortableColumn | null;
+        sortOrder?: SortOrder | null;
     };
     url: '/bookings/pro';
 };

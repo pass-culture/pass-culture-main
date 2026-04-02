@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export enum BookingStatusFilter {
+export enum BookingEventType {
   BOOKED = 'booked',
   VALIDATED = 'validated',
   REIMBURSED = 'reimbursed',

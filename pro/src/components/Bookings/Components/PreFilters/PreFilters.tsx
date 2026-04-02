@@ -150,7 +150,7 @@ export const PreFilters = ({
                 selectedPreFilters.bookingBeginningDate
               }
               selectedBookingEndingDate={selectedPreFilters.bookingEndingDate}
-              selectedBookingFilter={selectedPreFilters.bookingStatusFilter}
+              selectedEventType={selectedPreFilters.eventType}
               updateFilters={updateSelectedFilters}
             />
 
@@ -221,8 +221,8 @@ export const PreFilters = ({
           className={styles['pf-refresh-message']}
           data-testid="refresh-required-message"
         >
-          Vos filtres ont été modifiés. Veuillez cliquer sur « Afficher » pour
-          actualiser votre recherche.
+          Vos filtres ont été modifiés. Veuillez cliquer sur « Rechercher les
+          réservations » pour actualiser votre recherche.
         </p>
       )}
     </>
