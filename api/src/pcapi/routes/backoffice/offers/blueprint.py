@@ -257,7 +257,7 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
     "SYNCHRONIZED": {
         "field": "boolean",
         "special": lambda x: x != "true",
-        "column": offers_models.Offer.idAtProvider,
+        "column": offers_models.Offer.lastProviderId,
     },
     "HEADLINE": {
         "field": "boolean",
