@@ -159,7 +159,7 @@ class ProductMediation(PcObject, Model):
     )
     lastProvider: sa_orm.Mapped["Provider | None"] = sa_orm.relationship("Provider", foreign_keys=[lastProviderId])
     productId: sa_orm.Mapped[int] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), index=True, nullable=False
+        sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), nullable=False
     )
     product: sa_orm.Mapped["Product"] = sa_orm.relationship(
         "Product",
