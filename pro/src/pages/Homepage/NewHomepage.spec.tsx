@@ -15,7 +15,7 @@ import {
 import { PartnerLayout } from '@/layouts/PartnerLayout/PartnerLayout'
 
 import * as utils from './commons/utils'
-import { HomepageVariant, OffersCardVariant } from './components/types'
+import { HomepageVariant, type OffersCardVariant } from './components/types'
 import { NewHomepage } from './NewHomepage'
 
 vi.mock('@/components/CollectiveDmsTimeline/CollectiveDmsTimeline', () => ({
@@ -48,8 +48,7 @@ vi.mock('./components/NewsletterCard/NewsletterCard', () => ({
 
 vi.mock('./components/OffersEmptyStateCard/OffersEmptyStateCard', () => ({
   OffersEmptyStateCard: ({ variant }: { variant: OffersCardVariant }) => {
-    const variantText =
-      variant === OffersCardVariant.INDIVIDUAL ? 'individuelle' : 'collective'
+    const variantText = variant === 'INDIVIDUAL' ? 'individuelle' : 'collective'
     return <div>créer une offre {variantText}</div>
   },
 }))

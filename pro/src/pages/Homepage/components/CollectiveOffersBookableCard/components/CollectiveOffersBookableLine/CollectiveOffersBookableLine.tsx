@@ -5,18 +5,15 @@ import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/uti
 import { formatDateTimeParts } from '@/commons/utils/date'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { CollectiveStatusLabel } from '@/components/CollectiveStatusLabel/CollectiveStatusLabel'
+import type { CollectiveOffersVariantMap } from '@/pages/Homepage/components/types'
 import { Thumb } from '@/ui-kit/Thumb/Thumb'
 
-import type {
-  CollectiveOffersCardVariant,
-  CollectiveOffersVariantMap,
-} from '../../../types'
 import { CollectiveOffersBookableCTA } from '../CollectiveOffersBookableCTA/CollectiveOffersBookableCTA'
 import { CollectiveOffersBookableTag } from '../CollectiveOffersBookableTag/CollectiveOffersBookableTag'
 import styles from './CollectiveOffersBookableLine.module.scss'
 
 export type CollectiveOffersBookableLineProps = {
-  offer: CollectiveOffersVariantMap[CollectiveOffersCardVariant.BOOKABLE]
+  offer: CollectiveOffersVariantMap['BOOKABLE']
 }
 
 function getSecondaryContent(

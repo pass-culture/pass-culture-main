@@ -4,7 +4,7 @@ import {
   OfferStatus,
   SubcategoryIdEnum,
   type VenueListItemResponseModel,
-  VenueTypeCode,
+  type VenueTypeCode,
 } from '@/apiClient/v1'
 import type { DisplayableActivity } from '@/apiClient/v1/new'
 import {
