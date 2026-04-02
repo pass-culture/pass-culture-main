@@ -251,33 +251,20 @@ jobs:
 
       - name: "Configure algolia"
         id: "set_algolia_settings"
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
-        with:
-          timeout_minutes: 30
-          max_attempts: 3
-          command: |
-            ENV=${{ inputs.environment}}
-            POD_NAME=$(kubectl -n $ENV get pods -l role=api --field-selector=status.phase==Running -o json | jq -r '.items[] | "\(.metadata.name)"' | head -n 1)
-            FAIL=0
-            echo "flask commands runs on ${POD_NAME}"
+        run: |
+          export ENV=${{ inputs.environment }}
+          export DATE=$(date +%Y%m%d-%H%M%S)
+          JOB_NAME="set-algolia-settings-${DATE}"
 
-            if ! kubectl exec -it -n $ENV ${POD_NAME} -- flask set_algolia_settings artists --apply; then
-                echo "Failed to apply algolia settings for artists"
-                FAIL=1
-            fi
-            if ! kubectl exec -it -n $ENV ${POD_NAME} -- flask set_algolia_settings offers --apply; then
-                echo "Failed to apply algolia settings for offers"
-                FAIL=1
-            fi
-            if ! kubectl exec -it -n $ENV ${POD_NAME} -- flask set_algolia_settings collective_offers --apply; then
-                echo "Failed to apply algolia settings for collective_offers"
-                FAIL=1
-            fi
-            if ! kubectl exec -it -n $ENV ${POD_NAME} -- flask set_algolia_settings venues --apply; then
-                echo "Failed to apply algolia settings for venues"
-                FAIL=1
-            fi
-            exit $FAIL
+          export IMAGE=$(kubectl -n $ENV get pods -l role=api --field-selector=status.phase==Running -o jsonpath='{.items[0].spec.containers[0].image}')
+          export SERVICE_ACCOUNT_NAME=$(kubectl -n $ENV get pods -l role=api --field-selector=status.phase==Running -o jsonpath='{.items[0].spec.serviceAccountName}')
+          echo "Creating Job ${JOB_NAME} with image ${IMAGE}"
+
+          envsubst < .github/workflows/templates/algolia-settings-job.yaml | kubectl -n $ENV apply -f -
+
+          kubectl -n $ENV wait --for=condition=complete --timeout=1800s "job/${JOB_NAME}"
+          echo "Job ${JOB_NAME} completed successfully"
+          kubectl -n $ENV logs "job/${JOB_NAME}"
 
 
   apply-algolia-config:
@@ -324,34 +311,21 @@ jobs:
 
       - name: "Configure algolia"
         id: "set_algolia_settings"
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
-        with:
-          timeout_minutes: 30
-          max_attempts: 3
-          command: |
-            ENV=${{ inputs.environment}}
-            NS=pcapi-${{ inputs.environment_short_name }}
-            POD_NAME=$(kubectl -n $NS get pods -l role=api --field-selector=status.phase==Running -o json | jq -r '.items[] | "\(.metadata.name)"' | head -n 1)
-            FAIL=0
-            echo "flask commands runs on ${POD_NAME}"
+        run: |
+          export ENV=${{ inputs.environment }}
+          NS=pcapi-${{ inputs.environment_short_name }}
+          export DATE=$(date +%Y%m%d-%H%M%S)
+          JOB_NAME="set-algolia-settings-${DATE}"
 
-            if ! kubectl exec -it -n $NS ${POD_NAME} -- flask set_algolia_settings artists --apply; then
-                echo "Failed to apply algolia settings for artists"
-                FAIL=1
-            fi
-            if ! kubectl exec -it -n $NS ${POD_NAME} -- flask set_algolia_settings offers --apply; then
-                echo "Failed to apply algolia settings for offers"
-                FAIL=1
-            fi
-            if ! kubectl exec -it -n $NS ${POD_NAME} -- flask set_algolia_settings collective_offers --apply; then
-                echo "Failed to apply algolia settings for collective_offers"
-                FAIL=1
-            fi
-            if ! kubectl exec -it -n $NS ${POD_NAME} -- flask set_algolia_settings venues --apply; then
-                echo "Failed to apply algolia settings for venues"
-                FAIL=1
-            fi
-            exit $FAIL
+          export IMAGE=$(kubectl -n $NS get pods -l role=api --field-selector=status.phase==Running -o jsonpath='{.items[0].spec.containers[0].image}')
+          export SERVICE_ACCOUNT_NAME=$(kubectl -n $NS get pods -l role=api --field-selector=status.phase==Running -o jsonpath='{.items[0].spec.serviceAccountName}')
+          echo "Creating Job ${JOB_NAME} with image ${IMAGE}"
+
+          envsubst < .github/workflows/templates/algolia-settings-job.yaml | kubectl -n $NS apply -f -
+
+          kubectl -n $NS wait --for=condition=complete --timeout=1800s "job/${JOB_NAME}"
+          echo "Job ${JOB_NAME} completed successfully"
+          kubectl -n $NS logs "job/${JOB_NAME}"
 
   # Image resizing cannot be deployed as python 3.9 is not supported by app engine.
   # deploy-image-resizing-ehp:
