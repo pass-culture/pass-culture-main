@@ -4,9 +4,9 @@ import { Header } from '@/app/App/layouts/components/Header/Header'
 import { Footer } from '@/components/Footer/Footer'
 import { SkipLinks } from '@/components/SkipLinks/SkipLinks'
 
-import styles from './SignupFunnelLayout.module.scss'
+import styles from './FullPageLayout.module.scss'
 
-export const SignupFunnelLayout = ({
+export const FullPageLayout = ({
   children,
 }: Readonly<{ children?: React.ReactNode }>): JSX.Element => {
   return (

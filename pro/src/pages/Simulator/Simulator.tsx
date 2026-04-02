@@ -2,7 +2,7 @@ import { Outlet } from 'react-router'
 
 import { FullPageLayout } from '@/app/App/layouts/funnels/SignupFunnelLayout/FullPageLayout'
 
-export const WelcomeCarousel = (): JSX.Element => {
+export const Simulator = (): JSX.Element => {
   return (
     <FullPageLayout>
       <Outlet />
@@ -12,4 +12,4 @@ export const WelcomeCarousel = (): JSX.Element => {
 
 // Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
-export const Component = WelcomeCarousel
+export const Component = Simulator
