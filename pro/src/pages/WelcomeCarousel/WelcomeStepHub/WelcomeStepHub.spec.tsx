@@ -88,6 +88,7 @@ describe('<WelcomeStepHub />', () => {
         expect(mockNavigate).toHaveBeenCalledWith('/bienvenue/publics')
       )
     })
+
     it('should navigate to app if target is teen', async () => {
       renderWelcomeStepHub()
 
@@ -97,6 +98,7 @@ describe('<WelcomeStepHub />', () => {
         'https://passculture.app/creation-compte'
       )
     })
+
     it('should navigate to adage if target is teacher', async () => {
       const mockLogEvent = vi.fn()
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
@@ -121,6 +123,30 @@ describe('<WelcomeStepHub />', () => {
       expect(mockLogEvent).toHaveBeenCalledWith(
         WelcomeCarouselEvents.HAS_CLICKED_ADAGE_LINK
       )
+    })
+
+    it('should show error if no target', async () => {
+      const mockLogEvent = vi.fn()
+      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+        logEvent: mockLogEvent,
+      }))
+
+      renderWelcomeStepHub()
+
+      await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
+      expect(
+        screen.getByText('Veuillez sélectionner un profil pour continuer')
+      ).toBeVisible()
+
+      expect(mockLogEvent).not.toHaveBeenCalled()
+
+      await userEvent.click(screen.getByLabelText(/Partenaire culturel/))
+      expect(
+        screen.queryByRole('alert', {
+          name: 'Veuillez sélectionner un profil pour continuer',
+        })
+      ).not.toBeInTheDocument()
     })
   })
 })
