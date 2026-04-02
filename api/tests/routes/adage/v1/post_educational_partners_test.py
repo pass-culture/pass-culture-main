@@ -94,7 +94,7 @@ def test_post_educational_partners_venue_now_has_adage_id(mocked_beamer, mocked_
     assert venue.managingOfferer.allowedOnAdage is True
 
 
-@mock.patch("pcapi.core.educational.adage.api.get_adage_offerer", return_value=[])
+@mock.patch("pcapi.core.educational.adage.client.get_adage_offerer", return_value=[])
 def test_post_educational_partners_venue_deactivated_on_adage(
     mock_get_adage_offerer: mock.MagicMock, client: TestClient
 ):
@@ -120,7 +120,7 @@ def test_post_educational_partners_venue_deactivated_on_adage(
     assert venue.managingOfferer.allowedOnAdage is False
 
 
-@mock.patch("pcapi.core.educational.adage.api.get_adage_offerer")
+@mock.patch("pcapi.core.educational.adage.client.get_adage_offerer")
 def test_post_educational_partners_venue_deactivated_on_adage_has_other_partner(
     mock_get_adage_offerer: mock.MagicMock, client: TestClient
 ):
@@ -162,7 +162,7 @@ def test_post_educational_partners_venue_deactivated_on_adage_has_other_partner(
     assert venue.managingOfferer.allowedOnAdage is True
 
 
-@mock.patch("pcapi.core.educational.adage.api.get_adage_offerer", return_value=[])
+@mock.patch("pcapi.core.educational.adage.client.get_adage_offerer", return_value=[])
 def test_post_educational_partners_venue_not_sync_with_pass(mock_get_adage_offerer: mock.MagicMock, client: TestClient):
     venue = offerers_factories.VenueFactory(adageId="123", managingOfferer__allowedOnAdage=True)
 

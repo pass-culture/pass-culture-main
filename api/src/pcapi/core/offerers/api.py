@@ -51,7 +51,7 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import schemas as educational_schemas
-from pcapi.core.educational.adage import api as adage_client
+from pcapi.core.educational.adage import client as adage_client
 from pcapi.core.educational.api import booking as educational_booking_api
 from pcapi.core.educational.api import dms as dms_api
 from pcapi.core.external.attributes import api as external_attributes_api
@@ -1786,7 +1786,7 @@ def delete_venue_banner(venue: models.Venue) -> None:
 
 
 def can_offerer_create_educational_offer(offerer_id: int) -> bool:
-    import pcapi.core.educational.adage.api as adage_client
+    import pcapi.core.educational.adage.client as adage_client
 
     if settings.CAN_COLLECTIVE_OFFERER_IGNORE_ADAGE:
         return True

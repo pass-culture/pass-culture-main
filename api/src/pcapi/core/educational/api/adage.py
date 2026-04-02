@@ -9,7 +9,7 @@ import sqlalchemy.orm as sa_orm
 
 from pcapi.core.educational import models
 from pcapi.core.educational import schemas
-from pcapi.core.educational.adage import api as adage_client
+from pcapi.core.educational.adage import client as adage_client
 from pcapi.core.educational.api.venue import get_relative_venues_by_siret
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
