@@ -26,6 +26,12 @@ test.describe('Edit digital individual offers', () => {
         '/offre/individuelle/1/recapitulatif/description'
       )
 
+      await expect(
+        page.getByRole('heading', {
+          level: 2,
+          name: 'Description',
+        })
+      ).toBeVisible()
       await checkAccessibility(page)
 
       await expect(
