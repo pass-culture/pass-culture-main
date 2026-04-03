@@ -1,8 +1,9 @@
 import { useEffect } from 'react'
-import { Outlet, useLocation, useNavigate } from 'react-router'
+import { Outlet, useBlocker, useLocation, useNavigate } from 'react-router'
 
 import { FunnelLayout } from '@/app/App/layouts/funnels/FunnelLayout/FunnelLayout'
 import {
+  cleanSignupJourneyStorage,
   SignupJourneyContextProvider,
   useSignupJourneyContext,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
@@ -36,6 +37,20 @@ export const SignupJourneyRoutes = () => {
       }
     }
   }, [offerer?.siren, offerer?.siret, location.pathname, navigate, setOfferer])
+
+  // If the user leaves the signup journey, clear the saved data
+  const blocker = useBlocker(
+    ({ nextLocation }) =>
+      nextLocation.pathname.startsWith('/inscription/structure') === false
+  )
+  useEffect(() => {
+    if (blocker.state === 'blocked') {
+      console.log('Leaving signup journey, clearing storage …')
+      // Clear saved data for signup journey
+      cleanSignupJourneyStorage()
+      blocker.proceed()
+    }
+  }, [blocker])
 
   return (
     <FunnelLayout mainHeading="Votre structure" hideAdminButton>
