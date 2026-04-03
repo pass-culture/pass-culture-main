@@ -25,17 +25,16 @@ function stringifyArtist(
 
 export function serializeArtist(
   offer: GetIndividualOfferResponseModel,
-  { areArtistsEnabled = false },
   artistExtraData: string,
   defaultValue: string,
   artistType: ArtistType
 ) {
   const isProductBased = isOfferProductBased(offer)
 
-  if (areArtistsEnabled && !isProductBased) {
-    return stringifyArtist(offer.artistOfferLinks, artistType) ?? defaultValue
-  } else {
+  if (isProductBased) {
     return artistExtraData ?? defaultValue
+  } else {
+    return stringifyArtist(offer.artistOfferLinks, artistType) ?? defaultValue
   }
 }
 
@@ -61,7 +60,6 @@ const getMusicData = (
 
 const serializerOfferSubCategoryFields = (
   offer: GetIndividualOfferResponseModel,
-  areArtistsEnabled: boolean,
   subCategory?: SubcategoryResponseModel,
   musicTypes?: GetMusicTypesResponse
 ): {
@@ -112,14 +110,12 @@ const serializerOfferSubCategoryFields = (
   return {
     author: serializeArtist(
       offer,
-      { areArtistsEnabled },
       offer.extraData?.author,
       defaultValue('author'),
       ArtistType.AUTHOR
     ),
     stageDirector: serializeArtist(
       offer,
-      { areArtistsEnabled },
       offer.extraData?.stageDirector,
       defaultValue('stageDirector'),
       ArtistType.STAGE_DIRECTOR
@@ -133,7 +129,6 @@ const serializerOfferSubCategoryFields = (
     visa: offer.extraData?.visa || defaultValue('visa'),
     performer: serializeArtist(
       offer,
-      { areArtistsEnabled },
       offer.extraData?.performer,
       defaultValue('performer'),
       ArtistType.PERFORMER
@@ -148,7 +143,6 @@ export const serializeOfferSectionData = (
   offer: GetIndividualOfferWithAddressResponseModel,
   categories: CategoryResponseModel[],
   subCategories: SubcategoryResponseModel[],
-  areArtistsEnabled: boolean,
   musicTypes?: GetMusicTypesResponse
 ) => {
   const offerSubCategory = subCategories.find(
@@ -181,7 +175,6 @@ export const serializeOfferSectionData = (
   }
   const subCategoryData = serializerOfferSubCategoryFields(
     offer,
-    areArtistsEnabled,
     offerSubCategory,
     musicTypes
   )

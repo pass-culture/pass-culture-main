@@ -9,7 +9,6 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useMusicTypes } from '@/commons/hooks/useMusicTypes'
 import { getDelayToFrenchText } from '@/commons/utils/date'
 import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
@@ -35,7 +34,6 @@ export const OfferSection = ({
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const { categories, subCategories } = useIndividualOfferContext()
-  const areArtistsEnabled = useActiveFeature('WIP_OFFER_ARTISTS')
 
   const { musicTypes } = useMusicTypes()
 
@@ -43,7 +41,6 @@ export const OfferSection = ({
     offer,
     categories,
     subCategories,
-    areArtistsEnabled,
     musicTypes
   )
 
