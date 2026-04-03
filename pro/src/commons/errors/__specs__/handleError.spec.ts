@@ -8,14 +8,14 @@ import { handleError } from '../handleError'
 import type { FrontendErrorOptions } from '../types'
 
 const mockedSentry = vi.hoisted(() => {
-  const setExtrasMock = vi.fn()
+  const setContextMock = vi.fn()
   const captureException = vi.fn()
   const withScopeMock = vi.fn(
-    (cb: (scope: { setExtras: (e: unknown) => void }) => void) =>
-      cb({ setExtras: setExtrasMock })
+    (cb: (scope: { setContext: (e: unknown) => void }) => void) =>
+      cb({ setContext: setContextMock })
   )
 
-  return { setExtrasMock, captureException, withScopeMock }
+  return { setContextMock, captureException, withScopeMock }
 })
 vi.mock('@sentry/browser', () => ({
   withScope: mockedSentry.withScopeMock,
@@ -45,22 +45,33 @@ describe('handleError', () => {
     })
 
     expect(mockedSentry.captureException).toHaveBeenCalledWith(error)
-    expect(mockedSentry.setExtrasMock).not.toHaveBeenCalled()
+    expect(mockedSentry.setContextMock).toHaveBeenCalledExactlyOnceWith(
+      'default',
+      { isUserImpersonated: null }
+    )
     expect(consoleErrorSpy).toHaveBeenCalledWith(error)
   })
 
-  it('forwards extras to Sentry scope when provided', () => {
+  it('forwards context to Sentry scope when provided', () => {
     vi.spyOn(console, 'error').mockImplementation(vi.fn())
 
     const options: FrontendErrorOptions = {
-      extras: { foo: 'bar', count: 3 },
+      context: { foo: 'bar', count: 3 },
       userMessage: userMessage, // ignored by handleError signature (we omit in call)
       isSilent: false,
     }
 
     handleError(error, userMessage, options)
 
-    expect(mockedSentry.setExtrasMock).toHaveBeenCalledWith(options.extras)
+    expect(mockedSentry.setContextMock).toHaveBeenCalledTimes(2)
+    expect(mockedSentry.setContextMock).toHaveBeenNthCalledWith(1, 'default', {
+      isUserImpersonated: null,
+    })
+    expect(mockedSentry.setContextMock).toHaveBeenNthCalledWith(
+      2,
+      'custom',
+      options.context
+    )
   })
 
   it('accepts non-Error (unknown) values', () => {

@@ -1,15 +1,8 @@
 import type { Context } from '@sentry/browser'
-import type { Extras } from '@sentry/core/build/types/types-hoist/extra.d.ts'
 
 export type FrontendErrorOptions = Partial<{
   /** Sentry context to attach to the error. */
   context: Context
-  /**
-   * Additional Sentry extras to attach to the error.
-   *
-   * @deprecated Use `context` instead.
-   **/
-  extras: Extras
   /**
    * Whether to notify the user about the error.
    * @default false
