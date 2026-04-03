@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router'
 
-import { FullPageLayout } from '@/app/App/layouts/funnels/SignupFunnelLayout/FullPageLayout'
+import { FullPageLayout } from '@/app/App/layouts/funnels/FullPageLayout/FullPageLayout'
 
 export const WelcomeCarousel = (): JSX.Element => {
   return (
