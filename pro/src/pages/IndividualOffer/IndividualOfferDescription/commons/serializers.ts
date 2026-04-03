@@ -35,16 +35,12 @@ export function deSerializeDurationMinutes(durationMinute: number): string {
   return `${hours}:${minutes}`
 }
 
-export const serializeExtraData = (
-  formValues: DetailsFormValues,
-  isOfferArtistsFeatureActive: boolean
-) => {
+export const serializeExtraData = (formValues: DetailsFormValues) => {
   const validArtistOfferLinks = formValues.artistOfferLinks.filter((artist) =>
     artist.artistName?.trim()
   )
 
-  const shouldUseArtistOfferLinks =
-    isOfferArtistsFeatureActive && !formValues.productId
+  const shouldUseArtistOfferLinks = !formValues.productId
 
   const author = shouldUseArtistOfferLinks
     ? validArtistOfferLinks
@@ -99,8 +95,7 @@ const serializeArtistOfferLinks = (
 }
 
 export function serializeDetailsPostData(
-  formValues: DetailsFormValues,
-  isOfferArtistsFeatureActive: boolean
+  formValues: DetailsFormValues
 ): PostOfferBodyModel {
   assertOrFrontendError(
     formValues.accessibility,
@@ -113,7 +108,7 @@ export function serializeDetailsPostData(
     venueId: Number(formValues.venueId),
     description: formValues.description,
     durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
-    extraData: serializeExtraData(formValues, isOfferArtistsFeatureActive),
+    extraData: serializeExtraData(formValues),
     productId: formValues.productId ? Number(formValues.productId) : undefined,
     audioDisabilityCompliant: formValues.accessibility.audio,
     mentalDisabilityCompliant: formValues.accessibility.mental,
@@ -124,8 +119,7 @@ export function serializeDetailsPostData(
 }
 
 export function serializeDetailsPatchData(
-  formValues: DetailsFormValues,
-  isOfferArtistsFeatureActive: boolean
+  formValues: DetailsFormValues
 ): PatchOfferBodyModel {
   assertOrFrontendError(
     formValues.accessibility,
@@ -137,7 +131,7 @@ export function serializeDetailsPatchData(
     subcategoryId: formValues.subcategoryId,
     description: formValues.description,
     durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
-    extraData: serializeExtraData(formValues, isOfferArtistsFeatureActive),
+    extraData: serializeExtraData(formValues),
     audioDisabilityCompliant: formValues.accessibility.audio,
     mentalDisabilityCompliant: formValues.accessibility.mental,
     motorDisabilityCompliant: formValues.accessibility.motor,

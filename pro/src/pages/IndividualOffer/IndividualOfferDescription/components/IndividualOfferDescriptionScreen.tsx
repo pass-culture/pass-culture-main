@@ -81,7 +81,6 @@ export const IndividualOfferDescriptionScreen = ({
   const isNewOfferDraft = !initialOffer
   const availableVenues = filterAvailableVenues(venues)
   const availableVenuesAsOptions = getVenuesAsOptions(availableVenues)
-  const isOfferArtistsFeatureActive = useActiveFeature('WIP_OFFER_ARTISTS')
 
   const getInitialValues = () => {
     return isNewOfferDraft
@@ -126,9 +125,7 @@ export const IndividualOfferDescriptionScreen = ({
       if (isNewOfferDraft) {
         await mutate(
           [GET_OFFER_QUERY_KEY, offerId],
-          api.createOffer(
-            serializeDetailsPostData(formValues, isOfferArtistsFeatureActive)
-          ),
+          api.createOffer(serializeDetailsPostData(formValues)),
           {
             revalidate: false,
             populateCache: (newOffer) => {
@@ -140,10 +137,7 @@ export const IndividualOfferDescriptionScreen = ({
       } else if (initialOfferId) {
         await mutate(
           [GET_OFFER_QUERY_KEY, offerId],
-          api.patchOffer(
-            initialOfferId,
-            serializeDetailsPatchData(formValues, isOfferArtistsFeatureActive)
-          ),
+          api.patchOffer(initialOfferId, serializeDetailsPatchData(formValues)),
           { revalidate: false }
         )
       }

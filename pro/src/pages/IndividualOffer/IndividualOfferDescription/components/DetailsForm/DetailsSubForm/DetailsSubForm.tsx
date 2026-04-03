@@ -2,7 +2,6 @@ import { useFormContext } from 'react-hook-form'
 
 import { ArtistType } from '@/apiClient/v1'
 import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useMusicTypes } from '@/commons/hooks/useMusicTypes'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
@@ -85,10 +84,9 @@ export const DetailsSubForm = ({
   const displayEanField =
     subcategoryConditionalFields.includes('ean') && !isEanSearchDisplayed
 
-  const isOfferArtistsFeatureActive = useActiveFeature('WIP_OFFER_ARTISTS')
-
-  const shouldUseArtistOfferLinks =
-    isOfferArtistsFeatureActive && !isProductBased
+  // TODO (rchaffal): find a way to use the same artist field for both product-based and non-product-based offers,
+  // and remove the need for this condition. Maybe when extra data have been removed
+  const shouldUseArtistOfferLinks = !isProductBased
 
   return (
     <>

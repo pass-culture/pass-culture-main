@@ -94,7 +94,7 @@ const calloutLabel = /Cette catégorie nécessite un code EAN./
 
 describe('DetailsSubForm', () => {
   it('should always display conditional fields based on the selected category / subcategory', () => {
-    renderDetailsSubForm()
+    renderDetailsSubForm({ props: { isProductBased: true } })
 
     const subFormTextInputs = {
       speaker: /Intervenant/,
@@ -124,8 +124,8 @@ describe('DetailsSubForm', () => {
     expect(subFormDurationInput).toBeInTheDocument()
   })
 
-  it('should display combobox artists fields when WIP_OFFER_ARTISTS feature is active', () => {
-    renderDetailsSubForm({ features: ['WIP_OFFER_ARTISTS'] })
+  it('should display combobox artists fields', () => {
+    renderDetailsSubForm()
 
     const artistSelects = {
       author: /Auteur/,
@@ -139,12 +139,11 @@ describe('DetailsSubForm', () => {
     })
   })
 
-  it('should display textbox artists fields when WIP_OFFER_ARTISTS feature is active and the offer is product based', () => {
+  it('should display textbox artists fields and the offer is product based', () => {
     renderDetailsSubForm({
       props: {
         isProductBased: true,
       },
-      features: ['WIP_OFFER_ARTISTS'],
     })
 
     const artistSelects = {

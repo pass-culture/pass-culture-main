@@ -6,6 +6,7 @@ import { vi } from 'vitest'
 
 import { api } from '@/apiClient/api'
 import {
+  ArtistType,
   OfferStatus,
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
@@ -621,18 +622,36 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     )
   })
 
-  it('should submit the form with correct payload in edition', async () => {
+  it('should submit the form with correct payload in edition ', async () => {
     vi.spyOn(api, 'patchOffer').mockResolvedValue(
       getIndividualOfferFactory({
         id: 12,
       })
     )
+
     vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
       { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
     ])
     contextValue.offer = getIndividualOfferFactory({
       id: 12,
       subcategoryId: 'physicalBis' as SubcategoryIdEnum,
+      artistOfferLinks: [
+        {
+          artistId: '1',
+          artistName: 'Le Poing de Chuck',
+          artistType: ArtistType.PERFORMER,
+        },
+        {
+          artistId: '2',
+          artistName: 'JCVD',
+          artistType: ArtistType.STAGE_DIRECTOR,
+        },
+        {
+          artistId: '3',
+          artistName: 'Chuck Norris',
+          artistType: ArtistType.AUTHOR,
+        },
+      ],
     })
 
     renderDetailsScreen({ contextValue })
@@ -651,7 +670,23 @@ describe('<IndividualOfferDescriptionScreen />', () => {
 
     expect(api.patchOffer).toHaveBeenCalledOnce()
     expect(api.patchOffer).toHaveBeenCalledWith(12, {
-      artistOfferLinks: [],
+      artistOfferLinks: [
+        {
+          artistId: '1',
+          artistName: 'Le Poing de Chuck',
+          artistType: 'performer',
+        },
+        {
+          artistId: '2',
+          artistName: 'JCVD',
+          artistType: 'stage_director',
+        },
+        {
+          artistId: '3',
+          artistName: 'Chuck Norris',
+          artistType: 'author',
+        },
+      ],
       audioDisabilityCompliant: true,
       description: 'My super description',
       durationMinutes: null,

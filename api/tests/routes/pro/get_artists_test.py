@@ -8,7 +8,6 @@ from pcapi.core import testing
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    @pytest.mark.features(WIP_OFFER_ARTISTS=True)
     def when_user_has_rights_on_managing_offerer(self, client):
         artist1 = artist_factories.ArtistFactory(name="name-1")
         artist2 = artist_factories.ArtistFactory(name="name-2", mediation_uuid="uuid-2")

@@ -3,8 +3,6 @@ import logging
 from flask_login import login_required
 
 from pcapi.core.artist import repository as artist_repository
-from pcapi.models import api_errors
-from pcapi.models.feature import FeatureToggle
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import artist_serialize
 from pcapi.serialization.decorator import spectree_serialize
@@ -24,8 +22,6 @@ logger = logging.getLogger(__name__)
 )
 @atomic()
 def get_artists(query: artist_serialize.ArtistQueryModel) -> artist_serialize.ArtistsResponseModel:
-    if not FeatureToggle.WIP_OFFER_ARTISTS.is_active():
-        raise api_errors.ApiErrors(errors={"global": "service not available"}, status_code=503)
     artists = [
         artist_serialize.ArtistResponseModel(
             id=artist.id,
