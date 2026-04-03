@@ -1,3 +1,5 @@
+import pydantic as pydantic_v2
+
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
 
@@ -20,5 +22,5 @@ class EducationalInstitutionsResponseModel(HttpBodyModel):
 
 
 class EducationalInstitutionsQueryModel(HttpQueryParamsModel):
-    per_page_limit: int = 1000
-    page: int = 1
+    per_page_limit: int = pydantic_v2.Field(default=1000, ge=1, le=1000)
+    page: int = pydantic_v2.Field(default=1, ge=1)
