@@ -39,14 +39,6 @@ def upsert_headline_offer(
     rest.check_user_has_access_to_offerer(current_user, offerer_id)
     try:
         headline_offer = offers_api.upsert_headline_offer(offer)
-    except exceptions.OffererCanNotHaveHeadlineOffer:
-        raise api_errors.ApiErrors(
-            errors={
-                "global": [
-                    "Vous ne pouvez pas créer d'offre à la une sur une entité juridique possédant plusieurs structures"
-                ]
-            },
-        )
     except exceptions.OfferHasAlreadyAnActiveHeadlineOffer:
         raise api_errors.ApiErrors(
             errors={"global": ["Cette offre est déjà mise à la une"]},

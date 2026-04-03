@@ -672,7 +672,6 @@ def upsert_headline_offer(offer: models.Offer) -> models.HeadlineOffer:
 
 
 def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
-    offers_validation.check_offerer_is_eligible_for_headline_offers(offer.venue.managingOffererId)
     offers_validation.check_offer_is_eligible_to_be_headline(offer)
     try:
         headline_offer = models.HeadlineOffer(
