@@ -637,13 +637,14 @@ def post_merge_artists(artist_id: str) -> response_utils.BackofficeResponse:
         db.session.query(artist_models.ArtistProductLink).filter_by(artist_id=artist_to_delete_id).update(
             {"artist_id": artist_to_keep_id}
         )
-        async_index_artist_ids([artist_to_keep_id, artist_to_delete.id], reason=IndexationReason.ARTIST_LINKS_UPDATE)
         db.session.delete(artist_to_delete)
     except Exception as err:
         flash(f"Une erreur est survenue lors de la fusion : {err}", "warning")
         mark_transaction_as_invalid()
         return redirect(url_for(".get_artist_details", artist_id=artist_to_keep))
 
+    async_index_artist_ids([artist_to_keep_id, artist_to_delete_id], reason=IndexationReason.ARTIST_LINKS_UPDATE)
+    async_index_offers_of_artist_ids([artist_to_keep_id], reason=IndexationReason.ARTIST_LINKS_UPDATE)
     flash(
         Markup(
             "L'artiste <strong>{artist_to_delete_name}</strong> a été fusionné dans <strong>{artist_to_keep_name}</strong>."
@@ -716,7 +717,6 @@ def post_split_artist(artist_id: str) -> response_utils.BackofficeResponse:
         new_artist = artist_models.Artist(name=form.new_artist_name.data, description=form.new_artist_description.data)
         db.session.add(new_artist)
         db.session.flush()
-        async_index_artist_ids([source_artist.id, new_artist.id], reason=IndexationReason.ARTIST_CREATION)
 
         if form.new_artist_aliases.data:
             aliases_names = [name.strip() for name in form.new_artist_aliases.data.split(",") if name.strip()]
@@ -734,6 +734,9 @@ def post_split_artist(artist_id: str) -> response_utils.BackofficeResponse:
         flash(f"Une erreur est survenue lors de la séparation : {e}", "warning")
         mark_transaction_as_invalid()
         return redirect(url_for(".get_artist_details", artist_id=source_artist.id))
+
+    async_index_artist_ids([source_artist.id, new_artist.id], reason=IndexationReason.ARTIST_CREATION)
+    async_index_offers_of_artist_ids([source_artist.id, new_artist.id], reason=IndexationReason.ARTIST_CREATION)
 
     flash(
         Markup(

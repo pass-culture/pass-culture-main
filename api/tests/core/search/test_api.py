@@ -3,12 +3,14 @@ import itertools
 from unittest import mock
 
 import pytest
+import sqlalchemy as sa
 
 import pcapi.core.artist.factories as artists_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.search.testing as search_testing
 from pcapi.core import search
+from pcapi.core.artist import models as artists_models
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
@@ -19,6 +21,7 @@ from pcapi.core.search import serialization
 from pcapi.core.search.models import IndexationReason
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 from pcapi.utils import date as date_utils
 
 
@@ -347,6 +350,16 @@ class ReindexOfferIdsTest:
         search.reindex_offer_ids([offer_id])
         assert offer_id in search_testing.search_store["offers"]
 
+    def test_unindex_non_existent_offer(self):
+        offer_id = 999999999
+        assert db.session.scalar(sa.select(sa.func.count()).where(offers_models.Offer.id == offer_id)) == 0
+
+        search_testing.search_store["offers"][offer_id] = {"name": "Deleted offer"}
+
+        search.reindex_offer_ids([offer_id])
+
+        assert offer_id not in search_testing.search_store["offers"]
+
 
 class ReindexArtistIdsTest:
     def test_index_new_artists(self):
@@ -371,7 +384,7 @@ class ReindexArtistIdsTest:
         artists_factories.ArtistProductLinkFactory(artist_id=artist.id, product_id=product.id)
         offers_factories.StockFactory(offer__product=product)
 
-        search_testing.search_store["artists"][artist.id] = "dummy"
+        search_testing.search_store["artists"][artist.id] = {"name": "dummy"}
 
         artist_ids = [artist.id]
         search.reindex_artist_ids(artist_ids)
@@ -381,7 +394,7 @@ class ReindexArtistIdsTest:
     def test_unindex_artists_with_no_search_eligible_offers(self):
         artist = artists_factories.ArtistFactory()
 
-        search_testing.search_store["artists"][artist.id] = "dummy"
+        search_testing.search_store["artists"][artist.id] = {"name": "dummy"}
 
         search.reindex_artist_ids([artist.id])
         assert search_testing.search_store["artists"] == {}
@@ -392,10 +405,20 @@ class ReindexArtistIdsTest:
         artists_factories.ArtistProductLinkFactory(artist_id=artist.id, product_id=product.id)
         offers_factories.StockFactory(offer__product=product)
 
-        search_testing.search_store["artists"][artist.id] = "dummy"
+        search_testing.search_store["artists"][artist.id] = {"name": "dummy"}
 
         search.reindex_artist_ids([artist.id])
         assert search_testing.search_store["artists"] == {}
+
+    def test_unindex_non_existent_artist(self):
+        artist_id = "fake-uuid"
+        assert db.session.scalar(sa.select(sa.func.count()).where(artists_models.Artist.id == artist_id)) == 0
+
+        search_testing.search_store["artists"][artist_id] = {"name": "Deleted artist"}
+
+        search.reindex_artist_ids([artist_id])
+
+        assert artist_id not in search_testing.search_store["artists"]
 
 
 class ReindexVenueIdsTest:
@@ -453,6 +476,16 @@ class ReindexVenueIdsTest:
         assert search_testing.search_store["offers"] == {}
         search.reindex_venue_ids([venue.id])
         assert search_testing.search_store["offers"] == {}
+
+    def test_unindex_non_existent_venue(self):
+        venue_id = 999999999
+        assert db.session.scalar(sa.select(sa.func.count()).where(offerers_models.Venue.id == venue_id)) == 0
+
+        search_testing.search_store["venues"][venue_id] = {"name": "Deleted venue"}
+
+        search.reindex_venue_ids([venue_id])
+
+        assert venue_id not in search_testing.search_store["venues"]
 
 
 @pytest.mark.settings(REDIS_OFFER_IDS_CHUNK_SIZE=3)

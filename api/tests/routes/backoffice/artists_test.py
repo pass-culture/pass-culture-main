@@ -394,7 +394,10 @@ class PostMergeArtistsTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_ARTISTS
 
     @patch("pcapi.routes.backoffice.artists.blueprint.async_index_artist_ids")
-    def test_merge_artists_success(self, mock_async_index_artist_ids, db_session, authenticated_client):
+    @patch("pcapi.routes.backoffice.artists.blueprint.async_index_offers_of_artist_ids")
+    def test_merge_artists_success(
+        self, mock_async_index_offers_of_artist_ids, mock_async_index_artist_ids, db_session, authenticated_client
+    ):
         artist_to_keep = artist_factories.ArtistFactory.create()
         product1 = offers_factories.ProductFactory.create()
         product2 = offers_factories.ProductFactory.create()
@@ -413,7 +416,10 @@ class PostMergeArtistsTest(PostEndpointHelper):
 
         assert response.status_code == 200
         mock_async_index_artist_ids.assert_called_once_with(
-            [artist_to_keep.id, artist_to_delete_id], reason=IndexationReason.ARTIST_LINKS_UPDATE
+            [artist_to_keep.id, artist_to_delete.id], reason=IndexationReason.ARTIST_LINKS_UPDATE
+        )
+        mock_async_index_offers_of_artist_ids.assert_called_once_with(
+            [artist_to_keep.id], reason=IndexationReason.ARTIST_LINKS_UPDATE
         )
         assert (
             f"L'artiste {artist_to_delete.name} a été fusionné dans {artist_to_keep.name}."
@@ -468,7 +474,10 @@ class PostSplitArtistTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_ARTISTS
 
     @patch("pcapi.routes.backoffice.artists.blueprint.async_index_artist_ids")
-    def test_split_artist_success(self, mock_async_index_artist_ids, db_session, authenticated_client):
+    @patch("pcapi.routes.backoffice.artists.blueprint.async_index_offers_of_artist_ids")
+    def test_split_artist_success(
+        self, mock_async_index_offers_of_artist_ids, mock_async_index_artist_ids, db_session, authenticated_client
+    ):
         product_to_move = offers_factories.ProductFactory.create()
         source_artist = artist_factories.ArtistFactory.create(products=[product_to_move])
         new_artist_name = "New Split Artist"
@@ -489,6 +498,9 @@ class PostSplitArtistTest(PostEndpointHelper):
 
         new_artist = db_session.query(artist_models.Artist).filter_by(name="New Split Artist").one()
         mock_async_index_artist_ids.assert_called_once_with(
+            [source_artist.id, new_artist.id], reason=IndexationReason.ARTIST_CREATION
+        )
+        mock_async_index_offers_of_artist_ids.assert_called_once_with(
             [source_artist.id, new_artist.id], reason=IndexationReason.ARTIST_CREATION
         )
         assert product_to_move in new_artist.products

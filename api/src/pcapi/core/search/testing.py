@@ -1,4 +1,4 @@
-search_store: dict[str, dict[int, dict]] = {}
+search_store: dict[str, dict[int | str, dict]] = {}
 
 
 def reset_search_store() -> None:
