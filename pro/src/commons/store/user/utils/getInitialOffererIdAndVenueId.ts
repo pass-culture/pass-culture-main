@@ -20,7 +20,7 @@ export const getInitialOffererIdAndVenueId = (
   // TODO (igabriele, 2025-10-28): Handle that case properly before `WIP_SWITCH_VENUE` is enabled in production.
 
   const urlSearchParams = new URLSearchParams(window.location.search)
-  const selectedOffererIdFromUrl = Number(urlSearchParams.get('structure'))
+  const selectedOffererIdFromUrl = Number(urlSearchParams.get('offerer'))
   if (selectedOffererIdFromUrl) {
     return {
       initialOffererId: selectedOffererIdFromUrl,

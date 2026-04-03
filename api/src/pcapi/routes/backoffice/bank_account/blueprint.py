@@ -106,8 +106,6 @@ def get_linked_venues(bank_account_id: int) -> response_utils.BackofficeResponse
                 offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
-                offerers_models.Venue.isVirtual,
-                offerers_models.Venue.managingOffererId,
             )
         )
     ).all()
