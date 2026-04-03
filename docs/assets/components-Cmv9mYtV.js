@@ -1,0 +1,1 @@
+import{P as e}from"./components-BrAZQN53.js";export{e as createCopyToClipboardFunction};
