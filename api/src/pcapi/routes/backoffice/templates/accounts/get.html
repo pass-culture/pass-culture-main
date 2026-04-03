@@ -198,7 +198,7 @@
       <hr />
     {% endif %}
     {% call description_detail_vertical("Email") %}
-      {{ user.email }}&nbsp;{{ clipboard.copy_to_clipboard(user.email, "Copier le l'adresse email") }}
+      {{ user.email }}&nbsp;{{ clipboard.copy_to_clipboard(user.email, "Copier l'adresse email") }}
       {% if has_changed_email %}
         <i class="bi bi-envelope-plus-fill text-warning  pc-email-changed-icon"
            data-bs-toggle="tooltip"
