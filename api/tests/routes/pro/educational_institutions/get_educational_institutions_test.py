@@ -1,10 +1,10 @@
-from typing import Any
-
 import pytest
 
-import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
 from pcapi.core.educational.factories import EducationalInstitutionFactory
+from pcapi.core.users import factories as users_factories
+
+from tests.conftest import TestClient
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -16,7 +16,7 @@ class Return200Test:
     # count active educational_institution
     # select educational_institution
 
-    def test_get_educational_institutions(self, client: Any) -> None:
+    def test_get_educational_institutions(self, client: TestClient) -> None:
         institution1 = EducationalInstitutionFactory(
             name="aaaaaaaaaaaaaaaaa",
             institutionType="toto",
@@ -56,7 +56,7 @@ class Return200Test:
             "total": 2,
         }
 
-    def test_get_educational_institutions_empty_result(self, client: Any) -> None:
+    def test_get_educational_institutions_empty_result(self, client: TestClient) -> None:
         pro_user = users_factories.ProFactory()
 
         client = client.with_session_auth(pro_user.email)
@@ -71,7 +71,7 @@ class Return200Test:
             "total": 0,
         }
 
-    def test_get_educational_institutions_limit(self, client: Any) -> None:
+    def test_get_educational_institutions_limit(self, client: TestClient) -> None:
         institution1 = EducationalInstitutionFactory(name="Collège A")
         EducationalInstitutionFactory(name="Collège B")
         pro_user = users_factories.ProFactory()
@@ -98,7 +98,7 @@ class Return200Test:
             "total": 2,
         }
 
-    def test_get_educational_institutions_limit_page2(self, client: Any) -> None:
+    def test_get_educational_institutions_limit_page2(self, client: TestClient) -> None:
         EducationalInstitutionFactory()
         EducationalInstitutionFactory()
         institution3 = EducationalInstitutionFactory(
@@ -130,8 +130,28 @@ class Return200Test:
         }
 
 
+class Return400Test:
+    @pytest.mark.parametrize(
+        "params,error",
+        (
+            ("perPageLimit=-1&page=2", {"perPageLimit": ["Saisissez un nombre supérieur ou égal à 1"]}),
+            ("perPageLimit=1001&page=1", {"perPageLimit": ["Saisissez un nombre inférieur ou égal à 1000"]}),
+            ("page=0", {"page": ["Saisissez un nombre supérieur ou égal à 1"]}),
+        ),
+    )
+    def test_invalid_params(self, client: TestClient, params: str, error: dict):
+        pro_user = users_factories.ProFactory()
+        client = client.with_session_auth(pro_user.email)
+
+        with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES + 1):  # rollback
+            response = client.get(f"/educational_institutions?{params}")
+
+        assert response.status_code == 400
+        assert response.json == error
+
+
 class Return401Test:
-    def test_get_educational_institutions_no_user_login(self, client: Any) -> None:
+    def test_get_educational_institutions_no_user_login(self, client: TestClient) -> None:
         EducationalInstitutionFactory()
         EducationalInstitutionFactory()
 
