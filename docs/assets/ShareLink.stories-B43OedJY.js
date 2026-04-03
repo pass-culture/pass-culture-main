@@ -1,0 +1,20 @@
+import{i as e}from"./chunk-DseTPa7n.js";import{r as t}from"./iframe-1GOzK61K.js";import{t as n}from"./jsx-runtime-BuabnPLX.js";import{n as r,t as i}from"./testUtils-bjCRKPov.js";import{c as a,o}from"./store-C-8AFUxm.js";import{t as s}from"./classnames-MYlGWOUq.js";import{i as c,t as l}from"./Button-BHr8DO29.js";import{a as u}from"./chunk-UVKPFVEO-CRmLAfYM.js";import{t as d}from"./useAppDispatch-CxYPZJ01.js";import{t as f}from"./TextInput-BXZpffZe.js";import{t as p}from"./dist-CXochi14.js";import{t as m}from"./SnackBar-DjwZorzH.js";import{t as h}from"./useSnackBar-CTX4vj3t.js";import{i as g,n as _,t as v}from"./constants-r-_-nYgx.js";import{t as y}from"./full-duplicate-DITkpIAF.js";var b=e(t(),1);function x(e){let t=(0,b.useRef)(!1);return(0,b.useCallback)(()=>{t.current||(t.current=!0,e&&e())},[e])}var S={"share-link":`_share-link_1g7sa_1`,"share-link-input":`_share-link-input_1g7sa_7`,"share-link-button":`_share-link-button_1g7sa_12`},C=n(),w=({link:e,label:t,notifySuccessMessage:n,offerId:r})=>{let i=(0,b.useRef)(null),a=h(),{logEvent:o}=_(),s=u(),d=x(()=>{o(v.CLICKED_COPY_TEMPLATE_OFFER_LINK,{from:s.pathname,offerId:r})});return(0,C.jsxs)(`div`,{className:S[`share-link`],children:[(0,C.jsx)(`div`,{className:S[`share-link-input`],children:(0,C.jsx)(f,{name:`share-link`,label:t,value:e,ref:i})}),(0,C.jsx)(`div`,{className:S[`share-link-button`],children:(0,C.jsx)(l,{onClick:async()=>{try{await navigator.clipboard.writeText(e),a.success(n),d()}catch{i.current&&(i.current.select(),document.execCommand(`copy`),a.success(n),d())}},variant:c.PRIMARY,icon:y,label:`Copier`})})]})};try{w.displayName=`ShareLink`,w.__docgenInfo={description:``,displayName:`ShareLink`,props:{link:{defaultValue:null,description:``,name:`link`,required:!0,type:{name:`string`}},label:{defaultValue:null,description:``,name:`label`,required:!0,type:{name:`string`}},notifySuccessMessage:{defaultValue:null,description:``,name:`notifySuccessMessage`,required:!0,type:{name:`string`}},offerId:{defaultValue:null,description:``,name:`offerId`,required:!0,type:{name:`number`}}}}}catch{}var T=e(s(),1),E=a.getSelectors(e=>e.snackBar.list),D=e=>e.snackBar.isStickyBarOpen,O=e=>E.selectAll(e),k={"snack-bar-container":`_snack-bar-container_1xbo7_1`,"with-sticky-action-bar":`_with-sticky-action-bar_1xbo7_13`},A=()=>{let e=g(O),t=d(),n=g(D),r=e.sort((e,t)=>new Date(e.createdAt).getTime()-new Date(t.createdAt).getTime());return(0,C.jsx)(`div`,{className:(0,T.default)(k[`snack-bar-container`],n&&k[`with-sticky-action-bar`]),children:r.map((e,n)=>(0,C.jsx)(m,{variant:e.variant,description:e.description,onClose:()=>t(o(e.id)),testId:`global-snack-bar-${e.variant}-${n}`},e.id))})};try{A.displayName=`SnackBarContainer`,A.__docgenInfo={description:`The SnackBarContainer component is used to display snackbars of different types.
+It supports displaying snackbars such as errors and success
+
+---
+**Important: Use \`list\` selector to get the snackbars to be displayed.**
+---`,displayName:`SnackBarContainer`,props:{}}}catch{}var j={title:`@/ui-kit/ShareLink`,decorators:[p],component:w},M={render:e=>(0,C.jsxs)(r,{store:i({}),children:[(0,C.jsx)(`div`,{style:{width:`100%`},children:(0,C.jsx)(w,{...e})}),(0,C.jsx)(A,{})]}),args:{link:`https://bv.ac-versailles.fr/adage/passculture/offres/offerid/8\xA0`,label:`Lien de l’offre`,notifySuccessMessage:`Le lien ADAGE a bien été copié`}};M.parameters={...M.parameters,docs:{...M.parameters?.docs,source:{originalSource:`{
+  render: args => <Provider store={configureTestStore({})}>
+      <div style={{
+      width: '100%'
+    }}>
+        <ShareLink {...args} />
+      </div>
+      <SnackBarContainer />
+    </Provider>,
+  args: {
+    link: 'https://bv.ac-versailles.fr/adage/passculture/offres/offerid/8\xA0',
+    label: 'Lien de l’offre',
+    notifySuccessMessage: 'Le lien ADAGE a bien été copié'
+  }
+}`,...M.parameters?.docs?.source}}};var N=[`Default`];export{M as Default,N as __namedExportsOrder,j as default};

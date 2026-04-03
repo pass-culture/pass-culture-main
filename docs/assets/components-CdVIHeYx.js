@@ -1,0 +1,1 @@
+import{P as e}from"./components-CzebvUEs.js";export{e as createCopyToClipboardFunction};
