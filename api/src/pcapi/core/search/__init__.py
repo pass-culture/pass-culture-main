@@ -743,9 +743,6 @@ def reindex_offer_ids(offer_ids: abc.Collection[int], from_error_queue: bool = F
         elif backend.check_offer_id_is_indexed(offer.id):
             to_delete_ids.append(offer.id)
         else:
-            # FIXME (dbaty, 2021-06-24). I think we could safely do
-            # without the hashmap in Redis. Check the logs and see if
-            # I am right!
             logger.info(
                 "Redis 'indexed_offers' set avoided unnecessary request to indexation service",
                 extra={"source": "reindex_offer_ids", "offer": offer.id},
