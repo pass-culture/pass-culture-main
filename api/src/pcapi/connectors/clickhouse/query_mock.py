@@ -120,16 +120,16 @@ COUNT_OFFERS = [
 
 
 class MockOfferConsultationCountQueryResult:
-    month: int
+    day: datetime.date
     views: int
 
-    def __init__(self, month: int = 1, views: int = 0):
-        self.month = month
+    def __init__(self, day: datetime.date, views: int = 0):
+        self.day = day
         self.views = views
 
 
 OFFER_CONSULTATION_COUNT = [
-    MockOfferConsultationCountQueryResult(month=1, views=3456),
+    MockOfferConsultationCountQueryResult(day=datetime.date(2026, 1, 1), views=3456),
 ]
 
 

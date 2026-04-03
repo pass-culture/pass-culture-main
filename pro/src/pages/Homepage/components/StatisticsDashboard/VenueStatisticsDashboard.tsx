@@ -30,14 +30,14 @@ export const VenueStatisticsDashboard = ({
       {isLoading && <CumulatedViewsSkeleton />}
       {!isLoading &&
         (stats?.jsonData.topOffers.length ||
-        stats?.jsonData.monthlyViews.length ? (
+        stats?.jsonData.dailyViews.length ? (
           <div
             className={cn(styles['data-container'], {
               [styles['has-top-offers']]: stats.jsonData.topOffers.length > 0,
             })}
           >
             <VenueCumulatedViews
-              monthlyViews={stats.jsonData.monthlyViews}
+              monthlyViews={stats.jsonData.dailyViews}
               totalViewsLast30Days={stats.jsonData.totalViewsLast30Days}
             />
 

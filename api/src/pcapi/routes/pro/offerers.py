@@ -362,9 +362,8 @@ def get_venue_offers_stats(venue_id: int) -> offerers_serialize.GetVenueStatsRes
                 )
                 for top_offer in top_offers
             ],
-            monthly_views=[
-                offerers_serialize.VenueMonthlyViewModel(month=row.month, views=row.views)
-                for row in stats.monthly_views
+            daily_views=[
+                offerers_serialize.VenueDailyViewModel(day=row.day, views=row.views) for row in stats.daily_views
             ],
         ),
     )
