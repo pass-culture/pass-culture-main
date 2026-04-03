@@ -1202,6 +1202,8 @@ def get_inactive_headline_offers() -> list[models.HeadlineOffer]:
                 sa.func.upper(models.HeadlineOffer.timespan).is_(None),
             ),
         )
+        # needed to avoid N+1 query : the on_set_timespan listener accesses target.offer.productId
+        .options(sa_orm.contains_eager(models.HeadlineOffer.offer))
         .all()
     )
 
