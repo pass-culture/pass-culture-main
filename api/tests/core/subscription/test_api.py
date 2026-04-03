@@ -2704,7 +2704,7 @@ class TestQueriesTest:
 
         # 3 features flags checked in one query, no N+1 query when fraud checks and reviews joinedloaded
         # but the ff is already cached by BeneficiaryFraudCheckFactory.eligibilityType
-        with assert_num_queries(0):
+        with assert_num_queries(0, expire_session=False):
             subscription_api.get_user_subscription_state(fetched_user)
 
 

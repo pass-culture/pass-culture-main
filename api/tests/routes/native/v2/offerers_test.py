@@ -48,7 +48,7 @@ class GetVenueTest:
         )
         venue_id = venue.id
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries, expire_session=False):
             response = client.get(f"/native/v2/venue/{venue_id}")
             assert response.status_code == 200
 
@@ -125,7 +125,7 @@ class GetVenueTest:
         )
 
         venue_id = venue.id
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries, expire_session=False):
             response = client.get(f"/native/v2/venue/{venue_id}")
             assert response.status_code == 200
 
@@ -146,7 +146,7 @@ class GetVenueTest:
         )
 
         venue_id = venue.id
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries, expire_session=False):
             response = client.get(f"/native/v2/venue/{venue_id}")
             assert response.status_code == 200
 
@@ -157,7 +157,7 @@ class GetVenueTest:
     def test_get_venue_google_banner_meta_not_from_google(self, client):
         venue = offerers_factories.VenueFactory(isPermanent=True, _bannerMeta={"image_credit": "Henri"})
         venue_id = venue.id
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries, expire_session=False):
             response = client.get(f"/native/v2/venue/{venue_id}")
             assert response.status_code == 200
 
@@ -196,7 +196,7 @@ class GetVenueTest:
     def test_get_venue_returns_default_banner_url(self, client):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.BOOKSTORE, isPermanent=True)
         venue_id = venue.id
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries, expire_session=False):
             response = client.get(f"/native/v2/venue/{venue_id}")
             assert response.status_code == 200
 
@@ -206,7 +206,7 @@ class GetVenueTest:
         invalid_phone_number = "+33594282769"  # invalid phone number from real data
         venue = offerers_factories.VenueFactory(contact__phone_number=invalid_phone_number, isPermanent=True)
         venue_id = venue.id
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries, expire_session=False):
             response = client.get(f"/native/v2/venue/{venue_id}")
             assert response.status_code == 200
 

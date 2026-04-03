@@ -33,8 +33,9 @@ class Returns200Test:
         factories.ThingStockFactory(offer=offer_thing, dnBookedQuantity=40)
 
         client = client.with_session_auth(user_offerer.user.email)
+        venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"{URL}?venueId={venue.id}")
+            response = client.get(f"{URL}?venueId={venue_id}")
 
         assert response.status_code == 200
         assert response.json == [
@@ -68,8 +69,9 @@ class Returns200Test:
         factories.EventStockFactory(offer=offer, dnBookedQuantity=10, isSoftDeleted=True)
 
         client = client.with_session_auth(user_offerer.user.email)
+        venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"{URL}?venueId={venue.id}")
+            response = client.get(f"{URL}?venueId={venue_id}")
 
         assert response.status_code == 200
         assert response.json[0]["bookingsCount"] == 30 + 20 + 10
@@ -88,8 +90,9 @@ class Returns200Test:
 
         client = client.with_session_auth(user_offerer.user.email)
         num_queries = self.expected_num_queries - 1  # no select on stock
+        venue_id = venue.id
         with assert_num_queries(num_queries):
-            response = client.get(f"{URL}?venueId={venue.id}")
+            response = client.get(f"{URL}?venueId={venue_id}")
 
         assert response.status_code == 200
         assert response.json == []
@@ -123,8 +126,9 @@ class Returns200Test:
         assert expired_offer.status == offer_mixin.OfferStatus.EXPIRED
 
         client = client.with_session_auth(user_offerer.user.email)
+        venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"{URL}?venueId={venue.id}")
+            response = client.get(f"{URL}?venueId={venue_id}")
 
         assert response.status_code == 200
         assert [result["id"] for result in response.json] == [pending_offer.id, published_offer.id]
@@ -149,8 +153,9 @@ class Returns200Test:
         assert scheduled_offer.status == offer_mixin.OfferStatus.SCHEDULED
 
         client = client.with_session_auth(user_offerer.user.email)
+        venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"{URL}?venueId={venue.id}")
+            response = client.get(f"{URL}?venueId={venue_id}")
 
         assert response.status_code == 200
         assert [result["id"] for result in response.json] == [offer.id, scheduled_offer.id]
@@ -170,8 +175,9 @@ class Returns200Test:
         sold_out_offer = factories.EventOfferFactory(venue=venue)
 
         client = client.with_session_auth(user_offerer.user.email)
+        venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"{URL}?venueId={venue.id}")
+            response = client.get(f"{URL}?venueId={venue_id}")
 
         assert response.status_code == 200
         assert [(result["id"], result["status"]) for result in response.json] == [
@@ -195,8 +201,9 @@ class Returns200Test:
         sold_out_offer = factories.ThingOfferFactory(venue=venue)
 
         client = client.with_session_auth(user_offerer.user.email)
+        venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"{URL}?venueId={venue.id}")
+            response = client.get(f"{URL}?venueId={venue_id}")
 
         assert response.status_code == 200
         assert [(result["id"], result["status"]) for result in response.json] == [
@@ -223,8 +230,9 @@ class Returns200Test:
         )
 
         client = client.with_session_auth(user_offerer.user.email)
+        venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"{URL}?venueId={venue.id}")
+            response = client.get(f"{URL}?venueId={venue_id}")
 
         assert response.status_code == 200
         assert [(result["id"], result["status"]) for result in response.json] == [
@@ -244,8 +252,9 @@ class Returns200Test:
         factories.EventStockFactory(offer=active_thing)
 
         client = client.with_session_auth(user_offerer.user.email)
+        venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"{URL}?venueId={venue.id}")
+            response = client.get(f"{URL}?venueId={venue_id}")
 
         assert response.status_code == 200
         assert [(result["id"], result["status"]) for result in response.json] == [
@@ -274,8 +283,9 @@ class Returns200Test:
         factories.EventStockFactory(offer=offer_3, beginningDatetime=now - datetime.timedelta(days=1))
 
         client = client.with_session_auth(user_offerer.user.email)
+        venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"{URL}?venueId={venue.id}")
+            response = client.get(f"{URL}?venueId={venue_id}")
 
         assert response.status_code == 200
         assert [(result["id"], result["status"]) for result in response.json] == [

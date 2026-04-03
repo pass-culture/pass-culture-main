@@ -373,7 +373,7 @@ class CurrentPricingPointTest:
 
         venue_with_joinedload = self._load_venue(venue.id)
 
-        with assert_num_queries(0):
+        with assert_num_queries(0, expire_session=False):
             assert venue_with_joinedload.current_pricing_point_link is None
             assert venue_with_joinedload.current_pricing_point is None
 
@@ -393,7 +393,7 @@ class CurrentPricingPointTest:
 
         venue_with_joinedload = self._load_venue(venue.id)
 
-        with assert_num_queries(0):
+        with assert_num_queries(0, expire_session=False):
             assert venue_with_joinedload.current_pricing_point_link == link
             assert venue_with_joinedload.current_pricing_point is not None
             assert venue_with_joinedload.current_pricing_point.name == "current"
@@ -415,7 +415,7 @@ class CurrentBankAccountTest:
 
         venue_with_joinedload = self._load_venue(venue.id)
 
-        with assert_num_queries(0):
+        with assert_num_queries(0, expire_session=False):
             assert venue_with_joinedload.current_bank_account_link is None
 
     def test_bank_account_link(self):
@@ -434,7 +434,7 @@ class CurrentBankAccountTest:
 
         venue_with_joinedload = self._load_venue(venue.id)
 
-        with assert_num_queries(0):
+        with assert_num_queries(0, expire_session=False):
             assert venue_with_joinedload.current_bank_account_link == link
             assert venue_with_joinedload.current_bank_account_link.bankAccount.label == "current"
 

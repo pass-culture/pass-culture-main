@@ -114,7 +114,7 @@ class GetInvoicesTest:
         params = {"bankAccountId": bank_account1.id}
         queries = testing.AUTHENTICATION_QUERIES
         queries += 1  # select invoice
-        with testing.assert_num_queries(queries):
+        with testing.assert_num_queries(queries, expire_session=False):
             response = client.get("/v2/finance/invoices", params=params)
             assert response.status_code == 200
 
@@ -184,7 +184,7 @@ class GetInvoicesTest:
         params = {"offererId": offerer.id, "bankAccountId": bank_account1.id}
         queries = testing.AUTHENTICATION_QUERIES
         queries += 1  # select invoice
-        with testing.assert_num_queries(queries):
+        with testing.assert_num_queries(queries, expire_session=False):
             response = client.get("/v2/finance/invoices", params=params)
             assert response.status_code == 200
 

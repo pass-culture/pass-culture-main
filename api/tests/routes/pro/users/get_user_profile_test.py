@@ -28,7 +28,7 @@ class Returns200Test:
         with client.client.session_transaction() as session:
             session["internal_admin_email"] = user.email
 
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries, expire_session=False):
             response = client.get(url)
             assert response.status_code == 200
 
@@ -49,7 +49,7 @@ class Returns200Test:
         )
 
         client = client.with_session_auth(email="toto@example.com")
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries, expire_session=False):
             response = client.get("/users/current")
             assert response.status_code == 200
 

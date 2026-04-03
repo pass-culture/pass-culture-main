@@ -259,7 +259,7 @@ class CreateThingsTest(CreateOfferBase):
         payload = offer_minimal_shared_data(subcategory_id, venue)
 
         with assert_changes(Offer, 1):
-            with assert_num_queries(self.success_num_queries):
+            with assert_num_queries(self.success_num_queries, expire_session=False):
                 response = auth_client.post(self.endpoint, json=payload)
                 assert response.status_code == 201
 
@@ -427,7 +427,7 @@ class CreateDigitalEventTest(CreateOfferBase):
         }
 
         with assert_changes(Offer, 1):
-            with assert_num_queries(self.success_num_queries):
+            with assert_num_queries(self.success_num_queries, expire_session=False):
                 response = auth_client.post(self.endpoint, json=payload)
                 assert response.status_code == 201
 
@@ -462,7 +462,7 @@ class CreateActivitySubscriptionTest(CreateOfferBase):
         }
 
         with assert_changes(Offer, 1):
-            with assert_num_queries(self.success_num_queries):
+            with assert_num_queries(self.success_num_queries, expire_session=False):
                 response = auth_client.post(self.endpoint, json=payload)
                 assert response.status_code == 201
 
@@ -495,7 +495,7 @@ class CreateActivityOnlineTest(CreateOfferBase):
         }
 
         with assert_changes(Offer, 1):
-            with assert_num_queries(self.success_num_queries):
+            with assert_num_queries(self.success_num_queries, expire_session=False):
                 response = auth_client.post(self.endpoint, json=payload)
                 assert response.status_code == 201
 
@@ -516,7 +516,7 @@ class CreateActivityOnlineTest(CreateOfferBase):
         }
 
         with assert_changes(Offer, 1):
-            with assert_num_queries(self.success_num_queries):
+            with assert_num_queries(self.success_num_queries, expire_session=False):
                 response = auth_client.post(self.endpoint, json=payload)
                 assert response.status_code == 201
 
@@ -542,7 +542,7 @@ class CreateActivityOnlineEventTest(CreateOfferBase):
         }
 
         with assert_changes(Offer, 1):
-            with assert_num_queries(self.success_num_queries):
+            with assert_num_queries(self.success_num_queries, expire_session=False):
                 response = auth_client.post(self.endpoint, json=payload)
                 assert response.status_code == 201
 
@@ -574,7 +574,7 @@ class CreateActivityRandomTest(CreateOfferBase):
         payload = offer_minimal_shared_data(subcategory_id, venue)
 
         with assert_changes(Offer, 1):
-            with assert_num_queries(self.success_num_queries):
+            with assert_num_queries(self.success_num_queries, expire_session=False):
                 response = auth_client.post(self.endpoint, json=payload)
                 assert response.status_code == 201
 
@@ -594,7 +594,7 @@ class CreateActivityRandomTest(CreateOfferBase):
         }
 
         with assert_changes(Offer, 1):
-            with assert_num_queries(self.success_num_queries):
+            with assert_num_queries(self.success_num_queries, expire_session=False):
                 response = auth_client.post(self.endpoint, json=payload)
                 assert response.status_code == 201
 

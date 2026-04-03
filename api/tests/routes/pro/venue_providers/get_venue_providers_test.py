@@ -52,7 +52,7 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = allocine_venue_provider.venue.id
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries, expire_session=False):
             response = auth_request.get(f"/venues/{venue_id}/venue-providers")
             assert response.status_code == 200
 

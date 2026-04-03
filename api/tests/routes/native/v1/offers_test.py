@@ -124,7 +124,7 @@ class OffersTest:
         BookingFactory(stock=exhausted_stock, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))
         offer_id = offer.id
 
-        with assert_num_queries(self.nb_queries):
+        with assert_num_queries(self.nb_queries, expire_session=False):
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
                 assert response.status_code == 200
@@ -275,7 +275,7 @@ class OffersTest:
         offers_factories.ThingStockFactory(offer=offer, price=12.34, quantity=None)
 
         offer_id = offer.id
-        with assert_num_queries(self.nb_queries + 1):  # select artists
+        with assert_num_queries(self.nb_queries + 1, expire_session=False):  # select artists
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
                 assert response.status_code == 200
@@ -289,7 +289,7 @@ class OffersTest:
         offers_factories.ThingStockFactory(offer=offer, price=12.34, quantity=None)
 
         offer_id = offer.id
-        with assert_num_queries(self.nb_queries):
+        with assert_num_queries(self.nb_queries, expire_session=False):
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
                 assert response.status_code == 200
@@ -299,7 +299,7 @@ class OffersTest:
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id
-        with assert_num_queries(self.nb_queries):
+        with assert_num_queries(self.nb_queries, expire_session=False):
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
                 assert response.status_code == 200
@@ -319,7 +319,7 @@ class OffersTest:
         stock = offers_factories.StockWithActivationCodesFactory()
         offer_id = stock.offer.id
 
-        with assert_num_queries(self.nb_queries + 1):  # select activation_code
+        with assert_num_queries(self.nb_queries + 1, expire_session=False):  # select activation_code
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
                 assert response.status_code == 200
@@ -330,7 +330,7 @@ class OffersTest:
         stock = offers_factories.StockWithActivationCodesFactory(activationCodes__expirationDate=datetime(2050, 1, 1))
         offer_id = stock.offer.id
 
-        with assert_num_queries(self.nb_queries + 1):  # select activation_code
+        with assert_num_queries(self.nb_queries + 1, expire_session=False):  # select activation_code
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
                 assert response.status_code == 200
@@ -341,7 +341,7 @@ class OffersTest:
         stock = offers_factories.StockWithActivationCodesFactory(activationCodes__expirationDate=datetime(2000, 1, 1))
         offer_id = stock.offer.id
 
-        with assert_num_queries(self.nb_queries + 1):  # activation_code
+        with assert_num_queries(self.nb_queries + 1, expire_session=False):  # activation_code
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
                 assert response.status_code == 200
@@ -354,7 +354,7 @@ class OffersTest:
 
         offer_id = stock.offer.id
 
-        with assert_num_queries(self.nb_queries):
+        with assert_num_queries(self.nb_queries, expire_session=False):
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
 
@@ -387,7 +387,7 @@ class OffersTest:
         offer = offers_factories.ThingOfferFactory()
 
         offer_id = offer.id
-        with assert_num_queries(self.nb_queries):
+        with assert_num_queries(self.nb_queries, expire_session=False):
             response = client.get(f"/native/v1/offer/{offer_id}")
             assert response.status_code == 200
 
@@ -400,7 +400,7 @@ class OffersTest:
         non_deleted_stock = offers_factories.StockFactory(offer=offer, quantity=1)
 
         offer_id = offer.id
-        with assert_num_queries(self.nb_queries):
+        with assert_num_queries(self.nb_queries, expire_session=False):
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
 
@@ -414,7 +414,7 @@ class OffersTest:
         offers_factories.StockFactory(offer=offer, quantity=1)
 
         offer_id = offer.id
-        with assert_num_queries(self.nb_queries):
+        with assert_num_queries(self.nb_queries, expire_session=False):
             response = client.get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -433,7 +433,7 @@ class OffersTest:
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id
-        with assert_num_queries(self.nb_queries + 1):  # products and artists
+        with assert_num_queries(self.nb_queries + 1, expire_session=False):  # products and artists
             response = client.get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -455,7 +455,7 @@ class OffersTest:
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id
-        with assert_num_queries(self.nb_queries + 1):  # select artists
+        with assert_num_queries(self.nb_queries + 1, expire_session=False):  # select artists
             response = client.get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -472,7 +472,7 @@ class OffersTest:
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id
-        with assert_num_queries(self.nb_queries + 1):  # select artists
+        with assert_num_queries(self.nb_queries + 1, expire_session=False):  # select artists
             response = client.get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -491,7 +491,7 @@ class OffersTest:
         offers_factories.MediationFactory(id=111, offer=offer, thumbCount=2, credit="street credit")
 
         offer_id = offer.id
-        with assert_num_queries(self.nb_queries + 1):  # select artists
+        with assert_num_queries(self.nb_queries + 1, expire_session=False):  # select artists
             response = client.get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -594,7 +594,7 @@ class OffersV2Test:
         BookingFactory(stock=exhausted_stock, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))
 
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries):
+        with assert_num_queries(self.base_num_queries, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -744,7 +744,7 @@ class OffersV2Test:
         offers_factories.ThingStockFactory(offer=offer, price=12.34, quantity=None)
 
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries + self.num_queries_with_product):
+        with assert_num_queries(self.base_num_queries + self.num_queries_with_product, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -755,7 +755,7 @@ class OffersV2Test:
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries):
+        with assert_num_queries(self.base_num_queries, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -779,7 +779,7 @@ class OffersV2Test:
         # when
         num_queries = self.base_num_queries
         num_queries += 1  # select activation_code
-        with assert_num_queries(num_queries):
+        with assert_num_queries(num_queries, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         # then
@@ -794,7 +794,7 @@ class OffersV2Test:
         # when
         num_queries = self.base_num_queries
         num_queries += 1  # select activation_code
-        with assert_num_queries(num_queries):
+        with assert_num_queries(num_queries, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         # then
@@ -809,7 +809,7 @@ class OffersV2Test:
         # when
         nb_query = self.base_num_queries
         nb_query += 1  # select activation_code
-        with assert_num_queries(nb_query):
+        with assert_num_queries(nb_query, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         # then
@@ -821,7 +821,7 @@ class OffersV2Test:
         stock = offers_factories.EventStockFactory(beginningDatetime=date_utils.get_naive_utc_now() - timedelta(days=1))
 
         offer_id = stock.offer.id
-        with assert_num_queries(self.base_num_queries):
+        with assert_num_queries(self.base_num_queries, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.json["isExpired"]
@@ -854,7 +854,7 @@ class OffersV2Test:
         offers_factories.EventStockFactory(offer=offer)
 
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries):
+        with assert_num_queries(self.base_num_queries, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
             assert response.status_code == 200
 
@@ -864,7 +864,7 @@ class OffersV2Test:
         offer = offers_factories.ThingOfferFactory()
 
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries):
+        with assert_num_queries(self.base_num_queries, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert isinstance(response.json["metadata"], dict)
@@ -876,7 +876,7 @@ class OffersV2Test:
         non_deleted_stock = offers_factories.StockFactory(offer=offer, quantity=1)
 
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries):
+        with assert_num_queries(self.base_num_queries, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -889,7 +889,7 @@ class OffersV2Test:
         offers_factories.StockFactory(offer=offer, quantity=1)
 
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries):
+        with assert_num_queries(self.base_num_queries, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -906,7 +906,7 @@ class OffersV2Test:
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries + self.num_queries_with_product):
+        with assert_num_queries(self.base_num_queries + self.num_queries_with_product, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -929,7 +929,7 @@ class OffersV2Test:
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries + self.num_queries_with_product):
+        with assert_num_queries(self.base_num_queries + self.num_queries_with_product, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -952,7 +952,7 @@ class OffersV2Test:
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries + self.num_queries_with_product):
+        with assert_num_queries(self.base_num_queries + self.num_queries_with_product, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -973,7 +973,7 @@ class OffersV2Test:
         offers_factories.MediationFactory(id=111, offer=offer, thumbCount=2, credit="street credit")
 
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries + self.num_queries_with_product):
+        with assert_num_queries(self.base_num_queries + self.num_queries_with_product, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -992,7 +992,7 @@ class OffersV2Test:
         ReactionFactory(offer=offer, reactionType=ReactionTypeEnum.DISLIKE)
 
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries):
+        with assert_num_queries(self.base_num_queries, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1007,7 +1007,7 @@ class OffersV2Test:
         ReactionFactory(product=product, reactionType=ReactionTypeEnum.DISLIKE)
 
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries + self.num_queries_with_product):
+        with assert_num_queries(self.base_num_queries + self.num_queries_with_product, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1018,7 +1018,7 @@ class OffersV2Test:
         offers_factories.EventStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries):
+        with assert_num_queries(self.base_num_queries, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1067,7 +1067,7 @@ class OffersV2Test:
         offer = offers_factories.OfferFactory(offererAddress=oa)
 
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries):
+        with assert_num_queries(self.base_num_queries, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}/")
         response_offer = response.json
 
@@ -1088,7 +1088,7 @@ class OffersV2Test:
         )
 
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries):
+        with assert_num_queries(self.base_num_queries, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
         assert response.status_code == 200
         assert response.json["extraData"] == {
@@ -1127,7 +1127,7 @@ class OffersV2Test:
         )
 
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries + self.num_queries_with_product):
+        with assert_num_queries(self.base_num_queries + self.num_queries_with_product, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
         assert response.status_code == 200
         assert response.json["extraData"]["bookFormat"] == "Poche"
@@ -1137,7 +1137,7 @@ class OffersV2Test:
         offer = offers_factories.OfferFactory(extraData=extra_data)
 
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries):
+        with assert_num_queries(self.base_num_queries, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
         assert response.status_code == 200
         assert response.json["extraData"]["bookFormat"] == "Moyen format"
@@ -1162,7 +1162,7 @@ class OffersV2Test:
         )  # Not marked OK for publication by the author (isSocialMediaDiffusible)
 
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries + self.num_queries_with_product):
+        with assert_num_queries(self.base_num_queries + self.num_queries_with_product, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1183,7 +1183,7 @@ class OffersV2Test:
         )
 
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries + self.num_queries_with_product):
+        with assert_num_queries(self.base_num_queries + self.num_queries_with_product, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1203,7 +1203,7 @@ class OffersV2Test:
         )
 
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries + self.num_queries_with_product):
+        with assert_num_queries(self.base_num_queries + self.num_queries_with_product, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
             assert response.status_code == 200
             assert len(response.json["chronicles"]) == 1
@@ -1216,7 +1216,7 @@ class OffersV2Test:
         offer = offers_factories.OfferFactory(bookingAllowedDatetime=booking_allowed_datetime)
 
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries):
+        with assert_num_queries(self.base_num_queries, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1236,7 +1236,7 @@ class OffersV2Test:
         artists_factories.ArtistProductLinkFactory(artist_id=artist_3.id, product_id=product.id)
 
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries + self.num_queries_with_product):
+        with assert_num_queries(self.base_num_queries + self.num_queries_with_product, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1251,7 +1251,7 @@ class OffersV2Test:
     def test_get_headline_offer(self, client):
         offer = offers_factories.OfferFactory()
         offer_id = offer.id
-        with assert_num_queries(self.base_num_queries):
+        with assert_num_queries(self.base_num_queries, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1261,7 +1261,7 @@ class OffersV2Test:
         headline_offer = offers_factories.HeadlineOfferFactory()
         offer_id = headline_offer.offer.id
 
-        with assert_num_queries(self.base_num_queries):
+        with assert_num_queries(self.base_num_queries, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1358,7 +1358,7 @@ class OffersV2Test:
         )
         offer_id = metadata.offer.id
 
-        with assert_num_queries(self.base_num_queries):
+        with assert_num_queries(self.base_num_queries, expire_session=False):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1977,7 +1977,7 @@ class OffersStocksV2Test:
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
         nb_queries += 1  # select chronicles
-        with assert_num_queries(nb_queries):
+        with assert_num_queries(nb_queries, expire_session=False):
             response = client.post("/native/v2/offers/stocks", json=payload)
 
         # For the test to be deterministic
