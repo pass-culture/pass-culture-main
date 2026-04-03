@@ -1,28 +1,28 @@
 import dataclasses
+import datetime
 
 from pcapi.connectors.clickhouse.queries.base import BaseQuery
 from pcapi.connectors.clickhouse.queries.base import ClickHouseBaseModel
 
 
-class OfferMonthlyViewModel(ClickHouseBaseModel):
-    month: int
+class OfferDailyViewModel(ClickHouseBaseModel):
+    day: datetime.date
     views: int
 
 
 @dataclasses.dataclass
 class _Row:
-    month: int
+    day: datetime.date
     views: int
 
 
-class OfferConsultationCountQuery(BaseQuery[OfferMonthlyViewModel, _Row]):
-    model = OfferMonthlyViewModel
+class OfferConsultationCountQuery(BaseQuery[OfferDailyViewModel, _Row]):
+    model = OfferDailyViewModel
 
     @property
     def raw_query(self) -> str:
         return """
-        SELECT EXTRACT(MONTH from event_date) as month, sum(consultation_cnt) as views
+        SELECT event_date as day, consultation_cnt as views
         FROM analytics.daily_aggregated_venue_offer_consultation
         WHERE venue_id = :venue_id AND event_date >= today() - INTERVAL 6 MONTH
-        GROUP BY month
         """

@@ -1,5 +1,6 @@
 import enum
 import typing
+from datetime import date
 from datetime import datetime
 from typing import Iterable
 
@@ -360,15 +361,15 @@ class GetOffererStatsResponseModel(HttpBodyModel):
         )
 
 
-class VenueMonthlyViewModel(HttpBodyModel):
-    month: int
+class VenueDailyViewModel(HttpBodyModel):
+    day: date
     views: int
 
 
 class VenueStatsDataModel(HttpBodyModel):
     total_views_last_30_days: int
     top_offers: list[TopOffersResponseData]
-    monthly_views: list[VenueMonthlyViewModel]
+    daily_views: list[VenueDailyViewModel]
 
 
 class GetVenueStatsResponseModel(HttpBodyModel):
