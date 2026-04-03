@@ -13,7 +13,7 @@ export function HeadlineOfferCell({
   offer,
   setIsConfirmReplacementDialogOpen,
   setIsOfferWithoutImageDialogOpen,
-}: HeadlineOfferCellProps) {
+}: Readonly<HeadlineOfferCellProps>) {
   const { headlineOffer, upsertHeadlineOffer, removeHeadlineOffer } =
     useHeadlineOfferContext()
 
@@ -21,17 +21,17 @@ export function HeadlineOfferCell({
     if (offer.id === headlineOffer?.id) {
       await removeHeadlineOffer()
     } else {
-      if (!offer.thumbUrl) {
-        setIsOfferWithoutImageDialogOpen(true)
-      } else {
-        if (!headlineOffer?.id) {
+      if (offer.thumbUrl) {
+        if (headlineOffer?.id) {
+          setIsConfirmReplacementDialogOpen(true)
+        } else {
           await upsertHeadlineOffer({
             offerId: offer.id,
             context: { actionType: 'add' },
           })
-        } else {
-          setIsConfirmReplacementDialogOpen(true)
         }
+      } else {
+        setIsOfferWithoutImageDialogOpen(true)
       }
     }
   }

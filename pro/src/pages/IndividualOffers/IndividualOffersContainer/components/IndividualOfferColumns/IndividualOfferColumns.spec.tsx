@@ -59,20 +59,15 @@ const baseOffer = listOffersOfferFactory({
 type RenderOptions = {
   isRefactoFutureOfferEnabled?: boolean
   headlineOffer?: HeadLineOfferResponseModel | null
-  isHeadlineOfferAllowedForOfferer?: boolean
 }
 
 const renderTableWithOffer = (
   offer = baseOffer,
   options: RenderOptions = {}
 ) => {
-  const { headlineOffer = null, isHeadlineOfferAllowedForOfferer = false } =
-    options
+  const { headlineOffer = null } = options
 
-  const columns = getIndividualOfferColumns(
-    headlineOffer,
-    isHeadlineOfferAllowedForOfferer
-  )
+  const columns = getIndividualOfferColumns(headlineOffer)
 
   return renderWithProviders(
     <HeadlineOfferContextProvider>
@@ -153,7 +148,6 @@ describe('getIndividualOfferColumns', () => {
     renderTableWithOffer(baseOffer, {
       isRefactoFutureOfferEnabled: false,
       headlineOffer,
-      isHeadlineOfferAllowedForOfferer: true,
     })
     expect(await screen.findByText(/Offre à la une/i)).toBeInTheDocument()
   })
@@ -162,7 +156,6 @@ describe('getIndividualOfferColumns', () => {
     renderTableWithOffer(baseOffer, {
       isRefactoFutureOfferEnabled: true,
       headlineOffer: null,
-      isHeadlineOfferAllowedForOfferer: false,
     })
     expect(await screen.findByText(/Réservations/)).toBeInTheDocument()
   })

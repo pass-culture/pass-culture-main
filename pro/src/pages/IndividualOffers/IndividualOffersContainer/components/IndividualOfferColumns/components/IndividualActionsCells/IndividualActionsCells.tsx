@@ -46,8 +46,7 @@ export const IndividualActionsCells = ({
   editionStockLink,
 }: IndividualActionsCellsProps) => {
   const { storedFilters } = getStoredFilterConfig('individual')
-  const { isHeadlineOfferAllowedForOfferer, upsertHeadlineOffer } =
-    useHeadlineOfferContext()
+  const { upsertHeadlineOffer } = useHeadlineOfferContext()
   const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
   const urlSearchFilters = useQuerySearchFilters()
   const finalSearchFilters = {
@@ -122,8 +121,7 @@ export const IndividualActionsCells = ({
   // updated & headline offers without images are prohibited.
   const isNotAProductWithoutImage = !isProduct || hasImage
 
-  const isHeadlineActionDisplayed =
-    isHeadlineOfferAllowedForOfferer && isActive && isNotAProductWithoutImage
+  const isHeadlineActionDisplayed = isActive && isNotAProductWithoutImage
 
   return (
     <>

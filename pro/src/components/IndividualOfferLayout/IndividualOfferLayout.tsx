@@ -6,7 +6,6 @@ import {
   type GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
 } from '@/apiClient/v1'
-import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
@@ -40,7 +39,6 @@ export const IndividualOfferLayout = ({
   offer,
 }: IndividualOfferLayoutProps) => {
   const { hasPublishedOfferWithSameEan } = useIndividualOfferContext()
-  const { isHeadlineOfferAllowedForOfferer } = useHeadlineOfferContext()
   const mode = useOfferWizardMode()
   const isOfferRecommendationEnabled = useActiveFeature(
     'WIP_OFFER_RECOMMENDATION_PRO'
@@ -84,8 +82,6 @@ export const IndividualOfferLayout = ({
 
   const shouldDisplayHeadlineOfferCard =
     !!offer &&
-    isHeadlineOfferAllowedForOfferer &&
-    !offer.venue.isVirtual &&
     [OfferStatus.ACTIVE].includes(offer.status) &&
     isNotAProductWithoutImage
 

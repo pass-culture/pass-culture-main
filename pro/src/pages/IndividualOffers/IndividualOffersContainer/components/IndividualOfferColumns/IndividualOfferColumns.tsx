@@ -18,8 +18,7 @@ import { OfferNameCell } from './components/OfferNameCell/OfferNameCell'
 import { OfferStatusCell } from './components/OfferStatusCell/OfferStatusCell'
 
 export function getIndividualOfferColumns(
-  headlineOffer: HeadLineOfferResponseModel | null,
-  isHeadlineOfferAllowedForOfferer: boolean
+  headlineOffer: HeadLineOfferResponseModel | null
 ): Column<ListOffersOfferResponseModel>[] {
   const columns: Column<ListOffersOfferResponseModel>[] = [
     {
@@ -65,9 +64,7 @@ export function getIndividualOfferColumns(
       render: (offer) => (
         <OfferStatusCell
           offer={offer}
-          isHeadline={
-            isHeadlineOfferAllowedForOfferer && offer.id === headlineOffer?.id
-          }
+          isHeadline={offer.id === headlineOffer?.id}
         />
       ),
     },

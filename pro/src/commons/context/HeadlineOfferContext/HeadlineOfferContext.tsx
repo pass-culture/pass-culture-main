@@ -27,14 +27,12 @@ type HeadlineOfferContextValues = {
   headlineOffer: HeadLineOfferResponseModel | null
   upsertHeadlineOffer: (params: UpsertHeadlineOfferParams) => Promise<void>
   removeHeadlineOffer: () => Promise<void>
-  isHeadlineOfferAllowedForOfferer: boolean
 }
 
 const HeadlineOfferContext = createContext<HeadlineOfferContextValues>({
   headlineOffer: null,
   upsertHeadlineOffer: async () => noopAsync(),
   removeHeadlineOffer: async () => noopAsync(),
-  isHeadlineOfferAllowedForOfferer: false,
 })
 
 export const useHeadlineOfferContext = () => {
@@ -145,14 +143,8 @@ export function HeadlineOfferContextProvider({
           headlineOffer,
           upsertHeadlineOffer,
           removeHeadlineOffer,
-          isHeadlineOfferAllowedForOfferer,
         }),
-        [
-          headlineOffer,
-          upsertHeadlineOffer,
-          removeHeadlineOffer,
-          isHeadlineOfferAllowedForOfferer,
-        ]
+        [headlineOffer, upsertHeadlineOffer, removeHeadlineOffer]
       )}
     >
       {children}

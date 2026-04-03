@@ -18,7 +18,6 @@ import {
 const LABELS = {
   display: {
     headlineOffer: 'Headline Offer Id',
-    isHeadlineOfferAllowedForOfferer: 'Is Headline Offer Available',
   },
   controls: {
     upsertHeadlineOffer: 'Upsert Headline Offer',
@@ -75,12 +74,8 @@ vi.mock('swr', async () => ({
 }))
 
 const TestComponent = () => {
-  const {
-    headlineOffer,
-    upsertHeadlineOffer,
-    removeHeadlineOffer,
-    isHeadlineOfferAllowedForOfferer,
-  } = useHeadlineOfferContext()
+  const { headlineOffer, upsertHeadlineOffer, removeHeadlineOffer } =
+    useHeadlineOfferContext()
 
   return (
     <>
@@ -89,10 +84,6 @@ const TestComponent = () => {
         <span>
           {LABELS.display.headlineOffer}:{' '}
           {headlineOffer ? headlineOffer.id : 'null'}
-        </span>
-        <span>
-          {LABELS.display.isHeadlineOfferAllowedForOfferer}:{' '}
-          {isHeadlineOfferAllowedForOfferer ? 'true' : 'false'}
         </span>
       </div>
       <div>
@@ -143,87 +134,6 @@ describe('HeadlineOfferContext', () => {
           isPermanent: true,
         }),
       ],
-    })
-  })
-
-  describe('should tell if headline offer is available as a feature', () => {
-    it('should be available if feature is enabled and offerer is allowed to use it', async () => {
-      renderIndividualOffersContext()
-
-      await waitFor(async () => {
-        const display = await screen.findByText(
-          new RegExp(LABELS.display.isHeadlineOfferAllowedForOfferer)
-        )
-        expect(display.textContent).toContain('true')
-      })
-    })
-
-    it('should not be available if offerer has only virtual venues', async () => {
-      vi.spyOn(api, 'getVenues').mockResolvedValue({
-        venues: [
-          makeVenueListItem({
-            id: MOCK_DATA.headlineOffer.venueId,
-            isVirtual: true,
-            isPermanent: true,
-          }),
-        ],
-      })
-
-      renderIndividualOffersContext()
-
-      await waitFor(async () => {
-        const display = await screen.findByText(
-          new RegExp(LABELS.display.isHeadlineOfferAllowedForOfferer)
-        )
-        expect(display.textContent).toContain('false')
-      })
-    })
-  })
-
-  it('should not be available if offerer has more than one non-virtual venue', async () => {
-    vi.spyOn(api, 'getVenues').mockResolvedValue({
-      venues: [
-        makeVenueListItem({
-          id: MOCK_DATA.headlineOffer.venueId,
-          isVirtual: false,
-          isPermanent: false,
-        }),
-        makeVenueListItem({
-          id: MOCK_DATA.otherVenueOffer.venueId,
-          isVirtual: false,
-          isPermanent: true,
-        }),
-      ],
-    })
-
-    renderIndividualOffersContext()
-
-    await waitFor(async () => {
-      const display = await screen.findByText(
-        new RegExp(LABELS.display.isHeadlineOfferAllowedForOfferer)
-      )
-      expect(display.textContent).toContain('false')
-    })
-  })
-
-  it('should not be available if offerer has no permanent venue', async () => {
-    vi.spyOn(api, 'getVenues').mockResolvedValue({
-      venues: [
-        makeVenueListItem({
-          id: MOCK_DATA.headlineOffer.venueId,
-          isVirtual: false,
-          isPermanent: false,
-        }),
-      ],
-    })
-
-    renderIndividualOffersContext()
-
-    await waitFor(async () => {
-      const display = await screen.findByText(
-        new RegExp(LABELS.display.isHeadlineOfferAllowedForOfferer)
-      )
-      expect(display.textContent).toContain('false')
     })
   })
 
