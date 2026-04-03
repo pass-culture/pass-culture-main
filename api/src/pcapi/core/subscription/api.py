@@ -320,8 +320,12 @@ def get_honor_statement_subscription_item(
     )
 
 
-def get_user_subscription_state(user: users_models.User) -> subscription_schemas.UserSubscriptionState:
-    subscription_state_machine = subscription_machines.create_state_machine_to_current_state(user)
+def get_user_subscription_state(
+    user: users_models.User, phone_validation_state_enabled: bool = False
+) -> subscription_schemas.UserSubscriptionState:
+    subscription_state_machine = subscription_machines.create_state_machine_to_current_state(
+        user, phone_validation_state_enabled
+    )
     subscription_state = subscription_state_machine.state
     match subscription_state:
         case subscription_machines.SubscriptionStates.EMAIL_VALIDATION:
