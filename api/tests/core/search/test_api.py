@@ -371,7 +371,7 @@ class ReindexArtistIdsTest:
         artists_factories.ArtistProductLinkFactory(artist_id=artist.id, product_id=product.id)
         offers_factories.StockFactory(offer__product=product)
 
-        search_testing.search_store["artists"][artist.id] = "dummy"
+        search_testing.search_store["artists"][artist.id] = {"name": "dummy"}
 
         artist_ids = [artist.id]
         search.reindex_artist_ids(artist_ids)
@@ -381,7 +381,7 @@ class ReindexArtistIdsTest:
     def test_unindex_artists_with_no_search_eligible_offers(self):
         artist = artists_factories.ArtistFactory()
 
-        search_testing.search_store["artists"][artist.id] = "dummy"
+        search_testing.search_store["artists"][artist.id] = {"name": "dummy"}
 
         search.reindex_artist_ids([artist.id])
         assert search_testing.search_store["artists"] == {}
@@ -392,7 +392,7 @@ class ReindexArtistIdsTest:
         artists_factories.ArtistProductLinkFactory(artist_id=artist.id, product_id=product.id)
         offers_factories.StockFactory(offer__product=product)
 
-        search_testing.search_store["artists"][artist.id] = "dummy"
+        search_testing.search_store["artists"][artist.id] = {"name": "dummy"}
 
         search.reindex_artist_ids([artist.id])
         assert search_testing.search_store["artists"] == {}
