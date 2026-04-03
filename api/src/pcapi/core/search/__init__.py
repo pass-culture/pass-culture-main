@@ -379,6 +379,10 @@ def _reindex_venue_ids(
             to_delete_ids.append(venue.id)
 
     to_add_ids = [venue.id for venue in to_add]
+    # If venues were deleted from database, they won't be found by the query to be unindexed
+    found_venue_ids = to_delete_ids + to_add_ids
+    unfound_venue_ids = [venue_id for venue_id in venue_ids if venue_id not in found_venue_ids]
+    to_delete_ids += unfound_venue_ids
 
     logger.info(
         "Finished sorting venues: starting to index",
@@ -698,6 +702,11 @@ def reindex_artist_ids(artist_ids: abc.Collection[str], from_error_queue: bool =
 
     to_add_ids = [artist.id for artist in to_add]
 
+    # If artists were deleted from database, they won't be found by the query to be unindexed
+    found_artist_ids = to_delete_ids + to_add_ids
+    unfound_artist_ids = [artist_id for artist_id in artist_ids if artist_id not in found_artist_ids]
+    to_delete_ids += unfound_artist_ids
+
     logger.info(
         "Finished sorting artists: starting to index",
         extra={"count_to_add": len(to_add), "count_to_delete": len(to_delete_ids)},
@@ -748,6 +757,12 @@ def reindex_offer_ids(offer_ids: abc.Collection[int], from_error_queue: bool = F
                 extra={"source": "reindex_offer_ids", "offer": offer.id},
             )
 
+    to_add_ids = [offer.id for offer in to_add]
+    # If offers were deleted from database, they won't be found by the query to be unindexed
+    found_offer_ids = to_delete_ids + to_add_ids
+    unfound_offer_ids = [offer_id for offer_id in offer_ids if offer_id not in found_offer_ids]
+    to_delete_ids += unfound_offer_ids
+
     # Handle new or updated available offers
     last_x_days_bookings_count_by_offer = get_last_x_days_booking_count_by_offer(to_add)
     try:
@@ -757,11 +772,11 @@ def reindex_offer_ids(offer_ids: abc.Collection[int], from_error_queue: bool = F
             raise
         _log_indexation_error(
             "offers",
-            ids=[offer.id for offer in to_add],
+            ids=to_add_ids,
             exc=exc,
             from_error_queue=from_error_queue,
         )
-        backend.enqueue_offer_ids_in_error([offer.id for offer in to_add])
+        backend.enqueue_offer_ids_in_error(to_add_ids)
 
     # Handle unavailable offers (deleted, expired, sold out, etc.)
     try:
