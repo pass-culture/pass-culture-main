@@ -36,7 +36,7 @@
   &-subtitle {
     @include fonts.body;
 
-    margin: 0;
+    margin-top: var(--size-spacing-xs);
     color: var(--color-text-subtle);
   }
 

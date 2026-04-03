@@ -14,6 +14,8 @@ interface CardHeaderProps {
   subtitle?: string
   className?: string
   titleTag?: 'h2' | 'h3' | 'h4'
+  titleClassName?: string
+  subtitleClassName?: string
 }
 
 interface CardContentProps {
@@ -37,10 +39,18 @@ const CardHeader = ({
   subtitle,
   className,
   titleTag: TitleTag = 'h2',
+  titleClassName,
+  subtitleClassName,
 }: CardHeaderProps) => (
   <div className={cn(styles['card-header'], className)}>
-    <TitleTag className={styles['card-title']}>{title}</TitleTag>
-    {subtitle && <p className={styles['card-subtitle']}>{subtitle}</p>}
+    <TitleTag className={cn(styles['card-title'], titleClassName)}>
+      {title}
+    </TitleTag>
+    {subtitle && (
+      <p className={cn(styles['card-subtitle'], subtitleClassName)}>
+        {subtitle}
+      </p>
+    )}
   </div>
 )
 
