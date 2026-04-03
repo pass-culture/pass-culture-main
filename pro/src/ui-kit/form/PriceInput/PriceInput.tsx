@@ -1,4 +1,10 @@
-import React, { type ForwardedRef, useEffect, useRef, useState } from 'react'
+import React, {
+  type ForwardedRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react'
 
 import type { Currency } from '@/commons/core/shared/types'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
@@ -93,6 +99,8 @@ export const PriceInput = React.forwardRef(
     ref: ForwardedRef<HTMLInputElement>
   ) => {
     const priceRef = useRef<HTMLInputElement>(null)
+
+    useImperativeHandle(ref, () => priceRef.current as HTMLInputElement)
 
     const freeName = `${name}.free`
     const freeRef = useRef<HTMLInputElement>(null)

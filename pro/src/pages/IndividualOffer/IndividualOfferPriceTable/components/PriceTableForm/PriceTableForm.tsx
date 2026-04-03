@@ -65,9 +65,10 @@ export const PriceTableForm = ({
     watch,
     register,
     setValue,
+    setFocus,
     formState: { errors, defaultValues },
   } = useFormContext<PriceTableFormValues>()
-  const { fields, append, remove, update } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: 'priceCategories',
   })
@@ -123,28 +124,12 @@ export const PriceTableForm = ({
     }
 
     remove(indexToRemove)
-  }
 
-  const resetEntry = (indexToReset: number) => {
-    const initialEntry = {
-      ...PriceTableEntryValidationSchema.cast(
-        { offerId: offer.id },
-        { assert: false, context: schemaValidationContext }
-      ),
-      label: DEFAULT_PRICE_TABLE_ENTRY_LABEL_WHEN_SINGLE,
-    }
-
-    update(indexToReset, initialEntry)
+    const newIndex = indexToRemove > 0 ? indexToRemove - 1 : 0
+    setFocus(`priceCategories.${newIndex}.price`)
   }
 
   const askForRemovalConfirmationOrRemove = (indexToRemove: number) => {
-    // If there is only one entry left, we reset it instead of removing it
-    if (fields.length === 1) {
-      resetEntry(indexToRemove)
-
-      return
-    }
-
     const entryToRemove = getValues(`priceCategories.${indexToRemove}`)
 
     if (
@@ -238,7 +223,7 @@ export const PriceTableForm = ({
               }
             >
               <PriceInput
-                name="price"
+                {...register(`priceCategories.${index}.price`)}
                 value={watch(`priceCategories.${index}.price`) ?? ''}
                 disabled={
                   areAllFieldsDisabled || areAllFieldsDisabledButQuantity
@@ -381,18 +366,15 @@ export const PriceTableForm = ({
               // In EDITION mode, we don't allow removing/resetting prices for event offers
               !isEventOfferInEditionMode &&
                 !areAllFieldsDisabled &&
-                !areAllFieldsDisabledButQuantity && (
+                !areAllFieldsDisabledButQuantity &&
+                fields.length > 1 && (
                   <div className={styles['button-action']}>
                     <Button
                       variant={ButtonVariant.SECONDARY}
                       color={ButtonColor.NEUTRAL}
                       icon={fullTrashIcon}
                       onClick={() => askForRemovalConfirmationOrRemove(index)}
-                      tooltip={
-                        fields.length > 1
-                          ? 'Supprimer ce tarif'
-                          : 'Réinitialiser les valeurs de ce tarif'
-                      }
+                      iconAlt={'Supprimer ce tarif'}
                     />
                   </div>
                 )
