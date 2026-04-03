@@ -2,19 +2,17 @@ import { useId } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import type { ProUserCreationBodyV2Model } from '@/apiClient/v1'
+import { AlreadyHasAccount } from '@/components/AlreadyHasAccount/AlreadyHasAccount'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { LegalInfos } from '@/components/LegalInfos/LegalInfos'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import { PasswordInput } from '@/design-system/PasswordInput/PasswordInput'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import iconFullNext from '@/icons/full-next.svg'
 import { EmailSpellCheckInput } from '@/ui-kit/form/EmailSpellCheckInput/EmailSpellCheckInput'
 
 import styles from './SignupContainer.module.scss'
-
 export const SignupForm = (): JSX.Element => {
   const formId = useId()
 
@@ -102,20 +100,7 @@ export const SignupForm = (): JSX.Element => {
             label="S’inscrire"
           />
         </div>
-        <div className={styles['no-account']}>
-          <p className={styles['no-account-text']}>
-            Vous avez déjà un compte ?
-          </p>
-
-          <Button
-            as="a"
-            to="/connexion"
-            icon={iconFullNext}
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
-            label="Se connecter"
-          />
-        </div>
+        <AlreadyHasAccount />
       </FormLayout>
     </>
   )
