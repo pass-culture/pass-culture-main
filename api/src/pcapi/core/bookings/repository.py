@@ -436,7 +436,6 @@ def _get_filtered_bookings_query(
         db.session.query(models.Booking)
         .join(models.Booking.stock)
         .join(offers_models.Stock.offer)
-        .join(models.Booking.externalBookings, isouter=True)
         .join(models.Booking.venue, isouter=True)
         .outerjoin(offers_models.Offer.offererAddress)
         .outerjoin(offerers_models.OffererAddress.address)
@@ -512,9 +511,7 @@ def _get_filtered_bookings_count(
             event_date=event_date,
             offer_id=offer_id,
             offerer_address_id=offerer_address_id,
-        )
-        .with_entities(models.Booking.id, models.Booking.quantity)
-        .distinct(models.Booking.id)
+        ).with_entities(models.Booking.id, models.Booking.quantity)
     ).cte()
     # We really want total quantities here (and not the number of bookings),
     # since we'll build two rows for each "duo" bookings later.
@@ -574,28 +571,24 @@ def _get_filtered_booking_report(
         Address.city.label("locationCity"),
     )
 
-    bookings_query = (
-        _get_filtered_bookings_query(
-            pro_user_id=pro_user_id,
-            venue_ids=venue_ids,
-            period=period,
-            status_filter=status_filter,
-            event_date=event_date,
-            offer_id=offer_id,
-            offerer_address_id=offerer_address_id,
-            extra_joins=(
-                (models.Booking.offerer,),
-                (offers_models.Stock.offer,),
-                (models.Booking.user,),
-                (offers_models.Offer.offererAddress,),
-                (offerers_models.OffererAddress.address,),
-                (VenueOffererAddress, offerers_models.Venue.offererAddress),
-                (VenueAddress, VenueOffererAddress.address),
-            ),
-        )
-        .with_entities(*with_entities)
-        .distinct(models.Booking.id)
-    )
+    bookings_query = _get_filtered_bookings_query(
+        pro_user_id=pro_user_id,
+        venue_ids=venue_ids,
+        period=period,
+        status_filter=status_filter,
+        event_date=event_date,
+        offer_id=offer_id,
+        offerer_address_id=offerer_address_id,
+        extra_joins=(
+            (models.Booking.offerer,),
+            (offers_models.Stock.offer,),
+            (models.Booking.user,),
+            (offers_models.Offer.offererAddress,),
+            (offerers_models.OffererAddress.address,),
+            (VenueOffererAddress, offerers_models.Venue.offererAddress),
+            (VenueAddress, VenueOffererAddress.address),
+        ),
+    ).with_entities(*with_entities)
 
     return bookings_query
 
@@ -639,27 +632,23 @@ def _get_filtered_booking_pro(
         VenueAddress.departmentCode.label("venueDepartmentCode"),
     )
 
-    bookings_query = (
-        _get_filtered_bookings_query(
-            pro_user_id=pro_user_id,
-            venue_ids=venue_ids,
-            period=period,
-            status_filter=status_filter,
-            event_date=event_date,
-            offer_id=offer_id,
-            offerer_address_id=offerer_address_id,
-            extra_joins=(
-                (offers_models.Stock.offer,),
-                (models.Booking.user,),
-                (offers_models.Offer.offererAddress,),
-                (offerers_models.OffererAddress.address,),
-                (VenueOffererAddress, offerers_models.Venue.offererAddress),
-                (VenueAddress, VenueOffererAddress.address),
-            ),
-        )
-        .with_entities(*with_entities)
-        .distinct(models.Booking.id)
-    )
+    bookings_query = _get_filtered_bookings_query(
+        pro_user_id=pro_user_id,
+        venue_ids=venue_ids,
+        period=period,
+        status_filter=status_filter,
+        event_date=event_date,
+        offer_id=offer_id,
+        offerer_address_id=offerer_address_id,
+        extra_joins=(
+            (offers_models.Stock.offer,),
+            (models.Booking.user,),
+            (offers_models.Offer.offererAddress,),
+            (offerers_models.OffererAddress.address,),
+            (VenueOffererAddress, offerers_models.Venue.offererAddress),
+            (VenueAddress, VenueOffererAddress.address),
+        ),
+    ).with_entities(*with_entities)
 
     return bookings_query
 
