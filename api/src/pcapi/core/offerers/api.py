@@ -132,8 +132,10 @@ def update_venue(
     location_modifications: dict,
     author: users_models.User,
     *,
-    opening_hours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None = None,
-    contact_data: offerers_schemas.VenueContactModel | None = None,
+    opening_hours: opening_hours_schemas.WeekdayOpeningHoursTimespans
+    | opening_hours_schemas.WeekdayOpeningHoursTimespansV2
+    | None = None,
+    contact_data: offerers_schemas.VenueContactModel | offerers_schemas.VenueContactModelV2 | None = None,
     criteria: list[criteria_models.Criterion] | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     external_accessibility_url: str | None | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     cultural_domains: list[str] | None = None,
@@ -164,7 +166,12 @@ def update_venue(
     if contact_data:
         # target must not be None, otherwise contact_data fields will be compared to fields in Venue, which do not exist
         target = venue.contact if venue.contact is not None else offerers_models.VenueContact()
-        venue_snapshot.trace_update(contact_data.dict(), target=target, field_name_template="contact.{}")
+        if isinstance(contact_data, offerers_schemas.VenueContactModel):
+            venue_snapshot.trace_update(contact_data.dict(), target=target, field_name_template="contact.{}")
+        else:
+            venue_snapshot.trace_update(
+                contact_data.model_dump(mode="json"), target=target, field_name_template="contact.{}"
+            )
         upsert_venue_contact(venue, contact_data)
 
     if opening_hours:
@@ -439,7 +446,9 @@ def upsert_venue_contact(
     venue_contact.email = contact_data.email
     venue_contact.website = contact_data.website
     venue_contact.phone_number = contact_data.phone_number
-    venue_contact.social_medias = contact_data.social_medias or {}
+    venue_contact.social_medias = (
+        {key: str(value) for key, value in contact_data.social_medias.items()} if contact_data.social_medias else {}
+    )
 
     db.session.add(venue_contact)
     if is_managed_transaction():
@@ -3366,14 +3375,14 @@ def find_ban_address_from_insee_address(
             if ban_address is None
             else offerers_schemas.CoreLocationModelV2(
                 isManualEdition=is_manual_address,
-                banId=offerers_schemas.VenueBanId(ban_address.id) if not is_manual_address else None,
-                city=offerers_schemas.VenueCity(ban_address.city),
-                inseeCode=offerers_schemas.VenueInseeCode(ban_address.citycode),
+                banId=str(ban_address.id) if not is_manual_address else None,
+                city=ban_address.city,
+                inseeCode=ban_address.citycode,
                 label=ban_address.label,
                 latitude=ban_address.latitude,
                 longitude=ban_address.longitude,
-                postalCode=offerers_schemas.VenuePostalCode(ban_address.postcode),
-                street=offerers_schemas.VenueAddress(ban_address.street),
+                postalCode=ban_address.postcode,
+                street=ban_address.street,
             )
         )
     except api_adresse.AdresseException:
