@@ -592,7 +592,6 @@ def get_base_query_for_offer_indexation() -> sa_orm.Query:
                 offers_models.Product.extraData,
                 offers_models.Product.description,
                 offers_models.Product.chroniclesCount,
-                offers_models.Product.headlinesCount,
                 offers_models.Product.likesCount,
                 offers_models.Product.proAdvicesCount,
                 offers_models.Product.thumbCount,

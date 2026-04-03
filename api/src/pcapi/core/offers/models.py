@@ -231,12 +231,6 @@ class Product(PcObject, Model, HasThumbMixin):
         nullable=False,
         server_default=sa.text("0"),
     )
-    headlinesCount: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
-        sa.BigInteger,
-        sa.CheckConstraint('"headlinesCount" >= 0', name="check_headlines_count_is_positive"),
-        nullable=False,
-        server_default=sa.text("0"),
-    )
     likesCount: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger,
         sa.CheckConstraint('"likesCount" >= 0', name="check_likes_count_is_positive"),
@@ -692,73 +686,6 @@ class HeadlineOffer(PcObject, Model):
                 sa.exists().where(ProductMediation.productId == offer_alias.productId),
             ),
         )
-
-
-@sa.event.listens_for(HeadlineOffer, "after_insert")
-def after_insert_headline_offer(
-    _mapper: sa_orm.Mapper, connection: sa.engine.Connection, target: HeadlineOffer
-) -> None:
-    if not target.offer.productId:
-        return
-
-    now = date_utils.get_naive_utc_now()
-    parsed_value = _parse_datetime_range(target.timespan)
-
-    if now in parsed_value:
-        _increment_product_headlines_count(connection, target.offer.productId, 1)
-
-
-@sa.event.listens_for(HeadlineOffer.timespan, "set")
-def on_set_timespan(
-    target: HeadlineOffer,
-    value: psycopg2.extras.DateTimeRange,
-    old_value: psycopg2.extras.DateTimeRange,
-    _initiator: sa_orm.AttributeEvents,
-) -> None:
-    # During object creation, old_value is not a DateTimeRange (it's the NO_VALUE symbol).
-    # The after_insert event handles the count for new objects, so we can return early.
-    if old_value is sa_orm.attributes.NO_VALUE:
-        return
-
-    if not target.offer.productId:
-        return
-
-    now = date_utils.get_naive_utc_now()
-    parsed_value = _parse_datetime_range(value)
-
-    is_active_before_update = now in old_value
-    is_active_after_update = now in parsed_value
-
-    if is_active_before_update and not is_active_after_update:
-        _increment_product_headlines_count(db.session, target.offer.productId, -1)
-    elif not is_active_before_update and is_active_after_update:
-        _increment_product_headlines_count(db.session, target.offer.productId, 1)
-
-
-def _parse_datetime_range(value: psycopg2.extras.DateTimeRange) -> psycopg2.extras.DateTimeRange:
-    lower_bound = date_utils.get_naive_utc_from_iso_str(value.lower) if value.lower else None
-    upper_bound = date_utils.get_naive_utc_from_iso_str(value.upper) if value.upper else None
-    return psycopg2.extras.DateTimeRange(lower=lower_bound, upper=upper_bound)
-
-
-@sa.event.listens_for(HeadlineOffer, "after_delete")
-def after_delete_headline_offer(
-    _mapper: sa_orm.Mapper, connection: sa.engine.Connection, target: HeadlineOffer
-) -> None:
-    # SQLAlchemy will not call this event if the object is deleted using a bulk delete
-    # (e.g. db.session.execute(sa.delete(Chronicle).where(...)))
-    if target.offer.productId:
-        _increment_product_headlines_count(connection, target.offer.productId, -1)
-
-
-def _increment_product_headlines_count(
-    connection: sa.engine.Connection | sa_orm.scoped_session["flask_sqlalchemy.session.Session"],
-    product_id: int,
-    increment: int,
-) -> None:
-    connection.execute(
-        sa.update(Product).where(Product.id == product_id).values(headlinesCount=Product.headlinesCount + increment)
-    )
 
 
 class ValidationRuleOfferLink(PcObject, Model):
