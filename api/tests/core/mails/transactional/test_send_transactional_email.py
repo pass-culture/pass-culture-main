@@ -10,8 +10,8 @@ import pcapi.core.users.factories as users_factories
 from pcapi.core import token as token_utils
 from pcapi.core.mails import models
 from pcapi.core.mails import serialization
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.send_transactional_email import send_transactional_email
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.email_address_change_confirmation import send_email_confirmation_email
 from pcapi.utils import requests
 
@@ -39,7 +39,7 @@ class TransactionalEmailWithTemplateTest:
         assert caplog.records[0].levelname == "ERROR"
         assert (
             caplog.records[0].message
-            == "Exception when calling Sendinblue send_transac_email with status=400 and code=test_code"
+            == "Exception when calling Brevo send_transac_email with status=400 and code=test_code"
         )
         assert len(caplog.records) == 1
 
@@ -65,7 +65,7 @@ class TransactionalEmailWithTemplateTest:
         assert caplog.records[0].levelname == "ERROR"
         assert (
             caplog.records[0].message
-            == "Exception when calling Sendinblue send_transac_email with status=400 and code=unknown"
+            == "Exception when calling Brevo send_transac_email with status=400 and code=unknown"
         )
         assert len(caplog.records) == 1
 
@@ -95,7 +95,7 @@ class TransactionalEmailWithTemplateTest:
         assert caplog.records[0].levelname == "ERROR"
         assert (
             caplog.records[0].message
-            == "Sendinblue can't send email to inv***@example,oth***@example.com: code=invalid_parameter, message=email is not valid in to"
+            == "Brevo can't send email to inv***@example,oth***@example.com: code=invalid_parameter, message=email is not valid in to"
         )
         assert caplog.records[0].extra == {
             "template_id": TransactionalEmail.EMAIL_CONFIRMATION.value.id,

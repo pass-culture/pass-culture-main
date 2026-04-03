@@ -92,7 +92,7 @@ class VenueAutomationsTest:
 
         assert set(results) == {venue_no_booking.bookingEmail, venue_old_booking.bookingEmail}
 
-    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts")
+    @patch("pcapi.core.external.brevo.brevo_python.api.contacts_api.ContactsApi.import_contacts")
     def test_pro_inactive_venues_automation(self, mock_import_contacts):
         offerer = offerers_factories.OffererFactory(
             dateValidated=date_utils.get_naive_utc_now() - relativedelta(days=100)

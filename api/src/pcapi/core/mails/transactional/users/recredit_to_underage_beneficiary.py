@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from pcapi.core import mails
 from pcapi.core.mails import models
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.utils import format_price
 from pcapi.core.users import models as users_models
 

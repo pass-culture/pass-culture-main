@@ -7,7 +7,7 @@ import pcapi.core.finance.utils as finance_utils
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core import mails
 from pcapi.core.mails import models
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.utils import format_price
 from pcapi.models import db
 from pcapi.utils.date import get_date_formatted_for_email

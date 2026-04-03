@@ -23,7 +23,7 @@ def test_update_brevo_and_batch_users(app, caplog):
     users_factories.NonAttachedProFactory()
 
     with patch(
-        "pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts"
+        "pcapi.core.external.brevo.brevo_python.api.contacts_api.ContactsApi.import_contacts"
     ) as mock_import_contacts:
         with patch(
             "pcapi.core.external.commands.update_brevo_batch_attributes.update_users_attributes"
@@ -55,8 +55,8 @@ def test_update_brevo_pro(app, caplog):
     with caplog.at_level(logging.INFO):
         result = run_command(app, "update_brevo_pro")
 
-    assert len(testing.sendinblue_requests) == 4
-    assert {request["email"] for request in testing.sendinblue_requests} == {
+    assert len(testing.brevo_requests) == 4
+    assert {request["email"] for request in testing.brevo_requests} == {
         "first@example.com",
         "second@example.com",
         "third@example.com",

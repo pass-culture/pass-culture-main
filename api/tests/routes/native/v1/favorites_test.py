@@ -390,9 +390,9 @@ class PostTest:
             + 1  # for favorite tracking
         )
         assert len(push_testing.requests) == expected_push_counts
-        assert len(users_testing.sendinblue_requests) == 1
-        sendinblue_data = users_testing.sendinblue_requests[0]
-        assert sendinblue_data["attributes"]["LAST_FAVORITE_CREATION_DATE"] is not None
+        assert len(users_testing.brevo_requests) == 1
+        brevo_data = users_testing.brevo_requests[0]
+        assert brevo_data["attributes"]["LAST_FAVORITE_CREATION_DATE"] is not None
 
         favorite_creation_tracking_event = next(
             event
@@ -429,9 +429,9 @@ class PostTest:
             + 1  # for favorite tracking
         )
         assert len(push_testing.requests) == expected_push_counts
-        assert len(users_testing.sendinblue_requests) == 1
-        sendinblue_data = users_testing.sendinblue_requests[0]
-        assert sendinblue_data["attributes"]["LAST_FAVORITE_CREATION_DATE"] is not None
+        assert len(users_testing.brevo_requests) == 1
+        brevo_data = users_testing.brevo_requests[0]
+        assert brevo_data["attributes"]["LAST_FAVORITE_CREATION_DATE"] is not None
 
     @pytest.mark.settings(MAX_FAVORITES=1)
     def when_user_creates_one_favorite_above_the_limit(self, client):

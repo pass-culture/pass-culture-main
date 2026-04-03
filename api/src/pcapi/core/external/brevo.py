@@ -12,27 +12,27 @@ from typing import Iterable
 import brevo_python
 from brevo_python.api.contacts_api import ContactsApi
 from brevo_python.models.created_process_id import CreatedProcessId
-from brevo_python.rest import ApiException as SendinblueApiException
+from brevo_python.rest import ApiException as BrevoApiException
 
-import pcapi.core.users.models as users_models
 from pcapi import settings
 from pcapi.core import mails as mails_api
 from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.external.attributes import models as attributes_models
 from pcapi.core.mails import serialization
 from pcapi.core.mails import tasks
+from pcapi.core.users import models as users_models
 
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class SendinblueUserUpdateData:
+class BrevoUserUpdateData:
     email: str
     attributes: dict
 
 
-class SendinblueAttributes(Enum):
+class BrevoAttributes(Enum):
     ACHIEVEMENTS = "ACHIEVEMENTS"
     BONIFICATION_STATUS = "BONIFICATION_STATUS"
     BOOKED_OFFER_CATEGORIES = "BOOKED_OFFER_CATEGORIES"
@@ -103,8 +103,8 @@ class SendinblueAttributes(Enum):
         return list(map(lambda c: c.value, cls))
 
 
-class SendinblueOptionalAttributes(Enum):
-    # Not in SendinblueAttributes because of build_file_body which uses full list()
+class BrevoOptionalAttributes(Enum):
+    # Not in BrevoAttributes because of build_file_body which uses full list()
     # We don't want one-shot attributes in bulk import
     INTENDED_CATEGORIES = "INTENDED_CATEGORIES"
 
@@ -115,7 +115,7 @@ def update_contact_email(user: users_models.User, old_email: str, new_email: str
     else:
         contact_list_ids = [settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID]
 
-    contact_request = serialization.UpdateSendinblueContactRequest(
+    contact_request = serialization.UpdateBrevoContactRequest(
         email=old_email,
         use_pro_subaccount=user.has_any_pro_role,
         attributes={"EMAIL": new_email},
@@ -145,7 +145,7 @@ def update_contact_attributes(
             formatted_attributes.update(format_cultural_survey_answers(cultural_survey_answers))
         contact_list_ids = [settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID]
 
-    contact_request = serialization.UpdateSendinblueContactRequest(
+    contact_request = serialization.UpdateBrevoContactRequest(
         email=user_email,
         use_pro_subaccount=attributes.is_pro,
         attributes=formatted_attributes,
@@ -190,80 +190,77 @@ def _get_attr(
 
 def format_user_attributes(attributes: attributes_models.UserAttributes | attributes_models.ProAttributes) -> dict:
     result = {
-        SendinblueAttributes.ACHIEVEMENTS.value: _get_attr(attributes, "achievements", format_list),
-        SendinblueAttributes.BONIFICATION_STATUS.value: _get_attr(attributes, "bonification_status", format_enum),
-        SendinblueAttributes.BOOKED_OFFER_CATEGORIES.value: _get_attr(attributes, "booking_categories", format_list),
-        SendinblueAttributes.BOOKED_OFFER_CATEGORIES_COUNT.value: _get_attr(attributes, "booking_categories", len),
-        SendinblueAttributes.BOOKED_OFFER_SUBCATEGORIES.value: _get_attr(
-            attributes, "booking_subcategories", format_list
-        ),
-        SendinblueAttributes.BOOKING_COUNT.value: _get_attr(attributes, "booking_count"),
-        SendinblueAttributes.BOOKING_VENUES_COUNT.value: _get_attr(attributes, "booking_venues_count"),
-        SendinblueAttributes.CREDIT.value: _get_attr(attributes, "domains_credit", lambda v: v.all.remaining),
-        SendinblueAttributes.DATE_CREATED.value: _get_attr(attributes, "date_created"),
-        SendinblueAttributes.DATE_OF_BIRTH.value: _get_attr(attributes, "date_of_birth"),
-        SendinblueAttributes.DEPARTMENT_CODE.value: _get_attr(attributes, "departement_code", format_list_or_str),
-        SendinblueAttributes.DEPOSITS_COUNT.value: _get_attr(attributes, "deposits_count"),
-        SendinblueAttributes.DEPOSIT_ACTIVATION_DATE.value: _get_attr(attributes, "deposit_activation_date"),
-        SendinblueAttributes.DEPOSIT_EXPIRATION_DATE.value: _get_attr(attributes, "deposit_expiration_date"),
-        SendinblueAttributes.DMS_APPLICATION_APPROVED.value: _get_attr(attributes, "dms_application_approved"),
-        SendinblueAttributes.DMS_APPLICATION_SUBMITTED.value: _get_attr(attributes, "dms_application_submitted"),
-        SendinblueAttributes.ELIGIBILITY.value: _get_attr(attributes, "eligibility", format_enum),
-        SendinblueAttributes.FIRSTNAME.value: _get_attr(attributes, "first_name"),
-        SendinblueAttributes.HAS_BANNER_URL.value: _get_attr(attributes, "has_banner_url"),
-        SendinblueAttributes.HAS_BOOKINGS.value: _get_attr(attributes, "has_bookings"),
-        SendinblueAttributes.HAS_COLLECTIVE_OFFERS.value: _get_attr(attributes, "has_collective_offers"),
-        SendinblueAttributes.HAS_COMPLETED_ID_CHECK.value: _get_attr(attributes, "has_completed_id_check"),
-        SendinblueAttributes.HAS_INDIVIDUAL_OFFERS.value: _get_attr(attributes, "has_individual_offers"),
-        SendinblueAttributes.HAS_OFFERS.value: _get_attr(attributes, "has_offers"),
-        SendinblueAttributes.INITIAL_CREDIT.value: _get_attr(attributes, "domains_credit", lambda v: v.all.initial),
-        SendinblueAttributes.IS_ACTIVE_PRO.value: _get_attr(attributes, "is_active_pro"),
-        SendinblueAttributes.IS_BENEFICIARY.value: _get_attr(attributes, "is_beneficiary"),
-        SendinblueAttributes.IS_BENEFICIARY_18.value: _get_attr(
+        BrevoAttributes.ACHIEVEMENTS.value: _get_attr(attributes, "achievements", format_list),
+        BrevoAttributes.BONIFICATION_STATUS.value: _get_attr(attributes, "bonification_status", format_enum),
+        BrevoAttributes.BOOKED_OFFER_CATEGORIES.value: _get_attr(attributes, "booking_categories", format_list),
+        BrevoAttributes.BOOKED_OFFER_CATEGORIES_COUNT.value: _get_attr(attributes, "booking_categories", len),
+        BrevoAttributes.BOOKED_OFFER_SUBCATEGORIES.value: _get_attr(attributes, "booking_subcategories", format_list),
+        BrevoAttributes.BOOKING_COUNT.value: _get_attr(attributes, "booking_count"),
+        BrevoAttributes.BOOKING_VENUES_COUNT.value: _get_attr(attributes, "booking_venues_count"),
+        BrevoAttributes.CREDIT.value: _get_attr(attributes, "domains_credit", lambda v: v.all.remaining),
+        BrevoAttributes.DATE_CREATED.value: _get_attr(attributes, "date_created"),
+        BrevoAttributes.DATE_OF_BIRTH.value: _get_attr(attributes, "date_of_birth"),
+        BrevoAttributes.DEPARTMENT_CODE.value: _get_attr(attributes, "departement_code", format_list_or_str),
+        BrevoAttributes.DEPOSITS_COUNT.value: _get_attr(attributes, "deposits_count"),
+        BrevoAttributes.DEPOSIT_ACTIVATION_DATE.value: _get_attr(attributes, "deposit_activation_date"),
+        BrevoAttributes.DEPOSIT_EXPIRATION_DATE.value: _get_attr(attributes, "deposit_expiration_date"),
+        BrevoAttributes.DMS_APPLICATION_APPROVED.value: _get_attr(attributes, "dms_application_approved"),
+        BrevoAttributes.DMS_APPLICATION_SUBMITTED.value: _get_attr(attributes, "dms_application_submitted"),
+        BrevoAttributes.ELIGIBILITY.value: _get_attr(attributes, "eligibility", format_enum),
+        BrevoAttributes.FIRSTNAME.value: _get_attr(attributes, "first_name"),
+        BrevoAttributes.HAS_BANNER_URL.value: _get_attr(attributes, "has_banner_url"),
+        BrevoAttributes.HAS_BOOKINGS.value: _get_attr(attributes, "has_bookings"),
+        BrevoAttributes.HAS_COLLECTIVE_OFFERS.value: _get_attr(attributes, "has_collective_offers"),
+        BrevoAttributes.HAS_COMPLETED_ID_CHECK.value: _get_attr(attributes, "has_completed_id_check"),
+        BrevoAttributes.HAS_INDIVIDUAL_OFFERS.value: _get_attr(attributes, "has_individual_offers"),
+        BrevoAttributes.HAS_OFFERS.value: _get_attr(attributes, "has_offers"),
+        BrevoAttributes.INITIAL_CREDIT.value: _get_attr(attributes, "domains_credit", lambda v: v.all.initial),
+        BrevoAttributes.IS_ACTIVE_PRO.value: _get_attr(attributes, "is_active_pro"),
+        BrevoAttributes.IS_BENEFICIARY.value: _get_attr(attributes, "is_beneficiary"),
+        BrevoAttributes.IS_BENEFICIARY_18.value: _get_attr(
             attributes, "roles", lambda v: users_models.UserRole.BENEFICIARY.value in v
         ),
-        SendinblueAttributes.IS_BOOKING_EMAIL.value: _get_attr(attributes, "is_booking_email"),
-        SendinblueAttributes.IS_CURRENT_BENEFICIARY.value: _get_attr(attributes, "is_current_beneficiary"),
-        SendinblueAttributes.IS_FORMER_BENEFICIARY.value: _get_attr(attributes, "is_former_beneficiary"),
-        SendinblueAttributes.IS_ELIGIBLE.value: _get_attr(attributes, "is_eligible"),
-        SendinblueAttributes.IS_EMAIL_VALIDATED.value: _get_attr(attributes, "is_email_validated"),
-        SendinblueAttributes.IS_PERMANENT.value: _get_attr(attributes, "isPermanent"),
-        SendinblueAttributes.IS_OPEN_TO_PUBLIC.value: _get_attr(attributes, "isOpenToPublic"),
-        SendinblueAttributes.IS_PRO.value: _get_attr(attributes, "is_pro"),
-        SendinblueAttributes.IS_UNDERAGE_BENEFICIARY.value: _get_attr(
+        BrevoAttributes.IS_BOOKING_EMAIL.value: _get_attr(attributes, "is_booking_email"),
+        BrevoAttributes.IS_CURRENT_BENEFICIARY.value: _get_attr(attributes, "is_current_beneficiary"),
+        BrevoAttributes.IS_FORMER_BENEFICIARY.value: _get_attr(attributes, "is_former_beneficiary"),
+        BrevoAttributes.IS_ELIGIBLE.value: _get_attr(attributes, "is_eligible"),
+        BrevoAttributes.IS_EMAIL_VALIDATED.value: _get_attr(attributes, "is_email_validated"),
+        BrevoAttributes.IS_PERMANENT.value: _get_attr(attributes, "isPermanent"),
+        BrevoAttributes.IS_OPEN_TO_PUBLIC.value: _get_attr(attributes, "isOpenToPublic"),
+        BrevoAttributes.IS_PRO.value: _get_attr(attributes, "is_pro"),
+        BrevoAttributes.IS_UNDERAGE_BENEFICIARY.value: _get_attr(
             attributes, "roles", lambda v: users_models.UserRole.UNDERAGE_BENEFICIARY.value in v
         ),
-        SendinblueAttributes.IS_USER_EMAIL.value: _get_attr(attributes, "is_user_email"),
-        SendinblueAttributes.IS_VIRTUAL.value: _get_attr(attributes, "isVirtual"),
-        SendinblueAttributes.LAST_BOOKING_DATE.value: _get_attr(attributes, "last_booking_date"),
-        SendinblueAttributes.LAST_FAVORITE_CREATION_DATE.value: _get_attr(attributes, "last_favorite_creation_date"),
-        SendinblueAttributes.LAST_RECREDIT_TYPE.value: _get_attr(attributes, "last_recredit_type", format_enum),
-        SendinblueAttributes.LAST_VISIT_DATE.value: _get_attr(attributes, "last_visit_date"),
-        SendinblueAttributes.LASTNAME.value: _get_attr(attributes, "last_name"),
-        SendinblueAttributes.MARKETING_EMAIL_SUBSCRIPTION.value: _get_attr(attributes, "marketing_email_subscription"),
-        SendinblueAttributes.MOST_BOOKED_OFFER_SUBCATEGORY.value: _get_attr(attributes, "most_booked_subcategory"),
-        SendinblueAttributes.MOST_BOOKED_MOVIE_GENRE.value: _get_attr(attributes, "most_booked_movie_genre"),
-        SendinblueAttributes.MOST_BOOKED_MUSIC_TYPE.value: _get_attr(attributes, "most_booked_music_type"),
-        SendinblueAttributes.MOST_FAVORITE_OFFER_SUBCATEGORIES.value: _get_attr(
+        BrevoAttributes.IS_USER_EMAIL.value: _get_attr(attributes, "is_user_email"),
+        BrevoAttributes.IS_VIRTUAL.value: _get_attr(attributes, "isVirtual"),
+        BrevoAttributes.LAST_BOOKING_DATE.value: _get_attr(attributes, "last_booking_date"),
+        BrevoAttributes.LAST_FAVORITE_CREATION_DATE.value: _get_attr(attributes, "last_favorite_creation_date"),
+        BrevoAttributes.LAST_RECREDIT_TYPE.value: _get_attr(attributes, "last_recredit_type", format_enum),
+        BrevoAttributes.LAST_VISIT_DATE.value: _get_attr(attributes, "last_visit_date"),
+        BrevoAttributes.LASTNAME.value: _get_attr(attributes, "last_name"),
+        BrevoAttributes.MARKETING_EMAIL_SUBSCRIPTION.value: _get_attr(attributes, "marketing_email_subscription"),
+        BrevoAttributes.MOST_BOOKED_OFFER_SUBCATEGORY.value: _get_attr(attributes, "most_booked_subcategory"),
+        BrevoAttributes.MOST_BOOKED_MOVIE_GENRE.value: _get_attr(attributes, "most_booked_movie_genre"),
+        BrevoAttributes.MOST_BOOKED_MUSIC_TYPE.value: _get_attr(attributes, "most_booked_music_type"),
+        BrevoAttributes.MOST_FAVORITE_OFFER_SUBCATEGORIES.value: _get_attr(
             attributes, "most_favorite_offer_subcategories", format_list
         ),
-        SendinblueAttributes.OFFERER_NAME.value: _get_attr(attributes, "offerers_names", format_list),
-        SendinblueAttributes.OFFERER_TAG.value: _get_attr(attributes, "offerers_tags", format_list),
-        SendinblueAttributes.PERMANENT_THEME_PREFERENCE.value: _get_attr(attributes, "subscribed_themes", format_list)
-        or "",
-        SendinblueAttributes.POSTAL_CODE.value: _get_attr(attributes, "postal_code", format_list_or_str),
-        SendinblueAttributes.PRODUCT_BRUT_X_USE_DATE.value: _get_attr(
+        BrevoAttributes.OFFERER_NAME.value: _get_attr(attributes, "offerers_names", format_list),
+        BrevoAttributes.OFFERER_TAG.value: _get_attr(attributes, "offerers_tags", format_list),
+        BrevoAttributes.PERMANENT_THEME_PREFERENCE.value: _get_attr(attributes, "subscribed_themes", format_list) or "",
+        BrevoAttributes.POSTAL_CODE.value: _get_attr(attributes, "postal_code", format_list_or_str),
+        BrevoAttributes.PRODUCT_BRUT_X_USE_DATE.value: _get_attr(
             attributes, "products_use_date", lambda v: v.get("product_brut_x_use")
         ),
-        SendinblueAttributes.USER_ID.value: _get_attr(attributes, "user_id"),
-        SendinblueAttributes.USER_IS_ATTACHED.value: _get_attr(attributes, "user_is_attached"),
-        SendinblueAttributes.USER_IS_CREATOR.value: _get_attr(attributes, "user_is_creator"),
-        SendinblueAttributes.VENUE_COUNT.value: _get_attr(attributes, "venues_ids", len),
-        SendinblueAttributes.VENUE_LABEL.value: _get_attr(attributes, "venues_labels", format_list),
-        SendinblueAttributes.VENUE_NAME.value: _get_attr(attributes, "venues_names", format_list),
-        SendinblueAttributes.VENUE_TYPE.value: _get_attr(attributes, "venues_types", format_list),
-        SendinblueAttributes.IS_EAC.value: _get_attr(attributes, "is_eac"),
-        SendinblueAttributes.EAC_MEG.value: _get_attr(attributes, "is_eac_meg"),
+        BrevoAttributes.USER_ID.value: _get_attr(attributes, "user_id"),
+        BrevoAttributes.USER_IS_ATTACHED.value: _get_attr(attributes, "user_is_attached"),
+        BrevoAttributes.USER_IS_CREATOR.value: _get_attr(attributes, "user_is_creator"),
+        BrevoAttributes.VENUE_COUNT.value: _get_attr(attributes, "venues_ids", len),
+        BrevoAttributes.VENUE_LABEL.value: _get_attr(attributes, "venues_labels", format_list),
+        BrevoAttributes.VENUE_NAME.value: _get_attr(attributes, "venues_names", format_list),
+        BrevoAttributes.VENUE_TYPE.value: _get_attr(attributes, "venues_types", format_list),
+        BrevoAttributes.IS_EAC.value: _get_attr(attributes, "is_eac"),
+        BrevoAttributes.EAC_MEG.value: _get_attr(attributes, "is_eac_meg"),
     }
 
     return result
@@ -271,46 +268,46 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
 
 def format_pro_attributes(attributes: attributes_models.ProAttributes) -> dict:
     return {
-        SendinblueAttributes.DMS_APPLICATION_APPROVED.value: _get_attr(attributes, "dms_application_approved"),
-        SendinblueAttributes.DMS_APPLICATION_SUBMITTED.value: _get_attr(attributes, "dms_application_submitted"),
-        SendinblueAttributes.FIRSTNAME.value: _get_attr(attributes, "first_name"),
-        SendinblueAttributes.HAS_BANNER_URL.value: _get_attr(attributes, "has_banner_url"),
-        SendinblueAttributes.HAS_BOOKINGS.value: _get_attr(attributes, "has_bookings"),
-        SendinblueAttributes.HAS_COLLECTIVE_OFFERS.value: _get_attr(attributes, "has_collective_offers"),
-        SendinblueAttributes.HAS_INDIVIDUAL_OFFERS.value: _get_attr(attributes, "has_individual_offers"),
-        SendinblueAttributes.HAS_OFFERS.value: _get_attr(attributes, "has_offers"),
-        SendinblueAttributes.IS_ACTIVE_PRO.value: _get_attr(attributes, "is_active_pro"),
-        SendinblueAttributes.IS_BOOKING_EMAIL.value: _get_attr(attributes, "is_booking_email"),
-        SendinblueAttributes.IS_EAC.value: _get_attr(attributes, "is_eac"),
-        SendinblueAttributes.IS_EAC_MEG.value: _get_attr(attributes, "is_eac_meg"),
-        SendinblueAttributes.IS_PERMANENT.value: _get_attr(attributes, "isPermanent"),
-        SendinblueAttributes.IS_OPEN_TO_PUBLIC.value: _get_attr(attributes, "isOpenToPublic"),
-        SendinblueAttributes.IS_PRO.value: _get_attr(attributes, "is_pro"),
-        SendinblueAttributes.IS_USER_EMAIL.value: _get_attr(attributes, "is_user_email"),
-        SendinblueAttributes.IS_VIRTUAL.value: _get_attr(attributes, "isVirtual"),
-        SendinblueAttributes.LASTNAME.value: _get_attr(attributes, "last_name"),
-        SendinblueAttributes.MARKETING_EMAIL_SUBSCRIPTION.value: _get_attr(attributes, "marketing_email_subscription"),
-        SendinblueAttributes.OFFERER_NAME.value: _get_attr(attributes, "offerers_names", format_list),
-        SendinblueAttributes.OFFERER_TAG.value: _get_attr(attributes, "offerers_tags", format_list),
-        SendinblueAttributes.USER_ID.value: _get_attr(attributes, "user_id"),
-        SendinblueAttributes.USER_IS_ATTACHED.value: _get_attr(attributes, "user_is_attached"),
-        SendinblueAttributes.USER_IS_CREATOR.value: _get_attr(attributes, "user_is_creator"),
-        SendinblueAttributes.VENUE_COUNT.value: _get_attr(attributes, "venues_ids", len),
-        SendinblueAttributes.VENUE_LABEL.value: _get_attr(attributes, "venues_labels", format_list),
-        SendinblueAttributes.VENUE_NAME.value: _get_attr(attributes, "venues_names", format_list),
-        SendinblueAttributes.VENUE_TYPE.value: _get_attr(attributes, "venues_types", format_list),
+        BrevoAttributes.DMS_APPLICATION_APPROVED.value: _get_attr(attributes, "dms_application_approved"),
+        BrevoAttributes.DMS_APPLICATION_SUBMITTED.value: _get_attr(attributes, "dms_application_submitted"),
+        BrevoAttributes.FIRSTNAME.value: _get_attr(attributes, "first_name"),
+        BrevoAttributes.HAS_BANNER_URL.value: _get_attr(attributes, "has_banner_url"),
+        BrevoAttributes.HAS_BOOKINGS.value: _get_attr(attributes, "has_bookings"),
+        BrevoAttributes.HAS_COLLECTIVE_OFFERS.value: _get_attr(attributes, "has_collective_offers"),
+        BrevoAttributes.HAS_INDIVIDUAL_OFFERS.value: _get_attr(attributes, "has_individual_offers"),
+        BrevoAttributes.HAS_OFFERS.value: _get_attr(attributes, "has_offers"),
+        BrevoAttributes.IS_ACTIVE_PRO.value: _get_attr(attributes, "is_active_pro"),
+        BrevoAttributes.IS_BOOKING_EMAIL.value: _get_attr(attributes, "is_booking_email"),
+        BrevoAttributes.IS_EAC.value: _get_attr(attributes, "is_eac"),
+        BrevoAttributes.IS_EAC_MEG.value: _get_attr(attributes, "is_eac_meg"),
+        BrevoAttributes.IS_PERMANENT.value: _get_attr(attributes, "isPermanent"),
+        BrevoAttributes.IS_OPEN_TO_PUBLIC.value: _get_attr(attributes, "isOpenToPublic"),
+        BrevoAttributes.IS_PRO.value: _get_attr(attributes, "is_pro"),
+        BrevoAttributes.IS_USER_EMAIL.value: _get_attr(attributes, "is_user_email"),
+        BrevoAttributes.IS_VIRTUAL.value: _get_attr(attributes, "isVirtual"),
+        BrevoAttributes.LASTNAME.value: _get_attr(attributes, "last_name"),
+        BrevoAttributes.MARKETING_EMAIL_SUBSCRIPTION.value: _get_attr(attributes, "marketing_email_subscription"),
+        BrevoAttributes.OFFERER_NAME.value: _get_attr(attributes, "offerers_names", format_list),
+        BrevoAttributes.OFFERER_TAG.value: _get_attr(attributes, "offerers_tags", format_list),
+        BrevoAttributes.USER_ID.value: _get_attr(attributes, "user_id"),
+        BrevoAttributes.USER_IS_ATTACHED.value: _get_attr(attributes, "user_is_attached"),
+        BrevoAttributes.USER_IS_CREATOR.value: _get_attr(attributes, "user_is_creator"),
+        BrevoAttributes.VENUE_COUNT.value: _get_attr(attributes, "venues_ids", len),
+        BrevoAttributes.VENUE_LABEL.value: _get_attr(attributes, "venues_labels", format_list),
+        BrevoAttributes.VENUE_NAME.value: _get_attr(attributes, "venues_names", format_list),
+        BrevoAttributes.VENUE_TYPE.value: _get_attr(attributes, "venues_types", format_list),
     }
 
 
 def format_cultural_survey_answers(cultural_survey_answers: dict[str, list[str]]) -> dict:
     return {
-        SendinblueOptionalAttributes.INTENDED_CATEGORIES.value: format_list(
+        BrevoOptionalAttributes.INTENDED_CATEGORIES.value: format_list(
             cultural_survey_answers.get(cultural_survey_models.CulturalSurveyQuestionEnum.PROJECTIONS.value)
         )
     }
 
 
-def make_update_request(payload: serialization.UpdateSendinblueContactRequest) -> None:
+def make_update_request(payload: serialization.UpdateBrevoContactRequest) -> None:
     mails_api.create_contact(payload)
 
 
@@ -328,7 +325,7 @@ def send_import_contacts_request(
 
     try:
         api_instance.import_contacts(request_contact_import)
-    except SendinblueApiException as e:
+    except BrevoApiException as e:
         logger.exception("Exception when calling ContactsApi->import_contacts: %s", e)
 
 
@@ -342,17 +339,17 @@ def format_file_value(value: str | bool | int | datetime | None) -> str:
     return str(value)
 
 
-def build_file_body(users_data: list[SendinblueUserUpdateData]) -> str:
-    """Generates a csv-like string for bulk import, based on SendinblueAttributes
+def build_file_body(users_data: list[BrevoUserUpdateData]) -> str:
+    """Generates a csv-like string for bulk import, based on BrevoAttributes
        e.g.: "EMAIL;FIRSTNAME;SMS\n#john@example.com;John;Doe;31234567923"
 
     Args:
-        users_data (list[SendinblueUserUpdateData]): users data
+        users_data (list[BrevoUserUpdateData]): users data
 
     Returns:
         str: corresponding csv string
     """
-    file_body = ";".join(sorted(SendinblueAttributes.list())) + ";EMAIL"
+    file_body = ";".join(sorted(BrevoAttributes.list())) + ";EMAIL"
     for user in users_data:
         file_body += "\n"
         file_body += ";".join([format_file_value(value) for _, value in sorted(user.attributes.items())])
@@ -361,19 +358,15 @@ def build_file_body(users_data: list[SendinblueUserUpdateData]) -> str:
     return file_body
 
 
-def import_contacts_in_sendinblue(
-    sendinblue_users_data: list[SendinblueUserUpdateData], email_blacklist: bool = False
-) -> None:
-    # Split users in sendinblue lists
-    pro_users = [
-        user_data for user_data in sendinblue_users_data if user_data.attributes[SendinblueAttributes.IS_PRO.value]
-    ]
+def import_contacts_in_brevo(brevo_users_data: list[BrevoUserUpdateData], email_blacklist: bool = False) -> None:
+    # Split users in Brevo lists
+    pro_users = [user_data for user_data in brevo_users_data if user_data.attributes[BrevoAttributes.IS_PRO.value]]
     young_users = [
-        user_data for user_data in sendinblue_users_data if not user_data.attributes[SendinblueAttributes.IS_PRO.value]
+        user_data for user_data in brevo_users_data if not user_data.attributes[BrevoAttributes.IS_PRO.value]
     ]
 
     # send pro users request
-    # FIXME (prouzet, 2025-03-14): import_contacts_in_sendinblue is not called when refreshing pro users
+    # FIXME (prouzet, 2025-03-14): import_contacts_in_brevo is not called when refreshing pro users
     # This part causes an HTTP 400 error: {"code":"missing_parameter","message":"Missing listIds or newList"}
     # List is mandatory when calling import_contacts endpoint.
     if pro_users:
@@ -404,14 +397,14 @@ def import_contacts_in_sendinblue(
 
 
 def _send_import_request(
-    api_instance: ContactsApi, sib_list_id: int, iteration: int, count: int, file_body: str
+    api_instance: ContactsApi, brevo_list_id: int, iteration: int, count: int, file_body: str
 ) -> int:
     request_contact_import = brevo_python.RequestContactImport()
     request_contact_import.file_body = file_body
-    request_contact_import.list_ids = [sib_list_id]
+    request_contact_import.list_ids = [brevo_list_id]
     request_contact_import.notify_url = urllib.parse.urljoin(
         settings.API_URL,
-        f"/webhooks/sendinblue/importcontacts/{sib_list_id}/{iteration}",
+        f"/webhooks/sendinblue/importcontacts/{brevo_list_id}/{iteration}",
     )
 
     import_response: CreatedProcessId = api_instance.import_contacts(request_contact_import)
@@ -419,7 +412,7 @@ def _send_import_request(
         "ContactsApi->import_contacts returned: %s",
         import_response,
         extra={
-            "list_id": sib_list_id,
+            "list_id": brevo_list_id,
             "iteration": iteration,
             "email_count": count,
             "request_body_size": len(file_body),
@@ -430,16 +423,18 @@ def _send_import_request(
     return import_response.process_id
 
 
-def add_contacts_to_list(user_emails: Iterable[str], sib_list_id: int, use_pro_subaccount: bool | None = False) -> bool:
+def add_contacts_to_list(
+    user_emails: Iterable[str], brevo_list_id: int, use_pro_subaccount: bool | None = False
+) -> bool:
     """
-    Fills in a list of contacts using Sendinblue API.
+    Fills in a list of contacts using Brevo API.
     This function is intended to be used for automation and returns synchronously (waits for completion).
 
-    Webhook is called when the process is finished on Sendinblue side: see sendinblue_notify_importcontacts()
+    Webhook is called when the process is finished on Brevo side: see brevo_notify_importcontacts()
 
     Args:
         user_emails (Iterable[str]): list or generator of matching user email addresses
-        sib_list_id (int): Sendinblue list identifier
+        brevo_list_id (int): Brevo list identifier
 
     Returns:
         bool: True when successful, False otherwise
@@ -470,16 +465,16 @@ def add_contacts_to_list(user_emails: Iterable[str], sib_list_id: int, use_pro_s
 
         for emails in chunk(user_emails, max_emails_per_import):
             file_body = "EMAIL\n" + "\n".join(emails)
-            _send_import_request(contacts_api_instance, sib_list_id, iteration, len(emails), file_body)
+            _send_import_request(contacts_api_instance, brevo_list_id, iteration, len(emails), file_body)
             iteration += 1
 
         # Don't wait for processes completed, it would take too much time in the cron process
 
-    except SendinblueApiException as exception:
+    except BrevoApiException as exception:
         logger.exception(
             "Exception when calling ContactsApi->import_contacts: %s",
             exception,
-            extra={"list_id": sib_list_id, "iteration": iteration},
+            extra={"list_id": brevo_list_id, "iteration": iteration},
         )
         return False
 

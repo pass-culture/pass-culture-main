@@ -4,17 +4,17 @@ from dataclasses import asdict
 from typing import Iterable
 
 import brevo_python
-from brevo_python.rest import ApiException as SendinblueApiException
+from brevo_python.rest import ApiException as BrevoApiException
 
 from pcapi import settings
+from pcapi.core.mails import models
+from pcapi.core.mails import serialization
 from pcapi.core.mails import tasks
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.utils import email as email_utils
 from pcapi.utils.email import is_email_whitelisted
 from pcapi.utils.requests import ExternalAPIException
 
-from .. import models
-from .. import serialization
 from .base import BaseBackend
 
 
@@ -75,11 +75,11 @@ class SendinblueBackend(BaseBackend):
             tasks.send_transactional_email_secondary_task.delay(payload.model_dump())
 
         else:
-            raise ValueError(f"Tried sending an email via sendinblue, but received incorrectly formatted data: {data}")
+            raise ValueError(f"Tried sending an email via Brevo, but received incorrectly formatted data: {data}")
 
-    def create_contact(self, payload: serialization.UpdateSendinblueContactRequest) -> None:
+    def create_contact(self, payload: serialization.UpdateBrevoContactRequest) -> None:
         """
-        Creates or updates a contact in Brevo (previously Sendinblue).
+        Creates or updates a contact in Brevo
         """
 
         contact = brevo_python.CreateContact(
@@ -93,8 +93,8 @@ class SendinblueBackend(BaseBackend):
         try:
             self.contacts_api.create_contact(contact)
 
-        except SendinblueApiException as exception:
-            self._handle_sendinblue_exception(exception, payload)
+        except BrevoApiException as exception:
+            self._handle_brevo_exception(exception, payload)
 
         except Exception as exception:
             raise ExternalAPIException(is_retryable=True) from exception
@@ -103,13 +103,13 @@ class SendinblueBackend(BaseBackend):
         try:
             self.contacts_api.delete_contact(contact_email)
 
-        except SendinblueApiException as exception:
+        except BrevoApiException as exception:
             if exception.status >= 500:
                 raise ExternalAPIException(is_retryable=True) from exception
             if exception.status != 404:
                 # If we try to delete a non existing user, it's not a problem.
                 logger.exception(
-                    "Exception when calling Sendinblue delete_contact API",
+                    "Exception when calling Brevo delete_contact API",
                     extra={
                         "email": contact_email,
                     },
@@ -123,13 +123,13 @@ class SendinblueBackend(BaseBackend):
         try:
             contact_info = self.contacts_api.get_contact_info(contact_email)
 
-        except SendinblueApiException as exception:
+        except BrevoApiException as exception:
             if exception.status == 404:
                 return None
             if exception.status >= 500:
                 raise ExternalAPIException(is_retryable=True) from exception
             logger.exception(
-                "Exception when calling Sendinblue get_contact_info API",
+                "Exception when calling Brevo get_contact_info API",
                 extra={
                     "email": contact_email,
                 },
@@ -145,13 +145,13 @@ class SendinblueBackend(BaseBackend):
         try:
             return self.contacts_api.get_contact_info(contact_email).to_dict()
 
-        except SendinblueApiException as exception:
+        except BrevoApiException as exception:
             if exception.status == 404:
                 return {}
             if exception.status >= 500:
                 raise ExternalAPIException(is_retryable=True) from exception
             logger.exception(
-                "Exception when calling Sendinblue get_contact_info API",
+                "Exception when calling Brevo get_contact_info API",
                 extra={
                     "email": contact_email,
                 },
@@ -161,8 +161,8 @@ class SendinblueBackend(BaseBackend):
         except Exception as exception:
             raise ExternalAPIException(is_retryable=True) from exception
 
-    def _handle_sendinblue_exception(
-        self, exception: SendinblueApiException, payload: serialization.UpdateSendinblueContactRequest
+    def _handle_brevo_exception(
+        self, exception: BrevoApiException, payload: serialization.UpdateBrevoContactRequest
     ) -> None:
         if exception.status >= 500:
             raise ExternalAPIException(is_retryable=True) from exception
@@ -189,7 +189,7 @@ class SendinblueBackend(BaseBackend):
                     # Don't raise exception for data which should be fixed but create a specific alert for every case.
                     # This should avoid aggregation of all cases/emails in a single Sentry alert with 30k exceptions.
                     logger.error(
-                        "Sendinblue can't create contact %s: code=%s, message=%s",
+                        "Brevo can't create contact %s: code=%s, message=%s",
                         # Email is partially obfuscated in logs but full email is available in Sentry for investigation
                         email_utils.anonymize_email(payload.email),
                         code,
@@ -202,7 +202,7 @@ class SendinblueBackend(BaseBackend):
                     return None
 
         logger.exception(
-            "Exception when calling Sendinblue create_contact API",
+            "Exception when calling Brevo create_contact API",
             extra={
                 "email": payload.email,
                 "attributes": payload.attributes,

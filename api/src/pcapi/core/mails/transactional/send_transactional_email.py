@@ -85,7 +85,7 @@ def send_transactional_email(payload: serialization.SendTransactionalEmailReques
                     # This should avoid aggregation of all recipients in a single Sentry alert, so would help identify
                     # invalid emails and potential other invalid parameters lost in the crowd.
                     logger.error(
-                        "Sendinblue can't send email to %s: code=%s, message=%s",
+                        "Brevo can't send email to %s: code=%s, message=%s",
                         # Email is partially obfuscated in logs but full email is available in Sentry for investigation
                         ",".join(email_utils.anonymize_email(recipient) for recipient in payload.recipients),
                         code,
@@ -101,7 +101,7 @@ def send_transactional_email(payload: serialization.SendTransactionalEmailReques
                 pass
 
         logger.exception(
-            f"Exception when calling Sendinblue send_transac_email with status={exception.status} and code={code}",
+            f"Exception when calling Brevo send_transac_email with status={exception.status} and code={code}",
             extra=extra,
         )
         raise requests.ExternalAPIException(is_retryable=False) from exception

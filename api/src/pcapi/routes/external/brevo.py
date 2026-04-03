@@ -17,7 +17,7 @@ from pcapi.core.users.repository import find_user_by_email
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import public_api
-from pcapi.routes.external.serialization import sendinblue as serializers
+from pcapi.routes.external.serialization import brevo as serializers
 from pcapi.serialization.decorator import spectree_serialize
 
 
@@ -47,15 +47,15 @@ def _toggle_marketing_email_subscription(subscribe: bool) -> None:
     db.session.add(user)
     db.session.commit()
 
-    # Sendinblue is already up-to-date from originating automation, update marketing preference in Batch
-    update_external_user(user, skip_sendinblue=True)
+    # Brevo is already up-to-date from originating automation, update marketing preference in Batch
+    update_external_user(user, skip_brevo=True)
 
 
 @public_api.route("/webhooks/sendinblue/unsubscribe", methods=["POST"])
 @spectree_serialize(on_success_status=204)
-def sendinblue_unsubscribe_user() -> None:
+def brevo_unsubscribe_user() -> None:
     """
-    Automation scenario is configured in Sendinblue to call this webhook after user unsubscribes.
+    Automation scenario is configured in Brevo to call this webhook after user unsubscribes.
     Blacklist status and MARKETING_EMAIL_SUBSCRIPTION are updated in the scenario, so we don't need to sync them again.
     """
     _toggle_marketing_email_subscription(False)
@@ -63,9 +63,9 @@ def sendinblue_unsubscribe_user() -> None:
 
 @public_api.route("/webhooks/sendinblue/subscribe", methods=["POST"])
 @spectree_serialize(on_success_status=204)
-def sendinblue_subscribe_user() -> None:
+def brevo_subscribe_user() -> None:
     """
-    Automation scenario is configured in Sendinblue to call this webhook after user unsubscribes.
+    Automation scenario is configured in Brevo to call this webhook after user unsubscribes.
     Blacklist status and MARKETING_EMAIL_SUBSCRIPTION are updated in the scenario, so we don't need to sync them again.
     """
     _toggle_marketing_email_subscription(True)
@@ -73,13 +73,13 @@ def sendinblue_subscribe_user() -> None:
 
 @public_api.route("/webhooks/sendinblue/importcontacts/<int:list_id>/<int:iteration>", methods=["POST"])
 @spectree_serialize(on_success_status=204)
-def sendinblue_notify_importcontacts(list_id: int, iteration: int) -> None:
+def brevo_notify_importcontacts(list_id: int, iteration: int) -> None:
     """
-    Called by Sendinblue once an import process is finished.
+    Called by Brevo once an import process is finished.
     https://developers.brevo.com/reference/importcontacts-1
 
     Unfortunately there is no information in query string and the body is empty, so we can't check a process id.
-    The id of the list in Sendinblue is added to the URL when set in notifyUrl so we can at least print the list id.
+    The id of the list in Brevo is added to the URL when set in notifyUrl so we can at least print the list id.
     This webhook is for investigation purpose only.
     """
     logger.info("ContactsApi->import_contacts finished", extra={"list_id": list_id, "iteration": iteration})

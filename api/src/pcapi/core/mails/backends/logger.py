@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class LoggerBackend(BaseBackend):
     """A backend that logs email instead of sending it.
     It should be used for local development, and on testing/staging
-    when performing load tests when we don't want to overload Sendinblue.
+    when performing load tests when we don't want to overload Brevo.
     """
 
     def __init__(self, use_pro_subaccount: bool) -> None:
@@ -31,17 +31,17 @@ class LoggerBackend(BaseBackend):
             bcc_recipients = ", ".join(bcc_recipients)
         sent_data = asdict(data)
         logger.info(
-            "An email would be sent via Sendinblue %sto=%s, bcc=%s: %s",
+            "An email would be sent via Brevo %sto=%s, bcc=%s: %s",
             "using the PRO subaccount " if self.use_pro_subaccount else "",
             recipients,
             bcc_recipients,
             sent_data,
         )
 
-    def create_contact(self, payload: serialization.UpdateSendinblueContactRequest) -> None:
+    def create_contact(self, payload: serialization.UpdateBrevoContactRequest) -> None:
         logger.info(
-            "A request to Sendinblue Contact %sAPI would be sent for user %s with attributes %s emailBlacklisted: %s",
-            "PRO" if self.use_pro_subaccount else "",
+            "A request to Brevo%s create_contact would be sent for user %s with attributes %s emailBlacklisted: %s",
+            " PRO" if self.use_pro_subaccount else "",
             payload.email,
             payload.attributes,
             payload.emailBlacklisted,
@@ -49,22 +49,22 @@ class LoggerBackend(BaseBackend):
 
     def delete_contact(self, contact_email: str) -> None:
         logger.info(
-            "A request to Sendinblue Contact %sAPI would be sent for user %s to delete them.",
-            "PRO" if self.use_pro_subaccount else "",
+            "A request to Brevo%s delete_contact would be sent for user %s to delete them.",
+            " PRO" if self.use_pro_subaccount else "",
             contact_email,
         )
 
     def get_contact_url(self, contact_email: str) -> None:
         logger.info(
-            "A request to Sendinblue Contact %sAPI would be sent for user %s to to get their info.",
-            "PRO" if self.use_pro_subaccount else "",
+            "A request to Brevo%s get_contact_url would be sent for user %s to to get their info.",
+            " PRO" if self.use_pro_subaccount else "",
             contact_email,
         )
 
     def get_raw_contact_data(self, contact_email: str) -> dict:
         logger.info(
-            "A request to Sendinblue Contact %sAPI would be sent for user %s to to get their raw info.",
-            "PRO" if self.use_pro_subaccount else "",
+            "A request to Brevo%s get_raw_contact_data would be sent for user %s to to get their raw info.",
+            " PRO" if self.use_pro_subaccount else "",
             contact_email,
         )
         return {}

@@ -7,18 +7,18 @@ from unittest.mock import patch
 import pytest
 from brevo_python.models.request_contact_import import RequestContactImport
 
-import pcapi.core.users.testing as sendinblue_testing
+import pcapi.core.users.testing as brevo_testing
 from pcapi import settings
 from pcapi.core.cultural_survey import models as cultural_survey_models
-from pcapi.core.external.sendinblue import SendinblueUserUpdateData
-from pcapi.core.external.sendinblue import add_contacts_to_list
-from pcapi.core.external.sendinblue import build_file_body
-from pcapi.core.external.sendinblue import format_cultural_survey_answers
-from pcapi.core.external.sendinblue import format_pro_attributes
-from pcapi.core.external.sendinblue import format_user_attributes
-from pcapi.core.external.sendinblue import import_contacts_in_sendinblue
-from pcapi.core.external.sendinblue import make_update_request
-from pcapi.core.mails.serialization import UpdateSendinblueContactRequest
+from pcapi.core.external.brevo import BrevoUserUpdateData
+from pcapi.core.external.brevo import add_contacts_to_list
+from pcapi.core.external.brevo import build_file_body
+from pcapi.core.external.brevo import format_cultural_survey_answers
+from pcapi.core.external.brevo import format_pro_attributes
+from pcapi.core.external.brevo import format_user_attributes
+from pcapi.core.external.brevo import import_contacts_in_brevo
+from pcapi.core.external.brevo import make_update_request
+from pcapi.core.mails.serialization import UpdateBrevoContactRequest
 from pcapi.utils import date as date_utils
 
 from . import common_pro_attributes
@@ -204,7 +204,7 @@ class FormatUserAttributesTest:
             "VENUE_TYPE": "BOOKSTORE,MOVIE",
         }
 
-    def test_format_user_attributes_with_achievements_sendinblue(self):
+    def test_format_user_attributes_with_achievements_brevo(self):
         attributes = deepcopy(common_user_attributes)
         attributes.achievements = [
             "FIRST_MOVIE_BOOKING",
@@ -260,14 +260,14 @@ class BulkImportUsersDataTest:
         armin_attributes.user_id = 3
 
         self.users_data = [
-            SendinblueUserUpdateData(
+            BrevoUserUpdateData(
                 email="eren.yeager@shinganshina.paradis", attributes=format_user_attributes(eren_attributes)
             ),
-            SendinblueUserUpdateData(
+            BrevoUserUpdateData(
                 email="mikasa.ackerman@shinganshina.paradis",
                 attributes=format_user_attributes(mikasa_attributes),
             ),
-            SendinblueUserUpdateData(
+            BrevoUserUpdateData(
                 email="armin.arlert@shinganshina.paradis",
                 attributes=format_user_attributes(armin_attributes),
             ),
@@ -288,9 +288,9 @@ class BulkImportUsersDataTest:
         result = build_file_body(self.users_data)
         assert result == expected
 
-    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts")
-    def test_import_contacts_in_sendinblue(self, mock_import_contacts):
-        import_contacts_in_sendinblue(self.users_data)
+    @patch("pcapi.core.external.brevo.brevo_python.api.contacts_api.ContactsApi.import_contacts")
+    def test_import_contacts_in_brevo(self, mock_import_contacts):
+        import_contacts_in_brevo(self.users_data)
 
         expected_common_params = {
             "email_blacklist": False,
@@ -320,7 +320,7 @@ class BulkImportUsersDataTest:
         mock_import_contacts.assert_has_calls([call(expected_young_call), call(expected_pro_call)], any_order=True)
 
     @pytest.mark.parametrize("use_pro_subaccount", [True, False])
-    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts")
+    @patch("pcapi.core.external.brevo.brevo_python.api.contacts_api.ContactsApi.import_contacts")
     def test_add_contacts_to_list(self, mock_import_contacts, use_pro_subaccount):
         result = add_contacts_to_list(
             ["eren.yeager@shinganshina.paradis", "armin.arlert@shinganshina.paradis"],
@@ -344,7 +344,7 @@ class BulkImportUsersDataTest:
 
         assert result is True
 
-    @pytest.mark.skip(reason="For dev and debug only - this test sends data to sendinblue")
+    @pytest.mark.skip(reason="For dev and debug only - this test sends data to Brevo")
     # @pytest.mark.settings(API_URL="http://dev.external.ip:5001", SENDINBLUE_API_KEY="...")
     def test_add_contacts_to_list_without_mock(self):
         # Avoid pytest.PytestUnraisableExceptionWarning: Exception ignored in: <ssl.SSLSocket ...>
@@ -369,29 +369,29 @@ class BulkImportUsersDataTest:
 
         assert result is True
 
-    @pytest.mark.skip(reason="For dev and debug only - this test sends data to sendinblue")
+    @pytest.mark.skip(reason="For dev and debug only - this test sends data to Brevo")
     # @pytest.mark.settings(API_URL="http://dev.external.ip:5001", SENDINBLUE_API_KEY="...")
     def test_add_200k_contacts_to_list_without_mock(self):
         # 200k contacts: a single 8MB import request
         self._test_add_many_contacts_to_list_without_mock(200000, "200k")
 
-    @pytest.mark.skip(reason="For dev and debug only - this test sends data to sendinblue")
+    @pytest.mark.skip(reason="For dev and debug only - this test sends data to Brevo")
     # @pytest.mark.settings(API_URL="http://dev.external.ip:5001", SENDINBLUE_API_KEY="...")
     def test_add_500k_contacts_to_list_without_mock(self):
         # 500k contacts: several import requests
         # Use with caution, ingestion may take 10, 20, 25 minutes... before calling webhook
         self._test_add_many_contacts_to_list_without_mock(500000, "500k")
 
-    @pytest.mark.skip(reason="For dev and debug only - this test sends data to sendinblue")
+    @pytest.mark.skip(reason="For dev and debug only - this test sends data to Brevo")
     @pytest.mark.settings(IS_RUNNING_TESTS=False, IS_DEV=False, IS_TESTING=True)
     def test_update_pro_contact_without_mock(self):
         # Avoid pytest.PytestUnraisableExceptionWarning: Exception ignored in: <ssl.SSLSocket ...>
         warnings.filterwarnings(action="ignore", message="unclosed", category=ResourceWarning)
 
-        # This test helps to check data received in Sendinblue dashboard manually.
+        # This test helps to check data received in Brevo dashboard manually.
         # Note that SENDINBLUE_API_KEY must be filled in settings.
         make_update_request(
-            UpdateSendinblueContactRequest(
+            UpdateBrevoContactRequest(
                 email=f"test.pro.{date_utils.get_naive_utc_now().strftime('%y%m%d.%H%M')}@example.net",
                 use_pro_subaccount=True,
                 attributes=format_user_attributes(common_pro_attributes),
@@ -405,7 +405,7 @@ class BulkImportUsersDataTest:
         attributes = format_user_attributes(common_pro_attributes)
 
         make_update_request(
-            UpdateSendinblueContactRequest(
+            UpdateBrevoContactRequest(
                 email=email,
                 use_pro_subaccount=True,
                 attributes=attributes,
@@ -414,7 +414,7 @@ class BulkImportUsersDataTest:
             )
         )
 
-        assert sendinblue_testing.sendinblue_requests[0] == {
+        assert brevo_testing.brevo_requests[0] == {
             "email": email,
             "attributes": attributes,
             "emailBlacklisted": False,

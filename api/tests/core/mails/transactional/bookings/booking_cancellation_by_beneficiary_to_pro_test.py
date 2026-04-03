@@ -15,7 +15,7 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary_to_pro import (
     send_booking_cancellation_by_beneficiary_to_pro_email,
 )
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.providers.repository import get_provider_by_local_class
 
 
@@ -104,7 +104,7 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
 
 class MakeOffererBookingRecapEmailAfterUserCancellationTest:
     @pytest.mark.usefixtures("db_session")
-    def test_should_return_sendinblue_data_with_no_ongoing_booking(self):
+    def test_should_return_brevo_data_with_no_ongoing_booking(self):
         # Given
         stock = offers_factories.EventStockFactory(beginningDatetime=datetime(2019, 10, 9, 10, 20, 00))
         booking = bookings_factories.CancelledBookingFactory(stock=stock, quantity=2)
@@ -133,7 +133,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
         }
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_return_sendinblue_data_with_ongoing_bookings(self):
+    def test_should_return_brevo_data_with_ongoing_bookings(self):
         # Given
         stock = offers_factories.EventStockFactory(price=0, beginningDatetime=datetime(2019, 10, 9, 10, 20, 00))
         booking1 = bookings_factories.CancelledBookingFactory(stock=stock, quantity=2)

@@ -10,7 +10,7 @@ from pcapi.core.educational import testing as educational_testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
-from pcapi.core.users import testing as sendinblue_testing
+from pcapi.core.users import testing as brevo_testing
 from pcapi.models import db
 
 
@@ -114,8 +114,8 @@ class Returns200Test:
 
         assert_offer_values(offer, data, user, offerer)
 
-        # 2 requests (for 2 bookingEmail) for sendinblue
-        assert len(sendinblue_testing.sendinblue_requests) == 3
+        # 2 requests (for 2 bookingEmail) for Brevo
+        assert len(brevo_testing.brevo_requests) == 3
 
     def test_create_collective_offer_allowed_one_adage(self, client):
         # offerer is allowed on adage but has no venue with adageId

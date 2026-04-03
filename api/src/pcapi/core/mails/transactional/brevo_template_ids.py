@@ -4,7 +4,7 @@ from pcapi.core.mails import models
 
 
 class TransactionalEmail(Enum):
-    # Empty tags when it is set directly in Sendinblue template
+    # Empty tags when it is set directly in Brevo template
 
     ACCEPTED_AS_BENEFICIARY_V3 = models.Template(id_prod=1452, id_not_prod=176, use_priority_queue=True)
     ACCOUNT_UNSUSPENDED = models.Template(id_prod=644, id_not_prod=87, tags=["reactivation_compte_utilisateur"])

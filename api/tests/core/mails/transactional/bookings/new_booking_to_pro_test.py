@@ -12,7 +12,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.mails.transactional.bookings.new_booking_to_pro import get_new_booking_to_pro_email_data
 from pcapi.core.mails.transactional.bookings.new_booking_to_pro import send_user_new_booking_to_pro_email
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offers.factories import ActivationCodeFactory
 from pcapi.core.testing import assert_num_queries
 

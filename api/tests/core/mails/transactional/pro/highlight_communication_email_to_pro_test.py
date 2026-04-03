@@ -6,8 +6,8 @@ import pytest
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.pro.highlight_communication_to_pro import send_highlight_communication_email_to_pro
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

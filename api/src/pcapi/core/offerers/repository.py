@@ -553,7 +553,7 @@ def get_emails_by_venue(venue: models.Venue) -> set[str]:
 def get_emails_by_offerer(offerer: models.Offerer) -> set[str]:
     """
     Get all emails for which pro attributes may be modified when the offerer is updated or deleted.
-    Any bookingEmail in a venue should be updated in sendinblue when offerer is disabled, deleted or its name changed
+    Any bookingEmail in a venue should be updated in Brevo when offerer is disabled, deleted or its name changed
     """
     emails = {
         email
