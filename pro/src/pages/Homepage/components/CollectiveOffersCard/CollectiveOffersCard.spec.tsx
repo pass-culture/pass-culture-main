@@ -4,8 +4,11 @@ import type { ComponentProps } from 'react'
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { CollectiveOffersCardVariant, type OffersCardVariant } from '../types'
-import { CollectiveOffersCard } from './CollectiveOffersCard'
+import type { OffersCardVariant } from '../types'
+import {
+  CollectiveOffersCard,
+  type CollectiveOffersCardProps,
+} from './CollectiveOffersCard'
 
 vi.mock('@/ui-kit/Skeleton/Skeleton', () => ({
   Skeleton: () => <div>skeleton</div>,
@@ -17,12 +20,12 @@ vi.mock('../OffersEmptyStateCard/OffersEmptyStateCard', () => ({
 
 vi.mock('../OffersRetentionCard/OffersRetentionCard', () => ({
   OffersRetentionCard: ({ variant }: { variant: OffersCardVariant }) => (
-    <div>retention {variant}</div>
+    <div>retention {variant.toLowerCase()}</div>
   ),
 }))
 
-const defaultProps = {
-  variant: CollectiveOffersCardVariant.TEMPLATE,
+const defaultProps: CollectiveOffersCardProps<'TEMPLATE'> = {
+  variant: 'TEMPLATE',
   isLoading: false,
   hasOffers: false,
   offersToDisplay: [],
@@ -50,9 +53,9 @@ describe('CollectiveOffersCard', () => {
     expect(screen.getByText('retention template')).toBeVisible()
   })
 
-  it('should display bookable offers when venue has bookable offers to display on homepage', async () => {
+  it('should display bookable offers when venue has bookable offers to display on homepage', () => {
     renderCollectiveOffersCard({
-      variant: CollectiveOffersCardVariant.BOOKABLE,
+      variant: 'BOOKABLE',
       hasOffers: true,
       offersToDisplay: [
         {
@@ -66,7 +69,12 @@ describe('CollectiveOffersCard', () => {
       ],
     })
 
-    expect(await screen.findByText('offres réservables')).toBeVisible()
+    expect(
+      screen.getByRole('heading', {
+        level: 2,
+        name: 'Offres réservables',
+      })
+    ).toBeVisible()
   })
 
   it('should display template offers when venue has active template offers', async () => {

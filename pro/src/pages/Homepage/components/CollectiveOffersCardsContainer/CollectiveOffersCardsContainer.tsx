@@ -7,7 +7,6 @@ import {
 } from '@/commons/config/swrQueryKeys'
 
 import { CollectiveOffersCard } from '../CollectiveOffersCard/CollectiveOffersCard'
-import { CollectiveOffersCardVariant } from '../types'
 
 export const CollectiveOffersCardsContainer = ({
   venueId,
@@ -38,7 +37,7 @@ export const CollectiveOffersCardsContainer = ({
 
   const templateOffersComponent = (
     <CollectiveOffersCard
-      variant={CollectiveOffersCardVariant.TEMPLATE}
+      variant={'TEMPLATE'}
       offersToDisplay={templateOffers}
       hasOffers={hasTemplateOffers}
       isLoading={templateOffersQuery.isLoading}
@@ -47,7 +46,7 @@ export const CollectiveOffersCardsContainer = ({
 
   const bookableOffersComponent = (
     <CollectiveOffersCard
-      variant={CollectiveOffersCardVariant.BOOKABLE}
+      variant={'BOOKABLE'}
       offersToDisplay={bookableOffers}
       hasOffers={hasBookableOffers}
       isLoading={bookableOffersQuery.isLoading}

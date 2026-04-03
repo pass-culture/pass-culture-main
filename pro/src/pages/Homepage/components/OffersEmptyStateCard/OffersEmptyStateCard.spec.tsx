@@ -2,13 +2,10 @@ import { screen } from '@testing-library/react'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { OffersCardVariant } from '../types'
 import { OffersEmptyStateCard } from './OffersEmptyStateCard'
 
 it('should display correct information when variant is BOOKABLE', () => {
-  renderWithProviders(
-    <OffersEmptyStateCard variant={OffersCardVariant.BOOKABLE} />
-  )
+  renderWithProviders(<OffersEmptyStateCard variant="BOOKABLE" />)
 
   expect(
     screen.getByRole('heading', {
@@ -28,9 +25,7 @@ it('should display correct information when variant is BOOKABLE', () => {
 })
 
 it('should display correct information when variant is TEMPLATE', () => {
-  renderWithProviders(
-    <OffersEmptyStateCard variant={OffersCardVariant.TEMPLATE} />
-  )
+  renderWithProviders(<OffersEmptyStateCard variant="TEMPLATE" />)
 
   expect(
     screen.getByRole('heading', {
@@ -50,9 +45,7 @@ it('should display correct information when variant is TEMPLATE', () => {
 })
 
 it('should display correct information when variant is INDIVIDUAL', () => {
-  renderWithProviders(
-    <OffersEmptyStateCard variant={OffersCardVariant.INDIVIDUAL} />
-  )
+  renderWithProviders(<OffersEmptyStateCard variant="INDIVIDUAL" />)
 
   expect(
     screen.getByRole('heading', {

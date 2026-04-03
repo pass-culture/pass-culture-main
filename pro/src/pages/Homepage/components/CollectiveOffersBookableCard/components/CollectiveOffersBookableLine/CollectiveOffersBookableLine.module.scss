@@ -1,0 +1,137 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_a11y.scss" as a11y;
+
+/**
+ * We setup mobile display by default
+ *   (cf the following min-width in media queries)
+ *
+ * It allows us to limit overrides and code complexity.
+ *
+ * @see ../../CollectiveOffersBookableCard/CollectiveOffersBookableCard.module.scss
+ */
+.offer-line {
+  display: grid; // In mobile, every line has its own grid
+  align-items: center;
+  grid-template-columns: max-content 1fr;
+
+  // We don't use gaps to handle the space between elements
+  // because the space is not uniform on some layouts
+  // instead we use margin-left and margin-top (see code below)
+  gap: 0;
+
+  &-thumb {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    align-items: start;
+    justify-content: start;
+    height: 100%;
+  }
+
+  &-content {
+    @include fonts.body-accent;
+
+    grid-column: 2;
+    grid-row: 1;
+    margin-left: var(--size-spacing-s);
+    display: flex;
+    flex-direction: column;
+
+    &-primary {
+      @include fonts.body-accent-s;
+
+      margin-top: var(--size-spacing-s);
+    }
+
+    &-secondary {
+      @include fonts.body-xs;
+
+      color: var(--color-text-subtle);
+    }
+  }
+
+  &-status {
+    grid-column: 2;
+    grid-row: 2;
+    margin-left: var(--size-spacing-s);
+    margin-top: var(--size-spacing-s);
+  }
+
+  // CTA button
+  & > *:last-child {
+    grid-column: 1 / span 2;
+    grid-row: 3;
+    width: 100%;
+    justify-self: stretch;
+    margin-top: var(--size-spacing-m);
+  }
+
+  @media screen and (min-width: size.$laptop) {
+    grid-column: 1 / -1;
+    grid-row: auto / span 2;
+
+    // Starting in tablets, the line grid uses the list grid
+    grid-template-columns: subgrid;
+
+    &-thumb {
+      grid-column: auto;
+      grid-row: 1 / span 2;
+    }
+
+    &-content,
+    &-status {
+      grid-column: 2;
+      grid-row: auto;
+      margin-left: var(--size-spacing-s);
+    }
+
+    &-status {
+      margin-top: var(--size-spacing-s);
+    }
+
+    & > *:last-child {
+      grid-column: 4;
+      grid-row: 1 / span 2;
+      margin-top: inherit;
+      width: calc(100% - var(--size-spacing-m));
+      margin-left: var(--size-spacing-m);
+    }
+  }
+
+  @media screen and (min-width: size.$desktop) {
+    grid-column: 1 / -1;
+    grid-row: auto;
+
+    &-thumb,
+    &-content,
+    &-status {
+      grid-column: auto;
+      grid-row: auto;
+    }
+
+    &-status {
+      // We need the link to occupy all the "cell" space
+      height: 100%;
+      width: calc(100% - var(--size-spacing-m));
+      margin-left: var(--size-spacing-m);
+      margin-top: inherit;
+      align-content: center;
+
+      // To have the right position inside the "cell"
+      & > * {
+        display: block; // The link direct child is a span.
+        justify-self: center;
+      }
+    }
+
+    & > *:last-child {
+      grid-column: 4;
+      grid-row: auto;
+    }
+  }
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
+}
