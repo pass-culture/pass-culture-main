@@ -3,7 +3,7 @@ from pcapi.core.bookings import constants as booking_constants
 from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
 from pcapi.core.mails import models
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.users.models import User
 
 

@@ -9,7 +9,7 @@ import time_machine
 
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.bookings import factories as bookings_factories
-from pcapi.core.mails.transactional import sendinblue_template_ids
+from pcapi.core.mails.transactional import brevo_template_ids
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.utils import date as date_utils
@@ -172,11 +172,11 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         assert stock.priceCategory == price_category
         assert stock.quantity == 25
         assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
-            sendinblue_template_ids.TransactionalEmail.EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO.value
+            brevo_template_ids.TransactionalEmail.EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO.value
         )
         assert mails_testing.outbox[0]["To"] == event.venue.bookingEmail
         assert mails_testing.outbox[1]["template"] == dataclasses.asdict(
-            sendinblue_template_ids.TransactionalEmail.BOOKING_POSTPONED_BY_PRO_TO_BENEFICIARY.value
+            brevo_template_ids.TransactionalEmail.BOOKING_POSTPONED_BY_PRO_TO_BENEFICIARY.value
         )
         assert mails_testing.outbox[1]["To"] == "benefeciary@email.com"
 

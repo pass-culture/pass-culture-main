@@ -4,13 +4,13 @@ import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.categories import subcategories
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.pro.first_venue_approved_offer_to_pro import (
     get_first_venue_approved_offer_email_data,
 )
 from pcapi.core.mails.transactional.pro.first_venue_approved_offer_to_pro import (
     send_first_venue_approved_offer_email_to_pro,
 )
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.testing import assert_num_queries
 from pcapi.settings import PRO_URL
 
@@ -18,7 +18,7 @@ from pcapi.settings import PRO_URL
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class SendinblueSendFirstVenueOfferEmailTest:
+class BrevoSendFirstVenueOfferEmailTest:
     def test_get_first_venue_approved_offer_correct_email_metadata(self):
         # Given
         offer = offers_factories.OfferFactory(name="Ma petite offre", venue__name="Mon stade")

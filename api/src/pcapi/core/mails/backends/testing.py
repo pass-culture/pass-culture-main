@@ -31,8 +31,8 @@ class TestingBackend(BaseBackend):
         sent_data["use_pro_subaccount"] = self.use_pro_subaccount
         testing.outbox.append(sent_data)
 
-    def create_contact(self, payload: serialization.UpdateSendinblueContactRequest) -> None:
-        users_testing.sendinblue_requests.append(
+    def create_contact(self, payload: serialization.UpdateBrevoContactRequest) -> None:
+        users_testing.brevo_requests.append(
             {
                 "email": payload.email,
                 "attributes": payload.attributes,
@@ -42,17 +42,17 @@ class TestingBackend(BaseBackend):
         )
 
     def delete_contact(self, contact_email: str) -> None:
-        users_testing.sendinblue_requests.append(
+        users_testing.brevo_requests.append(
             {"email": contact_email, "action": "delete", "use_pro_subaccount": self.use_pro_subaccount}
         )
 
     def get_contact_url(self, contact_email: str) -> None:
-        users_testing.sendinblue_requests.append(
+        users_testing.brevo_requests.append(
             {"email": contact_email, "action": "get_contact_url", "use_pro_subaccount": self.use_pro_subaccount}
         )
 
     def get_raw_contact_data(self, contact_email: str) -> dict:
-        users_testing.sendinblue_requests.append(
+        users_testing.brevo_requests.append(
             {"email": contact_email, "action": "get_raw_contact_data", "use_pro_subaccount": self.use_pro_subaccount}
         )
         if contact_email == "valid_email@example.com":

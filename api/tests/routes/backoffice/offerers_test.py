@@ -18,7 +18,7 @@ from pcapi.core.geography import factories as geography_factories
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
-from pcapi.core.mails.transactional import sendinblue_template_ids
+from pcapi.core.mails.transactional import brevo_template_ids
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
@@ -406,7 +406,7 @@ class ActivateOrDeactivateOffererHelper(PostEndpointHelper):
     indexation_reason = NotImplemented
     default_form_data = {"comment": "Test"}
 
-    def test_should_update_sendinblue_contacts(self, authenticated_client):
+    def test_should_update_brevo_contacts(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(
             validationStatus=self.offerer_initial_status, isActive=self.offerer_initially_active
         )
@@ -416,7 +416,7 @@ class ActivateOrDeactivateOffererHelper(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form=self.default_form_data)
         assert response.status_code == 303
 
-        assert {sib_request["email"] for sib_request in testing.sendinblue_requests} == {
+        assert {brevo_request["email"] for brevo_request in testing.brevo_requests} == {
             venue.bookingEmail,
             users_offerer[0].user.email,
             users_offerer[1].user.email,
@@ -685,8 +685,8 @@ class UpdateOffererTest(PostEndpointHelper):
         assert history_rows[0]["Type"] == "Modification des informations"
         assert f"Nom juridique : {old_name} → {offerer_to_edit.name}" in history_rows[0]["Commentaire"]
 
-        assert len(testing.sendinblue_requests) == 4
-        assert {sendinblue_request["email"] for sendinblue_request in testing.sendinblue_requests} == {
+        assert len(testing.brevo_requests) == 4
+        assert {brevo_request["email"] for brevo_request in testing.brevo_requests} == {
             venues[0].bookingEmail,
             venues[1].bookingEmail,
             users_offerer[0].user.email,
@@ -721,8 +721,8 @@ class UpdateOffererTest(PostEndpointHelper):
         assert history_rows[0]["Auteur"] == legit_user.full_name
         assert "Premier tag → Deuxième tag, Troisième tag" in history_rows[0]["Commentaire"]
 
-        assert len(testing.sendinblue_requests) == 1
-        assert testing.sendinblue_requests[0]["email"] == venue.bookingEmail
+        assert len(testing.brevo_requests) == 1
+        assert testing.brevo_requests[0]["email"] == venue.bookingEmail
 
     def test_update_offerer_empty_name(self, legit_user, authenticated_client):
         offerer = offerers_factories.OffererFactory(name="Original")
@@ -3504,7 +3504,7 @@ class ValidateOffererAttachmentTest(PostEndpointHelper):
         assert mails_testing.outbox[0]["To"] == user_offerer.user.email
         assert (
             mails_testing.outbox[0]["template"]
-            == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_VALIDATION.value.__dict__
+            == brevo_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_VALIDATION.value.__dict__
         )
 
     def test_validate_offerer_attachment_htmx(self, legit_user, authenticated_client):
@@ -3583,7 +3583,7 @@ class RejectOffererAttachmentTest(PostEndpointHelper):
         assert mails_testing.outbox[0]["To"] == user_offerer.user.email
         assert (
             mails_testing.outbox[0]["template"]
-            == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_REJECTION.value.__dict__
+            == brevo_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_REJECTION.value.__dict__
         )
 
     def test_reject_offerer_attachment_htmx(self, legit_user, authenticated_client):
@@ -3707,7 +3707,7 @@ class InviteUserTest(PostEndpointHelper):
         assert mails_testing.outbox[0]["To"] == invited_email
         assert (
             mails_testing.outbox[0]["template"]
-            == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_NEW_USER.value.__dict__
+            == brevo_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_NEW_USER.value.__dict__
         )
 
     def test_invite_user_already_invited(self, authenticated_client, offerer):
@@ -3765,7 +3765,7 @@ class ResendInvitationTest(PostEndpointHelper):
         assert mails_testing.outbox[0]["To"] == invitation.email
         assert (
             mails_testing.outbox[0]["template"]
-            == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_NEW_USER.value.__dict__
+            == brevo_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_NEW_USER.value.__dict__
         )
 
     def test_resend_invitation_with_matching_user(self, legit_user, authenticated_client, offerer):
@@ -3784,7 +3784,7 @@ class ResendInvitationTest(PostEndpointHelper):
         assert mails_testing.outbox[0]["To"] == invited_email
         assert (
             mails_testing.outbox[0]["template"]
-            == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_EXISTING_VALIDATED_USER_EMAIL.value.__dict__
+            == brevo_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_EXISTING_VALIDATED_USER_EMAIL.value.__dict__
         )
 
     def test_can_not_resend_accepted_invitation(self, authenticated_client, offerer):
@@ -4096,8 +4096,7 @@ class BatchOffererAttachmentValidateTest(PostEndpointHelper):
         }
         for mail in mails_testing.outbox:
             assert (
-                mail["template"]
-                == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_VALIDATION.value.__dict__
+                mail["template"] == brevo_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_VALIDATION.value.__dict__
             )
 
 
@@ -4216,10 +4215,7 @@ class BatchOffererAttachmentRejectTest(PostEndpointHelper):
             user_offerer.user.email for user_offerer in user_offerers
         }
         for mail in mails_testing.outbox:
-            assert (
-                mail["template"]
-                == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_REJECTION.value.__dict__
-            )
+            assert mail["template"] == brevo_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_REJECTION.value.__dict__
 
 
 class ListOffererTagsTest(GetEndpointHelper):
@@ -4667,7 +4663,7 @@ class CreateIndividualOffererSubscriptionTest(PostEndpointHelper):
         assert mails_testing.outbox[0]["To"] == user_offerer.user.email
         assert (
             mails_testing.outbox[0]["template"]
-            == sendinblue_template_ids.TransactionalEmail.REMINDER_OFFERER_INDIVIDUAL_SUBSCRIPTION.value.__dict__
+            == brevo_template_ids.TransactionalEmail.REMINDER_OFFERER_INDIVIDUAL_SUBSCRIPTION.value.__dict__
         )
 
     def test_create_if_individual_subscription_already_exists(self, authenticated_client):
@@ -4698,7 +4694,7 @@ class CreateIndividualOffererSubscriptionTest(PostEndpointHelper):
         assert mails_testing.outbox[0]["To"] == user_offerer.user.email
         assert (
             mails_testing.outbox[0]["template"]
-            == sendinblue_template_ids.TransactionalEmail.REMINDER_OFFERER_INDIVIDUAL_SUBSCRIPTION.value.__dict__
+            == brevo_template_ids.TransactionalEmail.REMINDER_OFFERER_INDIVIDUAL_SUBSCRIPTION.value.__dict__
         )
 
 

@@ -109,7 +109,7 @@ class UserAutomationsTest:
             results = user_automations.get_users_ex_beneficiary()
             assert sorted([user.email for user in results]) == [user.email for user in users[1:4] + [users[6]]]
 
-    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts")
+    @patch("pcapi.core.external.brevo.brevo_python.api.contacts_api.ContactsApi.import_contacts")
     def test_user_ex_beneficiary_automation(self, mock_import_contacts):
         users = self._create_users_with_deposits()
 
@@ -159,7 +159,7 @@ class UserAutomationsTest:
             results = user_automations.get_email_for_users_created_one_year_ago_per_month()
             assert sorted(results) == sorted([user.email for user in matching_users])
 
-    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts")
+    @patch("pcapi.core.external.brevo.brevo_python.api.contacts_api.ContactsApi.import_contacts")
     def test_users_nearly_one_year_with_pass_automation(self, mock_import_contacts):
         users_factories.UserFactory(email="fabien+test@example.net", dateCreated=datetime(2033, 8, 31))
         users_factories.UserFactory(email="pierre+test@example.net", dateCreated=datetime(2033, 9, 1))
@@ -198,18 +198,18 @@ class UserAutomationsTest:
             assert results == [users[2]]
 
     @patch("pcapi.core.external.attributes.api.update_batch_user")
-    @patch("pcapi.core.external.attributes.api.update_sendinblue_user")
-    def test_users_whose_credit_expired_today_automation(self, mock_update_sendinblue, mock_update_batch):
+    @patch("pcapi.core.external.attributes.api.update_brevo_user")
+    def test_users_whose_credit_expired_today_automation(self, mock_update_brevo, mock_update_batch):
         users = self._create_users_with_deposits()
 
         with time_machine.travel("2034-11-02 05:00:00"):
             user_automations.users_whose_credit_expired_today_automation()
 
-        mock_update_sendinblue.assert_called_once()
+        mock_update_brevo.assert_called_once()
         mock_update_batch.assert_called_once()
 
-        assert mock_update_sendinblue.call_args.args[0] == users[2].email
-        assert mock_update_sendinblue.call_args.args[1].is_former_beneficiary is True
+        assert mock_update_brevo.call_args.args[0] == users[2].email
+        assert mock_update_brevo.call_args.args[1].is_former_beneficiary is True
 
         assert mock_update_batch.call_args.args[0] == users[2].id
         assert mock_update_batch.call_args.args[1].is_former_beneficiary is True

@@ -152,7 +152,7 @@ FRAUD_EMAIL_ADDRESS = os.environ.get("FRAUD_EMAIL_ADDRESS", "")
 DEV_EMAIL_ADDRESS = os.environ.get("DEV_EMAIL_ADDRESS", "")
 END_TO_END_TESTS_EMAIL_ADDRESS = os.environ.get("END_TO_END_TESTS_EMAIL_ADDRESS", "")
 
-# When load testing, override `EMAIL_BACKEND` to avoid going over SendinBlue quota:
+# When load testing, override `EMAIL_BACKEND` to avoid going over Brevo quota:
 # EMAIL_BACKEND="pcapi.core.mails.backends.logger.LoggerBackend"
 EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND")
 
@@ -202,7 +202,7 @@ PUSH_NOTIFICATION_BACKEND = os.environ.get("PUSH_NOTIFICATION_BACKEND", "LoggerB
 BEAMER_API_KEY = secrets_utils.get("BEAMER_API_KEY", "")
 BEAMER_BACKEND = os.environ.get("BEAMER_BACKEND", "LoggerBackend")
 
-# BREVO (ex: SENDINBLUE)
+# BREVO
 BREVO_WEBHOOK_SECRET = secrets_utils.get("BREVO_WEBHOOK_SECRET", "")
 BREVO_NUMBER_OF_OFFERS_IN_EXTERNAL_FEED = int(os.environ.get("BREVO_NUMBER_OF_OFFERS_IN_EXTERNAL_FEED", 5))
 SENDINBLUE_API_KEY = secrets_utils.get("SENDINBLUE_API_KEY", "")

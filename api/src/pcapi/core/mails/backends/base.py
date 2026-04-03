@@ -13,7 +13,7 @@ class BaseBackend:
     ) -> None:
         raise NotImplementedError()
 
-    def create_contact(self, payload: serialization.UpdateSendinblueContactRequest) -> None:
+    def create_contact(self, payload: serialization.UpdateBrevoContactRequest) -> None:
         raise NotImplementedError()
 
     def delete_contact(self, contact_email: str) -> None:

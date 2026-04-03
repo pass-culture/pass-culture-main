@@ -1,6 +1,6 @@
 from pcapi.core import mails
 from pcapi.core.mails import models
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 
 
 def send_reminder_offer_creation_j5_to_pro(venue_booking_email: str) -> None:

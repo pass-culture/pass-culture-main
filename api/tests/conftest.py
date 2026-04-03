@@ -186,7 +186,7 @@ def clear_outboxes():
         mails_testing.reset_outbox()
         batch_testing.reset_requests()
         search_testing.reset_search_store()
-        users_testing.reset_sendinblue_requests()
+        users_testing.reset_brevo_requests()
         users_testing.reset_zendesk_requests()
         users_testing.reset_zendesk_sell_requests()
         adage_api_testing.reset_requests()

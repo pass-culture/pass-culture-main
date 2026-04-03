@@ -2127,7 +2127,7 @@ class OffersStocksV2Test:
 
 
 class SendOfferWebAppLinkTest:
-    def test_sendinblue_send_offer_webapp_link_by_email(self, client):
+    def test_brevo_send_offer_webapp_link_by_email(self, client):
         """
         Test that email can be sent with SiB and that the link does not
         use the redirection domain (not activated by default)

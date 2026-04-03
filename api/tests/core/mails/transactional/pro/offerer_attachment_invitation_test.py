@@ -8,7 +8,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.token as token_utils
 import pcapi.core.users.factories as users_factories
 from pcapi import settings
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 
 
 @pytest.mark.usefixtures("db_session")

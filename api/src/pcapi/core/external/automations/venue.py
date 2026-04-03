@@ -7,7 +7,7 @@ from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.external.sendinblue import add_contacts_to_list
+from pcapi.core.external.brevo import add_contacts_to_list
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db

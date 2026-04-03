@@ -53,7 +53,7 @@ def log_cron_with_transaction(func: typing.Callable) -> typing.Callable:
         try:
             result = cron_require_feature(FeatureToggle.ENABLE_ALL_CRON)(func)(*args, **kwargs)
             # Check if there is something to commit. This avoids idle-in-transaction timeout exception in cron tasks
-            # which takes long time and do not write anything in database (e.g. sendinblue automation tasks only read
+            # which takes long time and do not write anything in database (e.g. Brevo automation tasks only read
             # database and often take more than one hour in production).
             if db.session.dirty:
                 db.session.commit()
