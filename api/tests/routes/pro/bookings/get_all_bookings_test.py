@@ -271,6 +271,28 @@ class Returns200Test:
         assert response.json["pages"] == 1
         assert response.json["total"] == 2
 
+    def test_should_return_duo_booking_twice(self, client: Any):
+        duo_booking = bookings_factories.UsedBookingFactory(
+            dateCreated=datetime(2020, 8, 11, 12, 0, 0),
+            quantity=2,
+        )
+        pro_user = users_factories.ProFactory(email="pro@example.com")
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=duo_booking.offerer)
+        offerer_id = duo_booking.offerer.id
+        client = client.with_session_auth(pro_user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(
+                f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&offererId={offerer_id}"
+            )
+            assert response.status_code == 200
+
+        assert response.json["page"] == 1
+        assert response.json["pages"] == 1
+        assert response.json["total"] == 2
+        assert len(response.json["bookingsRecap"]) == 2
+        assert response.json["bookingsRecap"][0] == response.json["bookingsRecap"][1]
+        assert response.json["bookingsRecap"][0]["bookingIsDuo"] is True
+
     def test_user_can_filter_bookings_by_offerer(self, client):
         pro_user = users_factories.ProFactory()
         offerer1 = offerers_factories.UserOffererFactory(user=pro_user).offerer

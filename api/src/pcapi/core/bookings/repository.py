@@ -654,7 +654,10 @@ def _get_filtered_booking_pro(
 
 
 def _duplicate_booking_when_quantity_is_two(bookings_recap_query: sa_orm.Query) -> sa_orm.Query:
-    return bookings_recap_query.union_all(bookings_recap_query.filter(models.Booking.quantity == DUO_QUANTITY))
+    duplicated_booking_rows = (
+        sa.func.generate_series(1, models.Booking.quantity).table_valued("duplicate_index").lateral()
+    )
+    return bookings_recap_query.join(duplicated_booking_rows, sa.true())
 
 
 def _get_booking_status(status: models.BookingStatus, is_confirmed: bool) -> str:
