@@ -38,6 +38,8 @@ from . import validation
 
 logger = logging.getLogger(__name__)
 
+# dumb comment to trigger CI
+
 EXTERNAL_BOOKINGS_FF = (
     feature.FeatureToggle.DISABLE_BOOST_EXTERNAL_BOOKINGS,
     feature.FeatureToggle.DISABLE_CDS_EXTERNAL_BOOKINGS,

@@ -1,0 +1,560 @@
+name: "3 [on_workflow/API] Tests"
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        type: string
+        required: false
+        default: pcapi-tests
+      tag:
+        type: string
+        required: true
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+      GCP_EHP_SERVICE_ACCOUNT:
+        required: true
+
+defaults:
+  run:
+    working-directory: api
+
+jobs:
+  quality-checks:
+    name: "Quality checks"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: "Compute docker image name:tag"
+        id: compute-image-name
+        env:
+          IMAGE: ${{ inputs.image }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          echo "image_name=$IMAGE:$TAG" | tee -a "${GITHUB_OUTPUT}"
+          echo "::notice:: Running tests api with $IMAGE:$TAG"
+      - name: "Download artifact"
+        if: ${{ inputs.tag != 'latest' }}
+        uses: actions/download-artifact@v6
+        with:
+          name: ${{ inputs.image }}-${{ inputs.tag }}.tar
+          path: ${{ runner.temp }}
+      - name: "Docker load artifact."
+        if: ${{ inputs.tag != 'latest' }}
+        env:
+          IMAGE: ${{ inputs.image }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          docker load --input "${{ runner.temp }}/$IMAGE-$TAG.tar"
+      - name: "Authentification to Google"
+        uses: "google-github-actions/auth@v3"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: "Get Secret"
+        id: secrets
+        uses: "google-github-actions/get-secretmanager-secrets@v3"
+        with:
+          secrets: |-
+            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
+      - name: "OpenID Connect Authentication"
+        id: openid-auth
+        uses: "google-github-actions/auth@v3"
+        with:
+          create_credentials_file: false
+          token_format: "access_token"
+          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER  }}
+          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      - name: "Docker login"
+        id: docker-login
+        uses: "docker/login-action@v3"
+        with:
+          registry: "europe-west1-docker.pkg.dev"
+          username: "oauth2accesstoken"
+          password: "${{ steps.openid-auth.outputs.access_token }}"
+      - name: "Show installed Python packages"
+        run: |
+          docker run \
+            --entrypoint sh \
+            "${{ steps.compute-image-name.outputs.image_name }}" \
+            -c 'pip freeze'
+      - name: "Run mypy"
+        run: |
+          docker run \
+            --entrypoint sh \
+            "${{ steps.compute-image-name.outputs.image_name }}" \
+            -c 'mypy src'
+
+  ruff-checks:
+    name: "Ruff"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: "Run ruff linter"
+        uses: astral-sh/ruff-action@v3
+        with:
+          src: "./api"
+      - name: "Run ruff formatter"
+        if: always() && !cancelled()
+        uses: astral-sh/ruff-action@v3
+        with:
+          args: "format --check --diff"
+          src: "./api"
+
+  tests-database:
+    name: "Test database schema"
+    env:
+      RUN_ENV: tests
+      DATABASE_URL_TEST: postgresql://pytest:pytest@postgres:5432/pass_culture
+      REDIS_URL: redis://redis:6379
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:15-3.4-alpine
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          POSTGRES_USER: pytest
+          POSTGRES_PASSWORD: pytest
+          POSTGRES_DB: pass_culture
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # On a feature branch, we must fetch the whole history to
+          # find the common ancestor with master (see `git merge-base`
+          # below). On master, the latest commit is enough.
+          fetch-depth: ${{ github.ref == 'master' && 1 || 0 }}
+          # By default, on a feature branch, the GitHub Action checks
+          # out a merge commit of the pull request (i.e. an artificial
+          # commit that would be the result of the merge of the
+          # feature branch on top of the master branch). We don't want
+          # that, we want the latest commit of the branch.
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      - name: "Checkout HEAD (on master) or the parent of the first commit (pull request)"
+        env:
+          GITHUB_REF: ${{ github.ref }}
+        run: |
+          if [[ "$GITHUB_REF" == "master" ]];
+          then SHA="HEAD"
+          else
+            git fetch origin master
+            SHA="$(git merge-base HEAD origin/master)"
+          fi
+          git checkout "${SHA}"
+      - name: "Get base alembic pre and post heads"
+        id: "base_heads"
+        run: |
+          pre="$(head --lines 1 alembic_version_conflict_detection.txt | cut --fields 1 --delimiter " ")"
+          post="$(tail --lines 1 alembic_version_conflict_detection.txt | cut --fields 1 --delimiter " ")"
+          echo "pre=$pre" >> "$GITHUB_OUTPUT"
+          echo "post=$post" >> "$GITHUB_OUTPUT"
+      - name: "Compute docker image name:tag"
+        id: compute-image-name
+        env:
+          IMAGE: ${{ inputs.image }}
+          TAG: ${{ inputs.tag }}
+        run: echo "image_name=$IMAGE:$TAG" | tee -a "${GITHUB_OUTPUT}"
+      - name: "Download artifact"
+        if: ${{ inputs.tag != 'latest' }}
+        uses: actions/download-artifact@v6
+        with:
+          name: ${{ inputs.image }}-${{ inputs.tag }}.tar
+          path: ${{ runner.temp }}
+      - name: "Docker load artifact."
+        if: ${{ inputs.tag != 'latest' }}
+        env:
+          IMAGE: ${{ inputs.image }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          docker load --input "${{ runner.temp }}/$IMAGE-$TAG.tar"
+      - name: "Authentification to Google"
+        uses: "google-github-actions/auth@v3"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: "Get Secret"
+        id: secrets
+        uses: "google-github-actions/get-secretmanager-secrets@v3"
+        with:
+          secrets: |-
+            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
+      - name: "OpenID Connect Authentication"
+        id: openid-auth
+        uses: "google-github-actions/auth@v3"
+        with:
+          create_credentials_file: false
+          token_format: "access_token"
+          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER  }}
+          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      - name: "Docker login"
+        id: docker-login
+        uses: "docker/login-action@v3"
+        with:
+          registry: "europe-west1-docker.pkg.dev"
+          username: "oauth2accesstoken"
+          password: "${{ steps.openid-auth.outputs.access_token }}"
+      - name: "Check for alembic multiple heads"
+        run: |
+          docker run \
+            --entrypoint bash \
+            "${{ steps.compute-image-name.outputs.image_name }}" \
+            -c '
+              LINE_COUNT="$(wc -l <<< "$(alembic heads)")"
+              echo "Found "$LINE_COUNT" head(s)"
+              if [ "${LINE_COUNT}" -ne 2 ]; then echo "There must be two heads";exit 1;fi
+            '
+      - name: "Check database and model are aligned"
+        run: |
+          docker run \
+            --network "${{ job.container.network }}" \
+            --env RUN_ENV --env DATABASE_URL_TEST \
+            --entrypoint bash \
+            ${{ steps.compute-image-name.outputs.image_name }} \
+            -c '
+              set -e
+              flask install_postgres_extensions
+              alembic upgrade pre@head
+              alembic upgrade post@head
+              flask install_data
+              alembic check
+            '
+      - name: "Check that downgrade scripts are correctly written"
+        run: |
+          docker run \
+            --network "${{ job.container.network }}" \
+            --env RUN_ENV --env DATABASE_URL_TEST \
+            --entrypoint bash \
+            ${{ steps.compute-image-name.outputs.image_name }} \
+            -c '
+              set -e
+              alembic downgrade post@f460dc2c9f93
+              alembic downgrade pre@f460dc2c9f93
+              alembic upgrade pre@head
+              alembic upgrade post@head
+            '
+      - name: "Lint migration upgrades"
+        run: |
+          docker run \
+            --network "${{ job.container.network }}" \
+            --env RUN_ENV --env DATABASE_URL_TEST \
+            --entrypoint bash \
+            ${{ steps.compute-image-name.outputs.image_name }} \
+            -c '
+              set -uo pipefail
+              status_code=0
+              alembic upgrade ${{ steps.base_heads.outputs.pre }}:pre@head --sql |
+                sed "/squawk:ignore-next-statement/,/;\$/d" |
+                squawk --config .squawk.toml ||
+                status_code=1
+              alembic upgrade ${{ steps.base_heads.outputs.post }}:post@head --sql |
+                sed "/squawk:ignore-next-statement/,/;\$/d" |
+                squawk --config .squawk.toml ||
+                status_code=1
+              YELLOW="\033[0;33m"
+              RESET="\033[0m"
+              if [ ${status_code} -ne 0 ];then
+                echo -e "${YELLOW}Hint: An SQL statement can be ignored if preceded by \`-- squawk:ignore-next-statement\`.${RESET}" 
+                echo -e "${YELLOW}See https://github.com/pass-culture/pass-culture-main/blob/master/api/src/pcapi/alembic/CONTRIBUTING.md#lint${RESET}";
+              fi
+              exit $status_code
+            '
+      - name: "Lint migration downgrades"
+        run: |
+          docker run \
+            --network "${{ job.container.network }}" \
+            --env RUN_ENV --env DATABASE_URL_TEST \
+            --entrypoint bash \
+            ${{ steps.compute-image-name.outputs.image_name }} \
+            -c '
+              set -uo pipefail
+              status_code=0
+              alembic downgrade pre@head:${{ steps.base_heads.outputs.pre }} --sql |
+                sed "/squawk:ignore-next-statement/,/;\$/d" |
+                squawk --config .squawk.toml ||
+                status_code=1
+              alembic downgrade post@head:${{ steps.base_heads.outputs.post }} --sql |
+                sed "/squawk:ignore-next-statement/,/;\$/d" |
+                squawk --config .squawk.toml ||
+                status_code=1
+              exit $status_code
+            '
+
+
+  restore-test-durations:
+    name: Restore pytest durations
+    runs-on: ubuntu-latest
+    outputs:
+      # This output will be used to know if we had a cache hit (exact match or not), or no cache hit at all.
+      # See documentation about the `cache-hit` output:
+      # https://github.com/actions/cache/blob/main/README.md#outputs
+      # > cache-hit - A string value to indicate an exact match was found for the key.
+      # > If there's a cache hit, this will be 'true' or 'false' to indicate if there's an exact match for key.
+      # > If there's a cache miss, this will be an empty string.
+      restored: ${{ steps.restore-test-durations.outputs.cache-hit == '' && 'false' || 'true' }}
+      date: ${{ steps.get-date.outputs.date }}
+    steps:
+      # http://man7.org/linux/man-pages/man1/date.1.html
+      - name: Get Date
+        working-directory: /
+        id: get-date
+        run: |
+          echo "date=$(/bin/date -u "+%Y%m%d")" >> "$GITHUB_OUTPUT"
+        shell: bash
+
+      # It's mandatory to use the exact same path when saving/restoring cache, otherwise it won't work
+      # (the same key is not enough - cf https://github.com/actions/cache/blob/main/README.md#cache-version).
+      - name: Restore test durations
+        id: restore-test-durations
+        uses: actions/cache/restore@v5
+        with:
+          path: /tests/.test_durations
+          key: tests-durations-${{ steps.get-date.outputs.date }}
+          restore-keys: |
+            tests-durations-${{ steps.get-date.outputs.date }}-
+            tests-durations-
+          fail-on-cache-miss: false
+
+      # Then we upload the restored test durations as an artifact. This way, each matrix job will download
+      # it when it starts. When a matrix job is manually retried, it will also reuse the artifact (to
+      # retry the exact same tests, even if the cache has been updated in the meantime).
+      - name: Upload test durations
+        if: steps.restore-test-durations.outputs.cache-hit != ''
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: test-durations-before
+          path: /tests/.test_durations
+
+  pytest:
+    needs: restore-test-durations
+    name: "Pytest ${{ matrix.pytest_args.description }} : ${{ matrix.group }}/4"
+    env:
+      RUN_ENV: tests
+      DATABASE_URL_TEST: postgresql://pytest:pytest@postgres:5432/pass_culture
+      REDIS_URL: redis://redis:6379
+      # Remove this environment variable when SQLAlchemy 2.0
+      # is successfully bump
+      SQLALCHEMY_WARN_20: 1
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        pytest_args:
+          - collection: "--ignore=tests/routes/backoffice"
+            description: "(without BO)"
+          - collection: "tests/routes/backoffice"
+            description: "(only BO)"
+        group: [1, 2, 3, 4]
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      postgres:
+        image: postgis/postgis:15-3.4-alpine
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          POSTGRES_USER: pytest
+          POSTGRES_PASSWORD: pytest
+          POSTGRES_DB: pass_culture
+    steps:
+      - uses: actions/checkout@v6
+      - name: "Compute docker image name:tag"
+        id: compute-image-name
+        env:
+          IMAGE: ${{ inputs.image }}
+          TAG: ${{ inputs.tag }}
+        run: echo "image_name=$IMAGE:$TAG" | tee -a "${GITHUB_OUTPUT}"
+      - name: "Download artifact"
+        if: ${{ inputs.tag != 'latest' }}
+        uses: actions/download-artifact@v6
+        with:
+          name: ${{ inputs.image }}-${{ inputs.tag }}.tar
+          path: ${{ runner.temp }}
+      - name: "Docker load artifact."
+        if: ${{ inputs.tag != 'latest' }}
+        env:
+          IMAGE: ${{ inputs.image }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          docker load --input "${{ runner.temp }}/$IMAGE-$TAG.tar"
+      - name: "Authentification to Google"
+        uses: "google-github-actions/auth@v3"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: "Get Secret"
+        id: secrets
+        uses: "google-github-actions/get-secretmanager-secrets@v3"
+        with:
+          secrets: |-
+            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
+      - name: "OpenID Connect Authentication"
+        id: openid-auth
+        uses: "google-github-actions/auth@v3"
+        with:
+          create_credentials_file: false
+          token_format: "access_token"
+          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER  }}
+          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      - name: "Docker login"
+        id: docker-login
+        uses: "docker/login-action@v3"
+        with:
+          registry: "europe-west1-docker.pkg.dev"
+          username: "oauth2accesstoken"
+          password: "${{ steps.openid-auth.outputs.access_token }}"
+      - name: "Setup database"
+        run: |
+          docker run \
+            --network "${{ job.container.network }}" \
+            --env RUN_ENV --env DATABASE_URL_TEST \
+            --entrypoint bash \
+            "${{ steps.compute-image-name.outputs.image_name }}" \
+            -c '
+              set -e
+              flask install_postgres_extensions
+              alembic upgrade pre@head
+              alembic upgrade post@head
+              flask install_data
+            '
+
+      - name: "Mount a Volume with pcapi rights"
+        run: |
+          docker run \
+            --volume ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests \
+            --user 0 \
+            --entrypoint bash \
+            "${{ steps.compute-image-name.outputs.image_name }}" \
+            -c '
+              echo "Changing owner and group fort directory test"
+              chown -R pcapi:pcapi /tests
+            '
+
+      # These two steps will be executed only when there IS a cache hit (exact match or not).
+      # When a matrix job is retried, it will reuse the same artifact to execute the exact same split.
+      - name: Download test durations
+        if: needs.restore-test-durations.outputs.restored == 'true'
+        uses: actions/download-artifact@v6
+        with:
+          name: test-durations-before
+
+      - name: Use cached test durations
+        if: needs.restore-test-durations.outputs.restored == 'true'
+        run: mv .test_durations "${{ runner.workspace }}/pass-culture-main/api/tests/.test_durations"
+
+        # When running pytest, we write the new test durations using options `--store-durations --clean-durations`.
+        # Option `--clean-durations` is undocumented but you can check its implementation here:
+        # https://github.com/jerry-git/pytest-split/blob/fb9af7e0122c18a96a7c01ca734c4ab01027f8d9/src/pytest_split/plugin.py#L68-L76
+        # > Removes the test duration info for tests which are not present while running the suite with > '--store-durations'.
+      - name: "Run pytest"
+        run: |
+          docker run \
+            --volume ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests \
+            --network "${{ job.container.network }}" \
+            --entrypoint bash \
+            --env RUN_ENV --env DATABASE_URL_TEST --env REDIS_URL --env SQLALCHEMY_WARN_20 \
+            "${{ steps.compute-image-name.outputs.image_name }}" \
+            -c '
+              pytest ${{ matrix.pytest_args.collection }} \
+              --splits 4 --group ${{ matrix.group }} \
+              --store-durations --durations-path /tests/.test_durations --clean-durations \
+              --durations=10 --junitxml="/tests/junit.xml" \
+              -q --color=yes
+            '
+
+      - name: Upload test durations
+        if: github.run_attempt == 1
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: "test-durations-after-partial-${{ matrix.pytest_args.description }}-${{ matrix.group }}"
+          path: "${{ runner.workspace }}/pass-culture-main/api/tests/.test_durations"
+          if-no-files-found: warn
+          include-hidden-files: true
+
+      - name: "Publish Test Report"
+        uses: mikepenz/action-junit-report@v6
+        if: always() # always run even if the previous step fails
+        with:
+          report_paths: "${{ runner.workspace }}/pass-culture-main/api/tests/junit.xml"
+          check_name: "Pytest Report"
+          fail_on_failure: false
+          skip_success_summary: true
+
+  cache-test-durations:
+    name: Cache test durations
+    needs: pytest
+    if: github.run_attempt == 1 && (success() || failure())
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all partial test durations
+        uses: actions/download-artifact@v6
+        with:
+          pattern: test-durations-after-partial-*
+          path: ${{ runner.temp }}
+
+      # This step regroups the 8 partial files and sorts keys alphabetically
+      - name: Merge all partial test durations
+        # overrides workflow default
+        working-directory: /
+        run: |
+          jq -s 'add' ${{ runner.temp }}/test-durations-after-partial-*/.test_durations \
+          | jq 'to_entries | sort_by(.key) | from_entries' \
+          > ${{ runner.temp }}/.test_durations
+
+      # This step uploads the final file as an artifact.
+      # We can download it from the GitHub GUI, and we would then commit it if we implemented a fallback mechanism
+      - name: Upload final test durations
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: test-durations-after
+          path: ${{ runner.temp }}/.test_durations
+          if-no-files-found: warn
+          include-hidden-files: true
+
+      - name: Get Date
+        working-directory: /
+        id: get-date
+        run: |
+          echo "date=$(/bin/date -u "+%Y%m%d")" >> "$GITHUB_OUTPUT"
+        shell: bash
+
+      # Finally, we cache the new test durations. This file will be restored in next CI execution
+      # (see step "Restore test durations" above).
+      - name: Cache final test durations
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ runner.temp }}/.test_durations
+          key: tests-durations-${{ steps.get-date.outputs.date }}-${{ github.run_id }}
+
+  notify-failure:
+    name: "Notification of any check failure"
+    needs: [quality-checks, ruff-checks, tests-database, pytest]
+    if: always() && github.ref == 'refs/heads/master' && contains(needs.*.result, 'failure')
+    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    with:
+      channel: ${{vars.SLACK_CI_NOTIFICATIONS_CHANNEL_ID}}
+      color: "#A30002"  # red
+      message: ":github-failure: <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|Tests api> a échoué sur `master`"
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
