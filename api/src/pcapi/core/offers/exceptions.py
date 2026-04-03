@@ -196,11 +196,6 @@ class OfferHasAlreadyAnActiveHeadlineOffer(Exception):
         super().__init__("headlineOffer", "This offer is already an active headline offer")
 
 
-class OffererCanNotHaveHeadlineOffer(Exception):
-    def __init__(self) -> None:
-        super().__init__("headlineOffer", "This offerer can not have headline offers")
-
-
 class VenueHasAlreadyAnActiveHeadlineOffer(Exception):
     def __init__(self) -> None:
         super().__init__("headlineOffer", "This venue has already an active headline offer")

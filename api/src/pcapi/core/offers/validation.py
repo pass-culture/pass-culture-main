@@ -885,29 +885,6 @@ class OfferValidationError(Exception):
     msg = "Invalid"
 
 
-def check_offerer_is_eligible_for_headline_offers(offerer_id: int) -> None:
-    # FIXME: ogeber 03.01.2025 - when venue regularisation is done, we can change this validation by
-    # raising the OffererCanNotHaveHeadlineOffer only if
-    # db.session.query(offerers_models.Venue).filter(
-    #     offerers_models.Venue.managingOffererId == offerer_id
-    #     offerers_models.Venue.isPermanent.is_(True)
-    # ).count()
-    # is superior to 1 (as permanent & virtual venues won't exist anymore)
-
-    # FIXME 2: ogeber 12.03.2026 - while doing the previous fixme, we should also
-    # take care of the move_offer: having headline offer on offerer that has several
-    # venues, we can move offer having a headline offer. We have decided that the
-    # business rule for that will be: remove the headline offer if we move offer's venue
-
-    venues = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.managingOffererId == offerer_id).all()
-
-    permanent_venues = [v for v in venues if v.isPermanent and not v.isVirtual]
-    non_permanent_venues = [v for v in venues if not v.isPermanent and not v.isVirtual]
-
-    if len(permanent_venues) != 1 or len(non_permanent_venues) > 0:
-        raise exceptions.OffererCanNotHaveHeadlineOffer()
-
-
 def check_offer_is_eligible_to_be_headline(offer: models.Offer) -> None:
     if offer.status != OfferStatus.ACTIVE:
         raise exceptions.InactiveOfferCanNotBeHeadline()

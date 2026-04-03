@@ -14,10 +14,9 @@ export function HeadlineOffer() {
   const { logEvent } = useAnalytics()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
-  const { isHeadlineOfferAllowedForOfferer, headlineOffer } =
-    useHeadlineOfferContext()
+  const { headlineOffer } = useHeadlineOfferContext()
 
-  if (!isHeadlineOfferAllowedForOfferer || !headlineOffer) {
+  if (!headlineOffer) {
     return
   }
 

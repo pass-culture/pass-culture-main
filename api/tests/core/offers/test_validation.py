@@ -986,25 +986,7 @@ class CheckPublicationDateTest:
             assert validation.check_publication_date(publication_date) is None
 
 
-class CheckOffererIsEligibleForHeadlineOffersTest:
-    def test_check_offerer_is_eligible_for_headline_offers(self):
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.VenueFactory(isPermanent=True, managingOfferer=offerer)
-
-        assert validation.check_offerer_is_eligible_for_headline_offers(offerer.id) is None
-
-        another_venue = offerers_factories.VenueFactory(isPermanent=False, managingOfferer=offerer)
-        with pytest.raises(exceptions.OffererCanNotHaveHeadlineOffer) as exc:
-            validation.check_offerer_is_eligible_for_headline_offers(offerer.id)
-            msg = "This offerer can not have headline offers"
-            assert exc.value.errors["headlineOffer"] == [msg]
-
-        another_venue.isPermanent = True
-        with pytest.raises(exceptions.OffererCanNotHaveHeadlineOffer) as exc:
-            validation.check_offerer_is_eligible_for_headline_offers(offerer.id)
-            msg = "This offerer can not have headline offers"
-            assert exc.value.errors["headlineOffer"] == [msg]
-
+class CheckOfferIsEligibleForHeadlineOffersTest:
     def test_check_offer_is_eligible_to_be_headline(self):
         offerer = offerers_factories.OffererFactory()
         permanent_venue = offerers_factories.VenueFactory(isPermanent=True, managingOfferer=offerer)
@@ -1014,7 +996,6 @@ class CheckOffererIsEligibleForHeadlineOffersTest:
         offer_without_image = offers_factories.OfferFactory(venue=permanent_venue)
         offers_factories.StockFactory(offer=offer_without_image)
 
-        assert validation.check_offerer_is_eligible_for_headline_offers(offerer.id) is None
         assert validation.check_offer_is_eligible_to_be_headline(offer) is None
 
         with pytest.raises(exceptions.OfferWithoutImageCanNotBeHeadline) as exc:
