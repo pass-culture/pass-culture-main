@@ -119,7 +119,38 @@ export const getValidationSchema = () =>
         return true
       }),
     quantityPerPriceCategories: quantityPerPriceCategoriesSchema,
-    bookingLimitDateInterval: yup.number().required().nullable(),
+    bookingLimitDateInterval: yup
+      .number()
+      .required()
+      .nullable()
+      .test(
+        'isBookingLimitValid',
+        'La date limite de réservation est dans le passé',
+        function (value) {
+          const { startingDate, beginningTimes } = this.parent
+          if (
+            value === null ||
+            value === undefined ||
+            !isDateValid(startingDate)
+          ) {
+            return true
+          }
+
+          const sortedTimes = beginningTimes
+            .map((item: { beginningTime: string }) => item.beginningTime)
+            .sort((a: string, b: string) => a.localeCompare(b))
+
+          const earliestTime = sortedTimes[0]
+          const startDateTime = new Date(`${startingDate}T${earliestTime}`)
+
+          const limitTimestamp =
+            startDateTime.getTime() - value * 24 * 60 * 60 * 1000
+          const limitDate = new Date(limitTimestamp)
+
+          const now = new Date()
+          return limitDate > now
+        }
+      ),
     monthlyOption: yup
       .string<MonthlyOption>()
       .nullable()
