@@ -17,8 +17,6 @@ from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v1.serialization.bookings import BookOfferRequest
 from pcapi.routes.native.v1.serialization.bookings import BookOfferResponse
 from pcapi.routes.native.v1.serialization.bookings import BookingDisplayStatusRequest
-from pcapi.routes.native.v1.serialization.bookings import BookingReponse
-from pcapi.routes.native.v1.serialization.bookings import BookingsResponse
 from pcapi.serialization.decorator import spectree_serialize
 
 from .. import blueprint
@@ -105,22 +103,6 @@ def book_offer(body: BookOfferRequest) -> BookOfferResponse:
     except external_bookings_exceptions.ExternalBookingShowDoesNotExistError:
         raise ApiErrors({"code": "PROVIDER_SHOW_DOES_NOT_EXIST"})
     return BookOfferResponse(booking_id=booking.id)
-
-
-@blueprint.native_route("/bookings", methods=["GET"])
-@spectree_serialize(api=blueprint.api, response_model=BookingsResponse)
-@authenticated_and_active_user_required
-def get_bookings() -> BookingsResponse:
-    individual_bookings = bookings_api.get_individual_bookings(current_user)
-    ended_bookings, ongoing_bookings = bookings_api.classify_and_sort_bookings(individual_bookings)
-
-    return BookingsResponse(
-        ended_bookings=[BookingReponse.build(booking) for booking in ended_bookings],
-        ongoing_bookings=[BookingReponse.build(booking) for booking in ongoing_bookings],
-        hasBookingsAfter18=any(
-            booking for booking in individual_bookings if bookings_api.is_booking_by_18_user(booking)
-        ),
-    )
 
 
 @blueprint.native_route("/bookings/<int:booking_id>/cancel", methods=["POST"])
