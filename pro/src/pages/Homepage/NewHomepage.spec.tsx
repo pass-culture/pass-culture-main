@@ -66,6 +66,12 @@ vi.mock(
   })
 )
 
+vi.mock('./components/EditoCard/EditoCard', () => ({
+  EditoCard: () => (
+    <div>Comment valoriser vos offres auprès du jeune public</div>
+  ),
+}))
+
 vi.mock('@/app/AppRouter/utils', async () => ({
   ...(await vi.importActual('@/app/AppRouter/utils')),
   isNewHomepageEnabled: () => true,

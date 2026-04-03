@@ -29,6 +29,7 @@ import {
   type TabKey,
 } from './commons/utils'
 import { CollectiveOffersCardsContainer } from './components/CollectiveOffersCardsContainer/CollectiveOffersCardsContainer'
+import { EditoCard } from './components/EditoCard/EditoCard'
 import { IncomeCard } from './components/IncomeCard/IncomeCard'
 import { NewsletterCard } from './components/NewsletterCard/NewsletterCard'
 import { OffersEmptyStateCard } from './components/OffersEmptyStateCard/OffersEmptyStateCard'
@@ -157,11 +158,10 @@ export const NewHomepage = (): JSX.Element => {
               <br />
               <b>Module statistiques</b>
             </div>
-            <div>
-              Comment valoriser vos offres auprès du jeune public ?
-              <br />
-              <b>Module Edito</b>
-            </div>
+            <EditoCard
+              canDisplayHighlights={selectedPartnerVenue.canDisplayHighlights}
+              venueId={selectedPartnerVenue.id}
+            />
           </div>
 
           <div className={styles['side']}>
