@@ -368,5 +368,19 @@ fi
 ## END CHECK SECRET LEAKS ##
 ############################
 
+#########################
+##### RUN SAST TOOL #####
+#########################
+
+cd $DIR
+
+echo "Running semgrep..."
+
+semgrep scan -q --config=p/security-audit . --baseline-commit HEAD~
+
+#############################
+##### END RUN SAST TOOL #####
+#############################
+
 # return 0-exit code
 exit 0
