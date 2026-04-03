@@ -40,8 +40,10 @@ describe('serializeExtraData', () => {
     artistOfferLinks: [],
   }
 
-  it('should correctly serialize extra data without artistsOfferLinks', () => {
-    expect(serializeExtraData(formValuesBase, false)).toStrictEqual({
+  it('should correctly serialize extra data without artistsOfferLinks (product based offer)', () => {
+    expect(
+      serializeExtraData({ ...formValuesBase, productId: 'coucou' })
+    ).toStrictEqual({
       author: 'Boris Vian',
       ean: 'any ean',
       gtl_id: 'a gtl id',
@@ -84,7 +86,7 @@ describe('serializeExtraData', () => {
       ],
     }
 
-    expect(serializeExtraData(formValues, true)).toStrictEqual({
+    expect(serializeExtraData(formValues)).toStrictEqual({
       author: 'Boris Vian, Aya Nakamura',
       ean: 'any ean',
       gtl_id: 'a gtl id',
@@ -116,7 +118,7 @@ describe('serializeExtraData', () => {
       visa: '',
     }
 
-    expect(serializeExtraData(formValues, false)).toStrictEqual({
+    expect(serializeExtraData(formValues)).toStrictEqual({
       author: null,
       ean: null,
       gtl_id: null,
@@ -142,7 +144,7 @@ describe('serializeExtraData', () => {
       ],
     }
 
-    expect(serializeExtraData(formValues, false)).toStrictEqual({
+    expect(serializeExtraData(formValues)).toStrictEqual({
       author: 'Boris Vian',
       ean: 'any ean',
       gtl_id: 'a gtl id',
@@ -185,8 +187,11 @@ describe('serializeDetailsPostData', () => {
     artistOfferLinks: [],
   }
 
-  it('should correctly serialize without artistsOfferLinks', () => {
-    const result = serializeDetailsPostData(formValuesBase, false)
+  it('should correctly serialize without artistsOfferLinks (product based offer)', () => {
+    const result = serializeDetailsPostData({
+      ...formValuesBase,
+      productId: '12',
+    })
 
     expect(result).toStrictEqual({
       name: 'Festival de la Musique',
@@ -205,7 +210,7 @@ describe('serializeDetailsPostData', () => {
         visa: '123456789',
         ean: 'any ean',
       },
-      productId: undefined,
+      productId: 12,
       audioDisabilityCompliant: true,
       mentalDisabilityCompliant: false,
       motorDisabilityCompliant: true,
@@ -236,7 +241,7 @@ describe('serializeDetailsPostData', () => {
       ],
     }
 
-    const result = serializeDetailsPostData(formValues, true)
+    const result = serializeDetailsPostData(formValues)
 
     expect(result).toMatchObject({
       extraData: {
@@ -294,8 +299,11 @@ describe('serializeDetailsPatchData', () => {
     artistOfferLinks: [],
   }
 
-  it('should correctly serialize without artistsOfferLinks', () => {
-    const result = serializeDetailsPatchData(formValuesBase, false)
+  it('should correctly serialize without artistsOfferLinks (product based offer)', () => {
+    const result = serializeDetailsPatchData({
+      ...formValuesBase,
+      productId: '12',
+    })
 
     expect(result).toStrictEqual({
       name: 'Festival de la Musique',
@@ -342,7 +350,7 @@ describe('serializeDetailsPatchData', () => {
       ],
     }
 
-    const result = serializeDetailsPatchData(formValues, true)
+    const result = serializeDetailsPatchData(formValues)
 
     expect(result).toMatchObject({
       extraData: {
