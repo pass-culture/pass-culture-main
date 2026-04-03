@@ -40,10 +40,11 @@ export function ArtistField({
     register,
     setValue,
     watch,
+    setFocus,
     formState: { errors },
   } = useFormContext<DetailsFormValues>()
 
-  const { fields, append, remove, update } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: 'artistOfferLinks',
   })
@@ -58,28 +59,19 @@ export function ArtistField({
       '`removeEntry` should not be called when there is only one entry of this type.'
     )
 
+    const currentPosInType = fieldsForType.findIndex(
+      ({ index }) => index === indexToRemove
+    )
+
     remove(indexToRemove)
-  }
 
-  const resetEntry = (indexToReset: number) => {
-    const initialEntry = {
-      artistId: null,
-      artistName: '',
-      artistType,
+    if (currentPosInType > 0) {
+      const prevFieldInType = fieldsForType[currentPosInType - 1]
+      setFocus(`artistOfferLinks.${prevFieldInType.index}.artistName`)
+    } else {
+      const nextFieldInType = fieldsForType[1]
+      setFocus(`artistOfferLinks.${nextFieldInType.index - 1}.artistName`)
     }
-
-    update(indexToReset, initialEntry)
-  }
-
-  const trashAction = (indexToRemove: number) => {
-    // If there is only one entry left for this type, we reset it instead of removing it
-    if (fieldsForType.length === 1) {
-      resetEntry(indexToRemove)
-
-      return
-    }
-
-    removeEntry(indexToRemove)
   }
 
   return (
@@ -145,24 +137,15 @@ export function ArtistField({
               />
             </div>
 
-            {!readOnly && (
+            {!readOnly && fieldsForType.length > 1 && (
               <div className={styles['button-action']}>
                 <Button
                   variant={ButtonVariant.SECONDARY}
                   color={ButtonColor.NEUTRAL}
                   icon={fullTrashIcon}
-                  iconAlt={
-                    fieldsForType.length > 1
-                      ? 'Supprimer ce champ'
-                      : 'Réinitialiser les valeurs de ce champ'
-                  }
-                  onClick={() => trashAction(index)}
+                  iconAlt={'Supprimer ce champ'}
+                  onClick={() => removeEntry(index)}
                   disabled={isTrashDisabled}
-                  tooltip={
-                    fieldsForType.length > 1
-                      ? 'Supprimer ce champ'
-                      : 'Réinitialiser les valeurs de ce champ'
-                  }
                 />
               </div>
             )}
