@@ -24,11 +24,6 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullLinkIcon from '@/icons/full-link.svg'
-import {
-  MAYBE_APP_USER_APE_CODE,
-  MAYBE_HIGHER_EDUCATION_INSTITUTION_CODE,
-} from '@/pages/Signup/SignupContainer/constants'
-import { MaybeAppUserDialog } from '@/pages/Signup/SignupContainer/MaybeAppUserDialog/MaybeAppUserDialog'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 
 import { ActionBar } from '../ActionBar/ActionBar'
@@ -42,15 +37,12 @@ interface OffererFormValues {
 }
 
 export const Offerer = (): JSX.Element => {
-  const isWelcomeCarouselEnabled = useActiveFeature('WIP_PRE_SIGNUP_INFO')
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const navigate = useNavigate()
   const { offerer, setOfferer, setInitialAddress } = useSignupJourneyContext()
-  const [showIsAppUserDialog, setShowIsAppUserDialog] = useState<boolean>(false)
-  const [isHigherEducation, setIsHigherEducation] = useState<boolean>(false)
   const [showInvisibleBanner, setShowInvisibleBanner] = useState<boolean>(false)
 
   const initialValues: OffererFormValues = offerer
@@ -90,30 +82,6 @@ export const Offerer = (): JSX.Element => {
       if (!offererSiretData) {
         snackBar.error('Une erreur est survenue')
         return
-      }
-
-      // Do not show dialog if FF is enabled
-      if (!isWelcomeCarouselEnabled) {
-        if (
-          !showIsAppUserDialog &&
-          offererSiretData?.apeCode &&
-          (MAYBE_APP_USER_APE_CODE.includes(offererSiretData.apeCode) ||
-            MAYBE_HIGHER_EDUCATION_INSTITUTION_CODE.includes(
-              offererSiretData.apeCode
-            ))
-        ) {
-          setIsHigherEducation(
-            MAYBE_HIGHER_EDUCATION_INSTITUTION_CODE.includes(
-              offererSiretData.apeCode
-            )
-          )
-          setShowIsAppUserDialog(true)
-          return
-        }
-        if (showIsAppUserDialog) {
-          setIsHigherEducation(false)
-          setShowIsAppUserDialog(false)
-        }
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -192,95 +160,80 @@ export const Offerer = (): JSX.Element => {
   }
 
   return (
-    <>
-      <MaybeAppUserDialog
-        onCancel={handleSubmit(onSubmit)}
-        onClose={() => {
-          setIsHigherEducation(false)
-          setShowIsAppUserDialog(false)
-        }}
-        isDialogOpen={showIsAppUserDialog}
-        isHigherEducation={isHigherEducation}
-      />
-      <FormLayout>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          data-testid="signup-offerer-form"
-        >
-          <FormLayout.Section>
-            <h2 className={styles['subtitle']}>
-              Dites-nous pour quelle structure vous travaillez
-            </h2>
-            <FormLayout.Row mdSpaceAfter>
-              <div className={styles['input-siret']}>
-                <TextInput
-                  {...register('siret')}
-                  label="Numéro de SIRET à 14 chiffres"
-                  type="text"
-                  required
-                  error={errors.siret?.message}
-                  onChange={(e) => {
-                    if (
-                      watch('siret').length === 0 ||
-                      e.target.value.replace(/(\d|\s)*/, '').length > 0 ||
-                      e.target.value.length === 14
-                    ) {
-                      setValue('siret', unhumanizeSiret(e.target.value))
-                    }
-                  }}
-                />
-              </div>
-            </FormLayout.Row>
-            <FormLayout.Row>
-              <Button
-                as="a"
-                variant={ButtonVariant.TERTIARY}
-                color={ButtonColor.NEUTRAL}
-                to="https://annuaire-entreprises.data.gouv.fr/"
-                isExternal
-                opensInNewTab
-                onClick={() =>
-                  logEvent(Events.CLICKED_UNKNOWN_SIRET, {
-                    from: location.pathname,
-                  })
-                }
-                label="Vous ne connaissez pas votre SIRET ? Consultez l'Annuaire des Entreprises."
+    <FormLayout>
+      <form onSubmit={handleSubmit(onSubmit)} data-testid="signup-offerer-form">
+        <FormLayout.Section>
+          <h2 className={styles['subtitle']}>
+            Dites-nous pour quelle structure vous travaillez
+          </h2>
+          <FormLayout.Row mdSpaceAfter>
+            <div className={styles['input-siret']}>
+              <TextInput
+                {...register('siret')}
+                label="Numéro de SIRET à 14 chiffres"
+                type="text"
+                required
+                error={errors.siret?.message}
+                onChange={(e) => {
+                  if (
+                    watch('siret').length === 0 ||
+                    e.target.value.replace(/(\d|\s)*/, '').length > 0 ||
+                    e.target.value.length === 14
+                  ) {
+                    setValue('siret', unhumanizeSiret(e.target.value))
+                  }
+                }}
               />
-            </FormLayout.Row>
-          </FormLayout.Section>
-          {showInvisibleBanner && <BannerInvisibleSiren />}
-          <Banner
-            title="Vous êtes un équipement d’une collectivité ou d’un établissement public ?"
-            actions={[
-              {
-                href: 'https://aide.passculture.app/hc/fr/articles/4633420022300--Acteurs-Culturels-Collectivit%C3%A9-Lieu-rattach%C3%A9-%C3%A0-une-collectivit%C3%A9-S-inscrire-et-param%C3%A9trer-son-compte-pass-Culture-',
-                label: 'En savoir plus',
-                isExternal: true,
-                type: 'link',
-                icon: fullLinkIcon,
-                iconAlt: 'Nouvelle fenêtre',
-              },
-            ]}
-            description={
-              <p>
-                Renseignez le SIRET de la structure à laquelle vous êtes
-                rattaché.
-              </p>
-            }
-          />
-          <ActionBar
-            isDisabled={isSubmitting}
-            onClickPrevious={
-              withSwitchVenueFeature ? () => navigate('/hub') : undefined
-            }
-            onClickNext={handleNextStep}
-            nextStepTitle="Continuer"
-            previousStepTitle={
-              withSwitchVenueFeature ? 'Annuler et quitter' : undefined
-            }
-          />
-        </form>
-      </FormLayout>
-    </>
+            </div>
+          </FormLayout.Row>
+          <FormLayout.Row>
+            <Button
+              as="a"
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
+              to="https://annuaire-entreprises.data.gouv.fr/"
+              isExternal
+              opensInNewTab
+              onClick={() =>
+                logEvent(Events.CLICKED_UNKNOWN_SIRET, {
+                  from: location.pathname,
+                })
+              }
+              label="Vous ne connaissez pas votre SIRET ? Consultez l'Annuaire des Entreprises."
+            />
+          </FormLayout.Row>
+        </FormLayout.Section>
+        {showInvisibleBanner && <BannerInvisibleSiren />}
+        <Banner
+          title="Vous êtes un équipement d’une collectivité ou d’un établissement public ?"
+          actions={[
+            {
+              href: 'https://aide.passculture.app/hc/fr/articles/4633420022300--Acteurs-Culturels-Collectivit%C3%A9-Lieu-rattach%C3%A9-%C3%A0-une-collectivit%C3%A9-S-inscrire-et-param%C3%A9trer-son-compte-pass-Culture-',
+              label: 'En savoir plus',
+              isExternal: true,
+              type: 'link',
+              icon: fullLinkIcon,
+              iconAlt: 'Nouvelle fenêtre',
+            },
+          ]}
+          description={
+            <p>
+              Renseignez le SIRET de la structure à laquelle vous êtes rattaché.
+            </p>
+          }
+        />
+        <ActionBar
+          isDisabled={isSubmitting}
+          onClickPrevious={
+            withSwitchVenueFeature ? () => navigate('/hub') : undefined
+          }
+          onClickNext={handleNextStep}
+          nextStepTitle="Continuer"
+          previousStepTitle={
+            withSwitchVenueFeature ? 'Annuler et quitter' : undefined
+          }
+        />
+      </form>
+    </FormLayout>
   )
 }
