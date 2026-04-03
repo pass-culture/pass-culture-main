@@ -33,7 +33,7 @@ const renderVenueStatisticsDashboard = (
 describe('StatisticsDashboard', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getVenueOffersStats').mockResolvedValue({
-      jsonData: { monthlyViews: [], topOffers: [], totalViewsLast30Days: 0 },
+      jsonData: { dailyViews: [], topOffers: [], totalViewsLast30Days: 0 },
       venueId: 1,
     })
   })
@@ -61,7 +61,7 @@ describe('StatisticsDashboard', () => {
   it('should not render most viewed offers if there are none', async () => {
     vi.spyOn(api, 'getVenueOffersStats').mockResolvedValueOnce({
       jsonData: {
-        monthlyViews: [{ month: 8, views: 10 }],
+        dailyViews: [{ day: '2026-08-01', views: 10 }],
         topOffers: [],
         totalViewsLast30Days: 0,
       },
@@ -83,10 +83,10 @@ describe('StatisticsDashboard', () => {
   it('should render monthlyViews graph if there is data', async () => {
     vi.spyOn(api, 'getVenueOffersStats').mockResolvedValueOnce({
       jsonData: {
-        monthlyViews: [
-          { month: 8, views: 10 },
-          { month: 9, views: 10 },
-          { month: 10, views: 10 },
+        dailyViews: [
+          { day: '2026-08-01', views: 10 },
+          { day: '2026-09-01', views: 10 },
+          { day: '2026-10-01', views: 10 },
         ],
         topOffers: [],
         totalViewsLast30Days: 0,

@@ -3,9 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { TopOffersResponseData } from './TopOffersResponseData';
-import type { VenueMonthlyViewModel } from './VenueMonthlyViewModel';
+import type { VenueDailyViewModel } from './VenueDailyViewModel';
 export type VenueStatsDataModel = {
-  monthlyViews: Array<VenueMonthlyViewModel>;
+  dailyViews: Array<VenueDailyViewModel>;
   topOffers: Array<TopOffersResponseData>;
   totalViewsLast30Days: number;
 };

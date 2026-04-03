@@ -1,3 +1,4 @@
+import datetime
 from unittest.mock import patch
 
 import pytest
@@ -20,9 +21,9 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 def build_mocked_venue_stats(offers):
     return offerers_api.VenueOffersStatisticsModel(
-        monthly_views=[
-            offerers_api.MonthlyViewsModel(month=1, views=128),
-            offerers_api.MonthlyViewsModel(month=2, views=256),
+        daily_views=[
+            offerers_api.DailyViewsModel(day=datetime.date(2026, 1, 1), views=128),
+            offerers_api.DailyViewsModel(day=datetime.date(2026, 1, 2), views=256),
         ],
         total_views_last_30_days=512,
         top_offers=[
@@ -32,14 +33,14 @@ def build_mocked_venue_stats(offers):
     )
 
 
-def assert_monthly_views_equal(json_data, mocked_stats):
-    found_monthly_views = json_data["monthlyViews"]
-    found_monthly_views = {(row["month"], row["views"]) for row in found_monthly_views}
+def assert_daily_views_equal(json_data, mocked_stats):
+    found_daily_views = json_data["dailyViews"]
+    found_daily_views = {(row["day"], row["views"]) for row in found_daily_views}
 
-    expected_monthly_views = mocked_stats.monthly_views
-    expected_monthly_views = {(row.month, row.views) for row in expected_monthly_views}
+    expected_daily_views = mocked_stats.daily_views
+    expected_daily_views = {(row.day.isoformat(), row.views) for row in expected_daily_views}
 
-    assert found_monthly_views == expected_monthly_views
+    assert found_daily_views == expected_daily_views
 
 
 def assert_top_offers_equal(json_data, mocked_stats):
@@ -83,7 +84,7 @@ class GetVenueOfferStatisticsTest:
 
         assert response.json["venueId"] == venue.id
         assert response.json["jsonData"]["totalViewsLast30Days"] == mocked_stats.total_views_last_30_days
-        assert_monthly_views_equal(response.json["jsonData"], mocked_stats)
+        assert_daily_views_equal(response.json["jsonData"], mocked_stats)
         assert_top_offers_equal(response.json["jsonData"], mocked_stats)
 
     @patch("pcapi.core.offerers.api.get_venue_offers_statistics")
@@ -92,7 +93,7 @@ class GetVenueOfferStatisticsTest:
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
         mock_venue_stats.return_value = offerers_api.VenueOffersStatisticsModel(
-            monthly_views=[],
+            daily_views=[],
             total_views_last_30_days=0,
             top_offers=[],
         )
@@ -103,7 +104,7 @@ class GetVenueOfferStatisticsTest:
 
         assert response.json["venueId"] == venue.id
         assert response.json["jsonData"]["totalViewsLast30Days"] == 0
-        assert not response.json["jsonData"]["monthlyViews"]
+        assert not response.json["jsonData"]["dailyViews"]
         assert not response.json["jsonData"]["topOffers"]
 
     def test_cannot_view_venue_stats_if_account_is_not_supposed_to(self, client):

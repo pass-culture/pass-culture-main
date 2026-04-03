@@ -6633,6 +6633,20 @@ export type VenueContactModelV2 = {
 };
 
 /**
+ * VenueDailyViewModel
+ */
+export type VenueDailyViewModel = {
+    /**
+     * Day
+     */
+    day: string;
+    /**
+     * Views
+     */
+    views: number;
+};
+
+/**
  * VenueLabelListResponseModel
  */
 export type VenueLabelListResponseModel = Array<VenueLabelResponseModel>;
@@ -6782,20 +6796,6 @@ export type VenueListQueryModel = {
 };
 
 /**
- * VenueMonthlyViewModel
- */
-export type VenueMonthlyViewModel = {
-    /**
-     * Month
-     */
-    month: number;
-    /**
-     * Views
-     */
-    views: number;
-};
-
-/**
  * VenueOfOffererFromSiretResponseModel
  */
 export type VenueOfOffererFromSiretResponseModel = {
@@ -6873,9 +6873,9 @@ export type VenueProviderResponse = {
  */
 export type VenueStatsDataModel = {
     /**
-     * Monthlyviews
+     * Dailyviews
      */
-    monthlyViews: Array<VenueMonthlyViewModel>;
+    dailyViews: Array<VenueDailyViewModel>;
     /**
      * Topoffers
      */
