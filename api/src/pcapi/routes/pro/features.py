@@ -22,7 +22,6 @@ PRO_FEATURES = (
     FeatureToggle.WIP_OFFER_RECOMMENDATION_PRO,
     FeatureToggle.WIP_ENABLE_OHO,
     FeatureToggle.WIP_ENABLE_NEW_PRO_HOME,
-    FeatureToggle.WIP_PRE_SIGNUP_INFO,
     FeatureToggle.WIP_PRE_SIGNUP_SIMULATION,
     FeatureToggle.WIP_VOLUNTEERING,
 )
