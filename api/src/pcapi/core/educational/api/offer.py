@@ -254,7 +254,7 @@ def create_collective_offer(
         offererAddressId=offerer_address.id if offerer_address else None,
     )
 
-    # we update pro email data in sendinblue
+    # we update pro email data in Brevo
     for email in collective_offer.bookingEmails:
         update_external_pro(email)
 

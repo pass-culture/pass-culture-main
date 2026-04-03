@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 SENDINBLUE_PRO_QUEUE_NAME = settings.GCP_SENDINBLUE_PRO_QUEUE_NAME
 
 
-# De-duplicate and delay by 12 hours, to avoid collecting pro attributes and making an update request to Sendinblue
+# De-duplicate and delay by 12 hours, to avoid collecting pro attributes and making an update request to Brevo
 # several times in a short time when a user managing an offerer makes several changes.
 #
 # Deduplication of Google tasks is based on identical payload in src.pcapi.tasks.cloud_task.enqueue_internal_task,
@@ -21,12 +21,12 @@ SENDINBLUE_PRO_QUEUE_NAME = settings.GCP_SENDINBLUE_PRO_QUEUE_NAME
 # So time_id parameter in UpdateProAttributesRequest helps to generate different hashes, so different task ids, every
 # 12 hours. Keep delayed_seconds below consistent with time_id generation.
 @task(SENDINBLUE_PRO_QUEUE_NAME, "/sendinblue/update_pro_attributes", True, 43_200)
-def update_sib_pro_attributes_task(payload: UpdateProAttributesRequest) -> None:
+def update_brevo_pro_attributes_task(payload: UpdateProAttributesRequest) -> None:
     from pcapi.core.external.attributes.api import get_pro_attributes
-    from pcapi.core.external.sendinblue import update_contact_attributes
+    from pcapi.core.external.brevo import update_contact_attributes
 
     # Keep at least to validate/debug on testing environment
-    logger.info("update_sib_pro_attributes_task", extra={"email": payload.email, "time_id": payload.time_id})
+    logger.info("update_brevo_pro_attributes_task", extra={"email": payload.email, "time_id": payload.time_id})
 
     attributes = get_pro_attributes(payload.email)
     update_contact_attributes(payload.email, attributes, asynchronous=False)

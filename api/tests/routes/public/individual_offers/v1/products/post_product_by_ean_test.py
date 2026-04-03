@@ -462,8 +462,8 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         assert book_stock.quantity == 10
         assert book_stock.price == decimal.Decimal("100.00")
 
-    @mock.patch("pcapi.tasks.sendinblue_tasks.update_sib_pro_attributes_task")
-    def test_valid_ean_without_task_autoflush(self, update_sib_pro_task_mock):
+    @mock.patch("pcapi.tasks.brevo_tasks.update_brevo_pro_attributes_task")
+    def test_valid_ean_without_task_autoflush(self, update_brevo_pro_task_mock):
         product_provider = providers_factories.ProviderFactory()
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         product = offers_factories.ProductFactory(
@@ -477,7 +477,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
         # the update task autoflushes the SQLAlchemy session, but is not executed synchronously in cloud
         # environments, therefore we cannot rely on its side effects
-        update_sib_pro_task_mock.side_effect = None
+        update_brevo_pro_task_mock.side_effect = None
 
         in_ten_minutes = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(
             minutes=10

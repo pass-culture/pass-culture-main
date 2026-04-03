@@ -39,9 +39,7 @@ def build_expected_called_params(list_id):
 
 class BaseProAutomations:
     MOCK_RUN_BQ_QUERY_PATH = "pcapi.connectors.big_query.TestingBackend.run_query"
-    MOCK_IMPORT_CONTACT_PATH = (
-        "pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts"
-    )
+    MOCK_IMPORT_CONTACT_PATH = "pcapi.core.external.brevo.brevo_python.api.contacts_api.ContactsApi.import_contacts"
 
     @property
     def func(self):

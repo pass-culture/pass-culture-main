@@ -43,11 +43,11 @@ def test_change_password_validates_email(client):
     with pytest.raises(users_exceptions.InvalidToken):
         token.check(token_utils.TokenType.RESET_PASSWORD)
 
-    # One call should be sent to batch, and one to sendinblue
+    # One call should be sent to batch, and one to Brevo
     assert len(push_testing.requests) == 2
-    assert len(users_testing.sendinblue_requests) == 1
-    sendinblue_data = users_testing.sendinblue_requests[0]
-    assert sendinblue_data["attributes"]["IS_EMAIL_VALIDATED"]
+    assert len(users_testing.brevo_requests) == 1
+    brevo_data = users_testing.brevo_requests[0]
+    assert brevo_data["attributes"]["IS_EMAIL_VALIDATED"]
 
 
 @pytest.mark.usefixtures("db_session")

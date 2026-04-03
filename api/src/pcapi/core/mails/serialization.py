@@ -2,7 +2,7 @@ from pydantic import BaseModel as BaseModelV2
 from pydantic import Field
 
 
-class UpdateSendinblueContactRequest(BaseModelV2):
+class UpdateBrevoContactRequest(BaseModelV2):
     email: str
     use_pro_subaccount: bool
     attributes: dict

@@ -21,7 +21,7 @@ import pcapi.core.subscription.models as subscription_models
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.core.external.batch import models as batch_models
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.utils.sentry import before_send
 
 import tests.core.subscription.bonus.bonus_fixtures as bonus_fixtures

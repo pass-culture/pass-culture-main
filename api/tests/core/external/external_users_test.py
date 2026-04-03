@@ -30,7 +30,7 @@ from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.users import models as users_models
-from pcapi.core.users import testing as sendinblue_testing
+from pcapi.core.users import testing as brevo_testing
 from pcapi.core.users.factories import BeneficiaryFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import FavoriteFactory
@@ -82,13 +82,13 @@ def test_update_external_user(marketing_subscription):
         batch_testing.requests[1].get("attribute_values", {}).get("u.marketing_push_subscription")
         is marketing_subscription
     )
-    assert len(sendinblue_testing.sendinblue_requests) == 1
-    assert sendinblue_testing.sendinblue_requests[0].get("email") == "jeanne@example.com"
-    assert sendinblue_testing.sendinblue_requests[0].get("emailBlacklisted") is not marketing_subscription
-    assert sendinblue_testing.sendinblue_requests[0].get("use_pro_subaccount") is False
+    assert len(brevo_testing.brevo_requests) == 1
+    assert brevo_testing.brevo_requests[0].get("email") == "jeanne@example.com"
+    assert brevo_testing.brevo_requests[0].get("emailBlacklisted") is not marketing_subscription
+    assert brevo_testing.brevo_requests[0].get("use_pro_subaccount") is False
 
 
-def test_email_should_not_be_blacklisted_in_sendinblue_by_default():
+def test_email_should_not_be_blacklisted_in_brevo_by_default():
     user = BeneficiaryGrant18Factory(
         email="jeanne@example.com",
         notificationSubscriptions={},
@@ -97,9 +97,9 @@ def test_email_should_not_be_blacklisted_in_sendinblue_by_default():
 
     update_external_user(user)
 
-    assert len(sendinblue_testing.sendinblue_requests) == 1
-    assert sendinblue_testing.sendinblue_requests[0].get("email") == "jeanne@example.com"
-    assert sendinblue_testing.sendinblue_requests[0].get("emailBlacklisted") is False
+    assert len(brevo_testing.brevo_requests) == 1
+    assert brevo_testing.brevo_requests[0].get("email") == "jeanne@example.com"
+    assert brevo_testing.brevo_requests[0].get("emailBlacklisted") is False
 
 
 def test_update_external_pro_user():
@@ -110,8 +110,8 @@ def test_update_external_pro_user():
         update_external_user(user)
 
     assert len(batch_testing.requests) == 0
-    assert len(sendinblue_testing.sendinblue_requests) == 1
-    assert sendinblue_testing.sendinblue_requests[0].get("use_pro_subaccount") is True
+    assert len(brevo_testing.brevo_requests) == 1
+    assert brevo_testing.brevo_requests[0].get("use_pro_subaccount") is True
 
 
 def test_get_user_attributes_beneficiary_with_v1_deposit():

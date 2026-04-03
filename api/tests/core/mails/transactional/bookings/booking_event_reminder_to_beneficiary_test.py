@@ -13,14 +13,14 @@ from pcapi.core.mails.transactional.bookings.booking_event_reminder_to_beneficia
 from pcapi.core.mails.transactional.bookings.booking_event_reminder_to_beneficiary import (
     send_individual_booking_event_reminder_email_to_beneficiary,
 )
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class SendEventReminderEmailToBeneficiaryTest:
-    def test_sendinblue_send_email(self):
+    def test_brevo_send_email(self):
         booking = BookingFactory(stock=offers_factories.EventStockFactory())
 
         send_individual_booking_event_reminder_email_to_beneficiary(booking)

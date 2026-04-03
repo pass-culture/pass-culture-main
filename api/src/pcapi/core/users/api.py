@@ -33,7 +33,7 @@ from pcapi import settings
 from pcapi.core import mails as mails_api
 from pcapi.core import token as token_utils
 from pcapi.core.external.attributes import api as external_attributes_api
-from pcapi.core.external.sendinblue import update_contact_attributes
+from pcapi.core.external.brevo import update_contact_attributes
 from pcapi.core.finance import deposit_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.permissions import models as perm_models
@@ -695,7 +695,7 @@ def update_user_info(
     else:
         db.session.add(user)
 
-    # TODO(prouzet) even for young users, we should probably remove contact with former email from sendinblue lists
+    # TODO(prouzet) even for young users, we should probably remove contact with former email from Brevo lists
     if old_email and user.has_pro_role:
         external_attributes_api.update_external_pro(old_email)
     external_attributes_api.update_external_user(user, batch_extra_data=batch_extra_data)
@@ -860,7 +860,7 @@ def update_last_connection_date(user: models.User) -> None:
     should_save_last_connection_date = (
         not previous_connection_date or last_connection_date - previous_connection_date > datetime.timedelta(minutes=15)
     )
-    should_update_sendinblue_last_connection_date = should_save_last_connection_date and (
+    should_update_brevo_last_connection_date = should_save_last_connection_date and (
         not previous_connection_date
         or last_connection_date.date() - previous_connection_date.date() >= datetime.timedelta(days=1)
     )
@@ -873,7 +873,7 @@ def update_last_connection_date(user: models.User) -> None:
         else:
             db.session.commit()
 
-    if should_update_sendinblue_last_connection_date:
+    if should_update_brevo_last_connection_date:
         external_attributes_api.update_external_user(user, skip_batch=True)
 
 

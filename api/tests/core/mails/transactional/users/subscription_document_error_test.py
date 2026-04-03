@@ -2,7 +2,7 @@ import pytest
 
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.subscription.models as subscription_models
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.ubble.subscription_document_error import (
     send_subscription_document_error_email,
 )
@@ -11,7 +11,7 @@ from pcapi.core.mails.transactional.users.ubble.subscription_document_error impo
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class SendinblueSubscriptionDocumentErrorEmailTest:
+class BrevoSubscriptionDocumentErrorEmailTest:
     def test_send_information_error_email(self) -> None:
         email = "123@test.com"
         code = subscription_models.FraudReasonCode.ID_CHECK_DATA_MATCH

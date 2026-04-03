@@ -17,11 +17,11 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_bene
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
     send_booking_cancellation_by_pro_to_beneficiary_email,
 )
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 
 
 @pytest.mark.usefixtures("db_session")
-class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
+class BrevoSendWarningToBeneficiaryAfterProBookingCancellationTest:
     def test_should_sends_email_to_beneficiary_when_pro_cancels_booking_without_offerer_address(self):
         # Given
         booking = bookings_factories.CancelledBookingFactory(
@@ -128,7 +128,7 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
+class BrevoRetrieveDataToWarnUserAfterProBookingCancellationTest:
     def test_should_return_event_data_when_booking_is_on_an_event(self):
         # Given
         stock = offers_factories.EventStockFactory(
@@ -241,13 +241,11 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
         )
 
         # When
-        sendiblue_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(
-            booking, rejected_by_fraud_action=False
-        )
+        brevo_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking, rejected_by_fraud_action=False)
 
         # Then
-        assert sendiblue_data.params["IS_FREE_OFFER"] is True
-        assert sendiblue_data.params["OFFER_PRICE"] == 0.00
+        assert brevo_data.params["IS_FREE_OFFER"] is True
+        assert brevo_data.params["OFFER_PRICE"] == 0.00
 
     def test_should_display_the_price_multiplied_by_quantity_when_it_is_a_duo_offer(self):
         # Given
@@ -258,23 +256,19 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
         )
 
         # When
-        sendiblue_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(
-            booking, rejected_by_fraud_action=False
-        )
+        brevo_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking, rejected_by_fraud_action=False)
 
         # Then
-        assert sendiblue_data.params["IS_FREE_OFFER"] is False
-        assert sendiblue_data.params["OFFER_PRICE"] == 20.00
+        assert brevo_data.params["IS_FREE_OFFER"] is False
+        assert brevo_data.params["OFFER_PRICE"] == 20.00
 
     def test_should_display_the_price_in_xpf_for_caledonian_beneficiary(self):
         # Given
         booking = bookings_factories.BookingFactory(stock__price=20, quantity=1, user__postalCode="98818")
 
         # When
-        sendinblue_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(
-            booking, rejected_by_fraud_action=False
-        )
+        brevo_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking, rejected_by_fraud_action=False)
 
         # Then
-        assert sendinblue_data.params["OFFER_PRICE"] == 20.00
-        assert sendinblue_data.params["FORMATTED_PRICE"] == "2385 F"
+        assert brevo_data.params["OFFER_PRICE"] == 20.00
+        assert brevo_data.params["FORMATTED_PRICE"] == "2385 F"

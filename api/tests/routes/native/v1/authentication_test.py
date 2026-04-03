@@ -18,14 +18,14 @@ from pcapi.connectors.dms import models as dms_models
 from pcapi.core import token as token_utils
 from pcapi.core.external.batch import testing as batch_testing
 from pcapi.core.history import factories as history_factories
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import repository as subscription_repository
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import schemas as users_schemas
-from pcapi.core.users import testing as sendinblue_testing
+from pcapi.core.users import testing as brevo_testing
 from pcapi.core.users.models import AccountState
 from pcapi.core.users.models import LoginDeviceHistory
 from pcapi.core.users.models import SingleSignOn
@@ -264,7 +264,7 @@ class SigninTest:
         assert refresh_response.status_code == 200
 
         assert user.lastConnectionDate == datetime(2020, 3, 15)
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(brevo_testing.brevo_requests) == 1
 
     def test_signin_with_extra_device_info(self, client):
         data = {
@@ -1184,7 +1184,7 @@ class EmailValidationTest:
 
         # assert we updated the external users
         assert len(batch_testing.requests) == 2
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(brevo_testing.brevo_requests) == 1
 
         # Ensure the access token contains user.id
         decoded = decode_token(access_token)
@@ -1223,7 +1223,7 @@ class EmailValidationTest:
 
         # assert we updated the external users
         assert len(batch_testing.requests) == 2
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(brevo_testing.brevo_requests) == 1
 
         # Ensure the access token is valid
         access_token = response.json["accessToken"]

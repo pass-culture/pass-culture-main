@@ -7,11 +7,11 @@ import pcapi.core.educational.factories as educational_factories
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.pro.offer_validation_to_pro import get_email_data_from_offer
 from pcapi.core.mails.transactional.pro.offer_validation_to_pro import retrieve_data_for_offer_approval_email
 from pcapi.core.mails.transactional.pro.offer_validation_to_pro import retrieve_data_for_offer_rejection_email
 from pcapi.core.mails.transactional.pro.offer_validation_to_pro import send_offer_validation_status_update_email
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.settings import PRO_URL
 from pcapi.utils import date as date_utils
@@ -20,7 +20,7 @@ from pcapi.utils import date as date_utils
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class SendinblueSendOfferValidationTest:
+class BrevoSendOfferValidationTest:
     @time_machine.travel("2032-10-15 12:48:00")
     @pytest.mark.parametrize("factory_class", [offers_factories.DigitalOfferFactory, offers_factories.OfferFactory])
     def test_get_validation_approval_correct_email_metadata(self, factory_class):

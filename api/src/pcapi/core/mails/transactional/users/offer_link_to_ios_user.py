@@ -1,6 +1,6 @@
 from pcapi.core import mails
 from pcapi.core.mails import models
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.utils import offer_app_redirect_link
 from pcapi.core.users.models import User

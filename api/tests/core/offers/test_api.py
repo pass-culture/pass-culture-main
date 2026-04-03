@@ -1403,7 +1403,7 @@ class CreateOfferTest:
         assert offer_update_record.technical_message_id == "offer.created"
         assert offer_update_record.message == "Offer has been created"
 
-        assert mail_third_party_record.message == "update_sib_pro_attributes_task"
+        assert mail_third_party_record.message == "update_brevo_pro_attributes_task"
 
     def test_create_offer_with_id_at_provider(self):
         venue = offerers_factories.VenueFactory()

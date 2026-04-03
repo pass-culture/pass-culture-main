@@ -9,7 +9,7 @@ import pcapi.core.educational.models as educational_models
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.testing import assert_num_queries
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import default_timezone_to_local_datetime

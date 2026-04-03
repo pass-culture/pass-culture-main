@@ -11,7 +11,7 @@ from dataclasses import dataclass
 import sqlalchemy as sa
 import urllib3.exceptions
 
-from pcapi.core.external import sendinblue
+from pcapi.core.external import brevo
 from pcapi.core.external.attributes.api import get_user_attributes
 from pcapi.core.external.attributes.models import UserAttributes
 from pcapi.core.external.batch import attributes as batch_attributes
@@ -77,11 +77,11 @@ def _format_batch_users(users_attributes: list[CollectedAttributes]) -> list[Use
     return res
 
 
-def _format_brevo_users(users_attributes: list[CollectedAttributes]) -> list[sendinblue.SendinblueUserUpdateData]:
+def _format_brevo_users(users_attributes: list[CollectedAttributes]) -> list[brevo.BrevoUserUpdateData]:
     res = []
     for user_attributes in users_attributes:
-        attributes = sendinblue.format_user_attributes(user_attributes.attributes)
-        res.append(sendinblue.SendinblueUserUpdateData(email=user_attributes.email, attributes=attributes))
+        attributes = brevo.format_user_attributes(user_attributes.attributes)
+        res.append(brevo.BrevoUserUpdateData(email=user_attributes.email, attributes=attributes))
     logger.info("[update_brevo_and_batch_users] %d users formatted for Brevo...", len(res))
     return res
 
@@ -106,7 +106,7 @@ def _run_iteration(min_user_id: int, max_user_id: int, synchronize_batch: bool, 
                 update_users_attributes(batch_users_data)
             if synchronize_brevo:
                 brevo_users_data = _format_brevo_users(user_attributes)
-                sendinblue.import_contacts_in_sendinblue(brevo_users_data)
+                brevo.import_contacts_in_brevo(brevo_users_data)
         except (TimeoutError, urllib3.exceptions.TimeoutError) as exc:
             if retries == 0:
                 raise

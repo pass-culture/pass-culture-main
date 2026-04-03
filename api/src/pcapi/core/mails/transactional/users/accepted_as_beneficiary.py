@@ -3,7 +3,7 @@ import logging
 from pcapi.core import mails
 from pcapi.core.finance.conf import get_credit_amount_per_age_and_eligibility
 from pcapi.core.mails import models
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.utils import format_price
 from pcapi.core.users.eligibility_api import get_pre_decree_or_current_eligibility
 from pcapi.core.users.models import EligibilityType
