@@ -127,7 +127,10 @@ def get_collective_offer_full_address(offer: models.CollectiveOffer | models.Col
 
             address = offer.offererAddress.address.fullAddress
             label: str | None
-            if offer.offererAddress == offer.venue.offererAddress:
+            # TODO bdalbianco labelOA: delete label is none
+            if offer.offererAddress.addressId == offer.venue.offererAddress.addressId and (
+                offer.offererAddress.label is None or offer.offererAddress.label == offer.venue.publicName
+            ):
                 label = offer.venue.publicName
             else:
                 label = offer.offererAddress.label

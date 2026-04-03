@@ -1247,12 +1247,9 @@ def get_venue_addresses(
         )
         .join(models.OffererAddress.address)
         .join(models.OffererAddress.venue)
-        .filter(models.OffererAddress.venueId == venue_id)
         .filter(
-            sa.or_(
-                models.OffererAddress.type.is_(None),
-                models.OffererAddress.type == offerers_models.LocationType.OFFER_LOCATION,
-            )
+            models.OffererAddress.venueId == venue_id,
+            models.OffererAddress.type == offerers_models.LocationType.OFFER_LOCATION,
         )
     )
 
