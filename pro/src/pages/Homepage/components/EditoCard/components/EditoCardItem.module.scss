@@ -1,0 +1,25 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.edito-card {
+  flex: 1;
+  border: none;
+  padding: 0;
+
+  &-image {
+    max-width: rem.torem(226px);
+  }
+
+  &-title {
+    @include fonts.title4;
+  }
+
+  &-subtitle {
+    @include fonts.body-s;
+  }
+
+  &-footer {
+    margin-top: auto;
+  }
+}
