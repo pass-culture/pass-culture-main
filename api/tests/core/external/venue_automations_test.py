@@ -1,7 +1,6 @@
 from unittest.mock import patch
 
 import pytest
-from brevo_python import RequestContactImport
 from dateutil.relativedelta import relativedelta
 
 import pcapi.core.bookings.factories as bookings_factories
@@ -92,7 +91,7 @@ class VenueAutomationsTest:
 
         assert set(results) == {venue_no_booking.bookingEmail, venue_old_booking.bookingEmail}
 
-    @patch("pcapi.core.external.brevo.brevo_python.api.contacts_api.ContactsApi.import_contacts")
+    @patch("brevo.contacts.client.ContactsClient.import_contacts")
     def test_pro_inactive_venues_automation(self, mock_import_contacts):
         offerer = offerers_factories.OffererFactory(
             dateValidated=date_utils.get_naive_utc_now() - relativedelta(days=100)
@@ -103,17 +102,9 @@ class VenueAutomationsTest:
         result = venue_automations.pro_inactive_venues_automation()
 
         mock_import_contacts.assert_called_once_with(
-            RequestContactImport(
-                file_url=None,
-                file_body=f"EMAIL\n{venue.bookingEmail}",
-                list_ids=[settings.SENDINBLUE_PRO_INACTIVE_90_DAYS_ID],
-                notify_url=f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{settings.SENDINBLUE_PRO_INACTIVE_90_DAYS_ID}/1",
-                new_list=None,
-                email_blacklist=False,
-                sms_blacklist=False,
-                update_existing_contacts=True,
-                empty_contacts_attributes=False,
-            )
+            file_body=f"EMAIL\n{venue.bookingEmail}",
+            list_ids=[settings.SENDINBLUE_PRO_INACTIVE_90_DAYS_ID],
+            notify_url=f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{settings.SENDINBLUE_PRO_INACTIVE_90_DAYS_ID}/1",
         )
 
         assert result is True

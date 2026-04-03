@@ -4,7 +4,6 @@ from unittest.mock import patch
 
 import pytest
 import time_machine
-from brevo_python import RequestContactImport
 from dateutil.relativedelta import relativedelta
 
 import pcapi.core.bookings.factories as bookings_factories
@@ -109,7 +108,7 @@ class UserAutomationsTest:
             results = user_automations.get_users_ex_beneficiary()
             assert sorted([user.email for user in results]) == [user.email for user in users[1:4] + [users[6]]]
 
-    @patch("pcapi.core.external.brevo.brevo_python.api.contacts_api.ContactsApi.import_contacts")
+    @patch("brevo.contacts.client.ContactsClient.import_contacts")
     def test_user_ex_beneficiary_automation(self, mock_import_contacts):
         users = self._create_users_with_deposits()
 
@@ -117,24 +116,19 @@ class UserAutomationsTest:
             result = user_automations.users_ex_beneficiary_automation()
 
         mock_import_contacts.assert_called_once()
-        assert mock_import_contacts.call_args.args[0].file_url is None
-        assert set(mock_import_contacts.call_args.args[0].file_body.split("\n")) == {
+        call_kwargs = mock_import_contacts.call_args.kwargs
+        assert set(call_kwargs.keys()) == {"file_body", "list_ids", "notify_url"}
+        assert set(call_kwargs["file_body"].split("\n")) == {
             "EMAIL",
             users[1].email,
             users[2].email,
             users[6].email,
         }
-        assert mock_import_contacts.call_args.args[0].list_ids == [
-            settings.SENDINBLUE_AUTOMATION_YOUNG_EX_BENEFICIARY_ID
-        ]
+        assert call_kwargs["list_ids"] == [settings.SENDINBLUE_AUTOMATION_YOUNG_EX_BENEFICIARY_ID]
         assert (
-            mock_import_contacts.call_args.args[0].notify_url
+            call_kwargs["notify_url"]
             == f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{settings.SENDINBLUE_AUTOMATION_YOUNG_EX_BENEFICIARY_ID}/1"
         )
-        assert mock_import_contacts.call_args.args[0].new_list is None
-        assert mock_import_contacts.call_args.args[0].sms_blacklist is False
-        assert mock_import_contacts.call_args.args[0].update_existing_contacts is True
-        assert mock_import_contacts.call_args.args[0].empty_contacts_attributes is False
 
         assert result is True
 
@@ -159,7 +153,7 @@ class UserAutomationsTest:
             results = user_automations.get_email_for_users_created_one_year_ago_per_month()
             assert sorted(results) == sorted([user.email for user in matching_users])
 
-    @patch("pcapi.core.external.brevo.brevo_python.api.contacts_api.ContactsApi.import_contacts")
+    @patch("brevo.contacts.client.ContactsClient.import_contacts")
     def test_users_nearly_one_year_with_pass_automation(self, mock_import_contacts):
         users_factories.UserFactory(email="fabien+test@example.net", dateCreated=datetime(2033, 8, 31))
         users_factories.UserFactory(email="pierre+test@example.net", dateCreated=datetime(2033, 9, 1))
@@ -171,17 +165,9 @@ class UserAutomationsTest:
             result = user_automations.users_one_year_with_pass_automation()
 
         mock_import_contacts.assert_called_once_with(
-            RequestContactImport(
-                file_url=None,
-                file_body="EMAIL\npierre+test@example.net",
-                list_ids=[settings.SENDINBLUE_AUTOMATION_YOUNG_1_YEAR_WITH_PASS_LIST_ID],
-                notify_url=f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{settings.SENDINBLUE_AUTOMATION_YOUNG_1_YEAR_WITH_PASS_LIST_ID}/1",
-                new_list=None,
-                email_blacklist=False,
-                sms_blacklist=False,
-                update_existing_contacts=True,
-                empty_contacts_attributes=False,
-            )
+            file_body="EMAIL\npierre+test@example.net",
+            list_ids=[settings.SENDINBLUE_AUTOMATION_YOUNG_1_YEAR_WITH_PASS_LIST_ID],
+            notify_url=f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{settings.SENDINBLUE_AUTOMATION_YOUNG_1_YEAR_WITH_PASS_LIST_ID}/1",
         )
 
         assert result is True

@@ -1,4 +1,4 @@
-from brevo_python.rest import ApiException as BrevoApiException
+from brevo.core import ApiError as BrevoApiError
 
 from pcapi import settings
 from pcapi.celery_tasks.tasks import celery_async_task
@@ -9,7 +9,7 @@ from .serialization import UpdateBrevoContactRequest
 
 @celery_async_task(
     name="tasks.mails.priority.update_contact_attributes",
-    autoretry_for=(BrevoApiException,),
+    autoretry_for=(BrevoApiError,),
     model=UpdateBrevoContactRequest,
     max_per_time_window=settings.SENDINBLUE_UPDATE_CONTACT_RATE_LIMIT_THRESHOLD,
     time_window_size=settings.SENDINBLUE_UPDATE_CONTACT_RATE_LIMIT_TIME_WINDOW_SECONDS,
@@ -22,7 +22,7 @@ def update_contact_attributes_task(payload: UpdateBrevoContactRequest) -> None:
 
 @celery_async_task(
     name="tasks.mails.priority.send_transactional_email_primary",
-    autoretry_for=(BrevoApiException,),
+    autoretry_for=(BrevoApiError,),
     model=SendTransactionalEmailRequest,
     max_per_time_window=settings.SENDINBLUE_SEND_EMAIL_PRIMARY_RATE_LIMIT_THRESHOLD,
     time_window_size=settings.SENDINBLUE_SEND_EMAIL_PRIMARY_RATE_LIMIT_TIME_WINDOW_SECONDS,
@@ -35,7 +35,7 @@ def send_transactional_email_primary_task(payload: SendTransactionalEmailRequest
 
 @celery_async_task(
     name="tasks.mails.default.send_transactional_email_secondary",
-    autoretry_for=(BrevoApiException,),
+    autoretry_for=(BrevoApiError,),
     model=SendTransactionalEmailRequest,
     max_per_time_window=settings.SENDINBLUE_SEND_EMAIL_SECONDARY_RATE_LIMIT_THRESHOLD,
     time_window_size=settings.SENDINBLUE_SEND_EMAIL_SECONDARY_RATE_LIMIT_TIME_WINDOW_SECONDS,

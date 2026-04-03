@@ -1,7 +1,6 @@
 from unittest.mock import patch
 
 import pytest
-from brevo_python import RequestContactImport
 
 from pcapi import settings
 from pcapi.core.external.automations.pro_user import pro_no_active_offers_since_40_days_automation
@@ -23,23 +22,9 @@ def mocked_bq_rows():
     ]
 
 
-def build_expected_called_params(list_id):
-    return RequestContactImport(
-        file_url=None,
-        file_body=f"EMAIL\n{DEFAULT_EMAILS[0]}\n{DEFAULT_EMAILS[1]}",
-        list_ids=[list_id],
-        notify_url=f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{list_id}/1",
-        new_list=None,
-        email_blacklist=False,
-        sms_blacklist=False,
-        update_existing_contacts=True,
-        empty_contacts_attributes=False,
-    )
-
-
 class BaseProAutomations:
     MOCK_RUN_BQ_QUERY_PATH = "pcapi.connectors.big_query.TestingBackend.run_query"
-    MOCK_IMPORT_CONTACT_PATH = "pcapi.core.external.brevo.brevo_python.api.contacts_api.ContactsApi.import_contacts"
+    MOCK_IMPORT_CONTACT_PATH = "brevo.contacts.client.ContactsClient.import_contacts"
 
     @property
     def func(self):
@@ -56,8 +41,11 @@ class BaseProAutomations:
             with patch(self.MOCK_IMPORT_CONTACT_PATH) as mock_import_contacts:
                 assert type(self).func()
 
-                expected_params = build_expected_called_params(self.id)
-                mock_import_contacts.assert_called_once_with(expected_params)
+                mock_import_contacts.assert_called_once_with(
+                    file_body=f"EMAIL\n{DEFAULT_EMAILS[0]}\n{DEFAULT_EMAILS[1]}",
+                    list_ids=[self.id],
+                    notify_url=f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{self.id}/1",
+                )
 
 
 class ChurnedProEmailTest(BaseProAutomations):

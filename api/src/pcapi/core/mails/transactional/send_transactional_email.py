@@ -1,8 +1,8 @@
-import json
 import logging
+import typing
 
-import brevo_python
-from brevo_python.rest import ApiException
+import brevo
+from brevo.core import ApiError as BrevoApiError
 
 from pcapi import settings
 from pcapi.utils import email as email_utils
@@ -15,94 +15,79 @@ logger = logging.getLogger(__name__)
 
 
 def send_transactional_email(payload: serialization.SendTransactionalEmailRequest) -> None:
-    to = [{"email": email} for email in payload.recipients]
-    bcc = [{"email": email} for email in payload.bcc_recipients] if payload.bcc_recipients else None
-    sender = payload.sender
-    reply_to = payload.reply_to
+    email_kwargs: dict[str, typing.Any] = {}
 
-    if payload.enable_unsubscribe:
-        headers = None
-    else:
-        headers = {"X-List-Unsub": "disabled"}
+    if payload.recipients:
+        email_kwargs["to"] = [brevo.SendTransacEmailRequestToItem(email=email) for email in payload.recipients]
 
-    extra = {
-        "template_id": payload.template_id,
-        "subject": payload.subject,
-        "sender": payload.sender,
-        "recipients": payload.recipients,
-        "reply_to": payload.reply_to,
-    }
+    if payload.bcc_recipients:
+        email_kwargs["bcc"] = [brevo.SendTransacEmailRequestBccItem(email=email) for email in payload.bcc_recipients]
 
-    send_smtp_email = brevo_python.SendSmtpEmail(to=to, bcc=bcc, sender=sender, reply_to=reply_to, headers=headers)
+    if payload.sender:
+        email_kwargs["sender"] = brevo.SendTransacEmailRequestSender(**payload.sender)
+
+    if payload.reply_to:
+        email_kwargs["reply_to"] = brevo.SendTransacEmailRequestReplyTo(**payload.reply_to)
+
+    if not payload.enable_unsubscribe:
+        email_kwargs["headers"] = {"X-List-Unsub": "disabled"}
 
     # Can send email with: to, sender, template_id, tags, params
 
     if payload.template_id:
-        send_smtp_email.template_id = payload.template_id
+        email_kwargs["template_id"] = payload.template_id
         if payload.tags:
-            send_smtp_email.tags = payload.tags
+            email_kwargs["tags"] = payload.tags
         if payload.params:  # params cannot be an empty dict in the API
-            send_smtp_email.params = payload.params
+            email_kwargs["params"] = payload.params
 
     # Or can send email with: to, sender, subject, html_content, attachment (Can be None)
 
     elif payload.subject and payload.html_content:
-        send_smtp_email.subject = payload.subject
-        send_smtp_email.html_content = payload.html_content
+        email_kwargs["subject"] = payload.subject
+        email_kwargs["html_content"] = payload.html_content
         if payload.attachment:  # attachment cannot be an empty list in the API
-            send_smtp_email.attachment = [
-                {"content": attachment.content, "name": attachment.name} for attachment in payload.attachment
+            email_kwargs["attachment"] = [
+                brevo.SendTransacEmailRequestAttachmentItem(**attachment) for attachment in payload.attachment
             ]
     else:
-        logger.error("Invalid payload in send_transactional_email", extra=extra)
+        logger.error("Invalid payload in send_transactional_email", extra={"payload": payload.model_dump()})
         return
 
     try:
-        configuration = brevo_python.Configuration()
-        if settings.PROXY_CERT_BUNDLE is not None:
-            configuration.ssl_ca_cert = settings.PROXY_CERT_BUNDLE
-        if payload.use_pro_subaccount:
-            configuration.api_key["api-key"] = settings.SENDINBLUE_PRO_API_KEY
-        else:
-            configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
-        api_instance = brevo_python.TransactionalEmailsApi(brevo_python.ApiClient(configuration))
-        api_instance.send_transac_email(send_smtp_email)
+        api_key = settings.SENDINBLUE_PRO_API_KEY if payload.use_pro_subaccount else settings.SENDINBLUE_API_KEY
+        client = brevo.Brevo(api_key=api_key, timeout=settings.BREVO_REQUEST_TIMEOUT)
+        client.transactional_emails.send_transac_email(**email_kwargs)
 
-    except ApiException as exception:
-        status = int(exception.status) if exception.status else 0
+    except BrevoApiError as exception:
+        status = int(exception.status_code) if exception.status_code else 0
         if status >= 500:
             raise requests.ExternalAPIException(is_retryable=True) from exception
 
-        code = "unknown"
-        if exception.body:
-            try:
-                data = json.loads(exception.body)
-                if data.get("code"):
-                    code = data["code"]
+        if isinstance(exception.body, dict):
+            code = exception.body.get("code", "unknown")
 
-                if status == 400 and code == "invalid_parameter":
-                    # Don't raise exception for data which should be fixed but create a specific alert for every case.
-                    # This should avoid aggregation of all recipients in a single Sentry alert, so would help identify
-                    # invalid emails and potential other invalid parameters lost in the crowd.
-                    logger.error(
-                        "Brevo can't send email to %s: code=%s, message=%s",
-                        # Email is partially obfuscated in logs but full email is available in Sentry for investigation
-                        ",".join(email_utils.anonymize_email(recipient) for recipient in payload.recipients),
-                        code,
-                        data.get("message"),
-                        extra={
-                            "template_id": payload.template_id,
-                            "recipients": payload.recipients,
-                            "bcc_recipients": payload.bcc_recipients,
-                        },
-                    )
-                    return
-            except json.JSONDecodeError:
-                pass
+            if status == 400 and code == "invalid_parameter":
+                # Don't raise exception for data which should be fixed but create a specific alert for every case.
+                # This should avoid aggregation of all recipients in a single Sentry alert, so would help identify
+                # invalid emails and potential other invalid parameters lost in the crowd.
+                logger.error(
+                    "Brevo can't send email to %s: code=%s, message=%s",
+                    # Email is partially obfuscated in logs but full email is available in Sentry for investigation
+                    ",".join(email_utils.anonymize_email(recipient) for recipient in payload.recipients),
+                    code,
+                    exception.body.get("message"),
+                    extra={
+                        "payload": payload.model_dump(),
+                        "status_code": exception.status_code,
+                        "body": exception.body,
+                    },
+                )
+                return
 
         logger.exception(
-            f"Exception when calling Brevo send_transac_email with status={exception.status} and code={code}",
-            extra=extra,
+            "Exception when calling Brevo send_transac_email",
+            extra={"payload": payload.model_dump(), "status_code": exception.status_code, "body": exception.body},
         )
         raise requests.ExternalAPIException(is_retryable=False) from exception
 

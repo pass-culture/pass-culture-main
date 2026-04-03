@@ -1,9 +1,9 @@
 import dataclasses
 from unittest.mock import patch
 
+import brevo
 import pytest
-from brevo_python.rest import ApiException
-from urllib3.response import HTTPResponse
+from brevo.core import ApiError as BrevoApiError
 
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.factories as users_factories
@@ -17,15 +17,12 @@ from pcapi.utils import requests
 
 
 class TransactionalEmailWithTemplateTest:
-    @patch("brevo_python.api.TransactionalEmailsApi.send_transac_email")
+    @patch("brevo.transactional_emails.client.TransactionalEmailsClient.send_transac_email")
     def test_bad_request(self, mock, caplog):
-        mock.side_effect = ApiException(
-            http_resp=HTTPResponse(
-                status=400,
-                reason="Bad Request",
-                headers={"Content-Type": "application/json"},
-                body='{"code":"test_code","message":"test_message"}',
-            )
+        mock.side_effect = BrevoApiError(
+            status_code=400,
+            headers={"Content-Type": "application/json"},
+            body={"code": "test_code", "message": "test_message"},
         )
 
         payload = serialization.SendTransactionalEmailRequest(
@@ -37,21 +34,33 @@ class TransactionalEmailWithTemplateTest:
 
         assert exception_info.value.is_retryable is False
         assert caplog.records[0].levelname == "ERROR"
-        assert (
-            caplog.records[0].message
-            == "Exception when calling Brevo send_transac_email with status=400 and code=test_code"
-        )
+        assert caplog.records[0].message == "Exception when calling Brevo send_transac_email"
+        assert caplog.records[0].extra == {
+            "payload": {
+                "attachment": None,
+                "bcc_recipients": [],
+                "enable_unsubscribe": False,
+                "html_content": None,
+                "params": {},
+                "recipients": [],
+                "reply_to": {},
+                "sender": {},
+                "subject": None,
+                "tags": [],
+                "template_id": 1,
+                "use_pro_subaccount": False,
+            },
+            "status_code": 400,
+            "body": {"code": "test_code", "message": "test_message"},
+        }
         assert len(caplog.records) == 1
 
-    @patch("brevo_python.api.TransactionalEmailsApi.send_transac_email")
+    @patch("brevo.transactional_emails.client.TransactionalEmailsClient.send_transac_email")
     def test_error_not_json(self, mock, caplog):
-        mock.side_effect = ApiException(
-            http_resp=HTTPResponse(
-                status=400,
-                reason="Bad Request",
-                headers={"Content-Type": "application/json"},
-                body="This is an error message",
-            )
+        mock.side_effect = BrevoApiError(
+            status_code=400,
+            headers={"Content-Type": "application/json"},
+            body="This is an error message",
         )
 
         payload = serialization.SendTransactionalEmailRequest(
@@ -63,21 +72,33 @@ class TransactionalEmailWithTemplateTest:
 
         assert exception_info.value.is_retryable is False
         assert caplog.records[0].levelname == "ERROR"
-        assert (
-            caplog.records[0].message
-            == "Exception when calling Brevo send_transac_email with status=400 and code=unknown"
-        )
+        assert caplog.records[0].message == "Exception when calling Brevo send_transac_email"
+        assert caplog.records[0].extra == {
+            "payload": {
+                "attachment": None,
+                "bcc_recipients": [],
+                "enable_unsubscribe": False,
+                "html_content": None,
+                "params": {},
+                "recipients": [],
+                "reply_to": {},
+                "sender": {},
+                "subject": None,
+                "tags": [],
+                "template_id": 1,
+                "use_pro_subaccount": False,
+            },
+            "status_code": 400,
+            "body": "This is an error message",
+        }
         assert len(caplog.records) == 1
 
-    @patch("brevo_python.api.TransactionalEmailsApi.send_transac_email")
+    @patch("brevo.transactional_emails.client.TransactionalEmailsClient.send_transac_email")
     def test_email_not_valid(self, mock, caplog):
-        mock.side_effect = ApiException(
-            http_resp=HTTPResponse(
-                status=400,
-                reason="Bad Request",
-                headers={"Content-Type": "application/json"},
-                body='{"code":"invalid_parameter","message":"email is not valid in to"}',
-            )
+        mock.side_effect = BrevoApiError(
+            status_code=400,
+            headers={"Content-Type": "application/json"},
+            body={"code": "invalid_parameter", "message": "email is not valid in to"},
         )
 
         payload = serialization.SendTransactionalEmailRequest(
@@ -85,7 +106,7 @@ class TransactionalEmailWithTemplateTest:
             recipients=["invalid@example", "other@example.com"],
             bcc_recipients=["bcc@example.com"],
             template_id=TransactionalEmail.EMAIL_CONFIRMATION.value.id,
-            params={"name": "Avery"},
+            params={"NAME": "Avery"},
             reply_to={"email": "support@example.com", "name": "pass Culture"},
             enable_unsubscribe=False,
         )
@@ -98,15 +119,28 @@ class TransactionalEmailWithTemplateTest:
             == "Brevo can't send email to inv***@example,oth***@example.com: code=invalid_parameter, message=email is not valid in to"
         )
         assert caplog.records[0].extra == {
-            "template_id": TransactionalEmail.EMAIL_CONFIRMATION.value.id,
-            "recipients": ["invalid@example", "other@example.com"],
-            "bcc_recipients": ["bcc@example.com"],
+            "payload": {
+                "attachment": None,
+                "bcc_recipients": ["bcc@example.com"],
+                "enable_unsubscribe": False,
+                "html_content": None,
+                "params": {"NAME": "Avery"},
+                "recipients": ["invalid@example", "other@example.com"],
+                "reply_to": {"email": "support@example.com", "name": "pass Culture"},
+                "sender": {"email": "support@example.com", "name": "pass Culture"},
+                "subject": None,
+                "tags": None,
+                "template_id": TransactionalEmail.EMAIL_CONFIRMATION.value.id,
+                "use_pro_subaccount": False,
+            },
+            "status_code": 400,
+            "body": {"code": "invalid_parameter", "message": "email is not valid in to"},
         }
         assert len(caplog.records) == 1
 
     @patch(
-        "brevo_python.api.TransactionalEmailsApi.send_transac_email",
-        side_effect=ApiException(status=524, reason="Bad Request"),
+        "brevo.transactional_emails.client.TransactionalEmailsClient.send_transac_email",
+        side_effect=BrevoApiError(status_code=524, body="Bad Request"),
     )
     def test_external_api_unavailable(self, mock, caplog):
         payload = serialization.SendTransactionalEmailRequest(
@@ -117,62 +151,54 @@ class TransactionalEmailWithTemplateTest:
             send_transactional_email(payload)
 
         assert exception_info.value.is_retryable is True
-        assert isinstance(exception_info.value.__cause__, ApiException)
+        assert isinstance(exception_info.value.__cause__, BrevoApiError)
 
         assert len(caplog.records) == 0
 
-    @patch("brevo_python.api.TransactionalEmailsApi.send_transac_email")
+    @patch("brevo.transactional_emails.client.TransactionalEmailsClient.send_transac_email")
     def test_send_transactional_email_with_template_id_success(self, mock_send_transac_email):
         payload = serialization.SendTransactionalEmailRequest(
             sender={"email": "support@example.com", "name": "pass Culture"},
             recipients=["avery.kelly@woobmail.com"],
             template_id=TransactionalEmail.EMAIL_CONFIRMATION.value.id,
-            params={"name": "Avery"},
+            params={"NAME": "Avery"},
             reply_to={"email": "support@example.com", "name": "pass Culture"},
             enable_unsubscribe=False,
         )
         send_transactional_email(payload)
 
         mock_send_transac_email.assert_called_once()
-        assert mock_send_transac_email.call_args[0][0].sender == {
-            "email": "support@example.com",
-            "name": "pass Culture",
+        assert mock_send_transac_email.call_args.kwargs == {
+            "sender": brevo.SendTransacEmailRequestSender(email="support@example.com", name="pass Culture"),
+            "params": {"NAME": "Avery"},
+            "template_id": TransactionalEmail.EMAIL_CONFIRMATION.value.id,
+            "to": [brevo.SendTransacEmailRequestToItem(email="avery.kelly@woobmail.com", name=None)],
+            "reply_to": brevo.SendTransacEmailRequestReplyTo(email="support@example.com", name="pass Culture"),
+            "headers": {"X-List-Unsub": "disabled"},
         }
-        assert mock_send_transac_email.call_args[0][0].params == {"name": "Avery"}
-        assert mock_send_transac_email.call_args[0][0].template_id == TransactionalEmail.EMAIL_CONFIRMATION.value.id
-        assert mock_send_transac_email.call_args[0][0].to == [{"email": "avery.kelly@woobmail.com"}]
-        assert mock_send_transac_email.call_args[0][0].tags is None
-        assert mock_send_transac_email.call_args[0][0].reply_to == {
-            "email": "support@example.com",
-            "name": "pass Culture",
-        }
-        assert mock_send_transac_email.call_args[0][0].headers == {"X-List-Unsub": "disabled"}
 
-    @patch("brevo_python.api.TransactionalEmailsApi.send_transac_email")
+    @patch("brevo.transactional_emails.client.TransactionalEmailsClient.send_transac_email")
     def test_send_transactional_email_with_reply_to_success(self, mock_send_transac_email):
         payload = serialization.SendTransactionalEmailRequest(
             sender={"email": "support@example.com", "name": "pass Culture"},
             recipients=["avery.kelly@woobmail.com"],
             template_id=TransactionalEmail.EMAIL_CONFIRMATION.value.id,
-            params={"name": "Avery"},
+            params={"NAME": "Avery"},
             reply_to={"email": "reply@example.com", "name": "reply"},
             enable_unsubscribe=True,
         )
         send_transactional_email(payload)
 
         mock_send_transac_email.assert_called_once()
-        assert mock_send_transac_email.call_args[0][0].sender == {
-            "email": "support@example.com",
-            "name": "pass Culture",
+        assert mock_send_transac_email.call_args.kwargs == {
+            "sender": brevo.SendTransacEmailRequestSender(email="support@example.com", name="pass Culture"),
+            "params": {"NAME": "Avery"},
+            "template_id": TransactionalEmail.EMAIL_CONFIRMATION.value.id,
+            "to": [brevo.SendTransacEmailRequestToItem(email="avery.kelly@woobmail.com", name=None)],
+            "reply_to": brevo.SendTransacEmailRequestReplyTo(email="reply@example.com", name="reply"),
         }
-        assert mock_send_transac_email.call_args[0][0].params == {"name": "Avery"}
-        assert mock_send_transac_email.call_args[0][0].template_id == TransactionalEmail.EMAIL_CONFIRMATION.value.id
-        assert mock_send_transac_email.call_args[0][0].to == [{"email": "avery.kelly@woobmail.com"}]
-        assert mock_send_transac_email.call_args[0][0].tags is None
-        assert mock_send_transac_email.call_args[0][0].reply_to == {"email": "reply@example.com", "name": "reply"}
-        assert mock_send_transac_email.call_args[0][0].headers is None
 
-    @patch("brevo_python.api.TransactionalEmailsApi.send_transac_email")
+    @patch("brevo.transactional_emails.client.TransactionalEmailsClient.send_transac_email")
     def test_send_transactional_email_with_template_id_success_empty_params(self, mock_send_transac_email):
         payload = serialization.SendTransactionalEmailRequest(
             sender={"email": "support@example.com", "name": "pass Culture"},
@@ -184,19 +210,13 @@ class TransactionalEmailWithTemplateTest:
         send_transactional_email(payload)
 
         mock_send_transac_email.assert_called_once()
-        assert mock_send_transac_email.call_args[0][0].sender == {
-            "email": "support@example.com",
-            "name": "pass Culture",
+        assert mock_send_transac_email.call_args.kwargs == {
+            "sender": brevo.SendTransacEmailRequestSender(email="support@example.com", name="pass Culture"),
+            "template_id": TransactionalEmail.EMAIL_CONFIRMATION.value.id,
+            "to": [brevo.SendTransacEmailRequestToItem(email="avery.kelly@woobmail.com", name=None)],
+            "reply_to": brevo.SendTransacEmailRequestReplyTo(email="support@example.com", name="pass Culture"),
+            "headers": {"X-List-Unsub": "disabled"},
         }
-        assert mock_send_transac_email.call_args[0][0].params is None
-        assert mock_send_transac_email.call_args[0][0].template_id == TransactionalEmail.EMAIL_CONFIRMATION.value.id
-        assert mock_send_transac_email.call_args[0][0].to == [{"email": "avery.kelly@woobmail.com"}]
-        assert mock_send_transac_email.call_args[0][0].tags is None
-        assert mock_send_transac_email.call_args[0][0].reply_to == {
-            "email": "support@example.com",
-            "name": "pass Culture",
-        }
-        assert mock_send_transac_email.call_args[0][0].headers == {"X-List-Unsub": "disabled"}
 
     @pytest.mark.settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
     @patch("pcapi.core.mails.tasks.send_transactional_email_primary_task.delay")
@@ -219,7 +239,7 @@ class TransactionalEmailWithoutTemplateTest:
         reply_to=None,
     )
 
-    @patch("brevo_python.api.TransactionalEmailsApi.send_transac_email")
+    @patch("brevo.transactional_emails.client.TransactionalEmailsClient.send_transac_email")
     def test_send_transactional_email_success(self, mock_send_transac_email):
         payload = serialization.SendTransactionalEmailRequest(
             sender=dataclasses.asdict(self.data.sender.value),
@@ -232,20 +252,16 @@ class TransactionalEmailWithoutTemplateTest:
         send_transactional_email(payload)
 
         mock_send_transac_email.assert_called_once()
-        assert mock_send_transac_email.call_args[0][0].sender == {
-            "email": "support@example.com",
-            "name": "pass Culture",
-        }
-        assert mock_send_transac_email.call_args[0][0].subject == "Bienvenue au pass Culture"
-        assert mock_send_transac_email.call_args[0][0].html_content == "Bonjour"
-        assert mock_send_transac_email.call_args[0][0].to == [{"email": "avery.kelly@woobmail.com"}]
-        assert mock_send_transac_email.call_args[0][0].tags is None
-        assert mock_send_transac_email.call_args[0][0].reply_to == {
-            "email": "support@example.com",
-            "name": "pass Culture",
+        assert mock_send_transac_email.call_args.kwargs == {
+            "sender": brevo.SendTransacEmailRequestSender(email="support@example.com", name="pass Culture"),
+            "subject": "Bienvenue au pass Culture",
+            "html_content": "Bonjour",
+            "to": [brevo.SendTransacEmailRequestToItem(email="avery.kelly@woobmail.com", name=None)],
+            "reply_to": brevo.SendTransacEmailRequestReplyTo(email="support@example.com", name="pass Culture"),
+            "headers": {"X-List-Unsub": "disabled"},
         }
 
-    @patch("brevo_python.api.TransactionalEmailsApi.send_transac_email")
+    @patch("brevo.transactional_emails.client.TransactionalEmailsClient.send_transac_email")
     def test_send_transactional_email_success_empty_attachement(self, mock_send_transac_email):
         payload = serialization.SendTransactionalEmailRequest(
             sender=dataclasses.asdict(self.data.sender.value),
@@ -258,15 +274,11 @@ class TransactionalEmailWithoutTemplateTest:
         send_transactional_email(payload)
 
         mock_send_transac_email.assert_called_once()
-        assert mock_send_transac_email.call_args[0][0].sender == {
-            "email": "support@example.com",
-            "name": "pass Culture",
-        }
-        assert mock_send_transac_email.call_args[0][0].subject == "Bienvenue au pass Culture"
-        assert mock_send_transac_email.call_args[0][0].html_content == "Bonjour"
-        assert mock_send_transac_email.call_args[0][0].to == [{"email": "avery.kelly@woobmail.com"}]
-        assert mock_send_transac_email.call_args[0][0].attachment is None
-        assert mock_send_transac_email.call_args[0][0].reply_to == {
-            "email": "support@example.com",
-            "name": "pass Culture",
+        assert mock_send_transac_email.call_args.kwargs == {
+            "sender": brevo.SendTransacEmailRequestSender(email="support@example.com", name="pass Culture"),
+            "subject": "Bienvenue au pass Culture",
+            "html_content": "Bonjour",
+            "to": [brevo.SendTransacEmailRequestToItem(email="avery.kelly@woobmail.com", name=None)],
+            "reply_to": brevo.SendTransacEmailRequestReplyTo(email="support@example.com", name="pass Culture"),
+            "headers": {"X-List-Unsub": "disabled"},
         }
