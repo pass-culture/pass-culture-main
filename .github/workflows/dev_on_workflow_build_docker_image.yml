@@ -37,6 +37,12 @@ jobs:
           echo "$TAG" > version.txt
           git add version.txt
 
+      - name: Add version to pro
+        working-directory: pro
+        run: |
+          yarn version
+          git add package.json
+
       - name: Build docker image and save as github artifact
         uses: ./.github/actions/build-docker-image
         with:
