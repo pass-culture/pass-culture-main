@@ -1,0 +1,27 @@
+name: "9 [test] test_build_and_push"
+
+on:
+  workflow_dispatch:
+
+permissions: write-all
+jobs:
+  build-pcapi:
+    name: "[pcapi] build docker image."
+    uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
+    with:
+      image: pcapi
+      tag: ${{ github.sha }}
+
+  push-pcapi:
+    name: Push pcapi docker image to artifact registry
+    uses: ./.github/workflows/dev_on_workflow_push_docker_image_passdirector.yml
+    needs:
+      - build-pcapi
+    with:
+      image: pcapi
+      tag: ${{ github.sha }}
+      environment: pcapi-opsv2
+    secrets:
+      WORKLOAD_IDENTITY_PRD: ${{ secrets.WORKLOAD_IDENTITY_PRD }}
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}

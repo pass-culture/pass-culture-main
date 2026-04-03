@@ -19,7 +19,7 @@ inputs:
     description: "Name of the cluster that hosts our workflow engine"
     required: true
   service_account:
-    description: "PCAPI deployment service account"
+    description: "PCAPI CD service account"
     required: true
   workload_identity_provider:
     description: "Workload identity provider to perform authentication to GCP"

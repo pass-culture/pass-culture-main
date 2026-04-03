@@ -2,7 +2,6 @@ name: "3 [on_workflow] Build and tag"
 
 # This reusable workflow should be called by another workflow.
 # It builds then tags the release so it's ready to deploy.
-
 on:
   workflow_call:
     inputs:
@@ -22,8 +21,14 @@ on:
         type: boolean
         default: false
 
+      environment:
+        required: false
+        description: The github environment to use
+        type: string
 
     secrets:
+      WORKLOAD_IDENTITY_PRD:
+        required: true
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
       GCP_EHP_SERVICE_ACCOUNT:
@@ -51,17 +56,20 @@ jobs:
 
   push-images:
     name: Push Docker images
+    uses: ./.github/workflows/dev_on_workflow_push_docker_image_passdirector.yml
     needs: [build-images]
     strategy:
       matrix:
         image: [pcapi, pcapi-console]
-    uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     with:
       image: ${{ matrix.image }}
-      tag: ${{ inputs.tag_number }}
+      tag: ${{ github.sha }}
+      environment: pcapi-tst
+      tag_latest: true
     secrets:
-      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      WORKLOAD_IDENTITY_PRD: ${{ secrets.WORKLOAD_IDENTITY_PRD }}
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
   tag-and-push-release:
     runs-on: ubuntu-22.04
