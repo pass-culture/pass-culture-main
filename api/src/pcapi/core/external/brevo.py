@@ -9,10 +9,8 @@ from typing import Any
 from typing import Callable
 from typing import Iterable
 
-import brevo_python
-from brevo_python.api.contacts_api import ContactsApi
-from brevo_python.models.created_process_id import CreatedProcessId
-from brevo_python.rest import ApiException as BrevoApiException
+import brevo
+from brevo.core import ApiError as BrevoApiError
 
 from pcapi import settings
 from pcapi.core import mails as mails_api
@@ -107,6 +105,11 @@ class BrevoOptionalAttributes(Enum):
     # Not in BrevoAttributes because of build_file_body which uses full list()
     # We don't want one-shot attributes in bulk import
     INTENDED_CATEGORIES = "INTENDED_CATEGORIES"
+
+
+def _get_brevo_client(use_pro_subaccount: bool) -> brevo.Brevo:
+    api_key = settings.SENDINBLUE_PRO_API_KEY if use_pro_subaccount else settings.SENDINBLUE_API_KEY
+    return brevo.Brevo(api_key=api_key, timeout=settings.BREVO_REQUEST_TIMEOUT)
 
 
 def update_contact_email(user: users_models.User, old_email: str, new_email: str, asynchronous: bool = True) -> None:
@@ -312,21 +315,17 @@ def make_update_request(payload: serialization.UpdateBrevoContactRequest) -> Non
 
 
 def send_import_contacts_request(
-    api_instance: ContactsApi, file_body: str, list_ids: list[int] | None, email_blacklist: bool = False
+    client: brevo.Brevo, file_body: str, list_ids: list[int] | None, email_blacklist: bool = False
 ) -> None:
-    request_contact_import = brevo_python.RequestContactImport(
-        email_blacklist=email_blacklist,
-        sms_blacklist=False,
-        update_existing_contacts=True,
-        empty_contacts_attributes=False,
-    )
-    request_contact_import.file_body = file_body
-    request_contact_import.list_ids = list_ids
-
     try:
-        api_instance.import_contacts(request_contact_import)
-    except BrevoApiException as e:
-        logger.exception("Exception when calling ContactsApi->import_contacts: %s", e)
+        client.contacts.import_contacts(
+            email_blacklist=email_blacklist,
+            file_body=file_body,
+            list_ids=list_ids,
+            update_existing_contacts=True,
+        )
+    except BrevoApiError as e:
+        logger.exception("Exception when calling Brevo import_contacts: %s", e)
 
 
 def format_file_value(value: str | bool | int | datetime | None) -> str:
@@ -370,57 +369,47 @@ def import_contacts_in_brevo(brevo_users_data: list[BrevoUserUpdateData], email_
     # This part causes an HTTP 400 error: {"code":"missing_parameter","message":"Missing listIds or newList"}
     # List is mandatory when calling import_contacts endpoint.
     if pro_users:
-        configuration = brevo_python.Configuration()
-        configuration.api_key["api-key"] = settings.SENDINBLUE_PRO_API_KEY
-        api_instance = brevo_python.ContactsApi(brevo_python.ApiClient(configuration))
-
+        client = _get_brevo_client(use_pro_subaccount=True)
         pro_users_file_body = build_file_body(pro_users)
         send_import_contacts_request(
-            api_instance,
+            client,
             file_body=pro_users_file_body,
             list_ids=None,
             email_blacklist=email_blacklist,
         )
     # send young users request
     if young_users:
-        configuration = brevo_python.Configuration()
-        configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
-        api_instance = brevo_python.ContactsApi(brevo_python.ApiClient(configuration))
-
+        client = _get_brevo_client(use_pro_subaccount=False)
         young_users_file_body = build_file_body(young_users)
         send_import_contacts_request(
-            api_instance,
+            client,
             file_body=young_users_file_body,
             list_ids=[settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID],
             email_blacklist=email_blacklist,
         )
 
 
-def _send_import_request(
-    api_instance: ContactsApi, brevo_list_id: int, iteration: int, count: int, file_body: str
-) -> int:
-    request_contact_import = brevo_python.RequestContactImport()
-    request_contact_import.file_body = file_body
-    request_contact_import.list_ids = [brevo_list_id]
-    request_contact_import.notify_url = urllib.parse.urljoin(
-        settings.API_URL,
-        f"/webhooks/sendinblue/importcontacts/{brevo_list_id}/{iteration}",
+def _send_import_request(client: brevo.Brevo, brevo_list_id: int, iteration: int, count: int, file_body: str) -> int:
+    import_contacts_response = client.contacts.import_contacts(
+        file_body=file_body,
+        list_ids=[brevo_list_id],
+        notify_url=urllib.parse.urljoin(
+            settings.API_URL,
+            f"/webhooks/sendinblue/importcontacts/{brevo_list_id}/{iteration}",
+        ),
     )
-
-    import_response: CreatedProcessId = api_instance.import_contacts(request_contact_import)
     logger.info(
-        "ContactsApi->import_contacts returned: %s",
-        import_response,
+        "Brevo import_contacts returned",
         extra={
             "list_id": brevo_list_id,
             "iteration": iteration,
             "email_count": count,
             "request_body_size": len(file_body),
-            "process_id": import_response.process_id,
+            "process_id": import_contacts_response.process_id,
         },
     )
 
-    return import_response.process_id
+    return import_contacts_response.process_id
 
 
 def add_contacts_to_list(
@@ -439,13 +428,7 @@ def add_contacts_to_list(
     Returns:
         bool: True when successful, False otherwise
     """
-
-    configuration = brevo_python.Configuration()
-    if use_pro_subaccount:
-        configuration.api_key["api-key"] = settings.SENDINBLUE_PRO_API_KEY
-    else:
-        configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
-    contacts_api_instance: ContactsApi = brevo_python.ContactsApi(brevo_python.ApiClient(configuration))
+    client = _get_brevo_client(bool(use_pro_subaccount))
 
     iteration = 1
 
@@ -465,16 +448,16 @@ def add_contacts_to_list(
 
         for emails in chunk(user_emails, max_emails_per_import):
             file_body = "EMAIL\n" + "\n".join(emails)
-            _send_import_request(contacts_api_instance, brevo_list_id, iteration, len(emails), file_body)
+            _send_import_request(client, brevo_list_id, iteration, len(emails), file_body)
             iteration += 1
 
         # Don't wait for processes completed, it would take too much time in the cron process
 
-    except BrevoApiException as exception:
+    except BrevoApiError as exception:
         logger.exception(
-            "Exception when calling ContactsApi->import_contacts: %s",
+            "Exception when calling Brevo import_contacts: %s",
             exception,
-            extra={"list_id": brevo_list_id, "iteration": iteration},
+            extra={"list_id": brevo_list_id, "iteration": iteration, "use_pro_subaccount": use_pro_subaccount},
         )
         return False
 

@@ -22,9 +22,7 @@ def test_update_brevo_and_batch_users(app, caplog):
     users_factories.ProFactory()
     users_factories.NonAttachedProFactory()
 
-    with patch(
-        "pcapi.core.external.brevo.brevo_python.api.contacts_api.ContactsApi.import_contacts"
-    ) as mock_import_contacts:
+    with patch("brevo.contacts.client.ContactsClient.import_contacts") as mock_import_contacts:
         with patch(
             "pcapi.core.external.commands.update_brevo_batch_attributes.update_users_attributes"
         ) as mock_update_batch:
