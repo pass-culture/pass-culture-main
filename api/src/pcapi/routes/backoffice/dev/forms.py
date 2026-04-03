@@ -1,11 +1,12 @@
 import datetime
 
 import wtforms
+from dateutil.relativedelta import relativedelta
 from flask_wtf import FlaskForm
 
+from pcapi.core.finance.conf import GRANTED_DEPOSIT_AMOUNT_18_v3
 from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
-from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users.generator import GeneratedIdProvider
 from pcapi.core.users.generator import GeneratedSubscriptionStep
@@ -35,12 +36,31 @@ class SimpleComponentsForm(FlaskForm):
     switch = fields.PCSwitchBooleanField("interrupteur")
 
 
+def get_max_birthdate() -> datetime.date:
+    return datetime.date.today() - relativedelta(years=15)
+
+
+def get_min_birthdate() -> datetime.date:
+    return datetime.date.today() - relativedelta(years=20)
+
+
+def get_default_birthdate() -> datetime.date:
+    return datetime.date.today() - relativedelta(years=18)
+
+
 class UserGeneratorForm(utils.PCForm):
-    age = fields.PCIntegerField(
+    age = fields.PCOptHiddenIntegerField(
         "Age",
-        default=users_constants.ELIGIBILITY_AGE_18,
         validators=[
+            wtforms.validators.Optional(),
             wtforms.validators.NumberRange(min=15, max=20, message="L'âge doit être entre 15 et 20 ans."),
+        ],
+    )
+    birthdate = fields.PCDateField(
+        "Date de naissance",
+        validators=[
+            wtforms.validators.Optional(),
+            fields.DateRangeValidator(min=get_min_birthdate, max=get_max_birthdate),
         ],
     )
     id_provider = fields.PCSelectField(
@@ -64,9 +84,31 @@ class UserGeneratorForm(utils.PCForm):
         ],
         default=GeneratedSubscriptionStep.EMAIL_VALIDATION.name,
     )
-    date_created = fields.PCDateField("Date de dépôt du dossier", default=datetime.date.today())
+    date_created = fields.PCDateField("Date de dépôt du dossier", default=datetime.date.today)
+    credit = fields.PCDecimalField(
+        "Crédit restant",
+        validators=[
+            wtforms.validators.Optional(),
+            wtforms.validators.NumberRange(min=0, max=GRANTED_DEPOSIT_AMOUNT_18_v3),
+        ],
+    )
     postal_code = fields.PCOptPostalCodeField("Code postal")
     transition_17_18 = fields.PCCheckboxField("Transition 17-18")
+
+    def validate(self, extra_validators: dict | None = None) -> bool:
+        # Ensure that we have either age exclusive or birthdate.
+        is_valid = super().validate(extra_validators)
+        if bool(self.age.data) == bool(self.birthdate.data):
+            self.age.errors.append("Il faut renseigner soit l'age soit la date de naissance.")
+            self.birthdate.errors.append("Il faut renseigner soit l'age soit la date de naissance.")
+            return False
+
+        # Ensure that credit is handled only if the generated user is a beneficiary
+        if self.credit.data is not None and self.step.data != GeneratedSubscriptionStep.BENEFICIARY.name:
+            self.credit.errors.append("L'utilisateur généré doit être bénéficiaire pour pouvoir préciser son crédit")
+            return False
+
+        return is_valid
 
 
 class UserDeletionForm(utils.PCForm):

@@ -1,4 +1,8 @@
+import datetime
+import decimal
+
 import pytest
+from dateutil.relativedelta import relativedelta
 
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -32,17 +36,13 @@ class E2EAccountTest:
         """
         Response format:
         {
+            "id": <user_id>,
             "email": "first_name.last_name.<user_id>@passculture.gen",
-            "id': <user_id>,
-            "token': {
-                "data": {},
-                "encoded_token": "<token>",
-                "key_suffix": 11142,
-                "type_": "TokenType.SIGNUP_EMAIL_CONFIRMATION"
-            }
+            "access_token": <token>,
+            "expiration_timestamp": <token_expiration_timestamp>,
         }
         """
-        response = auth_client.post("/e2e/account", {"step": "BENEFICIARY", "id_provider": "UBBLE"})
+        response = auth_client.post("/e2e/account", {"age": 18, "step": "BENEFICIARY", "id_provider": "UBBLE"})
         assert response.status_code == 200
 
         users = db.session.query(users_models.User).all()
@@ -53,6 +53,34 @@ class E2EAccountTest:
         assert response.json["email"] == user.email
         assert "access_token" in response.json
         assert "expiration_timestamp" in response.json
+
+    def test_create_account_with_birthdate(self, auth_client):
+        birthdate = datetime.date.today() - relativedelta(years=18)
+        birthdate_str = f"{birthdate:%Y-%m-%d}"
+        response = auth_client.post(
+            "/e2e/account", {"birthdate": birthdate_str, "step": "BENEFICIARY", "id_provider": "UBBLE"}
+        )
+        assert response.status_code == 200
+
+        users = db.session.query(users_models.User).all()
+        assert len(users) == 1
+        user = users[0]
+        assert user.is_beneficiary
+        assert response.json["id"] == user.id
+
+    def test_create_account_with_credit(self, auth_client):
+        response = auth_client.post(
+            "/e2e/account",
+            {"age": 18, "step": "BENEFICIARY", "id_provider": "UBBLE", "credit": decimal.Decimal("34.7")},
+        )
+        assert response.status_code == 200
+
+        users = db.session.query(users_models.User).all()
+        assert len(users) == 1
+        user = users[0]
+        assert user.is_beneficiary
+        assert response.json["id"] == user.id
+        assert user.deposit.amount == decimal.Decimal("34.7")
 
 
 class E2EAccountUbbleConfigTest:

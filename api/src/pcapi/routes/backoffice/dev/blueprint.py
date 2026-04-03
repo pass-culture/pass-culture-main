@@ -124,6 +124,8 @@ def components() -> response_utils.BackofficeResponse:
 @access_control.custom_login_required(redirect_to="backoffice_web.home")
 def get_generated_user() -> response_utils.BackofficeResponse:
     form = forms.UserGeneratorForm()
+    form.birthdate.default = forms.get_default_birthdate()
+    form.process()
     user = _get_user_if_exists(request_utils.get_query_params().get("userId"))
     token = request_utils.get_query_params().get("accessToken")
     link_to_app = None
@@ -184,8 +186,20 @@ def generate_user() -> response_utils.BackofficeResponse:
         flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.dev.get_generated_user"), code=303)
 
+    raw_date_created = form.date_created.data
+    user_data = users_generator.GenerateUserData(
+        age=form.age.data,
+        birthdate=form.birthdate.data,
+        credit=form.credit.data,
+        id_provider=users_generator.GeneratedIdProvider[form.id_provider.data],
+        step=users_generator.GeneratedSubscriptionStep[form.step.data],
+        transition_17_18=form.transition_17_18.data,
+        date_created=datetime.datetime(raw_date_created.year, raw_date_created.month, raw_date_created.day),
+        postal_code=form.postal_code.data,
+    )
+
     # >18yo user cannot be identified with Educonnect
-    age = form.age.data
+    age = user_data.get_age()
     id_provider = form.id_provider.data
     transition_17_18 = form.transition_17_18.data
     if (
@@ -221,15 +235,6 @@ def generate_user() -> response_utils.BackofficeResponse:
         return redirect(url_for("backoffice_web.dev.get_generated_user"), code=303)
 
     try:
-        raw_date_created = form.date_created.data
-        user_data = users_generator.GenerateUserData(
-            age=form.age.data,
-            id_provider=users_generator.GeneratedIdProvider[form.id_provider.data],
-            step=users_generator.GeneratedSubscriptionStep[form.step.data],
-            transition_17_18=form.transition_17_18.data,
-            date_created=datetime.datetime(raw_date_created.year, raw_date_created.month, raw_date_created.day),
-            postal_code=form.postal_code.data,
-        )
         user = users_generator.generate_user(user_data=user_data)
     except users_exceptions.UserGenerationForbiddenException:
         raise NotFound()
