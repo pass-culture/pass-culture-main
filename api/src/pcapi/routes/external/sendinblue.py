@@ -93,6 +93,9 @@ def sendinblue_notify_importcontacts(list_id: int, iteration: int) -> None:
 def brevo_get_user_recommendations(user_id: int) -> serializers.BrevoOffersResponse:
     """This route is called by Brevo on sending an email to a user to get recommended offers."""
 
+    # New feature
+    # ...
+
     user = db.session.query(User).filter(User.id == user_id).one_or_none()
     if not user:
         abort(404)
