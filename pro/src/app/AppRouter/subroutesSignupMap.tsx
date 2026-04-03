@@ -5,14 +5,10 @@ import {
   generatePath,
   Navigate,
   type NavigateProps,
-  redirect,
-  replace,
   useParams,
 } from 'react-router'
 
 import { withUserPermissions } from '@/commons/auth/withUserPermissions'
-import { isFeatureActive } from '@/commons/store/features/selectors'
-import { rootStore } from '@/commons/store/store'
 import { noop } from '@/commons/utils/noop'
 import { SignupValidation } from '@/pages/Signup/SignUpValidation/SignUpValidation'
 import { SignupConfirmation } from '@/pages/Signup/SignupConfirmation/SignupConfirmation'
@@ -30,13 +26,8 @@ const NavigateWithParams = ({ to, ...props }: NavigateProps) => {
 export const routesSignup: CustomRouteGroupChild[] = [
   {
     path: '/inscription',
-    loader: withUserPermissions(mustBeUnauthenticated, () => {
-      const state = rootStore.getState()
-      if (isFeatureActive(state, 'WIP_PRE_SIGNUP_INFO')) {
-        return redirect('/bienvenue')
-      }
-      return replace('/inscription/compte/creation')
-    }),
+    element: <Navigate to="/bienvenue" />,
+    loader: withUserPermissions(mustBeUnauthenticated),
   },
   {
     element: <SignupContainer />,
