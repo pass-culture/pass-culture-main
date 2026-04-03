@@ -9,7 +9,7 @@ import click
 from pcapi.core import search
 from pcapi.core.educational import models
 from pcapi.core.educational import schemas
-from pcapi.core.educational.adage import api as adage_client
+from pcapi.core.educational.adage import client as adage_client
 from pcapi.core.educational.api import adage as adage_api
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api import institution as institution_api

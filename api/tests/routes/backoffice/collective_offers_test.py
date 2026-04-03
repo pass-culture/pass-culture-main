@@ -1454,7 +1454,7 @@ class BatchCollectiveOffersValidateTest(PostEndpointHelper):
             collectiveOffer__institution=institution,
         )
         collective_offer = collective_stock.collectiveOffer
-        patched_function = "pcapi.core.educational.adage.api.notify_institution_association"
+        patched_function = "pcapi.core.educational.adage.client.notify_institution_association"
         adage_exception = educational_exceptions.AdageException(
             message="An error occured on adage side",
             status_code=400,
