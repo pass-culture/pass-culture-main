@@ -2085,7 +2085,7 @@ class UpdateOfferTest:
         assert call_args[1]["subcategory_id"] == subcategories.SPECTACLE_REPRESENTATION.id
 
     @mock.patch("pcapi.core.artist.api.upsert_artist_offer_links", return_value=([], []))
-    def test_update_offer_without_artist_offer_links_when_feature_flag_enabled(self, mock_upsert_artist_offer_links):
+    def test_update_offer_without_artist_offer_links(self, mock_upsert_artist_offer_links):
         offer = factories.OfferFactory()
         body = offers_schemas.UpdateOffer(name="Updated Name")
 
@@ -2094,7 +2094,7 @@ class UpdateOfferTest:
         mock_upsert_artist_offer_links.assert_not_called()
 
     @mock.patch("pcapi.core.artist.api.upsert_artist_offer_links", return_value=([], []))
-    def test_update_offer_with_artist_offer_links_when_feature_flag_enabled(self, mock_upsert_artist_offer_links):
+    def test_update_offer_with_artist_offer_links(self, mock_upsert_artist_offer_links):
         offer = factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
 
         artist_offer_links = [

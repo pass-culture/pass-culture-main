@@ -296,7 +296,7 @@ class CreateThingsTest(CreateOfferBase):
         assert offer.description == payload["description"]
         assert not offer.productId
 
-    def test_create_offer_with_artist_links_when_feature_flag_enabled(self, auth_client, venue):
+    def test_create_offer_with_artist_links(self, auth_client, venue):
         artist = artist_factories.ArtistFactory()
 
         payload = {
@@ -732,7 +732,7 @@ class Returns200Test:
         assert offer.ean == "1234567890112"
         assert "ean" not in offer.extraData
 
-    def test_create_offer_with_artist_links_when_feature_flag_enabled(self, client):
+    def test_create_offer_with_artist_links(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
