@@ -5,7 +5,6 @@ from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
-from brevo_python.models.request_contact_import import RequestContactImport
 
 import pcapi.core.users.testing as brevo_testing
 from pcapi import settings
@@ -288,39 +287,30 @@ class BulkImportUsersDataTest:
         result = build_file_body(self.users_data)
         assert result == expected
 
-    @patch("pcapi.core.external.brevo.brevo_python.api.contacts_api.ContactsApi.import_contacts")
+    @patch("brevo.contacts.client.ContactsClient.import_contacts")
     def test_import_contacts_in_brevo(self, mock_import_contacts):
         import_contacts_in_brevo(self.users_data)
 
-        expected_common_params = {
+        expected_young_params = {
             "email_blacklist": False,
-            "empty_contacts_attributes": False,
-            "file_body": "",
-            "file_url": None,
-            "new_list": None,
-            "notify_url": None,
-            "sms_blacklist": False,
+            "file_body": f"{self.expected_header}\n{self.eren_expected_file_body}\n{self.armin_expected_file_body}",
+            "list_ids": [settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID],
             "update_existing_contacts": True,
         }
 
-        expected_young_call = RequestContactImport(
-            **expected_common_params,
-        )
-        expected_young_call.list_ids = [settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID]
-        expected_young_call.file_body = (
-            f"{self.expected_header}\n{self.eren_expected_file_body}\n{self.armin_expected_file_body}"
-        )
+        expected_pro_params = {
+            "email_blacklist": False,
+            "file_body": f"{self.expected_header}\n{self.mikasa_expected_file_body}",
+            "list_ids": None,
+            "update_existing_contacts": True,
+        }
 
-        expected_pro_call = RequestContactImport(
-            **expected_common_params,
+        mock_import_contacts.assert_has_calls(
+            [call(**expected_young_params), call(**expected_pro_params)], any_order=True
         )
-        expected_pro_call.list_ids = None
-        expected_pro_call.file_body = f"{self.expected_header}\n{self.mikasa_expected_file_body}"
-
-        mock_import_contacts.assert_has_calls([call(expected_young_call), call(expected_pro_call)], any_order=True)
 
     @pytest.mark.parametrize("use_pro_subaccount", [True, False])
-    @patch("pcapi.core.external.brevo.brevo_python.api.contacts_api.ContactsApi.import_contacts")
+    @patch("brevo.contacts.client.ContactsClient.import_contacts")
     def test_add_contacts_to_list(self, mock_import_contacts, use_pro_subaccount):
         result = add_contacts_to_list(
             ["eren.yeager@shinganshina.paradis", "armin.arlert@shinganshina.paradis"],
@@ -329,17 +319,9 @@ class BulkImportUsersDataTest:
         )
 
         mock_import_contacts.assert_called_once_with(
-            RequestContactImport(
-                file_url=None,
-                file_body="EMAIL\neren.yeager@shinganshina.paradis\narmin.arlert@shinganshina.paradis",
-                list_ids=[SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID],
-                notify_url=f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID}/1",
-                new_list=None,
-                email_blacklist=False,
-                sms_blacklist=False,
-                update_existing_contacts=True,
-                empty_contacts_attributes=False,
-            )
+            file_body="EMAIL\neren.yeager@shinganshina.paradis\narmin.arlert@shinganshina.paradis",
+            list_ids=[SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID],
+            notify_url=f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID}/1",
         )
 
         assert result is True

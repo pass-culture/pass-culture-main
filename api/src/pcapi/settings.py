@@ -203,6 +203,7 @@ BEAMER_API_KEY = secrets_utils.get("BEAMER_API_KEY", "")
 BEAMER_BACKEND = os.environ.get("BEAMER_BACKEND", "LoggerBackend")
 
 # BREVO
+BREVO_REQUEST_TIMEOUT = int(os.environ.get("BREVO_REQUEST_TIMEOUT", 10))
 BREVO_WEBHOOK_SECRET = secrets_utils.get("BREVO_WEBHOOK_SECRET", "")
 BREVO_NUMBER_OF_OFFERS_IN_EXTERNAL_FEED = int(os.environ.get("BREVO_NUMBER_OF_OFFERS_IN_EXTERNAL_FEED", 5))
 SENDINBLUE_API_KEY = secrets_utils.get("SENDINBLUE_API_KEY", "")
@@ -698,8 +699,6 @@ HARVESTR_API_KEY = secrets_utils.get("HARVESTR_API_KEY", "")
 
 # Credit reform
 CREDIT_V3_DECREE_DATETIME = datetime.fromisoformat(os.environ.get("CREDIT_V3_DECREE_DATETIME", "2025-01-01"))
-# PROXY configuration
-PROXY_CERT_BUNDLE = os.environ.get("PROXY_CERT_BUNDLE", None)
 
 # Soft deletion
 SOFTDELETE_ENABLED = bool(int(os.environ.get("SOFTDELETE_ENABLED", 0)))

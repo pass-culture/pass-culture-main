@@ -1,10 +1,9 @@
-import json
 import logging
 from dataclasses import asdict
 from typing import Iterable
 
-import brevo_python
-from brevo_python.rest import ApiException as BrevoApiException
+from brevo import Brevo
+from brevo.core import ApiError as BrevoApiError
 
 from pcapi import settings
 from pcapi.core.mails import models
@@ -24,14 +23,8 @@ logger = logging.getLogger(__name__)
 class SendinblueBackend(BaseBackend):
     def __init__(self, use_pro_subaccount: bool) -> None:
         super().__init__()
-        configuration = brevo_python.Configuration()
-        if use_pro_subaccount:
-            configuration.api_key["api-key"] = settings.SENDINBLUE_PRO_API_KEY
-        else:
-            configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
-        if settings.PROXY_CERT_BUNDLE is not None:
-            configuration.ssl_ca_cert = settings.PROXY_CERT_BUNDLE
-        self.contacts_api = brevo_python.ContactsApi(brevo_python.ApiClient(configuration))
+        api_key = settings.SENDINBLUE_PRO_API_KEY if use_pro_subaccount else settings.SENDINBLUE_API_KEY
+        self.client = Brevo(api_key=api_key, timeout=settings.BREVO_REQUEST_TIMEOUT)
 
     def send_mail(
         self,
@@ -78,22 +71,18 @@ class SendinblueBackend(BaseBackend):
             raise ValueError(f"Tried sending an email via Brevo, but received incorrectly formatted data: {data}")
 
     def create_contact(self, payload: serialization.UpdateBrevoContactRequest) -> None:
-        """
-        Creates or updates a contact in Brevo
-        """
-
-        contact = brevo_python.CreateContact(
-            email=payload.email,
-            attributes=payload.attributes,
-            list_ids=payload.contact_list_ids,
-            update_enabled=True,
-            email_blacklisted=payload.emailBlacklisted,
-        )
+        contact_kwargs = {
+            "email": payload.email,
+            "attributes": payload.attributes,
+            "update_enabled": True,
+            "email_blacklisted": payload.emailBlacklisted,
+        }
+        if payload.contact_list_ids:
+            contact_kwargs["list_ids"] = payload.contact_list_ids
 
         try:
-            self.contacts_api.create_contact(contact)
-
-        except BrevoApiException as exception:
+            self.client.contacts.create_contact(**contact_kwargs)
+        except BrevoApiError as exception:
             self._handle_brevo_exception(exception, payload)
 
         except Exception as exception:
@@ -101,18 +90,16 @@ class SendinblueBackend(BaseBackend):
 
     def delete_contact(self, contact_email: str) -> None:
         try:
-            self.contacts_api.delete_contact(contact_email)
+            self.client.contacts.delete_contact(contact_email, identifier_type="email_id")
 
-        except BrevoApiException as exception:
-            if exception.status >= 500:
+        except BrevoApiError as exception:
+            if exception.status_code and exception.status_code >= 500:
                 raise ExternalAPIException(is_retryable=True) from exception
-            if exception.status != 404:
-                # If we try to delete a non existing user, it's not a problem.
+            if not exception.status_code or exception.status_code != 404:
+                # Trying to delete a non-existing user is not a problem
                 logger.exception(
                     "Exception when calling Brevo delete_contact API",
-                    extra={
-                        "email": contact_email,
-                    },
+                    extra={"email": contact_email, "status_code": exception.status_code, "body": exception.body},
                 )
                 raise ExternalAPIException(is_retryable=False) from exception
 
@@ -121,18 +108,17 @@ class SendinblueBackend(BaseBackend):
 
     def get_contact_url(self, contact_email: str) -> str | None:
         try:
-            contact_info = self.contacts_api.get_contact_info(contact_email)
+            contact_info = self.client.contacts.get_contact_info(contact_email, identifier_type="email_id")
 
-        except BrevoApiException as exception:
-            if exception.status == 404:
-                return None
-            if exception.status >= 500:
-                raise ExternalAPIException(is_retryable=True) from exception
+        except BrevoApiError as exception:
+            if exception.status_code:
+                if exception.status_code == 404:
+                    return None
+                if exception.status_code >= 500:
+                    raise ExternalAPIException(is_retryable=True) from exception
             logger.exception(
                 "Exception when calling Brevo get_contact_info API",
-                extra={
-                    "email": contact_email,
-                },
+                extra={"email": contact_email, "status_code": exception.status_code, "body": exception.body},
             )
             raise ExternalAPIException(is_retryable=False) from exception
 
@@ -143,18 +129,17 @@ class SendinblueBackend(BaseBackend):
 
     def get_raw_contact_data(self, contact_email: str) -> dict:
         try:
-            return self.contacts_api.get_contact_info(contact_email).to_dict()
+            return self.client.contacts.get_contact_info(contact_email).model_dump()
 
-        except BrevoApiException as exception:
-            if exception.status == 404:
-                return {}
-            if exception.status >= 500:
-                raise ExternalAPIException(is_retryable=True) from exception
+        except BrevoApiError as exception:
+            if exception.status_code:
+                if exception.status_code == 404:
+                    return {}
+                if exception.status_code >= 500:
+                    raise ExternalAPIException(is_retryable=True) from exception
             logger.exception(
                 "Exception when calling Brevo get_contact_info API",
-                extra={
-                    "email": contact_email,
-                },
+                extra={"email": contact_email, "status_code": exception.status_code, "body": exception.body},
             )
             raise ExternalAPIException(is_retryable=False) from exception
 
@@ -162,50 +147,48 @@ class SendinblueBackend(BaseBackend):
             raise ExternalAPIException(is_retryable=True) from exception
 
     def _handle_brevo_exception(
-        self, exception: BrevoApiException, payload: serialization.UpdateBrevoContactRequest
+        self, exception: BrevoApiError, payload: serialization.UpdateBrevoContactRequest
     ) -> None:
-        if exception.status >= 500:
+        if exception.status_code and exception.status_code >= 500:
             raise ExternalAPIException(is_retryable=True) from exception
 
-        if exception.status == 400 and exception.body:
-            try:
-                data = json.loads(exception.body)
-            except json.JSONDecodeError:
-                pass
-            else:
-                code = data.get("code")
-                # When new email already exists in Brevo contacts, no need to raise an error, keep existing and delete the
-                # contact with old email.
-                # Exception body contains:
-                # {
-                #     "code": "duplicate_parameter",
-                #     "message": "Unable to update contact, email is already associated with another Contact",
-                #     "metadata":{"duplicate_identifiers":["email"]}
-                # }
-                if code == "duplicate_parameter" and data.get("metadata", {}).get("duplicate_identifiers") == ["email"]:
-                    return self.delete_contact(payload.email)
+        if exception.status_code and exception.status_code == 400 and isinstance(exception.body, dict):
+            data = exception.body
+            code = data.get("code")
+            # When new email already exists in Brevo contacts, no need to raise an error, keep existing and delete the
+            # contact with old email.
+            # Exception body contains:
+            # {
+            #     "code": "duplicate_parameter",
+            #     "message": "Unable to update contact, email is already associated with another Contact",
+            #     "metadata":{"duplicate_identifiers":["email"]}
+            # }
+            if code == "duplicate_parameter" and data.get("metadata", {}).get("duplicate_identifiers") == ["email"]:
+                return self.delete_contact(payload.email)
 
-                if code:
-                    # Don't raise exception for data which should be fixed but create a specific alert for every case.
-                    # This should avoid aggregation of all cases/emails in a single Sentry alert with 30k exceptions.
-                    logger.error(
-                        "Brevo can't create contact %s: code=%s, message=%s",
-                        # Email is partially obfuscated in logs but full email is available in Sentry for investigation
-                        email_utils.anonymize_email(payload.email),
-                        code,
-                        data.get("message"),
-                        extra={
-                            "email": payload.email,
-                            "attributes": payload.attributes,
-                        },
-                    )
-                    return None
+            if code:
+                # Don't raise exception for data which should be fixed but create a specific alert for every case.
+                # This should avoid aggregation of all cases/emails in a single Sentry alert with 30k exceptions.
+                logger.error(
+                    "Brevo can't create contact %s: code=%s, message=%s",
+                    # Email is partially obfuscated in logs but full email is available in Sentry for investigation
+                    email_utils.anonymize_email(payload.email),
+                    code,
+                    data.get("message"),
+                    extra={
+                        "payload": payload.model_dump(),
+                        "status_code": exception.status_code,
+                        "body": exception.body,
+                    },
+                )
+                return None
 
         logger.exception(
             "Exception when calling Brevo create_contact API",
             extra={
-                "email": payload.email,
-                "attributes": payload.attributes,
+                "payload": payload.model_dump(),
+                "status_code": exception.status_code,
+                "body": exception.body,
             },
         )
         raise ExternalAPIException(is_retryable=False) from exception
