@@ -7,7 +7,13 @@ import { api } from '@/apiClient/api'
 import { isError } from '@/apiClient/helpers'
 import type { StructureDataBodyModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import {
+  cleanSignupJourneyStorage,
+  type Offerer as OffererType,
+  saveInitialAddressToStorage,
+  saveOffererToStorage,
+  useSignupJourneyContext,
+} from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
   FORM_ERROR_MESSAGE,
@@ -36,6 +42,11 @@ import { BannerInvisibleSiren } from './BannerInvisibleSiren/BannerInvisibleSire
 import { DEFAULT_OFFERER_FORM_VALUES } from './constants'
 import styles from './Offerer.module.scss'
 import { validationSchema } from './validationSchema'
+import {
+  LOCAL_STORAGE_KEY,
+  localStorageManager,
+} from '@/commons/utils/localStorageManager'
+import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 
 interface OffererFormValues {
   siret: string
@@ -48,7 +59,8 @@ export const Offerer = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const navigate = useNavigate()
-  const { offerer, setOfferer, setInitialAddress } = useSignupJourneyContext()
+  const { offerer, setOfferer, setActivity, setInitialAddress } =
+    useSignupJourneyContext()
   const [showIsAppUserDialog, setShowIsAppUserDialog] = useState<boolean>(false)
   const [isHigherEducation, setIsHigherEducation] = useState<boolean>(false)
   const [showInvisibleBanner, setShowInvisibleBanner] = useState<boolean>(false)
@@ -129,6 +141,17 @@ export const Offerer = (): JSX.Element => {
       const venueOfOffererProvidersResponse =
         await api.getVenuesOfOffererFromSiret(formattedSiret)
 
+      // Possible scenario is when user gets back here and changes his siret :
+      // We must reset both the stored state and the activity context that may have been filled
+      const offererStoredData = JSON.parse(
+        localStorageManager.getItem(LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER) ??
+          '{}'
+      ) as unknown as OffererType
+      if (offererStoredData?.siret?.trim() !== formValues.siret.trim()) {
+        setActivity(DEFAULT_ACTIVITY_VALUES)
+        cleanSignupJourneyStorage()
+      }
+
       const addressValues = {
         street: offererSiretData.location?.street ?? '',
         city: offererSiretData.location?.city ?? '',
@@ -143,18 +166,20 @@ export const Offerer = (): JSX.Element => {
         banId: offererSiretData.location?.banId ?? null,
       }
 
-      setInitialAddress({
+      const initialAddressData = {
         ...addressValues,
         addressAutocomplete: `${addressValues?.street} ${addressValues?.postalCode} ${addressValues?.city}`,
         'search-addressAutocomplete': `${addressValues?.street} ${addressValues?.postalCode} ${addressValues?.city}`,
-      })
+      }
+      saveInitialAddressToStorage(initialAddressData)
+      setInitialAddress(initialAddressData)
 
       const hasVenueWithSiret =
         venueOfOffererProvidersResponse.venues.find(
           (venue) => venue.siret === formattedSiret
         ) !== undefined
 
-      setOfferer({
+      const offererData = {
         ...formValues,
         name: offererSiretData.name ?? '',
         ...addressValues,
@@ -162,7 +187,10 @@ export const Offerer = (): JSX.Element => {
         apeCode: offererSiretData.apeCode ?? undefined,
         siren: venueOfOffererProvidersResponse.offererSiren,
         isDiffusible: offererSiretData.isDiffusible,
-      })
+      } satisfies OffererType
+
+      saveOffererToStorage(offererData)
+      setOfferer(offererData)
 
       const redirection = {
         to: hasVenueWithSiret
@@ -173,7 +201,6 @@ export const Offerer = (): JSX.Element => {
           : '/inscription/structure/identification',
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(redirection.path)
 
       logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {

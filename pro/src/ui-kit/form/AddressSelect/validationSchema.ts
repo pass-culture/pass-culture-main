@@ -25,8 +25,9 @@ export const validationSchema = {
   coords: yup
     .string()
     .trim()
-    .when(['manuallySetAddress'], {
-      is: (manuallySetAddress: boolean) => manuallySetAddress,
+    .when(['manuallySetAddress', 'isOpenToPublic'], {
+      is: (manuallySetAddress: boolean, isOpenToPublic: 'true' | 'false') =>
+        manuallySetAddress && isOpenToPublic === 'true',
       then: (schema) =>
         schema
           .required('Veuillez renseigner les coordonnées GPS')
