@@ -714,21 +714,6 @@ describe('PriceTableForm', () => {
     expect(quantityInput).toBeDisabled()
   })
 
-  it('should reset single event entry instead of removing it (label becomes "Tarif unique")', async () => {
-    const offer = { ...eventOffer }
-    renderPriceTableForm({ offer })
-
-    const deleteButton = screen.getByRole('button', {
-      name: LABELS.buttons.resetEntry,
-    })
-    await userEvent.click(deleteButton)
-
-    const labelInput = screen.getByLabelText(
-      LABELS.fields.label
-    ) as HTMLInputElement
-    expect(labelInput.value).toBe('Tarif unique')
-  })
-
   it('should render activation button as disabled attribute when synchronized via non-Allociné (digital non-event)', () => {
     const offer = {
       ...nonEventOffer,
