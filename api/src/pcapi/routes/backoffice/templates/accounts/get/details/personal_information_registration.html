@@ -125,52 +125,61 @@
 <div class="mb-3">{{ tunnel.type.value | format_eligibility_value | format_badge("primary") }}</div>
 <div class="py-1 pc-tunnel-history w-100"
      data-registration-steps-id="{{ tunnel.type.value }}">
-  <div class="window">
-    <div class="position-relative content"
-         style="left:0px">
-      <div class="progress position-absolute">
-        <div class="progress-bar"
-             role="progressbar"
-             aria-valuenow="{{ tunnel.progress }}"
-             aria-valuemin="0"
-             aria-valuemax="100"
-             style="width: {{ tunnel.progress }}%"></div>
-      </div>
-      <ol class="breadcrumb-container position-relative d-flex m-0 p-0 justify-content-between">
-        {% for step in tunnel.steps %}
-          <li {%+ if not loop.last %}
-              style="min-width:200px"
-              {% else %}
-              class="me-3"
-              {% endif %}>
-            {% set div_class %}
-              {{ 'step-success' if step.status.success }}{{ 'step-warning' if step.status.warning }}{{ 'step-error' if step.status.error }}{{ 'step-disabled' if step.status.disabled }}
-            {% endset %}
-            <div class="steps {{ div_class }}"
-                 disabled
-                 data-bs-toggle="tooltip"
-                 data-bs-placement="top"
-                 data-bs-custom-class="primary-tooltip"
-                 data-bs-title="{{ step.subscription_item_status | format_filter_status }}">
-              <span class="step-number d-flex flex-column justify-content-center align-items-center pe-none position-relative">
-                {% if step.icon %}
-                  <i class="bi {{ step.icon }} pe-none"></i>
-                {% else %}
-                  {{ step.text }}
-                {% endif %}
-                {% set status_icon = step.subscription_item_status | format_user_subscription_tunnel_step_status %}
-                {% if status_icon %}
-                  <div class="step-status-icon-container position-absolute translate-middle-y d-flex rounded-circle justify-content-center {{ div_class }}">
-                    {{ status_icon }}
-                  </div>
-                {% endif %}
-                <div class="step-text center-smallcontainer pe-none">{{ step.description | format_registration_step_description }}</div>
-              </span>
-            </div>
-          </li>
-        {% endfor %}
-      </ol>
+  <div class="d-flex">
+    <div class="fs-3 pe-3 pt-3 mt-3 left-scroll">
+      <i class="bi bi-chevron-left" /></i>
     </div>
+    <div class="window flex-grow-1">
+      <div class="position-relative content"
+           style="left:0px">
+        <div class="progress position-absolute">
+          <div class="progress-bar"
+               role="progressbar"
+               aria-valuenow="{{ tunnel.progress }}"
+               aria-valuemin="0"
+               aria-valuemax="100"
+               style="width: {{ tunnel.progress }}%"></div>
+        </div>
+        <ol class="breadcrumb-container position-relative d-flex m-0 p-0 justify-content-between">
+          {% for step in tunnel.steps %}
+            <li {%+ if not loop.last %}
+                style="min-width:200px"
+                {% else %}
+                class="me-3"
+                {% endif %}>
+              {% set div_class %}
+                {{ 'step-success' if step.status.success }}{{ 'step-warning' if step.status.warning }}{{ 'step-error' if step.status.error }}{{ 'step-disabled' if step.status.disabled }}
+              {% endset %}
+              <div class="steps {{ div_class }}"
+                   disabled
+                   data-bs-toggle="tooltip"
+                   data-bs-placement="top"
+                   data-bs-custom-class="primary-tooltip"
+                   data-bs-title="{{ step.subscription_item_status | format_filter_status }}">
+                <span class="step-number d-flex flex-column justify-content-center align-items-center pe-none position-relative">
+                  {% if step.icon %}
+                    <i class="bi {{ step.icon }} pe-none"></i>
+                  {% else %}
+                    {{ step.text }}
+                  {% endif %}
+                  {% set status_icon = step.subscription_item_status | format_user_subscription_tunnel_step_status %}
+                  {% if status_icon %}
+                    <div class="step-status-icon-container position-absolute translate-middle-y d-flex rounded-circle justify-content-center {{ div_class }}">
+                      {{ status_icon }}
+                    </div>
+                  {% endif %}
+                  <div class="step-text center-smallcontainer pe-none">{{ step.description | format_registration_step_description }}</div>
+                </span>
+              </div>
+            </li>
+          {% endfor %}
+        </ol>
+      </div>
+    </div>
+    <div class="fs-3 ps-3 pt-3 mt-3 right-scroll">
+      <i class="bi bi-chevron-right " />
+    </i>
   </div>
-  {% if fraud_actions_desc %}<div class="pt-3">{{ build_idcheck_histories(fraud_actions_desc) }}</div>{% endif %}
+</div>
+{% if fraud_actions_desc %}<div class="pt-3">{{ build_idcheck_histories(fraud_actions_desc) }}</div>{% endif %}
 </div>
