@@ -296,7 +296,6 @@ class CreateThingsTest(CreateOfferBase):
         assert offer.description == payload["description"]
         assert not offer.productId
 
-    @pytest.mark.features(WIP_OFFER_ARTISTS=True)
     def test_create_offer_with_artist_links_when_feature_flag_enabled(self, auth_client, venue):
         artist = artist_factories.ArtistFactory()
 
@@ -335,32 +334,6 @@ class CreateThingsTest(CreateOfferBase):
             "artistName": "Custom Artist Name",
             "artistType": "author",
         }
-
-    @pytest.mark.features(WIP_OFFER_ARTISTS=False)
-    def test_create_offer_with_artist_links_when_feature_flag_disabled(self, auth_client, venue):
-        artist = artist_factories.ArtistFactory()
-
-        payload = {
-            **offer_minimal_shared_data(subcategories.CONCERT.id, venue),
-            "artistOfferLinks": [
-                {
-                    "artistId": artist.id,
-                    "artistType": "performer",
-                    "artistName": artist.name,
-                },
-            ],
-        }
-
-        with assert_changes(Offer, 1):
-            response = auth_client.post(self.endpoint, json=payload)
-            assert response.status_code == 201
-
-        offer = db.session.query(Offer).one()
-
-        shared_response_json_checks(offer, response.json)
-        shared_offer_checks(offer, payload)
-
-        assert response.json["artistOfferLinks"] == []
 
 
 class CreateThingWithEanTest(CreateOfferBase):
@@ -759,7 +732,6 @@ class Returns200Test:
         assert offer.ean == "1234567890112"
         assert "ean" not in offer.extraData
 
-    @pytest.mark.features(WIP_OFFER_ARTISTS=True)
     def test_create_offer_with_artist_links_when_feature_flag_enabled(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -802,35 +774,6 @@ class Returns200Test:
             "artistName": "Custom Artist Name",
             "artistType": "author",
         }
-
-    @pytest.mark.features(WIP_OFFER_ARTISTS=False)
-    def test_create_offer_with_artist_links_when_feature_flag_disabled(self, client):
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-        artist = artist_factories.ArtistFactory()
-
-        data = {
-            "venueId": venue.id,
-            "name": "Concert symphonique",
-            "subcategoryId": subcategories.CONCERT.id,
-            "audioDisabilityCompliant": True,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "artistOfferLinks": [
-                {
-                    "artistId": artist.id,
-                    "artistType": "performer",
-                    "artistName": artist.name,
-                },
-            ],
-        }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
-
-        assert response.status_code == 201
-
-        assert response.json["artistOfferLinks"] == []
 
 
 @pytest.mark.usefixtures("db_session")
