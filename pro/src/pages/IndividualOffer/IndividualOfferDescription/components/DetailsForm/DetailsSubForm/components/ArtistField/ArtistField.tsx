@@ -43,7 +43,7 @@ export function ArtistField({
     formState: { errors },
   } = useFormContext<DetailsFormValues>()
 
-  const { fields, append, remove, update } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: 'artistOfferLinks',
   })
@@ -59,27 +59,6 @@ export function ArtistField({
     )
 
     remove(indexToRemove)
-  }
-
-  const resetEntry = (indexToReset: number) => {
-    const initialEntry = {
-      artistId: null,
-      artistName: '',
-      artistType,
-    }
-
-    update(indexToReset, initialEntry)
-  }
-
-  const trashAction = (indexToRemove: number) => {
-    // If there is only one entry left for this type, we reset it instead of removing it
-    if (fieldsForType.length === 1) {
-      resetEntry(indexToRemove)
-
-      return
-    }
-
-    removeEntry(indexToRemove)
   }
 
   return (
@@ -145,24 +124,16 @@ export function ArtistField({
               />
             </div>
 
-            {!readOnly && (
+            {!readOnly && fieldsForType.length > 1 && (
               <div className={styles['button-action']}>
                 <Button
                   variant={ButtonVariant.SECONDARY}
                   color={ButtonColor.NEUTRAL}
                   icon={fullTrashIcon}
-                  iconAlt={
-                    fieldsForType.length > 1
-                      ? 'Supprimer ce champ'
-                      : 'Réinitialiser les valeurs de ce champ'
-                  }
-                  onClick={() => trashAction(index)}
+                  iconAlt={'Supprimer ce champ'}
+                  onClick={() => removeEntry(index)}
                   disabled={isTrashDisabled}
-                  tooltip={
-                    fieldsForType.length > 1
-                      ? 'Supprimer ce champ'
-                      : 'Réinitialiser les valeurs de ce champ'
-                  }
+                  tooltip={'Supprimer ce champ'}
                 />
               </div>
             )}
