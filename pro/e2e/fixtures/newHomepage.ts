@@ -69,7 +69,10 @@ export async function expectIndividualModules(
     visibleModules.includes('STATS_CARD')
   )
   await expectModuleVisibility(
-    page.getByText('Module Edito'),
+    page.getByRole('heading', {
+      level: 2,
+      name: 'Comment valoriser vos offres auprès du public jeune ?',
+    }),
     visibleModules.includes('EDITO_CARD')
   )
 
