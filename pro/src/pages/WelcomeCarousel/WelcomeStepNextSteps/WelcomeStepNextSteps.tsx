@@ -2,7 +2,6 @@ import cn from 'classnames'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { WelcomeCarouselEvents } from '@/commons/core/FirebaseEvents/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
@@ -15,9 +14,6 @@ import styles from './WelcomeStepNextSteps.module.scss'
 
 const WelcomeStepNextSteps = (): JSX.Element => {
   const { logEvent } = useAnalytics()
-  const isPreSignupSimulatorFeatureActive = useActiveFeature(
-    'WIP_PRE_SIGNUP_SIMULATION'
-  )
   return (
     <>
       <h1 className={commonStyles.title}>Comment fonctionne l’inscription ?</h1>
@@ -84,11 +80,7 @@ const WelcomeStepNextSteps = (): JSX.Element => {
       >
         <Button
           as="a"
-          to={
-            isPreSignupSimulatorFeatureActive
-              ? '/inscription/preparation/siret'
-              : '/inscription/compte/creation'
-          }
+          to="/inscription/compte/creation"
           variant={ButtonVariant.PRIMARY}
           label="Démarrer l’inscription"
         />

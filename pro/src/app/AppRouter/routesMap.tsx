@@ -3,7 +3,6 @@
 
 import { Navigate, type NavigateProps, useLocation } from 'react-router'
 
-import { routesSimulator } from '@/app/AppRouter/subroutesSimulator'
 import { routesWelcomeCarousel } from '@/app/AppRouter/subroutesWelcomeCarousel'
 import { withUserPermissions } from '@/commons/auth/withUserPermissions'
 import { noop } from '@/commons/utils/noop'
@@ -537,17 +536,6 @@ export const routes: CustomRouteTree = [
     path: '/bienvenue',
     title: 'Bienvenue sur pass Culture Pro',
     children: routesWelcomeCarousel,
-    meta: { public: true },
-  },
-  {
-    lazy: () => import('@/pages/Simulator/Simulator'),
-    loader: withUserPermissions(mustBeUnauthenticated),
-    path: '/inscription/preparation',
-    handle: {
-      title: 'Renseignez votre SIRET',
-    },
-    featureName: 'WIP_PRE_SIGNUP_SIMULATION',
-    children: routesSimulator,
     meta: { public: true },
   },
   {
