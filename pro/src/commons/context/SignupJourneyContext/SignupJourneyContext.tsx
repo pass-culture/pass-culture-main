@@ -26,7 +26,7 @@ export interface Offerer
   isDiffusible: boolean
 }
 
-type InitialAddress = Address & {
+export interface InitialAddress extends Address {
   addressAutocomplete: string
   'search-addressAutocomplete': string
 }

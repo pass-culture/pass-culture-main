@@ -12,6 +12,12 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { getUserDefaultPath } from '@/app/AppRouter/utils/getUserDefaultPath'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import {
+  cleanSignupJourneyStorage,
+  tryRestoreActivityFromStorage,
+  tryRestoreInitialAddressFromStorage,
+  tryRestoreOffererFromStorage,
+} from '@/commons/context/SignupJourneyContext/storage'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
   RECAPTCHA_ERROR,
@@ -28,7 +34,10 @@ import { setSelectedOffererById } from '@/commons/store/user/dispatchers/setSele
 import { updateUser } from '@/commons/store/user/reducer'
 import { ensureCurrentUser } from '@/commons/store/user/selectors'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
-import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
+import {
+  DEFAULT_ADDRESS_FORM_VALUES,
+  DEFAULT_OFFERER_FORM_VALUES,
+} from '@/components/SignupJourneyForm/Offerer/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
@@ -54,7 +63,14 @@ export const Validation = (): JSX.Element | undefined => {
   const currentUser = useAppSelector(ensureCurrentUser)
   const userAccess = useAppSelector((state) => state.user.access)
 
-  const { activity, offerer } = useSignupJourneyContext()
+  const {
+    activity,
+    setActivity,
+    offerer,
+    setOfferer,
+    initialAddress,
+    setInitialAddress,
+  } = useSignupJourneyContext()
   useInitReCaptcha()
 
   const dispatch = useAppDispatch()
@@ -67,17 +83,33 @@ export const Validation = (): JSX.Element | undefined => {
   }[activity?.targetCustomer ?? Target.INDIVIDUAL]
 
   useEffect(() => {
-    if (offerer === null || offerer === DEFAULT_OFFERER_FORM_VALUES) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      navigate('/inscription/structure/identification')
-      return
+    if (
+      offerer === null ||
+      offerer === DEFAULT_OFFERER_FORM_VALUES ||
+      activity === null ||
+      activity === DEFAULT_ACTIVITY_VALUES ||
+      initialAddress === null ||
+      initialAddress === DEFAULT_ADDRESS_FORM_VALUES
+    ) {
+      try {
+        tryRestoreOffererFromStorage(setOfferer)
+        tryRestoreInitialAddressFromStorage(setInitialAddress)
+        tryRestoreActivityFromStorage(setActivity)
+      } catch {
+        cleanSignupJourneyStorage()
+        navigate('/inscription/structure/recherche')
+        return
+      }
     }
-    if (activity === null || activity === DEFAULT_ACTIVITY_VALUES) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      navigate('/inscription/structure/activite')
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activity, offerer, navigate])
+  }, [
+    offerer,
+    activity,
+    setOfferer,
+    setActivity,
+    initialAddress,
+    setInitialAddress,
+    navigate,
+  ])
 
   if (!activity?.activity || offerer === null) {
     return
@@ -118,6 +150,8 @@ export const Validation = (): JSX.Element | undefined => {
         token,
       }
       const createdOfferer = await api.saveNewOnboardingData(data)
+
+      cleanSignupJourneyStorage()
 
       if (withSwitchVenueFeature) {
         await dispatch(
@@ -161,7 +195,6 @@ export const Validation = (): JSX.Element | undefined => {
   }
 
   const handlePreviousStep = () => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/inscription/structure/activite')
   }
 
