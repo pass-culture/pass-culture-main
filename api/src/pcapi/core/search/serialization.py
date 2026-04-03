@@ -230,7 +230,6 @@ class AlgoliaSerializationMixin:
         chronicles_count = (
             offer.product.chroniclesCount if offer.product and offer.product.chroniclesCount else offer.chroniclesCount
         )
-        headlines_count = offer.product.headlinesCount if offer.product and offer.product.headlinesCount else None
         likes_count = offer.product.likesCount if offer.product and offer.product.likesCount else offer.likesCount
         pro_advices_count = offer.product.proAdvicesCount if offer.product else (1 if offer.hasProAdvice else 0)
         # If you update this dictionary, please check whether you need to
@@ -252,7 +251,6 @@ class AlgoliaSerializationMixin:
                 "gtlCodeLevel3": gtl_code_3,
                 "gtlCodeLevel4": gtl_code_4,
                 "hasImage": offer.thumbUrl is not None,
-                "headlinesCount": headlines_count or None,
                 "proAdvicesCount": pro_advices_count or None,
                 "indexedAt": date_utils.get_naive_utc_now().isoformat(),
                 "hasUrl": offer.hasUrl,

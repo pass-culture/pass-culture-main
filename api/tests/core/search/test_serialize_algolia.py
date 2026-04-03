@@ -510,7 +510,6 @@ def test_serialize_offer_chronicles_and_likes_count_when_0():
     offer = get_base_query_for_offer_indexation().filter(offers_models.Offer.id == offer.id).one()
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert "chroniclesCount" not in serialized["offer"]
-    assert "headlinesCount" not in serialized["offer"]
     assert "likes" not in serialized["offer"]
 
 
@@ -553,16 +552,6 @@ def test_serialize_offer_with_product_chronicles_count():
     offer = get_base_query_for_offer_indexation().filter(offers_models.Offer.id == offer.id).one()
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized["offer"]["chroniclesCount"] == 1
-
-
-def test_serialize_product_headlines_count():
-    product = offers_factories.ProductFactory()
-    offer = offers_factories.OfferFactory(product=product)
-    offers_factories.HeadlineOfferFactory(offer=offer)
-
-    offer = get_base_query_for_offer_indexation().filter(offers_models.Offer.id == offer.id).one()
-    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
-    assert serialized["offer"]["headlinesCount"] == 1
 
 
 def test_serialize_venue():
