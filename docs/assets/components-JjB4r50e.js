@@ -1,0 +1,1 @@
+import{P as e}from"./components-BR3-RuZM.js";export{e as createCopyToClipboardFunction};

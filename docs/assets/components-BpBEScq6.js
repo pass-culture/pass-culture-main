@@ -1,1 +1,0 @@
-import{P as e}from"./components-CbKM-q8p.js";export{e as createCopyToClipboardFunction};
