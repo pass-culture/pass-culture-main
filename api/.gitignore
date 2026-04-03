@@ -135,3 +135,6 @@ licenses.html
 
 # backoffice
 !**/backoffice/**/dist
+
+# offers news definitions html export
+src/pcapi/core/offers/defs/format/templates/index.html
