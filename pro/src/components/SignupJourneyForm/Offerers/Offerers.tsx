@@ -12,6 +12,11 @@ import {
   type Offerer,
   useSignupJourneyContext,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import {
+  cleanSignupJourneyStorage,
+  tryRestoreInitialAddressFromStorage,
+  tryRestoreOffererFromStorage,
+} from '@/commons/context/SignupJourneyContext/storage'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
@@ -33,6 +38,10 @@ import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { ActionBar } from '../ActionBar/ActionBar'
+import {
+  DEFAULT_ADDRESS_FORM_VALUES,
+  DEFAULT_OFFERER_FORM_VALUES,
+} from '../Offerer/constants'
 import styles from './Offerers.module.scss'
 
 export const Offerers = (): JSX.Element => {
@@ -47,7 +56,8 @@ export const Offerers = (): JSX.Element => {
   const [isVenueListOpen, setIsVenueListOpen] = useState<boolean>(false)
   const [showLinkDialog, setShowLinkDialog] = useState<boolean>(false)
 
-  const { offerer, setOfferer } = useSignupJourneyContext()
+  const { offerer, initialAddress, setOfferer, setInitialAddress } =
+    useSignupJourneyContext()
   const isLocalAuthority = MAYBE_LOCAL_AUTHORITY_APE_CODE.includes(
     offerer?.apeCode ?? ''
   )
@@ -64,7 +74,8 @@ export const Offerers = (): JSX.Element => {
       ? [GET_VENUES_OF_OFFERER_FROM_SIRET_QUERY_KEY, offerer.siret]
       : null,
     ([, offererSiret]) =>
-      api.getVenuesOfOffererFromSiret(offererSiret.replaceAll(' ', ''))
+      api.getVenuesOfOffererFromSiret(offererSiret.replaceAll(' ', '')),
+    { isPaused: () => offerer?.siret === null }
   )
 
   const permanentVenues =
@@ -72,10 +83,34 @@ export const Offerers = (): JSX.Element => {
   const displayToggleVenueList = permanentVenues.length > 5
 
   useEffect(() => {
+    if (
+      offerer === null ||
+      offerer === DEFAULT_OFFERER_FORM_VALUES ||
+      initialAddress === null ||
+      initialAddress === DEFAULT_ADDRESS_FORM_VALUES
+    ) {
+      try {
+        tryRestoreOffererFromStorage(setOfferer)
+        tryRestoreInitialAddressFromStorage(setInitialAddress)
+      } catch {
+        cleanSignupJourneyStorage()
+        navigate('/inscription/structure/recherche')
+        return
+      }
+    }
+
+    // In case of API error
     if (venuesOfOffererError) {
       navigate('/inscription/structure/recherche')
     }
-  }, [venuesOfOffererError, navigate])
+  }, [
+    offerer,
+    setOfferer,
+    initialAddress,
+    setInitialAddress,
+    venuesOfOffererError,
+    navigate,
+  ])
 
   if (isLoadingVenues || !offerer) {
     return <Spinner />
@@ -92,7 +127,6 @@ export const Offerers = (): JSX.Element => {
       used: SignupJourneyAction.NewOfferer,
     })
     setOfferer(newOfferer)
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/inscription/structure/identification')
   }
 
@@ -113,6 +147,8 @@ export const Offerers = (): JSX.Element => {
         siren: offerer.siren ?? '',
       }
       const createdOfferer = await api.createOfferer(request)
+
+      cleanSignupJourneyStorage()
 
       if (withSwitchVenueFeature) {
         await dispatch(
@@ -228,7 +264,6 @@ export const Offerers = (): JSX.Element => {
         hideRightButton
         onClickPrevious={() => {
           setOfferer(null)
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           navigate('/inscription/structure/recherche')
         }}
         previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}

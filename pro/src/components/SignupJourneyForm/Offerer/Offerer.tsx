@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
@@ -7,7 +7,18 @@ import { api } from '@/apiClient/api'
 import { isError } from '@/apiClient/helpers'
 import type { StructureDataBodyModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
+import {
+  type Offerer as OffererType,
+  useSignupJourneyContext,
+} from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import {
+  cleanSignupJourneyStorage,
+  saveInitialAddressToStorage,
+  saveOffererToStorage,
+  tryRestoreInitialAddressFromStorage,
+  tryRestoreOffererFromStorage,
+} from '@/commons/context/SignupJourneyContext/storage'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
   FORM_ERROR_MESSAGE,
@@ -16,6 +27,10 @@ import {
 import { getSiretData } from '@/commons/core/Venue/utils/getSiretData'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import {
+  LOCAL_STORAGE_KEY,
+  localStorageManager,
+} from '@/commons/utils/localStorageManager'
 import { unhumanizeSiret } from '@/commons/utils/siren'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
@@ -28,7 +43,10 @@ import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import { BannerInvisibleSiren } from './BannerInvisibleSiren/BannerInvisibleSiren'
-import { DEFAULT_OFFERER_FORM_VALUES } from './constants'
+import {
+  DEFAULT_ADDRESS_FORM_VALUES,
+  DEFAULT_OFFERER_FORM_VALUES,
+} from './constants'
 import styles from './Offerer.module.scss'
 import { validationSchema } from './validationSchema'
 
@@ -42,7 +60,13 @@ export const Offerer = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const navigate = useNavigate()
-  const { offerer, setOfferer, setInitialAddress } = useSignupJourneyContext()
+  const {
+    offerer,
+    setOfferer,
+    setActivity,
+    initialAddress,
+    setInitialAddress,
+  } = useSignupJourneyContext()
   const [showInvisibleBanner, setShowInvisibleBanner] = useState<boolean>(false)
 
   const initialValues: OffererFormValues = offerer
@@ -61,17 +85,73 @@ export const Offerer = (): JSX.Element => {
     handleSubmit,
     setError,
     watch,
+    reset,
     formState: { errors, isSubmitting },
   } = hookForm
 
-  const handleNextStep = () => {
+  const handleNextStep = useCallback(() => {
     if (Object.keys(errors).length !== 0) {
       snackBar.error(FORM_ERROR_MESSAGE)
       return
     }
-  }
+  }, [errors, snackBar])
+
+  const navigateToNextStep = useCallback(
+    (hasVenueWithSiret: boolean): { to: string; path: string } => {
+      const redirection = {
+        to: hasVenueWithSiret
+          ? SIGNUP_JOURNEY_STEP_IDS.OFFERERS
+          : SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
+        path: hasVenueWithSiret
+          ? '/inscription/structure/rattachement'
+          : '/inscription/structure/identification',
+      }
+      navigate(redirection.path)
+
+      return redirection
+    },
+    [navigate]
+  )
+
+  useEffect(() => {
+    // Try to restore the "offerer" and "initialAddress" context from storage
+    if (
+      offerer === null ||
+      offerer === DEFAULT_OFFERER_FORM_VALUES ||
+      initialAddress === null ||
+      initialAddress === DEFAULT_ADDRESS_FORM_VALUES
+    ) {
+      try {
+        const storedOfferer = tryRestoreOffererFromStorage(setOfferer)
+        reset(storedOfferer)
+        tryRestoreInitialAddressFromStorage(setInitialAddress)
+      } catch {
+        cleanSignupJourneyStorage()
+        navigate('/inscription/structure/recherche')
+        return
+      }
+    }
+  }, [offerer, initialAddress, setOfferer, setInitialAddress, reset, navigate])
 
   const onSubmit = async (formValues: OffererFormValues): Promise<void> => {
+    // Check here if the siret we've just submitted is the same as already stored in localStorage
+    // In that case, we don't need to fetch the siret data again and we can immediately redirect the user to the next step
+    try {
+      const offererStoredData = JSON.parse(
+        localStorageManager.getItem(LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER) ??
+          '{}'
+      ) as unknown as OffererType
+
+      if (offererStoredData?.siret?.trim() === formValues.siret.trim()) {
+        navigateToNextStep(offererStoredData.hasVenueWithSiret)
+        return
+      }
+    } catch {
+      // Any error while parsing localStorage is considered as a fallback to the normal flow
+    }
+
+    // If we're here, it means the siret we've just submitted is different from the one already stored in localStorage
+
     const formattedSiret = unhumanizeSiret(formValues.siret)
 
     let offererSiretData: StructureDataBodyModel
@@ -97,6 +177,18 @@ export const Offerer = (): JSX.Element => {
       const venueOfOffererProvidersResponse =
         await api.getVenuesOfOffererFromSiret(formattedSiret)
 
+      // Covers when the user came BACK there after having reached the "activity" step once.
+      // When back here, he decides to set ANOTHER siret, we must then clear the previous context data and storage as it's outdated
+      const offererStoredData = JSON.parse(
+        localStorageManager.getItem(LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER) ??
+          '{}'
+      ) as unknown as OffererType
+      if (offererStoredData?.siret?.trim() !== formValues.siret.trim()) {
+        setActivity(DEFAULT_ACTIVITY_VALUES)
+        // (no need to reset offerer + initialAddress because they're redefined below)
+        cleanSignupJourneyStorage()
+      }
+
       const addressValues = {
         street: offererSiretData.location?.street ?? '',
         city: offererSiretData.location?.city ?? '',
@@ -111,18 +203,20 @@ export const Offerer = (): JSX.Element => {
         banId: offererSiretData.location?.banId ?? null,
       }
 
-      setInitialAddress({
+      const initialAddressData = {
         ...addressValues,
         addressAutocomplete: `${addressValues?.street} ${addressValues?.postalCode} ${addressValues?.city}`,
         'search-addressAutocomplete': `${addressValues?.street} ${addressValues?.postalCode} ${addressValues?.city}`,
-      })
+      }
+      saveInitialAddressToStorage(initialAddressData)
+      setInitialAddress(initialAddressData)
 
       const hasVenueWithSiret =
         venueOfOffererProvidersResponse.venues.find(
           (venue) => venue.siret === formattedSiret
         ) !== undefined
 
-      setOfferer({
+      const offererData = {
         ...formValues,
         name: offererSiretData.name ?? '',
         ...addressValues,
@@ -130,23 +224,16 @@ export const Offerer = (): JSX.Element => {
         apeCode: offererSiretData.apeCode ?? undefined,
         siren: venueOfOffererProvidersResponse.offererSiren,
         isDiffusible: offererSiretData.isDiffusible,
-      })
+      } satisfies OffererType
 
-      const redirection = {
-        to: hasVenueWithSiret
-          ? SIGNUP_JOURNEY_STEP_IDS.OFFERERS
-          : SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
-        path: hasVenueWithSiret
-          ? '/inscription/structure/rattachement'
-          : '/inscription/structure/identification',
-      }
+      saveOffererToStorage(offererData)
+      setOfferer(offererData)
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      navigate(redirection.path)
+      const { to } = navigateToNextStep(hasVenueWithSiret)
 
       logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
         from: location.pathname,
-        to: redirection.to,
+        to,
         used: SignupJourneyAction.ActionBar,
       })
     } catch (error) {

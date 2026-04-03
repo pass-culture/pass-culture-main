@@ -31,7 +31,6 @@ export const SignupJourneyRoutes = () => {
     if (!location.pathname.includes('/inscription/structure/recherche')) {
       if (offerer?.siret === '' || offerer?.siren === '') {
         setOfferer(null)
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         navigate('/inscription/structure/recherche')
       }
     }

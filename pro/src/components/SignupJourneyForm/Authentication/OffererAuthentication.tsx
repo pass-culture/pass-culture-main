@@ -1,13 +1,28 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import { FormProvider, type Resolver, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
-import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
+import {
+  type Offerer,
+  useSignupJourneyContext,
+} from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import {
+  cleanSignupJourneyStorage,
+  saveOffererToStorage,
+  tryRestoreActivityFromStorage,
+  tryRestoreInitialAddressFromStorage,
+  tryRestoreOffererFromStorage,
+} from '@/commons/context/SignupJourneyContext/storage'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { removeQuotes } from '@/commons/utils/removeQuotes'
+import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
+import {
+  DEFAULT_ADDRESS_FORM_VALUES,
+  DEFAULT_OFFERER_FORM_VALUES,
+} from '@/components/SignupJourneyForm/Offerer/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import fullLinkIcon from '@/icons/full-link.svg'
@@ -23,7 +38,14 @@ import { validationSchema } from './validationSchema'
 export const OffererAuthentication = (): JSX.Element => {
   const navigate = useNavigate()
 
-  const { offerer, setOfferer } = useSignupJourneyContext()
+  const {
+    offerer,
+    setOfferer,
+    initialAddress,
+    setInitialAddress,
+    activity,
+    setActivity,
+  } = useSignupJourneyContext()
 
   const initialValues: OffererAuthenticationFormValues = {
     ...DEFAULT_OFFERER_FORM_VALUES,
@@ -37,21 +59,24 @@ export const OffererAuthentication = (): JSX.Element => {
   }
 
   const handlePreviousStep = useCallback(() => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/inscription/structure/recherche')
   }, [navigate])
 
   const onSubmit = (formValues: OffererAuthenticationFormValues) => {
     // Should never happen, so we use assertOrFrontendError to
     assertOrFrontendError(offerer, 'offerer is null')
-    setOfferer({
+
+    const offererData = {
       ...formValues,
       city: removeQuotes(formValues.city),
       street: removeQuotes(formValues.street),
       hasVenueWithSiret: false,
       isDiffusible: offerer.isDiffusible,
-    })
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    } satisfies Offerer
+
+    saveOffererToStorage(offererData)
+    setOfferer(offererData)
+
     navigate('/inscription/structure/activite')
   }
 
@@ -62,6 +87,54 @@ export const OffererAuthentication = (): JSX.Element => {
     ) as unknown as Resolver<OffererAuthenticationFormValues>,
     mode: 'onBlur',
   })
+
+  useEffect(() => {
+    if (
+      offerer === null ||
+      offerer === DEFAULT_OFFERER_FORM_VALUES ||
+      initialAddress === null ||
+      initialAddress === DEFAULT_ADDRESS_FORM_VALUES
+    ) {
+      try {
+        const storedOfferer = tryRestoreOffererFromStorage(setOfferer)
+        tryRestoreInitialAddressFromStorage(setInitialAddress)
+        methods.reset({
+          ...storedOfferer,
+          addressAutocomplete: `${storedOfferer?.street} ${storedOfferer?.postalCode} ${storedOfferer?.city}`,
+          'search-addressAutocomplete': `${storedOfferer?.street} ${storedOfferer?.postalCode} ${storedOfferer?.city}`,
+        })
+        resetReactHookFormAddressFields(
+          // @ts-expect-error Type should technically be correct
+          (name) => methods.setValue(name, storedOfferer[name])
+        )
+      } catch {
+        cleanSignupJourneyStorage()
+        navigate('/inscription/structure/recherche')
+        return
+      }
+    }
+
+    /* Try to restore the activity make sense if the user made his journey to the confirmation step,
+      and then GOT BACK HERE for any reason and refreshed the page, we don't want he loses his data.
+    */
+    if (activity === null || activity === DEFAULT_ACTIVITY_VALUES) {
+      try {
+        tryRestoreActivityFromStorage(setActivity)
+      } catch {
+        // Failing here isn't a problem, just ignore
+        return
+      }
+    }
+  }, [
+    offerer,
+    setOfferer,
+    initialAddress,
+    setInitialAddress,
+    activity,
+    setActivity,
+    methods,
+    navigate,
+  ])
 
   return (
     <FormLayout>

@@ -66,6 +66,7 @@ export const OffererAuthenticationForm = (): JSX.Element => {
               {...register('name')}
               label="Raison sociale"
               type="text"
+              value={offerer?.name}
               required
               disabled
             />
