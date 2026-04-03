@@ -100,7 +100,7 @@ class BookingsExportQueryModel(HttpQueryParamsModel):
 
 class ListBookingsQueryModel(HttpQueryParamsModel):
     page: int = 1
-    offerer_id: int | None = None
+    offerer_id: int
     venue_id: int | None = None
     offer_id: int | None = None
     event_date: date | None = None

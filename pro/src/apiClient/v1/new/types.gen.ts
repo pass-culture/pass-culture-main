@@ -3882,7 +3882,7 @@ export type ListBookingsQueryModel = {
     /**
      * Offererid
      */
-    offererId?: number | null;
+    offererId: number;
     /**
      * Page
      */
@@ -7154,7 +7154,7 @@ export type getArtistsResponse = getArtistsResponses[keyof getArtistsResponses];
 export type getBookingsCsvData = {
     body?: never;
     path?: never;
-    query?: {
+    query: {
         /**
          * Page
          */
@@ -7162,7 +7162,7 @@ export type getBookingsCsvData = {
         /**
          * Offererid
          */
-        offererId?: number | null;
+        offererId: number;
         /**
          * Venueid
          */
@@ -7247,7 +7247,7 @@ export type getBookingsDatesByOfferIdResponse = getBookingsDatesByOfferIdRespons
 export type getBookingsExcelData = {
     body?: never;
     path?: never;
-    query?: {
+    query: {
         /**
          * Page
          */
@@ -7255,7 +7255,7 @@ export type getBookingsExcelData = {
         /**
          * Offererid
          */
-        offererId?: number | null;
+        offererId: number;
         /**
          * Venueid
          */
@@ -7418,7 +7418,7 @@ export type getBookingsOfferByOfferIdExcelResponses = {
 export type getBookingsProData = {
     body?: never;
     path?: never;
-    query?: {
+    query: {
         /**
          * Page
          */
@@ -7426,7 +7426,7 @@ export type getBookingsProData = {
         /**
          * Offererid
          */
-        offererId?: number | null;
+        offererId: number;
         /**
          * Venueid
          */

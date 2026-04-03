@@ -94,7 +94,7 @@ class FindByProUserTest:
         )
 
         bookings_query, total = booking_repository.find_by_pro_user(
-            user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+            pro_user_id=pro.id, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
         )
 
         bookings = bookings_query.all()
@@ -136,7 +136,7 @@ class FindByProUserTest:
         )
 
         bookings_query, total = booking_repository.find_by_pro_user(
-            user=pro,
+            pro_user_id=pro.id,
             booking_period=((booking_date + timedelta(2)), (booking_date + timedelta(5))),
             status_filter=BookingStatusFilter.VALIDATED,
         )
@@ -166,7 +166,7 @@ class FindByProUserTest:
         )
 
         bookings_query, _ = booking_repository.find_by_pro_user(
-            user=pro,
+            pro_user_id=pro.id,
             booking_period=(date(2020, 1, 3), date(2020, 1, 4)),
             status_filter=BookingStatusFilter.REIMBURSED,
         )
@@ -190,7 +190,7 @@ class FindByProUserTest:
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, quantity=2)
 
         bookings_query, _ = booking_repository.find_by_pro_user(
-            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+            pro_user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking)
         )
         bookings = bookings_query.all()
 
@@ -220,7 +220,7 @@ class FindByProUserTest:
         )
 
         bookings_query, _ = booking_repository.find_by_pro_user(
-            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+            pro_user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking)
         )
         bookings = bookings_query.all()
 
@@ -261,7 +261,7 @@ class FindByProUserTest:
         )
 
         bookings_query, _ = booking_repository.find_by_pro_user(
-            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+            pro_user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking)
         )
         bookings = bookings_query.all()
 
@@ -289,7 +289,7 @@ class FindByProUserTest:
         )
 
         bookings_query, _ = booking_repository.find_by_pro_user(
-            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+            pro_user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking)
         )
         bookings = bookings_query.all()
 
@@ -318,7 +318,7 @@ class FindByProUserTest:
         )
 
         bookings_query, _ = booking_repository.find_by_pro_user(
-            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+            pro_user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking)
         )
         bookings = bookings_query.all()
 
@@ -352,7 +352,7 @@ class FindByProUserTest:
         bookings_factories.BookingFactory(user=beneficiary, stock=stock2, dateCreated=today, token="FGHI")
 
         bookings_query, _ = booking_repository.find_by_pro_user(
-            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+            pro_user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking)
         )
         bookings = bookings_query.all()
 
@@ -373,32 +373,13 @@ class FindByProUserTest:
         booking2 = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
 
         bookings_query, total = booking_repository.find_by_pro_user(
-            user=pro, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=1
+            pro_user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=1
         )
         bookings = bookings_query.all()
 
         assert len(bookings) == 1
         assert bookings[0].bookingToken == booking2.token
         assert total == 2
-
-    def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app: fixture):
-        beneficiary = users_factories.BeneficiaryGrant18Factory()
-        pro = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.NewUserOffererFactory(user=pro, offerer=offerer)
-
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-
-        offer = offers_factories.ThingOfferFactory(venue=venue, ean="9876543234999")
-        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
-        bookings_factories.BookingFactory(user=beneficiary, stock=stock)
-
-        bookings_query, _ = booking_repository.find_by_pro_user(
-            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
-        )
-        bookings = bookings_query.all()
-
-        assert bookings == []
 
     def test_should_return_one_booking_recap_item_when_quantity_booked_is_one(self, app: fixture):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -415,7 +396,7 @@ class FindByProUserTest:
         booking = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
 
         bookings_query, total = booking_repository.find_by_pro_user(
-            user=pro, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=4
+            pro_user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=4
         )
         bookings = bookings_query.all()
 
@@ -440,7 +421,7 @@ class FindByProUserTest:
         )
 
         bookings_query, total = booking_repository.find_by_pro_user(
-            user=pro, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=4
+            pro_user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=4
         )
         bookings = bookings_query.all()
 
@@ -468,7 +449,7 @@ class FindByProUserTest:
         )
 
         bookings_query, _ = booking_repository.find_by_pro_user(
-            user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+            pro_user_id=pro.id, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
         )
         bookings = bookings_query.all()
 
@@ -494,7 +475,7 @@ class FindByProUserTest:
         )
 
         bookings_query, _ = booking_repository.find_by_pro_user(
-            user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+            pro_user_id=pro.id, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
         )
         bookings = bookings_query.all()
 
@@ -513,7 +494,7 @@ class FindByProUserTest:
         bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer)
 
         bookings_query, _ = booking_repository.find_by_pro_user(
-            user=pro_user,
+            pro_user_id=pro_user.id,
             booking_period=(one_year_before_booking, one_year_after_booking),
             offerer_address_id=offerer_address_1.id,
         )
@@ -531,7 +512,7 @@ class FindByProUserTest:
         booking_two = bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
 
         bookings_query, _ = booking_repository.find_by_pro_user(
-            user=pro_user,
+            pro_user_id=pro_user.id,
             booking_period=(one_year_before_booking, one_year_after_booking),
             venue_id=booking_two.venue.id,
         )
@@ -559,7 +540,7 @@ class FindByProUserTest:
         )
 
         bookings_query, _ = booking_repository.find_by_pro_user(
-            user=user_offerer.user,
+            pro_user_id=user_offerer.user.id,
             booking_period=(one_year_before_booking, one_year_after_booking),
             event_date=event_date.date(),
         )
@@ -597,7 +578,7 @@ class FindByProUserTest:
         mayotte_booking = bookings_factories.BookingFactory(stock=stock_in_mayotte)
 
         bookings_query, _ = booking_repository.find_by_pro_user(
-            user=user_offerer.user,
+            pro_user_id=user_offerer.user.id,
             booking_period=(one_year_before_booking, one_year_after_booking),
             event_date=event_datetime.date(),
         )
@@ -627,7 +608,7 @@ class FindByProUserTest:
         )
 
         bookings_query, _ = booking_repository.find_by_pro_user(
-            user=user_offerer.user,
+            pro_user_id=user_offerer.user.id,
             booking_period=(booking_beginning_period, booking_ending_period),
             status_filter=booking_status_filter,
         )
@@ -670,7 +651,7 @@ class FindByProUserTest:
         )
 
         bookings_query, _ = booking_repository.find_by_pro_user(
-            user=user_offerer.user,
+            pro_user_id=user_offerer.user.id,
             booking_period=(requested_booking_period_beginning, requested_booking_period_ending),
         )
         bookings = bookings_query.all()

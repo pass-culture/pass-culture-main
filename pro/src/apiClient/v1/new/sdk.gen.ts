@@ -30,7 +30,7 @@ export const getArtists = <ThrowOnError extends boolean = false>(options: Option
 /**
  * get_bookings_csv <GET>
  */
-export const getBookingsCsv = <ThrowOnError extends boolean = false>(options?: Options<getBookingsCsvData, ThrowOnError>) => (options?.client ?? client).get<getBookingsCsvResponses, getBookingsCsvErrors, ThrowOnError, 'data'>({
+export const getBookingsCsv = <ThrowOnError extends boolean = false>(options: Options<getBookingsCsvData, ThrowOnError>) => (options.client ?? client).get<getBookingsCsvResponses, getBookingsCsvErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/bookings/csv',
     ...options
@@ -48,7 +48,7 @@ export const getOfferPriceCategoriesAndSchedulesByDates = <ThrowOnError extends 
 /**
  * get_bookings_excel <GET>
  */
-export const getBookingsExcel = <ThrowOnError extends boolean = false>(options?: Options<getBookingsExcelData, ThrowOnError>) => (options?.client ?? client).get<getBookingsExcelResponses, getBookingsExcelErrors, ThrowOnError, 'data'>({
+export const getBookingsExcel = <ThrowOnError extends boolean = false>(options: Options<getBookingsExcelData, ThrowOnError>) => (options.client ?? client).get<getBookingsExcelResponses, getBookingsExcelErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/bookings/excel',
     ...options
@@ -84,7 +84,7 @@ export const exportBookingsForOfferAsExcel = <ThrowOnError extends boolean = fal
 /**
  * get_bookings_pro <GET>
  */
-export const getBookingsPro = <ThrowOnError extends boolean = false>(options?: Options<getBookingsProData, ThrowOnError>) => (options?.client ?? client).get<getBookingsProResponses, getBookingsProErrors, ThrowOnError, 'data'>({
+export const getBookingsPro = <ThrowOnError extends boolean = false>(options: Options<getBookingsProData, ThrowOnError>) => (options.client ?? client).get<getBookingsProResponses, getBookingsProErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/bookings/pro',
     ...options

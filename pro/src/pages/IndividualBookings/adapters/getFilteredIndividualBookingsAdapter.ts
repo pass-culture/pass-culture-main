@@ -31,9 +31,9 @@ export const getFilteredIndividualBookingsAdapter = async (
     } = buildBookingsRecapQuery(nextPageFilters)
 
     const bookings = await api.getBookingsPro(
-      page,
       // @ts-expect-error api expect number
       offererId,
+      page,
       venueId,
       offerId,
       eventDate,

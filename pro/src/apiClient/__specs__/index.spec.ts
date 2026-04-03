@@ -19,7 +19,7 @@ describe('Maintenance', () => {
   it('should redirect to maintenance page api v1 responds with status 503', async () => {
     fetchMock.mockResponse('Service Unavailable', { status: 503 })
 
-    await api.getBookingsPro()
+    await api.getBookingsPro(1)
 
     expect(mockLocationAssign).toHaveBeenCalledWith(URL_FOR_MAINTENANCE)
   })

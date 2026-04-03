@@ -12,7 +12,7 @@ export type ListBookingsQueryModel = {
   exportType?: (BookingExportType | null);
   offerId?: (number | null);
   offererAddressId?: (number | null);
-  offererId?: (number | null);
+  offererId: number;
   page?: number;
   venueId?: (number | null);
 };
