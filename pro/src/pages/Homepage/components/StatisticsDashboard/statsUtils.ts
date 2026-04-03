@@ -1,8 +1,6 @@
 import { fr } from 'date-fns/locale'
 import { format } from 'date-fns-tz'
 
-import type { VenueMonthlyViewModel } from '@/apiClient/v1'
-
 import { formatNumberLabel } from '../../../../commons/utils/formatNumber'
 
 const MONTH_FORMAT = 'LLLL'
@@ -12,12 +10,6 @@ interface RecentViews {
   date: Date
   views: number
   rawMonth: number
-}
-
-interface MonthlyViewsResult {
-  recentViews: RecentViews[]
-  minViews: number
-  maxViews: number
 }
 
 export const buildDatasets = (recentViews: RecentViews[]) => {
@@ -122,37 +114,4 @@ export const computeGraphSteps = (maxViews: number, minViews: number) => {
 
   const lastStep = niceSteps.at(-1) as number
   return niceSteps.find((step) => step >= roughStep) ?? lastStep
-}
-
-export const buildMonthlyViews = (
-  monthlyViews: VenueMonthlyViewModel[]
-): MonthlyViewsResult => {
-  const now = new Date()
-  const currentYear = now.getFullYear()
-  const currentMonth = now.getMonth()
-  const cutoffDate = new Date(currentYear, currentMonth - 5, 1)
-
-  const filtered = monthlyViews
-    .map((view) => {
-      const year = view.month > currentMonth ? currentYear - 1 : currentYear
-      const date = new Date(year, view.month - 1, 1)
-      return { date, views: view.views, rawMonth: view.month }
-    })
-    .filter((item) => item.date >= cutoffDate)
-    .sort((a, b) => a.date.getTime() - b.date.getTime())
-
-  if (filtered.length === 0) {
-    return {
-      recentViews: [],
-      minViews: 0,
-      maxViews: 1000,
-    }
-  }
-
-  const views = filtered.map((v) => v.views)
-  return {
-    recentViews: filtered,
-    minViews: Math.min(...views),
-    maxViews: Math.max(...views),
-  }
 }

@@ -2,8 +2,8 @@ import cn from 'classnames'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import type { GetOffererResponseModel } from '@/apiClient/v1'
-import { GET_OFFERER_STATS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
+import { GET_VENUES_STATS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import strokeNoBookingIcon from '@/icons/stroke-no-booking.svg'
 import { Panel } from '@/ui-kit/Panel/Panel'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -14,13 +14,13 @@ import { MostViewedOffers } from './components/MostViewedOffers'
 import styles from './StatisticsDashboard.module.scss'
 
 interface StatisticsDashboardProps {
-  offerer: GetOffererResponseModel
+  venue: GetVenueResponseModel
 }
-// TODO (cmoinier 2025-02-18) remove component after switch venue FF
-export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
+
+export const StatisticsDashboard = ({ venue }: StatisticsDashboardProps) => {
   const { isLoading, data: stats } = useSWR(
-    [GET_OFFERER_STATS_QUERY_KEY, offerer.id],
-    ([, offererId]) => api.getOffererStats(offererId)
+    [GET_VENUES_STATS_QUERY_KEY, venue.id],
+    ([, venueId]) => api.getVenueOffersStats(venueId)
   )
 
   return (
@@ -51,7 +51,7 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
             width="42"
           />
 
-          {offerer.hasActiveOffer
+          {venue.hasNonDraftOffers
             ? 'Les statistiques de consultation de vos offres seront bientôt disponibles.'
             : 'Créez vos premières offres grand public pour être visible par les bénéficiaires'}
         </div>

@@ -14,7 +14,7 @@ import { useId, useMemo, useRef } from 'react'
 import { Line } from 'react-chartjs-2'
 import 'chartjs-adapter-date-fns'
 
-import type { OffererViewsModel } from '@/apiClient/v1'
+import type { VenueDailyViewModel } from '@/apiClient/v1'
 import { getDateTimeToFrenchText } from '@/commons/utils/date'
 
 import { buildGraphOptions, computeGraphSteps } from '../statsUtils'
@@ -24,7 +24,7 @@ import { CumulatedViewsEmptyState } from './CumulatedViewsEmptyState'
 // TODO (cmoinier 2025-02-18) remove component after switch venue FF
 
 export interface CumulatedViewsProps {
-  dailyViews: OffererViewsModel[]
+  dailyViews: VenueDailyViewModel[]
   totalViewsLast30Days: number
 }
 
@@ -47,8 +47,7 @@ export const CumulatedViews = ({
   const chartRef = useRef<ChartJS<'line', XYPoint[], unknown> | null>(null)
 
   const hasNoViews =
-    dailyViews.length < 2 ||
-    dailyViews.every((view) => view.numberOfViews === 0)
+    dailyViews.length < 2 || dailyViews.every((view) => view.views === 0)
 
   const { recentViews, minViews, maxViews, firstMonth } = useMemo(() => {
     const cutoff = startOfMonth(subMonths(new Date(), 5))
@@ -60,14 +59,14 @@ export const CumulatedViews = ({
     let max = -Infinity
 
     for (const view of dailyViews) {
-      const date = new Date(view.eventDate)
+      const date = new Date(view.day)
       if (date >= cutoff) {
-        const views = view.numberOfViews
+        const views = view.views
 
         filtered.push({
           date,
           views,
-          rawDate: view.eventDate,
+          rawDate: view.day,
         })
 
         if (views < min) {
@@ -167,9 +166,9 @@ export const CumulatedViews = ({
               </thead>
               <tbody>
                 {dailyViews.map((dailyView) => (
-                  <tr key={dailyView.eventDate}>
-                    <td>{dailyView.eventDate}</td>
-                    <td>{dailyView.numberOfViews}</td>
+                  <tr key={dailyView.day}>
+                    <td>{dailyView.day}</td>
+                    <td>{dailyView.views}</td>
                   </tr>
                 ))}
               </tbody>
