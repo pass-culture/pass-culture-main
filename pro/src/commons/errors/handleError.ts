@@ -19,7 +19,10 @@ export function handleError(
   userMessage: string,
   options: Omit<FrontendErrorOptions, 'isSilent' | 'userMessage'> = {}
 ): void {
-  const { extras } = options
+  const { context } = options
+
+  const isUserImpersonated: boolean | null =
+    rootStore.getState().user.currentUser?.isImpersonated ?? null
 
   rootStore.dispatch(
     addSnackBar({
@@ -29,8 +32,11 @@ export function handleError(
   )
 
   withScope((scope) => {
-    if (extras) {
-      scope.setExtras(extras)
+    scope.setContext('default', {
+      isUserImpersonated,
+    })
+    if (context) {
+      scope.setContext('custom', context)
     }
 
     captureException(error)
