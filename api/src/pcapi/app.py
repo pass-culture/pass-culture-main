@@ -40,7 +40,7 @@ if __name__ == "__main__":
     ip = settings.FLASK_IP
     port = settings.FLASK_PORT
     is_debugger_enabled = settings.IS_DEV and settings.DEBUG_ACTIVATED
-    use_reloader = settings.FLASK_USE_RELOADER and not is_debugger_enabled
+    use_reloader = settings.FLASK_USE_RELOADER
 
     if is_debugger_enabled:
         import debugpy

@@ -64,8 +64,8 @@
             "name": "Attach to api server",
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}",
-                    "remoteRoot": "${workspaceFolder}"
+                    "localRoot": "${workspaceFolder}/api",
+                    "remoteRoot": "/usr/src/app"
                 }
             ],
             "connect": {
@@ -81,8 +81,8 @@
             "name": "Attach to backoffice server",
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}",
-                    "remoteRoot": "${workspaceFolder}"
+                    "localRoot": "${workspaceFolder}/api",
+                    "remoteRoot": "/usr/src/app"
                 }
             ],
             "connect": {

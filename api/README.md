@@ -339,6 +339,22 @@ Quelques commandes VSCode utiles lorsqu'on est dans un fichier de test, avec leu
 
 Voir <https://code.visualstudio.com/docs/python/testing> pour plus d'informations.
 
+#### Debugging
+
+Une fois l'extension `ms-python.debugpy` installée, des configurations seront accessibles définies dans le fichier [.vscode/launch.json](.vscode/launch.json) du dossier que vous avez ouvert dans VSCode :
+- si vous avez ouvert la racine du projet git : utilisez celle adaptée à votre environnement (docker ou non) et à ce que vous souhaitez debbugger (api, backoffice, script).
+- si vous avez ouvert le dossier `api/` : seule la config pour se rattacher à l'api dans docker existe
+
+NB : Pour activer le debug dans docker, il faut lancer les services concernés avec l'option suivante :
+
+```yml
+  flask: # ou backoffice
+    ...
+    environment:
+      - DEBUG_ACTIVATED=1
+    ...
+```
+
 ## Contributing
 
 Des fichiers `CONTRIBUTING.md` à la racine de différents modules Python du projet apporteront des détails et conseils

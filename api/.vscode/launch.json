@@ -1,15 +1,21 @@
 {
     "version": "1",
-    "configurations": [{
-        "name": "Python: Remote Attach",
-        "type": "python",
-        "request": "attach",
-        "port": 10002,
-        "host": "localhost",
-        "subProcess": true,
-        "pathMappings": [{
-            "localRoot": "${workspaceFolder}",
-            "remoteRoot": "/usr/src/app"
-        }]
-    }]
+    "configurations": [
+        {
+            "name": "Python: Remote Attach",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 10002
+            },
+            "subProcess": true,
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "/usr/src/app"
+                }
+            ]
+        }
+    ]
 }
