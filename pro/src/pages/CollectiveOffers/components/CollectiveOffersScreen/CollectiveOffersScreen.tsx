@@ -1,13 +1,11 @@
 import { useRef, useState } from 'react'
 
-import {
-  CollectiveOfferDisplayedStatus,
-  type CollectiveOfferResponseModel,
-} from '@/apiClient/v1'
+import type { CollectiveOfferResponseModel } from '@/apiClient/v1'
 import {
   type CollectiveOffersSortingColumn,
   isCollectiveOfferBookable,
 } from '@/commons/core/OfferEducational/types'
+import { canExpire } from '@/commons/core/OfferEducational/utils/canExpire'
 import {
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   DEFAULT_PAGE,
@@ -51,15 +49,6 @@ export type CollectiveOffersScreenProps = {
   ) => void
   urlSearchFilters: Partial<CollectiveSearchFiltersParams>
   offers: CollectiveOfferResponseModel[]
-}
-
-function isCollectiveOfferPublishedOrPreBooked(
-  offer: CollectiveOfferResponseModel
-) {
-  return (
-    offer.displayedStatus === CollectiveOfferDisplayedStatus.PUBLISHED ||
-    offer.displayedStatus === CollectiveOfferDisplayedStatus.PREBOOKED
-  )
 }
 
 export const CollectiveOffersScreen = ({
@@ -248,7 +237,7 @@ export const CollectiveOffersScreen = ({
           getFullRowContent={(offer: CollectiveOfferResponseModel) => {
             const hasExpirationRow =
               isCollectiveOfferBookable(offer) &&
-              isCollectiveOfferPublishedOrPreBooked(offer) &&
+              canExpire(offer) &&
               !!offer.stock?.bookingLimitDatetime
             return hasExpirationRow ? <ExpirationCell offer={offer} /> : null
           }}
