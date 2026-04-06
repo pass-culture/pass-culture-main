@@ -58,6 +58,7 @@ export const CollectiveOffersBookableLine = ({
       </Link>
       <CollectiveOffersBookableCTA
         stock={offer.collectiveStock}
+        displayedStatus={offer.displayedStatus}
         offerId={offer.id}
         offerLink={offerLink}
       />
