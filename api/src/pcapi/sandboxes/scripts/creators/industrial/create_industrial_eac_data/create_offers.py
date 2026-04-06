@@ -561,6 +561,11 @@ def create_collective_offers_with_different_displayed_status(
             "startDatetime": four_weeks_ago,
             "endDatetime": four_weeks_ago,
         },
+        "Tallinn": {
+            "bookingLimitDatetime": today,
+            "startDatetime": tomorrow,
+            "endDatetime": tomorrow,
+        },
         # with a pending booking
         "Bruxelles": {
             "bookingLimitDatetime": in_two_weeks,
@@ -611,6 +616,13 @@ def create_collective_offers_with_different_displayed_status(
             "startDatetime": in_two_weeks,
             "endDatetime": in_two_weeks,
             "bookingFactory": educational_factories.ConfirmedCollectiveBookingFactory,
+        },
+        "Zagreb": {
+            "bookingLimitDatetime": two_weeks_ago,
+            "startDatetime": today,
+            "endDatetime": today,
+            "bookingFactory": educational_factories.ConfirmedCollectiveBookingFactory,
+            "confirmationDate": yesterday,
         },
         "La Valette": {
             "bookingLimitDatetime": four_weeks_ago,
