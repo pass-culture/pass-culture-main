@@ -63,6 +63,10 @@
     grid-column: 1 / span 2;
     grid-row: 3;
     width: 100%;
+
+    // To be sure that all CTAs have the same width even
+    // when there is only one kind of CTA
+    min-width: 13rem;
     justify-self: stretch;
     margin-top: var(--size-spacing-m);
   }
