@@ -1,6 +1,6 @@
 import { differenceInCalendarDays } from 'date-fns'
 
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
+import { canExpire } from '@/commons/core/OfferEducational/utils/canExpire'
 import { getExpirationText } from '@/commons/core/OfferEducational/utils/getExpirationText'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
@@ -17,11 +17,7 @@ export const CollectiveOffersBookableTag = ({
   displayedStatus,
   stock,
 }: CollectiveOffersBookableTagProps): JSX.Element => {
-  const canExpire =
-    displayedStatus === CollectiveOfferDisplayedStatus.PREBOOKED ||
-    displayedStatus === CollectiveOfferDisplayedStatus.PUBLISHED
-
-  if (canExpire) {
+  if (canExpire({ displayedStatus })) {
     const daysCountBeforeExpiration = differenceInCalendarDays(
       new Date(stock.bookingLimitDatetime),
       new Date()

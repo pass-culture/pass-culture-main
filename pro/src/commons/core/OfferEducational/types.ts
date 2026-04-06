@@ -1,5 +1,6 @@
 import type {
   CollectiveLocationType,
+  CollectiveOfferHomeResponseModel,
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
   EacFormat,
@@ -18,6 +19,11 @@ export type OfferDatesType = 'permanent' | 'specific_dates'
 export type CollectiveOffer =
   | CollectiveOfferTemplateResponseModel
   | CollectiveOfferResponseModel
+
+export type CollectiveOfferBookable =
+  | GetCollectiveOfferResponseModel
+  | CollectiveOfferResponseModel
+  | CollectiveOfferHomeResponseModel
 
 export interface OfferEducationalFormValues
   extends Partial<FlatAddressFormValues> {

@@ -5,6 +5,7 @@ import {
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferResponseModel,
 } from '@/apiClient/v1'
+import { canExpire } from '@/commons/core/OfferEducational/utils/canExpire'
 import { getExpirationText } from '@/commons/core/OfferEducational/utils/getExpirationText'
 import {
   FORMAT_DD_MM_YYYY,
@@ -20,15 +21,6 @@ type ExpirationCellProps = {
   offer: CollectiveOfferResponseModel
 }
 
-function isCollectiveOfferPublishedOrPreBooked(
-  offer: CollectiveOfferResponseModel
-) {
-  return (
-    offer.displayedStatus === CollectiveOfferDisplayedStatus.PUBLISHED ||
-    offer.displayedStatus === CollectiveOfferDisplayedStatus.PREBOOKED
-  )
-}
-
 export function ExpirationCell({ offer }: ExpirationCellProps) {
   const bookingLimitDate = offer.stock?.bookingLimitDatetime
 
@@ -36,8 +28,7 @@ export function ExpirationCell({ offer }: ExpirationCellProps) {
     new Date(bookingLimitDate ?? new Date()),
     new Date()
   )
-  const hasExpirationRow =
-    isCollectiveOfferPublishedOrPreBooked(offer) && !!bookingLimitDate
+  const hasExpirationRow = canExpire(offer) && !!bookingLimitDate
 
   if (!hasExpirationRow) {
     return null
