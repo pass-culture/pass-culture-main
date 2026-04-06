@@ -3,18 +3,23 @@ import userEvent from '@testing-library/user-event'
 import { useParams } from 'react-router'
 import { axe } from 'vitest-axe'
 
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
 import { buildCollectiveStock } from '@/commons/utils/factories/adageFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { CollectiveOffersBookableCTA } from './CollectiveOffersBookableCTA'
 
 const renderCollectiveOffersBookableCTA = (
-  stock?: React.ComponentProps<typeof CollectiveOffersBookableCTA>['stock']
+  stock?: React.ComponentProps<typeof CollectiveOffersBookableCTA>['stock'],
+  displayedStatus: React.ComponentProps<
+    typeof CollectiveOffersBookableCTA
+  >['displayedStatus'] = CollectiveOfferDisplayedStatus.PREBOOKED
 ) => {
   const user = userEvent.setup()
   const props = {
     offerId: 12,
     offerLink: '/lien/vers/mon/offre/12',
+    displayedStatus,
     stock: stock ?? buildCollectiveStock(1, 1),
   }
 
@@ -73,6 +78,21 @@ describe('<CollectiveOffersBookableCTA />', () => {
   it('should render a CTA to see the offer details otherwise', async () => {
     const stock = buildCollectiveStock(8, 9)
     const { user } = renderCollectiveOffersBookableCTA(stock)
+
+    const cta = screen.getByRole('link', { name: "Voir l'offre" })
+    expect(cta).toBeVisible()
+
+    await user.click(cta)
+
+    expect(screen.getByText('Detail de mon offre 12')).toBeVisible()
+  })
+
+  it('should always render CTA to see offer detail for statuses that cannot expire', async () => {
+    const stock = buildCollectiveStock(1, 2)
+    const { user } = renderCollectiveOffersBookableCTA(
+      stock,
+      CollectiveOfferDisplayedStatus.UNDER_REVIEW
+    )
 
     const cta = screen.getByRole('link', { name: "Voir l'offre" })
     expect(cta).toBeVisible()
