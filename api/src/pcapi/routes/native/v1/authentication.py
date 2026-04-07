@@ -224,7 +224,14 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) ->
         sso_user = google_oauth.get_google_user(body.authorization_code, is_web)
 
     if not sso_user.email_verified:
-        raise ApiErrors({"code": "SSO_EMAIL_NOT_VALIDATED", "general": ["L'email n'a pas été validé."]})
+        raise ApiErrors(
+            {
+                "code": "SSO_ERROR",
+                "general": [
+                    "La connexion avec ce compte SSO est refusée. Contacte le support pour plus d'informations."
+                ],
+            }
+        )
 
     if not sso_user.email:
         raise api_errors.ApiErrors(
@@ -258,10 +265,24 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) ->
         )
 
     if user.account_state.is_deleted:
-        raise ApiErrors({"code": "SSO_ACCOUNT_DELETED", "general": ["Le compte a été supprimé"]})
+        raise ApiErrors(
+            {
+                "code": "SSO_ERROR",
+                "general": [
+                    "La connexion avec ce compte SSO est refusée. Contacte le support pour plus d'informations."
+                ],
+            }
+        )
 
     if user.account_state == user_models.AccountState.ANONYMIZED:
-        raise ApiErrors({"code": "SSO_ACCOUNT_ANONYMIZED", "general": ["Le compte a été anonymisé"]})
+        raise ApiErrors(
+            {
+                "code": "SSO_ERROR",
+                "general": [
+                    "La connexion avec ce compte SSO est refusée. Contacte le support pour plus d'informations."
+                ],
+            }
+        )
 
     sso_user_id = sso_user.sub
     with transaction():
