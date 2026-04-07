@@ -87,6 +87,10 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
         nextSelectedPartnerVenue = await api.getVenue(
           nextSelectedPartnerVenueId
         )
+        assertOrFrontendError(
+          nextSelectedPartnerVenue,
+          '`nextSelectedPartnerVenue` is undefined.'
+        )
         nextSelectedOfferer = await api.getOfferer(
           nextSelectedPartnerVenue.managingOfferer.id
         )
