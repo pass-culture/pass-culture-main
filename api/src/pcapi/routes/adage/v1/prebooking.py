@@ -22,10 +22,10 @@ logger = logging.getLogger(__name__)
 
 @blueprint.adage_v1.route(educational_institution_path + "/prebookings", methods=["GET"])
 @atomic()
+@adage_api_key_required
 @spectree_serialize(
     api=blueprint.api, response_model=educational_schemas.EducationalBookingsResponse, tags=("get prebookings",)
 )
-@adage_api_key_required
 def get_educational_bookings(
     query: educational_schemas.GetEducationalBookingsRequest, year_id: str, uai_code: str
 ) -> educational_schemas.EducationalBookingsResponse:
@@ -42,13 +42,13 @@ def get_educational_bookings(
 
 @blueprint.adage_v1.route("/prebookings/<int:educational_booking_id>/confirm", methods=["POST"])
 @atomic()
+@adage_api_key_required
 @spectree_serialize(
     api=blueprint.api,
     response_model=educational_schemas.EducationalBookingResponse,
     on_error_statuses=[404, 422],
     tags=("change prebookings",),
 )
-@adage_api_key_required
 def confirm_prebooking(educational_booking_id: int) -> educational_schemas.EducationalBookingResponse:
     try:
         educational_booking = educational_api_booking.confirm_collective_booking(educational_booking_id)
@@ -70,13 +70,13 @@ def confirm_prebooking(educational_booking_id: int) -> educational_schemas.Educa
 
 @blueprint.adage_v1.route("/prebookings/<int:educational_booking_id>/refuse", methods=["POST"])
 @atomic()
+@adage_api_key_required
 @spectree_serialize(
     api=blueprint.api,
     response_model=educational_schemas.EducationalBookingResponse,
     on_error_statuses=[404, 422],
     tags=("change prebookings", "change bookings"),
 )
-@adage_api_key_required
 def refuse_pre_booking(educational_booking_id: int) -> educational_schemas.EducationalBookingResponse:
     """Refuse a prebooking confirmation
 
@@ -95,12 +95,12 @@ def refuse_pre_booking(educational_booking_id: int) -> educational_schemas.Educa
 
 @blueprint.adage_v1.route("/years/<string:educational_year_id>/prebookings", methods=["GET"])
 @atomic()
+@adage_api_key_required
 @spectree_serialize(
     api=blueprint.api,
     response_model=educational_schemas.EducationalBookingsPerYearResponse,
     tags=("get bookings per year",),
 )
-@adage_api_key_required
 def get_all_bookings_per_year(
     educational_year_id: str,
     query: educational_schemas.GetAllBookingsPerYearQueryModel,
@@ -115,13 +115,13 @@ def get_all_bookings_per_year(
 
 @blueprint.adage_v1.route("/prebookings/move", methods=["POST"])
 @atomic()
+@adage_api_key_required
 @spectree_serialize(
     api=blueprint.api,
     on_success_status=204,
     on_error_statuses=[404, 422],
     tags=("merge institution",),
 )
-@adage_api_key_required
 def merge_institution_prebookings(body: educational_schemas.MergeInstitutionPrebookingsQueryModel) -> None:
     institution_source = educational_repository.find_educational_institution_by_uai_code(body.source_uai)
     if not institution_source:
