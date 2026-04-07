@@ -10,7 +10,6 @@ import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getToday } from '@/commons/utils/date'
-import { getLastCollectiveDmsApplication } from '@/commons/utils/getLastCollectiveDmsApplication'
 import { CollectiveDmsTimeline } from '@/components/CollectiveDmsTimeline/CollectiveDmsTimeline'
 import { CollectiveDmsTimelineVariant } from '@/components/CollectiveDmsTimeline/types'
 import strokeWipIcon from '@/icons/stroke-wip.svg'
@@ -43,9 +42,8 @@ export const NewHomepage = (): JSX.Element => {
     ensureSelectedPartnerVenue
   )
 
-  const collectiveDmsApplication = getLastCollectiveDmsApplication(
-    selectedPartnerVenue.collectiveDmsApplications ?? []
-  )
+  const collectiveDmsApplication =
+    selectedPartnerVenue.lastCollectiveDmsApplication
 
   const hasIndividualTab = !!selectedPartnerVenue.hasNonDraftOffers
   const hasCollectiveTab =

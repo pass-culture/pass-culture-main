@@ -1,7 +1,6 @@
 import { type DMSApplicationForEAC, DMSApplicationstatus } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { getLastCollectiveDmsApplication } from '@/commons/utils/getLastCollectiveDmsApplication'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
@@ -10,7 +9,7 @@ import fullNextIcon from '@/icons/full-next.svg'
 import styles from './PartnerPage.module.scss'
 
 export type PartnerPageCollectiveSectionProps = {
-  collectiveDmsApplications: DMSApplicationForEAC[]
+  lastCollectiveDmsApplication: DMSApplicationForEAC | null
   venueId: number
   offererId: number
   venueName: string
@@ -23,14 +22,10 @@ export function PartnerPageCollectiveSection({
   offererId,
   venueName,
   allowedOnAdage,
-  collectiveDmsApplications,
+  lastCollectiveDmsApplication,
   isDisplayedInHomepage = false,
 }: PartnerPageCollectiveSectionProps) {
   const { logEvent } = useAnalytics()
-
-  const lastDmsApplication = getLastCollectiveDmsApplication(
-    collectiveDmsApplications
-  )
 
   const logCollectiveHelpLinkClick = () => {
     logEvent(Events.CLICKED_PARTNER_BLOCK_COLLECTIVE_HELP_LINK, {
@@ -60,7 +55,7 @@ export function PartnerPageCollectiveSection({
         venueName={venueName}
       />
     )
-  } else if (lastDmsApplication === null) {
+  } else if (lastCollectiveDmsApplication === null) {
     return (
       <AdageInformations
         tagText="Non référencé dans ADAGE"
@@ -99,8 +94,8 @@ export function PartnerPageCollectiveSection({
       </AdageInformations>
     )
   } else if (
-    lastDmsApplication.state === DMSApplicationstatus.REFUSE ||
-    lastDmsApplication.state === DMSApplicationstatus.SANS_SUITE
+    lastCollectiveDmsApplication.state === DMSApplicationstatus.REFUSE ||
+    lastCollectiveDmsApplication.state === DMSApplicationstatus.SANS_SUITE
   ) {
     return (
       <AdageInformations
@@ -117,9 +112,9 @@ export function PartnerPageCollectiveSection({
     )
   }
   // Last case :
-  // (lastDmsApplication?.state === DMSApplicationstatus.ACCEPTE && !hasAdageId) ||
-  // lastDmsApplication?.state === DMSApplicationstatus.EN_CONSTRUCTION ||
-  // lastDmsApplication?.state === DMSApplicationstatus.EN_INSTRUCTION)
+  // (lastCollectiveDmsApplication?.state === DMSApplicationstatus.ACCEPTE && !hasAdageId) ||
+  // lastCollectiveDmsApplication?.state === DMSApplicationstatus.EN_CONSTRUCTION ||
+  // lastCollectiveDmsApplication?.state === DMSApplicationstatus.EN_INSTRUCTION)
   return (
     <AdageInformations
       tagText="Référencement en cours"

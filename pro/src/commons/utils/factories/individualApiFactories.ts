@@ -415,7 +415,7 @@ export const defaultGetOffererResponseModel: GetOffererResponseModel = {
 export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
   {
     activity: DisplayableActivity.OTHER,
-    collectiveDmsApplications: [],
+    lastCollectiveDmsApplication: null,
     hasAdageId: false,
     hasCreatedOffer: false,
     isVirtual: false,
@@ -485,7 +485,7 @@ export const defaultGetVenueResponseModel: GetVenueResponseModel = {
   collectiveAccessInformation: null,
   collectivePhone: null,
   collectiveEmail: null,
-  collectiveDmsApplications: [],
+  lastCollectiveDmsApplication: null,
   hasAdageId: false,
   adageInscriptionDate: null,
   hasOffers: true,

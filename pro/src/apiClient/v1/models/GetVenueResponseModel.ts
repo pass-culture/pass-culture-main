@@ -27,7 +27,6 @@ export type GetVenueResponseModel = {
   canDisplayHighlights: boolean;
   collectiveAccessInformation?: (string | null);
   collectiveDescription?: (string | null);
-  collectiveDmsApplications: Array<DMSApplicationForEAC>;
   collectiveDomains: Array<GetVenueDomainResponseModel>;
   collectiveEmail?: (string | null);
   collectiveInterventionArea?: (Array<string> | null);
@@ -56,6 +55,7 @@ export type GetVenueResponseModel = {
   isPermanent?: (boolean | null);
   isValidated: boolean;
   isVirtual: boolean;
+  lastCollectiveDmsApplication: (DMSApplicationForEAC | null);
   location: LocationResponseModelV2;
   managingOfferer: GetVenueManagingOffererResponseModel;
   mentalDisabilityCompliant?: (boolean | null);

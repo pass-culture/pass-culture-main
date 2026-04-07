@@ -141,7 +141,7 @@ class GetVenueResponseModel(HttpBodyModel):
     collectiveAccessInformation: str | None = None
     collectivePhone: str | None = None
     collectiveEmail: str | None = None
-    collectiveDmsApplications: list[venue_collective_serialize.DMSApplicationForEAC]
+    lastCollectiveDmsApplication: venue_collective_serialize.DMSApplicationForEAC | None
     hasAdageId: bool
     adageInscriptionDate: datetime | None = None
     hasOffers: bool
@@ -157,14 +157,11 @@ class GetVenueResponseModel(HttpBodyModel):
     has_partner_page: bool
     can_display_highlights: bool
     has_non_draft_offers: bool
-    volunteeringUrl: str | None = pydantic_v2.Field(...)
+    volunteeringUrl: str | None
     audioDisabilityCompliant: bool | None = None
     mentalDisabilityCompliant: bool | None = None
     motorDisabilityCompliant: bool | None = None
     visualDisabilityCompliant: bool | None = None
-
-    # TODO: a supprimer
-    model_config = pydantic_v2.ConfigDict(extra="ignore")
 
     @classmethod
     def build(cls, venue: offerers_models.Venue, has_non_free_offers: bool) -> typing.Self:
@@ -197,6 +194,7 @@ class GetVenueResponseModel(HttpBodyModel):
             else:
                 banner_meta = venue_banners_serialize.BannerMetaModel(image_credit=None, original_image_url=None)
 
+        dms_application = venue.last_collective_dms_application
         return cls(
             activity=offerers_models.DisplayableActivity[venue.activity.name]
             if (venue.activity and venue.activity != offerers_models.Activity.NOT_ASSIGNED)
@@ -231,10 +229,11 @@ class GetVenueResponseModel(HttpBodyModel):
             collectiveAccessInformation=venue.collectiveAccessInformation,
             collectivePhone=venue.collectivePhone,
             collectiveEmail=venue.collectiveEmail,
-            collectiveDmsApplications=[
-                venue_collective_serialize.DMSApplicationForEAC.build(collective_ds_application, venue.id)
-                for collective_ds_application in venue.collectiveDmsApplications
-            ],
+            lastCollectiveDmsApplication=venue_collective_serialize.DMSApplicationForEAC.build(
+                dms_application, venue_id=venue.id
+            )
+            if dms_application
+            else None,
             hasAdageId=bool(venue.adageId),
             adageInscriptionDate=venue.adageInscriptionDate,
             hasOffers=venue.hasOffers,

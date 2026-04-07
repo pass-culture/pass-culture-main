@@ -4,34 +4,9 @@ import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
 } from '@/commons/utils/factories/individualApiFactories'
-import {
-  getLastCollectiveDmsApplication,
-  getLastDmsApplicationForOfferer,
-} from '@/commons/utils/getLastCollectiveDmsApplication'
+import { getLastDmsApplicationForOfferer } from '@/commons/utils/getLastCollectiveDmsApplication'
 
 describe('getLastCollectiveDmsApplication', () => {
-  it('should return collective dms application with most recent last change date', () => {
-    const firstDmsApplication = {
-      ...defaultDMSApplicationForEAC,
-      lastChangeDate: '2021-02-01T00:00:00Z',
-    }
-    const lastDmsApplication = {
-      ...defaultDMSApplicationForEAC,
-      lastChangeDate: '2023-12-25T00:00:00Z',
-    }
-    const otherDmsApplication = {
-      ...defaultDMSApplicationForEAC,
-      lastChangeDate: '2022-12-25T00:00:00Z',
-    }
-    expect(
-      getLastCollectiveDmsApplication([
-        firstDmsApplication,
-        lastDmsApplication,
-        otherDmsApplication,
-      ])
-    ).toEqual(lastDmsApplication)
-  })
-
   describe('getLastDmsApplicationForOfferer', () => {
     it('should return the last DMS application for a specific venue', () => {
       const venueId = 1
@@ -41,26 +16,22 @@ describe('getLastCollectiveDmsApplication', () => {
           {
             ...defaultGetOffererVenueResponseModel,
             id: venueId,
-            collectiveDmsApplications: [
-              {
-                ...defaultDMSApplicationForEAC,
-                venueId: venueId,
-                application: 1,
-                lastChangeDate: '2021-01-01T00:00:00Z',
-              },
-            ],
+            lastCollectiveDmsApplication: {
+              ...defaultDMSApplicationForEAC,
+              venueId: venueId,
+              application: 1,
+              lastChangeDate: '2021-01-01T00:00:00Z',
+            },
           },
           {
             ...defaultGetOffererVenueResponseModel,
             id: venueId + 1, // not the same venue
-            collectiveDmsApplications: [
-              {
-                ...defaultDMSApplicationForEAC,
-                venueId: venueId + 1, // not the same venue
-                application: 2,
-                lastChangeDate: '2023-01-01T00:00:00Z',
-              },
-            ],
+            lastCollectiveDmsApplication: {
+              ...defaultDMSApplicationForEAC,
+              venueId: venueId + 1, // not the same venue
+              application: 2,
+              lastChangeDate: '2023-01-01T00:00:00Z',
+            },
           },
         ],
       }
@@ -78,23 +49,19 @@ describe('getLastCollectiveDmsApplication', () => {
         managedVenues: [
           {
             ...defaultGetOffererVenueResponseModel,
-            collectiveDmsApplications: [
-              {
-                ...defaultDMSApplicationForEAC,
-                application: 1,
-                lastChangeDate: '2021-01-01T00:00:00Z',
-              },
-            ],
+            lastCollectiveDmsApplication: {
+              ...defaultDMSApplicationForEAC,
+              application: 1,
+              lastChangeDate: '2021-01-01T00:00:00Z',
+            },
           },
           {
             ...defaultGetOffererVenueResponseModel,
-            collectiveDmsApplications: [
-              {
-                ...defaultDMSApplicationForEAC,
-                application: 2,
-                lastChangeDate: '2020-01-01T00:00:00Z',
-              },
-            ],
+            lastCollectiveDmsApplication: {
+              ...defaultDMSApplicationForEAC,
+              application: 2,
+              lastChangeDate: '2020-01-01T00:00:00Z',
+            },
           },
         ],
       }
@@ -124,11 +91,11 @@ describe('getLastCollectiveDmsApplication', () => {
         managedVenues: [
           {
             ...defaultGetOffererVenueResponseModel,
-            collectiveDmsApplications: [],
+            lastCollectiveDmsApplication: null,
           },
           {
             ...defaultGetOffererVenueResponseModel,
-            collectiveDmsApplications: [],
+            lastCollectiveDmsApplication: null,
           },
         ],
       }

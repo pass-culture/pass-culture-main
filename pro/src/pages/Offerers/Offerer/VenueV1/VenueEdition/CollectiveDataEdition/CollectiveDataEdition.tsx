@@ -6,7 +6,6 @@ import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { GET_EDUCATIONAL_STATUSES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
-import { getLastCollectiveDmsApplication } from '@/commons/utils/getLastCollectiveDmsApplication'
 import { CollectiveDmsTimeline } from '@/components/CollectiveDmsTimeline/CollectiveDmsTimeline'
 import { Banner } from '@/design-system/Banner/Banner'
 import { PartnerPageCollectiveSection } from '@/pages/Homepage/components/Offerers/components/PartnerPages/components/PartnerPageCollectiveSection'
@@ -65,9 +64,6 @@ export const CollectiveDataEdition = ({
   const showCollectiveDataForm = Boolean(
     venue.hasAdageId && canCreateCollectiveOffer
   )
-  const collectiveDmsApplication = getLastCollectiveDmsApplication(
-    venue.collectiveDmsApplications
-  )
 
   return (
     <>
@@ -82,14 +78,14 @@ export const CollectiveDataEdition = ({
         venueId={venue.id}
         venueName={venue.name}
         offererId={venue.managingOfferer.id}
-        collectiveDmsApplications={venue.collectiveDmsApplications}
+        lastCollectiveDmsApplication={venue.lastCollectiveDmsApplication}
         allowedOnAdage={venue.allowedOnAdage}
       />
 
-      {collectiveDmsApplication && (
+      {venue.lastCollectiveDmsApplication && (
         <div className={styles['timeline']}>
           <CollectiveDmsTimeline
-            collectiveDmsApplication={collectiveDmsApplication}
+            collectiveDmsApplication={venue.lastCollectiveDmsApplication}
             hasAdageId={venue.hasAdageId}
             adageInscriptionDate={venue.adageInscriptionDate}
           />

@@ -4,7 +4,6 @@ import {
   type GetOffererVenueResponseModel,
   type GetVenueResponseModel,
 } from '@/apiClient/v1'
-import { getLastCollectiveDmsApplication } from '@/commons/utils/getLastCollectiveDmsApplication'
 
 export const getVirtualVenueFromOfferer = (
   offerer?: GetOffererResponseModel | null
@@ -29,9 +28,7 @@ export const hasOffererAtLeastOnePhysicalVenue = (
 export const shouldDisplayEACInformationSectionForVenue = (
   venue?: GetOffererVenueResponseModel | GetVenueResponseModel
 ): boolean => {
-  const dmsInformations = getLastCollectiveDmsApplication(
-    venue?.collectiveDmsApplications ?? []
-  )
+  const dmsInformations = venue?.lastCollectiveDmsApplication
 
   return (
     Boolean(dmsInformations) &&

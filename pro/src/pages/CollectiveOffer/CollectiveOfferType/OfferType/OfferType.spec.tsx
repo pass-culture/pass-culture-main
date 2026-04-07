@@ -181,13 +181,11 @@ describe('OfferType', () => {
       managedVenues: [
         {
           ...defaultGetOffererVenueResponseModel,
-          collectiveDmsApplications: [
-            {
-              ...defaultDMSApplicationForEAC,
-              application: 1,
-              lastChangeDate: '2021-01-01T00:00:00Z',
-            },
-          ],
+          lastCollectiveDmsApplication: {
+            ...defaultDMSApplicationForEAC,
+            application: 1,
+            lastChangeDate: '2021-01-01T00:00:00Z',
+          },
         },
       ],
     }

@@ -36,7 +36,7 @@ class GetOffererVenueResponseModel(HttpBodyModel):
     siret: str | None
     activity: offerers_models.DisplayableActivity | None
     withdrawal_details: str | None
-    collective_dms_applications: list[venue_collective_serialize.DMSApplicationForEAC]
+    last_collective_dms_application: venue_collective_serialize.DMSApplicationForEAC | None
     has_partner_page: bool
     has_venue_providers: bool
     is_permanent: bool
@@ -52,15 +52,18 @@ class GetOffererVenueResponseModel(HttpBodyModel):
         activity = None
         if venue.activity and venue.activity != offerers_models.Activity.NOT_ASSIGNED:
             activity = offerers_models.DisplayableActivity[venue.activity.name]
+
+        dms_application = venue.last_collective_dms_application
         return cls(
             activity=activity,
             banner_meta=venue.bannerMeta,
             banner_url=venue.bannerUrl,
             booking_email=venue.bookingEmail,
-            collective_dms_applications=[
-                venue_collective_serialize.DMSApplicationForEAC.build(application, venue.id)
-                for application in venue.collectiveDmsApplications
-            ],
+            last_collective_dms_application=venue_collective_serialize.DMSApplicationForEAC.build(
+                dms_application, venue_id=venue.id
+            )
+            if dms_application
+            else None,
             has_adage_id=bool(venue.adageId),
             has_created_offer=venue.id in ids_of_venues_with_offers,
             has_partner_page=venue._has_partner_page,

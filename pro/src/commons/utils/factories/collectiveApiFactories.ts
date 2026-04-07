@@ -322,7 +322,7 @@ export const defaultGetVenue: GetVenueResponseModel = {
   bannerMeta: null,
   bannerUrl: null,
   bookingEmail: '',
-  collectiveDmsApplications: [],
+  lastCollectiveDmsApplication: null,
   collectiveDomains: [],
   collectiveAccessInformation: null,
   collectiveDescription: null,
