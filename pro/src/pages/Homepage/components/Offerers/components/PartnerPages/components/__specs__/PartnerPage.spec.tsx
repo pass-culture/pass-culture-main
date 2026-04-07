@@ -114,7 +114,7 @@ describe('PartnerPages', () => {
     renderPartnerPages({
       venue: {
         ...defaultGetVenue,
-        collectiveDmsApplications: [],
+        lastCollectiveDmsApplication: null,
         allowedOnAdage: false,
       },
       offerer: {

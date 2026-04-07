@@ -99,7 +99,7 @@ export const PartnerPage = ({
         />
       )}
       <PartnerPageCollectiveSection
-        collectiveDmsApplications={venue.collectiveDmsApplications}
+        lastCollectiveDmsApplication={venue.lastCollectiveDmsApplication}
         venueId={venue.id}
         venueName={venue.name}
         offererId={offerer.id}

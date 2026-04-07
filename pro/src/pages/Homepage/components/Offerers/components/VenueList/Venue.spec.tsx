@@ -114,7 +114,7 @@ describe('<Venues />', () => {
         venue={{
           ...props.venue,
           hasCreatedOffer: true,
-          collectiveDmsApplications: [],
+          lastCollectiveDmsApplication: null,
         }}
       />
     )

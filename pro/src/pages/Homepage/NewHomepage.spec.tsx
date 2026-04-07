@@ -168,9 +168,9 @@ describe('NewHomepage', () => {
           ...defaultGetVenueResponseModel,
           allowedOnAdage,
           hasNonDraftOffers,
-          collectiveDmsApplications: hasCollectiveDMS
-            ? [defaultDMSApplicationForEACV2]
-            : undefined,
+          lastCollectiveDmsApplication: hasCollectiveDMS
+            ? defaultDMSApplicationForEACV2
+            : null,
         })
 
         if (shouldDisplayTabs) {
@@ -404,7 +404,7 @@ describe('NewHomepage', () => {
       it('should be displayed when venue has a collective DMS application', () => {
         renderNewHomepage({
           ...defaultGetVenueResponseModel,
-          collectiveDmsApplications: [defaultDMSApplicationForEACV2],
+          lastCollectiveDmsApplication: defaultDMSApplicationForEACV2,
         })
 
         expect(
@@ -415,7 +415,7 @@ describe('NewHomepage', () => {
       it('should not be displayed when venue has not a collective DMS application', () => {
         renderNewHomepage({
           ...defaultGetVenueResponseModel,
-          collectiveDmsApplications: undefined,
+          lastCollectiveDmsApplication: null,
           allowedOnAdage: true,
         })
 
@@ -429,12 +429,10 @@ describe('NewHomepage', () => {
       it('should be displayed when venue has a refused DMS application', () => {
         renderNewHomepage({
           ...defaultGetVenueResponseModel,
-          collectiveDmsApplications: [
-            {
-              ...defaultDMSApplicationForEACV2,
-              state: DMSApplicationstatus.REFUSE,
-            },
-          ],
+          lastCollectiveDmsApplication: {
+            ...defaultDMSApplicationForEACV2,
+            state: DMSApplicationstatus.REFUSE,
+          },
         })
 
         expect(
@@ -445,12 +443,10 @@ describe('NewHomepage', () => {
       it('should be displayed when venue has a "sans suite" DMS application', () => {
         renderNewHomepage({
           ...defaultGetVenueResponseModel,
-          collectiveDmsApplications: [
-            {
-              ...defaultDMSApplicationForEACV2,
-              state: DMSApplicationstatus.SANS_SUITE,
-            },
-          ],
+          lastCollectiveDmsApplication: {
+            ...defaultDMSApplicationForEACV2,
+            state: DMSApplicationstatus.SANS_SUITE,
+          },
         })
 
         expect(
@@ -461,7 +457,7 @@ describe('NewHomepage', () => {
       it('should not be displayed when venue has a pending DMS application', () => {
         renderNewHomepage({
           ...defaultGetVenueResponseModel,
-          collectiveDmsApplications: [defaultDMSApplicationForEACV2],
+          lastCollectiveDmsApplication: defaultDMSApplicationForEACV2,
         })
 
         expect(
@@ -472,7 +468,7 @@ describe('NewHomepage', () => {
       it('should not be displayed when venue has no DMS application', () => {
         renderNewHomepage({
           ...defaultGetVenueResponseModel,
-          collectiveDmsApplications: undefined,
+          lastCollectiveDmsApplication: null,
           allowedOnAdage: true,
         })
 
@@ -512,7 +508,7 @@ describe('NewHomepage', () => {
           ...defaultGetVenueResponseModel,
           hasNonFreeOffers: false,
           allowedOnAdage: false,
-          collectiveDmsApplications: [defaultDMSApplicationForEACV2],
+          lastCollectiveDmsApplication: defaultDMSApplicationForEACV2,
         })
 
         expect(
@@ -549,7 +545,7 @@ describe('NewHomepage', () => {
         renderNewHomepage({
           ...defaultGetVenueResponseModel,
           allowedOnAdage: false,
-          collectiveDmsApplications: [defaultDMSApplicationForEACV2],
+          lastCollectiveDmsApplication: defaultDMSApplicationForEACV2,
         })
 
         expect(
@@ -663,7 +659,7 @@ describe('NewHomepage', () => {
           dateCreated,
           adageInscriptionDate: null,
           allowedOnAdage: false,
-          collectiveDmsApplications: [defaultDMSApplicationForEACV2],
+          lastCollectiveDmsApplication: defaultDMSApplicationForEACV2,
         })
 
         expect(

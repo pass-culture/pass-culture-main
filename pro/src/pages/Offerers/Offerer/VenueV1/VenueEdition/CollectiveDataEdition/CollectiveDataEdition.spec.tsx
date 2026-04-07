@@ -127,7 +127,7 @@ describe('CollectiveDataEdition', () => {
           ...defaultGetVenue,
           id: 1,
           hasAdageId: false,
-          collectiveDmsApplications: [{ ...defaultDMSApplicationForEACV2 }],
+          lastCollectiveDmsApplication: defaultDMSApplicationForEACV2,
         },
       })
 

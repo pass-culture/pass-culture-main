@@ -10,7 +10,6 @@ export type GetOffererVenueResponseModel = {
   bannerMeta: (BannerMetaModel | null);
   bannerUrl: (string | null);
   bookingEmail: (string | null);
-  collectiveDmsApplications: Array<DMSApplicationForEAC>;
   hasAdageId: boolean;
   hasCreatedOffer: boolean;
   hasPartnerPage: boolean;
@@ -18,6 +17,7 @@ export type GetOffererVenueResponseModel = {
   id: number;
   isPermanent: boolean;
   isVirtual: boolean;
+  lastCollectiveDmsApplication: (DMSApplicationForEAC | null);
   name: string;
   publicName: string;
   siret: (string | null);

@@ -111,10 +111,13 @@ class Returns200Test:
         )
 
         venue_id = venue.id
-        dmsapplication = educational_factories.CollectiveDmsApplicationFactory(
-            venue=venue,
+        dmsapplication = educational_factories.CollectiveDmsApplicationFactory(venue=venue)
+        # older dms application, will not be in the result
+        educational_factories.CollectiveDmsApplicationFactory(
+            venue=venue, lastChangeDate=dmsapplication.lastChangeDate - datetime.timedelta(days=10)
         )
         offers_factories.EventStockFactory(offer__venue=venue)
+
         expected_serialized_venue = {
             "activity": "BOOKSTORE",
             "audioDisabilityCompliant": venue.audioDisabilityCompliant,
@@ -201,21 +204,19 @@ class Returns200Test:
             "collectivePhone": None,
             "collectiveStudents": [],
             "collectiveWebsite": None,
-            "collectiveDmsApplications": [
-                {
-                    "venueId": dmsapplication.venue.id,
-                    "state": dmsapplication.state,
-                    "procedure": dmsapplication.procedure,
-                    "application": dmsapplication.application,
-                    "lastChangeDate": format_into_utc_date(dmsapplication.lastChangeDate),
-                    "depositDate": format_into_utc_date(dmsapplication.depositDate),
-                    "expirationDate": format_into_utc_date(dmsapplication.expirationDate),
-                    "buildDate": format_into_utc_date(dmsapplication.buildDate),
-                    "instructionDate": None,
-                    "processingDate": None,
-                    "userDeletionDate": None,
-                }
-            ],
+            "lastCollectiveDmsApplication": {
+                "venueId": dmsapplication.venue.id,
+                "state": dmsapplication.state,
+                "procedure": dmsapplication.procedure,
+                "application": dmsapplication.application,
+                "lastChangeDate": format_into_utc_date(dmsapplication.lastChangeDate),
+                "depositDate": format_into_utc_date(dmsapplication.depositDate),
+                "expirationDate": format_into_utc_date(dmsapplication.expirationDate),
+                "buildDate": format_into_utc_date(dmsapplication.buildDate),
+                "instructionDate": None,
+                "processingDate": None,
+                "userDeletionDate": None,
+            },
             "hasAdageId": True,
             "adageInscriptionDate": format_into_utc_date(venue.adageInscriptionDate),
             "location": {

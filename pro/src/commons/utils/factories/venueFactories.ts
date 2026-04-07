@@ -92,7 +92,7 @@ export const makeGetVenueResponseModel = <
     bookingEmail: `booking.${override.id}@test.com`,
     collectiveAccessInformation: null,
     collectiveDescription: null,
-    collectiveDmsApplications: [],
+    lastCollectiveDmsApplication: null,
     collectiveDomains: [],
     collectiveEmail: null,
     collectiveInterventionArea: null,

@@ -52,8 +52,10 @@ class GetOffererTest:
             adageInscriptionDate=date_utils.get_naive_utc_now(),
             activity=offerers_models.Activity.FESTIVAL,
         )
+        dms_app = collective_factories.CollectiveDmsApplicationFactory(venue=venue_3)
+        # older dms application, will not be in the result
         collective_factories.CollectiveDmsApplicationFactory(
-            venue=venue_3,
+            venue=venue_3, lastChangeDate=dms_app.lastChangeDate - datetime.timedelta(days=10)
         )
 
         offerer_id = offerer.id
@@ -79,24 +81,21 @@ class GetOffererTest:
                     "bannerMeta": venue.bannerMeta,
                     "bannerUrl": venue.bannerUrl,
                     "bookingEmail": venue.bookingEmail,
-                    "collectiveDmsApplications": [
-                        {
-                            "venueId": a.venue.id,
-                            "state": a.state,
-                            "procedure": a.procedure,
-                            "application": a.application,
-                            "lastChangeDate": format_into_utc_date(a.lastChangeDate),
-                            "depositDate": format_into_utc_date(a.depositDate),
-                            "expirationDate": format_into_utc_date(a.expirationDate) if a.expirationDate else None,
-                            "buildDate": format_into_utc_date(a.buildDate) if a.buildDate else None,
-                            "instructionDate": format_into_utc_date(a.instructionDate) if a.instructionDate else None,
-                            "processingDate": format_into_utc_date(a.processingDate) if a.processingDate else None,
-                            "userDeletionDate": (
-                                format_into_utc_date(a.userDeletionDate) if a.userDeletionDate else None
-                            ),
-                        }
-                        for a in venue.collectiveDmsApplications
-                    ],
+                    "lastCollectiveDmsApplication": {
+                        "venueId": venue_3.id,
+                        "state": dms_app.state,
+                        "procedure": dms_app.procedure,
+                        "application": dms_app.application,
+                        "lastChangeDate": format_into_utc_date(dms_app.lastChangeDate),
+                        "depositDate": format_into_utc_date(dms_app.depositDate),
+                        "expirationDate": format_into_utc_date(dms_app.expirationDate),
+                        "buildDate": format_into_utc_date(dms_app.buildDate),
+                        "instructionDate": None,
+                        "processingDate": None,
+                        "userDeletionDate": None,
+                    }
+                    if venue.id == venue_3.id
+                    else None,
                     "id": venue.id,
                     "isPermanent": venue.isPermanent,
                     "isVirtual": False,

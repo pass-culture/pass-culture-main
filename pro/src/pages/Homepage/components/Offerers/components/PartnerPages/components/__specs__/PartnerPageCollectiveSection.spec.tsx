@@ -14,7 +14,7 @@ const renderPartnerPageCollectiveSection = (
 ) => {
   renderWithProviders(
     <PartnerPageCollectiveSection
-      collectiveDmsApplications={[defaultDMSApplicationForEAC]}
+      lastCollectiveDmsApplication={defaultDMSApplicationForEAC}
       venueId={7}
       offererId={8}
       venueName="Venue name"
@@ -27,7 +27,7 @@ const renderPartnerPageCollectiveSection = (
 describe('PartnerPages', () => {
   it('should display the EAC section when no adage', () => {
     renderPartnerPageCollectiveSection({
-      collectiveDmsApplications: [],
+      lastCollectiveDmsApplication: null,
       allowedOnAdage: false,
     })
 
@@ -37,7 +37,7 @@ describe('PartnerPages', () => {
 
   it('should display the EAC section when no adage but allowed on ADAGE', () => {
     renderPartnerPageCollectiveSection({
-      collectiveDmsApplications: [],
+      lastCollectiveDmsApplication: null,
       allowedOnAdage: true,
     })
 
@@ -46,12 +46,10 @@ describe('PartnerPages', () => {
 
   it('should display the EAC section when adage refused', () => {
     renderPartnerPageCollectiveSection({
-      collectiveDmsApplications: [
-        {
-          ...defaultDMSApplicationForEAC,
-          state: DMSApplicationstatus.REFUSE,
-        },
-      ],
+      lastCollectiveDmsApplication: {
+        ...defaultDMSApplicationForEAC,
+        state: DMSApplicationstatus.REFUSE,
+      },
     })
 
     expect(screen.getByText('Non référencé dans ADAGE')).toBeInTheDocument()
@@ -62,12 +60,10 @@ describe('PartnerPages', () => {
 
   it('should display the EAC section when adage is without following', () => {
     renderPartnerPageCollectiveSection({
-      collectiveDmsApplications: [
-        {
-          ...defaultDMSApplicationForEAC,
-          state: DMSApplicationstatus.SANS_SUITE,
-        },
-      ],
+      lastCollectiveDmsApplication: {
+        ...defaultDMSApplicationForEAC,
+        state: DMSApplicationstatus.SANS_SUITE,
+      },
     })
 
     expect(screen.getByText('Non référencé dans ADAGE')).toBeInTheDocument()
@@ -78,12 +74,10 @@ describe('PartnerPages', () => {
 
   it('should display the EAC section when adage application in progress', () => {
     renderPartnerPageCollectiveSection({
-      collectiveDmsApplications: [
-        {
-          ...defaultDMSApplicationForEAC,
-          state: DMSApplicationstatus.EN_INSTRUCTION,
-        },
-      ],
+      lastCollectiveDmsApplication: {
+        ...defaultDMSApplicationForEAC,
+        state: DMSApplicationstatus.EN_INSTRUCTION,
+      },
     })
 
     expect(screen.getByText('Référencement en cours')).toBeInTheDocument()
@@ -91,12 +85,10 @@ describe('PartnerPages', () => {
 
   it('should display the EAC section when adage application accepted but has not yet adageId', () => {
     renderPartnerPageCollectiveSection({
-      collectiveDmsApplications: [
-        {
-          ...defaultDMSApplicationForEAC,
-          state: DMSApplicationstatus.ACCEPTE,
-        },
-      ],
+      lastCollectiveDmsApplication: {
+        ...defaultDMSApplicationForEAC,
+        state: DMSApplicationstatus.ACCEPTE,
+      },
     })
 
     expect(screen.getByText('Référencement en cours')).toBeInTheDocument()
@@ -104,7 +96,7 @@ describe('PartnerPages', () => {
 
   it('should display the EAC section when it has an adageId in homepage', () => {
     renderPartnerPageCollectiveSection({
-      collectiveDmsApplications: [],
+      lastCollectiveDmsApplication: null,
       allowedOnAdage: true,
       isDisplayedInHomepage: true,
     })
@@ -117,7 +109,7 @@ describe('PartnerPages', () => {
 
   it('should display the EAC section when it has an adageId in venue form', () => {
     renderPartnerPageCollectiveSection({
-      collectiveDmsApplications: [],
+      lastCollectiveDmsApplication: null,
       allowedOnAdage: true,
       isDisplayedInHomepage: false,
     })

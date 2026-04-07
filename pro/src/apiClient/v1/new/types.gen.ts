@@ -3097,10 +3097,6 @@ export type GetOffererVenueResponseModel = {
      */
     bookingEmail: string | null;
     /**
-     * Collectivedmsapplications
-     */
-    collectiveDmsApplications: Array<DMSApplicationForEAC>;
-    /**
      * Hasadageid
      */
     hasAdageId: boolean;
@@ -3128,6 +3124,7 @@ export type GetOffererVenueResponseModel = {
      * Isvirtual
      */
     isVirtual: boolean;
+    lastCollectiveDmsApplication: DMSApplicationForEAC | null;
     /**
      * Name
      */
@@ -3428,10 +3425,6 @@ export type GetVenueResponseModel = {
      */
     collectiveDescription?: string | null;
     /**
-     * Collectivedmsapplications
-     */
-    collectiveDmsApplications: Array<DMSApplicationForEAC>;
-    /**
      * Collectivedomains
      */
     collectiveDomains: Array<GetVenueDomainResponseModel>;
@@ -3534,6 +3527,7 @@ export type GetVenueResponseModel = {
      * Isvirtual
      */
     isVirtual: boolean;
+    lastCollectiveDmsApplication: DMSApplicationForEAC | null;
     location: LocationResponseModelV2;
     managingOfferer: GetVenueManagingOffererResponseModel;
     /**
