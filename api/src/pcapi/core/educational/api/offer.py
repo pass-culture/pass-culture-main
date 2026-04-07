@@ -797,13 +797,23 @@ def create_offer_request(
     db.session.flush()
 
     transactional_mails.send_new_request_made_by_redactor_to_pro(request)
-    on_commit(
-        partial(
-            adage_client.notify_redactor_when_collective_request_is_made, serialize_collective_offer_request(request)
-        )
-    )
+    on_commit(partial(_notify_collective_request, data=serialize_collective_offer_request(request)))
 
     return request
+
+
+def _notify_collective_request(data: schemas.AdageCollectiveRequest) -> None:
+    try:
+        adage_client.notify_redactor_when_collective_request_is_made(data)
+    except exceptions.AdageException as adage_error:
+        logger.error(
+            "Redactor will not receive a notification",
+            extra={
+                "adage_status_code": adage_error.status_code,
+                "adage_response_text": adage_error.response_text,
+                "adage_message": adage_error.message,
+            },
+        )
 
 
 def archive_collective_offers(

@@ -44,19 +44,6 @@ def book_collective_offer(
             redactor_informations=get_redactor_information_from_adage_authentication(authenticated_information),
             stock_id=body.stockId,
         )
-    except exceptions.AdageException as exception:
-        logger.info(
-            "Could not book offer: adage api call failed",
-            extra={
-                "redactor_email": authenticated_information.email,
-                "status_code": str(exception.status_code),
-                "response_text": exception.response_text,
-            },
-        )
-        raise ApiErrors(
-            {"global": "La récupération des informations du rédacteur de projet via Adage a échoué"},
-            status_code=500,
-        )
 
     except exceptions.MissingRequiredRedactorInformation:
         logger.info(
