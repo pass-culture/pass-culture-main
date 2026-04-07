@@ -214,7 +214,9 @@ class GetVenueResponseModel(HttpBodyModel):
             venue_type = VenueTypeResponseModelV2(value="", label="")
 
         return cls(
-            activity=offerers_models.DisplayableActivity[venue.activity.name] if venue.activity else None,
+            activity=offerers_models.DisplayableActivity[venue.activity.name]
+            if (venue.activity and venue.activity != offerers_models.Activity.NOT_ASSIGNED)
+            else None,
             bannerUrl=venue.bannerUrl,
             isVirtual=venue.isVirtual,
             name=venue.name,
