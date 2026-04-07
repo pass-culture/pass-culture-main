@@ -2,13 +2,13 @@ name: "9 [test] deploy ops"
 
 on:
   workflow_dispatch:
-    inputs:
-      pcapi_image_tag:
-        description: pcapi image tag to deploy
-        required: false 
-        default: latest 
+  schedule:
+  - cron: "15 1 * * *" # Every night at 15 past 1
 
-permissions: write-all
+
+permissions:
+  contents: read
+  id-token: write
 
 jobs:
   deploy-to-ops:
@@ -17,7 +17,7 @@ jobs:
     with:
       environment: opsv2
       environment_short_name: opsv2
-      app_version: ${{ inputs.pcapi_image_tag }}
+      app_version: latest
       workflow_cluster_name: gke-infra-prd-eu9
       workflow_project_id: pc-infra-prd
       app_cluster_name: gke-backend-tst-eu9
