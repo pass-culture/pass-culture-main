@@ -1,1 +1,0 @@
-import{P as e}from"./components-CW815ImY.js";export{e as createCopyToClipboardFunction};
