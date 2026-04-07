@@ -156,8 +156,8 @@ export class DefaultService {
   }
   /**
    * get_bookings_csv <GET>
-   * @param page
    * @param offererId
+   * @param page
    * @param venueId
    * @param offerId
    * @param eventDate
@@ -170,8 +170,8 @@ export class DefaultService {
    * @throws ApiError
    */
   public getBookingsCsv(
+    offererId: number,
     page: number = 1,
-    offererId?: (number | null),
     venueId?: (number | null),
     offerId?: (number | null),
     eventDate?: (string | null),
@@ -225,8 +225,8 @@ export class DefaultService {
   }
   /**
    * get_bookings_excel <GET>
-   * @param page
    * @param offererId
+   * @param page
    * @param venueId
    * @param offerId
    * @param eventDate
@@ -239,8 +239,8 @@ export class DefaultService {
    * @throws ApiError
    */
   public getBookingsExcel(
+    offererId: number,
     page: number = 1,
-    offererId?: (number | null),
     venueId?: (number | null),
     offerId?: (number | null),
     eventDate?: (string | null),
@@ -354,8 +354,8 @@ export class DefaultService {
   }
   /**
    * get_bookings_pro <GET>
-   * @param page
    * @param offererId
+   * @param page
    * @param venueId
    * @param offerId
    * @param eventDate
@@ -368,8 +368,8 @@ export class DefaultService {
    * @throws ApiError
    */
   public getBookingsPro(
+    offererId: number,
     page: number = 1,
-    offererId?: (number | null),
     venueId?: (number | null),
     offerId?: (number | null),
     eventDate?: (string | null),

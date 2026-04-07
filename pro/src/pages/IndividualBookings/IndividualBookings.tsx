@@ -69,7 +69,7 @@ export const IndividualBookings = () => {
     updateUrl,
   } = useBookingsFilters(
     withSwitchVenueFeature
-      ? { venueId: selectedPartnerVenue.id.toString() }
+      ? { venueId: selectedPartnerVenue.id.toString(), offererId: selectedOfferer.id.toString() }
       : { offererId: selectedOfferer.id.toString() }
   )
 

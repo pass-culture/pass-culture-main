@@ -350,6 +350,24 @@ class VenueHasNonFreeOffersTest:
         assert repository.venue_has_non_free_offers(venue.id)
 
 
+class DoesOffererManageVenueTest:
+    def test_returns_true_when_venue_belongs_to_offerer(self):
+        venue = offerers_factories.VenueFactory()
+
+        assert repository.does_offerer_manage_venue(venue.managingOffererId, venue.id)
+
+    def test_returns_false_when_venue_belongs_to_another_offerer(self):
+        venue = offerers_factories.VenueFactory()
+        other_offerer = offerers_factories.OffererFactory()
+
+        assert not repository.does_offerer_manage_venue(other_offerer.id, venue.id)
+
+    def test_returns_false_when_venue_does_not_exist(self):
+        offerer = offerers_factories.OffererFactory()
+
+        assert not repository.does_offerer_manage_venue(offerer.id, 0)
+
+
 def test_sould_return_user_offerer_timezones():
     pro_user = users_factories.ProFactory()
     user_offerer = offerers_factories.UserOffererFactory(user=pro_user)

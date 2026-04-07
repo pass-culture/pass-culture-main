@@ -31,21 +31,27 @@ class GetAllBookingsTest:
     def test_call_repository_with_user_and_page(self, find_by_pro_user, client: Any):
         find_by_pro_user.return_value = ([], 0)
         pro = users_factories.ProFactory()
+        offerer = offerers_factories.UserOffererFactory(user=pro).offerer
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerer_id = offerer.id
 
         auth_client = client.with_session_auth(pro.email)
         # get user_session + user
-        with assert_num_queries(1):
-            response = auth_client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&page=3")
+        # check has_access (UserOfferer)
+        # resolve venue_ids from offerer
+        with assert_num_queries(3):
+            response = auth_client.get(
+                f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&page=3&offererId={offerer_id}"
+            )
             assert response.status_code == 200
 
         find_by_pro_user.assert_called_once_with(
-            user=pro,
+            pro_user_id=pro.id,
+            venue_ids=[venue.id],
             booking_period=BOOKING_PERIOD,
             status_filter=bookings_models.BookingStatusFilter.BOOKED,
             event_date=None,
-            venue_id=None,
             offer_id=None,
-            offerer_id=None,
             offerer_address_id=None,
             page=3,
             per_page_limit=500,
@@ -56,21 +62,27 @@ class GetAllBookingsTest:
     def test_call_repository_with_page_1(self, find_by_pro_user, client: Any):
         find_by_pro_user.return_value = ([], 0)
         pro = users_factories.ProFactory()
+        offerer = offerers_factories.UserOffererFactory(user=pro).offerer
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerer_id = offerer.id
 
         auth_client = client.with_session_auth(pro.email)
         # get user_session + user
-        with assert_num_queries(1):
-            response = auth_client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
+        # check has_access (UserOfferer)
+        # resolve venue_ids from offerer
+        with assert_num_queries(3):
+            response = auth_client.get(
+                f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&offererId={offerer_id}"
+            )
             assert response.status_code == 200
 
         find_by_pro_user.assert_called_once_with(
-            user=pro,
+            pro_user_id=pro.id,
+            venue_ids=[venue.id],
             booking_period=BOOKING_PERIOD,
             status_filter=bookings_models.BookingStatusFilter.BOOKED,
             event_date=None,
-            venue_id=None,
             offer_id=None,
-            offerer_id=None,
             offerer_address_id=None,
             page=1,
             per_page_limit=500,
@@ -81,25 +93,28 @@ class GetAllBookingsTest:
     def test_call_repository_with_venue_id(self, find_by_pro_user, client: Any):
         find_by_pro_user.return_value = ([], 0)
         pro = users_factories.ProFactory()
-        venue = offerers_factories.VenueFactory()
+        offerer = offerers_factories.UserOffererFactory(user=pro).offerer
+        offerer_id = offerer.id
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_id = venue.id
 
         auth_client = client.with_session_auth(pro.email)
         # get user_session + user
-        # get venue
-        with assert_num_queries(2):
+        # check has_access (UserOfferer)
+        # check venue belongs to offerer
+        with assert_num_queries(3):
             response = auth_client.get(
-                f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&venueId={venue.id}"
+                f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&offererId={offerer_id}&venueId={venue_id}"
             )
             assert response.status_code == 200
 
         find_by_pro_user.assert_called_once_with(
-            user=pro,
+            pro_user_id=pro.id,
+            venue_ids=[venue.id],
             booking_period=BOOKING_PERIOD,
             status_filter=bookings_models.BookingStatusFilter.BOOKED,
             event_date=None,
-            venue_id=venue.id,
             offer_id=None,
-            offerer_id=None,
             offerer_address_id=None,
             page=1,
             per_page_limit=500,
@@ -110,25 +125,28 @@ class GetAllBookingsTest:
     def test_call_repository_with_offer_id(self, find_by_pro_user, client: Any):
         find_by_pro_user.return_value = ([], 0)
         pro = users_factories.ProFactory()
-        offer = offers_factories.OfferFactory()
+        offerer = offerers_factories.UserOffererFactory(user=pro).offerer
+        offer = offers_factories.OfferFactory(venue__managingOfferer=offerer)
 
+        offerer_id = offerer.id
+        offer_id = offer.id
         auth_client = client.with_session_auth(pro.email)
         # get user_session + user
-        # get offer
-        with assert_num_queries(2):
+        # check has_access (UserOfferer)
+        # resolve venue_ids from offerer
+        with assert_num_queries(3):
             response = auth_client.get(
-                f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&offerId={offer.id}"
+                f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&offererId={offerer_id}&offerId={offer_id}"
             )
             assert response.status_code == 200
 
         find_by_pro_user.assert_called_once_with(
-            user=pro,
+            pro_user_id=pro.id,
+            venue_ids=[offer.venueId],
             booking_period=BOOKING_PERIOD,
             status_filter=bookings_models.BookingStatusFilter.BOOKED,
             event_date=None,
-            venue_id=None,
             offer_id=offer.id,
-            offerer_id=None,
             offerer_address_id=None,
             page=1,
             per_page_limit=500,
@@ -138,6 +156,8 @@ class GetAllBookingsTest:
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     expected_num_queries = 1  # Fetch the session + user
+    expected_num_queries += 1  # Check has_access (UserOfferer)
+    expected_num_queries += 1  # Resolve venue ids from offerer
     # the user timezones query is duplicated for better readability
     expected_num_queries += 1  # Fetch user timezones (for the count)
     expected_num_queries += 1  # Fetch user timezones (for the query)
@@ -178,12 +198,13 @@ class Returns200Test:
         )
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
-
+        offerer_id = offerer.id
         client = client.with_session_auth(pro_user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
+            response = client.get(
+                f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&offererId={offerer_id}"
+            )
             assert response.status_code == 200
-
         expected_bookings_recap = [
             {
                 "stock": {
@@ -284,11 +305,12 @@ class Returns200Test:
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offerer = stock.offer.venue.managingOfferer
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offerer_id = offerer.id
 
         client = client.with_session_auth(pro_user.email)
         with assert_num_queries(self.expected_num_queries):
             response = client.get(
-                f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&eventDate={requested_date}"
+                f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&eventDate={requested_date}&offererId={offerer_id}"
             )
 
         assert response.status_code == 200
@@ -307,11 +329,12 @@ class Returns200Test:
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
+        offerer_id = booking.offerer.id
         client = client.with_session_auth(pro_user.email)
         with assert_num_queries(self.expected_num_queries):
             response = client.get(
-                "/bookings/pro?bookingPeriodBeginningDate=%s&bookingPeriodEndingDate=%s&bookingStatusFilter=booked"
-                % (booking_period_beginning_date, booking_period_ending_date)
+                "/bookings/pro?bookingPeriodBeginningDate=%s&bookingPeriodEndingDate=%s&bookingStatusFilter=booked&offererId=%s"
+                % (booking_period_beginning_date, booking_period_ending_date, offerer_id)
             )
 
         assert response.status_code == 200
@@ -337,9 +360,10 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=externalbooking.booking.offerer)
 
         # when
+        offerer_id = externalbooking.booking.offerer.id
         client = client.with_session_auth(pro_user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+            response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&offererId={offerer_id}")
             assert response.status_code == 200
 
         assert response.json["bookingsRecap"][0]["bookingToken"] is None
@@ -395,10 +419,14 @@ class Returns400Test:
 
     def when_booking_period_and_event_date_is_not_given(self, client: Any):
         pro = users_factories.ProFactory()
+        offerer = offerers_factories.UserOffererFactory(user=pro).offerer
+
+        num_queries = self.num_queries
+        num_queries += 1  # check has_access (UserOfferer)
 
         client = client.with_session_auth(pro.email)
-        with assert_num_queries(self.num_queries):
-            response = client.get("/bookings/pro")
+        with assert_num_queries(num_queries):
+            response = client.get(f"/bookings/pro?offererId={offerer.id}")
             assert response.status_code == 400
 
         assert response.json["eventDate"] == ["Ce champ est obligatoire si aucune période n'est renseignée."]

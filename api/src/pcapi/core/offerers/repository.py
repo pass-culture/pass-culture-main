@@ -533,6 +533,16 @@ def get_venue_ids_by_offerer_ids(ids: typing.Collection[int]) -> typing.Collecti
     return [v.id for v in query]
 
 
+def does_offerer_manage_venue(offerer_id: int, venue_id: int) -> bool:
+    return db.session.scalar(
+        sa.select(
+            sa.select(models.Venue.id)
+            .where(models.Venue.id == venue_id, models.Venue.managingOffererId == offerer_id)
+            .exists()
+        )
+    )
+
+
 def get_emails_by_venue(venue: models.Venue) -> set[str]:
     """
     Get all emails for which pro attributes may be modified when the venue is updated or deleted.

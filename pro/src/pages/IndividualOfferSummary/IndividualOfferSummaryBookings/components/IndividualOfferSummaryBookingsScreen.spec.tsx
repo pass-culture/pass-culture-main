@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
@@ -54,6 +54,10 @@ describe('IndividualOfferSummaryBookingsScreen', () => {
     render(offer)
 
     expect(screen.getByText(/Réservations/)).toBeInTheDocument()
+    await waitFor(() => expect(api.getBookingsPro).toHaveBeenCalled())
+    const [firstCall] = vi.mocked(api.getBookingsPro).mock.calls
+    expect(firstCall[0]).toBe(String(offer.venue.managingOfferer.id))
+    expect(firstCall[3]).toBe(String(offer.id))
     expect(
       await screen.findByRole('button', {
         name: 'Télécharger les réservations',
