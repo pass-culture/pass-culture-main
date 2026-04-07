@@ -3,15 +3,14 @@ import { describe, expect, it } from 'vitest'
 import {
   buildDatasets,
   buildGraphOptions,
-  buildMonthlyViews,
   computeGraphSteps,
 } from '../statsUtils'
 
 describe('buildDatasets', () => {
   it('should return the correct dataset structure', () => {
     const recentViews = [
-      { date: new Date('2023-01-01'), views: 100, rawMonth: 1 },
-      { date: new Date('2023-02-01'), views: 200, rawMonth: 2 },
+      { date: new Date('2023-01-01'), views: 100, rawDate: '2023-01-01' },
+      { date: new Date('2023-02-01'), views: 200, rawDate: '2023-02-01' },
     ]
 
     const result = buildDatasets(recentViews)
@@ -42,19 +41,5 @@ describe('computeGraphSteps', () => {
     const result = computeGraphSteps(maxViews, minViews)
 
     expect(result).toBeGreaterThanOrEqual(300)
-  })
-})
-
-describe('buildMonthlyViews', () => {
-  it('should return the correct monthly views', () => {
-    const monthlyViews = [
-      { month: 1, views: 100 },
-      { month: 2, views: 200 },
-    ]
-
-    const result = buildMonthlyViews(monthlyViews)
-
-    expect(result.recentViews.length).toBeGreaterThanOrEqual(0)
-    expect(result.minViews).toBeLessThanOrEqual(result.maxViews)
   })
 })

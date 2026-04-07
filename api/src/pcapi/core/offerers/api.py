@@ -2100,7 +2100,7 @@ class OfferViewsModel:
 
 @dataclasses.dataclass
 class DailyViewsModel:
-    day: int
+    day: date
     views: int
 
 
