@@ -328,6 +328,21 @@ class Returns200Test:
 
         assert response.json["bannerMeta"] is None
 
+    def test_venue_with_NOT_ASSIGNED_activity(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            activity=offerers_models.Activity.NOT_ASSIGNED,
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        venue_id = venue.id
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_request.get("/venues/%s" % venue_id)
+            assert response.status_code == 200
+
+        assert response.json["activity"] is None
+
     def should_set_default_crop_params_when_venue_picture_has_no_crop_params(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
         venue = offerers_factories.VenueFactory(
