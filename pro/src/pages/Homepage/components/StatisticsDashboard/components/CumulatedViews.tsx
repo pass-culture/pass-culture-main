@@ -118,7 +118,8 @@ export const CumulatedViews = ({
         </h3>
         <span className={styles['total-views']}>
           Vos offres individuelles ont été vues{' '}
-          {totalViewsLast30Days.toLocaleString('fr-FR')} fois
+          {totalViewsLast30Days.toLocaleString('fr-FR')} fois ces 30 derniers
+          jours
         </span>
       </div>
 
