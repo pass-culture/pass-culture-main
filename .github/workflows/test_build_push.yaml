@@ -2,8 +2,13 @@ name: "9 [test] test_build_and_push"
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "15 1 * * *" # Every night at 15 past 1
 
-permissions: write-all
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   build-pcapi:
     name: "[pcapi] build docker image."
