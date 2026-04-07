@@ -88,18 +88,13 @@ def _notify_prebooking(data: schemas.EducationalBookingResponse) -> None:
         adage_client.notify_prebooking(data=data)
     except exceptions.AdageException as adage_error:
         logger.error(
-            "%s Educational institution will not receive a confirmation email.",
-            adage_error.message,
+            "Educational institution will not receive a confirmation email",
             extra={
-                "bookingId": data.id,
-                "adage status code": adage_error.status_code,
-                "adage response text": adage_error.response_text,
+                "booking_id": data.id,
+                "adage_status_code": adage_error.status_code,
+                "adage_response_text": adage_error.response_text,
+                "adage_message": adage_error.message,
             },
-        )
-    except ValidationError:
-        logger.exception(
-            "Could not notify adage of prebooking, hence send confirmation email to educational institution, as educationalBooking serialization failed.",
-            extra={"bookingId": data.id},
         )
 
 
