@@ -1,0 +1,1 @@
+import{P as e}from"./components-CMP3r75-.js";export{e as createCopyToClipboardFunction};
