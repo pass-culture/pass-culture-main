@@ -2099,25 +2099,25 @@ class OfferViewsModel:
 
 
 @dataclasses.dataclass
-class MonthlyViewsModel:
-    month: int
+class DailyViewsModel:
+    day: date
     views: int
 
 
 @dataclasses.dataclass
 class VenueOffersStatisticsModel:
-    monthly_views: list[MonthlyViewsModel]
+    daily_views: list[DailyViewsModel]
     total_views_last_30_days: int
     top_offers: list[OfferViewsModel]
 
 
 def get_venue_offers_statistics(venue_id: int) -> VenueOffersStatisticsModel:
-    monthly_views = clickhouse_queries.OfferConsultationCountQuery().execute({"venue_id": str(venue_id)})
+    daily_views = clickhouse_queries.OfferConsultationCountQuery().execute({"venue_id": str(venue_id)})
     views_count = clickhouse_queries.VenueOffersMonthlyViewsQuery().execute({"venue_id": str(venue_id)})
     top_offers = clickhouse_queries.TopOffersByViewsQuery().execute({"venue_id": str(venue_id)})
 
     return VenueOffersStatisticsModel(
-        monthly_views=[MonthlyViewsModel(month=row.month, views=row.views) for row in monthly_views],
+        daily_views=[DailyViewsModel(day=row.day, views=row.views) for row in daily_views],
         total_views_last_30_days=views_count[0].total if len(views_count) > 0 else 0,
         top_offers=[OfferViewsModel(offer_id=row.id, views=row.views, rank=row.rank) for row in top_offers],
     )

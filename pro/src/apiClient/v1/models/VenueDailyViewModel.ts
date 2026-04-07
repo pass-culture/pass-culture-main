@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type VenueMonthlyViewModel = {
-  month: number;
+export type VenueDailyViewModel = {
+  day: string;
   views: number;
 };
 

@@ -1,3 +1,4 @@
+import datetime
 from unittest import mock
 
 import pytest
@@ -51,5 +52,5 @@ class GetOfferConsultationCountTest:
         results = clickhouse_queries.OfferConsultationCountQuery().execute({"venue_id": 1})
 
         assert len(results) == 1
-        assert results[0].month == 1
+        assert results[0].day == datetime.date(2026, 1, 1)
         assert results[0].views == 3456

@@ -25,8 +25,8 @@ describe('CumulatedViews', () => {
 
   it('should render empty state when 0 views in the past 6 months', () => {
     const sixMonthsWithNoViews = Array.from(Array(180)).map((_key, index) => ({
-      numberOfViews: 0,
-      eventDate: format(
+      views: 0,
+      day: format(
         add(new Date('2021-01-01'), { days: index }),
         FORMAT_ISO_DATE_ONLY
       ),
@@ -46,8 +46,8 @@ describe('CumulatedViews', () => {
 
   it('should render graph and accessible table if data is present', () => {
     const dailyViews = Array.from(Array(180)).map((_key, index) => ({
-      numberOfViews: index,
-      eventDate: format(
+      views: index,
+      day: format(
         add(new Date('2021-01-01'), { days: index }),
         FORMAT_ISO_DATE_ONLY
       ),
@@ -67,8 +67,8 @@ describe('CumulatedViews', () => {
     const start = subMonths(today, 4)
 
     const dailyViews = Array.from({ length: 120 }, (_, index) => ({
-      numberOfViews: (index + 1) * 10,
-      eventDate: format(add(start, { days: index }), FORMAT_ISO_DATE_ONLY),
+      views: (index + 1) * 10,
+      day: format(add(start, { days: index }), FORMAT_ISO_DATE_ONLY),
     }))
 
     renderCumulatedViews({ dailyViews, totalViewsLast30Days: 0 })
@@ -82,8 +82,8 @@ describe('CumulatedViews', () => {
     const start = subMonths(today, 1)
 
     const dailyViews = Array.from({ length: 10 }, (_, index) => ({
-      numberOfViews: 100 + index,
-      eventDate: format(add(start, { days: index }), FORMAT_ISO_DATE_ONLY),
+      views: 100 + index,
+      day: format(add(start, { days: index }), FORMAT_ISO_DATE_ONLY),
     }))
 
     renderCumulatedViews({ dailyViews, totalViewsLast30Days: 0 })
@@ -98,8 +98,8 @@ describe('CumulatedViews', () => {
     const start = subMonths(today, 2)
 
     const dailyViews = Array.from({ length: 30 }, (_, index) => ({
-      numberOfViews: 500,
-      eventDate: format(add(start, { days: index }), FORMAT_ISO_DATE_ONLY),
+      views: 500,
+      day: format(add(start, { days: index }), FORMAT_ISO_DATE_ONLY),
     }))
 
     renderCumulatedViews({ dailyViews, totalViewsLast30Days: 0 })

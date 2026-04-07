@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
+import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -9,21 +9,16 @@ import { StatisticsDashboard } from '../StatisticsDashboard'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    getOffererStats: vi.fn(),
-    getOffererV2Stats: vi.fn(),
+    getVenueOffersStats: vi.fn(),
   },
 }))
 
-const renderStatisticsDashboard = (
-  hasActiveOffer = true,
-  features: string[] = []
-) =>
+const renderStatisticsDashboard = (hasOffers = true, features: string[] = []) =>
   renderWithProviders(
     <StatisticsDashboard
-      offerer={{
-        ...defaultGetOffererResponseModel,
-        isValidated: true,
-        hasActiveOffer: hasActiveOffer,
+      venue={{
+        ...defaultGetVenue,
+        hasNonDraftOffers: hasOffers,
       }}
     />,
     {
@@ -34,27 +29,13 @@ const renderStatisticsDashboard = (
 
 describe('StatisticsDashboard', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getOffererStats').mockResolvedValue({
+    vi.spyOn(api, 'getVenueOffersStats').mockResolvedValue({
       jsonData: { dailyViews: [], topOffers: [], totalViewsLast30Days: 0 },
-      syncDate: null,
-      offererId: 1,
-    })
-    vi.spyOn(api, 'getOffererV2Stats').mockResolvedValue({
-      publishedPublicOffers: 1,
-      publishedEducationalOffers: 0,
-      pendingPublicOffers: 0,
-      pendingEducationalOffers: 0,
+      venueId: 1,
     })
   })
 
   it('should render empty state when offerer has no offers', async () => {
-    vi.spyOn(api, 'getOffererV2Stats').mockResolvedValueOnce({
-      publishedPublicOffers: 0,
-      publishedEducationalOffers: 0,
-      pendingPublicOffers: 0,
-      pendingEducationalOffers: 0,
-    })
-
     renderStatisticsDashboard(false)
 
     expect(
@@ -75,14 +56,13 @@ describe('StatisticsDashboard', () => {
   })
 
   it('should not render most viewed offers if there are none', async () => {
-    vi.spyOn(api, 'getOffererStats').mockResolvedValueOnce({
+    vi.spyOn(api, 'getVenueOffersStats').mockResolvedValue({
       jsonData: {
-        dailyViews: [{ eventDate: '2020-10-10', numberOfViews: 10 }],
+        dailyViews: [{ day: '2020-10-10', views: 10 }],
         topOffers: [],
         totalViewsLast30Days: 0,
       },
-      syncDate: null,
-      offererId: 1,
+      venueId: 1,
     })
 
     renderStatisticsDashboard()
