@@ -564,7 +564,7 @@ venues: VenueTestDataListType = [
         "address": "2 Place Maréchal Foch",
         "postalCode": "20000",
         "city": "Ajaccio",
-        "departementCode": 20,
+        "departementCode": "2A",
         "banId": "2a004_0866_00002",
     },
     {
