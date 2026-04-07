@@ -19,13 +19,13 @@ educational_institution_path = "years/<string:year_id>/educational_institution/<
 
 @blueprint.adage_v1.route(educational_institution_path, methods=["GET"])
 @atomic()
+@adage_api_key_required
 @spectree_serialize(
     api=blueprint.api,
     response_model=EducationalInstitutionResponse,
     on_error_statuses=[404],
     tags=("get educational institution",),
 )
-@adage_api_key_required
 def get_educational_institution(year_id: str, uai_code: str) -> EducationalInstitutionResponse:
     educational_institution = repository.find_educational_institution_by_uai_code(uai_code)
 

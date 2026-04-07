@@ -19,13 +19,13 @@ logger = logging.getLogger(__name__)
 
 @blueprint.adage_v1.route("/venues/<string:venues_siret>", methods=["GET"])
 @atomic()
+@adage_api_key_required
 @spectree_serialize(
     api=blueprint.api,
     response_model=venue_serialization.GetVenuesResponseModel,
     on_error_statuses=[404, 422],
     tags=("get venues",),
 )
-@adage_api_key_required
 def get_venues_from_siret(
     venues_siret: str, query: venue_serialization.GetRelativeVenuesQueryModel
 ) -> venue_serialization.GetVenuesResponseModel:
@@ -45,13 +45,13 @@ def get_venues_from_siret(
 
 @blueprint.adage_v1.route("/venues/name/<string:venues_name>", methods=["GET"])
 @atomic()
+@adage_api_key_required
 @spectree_serialize(
     api=blueprint.api,
     response_model=venue_serialization.GetVenuesResponseModel,
     on_error_statuses=[404, 422],
     tags=("get venues",),
 )
-@adage_api_key_required
 def get_venues_from_name(
     venues_name: str, query: venue_serialization.GetRelativeVenuesQueryModel
 ) -> venue_serialization.GetVenuesResponseModel:
@@ -69,13 +69,13 @@ def get_venues_from_name(
 
 @blueprint.adage_v1.route("/venues", methods=["GET"])
 @atomic()
+@adage_api_key_required
 @spectree_serialize(
     api=blueprint.api,
     response_model=venue_serialization.GetVenuesResponseModel,
     on_error_statuses=[422],
     tags=("get all venues",),
 )
-@adage_api_key_required
 def get_all_venues(
     query: venue_serialization.GetAllVenuesQueryModel,
 ) -> venue_serialization.GetVenuesResponseModel:
@@ -88,13 +88,13 @@ def get_all_venues(
 
 @blueprint.adage_v1.route("/venues/id/<int:venue_id>", methods=["GET"])
 @atomic()
+@adage_api_key_required
 @spectree_serialize(
     api=blueprint.api,
     response_model=venue_serialization.VenueModel,
     on_error_statuses=[404, 422],
     tags=("get venue",),
 )
-@adage_api_key_required
 def get_venue_by_id(venue_id: int) -> venue_serialization.VenueModel:
     venue = offerers_repository.find_venue_by_id(venue_id)
     if not venue:
@@ -104,13 +104,13 @@ def get_venue_by_id(venue_id: int) -> venue_serialization.VenueModel:
 
 @blueprint.adage_v1.route("/venues/relative/id/<int:venue_id>", methods=["GET"])
 @atomic()
+@adage_api_key_required
 @spectree_serialize(
     api=blueprint.api,
     response_model=venue_serialization.GetVenuesResponseModel,
     on_error_statuses=[404, 422],
     tags=("get venue",),
 )
-@adage_api_key_required
 def get_relative_venues_by_id(venue_id: int) -> venue_serialization.GetVenuesResponseModel:
     venues = offerers_repository.find_relative_venue_by_id(venue_id)
     if not venues:
@@ -123,12 +123,12 @@ def get_relative_venues_by_id(venue_id: int) -> venue_serialization.GetVenuesRes
 
 @blueprint.adage_v1.route("/cultural-partners", methods=["POST"])
 @atomic()
+@adage_api_key_required
 @spectree_serialize(
     api=blueprint.api,
     response_model=None,
     on_success_status=204,
     on_error_statuses=[400, 401, 403, 404],
 )
-@adage_api_key_required
 def post_educational_partners(body: venue_serialization.PostAdageCulturalPartnerModel) -> None:
     educational_api_adage.synchronize_adage_partners(adage_partners=[body], apply=True)
