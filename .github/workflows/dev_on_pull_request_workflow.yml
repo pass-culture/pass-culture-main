@@ -231,7 +231,10 @@ jobs:
   dependabot-auto-merge:
     name: "Dependabot"
     needs: [test-pro, test-pro-e2e, test-api-documentation]
-    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    if: github.event.pull_request.user.login == 'dependabot[bot]' &&
+      always() &&
+      !cancelled() &&
+      !failure() &&
     uses: ./.github/workflows/dev_on_workflow_dependabot_auto_merge.yml
     secrets:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
