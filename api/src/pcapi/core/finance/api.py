@@ -74,6 +74,7 @@ from pcapi.routes.serialization.reimbursement_csv_serialize import find_reimburs
 from pcapi.utils import human_ids
 from pcapi.utils.chunks import get_chunks
 from pcapi.utils.repository import transaction
+from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import is_managed_transaction
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
@@ -3094,7 +3095,7 @@ def update_bank_account_venues_links(
 
     new_links = []
 
-    with transaction():
+    with atomic():
         link_bulk_update_mapping = []
         action_history_bulk_insert_mapping = []
 
