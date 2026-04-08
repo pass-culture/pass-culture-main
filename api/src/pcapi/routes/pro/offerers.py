@@ -354,6 +354,7 @@ def get_offerer_v2_stats(offerer_id: int) -> offerers_serialize.GetOffererV2Stat
 
 
 @private_api.route("/offerers/<int:offerer_id>/offerer_addresses", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,

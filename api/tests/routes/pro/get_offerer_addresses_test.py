@@ -236,6 +236,6 @@ class Return400Test:
         offerer = offerers_factories.OffererFactory()
         client = client.with_session_auth(email=pro.email)
         offerer_id = offerer.id
-        with assert_num_queries(2):
+        with assert_num_queries(4):
             response = client.get(f"/offerers/{offerer_id}/offerer_addresses")
             assert response.status_code == 403
