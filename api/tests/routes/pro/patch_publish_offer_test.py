@@ -86,9 +86,6 @@ class Returns200Test:
         assert not offer.bookingAllowedDatetime
         assert offer.validation == OfferValidationStatus.APPROVED
         assert offer.lastValidationPrice == stock.price
-        # TODO(jbaudet, 2025-06): remove check once publicationDate is
-        # replaced by publicationDatetime
-        assert offer.publicationDate is not None
         assert response.json["isActive"] is True
         assert response.json["isNonFreeOffer"] is True
         mock_async_index_offer_ids.assert_called_once()
@@ -136,7 +133,6 @@ class Returns200Test:
         assert offer.lastValidationPrice is None
         assert offer.finalizationDatetime == now_datetime_with_tz
         assert offer.publicationDatetime == publication_date
-        assert offer.publicationDate == offer.publicationDatetime
         assert not offer.bookingAllowedDatetime
         mock_async_index_offer_ids.assert_not_called()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
@@ -286,7 +282,6 @@ class Returns200Test:
 
         assert response.status_code == 200
         offer = db.session.get(offers_models.Offer, stock.offer.id)
-        assert offer.publicationDate == expected_publication_datetime
         assert offer.publicationDatetime == expected_publication_datetime
         assert offer.bookingAllowedDatetime == booking_allowed_datetime
         assert offer.finalizationDatetime == now_datetime_with_tz

@@ -427,7 +427,7 @@ class Returns200Test:
             response = auth_client.get(f"/offers/{offer_id}")
             assert response.status_code == 200
 
-        assert response.json["publicationDate"] == publication_date.strftime("%Y-%m-%dT%H:%M:%SZ")
+        assert response.json["publicationDatetime"] == publication_date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     @pytest.mark.parametrize("has_pending_bookings", [True, False])
     def test_pending_booking(self, client, has_pending_bookings):

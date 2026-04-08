@@ -29,7 +29,6 @@ def shared_offer_checks(offer, payload):
     assert offer.name == payload["name"]
     assert offer.venueId == payload["venueId"]
     assert offer.subcategoryId == payload["subcategoryId"]
-    assert not offer.publicationDate
     assert not offer.publicationDatetime
     assert not offer.bookingAllowedDatetime
     assert not offer.isActive
@@ -639,7 +638,7 @@ class Returns200Test:
         offer = db.session.get(Offer, offer_id)
         assert offer.bookingContact == None
         assert offer.bookingEmail == None
-        assert offer.publicationDate is None
+        assert offer.publicationDatetime is None
         assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
         assert offer.extraData == {"showType": 200, "showSubType": 201}
         assert offer.externalTicketOfficeUrl == None
