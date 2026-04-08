@@ -288,6 +288,7 @@ def _is_headline_offer(offer: offers_models.Offer) -> bool:
 
 
 @private_api.route("/venues/<int:venue_id>/offers-statistics", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
@@ -374,8 +375,8 @@ def get_offerer_addresses(
 
 
 @private_api.route("/offerers/<int:offerer_id>/headline-offer", methods=["GET"])
-@login_required
 @atomic()
+@login_required
 @spectree_serialize(
     response_model=headline_offer_serialize.HeadLineOfferResponseModel,
     api=blueprint.pro_private_schema,
@@ -397,8 +398,8 @@ def get_offerer_headline_offer(
 
 
 @private_api.route("/offerers/<int:offerer_id>/eligibility", methods=["GET"])
-@login_required
 @atomic()
+@login_required
 @spectree_serialize(
     response_model=offerers_serialize.OffererEligibilityResponseModel,
     api=blueprint.pro_private_schema,
