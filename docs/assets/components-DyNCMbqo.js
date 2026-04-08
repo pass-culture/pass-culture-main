@@ -1,0 +1,1 @@
+import{P as e}from"./components-CnmaG5Na.js";export{e as createCopyToClipboardFunction};
