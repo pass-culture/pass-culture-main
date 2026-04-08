@@ -747,7 +747,6 @@ if __name__ == "__main__":
     )
     parser.add_argument("files", nargs="+", type=str, help="Alembic migration .py files to analyse")
     parser.add_argument("--debug", action="store_true", help="Print per-env filter details to stderr")
-    parser.add_argument("--no-ping", dest="no_ping", action="store_false", help="Disable Slack team mentions in output")
-    parser.set_defaults(no_ping=False)
+    parser.add_argument("--no-ping", dest="no_ping", action="store_true", help="Disable Slack team mentions in output")
     args = parser.parse_args()
     main(file_names=args.files, debug=args.debug, no_ping=args.no_ping)
