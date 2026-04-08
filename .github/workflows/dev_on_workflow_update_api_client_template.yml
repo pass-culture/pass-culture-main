@@ -129,7 +129,7 @@ jobs:
           timeout: 120000
 
       - name: "Cache node dependencies"
-        uses: pass-culture-github-actions/cache@v1.0.0
+        uses: pass-culture-github-actions/cache@88f07af200f0bcf2480f9c194e3dbb9488a1902b # v1.0.0
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         with:
           bucket: ${{ inputs.CACHE_BUCKET_NAME }}

@@ -241,7 +241,7 @@ jobs:
 
       - name: "Cache the node_modules"
         id: "yarn-modules-cache"
-        uses: pass-culture-github-actions/cache@v1.0.0
+        uses: pass-culture-github-actions/cache@88f07af200f0bcf2480f9c194e3dbb9488a1902b # v1.0.0
         with:
           compression-method: "gzip"
           bucket: ${{ inputs.CACHE_BUCKET_NAME }}
