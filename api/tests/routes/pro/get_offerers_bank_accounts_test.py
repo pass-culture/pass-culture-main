@@ -25,6 +25,7 @@ class OfferersBankAccountTest:
 
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # Check user permission on offerer
+        num_queries += 2  # rollbacks
         with testing.assert_num_queries(num_queries):
             response = http_client.get(f"/offerers/{offerer_2_id}/bank-accounts")
             assert response.status_code == 403
