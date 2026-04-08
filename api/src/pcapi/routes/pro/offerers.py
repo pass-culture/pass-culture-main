@@ -243,6 +243,7 @@ def get_offerer_bank_accounts_and_attached_venues(
 
 
 @private_api.route("/offerers/<int:offerer_id>/bank-accounts/<int:bank_account_id>", methods=["PATCH"])
+@atomic()
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def link_venue_to_bank_account(
@@ -255,7 +256,7 @@ def link_venue_to_bank_account(
     try:
         finance_api.update_bank_account_venues_links(current_user, bank_account, body.venues_ids)
     except finance_exceptions.VenueAlreadyLinkedToAnotherBankAccount as exc:
-        raise ApiErrors({"code": "VENUE_ALREADY_LINKED_TO_ANOTHER_BANK_ACCOUNT", "message": str(exc)}, status_code=400)
+        raise ApiErrors({"code": "VENUE_ALREADY_LINKED_TO_ANOTHER_BANK_ACCOUNT", "message": str(exc)})
 
 
 @private_api.route("/offerers/<int:offerer_id>/stats", methods=["GET"])
