@@ -122,7 +122,7 @@ describe('IndividualOfferPracticalInfosForm', () => {
       )
     ).toBeInTheDocument()
   })
-  it('should allow the user to edit the external url and the complementary info even if the offer is synchronized and offline', () => {
+  it('should allow the user to edit the external url and the complementary info even if the offer is synchronized', () => {
     renderIndividualOfferPracticalInfosForm({
       offer: getIndividualOfferFactory({
         subcategoryId: SubcategoryIdEnum.LIVRE_PAPIER,
@@ -131,7 +131,6 @@ describe('IndividualOfferPracticalInfosForm', () => {
       }),
       subCategory: subcategoryFactory({
         id: SubcategoryIdEnum.LIVRE_PAPIER,
-        onlineOfflinePlatform: 'OFFLINE',
       }),
     })
 
@@ -139,23 +138,5 @@ describe('IndividualOfferPracticalInfosForm', () => {
     expect(
       screen.getByLabelText(/URL de votre site ou billetterie/)
     ).toBeEnabled()
-  })
-  it('should not allow the user to edit the external url and the complementary info if the offer is online', () => {
-    renderIndividualOfferPracticalInfosForm({
-      offer: getIndividualOfferFactory({
-        subcategoryId: SubcategoryIdEnum.LIVRE_PAPIER,
-        isEvent: false,
-        lastProvider: { name: 'provider' },
-      }),
-      subCategory: subcategoryFactory({
-        id: SubcategoryIdEnum.LIVRE_PAPIER,
-        onlineOfflinePlatform: 'ONLINE',
-      }),
-    })
-
-    expect(screen.getByLabelText(/Informations complémentaires/)).toBeDisabled()
-    expect(
-      screen.getByLabelText(/URL de votre site ou billetterie/)
-    ).toBeDisabled()
   })
 })
