@@ -49,7 +49,9 @@ class Returns200Test:
         )
 
         client = client.with_session_auth(email="toto@example.com")
-        with testing.assert_num_queries(self.num_queries, expire_session=False):
+        num_queries = 1  # select user + session
+        num_queries += 1  # user_offerer
+        with testing.assert_num_queries(num_queries, expire_session=False):
             response = client.get("/users/current")
             assert response.status_code == 200
 

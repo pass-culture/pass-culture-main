@@ -2661,21 +2661,6 @@ export class DefaultService {
     });
   }
   /**
-   * patch_pro_user_rgs_seen <PATCH>
-   * @returns void
-   * @throws ApiError
-   */
-  public patchProUserRgsSeen(): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/users/rgs-seen',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
    * signin <POST>
    * @param requestBody
    * @returns SharedLoginUserResponseModel OK
@@ -2724,21 +2709,6 @@ export class DefaultService {
       url: '/users/signup',
       body: requestBody,
       mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
-   * patch_user_tuto_seen <PATCH>
-   * @returns void
-   * @throws ApiError
-   */
-  public patchUserTutoSeen(): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/users/tuto-seen',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Content`,

@@ -806,7 +806,7 @@ class CreateOffererTest:
         offerers_factories.VenueFactory(managingOfferer=offerer)
 
         created_user_offerer = offerers_api.create_offerer(user, offerer_informations)
-        db.session.commit()  # due to synchronise_session=False in delete_venue
+        db.session.commit()  # due to synchronize_session=False in delete_venue
 
         created_offerer = created_user_offerer.offerer
         assert created_offerer.id == offerer.id

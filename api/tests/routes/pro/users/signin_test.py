@@ -117,12 +117,10 @@ class Returns200Test:
             "captchaToken": "token",
         }
 
-        # 1. fetch user by email (authentication)
-        # 2. fetch user by id (login_user)
+        # 1. fetch user
         # 3. stamp session
-        # 4. fetch user for serialization
         # 5. fetch user offerer
-        with assert_num_queries(5):
+        with assert_num_queries(3):
             response = client.post("/users/signin", json=data)
 
         assert response.status_code == 200
