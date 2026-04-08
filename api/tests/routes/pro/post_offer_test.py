@@ -85,8 +85,6 @@ def auth_client_fixture(client, user):
     return client.with_session_auth(user.email)
 
 
-# TODO(jbaudet - 09/2025): warning: this might not be accurate
-# delete this TODO if nothing has changed in a couple of months
 THINGS_WITH_EAN = {
     subcategories.LIVRE_PAPIER.id,
     subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
@@ -94,8 +92,6 @@ THINGS_WITH_EAN = {
 }
 
 
-# TODO(jbaudet - 09/2025): warning: this might not be accurate
-# delete this TODO if nothing has changed in a couple of months
 THINGS_RANDOM = {
     subcategories.ABO_BIBLIOTHEQUE.id,
     subcategories.ABO_CONCERT.id,
@@ -118,8 +114,6 @@ THINGS_RANDOM = {
 THINGS = THINGS_WITH_EAN | THINGS_RANDOM
 
 
-# TODO(jbaudet - 09/2025): warning: this might not be accurate
-# delete this TODO if nothing has changed in a couple of months
 DIGITAL_THING = {
     subcategories.TELECHARGEMENT_MUSIQUE.id,
     subcategories.LIVRE_NUMERIQUE.id,
@@ -142,8 +136,6 @@ DIGITAL_THING = {
 }
 
 
-# TODO(jbaudet - 09/2025): warning: this might not be accurate
-# delete this TODO if nothing has changed in a couple of months
 DIGITAL_ACTIVITY = {
     subcategories.SPECTACLE_ENREGISTRE.id,
     subcategories.SPECTACLE_VENTE_DISTANCE.id,
@@ -153,8 +145,6 @@ DIGITAL_ACTIVITY = {
 DIGITAL = DIGITAL_THING | DIGITAL_ACTIVITY
 
 
-# TODO(jbaudet - 09/2025): warning: this might not be accurate
-# delete this TODO if nothing has changed in a couple of months
 CANNOT_BE_CREATED = {
     subcategories.ACTIVATION_EVENT.id,
     subcategories.CAPTATION_MUSIQUE.id,
@@ -167,15 +157,11 @@ CANNOT_BE_CREATED = {
 }
 
 
-# TODO(jbaudet - 09/2025): warning: this might not be accurate
-# delete this TODO if nothing has changed in a couple of months
 ACTIVITY_SUBSCRIPTION = {
     subcategories.ABO_SPECTACLE.id,
 }
 
 
-# TODO(jbaudet - 09/2025): warning: this might not be accurate
-# delete this TODO if nothing has changed in a couple of months
 ACTIVITY_ONLINE = {
     subcategories.LIVESTREAM_MUSIQUE.id,
     subcategories.RENCONTRE_EN_LIGNE.id,
@@ -183,15 +169,11 @@ ACTIVITY_ONLINE = {
 }
 
 
-# TODO(jbaudet - 09/2025): warning: this might not be accurate
-# delete this TODO if nothing has changed in a couple of months
 ACTIVITY_ONLINE_EVENT = {
     subcategories.LIVESTREAM_EVENEMENT.id,
 }
 
 
-# TODO(jbaudet - 09/2025): warning: this might not be accurate
-# delete this TODO if nothing has changed in a couple of months
 ACTIVITY_WITHDRAWABLE = {
     subcategories.SPECTACLE_REPRESENTATION.id,
     subcategories.FESTIVAL_SPECTACLE.id,
@@ -202,8 +184,6 @@ ACTIVITY_WITHDRAWABLE = {
 }
 
 
-# TODO(jbaudet - 09/2025): warning: this might not be accurate
-# delete this TODO if nothing has changed in a couple of months
 ACTIVITY_RANDOM = {
     subcategories.ATELIER_PRATIQUE_ART.id,
     subcategories.CINE_PLEIN_AIR.id,
@@ -230,6 +210,10 @@ ACTIVITY = ACTIVITY_SUBSCRIPTION | ACTIVITY_ONLINE | ACTIVITY_ONLINE_EVENT | ACT
 ALL = THINGS | DIGITAL | ACTIVITY
 
 
+# The following test classes (thoses who rely on THINGS_*, DIGITAL_*,
+# etc.) were added to figure out some implicit offer definitions: what
+# is a LIVRE_PAPIER? what is a SALON? etc. Feel free to remove these
+# once those definitions are explicit.
 class CreateOfferBase:
     endpoint = "/v2/offers"
 
