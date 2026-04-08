@@ -237,7 +237,7 @@ def request_email_update_from_pro(user: models.User, email: str, password: str) 
 
     email_history = models.UserEmailHistory.build_update_request(user=user, new_email=email)
     db.session.add(email_history)
-    db.session.commit()
+    db.session.flush()
 
     send_pro_user_emails_for_email_change(user, email, token)
 

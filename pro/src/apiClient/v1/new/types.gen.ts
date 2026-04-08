@@ -10705,35 +10705,6 @@ export type postUsersResetPasswordResponses = {
 
 export type postUsersResetPasswordResponse = postUsersResetPasswordResponses[keyof postUsersResetPasswordResponses];
 
-export type patchUsersRgsSeenData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/users/rgs-seen';
-};
-
-export type patchUsersRgsSeenErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type patchUsersRgsSeenError = patchUsersRgsSeenErrors[keyof patchUsersRgsSeenErrors];
-
-export type patchUsersRgsSeenResponses = {
-    /**
-     * No Content
-     */
-    204: void;
-};
-
-export type patchUsersRgsSeenResponse = patchUsersRgsSeenResponses[keyof patchUsersRgsSeenResponses];
-
 export type postUsersSigninData = {
     body: LoginUserBodyModel;
     path?: never;
@@ -10820,35 +10791,6 @@ export type postUsersSignupResponses = {
 };
 
 export type postUsersSignupResponse = postUsersSignupResponses[keyof postUsersSignupResponses];
-
-export type patchUsersTutoSeenData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/users/tuto-seen';
-};
-
-export type patchUsersTutoSeenErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type patchUsersTutoSeenError = patchUsersTutoSeenErrors[keyof patchUsersTutoSeenErrors];
-
-export type patchUsersTutoSeenResponses = {
-    /**
-     * No Content
-     */
-    204: void;
-};
-
-export type patchUsersTutoSeenResponse = patchUsersTutoSeenResponses[keyof patchUsersTutoSeenResponses];
 
 export type patchUsersValidateEmailData = {
     body: ChangeProEmailBody;

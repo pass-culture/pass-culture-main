@@ -563,11 +563,19 @@ def change_email(
     current_user.email = new_email
     db.session.add(current_user)
     db.session.add(email_history)
-    db.session.commit()
+
+    if transaction_manager.is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
     db.session.query(models.UserSession).filter_by(userId=current_user.id).delete(synchronize_session=False)
     db.session.query(models.SingleSignOn).filter_by(userId=current_user.id).delete(synchronize_session=False)
-    db.session.commit()
+
+    if transaction_manager.is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
     logger.info("User has changed their email", extra={"user": current_user.id})
 
@@ -599,7 +607,7 @@ def update_password_and_external_user(user: models.User, new_password: str) -> N
         user.isEmailValidated = True
         external_attributes_api.update_external_user(user)
     db.session.add(user)
-    db.session.commit()
+    db.session.flush()
 
 
 def update_user_info(
@@ -620,7 +628,7 @@ def update_user_info(
     id_piece_number: str | T_UNCHANGED = UNCHANGED,
     marketing_email_subscription: bool | T_UNCHANGED = UNCHANGED,
     activity: models.ActivityEnum | T_UNCHANGED = UNCHANGED,
-    commit: bool = True,
+    commit: bool = True,  # TODO (tcoudray-pass, 08/04/2026) Remove this param
 ) -> history_api.ObjectUpdateSnapshot:
     old_email = None
     snapshot = history_api.ObjectUpdateSnapshot(user, author)
@@ -691,7 +699,7 @@ def update_user_info(
     if commit:
         snapshot.add_action()
         db.session.add(user)
-        db.session.commit
+        db.session.commit()
     else:
         db.session.add(user)
 
@@ -839,18 +847,6 @@ def create_pro_user(pro_user: users_serialization.ProUserCreationBodyV2Model) ->
     history_api.add_action(history_models.ActionType.USER_CREATED, author=new_pro_user, user=new_pro_user)
 
     return new_pro_user
-
-
-def set_pro_tuto_as_seen(user: models.User) -> None:
-    user.hasSeenProTutorials = True
-    db.session.add(user)
-    db.session.commit()
-
-
-def set_pro_rgs_as_seen(user: models.User) -> None:
-    user.hasSeenProRgs = True
-    db.session.add(user)
-    db.session.commit()
 
 
 def update_last_connection_date(user: models.User) -> None:

@@ -8,9 +8,8 @@ from pcapi.core.users import models as users_models
 class Returns200Test:
     # user to connect as
     # INSERT INTO action_history
-    # user
     # INSERT INTO user_session
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_current_user_has_rights_to_impersonate_a_pro(self, client, db_session):
         # given
@@ -154,15 +153,15 @@ class Returns200Test:
 
 
 class Returns403Test:
-    # user to connect as
-    expected_num_queries = 1
+    expected_num_queries = 1  # user to connect as
+    expected_num_queries += 2  # rollbacks
 
     def test_token_is_invalid(self, client, db_session):
         # given
         token = "xROk-l708o7G5gWf3BBVlHOviiVPODGDHxCBbCHcycLFI8n3yaCgQcUGH0WYSq3ROXU2DD7P-pyLKNdQjcKNFg"  # ggignore
 
         # when
-        with assert_num_queries(self.expected_num_queries - 1):  #  -1 user to connect as
+        with assert_num_queries(0):
             response = client.get(f"/users/connect-as/{token}")
             assert response.status_code == 403
 
@@ -289,8 +288,8 @@ class Returns403Test:
 
 
 class Returns404Test:
-    # user to connect as
-    expected_num_queries = 1
+    expected_num_queries = 1  # user to connect as
+    expected_num_queries += 2  # rollbacks
 
     def test_user_not_found(self, client, db_session):
         # given
