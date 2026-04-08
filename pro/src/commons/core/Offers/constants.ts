@@ -1,10 +1,8 @@
 import { OfferStatus, WithdrawalTypeEnum } from '@/apiClient/v1'
+import type { ListOffersQueryModel } from '@/apiClient/v1/new'
 import type { SelectOption } from '@/commons/custom_types/form'
 
-import type {
-  CollectiveSearchFiltersParams,
-  IndividualSearchFiltersParams,
-} from './types'
+import type { CollectiveSearchFiltersParams, SearchListParams } from './types'
 
 export enum INDIVIDUAL_OFFER_SUBTYPE {
   PHYSICAL_GOOD = 'PHYSICAL_GOOD',
@@ -63,18 +61,15 @@ export const DEFAULT_PAGE = 1
 export const NUMBER_OF_OFFERS_PER_PAGE = 10
 export const MAX_TOTAL_PAGES = 10
 export const MAX_OFFERS_TO_DISPLAY = MAX_TOTAL_PAGES * NUMBER_OF_OFFERS_PER_PAGE
-export const DEFAULT_SEARCH_FILTERS: IndividualSearchFiltersParams = {
+
+export const DEFAULT_SEARCH_FILTERS: ListOffersQueryModel & SearchListParams = {
   nameOrIsbn: ALL_OFFERS,
-  offererId: 'all',
-  venueId: ALL_VENUES,
-  categoryId: ALL_CATEGORIES,
-  format: ALL_FORMATS,
-  status: ALL_STATUS,
-  creationMode: ALL_CREATION_MODES,
+  categoryId: undefined,
+  creationMode: undefined,
   periodBeginningDate: ALL_EVENT_PERIODS,
   periodEndingDate: ALL_EVENT_PERIODS,
+  format: ALL_FORMATS,
   page: DEFAULT_PAGE,
-  offererAddressId: ALL_OFFERER_ADDRESSES,
 }
 
 export const DEFAULT_COLLECTIVE_SEARCH_FILTERS: CollectiveSearchFiltersParams =
@@ -104,8 +99,8 @@ export const ALL_FORMATS_OPTION: SelectOption = {
   value: ALL_FORMATS,
 }
 
-export const CREATION_MODES_OPTIONS: SelectOption[] = [
-  { label: 'Tous', value: ALL_CREATION_MODES },
+export const CREATION_MODES_OPTIONS: SelectOption<string | undefined>[] = [
+  { label: 'Tous', value: undefined },
   { label: 'Manuel', value: 'manual' },
   { label: 'Synchronisé', value: 'imported' },
 ]

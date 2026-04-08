@@ -1,24 +1,22 @@
-import { type ListOffersQueryModel, OfferStatus } from '@/apiClient/v1'
-import { nullifyEmptyProps } from '@/commons/utils/nullifyEmptyProps'
-import { toEnumOrNull } from '@/commons/utils/toEnumOrNull'
-import { toNumberOrNull } from '@/commons/utils/toNumberOrNull'
-
-import type { IndividualSearchFiltersParams } from '../types'
+import type { ListOffersQueryModel } from '@/apiClient/v1/new'
+import type { SearchListParams } from '@/commons/core/Offers/types'
 
 export const serializeApiIndividualFilters = (
-  searchFilters: Partial<IndividualSearchFiltersParams>
-): Omit<ListOffersQueryModel, 'collectiveOfferType'> => {
+  searchFilters: ListOffersQueryModel & SearchListParams
+): ListOffersQueryModel => {
   const { format: _format, page: _page, ...params } = searchFilters
 
-  return nullifyEmptyProps({
+  return {
     ...params,
-    categoryId:
-      searchFilters.categoryId === 'all' ? null : searchFilters.categoryId,
-    creationMode:
-      searchFilters.creationMode === 'all' ? null : searchFilters.creationMode,
-    offererAddressId: toNumberOrNull(searchFilters.offererAddressId),
-    offererId: toNumberOrNull(searchFilters.offererId),
-    status: toEnumOrNull(searchFilters.status, OfferStatus),
-    venueId: toNumberOrNull(searchFilters.venueId),
-  })
+    categoryId: searchFilters.categoryId,
+    creationMode: searchFilters.creationMode,
+    offererAddressId: searchFilters.offererAddressId
+      ? Number(searchFilters.offererAddressId)
+      : undefined,
+    offererId: searchFilters.offererId
+      ? Number(searchFilters.offererId)
+      : undefined,
+    status: searchFilters.status,
+    venueId: searchFilters.venueId ? Number(searchFilters.venueId) : undefined,
+  }
 }

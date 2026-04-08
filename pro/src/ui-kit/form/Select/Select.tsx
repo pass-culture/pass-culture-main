@@ -10,7 +10,7 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Select.module.scss'
 
-type SelectProps<T extends number | string = string> = {
+type SelectProps<T extends number | string | undefined = string> = {
   /** Name of the input. Used for identifying it in an uncontrolled form, and for referencing the error */
   name: string
   className?: string
@@ -45,7 +45,7 @@ export const Select = forwardRef(
       value,
       onChange,
       onBlur,
-    }: SelectProps<string | number>,
+    }: SelectProps<string | number | undefined>,
     ref: ForwardedRef<HTMLSelectElement>
   ): JSX.Element => {
     const fieldId = useId()

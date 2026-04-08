@@ -2,9 +2,6 @@ import type { ChangeEvent, Dispatch, SetStateAction, SubmitEvent } from 'react'
 
 import { OfferStatus } from '@/apiClient/v1'
 import {
-  ALL_CATEGORIES_OPTION,
-  ALL_OFFERER_ADDRESS_OPTION,
-  ALL_STATUS,
   CREATION_MODES_OPTIONS,
   DEFAULT_SEARCH_FILTERS,
 } from '@/commons/core/Offers/constants'
@@ -29,7 +26,7 @@ interface IndividualOffersSearchFiltersProps {
 }
 
 const individualFilterStatus = [
-  { label: 'Tous', value: ALL_STATUS },
+  { label: 'Tous', value: undefined },
   { label: 'Brouillon', value: OfferStatus.DRAFT },
   { label: 'Publiée', value: OfferStatus.ACTIVE },
   { label: 'Programmée', value: OfferStatus.SCHEDULED },
@@ -104,7 +101,7 @@ export const IndividualOffersSearchFilters = ({
       <FormLayout.Row inline mdSpaceAfter>
         <Select
           label="Statut"
-          value={selectedFilters.status as OfferStatus}
+          value={selectedFilters.status}
           name="status"
           onChange={handleChange}
           disabled={disableAllFilters}
@@ -114,11 +111,16 @@ export const IndividualOffersSearchFilters = ({
 
         <Select
           label="Localisation"
-          defaultOption={ALL_OFFERER_ADDRESS_OPTION}
           onChange={handleChange}
           disabled={offererAddresses.length === 0 || disableAllFilters}
           name="offererAddressId"
-          options={offererAddresses}
+          options={[
+            {
+              label: 'Toutes',
+              value: undefined,
+            },
+            ...offererAddresses,
+          ]}
           value={selectedFilters.offererAddressId}
           className={styles['select-filter']}
         />
@@ -126,11 +128,16 @@ export const IndividualOffersSearchFilters = ({
         {categories && (
           <Select
             label="Catégorie"
-            defaultOption={ALL_CATEGORIES_OPTION}
             onChange={handleChange}
             disabled={disableAllFilters}
             name="categoryId"
-            options={categories}
+            options={[
+              {
+                label: 'Toutes',
+                value: undefined,
+              },
+              ...categories,
+            ]}
             value={selectedFilters.categoryId}
             className={styles['select-filter']}
           />

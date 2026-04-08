@@ -1,12 +1,14 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { formatAndOrderAddresses } from 'repository/venuesService'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import {
   GetOffererAddressesWithOffersOption,
   GetVenueAddressesWithOffersOption,
 } from '@/apiClient/v1'
+import type { ListOffersQueryModel } from '@/apiClient/v1/new'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import {
   GET_CATEGORIES_QUERY_KEY,
@@ -15,7 +17,7 @@ import {
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { DEFAULT_PAGE } from '@/commons/core/Offers/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
-import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
+import type { SearchListParams } from '@/commons/core/Offers/types'
 import { computeIndividualOffersUrl } from '@/commons/core/Offers/utils/computeIndividualOffersUrl'
 import { serializeApiIndividualFilters } from '@/commons/core/Offers/utils/serializeApiIndividualFilters'
 import type { Audience } from '@/commons/core/shared/types'
@@ -23,10 +25,12 @@ import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
 import { useVenueAddresses } from '@/commons/hooks/swr/useVenueAddresses'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { sortByLabel } from '@/commons/utils/strings'
 import { getStoredFilterConfig } from '@/components/OffersTableSearch/utils'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { IndividualOffersContainer } from './IndividualOffersContainer/IndividualOffersContainer'
 import { computeIndividualApiFilters } from './utils/computeIndividualApiFilters'
@@ -35,12 +39,14 @@ export const IndividualOffers = (): JSX.Element => {
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const [isFirstLoad, setIsFirstLoad] = useState(true)
+  const snackbar = useSnackBar()
 
   const urlSearchFilters = useQuerySearchFilters()
   const { storedFilters } = getStoredFilterConfig('individual')
   const finalSearchFilters = {
     ...urlSearchFilters,
-    ...(storedFilters as Partial<IndividualSearchFiltersParams>),
+    ...(storedFilters as Partial<ListOffersQueryModel & SearchListParams>),
     ...(withSwitchVenueFeature
       ? { venueId: selectedPartnerVenue.id.toString() }
       : {}),
@@ -66,7 +72,9 @@ export const IndividualOffers = (): JSX.Element => {
   )
 
   const redirectWithSelectedFilters = (
-    filters: Partial<IndividualSearchFiltersParams> & { audience?: Audience }
+    filters: Partial<ListOffersQueryModel & SearchListParams> & {
+      audience?: Audience
+    }
   ) => {
     // We dont need to pass the offererId in the URL since
     // its already present in the redux store (useSelector(selectCurrentOfferer))
@@ -104,20 +112,42 @@ export const IndividualOffers = (): JSX.Element => {
       offererAddressId,
     } = serializeApiIndividualFilters(apiFilters)
 
-    return api.listOffers(
-      nameOrIsbn,
-      offererId,
-      status,
-      venueId,
-      categoryId,
-      creationMode,
-      periodBeginningDate,
-      periodEndingDate,
-      offererAddressId
-    )
+    return apiNew.listOffers({
+      query: {
+        nameOrIsbn: nameOrIsbn || undefined,
+        offererId: offererId ?? undefined,
+        status: status ?? undefined,
+        venueId: venueId ?? undefined,
+        categoryId: categoryId ?? undefined,
+        creationMode: creationMode ?? undefined,
+        periodBeginningDate: periodBeginningDate || undefined,
+        periodEndingDate: periodEndingDate || undefined,
+        offererAddressId: offererAddressId ?? undefined,
+      },
+    })
   })
 
-  const offers = offersQuery.error ? [] : offersQuery.data || []
+  useEffect(() => {
+    setIsFirstLoad(false)
+  }, [])
+
+  useEffect(() => {
+    if (offersQuery.error) {
+      snackbar.error('fdsfdsfds')
+    }
+  }, [offersQuery.error])
+
+  if (offersQuery.isLoading) {
+    return <Spinner />
+  }
+
+  if (isFirstLoad && (offersQuery.error || !offersQuery.data)) {
+    return (
+      <BasicLayout mainHeading="Offres individuelles">
+        <p>Y a une erreur !</p>
+      </BasicLayout>
+    )
+  }
 
   return (
     <HeadlineOfferContextProvider>
@@ -127,7 +157,7 @@ export const IndividualOffers = (): JSX.Element => {
           currentPageNumber={currentPageNumber}
           initialSearchFilters={apiFilters}
           isLoading={offersQuery.isLoading}
-          offers={offers}
+          offers={offersQuery.data}
           redirectWithSelectedFilters={redirectWithSelectedFilters}
           offererAddresses={offererAddresses}
         />
