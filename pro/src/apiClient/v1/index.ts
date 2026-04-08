@@ -131,7 +131,6 @@ export type { GetOffererMembersResponseModel } from './models/GetOffererMembersR
 export type { GetOffererNameResponseModel } from './models/GetOffererNameResponseModel';
 export type { GetOffererResponseModel } from './models/GetOffererResponseModel';
 export type { GetOfferersNamesResponseModel } from './models/GetOfferersNamesResponseModel';
-export type { GetOffererStatsResponseModel } from './models/GetOffererStatsResponseModel';
 export type { GetOffererV2StatsResponseModel } from './models/GetOffererV2StatsResponseModel';
 export type { GetOffererVenueResponseModel } from './models/GetOffererVenueResponseModel';
 export type { GetOfferLastProviderResponseModel } from './models/GetOfferLastProviderResponseModel';
@@ -211,8 +210,6 @@ export { OfferContactFormEnum } from './models/OfferContactFormEnum';
 export type { OfferDomain } from './models/OfferDomain';
 export type { OffererEligibilityResponseModel } from './models/OffererEligibilityResponseModel';
 export { OffererMemberStatus } from './models/OffererMemberStatus';
-export type { OffererStatsDataModel } from './models/OffererStatsDataModel';
-export type { OffererViewsModel } from './models/OffererViewsModel';
 export type { OfferHomeResponseModel } from './models/OfferHomeResponseModel';
 export type { OfferImage } from './models/OfferImage';
 export type { OfferImageV2 } from './models/OfferImageV2';

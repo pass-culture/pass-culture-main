@@ -3061,21 +3061,6 @@ export type GetOffererResponseModel = {
 };
 
 /**
- * GetOffererStatsResponseModel
- */
-export type GetOffererStatsResponseModel = {
-    jsonData: OffererStatsDataModel;
-    /**
-     * Offererid
-     */
-    offererId: number;
-    /**
-     * Syncdate
-     */
-    syncDate: string | null;
-};
-
-/**
  * GetOffererV2StatsResponseModel
  */
 export type GetOffererV2StatsResponseModel = {
@@ -4855,38 +4840,6 @@ export enum OffererMemberStatus {
     VALIDATED = 'validated',
     PENDING = 'pending'
 }
-
-/**
- * OffererStatsDataModel
- */
-export type OffererStatsDataModel = {
-    /**
-     * Dailyviews
-     */
-    dailyViews: Array<OffererViewsModel>;
-    /**
-     * Topoffers
-     */
-    topOffers: Array<TopOffersResponseData>;
-    /**
-     * Totalviewslast30Days
-     */
-    totalViewsLast30Days: number;
-};
-
-/**
- * OffererViewsModel
- */
-export type OffererViewsModel = {
-    /**
-     * Eventdate
-     */
-    eventDate: string;
-    /**
-     * Numberofviews
-     */
-    numberOfViews: number;
-};
 
 /**
  * PatchAllOffersActiveStatusBodyModel
@@ -9330,37 +9283,6 @@ export type getOfferersByOffererIdOffererAddressesResponses = {
 };
 
 export type getOfferersByOffererIdOffererAddressesResponse = getOfferersByOffererIdOffererAddressesResponses[keyof getOfferersByOffererIdOffererAddressesResponses];
-
-export type getOfferersByOffererIdStatsData = {
-    body?: never;
-    path: {
-        offerer_id: number;
-    };
-    query?: never;
-    url: '/offerers/{offerer_id}/stats';
-};
-
-export type getOfferersByOffererIdStatsErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type getOfferersByOffererIdStatsError = getOfferersByOffererIdStatsErrors[keyof getOfferersByOffererIdStatsErrors];
-
-export type getOfferersByOffererIdStatsResponses = {
-    /**
-     * OK
-     */
-    200: GetOffererStatsResponseModel;
-};
-
-export type getOfferersByOffererIdStatsResponse = getOfferersByOffererIdStatsResponses[keyof getOfferersByOffererIdStatsResponses];
 
 export type getOfferersByOffererIdV2StatsData = {
     body?: never;
