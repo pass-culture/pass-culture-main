@@ -1096,10 +1096,7 @@ def create_offerer(
         )
 
     db.session.add(offerer)
-    if is_managed_transaction():
-        db.session.flush()
-    else:
-        db.session.commit()
+    db.session.flush()
 
     if offerer_informations.phone_number:
         users_repository.fill_phone_number_on_all_users_offerer_without_any(
@@ -1162,10 +1159,7 @@ def update_offerer(
         )
 
     db.session.add(offerer)
-    if is_managed_transaction():
-        db.session.flush()
-    else:
-        db.session.commit()
+    db.session.flush()
 
     _update_external_offerer(offerer)
 

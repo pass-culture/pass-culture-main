@@ -146,6 +146,7 @@ def get_offerer_members(offerer_id: int) -> offerers_serialize.GetOffererMembers
 
 
 @private_api.route("/offerers", methods=["POST"])
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=201,

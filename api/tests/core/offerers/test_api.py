@@ -790,7 +790,6 @@ class CreateOffererTest:
         assert created_user_offerer.dateCreated is not None
 
     def test_create_offerer_if_siren_was_previously_rejected(self):
-        # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererBodyModel(
             name="Test Offerer",
@@ -806,10 +805,9 @@ class CreateOffererTest:
         first_creation_date = offerer.dateCreated
         offerers_factories.VenueFactory(managingOfferer=offerer)
 
-        # When
         created_user_offerer = offerers_api.create_offerer(user, offerer_informations)
+        db.session.commit()  # due to synchronise_session=False in delete_venue
 
-        # Then
         created_offerer = created_user_offerer.offerer
         assert created_offerer.id == offerer.id
         assert created_offerer.name == offerer_informations.name
@@ -835,7 +833,6 @@ class CreateOffererTest:
         assert not offerer.managedVenues
 
     def test_create_offerer_if_siren_was_previously_rejected_on_user_rejected(self):
-        # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererBodyModel(
             name="Test Offerer",
