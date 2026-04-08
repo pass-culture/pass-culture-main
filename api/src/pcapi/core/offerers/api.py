@@ -1715,7 +1715,7 @@ def save_venue_banner(
     venue: models.Venue,
     content: bytes,
     image_credit: str,
-    crop_params: image_conversion.CropParams | None = None,
+    crop_params: image_conversion.CropParams | image_conversion.CropParamsV2 | None = None,
 ) -> None:
     """
     Save the new venue's new banner: crop it and resize it if asked

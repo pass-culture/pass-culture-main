@@ -83,7 +83,7 @@ CONVERSION_QUALITY = 90
 DO_NOT_CROP = CropParams()
 
 
-def standardize_image(content: bytes, ratio: ImageRatio, crop_params: CropParams | None = None) -> bytes:
+def standardize_image(content: bytes, ratio: ImageRatio, crop_params: CropParams | CropParamsV2 | None = None) -> bytes:
     """
     Standardization steps are:
         * transpose image

@@ -2,14 +2,14 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { BannerMetaModelV2 } from './BannerMetaModelV2';
+import type { BannerMetaModel } from './BannerMetaModel';
 import type { DisplayableActivity } from './DisplayableActivity';
-import type { DMSApplicationForEACv2 } from './DMSApplicationForEACv2';
+import type { DMSApplicationForEAC } from './DMSApplicationForEAC';
 import type { ExternalAccessibilityDataModelV2 } from './ExternalAccessibilityDataModelV2';
-import type { GetVenueDomainResponseModelv2 } from './GetVenueDomainResponseModelv2';
+import type { GetVenueDomainResponseModel } from './GetVenueDomainResponseModel';
 import type { GetVenueManagingOffererResponseModel } from './GetVenueManagingOffererResponseModel';
 import type { GetVenuePricingPointResponseModel } from './GetVenuePricingPointResponseModel';
-import type { LegalStatusResponseModelv2 } from './LegalStatusResponseModelv2';
+import type { LegalStatusResponseModel } from './LegalStatusResponseModel';
 import type { LocationResponseModelV2 } from './LocationResponseModelV2';
 import type { SimplifiedBankAccountStatus } from './SimplifiedBankAccountStatus';
 import type { StudentLevels } from './StudentLevels';
@@ -22,17 +22,17 @@ export type GetVenueResponseModel = {
   allowedOnAdage: boolean;
   audioDisabilityCompliant?: (boolean | null);
   bankAccountStatus?: (SimplifiedBankAccountStatus | null);
-  bannerMeta?: (BannerMetaModelV2 | null);
+  bannerMeta?: (BannerMetaModel | null);
   bannerUrl?: (string | null);
   bookingEmail?: (string | null);
   canDisplayHighlights: boolean;
   collectiveAccessInformation?: (string | null);
   collectiveDescription?: (string | null);
-  collectiveDmsApplications: Array<DMSApplicationForEACv2>;
-  collectiveDomains: Array<GetVenueDomainResponseModelv2>;
+  collectiveDmsApplications: Array<DMSApplicationForEAC>;
+  collectiveDomains: Array<GetVenueDomainResponseModel>;
   collectiveEmail?: (string | null);
   collectiveInterventionArea?: (Array<string> | null);
-  collectiveLegalStatus?: (LegalStatusResponseModelv2 | null);
+  collectiveLegalStatus?: (LegalStatusResponseModel | null);
   collectiveNetwork?: (Array<string> | null);
   collectivePhone?: (string | null);
   collectiveStudents?: (Array<StudentLevels> | null);

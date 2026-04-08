@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type GetVenueDomainResponseModelv2 = {
+export type LegalStatusResponseModel = {
   id: number;
   name: string;
 };

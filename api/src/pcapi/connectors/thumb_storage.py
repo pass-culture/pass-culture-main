@@ -3,6 +3,7 @@ from pcapi.core import object_storage
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.utils.image_conversion import CropParams
+from pcapi.utils.image_conversion import CropParamsV2
 from pcapi.utils.image_conversion import ImageRatio
 from pcapi.utils.image_conversion import process_original_image
 from pcapi.utils.image_conversion import standardize_image
@@ -13,7 +14,7 @@ def create_thumb(
     image_as_bytes: bytes,
     *,
     storage_id_suffix_str: str = "",
-    crop_params: CropParams | None = None,
+    crop_params: CropParams | CropParamsV2 | None = None,
     ratio: ImageRatio = ImageRatio.PORTRAIT,
     keep_ratio: bool = False,
     object_id: str | None = None,
