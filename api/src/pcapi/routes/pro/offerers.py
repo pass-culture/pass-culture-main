@@ -332,6 +332,7 @@ def get_venue_offers_stats(venue_id: int) -> offerers_serialize.GetVenueStatsRes
 
 
 @private_api.route("/offerers/<int:offerer_id>/v2/stats", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
