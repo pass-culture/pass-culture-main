@@ -19,9 +19,6 @@ class Returns200Test:
     # google_places_info
     num_queries = 5
 
-    # location / address
-    num_queries_with_location = num_queries + 1
-
     def test_get_collective_offer_template(self, client):
         national_program = educational_factories.NationalProgramFactory()
         offer = educational_factories.CollectiveOfferTemplateFactory(nationalProgramId=national_program.id)
@@ -29,7 +26,7 @@ class Returns200Test:
 
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
-        with assert_num_queries(self.num_queries, expire_session=False):
+        with assert_num_queries(self.num_queries):
             response = client.get(f"/collective/offers-template/{offer_id}")
             assert response.status_code == 200
 
@@ -90,7 +87,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
 
         offer_id = offer.id
-        with assert_num_queries(self.num_queries_with_location):
+        with assert_num_queries(self.num_queries):
             response = client.get(f"/collective/offers-template/{offer_id}")
             assert response.status_code == 200
 
@@ -103,35 +100,6 @@ class Returns200Test:
         assert response_location["location"]["banId"] == venue.offererAddress.address.banId
         assert response_json["interventionArea"] == []
 
-    # TODO(OA): This test matches the data pre location refactoring
-    # venue and offer have the same OA/location
-    def test_location_address_venue_legacy(self, client):
-        venue = offerers_factories.VenueFactory()
-        offer = educational_factories.CollectiveOfferTemplateFactory(
-            venue=venue,
-            locationType=educational_models.CollectiveLocationType.ADDRESS,
-            locationComment=None,
-            offererAddressId=venue.offererAddress.id,
-            interventionArea=None,
-        )
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-        client = client.with_session_auth(email="user@example.com")
-
-        offer_id = offer.id
-        ban_id = venue.offererAddress.address.banId
-        with assert_num_queries(self.num_queries, expire_session=False):
-            response = client.get(f"/collective/offers-template/{offer_id}")
-            assert response.status_code == 200
-
-            response_json = response.json
-            response_location = response_json["location"]
-            assert response_location["locationType"] == "ADDRESS"
-            assert response_location["locationComment"] is None
-            assert response_location["location"] is not None
-            assert response_location["location"]["isVenueLocation"] is True
-            assert response_location["location"]["banId"] == ban_id
-            assert response_json["interventionArea"] == []
-
     def test_location_school(self, client):
         offer = educational_factories.CollectiveOfferTemplateFactory(
             locationType=educational_models.CollectiveLocationType.SCHOOL,
@@ -143,7 +111,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
 
         offer_id = offer.id
-        with assert_num_queries(self.num_queries, expire_session=False):
+        with assert_num_queries(self.num_queries):
             response = client.get(f"/collective/offers-template/{offer_id}")
             assert response.status_code == 200
 
@@ -170,7 +138,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
 
         offer_id = offer.id
-        with assert_num_queries(self.num_queries_with_location, expire_session=False):
+        with assert_num_queries(self.num_queries):
             response = client.get(f"/collective/offers-template/{offer_id}")
             assert response.status_code == 200
 
@@ -199,7 +167,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
 
         offer_id = offer.id
-        with assert_num_queries(self.num_queries_with_location):
+        with assert_num_queries(self.num_queries):
             response = client.get(f"/collective/offers-template/{offer_id}")
             assert response.status_code == 200
 
@@ -223,7 +191,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
 
         offer_id = offer.id
-        with assert_num_queries(self.num_queries, expire_session=False):
+        with assert_num_queries(self.num_queries):
             response = client.get(f"/collective/offers-template/{offer_id}")
             assert response.status_code == 200
 
@@ -240,7 +208,7 @@ class Returns200Test:
 
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
-        with assert_num_queries(self.num_queries, expire_session=False):
+        with assert_num_queries(self.num_queries):
             with testing.assert_no_duplicated_queries():
                 client.get(f"/collective/offers-template/{offer_id}")
 
