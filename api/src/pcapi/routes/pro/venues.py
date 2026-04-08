@@ -1,12 +1,12 @@
 from functools import partial
 
 import flask
-import pydantic.v1 as pydantic_v1
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
+from pydantic import ValidationError
 
 import pcapi.connectors.entreprise.exceptions as entreprise_exceptions
 from pcapi import settings
@@ -265,7 +265,6 @@ def upsert_venue_banner(venue_id: int) -> venue_serialize.GetVenueResponseModel:
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     try:
-        # TODO bdalbianco 23/03/26 switch to v2 once GetVenueResponseModel is migrated
         venue_banner = venue_banners_serialize.VenueBannerContentModel.from_request(request)
     except exceptions.InvalidVenueBannerContent as err:
         content = {"code": "INVALID_BANNER_CONTENT", "message": str(err)}
@@ -273,7 +272,7 @@ def upsert_venue_banner(venue_id: int) -> venue_serialize.GetVenueResponseModel:
     except exceptions.VenueBannerTooBig as err:
         content = {"code": "BANNER_TOO_BIG", "message": str(err)}
         raise ApiErrors(content, status_code=400)
-    except pydantic_v1.ValidationError as err:
+    except ValidationError as err:
         locations = ", ".join(str(loc) for e in err.errors() for loc in e["loc"])
         content = {"code": "INVALID_BANNER_PARAMS", "message": locations}
         raise ApiErrors(content, status_code=400)

@@ -1,12 +1,12 @@
 import type {
-  DMSApplicationForEACv2,
+  DMSApplicationForEAC,
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
 } from '@/apiClient/v1'
 
 export const getLastCollectiveDmsApplication = (
-  collectiveDmsApplications: DMSApplicationForEACv2[]
-): DMSApplicationForEACv2 | null => {
+  collectiveDmsApplications: DMSApplicationForEAC[]
+): DMSApplicationForEAC | null => {
   if (collectiveDmsApplications.length === 0) {
     return null
   }
@@ -35,7 +35,7 @@ export const getLastDmsApplicationForOfferer = (
   }
   return offerer.managedVenues?.reduce(
     (
-      mostRecent: DMSApplicationForEACv2 | null,
+      mostRecent: DMSApplicationForEAC | null,
       venue: GetOffererVenueResponseModel
     ) => {
       const lastDmsApplication = getLastCollectiveDmsApplication(

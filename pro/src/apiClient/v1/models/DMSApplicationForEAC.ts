@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { DMSApplicationstatus } from './DMSApplicationstatus';
-export type DMSApplicationForEACv2 = {
+export type DMSApplicationForEAC = {
   application: number;
   buildDate: (string | null);
   depositDate: string;

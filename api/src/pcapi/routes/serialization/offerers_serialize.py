@@ -18,7 +18,7 @@ from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import finance_serialize
 from pcapi.routes.serialization import venue_collective_serialize
-from pcapi.routes.serialization.venue_banners_serialize import BannerMetaModelV2
+from pcapi.routes.serialization.venue_banners_serialize import BannerMetaModel
 from pcapi.routes.shared import validation
 from pcapi.serialization.exceptions import PydanticError
 from pcapi.utils import phone_number as phone_number_utils
@@ -36,12 +36,12 @@ class GetOffererVenueResponseModel(HttpBodyModel):
     siret: str | None
     activity: offerers_models.DisplayableActivity | None
     withdrawal_details: str | None
-    collective_dms_applications: list[venue_collective_serialize.DMSApplicationForEACv2]
+    collective_dms_applications: list[venue_collective_serialize.DMSApplicationForEAC]
     has_partner_page: bool
     has_venue_providers: bool
     is_permanent: bool
     banner_url: str | None
-    banner_meta: BannerMetaModelV2 | None
+    banner_meta: BannerMetaModel | None
 
     @classmethod
     def build(
@@ -58,7 +58,7 @@ class GetOffererVenueResponseModel(HttpBodyModel):
             banner_url=venue.bannerUrl,
             booking_email=venue.bookingEmail,
             collective_dms_applications=[
-                venue_collective_serialize.DMSApplicationForEACv2.build(application, venue.id)
+                venue_collective_serialize.DMSApplicationForEAC.build(application, venue.id)
                 for application in venue.collectiveDmsApplications
             ],
             has_adage_id=bool(venue.adageId),

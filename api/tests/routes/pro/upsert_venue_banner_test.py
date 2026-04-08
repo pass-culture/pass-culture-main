@@ -75,12 +75,28 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_BANNER_CONTENT"
 
+    def test_upload_image_missing_query_param(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+
+        url = f"/venues/{venue.id}/banner"
+        url += "?x_crop_percent=0.8&y_crop_percent=0.1&height_crop_percent=1.0"
+
+        image_content = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+        file = {"banner": (io.BytesIO(image_content), "upsert_banner.jpg")}
+
+        client = client.with_session_auth(email=user_offerer.user.email)
+        response = client.post(url, files=file)
+
+        assert response.status_code == 400
+        assert response.json["code"] == "INVALID_BANNER_PARAMS"
+
     def test_upload_image_invalid_query_param(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
         url = f"/venues/{venue.id}/banner"
-        url += "?x_crop_percent=0.8&y_crop_percent=invalid_value"
+        url += "?x_crop_percent=0.8&y_crop_percent=invalid_value&height_crop_percent=1.0&width_crop_percent=1.0"
 
         image_content = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         file = {"banner": (io.BytesIO(image_content), "upsert_banner.jpg")}

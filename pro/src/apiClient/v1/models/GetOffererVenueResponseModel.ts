@@ -2,15 +2,15 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { BannerMetaModelV2 } from './BannerMetaModelV2';
+import type { BannerMetaModel } from './BannerMetaModel';
 import type { DisplayableActivity } from './DisplayableActivity';
-import type { DMSApplicationForEACv2 } from './DMSApplicationForEACv2';
+import type { DMSApplicationForEAC } from './DMSApplicationForEAC';
 export type GetOffererVenueResponseModel = {
   activity: (DisplayableActivity | null);
-  bannerMeta: (BannerMetaModelV2 | null);
+  bannerMeta: (BannerMetaModel | null);
   bannerUrl: (string | null);
   bookingEmail: (string | null);
-  collectiveDmsApplications: Array<DMSApplicationForEACv2>;
+  collectiveDmsApplications: Array<DMSApplicationForEAC>;
   hasAdageId: boolean;
   hasCreatedOffer: boolean;
   hasPartnerPage: boolean;

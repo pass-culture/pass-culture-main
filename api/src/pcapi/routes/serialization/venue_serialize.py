@@ -86,15 +86,6 @@ class PostVenueBodyModel(HttpBodyModel):
         return self
 
 
-class VenueResponseModel(BaseModel):
-    id: int
-
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
-
-
 class GetVenueManagingOffererResponseModel(HttpBodyModel):
     id: int
     isValidated: bool
@@ -135,7 +126,7 @@ class GetVenueResponseModel(HttpBodyModel):
     activity: offerers_models.DisplayableActivity | None = None
     dateCreated: datetime
     id: int
-    bannerMeta: venue_banners_serialize.BannerMetaModelV2 | None = None
+    bannerMeta: venue_banners_serialize.BannerMetaModel | None = None
     bookingEmail: str | None = None
     comment: str | None = None
     managingOfferer: GetVenueManagingOffererResponseModel
@@ -145,14 +136,14 @@ class GetVenueResponseModel(HttpBodyModel):
     collectiveDescription: str | None = None
     collectiveStudents: list[educational_models.StudentLevels] | None = None
     collectiveWebsite: str | None = None
-    collectiveDomains: list[venue_collective_serialize.GetVenueDomainResponseModelv2]
+    collectiveDomains: list[venue_collective_serialize.GetVenueDomainResponseModel]
     collectiveInterventionArea: list[str] | None = None
-    collectiveLegalStatus: venue_collective_serialize.LegalStatusResponseModelv2 | None = None
+    collectiveLegalStatus: venue_collective_serialize.LegalStatusResponseModel | None = None
     collectiveNetwork: list[str] | None = None
     collectiveAccessInformation: str | None = None
     collectivePhone: str | None = None
     collectiveEmail: str | None = None
-    collectiveDmsApplications: list[venue_collective_serialize.DMSApplicationForEACv2]
+    collectiveDmsApplications: list[venue_collective_serialize.DMSApplicationForEAC]
     hasAdageId: bool
     adageInscriptionDate: datetime | None = None
     hasOffers: bool
@@ -200,13 +191,13 @@ class GetVenueResponseModel(HttpBodyModel):
                 if not crop_params:
                     crop_params = venue_banners_serialize.CropParamsV2()
 
-                banner_meta = venue_banners_serialize.BannerMetaModelV2(
+                banner_meta = venue_banners_serialize.BannerMetaModel(
                     image_credit=None,
                     original_image_url=venue.bannerMeta.get("original_image_url"),
                     crop_params=crop_params,
                 )
             else:
-                banner_meta = venue_banners_serialize.BannerMetaModelV2(image_credit=None, original_image_url=None)
+                banner_meta = venue_banners_serialize.BannerMetaModel(image_credit=None, original_image_url=None)
 
         if venue.venueTypeCode:
             venue_type = VenueTypeResponseModelV2(value=venue.venueTypeCode.name, label=venue.venueTypeCode.name)
@@ -249,7 +240,7 @@ class GetVenueResponseModel(HttpBodyModel):
             collectivePhone=venue.collectivePhone,
             collectiveEmail=venue.collectiveEmail,
             collectiveDmsApplications=[
-                venue_collective_serialize.DMSApplicationForEACv2.build(collective_ds_application, venue.id)
+                venue_collective_serialize.DMSApplicationForEAC.build(collective_ds_application, venue.id)
                 for collective_ds_application in venue.collectiveDmsApplications
             ],
             hasAdageId=bool(venue.adageId),

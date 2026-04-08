@@ -11,7 +11,7 @@ import {
   type CollectiveOfferResponseModel,
   CollectiveOfferTemplateAllowedAction,
   type CollectiveOfferTemplateResponseModel,
-  type DMSApplicationForEACv2,
+  type DMSApplicationForEAC,
   DMSApplicationstatus,
   type EducationalInstitutionResponseModel,
   type EducationalRedactorResponseModel,
@@ -287,7 +287,7 @@ export const defaultEducationalRedactor: EducationalRedactorResponseModel = {
   lastName: 'Dupont',
 }
 
-export const defaultDMSApplicationForEAC: DMSApplicationForEACv2 = {
+export const defaultDMSApplicationForEAC: DMSApplicationForEAC = {
   application: 123,
   buildDate: null,
   depositDate: new Date().toISOString(),
@@ -301,7 +301,7 @@ export const defaultDMSApplicationForEAC: DMSApplicationForEACv2 = {
   venueId: 1,
 }
 
-export const defaultDMSApplicationForEACV2: DMSApplicationForEACv2 = {
+export const defaultDMSApplicationForEACV2: DMSApplicationForEAC = {
   application: 123,
   buildDate: new Date().toISOString(),
   depositDate: new Date().toISOString(),

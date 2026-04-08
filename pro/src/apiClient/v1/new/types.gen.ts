@@ -244,9 +244,9 @@ export type BankAccountResponseModel = {
 };
 
 /**
- * BannerMetaModelV2
+ * BannerMetaModel
  */
-export type BannerMetaModelV2 = {
+export type BannerMetaModel = {
     crop_params?: CropParamsV2;
     /**
      * Image Credit
@@ -1089,9 +1089,9 @@ export type CropParamsV2 = {
 };
 
 /**
- * DMSApplicationForEACv2
+ * DMSApplicationForEAC
  */
-export type DMSApplicationForEACv2 = {
+export type DMSApplicationForEAC = {
     /**
      * Application
      */
@@ -3102,7 +3102,7 @@ export type GetOffererV2StatsResponseModel = {
  */
 export type GetOffererVenueResponseModel = {
     activity: DisplayableActivity | null;
-    bannerMeta: BannerMetaModelV2 | null;
+    bannerMeta: BannerMetaModel | null;
     /**
      * Bannerurl
      */
@@ -3114,7 +3114,7 @@ export type GetOffererVenueResponseModel = {
     /**
      * Collectivedmsapplications
      */
-    collectiveDmsApplications: Array<DMSApplicationForEACv2>;
+    collectiveDmsApplications: Array<DMSApplicationForEAC>;
     /**
      * Hasadageid
      */
@@ -3326,9 +3326,9 @@ export enum GetVenueAddressesWithOffersOption {
 }
 
 /**
- * GetVenueDomainResponseModelv2
+ * GetVenueDomainResponseModel
  */
-export type GetVenueDomainResponseModelv2 = {
+export type GetVenueDomainResponseModel = {
     /**
      * Id
      */
@@ -3421,7 +3421,7 @@ export type GetVenueResponseModel = {
      */
     audioDisabilityCompliant?: boolean | null;
     bankAccountStatus?: SimplifiedBankAccountStatus | null;
-    bannerMeta?: BannerMetaModelV2 | null;
+    bannerMeta?: BannerMetaModel | null;
     /**
      * Bannerurl
      */
@@ -3445,11 +3445,11 @@ export type GetVenueResponseModel = {
     /**
      * Collectivedmsapplications
      */
-    collectiveDmsApplications: Array<DMSApplicationForEACv2>;
+    collectiveDmsApplications: Array<DMSApplicationForEAC>;
     /**
      * Collectivedomains
      */
-    collectiveDomains: Array<GetVenueDomainResponseModelv2>;
+    collectiveDomains: Array<GetVenueDomainResponseModel>;
     /**
      * Collectiveemail
      */
@@ -3458,7 +3458,7 @@ export type GetVenueResponseModel = {
      * Collectiveinterventionarea
      */
     collectiveInterventionArea?: Array<string> | null;
-    collectiveLegalStatus?: LegalStatusResponseModelv2 | null;
+    collectiveLegalStatus?: LegalStatusResponseModel | null;
     /**
      * Collectivenetwork
      */
@@ -3804,9 +3804,9 @@ export type InvoiceResponseV2Model = {
 };
 
 /**
- * LegalStatusResponseModelv2
+ * LegalStatusResponseModel
  */
-export type LegalStatusResponseModelv2 = {
+export type LegalStatusResponseModel = {
     /**
      * Id
      */
