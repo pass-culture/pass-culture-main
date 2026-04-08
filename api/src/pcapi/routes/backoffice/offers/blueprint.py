@@ -1396,8 +1396,6 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
             db.session.add(offer)
 
             if not was_manually_pending:
-                # TODO(jbaudet-pass): this might trigger some extra queries
-                # -> add missing load option to the offers query
                 recipients = _get_offer_recipients(offer)
                 offer_data = transactional_mails.get_email_data_from_offer(offer, old_validation, new_validation)
                 transactional_mails.send_offer_validation_status_update_email(offer_data, recipients)
