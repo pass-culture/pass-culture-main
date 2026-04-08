@@ -34,6 +34,10 @@
 
 .top {
   grid-area: top-area;
+
+  &:empty {
+    display: none;
+  }
 }
 
 .main {
