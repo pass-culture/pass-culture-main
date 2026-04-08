@@ -124,8 +124,9 @@ def get_favorites_for(user: User, favorite_id: int | None = None) -> list[serial
 
 
 @blueprint.native_route("/me/favorites", methods=["GET"])
-@spectree_serialize(response_model=serializers.PaginatedFavoritesResponse, api=blueprint.api)
+@atomic()
 @authenticated_and_active_user_required
+@spectree_serialize(response_model=serializers.PaginatedFavoritesResponse, api=blueprint.api)
 def get_favorites() -> serializers.PaginatedFavoritesResponse:
     favorites = get_favorites_for(current_user)
 
@@ -143,8 +144,9 @@ def get_favorites() -> serializers.PaginatedFavoritesResponse:
 
 
 @blueprint.native_route("/me/favorites", methods=["POST"])
-@spectree_serialize(response_model=serializers.FavoriteResponse, on_error_statuses=[400], api=blueprint.api)
+@atomic()
 @authenticated_and_active_user_required
+@spectree_serialize(response_model=serializers.FavoriteResponse, on_error_statuses=[400], api=blueprint.api)
 def create_favorite(body: serializers.FavoriteRequest) -> serializers.FavoriteResponse:
     if settings.MAX_FAVORITES:
         if db.session.query(Favorite).filter_by(user=current_user).count() >= settings.MAX_FAVORITES:
@@ -155,18 +157,11 @@ def create_favorite(body: serializers.FavoriteRequest) -> serializers.FavoriteRe
     except OfferNotFound as exception:
         raise ResourceNotFoundError() from exception
 
-    try:
-        # TODO (tconte-pass, 2026-03-24): use `atomic` as route decorator
-        # https://passculture.atlassian.net/browse/PC-40922
-        with atomic():
-            favorite = Favorite(offer=offer, user=current_user)
-            db.session.add(favorite)
-    except sa.exc.IntegrityError as exception:
-        candidate = db.session.query(Favorite).filter_by(offerId=body.offer_id, userId=current_user.id).one_or_none()
-        if not candidate:
-            raise exception
-        favorite = candidate
-    else:
+    favorite = db.session.query(Favorite).filter_by(offerId=body.offer_id, userId=current_user.id).one_or_none()
+    if not favorite:
+        favorite = Favorite(offer=offer, user=current_user)
+        db.session.add(favorite)
+        db.session.flush()
         update_external_user(current_user)
         track_offer_added_to_favorites_event(current_user.id, offer)
 
@@ -177,9 +172,9 @@ def create_favorite(body: serializers.FavoriteRequest) -> serializers.FavoriteRe
 
 
 @blueprint.native_route("/me/favorites/<int:favorite_id>", methods=["DELETE"])
-@spectree_serialize(on_success_status=204, api=blueprint.api)
-@authenticated_and_active_user_required
 @atomic()
+@authenticated_and_active_user_required
+@spectree_serialize(on_success_status=204, api=blueprint.api)
 def delete_favorite(favorite_id: int) -> None:
     favorite = first_or_404(db.session.query(Favorite).filter_by(id=favorite_id, user=current_user))
     db.session.delete(favorite)
