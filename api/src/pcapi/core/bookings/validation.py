@@ -150,7 +150,6 @@ def check_is_usable(booking: Booking) -> None:
     if is_booking_for_event_and_not_confirmed:
         if booking.cancellationLimitDate is None:
             raise ValueError("Can't compute max_cancellation_date with None as cancellationLimitDate")
-        # TODO bdalbianco 02/06/2025: CLEAN_OA remove check when no virtual venue
         offer_department_code = (
             booking.stock.offer.offererAddress.address.departmentCode if booking.stock.offer.offererAddress else None
         )
