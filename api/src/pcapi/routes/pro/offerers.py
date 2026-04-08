@@ -209,6 +209,7 @@ def save_new_onboarding_data(
 
 
 @private_api.route("/offerers/<int:offerer_id>/bank-accounts", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(
     response_model=offerers_serialize.GetOffererBankAccountsResponseModel, api=blueprint.pro_private_schema
