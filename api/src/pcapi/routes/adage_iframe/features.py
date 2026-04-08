@@ -14,10 +14,10 @@ ADAGE_FEATURES = (FeatureToggle.ENABLE_MARSEILLE,)
 
 @blueprint.adage_iframe.route("/features", methods=["GET"])
 @atomic()
+@adage_jwt_required
 @spectree_serialize(
     response_model=features_serialize.ListFeatureResponseModel, api=blueprint.api, on_error_statuses=[404]
 )
-@adage_jwt_required
 def list_features(authenticated_information: AuthenticatedInformation) -> features_serialize.ListFeatureResponseModel:
     all_features = db.session.query(Feature)
     requested_features = {feature.name for feature in ADAGE_FEATURES}

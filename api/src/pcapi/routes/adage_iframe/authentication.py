@@ -22,8 +22,8 @@ from pcapi.utils.transaction_manager import atomic
 
 @blueprint.adage_iframe.route("/authenticate", methods=["GET"])
 @atomic()
-@spectree_serialize(api=blueprint.api, response_model=AuthenticatedResponse)
 @adage_jwt_required
+@spectree_serialize(api=blueprint.api, response_model=AuthenticatedResponse)
 def authenticate(authenticated_information: AuthenticatedInformation) -> AuthenticatedResponse:
     # Warning: this GET route can create an object in db (_get_redactor -> find_or_create_redactor)
 

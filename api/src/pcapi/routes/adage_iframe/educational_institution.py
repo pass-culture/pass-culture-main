@@ -11,11 +11,11 @@ from pcapi.utils.transaction_manager import atomic
 
 @blueprint.adage_iframe.route("/collective/institution", methods=["GET"])
 @atomic()
+@adage_jwt_required
 @spectree_serialize(
     response_model=educational_institution.EducationalInstitutionBudgetResponseModel,
     api=blueprint.api,
 )
-@adage_jwt_required
 def get_educational_institution_with_budget(
     authenticated_information: AuthenticatedInformation,
 ) -> educational_institution.EducationalInstitutionBudgetResponseModel:

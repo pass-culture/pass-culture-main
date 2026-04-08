@@ -23,8 +23,8 @@ logger = logging.getLogger(__name__)
 
 @blueprint.adage_iframe.route("/collective/bookings", methods=["POST"])
 @atomic()
-@spectree_serialize(api=blueprint.api, response_model=BookCollectiveOfferResponse, on_error_statuses=[400, 403])
 @adage_jwt_required
+@spectree_serialize(api=blueprint.api, response_model=BookCollectiveOfferResponse, on_error_statuses=[400, 403])
 def book_collective_offer(
     body: BookCollectiveOfferRequest, authenticated_information: AuthenticatedInformation
 ) -> BookCollectiveOfferResponse:

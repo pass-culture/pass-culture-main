@@ -14,8 +14,8 @@ from pcapi.utils.transaction_manager import atomic
 
 @blueprint.adage_iframe.route("/collective/templates/<int:offer_id>/favorites", methods=["POST"])
 @atomic()
-@spectree_serialize(on_success_status=204, api=blueprint.api)
 @adage_jwt_required
+@spectree_serialize(on_success_status=204, api=blueprint.api)
 def post_collective_template_favorites(authenticated_information: AuthenticatedInformation, offer_id: int) -> None:
     try:
         offer_template = educational_repository.get_collective_offer_template_by_id(offer_id=offer_id)
@@ -34,8 +34,8 @@ def post_collective_template_favorites(authenticated_information: AuthenticatedI
 
 @blueprint.adage_iframe.route("/collective/template/<int:offer_template_id>/favorites", methods=["DELETE"])
 @atomic()
-@spectree_serialize(on_success_status=204, api=blueprint.api)
 @adage_jwt_required
+@spectree_serialize(on_success_status=204, api=blueprint.api)
 def delete_favorite_for_collective_offer_template(
     authenticated_information: AuthenticatedInformation, offer_template_id: int
 ) -> None:
@@ -55,8 +55,8 @@ def delete_favorite_for_collective_offer_template(
 
 @blueprint.adage_iframe.route("/collective/favorites", methods=["GET"])
 @atomic()
-@spectree_serialize(on_success_status=200, response_model=FavoritesResponseModel, api=blueprint.api)
 @adage_jwt_required
+@spectree_serialize(on_success_status=200, response_model=FavoritesResponseModel, api=blueprint.api)
 def get_collective_favorites(authenticated_information: AuthenticatedInformation) -> FavoritesResponseModel:
     redactor = find_redactor_by_email(authenticated_information.email)
     if redactor is None:
