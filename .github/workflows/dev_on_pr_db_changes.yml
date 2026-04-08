@@ -15,7 +15,7 @@ jobs:
     if: |
       (github.event_name == 'pull_request' && github.event.pull_request.merged == true) ||
       (github.event_name == 'pull_request_review' && github.event.review.state == 'approved')
-    uses: my-org/my-repo/.github/workflows/99_check_alembic_migrations.yml
+    uses: ./.github/workflows/dev_on_workflow_db_changes.yml
     with:
       ping_data_team: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true && true || false }}
     secrets: inherit
