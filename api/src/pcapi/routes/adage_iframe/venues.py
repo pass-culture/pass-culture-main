@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 
 @blueprint.adage_iframe.route("/venues/siret/<siret>", methods=["GET"])
 @atomic()
-@spectree_serialize(api=blueprint.api, response_model=VenueResponse)
 @adage_jwt_required
+@spectree_serialize(api=blueprint.api, response_model=VenueResponse)
 def get_venue_by_siret(
     authenticated_information: AuthenticatedInformation, siret: str, query: GetRelativeVenuesQueryModel
 ) -> VenueResponse:
@@ -33,8 +33,8 @@ def get_venue_by_siret(
 
 @blueprint.adage_iframe.route("/venues/<int:venue_id>", methods=["GET"])
 @atomic()
-@spectree_serialize(api=blueprint.api, response_model=VenueResponse)
 @adage_jwt_required
+@spectree_serialize(api=blueprint.api, response_model=VenueResponse)
 def get_venue_by_id(
     authenticated_information: AuthenticatedInformation, venue_id: int, query: GetRelativeVenuesQueryModel
 ) -> VenueResponse:

@@ -11,8 +11,8 @@ from pcapi.utils.transaction_manager import atomic
 
 @blueprint.adage_iframe.route("/redactor/preferences", methods=["POST"])
 @atomic()
-@spectree_serialize(api=blueprint.api, on_success_status=204)
 @adage_jwt_required
+@spectree_serialize(api=blueprint.api, on_success_status=204)
 def save_redactor_preferences(
     body: RedactorPreferences,
     authenticated_information: AuthenticatedInformation,

@@ -44,8 +44,8 @@ def _serialize_playlist_item_with_offer_template(
 
 @blueprint.adage_iframe.route("/playlists/classroom", methods=["GET"])
 @atomic()
-@spectree_serialize(response_model=serializers.ListCollectiveOfferTemplateResponseModel, api=blueprint.api)
 @adage_jwt_required
+@spectree_serialize(response_model=serializers.ListCollectiveOfferTemplateResponseModel, api=blueprint.api)
 def get_classroom_playlist(
     authenticated_information: AuthenticatedInformation,
 ) -> serializers.ListCollectiveOfferTemplateResponseModel:
@@ -97,12 +97,12 @@ def get_classroom_playlist(
 
 @blueprint.adage_iframe.route("/playlists/new_template_offers", methods=["GET"])
 @atomic()
+@adage_jwt_required
 @spectree_serialize(
     response_model=serializers.ListCollectiveOfferTemplateResponseModel,
     api=blueprint.api,
     on_error_statuses=[404],
 )
-@adage_jwt_required
 def new_template_offers_playlist(
     authenticated_information: AuthenticatedInformation,
 ) -> serializers.ListCollectiveOfferTemplateResponseModel:
@@ -170,8 +170,8 @@ def _serialize_playlist_item_with_venue(
 
 @blueprint.adage_iframe.route("/playlists/local-offerers", methods=["GET"])
 @atomic()
-@spectree_serialize(response_model=playlists_serializers.LocalOfferersPlaylist, api=blueprint.api)
 @adage_jwt_required
+@spectree_serialize(response_model=playlists_serializers.LocalOfferersPlaylist, api=blueprint.api)
 def get_local_offerers_playlist(
     authenticated_information: AuthenticatedInformation,
 ) -> playlists_serializers.LocalOfferersPlaylist:
@@ -191,8 +191,8 @@ def get_local_offerers_playlist(
 
 @blueprint.adage_iframe.route("/playlists/new_offerers", methods=["GET"])
 @atomic()
-@spectree_serialize(response_model=playlists_serializers.LocalOfferersPlaylist, api=blueprint.api)
 @adage_jwt_required
+@spectree_serialize(response_model=playlists_serializers.LocalOfferersPlaylist, api=blueprint.api)
 def get_new_offerers_playlist(
     authenticated_information: AuthenticatedInformation,
 ) -> playlists_serializers.LocalOfferersPlaylist:

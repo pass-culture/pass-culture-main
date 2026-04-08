@@ -8,10 +8,7 @@ from pcapi.utils.transaction_manager import atomic
 
 @blueprint.adage_iframe.route("/collective/academies", methods=["GET"])
 @atomic()
-@spectree_serialize(
-    response_model=academies.AcademiesResponseModel,
-    api=blueprint.api,
-)
 @adage_jwt_required
+@spectree_serialize(response_model=academies.AcademiesResponseModel, api=blueprint.api)
 def get_academies(authenticated_information: AuthenticatedInformation) -> academies.AcademiesResponseModel:
     return academies.AcademiesResponseModel.build()
