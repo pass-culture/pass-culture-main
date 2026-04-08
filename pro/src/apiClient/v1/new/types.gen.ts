@@ -1222,11 +1222,11 @@ export enum DisplayableActivity {
 export enum EacFormat {
     ATELIER_DE_PRATIQUE = 'Atelier de pratique',
     CONCERT = 'Concert',
-    'CONFÉRENCE,_RENCONTRE' = 'Conférence, rencontre',
-    'FESTIVAL,_SALON,_CONGRÈS' = 'Festival, salon, congrès',
+    CONF_RENCE_RENCONTRE = 'Conférence, rencontre',
+    FESTIVAL_SALON_CONGR_S = 'Festival, salon, congrès',
     PROJECTION_AUDIOVISUELLE = 'Projection audiovisuelle',
-    REPRÉSENTATION = 'Représentation',
-    VISITE_GUIDÉE = 'Visite guidée',
+    REPR_SENTATION = 'Représentation',
+    VISITE_GUID_E = 'Visite guidée',
     VISITE_LIBRE = 'Visite libre'
 }
 
@@ -1768,7 +1768,7 @@ export type FinanceBankAccountResponseModel = {
  * GenderEnum
  */
 export enum GenderEnum {
-    M = 'M.',
+    M_ = 'M.',
     MME = 'Mme'
 }
 
@@ -6174,18 +6174,18 @@ export type StructureDataBodyModel = {
  * StudentLevels
  */
 export enum StudentLevels {
-    ÉCOLES_MARSEILLE_MATERNELLE = 'Écoles Marseille - Maternelle',
-    'ÉCOLES_MARSEILLE_CP,_CE1,_CE2' = 'Écoles Marseille - CP, CE1, CE2',
-    'ÉCOLES_MARSEILLE_CM1,_CM2' = 'Écoles Marseille - CM1, CM2',
-    COLLÈGE_6E = 'Collège - 6e',
-    COLLÈGE_5E = 'Collège - 5e',
-    COLLÈGE_4E = 'Collège - 4e',
-    COLLÈGE_3E = 'Collège - 3e',
-    LYCÉE_SECONDE = 'Lycée - Seconde',
-    LYCÉE_PREMIÈRE = 'Lycée - Première',
-    LYCÉE_TERMINALE = 'Lycée - Terminale',
-    CAP_2E_ANNÉE = 'CAP - 2e année',
-    CAP_1RE_ANNÉE = 'CAP - 1re année'
+    _COLES_MARSEILLE_MATERNELLE = 'Écoles Marseille - Maternelle',
+    _COLES_MARSEILLE_CP_CE1_CE2 = 'Écoles Marseille - CP, CE1, CE2',
+    _COLES_MARSEILLE_CM1_CM2 = 'Écoles Marseille - CM1, CM2',
+    COLL_GE_6E = 'Collège - 6e',
+    COLL_GE_5E = 'Collège - 5e',
+    COLL_GE_4E = 'Collège - 4e',
+    COLL_GE_3E = 'Collège - 3e',
+    LYC_E_SECONDE = 'Lycée - Seconde',
+    LYC_E_PREMI_RE = 'Lycée - Première',
+    LYC_E_TERMINALE = 'Lycée - Terminale',
+    CAP_2E_ANN_E = 'CAP - 2e année',
+    CAP_1RE_ANN_E = 'CAP - 1re année'
 }
 
 /**
@@ -6893,23 +6893,23 @@ export type VenueStatsDataModel = {
  */
 export enum VenueTypeCode {
     AUTRE = 'Autre',
-    'ARTS_VISUELS,_ARTS_PLASTIQUES_ET_GALERIES' = 'Arts visuels, arts plastiques et galeries',
-    BIBLIOTHÈQUE_OU_MÉDIATHÈQUE = 'Bibliothèque ou médiathèque',
+    ARTS_VISUELS_ARTS_PLASTIQUES_ET_GALERIES = 'Arts visuels, arts plastiques et galeries',
+    BIBLIOTH_QUE_OU_M_DIATH_QUE = 'Bibliothèque ou médiathèque',
     CENTRE_CULTUREL = 'Centre culturel',
-    CINÉMA_SALLE_DE_PROJECTIONS = 'Cinéma - Salle de projections',
-    CINÉMA_ITINÉRANT = 'Cinéma itinérant',
+    CIN_MA_SALLE_DE_PROJECTIONS = 'Cinéma - Salle de projections',
+    CIN_MA_ITIN_RANT = 'Cinéma itinérant',
     COURS_ET_PRATIQUE_ARTISTIQUES = 'Cours et pratique artistiques',
     CULTURE_SCIENTIFIQUE = 'Culture scientifique',
     FESTIVAL = 'Festival',
-    JEUX_JEUX_VIDÉOS = 'Jeux / Jeux vidéos',
+    JEUX_JEUX_VID_OS = 'Jeux / Jeux vidéos',
     LIBRAIRIE = 'Librairie',
-    MAGASIN_ARTS_CRÉATIFS = 'Magasin arts créatifs',
+    MAGASIN_ARTS_CR_ATIFS = 'Magasin arts créatifs',
     MAGASIN_DE_DISTRIBUTION_DE_PRODUITS_CULTURELS = 'Magasin de distribution de produits culturels',
     MUSIQUE_DISQUAIRE = 'Musique - Disquaire',
-    'MUSIQUE_MAGASIN_D’INSTRUMENTS' = 'Musique - Magasin d’instruments',
+    MUSIQUE_MAGASIN_D_INSTRUMENTS = 'Musique - Magasin d’instruments',
     MUSIQUE_SALLE_DE_CONCERTS = 'Musique - Salle de concerts',
-    MUSÉE = 'Musée',
-    OFFRE_NUMÉRIQUE = 'Offre numérique',
+    MUS_E = 'Musée',
+    OFFRE_NUM_RIQUE = 'Offre numérique',
     PATRIMOINE_ET_TOURISME = 'Patrimoine et tourisme',
     SPECTACLE_VIVANT = 'Spectacle vivant'
 }
