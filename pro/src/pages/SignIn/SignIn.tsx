@@ -11,7 +11,6 @@ import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
-import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
@@ -20,6 +19,7 @@ import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 
+import { apiCall } from '../../commons/api/apiCall'
 import { SIGNIN_FORM_DEFAULT_VALUES } from './constants'
 import { SigninForm } from './SigninForm'
 import { validationSchema } from './validationSchema'
@@ -66,15 +66,16 @@ export const SignIn = (): JSX.Element => {
     const { email, password } = values
     try {
       const captchaToken = await getReCaptchaToken('loginUser')
-      const user = await apiNew.signin({
-        body: {
-          identifier: email,
-          password,
-          captchaToken,
-        },
-      })
+      const user = await apiCall(
+        apiNew.signin({
+          body: {
+            identifier: email,
+            password,
+            captchaToken,
+          },
+        })
+      )
 
-      assertOrFrontendError(user, '`user` is undefined.')
       await dispatch(initializeUser({ user })).unwrap()
 
       if (withSwitchVenueFeature) {
