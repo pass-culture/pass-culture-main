@@ -243,7 +243,7 @@ jobs:
           workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
 
       - name: "Connect to cluster"
-        uses: pass-culture/common-workflows/actions/pc-k8s-connect@pc-k8s-connect/v0.3.1
+        uses: pass-culture/common-workflows/actions/pc-k8s-connect@46bfbcb2f617bd3dcc034e974ef6ffbe6106d3cb # pc-k8s-connect/v0.3.1
         with:
           cluster_scope: ${{ inputs.cluster_scope }}
           cluster_environment: ${{ inputs.cluster_environment }}
