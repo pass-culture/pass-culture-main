@@ -51,6 +51,8 @@ class GetOfferConsultationCountTest:
     def test_get_offer_consultation_count(self):
         results = clickhouse_queries.OfferConsultationCountQuery().execute({"venue_id": 1})
 
-        assert len(results) == 1
+        assert len(results) == 2
         assert results[0].day == datetime.date(2026, 1, 1)
         assert results[0].views == 3456
+        assert results[1].day == datetime.date(2026, 1, 2)
+        assert results[1].views == 4567

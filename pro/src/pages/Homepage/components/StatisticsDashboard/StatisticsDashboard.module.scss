@@ -24,7 +24,7 @@
   grid-template-columns: 1fr;
 
   &.has-top-offers {
-    @media (min-width: size.$tablet) {
+    @media (min-width: size.$laptop) {
       grid-template-columns: 1fr rem.torem(230px);
     }
   }
