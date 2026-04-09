@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test'
+import { request as playwrightRequest } from '@playwright/test'
 import { addDays, format } from 'date-fns'
 import type { Response } from 'playwright-core'
 
@@ -17,6 +18,7 @@ import {
   expectCollectiveOffersAreFound,
   expectSuccessSnackbar,
 } from './helpers/assertions'
+import { setFeatureFlags } from './helpers/features'
 import {
   isGetCollectiveOffersBookableResponse,
   isGetCollectiveOffersTemplateResponse,
@@ -25,6 +27,7 @@ import {
   isGetVenuesReponse,
   isPostCollectiveStocksResponse,
 } from './helpers/requests'
+import { BASE_API_URL } from './helpers/sandbox'
 
 const newOfferName = 'Ma nouvelle offre collective créée'
 const otherVenueName = 'Mon Lieu B'
@@ -48,6 +51,12 @@ const commonOfferData = {
 
 test.describe('Create collective offers', () => {
   test.beforeEach(async ({ authenticatedPage: page }) => {
+    const requestContext = await playwrightRequest.newContext({
+      baseURL: BASE_API_URL,
+    })
+    await setFeatureFlags(requestContext, [
+      { name: 'WIP_SWITCH_VENUE', isActive: false },
+    ])
     await page.goto('/offre/creation')
     await mockAddressSearch(page)
   })

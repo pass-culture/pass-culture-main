@@ -1,12 +1,11 @@
+import { request as playwrightRequest } from '@playwright/test'
 import { addWeeks, format } from 'date-fns'
 
-import {
-  type CollectiveOffersUserData,
-  expect,
-  test,
-} from './fixtures/searchCollectiveOffer'
+import { expect, test } from './fixtures/searchCollectiveOffer'
 import { checkAccessibility } from './helpers/accessibility'
 import { expectCollectiveOffersAreFound } from './helpers/assertions'
+import { setFeatureFlags } from './helpers/features'
+import { BASE_API_URL, type CollectiveOffersUserData } from './helpers/sandbox'
 
 const INSTITUTION_NAME = 'COLLEGE 123'
 const FORMAT_NAME = 'Concert'
@@ -47,6 +46,12 @@ function getPublishedCollectiveOfferRow(
 
 test.describe('Search collective offers', () => {
   test.beforeEach(async ({ authenticatedPage: page }) => {
+    const requestContext = await playwrightRequest.newContext({
+      baseURL: BASE_API_URL,
+    })
+    await setFeatureFlags(requestContext, [
+      { name: 'WIP_SWITCH_VENUE', isActive: false },
+    ])
     await page.goto('/offres/collectives')
     await expect(page.getByTestId('spinner')).toHaveCount(0)
     await expect(page.getByText('Filtrer')).toBeVisible()

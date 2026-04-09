@@ -213,7 +213,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_OFFER_RECOMMENDATION_PRO,
     FeatureToggle.WIP_PRE_SIGNUP_SIMULATION,
     FeatureToggle.WIP_PRO_AUTONOMOUS_ANONYMIZATION,
-    FeatureToggle.WIP_SWITCH_VENUE,
     FeatureToggle.WIP_VOLUNTEERING,
     # Please keep alphabetic order
 )

@@ -1,10 +1,21 @@
+import { request as playwrightRequest } from '@playwright/test'
 import { addDays, format } from 'date-fns'
 
 import { expect, test } from './fixtures/searchIndividualOffer'
 import { checkAccessibility } from './helpers/accessibility'
 import { expectIndividualOffersOrBookingsAreFound } from './helpers/assertions'
+import { setFeatureFlags } from './helpers/features'
+import { BASE_API_URL } from './helpers/sandbox'
 
 test.describe('Search individual offers', () => {
+  test.beforeEach(async ({ authenticatedPage: page }) => {
+    const requestContext = await playwrightRequest.newContext({
+      baseURL: BASE_API_URL,
+    })
+    await setFeatureFlags(requestContext, [
+      { name: 'WIP_SWITCH_VENUE', isActive: false },
+    ])
+  })
   test('I should be able to search with a name and see expected results', async ({
     authenticatedPage: page,
     individualOffersUserData: userData,

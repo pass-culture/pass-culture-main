@@ -7,6 +7,7 @@ import {
 } from '@playwright/test'
 
 import { login } from '../helpers/auth'
+import { setFeatureFlags } from '../helpers/features'
 import { BASE_API_URL, sandboxCall } from '../helpers/sandbox'
 
 export interface ProUserWithCollectiveTemplateOffersResponse {
@@ -49,6 +50,9 @@ export const test = base.extend<{
       'GET',
       `${BASE_API_URL}/sandboxes/pro/create_pro_user_with_collective_offer_templates`
     )
+    await setFeatureFlags(requestContext, [
+      { name: 'WIP_SWITCH_VENUE', isActive: false },
+    ])
     await requestContext.dispose()
 
     const tempContext = await browser.newContext()

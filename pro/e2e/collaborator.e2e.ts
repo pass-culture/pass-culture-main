@@ -4,6 +4,7 @@ import { expect, request as playwrightRequest, test } from '@playwright/test'
 
 import { expectSuccessSnackbar } from './helpers/assertions'
 import { loginAndNavigate } from './helpers/auth'
+import { setFeatureFlags } from './helpers/features'
 import { BASE_API_URL, sandboxCall } from './helpers/sandbox'
 
 interface ProUserResponse {
@@ -32,6 +33,9 @@ test.describe('Collaborator list feature', () => {
       'GET',
       `${BASE_API_URL}/sandboxes/pro/create_regular_pro_user_already_onboarded`
     )
+    await setFeatureFlags(requestContext, [
+      { name: 'WIP_SWITCH_VENUE', isActive: false },
+    ])
     const userEmail = userData.user.email
 
     const clearResponse = await requestContext.fetch(
