@@ -907,22 +907,28 @@ def list_llm_offers() -> response_utils.BackofficeResponse:
             is_form_empty=is_form_empty,
         )
 
-    filters, warnings = advanced_search.generate_llm_search_dict(
-        search_parameters=form.search.data,
-        fields_definition=SEARCH_FIELD_TO_PYTHON,
-    )
-    for warning in warnings:
-        flash(escape(warning), "warning")
-
-    try:
-        responses = search_offers(payload=SearchOffersRequest(query=form.llm_search.data, filters=filters))
-        is_form_empty = False
-    except ExternalAPIException as e:
-        flash(
-            f"La recherche sémantique a rencontré un problème{', veuillez reéssayer plus tard' if e.is_retryable else ''}",
-            "warning",
+    responses = None
+    if not form.is_empty():
+        filters, warnings = advanced_search.generate_llm_search_dict(
+            search_parameters=form.search.data,
+            fields_definition=SEARCH_FIELD_TO_PYTHON,
         )
-        responses = None
+        for warning in warnings:
+            flash(escape(warning), "warning")
+
+        try:
+            responses = search_offers(
+                payload=SearchOffersRequest(
+                    query=form.llm_search.data or "",
+                    filters=filters,
+                )
+            )
+            is_form_empty = False
+        except ExternalAPIException as e:
+            flash(
+                f"La recherche sémantique a rencontré un problème{', veuillez reéssayer plus tard' if e.is_retryable else ''}",
+                "warning",
+            )
 
     offers_pertinence: dict[int, str] = {}
     if responses:

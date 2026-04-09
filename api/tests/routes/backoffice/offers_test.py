@@ -2277,6 +2277,26 @@ class ListLlmOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 0
 
+    def test_list_offers_by_query_with_empty_prompt(self, authenticated_client):
+        offers_factories.OfferFactory(name="hide")
+
+        query_args = {"llm_search": "", "limit": 100}
+
+        api_response = serialization.SearchOffersResponse(
+            results=[],
+        )
+
+        with patch(
+            "pcapi.core.external.compliance.backends.test.TestBackend.search_offers", return_value=api_response
+        ) as llm_mock:
+            with assert_num_queries(self.expected_num_queries_with_no_result):
+                response = authenticated_client.get(url_for(self.endpoint, **query_args))
+                assert response.status_code == 200
+            llm_mock.assert_not_called()
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 0
+
 
 class ValidateOfferTest(PostEndpointHelper):
     endpoint = "backoffice_web.offer.validate_offer"
