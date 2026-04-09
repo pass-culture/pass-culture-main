@@ -79,7 +79,7 @@
     "@biomejs/biome": "2.4.10",
     "@hey-api/openapi-ts": "0.94.5",
     "@hookform/devtools": "4.4.0",
-    "@playwright/test": "1.58.2",
+    "@playwright/test": "1.59.1",
     "@storybook/addon-a11y": "9.1.20",
     "@storybook/addon-docs": "9.1.20",
     "@storybook/react-vite": "9.1.20",
