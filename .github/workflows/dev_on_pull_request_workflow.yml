@@ -45,6 +45,32 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-tags: false
+      - name: Install passdirector
+        uses: ./.github/actions/setup-passdirector
+        with:
+          version: 53a863506809826cc6c48f5d5d3f3d62966dd620
+          github_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID}}
+          github_app_private_key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY}}
+      - name: Authentification to Google
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: Get Slack token secret
+        id: secrets
+        uses: google-github-actions/get-secretmanager-secrets@bc9c54b29fdffb8a47776820a7d26e77b379d262 # v3.0.0
+        with:
+          secrets: |-
+            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
+      - name: Test notification on with passdirector
+        shell: bash
+        env:
+          CHANNEL: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
+          MESSAGE: ":tada: Test de la commande `passdirector slack post`"
+          GITHUB_ACTOR: ${{github.actor}}
+          PASSDIRECTOR_SLACK_BOT_TOKEN: ${{steps.secrets.outputs.SLACK_BOT_TOKEN}}
+        run: |
+          passdirector slack post -c "${CHANNEL}" -m "${MESSAGE}" -a "${GITHUB_ACTOR}"
       - name: "Run actionlint"
         uses: pass-culture/common-workflows/actions/actionlint-check@b2eaf34df9945c76e68cffc6e4bf27037f6ea21a # actionlint/v0.2
       - name: "Check api folder changes"
@@ -185,7 +211,6 @@ jobs:
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-
 
   test-api-documentation:
     name: "Tests API documentation"

@@ -221,7 +221,7 @@ jobs:
     steps:
       - name: Checkout ref
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        
+
       - name: Configure git author
         run: |
           git config --global user.email "$GIT_CONFIG_EMAIL"
