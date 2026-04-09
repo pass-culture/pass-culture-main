@@ -1,4 +1,4 @@
-import { useFormContext } from 'react-hook-form'
+import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import { ArtistType } from '@/apiClient/v1'
 import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
@@ -47,10 +47,16 @@ export const DetailsSubForm = ({
   readOnlyFields,
 }: DetailsSubFormProps) => {
   const {
+    control,
     register,
     watch,
     formState: { errors },
   } = useFormContext<DetailsFormValues>()
+
+  const artistFieldArray = useFieldArray({
+    control,
+    name: 'artistOfferLinks',
+  })
 
   const categoryId = watch('categoryId')
   const showType = watch('showType')
@@ -178,6 +184,7 @@ export const DetailsSubForm = ({
                     <ArtistField
                       readOnly={readOnlyFields.includes('author')}
                       artistType={ArtistType.AUTHOR}
+                      fieldArray={artistFieldArray}
                     />
                   )}
                 {subcategoryConditionalFields.includes('visa') && (
@@ -204,6 +211,7 @@ export const DetailsSubForm = ({
                     <ArtistField
                       readOnly={readOnlyFields.includes('stageDirector')}
                       artistType={ArtistType.STAGE_DIRECTOR}
+                      fieldArray={artistFieldArray}
                     />
                   )}
                 {subcategoryConditionalFields.includes('performer') &&
@@ -221,6 +229,7 @@ export const DetailsSubForm = ({
                     <ArtistField
                       readOnly={readOnlyFields.includes('performer')}
                       artistType={ArtistType.PERFORMER}
+                      fieldArray={artistFieldArray}
                     />
                   )}
                 {displayEanField && (
