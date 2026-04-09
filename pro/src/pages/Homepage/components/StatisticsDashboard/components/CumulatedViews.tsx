@@ -28,6 +28,7 @@ import { CumulatedViewsEmptyState } from './CumulatedViewsEmptyState'
 export interface CumulatedViewsProps {
   dailyViews: VenueDailyViewModel[]
   totalViewsLast30Days: number
+  showTitle?: boolean
 }
 
 type XYPoint = { x: string; y: number }
@@ -45,6 +46,7 @@ Chart.register(
 export const CumulatedViews = ({
   dailyViews,
   totalViewsLast30Days,
+  showTitle = true,
 }: CumulatedViewsProps) => {
   const chartRef = useRef<ChartJS<'line', XYPoint[], unknown> | null>(null)
 
@@ -113,9 +115,11 @@ export const CumulatedViews = ({
   return (
     <div className={styles['cumulated-views']}>
       <div className={styles['header']}>
-        <h3 className={styles['block-title']}>
-          Les statistiques sur l’individuel
-        </h3>
+        {showTitle && (
+          <h3 className={styles['block-title']}>
+            Les statistiques sur l'individuel
+          </h3>
+        )}
         <span className={styles['total-views']}>
           Vos offres individuelles ont été vues{' '}
           {totalViewsLast30Days.toLocaleString('fr-FR')} fois ces 30 derniers

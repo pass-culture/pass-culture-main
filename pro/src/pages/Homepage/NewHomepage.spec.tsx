@@ -46,6 +46,10 @@ vi.mock('./components/NewsletterCard/NewsletterCard', () => ({
   NewsletterCard: () => <div>Newsletter</div>,
 }))
 
+vi.mock('./components/StatsCard/StatsCard', () => ({
+  StatsCard: () => <div>Les statistiques sur l'individuel</div>,
+}))
+
 vi.mock('./components/OffersEmptyStateCard/OffersEmptyStateCard', () => ({
   OffersEmptyStateCard: ({ variant }: { variant: OffersCardVariant }) => {
     const variantText = variant === 'INDIVIDUAL' ? 'individuelle' : 'collective'
@@ -401,7 +405,7 @@ describe('NewHomepage', () => {
 
       expect(
         screen.getByRole('tabpanel', { description: /indiv/ })
-      ).toHaveTextContent(/Evolution de consultation de vos offres/)
+      ).toHaveTextContent(/Les statistiques sur l'individuel/)
 
       expect(
         screen.getByRole('tabpanel', { description: /indiv/ })

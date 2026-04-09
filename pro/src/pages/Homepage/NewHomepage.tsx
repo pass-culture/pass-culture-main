@@ -34,6 +34,7 @@ import { IndividualOffersCard } from './components/IndividualOffersCard/Individu
 import { NewsletterCard } from './components/NewsletterCard/NewsletterCard'
 import { OffersEmptyStateCard } from './components/OffersEmptyStateCard/OffersEmptyStateCard'
 import { PartnerPageCard } from './components/PartnerPageCard/PartnerPageCard'
+import { StatsCard } from './components/StatsCard/StatsCard'
 import { HomepageVariant } from './components/types'
 import { VenueValidationBanner } from './components/VenueValidationBanner/VenueValidationBanner'
 import { WebinarCard } from './components/WebinarCard/WebinarCard'
@@ -153,11 +154,7 @@ export const NewHomepage = (): JSX.Element => {
                 selectedPartnerVenue.location?.departmentCode
               }
             />
-            <div>
-              Evolution de consultation de vos offres
-              <br />
-              <b>Module statistiques</b>
-            </div>
+            <StatsCard venue={selectedPartnerVenue} />
             <EditoCard
               canDisplayHighlights={selectedPartnerVenue.canDisplayHighlights}
               venueId={selectedPartnerVenue.id}

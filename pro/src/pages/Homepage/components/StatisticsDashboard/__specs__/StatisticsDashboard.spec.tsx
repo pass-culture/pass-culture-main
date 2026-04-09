@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
@@ -58,7 +58,10 @@ describe('StatisticsDashboard', () => {
   it('should not render most viewed offers if there are none', async () => {
     vi.spyOn(api, 'getVenueOffersStats').mockResolvedValue({
       jsonData: {
-        dailyViews: [{ day: '2020-10-10', views: 10 }],
+        dailyViews: [
+          { day: '2020-10-10', views: 10 },
+          { day: '2020-10-11', views: 20 },
+        ],
         topOffers: [],
         totalViewsLast30Days: 0,
       },
@@ -67,11 +70,13 @@ describe('StatisticsDashboard', () => {
 
     renderStatisticsDashboard()
 
-    expect(
-      await screen.findByRole('heading', {
-        name: /Les statistiques sur l’individuel/,
-      })
-    ).toBeInTheDocument()
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', {
+          name: /Les statistiques sur l'individuel/,
+        })
+      ).toBeInTheDocument()
+    })
     expect(
       screen.queryByText('Vos offres les plus consultées')
     ).not.toBeInTheDocument()

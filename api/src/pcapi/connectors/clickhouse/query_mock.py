@@ -130,6 +130,7 @@ class MockOfferConsultationCountQueryResult:
 
 OFFER_CONSULTATION_COUNT = [
     MockOfferConsultationCountQueryResult(day=datetime.date(2026, 1, 1), views=3456),
+    MockOfferConsultationCountQueryResult(day=datetime.date(2026, 1, 2), views=4567),
 ]
 
 
