@@ -56,9 +56,8 @@ def log_and_handle_ubble_response(
                 return ubble_function(*args, **kwargs)
             except requests.exceptions.HTTPError as e:
                 response = e.response
-                logger.error(
-                    f"Ubble %s error: {response.status_code}",
-                    request_type,
+                logger.warning(
+                    "Ubble error",
                     extra={
                         "alert": "Ubble error",
                         "error_type": "http",
@@ -286,16 +285,16 @@ def download_ubble_picture(http_url: pydantic_networks.HttpUrl) -> tuple[str | N
         raise requests.ExternalAPIException(is_retryable=True)
 
     if response.status_code == 403:
-        logger.error(
+        logger.warning(
             "Ubble picture-download: request has expired",
             extra={"url": str(http_url), "status_code": response.status_code},
         )
         raise UbbleAssetExpiredError("Asset has expired. It needs to be refetched before archiving.")
 
     if response.status_code != 200:
-        logger.error(
-            f"Ubble picture-download: unexpected error: {response.status_code}",
-            extra={"url": str(http_url)},
+        logger.warning(
+            "Ubble picture-download: unexpected error",
+            extra={"url": str(http_url), "status_code": response.status_code},
         )
         raise requests.ExternalAPIException(is_retryable=False)
 

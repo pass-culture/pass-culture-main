@@ -1053,7 +1053,7 @@ class DownloadUbbleDocumentPictureTest:
 
         # Then
         record = caplog.records[0]
-        assert record.levelname == "ERROR"
+        assert record.levelname == "WARNING"
         assert record.message == "Ubble picture-download: request has expired"
         assert self.picture_path in record.extra["url"]
 

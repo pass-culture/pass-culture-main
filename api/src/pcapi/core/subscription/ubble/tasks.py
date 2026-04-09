@@ -45,7 +45,7 @@ def update_ubble_workflow_task(payload: ubble_schemas.UpdateWorkflowPayload) -> 
         ubble_api.update_ubble_workflow(fraud_check)
 
     if fraud_check.status == subscription_models.FraudCheckStatus.PENDING:
-        logger.error(
+        logger.warning(
             "Pending ubble application still pending after 12 hours. This is a problem on the Ubble side.",
             extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId},
         )
