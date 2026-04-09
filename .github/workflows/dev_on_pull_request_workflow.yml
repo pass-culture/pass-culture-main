@@ -157,9 +157,7 @@ jobs:
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
       api-changed: ${{ needs.pcapi-init-job.outputs.api-changed }}
       dependencies-changed: ${{ needs.pcapi-init-job.outputs.dependencies-changed }}
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    secrets: inherit
 
   test-api:
     name: "Tests api"
@@ -170,9 +168,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_tests_api.yml
     with:
       tag: ${{ github.sha }}
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    secrets: inherit
 
   test-api-script:
     name: "Tests api scripts"
@@ -182,10 +178,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_tests_api_scripts.yml
     with:
       tag: ${{ github.sha }}
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-
+    secrets: inherit
 
   test-api-documentation:
     name: "Tests API documentation"
@@ -194,9 +187,7 @@ jobs:
       needs.pcapi-init-job.outputs.api-documentation-changed == 'true' ||
       needs.pcapi-init-job.outputs.github-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_tests_api_documentation.yml
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    secrets: inherit
 
   test-pro:
     name: "Pro Unit Tests"
@@ -207,9 +198,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_tests_pro.yml
     with:
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+    secrets: inherit
 
   test-pro-e2e:
     name: "Pro E2E Tests"
@@ -224,9 +213,7 @@ jobs:
       ENV: "development"
       tag: ${{ needs.build-pcapi-tests.result == 'skipped' && 'latest' || github.sha }}
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+    secrets: inherit
 
   dependabot-auto-merge:
     name: "Dependabot"
@@ -237,6 +224,4 @@ jobs:
       !cancelled() &&
       !failure()
     uses: ./.github/workflows/dev_on_workflow_dependabot_auto_merge.yml
-    secrets:
-      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
-      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+    secrets: inherit

@@ -5,49 +5,27 @@ name: "3 [on_workflow] Ping data team on slack"
 on:
   workflow_call:
     secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
-        required: true
-      GCP_EHP_SERVICE_ACCOUNT:
-        required: true
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: { required: true }
+      GCP_EHP_SERVICE_ACCOUNT: { required: true }
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: { required: true }
+      PASSCULTURE_GITHUB_ACTION_APP_ID: { required: true }
+      SLACK_BOT_TOKEN: { required: true }
 
 jobs:
-  slack-notification:
-    name: 'Send slack notification'
+  pr-info:
+    name: Retrieve pull request informations
     runs-on: ubuntu-22.04
+    outputs:
+      pr_url: ${{ steps.pr.outputs.url }}
+      pr_title: ${{ steps.pr.outputs.title }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - name: 'Authentification to Google'
-        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: 'Get Secret'
-        id: 'secrets'
-        uses: google-github-actions/get-secretmanager-secrets@bc9c54b29fdffb8a47776820a7d26e77b379d262 # v3.0.0
-        with:
-          secrets: |-
-            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
-      - name: "Retrieve pull request informations"
+      - uses: pass-culture-github-actions/pull-request@e858f4a1b944d91cd040811b24631694c8117d7c # v1.0.0
         id: "pr"
-        uses: pass-culture-github-actions/pull-request@e858f4a1b944d91cd040811b24631694c8117d7c # v1.0.0
-      - name: "Slack Notification"
-        uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2.1.1
-        with:
-          method: chat.postMessage
-          token: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
-          payload: |
-            channel: ${{ vars.SLACK_DB_CHANGES_CHANNEL_ID }}
-            attachments:
-              - color: "#008080"  # teal
-                blocks:
-                  - type: "context"
-                    elements:
-                      - type: "image"
-                        image_url: "https://github.com/${{github.actor}}.png"
-                        alt_text: "image de profil Github de ${{github.actor}}"
-                      - type: "mrkdwn"
-                        text: "*${{github.actor}}*"
-                  - type: "section"
-                    text:
-                      type: "mrkdwn"
-                      text: "<${{ steps.pr.outputs.url }}|Pull Request base de données> : ${{ steps.pr.outputs.title }}"
+
+  slack-notification:
+    needs: pr-info
+    uses: ./.github/workflows/slack_post_message_workflow.yml
+    with:
+      message: "<${{ needs.pr-info.outputs.pr_url }}|Pull Request base de données> : ${{ needs.pr-info.outputs.pr_title }}"
+    secrets: inherit
