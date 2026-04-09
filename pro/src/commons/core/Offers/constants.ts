@@ -53,7 +53,6 @@ export const OFFER_STATUS_SOLD_OUT = OfferStatus.SOLD_OUT
 const ALL_OFFERS = ''
 const ALL_VENUES = 'all'
 export const ALL_OFFERER_ADDRESSES = 'all'
-export const ALL_OFFERERS = 'all'
 const ALL_CATEGORIES = 'all'
 export const ALL_FORMATS = 'all'
 export const ALL_STATUS = 'all'

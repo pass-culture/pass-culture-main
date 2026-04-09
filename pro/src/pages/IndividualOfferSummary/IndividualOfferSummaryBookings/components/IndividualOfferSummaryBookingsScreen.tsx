@@ -44,10 +44,11 @@ export const IndividualOfferSummaryBookingsScreen = ({
   )
 
   const { data: bookings, isLoading: bookingsIsLoading } = useSWR(
-    [GET_BOOKINGS_QUERY_KEY],
+    [GET_BOOKINGS_QUERY_KEY, offer.id],
     async () => {
       const { bookings } = await getFilteredIndividualBookingsAdapter({
         ...DEFAULT_PRE_FILTERS,
+        offererId: String(offer.venue.managingOfferer.id),
         offerId: String(offer.id),
         bookingBeginningDate: '2015-01-01',
         bookingEndingDate: format(new Date(), FORMAT_ISO_DATE_ONLY),
