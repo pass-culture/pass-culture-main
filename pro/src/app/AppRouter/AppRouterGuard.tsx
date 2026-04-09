@@ -3,6 +3,7 @@ import { Navigate, useLocation, useSearchParams } from 'react-router'
 
 import { findCurrentRoute } from '@/app/AppRouter/findCurrentRoute'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { COOKIES } from '@/commons/utils/localStorageManager'
 
 type AppRouterGuardProps = {
   children: ReactNode
@@ -53,6 +54,7 @@ export const AppRouterGuard = memo(({ children }: AppRouterGuardProps) => {
       return <Navigate to="/rattachement-en-cours" replace />
     } else if (
       userAccess === 'no-onboarding' &&
+      !document.cookie.includes(COOKIES.DID_SKIP_ONBOARDING) &&
       !currentRoute?.meta?.onboardingOnly &&
       !currentRoute?.meta?.canBeOnboarding &&
       !location.pathname.startsWith('/inscription')

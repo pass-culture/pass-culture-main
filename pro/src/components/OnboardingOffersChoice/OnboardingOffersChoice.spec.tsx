@@ -10,6 +10,11 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { OnboardingOffersChoice } from './OnboardingOffersChoice'
 
 const mockLogEvent = vi.fn()
+const mockNavigate = vi.fn()
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual('react-router')),
+  useNavigate: () => mockNavigate,
+}))
 
 describe('OnboardingOffersChoice Component', () => {
   beforeEach(() => {
@@ -82,5 +87,12 @@ describe('OnboardingOffersChoice Component', () => {
         )
       })
     })
+  })
+
+  it('should handle skip link', async () => {
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Je le ferai plus tard' })
+    )
+    expect(mockNavigate).toHaveBeenCalledWith('/accueil')
   })
 })
