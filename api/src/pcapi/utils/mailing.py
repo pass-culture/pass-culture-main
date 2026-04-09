@@ -15,7 +15,11 @@ def build_pc_pro_reset_password_link(token_value: str) -> str:
 
 
 def get_collective_datetimes(collective_stock: CollectiveStock) -> tuple[datetime, datetime]:
-    department_code = collective_stock.collectiveOffer.venue.offererAddress.address.departmentCode
+    offer = collective_stock.collectiveOffer
+    if offer.offererAddress is not None:
+        department_code = offer.offererAddress.address.departmentCode
+    else:
+        department_code = collective_stock.collectiveOffer.venue.offererAddress.address.departmentCode
 
     return (
         utc_datetime_to_department_timezone(collective_stock.startDatetime, department_code),
