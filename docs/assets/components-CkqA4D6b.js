@@ -1,0 +1,1 @@
+import{P as e}from"./components-SzoxAg2-.js";export{e as createCopyToClipboardFunction};
