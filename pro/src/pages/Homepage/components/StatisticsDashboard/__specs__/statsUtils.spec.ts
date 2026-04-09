@@ -1,3 +1,4 @@
+import type { LinearScaleOptions, TooltipItem } from 'chart.js'
 import { describe, expect, it } from 'vitest'
 
 import {
@@ -16,20 +17,48 @@ describe('buildDatasets', () => {
     const result = buildDatasets(recentViews)
 
     expect(result.datasets[0].data).toEqual([
-      { x: new Date('2023-01-01'), y: 100 },
-      { x: new Date('2023-02-01'), y: 200 },
+      { x: '2023-01-01', y: 100 },
+      { x: '2023-02-01', y: 200 },
     ])
   })
 })
 
 describe('buildGraphOptions', () => {
   it('should return the correct graph options', () => {
-    const stepSize = 100
-    const firstMonth = 'janvier'
+    const stepSizeExpected = 100
+    const result = buildGraphOptions(stepSizeExpected, 'janvier')
 
-    const result = buildGraphOptions(stepSize, firstMonth)
+    const yAxis = result.scales?.y as LinearScaleOptions
 
-    expect(result.scales.y.ticks.stepSize).toBe(stepSize)
+    expect(yAxis?.ticks?.stepSize).toBe(stepSizeExpected)
+  })
+  it('should format the tooltip title correctly in French', () => {
+    const result = buildGraphOptions(100, 'janvier')
+    const titleCallback = result.plugins?.tooltip?.callbacks?.title as any
+
+    const mockTooltipItem = {
+      parsed: {
+        x: 1711584000000,
+      },
+    } as TooltipItem<'line'>
+
+    const formattedDate = titleCallback.call({} as any, [mockTooltipItem])
+
+    expect(formattedDate).toBe('28 mars 2024')
+  })
+  it('should not return anything in the tooltip if x axis is empty', () => {
+    const result = buildGraphOptions(100, 'janvier')
+    const titleCallback = result.plugins?.tooltip?.callbacks?.title as any
+
+    const mockTooltipItem = {
+      parsed: {
+        x: null,
+      },
+    } as TooltipItem<'line'>
+
+    const formattedDate = titleCallback.call({} as any, [mockTooltipItem])
+
+    expect(formattedDate).toBe('')
   })
 })
 
