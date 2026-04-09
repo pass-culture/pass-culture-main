@@ -176,7 +176,6 @@ class Returns200Test:
             "openingHours": opening_hours_api.format_opening_hours(venue.openingHours),
             "publicName": venue.publicName,
             "siret": venue.siret,
-            "venueType": {"label": "PERFORMING_ARTS", "value": "PERFORMING_ARTS"},
             "visualDisabilityCompliant": venue.visualDisabilityCompliant,
             "withdrawalDetails": None,
             "bannerUrl": venue.bannerUrl,

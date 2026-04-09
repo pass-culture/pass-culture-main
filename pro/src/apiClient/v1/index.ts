@@ -291,8 +291,6 @@ export type { VenueProviderResponse } from './models/VenueProviderResponse';
 export type { VenuesEducationalStatusesResponseModel } from './models/VenuesEducationalStatusesResponseModel';
 export type { VenuesEducationalStatusResponseModel } from './models/VenuesEducationalStatusResponseModel';
 export type { VenueStatsDataModel } from './models/VenueStatsDataModel';
-export { VenueTypeCode } from './models/VenueTypeCode';
-export type { VenueTypeResponseModelV2 } from './models/VenueTypeResponseModelV2';
 export type { VideoData } from './models/VideoData';
 export type { VideoMetatdataQueryModel } from './models/VideoMetatdataQueryModel';
 export type { VisualDisabilityModel } from './models/VisualDisabilityModel';

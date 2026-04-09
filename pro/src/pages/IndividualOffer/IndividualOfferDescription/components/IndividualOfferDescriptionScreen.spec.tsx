@@ -10,9 +10,8 @@ import {
   OfferStatus,
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
-  VenueTypeCode,
 } from '@/apiClient/v1'
-import type { DisplayableActivity } from '@/apiClient/v1/new'
+import { DisplayableActivity } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
@@ -780,7 +779,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
           props: {
             venues: [
               venueListItemFactory({
-                venueTypeCode: VenueTypeCode.FESTIVAL,
+                activity: DisplayableActivity.FESTIVAL,
               }),
             ],
           },

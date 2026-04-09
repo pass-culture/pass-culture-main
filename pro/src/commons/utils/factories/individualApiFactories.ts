@@ -26,7 +26,6 @@ import {
   type SubcategoryResponseModel,
   type VenueListItemResponseModel,
   type VenueProviderResponse,
-  type VenueTypeCode,
 } from '@/apiClient/v1'
 import { DisplayableActivity } from '@/apiClient/v1/new'
 import type { IndividualOfferContextValues } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -249,10 +248,6 @@ export const venueListItemFactory = (
   const offererId = customVenueListItem.managingOffererId ?? 1
   const offererName =
     customVenueListItem.offererName ?? 'la structure de Michel'
-  // Auto-generated `VenueTypeCode` enum is completely wrong:
-  // real keys are those declared in api/src/pcapi/core/offerers/schemas.py
-  const venueTypeCode =
-    customVenueListItem.venueTypeCode ?? ('OTHER' as VenueTypeCode)
 
   return {
     id,
@@ -276,7 +271,6 @@ export const venueListItemFactory = (
     offererName,
     publicName: `Nom public de la structure ${id}`,
     siret: null,
-    venueTypeCode,
     visualDisabilityCompliant: true,
     withdrawalDetails: null,
     ...customVenueListItem,
@@ -289,9 +283,6 @@ export const makeVenueListItem = <
 ): Omit<VenueListItemResponseModel, keyof T> & T => {
   const offererId = override.managingOffererId ?? 1
   const offererName = override.offererName ?? `Entité ${offererId}`
-  // Auto-generated `VenueTypeCode` enum is completely wrong:
-  // real keys are those declared in api/src/pcapi/core/offerers/schemas.py
-  const venueTypeCode = override.venueTypeCode ?? ('OTHER' as VenueTypeCode)
 
   const fake: VenueListItemResponseModel = {
     id: override.id,
@@ -315,7 +306,6 @@ export const makeVenueListItem = <
     offererName,
     publicName: `Nom public de la structure ${override.id}`,
     siret: null,
-    venueTypeCode,
     visualDisabilityCompliant: false,
     withdrawalDetails: null,
   }
@@ -525,7 +515,6 @@ export const defaultGetVenueResponseModel: GetVenueResponseModel = {
   canDisplayHighlights: true,
   hasNonDraftOffers: true,
   volunteeringUrl: null,
-  venueType: { label: '', value: '' },
 }
 
 export const defaultGetBookingResponse: GetBookingResponse = {
