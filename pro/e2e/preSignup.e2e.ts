@@ -101,8 +101,6 @@ test.describe('Pre signup pages', () => {
     ).toBeVisible()
   })
 
-  /* Will be used in PC-40910
-
   test('Navigate with WIP_PRE_SIGNUP_SIMULATION', async ({ page }) => {
     await page.context().addCookies([
       {
@@ -170,5 +168,5 @@ test.describe('Pre signup pages', () => {
         name: 'Créez votre compte',
       })
     ).toBeVisible()
-  })*/
+  })
 })
