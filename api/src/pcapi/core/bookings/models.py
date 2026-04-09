@@ -250,6 +250,7 @@ class Booking(PcObject, Model):
         sa.Index(
             "ix_booking_cancellation_reason", cancellationReason, postgresql_where=cancellationReason.is_not(None)
         ),
+        sa.Index("ix_booking_venueId_dateCreated", venueId, dateCreated),
     )
 
     def mark_as_used(self, validation_author_type: BookingValidationAuthorType) -> None:

@@ -3769,8 +3769,8 @@ class DownloadBookingsCSVTest(GetEndpointHelper):
     endpoint_kwargs = {"offer_id": 1, "stock_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # session + bookings
-    expected_num_queries = 2
+    # session + fetch offer + bookings
+    expected_num_queries = 3
 
     def test_download_bookings_csv(self, legit_user, authenticated_client):
         offerer = offerers_factories.UserOffererFactory().offerer  # because of join on UserOfferers
@@ -3794,8 +3794,8 @@ class DownloadBookingsXLSXTest(GetEndpointHelper):
     endpoint_kwargs = {"offer_id": 1, "stock_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # session + bookings
-    expected_num_queries = 2
+    # session + fetch offer + bookings
+    expected_num_queries = 3
 
     def reader_from_response(self, response):
         wb = openpyxl.load_workbook(BytesIO(response.data))
