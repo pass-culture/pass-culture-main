@@ -63,7 +63,7 @@ jobs:
         image: [pcapi, pcapi-console]
     with:
       image: ${{ matrix.image }}
-      tag: ${{ github.sha }}
+      tag: ${{ inputs.tag_number }}
       environment: pcapi-tst
       tag_latest: true
     secrets:
