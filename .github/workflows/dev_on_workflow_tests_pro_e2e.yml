@@ -17,10 +17,11 @@ on:
         type: string
         required: true
     secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
-        required: true
-      GCP_EHP_SERVICE_ACCOUNT:
-        required: true
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: { required: true }
+      GCP_EHP_SERVICE_ACCOUNT: { required: true }
+      SLACK_BOT_TOKEN: { required: true }
+      PASSCULTURE_GITHUB_ACTION_APP_ID: { required: true }
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: { required: true }
 
 defaults:
   run:
@@ -277,16 +278,11 @@ jobs:
           path: pro/playwright-report
           retention-days: 14
 
-
   notify-playwright-failure:
     name: "Notification of Playwright tests failure"
     needs: playwright-run
     if: always() && needs.playwright-run.result == 'failure' && github.ref == 'refs/heads/master'
-    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    uses: ./.github/workflows/slack_post_message_workflow.yml
     with:
-      channel: ${{vars.SLACK_CI_NOTIFICATIONS_CHANNEL_ID}}
-      color: "#A30002"
       message: ":github-failure: <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|Pro Playwright E2E Tests> a échoué sur `master`"
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    secrets: inherit

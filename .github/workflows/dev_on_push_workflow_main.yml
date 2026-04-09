@@ -138,18 +138,14 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_tests_api.yml
     with:
       tag: ${{ needs.build-pcapi-tests.result == 'skipped' && 'latest' || github.sha }}
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    secrets: inherit
 
   test-api-documentation:
     name: "Tests API documentation"
     needs: [pcapi-init-job]
     if: needs.pcapi-init-job.outputs.api-documentation-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_tests_api_documentation.yml
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    secrets: inherit
 
   test-pro:
     name: "Pro Unit Tests"
@@ -158,9 +154,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_tests_pro.yml
     with:
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+    secrets: inherit
 
   test-pro-e2e:
     name: "Pro E2E Tests"
@@ -174,9 +168,7 @@ jobs:
       ENV: "development"
       tag: ${{ needs.build-pcapi-tests.result == 'skipped' && 'latest' || github.sha }}
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+    secrets: inherit
 
   deploy-storybook:
     name: "Deploy Storybook"
@@ -192,9 +184,7 @@ jobs:
       github.ref == 'refs/heads/master' &&
       needs.check-folders-changes.outputs.maintenance-site-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_deploy_maintenance_site.yml
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    secrets: inherit
 
   ping-data-team-on-slack:
     name: "Ping data team on slack"
@@ -204,9 +194,7 @@ jobs:
       github.ref == 'refs/heads/master' &&
       needs.check-folders-changes.outputs.db-migrations-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_ping_data_team.yml
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    secrets: inherit
 
   tag-rc:
     runs-on: ubuntu-latest
@@ -221,7 +209,7 @@ jobs:
     steps:
       - name: Checkout ref
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        
+
       - name: Configure git author
         run: |
           git config --global user.email "$GIT_CONFIG_EMAIL"

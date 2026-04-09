@@ -6,12 +6,11 @@ on:
       doc-api-entrypoint:
         type: string
         required: false
-        default: 'api/documentation'
+        default: "api/documentation"
     secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
-        required: true
-      GCP_EHP_SERVICE_ACCOUNT:
-        required: true
+      SLACK_BOT_TOKEN: { required: true }
+      PASSCULTURE_GITHUB_ACTION_APP_ID: { required: true }
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: { required: true }
 
 env:
   registry: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry
@@ -31,7 +30,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version-file: '${{ inputs.doc-api-entrypoint }}/package.json'
+          node-version-file: "${{ inputs.doc-api-entrypoint }}/package.json"
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
       - name: "Build documentation"
         run: |
@@ -40,18 +39,13 @@ jobs:
           npm run build
         env:
           ENV: ci-tests
-        working-directory: '${{ inputs.doc-api-entrypoint }}'
+        working-directory: "${{ inputs.doc-api-entrypoint }}"
 
   end-slack-failure-notification:
-    name: "Send workflow end failure"
+    name: Send workflow end failure
     needs: api-documentation-build-checks
     if: always() && (failure() || cancelled())
-    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    uses: ./.github/workflows/slack_post_message_workflow.yml
     with:
-      channel: ${{vars.SLACK_CI_NOTIFICATIONS_CHANNEL_ID}}
-      color: "#A30002"  # red
-      message:
-        ':github-failure: :github-failure: Les tests api-documentation-build-checks échouent sur `master`'
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      message: ":github-failure: :github-failure: Les tests api-documentation-build-checks échouent sur `master`"
+    secrets: inherit

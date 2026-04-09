@@ -11,10 +11,11 @@ on:
         type: string
         required: true
     secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
-        required: true
-      GCP_EHP_SERVICE_ACCOUNT:
-        required: true
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: { required: true }
+      GCP_EHP_SERVICE_ACCOUNT: { required: true }
+      SLACK_BOT_TOKEN: { required: true }
+      PASSCULTURE_GITHUB_ACTION_APP_ID: { required: true }
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: { required: true }
 
 defaults:
   run:
@@ -287,7 +288,6 @@ jobs:
               exit $status_code
             '
 
-
   restore-test-durations:
     name: Restore pytest durations
     runs-on: ubuntu-latest
@@ -550,11 +550,7 @@ jobs:
     name: "Notification of any check failure"
     needs: [quality-checks, ruff-checks, tests-database, pytest]
     if: always() && github.ref == 'refs/heads/master' && contains(needs.*.result, 'failure')
-    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    uses: ./.github/workflows/slack_post_message_workflow.yml
     with:
-      channel: ${{vars.SLACK_CI_NOTIFICATIONS_CHANNEL_ID}}
-      color: "#A30002"  # red
       message: ":github-failure: <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|Tests api> a échoué sur `master`"
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+    secrets: inherit

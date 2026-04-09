@@ -34,16 +34,13 @@ jobs:
           fi
 
   ask-for-review-on-slack:
-    name: "Ask for deployment review on Slack"
+    name: Ask for deployment review on Slack
     needs: check-workflow-ref
-    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    uses: ./.github/workflows/slack_post_message_workflow.yml
     with:
       channel: ${{ vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID }}
-      color: "#D4AD3B" # yellow
       message: ":github-pending: Un <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `${{ github.ref_name }}` a été demandé sur `${{ inputs.target_environment }}`"
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+    secrets: inherit
 
   environment-short-name:
     name: "Environment short name"
@@ -88,16 +85,12 @@ jobs:
   deployment-confirmed:
     name: "Update message with deployment confirmation"
     needs: [ask-for-review-on-slack, version]
-    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    uses: ./.github/workflows/slack_update_message_workflow.yml
     with:
       channel: ${{ vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID }}
-      method: update
-      message-ts: ${{ needs.ask-for-review-on-slack.outputs.posted_message_ts }}
-      color: "#28A745" # green
+      message-ts: ${{ needs.ask-for-review-on-slack.outputs.message-ts }}
       message: ":rocket: Un <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `${{ github.ref_name }}` a été approuvé sur `${{ inputs.target_environment }}`"
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+    secrets: inherit
 
   # DELETE THIS : mgeoffray 2025-09-04
   # As soon as we are confident in our staging automatic deployments
@@ -132,12 +125,12 @@ jobs:
 
   deploy-integration:
     name: "Deploy on integration environment"
-    needs: 
+    needs:
       - version
     if: inputs.target_environment == 'production'
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
-      environment: integration 
+      environment: integration
       environment_short_name: int
       app_version: ${{ needs.version.outputs.APP_VERSION }}
       workflow_cluster_name: gke-infra-prd-eu9
@@ -159,7 +152,7 @@ jobs:
 
   deploy-production:
     name: "Deploy on production environment"
-    needs: 
+    needs:
       - version
     if: inputs.target_environment == 'production'
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
@@ -208,14 +201,11 @@ jobs:
       - deploy-production
       - deploy-ehp
     if: always() && !failure() && !cancelled()
-    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    uses: ./.github/workflows/slack_post_message_workflow.yml
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
-      color: "#28A745" # green
       message: ":github-success: La version `v${{ needs.version.outputs.APP_VERSION }}` a été <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|déployée> sur `${{ inputs.target_environment }}`"
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+    secrets: inherit
 
   end-slack-failure-notification:
     name: "Send workflow failure notification"
@@ -224,11 +214,8 @@ jobs:
       - deploy-production
       - deploy-ehp
     if: always() && (failure() || cancelled())
-    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    uses: ./.github/workflows/slack_post_message_workflow.yml
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
-      color: "#A30002" # red
       message: ":github-failure:Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|déploiement> de la version `v${{ needs.version.outputs.APP_VERSION }}` a échoué sur `${{ inputs.target_environment }}`"
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+    secrets: inherit
