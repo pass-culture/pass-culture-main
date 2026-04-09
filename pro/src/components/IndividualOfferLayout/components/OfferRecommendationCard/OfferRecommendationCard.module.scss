@@ -10,7 +10,7 @@
   border-radius: var(--size-border-radius-m);
   background: var(--color-background-decorative01);
   min-width: 100%;
-  
+
   @media (min-width: size.$laptop) {
     min-width: rem.torem(346px);
     max-width: rem.torem(346px);
@@ -42,20 +42,23 @@
   }
 
   &-recommendation {
-     @include fonts.body-italic;
+    @include fonts.body-italic;
 
-     font-style: italic;
-     margin: 0;
-     overflow: hidden;
-     border-left: rem.torem(3px) var(--color-border-decorative04) solid;
-     padding-left: var(--size-spacing-s);
+    font-style: italic;
+    margin: 0;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    border-left: rem.torem(3px) var(--color-border-decorative04) solid;
+    padding-left: var(--size-spacing-s);
 
-     &::before {
+    &::before {
       content: "“";
-     }
+    }
 
-     &::after {
+    &::after {
       content: "”";
-     }
+    }
   }
 }
