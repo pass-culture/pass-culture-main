@@ -1,0 +1,1 @@
+import{P as e}from"./components-DI1ODeSt.js";export{e as createCopyToClipboardFunction};
