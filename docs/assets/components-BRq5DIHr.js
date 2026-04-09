@@ -1,1 +1,0 @@
-import{P as e}from"./components-DVUr9l4R.js";export{e as createCopyToClipboardFunction};
