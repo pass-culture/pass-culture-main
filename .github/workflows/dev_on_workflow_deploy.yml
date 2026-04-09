@@ -84,7 +84,7 @@ jobs:
       cancel-in-progress: false
     runs-on: ubuntu-22.04
     environment:
-      name: pcapi-${{ inputs.environment }}
+      name: pcapi-${{ inputs.environment_short_name }}
       deployment: true
     permissions:
       id-token: write
@@ -294,7 +294,7 @@ jobs:
     runs-on: ubuntu-22.04
     continue-on-error: ${{ inputs.continue_on_error }}
     environment:
-      name: pcapi-${{ inputs.environment }}
+      name: pcapi-${{ inputs.environment_short_name }}
       deployment: false
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
