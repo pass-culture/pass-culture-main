@@ -289,7 +289,7 @@ def get_individual_booking_csv_download() -> response_utils.BackofficeResponse:
     export_data = booking_repository.get_export(
         pro_user_id=current_user.id,
         booking_period=typing.cast(tuple[datetime.date, datetime.date], form.from_to_date.data),
-        venue_id=form.venue.data,
+        venue_ids=[form.venue.data],
         export_type=bookings_models.BookingExportType.CSV,
     )
     buffer = BytesIO(typing.cast(str, export_data).encode("utf-8-sig"))
@@ -305,7 +305,7 @@ def get_individual_booking_xlsx_download() -> response_utils.BackofficeResponse:
     export_data = booking_repository.get_export(
         pro_user_id=current_user.id,
         booking_period=typing.cast(tuple[datetime.date, datetime.date], form.from_to_date.data),
-        venue_id=form.venue.data,
+        venue_ids=[form.venue.data],
         export_type=bookings_models.BookingExportType.EXCEL,
     )
     buffer = BytesIO(typing.cast(bytes, export_data))

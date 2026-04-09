@@ -72,7 +72,7 @@ one_year_before_booking = default_booking_date - timedelta(weeks=52)
 one_year_after_booking = default_booking_date + timedelta(weeks=52)
 
 
-class FindByProUserTest:
+class FindByVenuesTest:
     def test_should_return_only_expected_booking_attributes(self, app: fixture):
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
@@ -93,8 +93,10 @@ class FindByProUserTest:
             amount=12,
         )
 
-        bookings_query, total = booking_repository.find_by_pro_user(
-            pro_user_id=pro.id, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        bookings_query, total = booking_repository.find_by_venues(
+            pro_user_id=pro.id,
+            venue_ids=[venue.id],
+            booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365)),
         )
 
         bookings = bookings_query.all()
@@ -135,8 +137,9 @@ class FindByProUserTest:
             stock=stock, quantity=1, dateCreated=booking_date, dateUsed=(booking_date + timedelta(days=8))
         )
 
-        bookings_query, total = booking_repository.find_by_pro_user(
+        bookings_query, total = booking_repository.find_by_venues(
             pro_user_id=pro.id,
+            venue_ids=[venue.id],
             booking_period=((booking_date + timedelta(2)), (booking_date + timedelta(5))),
             status_filter=BookingStatusFilter.VALIDATED,
         )
@@ -165,8 +168,9 @@ class FindByProUserTest:
             stock=stock, quantity=1, dateCreated=booking_date, reimbursementDate=(booking_date + timedelta(days=4))
         )
 
-        bookings_query, _ = booking_repository.find_by_pro_user(
+        bookings_query, _ = booking_repository.find_by_venues(
             pro_user_id=pro.id,
+            venue_ids=[venue.id],
             booking_period=(date(2020, 1, 3), date(2020, 1, 4)),
             status_filter=BookingStatusFilter.REIMBURSED,
         )
@@ -189,8 +193,8 @@ class FindByProUserTest:
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, quantity=2)
 
-        bookings_query, _ = booking_repository.find_by_pro_user(
-            pro_user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        bookings_query, _ = booking_repository.find_by_venues(
+            pro_user_id=pro.id, venue_ids=[venue.id], booking_period=(one_year_before_booking, one_year_after_booking)
         )
         bookings = bookings_query.all()
 
@@ -219,8 +223,8 @@ class FindByProUserTest:
             token="ABCDEF",
         )
 
-        bookings_query, _ = booking_repository.find_by_pro_user(
-            pro_user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        bookings_query, _ = booking_repository.find_by_venues(
+            pro_user_id=pro.id, venue_ids=[venue.id], booking_period=(one_year_before_booking, one_year_after_booking)
         )
         bookings = bookings_query.all()
 
@@ -260,8 +264,8 @@ class FindByProUserTest:
             user=beneficiary, stock=stock, dateCreated=more_than_two_days_ago, token="ABCDEF"
         )
 
-        bookings_query, _ = booking_repository.find_by_pro_user(
-            pro_user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        bookings_query, _ = booking_repository.find_by_venues(
+            pro_user_id=pro.id, venue_ids=[venue.id], booking_period=(one_year_before_booking, one_year_after_booking)
         )
         bookings = bookings_query.all()
 
@@ -288,8 +292,8 @@ class FindByProUserTest:
             amount=5,
         )
 
-        bookings_query, _ = booking_repository.find_by_pro_user(
-            pro_user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        bookings_query, _ = booking_repository.find_by_venues(
+            pro_user_id=pro.id, venue_ids=[venue.id], booking_period=(one_year_before_booking, one_year_after_booking)
         )
         bookings = bookings_query.all()
 
@@ -317,8 +321,8 @@ class FindByProUserTest:
             amount=5,
         )
 
-        bookings_query, _ = booking_repository.find_by_pro_user(
-            pro_user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        bookings_query, _ = booking_repository.find_by_venues(
+            pro_user_id=pro.id, venue_ids=[venue.id], booking_period=(one_year_before_booking, one_year_after_booking)
         )
         bookings = bookings_query.all()
 
@@ -351,8 +355,10 @@ class FindByProUserTest:
         stock2 = offers_factories.ThingStockFactory(offer=offer2, price=0)
         bookings_factories.BookingFactory(user=beneficiary, stock=stock2, dateCreated=today, token="FGHI")
 
-        bookings_query, _ = booking_repository.find_by_pro_user(
-            pro_user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        bookings_query, _ = booking_repository.find_by_venues(
+            pro_user_id=pro.id,
+            venue_ids=[venue.id, venue2.id],
+            booking_period=(one_year_before_booking, one_year_after_booking),
         )
         bookings = bookings_query.all()
 
@@ -372,8 +378,9 @@ class FindByProUserTest:
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=yesterday, token="ABCD")
         booking2 = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
 
-        bookings_query, total = booking_repository.find_by_pro_user(
+        bookings_query, total = booking_repository.find_by_venues(
             pro_user_id=pro.id,
+            venue_ids=[venue.id],
             booking_period=(one_year_before_booking, one_year_after_booking),
             page=1,
             per_page_limit=1,
@@ -398,8 +405,9 @@ class FindByProUserTest:
         today = date_utils.get_naive_utc_now()
         booking = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
 
-        bookings_query, total = booking_repository.find_by_pro_user(
+        bookings_query, total = booking_repository.find_by_venues(
             pro_user_id=pro.id,
+            venue_ids=[venue.id],
             booking_period=(one_year_before_booking, one_year_after_booking),
             page=1,
             per_page_limit=4,
@@ -426,8 +434,9 @@ class FindByProUserTest:
             user=beneficiary, stock=stock, dateCreated=today, token="FGHI", quantity=2
         )
 
-        bookings_query, total = booking_repository.find_by_pro_user(
+        bookings_query, total = booking_repository.find_by_venues(
             pro_user_id=pro.id,
+            venue_ids=[venue.id],
             booking_period=(one_year_before_booking, one_year_after_booking),
             page=1,
             per_page_limit=4,
@@ -457,8 +466,10 @@ class FindByProUserTest:
             token="ABCDEF",
         )
 
-        bookings_query, _ = booking_repository.find_by_pro_user(
-            pro_user_id=pro.id, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        bookings_query, _ = booking_repository.find_by_venues(
+            pro_user_id=pro.id,
+            venue_ids=[venue.id],
+            booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365)),
         )
         bookings = bookings_query.all()
 
@@ -483,8 +494,10 @@ class FindByProUserTest:
             token="ABCDEF",
         )
 
-        bookings_query, _ = booking_repository.find_by_pro_user(
-            pro_user_id=pro.id, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        bookings_query, _ = booking_repository.find_by_venues(
+            pro_user_id=pro.id,
+            venue_ids=[venue.id],
+            booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365)),
         )
         bookings = bookings_query.all()
 
@@ -502,8 +515,9 @@ class FindByProUserTest:
         )
         bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer)
 
-        bookings_query, _ = booking_repository.find_by_pro_user(
+        bookings_query, _ = booking_repository.find_by_venues(
             pro_user_id=pro_user.id,
+            venue_ids=[booking_1.venue.id],
             booking_period=(one_year_before_booking, one_year_after_booking),
             offerer_address_id=offerer_address_1.id,
         )
@@ -520,10 +534,10 @@ class FindByProUserTest:
         bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
         booking_two = bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
 
-        bookings_query, _ = booking_repository.find_by_pro_user(
+        bookings_query, _ = booking_repository.find_by_venues(
             pro_user_id=pro_user.id,
+            venue_ids=[booking_two.venue.id],
             booking_period=(one_year_before_booking, one_year_after_booking),
-            venue_id=booking_two.venue.id,
         )
         bookings = bookings_query.all()
 
@@ -548,8 +562,9 @@ class FindByProUserTest:
             stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer)
         )
 
-        bookings_query, _ = booking_repository.find_by_pro_user(
+        bookings_query, _ = booking_repository.find_by_venues(
             pro_user_id=user_offerer.user.id,
+            venue_ids=[expected_booking.venue.id],
             booking_period=(one_year_before_booking, one_year_after_booking),
             event_date=event_date.date(),
         )
@@ -586,8 +601,9 @@ class FindByProUserTest:
         )
         mayotte_booking = bookings_factories.BookingFactory(stock=stock_in_mayotte)
 
-        bookings_query, _ = booking_repository.find_by_pro_user(
+        bookings_query, _ = booking_repository.find_by_venues(
             pro_user_id=user_offerer.user.id,
+            venue_ids=[cayenne_booking.venue.id, mayotte_booking.venue.id],
             booking_period=(one_year_before_booking, one_year_after_booking),
             event_date=event_datetime.date(),
         )
@@ -616,8 +632,9 @@ class FindByProUserTest:
             stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer),
         )
 
-        bookings_query, _ = booking_repository.find_by_pro_user(
+        bookings_query, _ = booking_repository.find_by_venues(
             pro_user_id=user_offerer.user.id,
+            venue_ids=[expected_booking.venue.id],
             booking_period=(booking_beginning_period, booking_ending_period),
             status_filter=booking_status_filter,
         )
@@ -659,8 +676,9 @@ class FindByProUserTest:
             stock=stock_in_mayotte, dateCreated=mayotte_booking_datetime
         )
 
-        bookings_query, _ = booking_repository.find_by_pro_user(
+        bookings_query, _ = booking_repository.find_by_venues(
             pro_user_id=user_offerer.user.id,
+            venue_ids=[cayenne_booking.venue.id, mayotte_booking.venue.id],
             booking_period=(requested_booking_period_beginning, requested_booking_period_ending),
         )
         bookings = bookings_query.all()
