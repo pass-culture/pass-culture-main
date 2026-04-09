@@ -127,7 +127,6 @@ export const makeGetVenueResponseModel = <
     openingHours: null,
     publicName: `Nom public de la structure ${override.id}`,
     activity: DisplayableActivity.OTHER,
-    venueType: { label: 'Autre', value: 'OTHER' }, // deprecated field (use ".activity" instead), but still required by the model
     pricingPoint: null,
     siret: null,
     visualDisabilityCompliant: false,

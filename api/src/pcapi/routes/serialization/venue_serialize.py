@@ -28,7 +28,6 @@ from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import venue_banners_serialize
 from pcapi.routes.serialization import venue_collective_serialize
 from pcapi.routes.serialization import venue_finance_serialize
-from pcapi.routes.serialization.venue_types_serialize import VenueTypeResponseModelV2
 from pcapi.serialization.utils import string_to_boolean_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import date as date_utils
@@ -132,7 +131,6 @@ class GetVenueResponseModel(HttpBodyModel):
     managingOfferer: GetVenueManagingOffererResponseModel
     pricingPoint: venue_finance_serialize.GetVenuePricingPointResponseModel | None = None
     siret: str | None = None
-    venueType: VenueTypeResponseModelV2
     collectiveDescription: str | None = None
     collectiveStudents: list[educational_models.StudentLevels] | None = None
     collectiveWebsite: str | None = None
@@ -199,11 +197,6 @@ class GetVenueResponseModel(HttpBodyModel):
             else:
                 banner_meta = venue_banners_serialize.BannerMetaModel(image_credit=None, original_image_url=None)
 
-        if venue.venueTypeCode:
-            venue_type = VenueTypeResponseModelV2(value=venue.venueTypeCode.name, label=venue.venueTypeCode.name)
-        else:
-            venue_type = VenueTypeResponseModelV2(value="", label="")
-
         return cls(
             activity=offerers_models.DisplayableActivity[venue.activity.name]
             if (venue.activity and venue.activity != offerers_models.Activity.NOT_ASSIGNED)
@@ -228,7 +221,6 @@ class GetVenueResponseModel(HttpBodyModel):
             managingOfferer=venue.managingOfferer,
             pricingPoint=get_current_pricing_point(venue),
             siret=venue.siret,
-            venueType=venue_type,
             collectiveDescription=venue.collectiveDescription,
             collectiveStudents=venue.collectiveStudents,
             collectiveWebsite=venue.collectiveWebsite,

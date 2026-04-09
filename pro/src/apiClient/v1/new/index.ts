@@ -417,8 +417,6 @@ export {
   type VenueOfOffererFromSiretResponseModel,
   type VenueProviderResponse,
   type VenueStatsDataModel,
-  VenueTypeCode,
-  type VenueTypeResponseModelV2,
   type VenuesEducationalStatusResponseModel,
   type VenuesEducationalStatusesResponseModel,
   type VideoData,

@@ -59,7 +59,6 @@ def test_response_serialization(client):
             "motorDisabilityCompliant": venue.motorDisabilityCompliant,
             "visualDisabilityCompliant": venue.visualDisabilityCompliant,
             "siret": venue.siret,
-            "venueTypeCode": venue.venueTypeCode.name,
             "activity": "BOOKSTORE",
             "hasCreatedOffer": False,
             "externalAccessibilityData": None,
@@ -98,7 +97,6 @@ def test_response_serialization(client):
             "motorDisabilityCompliant": venue_with_accessibility_provider.motorDisabilityCompliant,
             "visualDisabilityCompliant": venue_with_accessibility_provider.visualDisabilityCompliant,
             "siret": venue_with_accessibility_provider.siret,
-            "venueTypeCode": venue_with_accessibility_provider.venueTypeCode.name,
             "activity": "CINEMA",
             "hasCreatedOffer": False,
             "externalAccessibilityData": {

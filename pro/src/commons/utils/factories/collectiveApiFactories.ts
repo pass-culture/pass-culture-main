@@ -26,7 +26,6 @@ import {
   type ListOffersVenueResponseModel,
   type ListOffersVenueResponseModelV2,
   StudentLevels,
-  VenueTypeCode,
 } from '@/apiClient/v1'
 import { DisplayableActivity } from '@/apiClient/v1/new'
 
@@ -377,7 +376,6 @@ export const defaultGetVenue: GetVenueResponseModel = {
   name: 'Nom de la structure',
   publicName: 'Nom public de la structure',
   activity: DisplayableActivity.CULTURAL_CENTRE,
-  venueType: { value: VenueTypeCode.CENTRE_CULTUREL, label: 'Centre culturel' }, // deprecated field (use ".activity" instead), but still required by the model
   pricingPoint: null,
   visualDisabilityCompliant: true,
   openingHours: null,

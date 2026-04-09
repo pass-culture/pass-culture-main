@@ -3558,7 +3558,6 @@ export type GetVenueResponseModel = {
      * Siret
      */
     siret?: string | null;
-    venueType: VenueTypeResponseModelV2;
     /**
      * Visualdisabilitycompliant
      */
@@ -6719,7 +6718,6 @@ export type VenueListItemResponseModel = {
      * Siret
      */
     siret?: string;
-    venueTypeCode: VenueTypeCode;
     /**
      * Visualdisabilitycompliant
      */
@@ -6837,48 +6835,6 @@ export type VenueStatsDataModel = {
      * Totalviewslast30Days
      */
     totalViewsLast30Days: number;
-};
-
-/**
- * VenueTypeCode
- *
- * An enumeration.
- */
-export enum VenueTypeCode {
-    AUTRE = 'Autre',
-    'ARTS_VISUELS,_ARTS_PLASTIQUES_ET_GALERIES' = 'Arts visuels, arts plastiques et galeries',
-    BIBLIOTHÈQUE_OU_MÉDIATHÈQUE = 'Bibliothèque ou médiathèque',
-    CENTRE_CULTUREL = 'Centre culturel',
-    CINÉMA_SALLE_DE_PROJECTIONS = 'Cinéma - Salle de projections',
-    CINÉMA_ITINÉRANT = 'Cinéma itinérant',
-    COURS_ET_PRATIQUE_ARTISTIQUES = 'Cours et pratique artistiques',
-    CULTURE_SCIENTIFIQUE = 'Culture scientifique',
-    FESTIVAL = 'Festival',
-    JEUX_JEUX_VIDÉOS = 'Jeux / Jeux vidéos',
-    LIBRAIRIE = 'Librairie',
-    MAGASIN_ARTS_CRÉATIFS = 'Magasin arts créatifs',
-    MAGASIN_DE_DISTRIBUTION_DE_PRODUITS_CULTURELS = 'Magasin de distribution de produits culturels',
-    MUSIQUE_DISQUAIRE = 'Musique - Disquaire',
-    'MUSIQUE_MAGASIN_D’INSTRUMENTS' = 'Musique - Magasin d’instruments',
-    MUSIQUE_SALLE_DE_CONCERTS = 'Musique - Salle de concerts',
-    MUSÉE = 'Musée',
-    OFFRE_NUMÉRIQUE = 'Offre numérique',
-    PATRIMOINE_ET_TOURISME = 'Patrimoine et tourisme',
-    SPECTACLE_VIVANT = 'Spectacle vivant'
-}
-
-/**
- * VenueTypeResponseModelV2
- */
-export type VenueTypeResponseModelV2 = {
-    /**
-     * Label
-     */
-    label: string;
-    /**
-     * Value
-     */
-    value: string;
 };
 
 /**

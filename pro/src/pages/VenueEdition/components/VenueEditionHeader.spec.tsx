@@ -4,7 +4,6 @@ import { forwardRef } from 'react'
 
 import { api } from '@/apiClient/api'
 import * as apiHelpers from '@/apiClient/helpers'
-import { VenueTypeCode } from '@/apiClient/v1'
 import { DisplayableActivity } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
@@ -188,7 +187,6 @@ describe('VenueEditionHeader', () => {
         ...defaultGetVenue,
         activity: DisplayableActivity.FESTIVAL,
         isPermanent: true,
-        venueType: { value: VenueTypeCode.FESTIVAL, label: '' },
       },
     })
 

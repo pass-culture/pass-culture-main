@@ -6,7 +6,6 @@ import type { DisplayableActivity } from './DisplayableActivity';
 import type { ExternalAccessibilityDataModel } from './ExternalAccessibilityDataModel';
 import type { LocationResponseModel } from './LocationResponseModel';
 import type { SimplifiedBankAccountStatus } from './SimplifiedBankAccountStatus';
-import type { VenueTypeCode } from './VenueTypeCode';
 export type VenueListItemResponseModel = {
   activity?: DisplayableActivity | null;
   audioDisabilityCompliant?: boolean | null;
@@ -29,7 +28,6 @@ export type VenueListItemResponseModel = {
   offererName: string;
   publicName: string;
   siret?: string | null;
-  venueTypeCode: VenueTypeCode;
   visualDisabilityCompliant?: boolean | null;
   withdrawalDetails?: string | null;
 };

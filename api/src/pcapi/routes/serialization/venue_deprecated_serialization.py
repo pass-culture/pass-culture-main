@@ -30,7 +30,6 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     withdrawalDetails: str | None
     siret: str | None
     hasCreatedOffer: bool
-    venueTypeCode: offerers_models.VenueTypeCode
     activity: offerers_models.DisplayableActivity | None
     externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
     location: address_serialize.LocationResponseModel | None
