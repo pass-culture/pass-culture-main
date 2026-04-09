@@ -1,1 +1,0 @@
-import{P as e}from"./components-fKNjTrCO.js";export{e as createCopyToClipboardFunction};
