@@ -205,7 +205,7 @@ def get_stepper_title_and_subtitle(
         return subscription_schemas.SubscriptionStepperDetails(title=subscription_schemas.STEPPER_HAS_ISSUES_TITLE)
 
     if not user.age:
-        logger.error("Eligible user has no age", extra={"user": user.id})
+        logger.warning("Eligible user has no age", extra={"user": user.id})
         return subscription_schemas.SubscriptionStepperDetails(title=subscription_schemas.STEPPER_DEFAULT_TITLE)
 
     eligibility_to_activate = eligibility_api.get_pre_decree_or_current_eligibility(user)
