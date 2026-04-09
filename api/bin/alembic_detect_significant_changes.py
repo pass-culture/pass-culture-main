@@ -7,6 +7,7 @@ them against the set of SQL tables actually imported for each deployment
 environment (prod, stg). Prints a Slack-formatted alert for any environment
 that has noteworthy changes.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -15,7 +16,8 @@ import pathlib
 import re
 import sys
 import urllib.request
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from dataclasses import field
 from enum import Enum
 from typing import Iterator
 
@@ -39,6 +41,7 @@ BRANCH_ENV: dict[str, str] = {
 # OpKind — canonical set of detectable migration operation types
 # ---------------------------------------------------------------------------
 
+
 class OpKind(str, Enum):
     """Represents a normalised migration operation type used throughout the pipeline.
 
@@ -47,13 +50,13 @@ class OpKind(str, Enum):
     - Notable: additive changes that may still warrant attention (new columns, new tables)
     """
 
-    ADD_COLUMN    = "add_column"
-    ALTER_TYPE    = "alter_type"
-    CREATE_TABLE  = "create_table"
-    DROP_COLUMN   = "drop_column"
-    DROP_TABLE    = "drop_table"
+    ADD_COLUMN = "add_column"
+    ALTER_TYPE = "alter_type"
+    CREATE_TABLE = "create_table"
+    DROP_COLUMN = "drop_column"
+    DROP_TABLE = "drop_table"
     RENAME_COLUMN = "rename_column"
-    RENAME_TABLE  = "rename_table"
+    RENAME_TABLE = "rename_table"
 
     @property
     def is_important(self) -> bool:
@@ -88,28 +91,28 @@ class OpKind(str, Enum):
 # canonical OpKind. Both Python API calls and raw SQL variants are covered.
 _KEYWORD_MAP: dict[str, OpKind] = {
     # Important — destructive or structurally breaking operations
-    "drop_column":     OpKind.DROP_COLUMN,
-    "DROP COLUMN":     OpKind.DROP_COLUMN,
-    "alter_column":    OpKind.ALTER_TYPE,
-    "ALTER COLUMN":    OpKind.ALTER_TYPE,
-    "alter_type":      OpKind.ALTER_TYPE,
-    "ALTER TYPE":      OpKind.ALTER_TYPE,
-    "drop_table":      OpKind.DROP_TABLE,
-    "DROP TABLE":      OpKind.DROP_TABLE,
-    "rename_table":    OpKind.RENAME_TABLE,
-    "RENAME TO":       OpKind.RENAME_TABLE,
+    "drop_column": OpKind.DROP_COLUMN,
+    "DROP COLUMN": OpKind.DROP_COLUMN,
+    "alter_column": OpKind.ALTER_TYPE,
+    "ALTER COLUMN": OpKind.ALTER_TYPE,
+    "alter_type": OpKind.ALTER_TYPE,
+    "ALTER TYPE": OpKind.ALTER_TYPE,
+    "drop_table": OpKind.DROP_TABLE,
+    "DROP TABLE": OpKind.DROP_TABLE,
+    "rename_table": OpKind.RENAME_TABLE,
+    "RENAME TO": OpKind.RENAME_TABLE,
     "new_column_name": OpKind.RENAME_COLUMN,
-    "RENAME COLUMN":   OpKind.RENAME_COLUMN,
+    "RENAME COLUMN": OpKind.RENAME_COLUMN,
     # Notable — additive operations
-    "add_column":      OpKind.ADD_COLUMN,
-    "ADD COLUMN":      OpKind.ADD_COLUMN,
-    "create_table":    OpKind.CREATE_TABLE,
-    "CREATE TABLE":    OpKind.CREATE_TABLE,
+    "add_column": OpKind.ADD_COLUMN,
+    "ADD COLUMN": OpKind.ADD_COLUMN,
+    "create_table": OpKind.CREATE_TABLE,
+    "CREATE TABLE": OpKind.CREATE_TABLE,
 }
 
 # Pre-filtered keyword tuples for fast per-level scanning
 _IMPORTANT_KEYWORDS = tuple(k for k, v in _KEYWORD_MAP.items() if v.is_important)
-_NOTABLE_KEYWORDS   = tuple(k for k, v in _KEYWORD_MAP.items() if v.is_notable)
+_NOTABLE_KEYWORDS = tuple(k for k, v in _KEYWORD_MAP.items() if v.is_notable)
 
 
 # ---------------------------------------------------------------------------
@@ -192,6 +195,7 @@ class MigrationOp:
 # OperationExtractor — extracts table, column, and rename_to from a code line
 # ---------------------------------------------------------------------------
 
+
 class OperationExtractor:
     """Stateless helper that extracts operation metadata from a single code line.
 
@@ -242,17 +246,13 @@ class OperationExtractor:
     # -- Extraction strategies (tried in priority order) ---------------------
 
     @staticmethod
-    def _batch_alter_header(
-        code: str, _batch: str | None
-    ) -> tuple[str, None, None] | None:
+    def _batch_alter_header(code: str, _batch: str | None) -> tuple[str, None, None] | None:
         """Match op.batch_alter_table("name") and return the table name."""
         m = re.search(r'(?:op\.)?batch_alter_table\(\s*["\'](\w+)["\']', code)
         return (m.group(1), None, None) if m else None
 
     @staticmethod
-    def _batch_op_call(
-        code: str, batch: str | None
-    ) -> tuple[str | None, str | None, None] | None:
+    def _batch_op_call(code: str, batch: str | None) -> tuple[str | None, str | None, None] | None:
         """Match batch_op.<operation>(...) calls and return (batch_table, column)."""
         # add_column wraps the name inside sa.Column("name", ...), so the generic
         # first-quoted-arg pattern below would capture "name" from sa.Column instead.
@@ -263,37 +263,28 @@ class OperationExtractor:
         return (batch, m.group(1), None) if m else None
 
     @staticmethod
-    def _op_create_table(
-        code: str, _batch: str | None
-    ) -> tuple[str, None, None] | None:
+    def _op_create_table(code: str, _batch: str | None) -> tuple[str, None, None] | None:
         """Match op.create_table("name") and return the new table name."""
-        if not re.search(r'op\.create_table\s*\(', code):
+        if not re.search(r"op\.create_table\s*\(", code):
             return None
         m = re.search(r'op\.create_table\s*\(\s*["\'](\w+)["\']', code)
         return (m.group(1), None, None) if m else None
 
     @staticmethod
-    def _op_rename_table(
-        code: str, _batch: str | None
-    ) -> tuple[str, None, str] | None:
+    def _op_rename_table(code: str, _batch: str | None) -> tuple[str, None, str] | None:
         """Match op.rename_table("old", "new") and return (old_name, None, new_name)."""
-        m = re.search(
-            r'op\.rename_table\s*\(\s*["\'](\w+)["\'],\s*["\'](\w+)["\']', code
-        )
+        m = re.search(r'op\.rename_table\s*\(\s*["\'](\w+)["\'],\s*["\'](\w+)["\']', code)
         return (m.group(1), None, m.group(2)) if m else None
 
     @staticmethod
-    def _op_generic(
-        code: str, _batch: str | None
-    ) -> tuple[str, str | None, None] | None:
+    def _op_generic(code: str, _batch: str | None) -> tuple[str, str | None, None] | None:
         """Match generic op.<verb>("table"[, col_expr]) and return (table, column).
 
         The optional second argument is either a bare string "col" or a callable
         wrapping it such as sa.Column("col", ...). Both forms are captured.
         """
         m = re.search(
-            r'op\.(?!execute)\w+\(\s*["\'](\w+)["\']'
-            r'(?:,\s*(?:(?:\w+\.)*\w+\(\s*["\'](\w+)["\']|["\'](\w+)["\']))?',
+            r'op\.(?!execute)\w+\(\s*["\'](\w+)["\']' r'(?:,\s*(?:(?:\w+\.)*\w+\(\s*["\'](\w+)["\']|["\'](\w+)["\']))?',
             code,
         )
         if not m:
@@ -301,96 +292,86 @@ class OperationExtractor:
         return (m.group(1), m.group(2) or m.group(3), None)
 
     @staticmethod
-    def _sql_rename_to(
-        code: str, _batch: str | None
-    ) -> tuple[str, None, str] | None:
+    def _sql_rename_to(code: str, _batch: str | None) -> tuple[str, None, str] | None:
         """Match ALTER TABLE t RENAME TO new_name."""
         m = re.search(
-            r'ALTER\s+TABLE\s+(?:\w+\.)?(\w+)\s+RENAME\s+TO\s+(\w+)',
-            code, re.IGNORECASE,
+            r"ALTER\s+TABLE\s+(?:\w+\.)?(\w+)\s+RENAME\s+TO\s+(\w+)",
+            code,
+            re.IGNORECASE,
         )
         return (m.group(1), None, m.group(2)) if m else None
 
     @staticmethod
-    def _sql_rename_column(
-        code: str, _batch: str | None
-    ) -> tuple[str, str, str] | None:
+    def _sql_rename_column(code: str, _batch: str | None) -> tuple[str, str, str] | None:
         """Match <ALTER|DROP|RENAME> TABLE t RENAME COLUMN old TO new."""
         m = re.search(
-            r'(?:ALTER|DROP|RENAME)\s+TABLE\s+(?:\w+\.)?(\w+)'
-            r'\s+RENAME\s+COLUMN\s+(\w+)\s+TO\s+(\w+)',
-            code, re.IGNORECASE,
+            r"(?:ALTER|DROP|RENAME)\s+TABLE\s+(?:\w+\.)?(\w+)" r"\s+RENAME\s+COLUMN\s+(\w+)\s+TO\s+(\w+)",
+            code,
+            re.IGNORECASE,
         )
         return (m.group(1), m.group(2), m.group(3)) if m else None
 
     @staticmethod
-    def _sql_alter_column(
-        code: str, _batch: str | None
-    ) -> tuple[str, str, None] | None:
+    def _sql_alter_column(code: str, _batch: str | None) -> tuple[str, str, None] | None:
         """Match ALTER TABLE t ALTER COLUMN c."""
         m = re.search(
-            r'ALTER\s+TABLE\s+(?:\w+\.)?(\w+)\s+ALTER\s+COLUMN\s+(\w+)',
-            code, re.IGNORECASE,
+            r"ALTER\s+TABLE\s+(?:\w+\.)?(\w+)\s+ALTER\s+COLUMN\s+(\w+)",
+            code,
+            re.IGNORECASE,
         )
         return (m.group(1), m.group(2), None) if m else None
 
     @staticmethod
-    def _sql_add_column_with_table(
-        code: str, _batch: str | None
-    ) -> tuple[str, str, None] | None:
+    def _sql_add_column_with_table(code: str, _batch: str | None) -> tuple[str, str, None] | None:
         """Match ALTER TABLE t ADD COLUMN c, capturing both table and column."""
         m = re.search(
-            r'ALTER\s+TABLE\s+(?:\w+\.)?(\w+)\s+ADD\s+COLUMN\s+(\w+)',
-            code, re.IGNORECASE,
+            r"ALTER\s+TABLE\s+(?:\w+\.)?(\w+)\s+ADD\s+COLUMN\s+(\w+)",
+            code,
+            re.IGNORECASE,
         )
         return (m.group(1), m.group(2), None) if m else None
 
     @staticmethod
-    def _sql_drop_column_with_table(
-        code: str, _batch: str | None
-    ) -> tuple[str, str, None] | None:
+    def _sql_drop_column_with_table(code: str, _batch: str | None) -> tuple[str, str, None] | None:
         """Match ALTER TABLE t DROP COLUMN c, capturing both table and column."""
         m = re.search(
-            r'ALTER\s+TABLE\s+(?:\w+\.)?(\w+)\s+DROP\s+COLUMN\s+(\w+)',
-            code, re.IGNORECASE,
+            r"ALTER\s+TABLE\s+(?:\w+\.)?(\w+)\s+DROP\s+COLUMN\s+(\w+)",
+            code,
+            re.IGNORECASE,
         )
         return (m.group(1), m.group(2), None) if m else None
 
     @staticmethod
-    def _sql_alter_drop_rename_table(
-        code: str, _batch: str | None
-    ) -> tuple[str, None, None] | None:
+    def _sql_alter_drop_rename_table(code: str, _batch: str | None) -> tuple[str, None, None] | None:
         """Match <ALTER|DROP|RENAME> TABLE t, returning the table name only.
 
         Used as a fallback when no column or rename target could be extracted
         by the more specific strategies above.
         """
         m = re.search(
-            r'(?:ALTER|DROP|RENAME)\s+TABLE\s+(?:\w+\.)?(\w+)',
-            code, re.IGNORECASE,
+            r"(?:ALTER|DROP|RENAME)\s+TABLE\s+(?:\w+\.)?(\w+)",
+            code,
+            re.IGNORECASE,
         )
         return (m.group(1), None, None) if m else None
 
     @staticmethod
-    def _sql_create_table(
-        code: str, _batch: str | None
-    ) -> tuple[str, None, None] | None:
+    def _sql_create_table(code: str, _batch: str | None) -> tuple[str, None, None] | None:
         """Match CREATE TABLE t and return the table name."""
-        m = re.search(r'CREATE\s+TABLE\s+(?:\w+\.)?(\w+)', code, re.IGNORECASE)
+        m = re.search(r"CREATE\s+TABLE\s+(?:\w+\.)?(\w+)", code, re.IGNORECASE)
         return (m.group(1), None, None) if m else None
 
     @staticmethod
-    def _sql_add_column(
-        code: str, batch: str | None
-    ) -> tuple[str | None, str, None] | None:
+    def _sql_add_column(code: str, batch: str | None) -> tuple[str | None, str, None] | None:
         """Match ADD COLUMN c without an explicit table, falling back to batch context."""
-        m = re.search(r'ADD\s+COLUMN\s+(\w+)', code, re.IGNORECASE)
+        m = re.search(r"ADD\s+COLUMN\s+(\w+)", code, re.IGNORECASE)
         return (batch, m.group(1), None) if m else None
 
 
 # ---------------------------------------------------------------------------
 # MigrationFile — parses one Alembic migration *.py file
 # ---------------------------------------------------------------------------
+
 
 class MigrationFile:
     """Parses a single Alembic migration file and yields its detected operations.
@@ -453,9 +434,7 @@ class MigrationFile:
                     continue
 
                 # Update batch_alter_table context: enter on match, exit on dedent
-                bm = re.search(
-                    r'(?:op\.)?batch_alter_table\(\s*["\'](\w+)["\']', code_part
-                )
+                bm = re.search(r'(?:op\.)?batch_alter_table\(\s*["\'](\w+)["\']', code_part)
                 if bm:
                     batch_table = bm.group(1)
                 elif batch_table and not line.startswith((" ", "\t")):
@@ -470,9 +449,7 @@ class MigrationFile:
                             seen_kinds.append(kind)
 
                 for kind in seen_kinds:
-                    table, column, rename_to = self._extractor.extract(
-                        code_part, batch_table=batch_table
-                    )
+                    table, column, rename_to = self._extractor.extract(code_part, batch_table=batch_table)
                     yield MigrationOp(
                         hash=self.hash,
                         kind=kind,
@@ -485,6 +462,7 @@ class MigrationFile:
 # ---------------------------------------------------------------------------
 # EnvReport — filters and formats operations for a single deployment environment
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class EnvReport:
@@ -585,6 +563,7 @@ class EnvReport:
 # TableFetcher — retrieves SQL table names imported for a given GitHub branch
 # ---------------------------------------------------------------------------
 
+
 class TableFetcher:
     """Fetches the set of SQL table names imported for a given GitHub branch.
 
@@ -625,15 +604,14 @@ class TableFetcher:
             for item in tree
             if item["path"].startswith(self._sql_prefix)
             and item["path"].endswith(".sql")
-            and not any(
-                f"/{folder}/" in item["path"] for folder in self._excluded
-            )
+            and not any(f"/{folder}/" in item["path"] for folder in self._excluded)
         }
 
 
 # ---------------------------------------------------------------------------
 # ChangeDetector — top-level orchestrator for the full detection pipeline
 # ---------------------------------------------------------------------------
+
 
 class ChangeDetector:
     """Orchestrates the full migration change-detection pipeline.
@@ -703,6 +681,7 @@ class ChangeDetector:
 # Entry point
 # ---------------------------------------------------------------------------
 
+
 def main(file_names: list[str], debug: bool = False, no_ping: bool = False) -> None:
     """Run change detection and print Slack-formatted alerts for changed environments.
 
@@ -727,7 +706,7 @@ def main(file_names: list[str], debug: bool = False, no_ping: bool = False) -> N
 
         if debug:
             print(f"=== [{env}] imported tables ({len(tables)}) ===", file=sys.stderr)
-            passing  = [op for op in all_ops if op.should_notify(tables)]
+            passing = [op for op in all_ops if op.should_notify(tables)]
             filtered = [op for op in all_ops if not op.should_notify(tables)]
             print(f"  passing : {[op.kind.value + ':' + str(op.table) for op in passing]}", file=sys.stderr)
             print(f"  filtered: {[op.kind.value + ':' + str(op.table) for op in filtered]}", file=sys.stderr)
