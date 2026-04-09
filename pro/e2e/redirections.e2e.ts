@@ -14,100 +14,30 @@ test.describe('Redirections', () => {
       baseURL: BASE_API_URL,
     })
   })
-  test.describe('`/` path redirections', () => {
-    test('Without WIP_SWITCH_VENUE', async ({ page }) => {
-      await page.goto('/')
-      await expect(
-        page.getByRole('heading', { name: 'Connectez-vous' })
-      ).toBeVisible()
-    })
-    test('With WIP_SWITCH_VENUE', async ({ page }) => {
-      await setFeatureFlags(requestContext, [
-        {
-          name: 'WIP_SWITCH_VENUE',
-          isActive: true,
-        },
-      ])
-      await page.goto('/')
-      await expect(
-        page.getByRole('heading', { name: 'Connectez-vous' })
-      ).toBeVisible()
-    })
+  test('`/` path redirections', async ({ page }) => {
+    await setFeatureFlags(requestContext, [
+      {
+        name: 'WIP_SWITCH_VENUE',
+        isActive: true,
+      },
+    ])
+    await page.goto('/')
+    await expect(
+      page.getByRole('heading', { name: 'Connectez-vous' })
+    ).toBeVisible()
   })
-  test.describe('`/inscription` path redirections', () => {
-    test('Without WIP_SWITCH_VENUE nor WIP_PRE_SIGNUP_INFO', async ({
-      page,
-    }) => {
-      await setFeatureFlags(requestContext, [
-        {
-          name: 'WIP_SWITCH_VENUE',
-          isActive: false,
-        },
-        {
-          name: 'WIP_PRE_SIGNUP_INFO',
-          isActive: false,
-        },
-      ])
-      await page.goto('/inscription')
-      await expect(
-        page.getByRole('heading', { name: 'Créez votre compte' })
-      ).toBeVisible()
-    })
-    test('With WIP_SWITCH_VENUE and not WIP_PRE_SIGNUP_INFO', async ({
-      page,
-    }) => {
-      await setFeatureFlags(requestContext, [
-        {
-          name: 'WIP_SWITCH_VENUE',
-          isActive: true,
-        },
-        {
-          name: 'WIP_PRE_SIGNUP_INFO',
-          isActive: false,
-        },
-      ])
-      await page.goto('/inscription')
-      await expect(
-        page.getByRole('heading', { name: 'Créez votre compte' })
-      ).toBeVisible()
-    })
-    test.describe('with feature flag WIP_PRE_SIGNUP_INFO', () => {
-      test('Without WIP_SWITCH_VENUE', async ({ page }) => {
-        await setFeatureFlags(requestContext, [
-          {
-            name: 'WIP_SWITCH_VENUE',
-            isActive: false,
-          },
-          {
-            name: 'WIP_PRE_SIGNUP_INFO',
-            isActive: true,
-          },
-        ])
-        await page.goto('/inscription')
-        await expect(
-          page.getByRole('heading', {
-            name: 'Commençons par identifier votre profil',
-          })
-        ).toBeVisible()
+  test('`/inscription` path redirections', async ({ page }) => {
+    await setFeatureFlags(requestContext, [
+      {
+        name: 'WIP_SWITCH_VENUE',
+        isActive: true,
+      },
+    ])
+    await page.goto('/inscription')
+    await expect(
+      page.getByRole('heading', {
+        name: 'Commençons par identifier votre profil',
       })
-      test('With WIP_SWITCH_VENUE', async ({ page }) => {
-        await setFeatureFlags(requestContext, [
-          {
-            name: 'WIP_SWITCH_VENUE',
-            isActive: true,
-          },
-          {
-            name: 'WIP_PRE_SIGNUP_INFO',
-            isActive: true,
-          },
-        ])
-        await page.goto('/inscription')
-        await expect(
-          page.getByRole('heading', {
-            name: 'Commençons par identifier votre profil',
-          })
-        ).toBeVisible()
-      })
-    })
+    ).toBeVisible()
   })
 })

@@ -11,7 +11,7 @@ from pcapi import settings
 from pcapi.core.history import factories as history_factories
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
-from pcapi.core.users import testing as sendinblue_testing
+from pcapi.core.users import testing as brevo_testing
 from pcapi.core.users.models import AccountState
 
 
@@ -307,7 +307,7 @@ class RefreshAccessTokenTest:
         assert refresh_response.status_code == 200
 
         assert user.lastConnectionDate == datetime(2020, 3, 15)
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(brevo_testing.brevo_requests) == 1
 
     def test_user_logs_in_and_refreshes_token(self, client):
         data = {

@@ -7,7 +7,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.users.models import User
 from pcapi.models import db
 

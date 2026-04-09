@@ -29,7 +29,6 @@ class GetOffererTest:
     num_queries += 1  # select venue
     num_queries += 1  # check offerer has non free offers (select venue ?)
     num_queries += 1  # select venue_id
-    num_queries += 1  # select offerer_address
     num_queries += 1  # select venues_id with active offers
     num_queries += 1  # select offer to check if offerer has a partner page
 
@@ -52,19 +51,12 @@ class GetOffererTest:
             adageId="123",
             adageInscriptionDate=date_utils.get_naive_utc_now(),
             activity=offerers_models.Activity.FESTIVAL,
-            venueTypeCode=None,
         )
         collective_factories.CollectiveDmsApplicationFactory(
             venue=venue_3,
         )
 
         offerer_id = offerer.id
-        client = client.with_session_auth(pro.email)
-        with testing.assert_num_queries(self.num_queries):
-            with testing.assert_no_duplicated_queries():
-                response = client.get(f"/offerers/{offerer_id}")
-                assert response.status_code == 200
-
         expected_serialized_offerer = {
             "allowedOnAdage": offerer.allowedOnAdage,
             "canDisplayHighlights": False,
@@ -115,7 +107,6 @@ class GetOffererTest:
                     "name": venue.name,
                     "publicName": venue.publicName,
                     "siret": venue.siret,
-                    "venueTypeCode": venue.venueTypeCode.name if venue.venueTypeCode else None,
                     "withdrawalDetails": venue.withdrawalDetails,
                 }
                 for venue in sorted(offerer.managedVenues, key=lambda v: v.publicName)
@@ -125,6 +116,13 @@ class GetOffererTest:
             "venuesWithNonFreeOffersWithoutBankAccounts": [],
             "isCaledonian": False,
         }
+
+        client = client.with_session_auth(pro.email)
+        db.session.expire_all()
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(f"/offerers/{offerer_id}")
+            assert response.status_code == 200
+
         assert response.json == expected_serialized_offerer
 
         db.session.refresh(offerer)
@@ -353,8 +351,9 @@ class GetOffererTest:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
         http_client = client.with_session_auth(pro_user.email)
+        offerer_id = offerer.id
         with testing.assert_num_queries(self.num_queries):
-            response = http_client.get(f"/offerers/{offerer.id}")
+            response = http_client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
 
         offerer = response.json
@@ -678,10 +677,11 @@ class GetOffererTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, isPermanent=True)
         offers_factories.OfferFactory(venue=venue)
 
+        offerer_id = offerer.id
         client = client.with_session_auth(user_offerer.user.email)
         with testing.assert_num_queries(self.num_queries):
             with testing.assert_no_duplicated_queries():
-                response = client.get(f"/offerers/{offerer.id}")
+                response = client.get(f"/offerers/{offerer_id}")
                 assert response.status_code == 200
 
         # closed => similar to validated then suspended
@@ -716,10 +716,10 @@ class GetOffererTest:
         if at_least_one_offer:
             offers_factories.OfferFactory(venue=venue)
 
+        offerer_id = offerer.id
         client = client.with_session_auth(user_offerer.user.email)
         with testing.assert_num_queries(self.num_queries):
-            # with testing.assert_no_duplicated_queries():
-            response = client.get(f"/offerers/{offerer.id}")
+            response = client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
 
         assert response.json["hasPartnerPage"] is has_partner_page
@@ -728,9 +728,10 @@ class GetOffererTest:
         offerer = offerers_factories.CaledonianOffererFactory()
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
 
+        offerer_id = offerer.id
         client = client.with_session_auth(user_offerer.user.email)
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offerers/{offerer.id}")
+            response = client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
 
         assert response.json["isCaledonian"] is True
@@ -749,9 +750,10 @@ class GetOffererTest:
 
         offers_factories.OfferFactory(venue__managingOfferer=offerer, subcategoryId=subcategory_id)
 
+        offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offerers/{offerer.id}")
+            response = client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
 
         assert response.json["canDisplayHighlights"] is can_display_highlights

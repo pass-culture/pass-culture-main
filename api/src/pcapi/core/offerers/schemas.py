@@ -22,9 +22,12 @@ from pcapi.utils.siren import SIRET_LENGTH
 MAX_LONGITUDE = 180
 MAX_LATITUDE = 90
 
+
 SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
+
 SocialMedias = dict[SocialMedia, pydantic_v1.HttpUrl]
-SocialMediasV2 = dict[SocialMedia, pydantic_v2.HttpUrl]
+HttpUrlString = typing.Annotated[pydantic_v2.HttpUrl, pydantic_v2.AfterValidator(str)]
+SocialMediasV2 = dict[SocialMedia, HttpUrlString]
 
 
 def format_coordinate(value: typing.Any) -> Decimal:
@@ -73,6 +76,10 @@ WEBSITE_URL_REGEX = r"^(?:http(s)?:\/\/)?[\w.-\.-\.@]+(?:\.[\w\.-\.@]+)+[\w\-\._
 COMPILED_WEBSITE_URL_REGEX = re.compile(WEBSITE_URL_REGEX)
 
 
+# NOTE(jbaudet - 02/2026): deprecated -> pydantic v2 migration ongoing
+# check VenueContactModelV2 below.
+# It has not been removed yet because it is used by another model used
+# by others models...
 class VenueContactModel(BaseModel):
     class Config:
         alias_generator = to_camel
@@ -127,6 +134,9 @@ class VenueContactModelV2(BaseModelV2):
         url_preserve_empty_path=True,
         extra="forbid",
     )
+
+
+VENUE_IMAGE_CREDIT_MAX_LENGTH = 255
 
 
 class VenueImageCredit(RequiredStrippedString):

@@ -12,11 +12,7 @@ export function getOffererData(
   currentOfferer: GetOffererResponseModel | null | undefined,
   apiCall: () => Promise<GetOffererResponseModel>
 ): Promise<GetOffererResponseModel | null> {
-  if (
-    requestedOffererId &&
-    currentOfferer &&
-    currentOfferer.id === requestedOffererId
-  ) {
+  if (requestedOffererId && currentOfferer?.id === requestedOffererId) {
     return Promise.resolve(currentOfferer)
   }
   if (requestedOffererId === null) {

@@ -13,7 +13,7 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.categories import subcategories
 from pcapi.core.history import models as history_models
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import StockFactory

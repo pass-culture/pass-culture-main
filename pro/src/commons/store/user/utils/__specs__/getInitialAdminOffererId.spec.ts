@@ -19,12 +19,28 @@ vi.mock('@/commons/utils/localStorageManager', () => ({
 }))
 
 describe('getInitialAdminOffererId', () => {
+  beforeEach(() => {
+    window.history.pushState({}, '', '/')
+  })
   const offererNames = [
     getOffererNameFactory({ id: 100 }),
     getOffererNameFactory({ id: 200 }),
   ]
 
-  describe('Priority 1: localStorage', () => {
+  describe('Priority 1 : URL param (backoffice)', () => {
+    it('should return offerer id from URL param', () => {
+      window.history.pushState({}, '', '/?offerer=100')
+
+      const result = getInitialAdminOffererId({
+        offererNames,
+        selectedPartnerVenue: null,
+      })
+
+      expect(result).toBe(100)
+    })
+  })
+
+  describe('Priority 2: localStorage', () => {
     it('should return saved offerer id when present in offererNamesValidated', () => {
       vi.spyOn(localStorageManager, 'getItem').mockReturnValue('100')
 
@@ -48,7 +64,7 @@ describe('getInitialAdminOffererId', () => {
     })
   })
 
-  describe('Priority 2: selectedPartnerVenue parent offerer', () => {
+  describe('Priority 3: selectedPartnerVenue parent offerer', () => {
     it('should return selectedPartnerVenue parent offerer id when no localStorage and venue is selected', () => {
       vi.spyOn(localStorageManager, 'getItem').mockReturnValue(null)
       const selectedPartnerVenue = makeGetVenueResponseModel({
@@ -82,7 +98,7 @@ describe('getInitialAdminOffererId', () => {
     })
   })
 
-  describe('Priority 3: first offerer', () => {
+  describe('Priority 4: first offerer', () => {
     it('should return first offerer id when no localStorage and no selectedPartnerVenue', () => {
       vi.spyOn(localStorageManager, 'getItem').mockReturnValue(null)
 
@@ -95,7 +111,7 @@ describe('getInitialAdminOffererId', () => {
     })
   })
 
-  describe('Priority 4: no offerers', () => {
+  describe('Priority 5: no offerers', () => {
     it('should return null when offererNames is empty', () => {
       vi.spyOn(localStorageManager, 'getItem').mockReturnValue(null)
 

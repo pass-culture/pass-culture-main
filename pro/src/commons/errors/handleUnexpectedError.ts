@@ -25,12 +25,15 @@ export function handleUnexpectedError(
   error: FrontendError,
   options: FrontendErrorOptions = {}
 ): void {
-  const { context, extras, isSilent, userMessage } = {
+  const { context, isSilent, userMessage } = {
     ...DEFAULT_OPTIONS,
     ...options,
   }
 
-  if (!isSilent && typeof userMessage === 'string') {
+  const isUserImpersonated: boolean | null =
+    rootStore.getState().user.currentUser?.isImpersonated ?? null
+
+  if (!isSilent && userMessage) {
     rootStore.dispatch(
       addSnackBar({
         description: userMessage,
@@ -40,12 +43,11 @@ export function handleUnexpectedError(
   }
 
   withScope((scope) => {
+    scope.setContext('default', {
+      isUserImpersonated,
+    })
     if (context) {
-      scope.setContext('context', context)
-    }
-
-    if (extras) {
-      scope.setExtras(extras)
+      scope.setContext('custom', context)
     }
 
     captureException(error)

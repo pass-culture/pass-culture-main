@@ -28,7 +28,10 @@ import {
   currentOffererFactory,
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
-import { venueAddressFactory } from '@/commons/utils/factories/venueFactories'
+import {
+  makeGetVenueResponseModel,
+  venueAddressFactory,
+} from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { IndividualOffers } from './IndividualOffers'
@@ -105,7 +108,7 @@ const renderIndividualOffers = async (
       storeOverrides: {
         user: {
           currentUser: user,
-          selectedPartnerVenue: makeVenueListItem({ id: 2 }),
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
         },
         offerer: currentOffererFactory(),
       },

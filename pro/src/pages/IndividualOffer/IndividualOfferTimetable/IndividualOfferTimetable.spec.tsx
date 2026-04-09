@@ -12,8 +12,8 @@ import {
   getOfferVenueFactory,
   getStocksResponseFactory,
   individualOfferContextValuesFactory,
-  makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { IndividualOfferTimetable } from './IndividualOfferTimetable'
@@ -36,7 +36,7 @@ const renderIndividualOfferTimetable = (
       features: features,
       storeOverrides: {
         user: {
-          selectedPartnerVenue: makeVenueListItem({ id: 2 }),
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
         },
       },
     }

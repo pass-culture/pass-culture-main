@@ -278,7 +278,7 @@ def create_offer(
 
     db.session.flush()
 
-    if feature.FeatureToggle.WIP_OFFER_ARTISTS.is_active() and artist_offer_links is not None:
+    if artist_offer_links is not None:
         validation.check_artist_offer_links(artist_offer_links, subcategory)
 
         for artist_offer_link in artist_offer_links:
@@ -364,7 +364,7 @@ def update_offer(
     subcategory_id = updates.get("subcategoryId", offer.subcategoryId)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
 
-    if feature.FeatureToggle.WIP_OFFER_ARTISTS.is_active() and artist_offer_links is not None:
+    if artist_offer_links is not None:
         validation.check_artist_offer_links(artist_offer_links, subcategory)
         created_links, deleted_links = artist_api.upsert_artist_offer_links(artist_offer_links, offer)
         db.session.expire(offer, ["artistOfferLinks"])
@@ -704,17 +704,14 @@ def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
 
 
 def remove_headline_offer(headline_offer: offers_models.HeadlineOffer) -> None:
-    try:
-        headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, date_utils.get_naive_utc_now())
-        on_commit(
-            partial(
-                search.async_index_offer_ids,
-                {headline_offer.offerId},
-                reason=IndexationReason.OFFER_REINDEXATION,
-            ),
-        )
-    except sa_exc.IntegrityError:
-        raise exceptions.CannotRemoveHeadlineOffer
+    headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, date_utils.get_naive_utc_now())
+    on_commit(
+        partial(
+            search.async_index_offer_ids,
+            {headline_offer.offerId},
+            reason=IndexationReason.OFFER_REINDEXATION,
+        ),
+    )
 
 
 def _notify_pro_upon_stock_edit_for_event_offer(stock: models.Stock, bookings: list[bookings_models.Booking]) -> None:
@@ -2631,7 +2628,6 @@ def fetch_inconsistent_products(batch_size: int = 10_000) -> set[int]:
     while start < product_max_id:
         end = start + batch_size
         batch_result = get_query_product_ids(_chronicles_count_query(start, end))
-        batch_result += get_query_product_ids(_headlines_count_query(start, end))
         batch_result += get_query_product_ids(_likes_count_query(start, end))
         batch_result += get_query_product_ids(_pro_advice_count_query(start, end))
 
@@ -2643,7 +2639,6 @@ def fetch_inconsistent_products(batch_size: int = 10_000) -> set[int]:
 
 def update_product_counts(batch_size: int) -> None:
     _update_product_count("chroniclesCount", _chronicles_count_query, batch_size)
-    _update_product_count("headlinesCount", _headlines_count_query, batch_size)
     _update_product_count("likesCount", _likes_count_query, batch_size)
     _update_product_count("proAdvicesCount", _pro_advice_count_query, batch_size)
 
@@ -2695,20 +2690,6 @@ def _chronicles_count_query(start: int, end: int) -> sa.sql.expression.Select:
         )
         .group_by(models.Product.id, models.Product.chroniclesCount)
         .having(models.Product.chroniclesCount != count)
-    )
-
-
-def _headlines_count_query(start: int, end: int) -> sa.sql.expression.Select:
-    product_id = models.Product.id.label("product_id")
-    count = sa.func.count(models.Product.id).label("count")
-    return (
-        sa.select(product_id, count)
-        .select_from(models.HeadlineOffer)
-        .join(models.Offer, models.HeadlineOffer.offerId == models.Offer.id)
-        .join(models.Product, models.Offer.productId == models.Product.id)
-        .where(models.Offer.productId >= start, models.Offer.productId < end)
-        .group_by(models.Product.id)
-        .having(models.Product.headlinesCount != count)
     )
 
 

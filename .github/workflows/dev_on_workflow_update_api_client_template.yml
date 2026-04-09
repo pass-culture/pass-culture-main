@@ -60,7 +60,7 @@ jobs:
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         with:
           node-version-file: "pro/package.json"
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@5f7b7837d099ddbb8e4f2e15400434d41d78c51b
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
       - name: "Authentification to Google"
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
@@ -129,7 +129,7 @@ jobs:
           timeout: 120000
 
       - name: "Cache node dependencies"
-        uses: pass-culture-github-actions/cache@v1.0.0
+        uses: pass-culture-github-actions/cache@88f07af200f0bcf2480f9c194e3dbb9488a1902b # v1.0.0
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         with:
           bucket: ${{ inputs.CACHE_BUCKET_NAME }}

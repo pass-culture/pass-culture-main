@@ -27,7 +27,7 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.subscription import api as subscription_api
@@ -37,7 +37,7 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
-from pcapi.core.users import testing as sendinblue_testing
+from pcapi.core.users import testing as brevo_testing
 from pcapi.core.users.email import update as email_update
 from pcapi.models import db
 from pcapi.routes.native.v1.serialization import common_models
@@ -208,9 +208,9 @@ class SuspendAccountTest:
             history[0], user, author, history_models.ActionType.USER_SUSPENDED, reason
         )
 
-        assert len(sendinblue_testing.sendinblue_requests) == 1
-        assert sendinblue_testing.sendinblue_requests[0]["email"] == user.email
-        assert sendinblue_testing.sendinblue_requests[0]["action"] == "delete"
+        assert len(brevo_testing.brevo_requests) == 1
+        assert brevo_testing.brevo_requests[0]["email"] == user.email
+        assert brevo_testing.brevo_requests[0]["action"] == "delete"
 
     def test_suspend_beneficiary(self):
         user = users_factories.BeneficiaryGrant18Factory()
@@ -244,13 +244,13 @@ class SuspendAccountTest:
             history[0], user, author, history_models.ActionType.USER_SUSPENDED, reason, comment
         )
 
-        assert len(sendinblue_testing.sendinblue_requests) == 2
+        assert len(brevo_testing.brevo_requests) == 2
         # update venue attributes after booking is canceled
-        assert sendinblue_testing.sendinblue_requests[0]["email"] == cancellable_booking.venue.bookingEmail
-        assert len(sendinblue_testing.sendinblue_requests[0]["attributes"]) > 0
+        assert brevo_testing.brevo_requests[0]["email"] == cancellable_booking.venue.bookingEmail
+        assert len(brevo_testing.brevo_requests[0]["attributes"]) > 0
         # delete suspended user contact
-        assert sendinblue_testing.sendinblue_requests[1]["email"] == user.email
-        assert sendinblue_testing.sendinblue_requests[1]["action"] == "delete"
+        assert brevo_testing.brevo_requests[1]["email"] == user.email
+        assert brevo_testing.brevo_requests[1]["action"] == "delete"
 
     def test_suspend_pro(self):
         booking = bookings_factories.BookingFactory()
@@ -269,9 +269,9 @@ class SuspendAccountTest:
             history[0], pro, author, history_models.ActionType.USER_SUSPENDED, reason
         )
 
-        assert len(sendinblue_testing.sendinblue_requests) == 1
-        assert sendinblue_testing.sendinblue_requests[0]["email"] == pro.email
-        assert sendinblue_testing.sendinblue_requests[0]["action"] == "delete"
+        assert len(brevo_testing.brevo_requests) == 1
+        assert brevo_testing.brevo_requests[0]["email"] == pro.email
+        assert brevo_testing.brevo_requests[0]["action"] == "delete"
 
     def should_change_password_when_user_is_suspended_for_suspicious_login(self):
         user = users_factories.UserFactory()
@@ -319,9 +319,9 @@ class UnsuspendAccountTest:
             history[0], user, author, history_models.ActionType.USER_UNSUSPENDED, reason=None, comment=comment
         )
 
-        assert len(sendinblue_testing.sendinblue_requests) == 1
-        assert sendinblue_testing.sendinblue_requests[0]["email"] == user.email
-        assert len(sendinblue_testing.sendinblue_requests[0]["attributes"]) > 0
+        assert len(brevo_testing.brevo_requests) == 1
+        assert brevo_testing.brevo_requests[0]["email"] == user.email
+        assert len(brevo_testing.brevo_requests[0]["attributes"]) > 0
 
     def should_send_reset_password_email_when_user_is_suspended_for_suspicious_login(self):
         user = users_factories.UserFactory(isActive=False)
@@ -476,7 +476,7 @@ class ChangeUserEmailTest:
         # When
         email_update.validate_email_update_request(token)
 
-        assert sendinblue_testing.sendinblue_requests == [
+        assert brevo_testing.brevo_requests == [
             {
                 "email": self.old_email,
                 "attributes": {"EMAIL": self.new_email},
@@ -529,7 +529,7 @@ class CreateBeneficiaryTest:
         )
 
         assert len(batch_testing.requests) == 3
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(brevo_testing.brevo_requests) == 1
 
         trigger_event_log = batch_testing.requests[2]
         assert trigger_event_log["user_id"] == user.id
@@ -1396,7 +1396,7 @@ class UpdateUserLastConnectionDateTest:
         db.session.refresh(user)
 
         assert user.lastConnectionDate == datetime.datetime(2021, 9, 20, 11, 11, 11)
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(brevo_testing.brevo_requests) == 1
 
     @time_machine.travel("2021-9-20 01:11:11", tick=False)
     def test_update_day_after(self):
@@ -1407,7 +1407,7 @@ class UpdateUserLastConnectionDateTest:
         db.session.refresh(user)
 
         assert user.lastConnectionDate == datetime.datetime(2021, 9, 20, 1, 11, 11)
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(brevo_testing.brevo_requests) == 1
 
     @time_machine.travel("2021-9-20 11:11:11", tick=False)
     def test_update_same_day(self):
@@ -1418,7 +1418,7 @@ class UpdateUserLastConnectionDateTest:
         db.session.refresh(user)
 
         assert user.lastConnectionDate == datetime.datetime(2021, 9, 20, 11, 11, 11)
-        assert len(sendinblue_testing.sendinblue_requests) == 0
+        assert len(brevo_testing.brevo_requests) == 0
 
     @time_machine.travel("2021-9-20 11:11:11", tick=False)
     def test_no_update(self):
@@ -1429,7 +1429,7 @@ class UpdateUserLastConnectionDateTest:
         db.session.refresh(user)
 
         assert user.lastConnectionDate == datetime.datetime(2021, 9, 20, 11, 00, 11)
-        assert len(sendinblue_testing.sendinblue_requests) == 0
+        assert len(brevo_testing.brevo_requests) == 0
 
 
 class UserEmailValidationTest:

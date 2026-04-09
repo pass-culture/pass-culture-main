@@ -215,7 +215,6 @@ export const IndividualOfferMediaScreen = ({
               />
               <FormLayout.SubSection
                 title="Ajoutez une vidéo"
-                isNew
                 className={styles['media-sub-section']}
               >
                 <VideoUploader />

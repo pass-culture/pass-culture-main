@@ -3,7 +3,7 @@ import dataclasses
 import pytest
 
 from pcapi.core.mails import testing as mails_testing
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.personal_data_updated import send_beneficiary_personal_data_updated
 from pcapi.core.users import factories as users_factories
 

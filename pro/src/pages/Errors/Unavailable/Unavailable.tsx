@@ -5,7 +5,7 @@ export const Unavailable = () => {
   return (
     <ErrorLayout
       mainHeading="Page indisponible"
-      paragraph="Veuillez rééssayer plus tard"
+      paragraph="Veuillez réessayer plus tard"
       errorIcon={strokeWipIcon}
     />
   )

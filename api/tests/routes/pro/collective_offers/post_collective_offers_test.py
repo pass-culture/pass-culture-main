@@ -10,7 +10,7 @@ from pcapi.core.educational import testing as educational_testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
-from pcapi.core.users import testing as sendinblue_testing
+from pcapi.core.users import testing as brevo_testing
 from pcapi.models import db
 
 
@@ -114,8 +114,8 @@ class Returns200Test:
 
         assert_offer_values(offer, data, user, offerer)
 
-        # 2 requests (for 2 bookingEmail) for sendinblue
-        assert len(sendinblue_testing.sendinblue_requests) == 3
+        # 2 requests (for 2 bookingEmail) for Brevo
+        assert len(brevo_testing.brevo_requests) == 3
 
     def test_create_collective_offer_allowed_one_adage(self, client):
         # offerer is allowed on adage but has no venue with adageId
@@ -125,7 +125,7 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, adageId=None)
 
         data = base_offer_payload(venue=venue)
-        with patch("pcapi.core.educational.adage.api.get_adage_offerer") as get_adage_offerer_mock:
+        with patch("pcapi.core.educational.adage.client.get_adage_offerer") as get_adage_offerer_mock:
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
         get_adage_offerer_mock.assert_not_called()
@@ -373,7 +373,7 @@ class Returns403Test:
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         data = base_offer_payload(venue=venue)
-        with patch("pcapi.core.educational.adage.api.get_adage_offerer", return_value=[]):
+        with patch("pcapi.core.educational.adage.client.get_adage_offerer", return_value=[]):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 403

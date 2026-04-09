@@ -12,7 +12,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.mails.transactional import sendinblue_template_ids
+from pcapi.core.mails.transactional import brevo_template_ids
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
 from pcapi.utils import date as date_utils
@@ -276,11 +276,11 @@ class Returns200Test:
 
         assert len(mails_testing.outbox) == 2
         assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
-            sendinblue_template_ids.TransactionalEmail.EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO.value
+            brevo_template_ids.TransactionalEmail.EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO.value
         )
         assert mails_testing.outbox[0]["To"] == "venue@postponed.net"
         assert mails_testing.outbox[1]["template"] == dataclasses.asdict(
-            sendinblue_template_ids.TransactionalEmail.BOOKING_POSTPONED_BY_PRO_TO_BENEFICIARY.value
+            brevo_template_ids.TransactionalEmail.BOOKING_POSTPONED_BY_PRO_TO_BENEFICIARY.value
         )
         assert mails_testing.outbox[1]["To"] == "beneficiary@bookingEmail.fr"
 

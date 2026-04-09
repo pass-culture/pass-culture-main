@@ -16,14 +16,11 @@ export interface OfferEventDateCellProps {
   offer: CollectiveOffer
 }
 
-function getOfferDate(
+function getBookableOfferDate(
   date: string,
-  isTemplate: boolean,
   venue: ListOffersVenueResponseModel
-) {
-  return isTemplate
-    ? toDateStrippedOfTimezone(date)
-    : getLocalDepartementDateTimeFromUtc(date, venue.departementCode)
+): Date {
+  return getLocalDepartementDateTimeFromUtc(date, venue.departementCode)
 }
 
 export const OfferDateCell = ({ offer }: OfferEventDateCellProps) => {
@@ -44,16 +41,13 @@ export const OfferDateCell = ({ offer }: OfferEventDateCellProps) => {
       }
       return ['-']
     }
-    const offerStartDate = getOfferDate(
-      offerDatetimes.start,
-      isTemplateTable,
-      offer.venue
-    )
-    const offerEndDate = getOfferDate(
-      offerDatetimes.end,
-      isTemplateTable,
-      offer.venue
-    )
+    const offerStartDate = isTemplateTable
+      ? toDateStrippedOfTimezone(offerDatetimes.start)
+      : getBookableOfferDate(offerDatetimes.start, offer.venue)
+    const offerEndDate = isTemplateTable
+      ? toDateStrippedOfTimezone(offerDatetimes.end)
+      : getBookableOfferDate(offerDatetimes.end, offer.venue)
+
     if (
       offerDatetimes.start === offerDatetimes.end ||
       (isTemplateTable &&

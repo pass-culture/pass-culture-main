@@ -11,7 +11,7 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary import (
     send_booking_cancellation_by_beneficiary_email,
 )
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
@@ -47,7 +47,7 @@ class SendSendiblueBeneficiaryBookingCancellationEmailTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
+class MakeBeneficiaryBookingCancellationEmailBrevoDataTest:
     def test_should_return_thing_data_when_booking_is_a_thing(self):
         # Given
         booking = booking_factories.CancelledBookingFactory(

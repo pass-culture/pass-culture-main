@@ -5,11 +5,12 @@ import {
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferResponseModel,
 } from '@/apiClient/v1'
+import { canExpire } from '@/commons/core/OfferEducational/utils/canExpire'
+import { getExpirationText } from '@/commons/core/OfferEducational/utils/getExpirationText'
 import {
   FORMAT_DD_MM_YYYY,
   toDateStrippedOfTimezone,
 } from '@/commons/utils/date'
-import { pluralizeFr } from '@/commons/utils/pluralize'
 import fullInfoIcon from '@/icons/full-info.svg'
 import fullWaitIcon from '@/icons/full-wait.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -20,15 +21,6 @@ type ExpirationCellProps = {
   offer: CollectiveOfferResponseModel
 }
 
-function isCollectiveOfferPublishedOrPreBooked(
-  offer: CollectiveOfferResponseModel
-) {
-  return (
-    offer.displayedStatus === CollectiveOfferDisplayedStatus.PUBLISHED ||
-    offer.displayedStatus === CollectiveOfferDisplayedStatus.PREBOOKED
-  )
-}
-
 export function ExpirationCell({ offer }: ExpirationCellProps) {
   const bookingLimitDate = offer.stock?.bookingLimitDatetime
 
@@ -36,30 +28,26 @@ export function ExpirationCell({ offer }: ExpirationCellProps) {
     new Date(bookingLimitDate ?? new Date()),
     new Date()
   )
-
-  const hasExpirationRow =
-    isCollectiveOfferPublishedOrPreBooked(offer) && !!bookingLimitDate
+  const hasExpirationRow = canExpire(offer) && !!bookingLimitDate
 
   if (!hasExpirationRow) {
     return null
   }
 
+  const expirationText = getExpirationText(daysCountBeforeExpiration)
+  const isExpiringSoon = !!expirationText
+
   return (
     <div
       className={classNames(styles['banner'], {
-        [styles['banner-expires-soon']]: daysCountBeforeExpiration <= 7,
+        [styles['banner-expires-soon']]: isExpiringSoon,
       })}
     >
       <div className={styles['banner-expiration']}>
-        {daysCountBeforeExpiration <= 7 && (
+        {isExpiringSoon && (
           <div className={styles['banner-expiration-days-badge']}>
             <SvgIcon alt="" src={fullInfoIcon} width="16" />
-            <div>
-              expire{' '}
-              {daysCountBeforeExpiration > 0
-                ? `dans ${daysCountBeforeExpiration} ${pluralizeFr(daysCountBeforeExpiration, 'jour', 'jours')}`
-                : 'aujourd’hui'}
-            </div>
+            <div>{expirationText}</div>
           </div>
         )}
         <div className={styles['banner-expiration-waiting']}>

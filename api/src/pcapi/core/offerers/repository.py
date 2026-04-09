@@ -4,6 +4,7 @@ import typing
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from sqlalchemy.engine import Row
 
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
@@ -552,7 +553,7 @@ def get_emails_by_venue(venue: models.Venue) -> set[str]:
 def get_emails_by_offerer(offerer: models.Offerer) -> set[str]:
     """
     Get all emails for which pro attributes may be modified when the offerer is updated or deleted.
-    Any bookingEmail in a venue should be updated in sendinblue when offerer is disabled, deleted or its name changed
+    Any bookingEmail in a venue should be updated in Brevo when offerer is disabled, deleted or its name changed
     """
     emails = {
         email
@@ -593,7 +594,7 @@ def find_venues_of_offerer_from_siret(siret: str) -> tuple[models.Offerer | None
     return offerer, venues
 
 
-def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
+def get_offerer_and_extradata(offerer_id: int) -> Row | None:
     """
     Return and offerer and some extra data regarding it.
         - hasValidBankAccount
@@ -802,7 +803,14 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
         )
         .filter(models.Offerer.id == offerer_id)
         .options(
-            sa_orm.load_only(models.Offerer.id, models.Offerer.name),
+            sa_orm.load_only(
+                models.Offerer.id,
+                models.Offerer.name,
+                models.Offerer.siren,
+                models.Offerer.validationStatus,
+                models.Offerer.isActive,
+                models.Offerer.allowedOnAdage,
+            ),
             sa_orm.selectinload(models.Offerer.managedVenues).with_expression(
                 models.Venue._has_partner_page, models.Venue.has_partner_page
             ),

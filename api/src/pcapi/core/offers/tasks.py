@@ -403,9 +403,6 @@ def _create_or_update_ean_offers(
                 )
             for product in existing_products:
                 try:
-                    if offerer_address is None:
-                        # FIXME(PC-37261): change workflow to make this case impossible.
-                        raise Exception("offerer_address should not be None here")
                     assert product.ean  # to make mypy happy
                     stock_data = serialized_products_stocks[product.ean]
                     created_offer = _create_offer_from_product(
@@ -462,8 +459,6 @@ def _create_or_update_ean_offers(
             try:
                 ean = offer.ean
                 assert ean  # to make mypy happy
-                # TODO (tcoudray-pass, 08/10/25) : (OA) Remove when `Venue.offererAddress` is not nullable
-                assert offerer_address  # to make mypy happy
                 has_been_updated, offer = _update_offer_and_related_stock(
                     offer=offer,
                     stock_data=serialized_products_stocks[ean],

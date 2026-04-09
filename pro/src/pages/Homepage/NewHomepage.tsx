@@ -5,12 +5,16 @@ import {
   DMSApplicationstatus,
   type GetVenueResponseModel,
 } from '@/apiClient/v1'
+import { FrontendError } from '@/commons/errors/FrontendError'
+import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getToday } from '@/commons/utils/date'
 import { getLastCollectiveDmsApplication } from '@/commons/utils/getLastCollectiveDmsApplication'
 import { CollectiveDmsTimeline } from '@/components/CollectiveDmsTimeline/CollectiveDmsTimeline'
 import { CollectiveDmsTimelineVariant } from '@/components/CollectiveDmsTimeline/types'
+import strokeWipIcon from '@/icons/stroke-wip.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import {
   getPanelId,
   getTabId,
@@ -29,10 +33,7 @@ import { IncomeCard } from './components/IncomeCard/IncomeCard'
 import { NewsletterCard } from './components/NewsletterCard/NewsletterCard'
 import { OffersEmptyStateCard } from './components/OffersEmptyStateCard/OffersEmptyStateCard'
 import { PartnerPageCard } from './components/PartnerPageCard/PartnerPageCard'
-import {
-  HomepageVariant,
-  OffersEmptyStateCardVariant,
-} from './components/types'
+import { HomepageVariant } from './components/types'
 import { VenueValidationBanner } from './components/VenueValidationBanner/VenueValidationBanner'
 import { WebinarCard } from './components/WebinarCard/WebinarCard'
 import styles from './NewHomepage.module.scss'
@@ -55,6 +56,22 @@ export const NewHomepage = (): JSX.Element => {
   )
   const individualId = useId()
   const collectiveId = useId()
+
+  if (!hasIndividualTab && !hasCollectiveTab) {
+    handleUnexpectedError(
+      new FrontendError(
+        'The venue must have at least one visible tab (individual or collective).'
+      ),
+      { isSilent: true }
+    )
+    return (
+      <div className={styles['content']}>
+        <SvgIcon className={styles['error-icon']} src={strokeWipIcon} alt="" />
+        <h2 className={styles['title']}>Page indisponible</h2>
+        <p className={styles['description']}>Veuillez réessayer plus tard</p>
+      </div>
+    )
+  }
 
   const tabs: TabItem<TabKey>[] = [
     {
@@ -201,9 +218,7 @@ export const NewHomepage = (): JSX.Element => {
 
           <div className={styles['main']}>
             {hasRefusedDmsApplication && (
-              <OffersEmptyStateCard
-                variant={OffersEmptyStateCardVariant.INDIVIDUAL}
-              />
+              <OffersEmptyStateCard variant="INDIVIDUAL" />
             )}
             {selectedPartnerVenue.allowedOnAdage && (
               <CollectiveOffersCardsContainer

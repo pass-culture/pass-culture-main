@@ -4,7 +4,7 @@ from datetime import datetime
 
 from flask import current_app as app
 
-import pcapi.core.external.sendinblue as external_contacts
+import pcapi.core.external.brevo as external_contacts
 from pcapi import settings
 from pcapi.core import token as token_utils
 from pcapi.core.mails import transactional as transactional_mails

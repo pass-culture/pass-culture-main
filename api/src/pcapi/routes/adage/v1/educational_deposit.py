@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 
 @blueprint.adage_v1.route("years/<string:year_id>/deposits", methods=["GET"])
 @atomic()
-@spectree_serialize(api=blueprint.api, response_model=deposit_serialization.EducationalDepositsResponse)
 @adage_api_key_required
+@spectree_serialize(api=blueprint.api, response_model=deposit_serialization.EducationalDepositsResponse)
 def get_educational_deposit(year_id: str) -> deposit_serialization.EducationalDepositsResponse:
     educational_deposits = get_educational_deposits_by_year(year_id=year_id)
 

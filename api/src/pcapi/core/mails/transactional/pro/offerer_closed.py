@@ -5,7 +5,7 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.mails import models
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import repository as users_repository

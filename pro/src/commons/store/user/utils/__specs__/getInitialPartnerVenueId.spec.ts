@@ -6,7 +6,24 @@ import { makeVenueListItemLiteResponseModel } from '@/commons/utils/factories/ve
 import { LOCAL_STORAGE_KEY } from '@/commons/utils/localStorageManager'
 
 describe('getInitialPartnerVenueId', () => {
-  describe('Priority 1: first venue of a newly associated offerer', () => {
+  beforeEach(() => {
+    window.history.pushState({}, '', '/')
+  })
+  describe('Priority 1 : URL param (backoffice)', () => {
+    it('should return venue id from URL param', () => {
+      window.history.pushState({}, '', '/?venue=10')
+
+      const venues = [
+        makeVenueListItemLiteResponseModel({ id: 10, managingOffererId: 1 }),
+        makeVenueListItemLiteResponseModel({ id: 20, managingOffererId: 2 }),
+      ]
+
+      const result = getInitialPartnerVenueId(venues)
+
+      expect(result).toBe(10)
+    })
+  })
+  describe('Priority 2: first venue of a newly associated offerer', () => {
     it('should return the venue ID when new offerer has exactly one venue', () => {
       const venues = [
         makeVenueListItemLiteResponseModel({ id: 10, managingOffererId: 1 }),
@@ -68,7 +85,7 @@ describe('getInitialPartnerVenueId', () => {
     })
   })
 
-  describe('Priority 2: venue ID from local storage', () => {
+  describe('Priority 3: venue ID from local storage', () => {
     it('should return venue ID from local storage when present and valid', () => {
       localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '123')
 
@@ -106,7 +123,7 @@ describe('getInitialPartnerVenueId', () => {
     })
   })
 
-  describe('Priority 3: single venue auto-selection', () => {
+  describe('Priority 4: single venue auto-selection', () => {
     it('should return the only venue ID when user has exactly one venue', () => {
       const venues = [makeVenueListItemLiteResponseModel({ id: 789 })]
 
@@ -127,7 +144,7 @@ describe('getInitialPartnerVenueId', () => {
     })
   })
 
-  describe('Priority 4: no venue selection', () => {
+  describe('Priority 5: no venue selection', () => {
     it('should return null when user has no venues', () => {
       const venues: VenueListItemLiteResponseModel[] = []
 

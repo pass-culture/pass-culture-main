@@ -12,7 +12,7 @@ const translateObjectKeysAndValues = (
   originalObject: Record<string, any>,
   translationsMap: Record<string, string>
 ) => {
-  const nonTranlatedKeys = ['nom-ou-isbn', 'nameOrIsbn', 'nom', 'name'] //  These keys should not have their values translated since it's user inputs
+  const nonTranlatedKeys = new Set(['nom-ou-isbn', 'nameOrIsbn', 'nom', 'name']) //  These keys should not have their values translated since it's user inputs
 
   const result: Record<string, string> = {}
   Object.entries(originalObject).forEach(([originalKey, originalValue]) => {
@@ -20,7 +20,7 @@ const translateObjectKeysAndValues = (
 
     const translatedValue =
       Object.keys(translationsMap).includes(originalValue) &&
-      !nonTranlatedKeys.includes(originalKey)
+      !nonTranlatedKeys.has(originalKey)
         ? translationsMap[originalValue]
         : originalValue
 

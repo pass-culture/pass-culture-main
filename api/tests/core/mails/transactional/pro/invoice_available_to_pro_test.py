@@ -5,14 +5,14 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.finance import factories
 from pcapi.core.mails import testing as mails_testing
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.pro.invoice_available_to_pro import send_invoice_available_to_pro_email
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class SendinblueProAvailableInvoiceEmailDataTest:
+class BrevoProAvailableInvoiceEmailDataTest:
     def test_send_email_in_first_half_of_month(self):
         bank_account = factories.BankAccountFactory()
 

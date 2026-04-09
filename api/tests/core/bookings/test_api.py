@@ -42,7 +42,7 @@ from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.external.batch.utils import BATCH_DATETIME_FORMAT
 from pcapi.core.external_bookings import factories as external_bookings_factories
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers.clients.cinema_client import Ticket
 from pcapi.core.providers.clients.ems_client import EMS_EXTERNAL_BOOKINGS_TO_CANCEL

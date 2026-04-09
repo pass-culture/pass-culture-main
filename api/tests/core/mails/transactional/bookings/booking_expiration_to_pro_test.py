@@ -5,7 +5,7 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.mails.transactional.bookings.booking_expiration_to_pro import send_bookings_expiration_to_pro_email
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

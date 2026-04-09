@@ -73,6 +73,8 @@ const defaultVenue: GetVenueResponseModel = {
     isManualEdition: false,
     latitude: 48.8566,
     longitude: 2.3522,
+    departmentCode: '75',
+    label: 'label',
   },
   comment: 'Un lieu populaire pour les concerts et les événements',
   bookingEmail: 'contact@lieuexemple.com',

@@ -1,6 +1,6 @@
 from pcapi.core import mails
 from pcapi.core.mails import models
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.repository import find_new_offerer_user_email

@@ -16,16 +16,16 @@ import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constan
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { collectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import {
-  defaultGetOffererResponseModel,
-  makeVenueListItem,
-} from '@/commons/utils/factories/individualApiFactories'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
-import { venueAddressFactory } from '@/commons/utils/factories/venueFactories'
+import {
+  makeGetVenueResponseModel,
+  venueAddressFactory,
+} from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { TemplateCollectiveOffers } from '../TemplateCollectiveOffers'
@@ -66,7 +66,7 @@ const renderOffers = async (
     storeOverrides: {
       user: {
         currentUser: user,
-        selectedPartnerVenue: makeVenueListItem({ id: 2 }),
+        selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
       },
       offerer: currentOffererFactory(),
     },

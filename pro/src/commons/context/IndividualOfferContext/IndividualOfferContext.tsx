@@ -1,5 +1,5 @@
 import type React from 'react'
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
@@ -24,7 +24,7 @@ export interface IndividualOfferContextValues {
   categories: CategoryResponseModel[]
   subCategories: SubcategoryResponseModel[]
   isEvent: boolean | null
-  setIsEvent: (isEvent: boolean | null) => void
+  setIsControlledEvent: (isEvent: boolean | null) => void
   /** Real boolean guarded by early `<Splinner />` return while fetching offer data in context provider. */
   hasPublishedOfferWithSameEan: boolean
 }
@@ -36,8 +36,7 @@ export const IndividualOfferContext =
     isEvent: null,
     offer: null,
     offerId: null,
-    // TODO (igabriele, 2025-08-20): Rename that to `setIsControlledEvent`.
-    setIsEvent: () => undefined,
+    setIsControlledEvent: () => undefined,
     subCategories: [],
   })
 
@@ -52,7 +51,9 @@ interface IndividualOfferContextProviderProps {
 export const IndividualOfferContextProvider = ({
   children,
 }: IndividualOfferContextProviderProps) => {
-  const [isControlledEvent, setIsEvent] = useState<boolean | null>(null)
+  const [isControlledEvent, setIsControlledEvent] = useState<boolean | null>(
+    null
+  )
   const { offerId: offerIdAsString } = useParams<{
     offerId: string
   }>()
@@ -109,6 +110,32 @@ export const IndividualOfferContextProvider = ({
     { fallbackData: { categories: [], subcategories: [] } }
   )
 
+  //  Only consider a puslished offer that is different from the one we are editing or creating now
+  const publishedOfferWithSameEAN =
+    offer && publishedOfferWithSameEANQuery.data?.id !== offer.id
+      ? publishedOfferWithSameEANQuery.data
+      : undefined
+
+  const contextValue = useMemo(
+    () => ({
+      categories: categoriesQuery.data.categories,
+      hasPublishedOfferWithSameEan: Boolean(publishedOfferWithSameEAN),
+      isEvent: offer?.isEvent ?? isControlledEvent,
+      offer: offer ?? null,
+      offerId,
+      setIsControlledEvent,
+      subCategories: categoriesQuery.data.subcategories,
+    }),
+    [
+      categoriesQuery.data.categories,
+      categoriesQuery.data.subcategories,
+      publishedOfferWithSameEAN,
+      offer,
+      isControlledEvent,
+      offerId,
+    ]
+  )
+
   if (
     offerQuery.isLoading ||
     categoriesQuery.isLoading ||
@@ -117,24 +144,8 @@ export const IndividualOfferContextProvider = ({
     return <Spinner />
   }
 
-  //  Only consider a puslished offer that is different from the one we are editing or creating now
-  const publishedOfferWithSameEAN =
-    offer && publishedOfferWithSameEANQuery.data?.id !== offer.id
-      ? publishedOfferWithSameEANQuery.data
-      : undefined
-
   return (
-    <IndividualOfferContext.Provider
-      value={{
-        categories: categoriesQuery.data.categories,
-        hasPublishedOfferWithSameEan: Boolean(publishedOfferWithSameEAN),
-        isEvent: offer?.isEvent ?? isControlledEvent,
-        offer: offer ?? null,
-        offerId,
-        setIsEvent,
-        subCategories: categoriesQuery.data.subcategories,
-      }}
-    >
+    <IndividualOfferContext.Provider value={contextValue}>
       {children}
     </IndividualOfferContext.Provider>
   )

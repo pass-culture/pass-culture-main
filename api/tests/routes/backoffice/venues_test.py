@@ -23,7 +23,7 @@ from pcapi.core.geography import utils as geography_utils
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
@@ -432,7 +432,7 @@ class GetVenueTest(GetEndpointHelper):
     def test_get_venue_with_provider(self, authenticated_client):
         venue_provider = providers_factories.AllocineVenueProviderFactory(lastSyncDate=datetime(2024, 1, 5, 12, 0))
         venue_id = venue_provider.venue.id
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries, expire_session=False):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
             assert response.status_code == 200
 
@@ -539,7 +539,7 @@ class GetVenueTest(GetEndpointHelper):
         "bo_role, has_fraudulent_booking_badge, has_reimbursement_suspended_badge",
         [
             # Depend on permissions set in conftest.py
-            (perm_models.Roles.FRAUDE_CONFORMITE, True, True),
+            (perm_models.Roles.FRAUDE_PRO, True, True),
             (perm_models.Roles.SUPPORT_PRO, True, True),
             (perm_models.Roles.DAF, False, True),
             (perm_models.Roles.CHARGE_DEVELOPPEMENT, False, False),

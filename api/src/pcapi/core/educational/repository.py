@@ -1134,8 +1134,11 @@ def get_collective_offer_template_by_id(offer_id: int) -> models.CollectiveOffer
             db.session.query(models.CollectiveOfferTemplate)
             .filter(models.CollectiveOfferTemplate.id == offer_id)
             .options(
-                sa_orm.joinedload(models.CollectiveOfferTemplate.venue, innerjoin=True).joinedload(
-                    offerers_models.Venue.managingOfferer, innerjoin=True
+                sa_orm.joinedload(models.CollectiveOfferTemplate.venue).options(
+                    sa_orm.joinedload(offerers_models.Venue.managingOfferer),
+                    sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(
+                        offerers_models.OffererAddress.address
+                    ),
                 )
             )
             .options(sa_orm.joinedload(models.CollectiveOfferTemplate.domains))

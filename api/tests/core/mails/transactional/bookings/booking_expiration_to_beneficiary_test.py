@@ -14,13 +14,13 @@ from pcapi.core.mails.transactional.bookings.booking_expiration_to_beneficiary i
 from pcapi.core.mails.transactional.bookings.booking_expiration_to_beneficiary import (
     send_expired_bookings_to_beneficiary_email,
 )
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.utils import date as date_utils
 
 
 @pytest.mark.usefixtures("db_session")
-class SendExpiredBookingsEmailToBeneficiarySendinblueTest:
+class SendExpiredBookingsEmailToBeneficiaryBrevoTest:
     def test_should_send_email_to_beneficiary_when_expired_book_booking_cancelled(self):
         amnesiac_user = users_factories.BeneficiaryGrant18Factory(email="dory@example.com")
         expired_today_book_booking = BookingFactory(

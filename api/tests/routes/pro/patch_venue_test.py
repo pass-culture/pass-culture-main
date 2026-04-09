@@ -132,7 +132,7 @@ class Returns200Test:
         assert response.json["volunteeringUrl"] == "https://www.jeveuxaider.gouv.fr/organisations/new-structure-name"
 
         # an update request should be sent to Zendesk
-        assert len(external_testing.sendinblue_requests) == 1
+        assert len(external_testing.brevo_requests) == 1
         assert external_testing.zendesk_sell_requests == [
             {
                 "action": "update",

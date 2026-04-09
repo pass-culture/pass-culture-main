@@ -4,6 +4,7 @@ import { forwardRef } from 'react'
 
 import { api } from '@/apiClient/api'
 import * as apiHelpers from '@/apiClient/helpers'
+import { VenueTypeCode } from '@/apiClient/v1'
 import { DisplayableActivity } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
@@ -163,8 +164,8 @@ describe('VenueEditionHeader', () => {
         activity: DisplayableActivity.FESTIVAL,
         bannerUrl: 'https://www.example.com/image.png',
         bannerMeta: {
+          image_credit: null,
           original_image_url: 'https://www.example.com/image.png',
-          image_credit: '',
           crop_params: {
             x_crop_percent: 0,
             y_crop_percent: 0,
@@ -187,6 +188,7 @@ describe('VenueEditionHeader', () => {
         ...defaultGetVenue,
         activity: DisplayableActivity.FESTIVAL,
         isPermanent: true,
+        venueType: { value: VenueTypeCode.FESTIVAL, label: '' },
       },
     })
 
@@ -262,8 +264,8 @@ describe('VenueEditionHeader', () => {
         ...defaultGetVenue,
         bannerUrl: 'https://www.example.com/image.png',
         bannerMeta: {
+          image_credit: null,
           original_image_url: 'https://www.example.com/image.png',
-          image_credit: '',
           crop_params: {
             x_crop_percent: 0,
             y_crop_percent: 0,
@@ -316,8 +318,8 @@ describe('VenueEditionHeader', () => {
         ...defaultGetVenue,
         bannerUrl: 'https://www.example.com/image.png',
         bannerMeta: {
+          image_credit: null,
           original_image_url: 'https://www.example.com/image.png',
-          image_credit: '',
           crop_params: {
             x_crop_percent: 0,
             y_crop_percent: 0,

@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { OnboardingDidacticEvents } from '@/commons/core/FirebaseEvents/constants'
+import { NBSP } from '@/commons/core/shared/constants'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import { Card } from '@/ui-kit/Card/Card'
@@ -28,8 +29,9 @@ export const OnboardingOffersChoice = () => {
           <span>
             Vos offres seront visibles par{' '}
             <strong className={styles['card-description-highlight']}>
-              + de 4 millions de jeunes{' '}
+              + de 4 millions de jeunes
             </strong>
+            {NBSP}
             inscrits sur l’application mobile pass Culture.
           </span>
         </Card.Content>

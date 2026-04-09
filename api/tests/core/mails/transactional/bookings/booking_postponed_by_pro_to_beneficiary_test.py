@@ -13,16 +13,16 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class GetBookingPostponedByProToBeneficiaryTest:
-    def test_should_get_sendinblue_email_data_when_stock_date_have_been_changed(self):
+    def test_should_get_brevo_email_data_when_stock_date_have_been_changed(self):
         # Given
         stock = EventStockFactory(beginningDatetime=datetime(2019, 8, 20, 12, 0, 0))
         booking = bookings_factories.BookingFactory(stock=stock)
 
         # When
-        booking_info_for_sendinblue = get_booking_postponed_by_pro_to_beneficiary_email_data(booking)
+        booking_info_for_brevo = get_booking_postponed_by_pro_to_beneficiary_email_data(booking)
 
         # Then
-        assert booking_info_for_sendinblue.params == {
+        assert booking_info_for_brevo.params == {
             "BOOKING_CONTACT": None,
             "BOOKING_LINK": f"https://webapp-v2.example.com/reservation/{booking.id}/details",
             "EVENT_DATE": "mardi 20 août 2019",

@@ -1,7 +1,6 @@
 import cn from 'classnames'
 
 import style from './FormLayout.module.scss'
-import { Actions } from './FormLayoutActions'
 import { MandatoryInfo } from './FormLayoutMandatoryInfo'
 import { Row } from './FormLayoutRow'
 import { RowWithInfo } from './FormLayoutRowWithInfo'
@@ -41,5 +40,4 @@ FormLayout.Row = Row
 FormLayout.SubSubSection = SubSubSection
 FormLayout.SubSection = SubSection
 FormLayout.Section = Section
-FormLayout.Actions = Actions
 FormLayout.MandatoryInfo = MandatoryInfo

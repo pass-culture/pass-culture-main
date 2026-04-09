@@ -10,25 +10,17 @@ $info-box-margin-left: rem.torem(24px);
 
   &.full-width-actions {
     @media (min-width: size.$tablet) {
-      & > *:not(.form-layout-actions) {
+      & > * {
         width: rem.torem(486px);
       }
-    }
-
-    .form-layout-actions {
-      justify-content: space-between;
     }
   }
 
   &.medium-width-actions {
     @media (min-width: size.$tablet) {
-      & > *:not(.form-layout-actions) {
+      & > * {
         max-width: rem.torem(826px);
       }
-    }
-
-    .form-layout-actions {
-      justify-content: space-between;
     }
   }
 
@@ -100,23 +92,6 @@ $info-box-margin-left: rem.torem(24px);
       flex-flow: row wrap;
       flex-direction: row;
       gap: var(--size-spacing-l);
-    }
-  }
-
-  &-actions {
-    display: flex;
-  }
-
-  &-action {
-    margin-left: var(--size-spacing-xl);
-    text-align: center;
-
-    @media (min-width: size.$tablet) {
-      min-width: rem.torem(192px);
-    }
-
-    &:first-child {
-      margin-left: 0;
     }
   }
 

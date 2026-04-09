@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.email_address_change import get_confirmation_email_change_data
 from pcapi.core.mails.transactional.users.email_address_change import get_validation_email_change_data
 from pcapi.core.users import factories as users_factories
@@ -9,8 +9,8 @@ from pcapi.core.users import factories as users_factories
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class SendinblueEmailAddressChangeTest:
-    def test_should_return_sendinblue_confirmation_data(self):
+class BrevoEmailAddressChangeTest:
+    def test_should_return_brevo_confirmation_data(self):
         # Given
         user = users_factories.UserFactory.build(email="fabien+test@example.net", firstName="Fabien")
         confirmation_link = "http://example.com/confirmation"
@@ -26,7 +26,7 @@ class SendinblueEmailAddressChangeTest:
         assert data.params["CONFIRMATION_LINK"] == confirmation_link
         assert data.params["CANCELLATION_LINK"] == cancellation_link
 
-    def test_should_return_sendinblue_validation_data(self):
+    def test_should_return_brevo_validation_data(self):
         # Given
         user = users_factories.UserFactory.build(email="fabien+test@example.net", firstName="Fabien")
 

@@ -38,8 +38,9 @@ class Returns200Test:
         offer = factories.BookedCollectiveOfferFactory(venue=venue)
 
         client = client.with_session_auth(user_offerer.user.email)
+        venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"{URL}?venueId={venue.id}")
+            response = client.get(f"{URL}?venueId={venue_id}")
             assert response.status_code == 200
 
         stock = offer.collectiveStock
@@ -68,8 +69,9 @@ class Returns200Test:
         factories.DraftCollectiveOfferFactory(venue=venue)
 
         client = client.with_session_auth(user_offerer.user.email)
+        venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"{URL}?venueId={venue.id}")
+            response = client.get(f"{URL}?venueId={venue_id}")
             assert response.status_code == 200
 
         assert response.json == {
@@ -82,8 +84,9 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
         client = client.with_session_auth(user_offerer.user.email)
+        venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"{URL}?venueId={venue.id}")
+            response = client.get(f"{URL}?venueId={venue_id}")
             assert response.status_code == 200
 
         assert response.json == {"hasOffers": False, "offers": []}
@@ -111,8 +114,9 @@ class Returns200Test:
         factories.ArchivedCollectiveOfferFactory(venue=venue)
 
         client = client.with_session_auth(user_offerer.user.email)
+        venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"{URL}?venueId={venue.id}")
+            response = client.get(f"{URL}?venueId={venue_id}")
             assert response.status_code == 200
 
         response_json = response.json
@@ -129,8 +133,9 @@ class Returns200Test:
             offers_by_status[status] = factories.create_collective_offer_by_status(status, venue=venue)
 
         client = client.with_session_auth(user_offerer.user.email)
+        venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"{URL}?venueId={venue.id}")
+            response = client.get(f"{URL}?venueId={venue_id}")
             assert response.status_code == 200
 
         response_json = response.json
@@ -207,8 +212,9 @@ class Returns200Test:
         }
 
         client = client.with_session_auth(user_offerer.user.email)
+        venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"{URL}?venueId={venue.id}")
+            response = client.get(f"{URL}?venueId={venue_id}")
             assert response.status_code == 200
 
         ids = [offer["id"] for offer in response.json["offers"]]

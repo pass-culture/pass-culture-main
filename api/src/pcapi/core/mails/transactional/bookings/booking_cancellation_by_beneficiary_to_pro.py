@@ -3,7 +3,7 @@ import logging
 from pcapi.core import mails
 from pcapi.core.bookings.models import Booking
 from pcapi.core.mails import models
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.utils import format_price
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email

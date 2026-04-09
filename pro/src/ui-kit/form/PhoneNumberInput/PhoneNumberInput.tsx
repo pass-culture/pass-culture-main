@@ -178,6 +178,7 @@ export const PhoneNumberInput = forwardRef<
             value={phoneNumber}
             onChange={handleNumberChange}
             onBlur={handleBlur}
+            aria-invalid={Boolean(error)}
             id={inputId}
             className={classNames(styles['phone-number-input'], {
               [styles['has-error']]: Boolean(error),

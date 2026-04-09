@@ -537,7 +537,7 @@ class GetBoUserTest(GetEndpointHelper):
                 in (
                     perm_models.Roles.SUPPORT_N2.value,
                     perm_models.Roles.SUPPORT_PRO.value,
-                    perm_models.Roles.FRAUDE_CONFORMITE.value,
+                    perm_models.Roles.CONFORMITE.value,
                 )
             ]
         )
@@ -549,7 +549,7 @@ class GetBoUserTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data, parent_class="roles-tab-pane")
         assert [row["Rôle"] for row in rows] == [
-            perm_models.Roles.FRAUDE_CONFORMITE.value,
+            perm_models.Roles.CONFORMITE.value,
             perm_models.Roles.SUPPORT_N2.value,
             perm_models.Roles.SUPPORT_PRO.value,
         ]
@@ -578,8 +578,8 @@ class GetBoUserTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data, parent_class="roles-tab-pane")
         assert len(rows) == 1
-        assert rows[0]["Rôle"] == perm_models.Roles.FRAUDE_CONFORMITE.value
-        assert "actions exclusives à l'équipe Fraude et Conformité (PRO)" in rows[0]["Permissions"]
+        assert rows[0]["Rôle"] == perm_models.Roles.FRAUDE_PRO.value
+        assert "actions exclusives à l'équipe Fraude PRO" in rows[0]["Permissions"]
 
     def test_get_other_backoffice_profile_without_permission(self, pro_fraud_admin, client):
         client = client.with_bo_session_auth(pro_fraud_admin)

@@ -46,10 +46,9 @@ export const HeaderDropdown = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const [subOpen, setSubOpen] = useState(false)
 
+  const horizontalPadding = windowWidth >= 380 ? 17 : 0
   const sideOffset =
-    windowWidth >= 673
-      ? 20
-      : -(windowWidth - (16 + (windowWidth >= 380 ? 17 : 0)))
+    windowWidth >= 673 ? 20 : -(windowWidth - (16 + horizontalPadding))
 
   const offererOptions = sortByLabel(
     offererNames?.map((item) => ({

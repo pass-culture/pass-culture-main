@@ -2,6 +2,7 @@ import csv
 import datetime
 import logging
 from io import TextIOWrapper
+from secrets import token_urlsafe
 from typing import Iterable
 
 import click
@@ -282,7 +283,7 @@ def _add_or_update_admin(update_if_exists: bool) -> None:
 
 def _create_provider(venue: offerers_models.Venue, row: dict) -> None:
     formatted_email = sanitize_email(row["Mail"]).replace("_", "-")
-    provider = providers_models.Provider(name=row["Prénom"])
+    provider = providers_models.Provider(name=row["Prénom"], hmacKey=token_urlsafe(64))
     offerer_provider = offerers_models.OffererProvider(offerer=venue.managingOfferer, provider=provider)
     prefix = f"staging_{formatted_email}"
     key = offerers_models.ApiKey(

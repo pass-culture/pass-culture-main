@@ -12,14 +12,6 @@ describe('withVenueHelpers', () => {
   }
 
   describe('fullAddressAsString', () => {
-    it('should return null when location is nullish', () => {
-      const venue = makeGetVenueResponseModel({ id: 1, location: null })
-
-      const venueWithHelpers = withVenueHelpers(venue)
-
-      expect(venueWithHelpers.fullAddressAsString).toBeNull()
-    })
-
     it('should return full location with street when street is provided', () => {
       const venue = makeGetVenueResponseModel({
         id: 1,
@@ -28,6 +20,10 @@ describe('withVenueHelpers', () => {
           street: '123 Rue de Rivoli',
           postalCode: '75001',
           city: 'Paris',
+          banId: 'banid',
+          departmentCode: '75',
+          inseeCode: '75056',
+          label: 'label',
         },
       })
 
@@ -46,6 +42,10 @@ describe('withVenueHelpers', () => {
           street: null,
           postalCode: '75001',
           city: 'Paris',
+          banId: 'banid',
+          departmentCode: '75',
+          inseeCode: '75056',
+          label: 'label',
         },
       })
 

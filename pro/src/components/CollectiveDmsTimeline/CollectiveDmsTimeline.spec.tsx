@@ -162,6 +162,8 @@ describe('CollectiveDmsTimeline', () => {
       procedure: 123,
       state: DMSApplicationstatus.ACCEPTE,
       venueId: 33,
+      userDeletionDate: null,
+      expirationDate: null,
     }
 
     renderCollectiveDmsTimeline({

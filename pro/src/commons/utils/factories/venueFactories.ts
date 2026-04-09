@@ -66,13 +66,48 @@ export const makeGetVenueResponseModel = <
       name: offererName,
     })
 
+  const location: LocationResponseModelV2 = {
+    id: 2,
+    banId: null,
+    city: 'Paris',
+    departmentCode: null,
+    inseeCode: null,
+    isManualEdition: false,
+    isVenueLocation: false,
+    label: null,
+    latitude: 0,
+    longitude: 0,
+    postalCode: '75001',
+    street: null,
+  }
+
   const fake: GetVenueResponseModel = {
     id: override.id,
-    collectiveDmsApplications: [],
-    audioDisabilityCompliant: false,
     allowedOnAdage: false,
+    audioDisabilityCompliant: false,
+    adageInscriptionDate: null,
+    bankAccountStatus: null,
+    bannerMeta: null,
+    bannerUrl: null,
+    bookingEmail: `booking.${override.id}@test.com`,
+    collectiveAccessInformation: null,
+    collectiveDescription: null,
+    collectiveDmsApplications: [],
     collectiveDomains: [],
+    collectiveEmail: null,
+    collectiveInterventionArea: null,
+    collectiveLegalStatus: null,
+    collectiveNetwork: null,
+    collectivePhone: null,
+    collectiveStudents: null,
+    collectiveWebsite: null,
+    comment: null,
+    contact: null,
     dateCreated: new Date().toISOString(),
+    description: 'description',
+    externalAccessibilityData: null,
+    externalAccessibilityId: null,
+    externalAccessibilityUrl: null,
     hasActiveIndividualOffer: false,
     hasAdageId: false,
     hasOffers: false,
@@ -84,17 +119,22 @@ export const makeGetVenueResponseModel = <
     isPermanent: false,
     isValidated: false,
     isVirtual: false,
+    location: location,
     managingOfferer: offerer,
     mentalDisabilityCompliant: false,
     motorDisabilityCompliant: false,
     name: `Nom de la structure ${override.id}`,
+    openingHours: null,
     publicName: `Nom public de la structure ${override.id}`,
     activity: DisplayableActivity.OTHER,
     venueType: { label: 'Autre', value: 'OTHER' }, // deprecated field (use ".activity" instead), but still required by the model
+    pricingPoint: null,
+    siret: null,
     visualDisabilityCompliant: false,
     canDisplayHighlights: false,
     hasNonDraftOffers: false,
     volunteeringUrl: null,
+    withdrawalDetails: null,
   }
 
   return {
@@ -148,7 +188,7 @@ export const makeVenueListItemLiteResponseModel = <
 
   const fake: VenueListItemLiteResponseModel = {
     id: override.id,
-    location,
+    location: location,
     managingOffererId: offererId,
     publicName: `Nom public de la structure ${override.id}`,
   }

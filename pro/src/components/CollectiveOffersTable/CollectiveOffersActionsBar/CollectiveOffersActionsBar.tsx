@@ -56,8 +56,8 @@ const toggleCollectiveOffersActiveInactiveStatus = async <
     | CollectiveOfferDisplayedStatus.PUBLISHED
     | CollectiveOfferDisplayedStatus.HIDDEN,
   selectedOffers: T[],
-  areTemplateOffers: boolean = false,
-  snackBar: ReturnType<typeof useSnackBar>
+  snackBar: ReturnType<typeof useSnackBar>,
+  areTemplateOffers: boolean = false
 ) => {
   //  Differenciate template and bookable selected offers so that there can be two separarate api status update calls
 
@@ -91,7 +91,7 @@ export function CollectiveOffersActionsBar<
   areAllOffersSelected,
   areTemplateOffers,
   searchButtonRef,
-}: CollectiveOffersActionsBarProps<T>) {
+}: Readonly<CollectiveOffersActionsBarProps<T>>) {
   const urlSearchFilters = useQueryCollectiveSearchFilters()
 
   const snackBar = useSnackBar()
@@ -122,8 +122,8 @@ export function CollectiveOffersActionsBar<
           await toggleCollectiveOffersActiveInactiveStatus(
             CollectiveOfferDisplayedStatus.HIDDEN,
             selectedOffers,
-            areTemplateOffers,
-            snackBar
+            snackBar,
+            areTemplateOffers
           )
           await mutate(collectiveOffersQueryKeys)
           snackBar.success(

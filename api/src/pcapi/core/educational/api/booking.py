@@ -13,7 +13,7 @@ from pcapi.core.educational import repository
 from pcapi.core.educational import schemas
 from pcapi.core.educational import utils
 from pcapi.core.educational import validation
-from pcapi.core.educational.adage import api as adage_client
+from pcapi.core.educational.adage import client as adage_client
 from pcapi.core.educational.serialization import collective_booking as collective_booking_serialize
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models

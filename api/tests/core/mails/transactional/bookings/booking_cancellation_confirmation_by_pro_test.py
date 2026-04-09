@@ -11,7 +11,7 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation_confirmation_b
 from pcapi.core.mails.transactional.bookings.booking_cancellation_confirmation_by_pro import (
     send_booking_cancellation_confirmation_by_pro_email,
 )
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
 

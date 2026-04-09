@@ -42,7 +42,7 @@ def send(
     )
 
 
-def create_contact(payload: serialization.UpdateSendinblueContactRequest) -> None:
+def create_contact(payload: serialization.UpdateBrevoContactRequest) -> None:
     backend = _get_backend()
     backend(payload.use_pro_subaccount).create_contact(payload)
 
@@ -70,7 +70,7 @@ def _get_backend() -> "EmailBackend":
 def _get_backend_from_email_data(
     data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
 ) -> "EmailBackend":
-    # Do not send unnecessary transactional emails through Sendinblue in EHP
+    # Do not send unnecessary transactional emails through Brevo in EHP
     if (
         (settings.IS_STAGING or settings.IS_TESTING)
         and isinstance(data, models.TransactionalEmailData)

@@ -38,8 +38,6 @@ assert not (IS_PROD and IS_PERFORMANCE_TESTS)
 
 RUNS_ON_KUBERNETES = IS_TESTING or IS_STAGING or IS_PROD or IS_INTEGRATION or IS_OPS
 
-IS_NEW_INFRA = bool(int(os.environ.get("IS_NEW_INFRA", "0")))
-
 # Load configuration files
 env_path = Path(f"./.env.{ENV}")
 load_dotenv(dotenv_path=env_path)
@@ -152,7 +150,7 @@ FRAUD_EMAIL_ADDRESS = os.environ.get("FRAUD_EMAIL_ADDRESS", "")
 DEV_EMAIL_ADDRESS = os.environ.get("DEV_EMAIL_ADDRESS", "")
 END_TO_END_TESTS_EMAIL_ADDRESS = os.environ.get("END_TO_END_TESTS_EMAIL_ADDRESS", "")
 
-# When load testing, override `EMAIL_BACKEND` to avoid going over SendinBlue quota:
+# When load testing, override `EMAIL_BACKEND` to avoid going over Brevo quota:
 # EMAIL_BACKEND="pcapi.core.mails.backends.logger.LoggerBackend"
 EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND")
 
@@ -202,7 +200,8 @@ PUSH_NOTIFICATION_BACKEND = os.environ.get("PUSH_NOTIFICATION_BACKEND", "LoggerB
 BEAMER_API_KEY = secrets_utils.get("BEAMER_API_KEY", "")
 BEAMER_BACKEND = os.environ.get("BEAMER_BACKEND", "LoggerBackend")
 
-# BREVO (ex: SENDINBLUE)
+# BREVO
+BREVO_REQUEST_TIMEOUT = int(os.environ.get("BREVO_REQUEST_TIMEOUT", 10))
 BREVO_WEBHOOK_SECRET = secrets_utils.get("BREVO_WEBHOOK_SECRET", "")
 BREVO_NUMBER_OF_OFFERS_IN_EXTERNAL_FEED = int(os.environ.get("BREVO_NUMBER_OF_OFFERS_IN_EXTERNAL_FEED", 5))
 SENDINBLUE_API_KEY = secrets_utils.get("SENDINBLUE_API_KEY", "")
@@ -698,8 +697,6 @@ HARVESTR_API_KEY = secrets_utils.get("HARVESTR_API_KEY", "")
 
 # Credit reform
 CREDIT_V3_DECREE_DATETIME = datetime.fromisoformat(os.environ.get("CREDIT_V3_DECREE_DATETIME", "2025-01-01"))
-# PROXY configuration
-PROXY_CERT_BUNDLE = os.environ.get("PROXY_CERT_BUNDLE", None)
 
 # Soft deletion
 SOFTDELETE_ENABLED = bool(int(os.environ.get("SOFTDELETE_ENABLED", 0)))

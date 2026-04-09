@@ -149,13 +149,8 @@ class AdageHttpClient(AdageClient):
         api_response = self._make_post_request(url=f"{self.base_url}{url}", data=data.json())
         self._handle_notify_response(api_response, url)
 
-    def get_cultural_partners(
-        self, since_date: datetime.datetime | None = None
-    ) -> list[dict[str, str | int | float | None]]:
-        params = {}
-        if since_date:
-            params["dateModificationMin"] = since_date.strftime("%Y-%m-%d %H:%M:%S")
-
+    def get_cultural_partners(self, since_date: datetime.datetime) -> list[schemas.AdageCulturalPartner]:
+        params = {"dateModificationMin": since_date.strftime("%Y-%m-%d %H:%M:%S")}
         api_response = self._make_get_request(url=f"{self.base_url}/v1/partenaire-culturel", params=params)
 
         if api_response.status_code == 404:
@@ -163,7 +158,7 @@ class AdageHttpClient(AdageClient):
         if api_response.status_code != 200:
             raise self._get_api_adage_exception(api_response, "Error getting Adage API")
 
-        return api_response.json()
+        return parse_obj_as(list[schemas.AdageCulturalPartner], api_response.json())
 
     def notify_institution_association(self, data: schemas.AdageCollectiveOffer) -> None:
         api_response = self._make_post_request(url=f"{self.base_url}/v1/offre-assoc", data=data.json())

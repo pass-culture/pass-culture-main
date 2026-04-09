@@ -1,7 +1,7 @@
 import pytest
 
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.dms_subscription_emails import (
     send_pre_subscription_from_dms_error_email_to_beneficiary,
 )
@@ -11,7 +11,7 @@ from pcapi.core.subscription.dms import schemas as dms_schemas
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class PreSubscriptionDmsErrorEmailSendinblueTest:
+class PreSubscriptionDmsErrorEmailBrevoTest:
     def test_send_mail(self):
         # Given
         user_mail = "test@exemple.com"

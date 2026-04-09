@@ -34,6 +34,7 @@ class AutocompleteTestBase:
         search_query: str,
         expected_texts: list[str],
         expected_num_queries: int = 0,
+        expected_id_type=int,
     ):
         # session + data requested
         if not expected_num_queries:
@@ -45,7 +46,7 @@ class AutocompleteTestBase:
 
         items = response.json["items"]
         for item in items:
-            assert isinstance(item["id"], int)
+            assert isinstance(item["id"], expected_id_type)
             assert isinstance(item["text"], str)
         assert {re.sub(r"^\d+ - ", "", item["text"]) for item in items} == expected_texts
 
@@ -490,10 +491,15 @@ class AutocompleteCitiesTest(AutocompleteTestBase):
                 ],
                 {"Toulouse (31)", "Toulon (83)"},
             ),
+            ("Ajaccio", [api_geo.GeoCity(insee_code="2A004", name="Ajaccio")], {"Ajaccio (2A)"}),
         ],
     )
     def test_autocomplete_cities(self, authenticated_client, search_query, search_city_response, expected_texts):
         with mock.patch("pcapi.connectors.api_geo.search_city", return_value=search_city_response):
             self._test_autocomplete(
-                authenticated_client, search_query, expected_texts, expected_num_queries=self.expected_num_queries
+                authenticated_client,
+                search_query,
+                expected_texts,
+                expected_num_queries=self.expected_num_queries,
+                expected_id_type=str,
             )

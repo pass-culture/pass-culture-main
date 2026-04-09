@@ -37,7 +37,7 @@ ALL_PRODUCT_SUBCATEGORIES_IDS = EVENT_PRODUCT_SUBCATEGORIES_IDS + THINGS_PRODUCT
 OPENING_HOURS = [("10:00", "13:00"), ("14:00", "19:30")]
 
 
-class ProductFactory(BaseFactory):
+class ProductFactory(BaseFactory[models.Product]):
     AVAILABLE_SUBCATEGORIES = ALL_PRODUCT_SUBCATEGORIES_IDS
 
     class Meta:

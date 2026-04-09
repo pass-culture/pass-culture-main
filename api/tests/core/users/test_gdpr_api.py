@@ -32,7 +32,7 @@ from pcapi.core.geography import api as geography_api
 from pcapi.core.geography import models as geography_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
@@ -42,7 +42,7 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import gdpr_api
 from pcapi.core.users import models as users_models
-from pcapi.core.users import testing as sendinblue_testing
+from pcapi.core.users import testing as brevo_testing
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import date as date_utils
@@ -102,7 +102,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
         db.session.refresh(user_pass_culture)
         db.session.refresh(user_anonymized)
 
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(brevo_testing.brevo_requests) == 1
         assert len(batch_testing.requests) == 1
         assert batch_testing.requests[0]["user_id"] == user_to_anonymize.id
 
@@ -163,7 +163,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
 
         db.session.refresh(user_to_anonymize)
 
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(brevo_testing.brevo_requests) == 1
         assert len(batch_testing.requests) == 1
         assert batch_testing.requests[0]["user_id"] == user_to_anonymize.id
         assert user_to_anonymize.firstName is None
@@ -204,7 +204,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
 
         assert user_to_anonymize.firstName is None
         assert user_to_anonymize.email == f"anonymous_{user_to_anonymize.id}@anonymized.passculture"
-        assert sendinblue_testing.sendinblue_requests[0]["attributes"]["FIRSTNAME"] == ""
+        assert brevo_testing.brevo_requests[0]["attributes"]["FIRSTNAME"] == ""
 
     @pytest.mark.parametrize(
         "reason",
@@ -240,7 +240,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
 
         db.session.refresh(user_to_anonymize)
 
-        assert len(sendinblue_testing.sendinblue_requests) == 0
+        assert len(brevo_testing.brevo_requests) == 0
         assert user_to_anonymize.firstName == "user_to_anonymize"
 
     def test_anonymize_non_pro_non_beneficiary_user_suspended_5_years_ago_with_fraud(self) -> None:
@@ -260,7 +260,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
 
         db.session.refresh(user_to_anonymize)
 
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(brevo_testing.brevo_requests) == 1
         assert user_to_anonymize.firstName != "user_to_anonymize"
 
     def test_anonymize_non_pro_non_beneficiary_user_recently_suspended_without_fraud(self) -> None:
@@ -280,7 +280,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
 
         db.session.refresh(user_to_anonymize)
 
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(brevo_testing.brevo_requests) == 1
         assert user_to_anonymize.firstName != "user_to_anonymize"
 
 
@@ -1126,7 +1126,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         db.session.refresh(user_pass_culture)
         db.session.refresh(user_anonymized)
 
-        assert len(sendinblue_testing.sendinblue_requests) == 4
+        assert len(brevo_testing.brevo_requests) == 4
         assert len(batch_testing.requests) == 4
         user_id_set = set(request["user_id"] for request in batch_testing.requests)
         assert user_id_set == {
@@ -1210,7 +1210,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
 
         db.session.refresh(user_to_anonymize)
 
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(brevo_testing.brevo_requests) == 1
         assert len(batch_testing.requests) == 1
         assert batch_testing.requests[0]["user_id"] == user_to_anonymize.id
         assert user_to_anonymize.firstName is None
@@ -1232,7 +1232,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
 
         db.session.refresh(user_beneficiary_to_anonymize)
 
-        assert len(sendinblue_testing.sendinblue_requests) == 0
+        assert len(brevo_testing.brevo_requests) == 0
         assert user_beneficiary_to_anonymize.firstName == "user_beneficiary_to_anonymize"
         assert db.session.query(users_models.GdprUserDataExtract).count() == 1
 
@@ -1356,7 +1356,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
 
         db.session.refresh(user_to_anonymize)
 
-        assert len(sendinblue_testing.sendinblue_requests) == 0
+        assert len(brevo_testing.brevo_requests) == 0
         assert user_to_anonymize.firstName == "user_to_anonymize"
 
     def test_anonymize_beneficiary_user_suspended_5_years_ago_with_fraud(self) -> None:
@@ -1378,7 +1378,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
 
         db.session.refresh(user_to_anonymize)
 
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(brevo_testing.brevo_requests) == 1
         assert user_to_anonymize.firstName != "user_to_anonymize"
 
     @pytest.mark.parametrize(
@@ -1412,7 +1412,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
 
         db.session.refresh(user_to_anonymize)
 
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(brevo_testing.brevo_requests) == 1
         assert user_to_anonymize.firstName != "user_to_anonymize"
 
     def test_anonymize_user_without_validated_birth_date(self) -> None:

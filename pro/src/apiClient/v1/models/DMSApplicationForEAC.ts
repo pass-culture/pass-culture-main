@@ -5,15 +5,15 @@
 import type { DMSApplicationstatus } from './DMSApplicationstatus';
 export type DMSApplicationForEAC = {
   application: number;
-  buildDate?: string | null;
+  buildDate: (string | null);
   depositDate: string;
-  expirationDate?: string | null;
-  instructionDate?: string | null;
+  expirationDate: (string | null);
+  instructionDate: (string | null);
   lastChangeDate: string;
   procedure: number;
-  processingDate?: string | null;
+  processingDate: (string | null);
   state: DMSApplicationstatus;
-  userDeletionDate?: string | null;
+  userDeletionDate: (string | null);
   venueId: number;
 };
 

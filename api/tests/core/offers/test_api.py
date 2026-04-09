@@ -1403,7 +1403,7 @@ class CreateOfferTest:
         assert offer_update_record.technical_message_id == "offer.created"
         assert offer_update_record.message == "Offer has been created"
 
-        assert mail_third_party_record.message == "update_sib_pro_attributes_task"
+        assert mail_third_party_record.message == "update_brevo_pro_attributes_task"
 
     def test_create_offer_with_id_at_provider(self):
         venue = offerers_factories.VenueFactory()
@@ -1556,9 +1556,8 @@ class CreateOfferTest:
 
         assert error.value.errors["idAtProvider"] == ["`rolalala` is already taken by another venue offer"]
 
-    @pytest.mark.features(WIP_OFFER_ARTISTS=True)
     @mock.patch("pcapi.core.artist.api.create_artist_offer_link")
-    def test_call_create_artist_offer_link_when_feature_flag_enabled(self, mock_create_link):
+    def test_call_create_artist_offer_link(self, mock_create_link):
         venue = offerers_factories.VenueFactory()
         offerer_address = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer)
         artist = artist_factories.ArtistFactory()
@@ -1612,35 +1611,6 @@ class CreateOfferTest:
 
         mock_create_link.assert_has_calls([expected_first_call, expected_second_call], any_order=True)
 
-    @pytest.mark.features(WIP_OFFER_ARTISTS=False)
-    @mock.patch("pcapi.core.artist.api.create_artist_offer_link")
-    def test_do_not_call_create_artist_offer_link_when_feature_flag_disabled(self, mock_create_link):
-        venue = offerers_factories.VenueFactory()
-        offerer_address = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer)
-        artist = artist_factories.ArtistFactory()
-
-        body = offers_schemas.CreateOffer(
-            name="A pretty good offer",
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=True,
-            motorDisabilityCompliant=True,
-            visualDisabilityCompliant=True,
-            artistOfferLinks=[
-                {
-                    "artistId": artist.id,
-                    "artistType": artist_models.ArtistType.AUTHOR,
-                    "artistName": artist.name,
-                },
-            ],
-        )
-
-        offer = api.create_offer(body, venue=venue, offerer_address=offerer_address)
-
-        assert offer.id is not None
-        mock_create_link.assert_not_called()
-
-    @pytest.mark.features(WIP_OFFER_ARTISTS=True)
     @mock.patch("pcapi.core.artist.api.create_artist_offer_link")
     def test_do_not_call_create_artist_offer_link_when_artist_offer_links_is_none(self, mock_create_link):
         venue = offerers_factories.VenueFactory()
@@ -1661,7 +1631,6 @@ class CreateOfferTest:
         assert offer.id is not None
         mock_create_link.assert_not_called()
 
-    @pytest.mark.features(WIP_OFFER_ARTISTS=True)
     def test_raise_error_when_artist_type_is_not_allowed(self):
         venue = offerers_factories.VenueFactory()
         offerer_address = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer)
@@ -2115,27 +2084,8 @@ class UpdateOfferTest:
         call_args = mock_check_withdrawal.call_args
         assert call_args[1]["subcategory_id"] == subcategories.SPECTACLE_REPRESENTATION.id
 
-    @pytest.mark.features(WIP_OFFER_ARTISTS=False)
     @mock.patch("pcapi.core.artist.api.upsert_artist_offer_links", return_value=([], []))
-    def test_update_offer_with_artist_offer_links_when_feature_flag_disabled(self, mock_upsert_artist_offer_links):
-        offer = factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
-
-        artist_offer_links = [
-            {
-                "artistId": "any-id",
-                "artistType": artist_models.ArtistType.AUTHOR,
-                "artistName": "any-name",
-            }
-        ]
-        body = offers_schemas.UpdateOffer(artistOfferLinks=artist_offer_links)
-
-        api.update_offer(offer, body)
-
-        mock_upsert_artist_offer_links.assert_not_called()
-
-    @pytest.mark.features(WIP_OFFER_ARTISTS=True)
-    @mock.patch("pcapi.core.artist.api.upsert_artist_offer_links", return_value=([], []))
-    def test_update_offer_without_artist_offer_links_when_feature_flag_enabled(self, mock_upsert_artist_offer_links):
+    def test_update_offer_without_artist_offer_links(self, mock_upsert_artist_offer_links):
         offer = factories.OfferFactory()
         body = offers_schemas.UpdateOffer(name="Updated Name")
 
@@ -2143,9 +2093,8 @@ class UpdateOfferTest:
 
         mock_upsert_artist_offer_links.assert_not_called()
 
-    @pytest.mark.features(WIP_OFFER_ARTISTS=True)
     @mock.patch("pcapi.core.artist.api.upsert_artist_offer_links", return_value=([], []))
-    def test_update_offer_with_artist_offer_links_when_feature_flag_enabled(self, mock_upsert_artist_offer_links):
+    def test_update_offer_with_artist_offer_links(self, mock_upsert_artist_offer_links):
         offer = factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
 
         artist_offer_links = [
@@ -2168,7 +2117,6 @@ class UpdateOfferTest:
             offer,
         )
 
-    @pytest.mark.features(WIP_OFFER_ARTISTS=True)
     def test_raise_error_when_artist_type_is_not_allowed(self):
         offer = factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
 
@@ -2188,7 +2136,6 @@ class UpdateOfferTest:
             "artistOfferLinks": ["Le type d'artiste n'est pas autorisé pour cette sous catégorie"]
         }
 
-    @pytest.mark.features(WIP_OFFER_ARTISTS=True)
     @mock.patch("pcapi.core.artist.api.upsert_artist_offer_links")
     def test_update_offer_log_deleted_artist_offer_links(self, mock_upsert_artist_offer_links, caplog):
         offer = factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
@@ -2223,7 +2170,6 @@ class UpdateOfferTest:
         }
         assert log_record.technical_message_id == "offer.artistOfferLinks.deleted"
 
-    @pytest.mark.features(WIP_OFFER_ARTISTS=True)
     @mock.patch("pcapi.core.artist.api.upsert_artist_offer_links")
     def test_update_offer_log_created_artist_offer_links(self, mock_upsert_artist_offer_links, caplog):
         offer = factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
@@ -5354,16 +5300,6 @@ class FetchInconsistentProductsTest:
 
         assert api.fetch_inconsistent_products() == {product_1.id}
 
-    def test_headlines_count(self) -> None:
-        product_1 = factories.ProductFactory()
-        product_2 = factories.ProductFactory()
-        factories.HeadlineOfferFactory(offer__product=product_1)
-        factories.HeadlineOfferFactory(offer__product=product_2)
-
-        product_1.headlinesCount = 0
-
-        assert api.fetch_inconsistent_products() == {product_1.id}
-
     def test_likes_count(self) -> None:
         product = factories.ProductFactory()
         reactions_factories.ReactionFactory(product=product, reactionType=reactions_models.ReactionTypeEnum.LIKE)
@@ -5408,7 +5344,6 @@ class UpdateProductCountsTest:
         )
         reactions_factories.ReactionFactory(product=product_1, reactionType=reactions_models.ReactionTypeEnum.DISLIKE)
         chronicles_factories.ChronicleFactory.create(products=[product_1], isSocialMediaDiffusible=True)
-        factories.HeadlineOfferFactory(offer__product=product_2)
         factories.ProAdviceFactory(offer__product=product_1)
         factories.ProAdviceFactory(offer__product=product_2)
 
@@ -5420,6 +5355,5 @@ class UpdateProductCountsTest:
         assert product_1.likesCount == 2
         assert product_2.likesCount == 2
         assert product_1.chroniclesCount == 1
-        assert product_2.headlinesCount == 1
         assert product_1.proAdvicesCount == 1
         assert product_2.proAdvicesCount == 1

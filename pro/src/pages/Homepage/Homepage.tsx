@@ -4,11 +4,13 @@ import { useMemo, useRef } from 'react'
 import type { GetOffererNameResponseModel } from '@/apiClient/v1'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useOffererNamesQuery } from '@/commons/hooks/swr/useOffererNamesQuery'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { sortByLabel } from '@/commons/utils/strings'
 import { Newsletter } from '@/components/Newsletter/Newsletter'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
+import fullLinkIcon from '@/icons/full-link.svg'
 import { AddBankAccountCallout } from '@/pages/Homepage/components/AddBankAccountCallout/AddBankAccountCallout'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
@@ -23,13 +25,10 @@ import {
 import { Offerers } from './components/Offerers/Offerers'
 import { PublishedOfferStats } from './components/StatisticsDashboard/components/PublishedOfferStats'
 import { StatisticsDashboard } from './components/StatisticsDashboard/StatisticsDashboard'
-import { VenueStatisticsDashboard } from './components/StatisticsDashboard/VenueStatisticsDashboard'
 import { VenueOfferSteps } from './components/VenueOfferSteps/VenueOfferSteps'
 import styles from './Homepage.module.scss'
 
 export const Homepage = (): JSX.Element => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-
   const profileRef = useRef<HTMLElement>(null)
   const offerersRef = useRef<HTMLElement>(null)
 
@@ -46,9 +45,7 @@ export const Homepage = (): JSX.Element => {
 
   const selectedOfferer = useAppSelector(selectCurrentOfferer)
 
-  const selectedPartnerVenue = useAppSelector(
-    (state) => state.user.selectedPartnerVenue
-  )
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const hasNoVenueVisible = useMemo(() => {
     const physicalVenues = getPhysicalVenuesFromOfferer(selectedOfferer)
@@ -68,6 +65,27 @@ export const Homepage = (): JSX.Element => {
   return (
     <>
       <div className={styles['reimbursements-banners']}>
+        <Banner
+          title="On vous donne la parole"
+          variant={BannerVariants.DEFAULT}
+          actions={[
+            {
+              href: 'https://passculture-laconsultation.fr/survey/passculture-2030',
+              label: 'Donnez votre avis sur la feuille de route 2026-2030',
+              type: 'link',
+              isExternal: true,
+              icon: fullLinkIcon,
+            },
+          ]}
+          description={
+            <>
+              Aidez- nous à construire le pass Culture 2030 en partageant vos
+              besoins et vos pistes d’améliorations (10 minutes). Votre avis est
+              précieux et contribuera à répondre à nos futurs enjeux. Les
+              retours seront récoltés jusqu'au 13 avril inclus.
+            </>
+          }
+        />
         <AddBankAccountCallout
           offerer={selectedOfferer}
           venue={selectedPartnerVenue}
@@ -92,11 +110,7 @@ export const Homepage = (): JSX.Element => {
               [styles['container-stats-with-highlights']]: areHighlightsEnable,
             })}
           >
-            {withSwitchVenueFeature && selectedPartnerVenue ? (
-              <VenueStatisticsDashboard venue={selectedPartnerVenue} />
-            ) : (
-              <StatisticsDashboard offerer={selectedOfferer} />
-            )}
+            <StatisticsDashboard venue={selectedPartnerVenue} />
             {areHighlightsEnable && <HighlightHome />}
           </div>
           <PublishedOfferStats offerer={selectedOfferer} />

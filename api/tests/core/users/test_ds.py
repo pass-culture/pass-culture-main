@@ -13,7 +13,7 @@ from pcapi import settings as pcapi_settings
 from pcapi.connectors.dms import api as dms_api
 from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.users import ds as users_ds
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models

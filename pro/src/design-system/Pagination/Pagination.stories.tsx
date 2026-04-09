@@ -78,7 +78,7 @@ export const Playground: StoryObj<typeof Pagination> = {
 
           <div>
             <label htmlFor="demo_pageCount">Page count :</label>{' '}
-            <input id="demo_pageCount" type="number" min="1" onChange={(e) => setPageCount(parseInt(e.target.value))} value={pageCount} />
+            <input id="demo_pageCount" type="number" min="1" onChange={(e) => setPageCount(Number.parseInt(e.target.value))} value={pageCount} />
           </div>
 
           <div>

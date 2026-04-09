@@ -2,7 +2,7 @@ import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.mails import testing as mails_testing
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.recredit_to_underage_beneficiary import (
     get_recredit_to_underage_beneficiary_email_data,
 )
@@ -16,7 +16,7 @@ from pcapi.core.users.api import get_domains_credit
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class SendinblueSendNewlyEligibleUserEmailTest:
+class BrevoSendNewlyEligibleUserEmailTest:
     def test_send_recredit_email_to_underage_beneficiary(self):
         # given
         user = users_factories.UnderageBeneficiaryFactory()

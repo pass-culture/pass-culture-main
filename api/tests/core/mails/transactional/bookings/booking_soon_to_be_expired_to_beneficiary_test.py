@@ -11,7 +11,7 @@ from pcapi.core.mails.transactional.bookings.booking_soon_to_be_expired_to_benef
 from pcapi.core.mails.transactional.bookings.booking_soon_to_be_expired_to_beneficiary import (
     send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary,
 )
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.utils import date as date_utils
@@ -52,7 +52,7 @@ class FilterBooksBookingsTest:
         assert other_bookings == [other_booking]
 
 
-class SendinblueSendSoonToBeExpiredBookingsEmailToBeneficiaryTest:
+class BrevoSendSoonToBeExpiredBookingsEmailToBeneficiaryTest:
     def test_should_send_two_emails_to_beneficiary_when_they_have_soon_to_be_expired_bookings(
         self,
     ):

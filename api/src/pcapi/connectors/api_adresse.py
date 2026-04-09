@@ -438,7 +438,7 @@ class ApiAdresseBackend(BaseBackend):
         }
         data = self._cached_search(params=params)
         if self._is_result_empty(data):
-            logger.error(
+            logger.warning(
                 "No result from API Adresse for a municipality",
                 extra={"postcode": postcode, "city": city},
             )

@@ -1,5 +1,4 @@
 import classnames from 'classnames'
-import { useState } from 'react'
 import { NavLink, type To } from 'react-router'
 
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -53,9 +52,15 @@ const SideNavLink = ({
   )
 }
 
-export const RenderNavItem = ({ item }: { item: NavItem }) => {
-  const [open, setOpen] = useState(true)
-
+export const RenderNavItem = ({
+  item,
+  isOpen,
+  onToggleButtonClick = () => {},
+}: {
+  item: NavItem
+  isOpen?: boolean
+  onToggleButtonClick?: () => void
+}) => {
   switch (item.type) {
     case 'link':
       return (
@@ -79,16 +84,16 @@ export const RenderNavItem = ({ item }: { item: NavItem }) => {
           <SideNavToggleButton
             icon={item.icon || ''}
             title={item.title || ''}
-            isExpanded={open}
-            onClick={() => setOpen(!open)}
+            isExpanded={isOpen!}
+            onClick={onToggleButtonClick}
             ariaControls={`${item.key}-sublist`}
             id={`${item.key}-sublist-button`}
           />
 
-          {open && (
+          {isOpen && (
             <ul id={`${item.key}-sublist`}>
-              {item.children?.map((children: NavItem) => (
-                <RenderNavItem key={`${children.key}`} item={children} />
+              {item.children?.map((child: NavItem) => (
+                <RenderNavItem key={child.key} item={child} />
               ))}
             </ul>
           )}

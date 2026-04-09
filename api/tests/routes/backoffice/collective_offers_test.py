@@ -17,7 +17,7 @@ from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.mails import testing as mails_testing
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
@@ -1454,7 +1454,7 @@ class BatchCollectiveOffersValidateTest(PostEndpointHelper):
             collectiveOffer__institution=institution,
         )
         collective_offer = collective_stock.collectiveOffer
-        patched_function = "pcapi.core.educational.adage.api.notify_institution_association"
+        patched_function = "pcapi.core.educational.adage.client.notify_institution_association"
         adage_exception = educational_exceptions.AdageException(
             message="An error occured on adage side",
             status_code=400,

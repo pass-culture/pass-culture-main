@@ -15,7 +15,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.repository import has_collective_offers_for_program_and_venue_ids
 from pcapi.core.external.attributes import models
 from pcapi.core.external.batch.attributes import update_user_attributes as update_batch_user
-from pcapi.core.external.sendinblue import update_contact_attributes as update_sendinblue_user
+from pcapi.core.external.brevo import update_contact_attributes as update_brevo_user
 from pcapi.core.finance import deposit_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
@@ -39,7 +39,7 @@ def update_external_user(
     user: users_models.User,
     cultural_survey_answers: dict[str, list[str]] | None = None,
     skip_batch: bool = False,
-    skip_sendinblue: bool = False,
+    skip_brevo: bool = False,
     batch_extra_data: dict[str, datetime] | None = None,
 ) -> None:
     if not user.isActive:
@@ -61,10 +61,10 @@ def update_external_user(
                     batch_extra_data=batch_extra_data,
                 ),
             )
-        if not skip_sendinblue:
+        if not skip_brevo:
             on_commit(
                 partial(
-                    update_sendinblue_user,
+                    update_brevo_user,
                     user.email,
                     user_attributes,
                     cultural_survey_answers=cultural_survey_answers,
@@ -76,14 +76,14 @@ def update_external_pro(email: str | None) -> None:
     # Call this function instead of update_external_user in actions which are only available for pro
     # ex. updating a venue, in which bookingEmail is not a User parameter
     from pcapi.core.external.beamer.tasks import update_beamer_pro_attributes_task
-    from pcapi.tasks.sendinblue_tasks import update_sib_pro_attributes_task
+    from pcapi.tasks.brevo_tasks import update_brevo_pro_attributes_task
     from pcapi.tasks.serialization.external_pro_tasks import UpdateProAttributesRequest
 
     if email:
         now = date_utils.get_naive_utc_now()
         on_commit(
             partial(
-                update_sib_pro_attributes_task.delay,
+                update_brevo_pro_attributes_task.delay,
                 payload=UpdateProAttributesRequest(email=email, time_id=f"{now.hour // 12}"),
             ),
         )

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { WelcomeCarouselEvents } from '@/commons/core/FirebaseEvents/constants'
+import { AlreadyHasAccount } from '@/components/AlreadyHasAccount/AlreadyHasAccount'
 import { Button } from '@/design-system/Button/Button'
 import { Icon } from '@/design-system/Button/components/Icon/Icon'
 import { ButtonVariant } from '@/design-system/Button/types'
@@ -21,6 +22,7 @@ export const WelcomeStepHub = (): JSX.Element => {
   const { logEvent } = useAnalytics()
 
   const [selectedValue, setSelectedValue] = useState('')
+  const [error, setError] = useState('')
   const [showErrorContainer, setShowErrorContainer] = useState(false)
   return (
     <>
@@ -114,8 +116,10 @@ export const WelcomeStepHub = (): JSX.Element => {
               variant="detailed"
               display="vertical"
               onChange={(event) => {
+                setError('')
                 setSelectedValue(event.target.value)
               }}
+              error={error}
             />
           </div>
           <div
@@ -125,11 +129,12 @@ export const WelcomeStepHub = (): JSX.Element => {
             )}
           >
             <Button
-              disabled={!selectedValue}
               onClick={() => {
-                logEvent(WelcomeCarouselEvents.HAS_CLICKED_USER_TYPE, {
-                  target: selectedValue,
-                })
+                if (selectedValue) {
+                  logEvent(WelcomeCarouselEvents.HAS_CLICKED_USER_TYPE, {
+                    target: selectedValue,
+                  })
+                }
                 switch (selectedValue) {
                   case 'partenaire-culturel':
                     navigate('/bienvenue/publics')
@@ -141,11 +146,17 @@ export const WelcomeStepHub = (): JSX.Element => {
                   case 'enseignant':
                     setShowErrorContainer(true)
                     break
+                  default:
+                    setError('Veuillez sélectionner un profil pour continuer')
+                    break
                 }
               }}
               variant={ButtonVariant.PRIMARY}
               label="Continuer"
             />
+          </div>
+          <div className={styles['already-have-account']}>
+            <AlreadyHasAccount />
           </div>
         </>
       )}

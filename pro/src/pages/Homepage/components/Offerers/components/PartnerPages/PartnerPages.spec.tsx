@@ -3,7 +3,6 @@ import { userEvent } from '@testing-library/user-event'
 import { beforeEach, expect } from 'vitest'
 
 import { api } from '@/apiClient/api'
-import { VenueTypeCode } from '@/apiClient/v1'
 import { DisplayableActivity } from '@/apiClient/v1/new'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
@@ -36,6 +35,7 @@ describe('PartnerPages', () => {
       bannerUrl: 'MyFirstImage',
       name: 'first venue',
       bannerMeta: {
+        image_credit: null,
         original_image_url: 'MyFirstImage',
         crop_params: {
           height_crop_percent: 12,
@@ -53,7 +53,6 @@ describe('PartnerPages', () => {
         venues: [
           {
             ...defaultGetOffererVenueResponseModel,
-            venueTypeCode: VenueTypeCode.FESTIVAL,
           },
         ],
       })
@@ -193,6 +192,7 @@ describe('PartnerPages', () => {
           bannerUrl: 'MyFirstImage',
           name: 'first venue',
           bannerMeta: {
+            image_credit: null,
             original_image_url: 'MyFirstImage',
             crop_params: {
               height_crop_percent: 12,
@@ -208,6 +208,7 @@ describe('PartnerPages', () => {
           bannerUrl: 'MyOtherImage',
           name: 'other venue',
           bannerMeta: {
+            image_credit: null,
             original_image_url: 'MyOtherImage',
             crop_params: {
               height_crop_percent: 12,
@@ -235,6 +236,7 @@ describe('PartnerPages', () => {
         bannerUrl: 'MyOtherImage',
         name: 'other venue',
         bannerMeta: {
+          image_credit: null,
           original_image_url: 'MyOtherImage',
           crop_params: {
             height_crop_percent: 12,

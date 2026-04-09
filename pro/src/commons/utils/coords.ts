@@ -64,15 +64,13 @@ export const dmsRe =
  * @return {Number} If dmsStr is a valid coordinate string, the value in decimal degrees will be returned. Otherwise NaN will be returned.
  */
 export function parseDms(dmsStr: string): number {
-  let output = NaN
+  let output = Number.NaN
   const dmsMatch = dmsRe.exec(dmsStr)
   if (dmsMatch) {
     const degrees = Number(dmsMatch[1])
 
-    const minutes =
-      typeof dmsMatch[2] !== 'undefined' ? Number(dmsMatch[2]) / 60 : 0
-    const seconds =
-      typeof dmsMatch[3] !== 'undefined' ? Number(dmsMatch[3]) / 3600 : 0
+    const minutes = dmsMatch[2] === undefined ? 0 : Number(dmsMatch[2]) / 60
+    const seconds = dmsMatch[3] === undefined ? 0 : Number(dmsMatch[3]) / 3600
     const hemisphere = dmsMatch[4] || null
     if (hemisphere !== null && /[SW]/i.test(hemisphere)) {
       output = -Math.abs(degrees) - minutes - seconds

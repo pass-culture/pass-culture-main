@@ -121,15 +121,6 @@ describe('Homepage', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.spyOn(api, 'getOffererStats').mockResolvedValue({
-      jsonData: {
-        dailyViews: [],
-        topOffers: [],
-        totalViewsLast30Days: 0,
-      },
-      syncDate: null,
-      offererId: 1,
-    })
     vi.spyOn(api, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: 2,
@@ -137,6 +128,10 @@ describe('Homepage', () => {
         name: 'Venue A1',
       })
     )
+    vi.spyOn(api, 'getVenueOffersStats').mockResolvedValue({
+      jsonData: { dailyViews: [], topOffers: [], totalViewsLast30Days: 0 },
+      venueId: 1,
+    })
     vi.spyOn(api, 'getOffererV2Stats').mockResolvedValue({
       pendingEducationalOffers: 0,
       pendingPublicOffers: 0,

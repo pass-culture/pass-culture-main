@@ -56,7 +56,7 @@ def _get_online_reminder_data(data: OnlineEventReminderData) -> TransactionalEma
         return None
 
     return TransactionalEmailData(
-        template=mails_transactional.sendinblue_template_ids.TransactionalEmail.ONLINE_EVENT_REMINDER.value,
+        template=mails_transactional.brevo_template_ids.TransactionalEmail.ONLINE_EVENT_REMINDER.value,
         params={
             "OFFER_NAME": data.offer_name,
             "DIGITAL_OFFER_URL": data.offer_url,

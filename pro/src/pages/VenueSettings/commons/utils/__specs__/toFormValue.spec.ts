@@ -59,37 +59,13 @@ describe('toFormValues', () => {
     expect(formValues).toEqual(expectedFormValues)
   })
 
-  it('should return empty inseeCode and null banId if address is not provided', () => {
-    const formValues = toFormValues({
-      venue: {
-        ...venue,
-        location: null,
-      },
-    })
-
-    expect(formValues.inseeCode).toBeNull()
-    expect(formValues.banId).toBeNull()
-    // Check other address-related fields to ensure they are also handled correctly
-    expect(formValues.street).toEqual('')
-    expect(formValues.postalCode).toEqual('')
-    expect(formValues.city).toEqual('')
-    expect(formValues.addressAutocomplete).toEqual('undefined undefined') // Corresponds to `${autoCompleteStreet}${venue.address?.postalCode} ${venue.address?.city}`
-    expect(formValues['search-addressAutocomplete']).toEqual(
-      'undefined undefined'
-    )
-    expect(formValues.coords).toEqual('undefined, undefined')
-    expect(formValues.latitude).toEqual('undefined')
-    expect(formValues.longitude).toEqual('undefined')
-    expect(formValues.manuallySetAddress).toBeUndefined()
-  })
-
   it('should return empty inseeCode if inseeCode is missing in address', () => {
     const formValues = toFormValues({
       venue: {
         ...venue,
         location: {
           ...venue.location!, // Ensure address is not null
-          inseeCode: undefined,
+          inseeCode: null,
         },
       },
     })
@@ -102,7 +78,7 @@ describe('toFormValues', () => {
         ...venue,
         location: {
           ...venue.location!, // Ensure address is not null
-          banId: undefined,
+          banId: null,
         },
       },
     })
@@ -117,7 +93,7 @@ describe('toFormValues', () => {
         siret: 'NC0123456789XX',
         location: {
           ...venue.location!, // Ensure address is not null
-          banId: undefined,
+          banId: null,
         },
       },
     })

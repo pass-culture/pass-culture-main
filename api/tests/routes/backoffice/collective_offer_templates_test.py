@@ -8,7 +8,7 @@ from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.mails import testing as mails_testing
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
@@ -149,12 +149,13 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
     def test_list_offers_by_all_filters(self, authenticated_client, collective_offer_templates):
         template = collective_offer_templates[2]
         venue_id = template.venueId
+        format_name = template.formats[0].name
         with assert_num_queries(self.expected_num_queries + 1):  # +1 because of reloading selected venue
             response = authenticated_client.get(
                 url_for(
                     self.endpoint,
                     q="specific name",
-                    formats=str(template.formats[0].name),
+                    formats=str(format_name),
                     venue=[venue_id],
                 )
             )
@@ -212,8 +213,9 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
             flaggingValidationRules=[rule_1, rule_2]
         )
 
+        offer_id = collective_offer_template.id
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=str(collective_offer_template.id)))
+            response = authenticated_client.get(url_for(self.endpoint, q=str(offer_id)))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)

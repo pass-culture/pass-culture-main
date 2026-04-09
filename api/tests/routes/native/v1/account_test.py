@@ -33,7 +33,7 @@ from pcapi.core.external.batch import testing as push_testing
 from pcapi.core.finance import deposit_api
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
@@ -243,7 +243,7 @@ class AccountTest:
         expected_num_queries += 1  # recredit
 
         client.with_token(user)
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(expected_num_queries, expire_session=False):
             me_response = client.get("/native/v1/me")
 
         assert user.age == 17
@@ -379,7 +379,7 @@ class AccountTest:
         n_queries = 1  # get user
         n_queries += 1  # get bookings
 
-        with assert_num_queries(n_queries):
+        with assert_num_queries(n_queries, expire_session=False):
             response = client.get("/native/v1/me")
 
     def test_num_queries_beneficiary(self, client):
@@ -415,9 +415,10 @@ class AccountTest:
         user = sso.user
         user.password = None
 
+        client.with_token(user)
         expected_num_queries = 5  # user + achievements + bookings + deposit + fraud check
         with assert_num_queries(expected_num_queries):
-            response = client.with_token(user).get("/native/v1/me")
+            response = client.get("/native/v1/me")
             assert response.status_code == 200, response.json
 
         assert response.json["hasPassword"] == False
@@ -748,7 +749,7 @@ class AccountCreationTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["template"] == dataclasses.asdict(TransactionalEmail.EMAIL_CONFIRMATION.value)
         assert len(push_testing.requests) == 2
-        assert len(users_testing.sendinblue_requests) == 1
+        assert len(users_testing.brevo_requests) == 1
 
         email_validation_token_exists = token_utils.Token.token_exists(
             token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION, user.id
@@ -969,7 +970,7 @@ class AccountCreationWithSSOTest:
         mocked_check_recaptcha_token_is_valid.assert_called()
         assert len(mails_testing.outbox) == 0  # no email verification
         assert len(push_testing.requests) == 2
-        assert len(users_testing.sendinblue_requests) == 1
+        assert len(users_testing.brevo_requests) == 1
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_account_already_present(self, mocked_check_recaptcha_token_is_valid, client):

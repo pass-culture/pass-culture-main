@@ -1,6 +1,6 @@
 from pcapi.core import mails
 from pcapi.core.mails import models
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 
 
 def get_bank_account_validated_email_data() -> models.TransactionalEmailData:

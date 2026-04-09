@@ -8,11 +8,9 @@ from pydantic import field_validator
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.constants import ALL_INTERVENTION_AREA
 from pcapi.core.offerers import models as offerers_models
-from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.serialization.exceptions import PydanticError
-from pcapi.utils.date import format_into_utc_date
 
 
 class DMSApplicationstatus(enum.Enum):
@@ -23,33 +21,7 @@ class DMSApplicationstatus(enum.Enum):
     INSTRUCTING = "en_instruction"
 
 
-# TODO bdalbianco 23/03/2026 delete when getvenueresponsemodel is migrated
-class DMSApplicationForEAC(BaseModel):
-    venueId: int
-    state: DMSApplicationstatus
-    procedure: int
-    application: int
-    lastChangeDate: datetime
-    depositDate: datetime
-    expirationDate: datetime | None
-    buildDate: datetime | None
-    instructionDate: datetime | None
-    processingDate: datetime | None
-    userDeletionDate: datetime | None
-
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
-
-    @classmethod
-    def from_orm(  # type: ignore[override]
-        cls, collective_dms_application: educational_models.CollectiveDmsApplication, venue_id: int
-    ) -> typing.Self:
-        collective_dms_application.venueId = venue_id  # type: ignore [attr-defined]
-        return super().from_orm(collective_dms_application)
-
-
-class DMSApplicationForEACv2(HttpBodyModel):
+class DMSApplicationForEAC(HttpBodyModel):
     venueId: int
     state: DMSApplicationstatus
     procedure: int
@@ -81,30 +53,12 @@ class DMSApplicationForEACv2(HttpBodyModel):
         )
 
 
-# TODO bdalbianco 23/03/2026 delete when getvenueresponsemodel is migrated
-class GetVenueDomainResponseModel(BaseModel):
-    id: int
-    name: str
-
-    class Config:
-        orm_mode = True
-
-
-class GetVenueDomainResponseModelv2(HttpBodyModel):
+class GetVenueDomainResponseModel(HttpBodyModel):
     id: int
     name: str
 
 
-# TODO bdalbianco 23/03/2026 delete when getvenueresponsemodel is migrated
-class LegalStatusResponseModel(BaseModel):
-    id: int
-    name: str
-
-    class Config:
-        orm_mode = True
-
-
-class LegalStatusResponseModelv2(HttpBodyModel):
+class LegalStatusResponseModel(HttpBodyModel):
     id: int
     name: str
 

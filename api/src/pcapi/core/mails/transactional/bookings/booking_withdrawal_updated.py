@@ -4,7 +4,7 @@ import sqlalchemy.orm as sa_orm
 from pcapi.core import mails
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.mails import models
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models

@@ -7,6 +7,7 @@ import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { currentOffererFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
@@ -121,7 +122,7 @@ const renderIndividualOffersContext = () => {
     {
       storeOverrides: {
         user: {
-          selectedPartnerVenue: makeVenueListItem({ id: 2 }),
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
         },
         offerer: MOCK_DATA.offerer,
       },

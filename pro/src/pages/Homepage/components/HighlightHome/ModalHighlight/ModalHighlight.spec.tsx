@@ -5,7 +5,7 @@ import { axe } from 'vitest-axe'
 import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
-import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { ModalHighlight } from './ModalHighlight'
@@ -29,7 +29,7 @@ describe('ModalHighlight', () => {
     const { container } = renderWithProviders(<ModalHighlight open />, {
       storeOverrides: {
         user: {
-          selectedPartnerVenue: makeVenueListItem({ id: 2 }),
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
         },
       },
     })
@@ -78,7 +78,7 @@ describe('ModalHighlight', () => {
     renderWithProviders(<ModalHighlight open />, {
       storeOverrides: {
         user: {
-          selectedPartnerVenue: makeVenueListItem({ id: 2 }),
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
         },
       },
     })

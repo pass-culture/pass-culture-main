@@ -32,7 +32,7 @@ const contextValue: IndividualOfferContextValues = {
   offer: null,
   offerId: null,
   isEvent: null,
-  setIsEvent: vi.fn(),
+  setIsControlledEvent: vi.fn(),
   hasPublishedOfferWithSameEan: false,
 }
 

@@ -1,6 +1,6 @@
 import pcapi.connectors.big_query.queries as big_queries
 from pcapi import settings
-from pcapi.core.external.sendinblue import add_contacts_to_list
+from pcapi.core.external.brevo import add_contacts_to_list
 
 
 def pro_no_active_offers_since_40_days_automation() -> bool:

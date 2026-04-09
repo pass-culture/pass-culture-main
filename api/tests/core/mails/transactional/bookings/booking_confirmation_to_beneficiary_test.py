@@ -18,7 +18,7 @@ from pcapi.core.mails.transactional.bookings.booking_confirmation_to_beneficiary
 from pcapi.core.mails.transactional.bookings.booking_confirmation_to_beneficiary import (
     send_individual_booking_confirmation_email_to_beneficiary,
 )
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
@@ -28,7 +28,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 @time_machine.travel("2032-10-15 12:48:00")
-def test_sendinblue_send_email():
+def test_brevo_send_email():
     booking = BookingFactory(
         stock=offers_factories.EventStockFactory(price=1.99), dateCreated=date_utils.get_naive_utc_now()
     )
@@ -41,7 +41,7 @@ def test_sendinblue_send_email():
     assert mails_testing.outbox[0]["params"]["OFFER_PRICE"] == "1.99 €"
 
 
-def get_expected_base_sendinblue_email_data(booking, mediation, **overrides):
+def get_expected_base_brevo_email_data(booking, mediation, **overrides):
     email_data = models.TransactionalEmailData(
         template=TransactionalEmail.BOOKING_CONFIRMATION_BY_BENEFICIARY.value,
         params={
@@ -86,19 +86,19 @@ def get_expected_base_sendinblue_email_data(booking, mediation, **overrides):
 
 
 @time_machine.travel("2032-10-15 12:48:00")
-def test_should_return_event_specific_data_for_email_when_offer_is_an_event_sendinblue():
+def test_should_return_event_specific_data_for_email_when_offer_is_an_event_brevo():
     booking = BookingFactory(
         stock=offers_factories.EventStockFactory(price=23.99), dateCreated=date_utils.get_naive_utc_now()
     )
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
     email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
-    expected = get_expected_base_sendinblue_email_data(booking, mediation, FORMATTED_PRICE="23,99 €")
+    expected = get_expected_base_brevo_email_data(booking, mediation, FORMATTED_PRICE="23,99 €")
     assert email_data == expected
 
 
 @time_machine.travel("2032-10-15 12:48:00")
-def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event_sendinblue():
+def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event_brevo():
     booking = BookingFactory(
         stock=offers_factories.EventStockFactory(price=23.99), dateCreated=date_utils.get_naive_utc_now(), quantity=2
     )
@@ -106,7 +106,7 @@ def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event_s
 
     email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
-    expected = get_expected_base_sendinblue_email_data(
+    expected = get_expected_base_brevo_email_data(
         booking,
         mediation,
         IS_DUO_EVENT=True,
@@ -118,7 +118,7 @@ def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event_s
 
 
 @time_machine.travel("2032-10-15 12:48:00")
-def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing_sendinblue():
+def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing_brevo():
     stock = offers_factories.ThingStockFactory(
         price=23.99,
         offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
@@ -129,7 +129,7 @@ def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing_sendi
 
     email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
-    expected = get_expected_base_sendinblue_email_data(
+    expected = get_expected_base_brevo_email_data(
         booking,
         mediation,
         ALL_THINGS_NOT_VIRTUAL_THING=True,
@@ -147,7 +147,7 @@ def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing_sendi
 
 
 @time_machine.travel("2032-10-15 12:48:00")
-def test_should_use_public_name_when_available_sendinblue():
+def test_should_use_public_name_when_available_brevo():
     booking = BookingFactory(
         stock__offer__venue__name="LIBRAIRIE GENERALE UNIVERSITAIRE COLBERT",
         stock__offer__venue__publicName="Librairie Colbert",
@@ -157,7 +157,7 @@ def test_should_use_public_name_when_available_sendinblue():
 
     email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
-    expected = get_expected_base_sendinblue_email_data(
+    expected = get_expected_base_brevo_email_data(
         booking,
         mediation,
         VENUE_NAME="Librairie Colbert",
@@ -167,7 +167,7 @@ def test_should_use_public_name_when_available_sendinblue():
 
 
 @time_machine.travel("2032-10-15 12:48:00")
-def test_should_return_withdrawal_details_when_available_sendinblue():
+def test_should_return_withdrawal_details_when_available_brevo():
     withdrawal_details = "Conditions de retrait spécifiques."
     booking = BookingFactory(
         stock__offer__withdrawalDetails=withdrawal_details,
@@ -177,7 +177,7 @@ def test_should_return_withdrawal_details_when_available_sendinblue():
 
     email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
-    expected = get_expected_base_sendinblue_email_data(
+    expected = get_expected_base_brevo_email_data(
         booking,
         mediation,
         OFFER_WITHDRAWAL_DETAILS=withdrawal_details,
@@ -198,7 +198,7 @@ def test_should_return_offer_tags():
 
     email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
-    expected = get_expected_base_sendinblue_email_data(
+    expected = get_expected_base_brevo_email_data(
         booking,
         mediation,
         OFFER_TAGS="Tagged_offer",
@@ -221,7 +221,7 @@ def test_should_return_offer_features():
 
     email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
-    expected = get_expected_base_sendinblue_email_data(
+    expected = get_expected_base_brevo_email_data(
         booking,
         mediation,
         FEATURES="VO, IMAX",
@@ -245,9 +245,9 @@ def test_should_return_formatted_offer_price_in_xpf():
     assert email_data.params["FORMATTED_PRICE"] == "2385 F"
 
 
-class DigitalOffersSendinblueTest:
+class DigitalOffersbrevoTest:
     @time_machine.travel("2032-10-15 12:48:00")
-    def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_digital_thing_sendinblue(self):
+    def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_digital_thing_brevo(self):
         booking = BookingFactory(
             quantity=10,
             stock__price=0,
@@ -260,7 +260,7 @@ class DigitalOffersSendinblueTest:
 
         email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
-        expected = get_expected_base_sendinblue_email_data(
+        expected = get_expected_base_brevo_email_data(
             booking,
             mediation,
             ALL_BUT_NOT_VIRTUAL_THING=False,
@@ -279,7 +279,7 @@ class DigitalOffersSendinblueTest:
         assert email_data == expected
 
     @time_machine.travel("2032-10-15 12:48:00")
-    def test_hide_cancellation_policy_on_bookings_with_activation_code_sendinblue(self):
+    def test_hide_cancellation_policy_on_bookings_with_activation_code_brevo(self):
         offer = offers_factories.OfferFactory(
             venue__name="Lieu de l'offreur",
             venue__managingOfferer__name="Théâtre du coin",
@@ -297,7 +297,7 @@ class DigitalOffersSendinblueTest:
         mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
         email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
-        expected = get_expected_base_sendinblue_email_data(
+        expected = get_expected_base_brevo_email_data(
             booking,
             mediation,
             ALL_BUT_NOT_VIRTUAL_THING=False,
@@ -322,7 +322,7 @@ class DigitalOffersSendinblueTest:
         assert email_data == expected
 
     @time_machine.travel("2032-10-15 12:48:00")
-    def test_use_activation_code_instead_of_token_if_possible_sendinblue(self):
+    def test_use_activation_code_instead_of_token_if_possible_brevo(self):
         booking = BookingFactory(
             user__email="used-email@example.com",
             quantity=10,
@@ -337,7 +337,7 @@ class DigitalOffersSendinblueTest:
 
         email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
-        expected = get_expected_base_sendinblue_email_data(
+        expected = get_expected_base_brevo_email_data(
             booking,
             mediation,
             ALL_BUT_NOT_VIRTUAL_THING=False,
@@ -359,7 +359,7 @@ class DigitalOffersSendinblueTest:
         assert email_data == expected
 
     @time_machine.travel("2032-10-15 12:48:00")
-    def test_add_expiration_date_from_activation_code_sendinblue(self):
+    def test_add_expiration_date_from_activation_code_brevo(self):
         booking = BookingFactory(
             quantity=10,
             stock__price=0,
@@ -378,7 +378,7 @@ class DigitalOffersSendinblueTest:
 
         email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
-        expected = get_expected_base_sendinblue_email_data(
+        expected = get_expected_base_brevo_email_data(
             booking,
             mediation,
             ALL_BUT_NOT_VIRTUAL_THING=False,
@@ -399,13 +399,13 @@ class DigitalOffersSendinblueTest:
         assert email_data == expected
 
 
-def test_should_return_total_price_for_duo_offers_sendinblue():
+def test_should_return_total_price_for_duo_offers_brevo():
     booking = BookingFactory(quantity=2, stock__price=10)
     email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
     assert email_data.params["OFFER_PRICE"] == "20.00 €"
 
 
-def test_digital_offer_without_departement_code_information_sendinblue():
+def test_digital_offer_without_departement_code_information_brevo():
     """
     Test that a user without any postal code information can book a digital
     offer. The booking date information should use the default timezone:
@@ -421,9 +421,9 @@ def test_digital_offer_without_departement_code_information_sendinblue():
     assert email_data.params["BOOKING_HOUR"] == "12h00"
 
 
-class BooksBookingExpirationDateTestSendinblue:
+class BooksBookingExpirationDateTestbrevo:
     @time_machine.travel("2032-10-15 12:48:00")
-    def test_should_return_new_expiration_delay_data_for_email_when_offer_is_a_book_sendinblue(self):
+    def test_should_return_new_expiration_delay_data_for_email_when_offer_is_a_book_brevo(self):
         booking = BookingFactory(
             stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
             stock__offer__name="Super livre",
@@ -433,7 +433,7 @@ class BooksBookingExpirationDateTestSendinblue:
 
         email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
-        expected = get_expected_base_sendinblue_email_data(
+        expected = get_expected_base_brevo_email_data(
             booking,
             mediation,
             ALL_THINGS_NOT_VIRTUAL_THING=True,
@@ -462,7 +462,7 @@ class BookingWithWithdrawalTypeTest:
 
         email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
-        expected = get_expected_base_sendinblue_email_data(
+        expected = get_expected_base_brevo_email_data(
             booking,
             mediation,
             OFFER_WITHDRAWAL_TYPE=withdrawal_type.value,

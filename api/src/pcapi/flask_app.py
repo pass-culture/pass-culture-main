@@ -25,7 +25,6 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from pcapi import settings
 from pcapi.celery_tasks.celery import celery_init_app
 from pcapi.celery_tasks.config import CELERY_BASE_SETTINGS
-from pcapi.core import monkeypatches
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.logging import install_logging
@@ -55,8 +54,6 @@ URL_PREFIX_VALUES = [
     "public-accounts",
     "webhooks",
 ]
-
-monkeypatches.install_monkey_patches()
 
 logger = logging.getLogger(__name__)
 

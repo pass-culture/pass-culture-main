@@ -7,13 +7,13 @@ import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.pro.event_offer_postponed_confirmation_to_pro import (
     get_event_offer_postponed_confirmation_to_pro_email_data,
 )
 from pcapi.core.mails.transactional.pro.event_offer_postponed_confirmation_to_pro import (
     send_event_offer_postponement_confirmation_email_to_pro,
 )
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

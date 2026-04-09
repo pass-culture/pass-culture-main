@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
-import { expect } from 'vitest'
+import { expect, it } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
@@ -223,7 +223,7 @@ describe('OffererAuthenticationForm', () => {
     expect(noRadio).toBeInTheDocument()
   })
 
-  it('should render form without address when not dissufible', () => {
+  it('should render form without address when not diffusible', async () => {
     renderOffererAuthenticationForm({
       initialValues: initialValues,
       contextValue: {
@@ -235,8 +235,10 @@ describe('OffererAuthenticationForm', () => {
       },
     })
 
-    const addressField = screen.queryByLabelText('Adresse postale *')
-    expect(addressField).not.toBeInTheDocument()
+    await waitFor(() => {
+      const addressField = screen.queryByLabelText('Adresse postale *')
+      expect(addressField).not.toBeInTheDocument()
+    })
   })
 
   it('should call reset on open to public change', async () => {

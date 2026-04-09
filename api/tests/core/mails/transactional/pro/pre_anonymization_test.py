@@ -4,8 +4,8 @@ import pytest
 from dateutil.relativedelta import relativedelta
 
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.pro import pre_anonymization
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.utils import date as date_utils
 

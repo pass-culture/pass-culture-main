@@ -4,7 +4,7 @@ import pytest
 
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.users.factories as user_factories
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.anonymization import get_anonymization_email_data
 from pcapi.core.mails.transactional.users.anonymization import send_anonymization_confirmation_email_to_pro
 

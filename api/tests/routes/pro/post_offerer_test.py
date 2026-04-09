@@ -147,7 +147,7 @@ def test_when_no_address_is_provided(client):
     assert response.status_code == 201
     assert response.json["siren"] == "418166096"
     assert response.json["name"] == "MINISTERE DE LA CULTURE"
-    assert len(users_testing.sendinblue_requests) == 1
+    assert len(users_testing.brevo_requests) == 1
 
 
 def test_use_offerer_name_retrieved_from_sirene_api(client):

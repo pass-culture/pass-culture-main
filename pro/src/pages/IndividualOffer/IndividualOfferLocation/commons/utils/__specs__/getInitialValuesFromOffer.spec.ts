@@ -227,7 +227,7 @@ describe('getInitialValuesFromOffer', () => {
     const params = {
       offerVenue: makeVenueListItem({
         id: 2,
-        location: undefined,
+        location: null,
       }),
       isDigital: false,
     }

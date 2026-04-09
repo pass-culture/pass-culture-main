@@ -11,7 +11,7 @@ from dateutil.relativedelta import relativedelta
 import pcapi.core.finance.models as finance_models
 from pcapi import settings
 from pcapi.core.external.attributes import api as attributes_api
-from pcapi.core.external.sendinblue import add_contacts_to_list
+from pcapi.core.external.brevo import add_contacts_to_list
 from pcapi.core.users.models import User
 from pcapi.models import db
 

@@ -1,8 +1,9 @@
 import enum
 
+import pydantic as pydantic_v2
+
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
-from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
 
 
@@ -10,18 +11,10 @@ class LinkVenueToPricingPointBodyModel(HttpBodyModel):
     pricingPointId: int
 
 
-class GetVenuePricingPointResponseModel(BaseModel):
+class GetVenuePricingPointResponseModel(pydantic_v2.BaseModel):
     id: int
     siret: str
     venueName: str
-
-    class Config:
-        orm_mode = True
-
-    @classmethod
-    def from_orm(cls, venue: offerers_models.Venue) -> "GetVenuePricingPointResponseModel":
-        venue.venueName = venue.publicName  # type: ignore [attr-defined]
-        return super().from_orm(venue)
 
 
 class SimplifiedBankAccountStatus(enum.Enum):

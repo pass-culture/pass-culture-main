@@ -15,7 +15,7 @@ from pcapi.core.educational import repository
 from pcapi.core.educational import schemas
 from pcapi.core.educational import utils
 from pcapi.core.educational import validation
-from pcapi.core.educational.adage import api as adage_client
+from pcapi.core.educational.adage import client as adage_client
 from pcapi.core.educational.api import adage as api_adage
 from pcapi.core.educational.api import shared as api_shared
 from pcapi.core.educational.serialization.collective_booking import serialize_collective_booking
@@ -254,7 +254,7 @@ def create_collective_offer(
         offererAddressId=offerer_address.id if offerer_address else None,
     )
 
-    # we update pro email data in sendinblue
+    # we update pro email data in Brevo
     for email in collective_offer.bookingEmails:
         update_external_pro(email)
 

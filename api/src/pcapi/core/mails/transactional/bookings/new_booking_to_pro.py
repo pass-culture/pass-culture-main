@@ -7,7 +7,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.mails import models
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.utils import format_price
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db

@@ -107,7 +107,23 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_TECH_PARTNERS,
         perm_models.Permissions.READ_PRO_REIMBURSEMENT_SUSPENSION,
     ],
-    "fraude_conformite": [
+    "conformite": [
+        perm_models.Permissions.MANAGE_FRAUDULENT_BOOKING_INFO,
+        perm_models.Permissions.MANAGE_OFFERS,
+        perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS,
+        perm_models.Permissions.READ_BOOKINGS,
+        perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO,
+        perm_models.Permissions.READ_OFFERS,
+        perm_models.Permissions.READ_PRO_AE_INFO,
+        perm_models.Permissions.READ_PRO_ENTITY,
+        perm_models.Permissions.READ_PRO_ENTREPRISE_INFO,
+        perm_models.Permissions.READ_PRO_REIMBURSEMENT_SUSPENSION,
+        perm_models.Permissions.READ_PRO_SENSITIVE_INFO,
+        perm_models.Permissions.READ_PUBLIC_ACCOUNT,
+        perm_models.Permissions.VALIDATE_OFFERER,
+    ],
+    "conformite_n2": [],
+    "fraude_pro": [
         perm_models.Permissions.PRO_FRAUD_ACTIONS,
         perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO,
         perm_models.Permissions.MANAGE_FRAUDULENT_BOOKING_INFO,
@@ -352,7 +368,7 @@ def support_pro_n2_fixture(roles_with_permissions: None) -> users_models.User:
 @pytest.fixture(scope="function", name="pro_fraud_admin")
 def pro_fraud_admin_fixture(roles_with_permissions: None) -> users_models.User:
     user = users_factories.AdminFactory()
-    backoffice_api.upsert_roles(user, {perm_models.Roles.FRAUDE_CONFORMITE})
+    backoffice_api.upsert_roles(user, {perm_models.Roles.FRAUDE_PRO})
     db.session.flush()
     return user
 

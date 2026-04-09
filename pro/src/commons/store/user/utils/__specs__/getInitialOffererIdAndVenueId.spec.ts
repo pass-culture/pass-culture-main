@@ -20,9 +20,7 @@ describe('getInitialOffererIdAndVenueId', () => {
   })
 
   it('should return offerer id from URL param (priority 1)', () => {
-    window.history.pushState({}, '', '/?structure=707')
-    localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '123')
-    localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '999')
+    window.history.pushState({}, '', '/?offerer=707')
 
     const offererNamesValidated = [makeOffererName({ id: 1 })]
     const venues = [makeVenueListItemLiteResponseModel({ id: 2 })]

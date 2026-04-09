@@ -1,6 +1,11 @@
 $step-border-width: 1px;
 
 [data-registration-steps-id] {
+  & .window {
+    height: 112px;
+    overflow: hidden;
+  }
+
   & .progress {
     top: 3.4rem;
     left: 0;
@@ -27,6 +32,7 @@ $step-border-width: 1px;
   }
 
   & .breadcrumb-container {
+    user-select:none;
     list-style-type: none;
 
     & .steps {

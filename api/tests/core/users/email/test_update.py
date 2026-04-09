@@ -9,7 +9,7 @@ import pcapi.core.users.email.update as email_update
 import pcapi.core.users.exceptions as users_exceptions
 from pcapi.core import token as token_utils
 from pcapi.core.mails import testing as mails_testing
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import EmailHistoryEventTypeEnum
 from pcapi.core.users.models import User

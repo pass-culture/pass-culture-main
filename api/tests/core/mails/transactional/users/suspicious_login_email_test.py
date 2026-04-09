@@ -9,7 +9,7 @@ import time_machine
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.users.factories as users_factories
 from pcapi.core import token as token_utils
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.suspicious_login_email import get_suspicious_login_email_data
 from pcapi.core.mails.transactional.users.suspicious_login_email import send_suspicious_login_email
 from pcapi.core.users import constants
@@ -20,7 +20,7 @@ from pcapi.utils import date as date_utils
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class SendinblueSuspiciousLoginEmailTest:
+class BrevoSuspiciousLoginEmailTest:
     login_info = LoginDeviceHistory(
         deviceId="2E429592-2446-425F-9A62-D6983F375B3B",
         source="iPhone 13",
@@ -44,7 +44,7 @@ class SendinblueSuspiciousLoginEmailTest:
                     token_utils.TokenType.RESET_PASSWORD, constants.RESET_PASSWORD_TOKEN_LIFE_TIME, self.user.id
                 )
 
-    def should_return_sendinblue_template_data(self):
+    def should_return_brevo_template_data(self):
         with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
             suspicious_email_data = get_suspicious_login_email_data(
                 self.user, self.login_info, self.account_suspension_token, self.reset_password_token
@@ -58,7 +58,7 @@ class SendinblueSuspiciousLoginEmailTest:
             assert suspicious_email_data.params["LOGIN_TIME"] == "19h05"
 
     @pytest.mark.features(USE_UNIVERSAL_LINKS=False)
-    def should_return_sendinblue_template_data_account_securing_firebase_dynamic_link(self):
+    def should_return_brevo_template_data_account_securing_firebase_dynamic_link(self):
         reset_password_token = token_utils.Token.create(
             token_utils.TokenType.RESET_PASSWORD, constants.RESET_PASSWORD_TOKEN_LIFE_TIME, self.user.id
         )
@@ -75,7 +75,7 @@ class SendinblueSuspiciousLoginEmailTest:
         assert suspicious_email_data.params["ACCOUNT_SECURING_LINK"] == ACCOUNT_SECURING_LINK
 
     @pytest.mark.features(USE_UNIVERSAL_LINKS=True)
-    def should_return_sendinblue_template_data_account_securing_universal_link(self):
+    def should_return_brevo_template_data_account_securing_universal_link(self):
         reset_password_token = token_utils.Token.create(
             token_utils.TokenType.RESET_PASSWORD, constants.RESET_PASSWORD_TOKEN_LIFE_TIME, self.user.id
         )

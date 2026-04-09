@@ -50,6 +50,8 @@ from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational import schemas as educational_schemas
+from pcapi.core.educational.adage import client as adage_client
 from pcapi.core.educational.api import booking as educational_booking_api
 from pcapi.core.educational.api import dms as dms_api
 from pcapi.core.external.attributes import api as external_attributes_api
@@ -131,7 +133,7 @@ def update_venue(
     author: users_models.User,
     *,
     opening_hours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None = None,
-    contact_data: offerers_schemas.VenueContactModel | None = None,
+    contact_data: offerers_schemas.VenueContactModel | offerers_schemas.VenueContactModelV2 | None = None,
     criteria: list[criteria_models.Criterion] | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     external_accessibility_url: str | None | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     cultural_domains: list[str] | None = None,
@@ -1713,7 +1715,7 @@ def save_venue_banner(
     venue: models.Venue,
     content: bytes,
     image_credit: str,
-    crop_params: image_conversion.CropParams | None = None,
+    crop_params: image_conversion.CropParams | image_conversion.CropParamsV2 | None = None,
 ) -> None:
     """
     Save the new venue's new banner: crop it and resize it if asked
@@ -1747,7 +1749,14 @@ def save_venue_banner(
         "image_credit": image_credit,
         "author_id": user.id,
         "original_image_url": f"{venue.thumbUrl}_{original_image_timestamp}",
-        "crop_params": crop_params,
+        # NOTE(jbaudet - 02/2026): the asdict has been added because of
+        # the pydantic migration which leads to some models using
+        # CropParams or CropParamsV2. For example some response models
+        # will need the CropParams, others CropParamsV2. Its kind of a
+        # mess.
+        # Feel free to remove this explicit serialization once
+        # the whole pydantic migration is done.
+        "crop_params": dataclasses.asdict(crop_params) if crop_params else None,
         "updated_at": updated_at.isoformat(),
     }
 
@@ -1777,7 +1786,7 @@ def delete_venue_banner(venue: models.Venue) -> None:
 
 
 def can_offerer_create_educational_offer(offerer_id: int) -> bool:
-    import pcapi.core.educational.adage.api as adage_client
+    import pcapi.core.educational.adage.client as adage_client
 
     if settings.CAN_COLLECTIVE_OFFERER_IGNORE_ADAGE:
         return True
@@ -2090,25 +2099,25 @@ class OfferViewsModel:
 
 
 @dataclasses.dataclass
-class MonthlyViewsModel:
-    month: int
+class DailyViewsModel:
+    day: date
     views: int
 
 
 @dataclasses.dataclass
 class VenueOffersStatisticsModel:
-    monthly_views: list[MonthlyViewsModel]
+    daily_views: list[DailyViewsModel]
     total_views_last_30_days: int
     top_offers: list[OfferViewsModel]
 
 
 def get_venue_offers_statistics(venue_id: int) -> VenueOffersStatisticsModel:
-    monthly_views = clickhouse_queries.OfferConsultationCountQuery().execute({"venue_id": str(venue_id)})
+    daily_views = clickhouse_queries.OfferConsultationCountQuery().execute({"venue_id": str(venue_id)})
     views_count = clickhouse_queries.VenueOffersMonthlyViewsQuery().execute({"venue_id": str(venue_id)})
     top_offers = clickhouse_queries.TopOffersByViewsQuery().execute({"venue_id": str(venue_id)})
 
     return VenueOffersStatisticsModel(
-        monthly_views=[MonthlyViewsModel(month=row.month, views=row.views) for row in monthly_views],
+        daily_views=[DailyViewsModel(day=row.day, views=row.views) for row in daily_views],
         total_views_last_30_days=views_count[0].total if len(views_count) > 0 else 0,
         top_offers=[OfferViewsModel(offer_id=row.id, views=row.views, rank=row.rank) for row in top_offers],
     )
@@ -3283,8 +3292,10 @@ def update_offerer_address(offerer_address_id: int, address_id: int, label: str 
 
 def synchronize_from_adage_and_check_registration(offerer_id: int) -> bool:
     since_date = date_utils.get_naive_utc_now() - timedelta(days=2)
-    adage_cultural_partners = adage_api.get_cultural_partners(force_update=True, since_date=since_date)
-    adage_api.synchronize_adage_ids_on_venues(adage_cultural_partners)
+    adage_cultural_partners = adage_client.get_cultural_partners(since_date=since_date)
+    adage_api.synchronize_adage_ids_on_venues(
+        educational_schemas.AdageCulturalPartners(partners=adage_cultural_partners)
+    )
     return offerers_repository.offerer_has_venue_with_adage_id(offerer_id)
 
 

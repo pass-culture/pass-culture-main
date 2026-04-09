@@ -4,14 +4,12 @@ import userEvent from '@testing-library/user-event'
 import { api } from '@/apiClient/api'
 import { type HeadLineOfferResponseModel, OfferStatus } from '@/apiClient/v1'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
-import {
-  listOffersOfferFactory,
-  makeVenueListItem,
-} from '@/commons/utils/factories/individualApiFactories'
+import { listOffersOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
@@ -103,7 +101,7 @@ const renderTableWithOffer = (
       storeOverrides: {
         user: {
           currentUser: sharedCurrentUserFactory(),
-          selectedPartnerVenue: makeVenueListItem({ id: 2 }),
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
         },
         offerer: currentOffererFactory(),
       },

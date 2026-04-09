@@ -1,18 +1,15 @@
 import datetime
 import decimal
-import json
 import logging
 from unittest import mock
 
 import dateutil
 import pytest
 import time_machine
-from flask import current_app
 
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import factories
 from pcapi.core.educational import models
-from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api import institution as institution_api
 from pcapi.core.educational.api import offer as educational_api_offer
@@ -109,7 +106,6 @@ class UnindexExpiredOffersTest:
     @pytest.mark.settings(ALGOLIA_DELETING_COLLECTIVE_OFFERS_CHUNK_SIZE=3)
     @mock.patch("pcapi.core.search.unindex_collective_offer_template_ids")
     def test_default_run_template(self, mock_unindex_collective_offer_template_ids) -> None:
-
         # Expired template offer
         collective_offer_template_1 = factories.CollectiveOfferTemplateFactory(
             dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=9),
@@ -152,249 +148,6 @@ class UnindexExpiredOffersTest:
         assert mock_unindex_collective_offer_template_ids.mock_calls == [
             mock.call([collective_offer_template_1.id, collective_offer_template_2.id, collective_offer_template_3.id]),
         ]
-
-
-class GetCulturalPartnersTest:
-    def test_cultural_partners_no_cache(self) -> None:
-        redis_client = current_app.redis_client
-        redis_client.delete("api:adage_cultural_partner:cache")
-
-        result = educational_api_adage.get_cultural_partners()
-
-        assert json.loads(result.json()) == {
-            "partners": [
-                {
-                    "id": 128029,
-                    "venueId": None,
-                    "siret": "21260324500011",
-                    "regionId": None,
-                    "academieId": None,
-                    "statutId": None,
-                    "labelId": 4,
-                    "typeId": 4,
-                    "communeId": "26324",
-                    "libelle": "Musée de St Paul Les trois Châteaux : Le musat Musée d'Archéologie Tricastine",
-                    "adresse": "Place de Castellane",
-                    "siteWeb": "http://www.musat.fr/",
-                    "latitude": 44.349098,
-                    "longitude": 4.768178,
-                    "actif": 1,
-                    "dateModification": "2021-09-01T00:00:00",
-                    "statutLibelle": None,
-                    "labelLibelle": "Musée de France",
-                    "typeIcone": "museum",
-                    "typeLibelle": "Musée, domaine ou monument",
-                    "communeLibelle": "SAINT-PAUL-TROIS-CHATEAUX",
-                    "communeDepartement": "026",
-                    "academieLibelle": "GRENOBLE",
-                    "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
-                    "domaines": "Patrimoine, mémoire, archéologie",
-                    "domaineIds": "13",
-                    "synchroPass": 0,
-                },
-                {
-                    "id": 128028,
-                    "venueId": None,
-                    "siret": "",
-                    "regionId": None,
-                    "academieId": None,
-                    "statutId": None,
-                    "labelId": None,
-                    "typeId": 8,
-                    "communeId": "26324",
-                    "libelle": "Fête du livre jeunesse de St Paul les trois Châteaux",
-                    "adresse": "Place Charles Chausy",
-                    "siteWeb": "http://www.fetedulivrejeunesse.fr/",
-                    "latitude": 44.350457,
-                    "longitude": 4.765918,
-                    "actif": 1,
-                    "dateModification": "2021-09-01T00:00:00",
-                    "statutLibelle": None,
-                    "labelLibelle": None,
-                    "typeIcone": "town",
-                    "typeLibelle": "Association ou fondation pour la promotion, le développement et la diffusion d\u0027oeuvres",
-                    "communeLibelle": "SAINT-PAUL-TROIS-CHATEAUX",
-                    "communeDepartement": "026",
-                    "academieLibelle": "GRENOBLE",
-                    "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
-                    "domaines": "Univers du livre, de la lecture et des écritures",
-                    "domaineIds": "11",
-                    "synchroPass": 0,
-                },
-            ]
-        }
-
-    def test_cultural_partners_get_cache(self) -> None:
-        redis_client = current_app.redis_client
-        data = [
-            {
-                "id": 23,
-                "venueId": None,
-                "siret": "21260324500011",
-                "regionId": None,
-                "academieId": None,
-                "statutId": None,
-                "labelId": 4,
-                "typeId": 4,
-                "communeId": "26324",
-                "libelle": "Musée de St Paul Les trois Châteaux : Le musat Musée d'Archéologie Tricastine",
-                "adresse": "Place de Castellane",
-                "siteWeb": "http://www.musat.fr/",
-                "latitude": 44.349098,
-                "longitude": 4.768178,
-                "actif": 1,
-                "dateModification": "2021-09-01T00:00:00",
-                "statutLibelle": None,
-                "labelLibelle": "Musée de France",
-                "typeIcone": "museum",
-                "typeLibelle": "Musée, domaine ou monument",
-                "communeLibelle": "SAINT-PAUL-TROIS-CHATEAUX",
-                "communeDepartement": "026",
-                "academieLibelle": "GRENOBLE",
-                "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
-                "domaines": "Patrimoine, mémoire, archéologie",
-                "domaineIds": "13",
-                "synchroPass": 0,
-            },
-        ]
-        redis_client.set("api:adage_cultural_partner:cache", json.dumps(data).encode("utf-8"))
-
-        result = educational_api_adage.get_cultural_partners()
-
-        assert json.loads(result.json()) == {
-            "partners": [
-                {
-                    "id": 23,
-                    "venueId": None,
-                    "siret": "21260324500011",
-                    "regionId": None,
-                    "academieId": None,
-                    "statutId": None,
-                    "labelId": 4,
-                    "typeId": 4,
-                    "communeId": "26324",
-                    "libelle": "Musée de St Paul Les trois Châteaux : Le musat Musée d'Archéologie Tricastine",
-                    "adresse": "Place de Castellane",
-                    "siteWeb": "http://www.musat.fr/",
-                    "latitude": 44.349098,
-                    "longitude": 4.768178,
-                    "actif": 1,
-                    "dateModification": "2021-09-01T00:00:00",
-                    "statutLibelle": None,
-                    "labelLibelle": "Musée de France",
-                    "typeIcone": "museum",
-                    "typeLibelle": "Musée, domaine ou monument",
-                    "communeLibelle": "SAINT-PAUL-TROIS-CHATEAUX",
-                    "communeDepartement": "026",
-                    "academieLibelle": "GRENOBLE",
-                    "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
-                    "domaines": "Patrimoine, mémoire, archéologie",
-                    "domaineIds": "13",
-                    "synchroPass": 0,
-                },
-            ]
-        }
-
-    def test_cultural_partners_force_update(self) -> None:
-
-        redis_client = current_app.redis_client
-        data = [
-            {
-                "id": 23,
-                "venueId": None,
-                "siret": "21260324500011",
-                "regionId": None,
-                "academieId": None,
-                "statutId": None,
-                "labelId": 4,
-                "typeId": 4,
-                "communeId": "26324",
-                "libelle": "Musée de St Paul Les trois Châteaux : Le musat Musée d'Archéologie Tricastine",
-                "adresse": "Place de Castellane",
-                "siteWeb": "http://www.musat.fr/",
-                "latitude": 44.349098,
-                "longitude": 4.768178,
-                "actif": 1,
-                "dateModification": "2021-09-01T00:00:00",
-                "statutLibelle": None,
-                "labelLibelle": "Musée de France",
-                "typeIcone": "museum",
-                "typeLibelle": "Musée, domaine ou monument",
-                "communeLibelle": "SAINT-PAUL-TROIS-CHATEAUX",
-                "communeDepartement": "026",
-                "academieLibelle": "GRENOBLE",
-                "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
-                "domaines": "Patrimoine, mémoire, archéologie",
-                "domaineIds": "13",
-                "synchroPass": 1,
-            },
-        ]
-        redis_client.set("api:adage_cultural_partner:cache", json.dumps(data).encode("utf-8"))
-
-        result = educational_api_adage.get_cultural_partners(force_update=True)
-
-        assert json.loads(result.json()) == {
-            "partners": [
-                {
-                    "id": 128029,
-                    "venueId": None,
-                    "siret": "21260324500011",
-                    "regionId": None,
-                    "academieId": None,
-                    "statutId": None,
-                    "labelId": 4,
-                    "typeId": 4,
-                    "communeId": "26324",
-                    "libelle": "Musée de St Paul Les trois Châteaux : Le musat Musée d'Archéologie Tricastine",
-                    "adresse": "Place de Castellane",
-                    "siteWeb": "http://www.musat.fr/",
-                    "latitude": 44.349098,
-                    "longitude": 4.768178,
-                    "actif": 1,
-                    "dateModification": "2021-09-01T00:00:00",
-                    "statutLibelle": None,
-                    "labelLibelle": "Musée de France",
-                    "typeIcone": "museum",
-                    "typeLibelle": "Musée, domaine ou monument",
-                    "communeLibelle": "SAINT-PAUL-TROIS-CHATEAUX",
-                    "communeDepartement": "026",
-                    "academieLibelle": "GRENOBLE",
-                    "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
-                    "domaines": "Patrimoine, mémoire, archéologie",
-                    "domaineIds": "13",
-                    "synchroPass": 0,
-                },
-                {
-                    "id": 128028,
-                    "venueId": None,
-                    "siret": "",
-                    "regionId": None,
-                    "academieId": None,
-                    "statutId": None,
-                    "labelId": None,
-                    "typeId": 8,
-                    "communeId": "26324",
-                    "libelle": "Fête du livre jeunesse de St Paul les trois Châteaux",
-                    "adresse": "Place Charles Chausy",
-                    "siteWeb": "http://www.fetedulivrejeunesse.fr/",
-                    "latitude": 44.350457,
-                    "longitude": 4.765918,
-                    "actif": 1,
-                    "dateModification": "2021-09-01T00:00:00",
-                    "statutLibelle": None,
-                    "labelLibelle": None,
-                    "typeIcone": "town",
-                    "typeLibelle": "Association ou fondation pour la promotion, le développement et la diffusion d\u0027oeuvres",
-                    "communeLibelle": "SAINT-PAUL-TROIS-CHATEAUX",
-                    "communeDepartement": "026",
-                    "academieLibelle": "GRENOBLE",
-                    "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
-                    "domaines": "Univers du livre, de la lecture et des écritures",
-                    "domaineIds": "11",
-                    "synchroPass": 0,
-                },
-            ]
-        }
 
 
 @pytest.mark.usefixtures("db_session")

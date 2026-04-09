@@ -32,7 +32,7 @@ export const initializeSentry = () => {
         matchRoutes,
       }),
     ],
-    tracesSampleRate: parseFloat(SENTRY_SAMPLE_RATE),
+    tracesSampleRate: Number.parseFloat(SENTRY_SAMPLE_RATE),
     beforeSend: (event, hint) => {
       // scrub the user autologin token from the url
       if (event.tags) {

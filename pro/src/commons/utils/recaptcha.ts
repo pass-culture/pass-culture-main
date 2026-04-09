@@ -25,11 +25,11 @@ export const getReCaptchaToken = (action: string): Promise<string> => {
           if (token) {
             resolve(token)
           } else {
-            reject(RECAPTCHA_ERROR)
+            reject(new Error(RECAPTCHA_ERROR))
           }
         })
       } else {
-        reject(RECAPTCHA_ERROR)
+        reject(new Error(RECAPTCHA_ERROR))
       }
     })
   }

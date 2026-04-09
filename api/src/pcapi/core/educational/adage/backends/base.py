@@ -20,9 +20,7 @@ class AdageClient:
     def notify_booking_cancellation_by_offerer(self, data: schemas.EducationalBookingResponse) -> None:
         raise NotImplementedError()
 
-    def get_cultural_partners(
-        self, since_date: datetime.datetime | None = None
-    ) -> list[dict[str, str | int | float | None]]:
+    def get_cultural_partners(self, since_date: datetime.datetime) -> list[schemas.AdageCulturalPartner]:
         raise NotImplementedError()
 
     def notify_institution_association(self, data: schemas.AdageCollectiveOffer) -> None:

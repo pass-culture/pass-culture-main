@@ -4,7 +4,7 @@ import pytest
 
 from pcapi.core import token as token_utils
 from pcapi.core.mails import testing as mails_testing
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.reset_password import get_reset_password_email_data
 from pcapi.core.mails.transactional.users.reset_password import send_reset_password_email_to_user
 from pcapi.core.users import factories as users_factories
@@ -14,7 +14,7 @@ from pcapi.core.users.models import constants
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class SendinblueSendResetPasswordToUserEmailTest:
+class BrevoSendResetPasswordToUserEmailTest:
     def test_send_email(self) -> None:
         # given
         user = users_factories.UserFactory()

@@ -111,10 +111,7 @@
         "noUnreachableSuper": "error",
         "noUnsafeFinally": "error",
         "noUnsafeOptionalChaining": "error",
-        "noUnusedImports": {
-          "level": "error",
-          "fix": "safe" // no code fix suggested for noUnusedVariables
-        },
+        "noUnusedImports": "error", // default: "warn"
         "noUnusedLabels": "error",
         "noUnusedPrivateClassMembers": "error",
         "noUnusedVariables": "error",

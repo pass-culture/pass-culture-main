@@ -31,12 +31,13 @@ export const OpenToPublicToggle = ({
     ...radioDescriptions,
   }
 
+  const radioDescriptionWhenNotOpenToPublic =
+    isOpenToPublic === 'false' ? finalRadioDescriptions.no : ''
+
   const description =
     isOpenToPublic === 'true'
       ? finalRadioDescriptions.yes
-      : isOpenToPublic === 'false'
-        ? finalRadioDescriptions.no
-        : ''
+      : radioDescriptionWhenNotOpenToPublic
 
   return (
     <RadioButtonGroup

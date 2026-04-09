@@ -8,7 +8,7 @@ import logging
 import typing
 from datetime import datetime
 
-import pydantic.v1 as pydantic_v1
+from pydantic import BaseModel
 
 from pcapi import settings
 from pcapi.utils import date as date_utils
@@ -32,29 +32,29 @@ class NotFoundException(TypeformException):
     pass
 
 
-class TypeformQuestion(pydantic_v1.BaseModel):
+class TypeformQuestion(BaseModel):
     field_id: str
     title: str
 
 
-class TypeformForm(pydantic_v1.BaseModel):
+class TypeformForm(BaseModel):
     form_id: str
     title: str
     date_created: datetime
     fields: list[TypeformQuestion] = []
 
 
-class TypeformAnswer(pydantic_v1.BaseModel):
+class TypeformAnswer(BaseModel):
     field_id: str
     choice_id: str | None = None
     text: str | None = None
 
 
-class TypeformResponse(pydantic_v1.BaseModel):
+class TypeformResponse(BaseModel):
     response_id: str
     date_submitted: datetime
-    phone_number: str | None
-    email: str | None
+    phone_number: str | None = None
+    email: str | None = None
     answers: list[TypeformAnswer]
 
 

@@ -645,6 +645,49 @@ describe('initializeUser', () => {
       expect(state.user.access).toBeNull()
       expect(state.user.selectedPartnerVenue).toBeNull()
     })
+
+    it('should get the venue id from URL params for backoffice switcher', async () => {
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+        offerersNamesWithPendingValidation: [],
+        offerersNames: [getOffererNameFactory({ id: 100 })],
+      })
+      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+        venues: [
+          makeVenueListItemLiteResponseModel({
+            id: 101,
+            managingOffererId: 100,
+          }),
+          makeVenueListItemLiteResponseModel({
+            id: 201,
+            managingOffererId: 100,
+          }),
+        ],
+        venuesWithPendingValidation: [],
+      })
+      vi.spyOn(api, 'getVenue').mockResolvedValue(
+        makeGetVenueResponseModel({
+          id: 201,
+          managingOfferer: makeGetVenueManagingOffererResponseModel({
+            id: 100,
+          }),
+        })
+      )
+      vi.spyOn(api, 'getOfferer').mockResolvedValue({
+        ...defaultGetOffererResponseModel,
+        id: 100,
+        isOnboarded: true,
+      })
+
+      window.history.pushState({}, '', '/?venue=201')
+
+      const store = configureStoreWithSwitchVenueFeature()
+
+      await store.dispatch(initializeUser({ user })).unwrap()
+
+      const state = store.getState()
+      expect(state.user.access).toBe('full')
+      expect(state.user.selectedPartnerVenue?.id).toBe(201)
+    })
   })
 
   describe('error handling', () => {

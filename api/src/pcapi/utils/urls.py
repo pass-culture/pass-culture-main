@@ -58,21 +58,11 @@ def build_pc_pro_offer_path(offer: CollectiveOffer | CollectiveOfferTemplate | O
 
 
 def build_pc_pro_offerer_link(offerer: offerers_models.Offerer) -> str:
-    return f"/accueil?structure={offerer.id}"
-
-
-def build_pc_pro_offers_for_offerer_path(offerer: offerers_models.Offerer) -> str:
-    return f"/offres?structure={offerer.id}"
-
-
-def build_pc_pro_collective_offers_for_offerer_path(offerer: offerers_models.Offerer) -> str:
-    return f"/offres/collectives?structure={offerer.id}"
+    return f"/hub?offerer={offerer.id}"
 
 
 def build_pc_pro_venue_path(venue: offerers_models.Venue) -> str:
-    if venue.isVirtual:
-        return f"/accueil?structure={venue.managingOfferer.id}"
-    return f"/structures/{venue.managingOffererId}/lieux/{venue.id}/page-partenaire"
+    return f"/accueil?venue={venue.id}"
 
 
 def build_pc_pro_venue_parameters_path(venue: offerers_models.Venue) -> str:

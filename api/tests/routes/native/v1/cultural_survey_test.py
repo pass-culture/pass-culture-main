@@ -321,9 +321,8 @@ class CulturalSurveyQuestionsTest:
         assert not user.needsToFillCulturalSurvey
         assert user.culturalSurveyFilledDate == date_utils.get_naive_utc_now()
 
-        assert len(testing.sendinblue_requests) == 1
-        assert testing.sendinblue_requests[0]["email"] == user.email
+        assert len(testing.brevo_requests) == 1
+        assert testing.brevo_requests[0]["email"] == user.email
         assert (
-            testing.sendinblue_requests[0]["attributes"]["INTENDED_CATEGORIES"]
-            == "PROJECTION_SPECTACLE,PROJECTION_CINEMA"
+            testing.brevo_requests[0]["attributes"]["INTENDED_CATEGORIES"] == "PROJECTION_SPECTACLE,PROJECTION_CINEMA"
         )

@@ -169,7 +169,7 @@ describe('Income', () => {
       })
       renderIncome()
 
-      const years = [...Object.keys(MOCK_DATA.incomeByYear)]
+      const years = Object.keys(MOCK_DATA.incomeByYear)
       await waitFor(() => {
         expect(
           screen.getAllByRole('button', {
@@ -181,7 +181,7 @@ describe('Income', () => {
       // Years are sorted in descending order, so the last/most recent year
       // is the first item of the list of filters.
       const mostRecentYear = years.sort(
-        (a, b) => Number.parseInt(b, 10) - parseInt(a, 10)
+        (a, b) => Number.parseInt(b, 10) - Number.parseInt(a, 10)
       )[0]
       expect(
         screen.getByRole('button', {
@@ -204,11 +204,11 @@ describe('Income', () => {
         ).toBeGreaterThan(0)
       })
 
-      const years = [...Object.keys(MOCK_DATA.incomeByYear)]
+      const years = Object.keys(MOCK_DATA.incomeByYear)
       // Years are sorted in descending order, so the last/most recent year
       // is the first item of the list of filters.
       const mostRecentYear = years.sort(
-        (a, b) => Number.parseInt(b, 10) - parseInt(a, 10)
+        (a, b) => Number.parseInt(b, 10) - Number.parseInt(a, 10)
       )[0]
       expect(
         screen.getByRole('button', {

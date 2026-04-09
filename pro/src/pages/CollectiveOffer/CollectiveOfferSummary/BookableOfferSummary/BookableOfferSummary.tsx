@@ -17,6 +17,7 @@ import {
   Events,
 } from '@/commons/core/FirebaseEvents/constants'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
+import { getCollectiveOfferLink } from '@/commons/core/OfferEducational/utils/getCollectiveOfferLink'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -173,11 +174,11 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
     CollectiveOfferAllowedAction.CAN_CANCEL
   )
 
-  const offerEditLink = `/offre/${offer.id}/collectif/edition`
-
-  const draftOfferLink =
-    offer.displayedStatus === CollectiveOfferDisplayedStatus.DRAFT &&
-    `/offre/collectif/${offer.id}/creation`
+  const offerEditLink = getCollectiveOfferLink(
+    offer.id,
+    offer.displayedStatus,
+    true
+  )
 
   const location = offer.location
     ? getLocation(offer.location, true)
@@ -265,7 +266,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
                     variant={ButtonVariant.SECONDARY}
                     color={ButtonColor.NEUTRAL}
                     size={ButtonSize.SMALL}
-                    to={draftOfferLink ? draftOfferLink : offerEditLink}
+                    to={offerEditLink}
                     aria-label={'Modifier l’offre'}
                     icon={fullEditIcon}
                     label="Modifier"

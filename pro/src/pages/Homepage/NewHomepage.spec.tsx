@@ -4,8 +4,8 @@ import { axe } from 'vitest-axe'
 
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { DMSApplicationstatus } from '@/apiClient/v1/models/DMSApplicationstatus'
-import { defaultDMSApplicationForEAC } from '@/commons/utils/factories/collectiveApiFactories'
-import { defaultGetOffererVenueResponseModel } from '@/commons/utils/factories/individualApiFactories'
+import { defaultDMSApplicationForEACV2 } from '@/commons/utils/factories/collectiveApiFactories'
+import { defaultGetVenueResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
@@ -15,10 +15,7 @@ import {
 import { PartnerLayout } from '@/layouts/PartnerLayout/PartnerLayout'
 
 import * as utils from './commons/utils'
-import {
-  HomepageVariant,
-  OffersEmptyStateCardVariant,
-} from './components/types'
+import { HomepageVariant, type OffersCardVariant } from './components/types'
 import { NewHomepage } from './NewHomepage'
 
 vi.mock('@/components/CollectiveDmsTimeline/CollectiveDmsTimeline', () => ({
@@ -50,15 +47,8 @@ vi.mock('./components/NewsletterCard/NewsletterCard', () => ({
 }))
 
 vi.mock('./components/OffersEmptyStateCard/OffersEmptyStateCard', () => ({
-  OffersEmptyStateCard: ({
-    variant,
-  }: {
-    variant: OffersEmptyStateCardVariant
-  }) => {
-    const variantText =
-      variant === OffersEmptyStateCardVariant.INDIVIDUAL
-        ? 'individuelle'
-        : 'collective'
+  OffersEmptyStateCard: ({ variant }: { variant: OffersCardVariant }) => {
+    const variantText = variant === 'INDIVIDUAL' ? 'individuelle' : 'collective'
     return <div>créer une offre {variantText}</div>
   },
 }))
@@ -74,6 +64,11 @@ vi.mock(
     ),
   })
 )
+
+vi.mock('@/app/AppRouter/utils', async () => ({
+  ...(await vi.importActual('@/app/AppRouter/utils')),
+  isNewHomepageEnabled: () => true,
+}))
 
 vi.mock('@/app/AppRouter/utils', async () => ({
   ...(await vi.importActual('@/app/AppRouter/utils')),
@@ -126,7 +121,7 @@ const renderNewHomepage = (
 
 describe('NewHomepage', () => {
   it('should display the selected venue public name in the title', () => {
-    renderNewHomepage()
+    renderNewHomepage({ hasNonDraftOffers: true })
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
       'Votre espace Nom public de la structure'
     )
@@ -135,7 +130,7 @@ describe('NewHomepage', () => {
   describe('venue validation banner', () => {
     it('should not be displayed when the venue is validated', () => {
       renderNewHomepage({
-        ...defaultGetOffererVenueResponseModel,
+        ...defaultGetVenueResponseModel,
         isValidated: true,
       })
 
@@ -144,7 +139,7 @@ describe('NewHomepage', () => {
 
     it('should be displayed if the venue is not validated', () => {
       renderNewHomepage({
-        ...defaultGetOffererVenueResponseModel,
+        ...defaultGetVenueResponseModel,
         isValidated: false,
       })
 
@@ -170,11 +165,11 @@ describe('NewHomepage', () => {
         shouldDisplayTabs,
       }) => {
         renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
+          ...defaultGetVenueResponseModel,
           allowedOnAdage,
           hasNonDraftOffers,
           collectiveDmsApplications: hasCollectiveDMS
-            ? [defaultDMSApplicationForEAC]
+            ? [defaultDMSApplicationForEACV2]
             : undefined,
         })
 
@@ -188,7 +183,7 @@ describe('NewHomepage', () => {
 
     it('should render without accessibility violation', async () => {
       const { container } = renderNewHomepage({
-        ...defaultGetOffererVenueResponseModel,
+        ...defaultGetVenueResponseModel,
         allowedOnAdage: true,
         hasNonDraftOffers: true,
       })
@@ -203,7 +198,7 @@ describe('NewHomepage', () => {
     it('should display the corresponding panel when click on a given tab', async () => {
       const user = userEvent.setup()
       renderNewHomepage({
-        ...defaultGetOffererVenueResponseModel,
+        ...defaultGetVenueResponseModel,
         allowedOnAdage: true,
         hasNonDraftOffers: true,
       })
@@ -232,7 +227,7 @@ describe('NewHomepage', () => {
 
         const user = userEvent.setup()
         renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
+          ...defaultGetVenueResponseModel,
           allowedOnAdage: true,
           hasNonDraftOffers: true,
         })
@@ -247,7 +242,7 @@ describe('NewHomepage', () => {
         await user.click(screen.getByRole('tab', { name: /Collectif/ }))
         expect(utils.onNewTabSelected).toHaveBeenCalledWith(
           'tab-collective',
-          defaultGetOffererVenueResponseModel.id
+          defaultGetVenueResponseModel.id
         )
       })
 
@@ -255,7 +250,6 @@ describe('NewHomepage', () => {
         scenario             | hasIndividual | hasCollective | initialTab
         ${'only collective'} | ${false}      | ${true}       | ${'tab-collective'}
         ${'only individual'} | ${true}       | ${false}      | ${'tab-individual'}
-        ${'nothing'}         | ${false}      | ${false}      | ${'tab-individual'}
       `(
         'when other scenarii > should handle the $scenario case.',
         ({ hasIndividual, hasCollective, initialTab }) => {
@@ -263,13 +257,13 @@ describe('NewHomepage', () => {
           vi.spyOn(utils, 'onNewTabSelected')
 
           renderNewHomepage({
-            ...defaultGetOffererVenueResponseModel,
+            ...defaultGetVenueResponseModel,
             allowedOnAdage: hasCollective,
             hasNonDraftOffers: hasIndividual,
           })
 
           expect(utils.getInitialTab).toHaveBeenCalledExactlyOnceWith(
-            defaultGetOffererVenueResponseModel.id,
+            defaultGetVenueResponseModel.id,
             hasIndividual,
             hasCollective
           )
@@ -280,6 +274,20 @@ describe('NewHomepage', () => {
         }
       )
     })
+
+    it('should display unavailable page when venue has no tab', () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {})
+
+      renderNewHomepage({
+        ...defaultGetVenueResponseModel,
+        allowedOnAdage: false,
+        hasNonDraftOffers: false,
+      })
+
+      expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
+        'Page indisponible'
+      )
+    })
   })
 
   describe('individual panel', () => {
@@ -287,11 +295,14 @@ describe('NewHomepage', () => {
      * TODO (mdesquilbet-pass, 2026-02-18): replace text content assertions
      * by mocking components - when all modules are created
      */
+    beforeEach(() => {
+      vi.spyOn(utils, 'getInitialTab').mockReturnValue('tab-individual')
+    })
 
     describe('income module', () => {
       it('should be displayed if the venue has non free offers', () => {
         renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
+          ...defaultGetVenueResponseModel,
           hasNonDraftOffers: true,
           hasNonFreeOffers: true,
         })
@@ -303,7 +314,7 @@ describe('NewHomepage', () => {
 
       it("should not be displayed if the venue doesn't have non free offers", () => {
         renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
+          ...defaultGetVenueResponseModel,
           hasNonDraftOffers: true,
           hasNonFreeOffers: false,
         })
@@ -329,7 +340,7 @@ describe('NewHomepage', () => {
         today.setDate(today.getDate() + 30)
         vi.setSystemTime(today)
         renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
+          ...defaultGetVenueResponseModel,
           dateCreated,
           hasNonDraftOffers: true,
         })
@@ -347,7 +358,7 @@ describe('NewHomepage', () => {
         today.setDate(today.getDate() + 40)
         vi.setSystemTime(today)
         renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
+          ...defaultGetVenueResponseModel,
           dateCreated,
           hasNonDraftOffers: true,
         })
@@ -362,7 +373,7 @@ describe('NewHomepage', () => {
 
     it('should always have the mandatory modules', () => {
       renderNewHomepage({
-        ...defaultGetOffererVenueResponseModel,
+        ...defaultGetVenueResponseModel,
         hasNonDraftOffers: true,
       })
 
@@ -392,8 +403,8 @@ describe('NewHomepage', () => {
     describe('collective DMS timeline', () => {
       it('should be displayed when venue has a collective DMS application', () => {
         renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
-          collectiveDmsApplications: [defaultDMSApplicationForEAC],
+          ...defaultGetVenueResponseModel,
+          collectiveDmsApplications: [defaultDMSApplicationForEACV2],
         })
 
         expect(
@@ -403,7 +414,7 @@ describe('NewHomepage', () => {
 
       it('should not be displayed when venue has not a collective DMS application', () => {
         renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
+          ...defaultGetVenueResponseModel,
           collectiveDmsApplications: undefined,
           allowedOnAdage: true,
         })
@@ -417,10 +428,10 @@ describe('NewHomepage', () => {
     describe('individual offers modules', () => {
       it('should be displayed when venue has a refused DMS application', () => {
         renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
+          ...defaultGetVenueResponseModel,
           collectiveDmsApplications: [
             {
-              ...defaultDMSApplicationForEAC,
+              ...defaultDMSApplicationForEACV2,
               state: DMSApplicationstatus.REFUSE,
             },
           ],
@@ -433,10 +444,10 @@ describe('NewHomepage', () => {
 
       it('should be displayed when venue has a "sans suite" DMS application', () => {
         renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
+          ...defaultGetVenueResponseModel,
           collectiveDmsApplications: [
             {
-              ...defaultDMSApplicationForEAC,
+              ...defaultDMSApplicationForEACV2,
               state: DMSApplicationstatus.SANS_SUITE,
             },
           ],
@@ -449,8 +460,8 @@ describe('NewHomepage', () => {
 
       it('should not be displayed when venue has a pending DMS application', () => {
         renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
-          collectiveDmsApplications: [defaultDMSApplicationForEAC],
+          ...defaultGetVenueResponseModel,
+          collectiveDmsApplications: [defaultDMSApplicationForEACV2],
         })
 
         expect(
@@ -460,7 +471,7 @@ describe('NewHomepage', () => {
 
       it('should not be displayed when venue has no DMS application', () => {
         renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
+          ...defaultGetVenueResponseModel,
           collectiveDmsApplications: undefined,
           allowedOnAdage: true,
         })
@@ -474,7 +485,7 @@ describe('NewHomepage', () => {
     describe('income module', () => {
       it('should be displayed if the venue has non free offers', () => {
         renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
+          ...defaultGetVenueResponseModel,
           hasNonFreeOffers: true,
           allowedOnAdage: true,
         })
@@ -486,7 +497,7 @@ describe('NewHomepage', () => {
 
       it("should not be displayed if the venue doesn't have non free offers", () => {
         renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
+          ...defaultGetVenueResponseModel,
           hasNonFreeOffers: false,
           allowedOnAdage: true,
         })
@@ -498,10 +509,10 @@ describe('NewHomepage', () => {
 
       it('should not be displayed when the venue is not allowed on adage', () => {
         renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
+          ...defaultGetVenueResponseModel,
           hasNonFreeOffers: false,
           allowedOnAdage: false,
-          collectiveDmsApplications: [defaultDMSApplicationForEAC],
+          collectiveDmsApplications: [defaultDMSApplicationForEACV2],
         })
 
         expect(
@@ -513,7 +524,7 @@ describe('NewHomepage', () => {
     describe('mandatory modules', () => {
       it('should always have the mandatory modules when allowed on adage', () => {
         renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
+          ...defaultGetVenueResponseModel,
           allowedOnAdage: true,
         })
 
@@ -536,9 +547,9 @@ describe('NewHomepage', () => {
 
       it('should not have the mandatory modules when venue is not allowed on adage', () => {
         renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
+          ...defaultGetVenueResponseModel,
           allowedOnAdage: false,
-          collectiveDmsApplications: [defaultDMSApplicationForEAC],
+          collectiveDmsApplications: [defaultDMSApplicationForEACV2],
         })
 
         expect(
@@ -574,7 +585,7 @@ describe('NewHomepage', () => {
         today.setDate(today.getDate() + 30)
         vi.setSystemTime(today)
         renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
+          ...defaultGetVenueResponseModel,
           adageInscriptionDate,
           allowedOnAdage: true,
         })
@@ -592,7 +603,7 @@ describe('NewHomepage', () => {
         today.setDate(today.getDate() + 40)
         vi.setSystemTime(today)
         renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
+          ...defaultGetVenueResponseModel,
           adageInscriptionDate,
           allowedOnAdage: true,
         })
@@ -610,7 +621,7 @@ describe('NewHomepage', () => {
         today.setDate(today.getDate() + 30)
         vi.setSystemTime(today)
         renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
+          ...defaultGetVenueResponseModel,
           dateCreated,
           adageInscriptionDate: null,
           allowedOnAdage: true,
@@ -629,7 +640,7 @@ describe('NewHomepage', () => {
         today.setDate(today.getDate() + 40)
         vi.setSystemTime(today)
         renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
+          ...defaultGetVenueResponseModel,
           dateCreated,
           adageInscriptionDate: null,
           allowedOnAdage: true,
@@ -648,11 +659,11 @@ describe('NewHomepage', () => {
         today.setDate(today.getDate() + 40)
         vi.setSystemTime(today)
         renderNewHomepage({
-          ...defaultGetOffererVenueResponseModel,
+          ...defaultGetVenueResponseModel,
           dateCreated,
           adageInscriptionDate: null,
           allowedOnAdage: false,
-          collectiveDmsApplications: [defaultDMSApplicationForEAC],
+          collectiveDmsApplications: [defaultDMSApplicationForEACV2],
         })
 
         expect(

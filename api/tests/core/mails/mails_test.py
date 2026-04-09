@@ -3,8 +3,7 @@ import logging
 from unittest.mock import patch
 
 import pytest
-from brevo_python.rest import ApiException as SendinblueApiException
-from urllib3.response import HTTPResponse
+from brevo.core import ApiError as BrevoApiError
 
 from pcapi.core.mails import models
 from pcapi.core.mails import send
@@ -98,10 +97,10 @@ class SendinblueBackendTest:
         assert task_param["reply_to"] == expected_sent_data.reply_to
         assert task_param["enable_unsubscribe"] == self.expected_sent_data.enable_unsubscribe
 
-    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.delete_contact")
-    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.create_contact")
+    @patch("brevo.contacts.client.ContactsClient.delete_contact")
+    @patch("brevo.contacts.client.ContactsClient.create_contact")
     def test_create_contact(self, mock_create_contact, mock_delete_contact):
-        payload = serialization.UpdateSendinblueContactRequest(
+        payload = serialization.UpdateBrevoContactRequest(
             email="old.email@example.com",
             use_pro_subaccount=True,
             attributes={"EMAIL": "new.email@example.com"},
@@ -112,13 +111,19 @@ class SendinblueBackendTest:
         backend = self._get_backend_for_test()
         backend(use_pro_subaccount=True).create_contact(payload)
 
-        mock_create_contact.assert_called_once()
+        mock_create_contact.assert_called_once_with(
+            email="old.email@example.com",
+            attributes={"EMAIL": "new.email@example.com"},
+            list_ids=[123],
+            update_enabled=True,
+            email_blacklisted=False,
+        )
         mock_delete_contact.assert_not_called()
 
-    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.delete_contact")
-    @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.create_contact")
+    @patch("brevo.contacts.client.ContactsClient.delete_contact")
+    @patch("brevo.contacts.client.ContactsClient.create_contact")
     def test_create_contact_duplicate_email(self, mock_create_contact, mock_delete_contact):
-        payload = serialization.UpdateSendinblueContactRequest(
+        payload = serialization.UpdateBrevoContactRequest(
             email="old.email@example.com",
             use_pro_subaccount=True,
             attributes={"EMAIL": "new.email@example.com"},
@@ -126,22 +131,27 @@ class SendinblueBackendTest:
             emailBlacklisted=False,
         )
 
-        mock_create_contact.side_effect = SendinblueApiException(
-            http_resp=HTTPResponse(
-                status=400,
-                reason="Bad Request",
-                headers={"Content-Type": "application/json"},
-                body='{"code":"duplicate_parameter",'
-                '"message":"Unable to update contact, email is already associated with another Contact",'
-                '"metadata":{"duplicate_identifiers":["email"]}}',
-            )
+        mock_create_contact.side_effect = BrevoApiError(
+            status_code=400,
+            headers={"Content-Type": "application/json"},
+            body={
+                "code": "duplicate_parameter",
+                "message": "Unable to update contact, email is already associated with another Contact",
+                "metadata": {"duplicate_identifiers": ["email"]},
+            },
         )
 
         backend = self._get_backend_for_test()
         backend(use_pro_subaccount=True).create_contact(payload)
 
-        mock_create_contact.assert_called_once()
-        mock_delete_contact.assert_called_once_with("old.email@example.com")
+        mock_create_contact.assert_called_once_with(
+            email="old.email@example.com",
+            attributes={"EMAIL": "new.email@example.com"},
+            list_ids=[123],
+            update_enabled=True,
+            email_blacklisted=False,
+        )
+        mock_delete_contact.assert_called_once_with("old.email@example.com", identifier_type="email_id")
 
 
 @pytest.mark.usefixtures("db_session")
@@ -250,7 +260,7 @@ class SendTest:
         assert mock_send_transactional_email_secondary_task.call_count == 0
 
         assert caplog.messages[0] == (
-            "An email would be sent via Sendinblue to=lucy.ellingson@example.com, avery.kelly@example.com, bcc=(): "
+            "An email would be sent via Brevo to=lucy.ellingson@example.com, avery.kelly@example.com, bcc=(): "
             "{'template': {'id_prod': 11, 'id_not_prod': 12, 'tags': ['some', 'stuff'], 'use_priority_queue': False, "
             "'send_to_ehp': False, 'enable_unsubscribe': False}, "
             "'reply_to': {'email': 'reply_to@example.com', 'name': 'Tom S.'}, 'params': {}}"
@@ -348,7 +358,7 @@ class SendTest:
 
         assert mock_send_transactional_email_secondary_task.call_count == 0
         assert caplog.messages[0] == (
-            f"An email would be sent via Sendinblue {'using the PRO subaccount ' if expected_use_pro_subaccount else ''}to=lucy.ellingson@example.com, "
+            f"An email would be sent via Brevo {'using the PRO subaccount ' if expected_use_pro_subaccount else ''}to=lucy.ellingson@example.com, "
             "avery.kelly@example.com, bcc=(): {'template': {'id_prod': 1, 'id_not_prod': 10, 'tags': [], 'use_priority_queue': False, "
             f"'send_to_ehp': False, 'enable_unsubscribe': {enable_unsubscribe}"
             "}, 'reply_to': None, 'params': {}}"

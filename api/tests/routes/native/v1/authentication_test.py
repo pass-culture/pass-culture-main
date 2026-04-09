@@ -18,14 +18,14 @@ from pcapi.connectors.dms import models as dms_models
 from pcapi.core import token as token_utils
 from pcapi.core.external.batch import testing as batch_testing
 from pcapi.core.history import factories as history_factories
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import repository as subscription_repository
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import schemas as users_schemas
-from pcapi.core.users import testing as sendinblue_testing
+from pcapi.core.users import testing as brevo_testing
 from pcapi.core.users.models import AccountState
 from pcapi.core.users.models import LoginDeviceHistory
 from pcapi.core.users.models import SingleSignOn
@@ -264,7 +264,7 @@ class SigninTest:
         assert refresh_response.status_code == 200
 
         assert user.lastConnectionDate == datetime(2020, 3, 15)
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(brevo_testing.brevo_requests) == 1
 
     def test_signin_with_extra_device_info(self, client):
         data = {
@@ -399,19 +399,22 @@ class SSOSigninTest:
             token_utils.TokenType.ACCOUNT_CREATION, decoded_account_creation_token.key_suffix
         )
 
+    @pytest.mark.parametrize("sso_provider", ("apple", "google"))
     @patch("pcapi.connectors.google_oauth.get_google_user")
-    def test_updates_single_sign_on_email_change(self, mocked_google_oauth, client):
+    @patch("pcapi.connectors.apple_oauth.get_apple_user")
+    def test_updates_single_sign_on_email_change(self, mocked_apple_oauth, mocked_google_oauth, sso_provider, client):
         user = users_factories.UserFactory(isActive=True)
-        google_sso = users_factories.SingleSignOnFactory(user=user, ssoUserId="old google id")
+        google_sso = users_factories.SingleSignOnFactory(user=user, ssoUserId="old id", ssoProvider=sso_provider)
         oauth_state_token = token_utils.UUIDToken.create(
             token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
         )
+        mocked_apple_oauth.return_value = self.valid_sso_user
         mocked_google_oauth.return_value = self.valid_sso_user
         user.email = self.valid_sso_user.email
 
         response = client.post(
-            "/native/v1/oauth/google/authorize",
-            json={"authorizationCode": "4/google_code", "oauthStateToken": oauth_state_token.encoded_token},
+            f"/native/v1/oauth/{sso_provider}/authorize",
+            json={"authorizationCode": "fakeAuthCode", "oauthStateToken": oauth_state_token.encoded_token},
         )
 
         assert response.status_code == 200
@@ -471,19 +474,24 @@ class SSOSigninTest:
         assert user.isEmailValidated
         assert user.password is None
 
+    @pytest.mark.parametrize("sso_provider", ("apple", "google"))
     @patch("pcapi.connectors.google_oauth.get_google_user")
-    def test_single_sign_on_does_not_duplicate_ssos(self, mocked_google_oauth, client):
+    @patch("pcapi.connectors.apple_oauth.get_apple_user")
+    def test_single_sign_on_does_not_duplicate_ssos(
+        self, mocked_apple_oauth, mocked_google_oauth, sso_provider, client
+    ):
         single_sign_on = users_factories.SingleSignOnFactory(
-            user__email=self.valid_sso_user.email, ssoUserId=self.valid_sso_user.sub
+            user__email=self.valid_sso_user.email, ssoUserId=self.valid_sso_user.sub, ssoProvider=sso_provider
         )
         oauth_state_token = token_utils.UUIDToken.create(
             token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
         )
+        mocked_apple_oauth.return_value = self.valid_sso_user
         mocked_google_oauth.return_value = self.valid_sso_user
 
         response = client.post(
-            "/native/v1/oauth/google/authorize",
-            json={"authorizationCode": "4/google_code", "oauthStateToken": oauth_state_token.encoded_token},
+            f"/native/v1/oauth/{sso_provider}/authorize",
+            json={"authorizationCode": "fakeAuthCode", "oauthStateToken": oauth_state_token.encoded_token},
         )
 
         assert response.status_code == 200
@@ -1184,7 +1192,7 @@ class EmailValidationTest:
 
         # assert we updated the external users
         assert len(batch_testing.requests) == 2
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(brevo_testing.brevo_requests) == 1
 
         # Ensure the access token contains user.id
         decoded = decode_token(access_token)
@@ -1223,7 +1231,7 @@ class EmailValidationTest:
 
         # assert we updated the external users
         assert len(batch_testing.requests) == 2
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(brevo_testing.brevo_requests) == 1
 
         # Ensure the access token is valid
         access_token = response.json["accessToken"]

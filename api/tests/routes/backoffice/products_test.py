@@ -17,7 +17,7 @@ from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.mails import testing as mails_testing
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import factories as offers_factories
@@ -750,7 +750,7 @@ class GetTagOffersFormTest(GetEndpointHelper):
         offers_factories.OfferFactory.create(productId=None, isActive=False, **identifier_props)
 
         url = url_for(self.endpoint, product_id=product.id)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries, expire_session=False):
             response = authenticated_client.get(url)
 
         assert response.status_code == 200

@@ -6,7 +6,7 @@ from dateutil.relativedelta import relativedelta
 
 import pcapi.core.external.batch.testing as push_testing
 import pcapi.core.mails.testing as mails_testing
-import pcapi.core.mails.transactional.sendinblue_template_ids as sendinblue_template
+import pcapi.core.mails.transactional.brevo_template_ids as brevo_template
 import pcapi.core.subscription.factories as subscription_factories
 import pcapi.core.subscription.models as subscription_models
 import pcapi.core.subscription.ubble.constants as ubble_constants
@@ -222,12 +222,12 @@ class SendUbbleKoReminderReminderTest:
         mail1 = [e for e in mails_testing.outbox if e["To"] == user1.email][0]
         assert (
             mail1["template"]
-            == sendinblue_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_NOT_AUTHENTIC.value.__dict__
+            == brevo_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_NOT_AUTHENTIC.value.__dict__
         )
         mail2 = [e for e in mails_testing.outbox if e["To"] == user2.email][0]
         assert (
             mail2["template"]
-            == sendinblue_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_UNPROCESSABLE.value.__dict__
+            == brevo_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_UNPROCESSABLE.value.__dict__
         )
 
     @pytest.mark.settings(DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER=21)
@@ -250,12 +250,12 @@ class SendUbbleKoReminderReminderTest:
 
         assert (
             mails_testing.outbox[user1_index]["template"]
-            == sendinblue_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_NOT_SUPPORTED.value.__dict__
+            == brevo_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_NOT_SUPPORTED.value.__dict__
         )
 
         assert (
             mails_testing.outbox[user2_index]["template"]
-            == sendinblue_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_EXPIRED.value.__dict__
+            == brevo_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_EXPIRED.value.__dict__
         )
 
     @pytest.mark.settings(DAYS_BEFORE_UBBLE_QUICK_ACTION_REMINDER=7)

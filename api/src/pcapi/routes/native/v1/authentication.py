@@ -184,7 +184,7 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
 
 @blueprint.native_route("/oauth/state", methods=["GET"])
 @spectree_serialize(response_model=authentication.OauthStateResponse, on_success_status=200, api=blueprint.api)
-def google_oauth_state() -> authentication.OauthStateResponse:
+def sso_oauth_state() -> authentication.OauthStateResponse:
     encoded_oauth_state_token = users_api.create_oauth_state_token()
     return authentication.OauthStateResponse(oauth_state_token=encoded_oauth_state_token)
 
@@ -242,8 +242,8 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) ->
     if not user:
         logger.info(
             "Successful SSO authentication but no matching email found, sending account creation token",
-            extra={"sso_provider": "google", "avoid_current_user": True},
-            technical_message_id="users.login.sso.google",
+            extra={"sso_provider": sso_provider, "avoid_current_user": True},
+            technical_message_id=f"users.login.sso.{sso_provider}",
         )
         encoded_account_creation_token = users_api.create_account_creation_token(sso_user)
         # the frontends (web, ios & android app) will handle this error and redirect to the account creation form
@@ -272,22 +272,22 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) ->
             user.password = None
             user.isEmailValidated = True
 
-        current_google_sso = None
-        user_google_ssos = [sso for sso in user.single_sign_ons if sso.ssoProvider == "google"]
-        if user_google_ssos:
-            current_google_sso = user_google_ssos[0]
-            current_google_sso.ssoUserId = sso_user.sub
+        current_provider_sso = None
+        user_ssos_for_provider = [sso for sso in user.single_sign_ons if sso.ssoProvider == sso_provider]
+        if user_ssos_for_provider:
+            current_provider_sso = user_ssos_for_provider[0]
+            current_provider_sso.ssoUserId = sso_user.sub
         else:
-            current_google_sso = users_repo.create_single_sign_on(user, "google", sso_user_id)
-            db.session.add(current_google_sso)
+            current_provider_sso = users_repo.create_single_sign_on(user, sso_provider, sso_user_id)
+            db.session.add(current_provider_sso)
 
     users_api.save_device_info_and_notify_user(user, body.device_info)
 
     users_api.update_last_connection_date(user)
     logger.info(
         "Successful authentication attempt",
-        extra={"sso_provider": "google", "avoid_current_user": True},
-        technical_message_id="users.login.sso.google",
+        extra={"sso_provider": sso_provider, "avoid_current_user": True},
+        technical_message_id=f"users.login.sso.{sso_provider}",
     )
     tokens = create_user_jwt_tokens(user=user, device_info=body.device_info)
     return authentication.SigninResponse(

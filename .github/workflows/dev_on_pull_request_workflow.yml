@@ -46,7 +46,7 @@ jobs:
         with:
           fetch-tags: false
       - name: "Run actionlint"
-        uses: pass-culture/common-workflows/actions/actionlint-check@5f7b7837d099ddbb8e4f2e15400434d41d78c51b
+        uses: pass-culture/common-workflows/actions/actionlint-check@afae2577022181fccdaead9537235886c461f36a
       - name: "Check api folder changes"
         id: check-api-changes
         uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
@@ -230,8 +230,12 @@ jobs:
 
   dependabot-auto-merge:
     name: "Dependabot"
-    needs: [test-pro, test-pro-e2e]
-    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    needs: [test-pro, test-pro-e2e, test-api-documentation]
+    if: |
+      github.event.pull_request.user.login == 'dependabot[bot]' &&
+      always() &&
+      !cancelled() &&
+      !failure()
     uses: ./.github/workflows/dev_on_workflow_dependabot_auto_merge.yml
     secrets:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}

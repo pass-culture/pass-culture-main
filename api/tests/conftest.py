@@ -79,6 +79,19 @@ def pytest_configure(config):
         TestClient.WITH_DOC = True
 
 
+def pytest_addoption(parser):
+    parser.addoption(
+        "--sql-trace",
+        action="store_true",
+        help="For each sql query save the stack trace thad lead to it",
+    )
+
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_query_log(pytestconfig):
+    pcapi.core.testing.register_event_for_query_logger(with_trace=pytestconfig.getoption("--sql-trace"))
+
+
 def _init_celery(app: Flask):
     celery_config = {**CELERY_BASE_SETTINGS, "task_always_eager": True}
     app.config.from_mapping(CELERY=celery_config)
@@ -186,7 +199,7 @@ def clear_outboxes():
         mails_testing.reset_outbox()
         batch_testing.reset_requests()
         search_testing.reset_search_store()
-        users_testing.reset_sendinblue_requests()
+        users_testing.reset_brevo_requests()
         users_testing.reset_zendesk_requests()
         users_testing.reset_zendesk_sell_requests()
         adage_api_testing.reset_requests()
@@ -243,9 +256,6 @@ def _db(app):
     clean_all_database()
 
     return db
-
-
-pcapi.core.testing.register_event_for_query_logger()
 
 
 @pytest.fixture(name="client")

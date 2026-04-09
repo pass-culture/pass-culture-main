@@ -18,7 +18,7 @@ from pcapi import settings
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import models as history_models
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import factories as subscription_factories
@@ -2704,7 +2704,7 @@ class TestQueriesTest:
 
         # 3 features flags checked in one query, no N+1 query when fraud checks and reviews joinedloaded
         # but the ff is already cached by BeneficiaryFraudCheckFactory.eligibilityType
-        with assert_num_queries(0):
+        with assert_num_queries(0, expire_session=False):
             subscription_api.get_user_subscription_state(fetched_user)
 
 

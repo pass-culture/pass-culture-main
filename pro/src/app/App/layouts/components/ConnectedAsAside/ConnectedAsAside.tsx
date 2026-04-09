@@ -1,5 +1,6 @@
 import type { SharedCurrentUserResponseModel } from '@/apiClient/v1'
 import type { SharedCurrentUserResponseModel as SharedCurrentUserResponseModelNew } from '@/apiClient/v1/new'
+import { NBSP } from '@/commons/core/shared/constants'
 import fullInfoIcon from '@/icons/full-info.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
@@ -21,7 +22,7 @@ export const ConnectedAsAside = ({ currentUser }: ConnectedAsAsideProps) => {
         className={styles['connect-as-icon']}
       />
       <div className={styles['connect-as-text']}>
-        Vous êtes connecté en tant que :&nbsp;
+        Vous êtes connecté en tant que :{NBSP}
         <strong>
           {currentUser.firstName} {currentUser.lastName}
         </strong>

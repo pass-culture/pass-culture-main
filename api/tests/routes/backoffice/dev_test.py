@@ -1,6 +1,8 @@
+import datetime
 import urllib.parse
 
 import pytest
+from dateutil.relativedelta import relativedelta
 from flask import url_for
 
 from pcapi import settings
@@ -116,13 +118,15 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
 
     @pytest.mark.settings(ENABLE_TEST_USER_GENERATION=False)
     def test_returns_not_found_if_generation_disabled(self, authenticated_client):
-        form = {"age": "18", "id_provider": "UBBLE", "step": "BENEFICIARY"}
-        response = self.post_to_endpoint(authenticated_client, form=form)
+        birth_date = datetime.date.today() - relativedelta(years=18)
+        form = {"birth_date": f"{birth_date:%Y-%m-%d}", "id_provider": "UBBLE", "step": "BENEFICIARY"}
+        response = self.post_to_endpoint(authenticated_client, form=form, follow_redirects=True)
         assert response.status_code == 404
 
     def test_user_not_created_when_18yo_identified_with_educonnect(self, authenticated_client):
         number_of_users_before = db.session.query(users_models.User).count()
-        form = {"age": "18", "id_provider": "EDUCONNECT", "step": "BENEFICIARY"}
+        birth_date = datetime.date.today() - relativedelta(years=18)
+        form = {"birth_date": f"{birth_date:%Y-%m-%d}", "id_provider": "EDUCONNECT", "step": "BENEFICIARY"}
         response = self.post_to_endpoint(authenticated_client, form=form)
         number_of_users_after = db.session.query(users_models.User).count()
         assert response.status_code == 303
@@ -133,7 +137,8 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
 
     def test_user_not_created_when_underage_validates_phone_number(self, authenticated_client):
         number_of_users_before = db.session.query(users_models.User).count()
-        form = {"age": "17", "id_provider": "EDUCONNECT", "step": "PHONE_VALIDATION"}
+        birth_date = datetime.date.today() - relativedelta(years=17)
+        form = {"birth_date": f"{birth_date:%Y-%m-%d}", "id_provider": "EDUCONNECT", "step": "PHONE_VALIDATION"}
         response = self.post_to_endpoint(authenticated_client, form=form)
         number_of_users_after = db.session.query(users_models.User).count()
         assert response.status_code == 303
@@ -144,18 +149,8 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
 
     def test_user_not_created_when_age_below_valid_range(self, authenticated_client):
         number_of_users_before = db.session.query(users_models.User).count()
-        form = {"age": "14", "id_provider": "EDUCONNECT", "step": "EMAIL_VALIDATION"}
-        response = self.post_to_endpoint(authenticated_client, form=form)
-        number_of_users_after = db.session.query(users_models.User).count()
-        assert response.status_code == 303
-        assert urllib.parse.urlparse(response.headers["location"]).path == url_for(
-            "backoffice_web.dev.get_generated_user"
-        )
-        assert number_of_users_before == number_of_users_after
-
-    def test_user_not_created_when_age_above_valid_range(self, authenticated_client):
-        number_of_users_before = db.session.query(users_models.User).count()
-        form = {"age": "21", "id_provider": "UBBLE", "step": "EMAIL_VALIDATION"}
+        birth_date = datetime.date.today() - relativedelta(years=14)
+        form = {"birth_date": f"{birth_date:%Y-%m-%d}", "id_provider": "EDUCONNECT", "step": "EMAIL_VALIDATION"}
         response = self.post_to_endpoint(authenticated_client, form=form)
         number_of_users_after = db.session.query(users_models.User).count()
         assert response.status_code == 303
@@ -165,7 +160,13 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
         assert number_of_users_before == number_of_users_after
 
     def test_user_set_postal_code(self, authenticated_client):
-        form = {"age": 18, "id_provider": "UBBLE", "step": "BENEFICIARY", "postal_code": "63170"}
+        birth_date = datetime.date.today() - relativedelta(years=18)
+        form = {
+            "birth_date": f"{birth_date:%Y-%m-%d}",
+            "id_provider": "UBBLE",
+            "step": "BENEFICIARY",
+            "postal_code": "63170",
+        }
         response = self.post_to_endpoint(authenticated_client, form=form, follow_redirects=True)
         assert response.status_code == 200
         query_args = response.request.args.to_dict()
@@ -174,7 +175,13 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
         assert user.postalCode == "63170"
 
     def test_user_postal_code_ignored_before_profile_completion(self, authenticated_client):
-        form = {"age": 18, "id_provider": "UBBLE", "step": "EMAIL_VALIDATION", "postal_code": "63170"}
+        birth_date = datetime.date.today() - relativedelta(years=18)
+        form = {
+            "birth_date": f"{birth_date:%Y-%m-%d}",
+            "id_provider": "UBBLE",
+            "step": "EMAIL_VALIDATION",
+            "postal_code": "63170",
+        }
         response = self.post_to_endpoint(authenticated_client, form=form, follow_redirects=True)
         assert response.status_code == 200
         query_args = response.request.args.to_dict()
@@ -195,13 +202,50 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
         ],
     )
     def test_user_activity(self, authenticated_client, age, expected_activity):
-        form = {"age": age, "id_provider": "UBBLE", "step": "EMAIL_VALIDATION"}
+        birth_date = datetime.date.today() - relativedelta(years=age)
+        form = {"birth_date": f"{birth_date:%Y-%m-%d}", "id_provider": "UBBLE", "step": "EMAIL_VALIDATION"}
         response = self.post_to_endpoint(authenticated_client, form=form, follow_redirects=True)
         assert response.status_code == 200
         query_args = response.request.args.to_dict()
         user_id = query_args["userId"]
         user = db.session.query(users_models.User).get(user_id)
         assert user.activity == expected_activity
+
+    def test_user_credit(self, authenticated_client):
+        birth_date = datetime.date.today() - relativedelta(years=18)
+        form = {"birth_date": f"{birth_date:%Y-%m-%d}", "id_provider": "UBBLE", "step": "BENEFICIARY", "credit": 36}
+        response = self.post_to_endpoint(authenticated_client, form=form, follow_redirects=True)
+        assert response.status_code == 200
+        query_args = response.request.args.to_dict()
+        assert "userId" in query_args, response.data
+        user_id = query_args["userId"]
+        user = db.session.query(users_models.User).get(user_id)
+        assert user.deposit.amount == 36
+
+    def test_user_credit_default_amount(self, authenticated_client):
+        birth_date = datetime.date.today() - relativedelta(years=18)
+        form = {"birth_date": f"{birth_date:%Y-%m-%d}", "id_provider": "UBBLE", "step": "BENEFICIARY"}
+        response = self.post_to_endpoint(authenticated_client, form=form, follow_redirects=True)
+        assert response.status_code == 200
+        query_args = response.request.args.to_dict()
+        assert "userId" in query_args, response.data
+        user_id = query_args["userId"]
+        user = db.session.query(users_models.User).get(user_id)
+        assert user.wallet_balance == 150
+
+    def test_validate_age_and_transition_fields(self, authenticated_client):
+        birth_date = datetime.date.today() - relativedelta(years=18)
+        form = {
+            "id_provider": "UBBLE",
+            "step": "BENEFICIARY",
+            "birth_date": f"{birth_date:%Y-%m-%d}",
+            "transition_17_18": True,
+        }
+        response = self.post_to_endpoint(authenticated_client, form=form, follow_redirects=True)
+
+        assert response.status_code == 200
+        alert = html_parser.extract_alert(response.data)
+        assert "Si la Transition 17-18 est cochée, l'âge est fixé à 18 ans" in alert
 
 
 class UserDeletionPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermissionHelper):

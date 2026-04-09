@@ -1,0 +1,24 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
+
+.existing-account {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  @media (min-width: size.$tablet) {
+    flex-direction: row;
+    gap: var(--size-spacing-s);
+  }
+
+  &-text {
+    @include fonts.body-xs;
+
+    display: inline-block;
+
+    @media (min-width: size.$laptop) {
+      @include fonts.body;
+    }
+  }
+}

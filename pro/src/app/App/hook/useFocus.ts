@@ -11,5 +11,9 @@ export const useFocus = (): void => {
     if (topPageLink) {
       topPageLink.focus()
     }
+
+    // As "topPageLink" is a non-interactive <div tabIndex={-1}>, focusing above is not sufficient to guarantee that the browser scrolls to the top
+    // So we must force the #content-wrapper container to go to top
+    document.getElementById('content-wrapper')?.scrollTo(0, 0)
   }, [pathname])
 }

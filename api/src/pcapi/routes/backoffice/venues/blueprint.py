@@ -1,8 +1,9 @@
 import logging
+import typing
 from functools import partial
 
-import pydantic.v1 as pydantic_v1
 import sqlalchemy as sa
+import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 from flask import Response
 from flask import flash
@@ -176,7 +177,7 @@ def _render_venues(venues_ids: list[int] | None = None) -> response_utils.Backof
 
 
 def get_venue(venue_id: int) -> sa.engine.Row:
-    pricing_point = sa.orm.aliased(offerers_models.Venue)
+    pricing_point = sa_orm.aliased(offerers_models.Venue)
     if access_control.has_current_user_permission(perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO):
         has_fraudulent_booking_query: sa.sql.selectable.Exists | sa.sql.elements.Null = (
             sa.select(1)
@@ -267,7 +268,7 @@ def get_venue(venue_id: int) -> sa.engine.Row:
 
 
 def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVirtualVenueForm | None = None) -> str:
-    venue = venue_row.Venue
+    venue: offerers_models.Venue = venue_row.Venue
 
     if not edit_venue_form:
         if venue.isVirtual:
@@ -276,7 +277,7 @@ def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVi
                 phone_number=venue.contact.phone_number if venue.contact else None,
             )
         else:
-            edit_prefill = {
+            edit_prefill: dict[str, typing.Any] = {
                 "name": venue.name,
                 "public_name": venue.publicName,
                 "siret": venue.siret,
@@ -855,11 +856,11 @@ def update_venue(venue_id: int) -> response_utils.BackofficeResponse:
         update_siret = True
 
     if form.phone_number.data or venue.contact:
-        contact_data = offerers_schemas.VenueContactModel(
+        contact_data = offerers_schemas.VenueContactModelV2(
             phone_number=form.phone_number.data,
             # Use existing values, if any, to ensure that no data (website
             # for example) will be erased by mistake
-            email=pydantic_v1.EmailStr(venue.contact.email) if venue.contact and venue.contact.email else None,
+            email=venue.contact.email if venue.contact else None,
             website=venue.contact.website if venue.contact else None,
             social_medias=venue.contact.social_medias if venue.contact else None,
         )
@@ -894,7 +895,7 @@ def update_venue(venue_id: int) -> response_utils.BackofficeResponse:
             is_manual_edition=((not venue.isVirtual) and form.is_manual_address.data == "on"),
             # TODO(activation): should we also update culturalDomaines ?
         )
-    except sa.exc.IntegrityError as err:
+    except sa_exc.IntegrityError as err:
         # mostly errors about address / offerer_address tables
         logger.exception(
             "IntegrityError when updating venue: %s", str(err), extra={"venue_id": venue_id, "exc": str(err)}

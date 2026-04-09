@@ -15,18 +15,18 @@ export const FORMAT_HH_mm = 'HH:mm'
 export const buildDateTime = (date: string, time: string) => {
   const hoursAndMinutes = time.split(':')
   if (!isDateValid(date) || hoursAndMinutes.length < 2) {
-    throw Error('La date ou l’heure est invalide')
+    throw new Error('La date ou l’heure est invalide')
   }
   const [hours, minutes] = hoursAndMinutes
   const [year, month, day] = date.split('-')
 
   // new Date(year, month, day, hours, minutes)
   return new Date(
-    parseInt(year, 10),
-    parseInt(month, 10) - 1,
-    parseInt(day, 10),
-    parseInt(hours, 10),
-    parseInt(minutes, 10)
+    Number.parseInt(year, 10),
+    Number.parseInt(month, 10) - 1,
+    Number.parseInt(day, 10),
+    Number.parseInt(hours, 10),
+    Number.parseInt(minutes, 10)
   )
 }
 
@@ -97,13 +97,15 @@ export const getDateToFrenchText = (dateIsoString: string) => {
   return format(noTimeZoneDate, FORMAT_DD_MMMM_YYYY, FORMAT_OPTIONS)
 }
 
+const DEFAULT_DATE_TIME_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
+  day: '2-digit',
+  month: 'long',
+  year: 'numeric',
+}
+
 export function getDateTimeToFrenchText(
   date: Date,
-  options: Intl.DateTimeFormatOptions = {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  }
+  options: Intl.DateTimeFormatOptions = DEFAULT_DATE_TIME_FORMAT_OPTIONS
 ): string {
   return Intl.DateTimeFormat('fr-FR', options).format(date)
 }
@@ -164,7 +166,11 @@ export const toISOStringWithoutMilliseconds = (date: Date) => {
 
 export const getYearMonthDay = (date: string) => {
   const [year, month, day] = date.split('-')
-  return [parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10)]
+  return [
+    Number.parseInt(year, 10),
+    Number.parseInt(month, 10) - 1,
+    Number.parseInt(day, 10),
+  ]
 }
 
 export function formatShortDateForInput(date: Date) {

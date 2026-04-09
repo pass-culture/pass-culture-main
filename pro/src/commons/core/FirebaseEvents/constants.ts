@@ -137,4 +137,6 @@ export enum WelcomeCarouselEvents {
   HAS_CLICKED_USER_TYPE = 'hasClickedUserType',
   HAS_CLICKED_ADAGE_LINK = 'hasClickedAdageLink',
   CLICKED_SEE_WEBINAR = 'hasClickedSeeWebinar',
+  CLICKED_SEE_INDIV_OFFERS = 'hasClickedSeeIndivOffers',
+  CLICKED_SEE_COLLECTIVE_OFFERS = 'hasClickedSeeCollectiveOffers',
 }
