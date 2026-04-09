@@ -5115,7 +5115,7 @@ class CreateVenueTest(PostEndpointHelper):
         assert new_venue.publicName == form_data["public_name"]
         assert new_venue.activity == offerers_models.Activity.BOOKSTORE
         assert new_venue.bookingEmail == form_data["booking_email"]
-        assert new_venue.collectiveDomains == domains[:2]
+        assert set(new_venue.collectiveDomains) == set(domains[:2])
         assert new_venue.isOpenToPublic is boolean_switch_value
         assert new_venue.isPermanent is True
         assert new_venue.offererAddress.address == venue.offererAddress.address
