@@ -1,4 +1,4 @@
-import { useFieldArray, useFormContext } from 'react-hook-form'
+import { type UseFieldArrayReturn, useFormContext } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
 import { type ArtistResponseModel, ArtistType } from '@/apiClient/v1'
@@ -29,14 +29,15 @@ type ArtistOption = ArtistResponseModel & { value: string; label: string }
 type ArtistFieldProps = {
   readOnly: boolean
   artistType: ArtistType
+  fieldArray: UseFieldArrayReturn<DetailsFormValues, 'artistOfferLinks', 'id'>
 }
 
 export function ArtistField({
   readOnly,
   artistType,
+  fieldArray,
 }: Readonly<ArtistFieldProps>) {
   const {
-    control,
     register,
     setValue,
     watch,
@@ -44,10 +45,7 @@ export function ArtistField({
     formState: { errors },
   } = useFormContext<DetailsFormValues>()
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'artistOfferLinks',
-  })
+  const { fields, append, remove } = fieldArray
 
   const fieldsForType = fields
     .map((field, index) => ({ field, index }))

@@ -1,12 +1,18 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { forwardRef } from 'react'
-import { FormProvider, type UseFormGetValues, useForm } from 'react-hook-form'
+import {
+  FormProvider,
+  type UseFormGetValues,
+  useFieldArray,
+  useForm,
+} from 'react-hook-form'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { api } from '@/apiClient/api'
 import { type ArtistOfferLinkResponseModel, ArtistType } from '@/apiClient/v1'
 import { resizeImageURL } from '@/commons/utils/resizeImageURL'
+import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/types'
 
 import { ArtistField } from './ArtistField'
 
@@ -46,17 +52,33 @@ const renderArtistField = ({
     artistOfferLinks: ArtistOfferLinkResponseModel[]
   }>
 
+  const ArtistFieldParentMock = () => {
+    const fieldArray = useFieldArray<DetailsFormValues, 'artistOfferLinks'>({
+      name: 'artistOfferLinks',
+    })
+
+    return (
+      <ArtistField
+        artistType={artistType}
+        readOnly={readOnly}
+        fieldArray={fieldArray}
+      />
+    )
+  }
+
   const Wrapper = () => {
     const form = useForm({
       defaultValues: { artistOfferLinks: defaultArtistOfferLinks },
     })
     getValues = form.getValues
+
     return (
       <FormProvider {...form}>
-        <ArtistField artistType={artistType} readOnly={readOnly} />
+        <ArtistFieldParentMock />
       </FormProvider>
     )
   }
+
   return {
     ...render(<Wrapper />),
     getValues: () => getValues(),
