@@ -3,6 +3,7 @@ import { addDays, format } from 'date-fns'
 
 import { checkAccessibility } from './helpers/accessibility'
 import { loginAndNavigate } from './helpers/auth'
+import { setFeatureFlags } from './helpers/features'
 import {
   BASE_API_URL,
   createProUserWithBookings,
@@ -18,6 +19,9 @@ test.describe('Edit digital individual offers', () => {
         baseURL: BASE_API_URL,
       })
       const userData = await createProUserWithVirtualOffer(requestContext)
+      await setFeatureFlags(requestContext, [
+        { name: 'WIP_SWITCH_VENUE', isActive: false },
+      ])
       await requestContext.dispose()
 
       await loginAndNavigate(

@@ -3,6 +3,7 @@ import { expect, request as playwrightRequest, test } from '@playwright/test'
 import { checkAccessibility } from './helpers/accessibility'
 import { MOCKED_BACK_ADDRESS_LABEL, mockAddressSearch } from './helpers/address'
 import { login } from './helpers/auth'
+import { setFeatureFlags } from './helpers/features'
 import {
   BASE_API_URL,
   createNewProUser,
@@ -219,6 +220,9 @@ test.describe('Signup journey with known offerer...', () => {
       })
       const userData =
         await createNewProUserAndCollectivityOffererWithVenue(requestContext)
+      await setFeatureFlags(requestContext, [
+        { name: 'WIP_SWITCH_VENUE', isActive: false },
+      ])
       const mySiret = userData.siret
       await requestContext.dispose()
 

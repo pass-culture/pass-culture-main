@@ -1,6 +1,7 @@
 import { expect, request as playwrightRequest, test } from '@playwright/test'
 
 import { login } from './helpers/auth'
+import { setFeatureFlags } from './helpers/features'
 import { BASE_API_URL, sandboxCall } from './helpers/sandbox'
 
 interface ProUserResponse {
@@ -22,6 +23,9 @@ test.describe('Switch Offerer and Venue', () => {
       'GET',
       `${BASE_API_URL}/sandboxes/pro/create_pro_user_with_1_onboarded_and_1_unonboarded_offerers`
     )
+    await setFeatureFlags(requestContext, [
+      { name: 'WIP_SWITCH_VENUE', isActive: false },
+    ])
     const userEmail = userData.user.email
 
     await requestContext.dispose()

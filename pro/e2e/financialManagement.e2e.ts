@@ -3,6 +3,7 @@ import { expect, request as playwrightRequest, test } from '@playwright/test'
 import { checkAccessibility } from './helpers/accessibility'
 import { expectSuccessSnackbar } from './helpers/assertions'
 import { login } from './helpers/auth'
+import { setFeatureFlags } from './helpers/features'
 import { BASE_API_URL, sandboxCall } from './helpers/sandbox'
 
 interface ProUserWithFinancialDataResponse {
@@ -30,6 +31,9 @@ test.describe('Financial Management - messages, links to external help page, rei
       'GET',
       `${BASE_API_URL}/sandboxes/pro/create_pro_user_with_financial_data`
     )
+    await setFeatureFlags(requestContext, [
+      { name: 'WIP_SWITCH_VENUE', isActive: false },
+    ])
 
     await requestContext.dispose()
 

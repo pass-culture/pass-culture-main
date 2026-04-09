@@ -1,4 +1,7 @@
+import { request as playwrightRequest } from '@playwright/test'
+
 import { expect, test } from './fixtures/didacticOnboarding'
+import { setFeatureFlags } from './helpers/features'
 import {
   isGetCategoriesResponse,
   isGetEligibilityResponse,
@@ -8,6 +11,7 @@ import {
   isPatchStocksResponse,
   isPublishOfferResponse,
 } from './helpers/requests'
+import { BASE_API_URL } from './helpers/sandbox'
 
 test.describe('Didactic Onboarding feature', () => {
   test.beforeEach(async ({ authenticatedPage: page }) => {
@@ -159,6 +163,12 @@ test.describe('Didactic Onboarding feature', () => {
   test('I should be able to start my first offer manually, saving and resume a draft offer, and publish it to get onboarded', async ({
     authenticatedPage: page,
   }) => {
+    const requestContext = await playwrightRequest.newContext({
+      baseURL: BASE_API_URL,
+    })
+    await setFeatureFlags(requestContext, [
+      { name: 'WIP_SWITCH_VENUE', isActive: false },
+    ])
     await page
       .getByLabel('Commencer la création d’offre sur l’application mobile')
       .click()

@@ -3,7 +3,6 @@ import { expect, request as playwrightRequest, test } from '@playwright/test'
 
 import { checkAccessibility } from './helpers/accessibility'
 import { expectNoErrorSnackbar } from './helpers/assertions'
-import { setFeatureFlags } from './helpers/features'
 import { BASE_API_URL, sandboxCall } from './helpers/sandbox'
 
 interface EmailResponse {
@@ -18,9 +17,6 @@ test.describe('Account creation', () => {
     const requestContext = await playwrightRequest.newContext({
       baseURL: BASE_API_URL,
     })
-    await setFeatureFlags(requestContext, [
-      { name: 'WIP_SWITCH_VENUE', isActive: true },
-    ])
 
     const clearResponse = await requestContext.fetch(
       `${BASE_API_URL}/sandboxes/clear_email_list`,
