@@ -2207,7 +2207,6 @@ def create_from_onboarding_data(
         and onboarding_data.create_venue_without_siret
         and siret_info.ape_code
         and not APE_TAG_MAPPING.get(siret_info.ape_code, False)
-        and FeatureToggle.WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY.is_active()
     ):
         raise exceptions.NotACollectivity()
     if not venue or onboarding_data.create_venue_without_siret:

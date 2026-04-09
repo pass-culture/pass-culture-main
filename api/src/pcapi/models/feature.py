@@ -144,9 +144,6 @@ class FeatureToggle(enum.Enum):
     WIP_PRO_AUTONOMOUS_ANONYMIZATION = (
         "Activer la fonctionnalité d'anonymisation autonome des données personnelles depuis le portail pro"
     )
-    WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY = (
-        "Autoriser l'ajout de nouvelle structure seulement pour les collectivités"
-    )
     WIP_SWITCH_VENUE = "Activer la gestion de l'espace partenaire par venue sans passer par l'offerer"
     WIP_ASYNCHRONOUS_CELERY_CULTURAL_SURVEY = (
         "Activer le backend de tâches asynchrones Celery pour la synchro avec le cultural survey"
@@ -216,7 +213,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_OFFER_RECOMMENDATION_PRO,
     FeatureToggle.WIP_PRE_SIGNUP_SIMULATION,
     FeatureToggle.WIP_PRO_AUTONOMOUS_ANONYMIZATION,
-    FeatureToggle.WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY,
     FeatureToggle.WIP_SWITCH_VENUE,
     FeatureToggle.WIP_VOLUNTEERING,
     # Please keep alphabetic order

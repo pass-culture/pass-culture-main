@@ -3,10 +3,10 @@ import { expect, request as playwrightRequest, test } from '@playwright/test'
 import { checkAccessibility } from './helpers/accessibility'
 import { MOCKED_BACK_ADDRESS_LABEL, mockAddressSearch } from './helpers/address'
 import { login } from './helpers/auth'
-import { setFeatureFlags } from './helpers/features'
 import {
   BASE_API_URL,
   createNewProUser,
+  createNewProUserAndCollectivityOffererWithVenue,
   createNewProUserAndOfferer,
   createNewProUserAndOffererWithVenue,
 } from './helpers/sandbox'
@@ -23,10 +23,6 @@ test.describe('Signup journey with unknown offerer and unknown venue', () => {
       baseURL: BASE_API_URL,
     })
     const userData = await createNewProUser(requestContext)
-    await setFeatureFlags(requestContext, [
-      { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
-      { name: 'WIP_2025_AUTOLOGIN', isActive: true },
-    ])
     await requestContext.dispose()
 
     await login(page, userData.user.email)
@@ -93,10 +89,6 @@ test.describe('Signup journey with unknown offerer and unknown venue', () => {
       baseURL: BASE_API_URL,
     })
     const userData = await createNewProUser(requestContext)
-    await setFeatureFlags(requestContext, [
-      { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
-      { name: 'WIP_2025_AUTOLOGIN', isActive: true },
-    ])
     await requestContext.dispose()
 
     await mockAddressSearch(page)
@@ -169,10 +161,6 @@ test.describe('Signup journey with known offerer...', () => {
       })
       const userData = await createNewProUserAndOfferer(requestContext)
       const mySiret = userData.siren + endSiret
-      await setFeatureFlags(requestContext, [
-        { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
-        { name: 'WIP_2025_AUTOLOGIN', isActive: true },
-      ])
       await requestContext.dispose()
 
       await login(page, userData.user.email)
@@ -229,12 +217,9 @@ test.describe('Signup journey with known offerer...', () => {
       const requestContext = await playwrightRequest.newContext({
         baseURL: BASE_API_URL,
       })
-      const userData = await createNewProUserAndOffererWithVenue(requestContext)
+      const userData =
+        await createNewProUserAndCollectivityOffererWithVenue(requestContext)
       const mySiret = userData.siret
-      await setFeatureFlags(requestContext, [
-        { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
-        { name: 'WIP_2025_AUTOLOGIN', isActive: true },
-      ])
       await requestContext.dispose()
 
       await mockAddressSearch(page)
@@ -322,10 +307,6 @@ test.describe('Signup journey with known offerer...', () => {
       })
       const userData = await createNewProUserAndOffererWithVenue(requestContext)
       const mySiret = userData.siret
-      await setFeatureFlags(requestContext, [
-        { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
-        { name: 'WIP_2025_AUTOLOGIN', isActive: true },
-      ])
       await requestContext.dispose()
 
       await mockAddressSearch(page)

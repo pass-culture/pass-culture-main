@@ -51,9 +51,6 @@ export const Offerers = (): JSX.Element => {
   const isLocalAuthority = MAYBE_LOCAL_AUTHORITY_APE_CODE.includes(
     offerer?.apeCode ?? ''
   )
-  const restrictVenueCreationToCollectivity = useActiveFeature(
-    'WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY'
-  )
 
   // TODO: this is causing a rerender of the component and a double call to `getVenuesOfOffererFromSiret`
   const joinSpaceButtonRef = useRef<HTMLButtonElement>(null)
@@ -214,7 +211,7 @@ export const Offerers = (): JSX.Element => {
         />
       </div>
 
-      {(!restrictVenueCreationToCollectivity || isLocalAuthority) && (
+      {isLocalAuthority && (
         <>
           <div className={cn(styles['wrong-offerer-title'], styles['title-4'])}>
             Vous souhaitez ajouter une nouvelle structure à cet espace ?

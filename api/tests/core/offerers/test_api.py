@@ -3025,7 +3025,6 @@ class CreateFromOnboardingDataTest:
         # Venue Registration
         self.assert_venue_registration_attrs(created_venue)
 
-    @pytest.mark.features(WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY=True)
     def test_existing_siren_existing_siret_is_not_a_collectivity(self):
         offerer = offerers_factories.OffererFactory(siren="853318459")
         offerers_factories.VenueFactory(managingOfferer=offerer, siret="85331845900031")
@@ -3037,7 +3036,6 @@ class CreateFromOnboardingDataTest:
         with pytest.raises(offerers_exceptions.NotACollectivity):
             offerers_api.create_from_onboarding_data(user, onboarding_data)
 
-    @pytest.mark.features(WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY=True)
     def test_existing_siren_existing_siret_is_a_collectivity(self):
         offerer = offerers_factories.OffererFactory(siren="777084112")
         offerers_factories.VenueFactory(managingOfferer=offerer, siret="77708411200031")
