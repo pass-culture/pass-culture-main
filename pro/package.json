@@ -98,7 +98,7 @@
     "@vitest/runner": "4.1.2",
     "allure-js-commons": "3.6.0",
     "allure-vitest": "3.6.0",
-    "axe-core": "4.11.1",
+    "axe-core": "4.11.2",
     "check-unused-css": "^0.2.7",
     "jsdom": "29.0.1",
     "mustache": "4.2.0",
