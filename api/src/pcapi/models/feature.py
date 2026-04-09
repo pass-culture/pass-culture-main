@@ -137,7 +137,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_FINANCE_SETTLEMENTS = "Active le workflow finance des règlements"
     WIP_ENABLE_NEW_PRO_HOME = "Activer la nouvelle page d'accueil du portail pro"
     WIP_ENABLE_OHO = "Activer la création d'offre individuelle sur plages horaires"
-    WIP_LLM_OFFER_SEARCH = "Activer la recherche par LLM dans le BO"
     WIP_OFFER_RECOMMENDATION_PRO = "Active les recommandations, côté pro"
     WIP_PRE_SIGNUP_SIMULATION = (
         "Activer le parcours de simulation de documents avant inscription des partenaires culturels sur le portail pro"
@@ -214,7 +213,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS,
     FeatureToggle.WIP_ENABLE_NEW_PRO_HOME,
     FeatureToggle.WIP_ENABLE_OHO,
-    FeatureToggle.WIP_LLM_OFFER_SEARCH,
     FeatureToggle.WIP_OFFER_RECOMMENDATION_PRO,
     FeatureToggle.WIP_PRE_SIGNUP_SIMULATION,
     FeatureToggle.WIP_PRO_AUTONOMOUS_ANONYMIZATION,
