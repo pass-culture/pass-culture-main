@@ -127,7 +127,7 @@
       "pending-modal-" + user_offerer.id|string) }}
     {% endif %}
     {% if can_manage_pro %}
-      {{ build_lazy_modal(url_for("backoffice_web.offerer.get_delete_user_offerer_form", offerer_id=user_offerer.offerer.id, user_offerer_id=user_offerer.id) ,
+      {{ build_lazy_modal(url_for("backoffice_web.offerer.get_delete_user_offerer_form", offerer_id=user_offerer.offererId, user_offerer_id=user_offerer.id) ,
       "delete-modal-" + user_offerer.id|string) }}
     {% endif %}
   {% endif %}
