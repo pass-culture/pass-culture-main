@@ -45,6 +45,10 @@ from . import blueprint
 @login_required
 @spectree_serialize(response_model=ListBookingsResponseModel, api=blueprint.pro_private_schema)
 def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel:
+    user = current_user._get_current_object()
+    if not users_repository.has_access(user, query.offerer_id):
+        raise api_errors.ResourceNotFoundError()
+
     page = query.page
     per_page_limit = bookings_constants.BOOKINGS_PER_PAGE_LIMIT
     venue_id = query.venue_id
@@ -61,7 +65,7 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
         )
 
     bookings_query, total = booking_repository.find_by_pro_user(
-        user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
+        pro_user_id=user.id,
         booking_period=booking_period,
         status_filter=booking_status,
         event_date=event_date,
@@ -242,6 +246,10 @@ def get_offer_price_categories_and_schedules_by_dates(offer_id: int) -> EventDat
 
 
 def _create_booking_export_file(query: ListBookingsQueryModel, export_type: BookingExportType) -> bytes:
+    user = current_user._get_current_object()
+    if not users_repository.has_access(user, query.offerer_id):
+        raise api_errors.ResourceNotFoundError()
+
     offerer_id = query.offerer_id
     venue_id = query.venue_id
     event_date = query.event_date
@@ -255,7 +263,7 @@ def _create_booking_export_file(query: ListBookingsQueryModel, export_type: Book
     booking_status = query.booking_status_filter
 
     export_data = booking_repository.get_export(
-        user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
+        pro_user_id=user.id,
         booking_period=booking_period,
         status_filter=booking_status,
         event_date=event_date,
