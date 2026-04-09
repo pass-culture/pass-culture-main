@@ -730,9 +730,10 @@ class GetTagOffersFormTest(GetEndpointHelper):
 
     # Expected SQL queries:
     # 1. session + user
-    # 2. product + linked offers
+    # 2. product
+    # 3. linked offers
     # 3. unlinked offers
-    expected_num_queries = 3
+    expected_num_queries = 4
 
     @pytest.mark.parametrize(
         "identifier_props, identifier_string",
@@ -750,7 +751,7 @@ class GetTagOffersFormTest(GetEndpointHelper):
         offers_factories.OfferFactory.create(productId=None, isActive=False, **identifier_props)
 
         url = url_for(self.endpoint, product_id=product.id)
-        with assert_num_queries(self.expected_num_queries, expire_session=False):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
 
         assert response.status_code == 200

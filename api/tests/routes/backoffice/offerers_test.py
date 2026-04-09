@@ -1347,7 +1347,7 @@ class GetOffererUsersTest(GetEndpointHelper):
         offerers_factories.UserOffererFactory()
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
-        with assert_num_queries(self.expected_num_queries, expire_session=False):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1399,7 +1399,9 @@ class GetOffererUsersTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
-        with assert_num_queries(self.expected_num_queries, expire_session=False):
+        with assert_num_queries(
+            self.expected_num_queries,
+        ):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1413,7 +1415,9 @@ class GetOffererUsersTest(GetEndpointHelper):
         offerers_factories.OffererInvitationFactory()
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
-        with assert_num_queries(self.expected_num_queries, expire_session=False):
+        with assert_num_queries(
+            self.expected_num_queries,
+        ):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1449,7 +1453,9 @@ class GetOffererUsersTest(GetEndpointHelper):
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
-        with assert_num_queries(self.expected_num_queries, expire_session=False):
+        with assert_num_queries(
+            self.expected_num_queries,
+        ):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1505,7 +1511,9 @@ class GetOffererUsersTest(GetEndpointHelper):
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
-        with assert_num_queries(self.expected_num_queries, expire_session=False):
+        with assert_num_queries(
+            self.expected_num_queries,
+        ):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
