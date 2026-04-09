@@ -204,13 +204,13 @@ describe('screens:SignupJourney::Offerers', () => {
       screen.queryByRole('button', {
         name: 'Ajouter une nouvelle structure',
       })
-    ).toBeInTheDocument()
+    ).not.toBeInTheDocument()
 
     expect(
       screen.queryByText(
         'Vous souhaitez ajouter une nouvelle structure à cet espace ?'
       )
-    ).toBeInTheDocument()
+    ).not.toBeInTheDocument()
 
     expect(
       screen.queryByRole('button', {
@@ -220,9 +220,7 @@ describe('screens:SignupJourney::Offerers', () => {
   })
 
   it('should render component without venue creation', async () => {
-    renderOfferersScreen(contextValue, {
-      features: ['WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY'],
-    })
+    renderOfferersScreen(contextValue)
 
     expect(
       await screen.findByRole('button', { name: 'Rejoindre cet espace' })
@@ -239,34 +237,6 @@ describe('screens:SignupJourney::Offerers', () => {
         name: 'Ajouter une nouvelle structure',
       })
     ).not.toBeInTheDocument()
-  })
-
-  it('should render component with venue creation/attachment to collectivities', async () => {
-    renderOfferersScreen(
-      {
-        ...contextValue,
-        offerer: { ...DEFAULT_OFFERER_FORM_VALUES, apeCode: '8411Z' },
-      },
-      {
-        features: ['WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY'],
-      }
-    )
-
-    expect(
-      await screen.findByRole('button', { name: 'Rejoindre cet espace' })
-    ).toBeInTheDocument()
-
-    expect(
-      screen.queryByText(
-        'Vous souhaitez ajouter une nouvelle structure à cet espace ?'
-      )
-    ).toBeInTheDocument()
-
-    expect(
-      screen.queryByRole('button', {
-        name: 'Ajouter une nouvelle structure',
-      })
-    ).toBeInTheDocument()
   })
 
   it('should not display non permanent venues', async () => {

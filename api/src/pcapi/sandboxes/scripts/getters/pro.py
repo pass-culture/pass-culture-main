@@ -46,6 +46,13 @@ def create_new_pro_user_and_offerer_with_venue() -> dict:
     return {"user": get_pro_user_helper(pro_user), "siret": venue.siret}
 
 
+def create_new_pro_user_and_collectivity_offerer_with_venue() -> dict:
+    pro_user = users_factories.ProFactory.create()
+    offerer = offerers_factories.OffererFactory.create(siren="777084112")
+    venue = offerers_factories.VenueFactory.create(managingOfferer=offerer, isPermanent=True)
+    return {"user": get_pro_user_helper(pro_user), "siret": venue.siret}
+
+
 def create_regular_pro_user() -> dict:
     pro_user = users_factories.ProFactory.create()
     offerer = offerers_factories.OffererFactory.create(allowedOnAdage=False)

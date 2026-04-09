@@ -181,6 +181,16 @@ export async function createNewProUserAndOffererWithVenue(
   )
 }
 
+export async function createNewProUserAndCollectivityOffererWithVenue(
+  request: APIRequestContext
+): Promise<ProUserWithOffererAndVenueData> {
+  return await sandboxCall<ProUserWithOffererAndVenueData>(
+    request,
+    'GET',
+    `${BASE_API_URL}/sandboxes/pro/create_new_pro_user_and_collectivity_offerer_with_venue`
+  )
+}
+
 interface Venue {
   name: string
   fullAddress: string
