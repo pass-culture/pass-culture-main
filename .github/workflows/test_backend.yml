@@ -25,38 +25,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - name: "Compute docker image name:tag"
-        id: compute-image-name
-        env:
-          IMAGE: ${{ inputs.image }}
-          TAG: ${{ inputs.tag }}
-        run: |
-          echo "image_name=$IMAGE:$TAG" | tee -a "${GITHUB_OUTPUT}"
-          echo "::notice:: Running tests api with $IMAGE:$TAG"
-      - name: "Download artifact"
-        if: ${{ inputs.tag != 'latest' }}
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - name: Load docker image
+        id: load-docker-image
+        uses: ./.github/actions/load-docker-image
         with:
-          name: ${{ inputs.image }}-${{ inputs.tag }}.tar
-          path: ${{ runner.temp }}
-      - name: "Docker load artifact."
-        if: ${{ inputs.tag != 'latest' }}
-        env:
-          IMAGE: ${{ inputs.image }}
-          TAG: ${{ inputs.tag }}
-        run: |
-          docker load --input "${{ runner.temp }}/$IMAGE-$TAG.tar"
+          image: ${{ inputs.image }}
+          tag: ${{ inputs.tag }}
       - name: "Show installed Python packages"
         run: |
           docker run \
             --entrypoint sh \
-            "${{ steps.compute-image-name.outputs.image_name }}" \
+            "${{ steps.load-docker-image.outputs.image-name }}" \
             -c 'pip freeze'
       - name: "Run mypy"
         run: |
           docker run \
             --entrypoint sh \
-            "${{ steps.compute-image-name.outputs.image_name }}" \
+            "${{ steps.load-docker-image.outputs.image-name }}" \
             -c 'mypy src'
 
   ruff-checks:
@@ -98,6 +83,13 @@ jobs:
           POSTGRES_DB: pass_culture
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Load docker image
+        id: load-docker-image
+        uses: ./.github/actions/load-docker-image
+        with:
+          image: ${{ inputs.image }}
+          tag: ${{ inputs.tag }}
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           # On a feature branch, we must fetch the whole history to
           # find the common ancestor with master (see `git merge-base`
@@ -127,30 +119,11 @@ jobs:
           post="$(tail --lines 1 alembic_version_conflict_detection.txt | cut --fields 1 --delimiter " ")"
           echo "pre=$pre" >> "$GITHUB_OUTPUT"
           echo "post=$post" >> "$GITHUB_OUTPUT"
-      - name: "Compute docker image name:tag"
-        id: compute-image-name
-        env:
-          IMAGE: ${{ inputs.image }}
-          TAG: ${{ inputs.tag }}
-        run: echo "image_name=$IMAGE:$TAG" | tee -a "${GITHUB_OUTPUT}"
-      - name: Download artifact
-        if: ${{ inputs.tag != 'latest' }}
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: ${{ inputs.image }}-${{ inputs.tag }}.tar
-          path: ${{ runner.temp }}
-      - name: Docker load artifact
-        if: ${{ inputs.tag != 'latest' }}
-        env:
-          IMAGE: ${{ inputs.image }}
-          TAG: ${{ inputs.tag }}
-        run: |
-          docker load --input "${{ runner.temp }}/$IMAGE-$TAG.tar"
       - name: "Check for alembic multiple heads"
         run: |
           docker run \
             --entrypoint bash \
-            "${{ steps.compute-image-name.outputs.image_name }}" \
+            "${{ steps.load-docker-image.outputs.image-name }}" \
             -c '
               LINE_COUNT="$(wc -l <<< "$(alembic heads)")"
               echo "Found "$LINE_COUNT" head(s)"
@@ -162,7 +135,7 @@ jobs:
             --network "${{ job.container.network }}" \
             --env RUN_ENV --env DATABASE_URL_TEST \
             --entrypoint bash \
-            ${{ steps.compute-image-name.outputs.image_name }} \
+            ${{ steps.load-docker-image.outputs.image-name }} \
             -c '
               set -e
               flask install_postgres_extensions
@@ -177,7 +150,7 @@ jobs:
             --network "${{ job.container.network }}" \
             --env RUN_ENV --env DATABASE_URL_TEST \
             --entrypoint bash \
-            ${{ steps.compute-image-name.outputs.image_name }} \
+            ${{ steps.load-docker-image.outputs.image-name }} \
             -c '
               set -e
               alembic downgrade post@f460dc2c9f93
@@ -191,7 +164,7 @@ jobs:
             --network "${{ job.container.network }}" \
             --env RUN_ENV --env DATABASE_URL_TEST \
             --entrypoint bash \
-            ${{ steps.compute-image-name.outputs.image_name }} \
+            ${{ steps.load-docker-image.outputs.image-name }} \
             -c '
               set -uo pipefail
               status_code=0
@@ -217,7 +190,7 @@ jobs:
             --network "${{ job.container.network }}" \
             --env RUN_ENV --env DATABASE_URL_TEST \
             --entrypoint bash \
-            ${{ steps.compute-image-name.outputs.image_name }} \
+            ${{ steps.load-docker-image.outputs.image-name }} \
             -c '
               set -uo pipefail
               status_code=0
@@ -321,25 +294,12 @@ jobs:
           POSTGRES_DB: pass_culture
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - name: "Compute docker image name:tag"
-        id: compute-image-name
-        env:
-          IMAGE: ${{ inputs.image }}
-          TAG: ${{ inputs.tag }}
-        run: echo "image_name=$IMAGE:$TAG" | tee -a "${GITHUB_OUTPUT}"
-      - name: "Download artifact"
-        if: ${{ inputs.tag != 'latest' }}
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - name: Load docker image
+        id: load-docker-image
+        uses: ./.github/actions/load-docker-image
         with:
-          name: ${{ inputs.image }}-${{ inputs.tag }}.tar
-          path: ${{ runner.temp }}
-      - name: "Docker load artifact."
-        if: ${{ inputs.tag != 'latest' }}
-        env:
-          IMAGE: ${{ inputs.image }}
-          TAG: ${{ inputs.tag }}
-        run: |
-          docker load --input "${{ runner.temp }}/$IMAGE-$TAG.tar"
+          image: ${{ inputs.image }}
+          tag: ${{ inputs.tag }}
 
       - name: "Setup database"
         run: |
@@ -347,7 +307,7 @@ jobs:
             --network "${{ job.container.network }}" \
             --env RUN_ENV --env DATABASE_URL_TEST \
             --entrypoint bash \
-            "${{ steps.compute-image-name.outputs.image_name }}" \
+            "${{ steps.load-docker-image.outputs.image-name }}" \
             -c '
               set -e
               flask install_postgres_extensions
@@ -362,7 +322,7 @@ jobs:
             --volume ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests \
             --user 0 \
             --entrypoint bash \
-            "${{ steps.compute-image-name.outputs.image_name }}" \
+            "${{ steps.load-docker-image.outputs.image-name }}" \
             -c '
               echo "Changing owner and group fort directory test"
               chown -R pcapi:pcapi /tests
@@ -391,7 +351,7 @@ jobs:
             --network "${{ job.container.network }}" \
             --entrypoint bash \
             --env RUN_ENV --env DATABASE_URL_TEST --env REDIS_URL --env SQLALCHEMY_WARN_20 \
-            "${{ steps.compute-image-name.outputs.image_name }}" \
+            "${{ steps.load-docker-image.outputs.image-name }}" \
             -c '
               pytest ${{ matrix.pytest_args.collection }} \
               --splits 4 --group ${{ matrix.group }} \
