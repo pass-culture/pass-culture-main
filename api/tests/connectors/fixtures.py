@@ -295,7 +295,7 @@ def make_new_application():
             },
             {
                 "id": "Q2hhbXAtMTg3Mzc0Mw==",
-                "label": "Quel est le numéro de la pièce que tu viens de saisir ?",
+                "label": "Quel est le numéro de ta pièce d'identité ?",
                 "stringValue": "F9GFAL123",
                 "updatedAt": "2020-05-13T00:09:46+02:00",
             },
@@ -463,7 +463,7 @@ def make_new_stranger_application():
             },
             {
                 "id": "Q2hhbXAtMjAyMTk4Mw==",
-                "label": "Quel est le numéro de la pièce que tu viens de saisir",
+                "label": "Quel est le numéro de ta pièce d'identité ?",
                 "stringValue": "K682T8YLO",
                 "updatedAt": "2020-05-13T00:09:46+02:00",
             },

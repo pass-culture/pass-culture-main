@@ -169,7 +169,7 @@ class ParseBeneficiaryInformationTest:
                 "address": "adresse de résidence ?",
                 "birth_date": "date de naissance ?",
                 "city": "commune de résidence ?",
-                "id_piece_number": "numéro de la pièce ?",
+                "id_piece_number": "numéro de ta pièce ?",
                 "postal_code": "code postal ?",
                 "phone_number": "numéro de téléphone ?",
             },
@@ -191,6 +191,7 @@ class ParseBeneficiaryInformationTest:
             "accepte",
             labels={
                 "birth_place": "Quel est ton lieu de naissance ?",
+                "id_piece_number": "Quel est le numéro de la pièce que tu viens de saisir ?",
             },
         )
 

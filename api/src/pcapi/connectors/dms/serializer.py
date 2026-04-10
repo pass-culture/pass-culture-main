@@ -118,7 +118,10 @@ def parse_beneficiary_information_graphql(
         ):
             birth_place = value
 
-        elif dms_models.FieldLabelKeyword.ID_PIECE_NUMBER.value in label:
+        elif (
+            dms_models.FieldLabelKeyword.ID_PIECE_NUMBER_1.value in label
+            or dms_models.FieldLabelKeyword.ID_PIECE_NUMBER_2.value in label
+        ):
             value = _sanitize_id_piece_number(value.strip())
             if not fraud_check_api.validate_id_piece_number_format_fraud_item(
                 value, application_detail.procedure.number
