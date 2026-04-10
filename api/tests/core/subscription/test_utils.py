@@ -21,24 +21,30 @@ class UtilsUnitTest:
         assert subscription_utils.is_latin(test_input, accepted_chars=[]) == expected
 
     @pytest.mark.parametrize(
-        "test_input,expected",
+        "test_input",
         [
-            ("a", True),
-            ("მარიამ", False),
-            ("1 allée des séqoïas", True),
-            ("&", False),
-            ("25 & 26 rue Duhesme", False),
-            ("1", True),
-            ("La rue d'en face de chose-les-bains", True),
-            ("14 Chemin n°15 dit la Terre basse", True),
+            "a",
+            "1 allée des séqoïas",
+            "1",
+            "La rue d'en face de chose-les-bains",
+            "14 Chemin n°15 dit la Terre basse",
+            "Pas ici mais là-bas (plus loin)",
         ],
     )
-    def test_is_address_valid(self, test_input, expected):
-        if expected:
+    def test_valid_address(self, test_input):
+        subscription_utils.validate_address(test_input)
+
+    @pytest.mark.parametrize(
+        "test_input",
+        [
+            "მარიამ",
+            "&",
+            "25 & 26 rue Duhesme",
+        ],
+    )
+    def test_invalid_address(self, test_input):
+        with pytest.raises(ValueError):
             subscription_utils.validate_address(test_input)
-        else:
-            with pytest.raises(ValueError):
-                subscription_utils.validate_address(test_input)
 
     @pytest.mark.parametrize(
         "test_input,expected",
