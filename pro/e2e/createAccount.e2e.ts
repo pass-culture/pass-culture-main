@@ -75,7 +75,7 @@ test.describe('Account creation', () => {
       page.getByText('Dites-nous pour quelle structure vous travaillez')
     ).toBeVisible()
     await expectNoErrorSnackbar(page)
-    
+
     await checkAccessibility(page)
   })
 })

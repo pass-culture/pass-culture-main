@@ -189,10 +189,10 @@ test.describe('Didactic Onboarding feature', () => {
     await page.getByLabel(/Non accessible/).check()
     await page.getByText('Enregistrer et continuer').click()
 
-    await page.goto('/onboarding/individuel')
     await Promise.all([
-      page.waitForResponse(isGetOffersResponse),
+      page.goto('/onboarding/individuel'),
       page.waitForResponse(isGetCategoriesResponse),
+      page.waitForResponse(isGetOffersResponse),
     ])
 
     await expect(
