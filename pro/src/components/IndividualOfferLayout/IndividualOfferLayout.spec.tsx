@@ -187,11 +187,26 @@ describe('IndividualOfferLayout', () => {
       const offer = getIndividualOfferFactory({
         isActive: false,
         status: OfferStatus.ACTIVE,
+        name: 'offer name',
       })
 
       renderIndividualOfferLayout({ props: { offer } })
 
       expect(screen.queryByText(/offer name/)).not.toBeInTheDocument()
+    })
+
+    it('should display offer name title in edition', () => {
+      vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.EDITION)
+
+      const offer = getIndividualOfferFactory({
+        isActive: false,
+        status: OfferStatus.ACTIVE,
+        name: 'offer name',
+      })
+
+      renderIndividualOfferLayout({ props: { offer } })
+
+      expect(screen.getByText(/offer name/)).toBeInTheDocument()
     })
 
     it('should display provider banner', () => {
@@ -417,19 +432,6 @@ describe('IndividualOfferLayout', () => {
       expect(
         screen.queryByText(/Publication prévue le/)
       ).not.toBeInTheDocument()
-    })
-
-    it('should display a proper tag when offer is an headline offer and feature is active', () => {
-      const props = {
-        offer: {
-          ...nonEventOffer,
-          isHeadlineOffer: true,
-        },
-      }
-
-      renderIndividualOfferLayout({ props })
-
-      expect(screen.getByText('Offre à la une')).toBeInTheDocument()
     })
 
     it('should display an error callout if another offer exists with the same EAN', () => {

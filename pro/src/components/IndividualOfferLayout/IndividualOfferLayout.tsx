@@ -16,7 +16,6 @@ import { SynchronizedProviderInformation } from '@/components/SynchronisedProvid
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
-import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullTrashIcon from '@/icons/full-trash.svg'
 
 import { IndividualOfferNavigation } from './components/IndividualOfferNavigation/IndividualOfferNavigation'
@@ -127,13 +126,8 @@ export const IndividualOfferLayout = ({
             </span>
           ))}
       </div>
-      {offer && (
-        <p className={styles['offer-title']}>
-          {offer.name}
-          {offer.isHeadlineOffer && (
-            <Tag label="Offre à la une" variant={TagVariant.HEADLINE} />
-          )}
-        </p>
+      {offer && mode !== OFFER_WIZARD_MODE.READ_ONLY && (
+        <p className={styles['offer-title']}>{offer.name}</p>
       )}
       {offer && <OfferStatusBanner status={offer.status} />}
       {hasPublishedOfferWithSameEan && (
