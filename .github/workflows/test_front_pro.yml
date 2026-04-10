@@ -1,4 +1,4 @@
-name: "3 [on_workflow/PRO] Tests"
+name: "3 [CI] Test frontend"
 
 on:
   workflow_call:
@@ -19,8 +19,8 @@ defaults:
     working-directory: pro
 
 jobs:
-  type-check:
-    name: "Code/Type/Style Quality check"
+  run-quality-checks:
+    name: Quality checks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -54,8 +54,8 @@ jobs:
       - run: yarn lint:scss
       - run: yarn lint:scss:checkunused
 
-  pro-run-tests:
-    name: "Pro Unit tests"
+  run-unit-tests:
+    name: Unit tests
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -132,7 +132,7 @@ jobs:
 
   merge-allure-reports:
     if: ${{ !cancelled() && github.ref == 'refs/heads/master' }}
-    needs: [pro-run-tests]
+    needs: run-unit-tests
     runs-on: ubuntu-latest
     steps:
       - name: Download allure reports
@@ -172,7 +172,7 @@ jobs:
 
   merge-reports:
     if: ${{ !cancelled() }}
-    needs: [pro-run-tests]
+    needs: run-unit-tests
 
     runs-on: ubuntu-latest
     steps:
@@ -251,7 +251,7 @@ jobs:
 
   notify-failure:
     name: "Notification of any check failure"
-    needs: [type-check, pro-run-tests]
+    needs: [run-quality-checks, run-unit-tests]
     if: always() && github.ref == 'refs/heads/master' && contains(needs.*.result, 'failure')
     uses: ./.github/workflows/slack_post_message_workflow.yml
     with:

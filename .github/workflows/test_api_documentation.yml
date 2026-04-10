@@ -1,4 +1,4 @@
-name: "3 [on_workflow/API] Tests"
+name: "3 [CI] Check API documentation can be built"
 
 on:
   workflow_call:
@@ -21,7 +21,7 @@ defaults:
 
 jobs:
   api-documentation-build-checks:
-    name: "Check API documentation can be built"
+    name: Build check
     runs-on: ubuntu-22.04
     permissions:
       id-token: write

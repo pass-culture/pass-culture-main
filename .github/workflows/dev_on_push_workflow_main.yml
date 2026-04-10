@@ -45,8 +45,8 @@ jobs:
         with:
           files: |
             .github/workflows/dev_on_push_workflow.yml
-            .github/workflows/dev_on_workflow_tests_pro.yml
-            .github/workflows/dev_on_workflow_tests_pro_e2e.yml
+            .github/workflows/test_front_pro.yml
+            .github/workflows/test_e2e.yml
             pro/**
       - name: "Check changes in dependencies (frontend + backend)"
         id: check-dependencies-changes
@@ -118,7 +118,7 @@ jobs:
   prepare-cache-master: # on "master" branch only
     name: "Reset cache on master on dependency update"
     needs: [build-pcapi-tests, pcapi-init-job]
-    uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
+    uses: ./.github/workflows/test_api_client_update.yml
     if: github.ref == 'refs/heads/master'
     with:
       PCAPI_DOCKER_TAG: ${{ github.sha }}
@@ -135,7 +135,7 @@ jobs:
     name: "Test api"
     needs: [pcapi-init-job, build-pcapi-tests]
     if: needs.pcapi-init-job.outputs.api-changed == 'true'
-    uses: ./.github/workflows/dev_on_workflow_tests_api.yml
+    uses: ./.github/workflows/test_backend.yml
     with:
       tag: ${{ needs.build-pcapi-tests.result == 'skipped' && 'latest' || github.sha }}
     secrets: inherit
@@ -144,14 +144,14 @@ jobs:
     name: "Tests API documentation"
     needs: [pcapi-init-job]
     if: needs.pcapi-init-job.outputs.api-documentation-changed == 'true'
-    uses: ./.github/workflows/dev_on_workflow_tests_api_documentation.yml
+    uses: ./.github/workflows/test_api_documentation.yml
     secrets: inherit
 
   test-pro:
     name: "Pro Unit Tests"
     needs: [pcapi-init-job]
     if: needs.pcapi-init-job.outputs.pro-changed == 'true'
-    uses: ./.github/workflows/dev_on_workflow_tests_pro.yml
+    uses: ./.github/workflows/test_front_pro.yml
     with:
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
     secrets: inherit
@@ -159,7 +159,7 @@ jobs:
   test-pro-e2e:
     name: "Pro E2E Tests"
     needs: [pcapi-init-job, build-pcapi-tests]
-    uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
+    uses: ./.github/workflows/test_e2e.yml
     if: always() &&
       !cancelled() &&
       needs.pcapi-init-job.outputs.api-changed == 'true' ||
