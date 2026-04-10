@@ -17,6 +17,7 @@ import {
 import * as getSiretData from '@/commons/core/Venue/utils/getSiretData'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { structureDataBodyModelFactory } from '@/commons/utils/factories/userOfferersFactories'
+import type { LOCAL_STORAGE_KEY as LocalStorageKeyType } from '@/commons/utils/localStorageManager'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
@@ -25,6 +26,30 @@ import { Offerer } from './Offerer'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
+
+const inMemoryLocalStorage = new Map<string, string>()
+
+vi.mock('@/commons/utils/localStorageManager', async () => {
+  const actual = await vi.importActual('@/commons/utils/localStorageManager')
+
+  return {
+    ...actual,
+    localStorageManager: {
+      getItem: vi.fn((key: LocalStorageKeyType) => {
+        return inMemoryLocalStorage.get(key) ?? null
+      }),
+      setItem: vi.fn((key: LocalStorageKeyType, value: string) => {
+        inMemoryLocalStorage.set(key, value)
+      }),
+      removeItem: vi.fn((key: LocalStorageKeyType) => {
+        inMemoryLocalStorage.delete(key)
+      }),
+      clearPassCultureKeys: vi.fn(() => {
+        inMemoryLocalStorage.clear()
+      }),
+    },
+  }
+})
 
 // Mock l’appel à https://data.geopf.fr/geocodage/search/?limit=${limit}&q=${address}
 // Appel fait dans getDataFromAddress
@@ -88,6 +113,7 @@ describe('Offerer', () => {
   let contextValue: SignupJourneyContextValues
 
   beforeEach(() => {
+    inMemoryLocalStorage.clear()
     contextValue = {
       activity: null,
       offerer: DEFAULT_OFFERER_FORM_VALUES,

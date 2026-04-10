@@ -15,6 +15,7 @@ import {
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import type { LOCAL_STORAGE_KEY as LocalStorageKeyType } from '@/commons/utils/localStorageManager'
 import { noop } from '@/commons/utils/noop'
 import {
   type RenderWithProvidersOptions,
@@ -24,6 +25,44 @@ import * as storageAvailable from '@/commons/utils/storageAvailable'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 
 import { Offerers } from '../Offerers'
+
+const inMemoryLocalStorage = new Map<string, string>()
+
+const initialAddress = {
+  addressAutocomplete: '3 Rue de Valois 75001 Paris',
+  'search-addressAutocomplete': '3 Rue de Valois 75001 Paris',
+  street: '3 Rue de Valois',
+  city: 'Paris',
+  postalCode: '75001',
+  inseeCode: '75111',
+  latitude: 1.23,
+  longitude: 2.34,
+  coords: '',
+  manuallySetAddress: false,
+  banId: '',
+} as const
+
+vi.mock('@/commons/utils/localStorageManager', async () => {
+  const actual = await vi.importActual('@/commons/utils/localStorageManager')
+
+  return {
+    ...actual,
+    localStorageManager: {
+      getItem: vi.fn((key: LocalStorageKeyType) => {
+        return inMemoryLocalStorage.get(key) ?? null
+      }),
+      setItem: vi.fn((key: LocalStorageKeyType, value: string) => {
+        inMemoryLocalStorage.set(key, value)
+      }),
+      removeItem: vi.fn((key: LocalStorageKeyType) => {
+        inMemoryLocalStorage.delete(key)
+      }),
+      clearPassCultureKeys: vi.fn(() => {
+        inMemoryLocalStorage.clear()
+      }),
+    },
+  }
+})
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -85,6 +124,7 @@ describe('screens:SignupJourney::Offerers', () => {
   let venues: VenueOfOffererFromSiretResponseModel[]
 
   beforeEach(() => {
+    inMemoryLocalStorage.clear()
     contextValue = {
       activity: null,
       offerer: {
@@ -98,7 +138,7 @@ describe('screens:SignupJourney::Offerers', () => {
       },
       setActivity: () => {},
       setOfferer: () => {},
-      initialAddress: null,
+      initialAddress,
       setInitialAddress: noop,
     }
 
@@ -325,7 +365,7 @@ describe('screens:SignupJourney::Offerers', () => {
       },
       setActivity: () => {},
       setOfferer: () => {},
-      initialAddress: null,
+      initialAddress,
       setInitialAddress: noop,
     }
 
@@ -392,7 +432,7 @@ describe('screens:SignupJourney::Offerers', () => {
       },
       setActivity: () => {},
       setOfferer: () => {},
-      initialAddress: null,
+      initialAddress,
       setInitialAddress: noop,
     }
 
