@@ -30,7 +30,7 @@ export interface CumulatedViewsProps {
   totalViewsLast30Days: number
 }
 
-type XYPoint = { x: Date; y: number }
+type XYPoint = { x: string; y: number }
 
 Chart.register(
   Filler,

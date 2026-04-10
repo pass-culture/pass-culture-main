@@ -1,3 +1,4 @@
+import type { ChartOptions, TooltipItem } from 'chart.js'
 import { fr } from 'date-fns/locale'
 import { format } from 'date-fns-tz'
 
@@ -17,7 +18,7 @@ export const buildDatasets = (recentViews: RecentViews[]) => {
     datasets: [
       {
         data: recentViews.map((v) => ({
-          x: v.date,
+          x: v.rawDate,
           y: v.views,
         })),
         pointStyle: false as const,
@@ -34,7 +35,7 @@ export const buildDatasets = (recentViews: RecentViews[]) => {
 export const buildGraphOptions = (
   stepSize: number,
   firstMonth: string | null
-) => {
+): ChartOptions<'line'> => {
   return {
     responsive: true,
     maintainAspectRatio: false,
@@ -98,6 +99,18 @@ export const buildGraphOptions = (
     },
     plugins: {
       legend: { display: false },
+      tooltip: {
+        callbacks: {
+          title: (tooltipItems: TooltipItem<'line'>[]) => {
+            const item = tooltipItems[0]
+            if (item.parsed.x !== null) {
+              const date = new Date(item.parsed.x)
+              return format(date, 'd MMMM yyyy', { locale: fr })
+            }
+            return ''
+          },
+        },
+      },
     },
   }
 }
