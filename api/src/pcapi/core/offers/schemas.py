@@ -18,8 +18,6 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import artist_serialize
 from pcapi.serialization import utils as serialization_utils
 
-from . import deprecated  # noqa: F401
-
 
 class CreateOffer(BaseModel):
     name: str
