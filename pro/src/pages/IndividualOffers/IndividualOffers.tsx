@@ -26,7 +26,7 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { sortByLabel } from '@/commons/utils/strings'
-import { getStoredFilterConfig } from '@/components/OffersTableSearch/utils'
+import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 
 import { IndividualOffersContainer } from './IndividualOffersContainer/IndividualOffersContainer'
 import { computeIndividualApiFilters } from './utils/computeIndividualApiFilters'
@@ -37,7 +37,7 @@ export const IndividualOffers = (): JSX.Element => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const urlSearchFilters = useQuerySearchFilters()
-  const { storedFilters } = getStoredFilterConfig('individual')
+  const { storedFilters } = useStoredFilterConfig('individual')
   const finalSearchFilters = {
     ...urlSearchFilters,
     ...(storedFilters as Partial<IndividualSearchFiltersParams>),

@@ -35,6 +35,9 @@ const renderActionsBar = (
         offerer: {
           currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },
         },
+        user: {
+          selectedPartnerVenue: { id: 1 },
+        },
       },
       ...overrides,
     }

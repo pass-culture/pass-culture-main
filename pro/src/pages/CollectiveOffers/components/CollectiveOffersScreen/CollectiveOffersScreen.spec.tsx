@@ -34,6 +34,7 @@ const renderOffers = (
         currentUser: sharedCurrentUserFactory({
           roles: [UserRole.PRO],
         }),
+        selectedPartnerVenue: { id: 1 },
       },
       offerer: currentOffererFactory(),
     },

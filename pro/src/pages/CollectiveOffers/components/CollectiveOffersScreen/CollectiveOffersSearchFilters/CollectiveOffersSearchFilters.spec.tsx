@@ -38,6 +38,7 @@ const renderCollectiveOffersSearchFilters = (
     storeOverrides: {
       user: {
         currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: { id: 1 },
       },
       offerer: currentOffererFactory(),
     },

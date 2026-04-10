@@ -2,6 +2,8 @@ import type {
   CollectiveSearchFiltersParams,
   IndividualSearchFiltersParams,
 } from '@/commons/core/Offers/types'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 
 type StoredFilterConfig = {
@@ -19,40 +21,87 @@ export const locallyStoredFilterConfig: Record<FilterConfigType, string> = {
   template: 'TEMPLATE_OFFERS_FILTER_CONFIG',
 }
 
+const getStoredFilterConfigKey = (type: FilterConfigType) =>
+  locallyStoredFilterConfig[type]
+
 export function getStoredFilterConfig(
-  type: FilterConfigType
+  type: FilterConfigType,
+  venueId?: string | number
 ): StoredFilterConfig {
   const isSessionStorageAvailable = storageAvailable('sessionStorage')
-  const storedFilterConfig: StoredFilterConfig = isSessionStorageAvailable
-    ? JSON.parse(
-        sessionStorage.getItem(locallyStoredFilterConfig[type]) || '{}'
-      )
-    : {}
-  const { filtersVisibility = false, storedFilters = {} } = storedFilterConfig
+  const storageKey = getStoredFilterConfigKey(type)
 
+  if (!isSessionStorageAvailable) {
+    return {
+      filtersVisibility: false,
+      storedFilters: {},
+    }
+  }
+
+  const rawConfig = sessionStorage.getItem(storageKey)
+  if (!rawConfig) {
+    return {
+      filtersVisibility: false,
+      storedFilters: {},
+    }
+  }
+
+  const storedFilterConfig: StoredFilterConfig & {
+    storedVenueId?: string | number
+  } = JSON.parse(rawConfig)
+  const {
+    filtersVisibility = false,
+    storedFilters = {},
+    storedVenueId,
+  } = storedFilterConfig
+
+  if (venueId === undefined) {
+    if (storedVenueId === undefined) {
+      return {
+        filtersVisibility,
+        storedFilters,
+      }
+    }
+
+    return {
+      filtersVisibility: false,
+      storedFilters: {},
+    }
+  }
+
+  if (storedVenueId === venueId) {
+    return {
+      filtersVisibility,
+      storedFilters,
+    }
+  }
+
+  sessionStorage.removeItem(storageKey)
   return {
-    filtersVisibility,
-    storedFilters,
+    filtersVisibility: false,
+    storedFilters: {},
   }
 }
 
 export function useStoredFilterConfig<
   T extends 'individual' | 'collective' | 'template',
 >(type: T) {
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const isSessionStorageAvailable = storageAvailable('sessionStorage')
+  const filterConfig = getStoredFilterConfig(type, selectedPartnerVenue.id)
 
   const onFiltersToggle = (filtersVisibility: boolean) => {
-    const filterConfig = getStoredFilterConfig(type)
-    const newFilterConfig: StoredFilterConfig = {
+    const newFilterConfig: StoredFilterConfig & {
+      storedVenueId?: string | number
+    } = {
       ...filterConfig,
       filtersVisibility,
+      storedVenueId: selectedPartnerVenue.id,
     }
 
     if (isSessionStorageAvailable) {
-      sessionStorage.setItem(
-        locallyStoredFilterConfig[type],
-        JSON.stringify(newFilterConfig)
-      )
+      const storageKey = getStoredFilterConfigKey(type)
+      sessionStorage.setItem(storageKey, JSON.stringify(newFilterConfig))
     }
   }
 
@@ -61,32 +110,28 @@ export function useStoredFilterConfig<
       IndividualSearchFiltersParams | CollectiveSearchFiltersParams
     >
   ) => {
-    const filterConfig = getStoredFilterConfig(type)
-    const newFilterConfig: StoredFilterConfig = {
+    const newFilterConfig: StoredFilterConfig & {
+      storedVenueId?: string | number
+    } = {
       ...filterConfig,
       storedFilters: {
         ...filterConfig.storedFilters,
         ...selectedFilters,
       },
+      storedVenueId: selectedPartnerVenue.id,
     }
 
-    // We don't want to store offererId to support offerer switching.
-    // The /offers API will be called with a different offererId, but with the same filters saved
-    // by type of offer (individual, collective, template).
-    delete newFilterConfig.storedFilters.offererId
-
     if (isSessionStorageAvailable) {
-      sessionStorage.setItem(
-        locallyStoredFilterConfig[type],
-        JSON.stringify(newFilterConfig)
-      )
+      const storageKey = getStoredFilterConfigKey(type)
+      sessionStorage.setItem(storageKey, JSON.stringify(newFilterConfig))
     }
   }
 
   const onResetFilters = (resetNameOrIsbn = true) => {
-    const filterConfig = getStoredFilterConfig(type)
     const nameKey = type === 'individual' ? 'nameOrIsbn' : 'name'
-    const newFilterConfig: StoredFilterConfig = {
+    const newFilterConfig: StoredFilterConfig & {
+      storedVenueId?: string | number
+    } = {
       ...filterConfig,
       storedFilters: {
         ...(!resetNameOrIsbn
@@ -98,17 +143,17 @@ export function useStoredFilterConfig<
             }
           : {}),
       },
+      storedVenueId: selectedPartnerVenue.id,
     }
 
     if (isSessionStorageAvailable) {
-      sessionStorage.setItem(
-        locallyStoredFilterConfig[type],
-        JSON.stringify(newFilterConfig)
-      )
+      const storageKey = getStoredFilterConfigKey(type)
+      sessionStorage.setItem(storageKey, JSON.stringify(newFilterConfig))
     }
   }
 
   return {
+    ...filterConfig,
     onFiltersToggle,
     onApplyFilters,
     onResetFilters,

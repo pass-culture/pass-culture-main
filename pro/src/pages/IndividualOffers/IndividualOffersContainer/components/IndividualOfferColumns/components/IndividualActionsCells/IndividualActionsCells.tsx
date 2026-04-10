@@ -17,7 +17,7 @@ import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
-import { getStoredFilterConfig } from '@/components/OffersTableSearch/utils'
+import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import penIcon from '@/icons/full-edit.svg'
 import fullStockIcon from '@/icons/full-stock.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
@@ -45,7 +45,7 @@ export const IndividualActionsCells = ({
   editionOfferLink,
   editionStockLink,
 }: IndividualActionsCellsProps) => {
-  const { storedFilters } = getStoredFilterConfig('individual')
+  const { storedFilters } = useStoredFilterConfig('individual')
   const { isHeadlineOfferAllowedForOfferer, upsertHeadlineOffer } =
     useHeadlineOfferContext()
   const selectedOffererId = useAppSelector(ensureCurrentOfferer).id

@@ -16,7 +16,7 @@ import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
-import { getStoredFilterConfig } from '@/components/OffersTableSearch/utils'
+import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullHideIcon from '@/icons/full-hide.svg'
@@ -128,7 +128,7 @@ export const IndividualOffersActionsBar = ({
   searchButtonRef,
 }: IndividualOffersActionsBarProps): JSX.Element => {
   const urlSearchFilters = useQuerySearchFilters()
-  const { storedFilters } = getStoredFilterConfig('individual')
+  const { storedFilters } = useStoredFilterConfig('individual')
   const finalSearchFilters = {
     ...urlSearchFilters,
     ...(storedFilters as Partial<IndividualSearchFiltersParams>),

@@ -10,8 +10,12 @@ import { isEqual } from '@/commons/utils/isEqual'
 
 import { getStoredFilterConfig, useStoredFilterConfig } from './utils'
 
-const renderStoredFilterConfigHook = () => {
-  const store = configureTestStore({})
+const renderStoredFilterConfigHook = (venueId = 1) => {
+  const store = configureTestStore({
+    user: {
+      selectedPartnerVenue: { id: venueId } as any,
+    } as any,
+  })
   const wrapper = ({ children }: { children: any }) => (
     <Provider store={store}>{children}</Provider>
   )
@@ -66,6 +70,69 @@ describe('getStoredFilterConfig', () => {
       expect(filtersVisibility).toBe(false)
       expect(isEqual(storedFilters, {})).toBeTruthy()
     })
+
+    it('should return venue-specific stored config when available', () => {
+      const storedValue = {
+        filtersVisibility: true,
+        storedFilters: MOCKED_FILTERS,
+        storedVenueId: 'venue-id',
+      }
+      window.sessionStorage.setItem(
+        'INDIVIDUAL_OFFERS_FILTER_CONFIG',
+        JSON.stringify(storedValue)
+      )
+
+      const { filtersVisibility, storedFilters } = getStoredFilterConfig(
+        'individual',
+        'venue-id'
+      )
+
+      expect(filtersVisibility).toBe(storedValue.filtersVisibility)
+      expect(isEqual(storedFilters, storedValue.storedFilters)).toBeTruthy()
+    })
+
+    it('should ignore stored config when no venueId is provided but storedVenueId exists', () => {
+      const storedValue = {
+        filtersVisibility: true,
+        storedFilters: MOCKED_FILTERS,
+        storedVenueId: 'venue-id',
+      }
+      window.sessionStorage.setItem(
+        'INDIVIDUAL_OFFERS_FILTER_CONFIG',
+        JSON.stringify(storedValue)
+      )
+
+      const { filtersVisibility, storedFilters } =
+        getStoredFilterConfig('individual')
+
+      expect(filtersVisibility).toBe(false)
+      expect(isEqual(storedFilters, {})).toBeTruthy()
+    })
+
+    it('should switch venue and reset filters when venue changes', () => {
+      const result1 = renderStoredFilterConfigHook(1)
+      const { onApplyFilters: onApplyFilters1 } = result1.current
+
+      act(() => {
+        onApplyFilters1(MOCKED_FILTERS)
+      })
+
+      const { storedFilters } = getStoredFilterConfig('individual', 1)
+      expect(isEqual(storedFilters, MOCKED_FILTERS)).toBeTruthy()
+
+      const { storedFilters: filtersForVenue2 } = getStoredFilterConfig(
+        'individual',
+        2
+      )
+
+      expect(isEqual(filtersForVenue2, {})).toBeTruthy()
+
+      const { storedFilters: filtersAfterVenueChange } = getStoredFilterConfig(
+        'individual',
+        1
+      )
+      expect(isEqual(filtersAfterVenueChange, {})).toBeTruthy()
+    })
   })
 
   describe('when session storage is not available', () => {
@@ -99,13 +166,28 @@ describe('useStoredFilterConfig', () => {
         onFiltersToggle(true)
       })
 
-      const { filtersVisibility } = getStoredFilterConfig('individual')
+      const { filtersVisibility } = getStoredFilterConfig('individual', 1)
       expect(filtersVisibility).toBe(true)
+    })
+
+    it('should expose filtersVisibility from session storage for the current venue', () => {
+      const storedValue = {
+        filtersVisibility: true,
+        storedFilters: MOCKED_FILTERS,
+        storedVenueId: 1,
+      }
+      window.sessionStorage.setItem(
+        'INDIVIDUAL_OFFERS_FILTER_CONFIG',
+        JSON.stringify(storedValue)
+      )
+
+      const result = renderStoredFilterConfigHook(1)
+      expect(result.current.filtersVisibility).toBe(true)
     })
   })
 
   describe('onApplyFilters', () => {
-    it('should store the new selected filters, without offererId', () => {
+    it('should store the new selected filters', () => {
       const result = renderStoredFilterConfigHook()
       const { onApplyFilters } = result.current
 
@@ -113,11 +195,8 @@ describe('useStoredFilterConfig', () => {
         onApplyFilters(MOCKED_FILTERS)
       })
 
-      const { storedFilters } = getStoredFilterConfig('individual')
-      expect(isEqual(storedFilters, MOCKED_FILTERS)).toBeFalsy()
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { offererId: _offererId, ...expectedFilters } = MOCKED_FILTERS
-      expect(isEqual(storedFilters, expectedFilters)).toBeTruthy()
+      const { storedFilters } = getStoredFilterConfig('individual', 1)
+      expect(isEqual(storedFilters, MOCKED_FILTERS)).toBeTruthy()
     })
   })
 
@@ -130,7 +209,7 @@ describe('useStoredFilterConfig', () => {
         onResetFilters()
       })
 
-      const { storedFilters } = getStoredFilterConfig('individual')
+      const { storedFilters } = getStoredFilterConfig('individual', 1)
       expect(isEqual(storedFilters, {})).toBeTruthy()
     })
   })

@@ -18,7 +18,7 @@ import {
   ModalImageUpsertOrEdit,
   type OnImageUploadArgs,
 } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
-import { getStoredFilterConfig } from '@/components/OffersTableSearch/utils'
+import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import strokeVisualArtIcon from '@/icons/stroke-visual-art.svg'
 import { computeIndividualApiFilters } from '@/pages/IndividualOffers/utils/computeIndividualApiFilters'
 import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
@@ -44,7 +44,7 @@ export const HeadlineOfferImageDialogs = ({
 
   const [isImageUploaderOpen, setIsImageUploaderOpen] = useState(false)
   const snackBar = useSnackBar()
-  const { storedFilters } = getStoredFilterConfig('individual')
+  const { storedFilters } = useStoredFilterConfig('individual')
   const urlSearchFilters = useQuerySearchFilters()
   const finalSearchFilters = {
     ...urlSearchFilters,
