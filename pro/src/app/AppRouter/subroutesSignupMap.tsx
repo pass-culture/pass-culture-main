@@ -14,7 +14,6 @@ import { SignupValidation } from '@/pages/Signup/SignUpValidation/SignUpValidati
 import { SignupConfirmation } from '@/pages/Signup/SignupConfirmation/SignupConfirmation'
 import { SignupContainer } from '@/pages/Signup/SignupContainer/SignupContainer'
 
-import { validateSignupActivation } from './middlewares/validateSignupActivation'
 import type { CustomRouteGroupChild } from './types'
 import { mustBeUnauthenticated } from './utils'
 
@@ -45,7 +44,9 @@ export const routesSignup: CustomRouteGroupChild[] = [
   },
   {
     element: <SignupValidation />,
-    loader: withUserPermissions(() => true, validateSignupActivation),
+    // fix loader double call first
+    // loader: withUserPermissions(() => true, validateSignupActivation),
+    loader: noop,
     path: '/inscription/compte/confirmation/:token',
     title: 'Confirmation de création de compte',
     meta: { public: true },

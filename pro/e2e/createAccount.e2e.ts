@@ -2,6 +2,8 @@ import { randomUUID } from 'node:crypto'
 import { expect, request as playwrightRequest, test } from '@playwright/test'
 
 import { checkAccessibility } from './helpers/accessibility'
+import { expectNoErrorSnackbar } from './helpers/assertions'
+import { setFeatureFlags } from './helpers/features'
 import { BASE_API_URL, sandboxCall } from './helpers/sandbox'
 
 interface EmailResponse {
@@ -16,6 +18,9 @@ test.describe('Account creation', () => {
     const requestContext = await playwrightRequest.newContext({
       baseURL: BASE_API_URL,
     })
+    await setFeatureFlags(requestContext, [
+      { name: 'WIP_SWITCH_VENUE', isActive: true },
+    ])
 
     const clearResponse = await requestContext.fetch(
       `${BASE_API_URL}/sandboxes/clear_email_list`,
@@ -70,7 +75,10 @@ test.describe('Account creation', () => {
 
     await page.goto(emailData.params.EMAIL_VALIDATION_LINK)
 
-    await expect(page).toHaveURL(/\/inscription\/structure\/recherche/)
+    await expect(
+      page.getByText('Dites-nous pour quelle structure vous travaillez')
+    ).toBeVisible()
+    await expectNoErrorSnackbar(page)
     // Press tab to focus on the top of the page
     await page.keyboard.press('Tab')
     expect(page.getByRole('link', { name: 'Aller au contenu' })).toBeFocused()
