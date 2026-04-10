@@ -39,14 +39,9 @@ jobs:
       pro-changed: ${{ steps.check-pro-changes.outputs.any_modified }}
       dependencies-changed: ${{ steps.check-dependencies-changes.outputs.any_modified }}
       github-changed: ${{ steps.check-github-changes.outputs.any_modified }}
-      push-tags: ${{ steps.pcapi-tags.outputs.push-tags }}
-      checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          fetch-tags: false
-      - name: "Run actionlint"
-        uses: pass-culture/common-workflows/actions/actionlint-check@b2eaf34df9945c76e68cffc6e4bf27037f6ea21a # actionlint/v0.2
+        with: { fetch-tags: false }
       - name: "Check api folder changes"
         id: check-api-changes
         uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
@@ -91,23 +86,6 @@ jobs:
         with:
           files: |
             .github/**
-      # checkout source branch of the pull request
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
-          fetch-tags: false
-      - name: Define pcapi image tags
-        id: pcapi-tags
-        run: |
-          DOCKER_IMAGE="${{ env.docker_registry }}/pcapi"
-          API_CHECKSUM="$(tar --sort=name --owner=0 --group=0 --mtime='UTC 2019-01-01' -cf - api | sha1sum | awk '{ print $1 }')"
-          PUSH_TAGS="push-tags=$DOCKER_IMAGE:${{ github.event.pull_request.head.sha }},$DOCKER_IMAGE:$API_CHECKSUM"
-          API_TAG="checksum-tag=$API_CHECKSUM"
-          echo "PUSH_TAGS=$PUSH_TAGS"
-          echo "API_TAG=$API_TAG"
-          echo "$PUSH_TAGS" >> "$GITHUB_OUTPUT"
-          echo "$API_TAG" >> "$GITHUB_OUTPUT"
       - name: "Publish Summary"
         run: |
           {
@@ -121,6 +99,17 @@ jobs:
             echo "| [dependencies] content changed       | ${{ steps.check-dependencies-changes.outputs.any_modified }} |"
             echo "| [github] content changed             | ${{ steps.check-github-changes.outputs.any_modified }} |"
           } >> "$GITHUB_STEP_SUMMARY"
+
+  lint-github-actions:
+    name: Lint GitHub actions & worflows
+    needs: pr-changes
+    if: needs.pr-changes.outputs.github-changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with: { fetch-tags: false }
+      - name: "Run actionlint"
+        uses: pass-culture/common-workflows/actions/actionlint-check@b2eaf34df9945c76e68cffc6e4bf27037f6ea21a # v0.2
 
   build-backend-image:
     name: Build backend image
