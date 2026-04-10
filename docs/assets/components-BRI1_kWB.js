@@ -1,0 +1,1 @@
+import{P as e}from"./components-BDWXif_-.js";export{e as createCopyToClipboardFunction};
