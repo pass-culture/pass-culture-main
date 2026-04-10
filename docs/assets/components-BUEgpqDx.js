@@ -1,0 +1,1 @@
+import{P as e}from"./components-BS1l-4ei.js";export{e as createCopyToClipboardFunction};
