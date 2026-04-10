@@ -1,0 +1,1 @@
+import{P as e}from"./components-L_JLspUb.js";export{e as createCopyToClipboardFunction};
