@@ -185,7 +185,6 @@ class ProfileCompletedUserFactory(PhoneValidatedUserFactory):
     - profile completion
     """
 
-    hasSeenProTutorials = True
     hasSeenProRgs = True
 
     address: str | factory.declarations.BaseDeclaration = factory.Faker("street_address", locale="fr_FR")
@@ -469,7 +468,6 @@ class UserFactory(BaseFactory):
     lastName: str | factory.declarations.BaseDeclaration | None = "Neige"
     isEmailValidated = True
     roles: list[models.UserRole] = []
-    hasSeenProTutorials = True
     postalCode: str | factory.declarations.BaseDeclaration | None = factory.Faker("postcode")
 
     @classmethod
@@ -560,7 +558,6 @@ class AdminFactory(BaseFactory):
     lastName = "Columbo"
     isEmailValidated = True
     roles = [models.UserRole.ADMIN]
-    hasSeenProTutorials = True
     backoffice_profile = factory.RelatedFactory(
         "pcapi.core.permissions.factories.BackOfficeUserProfileFactory", factory_related_name="user"
     )
@@ -611,7 +608,6 @@ class BeneficiaryGrant18Factory(BaseFactory):
     lastName = "Doux"
     isEmailValidated = True
     roles = [models.UserRole.BENEFICIARY]
-    hasSeenProTutorials = True
     hasSeenProRgs = False
 
     @classmethod
@@ -959,7 +955,6 @@ class ProFactory(BaseFactory):
     lastName = "Coty"
     isEmailValidated = True
     roles = [models.UserRole.PRO]
-    hasSeenProTutorials = True
 
     @classmethod
     def _create(

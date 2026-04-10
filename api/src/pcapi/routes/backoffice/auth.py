@@ -145,7 +145,6 @@ def create_local_admin_user(email: str, first_name: str, last_name: str) -> user
 
     local_admin.firstName = first_name
     local_admin.lastName = last_name
-    local_admin.hasSeenProTutorials = True
     local_admin.hasSeenProRgs = True
     local_admin.needsToFillCulturalSurvey = False
 

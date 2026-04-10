@@ -5835,10 +5835,6 @@ export type SharedCurrentUserResponseModel = {
      */
     firstName?: string | null;
     /**
-     * Hasseenprotutorials
-     */
-    hasSeenProTutorials?: boolean | null;
-    /**
      * Hasuserofferer
      */
     hasUserOfferer?: boolean | null;
@@ -5928,10 +5924,6 @@ export type SharedLoginUserResponseModel = {
      * Firstname
      */
     firstName?: string | null;
-    /**
-     * Hasseenprotutorials
-     */
-    hasSeenProTutorials?: boolean | null;
     /**
      * Hasuserofferer
      */
