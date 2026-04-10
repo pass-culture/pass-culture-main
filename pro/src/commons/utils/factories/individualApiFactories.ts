@@ -20,6 +20,7 @@ import {
   type ListOffersOfferResponseModel,
   type ListOffersStockResponseModel,
   type ManagedVenue,
+  type OfferHomeResponseModel,
   OfferStatus,
   type PriceCategoryResponseModel,
   SubcategoryIdEnum,
@@ -602,4 +603,16 @@ export function getStocksResponseFactory<
     editedStockCount: 1,
     ...override,
   }
+}
+
+export const defaultOfferHomeResponseModel: OfferHomeResponseModel = {
+  id: 144,
+  bookingsCount: 12,
+  isEvent: true,
+  name: 'Mon offre indivuduelle sur la home',
+  status: OfferStatus.PUBLISHED,
+  thumbUrl: '',
+  stocks: [],
+  departmentCode: '75',
+  publicationDatetime: '2021-10-15T12:00:00.000Z',
 }

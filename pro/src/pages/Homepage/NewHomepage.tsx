@@ -30,6 +30,7 @@ import {
 import { CollectiveOffersCardsContainer } from './components/CollectiveOffersCardsContainer/CollectiveOffersCardsContainer'
 import { EditoCard } from './components/EditoCard/EditoCard'
 import { IncomeCard } from './components/IncomeCard/IncomeCard'
+import { IndividualOffersCard } from './components/IndividualOffersCard/IndividualOffersCard'
 import { NewsletterCard } from './components/NewsletterCard/NewsletterCard'
 import { OffersEmptyStateCard } from './components/OffersEmptyStateCard/OffersEmptyStateCard'
 import { PartnerPageCard } from './components/PartnerPageCard/PartnerPageCard'
@@ -146,11 +147,10 @@ export const NewHomepage = (): JSX.Element => {
           </span>
 
           <div className={styles['main']}>
-            <div>
-              Activités sur vos offres individuelles
-              <br />
-              <b>Module gestion offres indivs</b>
-            </div>
+            <IndividualOffersCard
+              venueId={selectedPartnerVenue.id}
+              venueDepartement={selectedPartnerVenue.location?.departmentCode}
+            />
             <div>
               Evolution de consultation de vos offres
               <br />

@@ -47,6 +47,7 @@ export const GET_OFFER_OPENING_HOURS_QUERY_KEY = 'getOfferOpeningHours'
 export const GET_ACTIVE_VENUE_OFFER_BY_EAN_QUERY_KEY =
   'getActiveVenueOfferByEan'
 export const GET_OFFERS_QUERY_KEY = 'listOffers'
+export const GET_OFFERS_HOME_QUERY_KEY = 'listOffersHome'
 export const GET_OFFERER_ADDRESS_QUERY_KEY = 'getoffererAddresses'
 export const GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY =
   'getOffererBankAccountsAndAttachedVenues'
