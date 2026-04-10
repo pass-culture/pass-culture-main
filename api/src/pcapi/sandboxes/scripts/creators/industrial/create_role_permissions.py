@@ -318,6 +318,11 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     "connect_as_pro": [
         perm_models.Permissions.CONNECT_AS_PRO,
     ],
+    "gestion_catalogue": [
+        perm_models.Permissions.BLACKLIST_ARTISTS,
+        perm_models.Permissions.MANAGE_ARTISTS,
+        perm_models.Permissions.READ_OFFERS,
+    ],
 }
 
 

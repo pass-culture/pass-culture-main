@@ -276,11 +276,11 @@ class ArtistDetailsActionType(enum.StrEnum):
 
 def _get_artist_details_actions() -> dict[ArtistDetailsActionType, bool]:
     can_manage_artists = access_control.has_current_user_permission(perm_models.Permissions.MANAGE_ARTISTS)
-    can_manage_fraud = access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+    can_blacklist_artists = access_control.has_current_user_permission(perm_models.Permissions.BLACKLIST_ARTISTS)
 
     actions = {
         ArtistDetailsActionType.EDIT: can_manage_artists,
-        ArtistDetailsActionType.BLACKLIST: can_manage_fraud,
+        ArtistDetailsActionType.BLACKLIST: can_blacklist_artists,
         ArtistDetailsActionType.LINK_PRODUCT: can_manage_artists,
         ArtistDetailsActionType.UNLINK_PRODUCT: can_manage_artists,
         ArtistDetailsActionType.MERGE: can_manage_artists,
@@ -357,7 +357,7 @@ def post_artist_edit_form(artist_id: str) -> response_utils.BackofficeResponse:
 
 
 @artists_blueprint.route("/<string:artist_id>/blacklist", methods=["GET"])
-@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+@access_control.permission_required(perm_models.Permissions.BLACKLIST_ARTISTS)
 def get_artist_blacklist_form(artist_id: str) -> response_utils.BackofficeResponse:
     artist = db.session.query(artist_models.Artist).filter_by(id=artist_id).one_or_none()
     if not artist:
@@ -379,7 +379,7 @@ def get_artist_blacklist_form(artist_id: str) -> response_utils.BackofficeRespon
 
 
 @artists_blueprint.route("/<string:artist_id>/blacklist", methods=["POST"])
-@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+@access_control.permission_required(perm_models.Permissions.BLACKLIST_ARTISTS)
 def post_artist_blacklist(artist_id: str) -> response_utils.BackofficeResponse:
     artist = db.session.query(artist_models.Artist).filter_by(id=artist_id).one_or_none()
     if not artist:
@@ -395,7 +395,7 @@ def post_artist_blacklist(artist_id: str) -> response_utils.BackofficeResponse:
 
 
 @artists_blueprint.route("/<string:artist_id>/unblacklist", methods=["GET"])
-@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+@access_control.permission_required(perm_models.Permissions.BLACKLIST_ARTISTS)
 def get_artist_unblacklist_form(artist_id: str) -> response_utils.BackofficeResponse:
     artist = db.session.query(artist_models.Artist).filter_by(id=artist_id).one_or_none()
     if not artist:
@@ -417,7 +417,7 @@ def get_artist_unblacklist_form(artist_id: str) -> response_utils.BackofficeResp
 
 
 @artists_blueprint.route("/<string:artist_id>/unblacklist", methods=["POST"])
-@access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+@access_control.permission_required(perm_models.Permissions.BLACKLIST_ARTISTS)
 def post_artist_unblacklist(artist_id: str) -> response_utils.BackofficeResponse:
     artist = db.session.query(artist_models.Artist).filter_by(id=artist_id).one_or_none()
     if not artist:

@@ -74,6 +74,7 @@ class Permissions(enum.Enum):
     READ_OFFERS = "visualiser les offres, produits, artistes"
     MANAGE_OFFERS = "gérer les offres"
     MANAGE_ARTISTS = "gérer les artistes"
+    BLACKLIST_ARTISTS = "blacklister des artistes"
     MULTIPLE_OFFERS_ACTIONS = "opérations sur plusieurs offres"
 
     VALIDATE_OFFERER = "gérer la validation des entités juridiques et des rattachements"
@@ -200,6 +201,7 @@ class Roles(enum.Enum):
     FRAUDE_CONFORMITE = "fraude_conformite"  # will become deprecated
     FRAUDE_JEUNES = "fraude_jeunes"
     FRAUDE_PRO = "fraude_pro"
+    GESTION_CATALOGUE = "gestion_catalogue"
     GLOBAL_ACCESS = "global_access"
     HOMOLOGATION = "homologation"
     HOMOLOGATION_PRO = "homologation_pro"

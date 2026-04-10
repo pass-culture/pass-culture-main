@@ -129,7 +129,7 @@ class PostArtistEditTest(PostEndpointHelper):
 
 
 class BlacklistArtistButtonTest(button_helpers.ButtonHelper):
-    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.BLACKLIST_ARTISTS
     button_label = "Blacklister"
 
     @property
@@ -141,7 +141,7 @@ class BlacklistArtistButtonTest(button_helpers.ButtonHelper):
 class GetArtistBlacklistFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.artist.get_artist_blacklist_form"
     endpoint_kwargs = {"artist_id": "some-uuid"}
-    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.BLACKLIST_ARTISTS
 
     # session + artist
     expected_num_queries = 2
@@ -161,7 +161,7 @@ class GetArtistBlacklistFormTest(GetEndpointHelper):
 class PostArtistBlacklistTest(PostEndpointHelper):
     endpoint = "backoffice_web.artist.post_artist_blacklist"
     endpoint_kwargs = {"artist_id": "some-uuid"}
-    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.BLACKLIST_ARTISTS
 
     @patch("pcapi.routes.backoffice.artists.blueprint.async_index_artist_ids")
     @patch("pcapi.routes.backoffice.artists.blueprint.async_index_offers_of_artist_ids")
@@ -183,7 +183,7 @@ class PostArtistBlacklistTest(PostEndpointHelper):
 
 
 class UnblacklistArtistButtonTest(button_helpers.ButtonHelper):
-    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.BLACKLIST_ARTISTS
     button_label = "Réactiver"
 
     @property
@@ -195,7 +195,7 @@ class UnblacklistArtistButtonTest(button_helpers.ButtonHelper):
 class GetArtistUnblacklistFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.artist.get_artist_unblacklist_form"
     endpoint_kwargs = {"artist_id": "some-uuid"}
-    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.BLACKLIST_ARTISTS
 
     # session + artist
     expected_num_queries = 2
@@ -214,7 +214,7 @@ class GetArtistUnblacklistFormTest(GetEndpointHelper):
 class PostArtistUnblacklistTest(PostEndpointHelper):
     endpoint = "backoffice_web.artist.post_artist_unblacklist"
     endpoint_kwargs = {"artist_id": "some-uuid"}
-    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.BLACKLIST_ARTISTS
 
     @patch("pcapi.routes.backoffice.artists.blueprint.async_index_artist_ids")
     @patch("pcapi.routes.backoffice.artists.blueprint.async_index_offers_of_artist_ids")
