@@ -10,12 +10,22 @@ import {
   SignupJourneyContext,
   type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import {
+  cleanSignupJourneyStorage,
+  RESTORE_ERRORS,
+  tryRestoreActivityFromStorage,
+  tryRestoreInitialAddressFromStorage,
+  tryRestoreOffererFromStorage,
+} from '@/commons/context/SignupJourneyContext/storage'
 import * as useEducationalDomains from '@/commons/hooks/swr/useEducationalDomains'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import type { LOCAL_STORAGE_KEY as LocalStorageKeyType } from '@/commons/utils/localStorageManager'
 import { noop } from '@/commons/utils/noop'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { DEFAULT_ADDRESS_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
+import {
+  DEFAULT_ADDRESS_FORM_VALUES,
+  DEFAULT_OFFERER_FORM_VALUES,
+} from '@/components/SignupJourneyForm/Offerer/constants'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 import { Activity } from '../Activity'
@@ -33,6 +43,22 @@ const initialAddress = {
   latitude: 1.23,
   longitude: 2.34,
 } as const
+
+vi.mock('@/commons/context/SignupJourneyContext/storage', async () => {
+  const actual = await vi.importActual<
+    typeof import('@/commons/context/SignupJourneyContext/storage')
+  >('@/commons/context/SignupJourneyContext/storage')
+
+  return {
+    ...actual,
+    cleanSignupJourneyStorage: vi.fn(),
+    tryRestoreOffererFromStorage: vi.fn(),
+    tryRestoreInitialAddressFromStorage: vi.fn(),
+    tryRestoreActivityFromStorage: vi.fn(() => {
+      throw new Error(actual.RESTORE_ERRORS.NO_ACTIVITY_DATA_IN_STORAGE)
+    }),
+  }
+})
 
 vi.mock('@/commons/utils/localStorageManager', async () => {
   const actual = await vi.importActual('@/commons/utils/localStorageManager')
@@ -81,6 +107,10 @@ const renderActivityScreen = (
           <Route
             path="/inscription/structure/confirmation"
             element={<div>Validation screen</div>}
+          />
+          <Route
+            path="/inscription/structure/recherche"
+            element={<div>Search screen</div>}
           />
         </Routes>
       </SignupJourneyContext.Provider>
@@ -151,6 +181,71 @@ describe('screens:SignupJourney::Activity', () => {
     expect(
       await screen.findByRole('button', { name: 'Étape précédente' })
     ).toBeInTheDocument()
+  })
+
+  describe('Restore contexts from storage', () => {
+    it('should try to restore offerer and initialAddress when context is missing', async () => {
+      const setOfferer = vi.fn()
+      const setInitialAddress = vi.fn()
+      contextValue.offerer = null
+      contextValue.setOfferer = setOfferer
+      contextValue.setInitialAddress = setInitialAddress
+
+      renderActivityScreen(contextValue)
+
+      await waitFor(() => {
+        expect(tryRestoreOffererFromStorage).toHaveBeenCalledWith(setOfferer)
+        expect(tryRestoreInitialAddressFromStorage).toHaveBeenCalledWith(
+          setInitialAddress
+        )
+      })
+    })
+
+    it('should clean storage and navigate to search when restoring offerer/address fails', async () => {
+      contextValue.offerer = DEFAULT_OFFERER_FORM_VALUES
+      vi.mocked(tryRestoreOffererFromStorage).mockImplementation(() => {
+        throw new Error('ANY_ERROR')
+      })
+
+      renderActivityScreen(contextValue)
+
+      await waitFor(() => {
+        expect(cleanSignupJourneyStorage).toHaveBeenCalled()
+        expect(screen.getByText('Search screen')).toBeInTheDocument()
+      })
+      expect(tryRestoreActivityFromStorage).not.toHaveBeenCalled()
+    })
+
+    it('should not clean storage nor navigate when no activity data exists in storage', async () => {
+      contextValue.activity = null
+      vi.mocked(tryRestoreActivityFromStorage).mockImplementation(() => {
+        throw new Error(RESTORE_ERRORS.NO_ACTIVITY_DATA_IN_STORAGE)
+      })
+
+      renderActivityScreen(contextValue)
+
+      await waitFor(() => {
+        expect(tryRestoreActivityFromStorage).toHaveBeenCalledWith(
+          contextValue.setActivity
+        )
+      })
+      expect(cleanSignupJourneyStorage).not.toHaveBeenCalled()
+      expect(screen.queryByText('Search screen')).not.toBeInTheDocument()
+    })
+
+    it('should clean storage and navigate to search when restoring activity fails with an unexpected error', async () => {
+      contextValue.activity = null
+      vi.mocked(tryRestoreActivityFromStorage).mockImplementation(() => {
+        throw new Error('ANY_OTHER_ERROR')
+      })
+
+      renderActivityScreen(contextValue)
+
+      await waitFor(() => {
+        expect(cleanSignupJourneyStorage).toHaveBeenCalled()
+        expect(screen.getByText('Search screen')).toBeInTheDocument()
+      })
+    })
   })
 
   it('should display validation screen on click next step button', async () => {

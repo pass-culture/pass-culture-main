@@ -8,6 +8,12 @@ import {
   SignupJourneyContext,
   type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import {
+  cleanSignupJourneyStorage,
+  tryRestoreActivityFromStorage,
+  tryRestoreInitialAddressFromStorage,
+  tryRestoreOffererFromStorage,
+} from '@/commons/context/SignupJourneyContext/storage'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import type { LOCAL_STORAGE_KEY as LocalStorageKeyType } from '@/commons/utils/localStorageManager'
 import { noop } from '@/commons/utils/noop'
@@ -36,6 +42,20 @@ const initialAddress = {
   latitude: 1.23,
   longitude: 2.34,
 } as const
+
+vi.mock('@/commons/context/SignupJourneyContext/storage', async () => {
+  const actual = await vi.importActual(
+    '@/commons/context/SignupJourneyContext/storage'
+  )
+
+  return {
+    ...actual,
+    cleanSignupJourneyStorage: vi.fn(),
+    tryRestoreOffererFromStorage: vi.fn(),
+    tryRestoreInitialAddressFromStorage: vi.fn(),
+    tryRestoreActivityFromStorage: vi.fn(),
+  }
+})
 
 vi.mock('@/commons/utils/localStorageManager', async () => {
   const actual = await vi.importActual('@/commons/utils/localStorageManager')
@@ -165,6 +185,82 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
       initialAddress,
       setInitialAddress: noop,
     }
+  })
+
+  describe('Restore contexts from storage', () => {
+    it('should try to restore offerer and initialAddress when context is missing', async () => {
+      const setOfferer = vi.fn()
+      const setInitialAddress = vi.fn()
+      contextValue.offerer = null
+      contextValue.initialAddress = null
+      contextValue.setOfferer = setOfferer
+      contextValue.setInitialAddress = setInitialAddress
+
+      vi.mocked(tryRestoreOffererFromStorage).mockReturnValue({
+        ...DEFAULT_OFFERER_FORM_VALUES,
+        siret: '123 456 789 33333',
+        name: 'Stored name',
+        street: '1 Stored Street',
+        postalCode: '75001',
+        city: 'Paris',
+      })
+
+      renderOffererAuthenticationScreen(contextValue)
+
+      await waitFor(() => {
+        expect(tryRestoreOffererFromStorage).toHaveBeenCalledWith(setOfferer)
+        expect(tryRestoreInitialAddressFromStorage).toHaveBeenCalledWith(
+          setInitialAddress
+        )
+      })
+    })
+
+    it('should clean storage and navigate to offerer screen when restoring offerer/address fails', async () => {
+      contextValue.offerer = DEFAULT_OFFERER_FORM_VALUES
+      vi.mocked(tryRestoreOffererFromStorage).mockImplementation(() => {
+        throw new Error('ANY_ERROR')
+      })
+
+      renderOffererAuthenticationScreen(contextValue)
+
+      await waitFor(() => {
+        expect(cleanSignupJourneyStorage).toHaveBeenCalled()
+        expect(screen.getByText('Offerer screen')).toBeInTheDocument()
+      })
+      expect(tryRestoreActivityFromStorage).not.toHaveBeenCalled()
+    })
+
+    it('should try to restore activity and ignore restore errors', async () => {
+      const setActivity = vi.fn()
+      contextValue.activity = null
+      contextValue.setActivity = setActivity
+      contextValue.offerer = {
+        ...DEFAULT_OFFERER_FORM_VALUES,
+        siret: '123 456 789 33333',
+        name: 'Test name',
+        street: '3 Rue de Valois',
+        city: 'Paris',
+        postalCode: '75001',
+        publicName: '',
+        isOpenToPublic: 'true',
+      }
+
+      vi.mocked(tryRestoreActivityFromStorage).mockImplementation(() => {
+        throw new Error('ANY_ERROR')
+      })
+
+      renderOffererAuthenticationScreen(contextValue)
+
+      await waitFor(() => {
+        expect(tryRestoreActivityFromStorage).toHaveBeenCalledWith(setActivity)
+      })
+      expect(
+        screen.getByRole('heading', {
+          level: 2,
+          name: 'Complétez les informations de votre structure',
+        })
+      ).toBeInTheDocument()
+    })
   })
 
   it('should render component', async () => {

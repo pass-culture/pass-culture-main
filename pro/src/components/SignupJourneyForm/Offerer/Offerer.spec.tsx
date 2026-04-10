@@ -14,6 +14,11 @@ import {
   SignupJourneyContext,
   type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import {
+  cleanSignupJourneyStorage,
+  tryRestoreInitialAddressFromStorage,
+  tryRestoreOffererFromStorage,
+} from '@/commons/context/SignupJourneyContext/storage'
 import * as getSiretData from '@/commons/core/Venue/utils/getSiretData'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { structureDataBodyModelFactory } from '@/commons/utils/factories/userOfferersFactories'
@@ -21,13 +26,29 @@ import type { LOCAL_STORAGE_KEY as LocalStorageKeyType } from '@/commons/utils/l
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
-import { DEFAULT_OFFERER_FORM_VALUES } from './constants'
+import {
+  DEFAULT_ADDRESS_FORM_VALUES,
+  DEFAULT_OFFERER_FORM_VALUES,
+} from './constants'
 import { Offerer } from './Offerer'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
 const inMemoryLocalStorage = new Map<string, string>()
+
+vi.mock('@/commons/context/SignupJourneyContext/storage', async () => {
+  const actual = await vi.importActual(
+    '@/commons/context/SignupJourneyContext/storage'
+  )
+
+  return {
+    ...actual,
+    cleanSignupJourneyStorage: vi.fn(),
+    tryRestoreOffererFromStorage: vi.fn(),
+    tryRestoreInitialAddressFromStorage: vi.fn(),
+  }
+})
 
 vi.mock('@/commons/utils/localStorageManager', async () => {
   const actual = await vi.importActual('@/commons/utils/localStorageManager')
@@ -106,6 +127,32 @@ const renderOffererScreen = (
   )
 }
 
+const renderOffererScreenForRestoreFailure = (
+  contextValue: SignupJourneyContextValues
+) => {
+  return renderWithProviders(
+    <>
+      <SignupJourneyContext.Provider value={contextValue}>
+        <Routes>
+          <Route
+            path="/inscription/structure/identification"
+            element={<Offerer />}
+          />
+          <Route
+            path="/inscription/structure/recherche"
+            element={<div>Search screen</div>}
+          />
+        </Routes>
+      </SignupJourneyContext.Provider>
+      <SnackBarContainer />
+    </>,
+    {
+      user: sharedCurrentUserFactory(),
+      initialRouterEntries: ['/inscription/structure/identification'],
+    }
+  )
+}
+
 const mockSetOfferer = vi.fn()
 const mockSetInitialAddress = vi.fn()
 
@@ -114,6 +161,9 @@ describe('Offerer', () => {
 
   beforeEach(() => {
     inMemoryLocalStorage.clear()
+    vi.mocked(cleanSignupJourneyStorage).mockClear()
+    vi.mocked(tryRestoreOffererFromStorage).mockReset()
+    vi.mocked(tryRestoreInitialAddressFromStorage).mockReset()
     contextValue = {
       activity: null,
       offerer: DEFAULT_OFFERER_FORM_VALUES,
@@ -130,6 +180,70 @@ describe('Offerer', () => {
     vi.spyOn(api, 'getStructureData').mockResolvedValue(
       structureDataBodyModelFactory()
     )
+  })
+
+  describe('Restore contexts from storage', () => {
+    it('should try to restore offerer and initialAddress and reset the form when context is missing', async () => {
+      const setOfferer = vi.fn()
+      const setInitialAddress = vi.fn()
+      contextValue.offerer = null
+      contextValue.initialAddress = null
+      contextValue.setOfferer = setOfferer
+      contextValue.setInitialAddress = setInitialAddress
+
+      const storedOfferer = {
+        ...DEFAULT_OFFERER_FORM_VALUES,
+        siret: '12345678933333',
+      }
+      vi.mocked(tryRestoreOffererFromStorage).mockReturnValue(storedOfferer)
+
+      renderOffererScreen(contextValue)
+
+      await waitFor(() => {
+        expect(tryRestoreOffererFromStorage).toHaveBeenCalledWith(setOfferer)
+        expect(tryRestoreInitialAddressFromStorage).toHaveBeenCalledWith(
+          setInitialAddress
+        )
+      })
+    })
+
+    it('should try to restore offerer and initialAddress when context equals default values', async () => {
+      const setOfferer = vi.fn()
+      const setInitialAddress = vi.fn()
+      contextValue.offerer = DEFAULT_OFFERER_FORM_VALUES
+      contextValue.initialAddress = DEFAULT_ADDRESS_FORM_VALUES
+      contextValue.setOfferer = setOfferer
+      contextValue.setInitialAddress = setInitialAddress
+
+      vi.mocked(tryRestoreOffererFromStorage).mockReturnValue({
+        ...DEFAULT_OFFERER_FORM_VALUES,
+        siret: '12345678933333',
+      })
+
+      renderOffererScreen(contextValue)
+
+      await waitFor(() => {
+        expect(tryRestoreOffererFromStorage).toHaveBeenCalledWith(setOfferer)
+        expect(tryRestoreInitialAddressFromStorage).toHaveBeenCalledWith(
+          setInitialAddress
+        )
+      })
+    })
+
+    it('should clean storage and navigate to search when restoring offerer/address fails', async () => {
+      contextValue.offerer = DEFAULT_OFFERER_FORM_VALUES
+      contextValue.initialAddress = null
+      vi.mocked(tryRestoreOffererFromStorage).mockImplementation(() => {
+        throw new Error('ANY_ERROR')
+      })
+
+      renderOffererScreenForRestoreFailure(contextValue)
+
+      await waitFor(() => {
+        expect(cleanSignupJourneyStorage).toHaveBeenCalled()
+        expect(screen.getByText('Search screen')).toBeInTheDocument()
+      })
+    })
   })
 
   it('should render component', async () => {
