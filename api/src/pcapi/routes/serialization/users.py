@@ -90,7 +90,6 @@ class SharedLoginUserResponseModel(HttpBodyModel):
     departementCode: str | None = None
     email: str
     firstName: str | None = None
-    hasSeenProTutorials: bool | None = None
     has_user_offerer: bool | None = None
     id: int
     isEmailValidated: bool
@@ -115,7 +114,6 @@ class SharedCurrentUserResponseModel(HttpBodyModel):
     email: str
     externalIds: dict | None = None
     firstName: str | None = None
-    hasSeenProTutorials: bool | None = None
     has_user_offerer: bool | None = None
     id: int
     idPieceNumber: str | None = None

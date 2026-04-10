@@ -9,11 +9,7 @@ import { Footer } from './Footer'
 
 const renderFooter = (isConnected: boolean = true) => {
   renderWithProviders(<Footer />, {
-    user: isConnected
-      ? sharedCurrentUserFactory({
-          hasSeenProTutorials: true,
-        })
-      : null,
+    user: isConnected ? sharedCurrentUserFactory() : null,
   })
 }
 
@@ -49,7 +45,7 @@ describe('Footer', () => {
         <Footer />
       </SkipLinksProvider>,
       {
-        user: sharedCurrentUserFactory({ hasSeenProTutorials: true }),
+        user: sharedCurrentUserFactory(),
       }
     )
 
