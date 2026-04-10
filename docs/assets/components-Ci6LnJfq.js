@@ -1,0 +1,1 @@
+import{P as e}from"./components-BUa-Du3H.js";export{e as createCopyToClipboardFunction};
