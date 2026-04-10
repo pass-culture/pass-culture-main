@@ -131,12 +131,12 @@ export async function expectCollectiveModules(
   )
 
   await expectModuleVisibility(
-    page.getByRole('heading', { level: 2, name: 'offres vitrines' }),
+    page.getByRole('heading', { level: 2, name: 'Offres vitrines' }),
     visibleModules.includes('COLLECTIVE_OFFER_TEMPLATES_CARD')
   )
 
   await expectModuleVisibility(
-    page.getByRole('heading', { level: 2, name: 'offres réservables' }),
+    page.getByRole('heading', { level: 2, name: 'Offres réservables' }),
     visibleModules.includes('COLLECTIVE_OFFERS_CARD')
   )
 

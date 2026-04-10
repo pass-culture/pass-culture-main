@@ -55,6 +55,19 @@ e2e/
 │  ├─ requests.ts # Factorisation pour toutes les requêtes utilisées dans un page.waitForResponse
 │  └─ sandbox.ts # Les différents appels à la sandbox existants.
 ```
+
+## Conventions d'écriture
+
+### Sélecteurs : Sensibilité à la casse et match d'une chaîne de caractère complète
+
+Contrairement à **Testing Library**, les locators **Playwright** ne sont **pas sensibles à la casse** et **ne matchent pas la chaîne de caractère complète** par défaut (cf [la doc](https://playwright.dev/docs/api/class-page#page-get-by-text-option-exact))
+
+* **Par défaut :** `page.getByRole('heading', { name: 'offres' })` validera un titre affichant **"Offres réservables"**.
+* **Mode strict :** Pour forcer le respect de la casse et le match sur la chaîne de caractère complète, utilisez `{ exact: true }`.
+
+**Note :** Nous avons choisi de ne pas imposer `exact: true` systématiquement pour préserver la lisibilité, mais restez vigilants si un test passe alors que la casse ne correspond pas.
+
+
 ## Problèmes connus
 
 ### PCAPI remonte des erreurs liés à des librairies.
