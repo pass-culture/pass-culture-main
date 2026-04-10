@@ -11,21 +11,15 @@ concurrency:
 
 permissions: write-all
 
-env:
-  docker_registry: "europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry"
-
 jobs:
-  labeler:
+  add-labels:
     name: Add labels
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
       - id: label-pr
         uses: actions/labeler@634933edcd8ababfe52f92936142cc22ac488b1b # v6.0.1
-        with:
-          sync-labels: true
-
+        with: { sync-labels: true }
       - run: |
           echo "These labels are added to the PR: ${{ steps.label-pr.outputs.all-labels }}"
 
@@ -35,7 +29,6 @@ jobs:
     outputs:
       api-changed: ${{ steps.check-api-changes.outputs.any_modified }}
       api-documentation-changed: ${{ steps.check-api-documentation-changes.outputs.any_modified }}
-      api-script-test-changed: ${{ steps.check-api-script-test-changes.outputs.any_modified }}
       pro-changed: ${{ steps.check-pro-changes.outputs.any_modified }}
       dependencies-changed: ${{ steps.check-dependencies-changes.outputs.any_modified }}
       github-changed: ${{ steps.check-github-changes.outputs.any_modified }}
@@ -51,19 +44,12 @@ jobs:
             !api/documentation/**
             !api/src/pcapi/scripts/**/main.py
             !api/src/pcapi/scripts/**/test_script.py
-            !api/tests/scripts/**/test_main.py
             !api/src/pcapi/scripts/**/main.sql
       - name: "Check api documentation folder changes"
         id: check-api-documentation-changes
         uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
         with:
           files: api/documentation/**
-      - name: "Check api script test folder changes"
-        id: check-api-script-test-changes
-        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
-        with:
-          files: |
-            api/tests/scripts/**/test_main.py
       - name: "Check pro folder changes"
         id: check-pro-changes
         uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
@@ -102,8 +88,8 @@ jobs:
 
   lint-github-actions:
     name: Lint GitHub actions & worflows
-    needs: pr-changes
-    if: needs.pr-changes.outputs.github-changed == 'true'
+    needs: compute-changes
+    if: needs.compute-changes.outputs.github-changed == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -116,7 +102,6 @@ jobs:
     needs: compute-changes
     if: |
       needs.compute-changes.outputs.api-changed == 'true' ||
-      needs.compute-changes.outputs.api-script-test-changed == 'true' ||
       needs.compute-changes.outputs.pro-changed == 'true' ||
       needs.compute-changes.outputs.github-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
@@ -155,16 +140,6 @@ jobs:
       needs.compute-changes.outputs.api-changed == 'true' ||
       needs.compute-changes.outputs.github-changed == 'true'
     uses: ./.github/workflows/test_backend.yml
-    with:
-      tag: ${{ github.sha }}
-    secrets: inherit
-
-  test-api-script:
-    name: "Tests api scripts"
-    needs: [compute-changes, build-backend-image]
-    if: |
-      needs.compute-changes.outputs.api-script-test-changed == 'true'
-    uses: ./.github/workflows/test_api_scripts_workflow.yml
     with:
       tag: ${{ github.sha }}
     secrets: inherit
