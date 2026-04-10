@@ -47,7 +47,6 @@ from pcapi.db_utils import clean_all_database
 from pcapi.db_utils import install_database_extensions
 from pcapi.models import db
 from pcapi.models import feature
-from pcapi.routes.backoffice import install_routes
 from pcapi.utils import requests
 from pcapi.utils.module_loading import import_string
 
@@ -68,10 +67,11 @@ class SessionStructre:
 def run_migrations():
     from pcapi import settings as pcapi_settings
 
-    alembic_cfg = Config("alembic.ini")
-    alembic_cfg.set_main_option("sqlalchemy.url", pcapi_settings.DATABASE_URL)
-    command.upgrade(alembic_cfg, "pre@head")
-    command.upgrade(alembic_cfg, "post@head")
+    with patch("sys.stderr"):  # hide alembic output
+        alembic_cfg = Config("alembic.ini")
+        alembic_cfg.set_main_option("sqlalchemy.url", pcapi_settings.DATABASE_URL)
+        command.upgrade(alembic_cfg, "pre@head")
+        command.upgrade(alembic_cfg, "post@head")
 
 
 def pytest_configure(config):
@@ -87,16 +87,18 @@ def pytest_addoption(parser):
     )
 
 
-@pytest.fixture(scope="session", autouse=True)
-def setup_query_log(pytestconfig):
-    pcapi.core.testing.register_event_for_query_logger(with_trace=pytestconfig.getoption("--sql-trace"))
+def _clean_g_between_requests(exc: BaseException | None = None) -> None:
+    WHITELIST = {
+        "_query_logger",
+        "csrf_token",  # FIXME transmit csrf in query for tests
+        "_session_to_commit",  # atomic is executed after this teardown
+        "_managed_session",  # atomic is executed after this teardown
+        "_on_commit_callbacks",  # atomic is executed after this teardown
+    }
 
-
-def _init_celery(app: Flask):
-    celery_config = {**CELERY_BASE_SETTINGS, "task_always_eager": True}
-    app.config.from_mapping(CELERY=celery_config)
-
-    celery_init_app(app, task_with_app_context=False)
+    for key in set(g) - WHITELIST:
+        if key not in WHITELIST:
+            g.pop(key, None)
 
 
 def build_backoffice_app():
@@ -104,21 +106,10 @@ def build_backoffice_app():
 
     from pcapi.backoffice_app import app
     from pcapi.backoffice_app import csrf
-    from pcapi.flask_app import remove_db_session
-
-    # Some tests fail without this. It's probably because of
-    # pytest_flask_sqlalchemy.
-    app.teardown_request_funcs[None].remove(remove_db_session)
-
-    _init_celery(app)
 
     with app.app_context():
         app.test_client_class = FlaskLoginClient
         app.config["TESTING"] = True
-
-        @app.teardown_request
-        def clean_g_between_requests(exc: BaseException | None = None) -> None:
-            g.pop("_login_user", default=None)
 
         @app.route("/signin/<int:user_id>", methods=["POST"])
         @csrf.exempt
@@ -128,33 +119,14 @@ def build_backoffice_app():
             from pcapi.core.users.models import User
 
             user = db.session.query(User).filter_by(id=user_id).one()
-
             login_user(user, remember=True)
-
             return ""
-
-        install_database_extensions()
-        run_migrations()
-        feature.install_feature_flags()
-
-        install_routes(app)
 
         yield app
 
 
 def build_main_app():
     from pcapi.app import app
-    from pcapi.flask_app import remove_db_session
-
-    # Some tests fail without this. It's probably because of
-    # pytest_flask_sqlalchemy.
-    app.teardown_request_funcs[None].remove(remove_db_session)
-
-    @app.teardown_request
-    def clean_g_between_requests(exc: BaseException | None = None) -> None:
-        g.pop("_login_user", default=None)
-
-    _init_celery(app)
 
     with app.app_context():
         app.config["TESTING"] = True
@@ -164,11 +136,36 @@ def build_main_app():
         app.register_blueprint(test_bookings_blueprint, url_prefix="/v2")
         app.register_blueprint(test_extended_spec_tree_blueprint)
 
-        install_database_extensions()
-        run_migrations()
-        feature.install_feature_flags()
-
         yield app
+
+
+@pytest.fixture(scope="session", autouse=True)
+def prepare_db(app):
+    install_database_extensions()
+    run_migrations()
+    feature.install_feature_flags()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_query_log(pytestconfig):
+    pcapi.core.testing.register_event_for_query_logger(with_trace=pytestconfig.getoption("--sql-trace"))
+
+
+@pytest.fixture(scope="session", autouse=True)
+def init_celery(app: Flask):
+    celery_config = {**CELERY_BASE_SETTINGS, "task_always_eager": True}
+    app.config.from_mapping(CELERY=celery_config)
+    celery_init_app(app, task_with_app_context=False)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def manage_teardown(app: Flask):
+    from pcapi.flask_app import remove_db_session
+
+    # Some tests fail without this. It's probably because of
+    # pytest_flask_sqlalchemy.
+    app.teardown_request_funcs[None].remove(remove_db_session)
+    app.teardown_request(_clean_g_between_requests)
 
 
 @pytest.fixture(scope="session", name="app")
