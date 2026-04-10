@@ -255,7 +255,11 @@ def get_offers_for_homepage(*, venue_id: int, offers_limit: int) -> list[models.
                 models.Stock.quantity,
                 models.Stock.dnBookedQuantity,
                 models.Stock.isSoftDeleted,
-            )
+            ),
+            sa_orm.joinedload(models.Offer.offererAddress)
+            .load_only()
+            .joinedload(offerers_models.OffererAddress.address)
+            .load_only(geography_models.Address.departmentCode),
         )
         # mediations and productMediations are needed for thumbUrl
         .options(

@@ -4730,6 +4730,10 @@ export type OfferHomeResponseModel = {
      */
     bookingsCount: number;
     /**
+     * Departmentcode
+     */
+    departmentCode: string | null;
+    /**
      * Id
      */
     id: number;
@@ -4741,6 +4745,10 @@ export type OfferHomeResponseModel = {
      * Name
      */
     name: string;
+    /**
+     * Publicationdatetime
+     */
+    publicationDatetime: string | null;
     status: OfferStatus;
     /**
      * Stocks
