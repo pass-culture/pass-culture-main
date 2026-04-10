@@ -43,11 +43,19 @@ describe('CollectiveOffersCardsContainer', () => {
     expect(cardsFirstRender[0]).toHaveAttribute('data-testid', 'card-template')
     expect(cardsFirstRender[1]).toHaveAttribute('data-testid', 'card-bookable')
 
+    const cardsSecondRender = cardsFirstRender
+
+    // We need waitFor here instead of findAllBy, because :
+    //   - `findAllBy` returns immediately since the elements are already there, so it returns the old ones.
+    //   - `waitFor` retries until the method it wraps returns no error. So it retries until the `expect` passes.
     await waitFor(() => {
-      const cards = screen.getAllByTestId(/^card-/)
-      expect(cards[0]).toHaveAttribute('data-testid', 'card-template')
-      expect(cards[1]).toHaveAttribute('data-testid', 'card-bookable')
+      const cardsSecondRender = screen.getAllByTestId(/^card-/)
+      expect(cardsSecondRender[0]).toHaveAttribute(
+        'data-testid',
+        'card-template'
+      )
     })
+    expect(cardsSecondRender[1]).toHaveAttribute('data-testid', 'card-bookable')
   })
 
   it('should render bookable offers before template offers when venue has only bookable offers to display', async () => {
@@ -71,10 +79,14 @@ describe('CollectiveOffersCardsContainer', () => {
     expect(cardsFirstRender[0]).toHaveAttribute('data-testid', 'card-template')
     expect(cardsFirstRender[1]).toHaveAttribute('data-testid', 'card-bookable')
 
+    let cardsSecondRender = cardsFirstRender
     await waitFor(() => {
-      const cards = screen.getAllByTestId(/^card-/)
-      expect(cards[0]).toHaveAttribute('data-testid', 'card-bookable')
-      expect(cards[1]).toHaveAttribute('data-testid', 'card-template')
+      cardsSecondRender = screen.getAllByTestId(/^card-/)
+      expect(cardsSecondRender[0]).toHaveAttribute(
+        'data-testid',
+        'card-bookable'
+      )
     })
+    expect(cardsSecondRender[1]).toHaveAttribute('data-testid', 'card-template')
   })
 })
