@@ -39,7 +39,7 @@ export const validateSignupActivation = async (
 
       rootStore.dispatch(
         addSnackBar({
-          description: errors.global,
+          description: errors.global ?? '',
           variant: SnackBarVariant.ERROR,
         })
       )

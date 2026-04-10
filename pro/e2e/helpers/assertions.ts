@@ -11,6 +11,12 @@ export async function expectSuccessSnackbar(
   ).toBeVisible()
 }
 
+export async function expectNoErrorSnackbar(page: Page): Promise<void> {
+  expect(
+    await page.locator('[data-testid^="global-snack-bar-error"]').count()
+  ).toEqual(0)
+}
+
 /**
  * This function takes a string[][] as a DataTable representing the data
  * in a Table and checks that what is displayed is what is expected.
