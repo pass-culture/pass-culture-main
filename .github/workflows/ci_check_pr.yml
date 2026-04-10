@@ -1,4 +1,4 @@
-name: "1 [on_pull_request] Initiate workflow"
+name: "1 [CI] PR checks"
 
 on:
   pull_request:
@@ -16,7 +16,7 @@ env:
 
 jobs:
   labeler:
-    name: "Add labels to PR"
+    name: Add labels
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -29,8 +29,8 @@ jobs:
       - run: |
           echo "These labels are added to the PR: ${{ steps.label-pr.outputs.all-labels }}"
 
-  pcapi-init-job:
-    name: "Init job"
+  compute-changes:
+    name: Compute changes
     runs-on: ubuntu-latest
     outputs:
       api-changed: ${{ steps.check-api-changes.outputs.any_modified }}
@@ -75,8 +75,8 @@ jobs:
         with:
           files: |
             .github/workflows/dev_on_pull_request_workflow.yml
-            .github/workflows/dev_on_workflow_tests_pro.yml
-            .github/workflows/dev_on_workflow_tests_pro_e2e.yml
+            .github/workflows/test_front_pro.yml
+            .github/workflows/test_e2e.yml
             pro/**
       - name: "Check changes in dependencies (frontend + backend)"
         id: check-dependencies-changes
@@ -97,7 +97,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
           fetch-tags: false
-      - name: "Define pcapi image tags."
+      - name: Define pcapi image tags
         id: pcapi-tags
         run: |
           DOCKER_IMAGE="${{ env.docker_registry }}/pcapi"
@@ -122,14 +122,14 @@ jobs:
             echo "| [github] content changed             | ${{ steps.check-github-changes.outputs.any_modified }} |"
           } >> "$GITHUB_STEP_SUMMARY"
 
-  build-pcapi-tests:
-    name: "[pcapi-tests] build docker image."
-    needs: [pcapi-init-job]
+  build-backend-image:
+    name: Build backend image
+    needs: compute-changes
     if: |
-      needs.pcapi-init-job.outputs.api-changed == 'true' ||
-      needs.pcapi-init-job.outputs.api-script-test-changed == 'true' ||
-      needs.pcapi-init-job.outputs.pro-changed == 'true' ||
-      needs.pcapi-init-job.outputs.github-changed == 'true'
+      needs.compute-changes.outputs.api-changed == 'true' ||
+      needs.compute-changes.outputs.api-script-test-changed == 'true' ||
+      needs.compute-changes.outputs.pro-changed == 'true' ||
+      needs.compute-changes.outputs.github-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
       image: pcapi-tests
@@ -137,86 +137,86 @@ jobs:
 
   run-mypy-cop:
     name: "MyPy cop"
-    needs: [pcapi-init-job]
+    needs: compute-changes
     if: |
-      needs.pcapi-init-job.outputs.api-changed == 'true' ||
-      needs.pcapi-init-job.outputs.github-changed == 'true'
+      needs.compute-changes.outputs.api-changed == 'true' ||
+      needs.compute-changes.outputs.github-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_mypy_cop.yml
 
-  update-api-client-template:
-    name: "Update api client template"
-    needs: [pcapi-init-job, build-pcapi-tests]
-    uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
+  check-api-client-update:
+    name: Front API Client
+    needs: [compute-changes, build-backend-image]
+    uses: ./.github/workflows/test_api_client_update.yml
     concurrency:
-      group: update-api-client-template-${{ github.ref }}
+      group: check-api-client-update-${{ github.ref }}
       cancel-in-progress: true
     with:
       PCAPI_DOCKER_TAG: ${{ github.sha }}
       TRIGGER_ONLY_ON_API_CHANGE: true
       TRIGGER_ONLY_ON_DEPENDENCY_CHANGE: true
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-      api-changed: ${{ needs.pcapi-init-job.outputs.api-changed }}
-      dependencies-changed: ${{ needs.pcapi-init-job.outputs.dependencies-changed }}
+      api-changed: ${{ needs.compute-changes.outputs.api-changed }}
+      dependencies-changed: ${{ needs.compute-changes.outputs.dependencies-changed }}
     secrets: inherit
 
-  test-api:
-    name: "Tests api"
-    needs: [pcapi-init-job, build-pcapi-tests]
+  test-backend:
+    name: Backend
+    needs: [compute-changes, build-backend-image]
     if: |
-      needs.pcapi-init-job.outputs.api-changed == 'true' ||
-      needs.pcapi-init-job.outputs.github-changed == 'true'
-    uses: ./.github/workflows/dev_on_workflow_tests_api.yml
+      needs.compute-changes.outputs.api-changed == 'true' ||
+      needs.compute-changes.outputs.github-changed == 'true'
+    uses: ./.github/workflows/test_backend.yml
     with:
       tag: ${{ github.sha }}
     secrets: inherit
 
   test-api-script:
     name: "Tests api scripts"
-    needs: [pcapi-init-job, build-pcapi-tests]
+    needs: [compute-changes, build-backend-image]
     if: |
-      needs.pcapi-init-job.outputs.api-script-test-changed == 'true'
-    uses: ./.github/workflows/dev_on_workflow_tests_api_scripts.yml
+      needs.compute-changes.outputs.api-script-test-changed == 'true'
+    uses: ./.github/workflows/test_api_scripts_workflow.yml
     with:
       tag: ${{ github.sha }}
     secrets: inherit
 
   test-api-documentation:
-    name: "Tests API documentation"
-    needs: [pcapi-init-job]
+    name: Public API documentation
+    needs: compute-changes
     if: |
-      needs.pcapi-init-job.outputs.api-documentation-changed == 'true' ||
-      needs.pcapi-init-job.outputs.github-changed == 'true'
-    uses: ./.github/workflows/dev_on_workflow_tests_api_documentation.yml
+      needs.compute-changes.outputs.api-documentation-changed == 'true' ||
+      needs.compute-changes.outputs.github-changed == 'true'
+    uses: ./.github/workflows/test_api_documentation.yml
     secrets: inherit
 
   test-pro:
-    name: "Pro Unit Tests"
-    needs: [pcapi-init-job]
+    name: Front Pro
+    needs: compute-changes
     if: |
-      needs.pcapi-init-job.outputs.pro-changed == 'true' ||
-      needs.pcapi-init-job.outputs.github-changed == 'true'
-    uses: ./.github/workflows/dev_on_workflow_tests_pro.yml
+      needs.compute-changes.outputs.pro-changed == 'true' ||
+      needs.compute-changes.outputs.github-changed == 'true'
+    uses: ./.github/workflows/test_front_pro.yml
     with:
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
     secrets: inherit
 
   test-pro-e2e:
-    name: "Pro E2E Tests"
-    needs: [pcapi-init-job, build-pcapi-tests]
-    uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
+    name: E2E
+    needs: [compute-changes, build-backend-image]
+    uses: ./.github/workflows/test_e2e.yml
     if: always() &&
       !cancelled() &&
-      needs.pcapi-init-job.outputs.api-changed == 'true' ||
-      needs.pcapi-init-job.outputs.pro-changed == 'true' ||
-      needs.pcapi-init-job.outputs.github-changed == 'true'
+      needs.compute-changes.outputs.api-changed == 'true' ||
+      needs.compute-changes.outputs.pro-changed == 'true' ||
+      needs.compute-changes.outputs.github-changed == 'true'
     with:
       ENV: "development"
-      tag: ${{ needs.build-pcapi-tests.result == 'skipped' && 'latest' || github.sha }}
+      tag: ${{ needs.build-backend-image.result == 'skipped' && 'latest' || github.sha }}
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
     secrets: inherit
 
   dependabot-auto-merge:
-    name: "Dependabot"
+    name: Dependabot
     needs: [test-pro, test-pro-e2e, test-api-documentation]
     if: |
       github.event.pull_request.user.login == 'dependabot[bot]' &&

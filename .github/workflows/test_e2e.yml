@@ -1,4 +1,4 @@
-name: "3 [on_workflow] Tests E2E Playwright"
+name: "3 [CI] Test E2E"
 
 on:
   workflow_call:
@@ -78,8 +78,8 @@ jobs:
       - name: "Cache Workflow Conclusion"
         uses: technote-space/workflow-conclusion-action@45ce8e0eb155657ab8ccf346ade734257fd196a5 # v3.0.3
 
-  playwright-run:
-    name: "Run Playwright E2E"
+  run-playwright-tests:
+    name: Run Playwright tests
     runs-on: ubuntu-24.04
     needs: [install]
     strategy:
@@ -229,7 +229,7 @@ jobs:
 
   merge-reposrts:
     if: ${{ !cancelled() }}
-    needs: [playwright-run]
+    needs: [run-playwright-tests]
     name: "Merge playwright reports"
     runs-on: ubuntu-latest
     steps:
@@ -280,8 +280,8 @@ jobs:
 
   notify-playwright-failure:
     name: "Notification of Playwright tests failure"
-    needs: playwright-run
-    if: always() && needs.playwright-run.result == 'failure' && github.ref == 'refs/heads/master'
+    needs: run-playwright-tests
+    if: always() && needs.run-playwright-tests.result == 'failure' && github.ref == 'refs/heads/master'
     uses: ./.github/workflows/slack_post_message_workflow.yml
     with:
       message: ":github-failure: <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|Pro Playwright E2E Tests> a échoué sur `master`"

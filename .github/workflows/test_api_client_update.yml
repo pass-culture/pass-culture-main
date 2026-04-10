@@ -1,4 +1,4 @@
-name: "3 [on_workflow] Update API Client template"
+name: "3 [CI] Check API Client is up-to-date"
 
 on:
   workflow_call:
@@ -26,14 +26,12 @@ on:
         required: false
         default: pcapi-tests
     secrets:
-      GCP_EHP_SERVICE_ACCOUNT:
-        required: true
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
-        required: true
+      GCP_EHP_SERVICE_ACCOUNT: { required: true }
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: { required: true }
 
 jobs:
-  update-api-client:
-    name: "Update API Client template"
+  check-api-client-update:
+    name: Check API client is up-to-date
     runs-on: ubuntu-22.04
     steps:
       - name: "Checkout 🛎️"
@@ -91,11 +89,11 @@ jobs:
           PCAPI_GID: 1000
       - uses: KengoTODA/actions-setup-docker-compose@477353946803dd64eaa44008b865b6bfc88cab4e # v1.2.4
         with:
-          version: '2.40.3'
+          version: "2.40.3"
       - name: "Run API"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: docker-compose -f docker-compose-backend.yml up postgres redis -d
-      - name: 'Set up Cloud SDK'
+      - name: "Set up Cloud SDK"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
       - name: "Run API server"
@@ -160,13 +158,13 @@ jobs:
         id: "changes"
         working-directory: pro
         run: |
-            diff="$(git diff -- src)"
-            if [[ "${diff}" != "" ]]; then
-              echo "Found changes in the API."
-              echo "${diff}" | awk '{ print "\t" $0 }'
-              echo "Please run 'yarn generate:api:client:local' AND 'yarn run generate:api:client:local:no:docker:next' and add the changes to the commit(s) that change the API."
-              exit 1
-            fi
-      - name: 'Show pcapi log when it fails'
+          diff="$(git diff -- src)"
+          if [[ "${diff}" != "" ]]; then
+            echo "Found changes in the API."
+            echo "${diff}" | awk '{ print "\t" $0 }'
+            echo "Please run 'yarn generate:api:client:local' AND 'yarn run generate:api:client:local:no:docker:next' and add the changes to the commit(s) that change the API."
+            exit 1
+          fi
+      - name: "Show pcapi log when it fails"
         if: failure()
         run: docker logs pc-api

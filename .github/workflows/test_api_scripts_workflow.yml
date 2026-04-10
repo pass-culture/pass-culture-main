@@ -1,4 +1,4 @@
-name: "3 [on_workflow/API] Script tests"
+name: "3 [CI] Test scripts"
 
 on:
   workflow_call:
@@ -143,7 +143,6 @@ jobs:
             -c '
               pytest tests/scripts/**/test_main.py --junitxml='/tests/junit.xml' --quiet --color=yes
             '
-            
 
       - name: "Publish Test Report"
         uses: mikepenz/action-junit-report@49b2ca06f62aa7ef83ae6769a2179271e160d8e4 # v6.3.1
