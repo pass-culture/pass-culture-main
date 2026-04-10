@@ -22,6 +22,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import on_commit
 
@@ -33,8 +34,8 @@ logger = logging.getLogger(__name__)
 
 
 @blueprint.native_route("/subscription/profile", methods=["GET"])
-@spectree_serialize(on_success_status=200, on_error_statuses=[404], api=blueprint.api)
 @authenticated_and_active_user_required
+@spectree_serialize(on_success_status=200, on_error_statuses=[404], api=blueprint.api)
 def get_profile() -> serializers.ProfileResponse | None:
     if (profile_data := subscription_api.get_profile_data(current_user)) is not None:
         profile_data_dict = profile_data.dict()
@@ -49,9 +50,9 @@ def get_profile() -> serializers.ProfileResponse | None:
 
 
 @blueprint.native_route("/subscription/profile", methods=["POST"])
-@spectree_serialize(on_success_status=204, api=blueprint.api)
-@authenticated_and_active_user_required
 @atomic()
+@authenticated_and_active_user_required
+@spectree_serialize(on_success_status=204, api=blueprint.api)
 def complete_profile(body: serializers.ProfileUpdateRequest) -> None:
     try:
         subscription_api.complete_profile(
@@ -62,12 +63,23 @@ def complete_profile(body: serializers.ProfileUpdateRequest) -> None:
             city=body.city,
             postal_code=body.postal_code,
             activity=users_models.ActivityEnum[body.activity_id.value],
+            phone_number=body.phone_number,
             school_type=(
                 users_models.SchoolTypeEnum[body.school_type_id.value] if body.school_type_id is not None else None
             ),
         )
     except exceptions.IneligiblePostalCodeException:
-        raise api_errors.ApiErrors({"code": "INELIGIBLE_POSTAL_CODE"})
+        error = {"code": "INELIGIBLE_POSTAL_CODE"}
+        logger.warning("Failed to define postal code", extra={"code postal": body.postal_code, "code": error["code"]})
+        raise api_errors.ApiErrors(error, status_code=400)
+    except phone_number_utils.InvalidCountryCode:
+        error = {"code": "INVALID_COUNTRY_CODE", "message": "L'indicatif téléphonique n'est pas accepté"}
+        logger.warning("Failed to define phone number", extra={"number": body.phone_number, "code": error["code"]})
+        raise api_errors.ApiErrors(error, status_code=400)
+    except phone_number_utils.InvalidPhoneNumber:
+        error = {"code": "INVALID_PHONE_NUMBER", "message": "Le numéro de téléphone est invalide"}
+        logger.warning("Failed to define phone number", extra={"number": body.phone_number, "code": error["code"]})
+        raise api_errors.ApiErrors(error, status_code=400)
 
     is_activated = subscription_api.activate_beneficiary_if_no_missing_step(current_user)
     if not is_activated:
@@ -75,12 +87,12 @@ def complete_profile(body: serializers.ProfileUpdateRequest) -> None:
 
 
 @blueprint.native_route("/subscription/activity_types", methods=["GET"])
+@authenticated_and_active_user_required
 @spectree_serialize(
     response_model=serializers.ActivityTypesResponse,
     on_success_status=200,
     api=blueprint.api,
 )
-@authenticated_and_active_user_required
 def get_activity_types() -> serializers.ActivityTypesResponse:
     activities = [
         serializers.ActivityResponseModel.model_validate(activity) for activity in profile_options.ALL_ACTIVITIES
@@ -93,9 +105,9 @@ def get_activity_types() -> serializers.ActivityTypesResponse:
 
 
 @blueprint.native_route("/subscription/honor_statement", methods=["POST"])
-@spectree_serialize(on_success_status=204, api=blueprint.api)
-@authenticated_and_active_user_required
 @atomic()
+@authenticated_and_active_user_required
+@spectree_serialize(on_success_status=204, api=blueprint.api)
 def create_honor_statement_fraud_check() -> None:
     fraud_api.create_honor_statement_fraud_check(current_user, "statement from /subscription/honor_statement endpoint")
 
@@ -106,9 +118,9 @@ def create_honor_statement_fraud_check() -> None:
 
 
 @blueprint.native_route("/ubble_identification", methods=["POST"])
-@spectree_serialize(api=blueprint.api, response_model=serializers.IdentificationSessionResponse)
-@authenticated_and_active_user_required
 @atomic()
+@authenticated_and_active_user_required
+@spectree_serialize(api=blueprint.api, response_model=serializers.IdentificationSessionResponse)
 def start_identification_session(
     body: serializers.IdentificationSessionRequest,
 ) -> serializers.IdentificationSessionResponse:
@@ -158,9 +170,9 @@ def start_identification_session(
 
 
 @blueprint.native_route("/subscription/bonus/quotient_familial", methods=["POST"])
-@spectree_serialize(on_success_status=204, api=blueprint.api)
-@authenticated_and_active_user_required
 @atomic()
+@authenticated_and_active_user_required
+@spectree_serialize(on_success_status=204, api=blueprint.api)
 def create_quotient_familial_bonus_credit_fraud_check(body: serializers.BonusCreditRequest) -> None:
     if not users_api.get_user_is_eligible_for_bonification(current_user):
         raise api_errors.ApiErrors(

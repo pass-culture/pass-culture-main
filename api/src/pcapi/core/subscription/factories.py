@@ -143,6 +143,7 @@ class ProfileCompletionContentFactory(factory.Factory):
     last_name = factory.Faker("last_name")
     origin = "In app"
     postal_code = factory.Faker("postcode", locale="fr_FR")
+    phone_number: str | None = None
     school_type: users_models.SchoolTypeEnum | None = None
 
 

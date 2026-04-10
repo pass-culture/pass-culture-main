@@ -31,6 +31,7 @@ from pcapi.core.users import young_status as young_status_module
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
+from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.decorators import retry
 
 from . import exceptions
@@ -524,10 +525,17 @@ def complete_profile(
     activity: users_models.ActivityEnum,
     first_name: str,
     last_name: str,
+    phone_number: str | None = None,
     school_type: users_models.SchoolTypeEnum | None = None,
 ) -> None:
     if postal_code in postal_code_utils.INELIGIBLE_POSTAL_CODES:
         raise exceptions.IneligiblePostalCodeException()
+
+    new_phone_number = phone_number
+    if phone_number:
+        phone_data = phone_number_utils.ParsedPhoneNumber(phone_number)
+        phone_number_utils.check_phone_number_is_legit(phone_data.phone_number, phone_data.country_code)
+        new_phone_number = phone_data.phone_number
 
     update_payload: dict = {
         "address": address,
@@ -535,6 +543,7 @@ def complete_profile(
         "postalCode": postal_code,
         "departementCode": postal_code_utils.PostalCode(postal_code).get_departement_code(),
         "activity": activity.value,
+        "phoneNumber": new_phone_number,
         "schoolType": school_type,
     }
 
@@ -558,6 +567,7 @@ def complete_profile(
             last_name=last_name,
             origin="Completed in application step",
             postal_code=postal_code,
+            phone_number=new_phone_number,
             school_type=school_type,
         ),
     )

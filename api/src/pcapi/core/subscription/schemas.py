@@ -176,6 +176,7 @@ class ProfileCompletionContent(pydantic_v2.BaseModel):
     postal_code: str | None = pydantic_v2.Field(
         None, validation_alias="postalCode"
     )  # Optional because it was not saved up until now
+    phone_number: str | None = None
     school_type: users_models.SchoolTypeEnum | None = None
 
     @pydantic_v2.field_validator("activity", mode="before")
