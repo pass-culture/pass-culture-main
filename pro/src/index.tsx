@@ -1,9 +1,15 @@
 import './styles/index.scss'
 
+import * as Sentry from '@sentry/react'
 import React from 'react'
 import { createRoot } from 'react-dom/client'
+import { createBrowserRouter } from 'react-router'
 
+import { App } from '@/app/App/App'
 import { initializeSentry } from '@/app/App/analytics/sentry'
+import { ErrorBoundary } from '@/app/AppRouter/ErrorBoundary'
+import { redirectedRoutes } from '@/app/AppRouter/redirectedRoutes'
+import { routes } from '@/app/AppRouter/routesMap'
 import { SENTRY_SERVER_URL } from '@/commons/utils/config'
 
 import { Root } from 'Root'
@@ -69,6 +75,40 @@ if (!isAdageIframe) {
 // Start app
 // @ts-expect-error
 const root = createRoot(document.getElementById('root'))
+
+const sentryCreateBrowserRouter =
+  Sentry.wrapCreateBrowserRouterV7(createBrowserRouter)
+
+export const router = sentryCreateBrowserRouter(
+  [
+    {
+      path: '/',
+      element: <App />,
+      errorElement: <ErrorBoundary />,
+      hydrateFallbackElement: <></>,
+      children: [
+        ...routes,
+        ...redirectedRoutes,
+        {
+          lazy: () => import('@/pages/Errors/NotFound/NotFound'),
+          path: '*',
+          title: 'Erreur 404 - Page indisponible',
+          meta: { public: true, canBeLoggedIn: true },
+        },
+      ],
+    },
+  ],
+  {
+    future: {
+      v7_relativeSplatPath: true,
+      v7_startTransition: true,
+      v7_fetcherPersist: true,
+      v7_normalizeFormMethod: true,
+      v7_partialHydration: true,
+      v7_skipActionErrorRevalidation: true,
+    },
+  }
+)
 
 root.render(
   <React.StrictMode>
