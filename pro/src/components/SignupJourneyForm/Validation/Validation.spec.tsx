@@ -12,6 +12,7 @@ import {
 import type { Address } from '@/commons/context/SignupJourneyContext/types'
 import { RECAPTCHA_ERROR } from '@/commons/core/shared/constants'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import type { LOCAL_STORAGE_KEY as LocalStorageKeyType } from '@/commons/utils/localStorageManager'
 import { noop } from '@/commons/utils/noop'
 import * as utils from '@/commons/utils/recaptcha'
 import {
@@ -20,6 +21,44 @@ import {
 } from '@/commons/utils/renderWithProviders'
 import { Validation } from '@/components/SignupJourneyForm/Validation/Validation'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
+
+const inMemoryLocalStorage = new Map<string, string>()
+
+const initialAddress = {
+  addressAutocomplete: '3 Rue de Valois 75001 Paris',
+  'search-addressAutocomplete': '3 Rue de Valois 75001 Paris',
+  street: '3 Rue de Valois',
+  city: 'Paris',
+  postalCode: '75001',
+  inseeCode: '75111',
+  latitude: 1.23,
+  longitude: 2.34,
+  coords: '',
+  manuallySetAddress: false,
+  banId: '',
+} as const
+
+vi.mock('@/commons/utils/localStorageManager', async () => {
+  const actual = await vi.importActual('@/commons/utils/localStorageManager')
+
+  return {
+    ...actual,
+    localStorageManager: {
+      getItem: vi.fn((key: LocalStorageKeyType) => {
+        return inMemoryLocalStorage.get(key) ?? null
+      }),
+      setItem: vi.fn((key: LocalStorageKeyType, value: string) => {
+        inMemoryLocalStorage.set(key, value)
+      }),
+      removeItem: vi.fn((key: LocalStorageKeyType) => {
+        inMemoryLocalStorage.delete(key)
+      }),
+      clearPassCultureKeys: vi.fn(() => {
+        inMemoryLocalStorage.clear()
+      }),
+    },
+  }
+})
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -73,6 +112,10 @@ const renderValidationScreen = (
       <SignupJourneyContext.Provider value={contextValue}>
         <Routes>
           <Route
+            path="/inscription/structure/recherche"
+            element={<div>Offerer search</div>}
+          />
+          <Route
             path="/inscription/structure/identification"
             element={<div>Authentification</div>}
           />
@@ -110,12 +153,13 @@ const createMockPromise = (value: string) => {
 describe('ValidationScreen', () => {
   let contextValue: SignupJourneyContextValues
   beforeEach(() => {
+    inMemoryLocalStorage.clear()
     contextValue = {
       activity: DEFAULT_ACTIVITY_VALUES,
       offerer: null,
       setActivity: () => {},
       setOfferer: () => {},
-      initialAddress: null,
+      initialAddress,
       setInitialAddress: noop,
     }
     setSelectedOffererByIdMock.mockReset()
@@ -126,7 +170,7 @@ describe('ValidationScreen', () => {
     renderValidationScreen(contextValue)
 
     await waitFor(() => {
-      expect(screen.getByText('Authentification')).toBeInTheDocument()
+      expect(screen.getByText('Offerer search')).toBeInTheDocument()
     })
   })
 
@@ -143,7 +187,7 @@ describe('ValidationScreen', () => {
       },
     })
     await waitFor(() => {
-      expect(screen.getByText('Activite')).toBeInTheDocument()
+      expect(screen.getByText('Offerer search')).toBeInTheDocument()
     })
   })
 
@@ -195,7 +239,7 @@ describe('ValidationScreen', () => {
         },
         setActivity: () => {},
         setOfferer: () => {},
-        initialAddress: null,
+        initialAddress,
         setInitialAddress: noop,
       }
       selectCurrentOffererId.mockReturnValue(null)
@@ -244,7 +288,7 @@ describe('ValidationScreen', () => {
         },
         setActivity: () => {},
         setOfferer: () => {},
-        initialAddress: null,
+        initialAddress,
         setInitialAddress: noop,
       }
       // Mock par défaut pour setSelectedOffererById
@@ -423,7 +467,7 @@ describe('ValidationScreen', () => {
         },
         setActivity: () => {},
         setOfferer: () => {},
-        initialAddress: null,
+        initialAddress,
         setInitialAddress: noop,
       }
     })
@@ -477,7 +521,7 @@ describe('ValidationScreen', () => {
         },
         setActivity: () => {},
         setOfferer: () => {},
-        initialAddress: null,
+        initialAddress,
         setInitialAddress: noop,
       }
     })

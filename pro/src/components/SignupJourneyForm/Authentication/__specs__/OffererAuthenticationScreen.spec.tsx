@@ -9,15 +9,55 @@ import {
   type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import type { LOCAL_STORAGE_KEY as LocalStorageKeyType } from '@/commons/utils/localStorageManager'
 import { noop } from '@/commons/utils/noop'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
+import {
+  DEFAULT_ADDRESS_FORM_VALUES,
+  DEFAULT_OFFERER_FORM_VALUES,
+} from '@/components/SignupJourneyForm/Offerer/constants'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 import { OffererAuthentication } from '../OffererAuthentication'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
+
+const inMemoryLocalStorage = new Map<string, string>()
+
+const initialAddress = {
+  ...DEFAULT_ADDRESS_FORM_VALUES,
+  addressAutocomplete: '3 Rue de Valois 75001 Paris',
+  'search-addressAutocomplete': '3 Rue de Valois 75001 Paris',
+  street: '3 Rue de Valois',
+  city: 'Paris',
+  postalCode: '75001',
+  inseeCode: '75111',
+  latitude: 1.23,
+  longitude: 2.34,
+} as const
+
+vi.mock('@/commons/utils/localStorageManager', async () => {
+  const actual = await vi.importActual('@/commons/utils/localStorageManager')
+
+  return {
+    ...actual,
+    localStorageManager: {
+      getItem: vi.fn((key: LocalStorageKeyType) => {
+        return inMemoryLocalStorage.get(key) ?? null
+      }),
+      setItem: vi.fn((key: LocalStorageKeyType, value: string) => {
+        inMemoryLocalStorage.set(key, value)
+      }),
+      removeItem: vi.fn((key: LocalStorageKeyType) => {
+        inMemoryLocalStorage.delete(key)
+      }),
+      clearPassCultureKeys: vi.fn(() => {
+        inMemoryLocalStorage.clear()
+      }),
+    },
+  }
+})
 
 vi.mock('@/apiClient/adresse/apiAdresse', async () => {
   return {
@@ -105,6 +145,7 @@ const renderOffererAuthenticationScreen = (
 describe('screens:SignupJourney::OffererAuthentication', () => {
   let contextValue: SignupJourneyContextValues
   beforeEach(() => {
+    inMemoryLocalStorage.clear()
     contextValue = {
       activity: null,
       offerer: {
@@ -121,7 +162,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
       },
       setActivity: () => {},
       setOfferer: () => {},
-      initialAddress: null,
+      initialAddress,
       setInitialAddress: noop,
     }
   })
@@ -200,7 +241,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
       },
       setActivity: () => {},
       setOfferer: () => {},
-      initialAddress: null,
+      initialAddress,
       setInitialAddress: noop,
     }
 
