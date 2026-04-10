@@ -3,148 +3,94 @@ name: "3 [CI] Check API Client is up-to-date"
 on:
   workflow_call:
     inputs:
-      TRIGGER_ONLY_ON_API_CHANGE:
-        required: true
-        type: boolean
-      TRIGGER_ONLY_ON_DEPENDENCY_CHANGE:
-        required: true
-        type: boolean
-      PCAPI_DOCKER_TAG:
+      tag:
         required: true
         type: string
-      CACHE_BUCKET_NAME:
-        type: string
-        required: true
-      api-changed:
-        type: string
-        required: true
-      dependencies-changed:
-        type: string
-        required: true
       image:
         type: string
-        required: false
-        default: pcapi-tests
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: { required: true }
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: { required: true }
+        required: true
 
 jobs:
   check-api-client-update:
     name: Check API client is up-to-date
     runs-on: ubuntu-22.04
-    steps:
-      - name: "Checkout 🛎️"
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          ref: ${{ github.head_ref }}
-      - name: "Should run cache"
-        id: "evaluate-variables"
+    env:
+      RUN_ENV: tests
+      DATABASE_URL_TEST: postgresql://pytest:pytest@postgres:5432/pass_culture
+      REDIS_URL: redis://redis:6379
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      postgres:
+        image: postgis/postgis:15-3.4-alpine
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
         env:
-          TRIGGER_ONLY_ON_API_CHANGE: ${{ inputs.TRIGGER_ONLY_ON_API_CHANGE }}
-          TRIGGER_ONLY_ON_DEPENDENCY_CHANGE: ${{ inputs.TRIGGER_ONLY_ON_DEPENDENCY_CHANGE }}
-          API_CHANGED: ${{ inputs.api-changed }}
-          DEPENDENCIES_CHANGED: ${{ inputs.dependencies-changed }}
-        run: |
-          if [[ ( "$TRIGGER_ONLY_ON_API_CHANGE" != "true" && "$TRIGGER_ONLY_ON_DEPENDENCY_CHANGE" != "true" ) || \
-                ( "$TRIGGER_ONLY_ON_API_CHANGE" == "true" && "$API_CHANGED" == "true" ) || \
-                ( "$TRIGGER_ONLY_ON_DEPENDENCY_CHANGE" == "true" && "$DEPENDENCIES_CHANGED" == "true" ) ]]; then
-            echo "should-run-cache=true" | tee -a "$GITHUB_OUTPUT"
-          else
-            echo "should-run-cache=false" | tee -a "$GITHUB_OUTPUT"
-          fi
-        shell: bash
+          POSTGRES_USER: pytest
+          POSTGRES_PASSWORD: pytest
+          POSTGRES_DB: pass_culture
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         with:
           node-version-file: "pro/package.json"
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-      - name: "Authentification to Google"
-        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+
+      - name: Load docker image
+        id: load-docker-image
+        uses: ./.github/actions/load-docker-image
         with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: "Compute docker image name:tag"
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        id: compute-image-name
-        env:
-          IMAGE: ${{ inputs.image }}
-          TAG: ${{ inputs.PCAPI_DOCKER_TAG }}
+          image: ${{ inputs.image }}
+          tag: ${{ inputs.tag }}
+
+      - name: "Setup database"
         run: |
-          echo "image_name=$IMAGE:$TAG" | tee -a "${GITHUB_OUTPUT}"
-          echo "::notice:: Running update api client template with $IMAGE:$TAG"
-      - name: "Download artifact"
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: ${{ inputs.image }}-${{ inputs.PCAPI_DOCKER_TAG }}.tar
-          path: ${{ runner.temp }}
-      - name: "Fix local permissions"
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        run: sudo chown -R "$PCAPI_UID:$PCAPI_GID" .
-        working-directory: api
-        env:
-          PCAPI_UID: 1000
-          PCAPI_GID: 1000
-      - uses: KengoTODA/actions-setup-docker-compose@477353946803dd64eaa44008b865b6bfc88cab4e # v1.2.4
-        with:
-          version: "2.40.3"
-      - name: "Run API"
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        run: docker-compose -f docker-compose-backend.yml up postgres redis -d
-      - name: "Set up Cloud SDK"
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
-      - name: "Run API server"
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        env:
-          IMAGE: ${{ inputs.image }}
-          TAG: ${{ inputs.PCAPI_DOCKER_TAG }}
-        run: |
-          if [ "$TAG" != "latest" ]; then
-            docker load --input "${{ runner.temp }}/$IMAGE-$TAG.tar"
-          fi
           docker run \
-            --name pc-api \
-            --workdir /usr/src/app \
-            --volume ./api:/usr/src/app \
-            --env-file ./env_file \
+            --network "${{ job.container.network }}" \
+            --env RUN_ENV --env DATABASE_URL_TEST \
+            --entrypoint bash \
+            "${{ steps.load-docker-image.outputs.image-name }}" \
+            -c '
+              set -e
+              flask install_postgres_extensions
+              alembic upgrade pre@head
+              alembic upgrade post@head
+              flask install_data
+            '
+
+      - name: "Run API server"
+        run: |
+          docker run \
+            --env RUN_ENV --env DATABASE_URL_TEST \
             --tty \
             --detach \
-            --network pass-culture-main_db_nw \
-            --restart on-failure \
+            --network "${{ job.container.network }}" \
             --publish 5001:5001 \
-            --publish 10002:10002 \
             --entrypoint bash \
-            "${{ steps.compute-image-name.outputs.image_name }}" \
-            -c "set -e ; flask install_postgres_extensions ; alembic upgrade pre@head ; alembic upgrade post@head ; flask install_data ; python src/pcapi/app.py"
+            "${{ steps.load-docker-image.outputs.image-name }}" \
+            -c "python src/pcapi/app.py"
+
       - name: "Wait for migrations to be run"
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         uses: iFaxity/wait-on-action@a7d13170ec542bdca4ef8ac4b15e9c6aa00a6866 # v1.2.1
         with:
           resource: http://localhost:5001/health/api
           timeout: 120000
-
-      - name: "Cache node dependencies"
-        uses: pass-culture-github-actions/cache@88f07af200f0bcf2480f9c194e3dbb9488a1902b # v1.0.0
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        with:
-          bucket: ${{ inputs.CACHE_BUCKET_NAME }}
-          workload-identity-provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service-account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-          compression-method: gzip
-          path: pro/node_modules
-          key: v1-yarn-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            v1-yarn-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: "Install dependencies PRO"
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         working-directory: pro
-        # we cannot use an action like nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2 along with `working-directory`
         run: yarn install --immutable
       - name: "Update api client"
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
         with:
           timeout_minutes: 10
@@ -154,7 +100,6 @@ jobs:
             yarn generate:api:client:local:no:docker
             yarn generate:api:client:local:no:docker:next
       - name: "Check if there are changes"
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         id: "changes"
         working-directory: pro
         run: |

@@ -30,7 +30,6 @@ jobs:
       api-changed: ${{ steps.check-api-changes.outputs.any_modified }}
       api-documentation-changed: ${{ steps.check-api-documentation-changes.outputs.any_modified }}
       pro-changed: ${{ steps.check-pro-changes.outputs.any_modified }}
-      dependencies-changed: ${{ steps.check-dependencies-changes.outputs.any_modified }}
       github-changed: ${{ steps.check-github-changes.outputs.any_modified }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -59,13 +58,6 @@ jobs:
             .github/workflows/test_front_pro.yml
             .github/workflows/test_e2e.yml
             pro/**
-      - name: "Check changes in dependencies (frontend + backend)"
-        id: check-dependencies-changes
-        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
-        with:
-          files: |
-            api/poetry.lock
-            pro/yarn.lock
       - name: "Check changes in .github"
         id: check-github-changes
         uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
@@ -82,7 +74,6 @@ jobs:
             echo "| [api] content changed                | ${{ steps.check-api-documentation-changes.outputs.any_modified }} |"
             echo "| [api-documentation] content changed  | ${{ steps.check-api-documentation-changes.outputs.any_modified }} |"
             echo "| [pro] content changed                | ${{ steps.check-pro-changes.outputs.any_modified }} |"
-            echo "| [dependencies] content changed       | ${{ steps.check-dependencies-changes.outputs.any_modified }} |"
             echo "| [github] content changed             | ${{ steps.check-github-changes.outputs.any_modified }} |"
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -125,13 +116,8 @@ jobs:
       group: check-api-client-update-${{ github.ref }}
       cancel-in-progress: true
     with:
-      PCAPI_DOCKER_TAG: ${{ github.sha }}
-      TRIGGER_ONLY_ON_API_CHANGE: true
-      TRIGGER_ONLY_ON_DEPENDENCY_CHANGE: true
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-      api-changed: ${{ needs.compute-changes.outputs.api-changed }}
-      dependencies-changed: ${{ needs.compute-changes.outputs.dependencies-changed }}
-    secrets: inherit
+      tag: ${{ github.sha }}
+      image: pcapi-tests
 
   test-backend:
     name: Backend
