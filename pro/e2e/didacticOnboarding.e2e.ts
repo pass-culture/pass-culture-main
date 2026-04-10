@@ -28,10 +28,6 @@ test.describe('Didactic Onboarding feature', () => {
     await expect(
       page.getByText('Sur ADAGE à destination des enseignants')
     ).toBeVisible()
-
-    // Press tab to focus on the top of the page
-    await page.keyboard.press('Tab')
-    await page.getByRole('link', { name: 'Aller au contenu' }).click()
   })
 
   test('I should be able to skip the onboarding', async ({

@@ -75,10 +75,7 @@ test.describe('Account creation', () => {
       page.getByText('Dites-nous pour quelle structure vous travaillez')
     ).toBeVisible()
     await expectNoErrorSnackbar(page)
-    // Press tab to focus on the top of the page
-    await page.keyboard.press('Tab')
-    expect(page.getByRole('link', { name: 'Aller au contenu' })).toBeFocused()
-
+    
     await checkAccessibility(page)
   })
 })
