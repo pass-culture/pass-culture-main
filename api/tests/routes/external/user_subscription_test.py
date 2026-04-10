@@ -208,7 +208,7 @@ class DmsWebhookApplicationTest:
                     {"id": "Q2hhbXAtMjAyMTk4MQ==", "label": "Ton selfie avec ta pièce d'identité  ", "stringValue": ""},
                     {
                         "id": "Q2hhbXAtMjAyMTk4Mw==",
-                        "label": "Quel est le numéro de la pièce que tu viens de saisir ?",
+                        "label": "Quel est le numéro de ta pièce d'identité ?",
                         "stringValue": "9X8Y7654Z",
                     },
                     {"id": "Q2hhbXAtNDUxMjg0", "label": "Déclaration de résidence", "stringValue": ""},
