@@ -1,0 +1,39 @@
+name: Load docker image stored as a GitHub artifact
+description: Download docker image stored as a GitHub artifact and load it
+inputs:
+  image:
+    description: The docker image name
+    required: true
+
+  tag:
+    description: The docker image tag
+    required: true
+
+outputs:
+  image-name:
+    value: ${{steps.compute-image-name.outputs.image-name}}
+
+runs:
+  using: composite
+  steps:
+    - name: Compute docker image name:tag
+      id: compute-image-name
+      shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+        TAG: ${{ inputs.tag }}
+      run: echo "image-name=$IMAGE:$TAG" | tee -a "${GITHUB_OUTPUT}"
+    - name: Download artifact
+      if: ${{ inputs.tag != 'latest' }}
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      with:
+        name: ${{ inputs.image }}-${{ inputs.tag }}.tar
+        path: ${{ runner.temp }}
+    - name: Docker load artifact
+      if: ${{ inputs.tag != 'latest' }}
+      shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+        TAG: ${{ inputs.tag }}
+      run: |
+        docker load --input "${{ runner.temp }}/$IMAGE-$TAG.tar"
