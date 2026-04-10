@@ -65,6 +65,10 @@ vi.mock(
   })
 )
 
+vi.mock('./components/IndividualOffersCard/IndividualOffersCard', () => ({
+  IndividualOffersCard: () => <div>Activités sur vos offres individuelles</div>,
+}))
+
 vi.mock('./components/EditoCard/EditoCard', () => ({
   EditoCard: () => (
     <div>Comment valoriser vos offres auprès du jeune public</div>
