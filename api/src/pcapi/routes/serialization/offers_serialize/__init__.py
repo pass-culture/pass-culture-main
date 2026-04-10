@@ -348,11 +348,18 @@ class OfferHomeResponseModel(HttpBodyModel):
     isEvent: bool
     thumbUrl: str | None
     bookingsCount: int
+    publicationDatetime: datetime.datetime | None
+    departmentCode: str | None
     stocks: list[StockHomeResponseModel]
 
     @classmethod
     def build(cls, offer: offers_models.Offer) -> typing.Self:
         bookings_count = sum(stock.dnBookedQuantity for stock in offer.stocks)
+
+        if offer.offererAddress:
+            department_code = offer.offererAddress.address.departmentCode
+        else:
+            department_code = None
 
         return cls(
             id=offer.id,
@@ -361,6 +368,8 @@ class OfferHomeResponseModel(HttpBodyModel):
             isEvent=offer.isEvent,
             thumbUrl=offer.thumbUrl,
             bookingsCount=bookings_count,
+            publicationDatetime=offer.publicationDatetime,
+            departmentCode=department_code,
             stocks=[StockHomeResponseModel.model_validate(stock) for stock in offer.activeStocks],
         )
 

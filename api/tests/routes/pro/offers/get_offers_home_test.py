@@ -9,6 +9,7 @@ from pcapi.core.testing import AUTHENTICATION_QUERIES
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import offer_mixin
+from pcapi.utils.date import format_into_utc_date
 
 from tests.conftest import TestClient
 
@@ -27,7 +28,9 @@ class Returns200Test:
     def test_home_offers(self, client: TestClient):
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        offer_event = factories.EventOfferFactory(venue=venue)
+        offer_event = factories.EventOfferFactory(
+            venue=venue, offererAddress=offerers_factories.OfferLocationFactory(address__departmentCode="33")
+        )
         stock = factories.EventStockFactory(offer=offer_event, dnBookedQuantity=30)
         offer_thing = factories.ThingOfferFactory(venue=venue)
         factories.ThingStockFactory(offer=offer_thing, dnBookedQuantity=40)
@@ -46,7 +49,9 @@ class Returns200Test:
                 "isEvent": True,
                 "thumbUrl": None,
                 "bookingsCount": 30,
-                "stocks": [{"beginningDatetime": stock.beginningDatetime.isoformat() + "Z"}],
+                "publicationDatetime": format_into_utc_date(offer_event.publicationDatetime),
+                "departmentCode": "33",
+                "stocks": [{"beginningDatetime": format_into_utc_date(stock.beginningDatetime)}],
             },
             {
                 "id": offer_thing.id,
@@ -55,6 +60,8 @@ class Returns200Test:
                 "isEvent": False,
                 "thumbUrl": None,
                 "bookingsCount": 40,
+                "publicationDatetime": format_into_utc_date(offer_thing.publicationDatetime),
+                "departmentCode": "75",
                 "stocks": [{"beginningDatetime": None}],
             },
         ]
