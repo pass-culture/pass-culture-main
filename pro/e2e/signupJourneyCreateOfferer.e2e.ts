@@ -243,9 +243,6 @@ test.describe('Signup journey with known offerer...', () => {
       await venuesSiretPromise
 
       await expect(page).toHaveURL(/\/inscription\/structure\/rattachement/)
-      // Hack because "aller au contenu" is focused by `useFocus`
-      await page.getByRole('link', { name: 'Aller au contenu' }).focus()
-      await page.getByRole('link', { name: 'Aller au contenu' }).click()
 
       const addressSearchPromise = page.waitForResponse((response) =>
         response.url().includes('data.geopf.fr/geocodage/search')
@@ -328,10 +325,6 @@ test.describe('Signup journey with known offerer...', () => {
       )
       await page.getByText('Continuer').click()
       await venuesSiretPromise
-
-      // Hack because "aller au contenu" is focused by `useFocus`
-      await page.getByRole('link', { name: 'Aller au contenu' }).focus()
-      await page.getByRole('link', { name: 'Aller au contenu' }).click()
 
       await page.getByText('Rejoindre cet espace').click()
 
