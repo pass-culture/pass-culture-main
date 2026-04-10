@@ -1514,7 +1514,7 @@ def resolve_offer_validation_sub_rule(sub_rule: models.OfferValidationSubRule, o
     else:
         target_attribute = type(offer).__name__
 
-    return OPERATIONS[sub_rule.operator.value](target_attribute, sub_rule.comparated["comparated"])  # type: ignore[operator]
+    return OPERATIONS[sub_rule.operator.value](target_attribute, sub_rule.comparated["comparated"])
 
 
 def rule_flags_offer(rule: models.OfferValidationRule, offer: AnyOffer) -> bool:

@@ -106,18 +106,15 @@ class CDSStocks(LocalProvider):
         model_type: type[offers_models.Product | offers_models.Offer | offers_models.Stock],
         id_at_providers: str,
     ) -> offers_models.Product | offers_models.Offer | offers_models.Stock | None:
+        query = db.session.query(model_type)
         if model_type == offers_models.Offer:
-            query = db.session.query(model_type).filter_by(idAtProvider=id_at_providers)
+            query = query.filter_by(idAtProvider=id_at_providers)
         elif model_type == offers_models.Stock:
-            query = (
-                db.session.query(model_type)
-                .filter(
-                    offers_models.Stock.idAtProviders == id_at_providers,  # i.e. "51%123%CDS#2"
-                )
-                .with_for_update()
-            )
+            query = query.filter(
+                offers_models.Stock.idAtProviders == id_at_providers,  # i.e. "51%123%CDS#2"
+            ).with_for_update()
         else:
-            query = db.session.query(model_type).filter_by(idAtProviders=id_at_providers)
+            query = query.filter_by(idAtProviders=id_at_providers)
 
         return typing.cast(
             offers_models.Product | offers_models.Offer | offers_models.Stock | None, query.one_or_none()
