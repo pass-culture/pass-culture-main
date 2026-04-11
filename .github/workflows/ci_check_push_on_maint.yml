@@ -1,0 +1,12 @@
+name: "1 [CI] Push on maint"
+
+on:
+  push: { branches: "maint/**" }
+
+permissions: write-all
+
+jobs:
+  test-changes:
+    name: Test changes
+    uses: ./.github/workflows/ci_test_changes.yml
+    secrets: inherit
