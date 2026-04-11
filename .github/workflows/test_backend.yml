@@ -10,10 +10,6 @@ on:
       tag:
         type: string
         required: true
-    secrets:
-      SLACK_BOT_TOKEN: { required: true }
-      PASSCULTURE_GITHUB_ACTION_APP_ID: { required: true }
-      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: { required: true }
 
 defaults:
   run:
@@ -423,12 +419,3 @@ jobs:
         with:
           path: ${{ runner.temp }}/.test_durations
           key: tests-durations-${{ steps.get-date.outputs.date }}-${{ github.run_id }}
-
-  notify-failure:
-    name: "Notification of any check failure"
-    needs: [quality-checks, ruff-checks, tests-database, pytest]
-    if: always() && github.ref == 'refs/heads/master' && contains(needs.*.result, 'failure')
-    uses: ./.github/workflows/slack_post_message_workflow.yml
-    with:
-      message: ":github-failure: <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|Tests api> a échoué sur `master`"
-    secrets: inherit

@@ -7,17 +7,6 @@ on:
         type: string
         required: false
         default: "api/documentation"
-    secrets:
-      SLACK_BOT_TOKEN: { required: true }
-      PASSCULTURE_GITHUB_ACTION_APP_ID: { required: true }
-      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: { required: true }
-
-env:
-  registry: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry
-
-defaults:
-  run:
-    working-directory: api
 
 jobs:
   api-documentation-build-checks:
@@ -40,12 +29,3 @@ jobs:
         env:
           ENV: ci-tests
         working-directory: "${{ inputs.doc-api-entrypoint }}"
-
-  end-slack-failure-notification:
-    name: Send workflow end failure
-    needs: api-documentation-build-checks
-    if: always() && (failure() || cancelled())
-    uses: ./.github/workflows/slack_post_message_workflow.yml
-    with:
-      message: ":github-failure: :github-failure: Les tests api-documentation-build-checks échouent sur `master`"
-    secrets: inherit

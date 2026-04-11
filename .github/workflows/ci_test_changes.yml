@@ -5,10 +5,8 @@ on:
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: { required: true }
       GCP_EHP_SERVICE_ACCOUNT: { required: true }
-      SLACK_BOT_TOKEN: { required: true }
-      PASSCULTURE_GITHUB_ACTION_APP_ID: { required: true }
-      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: { required: true }
     outputs:
+      # changes
       api-changed:
         value: ${{ jobs.compute-changes.outputs.api-changed }}
       api-documentation-changed:
@@ -21,6 +19,9 @@ on:
         value: ${{ jobs.compute-changes.outputs.alembic-changed }}
       maintenance-site-changed:
         value: ${{ jobs.compute-changes.outputs.maintenance-site-changed }}
+      # stringified array, ex: '["GitHub actions","Front Pro","Backend"]'
+      failed-tests-matrix:
+        value: ${{ jobs.compute-failed-tests-matrix.outputs.failed-tests-matrix }}
 
 permissions: write-all
 
@@ -127,9 +128,6 @@ jobs:
     name: Front API Client
     needs: [compute-changes, build-backend-image]
     uses: ./.github/workflows/test_api_client_update.yml
-    concurrency:
-      group: check-api-client-update-${{ github.ref }}
-      cancel-in-progress: true
     with:
       tag: ${{ github.sha }}
       image: pcapi-tests
@@ -152,7 +150,6 @@ jobs:
       needs.compute-changes.outputs.api-documentation-changed == 'true' ||
       needs.compute-changes.outputs.github-changed == 'true'
     uses: ./.github/workflows/test_api_documentation.yml
-    secrets: inherit
 
   test-pro:
     name: Front Pro
@@ -165,7 +162,7 @@ jobs:
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
     secrets: inherit
 
-  test-pro-e2e:
+  test-e2e:
     name: E2E
     needs: [compute-changes, build-backend-image]
     uses: ./.github/workflows/test_e2e.yml
@@ -178,4 +175,36 @@ jobs:
       ENV: "development"
       tag: ${{ github.sha }}
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-    secrets: inherit
+
+  # If the following jobs have failed: lint-github-actions, test_pro_result, test_backend_result
+  # this job will return '["GitHub actions","Front Pro","Backend"]' in `failed-tests-matrix` output
+  compute-failed-tests-matrix:
+    name: Compute failed tests matrix
+    runs-on: ubuntu-latest
+    needs:
+      - lint-github-actions
+      - test-pro
+      - test-e2e
+      - test-backend
+      - check-api-client-update
+      - test-api-documentation
+    if: always()
+    env:
+      lint_github_actions_result: ${{contains(needs.lint-github-actions.result, 'failure') && 'GitHub actions' || ''}}
+      test_pro_result: ${{contains(needs.test-pro.result, 'failure') && 'Front Pro' || ''}}
+      test_e2e_result: ${{contains(needs.test-e2e.result, 'failure') && 'E2E' || ''}}
+      test_backend_result: ${{contains(needs.test-backend.result, 'failure') && 'Backend' || ''}}
+      test_api_client_result: ${{contains(needs.check-api-client-update.result, 'failure') && 'Client API Front' || ''}}
+      test_api_documentation: ${{contains(needs.test-api-documentation.result, 'failure') && 'Documentation API' || ''}}
+    outputs:
+      failed-tests-matrix: ${{ steps.compute-matrix.outputs.failed-tests-matrix }}
+    steps:
+      - id: compute-matrix
+        run: |
+          failed_results=("$lint_github_actions_result"  "$test_pro_result"  "$test_e2e_result"  "$test_backend_result"  "$test_api_documentation")
+          json_array=$(printf '%s\n' "${failed_results[@]}" | jq -R -s '
+            split("\n")
+            | map(select(length > 0))
+            | .
+          ' -c)
+          echo "failed-tests-matrix=$json_array" >> "$GITHUB_OUTPUT"
