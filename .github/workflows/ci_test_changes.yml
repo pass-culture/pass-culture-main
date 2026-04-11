@@ -127,7 +127,7 @@ jobs:
   check-api-client-update:
     name: Front API Client
     needs: [compute-changes, build-backend-image]
-    uses: ./.github/workflows/test_api_client_update.yml
+    uses: ./.github/workflows/ci_test_api_client_update.yml
     with:
       tag: ${{ github.sha }}
       image: pcapi-tests
@@ -138,7 +138,7 @@ jobs:
     if: |
       needs.compute-changes.outputs.api-changed == 'true' ||
       needs.compute-changes.outputs.github-changed == 'true'
-    uses: ./.github/workflows/test_backend.yml
+    uses: ./.github/workflows/ci_test_backend.yml
     with:
       tag: ${{ github.sha }}
     secrets: inherit
@@ -149,7 +149,7 @@ jobs:
     if: |
       needs.compute-changes.outputs.api-documentation-changed == 'true' ||
       needs.compute-changes.outputs.github-changed == 'true'
-    uses: ./.github/workflows/test_api_documentation.yml
+    uses: ./.github/workflows/ci_test_api_documentation.yml
 
   test-pro:
     name: Front Pro
@@ -157,7 +157,7 @@ jobs:
     if: |
       needs.compute-changes.outputs.pro-changed == 'true' ||
       needs.compute-changes.outputs.github-changed == 'true'
-    uses: ./.github/workflows/test_front_pro.yml
+    uses: ./.github/workflows/ci_test_front_pro.yml
     with:
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
     secrets: inherit
@@ -165,7 +165,7 @@ jobs:
   test-e2e:
     name: E2E
     needs: [compute-changes, build-backend-image]
-    uses: ./.github/workflows/test_e2e.yml
+    uses: ./.github/workflows/ci_test_e2e.yml
     if: always() &&
       !cancelled() &&
       needs.compute-changes.outputs.api-changed == 'true' ||
