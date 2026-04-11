@@ -9,9 +9,6 @@ on:
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: { required: true }
       GCP_EHP_SERVICE_ACCOUNT: { required: true }
-      SLACK_BOT_TOKEN: { required: true }
-      PASSCULTURE_GITHUB_ACTION_APP_ID: { required: true }
-      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: { required: true }
       PAT_ALLURE_REPORTS_TEMP:
 
 defaults:
@@ -248,14 +245,3 @@ jobs:
         with:
           projectBaseDir: pro
           args: -Dsonar.qualitygate.wait=${{ github.event_name == 'pull_request' && 'true' || 'false'  }}
-
-  notify-failure:
-    name: "Notification of any check failure"
-    needs: [run-quality-checks, run-unit-tests]
-    if: always() && github.ref == 'refs/heads/master' && contains(needs.*.result, 'failure')
-    uses: ./.github/workflows/slack_post_message_workflow.yml
-    with:
-      message:
-        ":github-failure: <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|Pro Unit Tests> a
-        échoué sur `master`"
-    secrets: inherit
