@@ -1,0 +1,54 @@
+name: "1 [CI] Push on master checks"
+
+on:
+  push: { branches: master }
+
+permissions: write-all
+
+jobs:
+  test-changes:
+    name: Test changes
+    uses: ./.github/workflows/ci_test_changes.yml
+    secrets: inherit
+
+  deploy-storybook:
+    name: "Deploy Storybook"
+    needs: test-changes
+    if: ${{ always() && needs.test-changes.outputs.pro-changed == 'true' }}
+    uses: ./.github/workflows/dev_on_workflow_deploy_storybook.yml
+
+  deploy-maintenance-site:
+    name: "Deploy maintenance site"
+    needs: test-changes
+    if: ${{ always() && needs.test-changes.outputs.maintenance-site-changed == 'true' }}
+    uses: ./.github/workflows/dev_on_workflow_deploy_maintenance_site.yml
+    secrets: inherit
+
+  ping-data-team-on-slack:
+    name: "Ping data team on slack"
+    needs: test-changes
+    if: ${{ always() && needs.test-changes.outputs.alembic-changed == 'true' }}
+    uses: ./.github/workflows/dev_on_workflow_ping_data_team.yml
+    secrets: inherit
+
+  tag-rc:
+    name: Push rc tag
+    runs-on: ubuntu-latest
+    needs: test-changes
+    if: ${{ always() && success() }}
+    env:
+      GIT_CONFIG_EMAIL: ${{ vars.GH_ACTIONS_BOT_EMAIL }}
+      GIT_CONFIG_NAME: ${{ github.actor }}
+    steps:
+      - name: Checkout ref
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Configure git author
+        run: |
+          git config --global user.email "$GIT_CONFIG_EMAIL"
+          git config --global user.name "$GIT_CONFIG_NAME"
+
+      - name: Push rc tag
+        run: |
+          git tag -f rc
+          git push origin rc --force
