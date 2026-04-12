@@ -57,11 +57,7 @@ jobs:
         id: check-pro-changes
         uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
         with:
-          files: |
-            .github/workflows/dev_on_pull_request_workflow.yml
-            .github/workflows/test_front_pro.yml
-            .github/workflows/test_e2e.yml
-            pro/**
+          files: pro/**
       - name: Check .github folder changes
         id: check-github-changes
         uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
@@ -71,7 +67,7 @@ jobs:
         uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
         with:
           files: maintenance-site/**
-      - name: "Check alembic folder changes"
+      - name: Check alembic folder changes
         id: check-alembic-changes
         uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
         with:
@@ -81,16 +77,16 @@ jobs:
       - name: Publish Summary
         run: |
           {
-            echo "### :rocket: Init Job summary"
-            echo "| Results                              | Value |"
-            echo "| ------------------------------------ | ----- |"
-            echo "| commit sha                           | ${{ github.sha }} |"
-            echo "| [api] content changed                | ${{ steps.check-api-documentation-changes.outputs.any_modified }} |"
-            echo "| [api-documentation] content changed  | ${{ steps.check-api-documentation-changes.outputs.any_modified }} |"
-            echo "| [pro] content changed                | ${{ steps.check-pro-changes.outputs.any_modified }} |"
-            echo "| [github] content changed             | ${{ steps.check-github-changes.outputs.any_modified }} |"
-            echo "| [maintenance-site] content changed   | ${{ steps.check-maintenance-site-changes.outputs.any_modified }} |"
-            echo "| [alembic] content changed            | ${{ steps.check-alembic-changes.outputs.any_modified }} |"
+            echo "### Changes summary"
+            echo "**commit:** \`${{ github.sha }}\`"
+            echo "| Folder               | Status |"
+            echo "| -------------------- | ------ |"
+            echo "| \`/api\`               | ${{ steps.check-api-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }} |"
+            echo "| \`/api/documentation\` | ${{ steps.check-api-documentation-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }} |"
+            echo "| \`/api/**/alembic\`    | ${{ steps.check-alembic-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }} |"
+            echo "| \`/pro\`               | ${{ steps.check-pro-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }} |"
+            echo "| \`/.github\`           | ${{ steps.check-github-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }} |"
+            echo "| \`/maintenance-site\`  | ${{ steps.check-maintenance-site-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }} |"
           } >> "$GITHUB_STEP_SUMMARY"
 
   lint-github-actions:
