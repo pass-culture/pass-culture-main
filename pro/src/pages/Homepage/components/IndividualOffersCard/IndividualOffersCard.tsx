@@ -13,12 +13,12 @@ import styles from './IndividualOffersCard.module.scss'
 
 type IndividualOffersCardProps = {
   venueId: number
-  venueDepartement: string | null
+  venueDepartmentCode: string | null
 }
 
 export const IndividualOffersCard = ({
   venueId,
-  venueDepartement,
+  venueDepartmentCode,
 }: IndividualOffersCardProps): JSX.Element => {
   const { isLoading, data: offers } = useSWR(
     [GET_OFFERS_HOME_QUERY_KEY, venueId],
@@ -42,7 +42,7 @@ export const IndividualOffersCard = ({
           <IndividualOffersLine
             key={offer.id}
             offer={offer}
-            venueDepartement={venueDepartement}
+            venueDepartmentCode={venueDepartmentCode}
           />
         ))}
       </Card.Content>

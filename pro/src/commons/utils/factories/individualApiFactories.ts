@@ -612,7 +612,7 @@ export const defaultOfferHomeResponseModel: OfferHomeResponseModel = {
   name: 'Mon offre indivuduelle sur la home',
   status: OfferStatus.PUBLISHED,
   thumbUrl: '',
-  stocks: [],
+  stocks: [{ beginningDatetime: '2021-10-15T12:00:00.000Z' }],
   departmentCode: '75',
   publicationDatetime: '2021-10-15T12:00:00.000Z',
 }

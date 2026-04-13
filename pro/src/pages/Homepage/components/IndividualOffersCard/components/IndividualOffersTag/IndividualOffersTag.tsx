@@ -10,19 +10,15 @@ import waitFullIcon from '@/icons/full-wait.svg'
 
 type IndividualOffersTagProps = {
   offer: OfferHomeResponseModel
-  venueDepartement: string | null
-}
-
-function getReservationText(bookingsCount: number): string {
-  return `${bookingsCount} ${pluralizeFr(bookingsCount, 'réservation', 'réservations')}`
+  venueDepartmentCode: string | null
 }
 
 export const IndividualOffersTag = ({
   offer,
-  venueDepartement,
+  venueDepartmentCode,
 }: IndividualOffersTagProps): JSX.Element => {
   if (offer.status === OfferStatus.SCHEDULED) {
-    const departmentCode = offer.departmentCode ?? venueDepartement ?? ''
+    const departmentCode = offer.departmentCode ?? venueDepartmentCode ?? ''
 
     const publicationDate =
       offer.publicationDatetime &&
@@ -33,18 +29,20 @@ export const IndividualOffersTag = ({
             FORMAT_DD_MM_YYYY_HH_mm
           )
         : null
-    return (
-      <Tag
-        label={`Publication : ${publicationDate}`}
-        icon={waitFullIcon}
-        variant={TagVariant.WARNING}
-      />
-    )
+    if (publicationDate) {
+      return (
+        <Tag
+          label={`Publication : ${publicationDate}`}
+          icon={waitFullIcon}
+          variant={TagVariant.WARNING}
+        />
+      )
+    }
   }
 
   return (
     <Tag
-      label={getReservationText(offer.bookingsCount)}
+      label={`${offer.bookingsCount} ${pluralizeFr(offer.bookingsCount, 'réservation', 'réservations')}`}
       icon={ticketFullIcon}
     />
   )

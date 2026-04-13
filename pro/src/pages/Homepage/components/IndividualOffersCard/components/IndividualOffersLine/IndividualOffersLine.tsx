@@ -17,12 +17,12 @@ import styles from './IndividualOffersLine.module.scss'
 
 type IndividualOffersLineProps = {
   offer: OfferHomeResponseModel
-  venueDepartement: string | null
+  venueDepartmentCode: string | null
 }
 
-function getSecondaryContent(
+function getOfferLocalDate(
   offer: OfferHomeResponseModel,
-  venueDepartement: string | null
+  venueDepartmentCode: string | null
 ): string {
   if (!offer.isEvent || offer.stocks.length === 0) {
     return ''
@@ -32,7 +32,7 @@ function getSecondaryContent(
       return ''
     }
 
-    const departmentCode = (offer.departmentCode || venueDepartement) ?? ''
+    const departmentCode = (offer.departmentCode || venueDepartmentCode) ?? ''
 
     const dateToDisplay = formatLocalTimeDateString(
       offer.stocks[0].beginningDatetime,
@@ -46,7 +46,7 @@ function getSecondaryContent(
 
 export const IndividualOffersLine = ({
   offer,
-  venueDepartement,
+  venueDepartmentCode,
 }: IndividualOffersLineProps): JSX.Element => {
   const offerLink = getIndividualOfferUrl({
     offerId: offer.id,
@@ -54,7 +54,7 @@ export const IndividualOffersLine = ({
     step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
   })
 
-  const secondaryContent = getSecondaryContent(offer, venueDepartement)
+  const offerLocalDate = getOfferLocalDate(offer, venueDepartmentCode)
 
   return (
     <div key={offer.id} className={styles['offer-line']}>
@@ -65,11 +65,11 @@ export const IndividualOffersLine = ({
       <Link className={styles['offer-line-content']} to={offerLink}>
         <IndividualOffersTag
           offer={offer}
-          venueDepartement={venueDepartement}
+          venueDepartmentCode={venueDepartmentCode}
         />
         <div className={styles['offer-line-content-primary']}>{offer.name}</div>
         <div className={styles['offer-line-content-secondary']}>
-          {secondaryContent}
+          {offerLocalDate}
         </div>
       </Link>
       <Link className={styles['offer-line-status']} to={offerLink}>

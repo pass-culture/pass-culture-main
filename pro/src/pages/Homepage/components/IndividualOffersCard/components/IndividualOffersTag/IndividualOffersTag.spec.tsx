@@ -13,7 +13,7 @@ describe('<IndividualOffersTag />', () => {
   it('should render without accessibility violations', async () => {
     const offer = defaultOfferHomeResponseModel
     const { container } = render(
-      <IndividualOffersTag offer={offer} venueDepartement={'75'} />
+      <IndividualOffersTag offer={offer} venueDepartmentCode={'75'} />
     )
 
     expect(await axe(container)).toHaveNoViolations()
@@ -21,7 +21,7 @@ describe('<IndividualOffersTag />', () => {
 
   it('should display the number of reservations for non schedule offers', () => {
     const offer = defaultOfferHomeResponseModel
-    render(<IndividualOffersTag offer={offer} venueDepartement={'75'} />)
+    render(<IndividualOffersTag offer={offer} venueDepartmentCode={'75'} />)
 
     expect(screen.getByText('12 réservations')).toBeVisible()
   })
@@ -31,7 +31,7 @@ describe('<IndividualOffersTag />', () => {
       ...defaultOfferHomeResponseModel,
       bookingsCount: 1,
     }
-    render(<IndividualOffersTag offer={offer} venueDepartement={'75'} />)
+    render(<IndividualOffersTag offer={offer} venueDepartmentCode={'75'} />)
 
     expect(screen.getByText('1 réservation')).toBeVisible()
   })
@@ -41,7 +41,7 @@ describe('<IndividualOffersTag />', () => {
       ...defaultOfferHomeResponseModel,
       bookingsCount: 0,
     }
-    render(<IndividualOffersTag offer={offer} venueDepartement={'75'} />)
+    render(<IndividualOffersTag offer={offer} venueDepartmentCode={'75'} />)
 
     expect(screen.getByText('0 réservation')).toBeVisible()
   })
@@ -54,7 +54,7 @@ describe('<IndividualOffersTag />', () => {
       publicationDatetime: tomorrow.toISOString(),
       departmentCode: '973',
     }
-    render(<IndividualOffersTag offer={offer} venueDepartement={'75'} />)
+    render(<IndividualOffersTag offer={offer} venueDepartmentCode={'75'} />)
 
     const expectedDateText = formatInTimeZone(
       tomorrow,
@@ -72,7 +72,7 @@ describe('<IndividualOffersTag />', () => {
       publicationDatetime: tomorrow.toISOString(),
       departmentCode: null,
     }
-    render(<IndividualOffersTag offer={offer} venueDepartement={'974'} />)
+    render(<IndividualOffersTag offer={offer} venueDepartmentCode={'974'} />)
 
     const expectedDateText = formatInTimeZone(
       tomorrow,

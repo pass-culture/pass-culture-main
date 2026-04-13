@@ -19,7 +19,7 @@ describe('<IndividualOffersCard />', () => {
       defaultOfferHomeResponseModel,
     ])
     const { container } = renderWithProviders(
-      <IndividualOffersCard venueId={12} venueDepartement={'75'} />
+      <IndividualOffersCard venueId={12} venueDepartmentCode={'75'} />
     )
 
     // waitFor allows to wait for the complete render of the component (after the request response)
@@ -31,7 +31,7 @@ describe('<IndividualOffersCard />', () => {
   it('should render the empty state if no offers are returned', async () => {
     vi.spyOn(api, 'listOffersHome').mockResolvedValue([])
     renderWithProviders(
-      <IndividualOffersCard venueId={12} venueDepartement={'75'} />
+      <IndividualOffersCard venueId={12} venueDepartmentCode={'75'} />
     )
     expect(await screen.findByText('OffersEmptyStateCard')).toBeVisible()
   })
@@ -47,7 +47,7 @@ describe('<IndividualOffersCard />', () => {
         {
           path: '/',
           element: (
-            <IndividualOffersCard venueId={12} venueDepartement={'75'} />
+            <IndividualOffersCard venueId={12} venueDepartmentCode={'75'} />
           ),
         },
         {
