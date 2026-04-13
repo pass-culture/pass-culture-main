@@ -1,1 +1,0 @@
-import{P as e}from"./components-yCh5on1a.js";export{e as createCopyToClipboardFunction};
