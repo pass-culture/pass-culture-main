@@ -3411,10 +3411,6 @@ export type GetVenueResponseModel = {
      */
     canDisplayHighlights: boolean;
     /**
-     * Collectiveaccessinformation
-     */
-    collectiveAccessInformation?: string | null;
-    /**
      * Collectivedescription
      */
     collectiveDescription?: string | null;
@@ -3431,10 +3427,6 @@ export type GetVenueResponseModel = {
      */
     collectiveInterventionArea?: Array<string> | null;
     collectiveLegalStatus?: LegalStatusResponseModel | null;
-    /**
-     * Collectivenetwork
-     */
-    collectiveNetwork?: Array<string> | null;
     /**
      * Collectivephone
      */
@@ -3466,10 +3458,6 @@ export type GetVenueResponseModel = {
      */
     externalAccessibilityId?: string | null;
     /**
-     * Externalaccessibilityurl
-     */
-    externalAccessibilityUrl?: string | null;
-    /**
      * Hasactiveindividualoffer
      */
     hasActiveIndividualOffer: boolean;
@@ -3497,10 +3485,6 @@ export type GetVenueResponseModel = {
      * Id
      */
     id: number;
-    /**
-     * Isactive
-     */
-    isActive: boolean;
     /**
      * Iscaledonian
      */

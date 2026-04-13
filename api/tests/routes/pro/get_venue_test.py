@@ -163,7 +163,6 @@ class Returns200Test:
                 "mentalDisability": {"trainedPersonnel": acceslibre_enum.PERSONNEL_UNTRAINED.value},
             },
             "externalAccessibilityId": "accessibility-slug",
-            "externalAccessibilityUrl": "https://site-d-accessibilite.com/erps/accessibility-slug/",
             "hasActiveIndividualOffer": True,
             "isPermanent": venue.isPermanent,
             "isVirtual": False,
@@ -194,13 +193,11 @@ class Returns200Test:
             },
             "id": venue.id,
             "canDisplayHighlights": True,
-            "collectiveAccessInformation": None,
             "collectiveDescription": "Description du lieu",
             "collectiveDomains": [],
             "collectiveEmail": None,
             "collectiveInterventionArea": ["75", "92"],
             "collectiveLegalStatus": None,
-            "collectiveNetwork": None,
             "collectivePhone": None,
             "collectiveStudents": [],
             "collectiveWebsite": None,
@@ -238,7 +235,6 @@ class Returns200Test:
             "isCaledonian": False,
             "bankAccountStatus": "valid",
             "hasNonFreeOffers": True,
-            "isActive": True,
             "isValidated": True,
             "allowedOnAdage": True,
             "hasPartnerPage": True,
@@ -545,11 +541,7 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(
             name="L'encre et la plume", managingOfferer=user_offerer.offerer, venueTypeCode=VenueTypeCode.LIBRARY
         )
-        offerers_factories.AccessibilityProviderFactory(
-            venue=venue,
-            externalAccessibilityId="lencre-et-la-plume",
-            externalAccessibilityUrl="https://site-d-accessibilite.com/erps/lencre-et-la-plume",
-        )
+        offerers_factories.AccessibilityProviderFactory(venue=venue, externalAccessibilityId="lencre-et-la-plume")
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
@@ -558,7 +550,6 @@ class Returns200Test:
             assert response.status_code == 200
 
         assert response.json["externalAccessibilityId"] == "lencre-et-la-plume"
-        assert response.json["externalAccessibilityUrl"] == "https://site-d-accessibilite.com/erps/lencre-et-la-plume"
 
     def should_return_unknown_when_venue_has_no_external_accessibility_data(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")

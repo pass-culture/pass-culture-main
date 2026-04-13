@@ -25,13 +25,11 @@ export type GetVenueResponseModel = {
   bannerUrl?: (string | null);
   bookingEmail?: (string | null);
   canDisplayHighlights: boolean;
-  collectiveAccessInformation?: (string | null);
   collectiveDescription?: (string | null);
   collectiveDomains: Array<GetVenueDomainResponseModel>;
   collectiveEmail?: (string | null);
   collectiveInterventionArea?: (Array<string> | null);
   collectiveLegalStatus?: (LegalStatusResponseModel | null);
-  collectiveNetwork?: (Array<string> | null);
   collectivePhone?: (string | null);
   collectiveStudents?: (Array<StudentLevels> | null);
   collectiveWebsite?: (string | null);
@@ -41,7 +39,6 @@ export type GetVenueResponseModel = {
   description: (string | null);
   externalAccessibilityData?: (ExternalAccessibilityDataModelV2 | null);
   externalAccessibilityId?: (string | null);
-  externalAccessibilityUrl?: (string | null);
   hasActiveIndividualOffer: boolean;
   hasAdageId: boolean;
   hasNonDraftOffers: boolean;
@@ -49,7 +46,6 @@ export type GetVenueResponseModel = {
   hasOffers: boolean;
   hasPartnerPage: boolean;
   id: number;
-  isActive: boolean;
   isCaledonian: boolean;
   isOpenToPublic: boolean;
   isPermanent?: (boolean | null);
