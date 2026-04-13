@@ -61,7 +61,10 @@ export async function expectIndividualModules(
   visibleModules: IndividualModule[]
 ) {
   await expectModuleVisibility(
-    page.getByText('Module gestion offres indivs'),
+    page.getByRole('heading', {
+      level: 2,
+      name: 'Activités sur vos offres individuelles',
+    }),
     visibleModules.includes('OFFERS_CARD')
   )
   await expectModuleVisibility(
