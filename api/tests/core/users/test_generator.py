@@ -193,14 +193,16 @@ class UserGeneratorTest:
         assert identity_check.resultContent["birth_date"] == str(user.birth_date)
 
     def test_user_in_transition_17_18(self):
-        user_data = users_generator.GenerateUserData(transition_17_18=True)
+        user_data = users_generator.GenerateUserData(
+            transition_17_18=True, date_created=(date_utils.get_naive_utc_now() - relativedelta(years=1))
+        )
         user = users_generator.generate_user(user_data)
         assert user.age == users_constants.ELIGIBILITY_AGE_18
         assert user.has_underage_beneficiary_role
         assert user.deposit.type == finance_models.DepositType.GRANT_17_18
         assert user.deposit.expirationDate < date_utils.get_naive_utc_now()
         user_subscription_state = subscription_api.get_user_subscription_state(user)
-        assert user_subscription_state.next_step == subscription_schemas.SubscriptionStep.PHONE_VALIDATION
+        assert user_subscription_state.next_step == subscription_schemas.SubscriptionStep.PROFILE_COMPLETION
 
     @pytest.mark.parametrize(
         "id_provider",
