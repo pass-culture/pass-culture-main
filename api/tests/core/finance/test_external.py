@@ -114,7 +114,7 @@ class ExternalFinanceTest:
         assert invoice.status == expected_status
 
     def test_get_settlements(self):
-        first_bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount
+        first_bank_account = offerers_factories.VenueBankAccountLinkFactory(bankAccount__label="First").bankAccount
         second_bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount
         other_bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount
         invoice = finance_factories.InvoiceFactory(
@@ -132,7 +132,9 @@ class ExternalFinanceTest:
             cashflows=[finance_factories.CashflowFactory()],
             status=finance_models.InvoiceStatus.PENDING_PAYMENT,
         )
-        additional_bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount
+        additional_bank_account = offerers_factories.VenueBankAccountLinkFactory(
+            bankAccount__label="Additional"
+        ).bankAccount
         additional_invoice = finance_factories.InvoiceFactory(
             bankAccount=additional_bank_account,
             cashflows=[finance_factories.CashflowFactory()],
@@ -244,6 +246,8 @@ class ExternalFinanceTest:
         assert first_settlement.status == finance_models.SettlementStatus.REJECTED
         assert first_settlement.batch == settlement_batch
         assert first_bank_account.venueLinks[0].timespan.upper is not None
+        assert first_bank_account.status == finance_models.BankAccountApplicationStatus.REFUSED
+        assert first_bank_account.label == "REJET BANCAIRE - First"
 
         second_settlement = (
             db.session.query(finance_models.Settlement)
@@ -262,6 +266,7 @@ class ExternalFinanceTest:
         assert second_settlement.batch == settlement_batch
         assert invoice.status == finance_models.InvoiceStatus.PENDING_PAYMENT
         assert second_bank_account.venueLinks[0].timespan.upper is None
+        assert second_bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
 
         other_settlement = (
             db.session.query(finance_models.Settlement)
@@ -281,11 +286,14 @@ class ExternalFinanceTest:
         assert other_invoice.status == finance_models.InvoiceStatus.PENDING_PAYMENT
         assert another_invoice.status == finance_models.InvoiceStatus.PENDING_PAYMENT
         assert other_bank_account.venueLinks[0].timespan.upper is None
+        assert other_bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
 
         assert existing_settlement.dateRejected.timestamp() == pytest.approx(now.timestamp(), rel=1)
         assert existing_settlement.status == finance_models.SettlementStatus.REJECTED
         assert additional_invoice.status == finance_models.InvoiceStatus.PENDING_PAYMENT
         assert additional_bank_account.venueLinks[0].timespan.upper is not None
+        assert additional_bank_account.status == finance_models.BankAccountApplicationStatus.REFUSED
+        assert additional_bank_account.label == "REJET BANCAIRE - Additional"
 
     def test_get_settlements_create_new_batch(self):
         bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount

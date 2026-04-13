@@ -335,7 +335,12 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
         for settlement in rejected_settlements:
             invoice_ids |= {invoice.id for invoice in settlement.invoices}
             comment = f"Compte bancaire rejeté suite au rejet bancaire du virement {settlement.batch.name}"
-            finance_api.deprecate_venue_bank_account_links(settlement.bankAccount, comment)
+            bank_account = settlement.bankAccount
+            if bank_account.status != finance_models.BankAccountApplicationStatus.REFUSED:
+                bank_account.status = finance_models.BankAccountApplicationStatus.REFUSED
+                bank_account.label = "REJET BANCAIRE - " + bank_account.label
+            db.session.add(bank_account)
+            finance_api.deprecate_venue_bank_account_links(bank_account, comment)
             # TODO (PC-40443) send transactional mail explaining closed bank account
         finance_api.revert_invoices_validation(list(invoice_ids))
 
