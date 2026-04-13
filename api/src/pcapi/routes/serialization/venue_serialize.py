@@ -33,41 +33,17 @@ from pcapi.utils.siren import SIRET_LENGTH
 class PostVenueBodyModel(HttpBodyModel):
     activity: offerers_models.Activity | None
     address: address_serialize.LocationBodyModelV2
-    booking_email: typing.Annotated[
-        pydantic_v2.EmailStr, pydantic_v2.StringConstraints(max_length=offerers_schemas.BOOKING_EMAIL_MAX_LENGTH)
-    ]
+    booking_email: pydantic_v2.EmailStr = pydantic_v2.Field(max_length=offerers_schemas.BOOKING_EMAIL_MAX_LENGTH)
     cultural_domains: list[str] | None
-    comment: (
-        typing.Annotated[str, pydantic_v2.StringConstraints(max_length=offerers_schemas.VENUE_COMMENT_MAX_LENGTH)]
-        | None
-    )
+    comment: str | None = pydantic_v2.Field(max_length=offerers_schemas.VENUE_COMMENT_MAX_LENGTH)
     is_open_to_public: bool | None
     managing_offerer_id: int
-    name: typing.Annotated[
-        str, pydantic_v2.StringConstraints(min_length=1, max_length=offerers_schemas.VENUE_NAME_MAX_LENGTH)
-    ]
-    public_name: (
-        typing.Annotated[str, pydantic_v2.StringConstraints(max_length=offerers_schemas.VENUE_PUBLIC_NAME_MAX_LENGTH)]
-        | None
-    )
-    siret: (
-        typing.Annotated[
-            str,
-            pydantic_v2.StringConstraints(min_length=SIRET_LENGTH, max_length=SIRET_LENGTH),
-        ]
-        | None
-    )
+    name: str = pydantic_v2.Field(min_length=1, max_length=offerers_schemas.VENUE_NAME_MAX_LENGTH)
+    public_name: str | None = pydantic_v2.Field(max_length=offerers_schemas.VENUE_PUBLIC_NAME_MAX_LENGTH)
+    siret: str | None = pydantic_v2.Field(min_length=SIRET_LENGTH, max_length=SIRET_LENGTH)
     venue_label_id: int | None
-    withdrawal_details: (
-        typing.Annotated[
-            str, pydantic_v2.StringConstraints(max_length=offerers_schemas.VENUE_WITHDRAWAL_DETAILS_MAX_LENGTH)
-        ]
-        | None
-    )
-    description: (
-        typing.Annotated[str, pydantic_v2.StringConstraints(max_length=offerers_schemas.VENUE_DESCRIPTION_MAX_LENGTH)]
-        | None
-    )
+    withdrawal_details: str | None = pydantic_v2.Field(max_length=offerers_schemas.VENUE_WITHDRAWAL_DETAILS_MAX_LENGTH)
+    description: str | None = pydantic_v2.Field(max_length=offerers_schemas.VENUE_DESCRIPTION_MAX_LENGTH)
     contact: offerers_schemas.VenueContactModelV2 | None
     audio_disability_compliant: bool | None
     mental_disability_compliant: bool | None
