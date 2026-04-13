@@ -112,7 +112,6 @@ class GetVenueResponseModel(HttpBodyModel):
     contact: offerers_schemas.VenueContactModelV2 | None = None
     description: str | None = pydantic_v2.Field(max_length=1000)
     externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModelV2 | None = None
-    externalAccessibilityUrl: str | None = None
     externalAccessibilityId: str | None = None
     isOpenToPublic: bool
     isPermanent: bool | None = None
@@ -133,8 +132,6 @@ class GetVenueResponseModel(HttpBodyModel):
     collectiveDomains: list[venue_collective_serialize.GetVenueDomainResponseModel]
     collectiveInterventionArea: list[str] | None = None
     collectiveLegalStatus: venue_collective_serialize.LegalStatusResponseModel | None = None
-    collectiveNetwork: list[str] | None = None
-    collectiveAccessInformation: str | None = None
     collectivePhone: str | None = None
     collectiveEmail: str | None = None
     lastCollectiveDmsApplication: venue_collective_serialize.DMSApplicationForEAC | None
@@ -145,7 +142,6 @@ class GetVenueResponseModel(HttpBodyModel):
     hasActiveIndividualOffer: bool
     is_caledonian: bool
     openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespansV2 | None = None
-    isActive: bool
     isValidated: bool
     allowedOnAdage: bool
     bankAccountStatus: venue_finance_serialize.SimplifiedBankAccountStatus | None = None
@@ -162,7 +158,6 @@ class GetVenueResponseModel(HttpBodyModel):
     @classmethod
     def build(cls, venue: offerers_models.Venue, has_non_free_offers: bool) -> typing.Self:
         external_accessibility_data = None
-        external_accessibility_url = None
         external_accessibility_id = None
         if venue.accessibilityProvider:
             external_accessibility_data = (
@@ -170,7 +165,6 @@ class GetVenueResponseModel(HttpBodyModel):
                     venue.accessibilityProvider.externalAccessibilityData
                 )
             )
-            external_accessibility_url = venue.accessibilityProvider.externalAccessibilityUrl
             external_accessibility_id = venue.accessibilityProvider.externalAccessibilityId
 
         opening_hours = opening_hours_api.format_opening_hours_v2(venue.openingHours)
@@ -201,7 +195,6 @@ class GetVenueResponseModel(HttpBodyModel):
             contact=venue.contact,
             description=venue.description,
             externalAccessibilityData=external_accessibility_data,
-            externalAccessibilityUrl=external_accessibility_url,
             externalAccessibilityId=external_accessibility_id,
             isOpenToPublic=venue.isOpenToPublic,
             isPermanent=venue.isPermanent,
@@ -221,8 +214,6 @@ class GetVenueResponseModel(HttpBodyModel):
             collectiveDomains=venue.collectiveDomains,
             collectiveInterventionArea=venue.collectiveInterventionArea,
             collectiveLegalStatus=venue.venueEducationalStatus,
-            collectiveNetwork=venue.collectiveNetwork,
-            collectiveAccessInformation=venue.collectiveAccessInformation,
             collectivePhone=venue.collectivePhone,
             collectiveEmail=venue.collectiveEmail,
             lastCollectiveDmsApplication=venue_collective_serialize.DMSApplicationForEAC.build(
@@ -241,7 +232,6 @@ class GetVenueResponseModel(HttpBodyModel):
             hasActiveIndividualOffer=venue.hasActiveIndividualOffer,
             is_caledonian=venue.is_caledonian,
             openingHours=opening_hours,
-            isActive=venue.managingOfferer.isActive,
             isValidated=venue.managingOfferer.isValidated,
             allowedOnAdage=venue.managingOfferer.allowedOnAdage,
             bankAccountStatus=venue_finance_serialize.parse_venue_bank_account_status(venue),
