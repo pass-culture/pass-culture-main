@@ -124,4 +124,13 @@ def brevo_get_user_recommendations(user_id: int) -> serializers.BrevoOffersRespo
         .all()
     )
 
-    return serializers.BrevoOffersResponse(offers=[serializers.RecommendedOffer.from_orm(offer) for offer in offers])
+    return serializers.BrevoOffersResponse(
+        offers=[
+            serializers.RecommendedOffer(
+                image=offer.thumbUrl,
+                name=offer.name,
+                url=offer_app_link(offer),
+            )
+            for offer in offers
+        ]
+    )
