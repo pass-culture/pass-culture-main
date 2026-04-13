@@ -189,6 +189,12 @@ def sso_oauth_state() -> authentication.OauthStateResponse:
     return authentication.OauthStateResponse(oauth_state_token=encoded_oauth_state_token)
 
 
+_SSO_ACCESS_DENIED_ERROR = {
+    "code": "SSO_ERROR",
+    "general": ["La connexion avec ce compte SSO est refusée. Contacte le support pour plus d'informations."],
+}
+
+
 @blueprint.native_route("/oauth/<string:sso_provider>/authorize", methods=["POST"])
 @spectree_serialize(
     response_model=authentication.SigninResponse,
@@ -224,14 +230,11 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) ->
         sso_user = google_oauth.get_google_user(body.authorization_code, is_web)
 
     if not sso_user.email_verified:
-        raise ApiErrors(
-            {
-                "code": "SSO_ERROR",
-                "general": [
-                    "La connexion avec ce compte SSO est refusée. Contacte le support pour plus d'informations."
-                ],
-            }
+        logger.warning(
+            "SSO access denied: email not verified",
+            extra={"sso_provider": sso_provider},
         )
+        raise ApiErrors(_SSO_ACCESS_DENIED_ERROR)
 
     if not sso_user.email:
         raise api_errors.ApiErrors(
@@ -264,25 +267,12 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) ->
             status_code=401,
         )
 
-    if user.account_state.is_deleted:
-        raise ApiErrors(
-            {
-                "code": "SSO_ERROR",
-                "general": [
-                    "La connexion avec ce compte SSO est refusée. Contacte le support pour plus d'informations."
-                ],
-            }
+    if user.account_state.is_deleted or user.account_state == user_models.AccountState.ANONYMIZED:
+        logger.warning(
+            "SSO access denied: account state is not allowed",
+            extra={"sso_provider": sso_provider, "account_state": user.account_state},
         )
-
-    if user.account_state == user_models.AccountState.ANONYMIZED:
-        raise ApiErrors(
-            {
-                "code": "SSO_ERROR",
-                "general": [
-                    "La connexion avec ce compte SSO est refusée. Contacte le support pour plus d'informations."
-                ],
-            }
-        )
+        raise ApiErrors(_SSO_ACCESS_DENIED_ERROR)
 
     sso_user_id = sso_user.sub
     with transaction():
