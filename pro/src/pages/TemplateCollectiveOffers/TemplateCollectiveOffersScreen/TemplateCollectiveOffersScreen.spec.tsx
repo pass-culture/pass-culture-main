@@ -33,6 +33,7 @@ const renderOffers = (
     storeOverrides: {
       user: {
         currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: { id: 1 },
       },
       offerer: currentOffererFactory(),
     },
@@ -182,8 +183,11 @@ describe('TemplateCollectiveOffersScreen', () => {
         offerer: {
           currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },
         },
+        user: {
+          currentUser,
+          selectedPartnerVenue: { id: 1 },
+        },
       },
-      user: currentUser,
     })
 
     const checkbox = screen.getByRole('checkbox', { name: offers[0].name })

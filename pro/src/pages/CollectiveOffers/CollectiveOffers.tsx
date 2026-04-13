@@ -15,7 +15,7 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { getStoredFilterConfig } from '@/components/OffersTableSearch/utils'
+import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 
 import { CollectiveOffersScreen } from './components/CollectiveOffersScreen/CollectiveOffersScreen'
 
@@ -23,7 +23,7 @@ export const CollectiveOffers = () => {
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
   const urlSearchFilters = useQueryCollectiveSearchFilters()
-  const { storedFilters } = getStoredFilterConfig('collective')
+  const { storedFilters } = useStoredFilterConfig('collective')
   const finalSearchFilters = {
     ...(storedFilters as Partial<CollectiveSearchFiltersParams>),
     ...urlSearchFilters,

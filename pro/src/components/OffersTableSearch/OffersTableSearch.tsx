@@ -2,7 +2,6 @@ import { type SubmitEventHandler, useId, useState } from 'react'
 
 import {
   type FilterConfigType,
-  getStoredFilterConfig,
   useStoredFilterConfig,
 } from '@/components/OffersTableSearch/utils'
 import { Button } from '@/design-system/Button/Button'
@@ -38,10 +37,8 @@ export const OffersTableSearch = ({
   children,
   searchButtonRef,
 }: OffersTableSearchProps) => {
-  const { onFiltersToggle } = useStoredFilterConfig(type)
-  const [isExpanded, setIsExpanded] = useState(
-    getStoredFilterConfig(type).filtersVisibility
-  )
+  const { onFiltersToggle, filtersVisibility } = useStoredFilterConfig(type)
+  const [isExpanded, setIsExpanded] = useState(filtersVisibility)
 
   const toggleFiltersVisibility = () => {
     const willBeExpanded = !isExpanded

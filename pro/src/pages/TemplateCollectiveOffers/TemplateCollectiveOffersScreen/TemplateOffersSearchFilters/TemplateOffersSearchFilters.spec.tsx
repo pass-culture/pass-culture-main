@@ -26,7 +26,14 @@ describe('TemplateOffersSearchFilters', () => {
           offererAddressId: undefined,
           page: undefined,
         }}
-      />
+      />,
+      {
+        storeOverrides: {
+          user: {
+            selectedPartnerVenue: { id: 1 },
+          },
+        },
+      }
     )
     expect(screen.getByLabelText('Nom de l’offre')).toBeInTheDocument()
     expect(screen.getByLabelText('Statut')).toBeInTheDocument()

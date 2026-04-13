@@ -34,7 +34,14 @@ const renderOffersTableSearch = (
       onResetFilters={props.onResetFilters || vi.fn()}
     >
       {props.children}
-    </OffersTableSearch>
+    </OffersTableSearch>,
+    {
+      storeOverrides: {
+        user: {
+          selectedPartnerVenue: { id: 1 },
+        },
+      },
+    }
   )
 }
 
