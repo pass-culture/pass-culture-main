@@ -1,6 +1,6 @@
-from pcapi.routes.serialization import BaseModel
+from pydantic import BaseModel
 
 
 class TiteliveImage(BaseModel):
     recto: str
-    verso: str | None
+    verso: str | None = None
