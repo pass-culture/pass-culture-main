@@ -341,7 +341,7 @@ def connect_as() -> response_utils.BackofficeResponse:
             internal_admin_id=current_user.id,
             internal_admin_email=current_user.email,
             redirect_link=settings.PRO_URL + form.redirect.data,
-        ).dict(),
+        ).model_dump(),
         ttl=10,
     ).token
     return redirect(urls.build_pc_pro_connect_as_link(token), code=303)

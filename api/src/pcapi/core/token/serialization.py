@@ -1,4 +1,4 @@
-from pcapi.routes.serialization import BaseModel
+from pydantic import BaseModel
 
 
 class ConnectAsInternalModel(BaseModel):

@@ -49,7 +49,7 @@ class Returns200Test:
                 user_id=user_offerer.user.id,
                 internal_admin_email=admin.email,
                 internal_admin_id=admin.id,
-            ).dict(),
+            ).model_dump(),
         )
 
         response_token = client.get(f"/users/connect-as/{secure_token.token}")
