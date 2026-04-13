@@ -2,6 +2,7 @@ import type { ActivityFormValues } from '@/components/SignupJourneyForm/Activity
 
 export const defaultActivityFormValues: ActivityFormValues = {
   activity: undefined,
+  otherActivityComment: undefined,
   socialUrls: [{ url: '' }],
   targetCustomer: {
     individual: false,

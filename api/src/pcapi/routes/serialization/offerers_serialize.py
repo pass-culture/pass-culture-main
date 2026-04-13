@@ -278,6 +278,7 @@ class CreateOffererBodyModel(HttpBodyModel):
 
 class SaveNewOnboardingDataQueryModel(HttpBodyModel):
     activity: offerers_models.ActivityOpenToPublic | offerers_models.ActivityNotOpenToPublic
+    otherActivityComment: str | None
     address: address_serialize.LocationBodyModelV2
     cultural_domains: list[str] | None = pydantic_v2.Field(min_length=1, default=None)
     create_venue_without_siret: bool = False

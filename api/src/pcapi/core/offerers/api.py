@@ -2247,6 +2247,19 @@ def create_from_onboarding_data(
         venue = create_venue(venue_creation_info, user)
         create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
 
+    # Log the other activity comment if activity is OTHER
+    if onboarding_data.activity.value == offerers_models.Activity.OTHER.value:
+        logger.info(
+            "Other activity comment",
+            extra={
+                "user_id": user.id,
+                "venue_id": venue.id,
+                "is_open_to_public": onboarding_data.is_open_to_public,
+                "user_input": onboarding_data.otherActivityComment,
+            },
+            technical_message_id="venue_creation_with_other_activity",
+        )
+
     # Send welcome email only in the case of offerer creation
     if user_offerer.validationStatus == ValidationStatus.VALIDATED:
         transactional_mails.send_welcome_to_pro_email(user, venue)

@@ -245,4 +245,21 @@ describe('screens:SignupJourney::ActivityForm', () => {
     await userEvent.click(screen.getByText(/domaine III/))
     expect(screen.getByLabelText('domaines sélectionnés')).toBeInTheDocument()
   })
+
+  it('should display other activity comment input when activity is OTHER', async () => {
+    renderActivityForm(initialValues, contextValue)
+
+    await userEvent.selectOptions(
+      screen.getByRole('combobox', {
+        name: /Activité principale/,
+      }),
+      'Autre'
+    )
+    const otherActivityCommentInput = screen.queryByLabelText(
+      /Précisez votre activité/
+    )
+    expect(otherActivityCommentInput).toBeInTheDocument()
+    expect(otherActivityCommentInput).toBeRequired()
+    expect(otherActivityCommentInput).toHaveAttribute('maxlength', '100')
+  })
 })

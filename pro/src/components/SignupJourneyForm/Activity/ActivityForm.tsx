@@ -28,6 +28,7 @@ interface SocialUrl {
 
 export interface ActivityFormValues {
   activity?: ActivityOpenToPublicType | ActivityNotOpenToPublicType
+  otherActivityComment: string | undefined
   socialUrls: SocialUrl[]
   targetCustomer: {
     individual: boolean
@@ -92,6 +93,18 @@ export const ActivityForm = (): JSX.Element => {
             required
           />
         </FormLayout.Row>
+
+        {watch('activity') === 'OTHER' && (
+          <FormLayout.Row mdSpaceAfter>
+            <TextInput
+              {...register(`otherActivityComment`)}
+              label="Précisez votre activité"
+              error={formState.errors.otherActivityComment?.message}
+              maxCharactersCount={100}
+              required
+            />
+          </FormLayout.Row>
+        )}
 
         {!isLoadingEducationalDomains && (
           <FormLayout.Row mdSpaceAfter>
