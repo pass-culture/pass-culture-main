@@ -17,15 +17,11 @@
 {% set after_table = self.after_table() %}
 {% block title %}{{ special_event.title }}{% endblock %}
 {% block header_extra %}
-  <div>
-    {% call badges.badges_container() %}
-      {% if special_event.isFinished %}
-        {{ "• Terminé" | format_badge("danger") }}
-      {% else %}
-        {{ "• En cours" | format_badge("primary") }}
-      {% endif %}
-    {% endcall %}
-  </div>
+  {% if special_event.isFinished %}
+    {{ "• Terminé" | format_badge("danger") }}
+  {% else %}
+    {{ "• En cours" | format_badge("primary") }}
+  {% endif %}
 {% endblock %}
 {% block before_table %}
   <div>
@@ -128,9 +124,11 @@
     <!-- TITLE + TAGS -->
     <div class="d-flex">
       <!-- OFFER NAME -->
-      <h2 class="flex-fill">{{ self.title() }}</h2>
-      <!-- TAGS -->
-      {{ self.header_extra() }}
+      <h2 class="flex-fill">
+        {{ self.title() }}
+        <!-- TAGS -->
+        {{ self.header_extra() }}
+      </h2>
     </div>
     {% include "components/presentation/list.html" %}
   </div>

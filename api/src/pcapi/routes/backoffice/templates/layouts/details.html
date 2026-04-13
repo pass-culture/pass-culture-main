@@ -74,13 +74,13 @@
           <!-- TITLE + TAGS -->
           <div class="d-flex hstack gap-12">
             <!-- OFFER NAME -->
-            <h2 class="text-nowrap">
+            <h2>
               {% block title %}
               {% endblock title %}
+              <!-- TAGS -->
+              {% block header_extra %}
+              {% endblock header_extra %}
             </h2>
-            <!-- TAGS -->
-            {% block header_extra %}
-            {% endblock header_extra %}
           </div>
           <!-- ACTION BAR -->
           <div class="btn-group align-self-start"

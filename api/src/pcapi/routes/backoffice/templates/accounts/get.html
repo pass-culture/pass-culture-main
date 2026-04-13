@@ -17,25 +17,23 @@
 {% endblock %}
 {% block title %}{{ user.full_name }}{% endblock %}
 {% block header_extra %}
-  <div class="lh-lg mb-2">
-    {% for role in user.roles %}
-      <span class="mx-1">{{ role | format_role(deposits=user.deposits) | format_badge("primary") }}</span>
-    {% endfor %}
-    {% if not user.isActive %}
-      {% set user_label %}
-        {{ user.isActive | format_state }}
-        {% if user.suspension_reason %}: {{ user.suspension_reason | format_reason_label }}{% endif %}
-      {% endset %}
-      <span class="mx-1">{{ user_label | format_badge("danger") }}</span>
-    {% endif %}
-    {% for tag in user.tags %}<span class="mx-1">{{ (tag.label or tag.name) | format_badge("secondary") }}</span>{% endfor %}
-    {% if is_user_expired %}<span class="mx-1">{{ "Informations expirées" | format_badge("warning") }}</span>{% endif %}
-    {% if duplicate_user_id %}
-      <small class="mx-1"><a href="{{ duplicate_user_id | pc_backoffice_public_account_link }}"
+  {% for role in user.roles %}
+    <span class="mx-1">{{ role | format_role(deposits=user.deposits) | format_badge("primary") }}</span>
+  {% endfor %}
+  {% if not user.isActive %}
+    {% set user_label %}
+      {{ user.isActive | format_state }}
+      {% if user.suspension_reason %}: {{ user.suspension_reason | format_reason_label }}{% endif %}
+    {% endset %}
+    <span class="mx-1">{{ user_label | format_badge("danger") }}</span>
+  {% endif %}
+  {% for tag in user.tags %}<span class="mx-1">{{ (tag.label or tag.name) | format_badge("secondary") }}</span>{% endfor %}
+  {% if is_user_expired %}<span class="mx-1">{{ "Informations expirées" | format_badge("warning") }}</span>{% endif %}
+  {% if duplicate_user_id %}
+    <small class="mx-1"><a href="{{ duplicate_user_id | pc_backoffice_public_account_link }}"
    target="_blank">User ID
-      doublon : {{ duplicate_user_id }}</a></small>
-    {% endif %}
-  </div>
+    doublon : {{ duplicate_user_id }}</a></small>
+  {% endif %}
 {% endblock %}
 {% block action_buttons %}
   {% if allowed_actions.actions.SEND_VALIDATION in allowed_actions.inline_actions %}

@@ -17,12 +17,8 @@
   déjà le tag {{ [criterion] | format_criteria }}
 {% endmacro %}
 {% block header_extra %}
-  <div>
-    {% call badges.badges_container() %}
-      {% if product.lastProviderId %}{{ product.lastProvider.name | format_badge("primary") }}{% endif %}
-      {{ product.gcuCompatibilityType | format_product_cgu_compatibility_status(provider_name, with_badge=True) }}
-    {% endcall %}
-  </div>
+  {% if product.lastProviderId %}{{ product.lastProvider.name | format_badge("primary") }}{% endif %}
+  {{ product.gcuCompatibilityType | format_product_cgu_compatibility_status(provider_name, with_badge=True) }}
 {% endblock %}
 {% block action_buttons %}
   {% if action.SYNCHRO_TITELIVE in allowed_actions.inline_actions and product.ean and titelive_data and titelive_data.oeuvre %}
