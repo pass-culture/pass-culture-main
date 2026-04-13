@@ -1,5 +1,5 @@
-from pydantic.v1 import BaseModel
-from pydantic.v1 import EmailStr
+from pydantic import BaseModel
+from pydantic import EmailStr
 
 from pcapi import settings
 from pcapi.utils import requests
@@ -11,8 +11,8 @@ _HARVESTR_REST_API_URL = "https://rest.harvestr.io"
 class HaverstrRequester(BaseModel):
     type: str = "USER"
     name: str
-    externalUid: str | None
-    email: EmailStr | None
+    externalUid: str
+    email: EmailStr
 
 
 # Doc: https://developers.harvestr.io/api/create-a-message/
@@ -26,7 +26,7 @@ def create_message(title: str, content: str, requester: HaverstrRequester, *, la
             "title": title,
             "content": content,
             "labels": labels,
-            "requester": requester.dict(),
+            "requester": requester.model_dump(),
         },
         headers={"X-Harvestr-Private-App-Token": settings.HARVESTR_API_KEY},
     )
