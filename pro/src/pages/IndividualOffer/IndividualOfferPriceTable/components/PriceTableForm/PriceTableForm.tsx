@@ -223,7 +223,8 @@ export const PriceTableForm = ({
               }
             >
               <PriceInput
-                {...register(`priceCategories.${index}.price`)}
+                name="price"
+                ref={register(`priceCategories.${index}.price`).ref}
                 value={watch(`priceCategories.${index}.price`) ?? ''}
                 disabled={
                   areAllFieldsDisabled || areAllFieldsDisabledButQuantity
@@ -233,13 +234,11 @@ export const PriceTableForm = ({
                 currency={isCaledonian ? 'XPF' : 'EUR'}
                 showFreeCheckbox={!offer.isDigital}
                 onChange={(event) => {
-                  setValue(
-                    `priceCategories.${index}.price`,
-                    event.target.valueAsNumber,
-                    {
-                      shouldDirty: true,
-                    }
-                  )
+                  const newValue = event.target.valueAsNumber
+
+                  setValue(`priceCategories.${index}.price`, newValue, {
+                    shouldDirty: true,
+                  })
                 }}
               />
             </div>

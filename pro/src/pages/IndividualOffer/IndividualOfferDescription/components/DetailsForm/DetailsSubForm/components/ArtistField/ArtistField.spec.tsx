@@ -271,12 +271,18 @@ describe('ArtistField', () => {
           artistName: 'Author 2',
           artistType: ArtistType.AUTHOR,
         },
+        {
+          artistId: '3',
+          artistName: 'Author 3',
+          artistType: ArtistType.AUTHOR,
+        },
       ],
     })
 
     const trashButtons = screen.getAllByRole('button', {
       name: /Supprimer ce champ/i,
     })
+    await userEvent.click(trashButtons[2])
     await userEvent.click(trashButtons[0])
 
     const artistOfferLinks = getValues().artistOfferLinks
