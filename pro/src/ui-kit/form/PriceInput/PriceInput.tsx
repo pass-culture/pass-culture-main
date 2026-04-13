@@ -165,33 +165,31 @@ export const PriceInput = React.forwardRef(
     )
 
     return (
-      <div ref={ref}>
-        <TextInput
-          ref={priceRef}
-          autoComplete="off"
-          required={required}
-          name={name}
-          label={`${label} ${labelCurrency}`}
-          value={value?.toString() ?? ''}
-          type="number"
-          step={step}
-          min={0}
-          max={max}
-          disabled={disabled}
-          description={description}
-          requiredIndicator={requiredIndicator}
-          onChange={onTextInputChange}
-          onBlur={onBlur}
-          onKeyDown={(event) => {
-            // If the number input should have no decimal, prevent the user from typing "," or "."
-            if (step === 1 && /[,.]/.test(event.key)) {
-              event.preventDefault()
-            }
-          }}
-          error={error}
-          {...(showFreeCheckbox ? { extension: inputExtension } : {})}
-        />
-      </div>
+      <TextInput
+        ref={priceRef}
+        autoComplete="off"
+        required={required}
+        name={name}
+        label={`${label} ${labelCurrency}`}
+        value={value?.toString() ?? ''}
+        type="number"
+        step={step}
+        min={0}
+        max={max}
+        disabled={disabled}
+        description={description}
+        requiredIndicator={requiredIndicator}
+        onChange={onTextInputChange}
+        onBlur={onBlur}
+        onKeyDown={(event) => {
+          // If the number input should have no decimal, prevent the user from typing "," or "."
+          if (step === 1 && /[,.]/.test(event.key)) {
+            event.preventDefault()
+          }
+        }}
+        error={error}
+        {...(showFreeCheckbox ? { extension: inputExtension } : {})}
+      />
     )
   }
 )
