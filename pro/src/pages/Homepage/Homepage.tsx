@@ -9,8 +9,6 @@ import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { sortByLabel } from '@/commons/utils/strings'
 import { Newsletter } from '@/components/Newsletter/Newsletter'
-import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
-import fullLinkIcon from '@/icons/full-link.svg'
 import { AddBankAccountCallout } from '@/pages/Homepage/components/AddBankAccountCallout/AddBankAccountCallout'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
@@ -65,27 +63,6 @@ export const Homepage = (): JSX.Element => {
   return (
     <>
       <div className={styles['reimbursements-banners']}>
-        <Banner
-          title="On vous donne la parole"
-          variant={BannerVariants.DEFAULT}
-          actions={[
-            {
-              href: 'https://passculture-laconsultation.fr/survey/passculture-2030',
-              label: 'Donnez votre avis sur la feuille de route 2026-2030',
-              type: 'link',
-              isExternal: true,
-              icon: fullLinkIcon,
-            },
-          ]}
-          description={
-            <>
-              Aidez- nous à construire le pass Culture 2030 en partageant vos
-              besoins et vos pistes d’améliorations (10 minutes). Votre avis est
-              précieux et contribuera à répondre à nos futurs enjeux. Les
-              retours seront récoltés jusqu'au 13 avril inclus.
-            </>
-          }
-        />
         <AddBankAccountCallout
           offerer={selectedOfferer}
           venue={selectedPartnerVenue}
