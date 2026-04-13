@@ -191,7 +191,7 @@ def spectree_serialize(
             if form_in_kwargs:
                 try:
                     kwargs["form"] = form_in_kwargs(**form)
-                except pydantic.v1.ValidationError:
+                except (pydantic.v1.ValidationError, pydantic.ValidationError):
                     return flask.make_response(
                         'Please send a "Content-Type: application/x-www-form-urlencoded" HTTP header', 400
                     )
