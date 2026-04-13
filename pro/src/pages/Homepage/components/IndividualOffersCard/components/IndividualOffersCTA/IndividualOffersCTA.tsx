@@ -1,4 +1,4 @@
-import { type OfferHomeResponseModel, OfferStatus } from '@/apiClient/v1'
+import { OfferStatus } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
@@ -9,7 +9,7 @@ import { ButtonVariant } from '@/design-system/Button/types'
 
 type IndividualOffersCTAProps = {
   offerStatus: OfferStatus
-  offerId: OfferHomeResponseModel['id']
+  offerId: number
 }
 
 export const IndividualOffersCTA = ({

@@ -18,7 +18,7 @@ describe('<IndividualOffersLine />', () => {
     const { container } = renderWithProviders(
       <IndividualOffersLine
         offer={defaultOfferHomeResponseModel}
-        venueDepartement={'75'}
+        venueDepartmentCode={'75'}
       />
     )
 
@@ -32,7 +32,7 @@ describe('<IndividualOffersLine />', () => {
       departmentCode: null,
     }
     renderWithProviders(
-      <IndividualOffersLine offer={offer} venueDepartement={null} />
+      <IndividualOffersLine offer={offer} venueDepartmentCode={null} />
     )
 
     expect(screen.getByRole('img')).toBeVisible()
@@ -50,7 +50,7 @@ describe('<IndividualOffersLine />', () => {
       departmentCode: '974',
     }
     renderWithProviders(
-      <IndividualOffersLine offer={offer} venueDepartement={'75'} />
+      <IndividualOffersLine offer={offer} venueDepartmentCode={'75'} />
     )
 
     expect(screen.getByText('Le 01/02/2026 14:00')).toBeVisible()
@@ -63,7 +63,7 @@ describe('<IndividualOffersLine />', () => {
       departmentCode: '971',
     }
     renderWithProviders(
-      <IndividualOffersLine offer={offer} venueDepartement={'75'} />
+      <IndividualOffersLine offer={offer} venueDepartmentCode={'75'} />
     )
 
     expect(screen.getByText('Le 01/02/2026 06:00')).toBeVisible()
@@ -76,7 +76,7 @@ describe('<IndividualOffersLine />', () => {
       departmentCode: null,
     }
     renderWithProviders(
-      <IndividualOffersLine offer={offer} venueDepartement={'989'} />
+      <IndividualOffersLine offer={offer} venueDepartmentCode={'989'} />
     )
 
     expect(screen.getByText('Le 01/02/2026 02:00')).toBeVisible()
@@ -92,7 +92,7 @@ describe('<IndividualOffersLine />', () => {
       departmentCode: '971',
     }
     renderWithProviders(
-      <IndividualOffersLine offer={offer} venueDepartement={'75'} />
+      <IndividualOffersLine offer={offer} venueDepartmentCode={'75'} />
     )
 
     expect(screen.getByText('2 dates')).toBeVisible()
@@ -105,7 +105,7 @@ describe('<IndividualOffersLine />', () => {
       departmentCode: '971',
     }
     renderWithProviders(
-      <IndividualOffersLine offer={offer} venueDepartement={'75'} />
+      <IndividualOffersLine offer={offer} venueDepartmentCode={'75'} />
     )
 
     expect(
@@ -139,7 +139,10 @@ describe('<IndividualOffersLine />', () => {
             {
               path: '/',
               element: (
-                <IndividualOffersLine offer={offer} venueDepartement={'989'} />
+                <IndividualOffersLine
+                  offer={offer}
+                  venueDepartmentCode={'989'}
+                />
               ),
             },
             {

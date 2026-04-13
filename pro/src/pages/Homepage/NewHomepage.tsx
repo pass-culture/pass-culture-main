@@ -149,7 +149,9 @@ export const NewHomepage = (): JSX.Element => {
           <div className={styles['main']}>
             <IndividualOffersCard
               venueId={selectedPartnerVenue.id}
-              venueDepartement={selectedPartnerVenue.location?.departmentCode}
+              venueDepartmentCode={
+                selectedPartnerVenue.location?.departmentCode
+              }
             />
             <div>
               Evolution de consultation de vos offres
