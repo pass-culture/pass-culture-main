@@ -23,7 +23,7 @@ class Returns200Test:
                 user_id=target.id,
                 internal_admin_email=admin.email,
                 internal_admin_id=admin.id,
-            ).dict(),
+            ).model_dump(),
         )
         # when
         with assert_num_queries(self.expected_num_queries):
@@ -51,7 +51,7 @@ class Returns200Test:
                 user_id=target.id,
                 internal_admin_email=admin.email,
                 internal_admin_id=admin.id,
-            ).dict(),
+            ).model_dump(),
         )
         # when
         with assert_num_queries(self.expected_num_queries):
@@ -80,7 +80,7 @@ class Returns200Test:
                 user_id=intermediary_target.id,
                 internal_admin_email=admin.email,
                 internal_admin_id=admin.id,
-            ).dict(),
+            ).model_dump(),
         )
         real_secure_token = SecureToken(
             data=ConnectAsInternalModel(
@@ -88,7 +88,7 @@ class Returns200Test:
                 user_id=real_target.id,
                 internal_admin_email=admin.email,
                 internal_admin_id=admin.id,
-            ).dict(),
+            ).model_dump(),
         )
 
         # use connect as to connect to a pro
@@ -131,7 +131,7 @@ class Returns200Test:
                 user_id=target.id,
                 internal_admin_email=admin.email,
                 internal_admin_id=admin.id,
-            ).dict(),
+            ).model_dump(),
         )
         # when
         client = client.with_session_auth(admin.email)
@@ -186,7 +186,7 @@ class Returns403Test:
                 user_id=target.id,
                 internal_admin_email=admin.email,
                 internal_admin_id=admin.id,
-            ).dict(),
+            ).model_dump(),
         )
         # when
         with assert_num_queries(self.expected_num_queries):
@@ -214,7 +214,7 @@ class Returns403Test:
                 user_id=target.id,
                 internal_admin_email=admin.email,
                 internal_admin_id=admin.id,
-            ).dict(),
+            ).model_dump(),
         )
         # when
         with assert_num_queries(self.expected_num_queries):
@@ -242,7 +242,7 @@ class Returns403Test:
                 user_id=target.id,
                 internal_admin_email=admin.email,
                 internal_admin_id=admin.id,
-            ).dict(),
+            ).model_dump(),
         )
         # when
         with assert_num_queries(self.expected_num_queries):
@@ -270,7 +270,7 @@ class Returns403Test:
                 user_id=target.id,
                 internal_admin_email=admin.email,
                 internal_admin_id=admin.id,
-            ).dict(),
+            ).model_dump(),
         )
         # when
         with assert_num_queries(self.expected_num_queries):
@@ -301,7 +301,7 @@ class Returns404Test:
                 user_id=0,
                 internal_admin_email=admin.email,
                 internal_admin_id=admin.id,
-            ).dict(),
+            ).model_dump(),
         )
         # when
         with assert_num_queries(self.expected_num_queries):
