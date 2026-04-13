@@ -11,3 +11,38 @@
 
   @include fonts.title1;
 }
+
+.action-bar {
+  display: flex;
+  flex-flow: column-reverse wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--size-spacing-l);
+
+  & > * {
+    flex-grow: 1;
+    width: 100%;
+  }
+
+  @media (min-width: size.$tablet) {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+
+    & > * {
+      width: auto;
+      flex-grow: 0;
+    }
+  }
+
+  &-stepper {
+    order: 1;
+    margin-bottom: var(--size-spacing-l);
+
+    @media screen and (min-width: size.$tablet) {
+      margin-bottom: initial;
+      order: initial;
+    }
+  }
+}
