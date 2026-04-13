@@ -353,7 +353,7 @@ class SSOSigninTest:
         )
 
         assert response.status_code == 400
-        assert response.json["code"] == "SSO_ACCOUNT_DELETED"
+        assert response.json["code"] == "SSO_ERROR"
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
     def test_account_is_anonymized(self, mocked_google_oauth, client):
@@ -370,7 +370,7 @@ class SSOSigninTest:
         )
 
         assert response.status_code == 400
-        assert response.json["code"] == "SSO_ACCOUNT_ANONYMIZED"
+        assert response.json["code"] == "SSO_ERROR"
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
     def test_account_creation_token_if_account_does_not_exist(self, mocked_google_oauth, client, caplog):
