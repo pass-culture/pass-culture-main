@@ -1,5 +1,7 @@
+import { BubbleStepper } from '@/components/BubbleStepper/BubbleStepper'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import commonStyles from '@/pages/Simulator/CommonSimulator.module.scss'
-import { ActionBar } from '@/pages/Simulator/components/ActionBar/ActionBar'
 
 export const SimulatorActivity = (): JSX.Element => {
   return (
@@ -9,10 +11,24 @@ export const SimulatorActivity = (): JSX.Element => {
           Quelle est votre activité principale ?
         </h1>
       </div>
-      <ActionBar
-        previousTo="/inscription/preparation/siret"
-        nextTo="/inscription/preparation/publics"
-      />
+      <div className={commonStyles['action-bar']}>
+        <Button
+          as="a"
+          to="/inscription/preparation/siret"
+          variant={ButtonVariant.SECONDARY}
+          label="Retour"
+        />
+        <BubbleStepper
+          page={2}
+          total={3}
+          className={commonStyles['action-bar-stepper']}
+        />
+        <Button
+          as="a"
+          to="/inscription/preparation/publics"
+          label="Continuer"
+        />
+      </div>
     </>
   )
 }

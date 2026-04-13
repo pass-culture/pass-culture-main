@@ -1,5 +1,6 @@
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import commonStyles from '@/pages/Simulator/CommonSimulator.module.scss'
-import { ActionBar } from '@/pages/Simulator/components/ActionBar/ActionBar'
 
 export const SimulatorResults = (): JSX.Element => {
   return (
@@ -9,10 +10,15 @@ export const SimulatorResults = (): JSX.Element => {
           Voici les justificatifs à préparer pour votre inscription
         </h1>
       </div>
-      <ActionBar
-        previousTo="/inscription/preparation/publics"
-        nextTo="/inscription/compte/creation"
-      />
+      <div className={commonStyles['action-bar']}>
+        <Button
+          as="a"
+          to="/inscription/preparation/publics"
+          variant={ButtonVariant.SECONDARY}
+          label="Retour"
+        />
+        <Button as="a" to="/inscription/compte/creation" label="Continuer" />
+      </div>
     </>
   )
 }

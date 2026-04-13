@@ -1,10 +1,24 @@
-import { Outlet } from 'react-router'
+import { Outlet, useLocation } from 'react-router'
 
 import { FullPageLayout } from '@/app/App/layouts/funnels/FullPageLayout/FullPageLayout'
 
+import styles from './Simulator.module.scss'
+
 export const Simulator = (): JSX.Element => {
+  const location = useLocation()
+  const stepTitles: Record<string, string> = {
+    '/inscription/preparation/siret':
+      'Préparation de l’inscription - Étape 1 sur 3',
+    '/inscription/preparation/activite':
+      'Préparation de l’inscription - Étape 2 sur 3',
+    '/inscription/preparation/publics':
+      'Préparation de l’inscription - Étape 3 sur 3',
+  }
   return (
     <FullPageLayout>
+      <div className={styles['step-title']}>
+        {stepTitles[location.pathname]}
+      </div>
       <Outlet />
     </FullPageLayout>
   )
