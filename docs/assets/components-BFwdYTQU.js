@@ -1,0 +1,1 @@
+import{P as e}from"./components-pCbcs2BT.js";export{e as createCopyToClipboardFunction};
