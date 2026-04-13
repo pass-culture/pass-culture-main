@@ -43,10 +43,8 @@ export function IndividualOfferPracticalInfosForm({
   const receiveNotificationEmails = form.watch('receiveNotificationEmails')
   const bookingEmail = form.watch('bookingEmail')
 
-  const isFormDisabled = isOfferDisabled(offer) || isOfferSynchronized(offer)
-  const isOfferDisabledOrOnline =
-    isOfferDisabled(offer) ||
-    subCategory?.onlineOfflinePlatform === CATEGORY_STATUS.ONLINE
+  const isOfferDisabledOrSynchronized =
+    isOfferDisabled(offer) || isOfferSynchronized(offer)
 
   const hasNonFreeStock = stocks.some((s) => Boolean(s.price))
 
@@ -67,7 +65,7 @@ export function IndividualOfferPracticalInfosForm({
       <FormLayout.Section title="Informations pratiques">
         {subCategory?.canBeWithdrawable ? (
           <IndividualOfferPracticalInfosFormWithdrawal
-            isFormDisabled={isFormDisabled}
+            isFormDisabled={isOfferDisabledOrSynchronized}
           />
         ) : null}
         {!offer?.isEvent && (
@@ -84,7 +82,7 @@ export function IndividualOfferPracticalInfosForm({
             {...form.register('withdrawalDetails')}
             label="Informations complémentaires"
             maxLength={500}
-            disabled={isOfferDisabledOrOnline}
+            disabled={isOfferDisabled(offer)}
             description="Ces informations seront communiquées aux jeunes après leur réservation."
           />
         </FormLayout.Row>
@@ -121,7 +119,7 @@ export function IndividualOfferPracticalInfosForm({
             {...form.register('externalTicketOfficeUrl')}
             label="URL de votre site ou billetterie"
             type="url"
-            disabled={isOfferDisabledOrOnline}
+            disabled={isOfferDisabled(offer)}
             description="Format : https://exemple.com"
             error={form.formState.errors.externalTicketOfficeUrl?.message}
           />
@@ -132,7 +130,7 @@ export function IndividualOfferPracticalInfosForm({
           <Checkbox
             label="Être notifié par email des réservations"
             checked={Boolean(receiveNotificationEmails)}
-            disabled={isFormDisabled}
+            disabled={isOfferDisabledOrSynchronized}
             onChange={(e) => {
               if (e.target.checked && !bookingEmail) {
                 form.setValue(
@@ -152,7 +150,7 @@ export function IndividualOfferPracticalInfosForm({
               type="email"
               label="Email auquel envoyer les notifications"
               maxCharactersCount={90}
-              disabled={isFormDisabled}
+              disabled={isOfferDisabledOrSynchronized}
               description="Format : email@exemple.com"
               required
               requiredIndicator="explicit"
