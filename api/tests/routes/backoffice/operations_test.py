@@ -273,7 +273,7 @@ class GetEventDetailsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         descriptions = html_parser.extract_descriptions(response.data)
-        assert "Énigme des enchanteurs" in html_parser.extract(response.data, tag="h2")
+        assert "Énigme des enchanteurs" in html_parser.extract(response.data, tag="h2")[0]
         assert event.externalId.encode() in response.data
         assert format_date(event.dateCreated, "%d/%m/%Y") in descriptions["Date d'import"]
         assert format_date(event.eventDate, "%d/%m/%Y") in descriptions["Date de l'opération"]

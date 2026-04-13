@@ -5,13 +5,7 @@
 {% from "components/description.html" import description_detail_vertical %}
 {% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
 {% block title %}{{ artist.name }}{% endblock %}
-{% block header_extra %}
-  <div>
-    {% call badges.badges_container() %}
-      {{ artist.is_blacklisted | format_artist_visibility_status }}
-    {% endcall %}
-  </div>
-{% endblock %}
+{% block header_extra %}{{ artist.is_blacklisted | format_artist_visibility_status }}{% endblock %}
 {% block action_buttons %}
   {% if allowed_actions[action.EDIT] %}
     {{ action_bar_button("pencil-square", "Éditer", modal_id="#edit-artist-modal-" + artist.id) }}

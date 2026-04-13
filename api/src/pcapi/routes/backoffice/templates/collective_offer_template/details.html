@@ -13,7 +13,7 @@
   {{ collective_offer_template.name }}
 {% endblock title %}
 {% block header_extra %}
-  <div>{{ collective_offer_template.validation | format_offer_validation_status(with_badge=True) }}</div>
+  {{ collective_offer_template.validation | format_offer_validation_status(with_badge=True) }}
 {% endblock header_extra %}
 {% block action_buttons %}
   {% if has_permission("PRO_FRAUD_ACTIONS") %}

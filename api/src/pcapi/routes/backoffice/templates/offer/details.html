@@ -12,12 +12,8 @@
 {% from "components/presentation/images.html" import offer_detail_image %}
 {% block title %}{{ offer.name }}{% endblock %}
 {% block header_extra %}
-  <div>
-    {% call badges.badges_container() %}
-      {% if offer.lastProviderId %}{{ offer.lastProvider.name | format_badge("primary") }}{% endif %}
-      {{ offer.validation | format_offer_validation_status(with_badge=True) }}
-    {% endcall %}
-  </div>
+  {% if offer.lastProviderId %}{{ offer.lastProvider.name | format_badge("primary") }}{% endif %}
+  {{ offer.validation | format_offer_validation_status(with_badge=True) }}
 {% endblock %}
 {% block action_buttons %}
   {% if allowed_actions.actions.DEACTIVATE in allowed_actions.inline_actions %}
