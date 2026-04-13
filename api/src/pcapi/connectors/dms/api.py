@@ -8,10 +8,10 @@ from typing import Generator
 import gql
 import gql.transport.exceptions as gql_exceptions
 import urllib3.exceptions
+from pydantic import BaseModel
 
 from pcapi import settings
 from pcapi.connectors.dms import models as dms_models
-from pcapi.routes.serialization import BaseModel
 from pcapi.utils import requests
 from pcapi.utils.requests import exceptions as requests_exception
 
