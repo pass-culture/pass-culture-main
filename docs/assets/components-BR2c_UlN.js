@@ -1,0 +1,1 @@
+import{P as e}from"./components-CNaFkyA6.js";export{e as createCopyToClipboardFunction};
