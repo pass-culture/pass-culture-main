@@ -176,8 +176,7 @@ def discord_signin_post() -> Response | str:
             original_action="discordSignin",
             minimal_score=settings.RECAPTCHA_MINIMAL_SCORE,
         )
-    except (ReCaptchaException, InvalidRecaptchaTokenException) as exc:
-        logger.warning("Recaptcha failed: %s", str(exc))
+    except (ReCaptchaException, InvalidRecaptchaTokenException):
         form.error_message = "La vérification a échoué. Recharge la page et réessaie"
         return render_template("discord_signin.html", form=form)
 
