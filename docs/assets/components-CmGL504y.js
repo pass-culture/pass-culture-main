@@ -1,0 +1,1 @@
+import{P as e}from"./components-CHr3saX_.js";export{e as createCopyToClipboardFunction};
