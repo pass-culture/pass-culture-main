@@ -1,0 +1,1 @@
+import{P as e}from"./components-DKG1RGha.js";export{e as createCopyToClipboardFunction};
