@@ -25,6 +25,16 @@ jobs:
     name: Compute changes
     uses: ./.github/workflows/ci_compute_changes.yml
 
+  notify-failed-test:
+    name: Send failed test notification on Slack
+    strategy:
+      matrix:
+        failed-test: []
+    uses: ./.github/workflows/slack_post_message_workflow.yml
+    with:
+      message: ":github-failure: Les tests <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|${{matrix.failed-test}}> ont échoué sur `master`"
+    secrets: inherit
+
   test-changes:
     name: Test changes
     needs: compute-changes
