@@ -21,6 +21,16 @@ jobs:
         uses: actions/labeler@634933edcd8ababfe52f92936142cc22ac488b1b # v6.0.1
         with: { sync-labels: true }
 
+  notify-failed-test:
+    name: Send failed test notification on Slack
+    strategy:
+      matrix:
+        failed-test: []
+    uses: ./.github/workflows/slack_post_message_workflow.yml
+    with:
+      message: ":github-failure: Les tests <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|${{matrix.failed-test}}> ont échoué sur `master`"
+    secrets: inherit
+
   test-changes:
     name: Test changes
     uses: ./.github/workflows/ci_test_changes.yml
