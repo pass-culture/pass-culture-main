@@ -27,5 +27,6 @@ jobs:
     needs: pr-info
     uses: ./.github/workflows/slack_post_message_workflow.yml
     with:
+      channel: ${{vars.SLACK_DB_CHANGES_CHANNEL_ID}}
       message: "<${{ needs.pr-info.outputs.pr_url }}|Pull Request base de données> : ${{ needs.pr-info.outputs.pr_title }}"
     secrets: inherit
