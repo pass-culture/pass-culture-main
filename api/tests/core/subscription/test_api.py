@@ -2496,6 +2496,28 @@ class ActivateBeneficiaryIfNoMissingStepTest:
 
         assert len(mock_activate_beneficiary.mock_calls) == 3
 
+    def test_activation_on_getting_younger_at_id_check(self):
+        last_year = datetime.now(tz=None) - relativedelta(years=1)
+        with time_machine.travel(last_year):
+            # user first completed their profile at 17, declaring they were 18
+            user = users_factories.ProfileCompletedUserFactory(age=17)
+        # user starts the second subscription process
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+        # but user is actually 17
+        seventeen_years_ago = datetime.now(tz=None) - relativedelta(years=17, months=1)
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
+            resultContent=subscription_factories.UbbleContentFactory(birth_date=seventeen_years_ago.date().isoformat()),
+        )
+        user.validatedBirthDate = seventeen_years_ago.date()
+        subscription_factories.HonorStatementFraudCheckFactory(user=user)
+
+        is_user_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+        assert is_user_activated
+
 
 @pytest.mark.usefixtures("db_session")
 class HasCompletedProfileTest:
