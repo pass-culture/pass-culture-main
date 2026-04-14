@@ -7,7 +7,7 @@ import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Card } from '@/ui-kit/Card/Card'
 import { Skeleton } from '@/ui-kit/Skeleton/Skeleton'
 
-import { OffersEmptyStateCard } from '../OffersEmptyStateCard/OffersEmptyStateCard'
+import { OffersRetentionCard } from '../OffersRetentionCard/OffersRetentionCard'
 import { IndividualOffersLine } from './components/IndividualOffersLine/IndividualOffersLine'
 import styles from './IndividualOffersCard.module.scss'
 
@@ -31,7 +31,7 @@ export const IndividualOffersCard = ({
   }
 
   if (offers.length === 0) {
-    return <OffersEmptyStateCard variant="INDIVIDUAL" />
+    return <OffersRetentionCard variant="INDIVIDUAL" />
   }
 
   return (
