@@ -2,9 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type GetOfferMediationResponseModel = {
-  authorId?: (string | null);
-  credit?: (string | null);
-  thumbUrl?: (string | null);
+export type ShortHighlightResponseModelV2 = {
+  id: number;
+  name: string;
 };
 

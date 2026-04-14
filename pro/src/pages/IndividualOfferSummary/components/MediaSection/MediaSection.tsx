@@ -16,7 +16,7 @@ import styles from './MediaSection.module.scss'
 export interface MediaSectionProps {
   offerId: number
   imageUrl?: string | null
-  videoData?: VideoData
+  videoData?: VideoData | null
   isOnCreation?: boolean
 }
 

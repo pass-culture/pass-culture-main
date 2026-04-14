@@ -126,7 +126,7 @@ def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferWithAddressRe
         )
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    return offers_serialize.GetIndividualOfferWithAddressResponseModel.from_orm(offer)
+    return offers_serialize.GetIndividualOfferWithAddressResponseModel.build(offer)
 
 
 @private_api.route("/offers/<int:offer_id>/stocks/", methods=["GET"])
@@ -356,7 +356,7 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
     offer = offers_api.create_offer(
         create_offer_schema, offerer_address=offerer_address, venue=venue, product=product, is_from_private_api=True
     )
-    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
+    return offers_serialize.GetIndividualOfferResponseModel.build(offer)
 
 
 @private_api.route("/offers", methods=["POST"])
@@ -389,7 +389,7 @@ def post_offer(
         is_from_private_api=True,
     )
 
-    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
+    return offers_serialize.GetIndividualOfferResponseModel.build(offer)
 
 
 @private_api.route("/offers/publish", methods=["PATCH"])
@@ -424,7 +424,7 @@ def patch_publish_offer(
         booking_allowed_datetime=body.bookingAllowedDatetime,
     )
 
-    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
+    return offers_serialize.GetIndividualOfferResponseModel.build(offer)
 
 
 @private_api.route("/offers/active-status", methods=["PATCH"])
@@ -526,7 +526,7 @@ def patch_offer(
         ],
     )
 
-    return offers_serialize.GetIndividualOfferWithAddressResponseModel.from_orm(offer)
+    return offers_serialize.GetIndividualOfferWithAddressResponseModel.build(offer)
 
 
 @private_api.route("/offers/thumbnails", methods=["POST"])
@@ -656,7 +656,7 @@ def replace_offer_price_categories(
     ]
     offer = offers_repository.get_offer_by_id(offer.id, load_options=load_options)
 
-    return offers_serialize.GetIndividualOfferWithAddressResponseModel.from_orm(offer)
+    return offers_serialize.GetIndividualOfferWithAddressResponseModel.build(offer)
 
 
 @private_api.route("/offers/<int:venue_id>/ean/<string:ean>", methods=["GET"])
@@ -858,7 +858,7 @@ def post_highlight_request_offer(
         "venue",
     ]
     offer = offers_repository.get_offer_by_id(offer_id, load_options)
-    return offers_serialize.GetIndividualOfferWithAddressResponseModel.from_orm(offer)
+    return offers_serialize.GetIndividualOfferWithAddressResponseModel.build(offer)
 
 
 @private_api.route("/offers/<int:offer_id>/pro_advice", methods=["GET"])

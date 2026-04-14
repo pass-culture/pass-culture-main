@@ -1,6 +1,9 @@
 import { computeAddressDisplayName } from 'repository/venuesService'
 
-import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
+import {
+  getLocationResponseModel,
+  getLocationResponseModelV2,
+} from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   getIndividualOfferFactory,
   makeVenueListItem,
@@ -39,6 +42,7 @@ describe('getInitialValuesFromOffer', () => {
             latitude: 48.85332,
             isVenueLocation: false,
             longitude: 2.348979,
+            departmentCode: null,
           },
           isDigital: false,
         }
@@ -90,6 +94,7 @@ describe('getInitialValuesFromOffer', () => {
             latitude: 48.85332,
             longitude: 2.348979,
             isVenueLocation: true,
+            departmentCode: null,
           },
           isDigital: false,
         }
@@ -97,7 +102,7 @@ describe('getInitialValuesFromOffer', () => {
           ...paramsWithOfflineSubcategory,
           offerVenue: makeVenueListItem({
             id: 2,
-            location: getLocationResponseModel({
+            location: getLocationResponseModelV2({
               id,
             }),
           }),
@@ -209,6 +214,7 @@ describe('getInitialValuesFromOffer', () => {
         latitude: 48.85332,
         longitude: 2.348979,
         isVenueLocation: false,
+        departmentCode: null,
       },
       url: 'https://passculture.app',
       isDigital: true,

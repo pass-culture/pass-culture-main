@@ -64,7 +64,7 @@ export const IndividualOfferMediaScreen = ({
 
   const form = useForm()
 
-  const hasUpdatedVideoUrl = videoUrl !== offer.videoData.videoUrl
+  const hasUpdatedVideoUrl = videoUrl !== offer.videoData?.videoUrl
   const isFormDirty = hasUpdatedVideoUrl || hasUpsertedImage
 
   const handlePreviousStep = async () => {

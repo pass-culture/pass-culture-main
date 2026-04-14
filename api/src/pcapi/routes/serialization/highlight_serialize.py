@@ -14,8 +14,13 @@ def get_inclusive_daterange_tuple_from_exclusive_daterange(daterange: psycopg2.e
     return daterange.lower, daterange.upper - timedelta(days=1)
 
 
-# TODO (tpommellet) migrate to HttpBodyModel when ListOffersOfferResponseModel is migrated
+# TODO (igabriele, 2026-04-14): Replace with `ShortHighlightResponseModelV2` once `ListOffersOfferResponseModel` is migrated.
 class ShortHighlightResponseModel(ConfiguredBaseModel):
+    id: int
+    name: str
+
+
+class ShortHighlightResponseModelV2(HttpBodyModel):
     id: int
     name: str
 

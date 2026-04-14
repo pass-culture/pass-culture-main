@@ -5,16 +5,16 @@
 import type { OfferStatus } from './OfferStatus';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 export type GetActiveEANOfferResponseModel = {
-  audioDisabilityCompliant?: boolean | null;
+  audioDisabilityCompliant?: (boolean | null);
   dateCreated: string;
   id: number;
   isActive: boolean;
-  mentalDisabilityCompliant?: boolean | null;
-  motorDisabilityCompliant?: boolean | null;
+  mentalDisabilityCompliant?: (boolean | null);
+  motorDisabilityCompliant?: (boolean | null);
   name: string;
-  productId?: number | null;
+  productId?: (number | null);
   status: OfferStatus;
   subcategoryId: SubcategoryIdEnum;
-  visualDisabilityCompliant?: boolean | null;
+  visualDisabilityCompliant?: (boolean | null);
 };
 

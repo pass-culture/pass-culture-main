@@ -2,9 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-/**
- * An enumeration.
- */
 export enum WithdrawalTypeEnum {
   BY_EMAIL = 'by_email',
   IN_APP = 'in_app',

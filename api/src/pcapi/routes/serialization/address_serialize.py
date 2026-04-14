@@ -7,6 +7,7 @@ from pcapi.core.offerers import schemas as offerers_schema
 from pcapi.core.offerers.models import OffererAddress
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
+from pcapi.routes.serialization.thumbnails_serialize import pydantic_v2
 
 
 class LocationOnlyOnVenueBodyModelV2(HttpBodyModel):
@@ -70,6 +71,7 @@ class LocationBodyModel(offerers_schema.LocationModel):
         raise ValueError("isVenueLocation must be false when providing a full address")
 
 
+# TODO (igabriele, 2026-04-14): Replace with `LocationResponseModelV2` once `ListOffersOfferResponseModel` is migrated.
 class LocationResponseModel(BaseModel):
     id: int
     label: str | None = None
@@ -93,26 +95,6 @@ class LocationResponseModel(BaseModel):
         with the model definition.
         """
         return round(value, 5)
-
-
-class VenueAddressInfoGetter(pydantic_v1.utils.GetterDict):
-    def get(self, key: str, default: typing.Any = None) -> typing.Any:
-        venue = self._obj
-        if key == "coordinates":
-            return {
-                "latitude": venue.offererAddress.address.latitude,
-                "longitude": venue.offererAddress.address.longitude,
-            }
-        if key == "address" or key == "street":
-            return venue.offererAddress.address.street
-        if key == "city":
-            return venue.offererAddress.address.city
-        if key == "postalCode":
-            return venue.offererAddress.address.postalCode
-        if key == "departmentCode" or key == "departementCode":
-            return venue.offererAddress.address.departmentCode
-
-        return super().get(key, default)
 
 
 def retrieve_address_info_from_oa(offerer_address: OffererAddress) -> dict:
