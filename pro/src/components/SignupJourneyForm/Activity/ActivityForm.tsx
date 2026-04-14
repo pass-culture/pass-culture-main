@@ -28,7 +28,7 @@ interface SocialUrl {
 
 export interface ActivityFormValues {
   activity?: ActivityOpenToPublicType | ActivityNotOpenToPublicType
-  otherActivityComment: string | undefined
+  otherActivityComment?: string
   socialUrls: SocialUrl[]
   targetCustomer: {
     individual: boolean

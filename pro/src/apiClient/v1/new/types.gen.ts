@@ -5767,7 +5767,7 @@ export type SaveNewOnboardingDataQueryModel = {
     /**
      * Otheractivitycomment
      */
-    otherActivityComment: string | null;
+    otherActivityComment?: string | null;
     /**
      * Phonenumber
      */
