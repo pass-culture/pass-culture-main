@@ -1,13 +1,13 @@
+import type { CollectiveOfferTemplateHomeResponseModel } from '@/apiClient/v1'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Card } from '@/ui-kit/Card/Card'
 
-import type { CollectiveOffersVariantMap } from '../types'
-import styles from './CollectiveOffersTemplateCard.module.scss'
+import styles from '../CollectiveOffersList.module.scss'
 import { CollectiveOffersTemplateLine } from './components/CollectiveOffersTemplateLine/CollectiveOffersTemplateLine'
 
 type CollectiveOffersTemplateCardProps = {
-  offers: CollectiveOffersVariantMap['TEMPLATE'][]
+  offers: CollectiveOfferTemplateHomeResponseModel[]
 }
 
 export const CollectiveOffersTemplateCard = ({

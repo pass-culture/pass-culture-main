@@ -8,9 +8,9 @@ import { CollectiveStatusLabel } from '@/components/CollectiveStatusLabel/Collec
 import type { CollectiveOffersVariantMap } from '@/pages/Homepage/components/types'
 import { Thumb } from '@/ui-kit/Thumb/Thumb'
 
+import styles from '../../../CollectiveOffersLine.module.scss'
 import { CollectiveOffersBookableCTA } from '../CollectiveOffersBookableCTA/CollectiveOffersBookableCTA'
 import { CollectiveOffersBookableTag } from '../CollectiveOffersBookableTag/CollectiveOffersBookableTag'
-import styles from './CollectiveOffersBookableLine.module.scss'
 
 export type CollectiveOffersBookableLineProps = {
   offer: CollectiveOffersVariantMap['BOOKABLE']

@@ -40,7 +40,7 @@ describe('<CollectiveOffersTemplateLine />', () => {
       screen.getByText(`Du ${expectedStartDate} au ${expectedEndDate}`)
     ).toBeVisible()
     expect(
-      screen.getByRole('link', { name: 'Créer une offre réservable' })
+      screen.getByRole('button', { name: 'Créer une offre réservable' })
     ).toBeVisible()
     expect(screen.getByText('publiée')).toBeVisible()
   })
