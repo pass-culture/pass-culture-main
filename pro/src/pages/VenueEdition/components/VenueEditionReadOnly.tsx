@@ -56,7 +56,7 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
           <SummaryDescriptionList
             descriptions={[
               {
-                title: 'Lien vers votre page organisation jeveuxaider.gouv.fr',
+                title: 'Lien vers votre page organisation JeVeuxAider.gouv.fr',
                 text: venue.volunteeringUrl || 'Non renseigné',
               },
             ]}

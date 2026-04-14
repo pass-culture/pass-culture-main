@@ -10,7 +10,7 @@ describe('getVolunteeringUrlError', () => {
 
   it('should reject wrong host', () => {
     expect(getVolunteeringUrlError('https://coucou.fr/organisations/yop')).toBe(
-      'Veuillez renseigner une URL provenant de la plateforme jeveuxaider.gouv'
+      'Veuillez renseigner une URL provenant de la plateforme JeVeuxAider.gouv.fr'
     )
   })
 

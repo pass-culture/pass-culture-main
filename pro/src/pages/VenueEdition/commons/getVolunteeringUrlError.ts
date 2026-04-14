@@ -11,7 +11,7 @@ export const getVolunteeringUrlError = (url: string): string | undefined => {
 
     const host = parsed.hostname.toLowerCase()
     if (host !== 'www.jeveuxaider.gouv.fr' && host !== 'jeveuxaider.gouv.fr') {
-      return 'Veuillez renseigner une URL provenant de la plateforme jeveuxaider.gouv'
+      return 'Veuillez renseigner une URL provenant de la plateforme JeVeuxAider.gouv.fr'
     }
 
     const path = parsed.pathname.toLowerCase()
