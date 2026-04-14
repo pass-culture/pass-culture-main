@@ -1,24 +1,26 @@
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 
+import type { CollectiveOfferTemplateHomeResponseModel } from '@/apiClient/v1'
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
+import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { getCollectiveOfferLink } from '@/commons/core/OfferEducational/utils/getCollectiveOfferLink'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { formatDateTimeParts } from '@/commons/utils/date'
 import { CollectiveStatusLabel } from '@/components/CollectiveStatusLabel/CollectiveStatusLabel'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
-import type { CollectiveOffersVariantMap } from '@/pages/Homepage/components/types'
 import { Thumb } from '@/ui-kit/Thumb/Thumb'
 
-import styles from './CollectiveOffersTemplateLine.module.scss'
+import styles from '../../../CollectiveOffersLine.module.scss'
 
 export type CollectiveOffersTemplateLineProps = {
-  offer: CollectiveOffersVariantMap['TEMPLATE']
+  offer: CollectiveOfferTemplateHomeResponseModel
 }
 
-function getSecondaryContent(
-  dates: CollectiveOffersVariantMap['TEMPLATE']['dates']
+function formatOfferDates(
+  dates: CollectiveOfferTemplateHomeResponseModel['dates']
 ): string {
   if (!dates) {
     return ''
@@ -33,8 +35,10 @@ export const CollectiveOffersTemplateLine = ({
 }: CollectiveOffersTemplateLineProps): JSX.Element => {
   const offerId = computeURLCollectiveOfferId(offer.id, true)
   const offerLink = getCollectiveOfferLink(offerId, offer.displayedStatus)
+  const navigate = useNavigate()
+  const snackBar = useSnackBar()
 
-  const secondaryContent = getSecondaryContent(offer.dates)
+  const formattedOfferDates = formatOfferDates(offer.dates)
 
   return (
     <div key={offer.id} className={styles['offer-line']}>
@@ -46,7 +50,7 @@ export const CollectiveOffersTemplateLine = ({
         <Tag variant={TagVariant.DEFAULT} label="Offre vitrine" />
         <div className={styles['offer-line-content-primary']}>{offer.name}</div>
         <div className={styles['offer-line-content-secondary']}>
-          {secondaryContent}
+          {formattedOfferDates}
         </div>
       </Link>
       <Link className={styles['offer-line-status']} to={offerLink}>
@@ -56,8 +60,7 @@ export const CollectiveOffersTemplateLine = ({
         <Button
           variant={ButtonVariant.SECONDARY}
           label="Créer une offre réservable"
-          as="a"
-          to={`/offre/creation/collectif?templateId=${offer.id}`}
+          onClick={() => createOfferFromTemplate(navigate, snackBar, offer.id)}
         />
       ) : (
         <Button

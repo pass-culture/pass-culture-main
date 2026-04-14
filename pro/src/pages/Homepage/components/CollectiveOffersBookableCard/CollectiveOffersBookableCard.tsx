@@ -2,8 +2,8 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Card } from '@/ui-kit/Card/Card'
 
+import styles from '../CollectiveOffersList.module.scss'
 import type { CollectiveOffersVariantMap } from '../types'
-import styles from './CollectiveOffersBookableCard.module.scss'
 import { CollectiveOffersBookableLine } from './components/CollectiveOffersBookableLine/CollectiveOffersBookableLine'
 
 type CollectiveOffersBookableCardProps = {
