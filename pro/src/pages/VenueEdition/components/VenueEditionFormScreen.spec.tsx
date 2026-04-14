@@ -566,7 +566,7 @@ describe('VenueEditionFormScreen', () => {
       expect(screen.getByText('Nouveau')).toBeInTheDocument()
 
       await userEvent.type(
-        screen.getByLabelText(/URL de votre page jeveuxaider.gouv/),
+        screen.getByLabelText(/URL de votre page JeVeuxAider.gouv.fr/),
         'https://www.jeveuxaider.gouv.fr/organisations/exemple'
       )
 
@@ -587,7 +587,7 @@ describe('VenueEditionFormScreen', () => {
       renderForm({ ...baseVenue }, { features: ['WIP_VOLUNTEERING'] })
 
       await userEvent.type(
-        screen.getByLabelText(/URL de votre page jeveuxaider.gouv/),
+        screen.getByLabelText(/URL de votre page JeVeuxAider.gouv.fr/),
         'any-url'
       )
 

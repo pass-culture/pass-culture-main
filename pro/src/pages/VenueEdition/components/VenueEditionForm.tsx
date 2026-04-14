@@ -219,7 +219,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                         to="https://www.jeveuxaider.gouv.fr/"
                         color={ButtonColor.NEUTRAL}
                         size={ButtonSize.SMALL}
-                        label={'jeveuxaider.gouv.fr'}
+                        label={'JeVeuxAider.gouv.fr'}
                       />
                     </span>{' '}
                     et permettez aux jeunes de s’engager à vos côtés.
@@ -230,7 +230,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                   <TextInput
                     {...methods.register('volunteeringUrl')}
                     name="volunteeringUrl"
-                    label="URL de votre page jeveuxaider.gouv"
+                    label="URL de votre page JeVeuxAider.gouv.fr"
                     description="Format : https://www.jeveuxaider.gouv.fr/organisations/exemple"
                     error={methods.formState.errors.volunteeringUrl?.message}
                     onBlur={(event) => {
