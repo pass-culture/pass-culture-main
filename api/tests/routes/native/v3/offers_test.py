@@ -838,7 +838,7 @@ class OffersV3Test:
         offer = offers_factories.OfferFactory()
 
         offer_id = offer.id
-        response = client.get(f"/native/v2/offer/{offer_id}")
+        response = client.get(f"/native/v3/offer/{offer_id}")
 
         assert response.status_code == 200
         assert response.json["chroniclesCount"] == 0
@@ -849,7 +849,7 @@ class OffersV3Test:
         chronicles_factories.ChronicleFactory(offers=[offer], isSocialMediaDiffusible=True)
 
         offer_id = offer.id
-        response = client.get(f"/native/v2/offer/{offer_id}")
+        response = client.get(f"/native/v3/offer/{offer_id}")
 
         assert response.status_code == 200
         assert response.json["chroniclesCount"] == 2
@@ -859,7 +859,7 @@ class OffersV3Test:
         offer = offers_factories.OfferFactory(product=product)
 
         offer_id = offer.id
-        response = client.get(f"/native/v2/offer/{offer_id}")
+        response = client.get(f"/native/v3/offer/{offer_id}")
 
         assert response.status_code == 200
         assert response.json["chroniclesCount"] == 0
@@ -869,7 +869,7 @@ class OffersV3Test:
         offer = offers_factories.OfferFactory(product=product)
 
         offer_id = offer.id
-        response = client.get(f"/native/v2/offer/{offer_id}")
+        response = client.get(f"/native/v3/offer/{offer_id}")
 
         assert response.status_code == 200
         assert response.json["chroniclesCount"] == 1
@@ -880,7 +880,7 @@ class OffersV3Test:
         chronicles_factories.ChronicleFactory(offers=[offer], isSocialMediaDiffusible=True)
 
         offer_id = offer.id
-        response = client.get(f"/native/v2/offer/{offer_id}")
+        response = client.get(f"/native/v3/offer/{offer_id}")
 
         assert response.status_code == 200
         assert response.json["chroniclesCount"] == 2
@@ -890,7 +890,7 @@ class OffersV3Test:
         chronicles_factories.ChronicleFactory(offers=[offer], isActive=False, isSocialMediaDiffusible=False)
 
         offer_id = offer.id
-        response = client.get(f"/native/v2/offer/{offer_id}")
+        response = client.get(f"/native/v3/offer/{offer_id}")
 
         assert response.status_code == 200
         assert response.json["chroniclesCount"] == 0
@@ -901,7 +901,7 @@ class OffersV3Test:
         chronicles_factories.ChronicleFactory(products=[product], isActive=False, isSocialMediaDiffusible=False)
 
         offer_id = offer.id
-        response = client.get(f"/native/v2/offer/{offer_id}")
+        response = client.get(f"/native/v3/offer/{offer_id}")
 
         assert response.status_code == 200
         assert response.json["chroniclesCount"] == 0
