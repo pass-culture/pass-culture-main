@@ -1,6 +1,7 @@
 import { Skeleton } from '@/ui-kit/Skeleton/Skeleton'
 
 import { CollectiveOffersBookableCard } from '../CollectiveOffersBookableCard/CollectiveOffersBookableCard'
+import { CollectiveOffersTemplateCard } from '../CollectiveOffersTemplateCard/CollectiveOffersTemplateCard'
 import { OffersEmptyStateCard } from '../OffersEmptyStateCard/OffersEmptyStateCard'
 import { OffersRetentionCard } from '../OffersRetentionCard/OffersRetentionCard'
 import type {
@@ -22,8 +23,7 @@ const COLLECTIVE_OFFERS_CARD_CONFIG: CollectiveOffersCardConfigs = {
   },
   TEMPLATE: {
     emptyStateVariant: 'TEMPLATE',
-    // TODO (ahello - 26/03/25) implement component in https://passculture.atlassian.net/browse/PC-40065
-    renderOffers: (_offers) => <h2>offres vitrines</h2>,
+    renderOffers: (offers) => <CollectiveOffersTemplateCard offers={offers} />,
   },
 }
 
