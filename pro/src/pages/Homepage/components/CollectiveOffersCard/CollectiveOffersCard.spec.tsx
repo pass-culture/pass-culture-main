@@ -93,7 +93,10 @@ describe('CollectiveOffersCard', () => {
     })
 
     expect(
-      await screen.findByRole('heading', { level: 2, name: 'offres vitrines' })
+      await screen.findByRole('heading', {
+        level: 2,
+        name: 'Offres vitrines',
+      })
     ).toBeVisible()
   })
 })
