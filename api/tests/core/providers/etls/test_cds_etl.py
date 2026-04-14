@@ -351,7 +351,7 @@ class CDSExtractTransformLoadProcessTest:
 
         assert len(caplog.records) >= 2
         missing_tariff_record = caplog.records[-2]
-        assert missing_tariff_record.message == "[CDSExtractTransformLoadProcess] Step 2 - Missing pass Culture tariff"
+        assert missing_tariff_record.message == "[CDSExtractTransformLoadProcess] Step 2 - Missing pass Culture pricing"
         assert missing_tariff_record.extra == {
             "venue_id": venue_provider.venueId,
             "provider_id": venue_provider.providerId,
