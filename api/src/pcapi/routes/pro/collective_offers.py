@@ -713,7 +713,7 @@ def attach_offer_template_image(
     except UnidentifiedImageError:
         raise ApiErrors({"image": "Impossible d'identifier l'image"}, status_code=400)
 
-    return collective_offers_serialize.AttachImageResponseModel.from_orm(offer)
+    return collective_offers_serialize.AttachImageResponseModel.model_validate(offer)
 
 
 @private_api.route("/collective/offers/<int:offer_id>/image", methods=["DELETE"])
