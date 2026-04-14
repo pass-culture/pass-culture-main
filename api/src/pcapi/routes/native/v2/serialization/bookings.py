@@ -32,13 +32,15 @@ class OfferImageV2(HttpBodyModel):
 
 
 class TicketDisplayEnum(enum.Enum):
+    CINEMA_VOUCHER = "cinema_voucher"
     EMAIL_SENT = "email_sent"
     EMAIL_WILL_BE_SENT = "email_will_be_sent"
+    EXTERNAL_TICKET = "external_ticket"
+    HIDDEN_EXTERNAL_TICKET = "hidden_external_ticket"
+    NO_TICKET = "no_ticket"
     ONLINE_CODE = "online_code"
-    NOT_VISIBLE = "not_visible"
-    QR_CODE = "qr_code"
-    VOUCHER = "voucher"
     TICKET = "ticket"
+    VOUCHER = "voucher"
 
 
 class BookingVenueAddressResponseV2(HttpBodyModel):
@@ -220,6 +222,16 @@ def get_ticket_infos(booking: bookings_models.Booking) -> TicketResponse:
         delay=offer.withdrawalDelay,
     )
 
+    if offer.withdrawalType == WithdrawalTypeEnum.NO_TICKET:
+        return TicketResponse(
+            activation_code=None,
+            external_booking=None,
+            display=TicketDisplayEnum.NO_TICKET,
+            token=None,
+            voucher=None,
+            withdrawal=withdrawal,
+        )
+
     if offer.withdrawalType == WithdrawalTypeEnum.BY_EMAIL:
         return TicketResponse(
             activation_code=None,
@@ -254,7 +266,7 @@ def get_ticket_infos(booking: bookings_models.Booking) -> TicketResponse:
                 if booking_visible
                 else None
             ),
-            display=TicketDisplayEnum.QR_CODE if booking_visible else TicketDisplayEnum.NOT_VISIBLE,
+            display=TicketDisplayEnum.EXTERNAL_TICKET if booking_visible else TicketDisplayEnum.HIDDEN_EXTERNAL_TICKET,
             token=None,
             voucher=None,
             withdrawal=withdrawal,
@@ -269,7 +281,7 @@ def get_ticket_infos(booking: bookings_models.Booking) -> TicketResponse:
     token = TokenResponse(data=booking.token) if not booking.isExternal else None
     display = TicketDisplayEnum.VOUCHER if voucher else TicketDisplayEnum.TICKET
     if offer.subcategoryId == SEANCE_CINE.id:
-        display = TicketDisplayEnum.QR_CODE
+        display = TicketDisplayEnum.CINEMA_VOUCHER
 
     return TicketResponse(
         activation_code=None,
