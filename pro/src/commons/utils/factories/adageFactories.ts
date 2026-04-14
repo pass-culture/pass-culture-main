@@ -14,6 +14,8 @@ import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferHomeResponseModel,
+  CollectiveOfferTemplateAllowedAction,
+  type CollectiveOfferTemplateHomeResponseModel,
   type CollectiveStockHomeResponseModel,
 } from '@/apiClient/v1/new'
 
@@ -202,4 +204,23 @@ export const buildCollectiveOfferHome = (
     bookingDateDaysFromToday,
     startDateDaysFromToday
   ),
+})
+
+export const buildCollectiveOfferTemplateHome = (
+  displayedStatus: CollectiveOfferDisplayedStatus = CollectiveOfferDisplayedStatus.PUBLISHED
+): CollectiveOfferTemplateHomeResponseModel => ({
+  id: 436,
+  name: 'Mon offre vitrine 436',
+  displayedStatus,
+  imageUrl:
+    'http://localhost:5001/storage/thumbs/collectiveoffertemplate/00000004367405842.jpg',
+  allowedActions: [
+    CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
+    CollectiveOfferTemplateAllowedAction.CAN_DUPLICATE,
+    CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE,
+  ],
+  dates: {
+    start: new Date().toISOString(),
+    end: addDays(new Date(), 30).toISOString(),
+  },
 })
