@@ -1,1 +1,0 @@
-import{P as e}from"./components-Buj4GhC7.js";export{e as createCopyToClipboardFunction};

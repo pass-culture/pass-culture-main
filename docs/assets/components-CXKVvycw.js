@@ -1,0 +1,1 @@
+import{P as e}from"./components-Dgiv7JSJ.js";export{e as createCopyToClipboardFunction};
