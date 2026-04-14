@@ -21,6 +21,7 @@ from pcapi.core.bookings import schemas
 from pcapi.core.bookings import utils
 from pcapi.core.categories import subcategories
 from pcapi.core.finance.models import BookingFinanceIncident
+from pcapi.core.finance.models import FinanceIncident
 from pcapi.core.geography.models import Address
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
@@ -265,19 +266,32 @@ def find_expired_individual_bookings_ordered_by_offerer(expired_on: date | None 
     )
 
 
-def get_bookings_from_deposit(deposit_id: int) -> list[models.Booking]:
-    return (
-        db.session.query(models.Booking)
-        .filter(
+def get_bookings_from_deposit(deposit_id: int) -> Sequence[models.Booking]:
+    query = (
+        sa.select(models.Booking)
+        .where(
             models.Booking.depositId == deposit_id,
             models.Booking.status != models.BookingStatus.CANCELLED,
         )
         .options(
-            sa_orm.joinedload(models.Booking.stock).joinedload(offers_models.Stock.offer),
-            sa_orm.joinedload(models.Booking.incidents).joinedload(BookingFinanceIncident.incident),
+            sa_orm.load_only(
+                models.Booking.amount,
+                models.Booking.quantity,
+                models.Booking.status,
+            )
         )
-        .all()
+        .options(
+            sa_orm.joinedload(models.Booking.stock)
+            .load_only()
+            .joinedload(offers_models.Stock.offer)
+            .load_only(offers_models.Offer.subcategoryId, offers_models.Offer.url),
+            sa_orm.joinedload(models.Booking.incidents)
+            .load_only(BookingFinanceIncident.newTotalAmount)
+            .joinedload(BookingFinanceIncident.incident)
+            .load_only(FinanceIncident.status),
+        )
     )
+    return db.session.scalars(query).unique().all()
 
 
 def _create_export_query(offer_id: int, event_beginning_date: date) -> sa_orm.Query:
