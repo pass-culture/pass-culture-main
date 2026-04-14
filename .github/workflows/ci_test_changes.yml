@@ -5,20 +5,21 @@ on:
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: { required: true }
       GCP_EHP_SERVICE_ACCOUNT: { required: true }
-    outputs:
+    inputs:
       # changes
       api-changed:
-        value: ${{ jobs.compute-changes.outputs.api-changed }}
+        required: true
+        type: boolean
       api-documentation-changed:
-        value: ${{ jobs.compute-changes.outputs.api-documentation-changed }}
+        required: true
+        type: boolean
       pro-changed:
-        value: ${{ jobs.compute-changes.outputs.pro-changed }}
+        required: true
+        type: boolean
       github-changed:
-        value: ${{ jobs.compute-changes.outputs.github-changed }}
-      alembic-changed:
-        value: ${{ jobs.compute-changes.outputs.alembic-changed }}
-      maintenance-site-changed:
-        value: ${{ jobs.compute-changes.outputs.maintenance-site-changed }}
+        required: true
+        type: boolean
+    outputs:
       # stringified array, ex: '["GitHub actions","Front Pro","Backend"]'
       failed-tests-matrix:
         value: ${{ jobs.compute-failed-tests-matrix.outputs.failed-tests-matrix }}
@@ -26,73 +27,9 @@ on:
 permissions: write-all
 
 jobs:
-  compute-changes:
-    name: Compute changes
-    runs-on: ubuntu-latest
-    outputs:
-      api-changed: ${{ steps.check-api-changes.outputs.any_modified }}
-      api-documentation-changed: ${{ steps.check-api-documentation-changes.outputs.any_modified }}
-      pro-changed: ${{ steps.check-pro-changes.outputs.any_modified }}
-      github-changed: ${{ steps.check-github-changes.outputs.any_modified }}
-      alembic-changed: ${{ steps.check-alembic-changes.outputs.any_modified }}
-      maintenance-site-changed: ${{ steps.check-maintenance-site-changes.outputs.any_modified }}
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with: { fetch-tags: false }
-      - name: Check api folder changes
-        id: check-api-changes
-        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
-        with:
-          files: |
-            api/**
-            !api/documentation/**
-            !api/src/pcapi/scripts/**/main.py
-            !api/src/pcapi/scripts/**/test_script.py
-            !api/src/pcapi/scripts/**/main.sql
-      - name: Check public API documentation folder changes
-        id: check-api-documentation-changes
-        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
-        with: { files: api/documentation/** }
-      - name: Check pro folder changes
-        id: check-pro-changes
-        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
-        with:
-          files: pro/**
-      - name: Check .github folder changes
-        id: check-github-changes
-        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
-        with: { files: .github/** }
-      - name: "Check maintenance-site folder changes"
-        id: check-maintenance-site-changes
-        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
-        with:
-          files: maintenance-site/**
-      - name: Check alembic folder changes
-        id: check-alembic-changes
-        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
-        with:
-          files: |-
-            api/src/pcapi/alembic/versions/**
-            api/src/pcapi/alembic/run_migrations.py
-      - name: Publish Summary
-        run: |
-          {
-            echo "### Changes summary"
-            echo "**commit:** \`${{ github.sha }}\`"
-            echo "| Folder               | Status |"
-            echo "| -------------------- | ------ |"
-            echo "| \`/api\`               | ${{ steps.check-api-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }} |"
-            echo "| \`/api/documentation\` | ${{ steps.check-api-documentation-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }} |"
-            echo "| \`/api/**/alembic\`    | ${{ steps.check-alembic-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }} |"
-            echo "| \`/pro\`               | ${{ steps.check-pro-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }} |"
-            echo "| \`/.github\`           | ${{ steps.check-github-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }} |"
-            echo "| \`/maintenance-site\`  | ${{ steps.check-maintenance-site-changes.outputs.any_modified == 'true' && ':arrows_counterclockwise: Modified' || ':white_check_mark: Not modified' }} |"
-          } >> "$GITHUB_STEP_SUMMARY"
-
   lint-github-actions:
     name: Lint GitHub actions & worflows
-    needs: compute-changes
-    if: needs.compute-changes.outputs.github-changed == 'true'
+    if: ${{ inputs.github-changed }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -102,27 +39,15 @@ jobs:
 
   build-backend-image:
     name: Build backend image
-    needs: compute-changes
-    if: |
-      needs.compute-changes.outputs.api-changed == 'true' ||
-      needs.compute-changes.outputs.pro-changed == 'true' ||
-      needs.compute-changes.outputs.github-changed == 'true'
+    if: ${{ inputs.github-changed || inputs.api-changed || inputs.pro-changed }}
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
       image: pcapi-tests
       tag: ${{ github.sha }}
 
-  run-mypy-cop:
-    name: "MyPy cop"
-    needs: compute-changes
-    if: |
-      needs.compute-changes.outputs.api-changed == 'true' ||
-      needs.compute-changes.outputs.github-changed == 'true'
-    uses: ./.github/workflows/dev_on_workflow_mypy_cop.yml
-
   check-api-client-update:
     name: Front API Client
-    needs: [compute-changes, build-backend-image]
+    needs: build-backend-image
     uses: ./.github/workflows/ci_test_api_client_update.yml
     with:
       tag: ${{ github.sha }}
@@ -130,10 +55,8 @@ jobs:
 
   test-backend:
     name: Backend
-    needs: [compute-changes, build-backend-image]
-    if: |
-      needs.compute-changes.outputs.api-changed == 'true' ||
-      needs.compute-changes.outputs.github-changed == 'true'
+    needs: build-backend-image
+    if: ${{ inputs.github-changed || inputs.api-changed  }}
     uses: ./.github/workflows/ci_test_backend.yml
     with:
       tag: ${{ github.sha }}
@@ -141,18 +64,12 @@ jobs:
 
   test-api-documentation:
     name: Public API documentation
-    needs: compute-changes
-    if: |
-      needs.compute-changes.outputs.api-documentation-changed == 'true' ||
-      needs.compute-changes.outputs.github-changed == 'true'
+    if: ${{ inputs.github-changed || inputs.api-documentation-changed  }}
     uses: ./.github/workflows/ci_test_api_documentation.yml
 
   test-pro:
     name: Front Pro
-    needs: compute-changes
-    if: |
-      needs.compute-changes.outputs.pro-changed == 'true' ||
-      needs.compute-changes.outputs.github-changed == 'true'
+    if: ${{inputs.pro-changed || inputs.github-changed}}
     uses: ./.github/workflows/ci_test_front_pro.yml
     with:
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
@@ -160,13 +77,9 @@ jobs:
 
   test-e2e:
     name: E2E
-    needs: [compute-changes, build-backend-image]
+    needs: build-backend-image
     uses: ./.github/workflows/ci_test_e2e.yml
-    if: always() &&
-      !cancelled() &&
-      needs.compute-changes.outputs.api-changed == 'true' ||
-      needs.compute-changes.outputs.pro-changed == 'true' ||
-      needs.compute-changes.outputs.github-changed == 'true'
+    if: ${{ always() && !cancelled() && (inputs.api-changed || inputs.pro-changed || inputs.github-changed) }}
     with:
       ENV: "development"
       tag: ${{ github.sha }}
