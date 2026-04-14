@@ -9,8 +9,8 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { IndividualOffersCard } from './IndividualOffersCard'
 
 vi.mock('@/apiClient/api', () => ({ api: { listOffersHome: vi.fn() } }))
-vi.mock('../OffersEmptyStateCard/OffersEmptyStateCard', () => ({
-  OffersEmptyStateCard: () => <div>OffersEmptyStateCard</div>,
+vi.mock('../OffersRetentionCard/OffersRetentionCard', () => ({
+  OffersRetentionCard: () => <div>OffersRetentionCard</div>,
 }))
 
 describe('<IndividualOffersCard />', () => {
@@ -28,12 +28,12 @@ describe('<IndividualOffersCard />', () => {
     })
   })
 
-  it('should render the empty state if no offers are returned', async () => {
+  it('should render the retention card if no offers are returned', async () => {
     vi.spyOn(api, 'listOffersHome').mockResolvedValue([])
     renderWithProviders(
       <IndividualOffersCard venueId={12} venueDepartmentCode={'75'} />
     )
-    expect(await screen.findByText('OffersEmptyStateCard')).toBeVisible()
+    expect(await screen.findByText('OffersRetentionCard')).toBeVisible()
   })
 
   it('should have a CTA that sends to collective offer list', async () => {
