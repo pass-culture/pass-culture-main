@@ -1,0 +1,79 @@
+name: "0 [CD] Create hotfix release"
+
+run-name: "Create a hotfix release from ${{ github.ref }}"
+
+on: workflow_dispatch
+
+permissions: write-all
+
+jobs:
+  check-github-ref-is-maint-branch:
+    name: Check Github ref is a maintenance branch
+    runs-on: ubuntu-22.04
+    steps:
+      - env:
+          REF: ${{ github.ref }}
+        run: |
+          if ! [[ "$REF" =~ ^refs/heads/maint/v.*$ ]]; then
+            echo "This workflow can only be triggered from a maintenance branch (starting with 'maint/v')"
+            exit 1
+          fi
+
+  compute-hotfix-tag-number:
+    # Compute the next hotfix version
+    # Example: given branch maint/v200 and existing tags v200.0.0, v200.0.1 then output == 200.0.2
+    name: Compute hotfix tag number
+    needs: check-github-ref-is-maint-branch
+    runs-on: ubuntu-22.04
+    outputs:
+      hotfix-tag-number: ${{ steps.compute-hotfix-tag-number.outputs.hotfix-tag-number }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          fetch-depth: 0 # Fetch all history to get all tags
+      - name: "Find hotfix tag number"
+        id: "compute-hotfix-tag-number"
+        env:
+          GITHUB_REF: ${{ github.ref }}
+        run: |
+          MAJOR_NUMBER="${GITHUB_REF//refs\/heads\/maint\/v/}"
+          CURRENT_PATCH_NUMBER="$(git tag -l "v${MAJOR_NUMBER}.0.*" | sort -V | tail -n 1 | cut -d. -f3)"
+          NEXT_PATCH_NUMBER="$((CURRENT_PATCH_NUMBER + 1))"
+          echo "hotfix-tag-number=${MAJOR_NUMBER}.0.${NEXT_PATCH_NUMBER}" | tee -a "$GITHUB_OUTPUT"
+
+  build-and-tag-version:
+    name: Build and tag version
+    needs: compute-hotfix-tag-number
+    uses: ./.github/workflows/dev_on_workflow_build_and_tag.yml
+    secrets: inherit
+    with:
+      base_ref: ${{ github.ref }}
+      tag_number: ${{ needs.compute-hotfix-tag-number.outputs.hotfix-tag-number }}
+      base_ref_is_a_branch: true
+
+  create-front-pro-releases:
+    name: Create front pro releases
+    strategy:
+      matrix:
+        environment: [staging, production, integration]
+    needs: [build-and-tag-version, compute-hotfix-tag-number]
+    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
+    secrets: inherit
+    with:
+      ENV: ${{ matrix.environment }}
+      CHANNEL: "${{ needs.compute-hotfix-tag-number.outputs.hotfix-tag-number }}"
+      EXPIRES: "30d"
+      PUSH_RELEASE_TO_SENTRY: true
+      REF: v${{ needs.compute-hotfix-tag-number.outputs.hotfix-tag-number }}
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+
+  notify-end-of-workflow:
+    name: Send end of workflow notification
+    needs: [build-and-tag-version, create-front-pro-releases]
+    if: always()
+    uses: ./.github/workflows/slack_post_message_workflow.yml
+    with:
+      channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
+      message: "${{contains(needs.*.result, 'failure') && ':github-failure: La création de la release a échoue. <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Voir le détail>' || ':github-success: Release créée avec succès. <https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_dispatch_release_deploy.yml|Déployer> :rocket:' }}"
+    secrets: inherit
