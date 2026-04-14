@@ -17,6 +17,7 @@ class ProfileContent(HttpBodyModel):
     first_name: str
     last_name: str
     postal_code: str
+    phone_number: str | None = None
     school_type: profile_options.SchoolTypeValueEnum | None = None
 
     model_config = pydantic_v2.ConfigDict(
@@ -35,6 +36,7 @@ class ProfileUpdateRequest(HttpQueryParamsModel):
     first_name: str
     last_name: str
     postal_code: str
+    phone_number: str | None = None
     school_type_id: profile_options.SchoolTypeIdEnum | None = None
 
     @pydantic_v2.field_validator("first_name", "last_name", "address", "city", "postal_code", mode="after")

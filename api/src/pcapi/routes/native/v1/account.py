@@ -65,7 +65,9 @@ def patch_user_profile(body: serializers.UserProfilePatchRequest) -> serializers
     if "postal_code" in profile_update_dict:
         postal_code = profile_update_dict["postal_code"]
         if postal_code in postal_code_utils.INELIGIBLE_POSTAL_CODES:
-            raise api_errors.ApiErrors({"code": "INELIGIBLE_POSTAL_CODE"})
+            error = {"code": "INELIGIBLE_POSTAL_CODE"}
+            logger.warning("Failed to update postal code", extra={"code postal": postal_code, "code": error["code"]})
+            raise api_errors.ApiErrors(error, status_code=400)
         if not re.match(r"^\d{5}$", postal_code):
             raise api_errors.ApiErrors({"code": "INVALID_POSTAL_CODE"})
 

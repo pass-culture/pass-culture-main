@@ -425,6 +425,7 @@ def _create_profile_completion_fraud_check_from_dms(
             last_name=last_name,
             origin=f"Completed in DMS application {application_id}",
             postal_code=postal_code,
+            phone_number=None,
             school_type=None,
         ),
     )

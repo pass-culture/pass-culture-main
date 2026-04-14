@@ -53,6 +53,7 @@ class GetProfileTest:
         assert profile_content["postalCode"] == content.postal_code
         assert profile_content["activity"] == content.activity
         assert profile_content["schoolType"] == content.school_type
+        assert profile_content["phoneNumber"] == content.phone_number
 
     def test_get_profile_with_no_fraud_check(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
@@ -125,6 +126,7 @@ class GetProfileTest:
             "postalCode": "77000",
             "activityId": "HIGH_SCHOOL_STUDENT",
             "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
+            "phoneNumber": "+33609080706",
         }
 
         with time_machine.travel(date_utils.get_naive_utc_now() - datetime.timedelta(days=365)):
@@ -142,6 +144,7 @@ class GetProfileTest:
         assert response.json["profile"]["postalCode"] == profile_data["postalCode"]
         assert response.json["profile"]["activity"] == users_models.ActivityEnum.HIGH_SCHOOL_STUDENT.value
         assert response.json["profile"]["schoolType"] == users_models.SchoolTypeEnum.PUBLIC_HIGH_SCHOOL.value
+        assert response.json["profile"]["phoneNumber"] == profile_data["phoneNumber"]
 
     def test_get_profile_with_legacy_profile_completion_fraud_check(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
@@ -175,8 +178,6 @@ class UpdateProfileTest:
             activity=None,
             firstName=None,
             lastName=None,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            phoneNumber="+33609080706",
             dateOfBirth=datetime.date.today() - relativedelta(years=18, months=6),
         )
 
@@ -188,12 +189,24 @@ class UpdateProfileTest:
             "postalCode": "77000",
             "activityId": "HIGH_SCHOOL_STUDENT",
             "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
+            "phoneNumber": "+33609080706",
         }
 
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # user (update)
+        expected_num_queries += 1  # beneficiary_fraud_check (insert)
+        expected_num_queries += 1  # user
+        expected_num_queries += 1  # beneficiary_fraud_review
+        expected_num_queries += 1  # beneficiary_fraud_check
+        expected_num_queries += 1  # action history
+        expected_num_queries += 1  # booking
+        expected_num_queries += 1  # favorite
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # achievement
         client.with_token(user)
-        response = client.post("/native/v1/subscription/profile", profile_data)
-
-        assert response.status_code == 204
+        with assert_num_queries(expected_num_queries):
+            response = client.post("/native/v1/subscription/profile", profile_data)
+            assert response.status_code == 204
 
         user = db.session.get(users_models.User, user.id)
         assert not user.is_beneficiary
@@ -225,150 +238,12 @@ class UpdateProfileTest:
         assert profile_completion_fraud_check.reason == "Completed in application step"
 
     @pytest.mark.features(ENABLE_UBBLE=True)
-    def test_fulfill_profile_invalid_character(self, client):
-        user = users_factories.UserFactory(
-            address=None,
-            city=None,
-            postalCode=None,
-            activity=None,
-            firstName=None,
-            lastName=None,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            phoneNumber="+33609080706",
-            dateOfBirth=datetime.date.today() - relativedelta(years=18, months=6),
-        )
-
-        profile_data = {
-            "firstName": "ჯონ",
-            "lastName": "Doe",
-            "address": "1 rue des rues",
-            "city": "Uneville",
-            "postalCode": "77000",
-            "activityId": "HIGH_SCHOOL_STUDENT",
-            "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
-        }
-
-        client.with_token(user)
-        response = client.post("/native/v1/subscription/profile", profile_data)
-
-        assert response.status_code == 400
-
-    @pytest.mark.features(ENABLE_UBBLE=True)
-    def test_fulfill_profile_empty_field(self, client):
-        user = users_factories.UserFactory(
-            address=None,
-            city=None,
-            postalCode=None,
-            activity=None,
-            firstName=None,
-            lastName=None,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            phoneNumber="+33609080706",
-            dateOfBirth=datetime.date.today() - relativedelta(years=18, months=6),
-        )
-
-        profile_data = {
-            "firstName": " ",
-            "lastName": "Doe",
-            "address": "1 rue des rues",
-            "city": "Uneville",
-            "postalCode": "77000",
-            "activityId": "HIGH_SCHOOL_STUDENT",
-            "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
-        }
-
-        client.with_token(user)
-        response = client.post("/native/v1/subscription/profile", profile_data)
-
-        assert response.status_code == 400
-
-    @pytest.mark.features(ENABLE_UBBLE=True)
-    def test_fulfill_profile_missing_mandatory_field(self, client):
-        user = users_factories.UserFactory(
-            address=None,
-            city=None,
-            postalCode=None,
-            activity=None,
-            firstName=None,
-            lastName=None,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            phoneNumber="+33609080706",
-            dateOfBirth=datetime.date.today() - relativedelta(years=18, months=6),
-        )
-
-        profile_data = {
-            "firstName": " ",
-            "lastName": "Doe",
-            "address": "1 rue des rues",
-            "city": "Uneville",
-            "postalCode": "77000",
-            "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
-        }
-
-        client.with_token(user)
-        response = client.post("/native/v1/subscription/profile", profile_data)
-
-        assert response.status_code == 400
-
-    @pytest.mark.parametrize("postal_code", INELIGIBLE_POSTAL_CODES)
-    @pytest.mark.features(ENABLE_UBBLE=True)
-    def test_fulfill_profile_ineligible_postal_code(self, client, postal_code):
-        user = users_factories.UserFactory()
-
-        response = client.with_token(user).post(
-            "/native/v1/subscription/profile",
-            {
-                "firstName": "John",
-                "lastName": "Doe",
-                "address": "1 rue des rues",
-                "city": "Uneville",
-                "postalCode": postal_code,
-                "activityId": "HIGH_SCHOOL_STUDENT",
-                "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
-            },
-        )
-
-        assert response.status_code == 400
-        assert response.json["code"] == "INELIGIBLE_POSTAL_CODE"
-
-    @pytest.mark.features(ENABLE_UBBLE=True)
-    def test_fulfill_profile_valid_character(self, client):
-        user = users_factories.UserFactory(
-            address=None,
-            city=None,
-            postalCode=None,
-            activity=None,
-            firstName=None,
-            lastName=None,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            phoneNumber="+33609080706",
-            dateOfBirth=datetime.date.today() - relativedelta(years=18, months=6),
-        )
-
-        profile_data = {
-            "firstName": "John",
-            "lastName": "àâçéèêîôœùûÀÂÇÉÈÊÎÔŒÙÛ-' ",
-            "address": "1 rue des rues",
-            "city": "Uneville",
-            "postalCode": "77000",
-            "activityId": "HIGH_SCHOOL_STUDENT",
-            "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
-        }
-
-        client.with_token(user)
-        response = client.post("/native/v1/subscription/profile", profile_data)
-
-        assert response.status_code == 204
-
-    @pytest.mark.features(ENABLE_UBBLE=True)
     def test_fulfill_profile_activation(self, client):
         user = users_factories.UserFactory(
             address=None,
             city=None,
             postalCode=None,
             activity=None,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            phoneNumber="+33609080706",
             dateOfBirth=datetime.date.today() - relativedelta(years=18, months=6),
         )
 
@@ -396,12 +271,33 @@ class UpdateProfileTest:
             "postalCode": "77000",
             "activityId": "HIGH_SCHOOL_STUDENT",
             "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
+            "phoneNumber": "+33609080706",
         }
 
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # user (update)
+        expected_num_queries += 1  # beneficiary_fraud_check (insert)
+        expected_num_queries += 1  # user
+        expected_num_queries += 1  # beneficiary_fraud_review
+        expected_num_queries += 1  # beneficiary_fraud_check
+        expected_num_queries += 1  # action history
+        expected_num_queries += 1  # user
+        expected_num_queries += 1  # user
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # deposit (exists)
+        expected_num_queries += 1  # user (update)
+        expected_num_queries += 1  # deposit (insert)
+        expected_num_queries += 1  # recredit
+        expected_num_queries += 1  # deposit (update)
+        expected_num_queries += 1  # recredit (insert)
+        expected_num_queries += 1  # booking
+        expected_num_queries += 1  # favorite
+        expected_num_queries += 1  # achievement
+        expected_num_queries += 1  # user (update)
         client.with_token(user)
-        response = client.post("/native/v1/subscription/profile", profile_data)
-
-        assert response.status_code == 204
+        with assert_num_queries(expected_num_queries):
+            response = client.post("/native/v1/subscription/profile", profile_data)
+            assert response.status_code == 204
 
         user = db.session.get(users_models.User, user.id)
         assert user.firstName == "Alexandra"
@@ -413,6 +309,227 @@ class UpdateProfileTest:
         assert notification["user_id"] == user.id
         assert notification["attribute_values"]["u.is_beneficiary"]
         assert notification["attribute_values"]["u.postal_code"] == "75008"
+
+    @pytest.mark.features(ENABLE_UBBLE=True)
+    def test_fulfill_profile_without_optional_fields(self, client):
+        user = users_factories.UserFactory(
+            address=None,
+            city=None,
+            postalCode=None,
+            activity=None,
+            firstName=None,
+            lastName=None,
+            dateOfBirth=datetime.date.today() - relativedelta(years=18, months=6),
+        )
+
+        profile_data = {
+            "firstName": "John",
+            "lastName": "Doe",
+            "address": "1 rue des rues",
+            "city": "Uneville",
+            "postalCode": "77000",
+            "activityId": "HIGH_SCHOOL_STUDENT",
+        }
+
+        client.with_token(user)
+        response = client.post("/native/v1/subscription/profile", profile_data)
+
+        assert response.status_code == 204
+
+        assert user.firstName == "John"
+        assert user.lastName == "Doe"
+        assert user.address == "1 rue des rues"
+        assert user.city == "Uneville"
+        assert user.postalCode == "77000"
+        assert user.activity == "Lycéen"
+        assert user.schoolType is None
+        assert user.phoneNumber is None
+
+        # Check that a PROFILE_COMPLETION fraud check is created
+        profile_completion_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type == subscription_models.FraudCheckType.PROFILE_COMPLETION
+        ]
+        assert len(profile_completion_fraud_checks) == 1
+        profile_completion_fraud_check = profile_completion_fraud_checks[0]
+        assert profile_completion_fraud_check.status == subscription_models.FraudCheckStatus.OK
+        assert profile_completion_fraud_check.reason == "Completed in application step"
+
+    @pytest.mark.features(ENABLE_UBBLE=True)
+    def test_fulfill_profile_invalid_character(self, client):
+        user = users_factories.UserFactory(
+            address=None,
+            city=None,
+            postalCode=None,
+            activity=None,
+            firstName=None,
+            lastName=None,
+            dateOfBirth=datetime.date.today() - relativedelta(years=18, months=6),
+        )
+
+        profile_data = {
+            "firstName": "ჯონ",
+            "lastName": "Doe",
+            "address": "1 rue des rues",
+            "city": "Uneville",
+            "postalCode": "77000",
+            "activityId": "HIGH_SCHOOL_STUDENT",
+            "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
+            "phoneNumber": "+33609080706",
+        }
+
+        client.with_token(user)
+        response = client.post("/native/v1/subscription/profile", profile_data)
+
+        assert response.status_code == 400
+
+    @pytest.mark.features(ENABLE_UBBLE=True)
+    def test_fulfill_profile_empty_field(self, client):
+        user = users_factories.UserFactory(
+            address=None,
+            city=None,
+            postalCode=None,
+            activity=None,
+            firstName=None,
+            lastName=None,
+            dateOfBirth=datetime.date.today() - relativedelta(years=18, months=6),
+        )
+
+        profile_data = {
+            "firstName": " ",
+            "lastName": "Doe",
+            "address": "1 rue des rues",
+            "city": "Uneville",
+            "postalCode": "77000",
+            "activityId": "HIGH_SCHOOL_STUDENT",
+            "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
+            "phoneNumber": "+33609080706",
+        }
+
+        client.with_token(user)
+        response = client.post("/native/v1/subscription/profile", profile_data)
+
+        assert response.status_code == 400
+
+    @pytest.mark.features(ENABLE_UBBLE=True)
+    def test_fulfill_profile_missing_mandatory_field(self, client):
+        user = users_factories.UserFactory(
+            address=None,
+            city=None,
+            postalCode=None,
+            activity=None,
+            firstName=None,
+            lastName=None,
+            dateOfBirth=datetime.date.today() - relativedelta(years=18, months=6),
+        )
+
+        profile_data = {
+            "firstName": " ",
+            "lastName": "Doe",
+            "address": "1 rue des rues",
+            "city": "Uneville",
+            "postalCode": "77000",
+            "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
+            "phoneNumber": "+33609080706",
+        }
+
+        client.with_token(user)
+        response = client.post("/native/v1/subscription/profile", profile_data)
+
+        assert response.status_code == 400
+
+    @pytest.mark.parametrize("postal_code", INELIGIBLE_POSTAL_CODES)
+    @pytest.mark.features(ENABLE_UBBLE=True)
+    def test_fulfill_profile_ineligible_postal_code(self, client, postal_code):
+        user = users_factories.UserFactory()
+
+        response = client.with_token(user).post(
+            "/native/v1/subscription/profile",
+            {
+                "firstName": "John",
+                "lastName": "Doe",
+                "address": "1 rue des rues",
+                "city": "Uneville",
+                "postalCode": postal_code,
+                "activityId": "HIGH_SCHOOL_STUDENT",
+                "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
+                "phoneNumber": "+33609080706",
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json["code"] == "INELIGIBLE_POSTAL_CODE"
+
+    @pytest.mark.features(ENABLE_UBBLE=True)
+    def test_fulfill_profile_invalid_phone_number(self, client):
+        user = users_factories.UserFactory()
+
+        response = client.with_token(user).post(
+            "/native/v1/subscription/profile",
+            {
+                "firstName": "John",
+                "lastName": "Doe",
+                "address": "1 rue des rues",
+                "city": "Uneville",
+                "postalCode": "77000",
+                "activityId": "HIGH_SCHOOL_STUDENT",
+                "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
+                "phoneNumber": "+336090807060",
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json["code"] == "INVALID_PHONE_NUMBER"
+
+    @pytest.mark.features(ENABLE_UBBLE=True)
+    def test_fulfill_profile_invalid_phone_number_country_code(self, client):
+        user = users_factories.UserFactory()
+
+        response = client.with_token(user).post(
+            "/native/v1/subscription/profile",
+            {
+                "firstName": "John",
+                "lastName": "Doe",
+                "address": "1 rue des rues",
+                "city": "Uneville",
+                "postalCode": "77000",
+                "activityId": "HIGH_SCHOOL_STUDENT",
+                "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
+                "phoneNumber": "+46609080706",
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json["code"] == "INVALID_COUNTRY_CODE"
+
+    @pytest.mark.features(ENABLE_UBBLE=True)
+    def test_fulfill_profile_valid_character(self, client):
+        user = users_factories.UserFactory(
+            address=None,
+            city=None,
+            postalCode=None,
+            activity=None,
+            firstName=None,
+            lastName=None,
+            dateOfBirth=datetime.date.today() - relativedelta(years=18, months=6),
+        )
+
+        profile_data = {
+            "firstName": "John",
+            "lastName": "àâçéèêîôœùûÀÂÇÉÈÊÎÔŒÙÛ-' ",
+            "address": "1 rue des rues",
+            "city": "Uneville",
+            "postalCode": "77000",
+            "activityId": "HIGH_SCHOOL_STUDENT",
+            "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
+            "phoneNumber": "+33609080706",
+        }
+
+        client.with_token(user)
+        response = client.post("/native/v1/subscription/profile", profile_data)
+
+        assert response.status_code == 204
 
 
 class ActivityTypesTest:

@@ -6514,6 +6514,18 @@
                         "title": "Lastname",
                         "type": "string"
                     },
+                    "phoneNumber": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Phonenumber"
+                    },
                     "postalCode": {
                         "title": "Postalcode",
                         "type": "string"
