@@ -22,8 +22,6 @@ from pcapi.core.geography import models as geography_models
 from pcapi.core.geography import utils as geography_utils
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
-from pcapi.core.mails import testing as mails_testing
-from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
@@ -36,7 +34,6 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.backoffice.pro.forms import TypeOptions
 from pcapi.utils import date as date_utils
-from pcapi.utils import urls
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -880,7 +877,6 @@ class UpdateVenueTest(PostEndpointHelper):
             "is_manual_address": "",  # autocompletion used
             "booking_email": venue.bookingEmail + ".update",
             "phone_number": "+33102030456",
-            "is_permanent": True,
             "latitude": "48.869311",
             "longitude": "2.325463",
             "acceslibre_url": None,
@@ -904,7 +900,6 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.siret == data["siret"]
         assert venue.bookingEmail == data["booking_email"]
         assert venue.contact.phone_number == data["phone_number"]
-        assert venue.isPermanent == data["is_permanent"]
         assert address.city == data["city"]
         assert address.postalCode == data["postal_code"]
         assert address.street == data["street"]
@@ -955,13 +950,6 @@ class UpdateVenueTest(PostEndpointHelper):
             == "https://acceslibre.beta.gouv.fr/app/activite/mon-lieu-chez-acceslibre/"
         )
         assert acceslibre_snapshot["accessibilityProvider.externalAccessibilityUrl"]["old_info"] is None
-
-        assert len(mails_testing.outbox) == 1
-        # check that email is sent when venue is set to permanent and has no image
-        assert mails_testing.outbox[0]["To"] == venue.bookingEmail
-        assert mails_testing.outbox[0]["template"] == TransactionalEmail.VENUE_NEEDS_PICTURE.value.__dict__
-        assert mails_testing.outbox[0]["params"]["VENUE_NAME"] == venue.publicName
-        assert mails_testing.outbox[0]["params"]["VENUE_FORM_URL"] == urls.build_pc_pro_venue_link(venue)
 
     def test_update_venue_location_with_offerer_address_not_manual(self, authenticated_client, offerer):
         contact_email = "contact.venue@example.com"
@@ -1070,7 +1058,6 @@ class UpdateVenueTest(PostEndpointHelper):
             "is_manual_address": "on",
             "booking_email": venue.bookingEmail + ".update",
             "phone_number": "+33102030456",
-            "is_permanent": True,
             "latitude": "16.306774",
             "longitude": "-61.703636",
             "acceslibre_url": "https://acceslibre.beta.gouv.fr/app/slug/",
@@ -1099,13 +1086,6 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.contact.social_medias == social_medias
 
         assert len(venue.action_history) == 2
-
-        assert len(mails_testing.outbox) == 1
-        # check that email is sent when venue is set to permanent and has no image
-        assert mails_testing.outbox[0]["To"] == venue.bookingEmail
-        assert mails_testing.outbox[0]["template"] == TransactionalEmail.VENUE_NEEDS_PICTURE.value.__dict__
-        assert mails_testing.outbox[0]["params"]["VENUE_NAME"] == venue.publicName
-        assert mails_testing.outbox[0]["params"]["VENUE_FORM_URL"] == urls.build_pc_pro_venue_link(venue)
 
     def test_updating_venue_manual_address_with_initial_ban_id(
         self,
@@ -2034,40 +2014,6 @@ class UpdateVenueTest(PostEndpointHelper):
         db.session.refresh(venue)
         assert venue.accessibilityProvider == None
 
-    def test_update_venue_remove_accesslibre_url_when_becoming_non_permanent(self, authenticated_client):
-        # Venue becoming none permanent, become close to public. Venue close to public does not have acceslibre sync
-        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)
-        offerers_factories.AccessibilityProviderFactory(
-            venue=venue,
-            externalAccessibilityId="mon-slug",
-            externalAccessibilityUrl="https://acceslibre.beta.gouv.fr/erps/mon-slug/",
-        )
-        data = self._get_current_data(venue)
-        data["acceslibre_url"] = "https://acceslibre.beta.gouv.fr/erps/mon-nouveau-slug/"
-        data["is_permanent"] = False
-
-        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
-
-        assert response.status_code == 303
-        db.session.refresh(venue)
-        assert not venue.accessibilityProvider
-        assert venue.action_history[0].extraData == {
-            "modified_info": {
-                "accessibilityProvider.externalAccessibilityId": {
-                    "new_info": None,
-                    "old_info": "mon-slug",
-                },
-                "accessibilityProvider.externalAccessibilityUrl": {
-                    "new_info": None,
-                    "old_info": "https://acceslibre.beta.gouv.fr/erps/mon-slug/",
-                },
-                "isPermanent": {
-                    "new_info": False,
-                    "old_info": True,
-                },
-            }
-        }
-
     @patch("pcapi.core.offerers.tasks.match_acceslibre_task.delay")
     def test_update_venue_becomes_permanent_should_not_call_match_acceslibre_task(
         self, match_acceslibre_task, authenticated_client
@@ -2579,30 +2525,12 @@ class BatchEditVenuesTest(PostEndpointHelper):
     def test_empty_batch_edit_venues(self, legit_user, authenticated_client):
         form_data = {
             "object_ids": "",
-            "all_permanent": "",
-            "all_not_permanent": "",
         }
 
         response = self.post_to_endpoint(authenticated_client, form=form_data)
         assert response.status_code == 200
         assert len(response.data) == 0
 
-    @pytest.mark.parametrize("is_permanent", [True, False])
-    def test_batch_edit_venues_two_checkboxes(self, legit_user, authenticated_client, is_permanent):
-        venue = offerers_factories.VenueFactory(isPermanent=is_permanent)
-
-        form_data = {
-            "object_ids": str(venue.id),
-            "criteria": "",
-            "all_permanent": "on",
-            "all_not_permanent": "on",
-        }
-
-        response = self.post_to_endpoint(authenticated_client, form=form_data)
-        assert response.status_code == 200
-        assert venue.isPermanent is is_permanent  # unchanged
-
-    @pytest.mark.parametrize("set_permanent", [True, False])
     @patch("pcapi.core.search.async_index_venue_ids")
     def test_batch_edit_venues(
         self,
@@ -2610,7 +2538,6 @@ class BatchEditVenuesTest(PostEndpointHelper):
         legit_user,
         authenticated_client,
         criteria,
-        set_permanent,
     ):
         new_criterion = criteria_factories.CriterionFactory()
         venues = [
@@ -2619,16 +2546,13 @@ class BatchEditVenuesTest(PostEndpointHelper):
                 managingOfferer__siren="111111111",
                 siret="22222222233333",
                 criteria=criteria[:2],
-                isPermanent=set_permanent,
             ),
-            offerers_factories.VenueFactory(criteria=criteria[1:], isPermanent=not set_permanent),
+            offerers_factories.VenueFactory(criteria=criteria[1:]),
         ]
 
         form_data = {
             "object_ids": ",".join(str(venue.id) for venue in venues),
             "criteria": [criteria[0].id, new_criterion.id],
-            "all_permanent": "on" if set_permanent else "",
-            "all_not_permanent": "" if set_permanent else "on",
         }
 
         response = self.post_to_endpoint(authenticated_client, form=form_data)
@@ -2639,20 +2563,10 @@ class BatchEditVenuesTest(PostEndpointHelper):
             assert cells[1] == str(venue.id)
 
         assert set(venues[0].criteria) == {criteria[0], new_criterion}  # 1 kept, 1 removed, 1 added
-        assert venues[0].isPermanent is set_permanent
 
         assert set(venues[1].criteria) == {criteria[0], criteria[2], new_criterion}  # 1 kept, 1 added
-        assert venues[1].isPermanent is set_permanent
 
         mock_async_index_venue_ids.assert_called_once()
-
-        action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.INFO_MODIFIED
-        assert action.authorUserId == legit_user.id
-        assert action.venue == venues[1]
-        assert action.extraData["modified_info"] == {
-            "isPermanent": {"old_info": not set_permanent, "new_info": set_permanent}
-        }
 
     def test_batch_edit_venues_only_criteria(self, legit_user, authenticated_client, criteria):
         new_criterion = criteria_factories.CriterionFactory()
@@ -2663,8 +2577,6 @@ class BatchEditVenuesTest(PostEndpointHelper):
         form_data = {
             "object_ids": ",".join(str(venue.id) for venue in venues),
             "criteria": [criteria[0].id, new_criterion.id],
-            "all_permanent": "",
-            "all_not_permanent": "",
         }
 
         response = self.post_to_endpoint(authenticated_client, form=form_data)
@@ -2674,60 +2586,6 @@ class BatchEditVenuesTest(PostEndpointHelper):
         assert cells[1] == str(venues[0].id)
 
         assert set(venues[0].criteria) == {criteria[0], new_criterion}
-
-    @pytest.mark.parametrize(
-        "set_permanent,thumb_count,expected_mail_number",
-        [
-            (True, 0, 1),
-            (False, 0, 0),
-            (True, 1, 0),
-        ],
-    )
-    @patch("pcapi.core.search.async_index_venue_ids")
-    def test_batch_edit_venues_set_permanent_sends_mail(
-        self,
-        mock_async_index_venue_ids,
-        legit_user,
-        authenticated_client,
-        criteria,
-        set_permanent,
-        thumb_count,
-        expected_mail_number,
-    ):
-        venue = offerers_factories.VenueFactory(isPermanent=not set_permanent)
-        venue.thumbCount = thumb_count
-
-        form_data = {
-            "object_ids": str(venue.id),
-            "all_permanent": "on" if set_permanent else "",
-            "all_not_permanent": "" if set_permanent else "on",
-        }
-
-        response = self.post_to_endpoint(authenticated_client, form=form_data)
-        assert response.status_code == 200
-
-        cells = html_parser.extract_plain_row(response.data, id=f"venue-row-{venue.id}")
-        assert cells[1] == str(venue.id)
-
-        assert venue.isPermanent is set_permanent
-
-        assert len(mails_testing.outbox) == expected_mail_number
-        if expected_mail_number > 0:
-            # check that email is sent when venue is set to permanent and has no image
-            assert mails_testing.outbox[0]["To"] == venue.bookingEmail
-            assert mails_testing.outbox[0]["template"] == TransactionalEmail.VENUE_NEEDS_PICTURE.value.__dict__
-            assert mails_testing.outbox[0]["params"]["VENUE_NAME"] == venue.publicName
-            assert mails_testing.outbox[0]["params"]["VENUE_FORM_URL"] == urls.build_pc_pro_venue_link(venue)
-
-        mock_async_index_venue_ids.assert_called_once()
-
-        action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.INFO_MODIFIED
-        assert action.authorUserId == legit_user.id
-        assert action.venue == venue
-        assert action.extraData["modified_info"] == {
-            "isPermanent": {"old_info": not set_permanent, "new_info": set_permanent}
-        }
 
 
 class GetRemovePricingPointFormTest(GetEndpointHelper):

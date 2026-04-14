@@ -86,7 +86,6 @@ class EditVenueForm(EditVirtualVenueForm):
         validators=(wtforms.validators.Length(max=5, message="doit contenir au maximum %(max)d caractères"),),
     )
     is_manual_address = fields.PCOptHiddenField("Édition manuelle de l'adresse")
-    is_permanent = fields.PCSwitchBooleanField("Partenaire culturel permanent")
     acceslibre_url = fields.PCOptStringField(
         "URL chez acceslibre",
         validators=(wtforms.validators.Optional(), wtforms.validators.URL()),
@@ -106,7 +105,6 @@ class EditVenueForm(EditVirtualVenueForm):
         self._fields.move_to_end("booking_email")
         self._fields.move_to_end("phone_number")
         self._fields.move_to_end("acceslibre_url")
-        self._fields.move_to_end("is_permanent")
 
     def validate_public_name(self, public_name: fields.PCOptStringField) -> fields.PCOptStringField:
         # venue.publicName is no longer nullable in the database.
@@ -171,10 +169,6 @@ class EditVenueForm(EditVirtualVenueForm):
             )
         if not acceslibre_connector.id_exists_at_acceslibre(slug=acceslibre_url.data.split("/")[-2]):
             raise validators.ValidationError("Cette URL n'existe pas chez acceslibre")
-        # TODO: (pcharlet 2025-04-04) delete this condition when removing isPermanent. Keep next condition over self.venue.isOpenToPublic is False
-        if self.is_permanent.data is False and acceslibre_url.data:
-            if self.venue.isOpenToPublic:
-                acceslibre_url.data = None
         if self.venue.isOpenToPublic is False and acceslibre_url.data:
             raise validators.ValidationError(
                 "Vous ne pouvez pas ajouter d'url à ce partenaire culturel car il n'est pas ouvert au public"
@@ -288,16 +282,6 @@ class BatchEditVenuesForm(empty_forms.BatchForm):
     criteria = fields.PCTomSelectField(
         "Tags", multiple=True, choices=[], validate_choice=False, endpoint="backoffice_web.autocomplete_criteria"
     )
-    all_permanent = fields.PCCheckboxField("Marquer tous les partenaires culturels comme permanents")
-    all_not_permanent = fields.PCCheckboxField("Marquer tous les partenaires culturels comme non permanents")
-
-    def validate_all_permanent(self, all_permanent: fields.PCCheckboxField) -> fields.PCCheckboxField:
-        if all_permanent.data and self._fields["all_not_permanent"].data:
-            raise wtforms.ValidationError(
-                "Impossible de passer tous les partenaires culturels en permanents et non permanents"
-            )
-
-        return all_permanent
 
 
 class RemovePricingPointForm(utils.PCForm):

@@ -29,8 +29,6 @@ from pcapi.core.finance import siret_api
 from pcapi.core.geography import models as geography_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
-from pcapi.core.history.api import add_action
-from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -801,8 +799,6 @@ def update_venue(venue_id: int) -> response_utils.BackofficeResponse:
         if field.name and hasattr(venue, to_camelcase(field.name))
     }
 
-    venue_was_permanent = venue.isPermanent
-    new_permanent = attrs.get("isPermanent")
     update_siret = False
     unavailable_entreprise_api = False
     if not venue.isVirtual and venue.siret != form.siret.data:
@@ -914,9 +910,6 @@ def update_venue(venue_id: int) -> response_utils.BackofficeResponse:
                 )
         mark_transaction_as_invalid()
         return redirect(url_for(".get", venue_id=venue_id))
-
-    if not venue_was_permanent and new_permanent and venue.thumbCount == 0:
-        transactional_mails.send_permanent_venue_needs_picture(venue)
 
     if update_siret:
         if unavailable_entreprise_api:
@@ -1035,21 +1028,14 @@ def batch_edit_venues() -> response_utils.BackofficeResponse:
     )
 
     updated_criteria_venues = _update_venues_criteria(venues=venues, criteria_ids=form.criteria.data)
-    updated_permanent_venues = []
-    if form.all_permanent.data:
-        updated_permanent_venues = _update_permanent_venues(venues=venues, is_permanent=True)
-    elif form.all_not_permanent.data:
-        updated_permanent_venues = _update_permanent_venues(venues=venues, is_permanent=False)
 
-    updated_venues = list(set(updated_criteria_venues + updated_permanent_venues))
-
-    db.session.add_all(updated_venues)
+    db.session.add_all(updated_criteria_venues)
     db.session.flush()
 
     on_commit(
         partial(
             search.async_index_venue_ids,
-            [v.id for v in updated_venues],
+            [v.id for v in updated_criteria_venues],
             reason=IndexationReason.VENUE_BATCH_UPDATE,
         )
     )
@@ -1082,23 +1068,6 @@ def _update_venues_criteria(
         changed_venues.append(venue)
 
     return changed_venues
-
-
-def _update_permanent_venues(venues: list[offerers_models.Venue], is_permanent: bool) -> list[offerers_models.Venue]:
-    venues_to_update = [venue for venue in venues if venue.isPermanent != is_permanent]
-
-    for venue in venues_to_update:
-        add_action(
-            history_models.ActionType.INFO_MODIFIED,
-            author=current_user,
-            venue=venue,
-            modified_info={"isPermanent": {"old_info": venue.isPermanent, "new_info": is_permanent}},
-        )
-        venue.isPermanent = is_permanent
-        if is_permanent and venue.thumbCount == 0:
-            transactional_mails.send_permanent_venue_needs_picture(venue)
-
-    return venues_to_update
 
 
 def _load_venue_for_removing_pricing_point(venue_id: int) -> offerers_models.Venue:
