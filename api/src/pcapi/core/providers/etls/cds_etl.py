@@ -89,7 +89,7 @@ class CDSExtractTransformLoadProcess(
             if not voucher_type:
                 self._log(
                     logging.WARNING,
-                    "Step 2 - Missing pass Culture tariff",
+                    "Step 2 - Missing pass Culture pricing",
                     {"show_id": show.id, "show_datetime": show.showtime},
                 )
                 continue
