@@ -201,9 +201,9 @@ if settings.PROFILE_REQUESTS:
     )
 
 
-# Our L7 load balancer adds 2 IPs to the `X-Forwarded-For` HTTP header.
-# And there is another proxy in front of our app. Hence `x_for=3`.
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=3)
+# Our GCP L7 load balancer appends 2 IPs to the `X-Forwarded-For` HTTP
+# header: the client IP and the Google Front End IP. Hence `x_for=2`.
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=2)
 
 if not settings.JWT_SECRET_KEY:
     raise ValueError("JWT_SECRET_KEY not found in env")
