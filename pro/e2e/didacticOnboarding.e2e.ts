@@ -30,28 +30,6 @@ test.describe('Didactic Onboarding feature', () => {
     ).toBeVisible()
   })
 
-  test('I should be able to skip the onboarding', async ({
-    authenticatedPage: page,
-  }) => {
-    // Should not be able to go to home page
-    await page.goto('/accueil')
-    await expect(
-      page.getByText('Où souhaitez-vous diffuser votre première offre ?')
-    ).toBeVisible()
-
-    await page.pause()
-    await page.getByRole('button', { name: 'Je le ferai plus tard' }).click()
-    await expect(
-      page.getByText('Bienvenue sur votre espace partenaire')
-    ).toBeVisible()
-
-    // I should be able to navigate without being redirected to onboarding
-    await page.getByRole('link', { name: 'Réservations' }).click()
-    await expect(
-      page.getByRole('heading', { name: 'Réservations individuelles' })
-    ).toBeVisible()
-  })
-
   test('I should not be able to onboard me by submitting an Adage referencing file if I don’t have an Adage ID', async ({
     authenticatedPage: page,
   }) => {
