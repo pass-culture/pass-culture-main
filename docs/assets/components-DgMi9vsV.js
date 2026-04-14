@@ -1,1 +1,0 @@
-import{P as e}from"./components-zDTBIFte.js";export{e as createCopyToClipboardFunction};
