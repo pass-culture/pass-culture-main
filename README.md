@@ -32,6 +32,9 @@ Le repo `main` contient les 4 projets suivants :
 - [gitleaks](https://github.com/gitleaks/gitleaks)
   - `brew install gitleaks`
 
+- [semgrep](https://semgrep.dev/)
+  - `brew install semgrep`
+
 ### Installer l'ensemble des projets
 
 Il vous faudra une clé SSH sur votre profil GitHub pour pouvoir cloner le repository.
