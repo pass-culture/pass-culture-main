@@ -326,3 +326,63 @@ class CulturalSurveyQuestionsTest:
         assert (
             testing.brevo_requests[0]["attributes"]["INTENDED_CATEGORIES"] == "PROJECTION_SPECTACLE,PROJECTION_CINEMA"
         )
+
+    @time_machine.travel("2020-01-01", tick=False)
+    @patch("pcapi.core.cultural_survey.tasks.store_public_object")
+    @pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_CULTURAL_SURVEY=True)
+    def test_post_cultural_survey_answers_with_celery(self, store_public_object_mock, client):
+        user: users_models.User = users_factories.UserFactory()
+        client.with_token(user)
+
+        all_answers = [
+            {
+                "questionId": CulturalSurveyQuestionEnum.SORTIES.value,
+                "answerIds": [
+                    CulturalSurveyAnswerEnum.FESTIVAL.value,
+                ],
+            },
+            {
+                "questionId": CulturalSurveyQuestionEnum.FESTIVALS.value,
+                "answerIds": [
+                    CulturalSurveyAnswerEnum.FESTIVAL_MUSIQUE.value,
+                ],
+            },
+            {
+                "questionId": CulturalSurveyQuestionEnum.PROJECTIONS.value,
+                "answerIds": [
+                    CulturalSurveyAnswerEnum.PROJECTION_SPECTACLE.value,
+                    CulturalSurveyAnswerEnum.PROJECTION_CINEMA.value,
+                ],
+            },
+        ]
+        response = client.post(
+            "/native/v1/cultural_survey/answers",
+            json={"answers": all_answers},
+        )
+
+        assert response.status_code == 204
+
+        answers_str = (
+            '{"user_id": %s, "submitted_at": "2020-01-01T00:00:00", "answers": '
+            '[{"question_id": "SORTIES", "answer_ids": ["FESTIVAL"]}, '
+            '{"question_id": "FESTIVALS", "answer_ids": ["FESTIVAL_MUSIQUE"]}, '
+            '{"question_id": "PROJECTIONS", "answer_ids": ["PROJECTION_SPECTACLE", "PROJECTION_CINEMA"]}]}'
+        ) % user.id
+
+        store_public_object_mock.assert_called_once_with(
+            folder="QPI_exports/qpi_answers_20200101",
+            object_id=f"user_id_{user.id}.jsonl",
+            blob=bytes(answers_str, "utf-8"),
+            content_type="application/json",
+            bucket=settings.GCP_DATA_BUCKET_NAME,
+            project_id=settings.GCP_DATA_PROJECT_ID,
+        )
+
+        assert not user.needsToFillCulturalSurvey
+        assert user.culturalSurveyFilledDate == date_utils.get_naive_utc_now()
+
+        assert len(testing.brevo_requests) == 1
+        assert testing.brevo_requests[0]["email"] == user.email
+        assert (
+            testing.brevo_requests[0]["attributes"]["INTENDED_CATEGORIES"] == "PROJECTION_SPECTACLE,PROJECTION_CINEMA"
+        )
