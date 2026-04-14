@@ -18,8 +18,6 @@ type Backend = CegidFinanceBackend | DummyFinanceBackend
 BACKEND_BY_KEY: typing.Final[dict[str, type[Backend]]] = {
     "CegidFinanceBackend": CegidFinanceBackend,
     "DummyFinanceBackend": DummyFinanceBackend,
-    "pcapi.core.finance.backend.dummy.DummyFinanceBackend": DummyFinanceBackend,
-    "pcapi.core.finance.backend.cegid.CegidFinanceBackend": CegidFinanceBackend,
 }
 
 
