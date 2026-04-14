@@ -4,7 +4,6 @@ from datetime import date
 from datetime import datetime
 from typing import Any
 from typing import Callable
-from typing import TypeVar
 
 import pydantic as pydantic_v2
 from pydantic.v1.class_validators import validator
@@ -244,9 +243,6 @@ def get_gtl_labels(gtl_id: str) -> GtlLabelsV2 | None:
     return None
 
 
-BaseOfferResponseType = TypeVar("BaseOfferResponseType", bound="BaseOfferResponse")
-
-
 class ReactionCountV2(BaseModel):
     likes: int
 
@@ -254,7 +250,7 @@ class ReactionCountV2(BaseModel):
 MAX_PREVIEW_CHRONICLES = 5
 
 
-class BaseOfferResponseGetterDict(GetterDict):
+class OfferResponseV2GetterDict(GetterDict):
     def get(self, key: str, default: Any = None) -> Any:
         offer: models.Offer = self._obj
         product: models.Product | None = offer.product
@@ -476,7 +472,7 @@ class OfferVideoV2(ConfiguredBaseModel):
     durationSeconds: int | None
 
 
-class BaseOfferResponse(ConfiguredBaseModel):
+class OfferResponseV2(ConfiguredBaseModel):
     id: int
     accessibility: OfferAccessibilityResponseV2
     address: OfferAddressResponseV2 | None
@@ -497,6 +493,7 @@ class BaseOfferResponse(ConfiguredBaseModel):
     isDigital: bool
     isDuo: bool
     isEducational: bool
+    images: dict[str, OfferImageResponseV2] | None
     last30DaysBookings: int | None
     metadata: offer_metadata.Metadata
     name: str
@@ -510,15 +507,7 @@ class BaseOfferResponse(ConfiguredBaseModel):
     withdrawalDetails: str | None
 
     class Config:
-        getter_dict = BaseOfferResponseGetterDict
-
-
-class OfferResponse(BaseOfferResponse):
-    image: OfferImageResponseV2 | None
-
-
-class OfferResponseV2(BaseOfferResponse):
-    images: dict[str, OfferImageResponseV2] | None
+        getter_dict = OfferResponseV2GetterDict
 
 
 class OffersStocksResponseV2(BaseModel):
