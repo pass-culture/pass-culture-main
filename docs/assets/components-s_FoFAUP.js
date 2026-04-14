@@ -1,1 +1,0 @@
-import{P as e}from"./components-DC2nh-GK.js";export{e as createCopyToClipboardFunction};
