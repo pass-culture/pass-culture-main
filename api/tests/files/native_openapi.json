@@ -8007,13 +8007,15 @@
             },
             "TicketDisplayEnum": {
                 "enum": [
+                    "cinema_voucher",
                     "email_sent",
                     "email_will_be_sent",
+                    "external_ticket",
+                    "hidden_external_ticket",
+                    "no_ticket",
                     "online_code",
-                    "not_visible",
-                    "qr_code",
-                    "voucher",
-                    "ticket"
+                    "ticket",
+                    "voucher"
                 ],
                 "title": "TicketDisplayEnum",
                 "type": "string"

@@ -993,45 +993,21 @@ class GetBookingTicketTest:
         assert ticket["withdrawal"]["type"] == "on_site"
         assert ticket["withdrawal"]["delay"] == 60 * 30
 
-    def test_get_booking_no_ticket(self, client):
-        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        booking = booking_factories.BookingFactory(
-            user=user,
-            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
-            stock__offer__withdrawalType=offer_models.WithdrawalTypeEnum.NO_TICKET,
-        )
-
-        client.with_token(user)
-        with assert_num_queries(2):  # user + booking
-            response = client.get("/native/v2/bookings")
-            assert response.status_code == 200
-
-        ticket = response.json["ongoingBookings"][0]["ticket"]
-        assert ticket["display"] == "voucher"
-        assert ticket["voucher"] == {"data": f"PASSCULTURE:v3;TOKEN:{booking.token}"}
-        assert ticket["token"] == {
-            "data": booking.token,
-        }
-        assert ticket["activationCode"] is None
-
     def test_get_booking_event_no_ticket(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         booking = booking_factories.BookingFactory(
             user=user,
-            stock__offer__subcategoryId=subcategories.VISITE_GUIDEE.id,
+            stock__offer__subcategoryId=subcategories.CONCERT.id,
             stock__offer__withdrawalType=offer_models.WithdrawalTypeEnum.NO_TICKET,
         )
 
         client.with_token(user)
-        with assert_num_queries(2):  # user + booking
-            response = client.get("/native/v2/bookings")
-            assert response.status_code == 200
+        response = client.get(f"/native/v2/bookings/{booking.id}")
+        assert response.status_code == 200
 
-        ticket = response.json["ongoingBookings"][0]["ticket"]
-        assert ticket["display"] == "ticket"
-        assert ticket["token"] == {
-            "data": booking.token,
-        }
+        ticket = response.json["ticket"]
+        assert ticket["display"] == "no_ticket"
+        assert ticket["token"] is None
         assert ticket["voucher"] is None
         assert ticket["activationCode"] is None
 
@@ -1043,8 +1019,9 @@ class GetBookingTicketTest:
         )
 
         client.with_token(user)
-        response = client.get(f"/native/v2/bookings/{booking.id}")
-        assert response.status_code == 200
+        with assert_num_queries(3):  # user + bookings + booking
+            response = client.get(f"/native/v2/bookings/{booking.id}")
+            assert response.status_code == 200
 
         ticket = response.json["ticket"]
         assert ticket["display"] == "voucher"
@@ -1150,30 +1127,16 @@ class GetBookingTicketTest:
         assert ticket["display"] == "voucher"
 
     @pytest.mark.parametrize(
-        "subcategory,withdrawal_type,voucher,display",
+        "subcategory,withdrawal_type",
         [
-            (subcategories.CONCERT.id, offer_models.WithdrawalTypeEnum.ON_SITE, False, "ticket"),
+            (subcategories.CONCERT.id, offer_models.WithdrawalTypeEnum.ON_SITE),
             (
                 subcategories.EVENEMENT_CINE.id,
                 offer_models.WithdrawalTypeEnum.ON_SITE,
-                False,
-                "ticket",
-            ),
-            (
-                subcategories.SEANCE_CINE.id,
-                offer_models.WithdrawalTypeEnum.ON_SITE,
-                True,
-                "qr_code",
-            ),
-            (
-                subcategories.FESTIVAL_MUSIQUE.id,
-                offer_models.WithdrawalTypeEnum.ON_SITE,
-                False,
-                "ticket",
             ),
         ],
     )
-    def test_get_internal_event_ticket(self, client, subcategory, withdrawal_type, voucher, display):
+    def test_get_internal_event_ticket(self, client, subcategory, withdrawal_type):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         booking = booking_factories.BookingFactory(
             user=user,
@@ -1182,19 +1145,35 @@ class GetBookingTicketTest:
         )
 
         client.with_token(user)
-        with assert_num_queries(2):  # user + booking
-            response = client.get("/native/v2/bookings")
+        with assert_num_queries(3):  # user + bookings + booking
+            response = client.get(f"/native/v2/bookings/{booking.id}")
             assert response.status_code == 200
 
-        ticket = response.json["ongoingBookings"][0]["ticket"]
-        if voucher:
-            assert ticket["voucher"] == {"data": f"PASSCULTURE:v3;TOKEN:{booking.token}"}
-        else:
-            assert ticket["voucher"] == None
+        ticket = response.json["ticket"]
+
+        assert ticket["voucher"] is None
         assert ticket["token"] == {
             "data": booking.token,
         }
-        assert ticket["display"] == display
+        assert ticket["display"] == "ticket"
+
+    def test_get_physical_event_no_ticket(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        booking = booking_factories.BookingFactory(
+            user=user,
+            stock__offer__subcategoryId=subcategories.CONCERT.id,
+            stock__offer__withdrawalType=offer_models.WithdrawalTypeEnum.NO_TICKET,
+        )
+
+        client.with_token(user)
+        with assert_num_queries(3):  # user + bookings + booking
+            response = client.get(f"/native/v2/bookings/{booking.id}")
+            assert response.status_code == 200
+
+        ticket = response.json["ticket"]
+        assert ticket["token"] == None
+        assert ticket["voucher"] == None
+        assert ticket["display"] == "no_ticket"
 
     @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_get_external_event_ticket_visible(self, client):
@@ -1215,11 +1194,11 @@ class GetBookingTicketTest:
         ExternalBookingFactory(booking=booking, barcode="111111112", seat="A_2")
 
         client.with_token(user)
-        with assert_num_queries(2):  # user + booking
-            response = client.get("/native/v2/bookings")
+        with assert_num_queries(3):  # user + bookings + booking
+            response = client.get(f"/native/v2/bookings/{booking.id}")
             assert response.status_code == 200
 
-        ticket = response.json["ongoingBookings"][0]["ticket"]
+        ticket = response.json["ticket"]
         response_data = sorted(ticket["externalBooking"]["data"], key=lambda x: x["seat"])
         assert response_data == [
             {"barcode": "111111111", "seat": "A_1"},
@@ -1228,7 +1207,7 @@ class GetBookingTicketTest:
 
         assert ticket["token"] is None
         assert ticket["voucher"] is None
-        assert ticket["display"] == "qr_code"
+        assert ticket["display"] == "external_ticket"
 
     @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_get_external_event_ticket_hidden(self, client):
@@ -1249,15 +1228,34 @@ class GetBookingTicketTest:
         ExternalBookingFactory(booking=booking, barcode="111111112", seat="A_2")
 
         client.with_token(user)
-        with assert_num_queries(2):  # user + booking
-            response = client.get("/native/v2/bookings")
+        with assert_num_queries(3):  # user + bookings + booking
+            response = client.get(f"/native/v2/bookings/{booking.id}")
             assert response.status_code == 200
 
-        ticket = response.json["ongoingBookings"][0]["ticket"]
+        ticket = response.json["ticket"]
         assert ticket["externalBooking"] == {
             "data": None,
         }
 
         assert ticket["token"] is None
         assert ticket["voucher"] is None
-        assert ticket["display"] == "not_visible"
+        assert ticket["display"] == "hidden_external_ticket"
+
+    def test_get_cinema_voucher(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        booking = booking_factories.BookingFactory(
+            user=user,
+            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
+        )
+
+        client.with_token(user)
+        with assert_num_queries(3):  # user + bookings + booking
+            response = client.get(f"/native/v2/bookings/{booking.id}")
+            assert response.status_code == 200
+
+        ticket = response.json["ticket"]
+        assert ticket["token"] == {
+            "data": booking.token,
+        }
+        assert ticket["voucher"] == {"data": f"PASSCULTURE:v3;TOKEN:{booking.token}"}
+        assert ticket["display"] == "cinema_voucher"
