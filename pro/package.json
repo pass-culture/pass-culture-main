@@ -124,11 +124,6 @@
     "vitest-fail-on-console": "0.10.1",
     "vitest-fetch-mock": "0.4.5"
   },
-  "resolutions": {
-    "string-width": "4.2.3",
-    "vite-plugin-html/ejs/jake/minimatch": "3.1.4",
-    "picomatch": "2.3.2"
-  },
   "engines": {
     "node": "24.8"
   },
