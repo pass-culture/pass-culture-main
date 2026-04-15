@@ -146,9 +146,6 @@ class FeatureToggle(enum.Enum):
         "Activer la fonctionnalité d'anonymisation autonome des données personnelles depuis le portail pro"
     )
     WIP_SWITCH_VENUE = "Activer la gestion de l'espace partenaire par venue sans passer par l'offerer"
-    WIP_ASYNCHRONOUS_CELERY_CULTURAL_SURVEY = (
-        "Activer le backend de tâches asynchrones Celery pour la synchro avec le cultural survey"
-    )
     WIP_VOLUNTEERING = "Active la fonctionnalité de bénévolat"
     WIP_ENABLE_CULTURAL_OUTREACH = "Active la déclaration des actions de médiation culturelle"
 
@@ -209,7 +206,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.SYNCHRONIZE_ALLOCINE_PRODUCTS_FROM_BIGQUERY_TABLES,
     FeatureToggle.VENUE_REGULARIZATION,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CHECK_OFFERERS,
-    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CULTURAL_SURVEY,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_EXTERNAL_BOOKING,
     FeatureToggle.WIP_ENABLE_CULTURAL_OUTREACH,
     FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS,
