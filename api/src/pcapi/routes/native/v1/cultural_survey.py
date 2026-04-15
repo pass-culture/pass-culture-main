@@ -5,11 +5,8 @@ from flask_login import current_user
 from pcapi.core.cultural_survey import cultural_survey
 from pcapi.core.cultural_survey import tasks
 from pcapi.core.external.attributes.api import update_external_user
-from pcapi.models.feature import FeatureToggle
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.tasks import cultural_survey_tasks
-from pcapi.tasks.serialization.cultural_survey_tasks import CulturalSurveyAnswersForData
 from pcapi.utils import date as date_utils
 from pcapi.utils.repository import transaction
 
@@ -41,26 +38,18 @@ def get_cultural_survey_questions() -> serializers.CulturalSurveyQuestionsRespon
 )
 @authenticated_and_active_user_required
 def post_cultural_survey_answers(body: serializers.CulturalSurveyAnswersRequest) -> None:
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CULTURAL_SURVEY.is_active():
-        answers = [
-            tasks.CulturalSurveyTaskAnswer(question_id=answer.question_id, answer_ids=answer.answer_ids)
-            for answer in body.answers
-        ]
-        payload_celery = tasks.CulturalSurveyTaskAnswers(
-            user_id=current_user.id,
-            submitted_at=date_utils.get_naive_utc_now().isoformat(),
-            answers=answers,
-        )
+    answers = [
+        tasks.CulturalSurveyTaskAnswer(question_id=answer.question_id, answer_ids=answer.answer_ids)
+        for answer in body.answers
+    ]
+    payload = tasks.CulturalSurveyTaskAnswers(
+        user_id=current_user.id,
+        submitted_at=date_utils.get_naive_utc_now().isoformat(),
+        answers=answers,
+    )
 
-        tasks.upload_answers_task.delay(payload_celery.model_dump())
-    else:
-        payload = CulturalSurveyAnswersForData(
-            user_id=current_user.id,
-            submitted_at=date_utils.get_naive_utc_now().isoformat(),
-            answers=body.answers,
-        )
+    tasks.upload_answers_task.delay(payload.model_dump())
 
-        cultural_survey_tasks.upload_answers_task.delay(payload)
     with transaction():
         current_user.needsToFillCulturalSurvey = False
         current_user.culturalSurveyFilledDate = date_utils.get_naive_utc_now()
