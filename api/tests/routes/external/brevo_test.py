@@ -24,7 +24,6 @@ class SubscribeOrUnsubscribeUserTestHelper:
     expected_marketing_email = NotImplemented
 
     def test_webhook_ok(self, client):
-        # Given
         existing_user = UserFactory(
             email="lucy.ellingson@kennet.ca",
             notificationSubscriptions={"marketing_push": True, "marketing_email": self.initial_marketing_email},
@@ -32,10 +31,8 @@ class SubscribeOrUnsubscribeUserTestHelper:
         data = {"email": "lucy.ellingson@kennet.ca"}
         assert existing_user.notificationSubscriptions["marketing_email"] is self.initial_marketing_email
 
-        # When
         response = client.post(self.endpoint, json=data)
 
-        # Then
         assert response.status_code == 204
         db.session.refresh(existing_user)
         assert existing_user.notificationSubscriptions["marketing_email"] is self.expected_marketing_email
@@ -65,14 +62,11 @@ class SubscribeOrUnsubscribeUserTestHelper:
         assert response.status_code == 400
 
     def test_webhook_user_does_not_exist(self, client):
-        # Given
         data = {"email": "lucy.ellingson@kennet.ca"}
 
-        # When
         response = client.post(self.endpoint, json=data)
 
-        # Then
-        assert response.status_code == 400
+        assert response.status_code == 204  # avoids enumeration
 
 
 @pytest.mark.usefixtures("db_session")
@@ -92,11 +86,9 @@ class SubscribeUserTest(SubscribeOrUnsubscribeUserTestHelper):
 @pytest.mark.usefixtures("db_session")
 class NotifyImportContactsTest:
     def test_notify_importcontacts(self, client, caplog):
-        # When
         with caplog.at_level(logging.INFO):
             response = client.post("/webhooks/sendinblue/importcontacts/18/1")
 
-        # Then
         assert response.status_code == 204
         assert caplog.records[0].message == "ContactsApi->import_contacts finished"
         assert caplog.records[0].extra == {
