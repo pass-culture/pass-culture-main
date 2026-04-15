@@ -53,8 +53,8 @@ $dark-bg-subtle:          $gray-400;
 // scss-docs-end theme-bg-subtle-variables
 
 // scss-docs-start theme-border-subtle-variables
-$primary-border-subtle:   tint-color($primary, 60%);
-$secondary-border-subtle: tint-color($secondary, 60%);
+$primary-border-subtle:   $purple-400;
+$secondary-border-subtle: $gray-200;
 $success-border-subtle:   tint-color($success, 60%);
 $info-border-subtle:      tint-color($info, 60%);
 $warning-border-subtle:   tint-color($warning, 60%);
@@ -215,3 +215,4 @@ $purple-400: #6123DF;
 $purple-500: #320096;
 $purple-600: #25026C;
 // scss-doc-end colors
+
