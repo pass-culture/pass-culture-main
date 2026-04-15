@@ -46,7 +46,6 @@ from requests import exceptions  # noqa: TID251 F401
 
 logger = logging.getLogger(__name__)
 
-# See also `BREVO_REQUEST_TIMEOUT` in pcapi.settings
 REQUEST_TIMEOUT_IN_SECOND = 10
 
 
