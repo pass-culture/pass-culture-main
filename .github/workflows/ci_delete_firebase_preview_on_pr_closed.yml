@@ -1,12 +1,9 @@
-name: "1 [on_pull_request] Delete PR deployment"
+name: "1 [CI] Delete PR preview deployment"
 
 on:
-  pull_request:
-    types:
-      - closed
+  pull_request: { types: closed }
 
 jobs:
-  # Delete pro preview deployment
   delete-pro-firebase-preview-deployment:
     name: "Delete pro preview deployment"
     runs-on: ubuntu-22.04
