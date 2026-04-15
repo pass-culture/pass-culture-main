@@ -14,9 +14,6 @@ jobs:
     if: (github.actor != 'dependabot[bot]')
     permissions:
       security-events: write
-      # only required for workflows in private repositories
-      # actions: read
-      # contents: read
 
     steps:
       - name: Checkout repository
