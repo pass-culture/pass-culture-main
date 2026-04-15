@@ -1,4 +1,4 @@
-name: Semgrep
+name: 3 [CI] Daily Security scan
 
 on:
   schedule: 
