@@ -1,0 +1,80 @@
+name: "1 [CD] Deploy Staging on major release"
+
+on:
+  push:
+    tags: "v[0-9]+.0.0"
+  workflow_dispatch:
+
+permissions: write-all
+
+jobs:
+  notify-workflow-start:
+    name: Notify staging deployment has started
+    uses: ./.github/workflows/slack_post_message_workflow.yml
+    with:
+      channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
+      message: ":github-pending: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `${{ github.ref_name }}` est lancée"
+    secrets: inherit
+
+  get-release-number: # version without v
+    name: Get release number
+    runs-on: ubuntu-22.04
+    outputs:
+      release-number: ${{ steps.store-release-number.outputs.release-number }}
+    steps:
+      - name: Store release number
+        id: store-release-number
+        run: |
+          echo "release-number=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    name: Deploy to staging new infra
+    needs: get-release-number
+    if: always() && !failure() && !cancelled()
+    uses: ./.github/workflows/dev_on_workflow_deploy.yml
+    with:
+      environment: staging
+      environment_short_name: stg
+      app_version: "${{ needs.get-release-number.outputs.release-number }}"
+      workflow_cluster_name: gke-infra-prd-eu9
+      workflow_project_id: pc-infra-prd
+      app_cluster_name: gke-backend-stg-eu9
+      app_project_id: pc-backend-stg
+      location: europe-west9
+      is_new_infra: true
+      workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
+      apply_algolia_config: true
+      deploy_api: true
+      deploy_pro: true
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      NEW_INFRA_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PRD }}
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+
+  notify-success:
+    name: Notify deployment has succeeded
+    needs:
+      - notify-workflow-start
+      - deploy
+    if: always() && !failure() && !cancelled()
+    uses: ./.github/workflows/slack_update_message_workflow.yml
+    with:
+      channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
+      message-ts: ${{ needs.notify-workflow-start.outputs.message-ts }}
+      message: ":github-success: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `${{ github.ref_name }}` a réussi"
+    secrets: inherit
+
+  notify-failure:
+    name: Notify deployment has failed
+    needs:
+      - notify-workflow-start
+      - deploy
+    if: always() && (failure() || cancelled())
+    uses: ./.github/workflows/slack_update_message_workflow.yml
+    with:
+      channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
+      message-ts: ${{ needs.notify-workflow-start.outputs.message-ts }}
+      message: ":github-failure: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `${{ github.ref_name }}` a échoué  cc <!subteam^${{vars.SLACK_SHERIF_BACK_ID}}> <!subteam^${{vars.SLACK_SHERIF_INFRA_ID}}>"
+    secrets: inherit

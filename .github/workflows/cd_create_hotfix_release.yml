@@ -50,6 +50,7 @@ jobs:
       tag-number: ${{ needs.compute-hotfix-tag-number.outputs.hotfix-tag-number }}
       ref: ${{ github.ref }}
       base-ref-is-a-branch: true
+    secrets: inherit
 
   notify-end-of-workflow:
     name: Send end of workflow notification
