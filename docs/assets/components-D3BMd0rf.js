@@ -1,1 +1,0 @@
-import{P as e}from"./components-aaINMagL.js";export{e as createCopyToClipboardFunction};
