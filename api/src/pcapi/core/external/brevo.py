@@ -271,6 +271,7 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
 
 def format_pro_attributes(attributes: attributes_models.ProAttributes) -> dict:
     return {
+        BrevoAttributes.DEPARTMENT_CODE.value: _get_attr(attributes, "departement_code", format_list_or_str),
         BrevoAttributes.DMS_APPLICATION_APPROVED.value: _get_attr(attributes, "dms_application_approved"),
         BrevoAttributes.DMS_APPLICATION_SUBMITTED.value: _get_attr(attributes, "dms_application_submitted"),
         BrevoAttributes.FIRSTNAME.value: _get_attr(attributes, "first_name"),
@@ -292,6 +293,7 @@ def format_pro_attributes(attributes: attributes_models.ProAttributes) -> dict:
         BrevoAttributes.MARKETING_EMAIL_SUBSCRIPTION.value: _get_attr(attributes, "marketing_email_subscription"),
         BrevoAttributes.OFFERER_NAME.value: _get_attr(attributes, "offerers_names", format_list),
         BrevoAttributes.OFFERER_TAG.value: _get_attr(attributes, "offerers_tags", format_list),
+        BrevoAttributes.POSTAL_CODE.value: _get_attr(attributes, "postal_code", format_list_or_str),
         BrevoAttributes.USER_ID.value: _get_attr(attributes, "user_id"),
         BrevoAttributes.USER_IS_ATTACHED.value: _get_attr(attributes, "user_is_attached"),
         BrevoAttributes.USER_IS_CREATOR.value: _get_attr(attributes, "user_is_creator"),
