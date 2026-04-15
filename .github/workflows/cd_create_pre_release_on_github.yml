@@ -1,0 +1,115 @@
+name: "3 [CD] Create pre-release on GitHub"
+
+on:
+  workflow_call:
+    inputs:
+      base_ref:
+        # The base ref to tag from.
+        # Can be a branch name, a tag or a commit.
+        required: true
+        type: string
+
+      tag_number:
+        # 200.0.2 for example.
+        required: true
+        type: string
+
+      base_ref_is_a_branch:
+        required: false
+        type: boolean
+        default: false
+
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: { required: true }
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: { required: true }
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  create-pre-release-on-github:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Authenticate through github app ghactionci
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        id: github-token
+        with:
+          app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+          private-key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: pass-culture-main
+          permission-contents: write
+
+      - name: Checkout ref
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ inputs.base_ref }}
+          token: ${{ steps.github-token.outputs.token }}
+
+      - name: Add version to api
+        env:
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+          TAG_NUMBER: ${{ inputs.tag_number }}
+        working-directory: api
+        run: |
+          echo "$TAG_NUMBER" > version.txt
+          git add version.txt
+
+      - name: Add version to pro
+        env:
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+          TAG_NUMBER: ${{ inputs.tag_number }}
+        working-directory: pro
+        run: |
+          yarn version --new-version "$TAG_NUMBER"
+          git add package.json
+
+      - name: Add version to image-resizing
+        env:
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+          TAG_NUMBER: ${{ inputs.tag_number }}
+        working-directory: app-engine/image-resizing
+        run: |
+          echo "$TAG_NUMBER" > version.txt
+          git add version.txt
+
+      - name: Configure git author
+        env:
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+          GIT_CONFIG_EMAIL: ${{ vars.GH_ACTIONS_BOT_EMAIL }}
+          GIT_CONFIG_NAME: ${{ github.actor }}
+        run: |
+          git config --global user.email "$GIT_CONFIG_EMAIL"
+          git config --global user.name "$GIT_CONFIG_NAME"
+
+      - name: Tag release
+        env:
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+          TAG_NAME: v${{ inputs.tag_number }}
+        run: |
+          git commit -m "🚀 $TAG_NAME" -n
+          git tag -a "$TAG_NAME" -m "🚀 $TAG_NAME"
+          git push origin "$TAG_NAME"
+
+      - name: Push tag to base ref
+        env:
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+          BASE_REF: ${{ inputs.base_ref }}
+        if: ${{ inputs.base_ref_is_a_branch }}
+        run: git push origin "$BASE_REF"
+
+      - name: Create Github prerelease
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+        # generate notes vs the latest release
+        # beware of the order of the args !
+        run: |
+          latest_release="$(gh release list --json name,isLatest --jq '.[] | select(.isLatest)|.name')"
+          gh release create "$TAG_NAME" \
+          --title "$TAG_NAME" \
+          --verify-tag \
+          --prerelease \
+          --generate-notes \
+          --notes-start-tag="$latest_release"
