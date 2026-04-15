@@ -190,7 +190,9 @@ class Activity(enum.Enum):
     ART_GALLERY = "ART_GALLERY"
     ART_SCHOOL = "ART_SCHOOL"
     ARTISTIC_COMPANY = "ARTISTIC_COMPANY"
+    ARTISTIC_PRACTICE = "ARTISTIC_PRACTICE"
     ARTS_CENTRE = "ARTS_CENTRE"
+    # TODO (lmaubert 2026-04): Remove 'ARTS_EDUCATION', replaced by 'ARTISTIC_PRACTICE'
     ARTS_EDUCATION = "ARTS_EDUCATION"
     BOOKSTORE = "BOOKSTORE"
     CINEMA = "CINEMA"
@@ -204,6 +206,7 @@ class Activity(enum.Enum):
     GAMES_CENTRE = "GAMES_CENTRE"
     HERITAGE_SITE = "HERITAGE_SITE"
     LIBRARY = "LIBRARY"
+    MUNICIPALITY_CULTURAL_DEPARTMENT = "MUNICIPALITY_CULTURAL_DEPARTMENT"
     MUSEUM = "MUSEUM"
     MUSIC_INSTRUMENT_STORE = "MUSIC_INSTRUMENT_STORE"
     # TODO: (lmaubert 2026-01): Remove 'NOT_ASSIGNED' that was used for non-ERP structures (is_open_to_public=False) in a previous version
@@ -215,6 +218,7 @@ class Activity(enum.Enum):
     PRESS = "PRESS"
     PRESS_OR_MEDIA = "PRESS_OR_MEDIA"
     PRODUCTION_OR_PROMOTION_COMPANY = "PRODUCTION_OR_PROMOTION_COMPANY"
+    PUBLISHING_HOUSE = "PUBLISHING_HOUSE"
     RADIO_OR_MUSIC_STREAMING = "RADIO_OR_MUSIC_STREAMING"
     RECORD_STORE = "RECORD_STORE"
     SCIENCE_CENTRE = "SCIENCE_CENTRE"
@@ -244,6 +248,7 @@ ActivityOpenToPublic: enum.EnumType = enum.Enum(  # type: ignore[misc]
             "ART_GALLERY",
             "ART_SCHOOL",
             "ARTS_CENTRE",
+            "ARTISTIC_PRACTICE",
             "BOOKSTORE",
             "CINEMA",
             "COMMUNITY_CENTRE",
@@ -257,6 +262,7 @@ ActivityOpenToPublic: enum.EnumType = enum.Enum(  # type: ignore[misc]
             "MUSIC_INSTRUMENT_STORE",
             "OTHER",
             "PERFORMANCE_HALL",
+            "PUBLISHING_HOUSE",
             "RECORD_STORE",
             "SCIENCE_CENTRE",
             "TOURIST_INFORMATION_CENTRE",
@@ -273,12 +279,15 @@ ActivityNotOpenToPublic: enum.EnumType = enum.Enum(  # type: ignore[misc]
         if x.name
         in (
             "ARTISTIC_COMPANY",
-            "ARTS_EDUCATION",
+            "ARTISTIC_PRACTICE",
             "CULTURAL_MEDIATION",
             "FESTIVAL",
+            "HERITAGE_SITE",
+            "MUNICIPALITY_CULTURAL_DEPARTMENT",
             "OTHER",
             "PRESS_OR_MEDIA",
             "PRODUCTION_OR_PROMOTION_COMPANY",
+            "PUBLISHING_HOUSE",
             "RADIO_OR_MUSIC_STREAMING",
             "TELEVISION_OR_VIDEO_STREAMING",
             "TRAVELLING_CINEMA",

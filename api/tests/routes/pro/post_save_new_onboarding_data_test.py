@@ -348,17 +348,17 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {
             "activity.enum[ActivityNotOpenToPublic]": [
-                "Input should be 'ARTISTIC_COMPANY', 'ARTS_EDUCATION', "
-                "'CULTURAL_MEDIATION', 'FESTIVAL', 'OTHER', 'PRESS_OR_MEDIA', "
-                "'PRODUCTION_OR_PROMOTION_COMPANY', 'RADIO_OR_MUSIC_STREAMING', "
+                "Input should be 'ARTISTIC_COMPANY', 'ARTISTIC_PRACTICE', "
+                "'CULTURAL_MEDIATION', 'FESTIVAL', 'HERITAGE_SITE', 'MUNICIPALITY_CULTURAL_DEPARTMENT', 'OTHER', 'PRESS_OR_MEDIA', "
+                "'PRODUCTION_OR_PROMOTION_COMPANY', 'PUBLISHING_HOUSE', 'RADIO_OR_MUSIC_STREAMING', "
                 "'TELEVISION_OR_VIDEO_STREAMING' or 'TRAVELLING_CINEMA'",
             ],
             "activity.enum[ActivityOpenToPublic]": [
-                "Input should be 'ART_GALLERY', 'ART_SCHOOL', 'ARTS_CENTRE', "
+                "Input should be 'ART_GALLERY', 'ART_SCHOOL', 'ARTISTIC_PRACTICE', 'ARTS_CENTRE', "
                 "'BOOKSTORE', 'CINEMA', 'COMMUNITY_CENTRE', 'CREATIVE_ARTS_STORE', "
                 "'CULTURAL_CENTRE', 'DISTRIBUTION_STORE', 'FESTIVAL', 'HERITAGE_SITE', "
                 "'LIBRARY', 'MUSEUM', 'MUSIC_INSTRUMENT_STORE', 'OTHER', "
-                "'PERFORMANCE_HALL', 'RECORD_STORE', 'SCIENCE_CENTRE' or "
+                "'PERFORMANCE_HALL', 'PUBLISHING_HOUSE', 'RECORD_STORE', 'SCIENCE_CENTRE' or "
                 "'TOURIST_INFORMATION_CENTRE'",
             ],
         }
