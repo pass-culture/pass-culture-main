@@ -42,6 +42,5 @@ jobs:
           image: ${{ inputs.image }}
           context: api
           tag: ${{ inputs.tag }}
-          artifact_path: |
-            ./
-            !./pro/scripts/generator
+          # updating the layer cache can take up to a minute, and will almost never be used aside from master
+          write-cache: ${{ github.ref == 'refs/heads/master' }}
