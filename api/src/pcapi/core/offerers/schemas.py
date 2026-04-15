@@ -73,7 +73,7 @@ class RequiredStrippedString(pydantic_v1.ConstrainedStr):
 
 
 WEBSITE_URL_REGEX = r"^(?:http(s)?:\/\/)?[\w.-\.-\.@]+(?:\.[\w\.-\.@]+)+[\w\-\._~:\/?#[\]@%!\$&'\(\)\*\+,;=.]+$"
-COMPILED_WEBSITE_URL_REGEX = re.compile(WEBSITE_URL_REGEX)
+COMPILED_WEBSITE_URL_REGEX = re.compile(WEBSITE_URL_REGEX, flags=re.IGNORECASE)
 
 
 # NOTE(jbaudet - 02/2026): deprecated -> pydantic v2 migration ongoing

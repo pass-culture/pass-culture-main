@@ -339,6 +339,22 @@ class Returns200Test:
 
         assert response.json["activity"] is None
 
+    def test_venue_with_MiXeDcAsE_contact_website(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        WEBSITE = "HtTpS://mY.wEbSiTe.CoM/"
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            contact__website=WEBSITE,
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        venue_id = venue.id
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_request.get("/venues/%s" % venue_id)
+            assert response.status_code == 200
+
+        assert response.json["contact"]["website"] == WEBSITE
+
     def should_set_default_crop_params_when_venue_picture_has_no_crop_params(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
         venue = offerers_factories.VenueFactory(
