@@ -109,7 +109,7 @@ class BrevoOptionalAttributes(Enum):
 
 def _get_brevo_client(use_pro_subaccount: bool) -> brevo.Brevo:
     api_key = settings.SENDINBLUE_PRO_API_KEY if use_pro_subaccount else settings.SENDINBLUE_API_KEY
-    return brevo.Brevo(api_key=api_key, timeout=settings.BREVO_REQUEST_TIMEOUT)
+    return brevo.Brevo(api_key=api_key, timeout=settings.BREVO_CONTACTS_REQUEST_TIMEOUT)
 
 
 def update_contact_email(user: users_models.User, old_email: str, new_email: str, asynchronous: bool = True) -> None:
