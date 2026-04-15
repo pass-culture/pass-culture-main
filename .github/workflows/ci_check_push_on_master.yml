@@ -37,7 +37,7 @@ jobs:
     name: "Deploy Storybook"
     needs: [compute-changes, test-changes]
     if: ${{ always() && needs.compute-changes.outputs.pro-changed == 'true' }}
-    uses: ./.github/workflows/dev_on_workflow_deploy_storybook.yml
+    uses: ./.github/workflows/ci_deploy_storybook.yml
 
   deploy-maintenance-site:
     name: "Deploy maintenance site"
