@@ -3,8 +3,7 @@ name: Semgrep
 on:
   schedule: 
     - cron: 12 8 * * *
-
-  workflow_dispatch: {}
+  workflow_dispatch:
 
 jobs:
   semgrep_scan:
