@@ -287,7 +287,7 @@ describe('VenueEditionHeader', () => {
 
     expect(api.deleteVenueBanner).toHaveBeenCalledWith(defaultGetVenue.id)
     expect(mockMutate).toHaveBeenCalledWith(
-      [GET_VENUE_QUERY_KEY, defaultGetVenue.id],
+      [GET_VENUE_QUERY_KEY, String(defaultGetVenue.id)],
       expect.any(Function),
       { revalidate: true }
     )
