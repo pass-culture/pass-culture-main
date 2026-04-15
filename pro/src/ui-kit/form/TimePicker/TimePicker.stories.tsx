@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react/*'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { PropsWithChildren } from 'react'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 
@@ -39,7 +39,7 @@ export const WithinForm: Story = {
     label: 'Select a time',
   },
   decorators: [
-    (Story) => (
+    (Story: any) => (
       <Wrapper>
         <Story />
       </Wrapper>
