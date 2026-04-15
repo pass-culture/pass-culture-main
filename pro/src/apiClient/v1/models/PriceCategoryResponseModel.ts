@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type PriceCategoryResponseModel = {
+  hasStocks: boolean;
   id: number;
   label: string;
   price: number;

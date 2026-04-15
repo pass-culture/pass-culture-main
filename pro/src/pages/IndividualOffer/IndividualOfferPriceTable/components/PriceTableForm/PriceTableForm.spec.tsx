@@ -60,6 +60,7 @@ const renderPriceTableForm: RenderComponentFunction<
         bookingLimitDatetime: null,
         bookingsQuantity: null,
         hasActivationCode: false,
+        hasStocks: null,
         id: null,
         label: offer.isEvent ? 'Normal' : null,
         price: 10,
@@ -101,7 +102,7 @@ const LABELS = {
     addEntry: 'Ajouter un tarif',
     cancelEntryRemoval: 'Annuler',
     closeModal: 'Fermer la fenêtre modale',
-    confirmEntryRemoval: 'Supprimer',
+    confirmEntryRemoval: 'Confirmer la suppression',
     removeEntry: 'Supprimer ce tarif',
     resetEntry: 'Réinitialiser les valeurs de ce tarif',
     submitActivationCodes: 'Valider',
@@ -128,6 +129,7 @@ describe('PriceTableForm', () => {
     bookingLimitDatetime: null,
     bookingsQuantity: null,
     hasActivationCode: false,
+    hasStocks: null,
     id: null,
     label: null,
     price: 0,
@@ -244,26 +246,21 @@ describe('PriceTableForm', () => {
     expect(screen.getByText('Réservations')).toBeInTheDocument()
   })
 
-  it('should open confirmation dialog before deleting existing stock with bookings in EDITION mode and then remove it', async () => {
-    const offer = { ...nonEventOffer, isEvent: false }
-    const contextValues = { mode: OFFER_WIZARD_MODE.EDITION }
-    const props = { mode: OFFER_WIZARD_MODE.EDITION }
+  it('should ask for confirmation before deleting a price category with some stocks in CREATION mode', async () => {
+    const offer = { ...nonEventOffer, isEvent: true }
+    const contextValues = { mode: OFFER_WIZARD_MODE.CREATION }
+    const props = { mode: OFFER_WIZARD_MODE.CREATION }
     const defaultValues = {
       priceCategories: [
         {
           ...entryBase,
-          bookingsQuantity: 3,
-          id: 42,
-          price: 20,
-          quantity: 10,
-          remainingQuantity: 7,
+          id: 1,
+          hasStocks: true,
         },
         {
           ...entryBase,
-          id: 43,
-          price: 25,
-          quantity: 5,
-          remainingQuantity: 5,
+          id: 2,
+          hasStocks: false,
         },
       ],
       isDuo: null,
@@ -284,13 +281,30 @@ describe('PriceTableForm', () => {
     await userEvent.click(deleteButtons[0])
 
     expect(
-      screen.getByText('Voulez-vous supprimer ce stock ?')
+      screen.getByRole('dialog', {
+        name: 'Voulez-vous supprimer ce tarif ?',
+      })
     ).toBeInTheDocument()
-    const confirmButton = screen.getByRole('button', {
-      name: LABELS.buttons.confirmEntryRemoval,
-    })
-    await userEvent.click(confirmButton)
 
+    // The user clicks "Annuler"
+    await userEvent.click(
+      screen.getByRole('button', { name: LABELS.buttons.cancelEntryRemoval })
+    )
+
+    expect(
+      screen.getAllByRole('button', { name: LABELS.buttons.removeEntry })
+    ).toHaveLength(2)
+
+    await userEvent.click(deleteButtons[0])
+
+    // The user clicks "Confirmer la suppression"
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: LABELS.buttons.confirmEntryRemoval,
+      })
+    )
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     expect(
       screen.queryByRole('button', {
         name: LABELS.buttons.removeEntry,
@@ -347,53 +361,6 @@ describe('PriceTableForm', () => {
       name: /Stock/,
     })) as HTMLInputElement
     expect(stockInput.value).toBe('4')
-  })
-
-  it('should cancel deletion when user clicks Annuler in confirmation dialog', async () => {
-    const offer = { ...nonEventOffer, isEvent: false }
-    const contextValues = { mode: OFFER_WIZARD_MODE.EDITION }
-    const props = { mode: OFFER_WIZARD_MODE.EDITION }
-    const defaultValues = {
-      priceCategories: [
-        {
-          ...entryBase,
-          bookingsQuantity: 3,
-          id: 101,
-          price: 10,
-          quantity: 5,
-          remainingQuantity: 5,
-        },
-        {
-          ...entryBase,
-          id: 102,
-          price: 12,
-          quantity: 6,
-          remainingQuantity: 6,
-        },
-      ],
-      isDuo: null,
-    }
-
-    renderPriceTableForm({
-      offer,
-      contextValues,
-      props,
-      defaultValues,
-    })
-
-    const deleteButtons = screen.getAllByRole('button', {
-      name: LABELS.buttons.removeEntry,
-    })
-    await userEvent.click(deleteButtons[0])
-    expect(
-      screen.getByRole('heading', { name: 'Voulez-vous supprimer ce stock ?' })
-    ).toBeInTheDocument()
-    await userEvent.click(
-      screen.getByRole('button', { name: LABELS.buttons.cancelEntryRemoval })
-    )
-    expect(
-      screen.getAllByRole('button', { name: LABELS.buttons.removeEntry })
-    ).toHaveLength(2)
   })
 
   it('should cancel activation code dialog without modifying quantity', async () => {

@@ -5562,6 +5562,10 @@ export type PriceCategoryBody = {
  */
 export type PriceCategoryResponseModel = {
     /**
+     * Hasstocks
+     */
+    hasStocks: boolean;
+    /**
      * Id
      */
     id: number;

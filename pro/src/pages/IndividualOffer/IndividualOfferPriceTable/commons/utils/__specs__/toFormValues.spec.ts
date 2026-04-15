@@ -1,3 +1,7 @@
+import type {
+  GetOfferStockResponseModel,
+  PriceCategoryResponseModel,
+} from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 
@@ -13,20 +17,41 @@ describe('toFormValues', () => {
     offer,
   })
 
+  it('should map existing stocks (non-event offer)', () => {
+    const offer = { ...baseOffer, isEvent: false }
+    const context = makeContext(offer)
+    const stocks: GetOfferStockResponseModel[] = [
+      {
+        id: 1,
+        activationCodesExpirationDatetime: null,
+        beginningDatetime: null,
+        bookingLimitDatetime: null,
+        bookingsQuantity: 2,
+        hasActivationCode: false,
+        isEventDeletable: true,
+        price: 20,
+        priceCategoryId: 2,
+        quantity: 10,
+        remainingQuantity: 'infinity',
+      },
+    ]
+
+    const result = toFormValues(offer, stocks, context)
+
+    expect(result.priceCategories).toHaveLength(1)
+    expect(result.priceCategories[0].label).toBeNull()
+    expect(result.priceCategories[0].offerId).toBe(offer.id)
+  })
+
   it('should map existing price categories (event offer)', () => {
     const offer = { ...baseOffer, isEvent: true }
     const context = makeContext(offer)
-    const priceCategories = [
+    const priceCategories: PriceCategoryResponseModel[] = [
       {
         id: 1,
+        hasStocks: false,
         label: 'Plein tarif',
         price: 20,
-        offerId: offer.id,
-        bookingsQuantity: 2,
-        quantity: 10,
-        remainingQuantity: null,
-        activationCodes: [],
-        activationCodesExpirationDatetime: '',
       },
     ]
 

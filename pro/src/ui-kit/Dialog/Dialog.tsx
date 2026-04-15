@@ -45,6 +45,7 @@ export const Dialog = ({
 
   return (
     <DialogBuilder
+      ariaLabelledby={titleId}
       open={open}
       onOpenChange={(open) => !open && (onClose ? onClose() : onCancel())}
       trigger={trigger}

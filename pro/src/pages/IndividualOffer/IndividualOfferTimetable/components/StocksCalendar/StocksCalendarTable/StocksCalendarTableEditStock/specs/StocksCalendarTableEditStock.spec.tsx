@@ -36,7 +36,9 @@ function renderStocksCalendarTableEditStock(
           <StocksCalendarTableEditStock
             departmentCode="56"
             stock={getOfferStockFactory()}
-            priceCategories={[{ id: 1, label: 'tarif', price: 12 }]}
+            priceCategories={[
+              { id: 1, hasStocks: false, label: 'tarif', price: 12 },
+            ]}
             onUpdateStock={() => vi.fn()}
             offer={getIndividualOfferFactory()}
             {...props}

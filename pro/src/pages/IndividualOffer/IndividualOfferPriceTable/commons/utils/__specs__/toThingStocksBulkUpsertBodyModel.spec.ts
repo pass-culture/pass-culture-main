@@ -21,6 +21,7 @@ describe('toThingStocksBulkUpsertBodyModel', () => {
     bookingsQuantity: null,
     remainingQuantity: null,
     hasActivationCode: false,
+    hasStocks: null,
     label: 'Tarif',
   }
   const contextBase = { departementCode: '75' }

@@ -9,9 +9,9 @@ import {
 describe('getPriceCategoryOptions', () => {
   it('should return options sorted by price then label', () => {
     const priceCategories = [
-      { id: 1, label: 'Adulte', price: 20 },
-      { id: 2, label: 'Enfant', price: 10 },
-      { id: 3, label: 'Senior', price: 15 },
+      { id: 1, hasStocks: false, label: 'Adulte', price: 20 },
+      { id: 2, hasStocks: false, label: 'Enfant', price: 10 },
+      { id: 3, hasStocks: false, label: 'Senior', price: 15 },
     ]
     vi.spyOn(formatPrice, 'formatPrice').mockImplementation(
       (price) => `${price},00 €`
@@ -40,7 +40,10 @@ describe('getPriceCategoryName', () => {
     )
 
     expect(
-      getPriceCategoryName({ id: 1, label: 'Adulte', price: 20 }, false)
+      getPriceCategoryName(
+        { id: 1, hasStocks: false, label: 'Adulte', price: 20 },
+        false
+      )
     ).toBe('20,00 € - Adulte')
   })
 
@@ -50,7 +53,10 @@ describe('getPriceCategoryName', () => {
       'convertEuroToPacificFranc'
     ).mockImplementation(() => 2392)
     expect(
-      getPriceCategoryName({ id: 1, label: 'Adulte', price: 20 }, true)
+      getPriceCategoryName(
+        { id: 1, hasStocks: false, label: 'Adulte', price: 20 },
+        true
+      )
     ).toBe('2 392 F - Adulte')
   })
 })

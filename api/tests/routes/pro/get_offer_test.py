@@ -178,7 +178,9 @@ class Returns200Test:
             "id": stock.offer.id,
             "status": "PUBLISHED",
             "isNonFreeOffer": None,
-            "priceCategories": [{"label": "Au pied du mur", "price": 10.1, "id": stock.priceCategoryId}],
+            "priceCategories": [
+                {"hasStocks": True, "id": stock.priceCategoryId, "label": "Au pied du mur", "price": 10.1}
+            ],
             "subcategoryId": "SEANCE_CINE",
             "thumbUrl": None,
             "url": None,
@@ -293,6 +295,35 @@ class Returns200Test:
             assert response.status_code == 200
 
         assert response.json["hasStocks"] == False
+        assert response.json["priceCategories"] == [
+            {
+                "hasStocks": False,
+                "id": deleted_stock.priceCategoryId,
+                "label": deleted_stock.priceCategory.label,
+                "price": float(deleted_stock.priceCategory.price),
+            }
+        ]
+
+    def test_price_category_has_stocks_reflects_stock_presence(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
+        price_category_with_stock = offers_factories.PriceCategoryFactory(
+            offer=offer, priceCategoryLabel__label="Tarif avec stock"
+        )
+        price_category_without_stock = offers_factories.PriceCategoryFactory(
+            offer=offer, priceCategoryLabel__label="Tarif sans Stock"
+        )
+        offers_factories.EventStockFactory(offer=offer, priceCategory=price_category_with_stock)
+
+        auth_client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_client.get(f"/offers/{offer_id}")
+            assert response.status_code == 200
+
+        returned_price_categories = {pc["id"]: pc for pc in response.json["priceCategories"]}
+        assert returned_price_categories[price_category_with_stock.id]["hasStocks"] is True
+        assert returned_price_categories[price_category_without_stock.id]["hasStocks"] is False
 
     def test_returns_positive_booking_count(self, client):
         user_offerer = offerers_factories.UserOffererFactory()

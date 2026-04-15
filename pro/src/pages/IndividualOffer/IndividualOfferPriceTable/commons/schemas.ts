@@ -28,6 +28,12 @@ export const PriceTableEntryValidationSchema = yup.object().shape({
     .default(null)
     .defined()
     .transform(readonly),
+  hasStocks: yup
+    .boolean()
+    .nullable()
+    .default(null)
+    .defined()
+    .transform(readonly),
   offerId: yup.number().transform(readonly).defined(),
   remainingQuantity: yup
     .mixed<number | string>() // `number | "unlimited"`
