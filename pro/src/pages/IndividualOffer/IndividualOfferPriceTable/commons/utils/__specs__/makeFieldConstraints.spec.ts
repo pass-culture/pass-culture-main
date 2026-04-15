@@ -34,6 +34,7 @@ describe('makeFieldConstraints', () => {
     activationCodes: [],
     id: null,
     hasActivationCode: false,
+    hasStocks: null,
     label: 'Tarif',
     price: 10,
     quantity: 5,

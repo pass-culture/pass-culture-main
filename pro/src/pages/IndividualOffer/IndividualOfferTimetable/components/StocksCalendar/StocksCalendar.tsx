@@ -127,10 +127,9 @@ export function StocksCalendar({
         ? 'Une date a été supprimée'
         : `${ids.length} dates ont été supprimées`
     )
-    if (mode === OFFER_WIZARD_MODE.EDITION) {
-      // update offer status
-      await mutate([GET_OFFER_QUERY_KEY, offer.id])
-    }
+
+    // Update offer price categories and status
+    await mutate([GET_OFFER_QUERY_KEY, offer.id])
   }
 
   async function updateStock(stock: EventStockUpdateBodyModel) {

@@ -34,6 +34,7 @@ describe('PriceTableValidationSchema', () => {
     bookingLimitDatetime: '',
     bookingsQuantity: null,
     hasActivationCode: false,
+    hasStocks: null,
     id: null,
     label: 'Normal',
     price: 10,

@@ -23,7 +23,6 @@ import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullCodeIcon from '@/icons/full-code.svg'
 import fulleMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import { DialogStockThingDeleteConfirm } from '@/pages/IndividualOffer/components/DialogStockThingDeleteConfirm'
 import { ActivationCodeFormDialog } from '@/pages/IndividualOffer/IndividualOfferPriceTable/components/PriceTableForm/ActivationCodeFormDialog/ActivationCodeFormDialog'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { PriceInput } from '@/ui-kit/form/PriceInput/PriceInput'
@@ -39,6 +38,7 @@ import {
 } from '../../commons/schemas'
 import type { PriceTableFormContext } from '../../commons/types'
 import { makeFieldConstraints } from '../../commons/utils/makeFieldConstraints'
+import { PriceCategoryRemovalConfirmationModal } from './PriceCategoryRemovalConfirmationModal'
 import styles from './PriceTableForm.module.scss'
 
 export interface PriceTableFormProps {
@@ -77,8 +77,9 @@ export const PriceTableForm = ({
     activationCodeEntryIndexToUpload,
     setActivationCodeEntryIndexToUpload,
   ] = useState<number | null>(null)
-  const [entryIndexToConfirmAndRemove, setEntryIndexToConfirmAndRemove] =
-    useState<number | null>(null)
+  const [entryIndexToRemove, setEntryIndexToRemove] = useState<number | null>(
+    null
+  )
 
   const areAllFieldsDisabled =
     isOfferDisabled(offer) || hasPublishedOfferWithSameEan
@@ -125,20 +126,20 @@ export const PriceTableForm = ({
 
     remove(indexToRemove)
 
+    setEntryIndexToRemove(null)
+
     const newIndex = indexToRemove > 0 ? indexToRemove - 1 : 0
     setFocus(`priceCategories.${newIndex}.price`)
   }
 
   const askForRemovalConfirmationOrRemove = (indexToRemove: number) => {
-    const entryToRemove = getValues(`priceCategories.${indexToRemove}`)
+    const priceCategoryToRemove = getValues(`priceCategories.${indexToRemove}`)
 
     if (
-      mode === OFFER_WIZARD_MODE.EDITION &&
-      typeof entryToRemove.id === 'number' &&
-      entryToRemove.bookingsQuantity &&
-      entryToRemove.bookingsQuantity > 0
+      mode === OFFER_WIZARD_MODE.CREATION &&
+      priceCategoryToRemove.hasStocks
     ) {
-      setEntryIndexToConfirmAndRemove(indexToRemove)
+      setEntryIndexToRemove(indexToRemove)
     } else {
       removeEntry(indexToRemove)
     }
@@ -175,15 +176,12 @@ export const PriceTableForm = ({
 
   return (
     <>
-      <DialogStockThingDeleteConfirm
-        isDialogOpen={entryIndexToConfirmAndRemove !== null}
-        onCancel={() => setEntryIndexToConfirmAndRemove(null)}
-        onConfirm={() =>
-          entryIndexToConfirmAndRemove
-            ? removeEntry(entryIndexToConfirmAndRemove)
-            : null
-        }
-      />
+      {entryIndexToRemove !== null && (
+        <PriceCategoryRemovalConfirmationModal
+          onCancel={() => setEntryIndexToRemove(null)}
+          onConfirm={() => removeEntry(entryIndexToRemove)}
+        />
+      )}
 
       <ActivationCodeFormDialog
         activationCodeButtonRef={activationCodeButtonRef}

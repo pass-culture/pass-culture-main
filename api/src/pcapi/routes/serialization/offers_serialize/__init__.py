@@ -445,12 +445,22 @@ class GetOfferMediationResponseModel(BaseModel):
 
 
 class PriceCategoryResponseModel(BaseModel):
-    price: float
-    label: str
     id: int
+    hasStocks: bool
+    label: str
+    price: float
 
     class Config:
         orm_mode = True
+
+    @classmethod
+    def build(cls, price_category: offers_models.PriceCategory, has_stocks: bool) -> typing.Self:
+        return cls(
+            id=price_category.id,
+            hasStocks=has_stocks,
+            label=price_category.label,
+            price=float(price_category.price),
+        )
 
 
 def _format_time(time_to_format: datetime.time) -> str:
@@ -473,6 +483,14 @@ class IndividualOfferResponseGetterDict(GetterDict):
                 highlight_request.highlight
                 for highlight_request in self._obj.highlight_requests
                 if highlight_request.highlight.highlight_datespan.upper > datetime.date.today()
+            ]
+        if key == "priceCategories":
+            price_category_ids_with_stocks = {
+                stock.priceCategoryId for stock in self._obj.stocks if stock.priceCategoryId
+            }
+            return [
+                PriceCategoryResponseModel.build(price_category, price_category.id in price_category_ids_with_stocks)
+                for price_category in self._obj.priceCategories
             ]
         return super().get(key, default)
 
@@ -555,7 +573,6 @@ class GetActiveEANOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
         orm_mode = True
         json_encoders = {datetime.datetime: format_into_utc_date}
         use_enum_values = True
-        getter_dict = IndividualOfferResponseGetterDict
 
 
 class GetIndividualOfferWithAddressResponseModel(GetIndividualOfferResponseModel):

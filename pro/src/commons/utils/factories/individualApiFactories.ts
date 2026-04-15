@@ -145,6 +145,7 @@ export const priceCategoryFactory = (
   customPriceCategory: Partial<PriceCategoryResponseModel> = {}
 ): PriceCategoryResponseModel => ({
   id: priceCategoryId++,
+  hasStocks: false,
   label: 'mon label',
   price: 66.6,
   ...customPriceCategory,

@@ -8,6 +8,8 @@ import { DialogBuilderCloseButton } from './DialogBuilderCloseButton'
 type DialogVariant = 'default' | 'drawer'
 
 export interface DialogBuilderProps {
+  /** `<dialog>` aria label element ID (usually the title). */
+  ariaLabelledby?: string
   /**
    * The trigger element that opens the dialog.
    */
@@ -79,6 +81,7 @@ export interface DialogBuilderProps {
 const DialogBuilderBase = ({
   trigger,
   title,
+  ariaLabelledby,
   isTitleHidden = false,
   imageTitle = null,
   children,
@@ -110,6 +113,7 @@ const DialogBuilderBase = ({
           <Dialog.Content
             className={cn(styles['dialog-builder-content'], className)}
             aria-describedby={undefined}
+            aria-labelledby={ariaLabelledby}
             ref={contentRef}
             onPointerDownOutside={(e) => {
               if (!contentRef.current) {

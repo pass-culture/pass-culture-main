@@ -51,7 +51,9 @@ describe('StocksCalendarFilters', () => {
 
     renderStocksCalendarFilters({
       onUpdateFilters: updateFiltersMock,
-      priceCategories: [{ id: 1, label: 'Tarif 1', price: 1 }],
+      priceCategories: [
+        { id: 1, hasStocks: false, label: 'Tarif 1', price: 1 },
+      ],
     })
 
     const typedDate = addDays(new Date(), 1).toISOString().split('T')[0]

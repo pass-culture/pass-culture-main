@@ -50,7 +50,9 @@ function renderStocksCalendar(
     <>
       <StocksCalendar
         offer={getIndividualOfferFactory({
-          priceCategories: [{ id: 1, label: 'Tarif 1', price: 1 }],
+          priceCategories: [
+            { id: 1, hasStocks: false, label: 'Tarif 1', price: 1 },
+          ],
         })}
         mode={OFFER_WIZARD_MODE.CREATION}
         timetableTypeRadioGroupShown={false}
@@ -70,7 +72,9 @@ describe('StocksCalendar', () => {
   it('should display a button to add calendar infos when there are no stocks yet', async () => {
     renderStocksCalendar([], {
       offer: getIndividualOfferFactory({
-        priceCategories: [{ id: 1, label: 'Tarif 1', price: 1 }],
+        priceCategories: [
+          { id: 1, hasStocks: false, label: 'Tarif 1', price: 1 },
+        ],
         hasStocks: false,
       }),
     })
@@ -87,7 +91,9 @@ describe('StocksCalendar', () => {
   it('should display an info banner', async () => {
     renderStocksCalendar([], {
       offer: getIndividualOfferFactory({
-        priceCategories: [{ id: 1, label: 'Tarif 1', price: 1 }],
+        priceCategories: [
+          { id: 1, hasStocks: false, label: 'Tarif 1', price: 1 },
+        ],
         hasStocks: false,
       }),
     })
@@ -106,7 +112,9 @@ describe('StocksCalendar', () => {
   it('should not display an info banner if the offer is disabled', async () => {
     renderStocksCalendar([], {
       offer: getIndividualOfferFactory({
-        priceCategories: [{ id: 1, label: 'Tarif 1', price: 1 }],
+        priceCategories: [
+          { id: 1, hasStocks: false, label: 'Tarif 1', price: 1 },
+        ],
         status: OfferStatus.REJECTED,
         hasStocks: false,
       }),
@@ -124,7 +132,9 @@ describe('StocksCalendar', () => {
   it('should open the recurrence form when clicking on the button when there are no stocks yet', async () => {
     renderStocksCalendar([], {
       offer: getIndividualOfferFactory({
-        priceCategories: [{ id: 1, label: 'Tarif 1', price: 1 }],
+        priceCategories: [
+          { id: 1, hasStocks: false, label: 'Tarif 1', price: 1 },
+        ],
         hasStocks: false,
       }),
     })
@@ -221,7 +231,9 @@ describe('StocksCalendar', () => {
   it('should close the dialog when the form is validated', async () => {
     renderStocksCalendar([], {
       offer: getIndividualOfferFactory({
-        priceCategories: [{ id: 1, label: 'Tarif 1', price: 1 }],
+        priceCategories: [
+          { id: 1, hasStocks: false, label: 'Tarif 1', price: 1 },
+        ],
         hasStocks: false,
       }),
     })
@@ -299,7 +311,9 @@ describe('StocksCalendar', () => {
   it('should not show the total number of stocks if there is none', async () => {
     renderStocksCalendar([], {
       offer: getIndividualOfferFactory({
-        priceCategories: [{ id: 1, label: 'Tarif 1', price: 1 }],
+        priceCategories: [
+          { id: 1, hasStocks: false, label: 'Tarif 1', price: 1 },
+        ],
         hasStocks: false,
       }),
     })
@@ -344,7 +358,9 @@ describe('StocksCalendar', () => {
 
     renderStocksCalendar([], {
       offer: getIndividualOfferFactory({
-        priceCategories: [{ id: 1, label: 'Tarif', price: 1 }],
+        priceCategories: [
+          { id: 1, hasStocks: false, label: 'Tarif', price: 1 },
+        ],
         hasStocks: false,
       }),
     })
@@ -423,8 +439,8 @@ describe('StocksCalendar', () => {
       {
         offer: getIndividualOfferFactory({
           priceCategories: [
-            { id: 0, label: 'Tarif 1', price: 1 },
-            { id: 1, label: 'Tarif 2', price: 1 },
+            { id: 0, label: 'Tarif 1', hasStocks: false, price: 1 },
+            { id: 1, label: 'Tarif 2', hasStocks: false, price: 1 },
           ],
         }),
         mode: OFFER_WIZARD_MODE.EDITION,
@@ -485,7 +501,9 @@ describe('StocksCalendar', () => {
       <>
         <StocksCalendar
           offer={getIndividualOfferFactory({
-            priceCategories: [{ id: 1, label: 'Tarif 1', price: 1 }],
+            priceCategories: [
+              { id: 1, hasStocks: false, label: 'Tarif 1', price: 1 },
+            ],
           })}
           mode={OFFER_WIZARD_MODE.CREATION}
           timetableTypeRadioGroupShown={false}
@@ -589,7 +607,9 @@ describe('StocksCalendar', () => {
       <>
         <StocksCalendar
           offer={getIndividualOfferFactory({
-            priceCategories: [{ id: 1, label: 'Tarif 1', price: 1 }],
+            priceCategories: [
+              { id: 1, hasStocks: false, label: 'Tarif 1', price: 1 },
+            ],
           })}
           mode={OFFER_WIZARD_MODE.CREATION}
           timetableTypeRadioGroupShown={false}
@@ -624,7 +644,9 @@ describe('StocksCalendar', () => {
   it('should display "Aucune date à afficher" for synchronized offers without stocks', async () => {
     renderStocksCalendar([], {
       offer: getIndividualOfferFactory({
-        priceCategories: [{ id: 1, label: 'Tarif 1', price: 1 }],
+        priceCategories: [
+          { id: 1, hasStocks: false, label: 'Tarif 1', price: 1 },
+        ],
         lastProvider: { name: 'Provider' },
         hasStocks: false,
       }),
