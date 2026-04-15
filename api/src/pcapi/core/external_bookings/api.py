@@ -10,8 +10,6 @@ import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
 import pcapi.core.users.models as users_models
-import pcapi.tasks.external_api_booking_notification_tasks as external_api_booking_notification
-import pcapi.tasks.serialization.external_api_booking_notification_tasks as external_api_booking_notification_serialization
 import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi import settings
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
@@ -369,40 +367,14 @@ def send_booking_notification_to_external_service(
         return
 
     try:
-        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_EXTERNAL_BOOKING.is_active():
-            external_api_notification_request_v2 = providers_tasks.ExternalApiBookingNotificationRequest.build(
-                booking, action
-            )
-            signature = generate_hmac_signature(hmacKey, external_api_notification_request_v2.model_dump_json())
-            payload_v2 = providers_tasks.ExternalApiBookingNotificationTaskPayload(
-                data=external_api_notification_request_v2,
-                notificationUrl=notification_url,
-                signature=signature,
-            )
-            on_commit(
-                functools.partial(
-                    providers_tasks.external_api_booking_notification_task.delay,
-                    payload_v2.model_dump(),
-                ),
-            )
-        else:
-            external_api_notification_request = (
-                external_api_booking_notification_serialization.ExternalApiBookingNotificationRequest.build(
-                    booking, action
-                )
-            )
-            signature = generate_hmac_signature(hmacKey, external_api_notification_request.json())
-            payload = external_api_booking_notification.ExternalApiBookingNotificationTaskPayload(
-                data=external_api_notification_request,
-                notificationUrl=notification_url,
-                signature=signature,
-            )
-            on_commit(
-                functools.partial(
-                    external_api_booking_notification.external_api_booking_notification_task.delay,
-                    payload,
-                ),
-            )
+        external_api_notification_request = providers_tasks.ExternalApiBookingNotificationRequest.build(booking, action)
+        signature = generate_hmac_signature(hmacKey, external_api_notification_request.model_dump_json())
+        payload = providers_tasks.ExternalApiBookingNotificationTaskPayload(
+            data=external_api_notification_request,
+            notificationUrl=notification_url,
+            signature=signature,
+        )
+        on_commit(functools.partial(providers_tasks.external_api_booking_notification_task.delay, payload.model_dump()))
     except Exception as err:
         logger.exception(
             "Error: %s. Could not send external booking notification for: booking: %s, action %s",
