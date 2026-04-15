@@ -1,0 +1,59 @@
+name: "0 [CD] Create release"
+
+run-name: "Create a release from ${{ inputs.ref }}"
+
+on:
+  workflow_call:
+    inputs:
+      tag-number:
+        type: string
+        required: true
+      ref:
+        type: string
+        required: true
+      base-ref-is-a-branch:
+        type: boolean
+        required: true
+    secrets:
+      GCP_EHP_SERVICE_ACCOUNT: { required: true }
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: { required: true }
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: { required: true }
+      PASSCULTURE_GITHUB_ACTION_APP_ID: { required: true }
+
+permissions: write-all
+
+jobs:
+  create-docker-images-on-registry:
+    name: Build and tag version
+    uses: ./.github/workflows/cd_create_docker_images_on_registry.yml
+    with:
+      base_ref: ${{ inputs.ref }}
+      tag_number: ${{ inputs.tag-number }}
+    secrets: inherit
+
+  create-front-pro-releases-on-firebase:
+    name: Create front pro releases
+    strategy:
+      matrix:
+        environment: [staging, production, integration]
+    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
+    with:
+      ENV: ${{ matrix.environment }}
+      CHANNEL: "${{ inputs.tag-number }}"
+      EXPIRES: "30d"
+      PUSH_RELEASE_TO_SENTRY: true
+      REF: v${{ inputs.tag-number }}
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+    secrets: inherit
+
+  create-pre-release-on-github:
+    name: Create pre release on GitHub
+    needs:
+      - create-docker-images-on-registry
+      - create-front-pro-releases-on-firebase
+    uses: ./.github/workflows/cd_create_pre_release_on_github.yml
+    with:
+      base_ref: ${{ inputs.ref }}
+      tag_number: ${{ inputs.tag-number }}
+      base_ref_is_a_branch: ${{ inputs.base-ref-is-a-branch }}
+    secrets: inherit

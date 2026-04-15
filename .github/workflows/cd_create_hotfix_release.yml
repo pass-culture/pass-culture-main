@@ -42,47 +42,18 @@ jobs:
           NEXT_PATCH_NUMBER="$((CURRENT_PATCH_NUMBER + 1))"
           echo "hotfix-tag-number=${MAJOR_NUMBER}.0.${NEXT_PATCH_NUMBER}" | tee -a "$GITHUB_OUTPUT"
 
-  create-docker-images-on-registry:
-    name: Build and tag version
+  create-release:
+    name: Create hotfix release
     needs: compute-hotfix-tag-number
-    uses: ./.github/workflows/cd_create_docker_images_on_registry.yml
-    secrets: inherit
+    uses: ./.github/workflows/cd_create_release.yml
     with:
-      base_ref: ${{ github.ref }}
-      tag_number: ${{ needs.compute-hotfix-tag-number.outputs.hotfix-tag-number }}
-
-  create-front-pro-releases-on-firebase:
-    name: Create front pro releases
-    strategy:
-      matrix:
-        environment: [staging, production, integration]
-    needs: compute-hotfix-tag-number
-    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
-    secrets: inherit
-    with:
-      ENV: ${{ matrix.environment }}
-      CHANNEL: "${{ needs.compute-hotfix-tag-number.outputs.hotfix-tag-number }}"
-      EXPIRES: "30d"
-      PUSH_RELEASE_TO_SENTRY: true
-      REF: v${{ needs.compute-hotfix-tag-number.outputs.hotfix-tag-number }}
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-
-  create-pre-release-on-github:
-    name: Create pre release on GitHub
-    needs:
-      - create-docker-images-on-registry
-      - create-front-pro-releases-on-firebase
-      - compute-hotfix-tag-number
-    uses: ./.github/workflows/cd_create_pre_release_on_github.yml
-    with:
-      base_ref: ${{ github.ref }}
-      tag_number: ${{ needs.compute-hotfix-tag-number.outputs.hotfix-tag-number }}
-      base_ref_is_a_branch: true
-    secrets: inherit
+      tag-number: ${{ needs.compute-hotfix-tag-number.outputs.hotfix-tag-number }}
+      ref: ${{ github.ref }}
+      base-ref-is-a-branch: true
 
   notify-end-of-workflow:
     name: Send end of workflow notification
-    needs: create-pre-release-on-github
+    needs: create-release
     if: always()
     uses: ./.github/workflows/slack_post_message_workflow.yml
     with:
