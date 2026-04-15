@@ -1,1 +1,0 @@
-var e=``+new URL(`full-error-BxG7-hWY.svg`,import.meta.url).href;export{e as t};

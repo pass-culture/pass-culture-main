@@ -1,1 +1,0 @@
-var e=``+new URL(`stroke-trash-CEM5LqLP.svg`,import.meta.url).href;export{e as t};

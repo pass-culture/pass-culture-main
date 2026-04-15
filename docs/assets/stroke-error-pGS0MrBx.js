@@ -1,1 +1,0 @@
-var e=``+new URL(`stroke-error-DFrpOxHB.svg`,import.meta.url).href;export{e as t};
