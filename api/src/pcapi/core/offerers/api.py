@@ -467,6 +467,14 @@ def create_venue(
 
     data = venue_data.model_dump(by_alias=True)
     data["dmsToken"] = dms_token
+    data["validationStatus"] = (
+        db.session.query(models.Offerer)
+        .filter(models.Offerer.id == venue_data.managing_offerer_id)
+        .options(sa_orm.load_only(models.Offerer.validationStatus))
+        .one()
+        .validationStatus
+    )
+
     if not data["publicName"]:
         data["publicName"] = data["name"]
     if venue.is_soft_deleted():
