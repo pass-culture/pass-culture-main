@@ -13,41 +13,30 @@ inputs:
     description: The docker image tag
     required: true
 
-  artifact_path:
-    description: Paths to include in the artifact upload
+  write-cache:
+    description: Export the built layers to Docker cache
     required: false
-    default: |
-      ./
-      !./pro/scripts/generator'
+    default: false
 
 runs:
   using: composite
   steps:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
-      with:
-        driver: docker
 
     - name: Build docker image
       uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
       with:
-        push: false
         context: ${{ inputs.context }}
         target: ${{ inputs.image }}
         tags: ${{ inputs.image }}:${{ inputs.tag }}
-
-    - name: Store artifact
-      shell: bash
-      env:
-        IMAGE: ${{ inputs.image }}
-        TAG: ${{ inputs.tag }}
-      run: |
-        docker images
-        docker save "$IMAGE:$TAG" > "$IMAGE-$TAG.tar"
+        cache-from: type=gha,scope=${{ inputs.image }}
+        cache-to: ${{ inputs.write-cache == 'true' && format('type=gha,mode=max,scope={0}', inputs.image) || ''}}
+        outputs: type=docker,dest=${{ runner.temp }}/${{ inputs.image }}-${{ inputs.tag }}.tar
 
     - name: Upload built image to github artifact
       uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
       with:
         name: ${{ inputs.image }}-${{ inputs.tag }}.tar
-        path: ${{ inputs.artifact_path }}
+        path: ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.tag }}.tar
         retention-days: 1
