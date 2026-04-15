@@ -210,6 +210,7 @@ class CreateVenueTest:
         assert venue.bookingEmail == "venue@example.com"
         assert venue.dmsToken
         assert venue.current_pricing_point_id == venue.id
+        assert venue.validationStatus == user_offerer.offerer.validationStatus
 
         offerer_address = db.session.query(offerers_models.OffererAddress).one()
         assert offerer_address.label is None

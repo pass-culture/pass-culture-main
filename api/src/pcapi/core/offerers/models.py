@@ -44,6 +44,7 @@ from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.models.validation_status_mixin import ValidationStatusMixin
 from pcapi.utils import crypto
 from pcapi.utils import date as date_utils
@@ -301,9 +302,16 @@ DisplayableActivity: enum.EnumType = enum.Enum(  # type: ignore[misc]
 )
 
 
-class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMixin):
+class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMixin, ValidationStatusMixin):
     __tablename__ = "venue"
     thumb_path_component = "venues"
+
+    # TODO(jbaudet - 04/2026): this overrides `ValidationStatusMixin`
+    # column definition: column is now nullable, and should be removed
+    # once the column has been filled with expected values.
+    validationStatus: sa_orm.Mapped[ValidationStatus | None] = sa_orm.mapped_column(  # type: ignore[assignment]
+        sa.Enum(ValidationStatus, create_constraint=False), nullable=True
+    )
 
     name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(140), nullable=False)
 
