@@ -34,13 +34,13 @@ from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.exceptions import InactiveProvider
 from pcapi.core.providers.repository import get_provider_by_local_class
+from pcapi.core.providers.tasks import BookingAction
 from pcapi.core.reactions.factories import ReactionFactory
 from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
 
@@ -189,66 +189,8 @@ class PostBookingTest:
         assert booking.status == BookingStatus.CONFIRMED
         assert not booking.dateUsed
 
-    @patch("pcapi.tasks.external_api_booking_notification_tasks.external_api_booking_notification_task.delay")
-    def test_bookings_send_notification_to_external_api_with_external_event_booking(self, mocked_task, client):
-        base_url = "https://book_my_offer.com"
-        external_notification_url = base_url + "/notify"
-
-        eighteen_years_ago = datetime(date.today().year - 18, 1, 1)
-        user = users_factories.BeneficiaryGrant18Factory(
-            email=self.identifier, dateOfBirth=eighteen_years_ago, phoneNumber="+33101010101"
-        )
-        provider = providers_factories.ProviderFactory(
-            name="Technical provider",
-            localClass=None,
-            notificationExternalUrl=external_notification_url,
-        )
-        providers_factories.OffererProviderFactory(provider=provider)
-        stock = offers_factories.EventStockFactory(
-            lastProvider=provider,
-            priceCategory__price=2,
-            offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
-            offer__lastProvider=provider,
-            offer__ean="1234567890123",
-            idAtProviders="",
-            dnBookedQuantity=14,
-            quantity=20,
-        )
-
-        response = client.with_token(user).post(
-            "/native/v1/bookings",
-            json={"stockId": stock.id, "quantity": 1},
-        )
-
-        assert response.status_code == 200
-
-        booking = db.session.query(Booking).filter(Booking.stockId == stock.id).first()
-        assert booking.userId == user.id
-        assert response.json["bookingId"] == booking.id
-        assert booking.status == BookingStatus.CONFIRMED
-        assert not booking.dateUsed
-
-        assert mocked_task.call_count == 1
-        notification = mocked_task.call_args.args[0].data
-        assert notification.offer_ean == "1234567890123"
-        assert notification.offer_id == stock.offer.id
-        assert notification.offer_name == stock.offer.name
-        assert notification.offer_price == 200
-        assert notification.stock_id == stock.id
-        assert notification.booking_quantity == booking.quantity
-        assert notification.booking_creation_date == booking.dateCreated
-        assert notification.venue_address == stock.offer.venue.offererAddress.address.street
-        assert notification.user_email == user.email
-        assert notification.user_first_name == user.firstName
-        assert notification.user_last_name == user.lastName
-        assert notification.user_phone == user.phoneNumber
-        assert notification.action == BookingAction.BOOK
-
-        assert mocked_task.call_args.args[0].notificationUrl == external_notification_url
-
-    @pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_EXTERNAL_BOOKING=True)
     @patch("pcapi.core.providers.tasks.external_api_booking_notification_task.delay")
-    def test_bookings_send_notification_to_external_api_with_external_event_booking_with_FF(self, mocked_task, client):
+    def test_bookings_send_notification_to_external_api_with_external_event_booking(self, mocked_task, client):
         base_url = "https://book_my_offer.com"
         external_notification_url = base_url + "/notify"
 
