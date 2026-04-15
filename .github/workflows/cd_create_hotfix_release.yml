@@ -42,22 +42,21 @@ jobs:
           NEXT_PATCH_NUMBER="$((CURRENT_PATCH_NUMBER + 1))"
           echo "hotfix-tag-number=${MAJOR_NUMBER}.0.${NEXT_PATCH_NUMBER}" | tee -a "$GITHUB_OUTPUT"
 
-  build-and-tag-version:
+  create-docker-images-on-registry:
     name: Build and tag version
     needs: compute-hotfix-tag-number
-    uses: ./.github/workflows/dev_on_workflow_build_and_tag.yml
+    uses: ./.github/workflows/cd_create_docker_images_on_registry.yml
     secrets: inherit
     with:
       base_ref: ${{ github.ref }}
       tag_number: ${{ needs.compute-hotfix-tag-number.outputs.hotfix-tag-number }}
-      base_ref_is_a_branch: true
 
-  create-front-pro-releases:
+  create-front-pro-releases-on-firebase:
     name: Create front pro releases
     strategy:
       matrix:
         environment: [staging, production, integration]
-    needs: [build-and-tag-version, compute-hotfix-tag-number]
+    needs: compute-hotfix-tag-number
     uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     secrets: inherit
     with:
@@ -68,9 +67,22 @@ jobs:
       REF: v${{ needs.compute-hotfix-tag-number.outputs.hotfix-tag-number }}
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
+  create-pre-release-on-github:
+    name: Create pre release on GitHub
+    needs:
+      - create-docker-images-on-registry
+      - create-front-pro-releases-on-firebase
+      - compute-hotfix-tag-number
+    uses: ./.github/workflows/cd_create_pre_release_on_github.yml
+    with:
+      base_ref: ${{ github.ref }}
+      tag_number: ${{ needs.compute-hotfix-tag-number.outputs.hotfix-tag-number }}
+      base_ref_is_a_branch: true
+    secrets: inherit
+
   notify-end-of-workflow:
     name: Send end of workflow notification
-    needs: [build-and-tag-version, create-front-pro-releases]
+    needs: create-pre-release-on-github
     if: always()
     uses: ./.github/workflows/slack_post_message_workflow.yml
     with:

@@ -1,0 +1,55 @@
+name: "3 [CD] Create docker images on registry"
+
+# This reusable workflow should be called by another workflow.
+# It builds then tags the release so it's ready to deploy.
+on:
+  workflow_call:
+    inputs:
+      base_ref:
+        # The base ref to tag from.
+        # Can be a branch name, a tag or a commit.
+        required: true
+        type: string
+
+      tag_number:
+        # 200.0.2 for example.
+        required: true
+        type: string
+
+    secrets:
+      WORKLOAD_IDENTITY_PRD: { required: true }
+      PASSCULTURE_GITHUB_ACTION_APP_ID: { required: true }
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: { required: true }
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  build-images:
+    name: Build Docker images
+    strategy:
+      matrix:
+        image: [pcapi, pcapi-console]
+    uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
+    with:
+      image: ${{ matrix.image }}
+      base_ref: ${{ inputs.base_ref }}
+      tag: ${{ inputs.tag_number }}
+
+  push-images:
+    name: Push Docker images
+    uses: ./.github/workflows/dev_on_workflow_push_docker_image_passdirector.yml
+    needs: build-images
+    strategy:
+      matrix:
+        image: [pcapi, pcapi-console]
+    with:
+      image: ${{ matrix.image }}
+      tag: ${{ inputs.tag_number }}
+      environment: pcapi-tst
+      tag_latest: true
+    secrets:
+      WORKLOAD_IDENTITY_PRD: ${{ secrets.WORKLOAD_IDENTITY_PRD }}
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
