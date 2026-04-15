@@ -69,7 +69,8 @@ def _toggle_marketing_email_subscription(subscribe: bool) -> None:
 
     user = find_user_by_email(user_email)
     if user is None:
-        raise ApiErrors({"User": "user not found for email %s" % user_email}, status_code=400)
+        # Nothing to do - Return success status code to avoid enumeration
+        return
 
     history_api.ObjectUpdateSnapshot(user, user).trace_update(
         {"marketing_email": subscribe},
