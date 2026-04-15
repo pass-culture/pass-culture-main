@@ -1,0 +1,1 @@
+import{P as e}from"./components-CdF_Pn9D.js";export{e as createCopyToClipboardFunction};
