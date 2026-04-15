@@ -43,6 +43,3 @@ jobs:
           image: ${{ inputs.image }}
           context: api
           tag: ${{ inputs.tag }}
-          artifact_path: |
-            ./
-            !./pro/scripts/generator
