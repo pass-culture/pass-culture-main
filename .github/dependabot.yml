@@ -21,61 +21,61 @@ updates:
     ignore:
       - dependency-name: "openapi-typescript-codegen"
 
-    groups:
-      # React updates
-      # Open PRs for each major or minor version
-      # Open an aggregate PR for all patch version updates
-      react:
-        patterns:
-          - "react*"
-          - "@types/react*"
-        update-types:
-          - "patch"
-      # Build tools
-      # Open PRs for each major or minor version
-      # Open an aggregate PR for all patch version updates
-      build-tools:
-        patterns:
-          - "@storybook*"
-          - "storybook*"
-          - "typescript*"
-          - "vite*"
-        update-types:
-          - "patch"
-      # Other tools
-      # Open PRs for each major version
-      # Open an aggregate PR for all minor and patch version updates
-      tools:
-        patterns:
-          - "@sentry*"
-          - "sentry*"
-        update-types:
-          - "minor"
-          - "patch"
-      # Testing tools
-      # Open PRs for each major or minor version
-      # Open an aggregate PR for all patch version updates
-      testing-tols:
-        patterns:
-          - "allure*"
-          - "cypress*"
-          - "playwright*"
-          - "vitest*"
-        update-types:
-          - "patch"
-      # Linting and formatting
-      # Open PRs for each major or minor version
-      # Open an aggregate PR for all patch version updates
-      linting:
-        patterns:
-          - "@biomejs*"
-          - "eslint*"
-          - "@eslint/*"
-          - "prettier*"
-          - "stylelint*"
-          - "typescript-eslint*"
-        update-types:
-          - "patch"
+#    groups:
+#      # React updates
+#      # Open PRs for each major or minor version
+#      # Open an aggregate PR for all patch version updates
+#      react:
+#        patterns:
+#          - "react*"
+#          - "@types/react*"
+#        update-types:
+#          - "patch"
+#      # Build tools
+#      # Open PRs for each major or minor version
+#      # Open an aggregate PR for all patch version updates
+#      build-tools:
+#        patterns:
+#          - "@storybook*"
+#          - "storybook*"
+#          - "typescript*"
+#          - "vite*"
+#        update-types:
+#          - "patch"
+#      # Other tools
+#      # Open PRs for each major version
+#      # Open an aggregate PR for all minor and patch version updates
+#      tools:
+#        patterns:
+#          - "@sentry*"
+#          - "sentry*"
+#        update-types:
+#          - "minor"
+#          - "patch"
+#      # Testing tools
+#      # Open PRs for each major or minor version
+#      # Open an aggregate PR for all patch version updates
+#      testing-tols:
+#        patterns:
+#          - "allure*"
+#          - "cypress*"
+#          - "playwright*"
+#          - "vitest*"
+#        update-types:
+#          - "patch"
+#      # Linting and formatting
+#      # Open PRs for each major or minor version
+#      # Open an aggregate PR for all patch version updates
+#      linting:
+#        patterns:
+#          - "@biomejs*"
+#          - "eslint*"
+#          - "@eslint/*"
+#          - "prettier*"
+#          - "stylelint*"
+#          - "typescript-eslint*"
+#        update-types:
+#          - "patch"
 
   # Public API doc
   - package-ecosystem: 'npm'
