@@ -1,1 +1,0 @@
-import{P as e}from"./components-CbKGpLET.js";export{e as createCopyToClipboardFunction};
