@@ -3383,11 +3383,11 @@ export type GetVenuePricingPointResponseModel = {
  * GetVenueResponseModel
  */
 export type GetVenueResponseModel = {
-    activity?: DisplayableActivity | null;
+    activity: DisplayableActivity | null;
     /**
      * Adageinscriptiondate
      */
-    adageInscriptionDate?: string | null;
+    adageInscriptionDate: string | null;
     /**
      * Allowedonadage
      */
@@ -3395,17 +3395,17 @@ export type GetVenueResponseModel = {
     /**
      * Audiodisabilitycompliant
      */
-    audioDisabilityCompliant?: boolean | null;
-    bankAccountStatus?: SimplifiedBankAccountStatus | null;
-    bannerMeta?: BannerMetaModel | null;
+    audioDisabilityCompliant: boolean | null;
+    bankAccountStatus: SimplifiedBankAccountStatus | null;
+    bannerMeta: BannerMetaModel | null;
     /**
      * Bannerurl
      */
-    bannerUrl?: string | null;
+    bannerUrl: string | null;
     /**
      * Bookingemail
      */
-    bookingEmail?: string | null;
+    bookingEmail: string | null;
     /**
      * Candisplayhighlights
      */
@@ -3413,7 +3413,7 @@ export type GetVenueResponseModel = {
     /**
      * Collectivedescription
      */
-    collectiveDescription?: string | null;
+    collectiveDescription: string | null;
     /**
      * Collectivedomains
      */
@@ -3421,29 +3421,29 @@ export type GetVenueResponseModel = {
     /**
      * Collectiveemail
      */
-    collectiveEmail?: string | null;
+    collectiveEmail: string | null;
     /**
      * Collectiveinterventionarea
      */
-    collectiveInterventionArea?: Array<string> | null;
-    collectiveLegalStatus?: LegalStatusResponseModel | null;
+    collectiveInterventionArea: Array<string> | null;
+    collectiveLegalStatus: LegalStatusResponseModel | null;
     /**
      * Collectivephone
      */
-    collectivePhone?: string | null;
+    collectivePhone: string | null;
     /**
      * Collectivestudents
      */
-    collectiveStudents?: Array<StudentLevels> | null;
+    collectiveStudents: Array<StudentLevels> | null;
     /**
      * Collectivewebsite
      */
-    collectiveWebsite?: string | null;
+    collectiveWebsite: string | null;
     /**
      * Comment
      */
-    comment?: string | null;
-    contact?: VenueContactModelV2 | null;
+    comment: string | null;
+    contact: VenueContactModelV2 | null;
     /**
      * Datecreated
      */
@@ -3452,11 +3452,11 @@ export type GetVenueResponseModel = {
      * Description
      */
     description: string | null;
-    externalAccessibilityData?: ExternalAccessibilityDataModelV2 | null;
+    externalAccessibilityData: ExternalAccessibilityDataModelV2 | null;
     /**
      * Externalaccessibilityid
      */
-    externalAccessibilityId?: string | null;
+    externalAccessibilityId: string | null;
     /**
      * Hasactiveindividualoffer
      */
@@ -3496,7 +3496,7 @@ export type GetVenueResponseModel = {
     /**
      * Ispermanent
      */
-    isPermanent?: boolean | null;
+    isPermanent: boolean | null;
     /**
      * Isvalidated
      */
@@ -3511,17 +3511,17 @@ export type GetVenueResponseModel = {
     /**
      * Mentaldisabilitycompliant
      */
-    mentalDisabilityCompliant?: boolean | null;
+    mentalDisabilityCompliant: boolean | null;
     /**
      * Motordisabilitycompliant
      */
-    motorDisabilityCompliant?: boolean | null;
+    motorDisabilityCompliant: boolean | null;
     /**
      * Name
      */
     name: string;
-    openingHours?: WeekdayOpeningHoursTimespansV2 | null;
-    pricingPoint?: GetVenuePricingPointResponseModel | null;
+    openingHours: WeekdayOpeningHoursTimespansV2 | null;
+    pricingPoint: GetVenuePricingPointResponseModel | null;
     /**
      * Publicname
      */
@@ -3529,11 +3529,11 @@ export type GetVenueResponseModel = {
     /**
      * Siret
      */
-    siret?: string | null;
+    siret: string | null;
     /**
      * Visualdisabilitycompliant
      */
-    visualDisabilityCompliant?: boolean | null;
+    visualDisabilityCompliant: boolean | null;
     /**
      * Volunteeringurl
      */
@@ -3541,7 +3541,7 @@ export type GetVenueResponseModel = {
     /**
      * Withdrawaldetails
      */
-    withdrawalDetails?: string | null;
+    withdrawalDetails: string | null;
 };
 
 /**

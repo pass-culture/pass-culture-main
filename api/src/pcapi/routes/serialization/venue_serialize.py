@@ -84,52 +84,52 @@ def get_current_pricing_point(
 class GetVenueResponseModel(HttpBodyModel):
     isVirtual: bool
     name: str
-    bannerUrl: str | None = None
-    contact: offerers_schemas.VenueContactModelV2 | None = None
+    bannerUrl: str | None
+    contact: offerers_schemas.VenueContactModelV2 | None
     description: str | None = pydantic_v2.Field(max_length=1000)
-    externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModelV2 | None = None
-    externalAccessibilityId: str | None = None
+    externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModelV2 | None
+    externalAccessibilityId: str | None
     isOpenToPublic: bool
-    isPermanent: bool | None = None
+    isPermanent: bool | None
     publicName: str
-    withdrawalDetails: str | None = None
-    activity: offerers_models.DisplayableActivity | None = None
+    withdrawalDetails: str | None
+    activity: offerers_models.DisplayableActivity | None
     dateCreated: datetime
     id: int
-    bannerMeta: venue_banners_serialize.BannerMetaModel | None = None
-    bookingEmail: str | None = None
-    comment: str | None = None
+    bannerMeta: venue_banners_serialize.BannerMetaModel | None
+    bookingEmail: str | None
+    comment: str | None
     managingOfferer: GetVenueManagingOffererResponseModel
-    pricingPoint: venue_finance_serialize.GetVenuePricingPointResponseModel | None = None
-    siret: str | None = None
-    collectiveDescription: str | None = None
-    collectiveStudents: list[educational_models.StudentLevels] | None = None
-    collectiveWebsite: str | None = None
+    pricingPoint: venue_finance_serialize.GetVenuePricingPointResponseModel | None
+    siret: str | None
+    collectiveDescription: str | None
+    collectiveStudents: list[educational_models.StudentLevels] | None
+    collectiveWebsite: str | None
     collectiveDomains: list[venue_collective_serialize.GetVenueDomainResponseModel]
-    collectiveInterventionArea: list[str] | None = None
-    collectiveLegalStatus: venue_collective_serialize.LegalStatusResponseModel | None = None
-    collectivePhone: str | None = None
-    collectiveEmail: str | None = None
+    collectiveInterventionArea: list[str] | None
+    collectiveLegalStatus: venue_collective_serialize.LegalStatusResponseModel | None
+    collectivePhone: str | None
+    collectiveEmail: str | None
     lastCollectiveDmsApplication: venue_collective_serialize.DMSApplicationForEAC | None
     hasAdageId: bool
-    adageInscriptionDate: datetime | None = None
+    adageInscriptionDate: datetime | None
     hasOffers: bool
     location: address_serialize.LocationResponseModelV2
     hasActiveIndividualOffer: bool
     is_caledonian: bool
-    openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespansV2 | None = None
+    openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespansV2 | None
     isValidated: bool
     allowedOnAdage: bool
-    bankAccountStatus: venue_finance_serialize.SimplifiedBankAccountStatus | None = None
+    bankAccountStatus: venue_finance_serialize.SimplifiedBankAccountStatus | None
     has_non_free_offers: bool
     has_partner_page: bool
     can_display_highlights: bool
     has_non_draft_offers: bool
     volunteeringUrl: HttpUrlString | None
-    audioDisabilityCompliant: bool | None = None
-    mentalDisabilityCompliant: bool | None = None
-    motorDisabilityCompliant: bool | None = None
-    visualDisabilityCompliant: bool | None = None
+    audioDisabilityCompliant: bool | None
+    mentalDisabilityCompliant: bool | None
+    motorDisabilityCompliant: bool | None
+    visualDisabilityCompliant: bool | None
 
     @classmethod
     def build(cls, venue: offerers_models.Venue, has_non_free_offers: bool) -> typing.Self:
