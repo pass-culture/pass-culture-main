@@ -20,6 +20,7 @@ import {
   Mode,
 } from '@/commons/core/OfferEducational/types'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { RedirectToBankAccountDialog } from '@/components/RedirectToBankAccountDialog/RedirectToBankAccountDialog'
 import { Button } from '@/design-system/Button/Button'
@@ -42,6 +43,7 @@ export const CollectiveOfferPreviewCreationScreen = ({
   const navigate = useNavigate()
   const { mutate } = useSWRConfig()
   const { logEvent } = useAnalytics()
+  const { syncVenue } = useSyncVenueCache()
   const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
 
   const backRedirectionUrl = offer.isTemplate
@@ -95,6 +97,7 @@ export const CollectiveOfferPreviewCreationScreen = ({
         newOffer,
         { revalidate: false }
       )
+      await syncVenue(offer.venue.id)
 
       const isNonFreeOffer =
         newOffer.collectiveStock && newOffer.collectiveStock.price > 0

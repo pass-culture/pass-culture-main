@@ -12,7 +12,7 @@ export const useSyncVenueCache = () => {
 
   const syncVenue = async (venueId: number) => {
     await mutate(
-      [GET_VENUE_QUERY_KEY, venueId],
+      [GET_VENUE_QUERY_KEY, String(venueId)],
       async () => {
         const updatedVenue = await api.getVenue(venueId)
         dispatch(setSelectedPartnerVenue(updatedVenue))
@@ -26,7 +26,7 @@ export const useSyncVenueCache = () => {
     venueId: number,
     venueData: GetVenueResponseModel
   ) => {
-    await mutate([GET_VENUE_QUERY_KEY, venueId], venueData, {
+    await mutate([GET_VENUE_QUERY_KEY, String(venueId)], venueData, {
       revalidate: false,
     })
     dispatch(setSelectedPartnerVenue(venueData))

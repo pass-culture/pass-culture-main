@@ -19,6 +19,7 @@ import {
 } from '@/commons/core/shared/constants'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import { isCollectiveStockEditable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 
@@ -35,6 +36,7 @@ export const CollectiveOfferStockEdition = ({
   const snackBar = useSnackBar()
   const navigate = useNavigate()
   const { mutate } = useSWRConfig()
+  const { syncVenue } = useSyncVenueCache()
 
   assertOrFrontendError(
     !isCollectiveOfferTemplate(offer),
@@ -69,6 +71,8 @@ export const CollectiveOfferStockEdition = ({
     }
 
     await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY, offer.id])
+    await syncVenue(offer.venue.id)
+
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(
       `/offre/${computeURLCollectiveOfferId(
