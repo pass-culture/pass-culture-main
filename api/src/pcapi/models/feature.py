@@ -150,6 +150,7 @@ class FeatureToggle(enum.Enum):
         "Activer le backend de tâches asynchrones Celery pour la synchro avec le cultural survey"
     )
     WIP_VOLUNTEERING = "Active la fonctionnalité de bénévolat"
+    WIP_ENABLE_CULTURAL_OUTREACH = "Active la déclaration des actions de médiation culturelle"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -208,6 +209,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CHECK_OFFERERS,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CULTURAL_SURVEY,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_EXTERNAL_BOOKING,
+    FeatureToggle.WIP_ENABLE_CULTURAL_OUTREACH,
     FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS,
     FeatureToggle.WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK,
     FeatureToggle.WIP_ENABLE_NEW_PRO_HOME,
