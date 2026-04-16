@@ -526,7 +526,7 @@ def get_venues_by_ids(ids: typing.Collection[int]) -> sa_orm.Query[models.Venue]
     )
 
 
-def get_venue_ids_by_offerer_ids(ids: typing.Collection[int]) -> typing.Collection[int]:
+def get_venue_ids_by_offerer_ids(ids: typing.Collection[int]) -> list[int]:
     query = (
         db.session.query(models.Venue).filter(models.Venue.managingOffererId.in_(ids)).with_entities(models.Venue.id)
     )

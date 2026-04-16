@@ -88,7 +88,7 @@ vi.mock('@/commons/utils/date', async () => {
 })
 
 const NTH_ARGUMENT_GET_BOOKINGS = {
-  page: 1,
+  page: 2,
   eventDate: 5,
   bookingBeginningDate: 7,
   bookingEndingDate: 8,
@@ -799,8 +799,8 @@ describe('components | BookingsRecap | Pro user', () => {
     await userEvent.click(downloadSubButton)
 
     expect(api.getBookingsCsv).toHaveBeenCalledWith(
-      1,
       42,
+      1,
       null,
       null,
       null,
@@ -861,7 +861,7 @@ describe('components | BookingsRecap | Pro user', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should fetch bookings using venueId without offererId when clicking "Afficher"', async () => {
+    it('should fetch bookings using both offererId and venueId when clicking "Afficher"', async () => {
       const bookingRecap = bookingRecapFactory()
       const spyGetBookingsPro = vi
         .spyOn(api, 'getBookingsPro')
@@ -880,7 +880,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
       await screen.findAllByText(bookingRecap.stock.offerName)
       const callArgs = spyGetBookingsPro.mock.calls[0]
-      expect(callArgs[1]).toBeUndefined()
+      expect(callArgs[0]).toBe('1')
       expect(callArgs[2]).toBe(
         defaultGetOffererVenueResponseModel.id.toString()
       )

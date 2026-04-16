@@ -4,10 +4,13 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from '@/apiClient/api'
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { IndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import {
   bookingRecapFactory,
   bookingRecapStockFactory,
   getIndividualOfferFactory,
+  getOfferManagingOffererFactory,
+  getOfferVenueFactory,
   individualOfferContextValuesFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -106,6 +109,40 @@ describe('IndividualOfferSummaryBookingsScreen', () => {
     expect(
       screen.getByText('Vous n’avez aucune réservation pour le moment')
     ).toBeInTheDocument()
+  })
+
+  it('should fetch bookings with the offer managingOfferer id', async () => {
+    const offer = getIndividualOfferFactory(
+      { name: 'Offre de test' },
+      getOfferVenueFactory({
+        managingOfferer: getOfferManagingOffererFactory({ id: 42 }),
+      })
+    )
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValueOnce({
+      bookingsRecap: [
+        bookingRecapFactory({
+          stock: bookingRecapStockFactory({ offerName: 'Offre de test' }),
+        }),
+      ],
+      page: 1,
+      pages: 1,
+      total: 1,
+    })
+
+    render(offer)
+
+    await screen.findAllByRole('link', { name: 'Offre de test' })
+    expect(api.getBookingsPro).toHaveBeenCalledWith(
+      '42',
+      1,
+      undefined,
+      String(offer.id),
+      undefined,
+      DEFAULT_PRE_FILTERS.bookingStatusFilter,
+      '2015-01-01',
+      expect.any(String),
+      undefined
+    )
   })
 
   it('should open a download modal', async () => {

@@ -61,7 +61,7 @@ function HookConsumer({ initialParams }: { initialParams: HookParams }) {
 }
 
 function renderHook(
-  params: HookParams,
+  params: HookParams = { offererId: '42' },
   initialRouterEntries: string[] = ['/test']
 ) {
   const routes: RouteObject[] = [
@@ -84,41 +84,26 @@ function getDisplayedFilter(testId: string): string {
 
 describe('useBookingsFilters', () => {
   describe('initialAppliedFilters', () => {
-    it('should use DEFAULT_PRE_FILTERS when no params are provided', () => {
-      renderHook({})
+    it('should use DEFAULT_PRE_FILTERS merged with offererId when only offererId is provided', () => {
+      renderHook()
 
-      expect(hookResult.initialAppliedFilters).toEqual(DEFAULT_PRE_FILTERS)
-    })
-
-    it('should override offererId when provided', () => {
-      renderHook({ offererId: '42' })
-
-      expect(hookResult.initialAppliedFilters.offererId).toBe('42')
-      expect(hookResult.initialAppliedFilters.offerVenueId).toBe(
-        DEFAULT_PRE_FILTERS.offerVenueId
-      )
+      expect(hookResult.initialAppliedFilters).toEqual({
+        ...DEFAULT_PRE_FILTERS,
+        offererId: '42',
+      })
     })
 
     it('should override offerVenueId when venueId is provided', () => {
-      renderHook({ venueId: '99' })
-
-      expect(hookResult.initialAppliedFilters.offerVenueId).toBe('99')
-      expect(hookResult.initialAppliedFilters.offererId).toBe(
-        DEFAULT_PRE_FILTERS.offererId
-      )
-    })
-
-    it('should override both when both params are provided', () => {
       renderHook({ offererId: '42', venueId: '99' })
 
-      expect(hookResult.initialAppliedFilters.offererId).toBe('42')
       expect(hookResult.initialAppliedFilters.offerVenueId).toBe('99')
+      expect(hookResult.initialAppliedFilters.offererId).toBe('42')
     })
   })
 
   describe('selectedPreFilters initialization', () => {
     it('should initialize selectedPreFilters from initialAppliedFilters', () => {
-      renderHook({ offererId: '42' })
+      renderHook()
 
       expect(hookResult.selectedPreFilters.offererId).toBe('42')
       expect(hookResult.selectedPreFilters.bookingStatusFilter).toBe(
@@ -127,7 +112,7 @@ describe('useBookingsFilters', () => {
     })
 
     it('should initialize with default dates', () => {
-      renderHook({})
+      renderHook()
 
       expect(hookResult.selectedPreFilters.bookingBeginningDate).toBe(
         DEFAULT_PRE_FILTERS.bookingBeginningDate
@@ -140,7 +125,7 @@ describe('useBookingsFilters', () => {
 
   describe('filter state reset on offererId / venueId change', () => {
     it('should reset selectedPreFilters when offererId changes', () => {
-      renderHook({ offererId: '42' })
+      renderHook()
 
       act(() => {
         hookResult.updateSelectedFilters({
@@ -163,7 +148,7 @@ describe('useBookingsFilters', () => {
     })
 
     it('should reset selectedPreFilters when venueId changes', () => {
-      renderHook({ venueId: '10' })
+      renderHook({ offererId: '42', venueId: '10' })
 
       act(() => {
         hookResult.updateSelectedFilters({
@@ -176,7 +161,7 @@ describe('useBookingsFilters', () => {
       )
 
       act(() => {
-        setParamsFromOutside({ venueId: '20' })
+        setParamsFromOutside({ offererId: '42', venueId: '20' })
       })
 
       expect(getDisplayedFilter('offerVenueId')).toBe('20')
@@ -186,7 +171,7 @@ describe('useBookingsFilters', () => {
     })
 
     it('should reset wereBookingsRequested when params change', () => {
-      renderHook({ offererId: '42' })
+      renderHook()
 
       act(() => {
         hookResult.setWereBookingsRequested(true)
@@ -202,7 +187,7 @@ describe('useBookingsFilters', () => {
     })
 
     it('should not reset when the same offererId is provided again', () => {
-      renderHook({ offererId: '42' })
+      renderHook()
 
       act(() => {
         hookResult.updateSelectedFilters({
@@ -220,7 +205,7 @@ describe('useBookingsFilters', () => {
     })
 
     it('should reset appliedPreFilters along with selectedPreFilters', () => {
-      renderHook({ offererId: '42' })
+      renderHook()
 
       act(() => {
         hookResult.updateSelectedFilters({
@@ -249,7 +234,7 @@ describe('useBookingsFilters', () => {
 
   describe('URL params synchronization', () => {
     it('should read filters from URL search params on mount', () => {
-      renderHook({ offererId: '42' }, [
+      renderHook(undefined, [
         '/test?bookingStatusFilter=validated&bookingBeginningDate=2020-01-01&bookingEndingDate=2020-06-01',
       ])
 
@@ -263,15 +248,13 @@ describe('useBookingsFilters', () => {
     })
 
     it('should always use initialAppliedFilters.offererId regardless of URL', () => {
-      renderHook({ offererId: '42' }, [
-        '/test?offererId=999&bookingStatusFilter=booked',
-      ])
+      renderHook(undefined, ['/test?offererId=999&bookingStatusFilter=booked'])
 
       expect(hookResult.selectedPreFilters.offererId).toBe('42')
     })
 
     it('should read offerVenueId from URL', () => {
-      renderHook({ offererId: '42' }, [
+      renderHook(undefined, [
         '/test?offerVenueId=55&bookingStatusFilter=booked',
       ])
 
@@ -279,13 +262,15 @@ describe('useBookingsFilters', () => {
     })
 
     it('should read offererAddressId from URL', () => {
-      renderHook({}, ['/test?offererAddressId=77&bookingStatusFilter=booked'])
+      renderHook(undefined, [
+        '/test?offererAddressId=77&bookingStatusFilter=booked',
+      ])
 
       expect(hookResult.selectedPreFilters.offererAddressId).toBe('77')
     })
 
     it('should clear booking dates when URL has offerEventDate but no booking dates', () => {
-      renderHook({ offererId: '42' }, ['/test?offerEventDate=2020-06-10'])
+      renderHook(undefined, ['/test?offerEventDate=2020-06-10'])
 
       expect(hookResult.selectedPreFilters.offerEventDate).toBe('2020-06-10')
       expect(hookResult.selectedPreFilters.bookingBeginningDate).toBe('')
@@ -293,7 +278,7 @@ describe('useBookingsFilters', () => {
     })
 
     it('should keep booking dates from URL when both offerEventDate and dates are present', () => {
-      renderHook({}, [
+      renderHook(undefined, [
         '/test?offerEventDate=2020-06-10&bookingBeginningDate=2020-01-01&bookingEndingDate=2020-06-01',
       ])
 
@@ -305,7 +290,7 @@ describe('useBookingsFilters', () => {
     })
 
     it('should fallback invalid bookingStatusFilter to default', () => {
-      renderHook({}, ['/test?bookingStatusFilter=invalid_value'])
+      renderHook(undefined, ['/test?bookingStatusFilter=invalid_value'])
 
       expect(hookResult.selectedPreFilters.bookingStatusFilter).toBe(
         DEFAULT_PRE_FILTERS.bookingStatusFilter
@@ -313,7 +298,7 @@ describe('useBookingsFilters', () => {
     })
 
     it('should not apply URL overrides when no recognized params are in URL', () => {
-      renderHook({ offererId: '42' }, ['/test?unrelated=true'])
+      renderHook(undefined, ['/test?unrelated=true'])
 
       expect(hookResult.selectedPreFilters).toEqual(
         hookResult.initialAppliedFilters
@@ -323,7 +308,7 @@ describe('useBookingsFilters', () => {
 
   describe('updateSelectedFilters', () => {
     it('should update a single filter', () => {
-      renderHook({})
+      renderHook()
 
       act(() => {
         hookResult.updateSelectedFilters({
@@ -337,7 +322,7 @@ describe('useBookingsFilters', () => {
     })
 
     it('should clear booking dates when offerEventDate is updated to a new value', () => {
-      renderHook({})
+      renderHook()
 
       act(() => {
         hookResult.updateSelectedFilters({ offerEventDate: '2020-06-10' })
@@ -349,7 +334,7 @@ describe('useBookingsFilters', () => {
     })
 
     it('should restore booking dates when offerEventDate matches the applied value', () => {
-      renderHook({})
+      renderHook()
 
       act(() => {
         hookResult.updateSelectedFilters({ offerEventDate: '2020-06-10' })
@@ -372,7 +357,7 @@ describe('useBookingsFilters', () => {
     })
 
     it('should preserve other filters when updating one', () => {
-      renderHook({ offererId: '42' })
+      renderHook()
 
       act(() => {
         hookResult.updateSelectedFilters({
@@ -389,13 +374,13 @@ describe('useBookingsFilters', () => {
 
   describe('hasPreFilters', () => {
     it('should be false when selectedPreFilters match initialAppliedFilters', () => {
-      renderHook({ offererId: '42' })
+      renderHook()
 
       expect(hookResult.hasPreFilters).toBe(false)
     })
 
     it('should be true when a non-date filter differs', () => {
-      renderHook({})
+      renderHook()
 
       act(() => {
         hookResult.updateSelectedFilters({
@@ -407,7 +392,7 @@ describe('useBookingsFilters', () => {
     })
 
     it('should be true when a date filter differs', () => {
-      renderHook({})
+      renderHook()
 
       act(() => {
         hookResult.updateSelectedFilters({
@@ -419,7 +404,7 @@ describe('useBookingsFilters', () => {
     })
 
     it('should be false after resetPreFilters', () => {
-      renderHook({})
+      renderHook()
 
       act(() => {
         hookResult.updateSelectedFilters({
@@ -439,13 +424,13 @@ describe('useBookingsFilters', () => {
 
   describe('isRefreshRequired', () => {
     it('should be false initially', () => {
-      renderHook({})
+      renderHook()
 
       expect(hookResult.isRefreshRequired).toBe(false)
     })
 
     it('should be false when filters changed but bookings were never requested', () => {
-      renderHook({})
+      renderHook()
 
       act(() => {
         hookResult.updateSelectedFilters({
@@ -457,7 +442,7 @@ describe('useBookingsFilters', () => {
     })
 
     it('should be true when filters changed after bookings were requested', () => {
-      renderHook({})
+      renderHook()
 
       act(() => {
         hookResult.applyNow()
@@ -474,7 +459,7 @@ describe('useBookingsFilters', () => {
     })
 
     it('should be false after applyNow syncs filters', () => {
-      renderHook({})
+      renderHook()
 
       act(() => {
         hookResult.applyNow()
@@ -499,7 +484,7 @@ describe('useBookingsFilters', () => {
 
   describe('applyNow', () => {
     it('should synchronize appliedPreFilters with selectedPreFilters', () => {
-      renderHook({ offererId: '42' })
+      renderHook()
 
       act(() => {
         hookResult.updateSelectedFilters({
@@ -523,7 +508,7 @@ describe('useBookingsFilters', () => {
 
   describe('resetPreFilters', () => {
     it('should reset all filters to initialAppliedFilters', () => {
-      renderHook({ offererId: '42' })
+      renderHook()
 
       act(() => {
         hookResult.updateSelectedFilters({
@@ -550,7 +535,7 @@ describe('useBookingsFilters', () => {
 
   describe('applyNow URL navigation', () => {
     it('should include non-default filters in urlParams after applyNow', () => {
-      renderHook({ offererId: '42' })
+      renderHook()
 
       act(() => {
         hookResult.updateSelectedFilters({

@@ -120,8 +120,8 @@ describe('IndividualActivityData', () => {
     await userEvent.click(downloadSubButton)
 
     expect(api.getBookingsCsv).toHaveBeenCalledWith(
-      1,
       defaultGetOffererResponseModel.id,
+      1,
       null,
       null,
       null,
@@ -158,8 +158,8 @@ describe('IndividualActivityData', () => {
     await userEvent.click(downloadSubButton)
 
     expect(api.getBookingsCsv).toHaveBeenCalledWith(
-      1,
       99,
+      1,
       null,
       null,
       null,

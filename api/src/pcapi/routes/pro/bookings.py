@@ -7,6 +7,7 @@ from flask_login import current_user
 from flask_login import login_required
 
 import pcapi.core.bookings.repository as booking_repository
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import constants as bookings_constants
@@ -45,14 +46,14 @@ from . import blueprint
 @login_required
 @spectree_serialize(response_model=ListBookingsResponseModel, api=blueprint.pro_private_schema)
 def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel:
+    user = current_user._get_current_object()
+    if not users_repository.has_access(user, query.offerer_id):
+        raise api_errors.ResourceNotFoundError()
+
+    venue_ids = _resolve_venue_ids_for_offerer(offerer_id=query.offerer_id, venue_id=query.venue_id)
+
     page = query.page
     per_page_limit = bookings_constants.BOOKINGS_PER_PAGE_LIMIT
-    venue_id = query.venue_id
-    offer_id = query.offer_id
-    offerer_id = query.offerer_id
-    offerer_address_id = query.offerer_address_id
-    event_date = query.event_date
-    booking_status = query.booking_status_filter
     booking_period = None
     if query.booking_period_beginning_date and query.booking_period_ending_date:
         booking_period = (
@@ -60,15 +61,14 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
             query.booking_period_ending_date,
         )
 
-    bookings_query, total = booking_repository.find_by_pro_user(
-        user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
+    bookings_query, total = booking_repository.find_by_venues(
+        pro_user_id=user.id,
+        venue_ids=venue_ids,
         booking_period=booking_period,
-        status_filter=booking_status,
-        event_date=event_date,
-        venue_id=venue_id,
-        offer_id=offer_id,
-        offerer_id=offerer_id,
-        offerer_address_id=offerer_address_id,
+        status_filter=query.booking_status_filter,
+        event_date=query.event_date,
+        offer_id=query.offer_id,
+        offerer_address_id=query.offerer_address_id,
         page=int(page),
         per_page_limit=per_page_limit,
     )
@@ -242,10 +242,12 @@ def get_offer_price_categories_and_schedules_by_dates(offer_id: int) -> EventDat
 
 
 def _create_booking_export_file(query: ListBookingsQueryModel, export_type: BookingExportType) -> bytes:
-    offerer_id = query.offerer_id
-    venue_id = query.venue_id
-    event_date = query.event_date
-    offerer_address_id = query.offerer_address_id
+    user = current_user._get_current_object()
+    if not users_repository.has_access(user, query.offerer_id):
+        raise api_errors.ResourceNotFoundError()
+
+    venue_ids = _resolve_venue_ids_for_offerer(offerer_id=query.offerer_id, venue_id=query.venue_id)
+
     booking_period = None
     if query.booking_period_beginning_date and query.booking_period_ending_date:
         booking_period = (
@@ -255,19 +257,27 @@ def _create_booking_export_file(query: ListBookingsQueryModel, export_type: Book
     booking_status = query.booking_status_filter
 
     export_data = booking_repository.get_export(
-        user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
+        pro_user_id=user.id,
+        venue_ids=venue_ids,
         booking_period=booking_period,
         status_filter=booking_status,
-        event_date=event_date,
-        offerer_id=offerer_id,
-        venue_id=venue_id,
+        event_date=query.event_date,
         export_type=export_type,
-        offerer_address_id=offerer_address_id,
+        offerer_address_id=query.offerer_address_id,
     )
 
     if export_type == BookingExportType.CSV:
         return cast(str, export_data).encode("utf-8-sig")
     return cast(bytes, export_data)
+
+
+def _resolve_venue_ids_for_offerer(*, offerer_id: int, venue_id: int | None) -> list[int]:
+    if venue_id is not None:
+        venue = get_or_404(offerers_models.Venue, venue_id)
+        if venue.managingOffererId != offerer_id:
+            raise api_errors.ResourceNotFoundError()
+        return [venue_id]
+    return offerers_repository.get_venue_ids_by_offerer_ids([offerer_id])
 
 
 def _get_booking_by_token_or_404(token: str) -> bookings_models.Booking:

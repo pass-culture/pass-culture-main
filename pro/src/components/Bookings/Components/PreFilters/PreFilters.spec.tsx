@@ -74,7 +74,7 @@ describe('filter bookings by bookings period', () => {
       isLocalLoading: false,
       updateUrl: vi.fn(),
 
-      selectedPreFilters: { ...DEFAULT_PRE_FILTERS },
+      selectedPreFilters: { ...DEFAULT_PRE_FILTERS, offererId: '42' },
       updateSelectedFilters: vi.fn(),
       hasPreFilters: false,
       isRefreshRequired: false,
@@ -142,7 +142,7 @@ describe('filter bookings by bookings period', () => {
       offerId: DEFAULT_PRE_FILTERS.offerId,
       offerVenueId: DEFAULT_PRE_FILTERS.offerVenueId,
       offererAddressId: '21',
-      offererId: DEFAULT_PRE_FILTERS.offererId,
+      offererId: '42',
     })
   })
 
@@ -163,7 +163,7 @@ describe('filter bookings by bookings period', () => {
       offerId: DEFAULT_PRE_FILTERS.offerId,
       offerVenueId: DEFAULT_PRE_FILTERS.offerVenueId,
       offererAddressId: '21',
-      offererId: DEFAULT_PRE_FILTERS.offererId,
+      offererId: '42',
     })
   })
 

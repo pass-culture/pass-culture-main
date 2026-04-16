@@ -8,17 +8,21 @@ import { DEFAULT_PRE_FILTERS } from '../constants'
 import { buildBookingsRecapQuery } from '../utils'
 
 describe('buildBookingsRecapQuery', () => {
-  it('should use default filters when no filters is passed in argument', () => {
-    expect(buildBookingsRecapQuery({ page: 1 })).toStrictEqual({
-      page: 1,
-      bookingPeriodBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
-      bookingPeriodEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
-      bookingStatusFilter: DEFAULT_PRE_FILTERS.bookingStatusFilter,
-    })
+  it('should use default filters when only offererId is passed in argument', () => {
+    expect(buildBookingsRecapQuery({ offererId: '42', page: 1 })).toStrictEqual(
+      {
+        page: 1,
+        offererId: '42',
+        bookingPeriodBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
+        bookingPeriodEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
+        bookingStatusFilter: DEFAULT_PRE_FILTERS.bookingStatusFilter,
+      }
+    )
   })
 
   it('should compute params with given prefilters', () => {
     const preFilters = {
+      offererId: '42',
       offerVenueId: 'AY',
       offerEventDate: '2022-01-01',
       bookingBeginningDate: '2022-01-01',
@@ -28,6 +32,7 @@ describe('buildBookingsRecapQuery', () => {
     }
 
     expect(buildBookingsRecapQuery(preFilters)).toStrictEqual({
+      offererId: '42',
       venueId: 'AY',
       eventDate: formatBrowserTimezonedDateAsUTC(
         new Date('2022-01-01T10:00:00.000Z'),

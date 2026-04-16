@@ -5,7 +5,7 @@ import type {
 } from '@/commons/core/Bookings/types'
 
 export const buildBookingsRecapQuery = ({
-  offererId = DEFAULT_PRE_FILTERS.offererId,
+  offererId,
   offerVenueId = DEFAULT_PRE_FILTERS.offerVenueId,
   offererAddressId = DEFAULT_PRE_FILTERS.offererAddressId,
   offerEventDate = DEFAULT_PRE_FILTERS.offerEventDate,
@@ -14,12 +14,11 @@ export const buildBookingsRecapQuery = ({
   bookingStatusFilter = DEFAULT_PRE_FILTERS.bookingStatusFilter,
   offerId,
   page,
-}: Partial<PreFiltersParams> & { page?: number }): APIFilters => {
-  const params = { page } as APIFilters
-
-  if (offererId !== DEFAULT_PRE_FILTERS.offererId) {
-    params.offererId = offererId
-  }
+}: Partial<PreFiltersParams> & {
+  offererId: string
+  page?: number
+}): APIFilters => {
+  const params = { page, offererId } as APIFilters
 
   if (offerVenueId !== DEFAULT_PRE_FILTERS.offerVenueId) {
     params.venueId = offerVenueId

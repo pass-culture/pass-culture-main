@@ -1954,8 +1954,14 @@ def edit_offer_venue(offer_id: int) -> response_utils.BackofficeResponse:
 
 @list_offers_blueprint.route("/<int:offer_id>/bookings.csv", methods=["GET"])
 def download_bookings_csv(offer_id: int) -> response_utils.BackofficeResponse:
+    offer = db.session.query(offers_models.Offer).filter_by(id=offer_id).one_or_none()
+
+    if not offer:
+        raise NotFound()
+
     export_data = booking_repository.get_export(
-        user=current_user,
+        pro_user_id=current_user.id,
+        venue_ids=[offer.venueId],
         offer_id=offer_id,
         export_type=bookings_models.BookingExportType.CSV,
     )
@@ -1970,8 +1976,14 @@ def download_bookings_csv(offer_id: int) -> response_utils.BackofficeResponse:
 
 @list_offers_blueprint.route("/<int:offer_id>/bookings.xlsx", methods=["GET"])
 def download_bookings_xlsx(offer_id: int) -> response_utils.BackofficeResponse:
+    offer = db.session.query(offers_models.Offer).filter_by(id=offer_id).one_or_none()
+
+    if not offer:
+        raise NotFound()
+
     export_data = booking_repository.get_export(
-        user=current_user,
+        pro_user_id=current_user.id,
+        venue_ids=[offer.venueId],
         offer_id=offer_id,
         export_type=bookings_models.BookingExportType.EXCEL,
     )

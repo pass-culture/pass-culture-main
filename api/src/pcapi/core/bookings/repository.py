@@ -80,38 +80,35 @@ def booking_export_header() -> list[str]:
     return BOOKING_EXPORT_HEADER
 
 
-def find_by_pro_user(
-    user: User,
+def find_by_venues(
     *,
+    pro_user_id: int,
+    venue_ids: list[int],
     booking_period: tuple[date, date] | None = None,
     status_filter: models.BookingStatusFilter | None = None,
     event_date: date | None = None,
-    venue_id: int | None = None,
     offer_id: int | None = None,
-    offerer_id: int | None = None,
     offerer_address_id: int | None = None,
     page: int = 1,
     per_page_limit: int = constants.BOOKINGS_PER_PAGE_LIMIT,
 ) -> tuple[sa_orm.Query, int]:
     total_bookings_recap = _get_filtered_bookings_count(
-        user,
+        pro_user_id=pro_user_id,
+        venue_ids=venue_ids,
         period=booking_period,
         status_filter=status_filter,
         event_date=event_date,
-        venue_id=venue_id,
         offer_id=offer_id,
-        offerer_id=offerer_id,
         offerer_address_id=offerer_address_id,
     )
 
     bookings_query = _get_filtered_booking_pro(
-        pro_user=user,
+        pro_user_id=pro_user_id,
+        venue_ids=venue_ids,
         period=booking_period,
         status_filter=status_filter,
         event_date=event_date,
-        venue_id=venue_id,
         offer_id=offer_id,
-        offerer_id=offerer_id,
         offerer_address_id=offerer_address_id,
     )
     bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
@@ -387,24 +384,22 @@ def export_bookings_by_offer_id(
 
 
 def get_export(
-    user: User,
     *,
+    pro_user_id: int,
+    venue_ids: list[int],
     booking_period: tuple[date, date] | None = None,
     status_filter: models.BookingStatusFilter | None = models.BookingStatusFilter.BOOKED,
     event_date: date | None = None,
-    offerer_id: int | None = None,
-    venue_id: int | None = None,
     offer_id: int | None = None,
     offerer_address_id: int | None = None,
     export_type: models.BookingExportType | None = models.BookingExportType.CSV,
 ) -> str | bytes:
     bookings_query = _get_filtered_booking_report(
-        pro_user=user,
+        pro_user_id=pro_user_id,
+        venue_ids=venue_ids,
         period=booking_period,
         status_filter=status_filter,
         event_date=event_date,
-        offerer_id=offerer_id,
-        venue_id=venue_id,
         offer_id=offer_id,
         offerer_address_id=offerer_address_id,
     )
@@ -425,13 +420,12 @@ def serialize_offer_type_educational_or_individual(offer_is_educational: bool) -
 
 
 def _get_filtered_bookings_query(
-    pro_user: User,
     *,
+    pro_user_id: int,
+    venue_ids: list[int],
     period: tuple[date, date] | None = None,
     status_filter: models.BookingStatusFilter | None = None,
     event_date: date | None = None,
-    offerer_id: int | None = None,
-    venue_id: int | None = None,
     offer_id: int | None = None,
     offerer_address_id: int | None = None,
     extra_joins: tuple[tuple[typing.Any, ...], ...] = (),
@@ -440,11 +434,8 @@ def _get_filtered_bookings_query(
     VenueAddress = sa_orm.aliased(Address)
     bookings_query = (
         db.session.query(models.Booking)
-        .join(models.Booking.offerer)
-        .join(offerers_models.Offerer.UserOfferers)
         .join(models.Booking.stock)
         .join(offers_models.Stock.offer)
-        .join(models.Booking.externalBookings, isouter=True)
         .join(models.Booking.venue, isouter=True)
         .outerjoin(offers_models.Offer.offererAddress)
         .outerjoin(offerers_models.OffererAddress.address)
@@ -458,17 +449,12 @@ def _get_filtered_bookings_query(
         else:
             bookings_query = bookings_query.join(join_key, isouter=True)
 
-    if not pro_user.has_admin_role:
-        bookings_query = bookings_query.filter(offerers_models.UserOfferer.userId == pro_user.id)
-
-    bookings_query = bookings_query.filter(offerers_models.UserOfferer.isValidated)
-
     if period:
         date_column_to_filter_on = BOOKING_DATE_STATUS_MAPPING[status_filter or models.BookingStatusFilter.BOOKED]
 
         datetime_period_by_timezones = offerers_repository.convert_date_period_to_datetime_period_for_timezones(
             period,
-            pro_user.id,
+            pro_user_id,
             offer_id=offer_id,
             offerer_address_id=offerer_address_id,
         )
@@ -488,11 +474,8 @@ def _get_filtered_bookings_query(
                     ]
                 )
             )
-    if offerer_id is not None:
-        bookings_query = bookings_query.filter(models.Booking.offererId == offerer_id)
-
-    if venue_id is not None:
-        bookings_query = bookings_query.filter(models.Booking.venueId == venue_id)
+    if venue_ids is not None:
+        bookings_query = bookings_query.filter(models.Booking.venueId.in_(venue_ids))
 
     if offer_id is not None:
         bookings_query = bookings_query.filter(offers_models.Stock.offerId == offer_id)
@@ -510,29 +493,25 @@ def _get_filtered_bookings_query(
 
 
 def _get_filtered_bookings_count(
-    pro_user: User,
     *,
+    pro_user_id: int,
+    venue_ids: list[int],
     period: tuple[date, date] | None = None,
     status_filter: models.BookingStatusFilter | None = None,
     event_date: date | None = None,
-    venue_id: int | None = None,
     offer_id: int | None = None,
-    offerer_id: int | None = None,
     offerer_address_id: int | None = None,
 ) -> int:
     bookings = (
         _get_filtered_bookings_query(
-            pro_user,
+            pro_user_id=pro_user_id,
+            venue_ids=venue_ids,
             period=period,
             status_filter=status_filter,
             event_date=event_date,
-            venue_id=venue_id,
             offer_id=offer_id,
-            offerer_id=offerer_id,
             offerer_address_id=offerer_address_id,
-        )
-        .with_entities(models.Booking.id, models.Booking.quantity)
-        .distinct(models.Booking.id)
+        ).with_entities(models.Booking.id, models.Booking.quantity)
     ).cte()
     # We really want total quantities here (and not the number of bookings),
     # since we'll build two rows for each "duo" bookings later.
@@ -541,13 +520,12 @@ def _get_filtered_bookings_count(
 
 
 def _get_filtered_booking_report(
-    pro_user: User,
     *,
+    pro_user_id: int,
+    venue_ids: list[int],
     period: tuple[date, date] | None,
     status_filter: models.BookingStatusFilter | None,
     event_date: date | None = None,
-    offerer_id: int | None = None,
-    venue_id: int | None = None,
     offer_id: int | None = None,
     offerer_address_id: int | None = None,
 ) -> sa_orm.Query:
@@ -593,41 +571,36 @@ def _get_filtered_booking_report(
         Address.city.label("locationCity"),
     )
 
-    bookings_query = (
-        _get_filtered_bookings_query(
-            pro_user,
-            period=period,
-            status_filter=status_filter,
-            event_date=event_date,
-            offerer_id=offerer_id,
-            venue_id=venue_id,
-            offer_id=offer_id,
-            offerer_address_id=offerer_address_id,
-            extra_joins=(
-                (offers_models.Stock.offer,),
-                (models.Booking.user,),
-                (offers_models.Offer.offererAddress,),
-                (offerers_models.OffererAddress.address,),
-                (VenueOffererAddress, offerers_models.Venue.offererAddress),
-                (VenueAddress, VenueOffererAddress.address),
-            ),
-        )
-        .with_entities(*with_entities)
-        .distinct(models.Booking.id)
-    )
+    bookings_query = _get_filtered_bookings_query(
+        pro_user_id=pro_user_id,
+        venue_ids=venue_ids,
+        period=period,
+        status_filter=status_filter,
+        event_date=event_date,
+        offer_id=offer_id,
+        offerer_address_id=offerer_address_id,
+        extra_joins=(
+            (models.Booking.offerer,),
+            (offers_models.Stock.offer,),
+            (models.Booking.user,),
+            (offers_models.Offer.offererAddress,),
+            (offerers_models.OffererAddress.address,),
+            (VenueOffererAddress, offerers_models.Venue.offererAddress),
+            (VenueAddress, VenueOffererAddress.address),
+        ),
+    ).with_entities(*with_entities)
 
     return bookings_query
 
 
 def _get_filtered_booking_pro(
-    pro_user: User,
     *,
+    pro_user_id: int,
+    venue_ids: list[int],
     period: tuple[date, date] | None = None,
     status_filter: models.BookingStatusFilter | None = None,
     event_date: date | None = None,
-    venue_id: int | None = None,
     offer_id: int | None = None,
-    offerer_id: int | None = None,
     offerer_address_id: int | None = None,
 ) -> sa_orm.Query:
     VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
@@ -659,34 +632,32 @@ def _get_filtered_booking_pro(
         VenueAddress.departmentCode.label("venueDepartmentCode"),
     )
 
-    bookings_query = (
-        _get_filtered_bookings_query(
-            pro_user,
-            period=period,
-            status_filter=status_filter,
-            event_date=event_date,
-            venue_id=venue_id,
-            offer_id=offer_id,
-            offerer_id=offerer_id,
-            offerer_address_id=offerer_address_id,
-            extra_joins=(
-                (offers_models.Stock.offer,),
-                (models.Booking.user,),
-                (offers_models.Offer.offererAddress,),
-                (offerers_models.OffererAddress.address,),
-                (VenueOffererAddress, offerers_models.Venue.offererAddress),
-                (VenueAddress, VenueOffererAddress.address),
-            ),
-        )
-        .with_entities(*with_entities)
-        .distinct(models.Booking.id)
-    )
+    bookings_query = _get_filtered_bookings_query(
+        pro_user_id=pro_user_id,
+        venue_ids=venue_ids,
+        period=period,
+        status_filter=status_filter,
+        event_date=event_date,
+        offer_id=offer_id,
+        offerer_address_id=offerer_address_id,
+        extra_joins=(
+            (offers_models.Stock.offer,),
+            (models.Booking.user,),
+            (offers_models.Offer.offererAddress,),
+            (offerers_models.OffererAddress.address,),
+            (VenueOffererAddress, offerers_models.Venue.offererAddress),
+            (VenueAddress, VenueOffererAddress.address),
+        ),
+    ).with_entities(*with_entities)
 
     return bookings_query
 
 
 def _duplicate_booking_when_quantity_is_two(bookings_recap_query: sa_orm.Query) -> sa_orm.Query:
-    return bookings_recap_query.union_all(bookings_recap_query.filter(models.Booking.quantity == DUO_QUANTITY))
+    duplicated_booking_rows = (
+        sa.func.generate_series(1, models.Booking.quantity).table_valued("duplicate_index").lateral()
+    )
+    return bookings_recap_query.join(duplicated_booking_rows, sa.true())
 
 
 def _get_booking_status(status: models.BookingStatus, is_confirmed: bool) -> str:

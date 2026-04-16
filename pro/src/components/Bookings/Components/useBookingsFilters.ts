@@ -22,7 +22,7 @@ export function useBookingsFilters({
   offererId,
   venueId,
 }: {
-  offererId?: string
+  offererId: string
   venueId?: string
 }) {
   const navigate = useNavigate()
@@ -32,7 +32,7 @@ export function useBookingsFilters({
   const initialAppliedFilters: PreFiltersParams = useMemo(
     () => ({
       ...DEFAULT_PRE_FILTERS,
-      ...(offererId ? { offererId: offererId } : undefined),
+      offererId,
       ...(venueId ? { offerVenueId: venueId } : undefined),
     }),
     [offererId, venueId]
