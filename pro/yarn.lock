@@ -2145,10 +2145,10 @@
   dependencies:
     "@rolldown/pluginutils" "1.0.0-rc.7"
 
-"@vitest/coverage-istanbul@4.1.2":
-  version "4.1.2"
-  resolved "https://registry.yarnpkg.com/@vitest/coverage-istanbul/-/coverage-istanbul-4.1.2.tgz#22a389e18bd0d98150fcc0e0b9d11ef269fa1a66"
-  integrity sha512-WSz7+4a7PcMtMNvIP7AXUMffsq4JrWeJaguC8lg6fSQyGxSfaT4Rf81idqwxTT6qX5kjjZw2t9rAnCRRQobSqw==
+"@vitest/coverage-istanbul@4.1.4":
+  version "4.1.4"
+  resolved "https://registry.yarnpkg.com/@vitest/coverage-istanbul/-/coverage-istanbul-4.1.4.tgz#936eefc04b9050b477a24b22059a63d469a8cb84"
+  integrity sha512-Pyi4F8RnqU6hBGiIDhS/e8gVD4FRcUvZJ2AbFiIlmIxHlEIsKyCxGOqufCECobty/dXELcN8oIH4Gms3hVOCYA==
   dependencies:
     "@babel/core" "^7.29.0"
     "@istanbuljs/schema" "^0.1.3"
