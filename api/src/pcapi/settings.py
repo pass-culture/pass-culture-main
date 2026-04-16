@@ -27,6 +27,8 @@ IS_PROD = ENV == "production"
 IS_TESTING = ENV == "testing"
 IS_OPS = ENV == "ops"
 
+IS_UV = "True"
+
 if ENV not in ("development", "integration", "staging", "production", "testing", "ops"):
     raise RuntimeError("Unknown environment")
 
