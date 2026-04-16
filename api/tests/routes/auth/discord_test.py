@@ -1,3 +1,4 @@
+import re
 import unittest
 from unittest.mock import patch
 from urllib.parse import unquote
@@ -6,7 +7,6 @@ import pytest
 import time_machine
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
-from flask import g
 from flask import url_for
 
 from pcapi import settings
@@ -41,9 +41,11 @@ class DiscordSigninTest:
         format=serialization.PublicFormat.SubjectPublicKeyInfo,
     )
 
-    def fetch_csrf_token(self, client):
-        # will generate a csrf token
-        client.get(url_for("auth.discord_signin"))
+    def fetch_csrf_token(self, client) -> str:
+        # will generate a csrf token and return it
+        response = client.get(url_for("auth.discord_signin"))
+        match = re.search(r'name="csrf_token" value="([^"]+)"', response.text)
+        return match.groups()[0] if match else ""
 
     def post_to_endpoint(
         self,
@@ -54,12 +56,11 @@ class DiscordSigninTest:
         expected_num_queries: int | None = None,
         **url_kwargs,
     ):
-        self.fetch_csrf_token(client)
         url = url_for(self.endpoint, **url_kwargs)
 
         if form is None:
             form = {}
-        form["csrf_token"] = g.get("csrf_token", None)
+        form["csrf_token"] = self.fetch_csrf_token(client)
         if expected_num_queries is not None:
             with assert_num_queries(expected_num_queries):
                 return client.post(url, form=form, headers=headers, follow_redirects=follow_redirects)

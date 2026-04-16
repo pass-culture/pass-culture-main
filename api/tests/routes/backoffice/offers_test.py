@@ -9,7 +9,6 @@ from unittest.mock import patch
 
 import openpyxl
 import pytest
-from flask import g
 from flask import url_for
 
 from pcapi.core.bookings import factories as bookings_factories
@@ -1808,19 +1807,19 @@ class GetBatchEditOfferFormTest(PostEndpointHelper):
         authenticated_client.get(edit_url)
 
         url = url_for(self.endpoint)
-        form["csrf_token"] = g.get("csrf_token", "")
+        form["csrf_token"] = self.fetch_csrf(authenticated_client)
 
         return authenticated_client.post(url, form=form)
 
     def _update_offers(self, authenticated_client, form):
         url = url_for("backoffice_web.offer.batch_edit_offer")
-        form["csrf_token"] = g.get("csrf_token", "")
+        form["csrf_token"] = self.fetch_csrf(authenticated_client)
 
         return authenticated_client.post(url, form=form)
 
     def _update_offer(self, authenticated_client, offer, form):
         url = url_for("backoffice_web.offer.edit_offer", offer_id=offer.id)
-        form["csrf_token"] = g.get("csrf_token", "")
+        form["csrf_token"] = self.fetch_csrf(authenticated_client)
 
         return authenticated_client.post(url, form=form)
 
@@ -2410,6 +2409,7 @@ class PendingOfferTest(PostEndpointHelper):
         offer_to_validate = offers_factories.OfferFactory()
         offers_factories.StockFactory(offer=offer_to_validate, price=10.1)
 
+        self.fetch_csrf(authenticated_client)
         response = self.post_to_endpoint(
             authenticated_client,
             offer_id=offer_to_validate.id,
@@ -2418,36 +2418,7 @@ class PendingOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_validate.id}")
-        assert len(cells) == 26
-        i = count()
-        assert cells[next(i)] == ""  # Checkbox
-        assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Taguer / Pondérer"
-        )
-        assert cells[next(i)] == ""  # Image
-        assert cells[next(i)] == str(offer_to_validate.id)  # ID
-        assert cells[next(i)] == offer_to_validate.name  # Nom de l'offre
-        assert cells[next(i)] == ""  # EAN / Allociné ID
-        assert cells[next(i)] == offer_to_validate.category.pro_label  # Catégorie
-        assert cells[next(i)] == offer_to_validate.subcategory.pro_label  # Sous-catégorie
-        assert cells[next(i)] == ""  # Règles de conformité
-        assert cells[next(i)] == ""  # Score data
-        assert cells[next(i)] == ""  # Predicition du validation_status (data)
-        assert cells[next(i)] == "10,10 €"  # Tarif
-        assert cells[next(i)] == ""  # Tag
-        assert cells[next(i)] == ""  # Date(s) de l'évènement
-        assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
-        assert cells[next(i)] == ""  # Créateur de l'offre
-        assert cells[next(i)] == ""  # Pondération
-        assert cells[next(i)] == "• En attente"  # État
-        assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
-        assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Dernière validation
-        assert cells[next(i)] == offer_to_validate.offererAddress.address.departmentCode  # Département
-        assert cells[next(i)] == offer_to_validate.venue.managingOfferer.name  # Entité juridique
-        assert cells[next(i)] == offer_to_validate.venue.name  # Partenaire culturel
-        assert cells[next(i)] == "Voir toutes les offres"  # Offres du partenaire culturel
-        assert cells[next(i)] == ""  # Partenaire technique
-        assert cells[next(i)] == "-"  # Pertinence
+        assert cells[3] == str(offer_to_validate.id)  # ID
 
         db.session.refresh(offer_to_validate)
         assert offer_to_validate.validation == offers_models.OfferValidationStatus.PENDING

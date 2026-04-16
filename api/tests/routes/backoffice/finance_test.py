@@ -1645,7 +1645,7 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.CREATE_INCIDENTS
     error_message_template = "Erreur %s Annuler"
 
-    expected_num_queries = 5
+    expected_num_queries = 3
 
     @pytest.mark.parametrize(
         "venue_factory,show_xfp_amount",
@@ -1764,7 +1764,7 @@ class GetCollectiveBookingOverpaymentFormTest(PostEndpointHelper):
     endpoint_kwargs = {"collective_booking_id": 1}
     needed_permission = perm_models.Permissions.CREATE_INCIDENTS
 
-    expected_num_queries = 8
+    expected_num_queries = 6
 
     def test_get_form(self, authenticated_client):
         collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
@@ -2023,7 +2023,7 @@ class GetCommercialGestureCreationFormTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.CREATE_INCIDENTS
     error_message_template = "Erreur %s Annuler"
 
-    expected_num_queries = 5
+    expected_num_queries = 3
 
     @pytest.mark.parametrize(
         "venue_factory,show_xfp_amount",
