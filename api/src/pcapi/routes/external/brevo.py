@@ -165,11 +165,12 @@ def _brevo_get_user_recommendations(user_id: int) -> serializers.BrevoOffersResp
 
     body = {
         "subcategories": RECOMMENDATION_SUBCATEGORIES,
-        "price_max": price_max,
+        "price_max": float(price_max),
     }
     try:
         raw_response = recommendation_api.get_playlist(user, params=user_location, body=body)
-    except (recommendation_api.RecommendationApiException, recommendation_api.RecommendationApiTimeoutException):
+    except (recommendation_api.RecommendationApiException, recommendation_api.RecommendationApiTimeoutException) as exc:
+        logger.error("Request to recommendation API failed", extra={"error": str(exc)})
         raise ApiErrors(status_code=503)
 
     try:
