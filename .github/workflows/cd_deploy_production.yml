@@ -1,0 +1,127 @@
+name: "0 [CD] Deploy release to production"
+
+run-name: "Deploy ${{ github.ref }} to production by @${{ github.actor }}"
+
+on: workflow_dispatch
+
+permissions: write-all
+
+jobs:
+  check-ref-is-a-version-tag:
+    name: Check tag is a version tag
+    runs-on: ubuntu-22.04
+    steps:
+      - name: "Check workflow ref"
+        env:
+          GITHUB_REF: ${{ github.ref }}
+        run: |
+          if ! [[ "$GITHUB_REF" =~ ^refs\/tags\/v.*$ ]]; then
+            echo "This workflow can only be triggered from a tag (starting with a 'v')"
+            exit 1
+          fi
+
+  ask-for-review-on-slack:
+    name: Ask for deployment review on Slack
+    needs: check-ref-is-a-version-tag
+    uses: ./.github/workflows/slack_post_message_workflow.yml
+    with:
+      channel: ${{ vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID }}
+      message: ":github-pending: Un <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `${{ github.ref_name }}` a été demandé sur `production`"
+    secrets: inherit
+
+  version:
+    name: "Version"
+    needs: check-ref-is-a-version-tag
+    runs-on: ubuntu-22.04
+    outputs:
+      APP_VERSION: ${{ steps.app-version.outputs.APP_VERSION }}
+    steps:
+      - name: "Checkout Release"
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: "${{ github.ref }}"
+          fetch-depth: 0
+      - name: "Get app version"
+        id: "app-version"
+        run: echo APP_VERSION="$(cat ./api/version.txt)" | tee -a "$GITHUB_OUTPUT"
+
+  notify-deployment-confirmed:
+    name: Update message with deployment confirmation
+    needs: [ask-for-review-on-slack, version]
+    uses: ./.github/workflows/slack_update_message_workflow.yml
+    with:
+      channel: ${{ vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID }}
+      message-ts: ${{ needs.ask-for-review-on-slack.outputs.message-ts }}
+      message: ":rocket: Un <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `${{ github.ref_name }}` a été approuvé sur `production`"
+    secrets: inherit
+
+  deploy:
+    name: Deploy
+    needs: version
+    uses: ./.github/workflows/dev_on_workflow_deploy.yml
+    strategy:
+      matrix:
+        include:
+          - environment: integration
+            environment_short_name: int
+            app_cluster_name: gke-backend-stg-eu9
+            app_project_id: pc-backend-stg
+          - environment: production
+            environment_short_name: prd
+            app_cluster_name: gke-backend-prd-eu9
+            app_project_id: pc-backend-prd
+    with:
+      environment: ${{ matrix.environment }}
+      environment_short_name: ${{ matrix.environment_short_name }}
+      app_version: ${{ needs.version.outputs.APP_VERSION }}
+      workflow_cluster_name: gke-infra-prd-eu9
+      workflow_project_id: pc-infra-prd
+      app_cluster_name: ${{ matrix.app_cluster_name }}
+      app_project_id: ${{ matrix.app_project_id }}
+      location: europe-west9
+      is_new_infra: true
+      workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
+      apply_algolia_config: true
+      deploy_api: true
+      deploy_pro: true
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      NEW_INFRA_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PRD }}
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+
+  publish-github-release:
+    runs-on: ubuntu-22.04
+    needs: deploy
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Publish Github release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          gh release edit "$REF_NAME" \
+          --prerelease=false \
+          --latest \
+          --verify-tag
+
+  notify-success:
+    name: Notify deployment has succeeded
+    needs: [version, deploy]
+    if: always() && !failure() && !cancelled()
+    uses: ./.github/workflows/slack_post_message_workflow.yml
+    with:
+      channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
+      message: ":github-success: La version `v${{ needs.version.outputs.APP_VERSION }}` a été <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|déployée> sur `production`"
+    secrets: inherit
+
+  notify-failure:
+    name: Notify deployment has failed
+    needs: [version, deploy]
+    if: always() && (failure() || cancelled())
+    uses: ./.github/workflows/slack_post_message_workflow.yml
+    with:
+      channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
+      message: ":github-failure:Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|déploiement> de la version `v${{ needs.version.outputs.APP_VERSION }}` a échoué sur `production`"
+    secrets: inherit
