@@ -129,7 +129,7 @@ def brevo_notify_importcontacts(list_id: int, iteration: int) -> None:
 def brevo_get_user_recommendations(user_id: int) -> serializers.BrevoOffersResponse:
     """This route is called by Brevo on sending an email to a user to get recommended offers."""
 
-    if FeatureToggle.WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK:
+    if FeatureToggle.WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK.is_active():
         return _brevo_get_user_recommendations(user_id)
 
     return _old_brevo_get_user_recommendations(user_id)
