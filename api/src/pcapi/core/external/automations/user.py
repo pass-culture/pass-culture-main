@@ -1,4 +1,3 @@
-from collections.abc import Iterable
 from collections.abc import Iterator
 from datetime import date
 from datetime import datetime
@@ -20,17 +19,6 @@ YIELD_COUNT_PER_DB_QUERY = 1000
 
 # 4 or 5 leap years in 18 years
 DAYS_IN_18_YEARS = 365 * 14 + 366 * 4
-
-
-def get_young_users_emails_query() -> sa_orm.Query:
-    return (
-        db.session.query(User.email)
-        .yield_per(YIELD_COUNT_PER_DB_QUERY)
-        .filter(
-            sa.not_(User.has_pro_role),
-            sa.not_(User.has_admin_role),
-        )
-    )
 
 
 def get_users_ex_beneficiary() -> sa_orm.query.RowReturningQuery[tuple[str]]:
@@ -62,36 +50,6 @@ def users_ex_beneficiary_automation() -> bool:
     """
     user_emails = (email for (email,) in get_users_ex_beneficiary())
     return add_contacts_to_list(user_emails, settings.SENDINBLUE_AUTOMATION_YOUNG_EX_BENEFICIARY_ID)
-
-
-def get_email_for_users_created_one_year_ago_per_month() -> Iterable[str]:
-    first_day_of_month = (date.today() - relativedelta(months=12)).replace(day=1)
-    last_day_of_month = first_day_of_month + relativedelta(months=1, days=-1)
-
-    return (
-        email
-        for (email,) in get_young_users_emails_query().filter(
-            User.dateCreated.between(
-                datetime.combine(first_day_of_month, datetime.min.time()),
-                datetime.combine(last_day_of_month, datetime.max.time()),
-            )
-        )
-    )
-
-
-def users_one_year_with_pass_automation() -> bool:
-    """
-    This automation is called once a month and includes young users who created their PassCulture account in the same
-    month (from first to last day) one year earlier.
-
-    Example: List produced in November 2021 contains all young users who created their account in November 2020
-
-    List: jeunes-un-an-sur-le-pass
-    """
-    return add_contacts_to_list(
-        get_email_for_users_created_one_year_ago_per_month(),
-        settings.SENDINBLUE_AUTOMATION_YOUNG_1_YEAR_WITH_PASS_LIST_ID,
-    )
 
 
 def get_users_whose_credit_expired_today() -> Iterator[User]:
