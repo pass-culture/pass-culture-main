@@ -7,7 +7,6 @@ import sqlalchemy.orm as sa_orm
 
 import pcapi.utils.cron as cron_decorators
 from pcapi.connectors import api_sirene
-from pcapi.core.external.automations import venue as venue_automations
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import synchronize_venues_banners_with_google_places as banner_url_synchronizations
@@ -132,14 +131,6 @@ def delete_user_offerers_on_closed_offerers(apply: bool = False) -> None:
 def send_reminder_email_to_individual_offerers() -> None:
     # This command is called from a cron running every day.
     offerers_api.send_reminder_email_to_individual_offerers()
-
-
-@blueprint.cli.command("pro_inactive_venues_automation")
-@cron_decorators.log_cron_with_transaction
-def pro_inactive_venues_automation() -> None:
-    """Updates the list of venues which are inactive since 90 days or more ("pros-inactivité-90j" list).
-    This command is meant to be called every day."""
-    venue_automations.pro_inactive_venues_automation()
 
 
 @blueprint.cli.command("update_offerer_stats")

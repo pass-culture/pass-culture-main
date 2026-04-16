@@ -10,7 +10,6 @@ import pcapi.core.users.repository as users_repository
 import pcapi.utils.cron as cron_decorators
 from pcapi import settings
 from pcapi.connectors.dms.utils import import_ds_applications
-from pcapi.core.external.automations import pro_user as pro_user_automations
 from pcapi.core.external.automations import user as user_automations
 from pcapi.core.external.batch import transactional_notifications
 from pcapi.core.mails import transactional as transactional_mails
@@ -61,49 +60,12 @@ def users_ex_beneficiary_automation() -> None:
     user_automations.users_ex_beneficiary_automation()
 
 
-@blueprint.cli.command("users_one_year_with_pass_automation")
-@cron_decorators.log_cron_with_transaction
-def users_one_year_with_pass_automation() -> None:
-    """Includes young users who created their PassCulture account in the same month
-    (from first to last day) one year earlier in "jeunes-un-an-sur-le-pass" list.
-            This command is meant to be called every month."""
-    user_automations.users_one_year_with_pass_automation()
-
-
 @blueprint.cli.command("users_whose_credit_expired_today_automation")
 @cron_decorators.log_cron_with_transaction
 def users_whose_credit_expired_today_automation() -> None:
     """Updates external attributes for young users whose credit just expired.
     This command is meant to be called every day."""
     user_automations.users_whose_credit_expired_today_automation()
-
-
-@blueprint.cli.command("pro_no_active_offers_since_40_days_automation")
-@cron_decorators.log_cron_with_transaction
-def pro_no_active_offers_since_40_days_automation() -> None:
-    """Updates the list of pros whose offers are inactive since exactly 40 days ago ("pros-pas-offre-active-40-j" list).
-    This command is meant to be called every day."""
-    pro_user_automations.pro_no_active_offers_since_40_days_automation()
-
-
-@blueprint.cli.command("pro_no_bookings_since_40_days_automation")
-@cron_decorators.log_cron_with_transaction
-def pro_no_bookings_since_40_days_automation() -> None:
-    """Updates the list of pros whose offers haven't been booked since exactly 40 days ago ("pros-pas-de-resa-40-j" list).
-    This command is meant to be called every day."""
-    pro_user_automations.pro_no_bookings_since_40_days_automation()
-
-
-@blueprint.cli.command("pro_marketing_live_show_email_churned_40_days_ago")
-@cron_decorators.log_cron_with_transaction
-def pro_marketing_live_show_email_churned_40_days_ago() -> None:
-    pro_user_automations.update_pro_contacts_list_for_live_show_churned_40_days_ago()
-
-
-@blueprint.cli.command("pro_marketing_live_show_email_last_booking_40_days_ago")
-@cron_decorators.log_cron_with_transaction
-def pro_marketing_live_show_email_last_booking_40_days_ago() -> None:
-    pro_user_automations.update_pro_contacts_list_for_live_show_last_booking_40_days_ago()
 
 
 @blueprint.cli.command("delete_suspended_accounts_after_withdrawal_period")

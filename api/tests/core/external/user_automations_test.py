@@ -135,47 +135,6 @@ class UserAutomationsTest:
 
         assert result is True
 
-    def test_get_email_for_users_created_one_year_ago_per_month(self):
-        matching_users = []
-
-        users_factories.UserFactory(email="fabien+test@example.net", dateCreated=datetime(2033, 7, 31))
-        matching_users.append(
-            users_factories.UserFactory(email="pierre+test@example.net", dateCreated=datetime(2033, 8, 1))
-        )
-        matching_users.append(
-            users_factories.UserFactory(email="marc+test@example.net", dateCreated=datetime(2033, 8, 10))
-        )
-        matching_users.append(
-            users_factories.UserFactory(email="daniel+test@example.net", dateCreated=datetime(2033, 8, 31))
-        )
-        users_factories.UserFactory(email="billy+test@example.net", dateCreated=datetime(2033, 9, 1))
-        users_factories.UserFactory(email="gerard+test@example.net", dateCreated=datetime(2033, 9, 21))
-
-        # matching: from 2033-08-01 to 2033-08-31
-        with time_machine.travel("2034-08-10 15:00:00"):
-            results = user_automations.get_email_for_users_created_one_year_ago_per_month()
-            assert sorted(results) == sorted([user.email for user in matching_users])
-
-    @patch("brevo.contacts.client.ContactsClient.import_contacts")
-    def test_users_nearly_one_year_with_pass_automation(self, mock_import_contacts):
-        users_factories.UserFactory(email="fabien+test@example.net", dateCreated=datetime(2033, 8, 31))
-        users_factories.UserFactory(email="pierre+test@example.net", dateCreated=datetime(2033, 9, 1))
-        users_factories.UserFactory(email="daniel+test@example.net", dateCreated=datetime(2033, 10, 1))
-        users_factories.UserFactory(email="gerard+test@example.net", dateCreated=datetime(2033, 10, 31))
-
-        # matching: from 2033-09-01 to 2033-09-31
-        with time_machine.travel("2034-09-10 15:00:00"):
-            result = user_automations.users_one_year_with_pass_automation()
-
-        mock_import_contacts.assert_called_once_with(
-            file_body="EMAIL\npierre+test@example.net",
-            list_ids=[settings.SENDINBLUE_AUTOMATION_YOUNG_1_YEAR_WITH_PASS_LIST_ID],
-            notify_url=f"{settings.API_URL}/webhooks/brevo/importcontacts/{settings.SENDINBLUE_AUTOMATION_YOUNG_1_YEAR_WITH_PASS_LIST_ID}/1",
-            request_options={"additional_query_parameters": {"token": settings.BREVO_WEBHOOK_SECRET_QUERY_PARAM}},
-        )
-
-        assert result is True
-
     def test_get_users_whose_credit_expired_today(self):
         users = self._create_users_with_deposits()
 
