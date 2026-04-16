@@ -22,6 +22,7 @@ PRO_FEATURES = (
     FeatureToggle.WIP_ENABLE_NEW_PRO_HOME,
     FeatureToggle.WIP_PRE_SIGNUP_SIMULATION,
     FeatureToggle.WIP_VOLUNTEERING,
+    FeatureToggle.WIP_ENABLE_CULTURAL_OUTREACH,
 )
 
 
