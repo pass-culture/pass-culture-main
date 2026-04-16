@@ -122,7 +122,7 @@ export const routes: CustomRouteTree = [
   },
   {
     lazy: () => import('@/pages/EmailChangeValidation/EmailChangeValidation'),
-    loader: withUserPermissions(mustBeUnauthenticated),
+    loader: noop,
     path: '/email_validation',
     title: 'Valider l’adresse email',
     meta: { public: true },

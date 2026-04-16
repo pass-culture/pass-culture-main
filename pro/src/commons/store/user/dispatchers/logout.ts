@@ -5,7 +5,7 @@ import {
   localStorageManager,
 } from '@/commons/utils/localStorageManager'
 
-export const logout = async () => {
+export const logout = async (redirect = true) => {
   localStorageManager.clearPassCultureKeys()
   // TODO (smokhtari, 2026-02-18): remove manually until WIP_SWITCH_VENUE FF is enabled.
   localStorageManager.removeItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)
@@ -18,6 +18,8 @@ export const logout = async () => {
   } catch (err) {
     handleError(err, 'Une erreur est survenue lors de la déconnexion.')
   } finally {
-    window.location.href = '/connexion'
+    if (redirect) {
+      window.location.href = '/connexion'
+    }
   }
 }
