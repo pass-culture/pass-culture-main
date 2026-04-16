@@ -2330,12 +2330,19 @@ allure-js-commons@3.7.0:
   dependencies:
     md5 "^2.3.0"
 
-allure-vitest@3.7.0:
-  version "3.7.0"
-  resolved "https://registry.yarnpkg.com/allure-vitest/-/allure-vitest-3.7.0.tgz#003df6090b398a346953f1917b5caf2e00ea848f"
-  integrity sha512-OMG3KPapqctb9JGVRKVrgtmJIqeH+klIp75HTs8QLfKlrgvXfOdPjmd5XyYd5ciaWxkySyY6MZcuh7SOd1HvvA==
+allure-js-commons@3.7.1:
+  version "3.7.1"
+  resolved "https://registry.yarnpkg.com/allure-js-commons/-/allure-js-commons-3.7.1.tgz#9462af1b90f7fcca149d3477394acf5c05b1ac4c"
+  integrity sha512-S8tFymEzgWpp3ITGFu01z2+6KYdiNZC3sX8FbJaNgLoLWBHDBNQ0lq4lTQgkVjV6IN4TIUrnYfa2YuytWpv8WA==
   dependencies:
-    allure-js-commons "3.7.0"
+    md5 "^2.3.0"
+
+allure-vitest@3.7.1:
+  version "3.7.1"
+  resolved "https://registry.yarnpkg.com/allure-vitest/-/allure-vitest-3.7.1.tgz#2abac84e3bd412137122452e1e09d0d5a12c4577"
+  integrity sha512-RgxxIjTEDHEPqEShPxLrxC4A3E5GGSjHgEtNh0aW7WJ09OW+j+OYq8xad0lYTDM97Nb5o414cwMNcjBrN7bKqA==
+  dependencies:
+    allure-js-commons "3.7.1"
 
 ansi-colors@4.1.3:
   version "4.1.3"
