@@ -73,7 +73,8 @@ def _get_account_update_requests_query() -> sa_orm.Query:
         )
         .outerjoin(aliased_instructor, users_models.UserAccountUpdateRequest.lastInstructorId == aliased_instructor.id)
         .options(
-            sa_orm.contains_eager(users_models.UserAccountUpdateRequest.user).load_only(
+            sa_orm.contains_eager(users_models.UserAccountUpdateRequest.user)
+            .load_only(
                 users_models.User.id,
                 users_models.User.firstName,
                 users_models.User.lastName,
@@ -84,6 +85,13 @@ def _get_account_update_requests_query() -> sa_orm.Query:
                 users_models.User.departementCode,
                 users_models.User.civility,
                 users_models.User.roles,
+                users_models.User.isActive,
+            )
+            .options(
+                sa_orm.with_expression(
+                    users_models.User.suspension_reason_expression,
+                    users_models.User.suspension_reason.expression,
+                )
             ),
             sa_orm.contains_eager(
                 users_models.UserAccountUpdateRequest.lastInstructor.of_type(aliased_instructor)
