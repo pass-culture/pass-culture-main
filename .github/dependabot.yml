@@ -155,10 +155,8 @@ updates:
       - '.github/workflows'
       - '.github/actions/*'
     schedule:
-      interval: 'weekly'
-      day: "thursday"
-      time: '07:00'
-      timezone: "Europe/Paris"
+      # first day og the month
+      interval: 'monthly'
     open-pull-requests-limit: 10
     cooldown:
       # The property 'semver-major-days' is not supported for the package ecosystem 'github-actions'.
