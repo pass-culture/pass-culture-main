@@ -15,6 +15,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.users.factories import BeneficiaryFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.models import db
+from pcapi.settings import RECOMMENDATION_API_URL
 
 
 class SubscribeOrUnsubscribeUserTestHelper:
@@ -161,6 +162,22 @@ class GetUserRecommendationsTest:
                 "url": "https://webapp-v2.example.com/offre/1",
             },
         ]
+
+    @pytest.mark.settings(
+        BREVO_WEBHOOK_SECRET="secret",
+        RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
+        RECOMMENDATION_API_URL="https://recommendation.api",
+    )
+    def test_recommendation_api_payload_is_serializable(self, requests_mock, client):
+        user_id = UserFactory().id
+        requests_mock.post(
+            RECOMMENDATION_API_URL + f"/playlist_recommendation/{user_id}",
+            json={"playlist_recommended_offers": [], "params": {}},
+        )
+
+        response = client.get(f"/webhooks/brevo/recommendations/{user_id}", headers=self.headers)
+
+        assert response.status_code == 200
 
     def test_401_on_invalid_token(self, client):
         user_id = UserFactory(id=1).id
