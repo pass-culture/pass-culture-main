@@ -112,7 +112,7 @@ export const Hub = () => {
         {filteredVenues.map((venue) => (
           <div key={venue.id}>
             <button
-              aria-describedby={`venue-${venue.id}-name`}
+              aria-labelledby={`venue-${venue.id}-name`}
               className={styles['venue-item-button']}
               onClick={() => setSelectedVenueByIdAndRedirect(venue.id)}
               type="button"

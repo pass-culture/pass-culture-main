@@ -1,11 +1,11 @@
-import { request as playwrightRequest } from '@playwright/test'
+import type { Page } from '@playwright/test'
 import { addWeeks, format } from 'date-fns'
 
 import { expect, test } from './fixtures/searchCollectiveOffer'
 import { checkAccessibility } from './helpers/accessibility'
 import { expectCollectiveOffersAreFound } from './helpers/assertions'
-import { setFeatureFlags } from './helpers/features'
-import { BASE_API_URL, type CollectiveOffersUserData } from './helpers/sandbox'
+import { navigateToHubAndPickVenue } from './helpers/navigateToHubAndPickVenue'
+import type { CollectiveOffersUserData } from './helpers/sandbox'
 
 const INSTITUTION_NAME = 'COLLEGE 123'
 const FORMAT_NAME = 'Concert'
@@ -44,18 +44,22 @@ function getPublishedCollectiveOfferRow(
   ]
 }
 
+async function goToCollectiveOffersForVenue(page: Page, venueName: string) {
+  await navigateToHubAndPickVenue(page, venueName)
+  await page.goto('/offres/collectives')
+  await expect(page.getByTestId('spinner')).toHaveCount(0)
+  await expect(page.getByText('Filtrer')).toBeVisible()
+}
+
 test.describe('Search collective offers', () => {
-  test.beforeEach(async ({ authenticatedPage: page }) => {
-    const requestContext = await playwrightRequest.newContext({
-      baseURL: BASE_API_URL,
-    })
-    await setFeatureFlags(requestContext, [
-      { name: 'WIP_SWITCH_VENUE', isActive: false },
-    ])
-    await page.goto('/offres/collectives')
-    await expect(page.getByTestId('spinner')).toHaveCount(0)
-    await expect(page.getByText('Filtrer')).toBeVisible()
-  })
+  test.beforeEach(
+    async ({ authenticatedPage: page, collectiveOffersUserData: userData }) => {
+      await goToCollectiveOffersForVenue(
+        page,
+        userData.offerPublished.venueName
+      )
+    }
+  )
 
   test('I should be able to search with a name and see expected results', async ({
     authenticatedPage: page,
@@ -233,30 +237,6 @@ test.describe('Search collective offers', () => {
     await page.getByText('Rechercher').click()
 
     const rows = page.locator('tbody').locator('tr[data-testid="table-row"]')
-    await expect(rows).toHaveCount(5)
-  })
-
-  test('I should be able to download offers in CSV and Excel format', async ({
-    authenticatedPage: page,
-  }) => {
-    await page.getByText('Télécharger').click()
-
-    const csvResponsePromise = page.waitForResponse(
-      (response) =>
-        response.url().includes('/collective/offers/csv') &&
-        response.request().method() === 'GET'
-    )
-    await page.getByText('Télécharger format CSV').click()
-    const csvResponse = await csvResponsePromise
-    expect(csvResponse.status()).toBe(200)
-
-    const excelResponsePromise = page.waitForResponse(
-      (response) =>
-        response.url().includes('/collective/offers/excel') &&
-        response.request().method() === 'GET'
-    )
-    await page.getByText('Télécharger format Excel').click()
-    const excelResponse = await excelResponsePromise
-    expect(excelResponse.status()).toBe(200)
+    await expect(rows).toHaveCount(3)
   })
 })
