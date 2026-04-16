@@ -56,7 +56,7 @@ export const test = base.extend<{
 
     const tempContext = await browser.newContext()
     const tempPage = await tempContext.newPage()
-    await login(tempPage, data.user.email)
+    await login(tempPage, data.user.email, { isMultiVenue: true })
 
     const storageStatePath = path.join(
       testInfo.project.outputDir,

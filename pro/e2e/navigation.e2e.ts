@@ -1,6 +1,6 @@
 import { expect, request as playwrightRequest, test } from '@playwright/test'
 
-import { loginAndNavigate } from './helpers/auth'
+import { login } from './helpers/auth'
 import { BASE_API_URL, sandboxCall } from './helpers/sandbox'
 
 interface ProUserResponse {
@@ -30,7 +30,7 @@ test.describe('Navigation', () => {
   test('I should see the top of the page when changing page', async ({
     page,
   }) => {
-    await loginAndNavigate(page, userEmail, '/accueil')
+    await login(page, userEmail)
 
     const nextStepsHeading = page.getByRole('heading', {
       name: /Prochaines étapes/,

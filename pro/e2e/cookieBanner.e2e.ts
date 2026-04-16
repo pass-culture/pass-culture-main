@@ -5,7 +5,7 @@ import {
   test,
 } from '@playwright/test'
 
-import { loginAndNavigate } from './helpers/auth'
+import { login } from './helpers/auth'
 import { BASE_API_URL, createRegularOnboardedProUser } from './helpers/sandbox'
 
 async function clearBrowserStateAndReload(page: Page): Promise<void> {
@@ -234,13 +234,9 @@ test.describe('Cookie banner', () => {
       const userData = await createRegularOnboardedProUser(requestContext)
       await requestContext.dispose()
 
-      await loginAndNavigate(
-        page,
-        userData.user.email,
-        '/accueil',
-        undefined,
-        false
-      )
+      await login(page, userData.user.email, {
+        setCookieConsent: false,
+      })
 
       await page
         .getByRole('button', { name: 'Gestion des cookies' })
@@ -269,13 +265,9 @@ test.describe('Cookie banner', () => {
           return data
         })
 
-      await loginAndNavigate(
-        page,
-        newUserData.user.email,
-        '/accueil',
-        undefined,
-        false
-      )
+      await login(page, newUserData.user.email, {
+        setCookieConsent: false,
+      })
 
       await page
         .getByRole('button', { name: 'Gestion des cookies' })
