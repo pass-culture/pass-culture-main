@@ -12,5 +12,5 @@ export async function navigateToHubAndPickVenue(page: Page, venueName: string) {
 
   await expect(venueButton).toBeVisible()
   await venueButton.click()
-  await page.waitForURL(/\/accueil/)
+  await page.waitForURL(/\/accueil$/)
 }

@@ -6,7 +6,7 @@ import {
   request as playwrightRequest,
 } from '@playwright/test'
 
-import { login } from '../helpers/auth'
+import { doLogin } from '../helpers/auth'
 import {
   BASE_API_URL,
   createProUserWithIndividualOffers,
@@ -46,7 +46,7 @@ export const test = base.extend<{
 
     const tempContext = await browser.newContext()
     const tempPage = await tempContext.newPage()
-    await login(tempPage, userData.user.email)
+    await doLogin(tempPage, userData.user.email, { retry: true })
 
     const storageStatePath = path.join(
       testInfo.project.outputDir,

@@ -15,20 +15,21 @@ export async function loginAsAndGoToHomepage(
   sandboxSpecificCall: (
     request: APIRequestContext
   ) => Promise<Record<string, any>>,
-  venueToSelect: string = ''
+  venueToSelect?: string
 ): Promise<Record<string, any>> {
   const requestContext = await playwrightRequest.newContext({
     baseURL: BASE_API_URL,
   })
   const userData = await sandboxSpecificCall(requestContext)
   await setFeatureFlags(requestContext, [
-    { name: 'WIP_SWITCH_VENUE', isActive: true },
     { name: 'WIP_ENABLE_NEW_PRO_HOME', isActive: true },
   ])
   await requestContext.dispose()
 
-  await login(page, userData.user.email)
-  await page.goto('/accueil')
+  await login(page, userData.user.email, {
+    isMultiVenue: !!venueToSelect,
+    withNewProHome: true,
+  })
 
   if (venueToSelect) {
     await page.getByRole('button', { name: venueToSelect }).click()

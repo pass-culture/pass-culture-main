@@ -6,4 +6,6 @@ export async function checkAccessibility(page: Page): Promise<void> {
   axeBuilder.exclude('iframe[name^="a-"]')
   const results = await axeBuilder.analyze()
   expect(results.violations).toHaveLength(0)
+
+  await Promise.resolve()
 }

@@ -2,7 +2,7 @@ import { expect, request as playwrightRequest, test } from '@playwright/test'
 
 import { checkAccessibility } from './helpers/accessibility'
 import { MOCKED_BACK_ADDRESS_LABEL, mockAddressSearch } from './helpers/address'
-import { login } from './helpers/auth'
+import { doLogin } from './helpers/auth'
 import { setFeatureFlags } from './helpers/features'
 import {
   BASE_API_URL,
@@ -26,7 +26,7 @@ test.describe('Signup journey with unknown offerer and unknown venue', () => {
     const userData = await createNewProUser(requestContext)
     await requestContext.dispose()
 
-    await login(page, userData.user.email)
+    await doLogin(page, userData.user.email, { retry: true })
     await page.goto('/')
     await expect(page.getByTestId('spinner')).toHaveCount(0)
 
@@ -94,7 +94,7 @@ test.describe('Signup journey with unknown offerer and unknown venue', () => {
 
     await mockAddressSearch(page)
 
-    await login(page, userData.user.email)
+    await doLogin(page, userData.user.email, { retry: true })
     await page.goto('/')
     await expect(page.getByTestId('spinner')).toHaveCount(0)
 
@@ -164,7 +164,7 @@ test.describe('Signup journey with known offerer...', () => {
       const mySiret = userData.siren + endSiret
       await requestContext.dispose()
 
-      await login(page, userData.user.email)
+      await doLogin(page, userData.user.email, { retry: true })
       await page.goto('/')
       await expect(page.getByTestId('spinner')).toHaveCount(0)
 
@@ -228,7 +228,7 @@ test.describe('Signup journey with known offerer...', () => {
 
       await mockAddressSearch(page)
 
-      await login(page, userData.user.email)
+      await doLogin(page, userData.user.email, { retry: true })
       await page.goto('/')
       await expect(page.getByTestId('spinner')).toHaveCount(0)
 
@@ -312,7 +312,7 @@ test.describe('Signup journey with known offerer...', () => {
 
       await mockAddressSearch(page)
 
-      await login(page, userData.user.email)
+      await doLogin(page, userData.user.email, { retry: true })
       await page.goto('/')
       await expect(page.getByTestId('spinner')).toHaveCount(0)
 

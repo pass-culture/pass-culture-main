@@ -1,7 +1,7 @@
 import { expect, request as playwrightRequest, test } from '@playwright/test'
 
 import { MOCKED_BACK_ADDRESS_LABEL, mockAddressSearch } from './helpers/address'
-import { login } from './helpers/auth'
+import { doLogin } from './helpers/auth'
 import { setFeatureFlags } from './helpers/features'
 import { BASE_API_URL, createNewProUser } from './helpers/sandbox'
 
@@ -22,7 +22,7 @@ test.describe('Signup journey with not diffusible offerer siret', () => {
 
     await requestContext.dispose()
 
-    await login(page, userData.user.email)
+    await doLogin(page, userData.user.email, { retry: true })
     await page.goto('/')
     await expect(page.getByTestId('spinner')).toHaveCount(0)
   })

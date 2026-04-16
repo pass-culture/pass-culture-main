@@ -3,7 +3,6 @@ import { addDays, format } from 'date-fns'
 
 import { checkAccessibility } from './helpers/accessibility'
 import { loginAndNavigate } from './helpers/auth'
-import { setFeatureFlags } from './helpers/features'
 import {
   BASE_API_URL,
   createProUserWithBookings,
@@ -19,9 +18,6 @@ test.describe('Edit digital individual offers', () => {
         baseURL: BASE_API_URL,
       })
       const userData = await createProUserWithVirtualOffer(requestContext)
-      await setFeatureFlags(requestContext, [
-        { name: 'WIP_SWITCH_VENUE', isActive: false },
-      ])
       await requestContext.dispose()
 
       await loginAndNavigate(
@@ -29,13 +25,11 @@ test.describe('Edit digital individual offers', () => {
         userData.user.email,
         '/offre/individuelle/1/recapitulatif/description'
       )
-
       await expect(
-        page.getByRole('heading', {
-          level: 2,
-          name: 'Description',
-        })
+        page.getByRole('heading', { level: 2, name: 'Description' })
       ).toBeVisible()
+      await expect(page.getByTestId('spinner')).toHaveCount(0)
+
       await checkAccessibility(page)
 
       await expect(
@@ -66,8 +60,6 @@ test.describe('Edit digital individual offers', () => {
       await requestContext.dispose()
 
       await loginAndNavigate(page, userData.user.email, '/offres')
-
-      await expect(page.getByTestId('spinner')).not.toBeVisible()
 
       // OFFER SUMMARY PAGE
       const firstRow = page.locator('tbody').getByRole('row').first()
@@ -137,9 +129,10 @@ test.describe('Edit digital individual offers', () => {
         userData.user.email,
         '/offre/individuelle/2/edition/horaires'
       )
-
-      await expect(page.getByText('Modifier l’offre')).toBeVisible()
-      await expect(page.getByTestId('spinner')).not.toBeVisible()
+      await expect(
+        page.getByRole('heading', { level: 1, name: 'Modifier l’offre' })
+      ).toBeVisible()
+      await expect(page.getByTestId('spinner')).toHaveCount(0)
 
       const patchStockPromise = page.waitForResponse(
         (response) =>

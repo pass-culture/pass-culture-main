@@ -2,14 +2,21 @@ import { expect, type Page } from '@playwright/test'
 
 const DEFAULT_PASSWORD = 'user@AZERTY123'
 
-async function doLogin(
+export async function doLogin(
   page: Page,
   email: string,
-  password: string,
-  setCookieConsent: boolean,
-  retry: boolean = true
+  options?: {
+    password?: string
+    retry?: boolean
+    setCookieConsent?: boolean
+  }
 ): Promise<void> {
-  await page.goto('/connexion')
+  const { password, retry, setCookieConsent } = {
+    password: DEFAULT_PASSWORD,
+    retry: false,
+    setCookieConsent: true,
+    ...options,
+  }
 
   if (setCookieConsent) {
     await page.context().addCookies([
@@ -21,6 +28,8 @@ async function doLogin(
       },
     ])
   }
+
+  await page.goto('/connexion')
 
   await page.getByRole('textbox', { name: /adresse email/i }).fill(email)
   await page.getByRole('textbox', { name: /mot de passe/i }).fill(password)
@@ -37,8 +46,13 @@ async function doLogin(
   if (!signinResponse.ok()) {
     if (retry) {
       await page.waitForTimeout(5000)
-      return doLogin(page, email, password, setCookieConsent, false)
+
+      return doLogin(page, email, {
+        password,
+        setCookieConsent,
+      })
     }
+
     throw new Error(`Login failed: ${signinResponse.status()}`)
   }
 
@@ -53,10 +67,48 @@ async function doLogin(
 export async function login(
   page: Page,
   email: string,
-  password: string = DEFAULT_PASSWORD,
-  setCookieConsent: boolean = true
+  options?: {
+    isMultiVenue?: boolean
+    password?: string
+    setCookieConsent?: boolean
+    // TODO (igabriele, 2026-04-16): Delete this prop once `WIP_ENABLE_NEW_PRO_HOME` FF is enabled and removed.
+    withNewProHome?: boolean
+  }
 ): Promise<void> {
-  await doLogin(page, email, password, setCookieConsent, true)
+  const { isMultiVenue, password, setCookieConsent, withNewProHome } = {
+    isMultiVenue: false,
+    password: DEFAULT_PASSWORD,
+    setCookieConsent: true,
+    withNewProHome: false,
+    ...options,
+  }
+
+  await doLogin(page, email, {
+    password,
+    setCookieConsent,
+    retry: true,
+  })
+
+  if (isMultiVenue) {
+    await expect(page).toHaveURL(/\/hub$/)
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: 'À quelle structure souhaitez-vous accéder ?',
+      })
+    ).toBeVisible()
+  } else {
+    await expect(page).toHaveURL(/\/accueil$/)
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: withNewProHome
+          ? /^Votre espace /
+          : 'Bienvenue sur votre espace partenaire',
+      })
+    ).toBeVisible()
+  }
+  await expect(page.getByTestId('spinner')).toHaveCount(0)
 }
 
 export async function loginAndNavigate(
@@ -66,17 +118,14 @@ export async function loginAndNavigate(
   password: string = DEFAULT_PASSWORD,
   setCookieConsent: boolean = true
 ): Promise<void> {
-  await login(page, email, password, setCookieConsent)
+  await doLogin(page, email, {
+    password,
+    setCookieConsent,
+    retry: true,
+  })
 
   await page.goto(path)
 
-  if (path === '/accueil') {
-    await expect(page.getByTestId('spinner')).not.toBeVisible()
-    await expect(
-      page.getByText('Bienvenue sur votre espace partenaire')
-    ).toBeVisible()
-  } else {
-    await expect(page).toHaveURL(new RegExp(path))
-    await expect(page.getByTestId('spinner')).not.toBeVisible()
-  }
+  await expect(page).toHaveURL(new RegExp(path))
+  await expect(page.getByTestId('spinner')).toHaveCount(0)
 }

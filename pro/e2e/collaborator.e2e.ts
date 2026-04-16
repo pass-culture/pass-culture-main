@@ -1,10 +1,10 @@
 import { randomUUID } from 'node:crypto'
-import AxeBuilder from '@axe-core/playwright'
 import { expect, request as playwrightRequest, test } from '@playwright/test'
 
+import { checkAccessibility } from './helpers/accessibility'
 import { expectSuccessSnackbar } from './helpers/assertions'
-import { loginAndNavigate } from './helpers/auth'
-import { setFeatureFlags } from './helpers/features'
+import { login } from './helpers/auth'
+import { navigateToAdministrationSpace } from './helpers/navigation'
 import { BASE_API_URL, sandboxCall } from './helpers/sandbox'
 
 interface ProUserResponse {
@@ -33,10 +33,6 @@ test.describe('Collaborator list feature', () => {
       'GET',
       `${BASE_API_URL}/sandboxes/pro/create_regular_pro_user_already_onboarded`
     )
-    await setFeatureFlags(requestContext, [
-      { name: 'WIP_SWITCH_VENUE', isActive: false },
-    ])
-    const userEmail = userData.user.email
 
     const clearResponse = await requestContext.fetch(
       `${BASE_API_URL}/sandboxes/clear_email_list`,
@@ -48,16 +44,12 @@ test.describe('Collaborator list feature', () => {
 
     const randomEmail = `collaborator${randomUUID()}@example.com`
 
-    await loginAndNavigate(page, userEmail, '/accueil')
+    await login(page, userData.user.email)
+    await navigateToAdministrationSpace(page)
+    await page.getByRole('link', { name: 'Collaborateurs' }).click()
+    await expect(page).toHaveURL(/\/collaborateurs$/)
 
-    await page.getByText('Collaborateurs').click()
-
-    await expect(page).toHaveURL(/\/collaborateurs/)
-    await expect(page.getByTestId('spinner')).toHaveCount(0)
-    await expect(page.getByText(userEmail)).toBeVisible()
-
-    const accessibilityResults = await new AxeBuilder({ page }).analyze()
-    expect(accessibilityResults.violations).toHaveLength(0)
+    await checkAccessibility(page)
 
     await page.getByText('Ajouter un collaborateur').click()
     await page.getByLabel('Adresse email').fill(randomEmail)
@@ -72,7 +64,9 @@ test.describe('Collaborator list feature', () => {
       .filter({ hasText: randomEmail })
     await expect(newCollaboratorRow).toContainText('En attente')
 
-    const currentUserRow = page.getByRole('row').filter({ hasText: userEmail })
+    const currentUserRow = page
+      .getByRole('row')
+      .filter({ hasText: userData.user.email })
     await expect(currentUserRow).toContainText('Validé')
 
     const emailRequestContext = await playwrightRequest.newContext({

@@ -3,7 +3,7 @@ import { expect, request as playwrightRequest, test } from '@playwright/test'
 import { checkAccessibility } from './helpers/accessibility'
 import { expectSuccessSnackbar } from './helpers/assertions'
 import { login } from './helpers/auth'
-import { setFeatureFlags } from './helpers/features'
+import { navigateToAdministrationSpace } from './helpers/navigation'
 import { BASE_API_URL, sandboxCall } from './helpers/sandbox'
 
 interface ProUserWithFinancialDataResponse {
@@ -25,21 +25,15 @@ test.describe('Financial Management - messages, links to external help page, rei
     const requestContext = await playwrightRequest.newContext({
       baseURL: BASE_API_URL,
     })
-
     const userData = await sandboxCall<ProUserWithFinancialDataResponse>(
       requestContext,
       'GET',
       `${BASE_API_URL}/sandboxes/pro/create_pro_user_with_financial_data`
     )
-    await setFeatureFlags(requestContext, [
-      { name: 'WIP_SWITCH_VENUE', isActive: false },
-    ])
-
     await requestContext.dispose()
 
     await login(page, userData.user.email)
-    await page.goto('/remboursements')
-    await expect(page.getByTestId('spinner')).toHaveCount(0)
+    await navigateToAdministrationSpace(page)
 
     await expect(
       page.getByText(
@@ -77,17 +71,17 @@ test.describe('Financial Management - messages, links to external help page, rei
       const requestContext = await playwrightRequest.newContext({
         baseURL: BASE_API_URL,
       })
-
       const userData = await sandboxCall<ProUserWithVenuesResponse>(
         requestContext,
         'GET',
         `${BASE_API_URL}/sandboxes/pro/create_pro_user_with_financial_data_and_3_venues`
       )
-
       await requestContext.dispose()
 
-      await login(page, userData.user.email)
-      await page.goto('/remboursements/informations-bancaires')
+      await login(page, userData.user.email, { isMultiVenue: true })
+      await navigateToAdministrationSpace(page)
+      await page.getByRole('link', { name: /Informations bancaires/ }).click()
+      await expect(page).toHaveURL(/\/remboursements\/informations-bancaires$/)
       await expect(page.getByTestId('profile-button')).toBeVisible()
       await expect(page.getByTestId('spinner')).toHaveCount(0)
     })

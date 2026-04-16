@@ -9,7 +9,7 @@ import {
 } from '@playwright/test'
 import * as path from 'node:path'
 
-import { login } from '../helpers/auth'
+import { doLogin } from '../helpers/auth'
 
 export interface AccessibilityResult {
   violations: Array<{
@@ -55,7 +55,7 @@ export const test = base.extend<{
     const tempContext = await browser.newContext()
     const tempPage = await tempContext.newPage()
 
-    await login(tempPage, data.user.email)
+    await doLogin(tempPage, data.user.email)
 
     const storageStatePath = path.join(
       testInfo.project.outputDir,
@@ -69,6 +69,7 @@ export const test = base.extend<{
     sessionCache.set(projectName, session)
     await use(session)
   },
+
   authenticatedPage: async ({ browser, authSession }, use, testInfo) => {
     const context = await browser.newContext({
       storageState: authSession.storageStatePath,
