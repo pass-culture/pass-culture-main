@@ -11,10 +11,12 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi import settings
 from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
+from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -239,6 +241,35 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
             rows[0]["Modification"]
             == f"Saisie incomplèteEmail en doublon Email : {update_request.oldEmail} → {update_request.newEmail} Téléphone : {update_request.user.phoneNumber} →"
         )
+
+    def test_list_account_update_requests_suspended_user(self, authenticated_client):
+        users_factories.EmailUpdateRequestFactory(user__isActive=False)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Jeune"].endswith("Pass 18 Suspendu")
+
+    def test_list_account_update_requests_suspended_user_with_reason(self, authenticated_client):
+        user = users_factories.EmailUpdateRequestFactory(user__isActive=False).user
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
+        )
+        history_factories.UnsuspendedUserActionHistoryFactory(user=user)
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, reason=users_constants.SuspensionReason.FRAUD_USURPATION
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Jeune"].endswith("Pass 18 Suspendu : Fraude usurpation")
 
     def test_list_filter_by_email(self, authenticated_client):
         specific_submitter_email_request = users_factories.FirstNameUpdateRequestFactory(

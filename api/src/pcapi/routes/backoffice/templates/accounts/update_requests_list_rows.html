@@ -139,6 +139,15 @@
             {{ role | format_role(deposits=update_request.user.deposits) | format_badge("secondary") }}
           {% endfor %}
         {% endif %}
+        {% if not update_request.user.isActive %}
+          {% set user_label %}
+            {{ update_request.user.isActive | format_state }}
+            {% if update_request.user.suspension_reason_expression %}
+              : {{ update_request.user.suspension_reason_expression | format_reason_label }}
+            {% endif %}
+          {% endset %}
+          <span class="mx-1">{{ user_label | format_badge("danger") }}</span>
+        {% endif %}
         {% if update_request.is_user_set_manually %}
           <br />
           {{ "Sélectionné manuellement" | format_badge('secondary', 'person-check-fill') }}
