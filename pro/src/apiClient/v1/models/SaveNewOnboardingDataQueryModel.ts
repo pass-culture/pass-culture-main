@@ -12,6 +12,7 @@ export type SaveNewOnboardingDataQueryModel = {
   createVenueWithoutSiret?: boolean;
   culturalDomains?: (Array<string> | null);
   isOpenToPublic: boolean;
+  otherActivityComment?: (string | null);
   phoneNumber?: (string | null);
   publicName?: (string | null);
   siret: string;

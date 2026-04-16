@@ -315,6 +315,7 @@ describe('ValidationScreen', () => {
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
       expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
         activity: 'MUSEUM',
+        otherActivityComment: null,
         culturalDomains: undefined,
         publicName: 'nom public',
         siret: '123123123',
@@ -358,6 +359,7 @@ describe('ValidationScreen', () => {
       expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
         culturalDomains: undefined,
         activity: 'MUSEUM',
+        otherActivityComment: null,
         publicName: null,
         siret: '123123123',
         webPresence: 'url1, url2',
@@ -444,6 +446,50 @@ describe('ValidationScreen', () => {
         'Domaine II',
         'Domaine C',
       ])
+    })
+
+    it('should send other activity comment if activity is OTHER', async () => {
+      if (contextValue.activity) {
+        contextValue.activity.activity = 'OTHER'
+        contextValue.activity.otherActivityComment = 'urbex en pleine nature'
+      }
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+        offerersNames: [],
+        offerersNamesWithPendingValidation: [],
+      })
+      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
+      vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
+        {} as PostOffererResponseModel
+      )
+      vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
+        remove: vi.fn(),
+      } as unknown as HTMLScriptElement)
+      vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
+      renderValidationScreen(contextValue)
+      await userEvent.click(screen.getByText('Valider et créer ma structure'))
+      expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
+        culturalDomains: undefined,
+        activity: 'OTHER',
+        otherActivityComment: 'urbex en pleine nature',
+        publicName: null,
+        siret: '123123123',
+        webPresence: 'url1, url2',
+        target: Target.EDUCATIONAL,
+        createVenueWithoutSiret: false,
+        address: {
+          street: '3 Rue de Valois',
+          banId: '75118_5995_00043',
+          city: 'Paris',
+          latitude: 0,
+          longitude: 0,
+          postalCode: '75001',
+          inseeCode: '75111',
+          isManualEdition: false,
+        },
+        token: 'token',
+        isOpenToPublic: false,
+        phoneNumber: '',
+      })
     })
   })
 

@@ -131,6 +131,7 @@ export const Validation = (): JSX.Element | undefined => {
         activity: activity.activity as
           | ActivityOpenToPublic
           | ActivityNotOpenToPublic,
+        otherActivityComment: activity.otherActivityComment || null,
         webPresence: activity.socialUrls.join(', '),
         target:
           /* istanbul ignore next: the form validation already handles this */
@@ -254,7 +255,11 @@ export const Validation = (): JSX.Element | undefined => {
           />
         </div>
         <div className={styles['data-displaying']}>
-          <div className={styles['data-line']}>{activityLabel}</div>
+          <div className={styles['data-line']}>
+            {activityLabel}
+            {activity.activity === 'OTHER' &&
+              ` : ${activity.otherActivityComment}`}
+          </div>
           {(activity.culturalDomains ?? []).length > 0 && (
             <div className={styles['data-line']}>
               {activity.culturalDomains?.join(', ')}

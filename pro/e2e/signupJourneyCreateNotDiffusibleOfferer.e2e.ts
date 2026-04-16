@@ -61,7 +61,7 @@ test.describe('Signup journey with not diffusible offerer siret', () => {
       .click()
     await page.getByText('Théatre').click()
 
-    await page.getByLabel(/Activité principale/).selectOption('Autre')
+    await page.getByLabel(/Activité principale/).selectOption('Festival')
     await page.getByLabel('Numéro de téléphone').fill('612345678')
     await page.getByText('Au grand public').click()
     await page.getByText('Étape suivante').click()

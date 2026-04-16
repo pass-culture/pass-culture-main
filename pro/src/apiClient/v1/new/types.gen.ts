@@ -5757,6 +5757,10 @@ export type SaveNewOnboardingDataQueryModel = {
      */
     isOpenToPublic: boolean;
     /**
+     * Otheractivitycomment
+     */
+    otherActivityComment?: string | null;
+    /**
      * Phonenumber
      */
     phoneNumber?: string | null;

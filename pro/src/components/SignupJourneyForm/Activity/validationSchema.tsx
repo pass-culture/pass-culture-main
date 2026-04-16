@@ -30,6 +30,12 @@ export const validationSchema = (
     activity: activityValidator.required(
       'Veuillez sélectionner une activité principale'
     ),
+    otherActivityComment: yup.string().when('activity', {
+      is: (activity: ActivityOpenToPublicType | ActivityNotOpenToPublicType) =>
+        activity === 'OTHER',
+      then: (schema) =>
+        schema.required('Veuillez préciser votre type d’activité'),
+    }),
     culturalDomains: yup
       .array()
       .of(yup.string().required())
