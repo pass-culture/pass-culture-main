@@ -16,18 +16,12 @@ const EmailChangeValidation = () => {
 
   useEffect(() => {
     const changeEmail = async () => {
-      const { expiration_timestamp, token } = parse(location.search)
-      const expiration_date = new Date(expiration_timestamp)
-      const now = new Date(Date.now() / 1000)
-      if (expiration_date > now) {
-        setIsSuccess(false)
-        return
-      }
+      const { token } = parse(location.search)
 
       try {
         await api.patchValidateEmail({ token: token })
         setIsSuccess(true)
-        await logout()
+        await logout(false)
       } catch {
         setIsSuccess(false)
       }

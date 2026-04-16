@@ -16,7 +16,13 @@ export const EmailChangeValidationScreen = ({
           <p className={styles['subtitle']}>
             Merci d’avoir confirmé votre changement d’adresse email.
           </p>
-          <Button as="a" to="/" label="Se connecter" />
+          <Button
+            onClick={() => {
+              // redirection using this to handle store reload
+              globalThis.location.href = '/connexion'
+            }}
+            label="Se connecter"
+          />
         </>
       )}
       {!isSuccess && (
