@@ -29,7 +29,7 @@ from pcapi.routes.serialization import artist_serialize
 from pcapi.routes.serialization import highlight_serialize
 from pcapi.routes.serialization import venue_serialize
 from pcapi.routes.serialization.address_serialize import LocationResponseModel
-from pcapi.routes.serialization.address_serialize import VenueAddressInfoGetter
+from pcapi.routes.serialization.address_serialize import LocationResponseModelV2
 from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
 from pcapi.serialization.utils import NOW_LITERAL
 from pcapi.serialization.utils import to_camel
@@ -192,12 +192,13 @@ class ListOffersStockResponseModel(BaseModel):
         return remainingQuantity
 
 
-def offer_location_getter_dict_helper(offer: offers_models.Offer) -> LocationResponseModel | None:
+def _build_offer_location_dict(offer: offers_models.Offer) -> dict | None:
     is_venue_location = False
     if offer.status == OfferStatus.DRAFT and not offer.offererAddressId:
         # The offer is still in the funnel creation and without any offererAddress defined
         # We don't want to blindly return venue.offererAddress
         return None
+
     offerer_address = None
     # TODO (prouzet, 2025-11-14) CLEAN_OA Remove second part of the condition when step 4.2 is completed
     if offer.offererAddress and (
@@ -211,12 +212,15 @@ def offer_location_getter_dict_helper(offer: offers_models.Offer) -> LocationRes
     else:
         offerer_address = offer.venue.offererAddress
         is_venue_location = True
+    location_data = retrieve_address_info_from_oa(offerer_address)
+    location_data.pop("id_oa", None)
     label = offer.venue.publicName if (is_venue_location or offerer_address.label is None) else offerer_address.label
-    return LocationResponseModel(
-        **retrieve_address_info_from_oa(offerer_address),
-        label=label,
-        isVenueLocation=is_venue_location,
-    )
+
+    return {
+        **location_data,
+        "label": label,
+        "isVenueLocation": is_venue_location,
+    }
 
 
 class ListOffersOfferResponseModelsGetterDict(GetterDict):
@@ -233,7 +237,8 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
         if key == "isHeadlineOffer":
             return self._obj.is_headline_offer
         if key == "location":
-            return offer_location_getter_dict_helper(self._obj)
+            location_dict = _build_offer_location_dict(self._obj)
+            return LocationResponseModel(**location_dict) if location_dict else None
         if key == "bookingsCount":
             return sum([stock.dnBookedQuantity for stock in self._obj.stocks])
         if key == "highlightRequests":
@@ -413,111 +418,79 @@ class GetOfferStockResponseModel(BaseModel):
         json_encoders = {datetime.datetime: format_into_utc_date}
 
 
-class GetOfferManagingOffererResponseModel(BaseModel):
+class GetOfferManagingOffererResponseModel(HttpBodyModel):
     id: int
     name: str
 
-    class Config:
-        orm_mode = True
 
-
-class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
-    street: str | None
-    bookingEmail: str | None
-    city: str | None
-    departementCode: str | None
+class GetOfferVenueResponseModel(HttpBodyModel):
+    street: str | None = None
+    bookingEmail: str | None = None
+    city: str | None = None
+    departementCode: str | None = None
     id: int
     isVirtual: bool
     managingOfferer: GetOfferManagingOffererResponseModel
     name: str
-    postalCode: str | None
+    postalCode: str | None = None
     publicName: str
+    audioDisabilityCompliant: bool | None = None
+    mentalDisabilityCompliant: bool | None = None
+    motorDisabilityCompliant: bool | None = None
+    visualDisabilityCompliant: bool | None = None
 
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime.datetime: format_into_utc_date}
-        getter_dict = VenueAddressInfoGetter
+    @classmethod
+    def build(cls, venue: offerers_models.Venue) -> typing.Self:
+        data = {field: getattr(venue, field) for field in cls.model_fields if hasattr(venue, field)}
+        data.update(
+            {
+                "street": venue.offererAddress.address.street,
+                "postalCode": venue.offererAddress.address.postalCode,
+                "city": venue.offererAddress.address.city,
+                "departementCode": venue.offererAddress.address.departmentCode,
+            }
+        )
+
+        return cls.model_validate(data)
 
 
-class GetOfferLastProviderResponseModel(BaseModel):
+class GetOfferLastProviderResponseModel(HttpBodyModel):
     name: str
 
-    class Config:
-        orm_mode = True
+
+class GetOfferMediationResponseModel(HttpBodyModel):
+    authorId: str | None = None
+    credit: str | None = None
+    thumbUrl: str | None = None
 
 
-class GetOfferMediationResponseModel(BaseModel):
-    authorId: str | None
-    credit: str | None
-    thumbUrl: str | None
-
-    class Config:
-        orm_mode = True
-
-
-class PriceCategoryResponseModel(BaseModel):
+class PriceCategoryResponseModel(HttpBodyModel):
     price: float
     label: str
     id: int
 
-    class Config:
-        orm_mode = True
+
+class VideoData(HttpBodyModel):
+    videoDuration: int | None = None
+    videoExternalId: str | None = None
+    videoTitle: str | None = None
+    videoThumbnailUrl: str | None = None
+    videoUrl: pydantic_v2.HttpUrl | None = None
 
 
-def _format_time(time_to_format: datetime.time) -> str:
-    return time_to_format.strftime("%H:%M")
-
-
-class IndividualOfferResponseGetterDict(GetterDict):
-    def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "videoData":
-            meta_data = self._obj.metaData
-            return VideoData.from_orm(meta_data)
-        if key == "extraData" and self._obj.product:
-            self._obj.ean = self._obj.product.ean
-        if key == "extraData" and self._obj.ean:
-            extra_data_copy = self._obj.extraData.copy() if self._obj.extraData else {}
-            extra_data_copy["ean"] = self._obj.ean
-            return extra_data_copy
-        if key == "highlightRequests":
-            return [
-                highlight_request.highlight
-                for highlight_request in self._obj.highlight_requests
-                if highlight_request.highlight.highlight_datespan.upper > datetime.date.today()
-            ]
-        return super().get(key, default)
-
-
-class IndividualOfferWithAddressResponseGetterDict(IndividualOfferResponseGetterDict):
-    def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "location":
-            return offer_location_getter_dict_helper(self._obj)
-        if key == "isHeadlineOffer":
-            return self._obj.is_headline_offer
-        return super().get(key, default)
-
-
-class VideoData(ConfiguredBaseModel):
-    videoDuration: int | None
-    videoExternalId: str | None
-    videoTitle: str | None
-    videoThumbnailUrl: str | None
-    videoUrl: HttpUrl | None
-
-
-class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
-    activeMediation: GetOfferMediationResponseModel | None
+class GetIndividualOfferResponseModel(HttpBodyModel):
+    activeMediation: GetOfferMediationResponseModel | None = None
     artistOfferLinks: list[artist_serialize.ArtistOfferLinkResponseModel]
-    bookingContact: str | None
-    bookingsCount: int | None
-    bookingEmail: str | None
+    bookingContact: str | None = None
+    bookingsCount: int | None = None
+    bookingEmail: str | None = None
     dateCreated: datetime.datetime
-    publicationDate: datetime.datetime | None  # TODO: (tcoudray-pass, 16/06/25) Remove in favor of publicationDatetime
-    publicationDatetime: datetime.datetime | None
-    bookingAllowedDatetime: datetime.datetime | None
-    description: str | None
-    durationMinutes: int | None
-    extraData: Any
+    publicationDate: datetime.datetime | None = None  # TODO: (tcoudray-pass, 16/06/25) Remove in favor of publicationDatetime
+    publicationDatetime: datetime.datetime | None = None
+    bookingAllowedDatetime: datetime.datetime | None = None
+    description: str | None = None
+    durationMinutes: int | None = None
+    extraData: Any = None
     hasBookingLimitDatetimesPassed: bool
     hasStocks: bool
     isActive: bool
@@ -529,56 +502,100 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     isNational: bool
     isThing: bool
     id: int
-    lastProvider: GetOfferLastProviderResponseModel | None
+    lastProvider: GetOfferLastProviderResponseModel | None = None
     name: str
-    priceCategories: list[PriceCategoryResponseModel] | None
+    priceCategories: list[PriceCategoryResponseModel] | None = None
     subcategoryId: SubcategoryIdEnum
-    productId: int | None
-    thumbUrl: str | None
-    externalTicketOfficeUrl: str | None
-    url: str | None
+    productId: int | None = None
+    thumbUrl: str | None = None
+    externalTicketOfficeUrl: str | None = None
+    url: str | None = None
     venue: GetOfferVenueResponseModel
-    withdrawalDelay: int | None
-    withdrawalDetails: str | None
-    withdrawalType: offers_models.WithdrawalTypeEnum | None
+    withdrawalDelay: int | None = None
+    withdrawalDetails: str | None = None
+    withdrawalType: offers_models.WithdrawalTypeEnum | None = None
     status: OfferStatus
-    isNonFreeOffer: bool | None
-    videoData: VideoData
-    highlightRequests: list[highlight_serialize.ShortHighlightResponseModel]
+    isNonFreeOffer: bool | None = None
+    videoData: VideoData | None
+    highlightRequests: list[highlight_serialize.ShortHighlightResponseModelV2]
+    audioDisabilityCompliant: bool | None = None
+    mentalDisabilityCompliant: bool | None = None
+    motorDisabilityCompliant: bool | None = None
+    visualDisabilityCompliant: bool | None = None
 
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime.datetime: format_into_utc_date, datetime.time: _format_time}
-        use_enum_values = True
-        getter_dict = IndividualOfferResponseGetterDict
+    @classmethod
+    def build(cls, offer: offers_models.Offer) -> typing.Self:
+        extra_data = offer.extraData.copy() if offer.extraData else {}
+        ean = offer.ean or (offer.product.ean if offer.product else None)
+        if ean:
+            extra_data["ean"] = ean
+        highlight_requests = [
+            highlight_request.highlight
+            for highlight_request in offer.highlight_requests
+            if highlight_request.highlight.highlight_datespan.upper > datetime.date.today()
+        ]
+        venue = GetOfferVenueResponseModel.build(offer.venue)
+
+        data = {field: getattr(offer, field) for field in cls.model_fields if hasattr(offer, field)}
+        data.update(
+            {
+                "extraData": extra_data,
+                "highlightRequests": highlight_requests,
+                "venue": venue,
+                "videoData": offer.metaData,
+            }
+        )
+
+        return cls.model_validate(data)
 
 
-class GetActiveEANOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
+class GetActiveEANOfferResponseModel(HttpBodyModel):
     dateCreated: datetime.datetime
     isActive: bool
     id: int
     name: str
     subcategoryId: SubcategoryIdEnum
-    productId: int | None
+    productId: int | None = None
     status: OfferStatus
-
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime.datetime: format_into_utc_date}
-        use_enum_values = True
-        getter_dict = IndividualOfferResponseGetterDict
+    audioDisabilityCompliant: bool | None = None
+    mentalDisabilityCompliant: bool | None = None
+    motorDisabilityCompliant: bool | None = None
+    visualDisabilityCompliant: bool | None = None
 
 
 class GetIndividualOfferWithAddressResponseModel(GetIndividualOfferResponseModel):
-    location: LocationResponseModel | None
+    location: LocationResponseModelV2 | None = None
     hasPendingBookings: bool
     isHeadlineOffer: bool
 
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime.datetime: format_into_utc_date}
-        use_enum_values = True
-        getter_dict = IndividualOfferWithAddressResponseGetterDict
+    @classmethod
+    def build(cls, offer: offers_models.Offer) -> typing.Self:
+        extra_data = offer.extraData.copy() if offer.extraData else {}
+        ean = offer.ean or (offer.product.ean if offer.product else None)
+        if ean:
+            extra_data["ean"] = ean
+        highlight_requests = [
+            highlight_request.highlight
+            for highlight_request in offer.highlight_requests
+            if highlight_request.highlight.highlight_datespan.upper > datetime.date.today()
+        ]
+        location_dict = _build_offer_location_dict(offer)
+        location = LocationResponseModelV2(**location_dict) if location_dict else None
+        venue = GetOfferVenueResponseModel.build(offer.venue)
+
+        data = {field: getattr(offer, field) for field in cls.model_fields if hasattr(offer, field)}
+        data.update(
+            {
+                "extraData": extra_data,
+                "highlightRequests": highlight_requests,
+                "isHeadlineOffer": offer.is_headline_offer,
+                "location": location,
+                "venue": venue,
+                "videoData": offer.metaData,
+            }
+        )
+
+        return cls.model_validate(data)
 
 
 class GetStocksResponseModel(ConfiguredBaseModel):

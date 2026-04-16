@@ -48,8 +48,6 @@ function getPhysicalAddressSubformInitialValuesFromOffer(
       offerLocation,
       postalCode: offer.location.postalCode,
       'search-addressAutocomplete': addressAutocomplete,
-      // TODO (igabriele, 2025-08-25): This should not be nullable. Investigate why we can receive an offer address without street since it's mandatory.
-      // @ts-expect-error
       street: offer.location.street,
     }
   } else if (offerVenue.location) {

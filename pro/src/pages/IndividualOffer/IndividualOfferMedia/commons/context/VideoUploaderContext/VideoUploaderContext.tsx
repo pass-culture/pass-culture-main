@@ -15,7 +15,7 @@ import { noop, noopAsync } from '@/commons/utils/noop'
 
 type VideoUploaderContextValues = {
   setVideoUrl: Dispatch<SetStateAction<string | null | undefined>>
-  videoData?: VideoData
+  videoData?: VideoData | null
   handleVideoOnSubmit: () => Promise<GetIndividualOfferResponseModel>
   onVideoUpload: (p: onVideoUploadProps) => Promise<void>
   onVideoDelete: () => void
@@ -42,7 +42,7 @@ export const useVideoUploaderContext = () => {
 type VideoUploaderContextProviderProps = {
   children: React.ReactNode
   offerId: number
-  initialVideoData?: VideoData
+  initialVideoData?: VideoData | null
 }
 
 type onVideoUploadProps = {

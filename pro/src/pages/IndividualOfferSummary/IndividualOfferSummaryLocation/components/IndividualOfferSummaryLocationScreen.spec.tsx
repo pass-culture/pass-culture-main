@@ -67,6 +67,7 @@ describe('<IndividualOfferSummaryLocationScreen />', () => {
         isVenueLocation: true,
         banId: '75101_xxxx',
         inseeCode: '75101',
+        departmentCode: null,
       },
     })
 

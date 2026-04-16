@@ -377,6 +377,7 @@ export {
   type SharedCurrentUserResponseModel,
   type SharedLoginUserResponseModel,
   type ShortHighlightResponseModel,
+  type ShortHighlightResponseModelV2,
   SimplifiedBankAccountStatus,
   type StatisticsModel,
   type StatisticsQueryModel,
