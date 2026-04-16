@@ -17,6 +17,7 @@ from pcapi.core.users.models import User
 from pcapi.core.users.password_utils import check_password_strength
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.core.users.sessions import create_user_jwt_tokens
+from pcapi.core.users.sessions import refresh_user_jwt_tokens
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -42,6 +43,7 @@ logger = logging.getLogger(__name__)
 
 
 @blueprint.native_route("/signin", methods=["POST"])
+@atomic()
 @spectree_serialize(
     response_model=authentication.SigninResponse,
     on_success_status=200,
@@ -79,11 +81,12 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
 
 
 @blueprint.native_route("/refresh_access_token", methods=["POST"])
+@atomic()
 @authenticated_with_refresh_token
 @spectree_serialize(response_model=authentication.RefreshResponse, api=blueprint.api, on_error_statuses=[401])
 def refresh() -> authentication.RefreshResponse:
     users_api.update_last_connection_date(current_user)
-    tokens = create_user_jwt_tokens(user=current_user, device_info=None)
+    tokens = refresh_user_jwt_tokens(user=current_user, device_info=None, legacy=True)
     return authentication.RefreshResponse(access_token=tokens.access)
 
 

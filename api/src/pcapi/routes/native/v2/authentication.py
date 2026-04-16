@@ -6,6 +6,7 @@ from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as user_models
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.sessions import create_user_jwt_tokens
+from pcapi.core.users.sessions import refresh_user_jwt_tokens
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.native.security import authenticated_with_refresh_token
@@ -59,7 +60,7 @@ def signin(body: authentication.SigninRequestV2) -> authentication.SigninRespons
 @atomic()
 def refresh(body: authentication.RefreshRequestV2) -> authentication.RefreshResponseV2:
     users_api.update_last_connection_date(current_user)
-    tokens = create_user_jwt_tokens(
+    tokens = refresh_user_jwt_tokens(
         user=current_user,
         device_info=body.device_info,
     )

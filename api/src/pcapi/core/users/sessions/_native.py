@@ -7,6 +7,7 @@ from datetime import timedelta
 import flask
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import create_refresh_token
+from flask_jwt_extended import decode_token
 from flask_jwt_extended import verify_jwt_in_request
 
 from pcapi import settings
@@ -14,6 +15,7 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.utils import date as date_utils
+from pcapi.utils.transaction_manager import is_managed_transaction
 
 from . import _common
 
@@ -71,15 +73,15 @@ class SessionManager(_common.AbstractSessionManager):
             # invalid token
             return None
 
-        if jwt.data.user_claims is None:
-            # refresh token
-            return None
-
-        return (
-            db.session.query(users_models.User)
-            .filter(users_models.User.id == jwt.data.user_claims["user_id"])
-            .one_or_none()
-        )
+        try:
+            # new token with user id as sub
+            user_id = int(jwt.data.sub)
+        except ValueError:
+            if jwt.data.user_claims is None:
+                return None
+            # legacy token with email as sub and user_id in user claim
+            user_id = jwt.data.user_claims["user_id"]
+        return db.session.query(users_models.User).filter(users_models.User.id == user_id).one_or_none()
 
 
 def load_jwt(request: flask.Request, *, jwt_type: JwtType) -> JwtContainer | None:
@@ -95,10 +97,6 @@ def load_jwt(request: flask.Request, *, jwt_type: JwtType) -> JwtContainer | Non
         return None
 
     return save_jwt_container(results, request)
-
-
-def _is_used_jwt_refresh() -> bool:
-    return hasattr(flask.g, "jwt") and flask.g.jwt.data.type == JwtType.REFRESH
 
 
 def save_jwt_container(data: tuple[dict, dict], request: flask.Request) -> JwtContainer:
@@ -131,19 +129,68 @@ def _delete_jwt_container() -> None:
 def create_user_jwt_tokens(
     user: users_models.User,
     device_info: "DeviceInfo | DeviceInfoV2 | None" = None,
+    legacy: bool = False,
 ) -> TokensContainer:
-    if _is_used_jwt_refresh():
-        # TODO regenerate a refresh token when renewing the access token
+    if users_api.is_login_device_a_trusted_device(device_info, user):
+        duration = timedelta(seconds=settings.JWT_REFRESH_TOKEN_EXTENDED_EXPIRES)
+    else:
+        duration = timedelta(seconds=settings.JWT_REFRESH_TOKEN_EXPIRES)
+    refresh_token = create_refresh_token(identity=str(user.id), expires_delta=duration)
+
+    access_token = create_access_token(identity=str(user.id))
+    _register_tokens(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        device_id=device_info.device_id if device_info else "",
+    )
+    return TokensContainer(access=access_token, refresh=refresh_token)
+
+
+def refresh_user_jwt_tokens(
+    user: users_models.User,
+    device_info: "DeviceInfo | DeviceInfoV2 | None" = None,
+    *,
+    legacy: bool = False,
+) -> TokensContainer:
+    db.session.query(users_models.NativeUserSession).filter(
+        users_models.NativeUserSession.refreshToken == flask.g.jwt.data.jti
+    ).delete(synchronize_session=False)
+    if legacy:
+        # TODO remove legacy mode when v1/refresh_access_token is removed
         refresh_token = flask.g.jwt.raw
     else:
-        if users_api.is_login_device_a_trusted_device(device_info, user):
-            duration = timedelta(seconds=settings.JWT_REFRESH_TOKEN_EXTENDED_EXPIRES)
-        else:
-            duration = timedelta(seconds=settings.JWT_REFRESH_TOKEN_EXPIRES)
-        refresh_token = create_refresh_token(identity=user.email, expires_delta=duration)
+        if not device_info:
+            raise ValueError("device_info is only optional in legacy mode")
+        refresh_token = create_refresh_token(
+            identity=str(user.id),
+            expires_delta=(flask.g.jwt.data.exp - date_utils.get_naive_utc_now()),
+        )
 
-    access_token = create_access_token(identity=user.email, additional_claims={"user_claims": {"user_id": user.id}})
+    access_token = create_access_token(identity=str(user.id))
+    _register_tokens(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        device_id=device_info.device_id if device_info else "",
+    )
     return TokensContainer(access=access_token, refresh=refresh_token)
+
+
+def _register_tokens(access_token: str, refresh_token: str, device_id: str) -> None:
+    decoded_refresh_token = decode_token(refresh_token)
+    decoded_access_token = decode_token(access_token)
+    db.session.add(
+        users_models.NativeUserSession(
+            expirationDatetime=datetime.fromtimestamp(decoded_refresh_token["exp"]),
+            refreshToken=decoded_refresh_token["jti"],
+            accessToken=decoded_access_token["jti"],
+            userId=decoded_access_token["sub"],
+            deviceId=device_id,
+        )
+    )
+    if is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
 
 def delete_expired_jwt() -> None:
