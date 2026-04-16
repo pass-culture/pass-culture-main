@@ -118,7 +118,7 @@
     "typescript": "5.9.3",
     "vite": "8.0.8",
     "vite-plugin-html": "3.2.2",
-    "vitest": "4.1.2",
+    "vitest": "4.1.4",
     "vitest-axe": "0.1.0",
     "vitest-canvas-mock": "1.1.4",
     "vitest-fail-on-console": "0.10.1",
