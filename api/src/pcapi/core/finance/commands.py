@@ -193,7 +193,7 @@ def clean_duplicate_bank_accounts() -> None:
 )
 @cron_decorators.log_cron_with_transaction
 def push_bank_accounts(count: int) -> None:
-    if not FeatureToggle.ENABLE_BANK_ACCOUNT_SYNC:
+    if not FeatureToggle.ENABLE_BANK_ACCOUNT_SYNC.is_active():
         logger.info("Sync bank account cronjob will not run. ENABLE_BANK_ACCOUNT_SYNC feature must be activated")
         return
 
@@ -215,7 +215,7 @@ def push_bank_accounts(count: int) -> None:
 )
 @cron_decorators.log_cron_with_transaction
 def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
-    if not FeatureToggle.ENABLE_INVOICE_SYNC:
+    if not FeatureToggle.ENABLE_INVOICE_SYNC.is_active():
         logger.info("Sync invoice cronjob with not run. ENABLE_INVOICE_SYNC feature must be activated")
         return
 

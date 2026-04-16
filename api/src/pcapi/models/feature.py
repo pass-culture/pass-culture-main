@@ -164,6 +164,8 @@ class FeatureToggle(enum.Enum):
         return db.session.query(Feature).filter_by(name=self.name).one().isActive
 
     def __bool__(self) -> bool:
+        # TODO(tconte-pass, 2026-04-17): remove this function if the log hasn't appeared for a while
+        logger.error("This function should not be used. Use `is_active()` explicitly instead.")
         return self.is_active()
 
 
