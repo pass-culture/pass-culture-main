@@ -2,6 +2,7 @@ import copy
 import logging
 import uuid
 from datetime import datetime
+from datetime import timedelta
 from unittest.mock import patch
 
 import pytest
@@ -28,6 +29,7 @@ from pcapi.core.users import schemas as users_schemas
 from pcapi.core.users import testing as brevo_testing
 from pcapi.core.users.models import AccountState
 from pcapi.core.users.models import LoginDeviceHistory
+from pcapi.core.users.models import NativeUserSession
 from pcapi.core.users.models import SingleSignOn
 from pcapi.core.users.models import TrustedDevice
 from pcapi.models import db
@@ -131,7 +133,7 @@ class SigninTest:
 
         # Ensure the access token contains user.id
         decoded = decode_token(access_token)
-        assert decoded["user_claims"]["user_id"] == user.id
+        assert decoded["sub"] == str(user.id)
 
         # Ensure the refresh token can generate a new access token
         client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
@@ -147,7 +149,7 @@ class SigninTest:
 
         # Ensure the new access token contains user.id
         decoded = decode_token(access_token)
-        assert decoded["user_claims"]["user_id"] == user.id
+        assert decoded["sub"] == str(user.id)
 
     def test_user_logs_in_with_wrong_password(self, client, caplog):
         data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
@@ -1196,7 +1198,7 @@ class EmailValidationTest:
 
         # Ensure the access token contains user.id
         decoded = decode_token(access_token)
-        assert decoded["user_claims"]["user_id"] == user.id
+        assert decoded["sub"] == str(user.id)
 
         # Ensure the refresh token is valid
         refresh_token = response.json["refreshToken"]
@@ -1295,3 +1297,125 @@ class EmailValidationTest:
 
         assert response.status_code == 200
         assert user.isEmailValidated
+
+
+class RefreshTest:
+    def test_with_refresh_token(self, client):
+        user = users_factories.BeneficiaryFactory()
+        token = create_refresh_token(identity=user.email, expires_delta=timedelta(seconds=30))
+
+        response = client.with_explicit_token(token).post("/native/v1/refresh_access_token", json={})
+
+        assert response.status_code == 200
+        access_token = response.json.get("accessToken")
+        assert access_token
+        assert db.session.query(NativeUserSession).count() == 1
+        assert (
+            db.session.query(NativeUserSession)
+            .filter(
+                NativeUserSession.accessToken == decode_token(access_token)["jti"],
+                NativeUserSession.refreshToken == decode_token(token)["jti"],
+            )
+            .count()
+        )
+
+    def test_user_is_inactive(self, client):
+        user = users_factories.BeneficiaryFactory(isActive=False)
+        token = create_refresh_token(identity=user.email, expires_delta=timedelta(seconds=30))
+
+        response = client.with_explicit_token(token).post("/native/v1/refresh_access_token", json={})
+
+        assert response.status_code == 200
+        assert response.json.get("accessToken")
+        assert db.session.query(NativeUserSession).count() == 1
+
+    def test_user_does_not_exists(self, client):
+        token = create_refresh_token(identity="invalid_email@example.com", expires_delta=timedelta(seconds=30))
+
+        response = client.with_explicit_token(token).post("/native/v1/refresh_access_token", json={})
+
+        assert response.status_code == 403
+        assert db.session.query(NativeUserSession).count() == 0
+
+    def test_with_access_token(self, client):
+        user = users_factories.BeneficiaryFactory()
+        token = create_access_token(
+            identity=user.email,
+            expires_delta=timedelta(seconds=30),
+            additional_claims={"user_claims": {"user_id": user.id}},
+        )
+
+        response = client.with_explicit_token(token).post("/native/v1/refresh_access_token", json={})
+
+        assert response.status_code == 401
+        assert response.json == {}
+        assert db.session.query(NativeUserSession).count() == 0
+
+    def test_with_no_token(self, client):
+        response = client.without_token().post("/native/v1/refresh_access_token", json={})
+
+        assert response.status_code == 401
+        assert response.json == {}
+        assert db.session.query(NativeUserSession).count() == 0
+
+    def test_with_invalid_token(self, client):
+        user = users_factories.BeneficiaryFactory()
+        token = create_refresh_token(identity=user.email, expires_delta=timedelta(seconds=30))[:-4]
+
+        response = client.with_explicit_token(token).post("/native/v1/refresh_access_token", json={})
+
+        assert response.status_code == 401
+        assert response.json == {}
+        assert db.session.query(NativeUserSession).count() == 0
+
+    def test_with_expired_token(self, client):
+        user = users_factories.BeneficiaryFactory()
+        token = create_refresh_token(identity=user.email, expires_delta=timedelta(seconds=-30))
+
+        response = client.with_explicit_token(token).post("/native/v1/refresh_access_token", json={})
+
+        assert response.status_code == 401
+        assert response.json == {}
+        assert db.session.query(NativeUserSession).count() == 0
+
+    def test_with_new_token(self, client):
+        user = users_factories.BeneficiaryFactory()
+        token = create_refresh_token(identity=str(user.id), expires_delta=timedelta(seconds=30))
+        users_factories.NativeUserSessionFactory(
+            refreshToken=decode_token(token)["jti"],
+            user=user,
+        )
+
+        response = client.with_explicit_token(token).post("/native/v1/refresh_access_token", json={})
+
+        assert response.status_code == 200
+        access_token = response.json.get("accessToken")
+        assert access_token
+        assert db.session.query(NativeUserSession).count() == 1
+        assert (
+            db.session.query(NativeUserSession)
+            .filter(
+                NativeUserSession.accessToken == decode_token(access_token)["jti"],
+                NativeUserSession.refreshToken == decode_token(token)["jti"],
+            )
+            .count()
+        )
+
+    def test_with_new_unregistred_token(self, client):
+        user = users_factories.BeneficiaryFactory()
+        token = create_refresh_token(identity=str(user.id), expires_delta=timedelta(seconds=30))
+
+        response = client.with_explicit_token(token).post("/native/v1/refresh_access_token", json={})
+
+        assert response.status_code == 200
+        access_token = response.json.get("accessToken")
+        assert access_token
+        assert db.session.query(NativeUserSession).count() == 1
+        assert (
+            db.session.query(NativeUserSession)
+            .filter(
+                NativeUserSession.accessToken == decode_token(access_token)["jti"],
+                NativeUserSession.refreshToken == decode_token(token)["jti"],
+            )
+            .count()
+        )

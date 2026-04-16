@@ -59,7 +59,20 @@ def authenticated_with_refresh_token(route_function: RouteFunc) -> RouteDecorato
         if not hasattr(flask.g, "jwt"):
             raise UnauthorizedError("Invalid token")
 
-        user = db.session.query(users_models.User).filter(users_models.User.email == flask.g.jwt.data.sub).one_or_none()
+        try:
+            user = (
+                db.session.query(users_models.User)
+                .filter(users_models.User.id == int(flask.g.jwt.data.sub))
+                .one_or_none()
+            )
+        except ValueError:
+            # legacy refresh token
+            # TODO rpa : remove this case 1 year after the update is live
+            user = (
+                db.session.query(users_models.User)
+                .filter(users_models.User.email == flask.g.jwt.data.sub)
+                .one_or_none()
+            )
         if user:
             login_user(
                 user,
