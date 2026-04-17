@@ -611,6 +611,11 @@ def format_booking_cancellation(
 
 def format_booking_status_long(booking: bookings_models.Booking | educational_models.CollectiveBooking) -> str:
     if booking.status in (
+        bookings_models.BookingStatus.PENDING_REIMBURSEMENT,
+        educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT,
+    ):
+        return format_badge("AC en cours de remboursement", "success")
+    if booking.status in (
         bookings_models.BookingStatus.REIMBURSED,
         educational_models.CollectiveBookingStatus.REIMBURSED,
     ):
@@ -651,6 +656,11 @@ def format_booking_validation_author_type(
 def format_booking_status(
     booking: bookings_models.Booking | educational_models.CollectiveBooking, with_badge: bool = False
 ) -> str:
+    if booking.status in (
+        bookings_models.BookingStatus.PENDING_REIMBURSEMENT,
+        educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT,
+    ):
+        return format_badge("En cours de remboursement", "success") if with_badge else "En cours de remboursement"
     if booking.status in (
         bookings_models.BookingStatus.REIMBURSED,
         educational_models.CollectiveBookingStatus.REIMBURSED,
