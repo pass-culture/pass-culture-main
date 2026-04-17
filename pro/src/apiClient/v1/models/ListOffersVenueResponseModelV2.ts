@@ -5,9 +5,6 @@
 export type ListOffersVenueResponseModelV2 = {
   departementCode: string;
   id: number;
-  isVirtual: boolean;
   name: string;
-  offererName: string;
-  publicName: string;
 };
 

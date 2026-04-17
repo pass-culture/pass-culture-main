@@ -3982,14 +3982,6 @@ export type ListOffersOfferResponseModel = {
      */
     bookingsCount?: number;
     /**
-     * Canbeevent
-     */
-    canBeEvent: boolean;
-    /**
-     * Hasbookinglimitdatetimespassed
-     */
-    hasBookingLimitDatetimesPassed: boolean;
-    /**
      * Highlightrequests
      */
     highlightRequests: Array<ShortHighlightResponseModel>;
@@ -3998,37 +3990,9 @@ export type ListOffersOfferResponseModel = {
      */
     id: number;
     /**
-     * Isactive
-     */
-    isActive: boolean;
-    /**
-     * Isdigital
-     */
-    isDigital: boolean;
-    /**
-     * Iseditable
-     */
-    isEditable: boolean;
-    /**
-     * Iseducational
-     */
-    isEducational: boolean;
-    /**
      * Isevent
      */
     isEvent: boolean;
-    /**
-     * Isheadlineoffer
-     */
-    isHeadlineOffer: boolean;
-    /**
-     * Isshowcase
-     */
-    isShowcase?: boolean;
-    /**
-     * Isthing
-     */
-    isThing: boolean;
     /**
      * LocationResponseModel
      */
@@ -4118,14 +4082,6 @@ export type ListOffersStockResponseModel = {
      */
     beginningDatetime?: string;
     /**
-     * Bookingquantity
-     */
-    bookingQuantity?: number;
-    /**
-     * Hasbookinglimitdatetimepassed
-     */
-    hasBookingLimitDatetimePassed: boolean;
-    /**
      * Id
      */
     id: number;
@@ -4148,21 +4104,9 @@ export type ListOffersVenueResponseModel = {
      */
     id: number;
     /**
-     * Isvirtual
-     */
-    isVirtual: boolean;
-    /**
      * Name
      */
     name: string;
-    /**
-     * Offerername
-     */
-    offererName: string;
-    /**
-     * Publicname
-     */
-    publicName: string;
 };
 
 /**
@@ -4178,21 +4122,9 @@ export type ListOffersVenueResponseModelV2 = {
      */
     id: number;
     /**
-     * Isvirtual
-     */
-    isVirtual: boolean;
-    /**
      * Name
      */
     name: string;
-    /**
-     * Offerername
-     */
-    offererName: string;
-    /**
-     * Publicname
-     */
-    publicName: string;
 };
 
 /**

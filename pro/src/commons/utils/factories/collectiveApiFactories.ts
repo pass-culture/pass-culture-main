@@ -98,9 +98,6 @@ export const listOffersVenueFactory = (
 ): ListOffersVenueResponseModel => ({
   id: 1,
   name: 'Nom de la structure',
-  publicName: 'Nom public de la structure',
-  offererName: 'offerer name',
-  isVirtual: false,
   ...customListOffersVenue,
 })
 
@@ -109,9 +106,6 @@ const listOffersVenueV2Factory = (
 ): ListOffersVenueResponseModelV2 => ({
   id: 1,
   name: 'Nom de la structure',
-  publicName: 'Nom public de la structure',
-  offererName: 'offerer name',
-  isVirtual: false,
   departementCode: '33',
   ...customListOffersVenue,
 })

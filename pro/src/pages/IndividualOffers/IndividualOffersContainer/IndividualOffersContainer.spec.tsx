@@ -450,18 +450,9 @@ describe('IndividualOffersScreen', () => {
 
   it('should disabled checkbox when offer is rejected or pending for validation', () => {
     const offers = [
-      listOffersOfferFactory({
-        isActive: false,
-        status: OfferStatus.REJECTED,
-      }),
-      listOffersOfferFactory({
-        isActive: true,
-        status: OfferStatus.PENDING,
-      }),
-      listOffersOfferFactory({
-        isActive: true,
-        status: OfferStatus.ACTIVE,
-      }),
+      listOffersOfferFactory({ status: OfferStatus.REJECTED }),
+      listOffersOfferFactory({ status: OfferStatus.PENDING }),
+      listOffersOfferFactory({ status: OfferStatus.ACTIVE }),
     ]
 
     renderOffers({
@@ -494,7 +485,6 @@ describe('IndividualOffersScreen', () => {
       const manyOffers = Array.from({ length: 20 }, (_, i) =>
         listOffersOfferFactory({
           name: `Offer ${i + 1}`,
-          isActive: false,
           status: OfferStatus.INACTIVE,
         })
       )
@@ -532,18 +522,9 @@ describe('IndividualOffersScreen', () => {
       const patchSpy = vi.spyOn(api, 'patchAllOffersActiveStatus')
 
       const offers = [
-        listOffersOfferFactory({
-          isActive: false,
-          status: OfferStatus.DRAFT,
-        }),
-        listOffersOfferFactory({
-          isActive: true,
-          status: OfferStatus.ACTIVE,
-        }),
-        listOffersOfferFactory({
-          isActive: false,
-          status: OfferStatus.INACTIVE,
-        }),
+        listOffersOfferFactory({ status: OfferStatus.DRAFT }),
+        listOffersOfferFactory({ status: OfferStatus.ACTIVE }),
+        listOffersOfferFactory({ status: OfferStatus.INACTIVE }),
       ]
 
       renderOffers({
@@ -576,15 +557,8 @@ describe('IndividualOffersScreen', () => {
       const offers = [
         listOffersOfferFactory(),
         listOffersOfferFactory(),
-        listOffersOfferFactory({
-          isActive: false,
-          status: OfferStatus.REJECTED,
-          isEditable: false,
-        }),
-        listOffersOfferFactory({
-          status: OfferStatus.PENDING,
-          isEditable: false,
-        }),
+        listOffersOfferFactory({ status: OfferStatus.REJECTED }),
+        listOffersOfferFactory({ status: OfferStatus.PENDING }),
       ]
 
       renderOffers({

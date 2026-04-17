@@ -44,13 +44,11 @@ const baseOffer = listOffersOfferFactory({
     {
       remainingQuantity: 2,
       beginningDatetime: new Date().toISOString(),
-      hasBookingLimitDatetimePassed: false,
       id: 0,
     },
     {
       remainingQuantity: 3,
       beginningDatetime: new Date().toISOString(),
-      hasBookingLimitDatetimePassed: false,
       id: 0,
     },
   ],

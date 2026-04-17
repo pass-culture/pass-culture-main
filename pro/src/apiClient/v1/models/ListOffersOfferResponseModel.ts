@@ -11,18 +11,9 @@ import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 export type ListOffersOfferResponseModel = {
   bookingAllowedDatetime?: string | null;
   bookingsCount?: number | null;
-  canBeEvent: boolean;
-  hasBookingLimitDatetimesPassed: boolean;
   highlightRequests: Array<ShortHighlightResponseModel>;
   id: number;
-  isActive: boolean;
-  isDigital: boolean;
-  isEditable: boolean;
-  isEducational: boolean;
   isEvent: boolean;
-  isHeadlineOffer: boolean;
-  isShowcase?: boolean | null;
-  isThing: boolean;
   location?: LocationResponseModel | null;
   name: string;
   productId?: number | null;
