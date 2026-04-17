@@ -47,11 +47,30 @@ export const OffererAuthentication = (): JSX.Element => {
     setActivity,
   } = useSignupJourneyContext()
 
+  const addressAutocomplete =
+    `${offerer?.street} ${offerer?.postalCode} ${offerer?.city}`.trim()
+  const hasAllInitialAddressPart =
+    initialAddress?.street && initialAddress?.postalCode && initialAddress?.city
+
+  const isInitialAddress =
+    initialAddress !== null &&
+    initialAddress.addressAutocomplete === addressAutocomplete
+
   const initialValues: OffererAuthenticationFormValues = {
     ...DEFAULT_OFFERER_FORM_VALUES,
     ...offerer,
-    addressAutocomplete: `${offerer?.street} ${offerer?.postalCode} ${offerer?.city}`,
-    'search-addressAutocomplete': `${offerer?.street} ${offerer?.postalCode} ${offerer?.city}`,
+    addressAutocomplete:
+      (offerer?.isDiffusible && hasAllInitialAddressPart) ||
+      !isInitialAddress ||
+      offerer?.isOpenToPublic === 'false'
+        ? addressAutocomplete
+        : '',
+    'search-addressAutocomplete':
+      (offerer?.isDiffusible && hasAllInitialAddressPart) ||
+      !isInitialAddress ||
+      offerer?.isOpenToPublic === 'false'
+        ? addressAutocomplete
+        : '',
     latitude: offerer?.latitude || 0,
     longitude: offerer?.longitude || 0,
     banId: offerer?.banId || '',

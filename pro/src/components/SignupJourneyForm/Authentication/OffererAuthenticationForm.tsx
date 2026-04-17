@@ -25,6 +25,13 @@ export interface OffererAuthenticationFormValues extends Address {
 
 export const OffererAuthenticationForm = (): JSX.Element => {
   const { offerer, initialAddress } = useSignupJourneyContext()
+  const hasAllInitialAddressPart =
+    initialAddress?.street && initialAddress?.postalCode && initialAddress?.city
+
+  const isInitialAddress =
+    initialAddress !== null &&
+    initialAddress.addressAutocomplete ===
+      `${offerer?.street} ${offerer?.postalCode} ${offerer?.city}`.trim()
 
   const {
     watch,
@@ -45,7 +52,13 @@ export const OffererAuthenticationForm = (): JSX.Element => {
   }
 
   const shouldDisplayAddress =
-    watch('isOpenToPublic') === 'true' || offerer?.isDiffusible
+    watch('isOpenToPublic') === undefined ||
+    watch('isOpenToPublic') === 'true' ||
+    !hasAllInitialAddressPart
+
+  const notOpenToPublicLabel = hasAllInitialAddressPart
+    ? 'Cette adresse postale ne sera pas visible.'
+    : "Nous n'avons pas pu récupérer votre adresse automatiquement. Renseignez-en une pour continuer."
 
   return (
     <>
@@ -108,22 +121,34 @@ export const OffererAuthenticationForm = (): JSX.Element => {
             error={errors.isOpenToPublic?.message}
             onChange={(e) => {
               clearErrors('isOpenToPublic')
-              if (!offerer?.isDiffusible) {
-                if (e.target.value === 'true') {
-                  // We reset the address fields when the user toggles the open to public toggle when they aren't diffusible
+
+              if (e.target.value === 'true') {
+                // The user is diffusible and had isOpenToPublic set to false. We reset it to the initial one
+                if (offerer?.isDiffusible && !isInitialAddress) {
+                  resetReactHookFormAddressFields((name, _) => {
+                    // @ts-expect-error Type is right since it's gotten from the defaultValues
+                    setValue(name, initialAddress[name])
+                  })
+                }
+
+                // The user is not diffusible, we reset the fields to blank
+                if (!offerer?.isDiffusible && hasAllInitialAddressPart) {
                   resetReactHookFormAddressFields<OffererAuthenticationFormValues>(
                     (name, defaultValue) => setValue(name, defaultValue)
                   )
-                } else {
-                  // We init the address fields as the default ones when the user untoggle the open to public toggle when they are not diffusible
-                  if (initialAddress) {
-                    resetReactHookFormAddressFields((name, _) => {
-                      // @ts-expect-error Type is right since it's gotten from the defaultValues
-                      setValue(name, initialAddress[name])
-                    })
-                  }
                 }
+              } else if (
+                (!isInitialAddress || !offerer?.isDiffusible) &&
+                initialAddress &&
+                hasAllInitialAddressPart
+              ) {
+                // We init the address fields as the default ones when the user untoggle the open to public toggle
+                resetReactHookFormAddressFields((name, _) => {
+                  // @ts-expect-error Type is right since it's gotten from the defaultValues
+                  setValue(name, initialAddress[name])
+                })
               }
+
               setValue('isOpenToPublic', e.target.value)
             }}
             isOpenToPublic={watch('isOpenToPublic')}
@@ -146,9 +171,9 @@ export const OffererAuthenticationForm = (): JSX.Element => {
             onManualChange={toggleManuallySetAddress}
             renderManual={() => <AddressManual />}
             description={
-              watch('isOpenToPublic') === 'true'
-                ? 'Cette adresse postale sera visible.'
-                : 'Cette adresse postale ne sera pas visible.'
+              watch('isOpenToPublic') === 'false'
+                ? notOpenToPublicLabel
+                : 'Cette adresse postale sera visible.'
             }
             error={errors.addressAutocomplete?.message}
             manual={manuallySetAddress}
