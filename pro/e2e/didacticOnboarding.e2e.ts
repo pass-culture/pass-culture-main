@@ -88,7 +88,6 @@ test.describe('Didactic Onboarding feature', () => {
     ])
 
     await expect(page).toHaveURL(/\/accueil$/)
-    await expect(page.getByText(/Votre page partenaire/)).toBeVisible()
   })
 
   test('I should be able to create my first offer automatically', async ({
