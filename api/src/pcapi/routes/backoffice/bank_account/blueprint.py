@@ -26,6 +26,7 @@ from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import request as request_utils
 from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.routes.serialization import reimbursement_csv_serialize
 from pcapi.utils import date as date_utils
@@ -181,9 +182,9 @@ def get_invoices(bank_account_id: int) -> response_utils.BackofficeResponse:
 
 
 def _redirect_to_invoices(bank_account_id: int, code: int = 303) -> response_utils.BackofficeResponse:
-    if request.referrer:
-        return redirect(request.referrer, code)
-    return url_for("backoffice_web.bank_account.get", bank_account_id=bank_account_id, active_tab="invoices")
+    return request_utils.safe_redirect_back(
+        request, url_for("backoffice_web.bank_account.get", bank_account_id=bank_account_id, active_tab="invoices")
+    )
 
 
 @bank_blueprint.route("/<int:bank_account_id>/reimbursement-details", methods=["POST"])

@@ -266,10 +266,8 @@ def update_chronicle_content(chronicle_id: int) -> response_utils.BackofficeResp
 
     if request_utils.is_request_from_htmx():
         return _render_chronicle_row(chronicle_id)
-    return redirect(
-        request.referrer
-        or url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="content"),
-        code=303,
+    return request_utils.safe_redirect_back(
+        request, url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="content")
     )
 
 
@@ -288,7 +286,7 @@ def publish_chronicle(chronicle_id: int) -> response_utils.BackofficeResponse:
     flash(f"La chronique {chronicle_id} a été publiée", "success")
     if request_utils.is_request_from_htmx():
         return _render_chronicle_row(chronicle_id)
-    return redirect(request.referrer or url_for("backoffice_web.chronicles.list_chronicles"), code=303)
+    return request_utils.safe_redirect_back(request, url_for("backoffice_web.chronicles.list_chronicles"))
 
 
 @chronicles_blueprint.route("/<int:chronicle_id>/unpublish", methods=["POST"])
@@ -307,7 +305,7 @@ def unpublish_chronicle(chronicle_id: int) -> response_utils.BackofficeResponse:
 
     if request_utils.is_request_from_htmx():
         return _render_chronicle_row(chronicle_id)
-    return redirect(request.referrer or url_for("backoffice_web.chronicles.list_chronicles"), code=303)
+    return request_utils.safe_redirect_back(request, url_for("backoffice_web.chronicles.list_chronicles"))
 
 
 @chronicles_blueprint.route("/<int:chronicle_id>/attach-product", methods=["POST"])

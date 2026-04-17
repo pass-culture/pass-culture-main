@@ -24,6 +24,7 @@ from pcapi.models import db
 from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.users import forms
 from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import request as request_utils
 from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.utils.requests import ExternalAPIException
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
@@ -42,14 +43,13 @@ users_blueprint = backoffice_blueprint.child_backoffice_blueprint(
 
 def _redirect_to_user_page(user: users_models.User) -> response_utils.BackofficeResponse:
     # Actions should always come from user details page
-    if request.referrer:
-        return redirect(request.referrer, code=303)
-
     # Fallback in case referrer is missing (maybe because of browser settings)
     if user.has_any_pro_role:
-        return redirect(url_for("backoffice_web.pro_user.get", user_id=user.id), code=303)
+        url = url_for("backoffice_web.pro_user.get", user_id=user.id)
+    else:
+        url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
 
-    return redirect(url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id), code=303)
+    return request_utils.safe_redirect_back(request, url)
 
 
 def _check_user_role_vs_backoffice_permission(user: users_models.User, unsuspend: bool = False) -> None:

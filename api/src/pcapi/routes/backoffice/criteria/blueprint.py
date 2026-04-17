@@ -97,7 +97,7 @@ def create_tag() -> response_utils.BackofficeResponse:
 
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.tags.list_tags"), code=303)
+        return request_utils.safe_redirect_back(request, url_for("backoffice_web.tags.list_tags"))
 
     try:
         tag = criteria_models.Criterion(
@@ -265,4 +265,4 @@ def create_tag_category() -> response_utils.BackofficeResponse:
         mark_transaction_as_invalid()
         flash("Cette catégorie existe déjà", "warning")
 
-    return redirect(url_for("backoffice_web.tags.list_tags", active_tab="categories"), code=303)
+    return request_utils.safe_redirect_back(request, url_for("backoffice_web.tags.list_tags", active_tab="categories"))

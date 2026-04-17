@@ -988,7 +988,7 @@ def get_batch_edit_venues_form() -> response_utils.BackofficeResponse:
         if not form.validate():
             flash(response_utils.build_form_error_msg(form), "warning")
             mark_transaction_as_invalid()
-            return redirect(request.referrer or url_for(".list_venues"), code=303)
+            return request_utils.safe_redirect_back(request, url_for(".list_venues"))
 
         venues = (
             db.session.query(offerers_models.Venue)

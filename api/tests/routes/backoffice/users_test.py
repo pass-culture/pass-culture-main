@@ -290,7 +290,7 @@ class SuspendUserTest(PostEndpointHelper):
             ]
         )
 
-        referer = url_for("backoffice_web.bo_users.get_bo_user", user_id=user.id)
+        referer = url_for("backoffice_web.bo_users.get_bo_user", user_id=user.id, _external=True)
 
         response = self.post_to_endpoint(
             client.with_bo_session_auth(super_admin),
@@ -331,7 +331,7 @@ class SuspendUserTest(PostEndpointHelper):
             ]
         )
 
-        referer = url_for("backoffice_web.bo_users.get_bo_user", user_id=user.id)
+        referer = url_for("backoffice_web.bo_users.get_bo_user", user_id=user.id, _external=True)
 
         response = self.post_to_endpoint(
             client.with_bo_session_auth(beneficiary_fraud_admin),

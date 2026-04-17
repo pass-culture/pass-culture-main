@@ -521,16 +521,15 @@ def update_date_event(special_event_id: int) -> response_utils.BackofficeRespons
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(request.referrer, 303)
+        return request_utils.safe_redirect_back(request)
 
     db.session.query(operations_models.SpecialEvent).filter(
         operations_models.SpecialEvent.id == special_event_id
     ).update({"eventDate": form.date.data}, synchronize_session=False)
 
     flash("La date de l'évènement a été mise à jour", "success")
-    return redirect(
-        request.referrer or url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id),
-        303,
+    return request_utils.safe_redirect_back(
+        request, url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id)
     )
 
 
@@ -573,16 +572,15 @@ def update_end_import_date(special_event_id: int) -> response_utils.BackofficeRe
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(request.referrer, 303)
+        return request_utils.safe_redirect_back(request)
 
     db.session.query(operations_models.SpecialEvent).filter(
         operations_models.SpecialEvent.id == special_event_id
     ).update({"endImportDate": form.date.data}, synchronize_session=False)
 
     flash("La date de fin d'import des candidatures a été mise à jour", "success")
-    return redirect(
-        request.referrer or url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id),
-        303,
+    return request_utils.safe_redirect_back(
+        request, url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id)
     )
 
 
@@ -633,10 +631,8 @@ def update_venue(special_event_id: int) -> response_utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(
-            request.referrer
-            or url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id),
-            303,
+        return request_utils.safe_redirect_back(
+            request, url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id)
         )
 
     db.session.query(operations_models.SpecialEvent).filter(
@@ -649,7 +645,6 @@ def update_venue(special_event_id: int) -> response_utils.BackofficeResponse:
     )
 
     flash("Le partenaire culturel a été mis à jour", "success")
-    return redirect(
-        request.referrer or url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id),
-        303,
+    return request_utils.safe_redirect_back(
+        request, url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id)
     )

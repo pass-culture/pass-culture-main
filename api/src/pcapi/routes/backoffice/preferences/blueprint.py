@@ -1,5 +1,4 @@
 from flask import flash
-from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
@@ -9,6 +8,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.preferences import forms
+from pcapi.routes.backoffice.utils import request as request_utils
 from pcapi.routes.backoffice.utils import response as response_utils
 
 
@@ -49,4 +49,4 @@ def save_preferences() -> response_utils.BackofficeResponse:
     db.session.flush()
 
     flash("Les préférences ont été enregistrées", "success")
-    return redirect(request.referrer or url_for(".edit_preferences"), 303)
+    return request_utils.safe_redirect_back(request, url_for(".edit_preferences"))

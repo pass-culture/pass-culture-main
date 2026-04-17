@@ -1008,7 +1008,7 @@ def batch_validate_offers() -> response_utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(request.referrer, 400)
+        return request_utils.safe_redirect_back(request, code=400)
 
     _batch_validate_offers(form.object_ids_list)
     flash("Les offres ont été validées", "success")
@@ -1038,7 +1038,7 @@ def batch_pending_offers() -> response_utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(request.referrer, 400)
+        return request_utils.safe_redirect_back(request, code=400)
 
     _batch_pending_offers(form.object_ids_list)
     flash(
@@ -1070,7 +1070,7 @@ def batch_reject_offers() -> response_utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(request.referrer, 400)
+        return request_utils.safe_redirect_back(request, code=400)
 
     _batch_reject_offers(form.object_ids_list)
     flash("Les offres ont été rejetées", "success")
@@ -1085,7 +1085,7 @@ def get_batch_edit_offer_form() -> response_utils.BackofficeResponse:
         if not form.validate():
             mark_transaction_as_invalid()
             flash(response_utils.build_form_error_msg(form), "warning")
-            return redirect(request.referrer, 400)
+            return request_utils.safe_redirect_back(request, code=400)
 
         offers = (
             db.session.query(offers_models.Offer)
@@ -1120,7 +1120,7 @@ def batch_edit_offer() -> response_utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(request.referrer, 400)
+        return request_utils.safe_redirect_back(request, code=400)
 
     offers = (
         db.session.query(offers_models.Offer)
@@ -1176,7 +1176,7 @@ def edit_offer(offer_id: int) -> response_utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash("Le formulaire n'est pas valide", "warning")
-        return redirect(request.referrer, 400)
+        return request_utils.safe_redirect_back(request, code=400)
 
     criteria = (
         db.session.query(criteria_models.Criterion).filter(criteria_models.Criterion.id.in_(form.criteria.data)).all()
@@ -1197,7 +1197,7 @@ def edit_offer(offer_id: int) -> response_utils.BackofficeResponse:
     if request_utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
 
-    return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
+    return request_utils.safe_redirect_back(request, url_for("backoffice_web.offer.list_offers"))
 
 
 @list_offers_blueprint.route("/<int:offer_id>/validate", methods=["GET"])
@@ -1247,7 +1247,7 @@ def validate_offer(offer_id: int) -> response_utils.BackofficeResponse:
 
     if request_utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
-    return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
+    return request_utils.safe_redirect_back(request, url_for("backoffice_web.offer.list_offers"))
 
 
 @list_offers_blueprint.route("/<int:offer_id>/pending", methods=["GET"])
@@ -1284,7 +1284,7 @@ def pending_offer(offer_id: int) -> response_utils.BackofficeResponse:
 
     if request_utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
-    return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
+    return request_utils.safe_redirect_back(request, url_for("backoffice_web.offer.list_offers"))
 
 
 @list_offers_blueprint.route("/<int:offer_id>/reject", methods=["GET"])
@@ -1317,7 +1317,7 @@ def reject_offer(offer_id: int) -> response_utils.BackofficeResponse:
 
     if request_utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
-    return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
+    return request_utils.safe_redirect_back(request, url_for("backoffice_web.offer.list_offers"))
 
 
 def _get_offer_recipients(offer: offers_models.Offer) -> list[str]:
@@ -2084,7 +2084,7 @@ def activate_offer(offer_id: int) -> response_utils.BackofficeResponse:
     flash("L'offre a été publiée", "success")
     if request_utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
-    return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
+    return request_utils.safe_redirect_back(request, url_for("backoffice_web.offer.list_offers"))
 
 
 @list_offers_blueprint.route("/batch-activate", methods=["POST"])
@@ -2094,7 +2094,7 @@ def batch_activate_offers() -> response_utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(request.referrer, 400)
+        return request_utils.safe_redirect_back(request, code=400)
 
     _batch_update_activation_offers(form.object_ids_list, is_active=True)
     flash("Les offres ont été publiées", "success")
@@ -2108,7 +2108,7 @@ def deactivate_offer(offer_id: int) -> response_utils.BackofficeResponse:
     flash("L'offre a été mise en pause, l’acteur pourra la réactiver", "success")
     if request_utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
-    return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
+    return request_utils.safe_redirect_back(request, url_for("backoffice_web.offer.list_offers"))
 
 
 @list_offers_blueprint.route("/batch-deactivate", methods=["POST"])
@@ -2118,7 +2118,7 @@ def batch_deactivate_offers() -> response_utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(request.referrer, 400)
+        return request_utils.safe_redirect_back(request, code=400)
 
     _batch_update_activation_offers(form.object_ids_list, is_active=False)
     flash("Les offres ont été mises en pause, l’acteur pourra les réactiver", "success")

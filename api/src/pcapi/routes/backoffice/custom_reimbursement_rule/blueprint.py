@@ -5,7 +5,6 @@ import pytz
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from flask import flash
-from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
@@ -354,4 +353,4 @@ def edit_custom_reimbursement_rule(reimbursement_rule_id: int) -> response_utils
 
 
 def _redirect_after_reimbursement_rule_action() -> response_utils.BackofficeResponse:
-    return redirect(request.referrer or url_for("backoffice_web.validation.list_offerers_to_validate"), code=303)
+    return request_utils.safe_redirect_back(request, url_for("backoffice_web.validation.list_offerers_to_validate"))

@@ -321,7 +321,7 @@ def configure_ubble_v2_response(user_id: int) -> response_utils.BackofficeRespon
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(request.referrer or url_for("backoffice_web.dev.get_generated_user"), code=303)
+        return request_utils.safe_redirect_back(request, url_for("backoffice_web.dev.get_generated_user"))
 
     # Ubble response codes can be tested by inserting the ones we want in the external applicant id of the Ubble
     # applicant. See https://docs.ubble.ai/#section/Testing/Declined-verification-on-retry-after-checks-inconclusive
@@ -352,7 +352,7 @@ def configure_api_quotient_familial_response(user_id: int) -> response_utils.Bac
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(request.referrer or url_for("backoffice_web.dev.get_generated_user"), code=303)
+        return request_utils.safe_redirect_back(request, url_for("backoffice_web.dev.get_generated_user"))
 
     create_qf_fraud_check(user, form)
     db.session.flush()

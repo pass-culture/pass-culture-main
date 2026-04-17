@@ -33,6 +33,7 @@ from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import request as request_utils
 from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.utils import requests
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
@@ -313,7 +314,7 @@ def synchronize_product_with_titelive(product_id: int) -> response_utils.Backoff
     else:
         flash("Le produit a été synchronisé avec Titelive", "success")
 
-    return redirect(request.referrer or url_for(".get_product_details", product_id=product_id), 303)
+    return request_utils.safe_redirect_back(request, url_for(".get_product_details", product_id=product_id))
 
 
 @list_products_blueprint.route("/<int:product_id>/whitelist", methods=["GET"])
@@ -344,7 +345,7 @@ def whitelist_product(product_id: int) -> response_utils.BackofficeResponse:
 
     product.gcuCompatibilityType = offers_models.GcuCompatibilityType.COMPATIBLE
     flash("Le produit a été marqué compatible avec les CGU", "success")
-    return redirect(request.referrer or url_for(".get_product_details", product_id=product_id), 303)
+    return request_utils.safe_redirect_back(request, url_for(".get_product_details", product_id=product_id))
 
 
 @list_products_blueprint.route("/<int:product_id>/blacklist", methods=["GET"])
@@ -380,7 +381,7 @@ def blacklist_product(product_id: int) -> response_utils.BackofficeResponse:
         db.session.rollback()
         flash("Une erreur s'est produite lors de l'opération", "warning")
 
-    return redirect(request.referrer or url_for(".get_product_details", product_id=product_id), 303)
+    return request_utils.safe_redirect_back(request, url_for(".get_product_details", product_id=product_id))
 
 
 @list_products_blueprint.route("/<int:product_id>/link_offers/confirm", methods=["GET", "POST"])
@@ -427,7 +428,7 @@ def batch_link_offers_to_product(product_id: int) -> response_utils.BackofficeRe
         ),
         "success",
     )
-    return redirect(request.referrer or url_for(".get_product_details", product_id=product_id), 303)
+    return request_utils.safe_redirect_back(request, url_for(".get_product_details", product_id=product_id))
 
 
 @list_products_blueprint.route("/<int:product_id>/tag-offers", methods=["GET"])
@@ -664,4 +665,4 @@ def import_product_from_titelive(ean: str) -> response_utils.BackofficeResponse:
         flash(Markup("Le produit <b>{product_name}</b> a été créé").format(product_name=product.name), "success")
         return redirect(url_for(".get_product_details", product_id=product.id), 303)
 
-    return redirect(request.referrer or url_for(".search_product"), 303)
+    return request_utils.safe_redirect_back(request, url_for(".search_product"))

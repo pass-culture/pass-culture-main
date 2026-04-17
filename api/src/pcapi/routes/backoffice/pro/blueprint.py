@@ -28,6 +28,7 @@ from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.routes.backoffice.utils import access_control
 from pcapi.routes.backoffice.utils import logs as logs_utils
+from pcapi.routes.backoffice.utils import request as request_utils
 from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.routes.backoffice.utils import search as search_utils
 from pcapi.utils import urls
@@ -305,7 +306,7 @@ def connect_as() -> response_utils.BackofficeResponse:
     if not form.validate():
         flash("Échec de la validation de sécurité, veuillez réessayer", "warning")
         mark_transaction_as_invalid()
-        return redirect(request.referrer or url_for("backoffice_web.home"), code=303)
+        return request_utils.safe_redirect_back(request)
 
     try:
         match form.object_type.data:
@@ -333,7 +334,7 @@ def connect_as() -> response_utils.BackofficeResponse:
         else:
             flash("Erreur inconnue", "warning")
         mark_transaction_as_invalid()
-        return redirect(request.referrer or url_for("backoffice_web.home"), code=303)
+        return request_utils.safe_redirect_back(request)
 
     token = SecureToken(
         data=ConnectAsInternalModel(
