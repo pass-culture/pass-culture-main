@@ -117,7 +117,7 @@ export const Desk = (): JSX.Element => {
   }
 
   const handleSubmitError = (error: ApiError) => {
-    if (error.status === 503 || error.status === 500) {
+    if (error.status === 503 || error.status === 502 || error.status === 500) {
       snackBar.error(
         error['body']?.global ||
           'Le service de validation des contremarques est momentanément indisponible. Veuillez réessayer dans quelques instants.'

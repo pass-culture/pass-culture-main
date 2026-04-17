@@ -6,7 +6,7 @@ import type { CreateClientConfig } from './v1/new/client.gen'
 const customFetch: typeof fetch = async (input, init) => {
   const response = await fetch(input, init)
 
-  if (response.status === 503) {
+  if (response.status === 502 || response.status === 503) {
     window.location.assign(URL_FOR_MAINTENANCE)
     return new Promise<Response>(() => null)
   }
