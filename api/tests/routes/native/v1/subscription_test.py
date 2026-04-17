@@ -357,6 +357,35 @@ class UpdateProfileTest:
         assert profile_completion_fraud_check.reason == "Completed in application step"
 
     @pytest.mark.features(ENABLE_UBBLE=True)
+    def test_phone_number_not_deleted_if_missing_but_previously_filled(self, client):
+        user = users_factories.UserFactory(
+            address=None,
+            city=None,
+            postalCode=None,
+            activity=None,
+            firstName=None,
+            lastName=None,
+            phoneNumber="+33609080706",
+            dateOfBirth=datetime.date.today() - relativedelta(years=18, months=6),
+        )
+
+        profile_data = {
+            "firstName": "John",
+            "lastName": "Doe",
+            "address": "1 rue des rues",
+            "city": "Uneville",
+            "postalCode": "77000",
+            "activityId": "HIGH_SCHOOL_STUDENT",
+        }
+
+        client.with_token(user)
+        response = client.post("/native/v1/subscription/profile", profile_data)
+
+        assert response.status_code == 204
+
+        assert user.phoneNumber == "+33609080706"
+
+    @pytest.mark.features(ENABLE_UBBLE=True)
     def test_fulfill_profile_invalid_character(self, client):
         user = users_factories.UserFactory(
             address=None,
