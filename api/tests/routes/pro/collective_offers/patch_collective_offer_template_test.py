@@ -228,7 +228,7 @@ class Returns200Test:
                 f"/collective/offers-template/{offer.id}",
                 json={
                     "contactEmail": "a@b.com",
-                    "contactPhone": "0101",
+                    "contactPhone": "0101010101",
                     "contactUrl": "http://localhost/",
                     "contactForm": None,
                 },
@@ -239,7 +239,7 @@ class Returns200Test:
             db.session.query(models.CollectiveOfferTemplate).filter(models.CollectiveOfferTemplate.id == offer.id).one()
         )
         assert updated_offer.contactEmail == "a@b.com"
-        assert updated_offer.contactPhone == "0101"
+        assert updated_offer.contactPhone == "+33101010101"
         assert updated_offer.contactUrl == "http://localhost/"
         assert updated_offer.contactForm is None
 
@@ -924,6 +924,18 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {field: ["Ce champ ne peut pas être null"]}
+
+    def test_phone_number(self, client):
+        offer_ctx = build_offer_context()
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+
+        data = {"contactPhone": "123"}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"contactPhone": ["Numéro de téléphone invalide"]}
 
 
 class InvalidDatesTest:

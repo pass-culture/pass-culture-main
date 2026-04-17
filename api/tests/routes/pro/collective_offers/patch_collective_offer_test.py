@@ -838,6 +838,16 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {field: ["Ce champ ne peut pas être null"]}
 
+    def test_phone_number(self, auth_client, venue):
+        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue)
+
+        data = {"contactPhone": "123"}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = auth_client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"contactPhone": ["Numéro de téléphone invalide"]}
+
 
 class Returns403Test:
     def test_patch_collective_offer_replacing_venue_with_different_offerer(self, client):
