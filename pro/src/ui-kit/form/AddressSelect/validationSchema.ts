@@ -3,13 +3,16 @@ import * as yup from 'yup'
 import { checkCoords } from '@/commons/utils/coords'
 
 export const validationSchema = {
-  addressAutocomplete: yup.string().when(['manuallySetAddress'], {
-    is: (manuallySetAddress: boolean) => !manuallySetAddress,
-    then: (schema) =>
-      schema.required(
-        'Veuillez sélectionner une adresse parmi les suggestions'
-      ),
-  }),
+  addressAutocomplete: yup
+    .string()
+    .trim()
+    .when(['manuallySetAddress'], {
+      is: (manuallySetAddress: boolean) => !manuallySetAddress,
+      then: (schema) =>
+        schema.required(
+          'Veuillez sélectionner une adresse parmi les suggestions'
+        ),
+    }),
   street: yup
     .string()
     .trim()

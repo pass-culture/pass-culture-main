@@ -298,6 +298,25 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
     expect(screen.queryByRole('button', { name: 'Retour' })).toBeInTheDocument()
   })
 
+  it('should render component with empty adresss', async () => {
+    renderOffererAuthenticationScreen({
+      ...contextValue,
+
+      initialAddress: {
+        ...DEFAULT_ADDRESS_FORM_VALUES,
+        street: '123 Rue de Valois',
+        city: 'Toto',
+        postalCode: '123123',
+      },
+    })
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Adresse postale *')).toHaveValue(
+        '3 Rue de Valois 75001 Paris'
+      )
+    })
+  })
+
   it('should display activity screen on submit', async () => {
     renderOffererAuthenticationScreen(contextValue)
     expect(

@@ -205,8 +205,10 @@ export const Offerer = (): JSX.Element => {
 
       const initialAddressData = {
         ...addressValues,
-        addressAutocomplete: `${addressValues?.street} ${addressValues?.postalCode} ${addressValues?.city}`,
-        'search-addressAutocomplete': `${addressValues?.street} ${addressValues?.postalCode} ${addressValues?.city}`,
+        addressAutocomplete:
+          `${addressValues?.street} ${addressValues?.postalCode} ${addressValues?.city}`.trim(),
+        'search-addressAutocomplete':
+          `${addressValues?.street} ${addressValues?.postalCode} ${addressValues?.city}`.trim(),
       }
       saveInitialAddressToStorage(initialAddressData)
       setInitialAddress(initialAddressData)

@@ -13,7 +13,10 @@ import {
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { noop } from '@/commons/utils/noop'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
+import {
+  DEFAULT_ADDRESS_FORM_VALUES,
+  DEFAULT_OFFERER_FORM_VALUES,
+} from '@/components/SignupJourneyForm/Offerer/constants'
 import { Button } from '@/design-system/Button/Button'
 
 import {
@@ -223,17 +226,27 @@ describe('OffererAuthenticationForm', () => {
     expect(noRadio).toBeInTheDocument()
   })
 
-  it('should render form without address when not diffusible', async () => {
+  it('should render form without address when clicked no open to public', async () => {
     renderOffererAuthenticationForm({
       initialValues: initialValues,
       contextValue: {
         ...contextValue,
         offerer: {
           ...offererAuthenticationFormValues,
-          isDiffusible: false,
+          street: '3 Rue de Valois',
+          city: 'Paris',
+          postalCode: '75001',
+        },
+        initialAddress: {
+          ...DEFAULT_ADDRESS_FORM_VALUES,
+          street: '3 Rue de Valois',
+          city: 'Paris',
+          postalCode: '75001',
         },
       },
     })
+
+    await userEvent.click(await screen.findByRole('radio', { name: 'Non' }))
 
     await waitFor(() => {
       const addressField = screen.queryByLabelText('Adresse postale *')
