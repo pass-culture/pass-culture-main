@@ -1,3 +1,6 @@
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
+import { useFunctionOnce } from '@/commons/hooks/useFunctionOnce'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -9,7 +12,12 @@ import { Card } from '@/ui-kit/Card/Card'
 import newsletter from './assets/newsletter.png'
 import styles from './NewsletterCard.module.scss'
 
-export const NewsletterCard = () => {
+export const NewsletterCard = ({ venueId }: { venueId: number }) => {
+  const { logEvent } = useAnalytics()
+  const logNewsletterClick = useFunctionOnce(() =>
+    logEvent(HomepageEvents.CLICKED_NEWSLETTER, { venueId })
+  )
+
   return (
     <Card variant="info">
       <img
@@ -34,6 +42,7 @@ export const NewsletterCard = () => {
           as="a"
           isExternal
           opensInNewTab
+          onClick={logNewsletterClick}
         />
       </Card.Footer>
     </Card>

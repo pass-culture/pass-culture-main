@@ -1,7 +1,11 @@
 import { useState } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
+import {
+  EngagementEvents,
+  HomepageEvents,
+} from '@/commons/core/FirebaseEvents/constants'
+import { useFunctionOnce } from '@/commons/hooks/useFunctionOnce'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -27,6 +31,15 @@ export const EditoCard = ({
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { logEvent } = useAnalytics()
+  const logHeadlineOfferClick = useFunctionOnce(() =>
+    logEvent(HomepageEvents.CLICKED_HEADLINE_OFFER, { venueId })
+  )
+  const logCulturalSurveyClick = useFunctionOnce(() =>
+    logEvent(HomepageEvents.CLICKED_CULTURAL_SURVEY, { venueId })
+  )
+  const logRecommendationClick = useFunctionOnce(() =>
+    logEvent(HomepageEvents.CLICKED_RECOMMENDATION, { venueId })
+  )
 
   const highlightOfferCard = (
     <EditoCardItem
@@ -73,6 +86,7 @@ export const EditoCard = ({
           fullWidth={true}
           as="a"
           to="https://pass.culture.fr/ressources/references-culturelles-best-of-2025"
+          onClick={logCulturalSurveyClick}
         />
       }
     />
@@ -92,6 +106,7 @@ export const EditoCard = ({
           fullWidth={true}
           to="/offres"
           as="a"
+          onClick={logHeadlineOfferClick}
         />
       }
     />
@@ -111,6 +126,7 @@ export const EditoCard = ({
           fullWidth={true}
           to="/offres"
           as="a"
+          onClick={logRecommendationClick}
         />
       }
     />

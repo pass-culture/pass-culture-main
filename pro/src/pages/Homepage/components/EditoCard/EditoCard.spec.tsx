@@ -3,7 +3,10 @@ import userEvent from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
-import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
+import {
+  EngagementEvents,
+  HomepageEvents,
+} from '@/commons/core/FirebaseEvents/constants'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { EditoCard } from './EditoCard'
@@ -182,6 +185,58 @@ describe('EditoCard', () => {
           venueId: 1,
           action: 'discover',
         }
+      )
+    })
+  })
+
+  describe('tracking', () => {
+    beforeEach(() => {
+      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+        logEvent: mockLogEvent,
+      }))
+    })
+
+    it('should log CLICKED_HEADLINE_OFFER on "Choisir une offre" click', async () => {
+      const user = userEvent.setup()
+
+      renderWithProviders(
+        <EditoCard {...defaultProps} canDisplayHighlights={false} />
+      )
+
+      const links = screen.getAllByRole('link', { name: 'Choisir une offre' })
+      await user.click(links[0])
+
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        HomepageEvents.CLICKED_HEADLINE_OFFER,
+        { venueId: 1 }
+      )
+    })
+
+    it('should log CLICKED_CULTURAL_SURVEY on "Lire l’enquête" click', async () => {
+      const user = userEvent.setup()
+
+      renderWithProviders(<EditoCard {...defaultProps} />)
+
+      await user.click(screen.getByRole('link', { name: /Lire l’enquête/ }))
+
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        HomepageEvents.CLICKED_CULTURAL_SURVEY,
+        { venueId: 1 }
+      )
+    })
+    it('should log CLICKED_RECOMMENDATION on recommendation "Choisir une offre" click', async () => {
+      const user = userEvent.setup()
+
+      renderWithProviders(
+        <EditoCard {...defaultProps} canDisplayHighlights={false} />
+      )
+
+      const links = screen.getAllByRole('link', { name: 'Choisir une offre' })
+      await user.click(links[1])
+
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        HomepageEvents.CLICKED_RECOMMENDATION,
+        { venueId: 1 }
       )
     })
   })

@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
-import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { Events, HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
@@ -162,5 +162,38 @@ describe('PartnerPageCard', () => {
         screen.queryByRole('link', { name: /Voir ma page/ })
       ).not.toBeInTheDocument()
     })
+  })
+
+  it('should log CLICKED_PARTNER_PAGE on "Voir ma page" click', async () => {
+    const user = userEvent.setup()
+
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+
+    renderPartnerPageCard(HomepageVariant.INDIVIDUAL)
+
+    await user.click(screen.getByRole('link', { name: /Voir ma page/ }))
+
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      HomepageEvents.CLICKED_PARTNER_PAGE,
+      { venueId: baseVenue.id }
+    )
+  })
+
+  it('should log CLICKED_PARTNER_PAGE only once on multiple clicks', async () => {
+    const user = userEvent.setup()
+
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+
+    renderPartnerPageCard(HomepageVariant.INDIVIDUAL)
+
+    const link = screen.getByRole('link', { name: /Voir ma page/ })
+    await user.click(link)
+    await user.click(link)
+
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
   })
 })
