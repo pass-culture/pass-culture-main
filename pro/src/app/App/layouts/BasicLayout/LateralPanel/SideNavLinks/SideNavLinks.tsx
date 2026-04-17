@@ -4,8 +4,9 @@ import {
   LAPTOP_MEDIA_QUERY,
   useMediaQuery,
 } from '@/commons/hooks/useMediaQuery'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullSmsIcon from '@/icons/full-sms.svg'
-import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { HelpDropdownNavItem } from './components/HelpDropdownNavItem'
 import { RenderNavItem } from './components/SideNavLink'
@@ -72,7 +73,7 @@ export const SideNavLinks = ({
   }
 
   return (
-    <div className={styles.sidebar}>
+    <div className={styles['sidebar']}>
       {/* SCROLLABLE CONTENT */}
       <ul>
         {mainItems.map((item) => (
@@ -86,7 +87,7 @@ export const SideNavLinks = ({
       </ul>
 
       {/* FOOTER */}
-      <div className={styles.footer}>
+      <div className={styles['footer']}>
         {footerItems && (
           <div>
             <div aria-hidden="true">
@@ -95,13 +96,15 @@ export const SideNavLinks = ({
 
             {withSwitchVenueFeature ? (
               <ul>
-                <li>
+                <li className={styles['review']}>
                   <UserReviewDialog
                     dialogTrigger={
-                      <div className={styles['nav-links-item']}>
-                        <SvgIcon width="22" src={fullSmsIcon} />
-                        Donner mon avis
-                      </div>
+                      <Button
+                        icon={fullSmsIcon}
+                        label="Donner mon avis"
+                        variant={ButtonVariant.TERTIARY}
+                        color={ButtonColor.NEUTRAL}
+                      />
                     }
                   />
                 </li>

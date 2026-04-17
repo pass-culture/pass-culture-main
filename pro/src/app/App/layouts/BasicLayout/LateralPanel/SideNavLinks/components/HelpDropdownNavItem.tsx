@@ -1,6 +1,4 @@
 import { HelpDropdownMenu } from '@/app/App/layouts/components/Header/components/HeaderHelpDropdown/HelpDropdownMenu'
-import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullHelpIcon from '@/icons/full-help.svg'
 import fullRightIcon from '@/icons/full-right.svg'
 import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
@@ -20,15 +18,14 @@ export const HelpDropdownNavItem = ({
     side={isMobileScreen ? 'top' : 'right'}
     sideOffset={0}
     trigger={
-      <div className={styles['nav-links-help']}>
-        <Button
-          variant={ButtonVariant.TERTIARY}
-          color={ButtonColor.NEUTRAL}
-          icon={fullHelpIcon}
-          label="Centre d’aide"
-        />
+      // The DS does not allow two icons in the same button
+      <button type="button" className={styles['nav-links-help']}>
+        <div className={styles['nav-links-help-content']}>
+          <SvgIcon src={fullHelpIcon} alt="" width="22" />
+          Centre d’aide
+        </div>
         <SvgIcon src={fullRightIcon} alt="" width="18" />
-      </div>
+      </button>
     }
   >
     <HelpDropdownMenu />

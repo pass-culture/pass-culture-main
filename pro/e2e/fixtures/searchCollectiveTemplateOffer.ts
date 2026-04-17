@@ -7,7 +7,7 @@ import {
 } from '@playwright/test'
 
 import { login } from '../helpers/auth'
-import { setFeatureFlags } from '../helpers/features'
+import { navigateToHubAndPickVenue } from '../helpers/navigateToHubAndPickVenue'
 import { BASE_API_URL, sandboxCall } from '../helpers/sandbox'
 
 export interface ProUserWithCollectiveTemplateOffersResponse {
@@ -19,6 +19,9 @@ export interface ProUserWithCollectiveTemplateOffersResponse {
   offerArchived: { name: string; venueName: string }
   offerUnderReview: { name: string; venueName: string }
   offerRejected: { name: string; venueName: string }
+  offerArchivedSecondVenue: { name: string; venueName: string }
+  offerUnderReviewSecondVenue: { name: string; venueName: string }
+  offerRejectedSecondVenue: { name: string; venueName: string }
 }
 
 interface AuthSession {
@@ -50,10 +53,6 @@ export const test = base.extend<{
       'GET',
       `${BASE_API_URL}/sandboxes/pro/create_pro_user_with_collective_offer_templates`
     )
-    await setFeatureFlags(requestContext, [
-      { name: 'WIP_SWITCH_VENUE', isActive: false },
-    ])
-    await requestContext.dispose()
 
     const tempContext = await browser.newContext()
     const tempPage = await tempContext.newPage()
@@ -75,12 +74,17 @@ export const test = base.extend<{
     await use(authSession.data)
   },
 
-  page: async ({ browser, authSession }, use, testInfo) => {
+  page: async ({ browser, authSession, templateOffersData }, use, testInfo) => {
     const context = await browser.newContext({
       storageState: authSession.storageStatePath,
       ...testInfo.project.use,
     })
     const page = await context.newPage()
+
+    await navigateToHubAndPickVenue(
+      page,
+      templateOffersData.offerPublished.venueName
+    )
 
     await page.goto('/offres/vitrines')
     await expect(page.getByTestId('spinner')).toHaveCount(0)

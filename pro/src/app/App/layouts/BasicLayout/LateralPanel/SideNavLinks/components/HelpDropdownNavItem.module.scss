@@ -2,8 +2,11 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_outline.scss" as outline;
 @use "styles/variables/_z-index.scss" as zIndex;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .nav-links-help {
+  @include fonts.button;
+
   display: flex;
   gap: var(--size-spacing-s);
   align-items: center;
@@ -12,6 +15,7 @@
   background-color: transparent;
   border: none;
   justify-content: space-between;
+  cursor: pointer;
 
   &:hover {
     background-color: var(--color-background-subtle);
@@ -22,4 +26,9 @@
 
     border-radius: var(--size-border-radius-l);
   }
+}
+
+.nav-links-help-content {
+  display: flex;
+  gap: var(--size-spacing-s);
 }

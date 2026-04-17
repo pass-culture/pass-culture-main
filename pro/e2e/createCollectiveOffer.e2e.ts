@@ -77,7 +77,7 @@ test.describe('Create collective offers', () => {
       BOOKABLE_OFFERS_COLUMNS,
       [
         '',
-        `N°6${newOfferName}`,
+        `N°7${newOfferName}`,
         format(commonOfferData.date, 'dd/MM/yyyy'),
         '10€',
         'COLLEGE 123 75000',
@@ -107,7 +107,7 @@ test.describe('Create collective offers', () => {
       BOOKABLE_OFFERS_COLUMNS,
       [
         '',
-        `N°7${newOfferName}`,
+        `N°8${newOfferName}`,
         `${format(commonOfferData.date, 'dd/MM/yyyy')}`,
         '10€',
         'COLLEGE 123 75000',
@@ -140,7 +140,7 @@ test.describe('Create collective offers', () => {
       BOOKABLE_OFFERS_COLUMNS,
       [
         '',
-        `N°8${newOfferName}`,
+        `N°9${newOfferName}`,
         `${format(commonOfferData.date, 'dd/MM/yyyy')}`,
         '10€',
         'COLLEGE 123 75000',
@@ -171,7 +171,7 @@ test.describe('Create collective offers', () => {
       BOOKABLE_OFFERS_COLUMNS,
       [
         '',
-        `N°9${newOfferName}`,
+        `N°10${newOfferName}`,
         `${format(commonOfferData.date, 'dd/MM/yyyy')}`,
         '10€',
         'COLLEGE 123 75000',
@@ -205,7 +205,7 @@ test.describe('Create collective offers', () => {
       BOOKABLE_OFFERS_COLUMNS,
       [
         '',
-        `N°10${newOfferName}`,
+        `N°11${newOfferName}`,
         `${format(commonOfferData.date, 'dd/MM/yyyy')}`,
         '10€',
         'COLLEGE 123 75000',
@@ -257,7 +257,7 @@ test.describe('Create collective offers', () => {
     await fillInstitution(page, checkAccessibility)
     await publishAndSearchOffer(page, checkAccessibility)
 
-    await page.getByRole('link', { name: `N°6 ${newOfferName}` }).click()
+    await page.getByRole('link', { name: `N°7 ${newOfferName}` }).click()
     await page.getByLabel('Modifier').first().click()
     await page.getByLabel('Autre adresse').click()
     await autoCompleteAddress(page)

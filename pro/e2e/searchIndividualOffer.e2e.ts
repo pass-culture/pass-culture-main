@@ -1,21 +1,16 @@
-import { request as playwrightRequest } from '@playwright/test'
 import { addDays, format } from 'date-fns'
 
 import { expect, test } from './fixtures/searchIndividualOffer'
 import { checkAccessibility } from './helpers/accessibility'
 import { expectIndividualOffersOrBookingsAreFound } from './helpers/assertions'
-import { setFeatureFlags } from './helpers/features'
-import { BASE_API_URL } from './helpers/sandbox'
+import { navigateToHubAndPickVenue } from './helpers/navigateToHubAndPickVenue'
 
 test.describe('Search individual offers', () => {
-  test.beforeEach(async ({ authenticatedPage: page }) => {
-    const requestContext = await playwrightRequest.newContext({
-      baseURL: BASE_API_URL,
-    })
-    await setFeatureFlags(requestContext, [
-      { name: 'WIP_SWITCH_VENUE', isActive: false },
-    ])
-  })
+  test.beforeEach(
+    async ({ authenticatedPage: page, individualOffersUserData: userData }) => {
+      await navigateToHubAndPickVenue(page, userData.venue.name)
+    }
+  )
   test('I should be able to search with a name and see expected results', async ({
     authenticatedPage: page,
     individualOffersUserData: userData,
@@ -324,9 +319,7 @@ test.describe('Search individual offers', () => {
     individualOffersUserData: userData,
   }) => {
     const {
-      venue0,
       venue,
-      offer0: offerName0,
       offer1: offerName1,
       offer2: offerName2,
       offer3: offerName3,
@@ -460,13 +453,6 @@ test.describe('Search individual offers', () => {
         `${venue.name} - ${venue.fullAddress}`,
         '1 000',
         'publiée',
-      ],
-      [
-        '',
-        offerName0.name,
-        `${venue0.name} - ${venue0.fullAddress}`,
-        '0',
-        'épuisée',
       ],
     ]
 

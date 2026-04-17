@@ -343,6 +343,13 @@ def create_pro_user_with_collective_offers() -> dict:
         locationType=educational_models.CollectiveLocationType.SCHOOL,
     )
 
+    offerArchivedSecondVenue = educational_factories.ArchivedCollectiveOfferFactory.create(
+        name="Mon offre collective archivée réservable dans un autre lieu",
+        venue=venue1,
+        formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
+        locationType=educational_models.CollectiveLocationType.SCHOOL,
+    )
+
     educational_factories.EducationalCurrentYearFactory.create()
     educational_factories.EducationalYearFactory.create()
     educational_institution = educational_factories.EducationalInstitutionFactory(name="COLLEGE 123")
@@ -390,6 +397,11 @@ def create_pro_user_with_collective_offers() -> dict:
             "venueName": offerArchived.venue.name,
             "venueFullAddress": offerArchived.venue.offererAddress.address.fullAddress,
         },
+        "offerArchivedSecondVenue": {
+            "name": offerArchivedSecondVenue.name,
+            "venueName": offerArchivedSecondVenue.venue.name,
+            "venueFullAddress": offerArchivedSecondVenue.venue.offererAddress.address.fullAddress,
+        },
     }
 
 
@@ -426,21 +438,40 @@ def create_pro_user_with_collective_offer_templates() -> dict:
     )
     offerArchived = educational_factories.create_collective_offer_template_by_status(
         CollectiveOfferDisplayedStatus.ARCHIVED,
-        venue=venue2,
+        venue=venue1,
         name="Offre vitrine archivée en établissement scolaire",
         formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
         locationType=educational_models.CollectiveLocationType.SCHOOL,
     )
     offerUnderReview = educational_factories.create_collective_offer_template_by_status(
         CollectiveOfferDisplayedStatus.UNDER_REVIEW,
-        venue=venue2,
+        venue=venue1,
         name="Offre vitrine en instruction",
         formats=[EacFormat.REPRESENTATION],
     )
     offerRejected = educational_factories.create_collective_offer_template_by_status(
         CollectiveOfferDisplayedStatus.REJECTED,
-        venue=venue2,
+        venue=venue1,
         name="Offre vitrine non conforme",
+        formats=[EacFormat.REPRESENTATION],
+    )
+    offerArchivedSecondVenue = educational_factories.create_collective_offer_template_by_status(
+        CollectiveOfferDisplayedStatus.ARCHIVED,
+        venue=venue2,
+        name="Offre vitrine archivée en établissement scolaire autre lieu",
+        formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
+        locationType=educational_models.CollectiveLocationType.SCHOOL,
+    )
+    offerUnderReviewSecondVenue = educational_factories.create_collective_offer_template_by_status(
+        CollectiveOfferDisplayedStatus.UNDER_REVIEW,
+        venue=venue2,
+        name="Offre vitrine en instruction autre lieu",
+        formats=[EacFormat.REPRESENTATION],
+    )
+    offerRejectedSecondVenue = educational_factories.create_collective_offer_template_by_status(
+        CollectiveOfferDisplayedStatus.REJECTED,
+        venue=venue2,
+        name="Offre vitrine non conforme autre lieu",
         formats=[EacFormat.REPRESENTATION],
     )
 
@@ -470,6 +501,21 @@ def create_pro_user_with_collective_offer_templates() -> dict:
             "name": offerRejected.name,
             "venueName": offerRejected.venue.name,
             "venueFullAddress": offerRejected.venue.offererAddress.address.fullAddress,
+        },
+        "offerArchivedSecondVenue": {
+            "name": offerArchivedSecondVenue.name,
+            "venueName": offerArchivedSecondVenue.venue.name,
+            "venueFullAddress": offerArchivedSecondVenue.venue.offererAddress.address.fullAddress,
+        },
+        "offerUnderReviewSecondVenue": {
+            "name": offerUnderReviewSecondVenue.name,
+            "venueName": offerUnderReviewSecondVenue.venue.name,
+            "venueFullAddress": offerUnderReviewSecondVenue.venue.offererAddress.address.fullAddress,
+        },
+        "offerRejectedSecondVenue": {
+            "name": offerRejectedSecondVenue.name,
+            "venueName": offerRejectedSecondVenue.venue.name,
+            "venueFullAddress": offerRejectedSecondVenue.venue.offererAddress.address.fullAddress,
         },
     }
 
