@@ -26,7 +26,7 @@ runs:
         target: ${{ inputs.image }}
         tags: ${{ inputs.image }}:${{ inputs.tag }}
         cache-from: type=gha,scope=${{ inputs.image }}
-        cache-to: type=gha,mode=max,scope=${{ inputs.image }}
+        cache-to: ${{ github.ref_name == 'master' && format('type=gha,mode=max,scope={0}', inputs.image) || ''}} 
         outputs: type=docker,dest=${{ runner.temp }}/${{ inputs.image }}-${{ inputs.tag }}.tar
 
     - name: Upload built image to github artifact

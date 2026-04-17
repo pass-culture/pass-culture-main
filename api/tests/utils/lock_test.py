@@ -23,4 +23,5 @@ class LockTest:
         with lock_utils.lock("test_lock_timeout", ttl=1, timeout=2):
             with lock_utils.lock("test_lock_timeout", ttl=5, timeout=3):
                 assert True
+                assert True
                 pass

@@ -28,7 +28,7 @@ IS_TESTING = ENV == "testing"
 IS_OPS = ENV == "ops"
 
 IS_UV = "True"
-GHA_CACHE = "MAXX"
+GHA_CACHE = "NO UPLOAD"
 
 if ENV not in ("development", "integration", "staging", "production", "testing", "ops"):
     raise RuntimeError("Unknown environment")
