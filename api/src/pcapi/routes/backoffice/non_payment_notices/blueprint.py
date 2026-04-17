@@ -4,7 +4,6 @@ import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 from flask import flash
-from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
@@ -150,7 +149,7 @@ def list_notices() -> response_utils.BackofficeResponse:
 
 
 def _redirect_to_list() -> response_utils.BackofficeResponse:
-    return redirect(request.referrer or url_for("backoffice_web.non_payment_notices.list_notices"), code=303)
+    return request_utils.safe_redirect_back(request, url_for("backoffice_web.non_payment_notices.list_notices"))
 
 
 @non_payment_notices_blueprint.route("/create", methods=["GET"])

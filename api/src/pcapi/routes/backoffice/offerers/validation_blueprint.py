@@ -52,11 +52,8 @@ def _filter_homologation_tags(tags: list[offerers_models.OffererTag]) -> list[of
     return [tag for tag in tags if "homologation" in [cat.name for cat in tag.categories]]
 
 
-def _redirect_after_offerer_validation_action(code: int = 303) -> response_utils.BackofficeResponse:
-    if request.referrer:
-        return redirect(request.referrer, code)
-
-    return redirect(url_for("backoffice_web.validation.list_offerers_to_validate"), code)
+def _redirect_after_offerer_validation_action() -> response_utils.BackofficeResponse:
+    return request_utils.safe_redirect_back(request, url_for("backoffice_web.validation.list_offerers_to_validate"))
 
 
 def _render_offerers_to_validate(offerers_id: list[int]) -> response_utils.BackofficeResponse:
@@ -658,26 +655,23 @@ def list_offerers_attachments_to_validate() -> response_utils.BackofficeResponse
     )
 
 
-def _redirect_after_user_offerer_validation_action(
-    offerer_id: int, code: int = 303
-) -> response_utils.BackofficeResponse:
+def _redirect_after_user_offerer_validation_action(offerer_id: int) -> response_utils.BackofficeResponse:
     dst_url = url_for("backoffice_web.offerer.get", offerer_id=offerer_id, active_tab="users")
 
-    if request.referrer:
-        referrer_path = urlparse(request.referrer).path
+    if referrer := request.referrer:
+        referrer_path = urlparse(referrer).path
         dst_path = urlparse(dst_url).path
 
         if referrer_path != dst_path:
-            return redirect(request.referrer, code)
+            return request_utils.safe_redirect_back(request, dst_url + "#offerer_details_frame")
 
-    return redirect(dst_url + "#offerer_details_frame", code=code)
+    return redirect(dst_url + "#offerer_details_frame", code=303)
 
 
-def _redirect_after_user_offerer_validation_action_list(code: int = 303) -> response_utils.BackofficeResponse:
-    if request.referrer:
-        return redirect(request.referrer, code)
-
-    return redirect(url_for("backoffice_web.validation.list_offerers_attachments_to_validate"), code)
+def _redirect_after_user_offerer_validation_action_list() -> response_utils.BackofficeResponse:
+    return request_utils.safe_redirect_back(
+        request, url_for("backoffice_web.validation.list_offerers_attachments_to_validate")
+    )
 
 
 user_offerer_blueprint = backoffice_blueprint.child_backoffice_blueprint(

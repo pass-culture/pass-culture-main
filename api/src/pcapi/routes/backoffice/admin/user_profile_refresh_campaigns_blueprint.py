@@ -15,6 +15,7 @@ from pcapi.models import db
 from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.admin import forms
 from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import request as request_utils
 from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.utils import date as date_utils
 
@@ -71,9 +72,8 @@ def create_campaign() -> response_utils.BackofficeResponse:
     form = forms.UserProfileRefreshCampaignForm()
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(
-            request.referrer or url_for("backoffice_web.user_profile_refresh_campaigns.list_campaigns"),
-            code=303,
+        return request_utils.safe_redirect_back(
+            request, url_for("backoffice_web.user_profile_refresh_campaigns.list_campaigns")
         )
 
     new_campaign_is_active = bool(form.is_active.data)
@@ -133,7 +133,7 @@ def edit_campaign(campaign_id: int) -> response_utils.BackofficeResponse:
     form = forms.UserProfileRefreshCampaignForm()
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(request.referrer, 400)
+        return request_utils.safe_redirect_back(request, code=400)
 
     new_campaign_date = date_utils.datetime_to_localized_datetime(form.campaign_date.data).replace(tzinfo=None)
     modified_info = {}

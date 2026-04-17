@@ -586,7 +586,7 @@ def validate_collective_offer(collective_offer_id: int) -> response_utils.Backof
     _batch_validate_or_reject_collective_offers(offer_mixin.OfferValidationStatus.APPROVED, [collective_offer_id])
     if request_utils.is_request_from_htmx():
         return _render_collective_offers([collective_offer_id])
-    return redirect(request.referrer or url_for("backoffice_web.collective_offer.list_collective_offers"), 303)
+    return request_utils.safe_redirect_back(request, url_for("backoffice_web.collective_offer.list_collective_offers"))
 
 
 def _batch_validate_or_reject_collective_offers(
@@ -748,7 +748,9 @@ def reject_collective_offer(collective_offer_id: int) -> response_utils.Backoffi
         flash(response_utils.build_form_error_msg(form), "warning")
         if request_utils.is_request_from_htmx():
             return _render_collective_offers()
-        return redirect(request.referrer or url_for("backoffice_web.collective_offer.list_collective_offers"), 303)
+        return request_utils.safe_redirect_back(
+            request, url_for("backoffice_web.collective_offer.list_collective_offers")
+        )
 
     _batch_validate_or_reject_collective_offers(
         offer_mixin.OfferValidationStatus.REJECTED,
@@ -757,7 +759,7 @@ def reject_collective_offer(collective_offer_id: int) -> response_utils.Backoffi
     )
     if request_utils.is_request_from_htmx():
         return _render_collective_offers([collective_offer_id])
-    return redirect(request.referrer or url_for("backoffice_web.collective_offer.list_collective_offers"), 303)
+    return request_utils.safe_redirect_back(request, url_for("backoffice_web.collective_offer.list_collective_offers"))
 
 
 @blueprint.route("/batch/validate", methods=["GET"])
@@ -930,7 +932,7 @@ def get_collective_offer_details(collective_offer_id: int) -> response_utils.Bac
 @blueprint.route("/<int:collective_offer_id>/update-price", methods=["POST"])
 @access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def edit_collective_offer_price(collective_offer_id: int) -> response_utils.BackofficeResponse:
-    redirect_url = request.referrer or url_for(
+    redirect_url = url_for(
         "backoffice_web.collective_offer.get_collective_offer_details", collective_offer_id=collective_offer_id
     )
     collective_offer = (
@@ -951,18 +953,18 @@ def edit_collective_offer_price(collective_offer_id: int) -> response_utils.Back
 
     if not collective_offer:
         flash("Cette offre collective n'existe pas", "warning")
-        return redirect(redirect_url, code=303)
+        return request_utils.safe_redirect_back(request, redirect_url)
 
     is_collective_offer_price_editable = _is_collective_offer_price_editable(collective_offer)
 
     if not is_collective_offer_price_editable:
         flash("Cette offre n'est pas modifiable", "warning")
-        return redirect(redirect_url, code=303)
+        return request_utils.safe_redirect_back(request, redirect_url)
 
     form = forms.EditCollectiveOfferPrice()
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(redirect_url, code=303)
+        return request_utils.safe_redirect_back(request, redirect_url)
     price = form.price.data
     number_of_tickets = form.numberOfTickets.data
 
@@ -983,11 +985,11 @@ def edit_collective_offer_price(collective_offer_id: int) -> response_utils.Back
         ]
         if is_confirmed_or_used and price > collective_offer.collectiveStock.price:
             flash("Impossible d'augmenter le prix d'une offre confirmée", "warning")
-            return redirect(redirect_url, code=303)
+            return request_utils.safe_redirect_back(request, redirect_url)
 
         if is_confirmed_or_used and number_of_tickets > collective_offer.collectiveStock.numberOfTickets:
             flash("Impossible d'augmenter le nombre de participants d'une offre confirmée", "warning")
-            return redirect(redirect_url, code=303)
+            return request_utils.safe_redirect_back(request, redirect_url)
 
         try:
             cancelled_event = finance_api.cancel_latest_event(collective_booking)
@@ -1000,13 +1002,13 @@ def edit_collective_offer_price(collective_offer_id: int) -> response_utils.Back
         except finance_exceptions.NonCancellablePricingError:
             flash("Impossible, réservation est déjà remboursée (ou en cours de remboursement)", "warning")
             mark_transaction_as_invalid()
-            return redirect(redirect_url, code=303)
+            return request_utils.safe_redirect_back(request, redirect_url)
 
     collective_offer.collectiveStock.price = price
     collective_offer.collectiveStock.numberOfTickets = number_of_tickets
 
     flash("L'offre collective a été mise à jour", "success")
-    return redirect(redirect_url, code=303)
+    return request_utils.safe_redirect_back(request, redirect_url)
 
 
 @blueprint.route("/<int:collective_offer_id>/update-price", methods=["GET"])

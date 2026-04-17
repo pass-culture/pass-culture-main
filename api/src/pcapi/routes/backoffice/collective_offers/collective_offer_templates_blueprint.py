@@ -4,7 +4,6 @@ import functools
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from flask import flash
-from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
@@ -247,9 +246,8 @@ def validate_collective_offer_template(collective_offer_template_id: int) -> res
 
     if request_utils.is_request_from_htmx():
         return _render_collective_offers_templates([collective_offer_template_id])
-    return redirect(
-        request.referrer or url_for("backoffice_web.collective_offer_template.list_collective_offer_templates"),
-        303,
+    return request_utils.safe_redirect_back(
+        request, url_for("backoffice_web.collective_offer_template.list_collective_offer_templates")
     )
 
 
@@ -294,8 +292,8 @@ def reject_collective_offer_template(collective_offer_template_id: int) -> respo
         flash(response_utils.build_form_error_msg(form), "warning")
         if request_utils.is_request_from_htmx():
             return _render_collective_offers_templates()
-        return redirect(
-            request.referrer or url_for("backoffice_web.collective_offer_template.list_collective_offer_templates"), 303
+        return request_utils.safe_redirect_back(
+            request, url_for("backoffice_web.collective_offer_template.list_collective_offer_templates")
         )
 
     _batch_validate_or_reject_collective_offer_templates(
@@ -305,9 +303,8 @@ def reject_collective_offer_template(collective_offer_template_id: int) -> respo
     )
     if request_utils.is_request_from_htmx():
         return _render_collective_offers_templates([collective_offer_template_id])
-    return redirect(
-        request.referrer or url_for("backoffice_web.collective_offer_template.list_collective_offer_templates"),
-        303,
+    return request_utils.safe_redirect_back(
+        request, url_for("backoffice_web.collective_offer_template.list_collective_offer_templates")
     )
 
 

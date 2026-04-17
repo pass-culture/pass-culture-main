@@ -353,7 +353,7 @@ def post_artist_edit_form(artist_id: str) -> response_utils.BackofficeResponse:
     else:
         flash(response_utils.build_form_error_msg(form), "warning")
 
-    return redirect(request.referrer or url_for(".get_artist_details", artist_id=artist_id), 303)
+    return request_utils.safe_redirect_back(request, url_for(".get_artist_details", artist_id=artist_id))
 
 
 @artists_blueprint.route("/<string:artist_id>/blacklist", methods=["GET"])
@@ -391,7 +391,7 @@ def post_artist_blacklist(artist_id: str) -> response_utils.BackofficeResponse:
     async_index_offers_of_artist_ids([artist.id], reason=IndexationReason.ARTIST_BLACKLISTING)
 
     flash(Markup("L'artiste <strong>{name}</strong> a été blacklisté.").format(name=artist.name), "success")
-    return redirect(request.referrer or url_for(".get_artist_details", artist_id=artist_id), 303)
+    return request_utils.safe_redirect_back(request, url_for(".get_artist_details", artist_id=artist_id))
 
 
 @artists_blueprint.route("/<string:artist_id>/unblacklist", methods=["GET"])
@@ -427,7 +427,7 @@ def post_artist_unblacklist(artist_id: str) -> response_utils.BackofficeResponse
     async_index_artist_ids([artist.id], reason=IndexationReason.ARTIST_UNBLACKLISTING)
     async_index_offers_of_artist_ids([artist.id], reason=IndexationReason.ARTIST_UNBLACKLISTING)
     flash(Markup("L'artiste <strong>{name}</strong> a été réactivé.").format(name=artist.name), "success")
-    return redirect(request.referrer or url_for(".get_artist_details", artist_id=artist_id), 303)
+    return request_utils.safe_redirect_back(request, url_for(".get_artist_details", artist_id=artist_id))
 
 
 @artists_blueprint.route("/<string:artist_id>/products/<int:product_id>/unlink-form", methods=["GET"])
@@ -621,7 +621,7 @@ def post_merge_artists(artist_id: str) -> response_utils.BackofficeResponse:
     form = forms.MergeArtistForm(source_artist_id=artist_to_keep_id)
     if not form.validate_on_submit():
         flash(response_utils.build_form_error_msg(form), "warning")
-        return redirect(request.referrer)
+        return request_utils.safe_redirect_back(request)
 
     artist_to_delete_id = form.target_artist_id.data[0]
     artist_to_delete = db.session.query(artist_models.Artist).filter_by(id=artist_to_delete_id).one_or_none()
