@@ -41,6 +41,7 @@ BOOKING_STATUS_LABELS = {
     models.BookingStatus.CONFIRMED: "réservé",
     models.BookingStatus.CANCELLED: "annulé",
     models.BookingStatus.USED: "validé",
+    models.BookingStatus.PENDING_REIMBURSEMENT: "en cours de remboursement",
     models.BookingStatus.REIMBURSED: "remboursé",
     "confirmed": "confirmé",
 }
