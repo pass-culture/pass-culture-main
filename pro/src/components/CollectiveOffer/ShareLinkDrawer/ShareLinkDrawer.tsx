@@ -3,7 +3,6 @@ import { forwardRef, useState } from 'react'
 
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
-import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import connectStrokeIcon from '@/icons/stroke-connect.svg'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
@@ -35,7 +34,6 @@ export const ShareLinkDrawer = forwardRef<
               setIsOpenDialog(true)
             }}
           />
-          <Tag label="Nouveau" variant={TagVariant.NEW} aria-hidden="true" />
         </div>
       }
     >
