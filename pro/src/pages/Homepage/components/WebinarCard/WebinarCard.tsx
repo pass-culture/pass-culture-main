@@ -1,3 +1,6 @@
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
+import { useFunctionOnce } from '@/commons/hooks/useFunctionOnce'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -25,6 +28,10 @@ export interface WebinarCardProps {
 export const WebinarCard = ({ variant }: Readonly<WebinarCardProps>) => {
   const buttonLink = WEBINAR_LINKS[variant]
   const isCollective = variant === HomepageVariant.COLLECTIVE
+  const { logEvent } = useAnalytics()
+  const logWebinarClick = useFunctionOnce(() =>
+    logEvent(HomepageEvents.CLICKED_WEBINAR, { variant })
+  )
 
   return (
     <Card variant="info">
@@ -55,6 +62,7 @@ export const WebinarCard = ({ variant }: Readonly<WebinarCardProps>) => {
           as="a"
           isExternal
           opensInNewTab
+          onClick={logWebinarClick}
         />
       </Card.Footer>
     </Card>

@@ -140,3 +140,12 @@ export enum WelcomeCarouselEvents {
   CLICKED_SEE_INDIV_OFFERS = 'hasClickedSeeIndivOffers',
   CLICKED_SEE_COLLECTIVE_OFFERS = 'hasClickedSeeCollectiveOffers',
 }
+
+export enum HomepageEvents {
+  CLICKED_PARTNER_PAGE = 'hasClickedPartnerPage',
+  CLICKED_HEADLINE_OFFER = 'hasClickedHeadlineOffer',
+  CLICKED_CULTURAL_SURVEY = 'hasClickedCulturalSurvey',
+  CLICKED_WEBINAR = 'hasClickedWebinar',
+  CLICKED_NEWSLETTER = 'hasClickedNewsletter',
+  CLICKED_RECOMMENDATION = 'hasClickedRecommendation',
+}

@@ -1,7 +1,8 @@
 import type { BannerMetaModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { Events, HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useOnVenueImageUpload } from '@/commons/core/Venue/hooks/useOnVenueImageUpload'
+import { useFunctionOnce } from '@/commons/hooks/useFunctionOnce'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { noop } from '@/commons/utils/noop'
@@ -35,6 +36,9 @@ export const PartnerPageCard = ({
   variant,
 }: PartnerPageProps) => {
   const { logEvent } = useAnalytics()
+  const logPartnerPageClick = useFunctionOnce(() =>
+    logEvent(HomepageEvents.CLICKED_PARTNER_PAGE, { venueId })
+  )
   const { imageValues, handleOnImageUpload } = useOnVenueImageUpload(
     venueId,
     venueBannerUrl,
@@ -95,6 +99,7 @@ export const PartnerPageCard = ({
             to={venuePreviewLink}
             as="a"
             opensInNewTab
+            onClick={logPartnerPageClick}
           />
         )}
       </Card.Footer>

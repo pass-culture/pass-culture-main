@@ -181,7 +181,7 @@ export const NewHomepage = (): JSX.Element => {
             {shouldDisplayWebinarCard && (
               <WebinarCard variant={HomepageVariant.INDIVIDUAL} />
             )}
-            <NewsletterCard />
+            <NewsletterCard venueId={selectedPartnerVenue.id} />
           </div>
         </div>
       )}
@@ -246,7 +246,7 @@ export const NewHomepage = (): JSX.Element => {
                 {shouldDisplayCollectiveWebinarCard && (
                   <WebinarCard variant={HomepageVariant.COLLECTIVE} />
                 )}
-                <NewsletterCard />
+                <NewsletterCard venueId={selectedPartnerVenue.id} />
               </>
             )}
           </div>
