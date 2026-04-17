@@ -28,6 +28,7 @@ IS_TESTING = ENV == "testing"
 IS_OPS = ENV == "ops"
 
 IS_UV = "True"
+WHAT = "CACHEMAXX"
 
 if ENV not in ("development", "integration", "staging", "production", "testing", "ops"):
     raise RuntimeError("Unknown environment")
