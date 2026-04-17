@@ -3,7 +3,6 @@ import logging
 from decimal import Decimal
 
 import sqlalchemy as sa
-from flask import abort
 from flask import request
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import load_only
@@ -12,6 +11,7 @@ import pcapi.connectors.recommendation as recommendation_api
 import pcapi.core.geography.repository as geography_repository
 from pcapi import settings
 from pcapi.connectors.serialization.brevo_serializers import brevo_webhook
+from pcapi.connectors.serialization.brevo_serializers import require_brevo_token_as_query_param
 from pcapi.core.categories import subcategories
 from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.finance.conf import GRANTED_DEPOSIT_AMOUNT_18_v2
@@ -89,6 +89,25 @@ def _toggle_marketing_email_subscription(subscribe: bool) -> None:
 
 @public_api.route("/webhooks/sendinblue/unsubscribe", methods=["POST"])
 @spectree_serialize(on_success_status=204)
+def brevo_unsubscribe_user_legacy() -> None:
+    """
+    TODO (prouzet, 2026-04-16): remove this route when automations are migrated to /webhooks/brevo/unsubscribe
+    """
+    _toggle_marketing_email_subscription(False)
+
+
+@public_api.route("/webhooks/sendinblue/subscribe", methods=["POST"])
+@spectree_serialize(on_success_status=204)
+def brevo_subscribe_user_legacy() -> None:
+    """
+    TODO (prouzet, 2026-04-16): remove this route when automations are migrated to /webhooks/brevo/subscribe
+    """
+    _toggle_marketing_email_subscription(True)
+
+
+@public_api.route("/webhooks/brevo/unsubscribe", methods=["POST"])
+@require_brevo_token_as_query_param
+@spectree_serialize(on_success_status=204)
 def brevo_unsubscribe_user() -> None:
     """
     Automation scenario is configured in Brevo to call this webhook after user unsubscribes.
@@ -97,7 +116,8 @@ def brevo_unsubscribe_user() -> None:
     _toggle_marketing_email_subscription(False)
 
 
-@public_api.route("/webhooks/sendinblue/subscribe", methods=["POST"])
+@public_api.route("/webhooks/brevo/subscribe", methods=["POST"])
+@require_brevo_token_as_query_param
 @spectree_serialize(on_success_status=204)
 def brevo_subscribe_user() -> None:
     """
@@ -223,7 +243,7 @@ def _brevo_get_user_recommendations(user_id: int) -> serializers.BrevoOffersResp
 def _old_brevo_get_user_recommendations(user_id: int) -> serializers.BrevoOffersResponse:
     user = db.session.query(User).filter(User.id == user_id).one_or_none()
     if not user:
-        abort(404)
+        raise ResourceNotFoundError()
 
     user_location = geography_repository.get_coordinates_from_address(user.address, user.postalCode)
     if not user_location:
