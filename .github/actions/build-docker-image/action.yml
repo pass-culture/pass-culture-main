@@ -26,6 +26,7 @@ runs:
         target: ${{ inputs.image }}
         tags: ${{ inputs.image }}:${{ inputs.tag }}
         cache-from: type=gha,scope=${{ inputs.image }}
+        # updating a layer cache can take up to a minute, and will almost never be used aside from master
         cache-to: ${{ github.ref_name == 'master' && format('type=gha,mode=max,scope={0}', inputs.image) || ''}} 
         outputs: type=docker,dest=${{ runner.temp }}/${{ inputs.image }}-${{ inputs.tag }}.tar
 
