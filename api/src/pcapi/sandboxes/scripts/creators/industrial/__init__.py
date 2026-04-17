@@ -21,6 +21,9 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_criterion imp
     associate_criterion_to_one_offer_with_mediation,
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_criterion import create_industrial_criteria
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_cultural_outreach import (
+    create_industrial_cultural_outreach,
+)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_draft_offers import create_industrial_draft_offers
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_eac_data import create_eac_data
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_occurrences import (
@@ -132,6 +135,8 @@ def save_industrial_sandbox() -> None:
     create_offers_with_artists()
 
     create_offers_with_pro_advice()
+
+    create_industrial_cultural_outreach()
 
     criteria_by_name = create_industrial_criteria()
 

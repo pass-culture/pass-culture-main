@@ -25,6 +25,7 @@ from pcapi.core.categories import models
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
 from pcapi.core.criteria.models import OfferCriterion
+from pcapi.core.cultural_outreach.models import CulturalOutreach
 from pcapi.core.educational.models import ValidationRuleCollectiveOfferLink
 from pcapi.core.educational.models import ValidationRuleCollectiveOfferTemplateLink
 from pcapi.core.finance.models import CustomReimbursementRule
@@ -733,6 +734,14 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     )
     criteria: sa_orm.Mapped[list["Criterion"]] = sa_orm.relationship(
         "Criterion", back_populates="offers", secondary=OfferCriterion.__table__
+    )
+    culturalOutreach: sa_orm.Mapped[CulturalOutreach | None] = sa_orm.relationship(
+        CulturalOutreach,
+        foreign_keys="CulturalOutreach.offerId",
+        back_populates="offer",
+        uselist=False,
+        cascade="all, delete-orphan",
+        passive_deletes=True,
     )
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         db_utils.TimezonedDatetime, nullable=False, default=date_utils.get_naive_utc_now
