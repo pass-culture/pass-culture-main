@@ -7,7 +7,7 @@ interface FeaturesState {
   lastLoaded?: number
 }
 
-export const initialState: FeaturesState = {
+const initialState: FeaturesState = {
   list: [],
 }
 

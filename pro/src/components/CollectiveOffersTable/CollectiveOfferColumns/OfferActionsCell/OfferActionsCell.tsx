@@ -22,9 +22,7 @@ import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/uti
 import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { getCollectiveOfferLink } from '@/commons/core/OfferEducational/utils/getCollectiveOfferLink'
-import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
-import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
-import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getCollectiveOffersSwrKeys'
+import { useCollectiveOffersSwrKeys } from '@/commons/core/Offers/hooks/useCollectiveOffersSwrKeys'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -53,15 +51,13 @@ import styles from './OfferActionsCell.module.scss'
 
 export interface OfferActionsCellProps {
   offer: CollectiveOffer
-  urlSearchFilters: Partial<CollectiveSearchFiltersParams>
 }
 
 const LOCAL_STORAGE_HAS_SEEN_MODAL_KEY = `${PASS_CULTURE_PREFIX}DUPLICATE_OFFER_MODAL_SEEN`
 
-export const OfferActionsCell = ({
-  offer,
-  urlSearchFilters,
-}: OfferActionsCellProps) => {
+export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
+  const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
+
   const navigate = useNavigate()
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
@@ -81,15 +77,11 @@ export const OfferActionsCell = ({
   const dropdownTriggerRef = useRef<HTMLButtonElement>(null)
   const isTemplateTable = !isCollectiveOfferBookable(offer)
 
-  const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
+  const collectiveOffersQueryKeys = useCollectiveOffersSwrKeys({
     isInTemplateOffersPage: isTemplateTable,
-    urlSearchFilters,
-    selectedOffererId,
   })
 
   const { mutate } = useSWRConfig()
-
-  const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
 
   const offerId = computeURLCollectiveOfferId(offer.id, isTemplateTable)
   const editionOfferLink = getCollectiveOfferLink(
@@ -148,12 +140,6 @@ export const OfferActionsCell = ({
       await duplicateBookableOffer(navigate, snackBar, offer.id)
     }
   }
-
-  const apiFilters = {
-    ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-    ...urlSearchFilters,
-  }
-  delete apiFilters.page
 
   const cancelBooking = async () => {
     if (!offer.id) {

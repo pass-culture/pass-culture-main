@@ -15,11 +15,11 @@ import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
   Events,
 } from '@/commons/core/FirebaseEvents/constants'
-import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   collectiveOfferFactory,
   collectiveOfferTemplateFactory,
+  defaultGetVenue,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
   getCollectiveOfferVenueFactory,
@@ -57,7 +57,6 @@ const renderOfferActionsCell = (
 ) => {
   const defaultProps: OfferActionsCellProps = {
     offer: collectiveOfferFactory(),
-    urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
     ...props,
   }
 
@@ -66,6 +65,9 @@ const renderOfferActionsCell = (
     storeOverrides: {
       offerer: {
         currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },
+      },
+      user: {
+        selectedPartnerVenue: defaultGetVenue,
       },
     },
   })

@@ -2,7 +2,6 @@ import { expect, request as playwrightRequest, test } from '@playwright/test'
 
 import { expectCollectiveOffersAreFound } from './helpers/assertions'
 import { login } from './helpers/auth'
-import { setFeatureFlags } from './helpers/features'
 import {
   BASE_API_URL,
   createProUserWithActiveCollectiveOffer,
@@ -41,9 +40,6 @@ test.describe('Adage confirmation', () => {
 
     const userData =
       await createProUserWithActiveCollectiveOffer(requestContext)
-    await setFeatureFlags(requestContext, [
-      { name: 'WIP_SWITCH_VENUE', isActive: false },
-    ])
 
     const userLogin = userData.user.email
     const offer = userData.offer

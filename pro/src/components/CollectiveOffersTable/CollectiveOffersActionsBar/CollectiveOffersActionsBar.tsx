@@ -10,11 +10,8 @@ import {
   type CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import { MAX_OFFERS_TO_DISPLAY } from '@/commons/core/Offers/constants'
-import { useQueryCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
-import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getCollectiveOffersSwrKeys'
-import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { useCollectiveOffersSwrKeys } from '@/commons/core/Offers/hooks/useCollectiveOffersSwrKeys'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
@@ -92,23 +89,18 @@ export function CollectiveOffersActionsBar<
   areTemplateOffers,
   searchButtonRef,
 }: Readonly<CollectiveOffersActionsBarProps<T>>) {
-  const urlSearchFilters = useQueryCollectiveSearchFilters()
-
   const snackBar = useSnackBar()
   const [isDeactivationDialogOpen, setIsDeactivationDialogOpen] =
     useState(false)
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false)
 
-  const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
   const archiveButtonRef = useRef<HTMLButtonElement>(null)
   const deActivateButtonRef = useRef<HTMLButtonElement>(null)
 
   const { mutate } = useSWRConfig()
 
-  const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
+  const collectiveOffersQueryKeys = useCollectiveOffersSwrKeys({
     isInTemplateOffersPage: areTemplateOffers,
-    urlSearchFilters,
-    selectedOffererId,
   })
 
   async function updateOfferStatus(

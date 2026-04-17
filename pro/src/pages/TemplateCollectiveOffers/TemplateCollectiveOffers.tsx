@@ -4,36 +4,25 @@ import useSWR from 'swr'
 import { api } from '@/apiClient/api'
 import type { CollectiveOfferTemplateResponseModel } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
-import { GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   DEFAULT_PAGE,
 } from '@/commons/core/Offers/constants'
+import { useCollectiveOffersSwrKeys } from '@/commons/core/Offers/hooks/useCollectiveOffersSwrKeys'
 import { useQueryCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializeApiCollectiveFilters'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
-import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import { TemplateCollectiveOffersScreen } from '@/pages/TemplateCollectiveOffers/TemplateCollectiveOffersScreen/TemplateCollectiveOffersScreen'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 export const TemplateCollectiveOffers = (): JSX.Element => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-
   const urlSearchFilters = useQueryCollectiveSearchFilters()
-  const { storedFilters } = useStoredFilterConfig('template')
-  const finalSearchFilters = {
-    ...urlSearchFilters,
-    ...(storedFilters as Partial<CollectiveSearchFiltersParams>),
-  }
   const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
-  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
-  const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
+  const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
   const navigate = useNavigate()
 
   const redirectWithUrlFilters = (
@@ -54,18 +43,12 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
     )
   }
 
-  const apiFilters: CollectiveSearchFiltersParams = {
-    ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-    ...finalSearchFilters,
-    ...{ offererId: selectedOffererId.toString() },
-    ...(withSwitchVenueFeature
-      ? { venueId: selectedPartnerVenue.id.toString() }
-      : {}),
-  }
-  delete apiFilters.page
+  const [queryKey, apiFilters] = useCollectiveOffersSwrKeys({
+    isInTemplateOffersPage: true,
+  })
 
   const offersQuery = useSWR<CollectiveOfferTemplateResponseModel[]>(
-    [GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY, apiFilters],
+    [queryKey, apiFilters],
     () => {
       const params = serializeApiCollectiveFilters(apiFilters)
       return api.getCollectiveOfferTemplates(
