@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi import settings
 from pcapi.connectors.recommendation import RecommendationApiException
 from pcapi.connectors.recommendation import RecommendationApiTimeoutException
 from pcapi.core.categories import subcategories
@@ -18,7 +19,7 @@ from pcapi.models import db
 from pcapi.settings import RECOMMENDATION_API_URL
 
 
-class SubscribeOrUnsubscribeUserTestHelper:
+class SubscribeOrUnsubscribeUserLegacyTestHelper:
     # attributes overriden in inherited test classes
     endpoint = NotImplemented
     initial_marketing_email = NotImplemented
@@ -71,15 +72,95 @@ class SubscribeOrUnsubscribeUserTestHelper:
 
 
 @pytest.mark.usefixtures("db_session")
-class UnsubscribeUserTest(SubscribeOrUnsubscribeUserTestHelper):
+class UnsubscribeUserLegacyTest(SubscribeOrUnsubscribeUserLegacyTestHelper):
     endpoint = "/webhooks/sendinblue/unsubscribe"
     initial_marketing_email = True
     expected_marketing_email = False
 
 
 @pytest.mark.usefixtures("db_session")
-class SubscribeUserTest(SubscribeOrUnsubscribeUserTestHelper):
+class SubscribeUserLegacyTest(SubscribeOrUnsubscribeUserLegacyTestHelper):
     endpoint = "/webhooks/sendinblue/subscribe"
+    initial_marketing_email = False
+    expected_marketing_email = True
+
+
+class SubscribeOrUnsubscribeTestHelper:
+    # attributes overriden in inherited test classes
+    endpoint = NotImplemented
+    initial_marketing_email = NotImplemented
+    expected_marketing_email = NotImplemented
+
+    def test_webhook_ok(self, client):
+        existing_user = UserFactory(
+            email="lucy.ellingson@kennet.ca",
+            notificationSubscriptions={"marketing_push": True, "marketing_email": self.initial_marketing_email},
+        )
+        data = {"email": "lucy.ellingson@kennet.ca"}
+        assert existing_user.notificationSubscriptions["marketing_email"] is self.initial_marketing_email
+
+        response = client.post(f"{self.endpoint}?token={settings.BREVO_WEBHOOK_SECRET_QUERY_PARAM}", json=data)
+
+        assert response.status_code == 204
+        db.session.refresh(existing_user)
+        assert existing_user.notificationSubscriptions["marketing_email"] is self.expected_marketing_email
+
+        action = (
+            db.session.query(history_models.ActionHistory)
+            .filter(
+                history_models.ActionHistory.actionType == history_models.ActionType.INFO_MODIFIED,
+                history_models.ActionHistory.authorUserId == existing_user.id,
+                history_models.ActionHistory.userId == existing_user.id,
+            )
+            .one()
+        )
+        assert action.extraData == {
+            "modified_info": {
+                "notificationSubscriptions.marketing_email": {
+                    "old_info": self.initial_marketing_email,
+                    "new_info": self.expected_marketing_email,
+                }
+            },
+        }
+
+    def test_webhook_bad_request(self, client):
+        data = {}
+        with assert_num_queries(0):
+            response = client.post(f"{self.endpoint}?token={settings.BREVO_WEBHOOK_SECRET_QUERY_PARAM}", json=data)
+            assert response.status_code == 400
+
+    def test_webhook_user_does_not_exist(self, client):
+        data = {"email": "lucy.ellingson@kennet.ca"}
+
+        with assert_num_queries(1):
+            response = client.post(f"{self.endpoint}?token={settings.BREVO_WEBHOOK_SECRET_QUERY_PARAM}", json=data)
+            assert response.status_code == 204  # avoids enumeration
+
+    def test_webhook_user_missing_token(self, client):
+        data = {"email": "lucy.ellingson@kennet.ca"}
+
+        with assert_num_queries(0):
+            response = client.post(self.endpoint, json=data)
+            assert response.status_code == 401
+
+    def test_webhook_user_bad_token(self, client):
+        data = {"email": "lucy.ellingson@kennet.ca"}
+
+        with assert_num_queries(0):
+            response = client.post(f"{self.endpoint}?token=something", json=data)
+            assert response.status_code == 401
+
+
+@pytest.mark.usefixtures("db_session")
+class UnsubscribeUserTest(SubscribeOrUnsubscribeTestHelper):
+    endpoint = "/webhooks/brevo/unsubscribe"
+    initial_marketing_email = True
+    expected_marketing_email = False
+
+
+@pytest.mark.usefixtures("db_session")
+class SubscribeUserTest(SubscribeOrUnsubscribeTestHelper):
+    endpoint = "/webhooks/brevo/subscribe"
     initial_marketing_email = False
     expected_marketing_email = True
 
