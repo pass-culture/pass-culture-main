@@ -104,7 +104,8 @@ class VenueAutomationsTest:
         mock_import_contacts.assert_called_once_with(
             file_body=f"EMAIL\n{venue.bookingEmail}",
             list_ids=[settings.SENDINBLUE_PRO_INACTIVE_90_DAYS_ID],
-            notify_url=f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{settings.SENDINBLUE_PRO_INACTIVE_90_DAYS_ID}/1",
+            notify_url=f"{settings.API_URL}/webhooks/brevo/importcontacts/{settings.SENDINBLUE_PRO_INACTIVE_90_DAYS_ID}/1",
+            request_options={"additional_query_parameters": {"token": settings.BREVO_WEBHOOK_SECRET_QUERY_PARAM}},
         )
 
         assert result is True

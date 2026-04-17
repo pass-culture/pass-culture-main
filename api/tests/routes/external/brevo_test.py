@@ -169,14 +169,24 @@ class SubscribeUserTest(SubscribeOrUnsubscribeTestHelper):
 class NotifyImportContactsTest:
     def test_notify_importcontacts(self, client, caplog):
         with caplog.at_level(logging.INFO):
-            response = client.post("/webhooks/sendinblue/importcontacts/18/1")
+            response = client.post(
+                f"/webhooks/brevo/importcontacts/18/1?token={settings.BREVO_WEBHOOK_SECRET_QUERY_PARAM}"
+            )
 
         assert response.status_code == 204
-        assert caplog.records[0].message == "ContactsApi->import_contacts finished"
+        assert caplog.records[0].message == "Brevo import_contacts finished"
         assert caplog.records[0].extra == {
             "list_id": 18,
             "iteration": 1,
         }
+
+    def test_notify_importcontacts_missing_token(self, client):
+        response = client.post("/webhooks/brevo/importcontacts/18/1")
+        assert response.status_code == 401
+
+    def test_notify_importcontacts_bad_token(self, client):
+        response = client.post("/webhooks/brevo/importcontacts/18/1?token=something")
+        assert response.status_code == 401
 
 
 @pytest.mark.usefixtures("db_session")

@@ -254,7 +254,8 @@ class BulkImportUsersDataTest:
         mock_import_contacts.assert_called_once_with(
             file_body="EMAIL\neren.yeager@shinganshina.paradis\narmin.arlert@shinganshina.paradis",
             list_ids=[SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID],
-            notify_url=f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID}/1",
+            notify_url=f"{settings.API_URL}/webhooks/brevo/importcontacts/{SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID}/1",
+            request_options={"additional_query_parameters": {"token": settings.BREVO_WEBHOOK_SECRET_QUERY_PARAM}},
         )
 
         assert result is True
