@@ -28,7 +28,7 @@ export const OfferNameCell = ({ offer, offerLink }: OfferNameCellProps) => {
     const departmentCode = getDepartmentCode(offer)
 
     /* istanbul ignore next: DEBT, TO FIX */
-    if (offer.isShowcase || !startDatetime || !departmentCode) {
+    if (!startDatetime || !departmentCode) {
       return null
     }
 

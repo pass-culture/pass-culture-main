@@ -181,10 +181,8 @@ class PatchAllOffersActiveStatusResponseModel(BaseModel):
 
 class ListOffersStockResponseModel(BaseModel):
     id: int
-    hasBookingLimitDatetimePassed: bool
     remainingQuantity: int | str
     beginningDatetime: datetime.datetime | None
-    bookingQuantity: int | None
 
     @validator("remainingQuantity", pre=True)
     def validate_remaining_quantity(cls, remainingQuantity: int | str) -> int | str:
@@ -217,10 +215,6 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
             return self._obj.ean
         if key == "venue":
             return _serialize_venue(self._obj.venue)
-        if key == "isShowcase":
-            return False
-        if key == "isHeadlineOffer":
-            return self._obj.is_headline_offer
         if key == "location":
             return offer_location_getter_dict_helper(self._obj)
         if key == "bookingsCount":
@@ -236,15 +230,8 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
 
 # TODO(pydantic_v2): delete ListOffersVenueResponseModel once this is migrated
 class ListOffersOfferResponseModel(BaseModel):
-    hasBookingLimitDatetimesPassed: bool
     id: int
-    isActive: bool
-    isEditable: bool
     isEvent: bool
-    canBeEvent: bool
-    isThing: bool
-    isEducational: bool
-    isHeadlineOffer: bool
     name: str
     stocks: list[ListOffersStockResponseModel]
     thumbUrl: str | None
@@ -252,9 +239,7 @@ class ListOffersOfferResponseModel(BaseModel):
     subcategoryId: SubcategoryIdEnum
     venue: venue_serialize.ListOffersVenueResponseModel
     status: OfferStatus
-    isShowcase: bool | None
     location: LocationResponseModel | None
-    isDigital: bool
     publicationDatetime: datetime.datetime | None
     bookingAllowedDatetime: datetime.datetime | None
     bookingsCount: int | None
@@ -281,20 +266,15 @@ def _serialize_offer_paginated(offer: offers_models.Offer) -> ListOffersOfferRes
 def _serialize_stock(stock: offers_models.Stock) -> ListOffersStockResponseModel:
     return ListOffersStockResponseModel(
         id=stock.id,
-        hasBookingLimitDatetimePassed=stock.hasBookingLimitDatetimePassed,
         remainingQuantity=stock.remainingQuantity,
         beginningDatetime=stock.beginningDatetime,
-        bookingQuantity=stock.dnBookedQuantity,
     )
 
 
 def _serialize_venue(venue: offerers_models.Venue) -> venue_serialize.ListOffersVenueResponseModel:
     return venue_serialize.ListOffersVenueResponseModel(
         id=venue.id,
-        isVirtual=venue.isVirtual,
         name=venue.name,
-        offererName=venue.managingOfferer.name,
-        publicName=venue.publicName,
         departementCode=venue.offererAddress.address.departmentCode,
     )
 

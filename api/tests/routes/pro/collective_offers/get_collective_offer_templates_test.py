@@ -49,10 +49,7 @@ class Returns200Test:
                 "venue": {
                     "id": venue.id,
                     "departementCode": venue.offererAddress.address.departmentCode,
-                    "isVirtual": False,
                     "name": venue.name,
-                    "offererName": venue.managingOfferer.name,
-                    "publicName": venue.publicName,
                 },
                 "location": {
                     "location": None,

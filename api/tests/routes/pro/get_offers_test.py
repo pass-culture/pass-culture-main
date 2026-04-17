@@ -309,24 +309,14 @@ class Returns200Test:
 
         assert response.json == [
             {
-                "hasBookingLimitDatetimesPassed": True,
                 "id": event_offer.id,
-                "isActive": True,
-                "isDigital": False,
-                "isEditable": True,
-                "isHeadlineOffer": False,
                 "isEvent": True,
-                "canBeEvent": True,
-                "isThing": False,
-                "isEducational": False,
                 "name": event_offer.name,
                 "stocks": [
                     {
                         "id": event_stock.id,
-                        "hasBookingLimitDatetimePassed": True,
                         "remainingQuantity": 950,
                         "beginningDatetime": "2022-09-21T13:19:00Z",
-                        "bookingQuantity": 50,
                     }
                 ],
                 "thumbUrl": None,
@@ -334,14 +324,10 @@ class Returns200Test:
                 "subcategoryId": "SEANCE_CINE",
                 "venue": {
                     "id": venue.id,
-                    "isVirtual": False,
                     "name": venue.name,
-                    "offererName": venue.managingOfferer.name,
-                    "publicName": venue.publicName,
                     "departementCode": venue.offererAddress.address.departmentCode,
                 },
                 "status": "EXPIRED",
-                "isShowcase": False,
                 "location": {
                     "banId": offerer_address1.address.banId,
                     "city": offerer_address1.address.city,
@@ -389,24 +375,14 @@ class Returns200Test:
 
         assert response.json == [
             {
-                "hasBookingLimitDatetimesPassed": True,
                 "id": event_offer.id,
-                "isActive": False,
-                "isDigital": False,
-                "isEditable": True,
-                "isHeadlineOffer": False,
                 "isEvent": True,
-                "canBeEvent": True,
-                "isThing": False,
-                "isEducational": False,
                 "name": event_offer.name,
                 "stocks": [
                     {
                         "id": event_stock.id,
-                        "hasBookingLimitDatetimePassed": True,
                         "remainingQuantity": 1000,
                         "beginningDatetime": "2022-09-21T13:19:00Z",
-                        "bookingQuantity": 0,
                     }
                 ],
                 "thumbUrl": None,
@@ -414,14 +390,10 @@ class Returns200Test:
                 "subcategoryId": "SEANCE_CINE",
                 "venue": {
                     "id": venue.id,
-                    "isVirtual": False,
                     "name": venue.name,
-                    "offererName": venue.managingOfferer.name,
-                    "publicName": venue.publicName,
                     "departementCode": venue.offererAddress.address.departmentCode,
                 },
                 "status": "DRAFT",
-                "isShowcase": False,
                 "location": None,
                 "publicationDatetime": None,
                 "bookingAllowedDatetime": None,
@@ -455,16 +427,8 @@ class Returns200Test:
 
         assert response.json == [
             {
-                "hasBookingLimitDatetimesPassed": False,
                 "id": event_offer.id,
-                "isActive": True,
-                "isDigital": False,
-                "isEditable": True,
                 "isEvent": True,
-                "canBeEvent": True,
-                "isHeadlineOffer": False,
-                "isThing": False,
-                "isEducational": False,
                 "name": event_offer.name,
                 "stocks": [],
                 "thumbUrl": None,
@@ -472,14 +436,10 @@ class Returns200Test:
                 "subcategoryId": "SEANCE_CINE",
                 "venue": {
                     "id": venue.id,
-                    "isVirtual": False,
                     "name": venue.name,
-                    "offererName": venue.managingOfferer.name,
-                    "publicName": venue.publicName,
                     "departementCode": venue.offererAddress.address.departmentCode,
                 },
                 "status": "SOLD_OUT",
-                "isShowcase": False,
                 "location": {
                     "banId": venue.offererAddress.address.banId,
                     "city": venue.offererAddress.address.city,
@@ -582,17 +542,8 @@ class Returns200Test:
         assert len(response.json) == 2
         assert response.json == [
             {
-                "hasBookingLimitDatetimesPassed": False,
                 "id": event_offer2.id,
-                "isActive": True,
-                "isDigital": False,
-                "isEditable": True,
-                "isEducational": False,
                 "isEvent": True,
-                "canBeEvent": True,
-                "isHeadlineOffer": False,
-                "isShowcase": False,
-                "isThing": False,
                 "name": event_offer2.name,
                 "productIsbn": None,
                 "status": "SOLD_OUT",
@@ -601,10 +552,7 @@ class Returns200Test:
                 "thumbUrl": None,
                 "venue": {
                     "id": venue.id,
-                    "isVirtual": False,
                     "name": venue.name,
-                    "offererName": venue.managingOfferer.name,
-                    "publicName": venue.publicName,
                     "departementCode": "75",
                 },
                 "location": {
@@ -628,17 +576,8 @@ class Returns200Test:
                 "highlightRequests": [],
             },
             {
-                "hasBookingLimitDatetimesPassed": False,
                 "id": event_offer1.id,
-                "isActive": True,
-                "isDigital": False,
-                "isEditable": True,
-                "isEducational": False,
-                "isHeadlineOffer": False,
                 "isEvent": True,
-                "canBeEvent": True,
-                "isShowcase": False,
-                "isThing": False,
                 "name": event_offer1.name,
                 "productIsbn": None,
                 "status": "SOLD_OUT",
@@ -647,10 +586,7 @@ class Returns200Test:
                 "thumbUrl": None,
                 "venue": {
                     "id": venue.id,
-                    "isVirtual": False,
                     "name": venue.name,
-                    "offererName": venue.managingOfferer.name,
-                    "publicName": venue.publicName,
                     "departementCode": "75",
                 },
                 "location": {
@@ -704,16 +640,8 @@ class Returns200Test:
 
         assert response.json == [
             {
-                "hasBookingLimitDatetimesPassed": False,
                 "id": event_offer1.id,
-                "isActive": True,
-                "isDigital": False,
-                "isEditable": True,
                 "isEvent": True,
-                "canBeEvent": True,
-                "isHeadlineOffer": False,
-                "isThing": False,
-                "isEducational": False,
                 "name": "The Weeknd",
                 "stocks": [],
                 "thumbUrl": None,
@@ -721,14 +649,10 @@ class Returns200Test:
                 "subcategoryId": "CONCERT",
                 "venue": {
                     "id": venue.id,
-                    "isVirtual": False,
                     "name": venue.name,
-                    "offererName": venue.managingOfferer.name,
-                    "publicName": venue.publicName,
                     "departementCode": "75",
                 },
                 "status": "SOLD_OUT",
-                "isShowcase": False,
                 "location": {
                     "id": offerer_address1.address.id,
                     "banId": offerer_address1.address.banId,
@@ -779,16 +703,8 @@ class Returns200Test:
             assert response.status_code == 200
         assert response.json == [
             {
-                "hasBookingLimitDatetimesPassed": False,
                 "id": event_offer1.id,
-                "isActive": True,
-                "isDigital": False,
-                "isEditable": True,
                 "isEvent": True,
-                "canBeEvent": True,
-                "isHeadlineOffer": False,
-                "isThing": False,
-                "isEducational": False,
                 "name": "The Weeknd",
                 "stocks": [],
                 "thumbUrl": None,
@@ -796,14 +712,10 @@ class Returns200Test:
                 "subcategoryId": "CONCERT",
                 "venue": {
                     "id": venue.id,
-                    "isVirtual": False,
                     "name": venue.name,
-                    "offererName": venue.managingOfferer.name,
-                    "publicName": venue.publicName,
                     "departementCode": "75",
                 },
                 "status": "SOLD_OUT",
-                "isShowcase": False,
                 "location": None,
                 "publicationDatetime": "2022-11-21T13:19:00Z",
                 "bookingAllowedDatetime": None,

@@ -57,18 +57,10 @@ export const listOffersOfferFactory = (
     id: currentOfferId,
     status: OfferStatus.ACTIVE,
     subcategoryId: SubcategoryIdEnum.CINE_PLEIN_AIR,
-    isActive: true,
-    isDigital: false,
-    hasBookingLimitDatetimesPassed: true,
-    isEducational: false,
     name: `offer name ${offerId}`,
     isEvent: true,
-    canBeEvent: true,
-    isThing: false,
-    isHeadlineOffer: false,
     venue: listOffersVenueFactory(),
     stocks: [],
-    isEditable: true,
     highlightRequests: [],
     ...customListOffersOffer,
   }
@@ -80,7 +72,6 @@ export const listOffersStockFactory = (
   const currentStockId = stockId++
   return {
     id: currentStockId,
-    hasBookingLimitDatetimePassed: false,
     remainingQuantity: 100,
     ...customListOffersStockFactory,
   }

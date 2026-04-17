@@ -114,11 +114,8 @@ def get_capped_offers_for_filters(
                 models.Offer.subcategoryId,
                 models.Offer.validation,
                 models.Offer.ean,
-                models.Offer._extraData,
-                models.Offer.lastProviderId,
                 models.Offer.offererAddressId,
                 models.Offer.productId,
-                models.Offer.url,
                 models.Offer.publicationDatetime,
                 models.Offer.bookingAllowedDatetime,
             ).joinedload(models.Offer.headlineOffers)
@@ -135,9 +132,6 @@ def get_capped_offers_for_filters(
                     offerers_models.Venue.name,
                     offerers_models.Venue.publicName,
                     offerers_models.Venue.isVirtual,
-                ),
-                sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
-                    offerers_models.Offerer.id, offerers_models.Offerer.name
                 ),
                 sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(
                     offerers_models.OffererAddress.address

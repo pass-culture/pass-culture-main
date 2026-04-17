@@ -357,29 +357,20 @@ class GetOffersStatsResponseModel(HttpBodyModel):
 # TODO(pydantic_v2): remove this serializer once ListOffersOfferResponseModel is migrated
 class ListOffersVenueResponseModel(BaseModel):
     id: int
-    isVirtual: bool
     name: str
-    offererName: str
-    publicName: str
     departementCode: str | None
 
 
 class ListOffersVenueResponseModelV2(HttpBodyModel):
     id: int
-    isVirtual: bool
     name: str
-    offererName: str
-    publicName: str
     departementCode: str
 
     @classmethod
     def build(cls, venue: offerers_models.Venue) -> typing.Self:
         return cls(
             id=venue.id,
-            isVirtual=venue.isVirtual,
             name=venue.name,
-            offererName=venue.managingOfferer.name,
-            publicName=venue.publicName,
             departementCode=venue.offererAddress.address.departmentCode,
         )
 
