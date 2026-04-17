@@ -97,7 +97,6 @@ class GetOffererResponseModel(HttpBodyModel):
     allowed_on_adage: bool
     has_bank_account_with_pending_corrections: bool
     is_onboarded: bool
-    has_headline_offer: bool
     has_partner_page: bool
     is_caledonian: bool
     can_display_highlights: bool
@@ -128,7 +127,6 @@ class GetOffererResponseModel(HttpBodyModel):
             has_available_pricing_points=any(venue.siret for venue in venues),
             has_bank_account_with_pending_corrections=row.hasBankAccountWithPendingCorrections,
             has_digital_venue_at_least_one_offer=has_digital_venue_at_least_one_offer,
-            has_headline_offer=row.hasHeadlineOffer,
             has_non_free_offer=row.hasNonFreeOffer,
             has_partner_page=row.hasPartnerPage,
             has_pending_bank_account=row.hasPendingBankAccount,

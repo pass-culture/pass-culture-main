@@ -291,32 +291,20 @@ class GetVenueAddressesTest:
         assert len(results) == 1
 
 
-class GetOffererHeadlineOfferTest:
+class GetVenueHeadlineOfferTest:
     def test_return_headline_offer(self):
         offer = offers_factories.OfferFactory()
         offers_factories.HeadlineOfferFactory(offer=offer)
 
-        headline_offer = repository.get_offerer_headline_offer(offer.venue.managingOffererId)
+        headline_offer = repository.get_venue_headline_offer(offer.venueId)
 
         assert headline_offer.id == offer.id
 
-    def test_shoud_not_return_several_headline_offer(self):
-        offerer = offerers_factories.OffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        other_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offer = offers_factories.OfferFactory(venue=venue)
-        other_offer = offers_factories.OfferFactory(venue=other_venue)
-        offers_factories.HeadlineOfferFactory(offer=offer, venue=venue)
-        offers_factories.HeadlineOfferFactory(offer=other_offer, venue=other_venue)
-
-        with pytest.raises(sa_orm.exc.MultipleResultsFound):
-            repository.get_offerer_headline_offer(offerer.id)
-
     def test_returns_no_headline_offer(self):
-        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory()
 
         with pytest.raises(sa_orm.exc.NoResultFound):
-            repository.get_offerer_headline_offer(offerer.id)
+            repository.get_venue_headline_offer(venue.id)
 
 
 class VenueHasNonFreeOffersTest:

@@ -66,7 +66,6 @@ class GetOffererTest:
             "hasAvailablePricingPoints": True,
             "hasBankAccountWithPendingCorrections": False,
             "hasDigitalVenueAtLeastOneOffer": False,
-            "hasHeadlineOffer": False,
             "hasNonFreeOffer": False,
             "hasPartnerPage": False,
             "hasPendingBankAccount": False,
@@ -179,7 +178,6 @@ class GetOffererTest:
         assert response.json["hasPendingBankAccount"] is False
         assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == []
         assert response.json["hasNonFreeOffer"] is False
-        assert response.json["hasHeadlineOffer"] is False
 
     def test_offerer_has_non_free_offer(self, client):
         pro = users_factories.ProFactory()
@@ -647,28 +645,6 @@ class GetOffererTest:
             second_venue.id,
             third_venue.id,
         }
-
-    def test_offerer_has_headline_offer(self, client):
-        pro = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-
-        offer = offers_factories.OfferFactory(venue__managingOfferer=offerer)
-        inactive_offer_on_another_venue = offers_factories.OfferFactory(venue__managingOfferer=offerer, isActive=False)
-        inactive_timespan = (
-            date_utils.get_naive_utc_now() - datetime.timedelta(days=2),
-            date_utils.get_naive_utc_now() - datetime.timedelta(days=2),
-        )
-        offers_factories.HeadlineOfferFactory(offer=offer)
-        offers_factories.HeadlineOfferFactory(offer=offer, timespan=inactive_timespan)
-        offers_factories.HeadlineOfferFactory(offer=inactive_offer_on_another_venue)
-
-        offerer_id = offerer.id
-        client = client.with_session_auth(pro.email)
-        with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/offerers/{offerer_id}")
-            assert response.status_code == 200
-        assert response.json["hasHeadlineOffer"] is True
 
     def test_closed_offerer(self, client):
         offerer = offerers_factories.ClosedOffererFactory()

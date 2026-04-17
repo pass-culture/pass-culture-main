@@ -602,7 +602,6 @@ def get_offerer_and_extradata(offerer_id: int) -> Row | None:
         - hasNonFreeOffers
         - hasBankAccountWithPendingCorrections
         - isOnboarded
-        - hasHeadlineOffer
         - canDisplayHighlights
     """
     has_non_free_offers_subquery = (
@@ -741,22 +740,6 @@ def get_offerer_and_extradata(offerer_id: int) -> Row | None:
         .exists()
     )
 
-    has_headline_offer = (
-        sa.select(1)
-        .select_from(offers_models.Offer)
-        .join(models.Venue, offers_models.Offer.venueId == models.Venue.id)
-        .join(models.Offerer, models.Venue.managingOffererId == models.Offerer.id)
-        .join(offers_models.HeadlineOffer, offers_models.HeadlineOffer.offerId == offers_models.Offer.id)
-        .where(
-            sa.and_(
-                models.Offerer.id == offerer_id,
-                offers_models.HeadlineOffer.isActive == True,
-            )
-        )
-        .correlate(models.Offerer)
-        .exists()
-    )
-
     has_partner_page = (
         sa.select(1)
         .select_from(offers_models.Offer)
@@ -797,7 +780,6 @@ def get_offerer_and_extradata(offerer_id: int) -> Row | None:
             sa.or_(
                 models.Offerer.allowedOnAdage.is_(True), has_adage_id, has_collective_application, has_non_draft_offers
             ).label("isOnboarded"),
-            has_headline_offer.label("hasHeadlineOffer"),
             has_partner_page.label("hasPartnerPage"),
             can_display_highlights.label("canDisplayHighlights"),
         )
@@ -1260,11 +1242,9 @@ def get_venue_addresses(
     return query
 
 
-def get_offerer_headline_offer(offerer_id: int) -> offers_models.Offer:
+def get_venue_headline_offer(venue_id: int) -> offers_models.Offer:
     return (
         db.session.query(offers_models.Offer)
-        .join(models.Venue, offers_models.Offer.venueId == models.Venue.id)
-        .join(models.Offerer, models.Venue.managingOffererId == models.Offerer.id)
         .join(offers_models.HeadlineOffer, offers_models.HeadlineOffer.offerId == offers_models.Offer.id)
         .options(
             sa_orm.contains_eager(offers_models.Offer.headlineOffers),
@@ -1272,7 +1252,7 @@ def get_offerer_headline_offer(offerer_id: int) -> offers_models.Offer:
             sa_orm.joinedload(offers_models.Offer.product).joinedload(offers_models.Product.productMediations),
         )
         .filter(
-            models.Offerer.id == offerer_id,
+            offers_models.HeadlineOffer.venueId == venue_id,
             offers_models.HeadlineOffer.isActive == True,
         )
         .one()

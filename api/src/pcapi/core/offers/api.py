@@ -654,8 +654,7 @@ def set_upper_timespan_of_inactive_headline_offers() -> None:
 
 
 def upsert_headline_offer(offer: models.Offer) -> models.HeadlineOffer:
-    offerer_id = offer.venue.managingOffererId
-    headline_offer = offers_repository.get_current_headline_offer(offerer_id)
+    headline_offer = offers_repository.get_current_headline_offer(offer.venueId)
     if headline_offer and headline_offer.offerId != offer.id:
         remove_headline_offer(headline_offer)
         logger.info(

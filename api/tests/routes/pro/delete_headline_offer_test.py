@@ -24,7 +24,7 @@ class Returns204Test:
         yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
         old_headline_offer = offers_factories.HeadlineOfferFactory(offer=offer, timespan=(ten_days_ago, yesterday))
 
-        data = {"offererId": offer.venue.managingOfferer.id}
+        data = {"venueId": offer.venueId}
         client = client.with_session_auth(pro.email)
         with caplog.at_level(logging.INFO):
             response = client.post("/offers/delete_headline", json=data)
@@ -45,19 +45,16 @@ class Returns204Test:
         }
         assert log.technical_message_id == "headline_offer_deactivation"
 
-    def test_delete_only_offerers_headline_offer(self, client, caplog):
+    def test_delete_only_venues_headline_offer(self, client, caplog):
         pro = users_factory.ProFactory()
         offer = offers_factories.OfferFactory()
-        offerer = offer.venue.managingOfferer
         another_offer = offers_factories.OfferFactory()
-        another_offerer = another_offer.venue.managingOfferer
         headline_offer = offers_factories.HeadlineOfferFactory(offer=offer)
         another_headline_offer = offers_factories.HeadlineOfferFactory(offer=another_offer)
 
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        offerers_factories.UserOffererFactory(user=pro, offerer=another_offerer)
+        offerers_factories.UserOffererFactory(user=pro, offerer=offer.venue.managingOfferer)
         client = client.with_session_auth(pro.email)
-        data = {"offererId": offerer.id}
+        data = {"venueId": offer.venueId}
         with caplog.at_level(logging.INFO):
             response = client.post("/offers/delete_headline", json=data)
 
@@ -82,7 +79,7 @@ class Returns401Test:
         offer = offers_factories.OfferFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offer.venue.managingOfferer)
         headline_offer = offers_factories.HeadlineOfferFactory(offer=offer)
-        data = {"offererId": offer.venue.managingOfferer.id}
+        data = {"venueId": offer.venueId}
 
         response = client.post("/offers/delete_headline", json=data)
 
