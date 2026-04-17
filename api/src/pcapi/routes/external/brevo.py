@@ -127,7 +127,8 @@ def brevo_subscribe_user() -> None:
     _toggle_marketing_email_subscription(True)
 
 
-@public_api.route("/webhooks/sendinblue/importcontacts/<int:list_id>/<int:iteration>", methods=["POST"])
+@public_api.route("/webhooks/brevo/importcontacts/<int:list_id>/<int:iteration>", methods=["POST"])
+@require_brevo_token_as_query_param
 @spectree_serialize(on_success_status=204)
 def brevo_notify_importcontacts(list_id: int, iteration: int) -> None:
     """
@@ -138,7 +139,7 @@ def brevo_notify_importcontacts(list_id: int, iteration: int) -> None:
     The id of the list in Brevo is added to the URL when set in notifyUrl so we can at least print the list id.
     This webhook is for investigation purpose only.
     """
-    logger.info("ContactsApi->import_contacts finished", extra={"list_id": list_id, "iteration": iteration})
+    logger.info("Brevo import_contacts finished", extra={"list_id": list_id, "iteration": iteration})
 
 
 @public_api.route("/webhooks/brevo/recommendations/<int:user_id>", methods=["GET"])

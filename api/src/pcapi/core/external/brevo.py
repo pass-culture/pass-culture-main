@@ -11,6 +11,7 @@ from typing import Iterable
 
 import brevo
 from brevo.core import ApiError as BrevoApiError
+from brevo.core import RequestOptions
 
 from pcapi import settings
 from pcapi.core import mails as mails_api
@@ -397,7 +398,10 @@ def _send_import_request(client: brevo.Brevo, brevo_list_id: int, iteration: int
         list_ids=[brevo_list_id],
         notify_url=urllib.parse.urljoin(
             settings.API_URL,
-            f"/webhooks/sendinblue/importcontacts/{brevo_list_id}/{iteration}",
+            f"/webhooks/brevo/importcontacts/{brevo_list_id}/{iteration}",
+        ),
+        request_options=RequestOptions(
+            additional_query_parameters={"token": settings.BREVO_WEBHOOK_SECRET_QUERY_PARAM}
         ),
     )
     logger.info(

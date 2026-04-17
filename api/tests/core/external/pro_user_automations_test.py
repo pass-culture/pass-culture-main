@@ -44,7 +44,10 @@ class BaseProAutomations:
                 mock_import_contacts.assert_called_once_with(
                     file_body=f"EMAIL\n{DEFAULT_EMAILS[0]}\n{DEFAULT_EMAILS[1]}",
                     list_ids=[self.id],
-                    notify_url=f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{self.id}/1",
+                    notify_url=f"{settings.API_URL}/webhooks/brevo/importcontacts/{self.id}/1",
+                    request_options={
+                        "additional_query_parameters": {"token": settings.BREVO_WEBHOOK_SECRET_QUERY_PARAM}
+                    },
                 )
 
 
