@@ -4,6 +4,7 @@ import { API_URL, URL_FOR_MAINTENANCE } from '@/commons/utils/config'
 export const HTTP_STATUS = {
   NO_CONTENT: 204,
   FORBIDDEN: 403,
+  BAD_GATEWAY: 502,
   SERVICE_UNAVAILABLE: 503,
 }
 const NOT_JSON_BODY_RESPONSE_STATUS = [
@@ -36,7 +37,10 @@ const fetchWithErrorHandler = async (path: string, options: RequestInit) => {
       ? null
       : await response.json()
     if (!response.ok) {
-      if (response.status === HTTP_STATUS.SERVICE_UNAVAILABLE) {
+      if (
+        response.status === HTTP_STATUS.SERVICE_UNAVAILABLE ||
+        response.status === HTTP_STATUS.BAD_GATEWAY
+      ) {
         window.location.assign(URL_FOR_MAINTENANCE)
       }
       return Promise.reject(
