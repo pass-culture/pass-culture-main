@@ -61,7 +61,8 @@ export async function doLogin(
   )
   await page.waitForResponse((response) => response.url().includes('/venues'))
 
-  await page.waitForURL((url) => !url.pathname.includes('/connexion'))
+  await expect(page).not.toHaveURL(/\/connexion/)
+  await expect(page.getByTestId('spinner')).toHaveCount(0)
 }
 
 export async function login(
@@ -108,7 +109,6 @@ export async function login(
       })
     ).toBeVisible()
   }
-  await expect(page.getByTestId('spinner')).toHaveCount(0)
 }
 
 export async function loginAndNavigate(

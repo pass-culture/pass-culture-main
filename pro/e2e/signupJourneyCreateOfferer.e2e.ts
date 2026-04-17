@@ -3,7 +3,6 @@ import { expect, request as playwrightRequest, test } from '@playwright/test'
 import { checkAccessibility } from './helpers/accessibility'
 import { MOCKED_BACK_ADDRESS_LABEL, mockAddressSearch } from './helpers/address'
 import { doLogin } from './helpers/auth'
-import { setFeatureFlags } from './helpers/features'
 import {
   BASE_API_URL,
   createNewProUser,
@@ -220,19 +219,14 @@ test.describe('Signup journey with known offerer...', () => {
       })
       const userData =
         await createNewProUserAndCollectivityOffererWithVenue(requestContext)
-      await setFeatureFlags(requestContext, [
-        { name: 'WIP_SWITCH_VENUE', isActive: false },
-      ])
       const mySiret = userData.siret
       await requestContext.dispose()
 
       await mockAddressSearch(page)
 
       await doLogin(page, userData.user.email, { retry: true })
-      await page.goto('/')
-      await expect(page.getByTestId('spinner')).toHaveCount(0)
 
-      await expect(page).toHaveURL(/\/inscription\/structure\/recherche/)
+      await expect(page).toHaveURL(/\/inscription\/structure\/recherche$/)
       await page.getByLabel(/Numéro de SIRET à 14 chiffres/).fill(mySiret)
 
       const venuesSiretPromise = page.waitForResponse(
@@ -242,7 +236,7 @@ test.describe('Signup journey with known offerer...', () => {
       await page.getByText('Continuer').click()
       await venuesSiretPromise
 
-      await expect(page).toHaveURL(/\/inscription\/structure\/rattachement/)
+      await expect(page).toHaveURL(/\/inscription\/structure\/rattachement$/)
 
       const addressSearchPromise = page.waitForResponse((response) =>
         response.url().includes('data.geopf.fr/geocodage/search')
@@ -252,7 +246,7 @@ test.describe('Signup journey with known offerer...', () => {
         .click()
       await addressSearchPromise
 
-      await expect(page).toHaveURL(/\/inscription\/structure\/identification/)
+      await expect(page).toHaveURL(/\/inscription\/structure\/identification$/)
       await page.getByLabel(/Adresse postale/).clear()
       await page.getByLabel(/Adresse postale/).fill(MOCKED_BACK_ADDRESS_LABEL)
 
@@ -268,7 +262,7 @@ test.describe('Signup journey with known offerer...', () => {
 
       await page.getByText('Étape suivante').click()
 
-      await expect(page).toHaveURL(/\/inscription\/structure\/activite/)
+      await expect(page).toHaveURL(/\/inscription\/structure\/activite$/)
       await page
         .getByLabel(/Activité principale/)
         .selectOption('Sélectionnez votre activité principale')
@@ -281,7 +275,7 @@ test.describe('Signup journey with known offerer...', () => {
       await page.getByLabel(/Activité principale/).selectOption('Galerie d’art')
       await page.getByText('Étape suivante').click()
 
-      await expect(page).toHaveURL(/\/inscription\/structure\/confirmation/)
+      await expect(page).toHaveURL(/\/inscription\/structure\/confirmation$/)
 
       const createOffererPromise = page.waitForResponse(
         (response) =>
@@ -292,12 +286,13 @@ test.describe('Signup journey with known offerer...', () => {
       await createOffererPromise
 
       await expect(page.getByTestId('spinner')).toHaveCount(0)
-      await expect(page).toHaveURL('/rattachement-en-cours')
+      await expect(page).toHaveURL('/hub')
       await expect(
-        page.getByText(
-          'Votre rattachement est en cours de traitement par les équipes du pass Culture'
-        )
+        page.getByRole('heading', {
+          name: 'À quelle structure souhaitez-vous accéder ?',
+        })
       ).toBeVisible()
+      await expect(page.getByText(/3 rue de valois/i)).toBeVisible()
     })
 
     test('I should be able to sign up with a new account and a known offerer/venue and then join the space', async ({
