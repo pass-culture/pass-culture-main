@@ -994,9 +994,12 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     @isSoldOut.inplace.expression
     @classmethod
     def _isSoldOutExpression(cls) -> ColumnElement[bool]:
-        return ~sa.exists().where(Stock.offerId == cls.id).where(Stock.isSoftDeleted.is_(False)).where(
-            sa.or_(Stock.beginningDatetime > sa.func.now(), Stock.beginningDatetime.is_(None))
-        ).where(sa.or_(Stock.remainingQuantity.is_(None), Stock.remainingQuantity > 0))
+        return ~sa.exists().where(
+            Stock.offerId == cls.id,
+            Stock.isSoftDeleted.is_(False),
+            sa.or_(Stock.beginningDatetime.is_(None), Stock.beginningDatetime > sa.func.now()),
+            sa.or_(Stock.remainingQuantity.is_(None), Stock.remainingQuantity > 0),
+        )
 
     @property
     def activeMediation(self) -> Mediation | None:
@@ -1152,11 +1155,15 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     @classmethod
     def _hasBookingLimitDatetimesPassedExpression(cls) -> ColumnElement[bool]:
         return sa.and_(
-            sa.exists().where(Stock.offerId == cls.id).where(Stock.isSoftDeleted.is_(False)),
-            ~sa.exists()
-            .where(Stock.offerId == cls.id)
-            .where(Stock.isSoftDeleted.is_(False))
-            .where(Stock.hasBookingLimitDatetimePassed.is_(False)),
+            sa.exists().where(
+                Stock.offerId == cls.id,
+                Stock.isSoftDeleted.is_(False),
+            ),
+            ~sa.exists().where(
+                Stock.offerId == cls.id,
+                Stock.isSoftDeleted.is_(False),
+                Stock.hasBookingLimitDatetimePassed.is_(False),
+            ),
         )
 
     @property
