@@ -939,7 +939,7 @@ class EligibleActivableUnderageFactory(EligibleUnderageFactory):
         )
 
 
-class ProFactory(BaseFactory):
+class ProFactory(BaseFactory[models.User]):
     class Meta:
         model = models.User
         sqlalchemy_get_or_create = ["email"]

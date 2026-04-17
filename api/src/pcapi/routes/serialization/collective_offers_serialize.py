@@ -539,6 +539,10 @@ class PostCollectiveOfferBodyModel(HttpBodyModel):
     national_program_id: int | None = None
     formats: list[EacFormat] = pydantic_v2.Field(min_length=1)
 
+    @pydantic_v2.field_validator("contact_phone", mode="after")
+    def validate_contact_phone(cls, phone_number: str | None) -> str | None:
+        return utils.validate_phone_number_nullable(phone_number)
+
 
 class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
     price_detail: str | None = pydantic_v2.Field(default=None, max_length=constants.MAX_COLLECTIVE_PRICE_DETAILS_LENGTH)
@@ -592,6 +596,10 @@ class PatchCollectiveOfferBodyModel(HttpBodyModel):
             raise PydanticError("Ce champ ne peut pas être null")
 
         return value
+
+    @pydantic_v2.field_validator("contact_phone", mode="after")
+    def validate_contact_phone(cls, phone_number: str | None) -> str | None:
+        return utils.validate_phone_number_nullable(phone_number)
 
 
 class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):

@@ -5,11 +5,12 @@ import flask
 import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
 import pytz
+from pydantic_core import PydanticCustomError
 from typing_extensions import Annotated
 
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils import date as date_utils
-from pcapi.utils.date import get_naive_utc_now
+from pcapi.utils import phone_number as phone_number_utils
 
 from .exceptions import PydanticError
 
@@ -163,7 +164,7 @@ def check_date_in_future_and_remove_timezone(
     ErrorClass = PydanticError if pydantic_version == "v2" else ValueError
 
     if value == "now":
-        return get_naive_utc_now()
+        return date_utils.get_naive_utc_now()
 
     assert isinstance(value, datetime.datetime)  # to make mypy happy
 
@@ -194,6 +195,20 @@ future_tz_aware_datetime = Annotated[datetime.datetime, pydantic_v2.AfterValidat
 
 def validate_timezoned_datetime(field_name: str, always: bool = False) -> classmethod:
     return pydantic_v1.validator(field_name, pre=False, allow_reuse=True, always=always)(check_date_in_future)
+
+
+def validate_phone_number(phone_number: str) -> str:
+    try:
+        return phone_number_utils.ParsedPhoneNumber(phone_number).phone_number
+    except phone_number_utils.InvalidPhoneNumber:
+        raise PydanticCustomError("invalid_phone_number", "Numéro de téléphone invalide")
+
+
+def validate_phone_number_nullable(phone_number: str | None) -> str | None:
+    if not phone_number:
+        return None
+
+    return validate_phone_number(phone_number)
 
 
 def parse_args_as_list(args: typing.Any) -> list[typing.Any] | None:

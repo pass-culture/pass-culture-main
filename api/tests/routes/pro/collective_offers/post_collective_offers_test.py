@@ -13,6 +13,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as brevo_testing
 from pcapi.models import db
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
+from pcapi.utils.phone_number import ParsedPhoneNumber
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -84,7 +85,7 @@ def assert_offer_values(offer: models.CollectiveOffer, data, user, offerer):
     assert offer.audioDisabilityCompliant == data["audioDisabilityCompliant"]
     assert offer.mentalDisabilityCompliant == data["mentalDisabilityCompliant"]
     assert offer.contactEmail == data["contactEmail"]
-    assert offer.contactPhone == data["contactPhone"]
+    assert offer.contactPhone == ParsedPhoneNumber(data["contactPhone"]).phone_number
     assert offer.locationType == models.CollectiveLocationType[data["location"]["locationType"]]
     assert offer.locationComment == data["location"]["locationComment"]
     assert offer.interventionArea == data["interventionArea"]
@@ -633,6 +634,20 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {f"location.location.0.{field_name}": [error_message]}
+        assert db.session.query(models.CollectiveOffer).count() == 0
+
+    def test_phone_number(self, client):
+        venue = offerers_factories.VenueFactory()
+        user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+
+        data = {
+            **base_offer_payload(venue=venue),
+            "contactPhone": "123123",
+        }
+        response = client.with_session_auth(user_offerer.user.email).post("/collective/offers", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"contactPhone": ["Numéro de téléphone invalide"]}
         assert db.session.query(models.CollectiveOffer).count() == 0
 
 

@@ -141,7 +141,7 @@ def patch_user_phone(body: users_serializers.UserPhoneBodyModel) -> users_serial
         )
     attributes = body.model_dump()
     users_api.update_user_info(user, author=current_user, **attributes)
-    return users_serializers.UserPhoneResponseModel.from_orm(user)
+    return users_serializers.UserPhoneResponseModel.model_validate(user)
 
 
 @private_api.route("/users/validate_email", methods=["PATCH"])

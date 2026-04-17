@@ -8,7 +8,7 @@ from pcapi.core.users.password_utils import check_password_strength
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.serialization.exceptions import PydanticError
-from pcapi.utils import phone_number as phone_number_utils
+from pcapi.serialization.utils import validate_phone_number
 from pcapi.utils.email import sanitize_email
 
 
@@ -24,13 +24,6 @@ class UserIdentityBodyModel(HttpBodyModel):
 
 class UserPhoneResponseModel(HttpBodyModel):
     phone_number: str
-
-
-def validate_phone_number(phone_number: str) -> str:
-    try:
-        return phone_number_utils.ParsedPhoneNumber(phone_number).phone_number
-    except Exception:
-        raise PydanticError(f"numéro de téléphone invalide: {phone_number}")
 
 
 class UserPhoneBodyModel(HttpBodyModel):
