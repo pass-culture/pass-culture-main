@@ -52,7 +52,7 @@ export const GET_OFFERER_ADDRESS_QUERY_KEY = 'getoffererAddresses'
 export const GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY =
   'getOffererBankAccountsAndAttachedVenues'
 export const GET_OFFERER_QUERY_KEY = 'getOfferer'
-export const GET_OFFERER_HEADLINE_OFFER_QUERY_KEY = 'getOffererHeadlineOffer'
+export const GET_VENUE_HEADLINE_OFFER_QUERY_KEY = 'getVenueHeadlineOffer'
 export const GET_OFFERER_NAMES_QUERY_KEY = 'getOffererNames'
 export const GET_OFFERER_V2_STATS_QUERY_KEY = 'getOffererV2Stats'
 export const GET_PROVIDERS_QUERY_KEY = 'getProviders'

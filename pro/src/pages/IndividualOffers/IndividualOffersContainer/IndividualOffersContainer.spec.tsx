@@ -100,7 +100,7 @@ vi.mock('@/apiClient/api', () => ({
     listOfferersNames: vi.fn().mockReturnValue({}),
     deleteDraftOffers: vi.fn(),
     patchAllOffersActiveStatus: vi.fn(),
-    getOffererHeadlineOffer: vi.fn(),
+    getVenueHeadlineOffer: vi.fn(),
     getVenues: vi.fn(),
   },
 }))
@@ -625,7 +625,7 @@ describe('IndividualOffersScreen', () => {
         venueListItemFactory({ name: 'Une venue physique & permanente' }),
       ],
     })
-    vi.spyOn(api, 'getOffererHeadlineOffer').mockResolvedValue({
+    vi.spyOn(api, 'getVenueHeadlineOffer').mockResolvedValue({
       id: 42,
       name: 'My offer',
       venueId: 1,

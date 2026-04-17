@@ -58,7 +58,7 @@ const MOCK_DATA = {
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    getOffererHeadlineOffer: vi.fn(),
+    getVenueHeadlineOffer: vi.fn(),
     upsertHeadlineOffer: vi.fn(),
     deleteHeadlineOffer: vi.fn(),
     getVenues: vi.fn(),
@@ -123,7 +123,7 @@ const renderIndividualOffersContext = () => {
 
 describe('HeadlineOfferContext', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getOffererHeadlineOffer').mockResolvedValue(
+    vi.spyOn(api, 'getVenueHeadlineOffer').mockResolvedValue(
       MOCK_DATA.headlineOffer
     )
     vi.spyOn(api, 'getVenues').mockResolvedValue({
@@ -164,7 +164,7 @@ describe('HeadlineOfferContext', () => {
       })
 
       // We are not testing display update since this happens after a re-render,
-      // which is triggered by the SWR mutate function on GET_OFFERER_HEADLINE_OFFER_QUERY_KEY.
+      // which is triggered by the SWR mutate function on GET_VENUE_HEADLINE_OFFER_QUERY_KEY.
       // This would be like testing the SWR library itself & its none of our concern.
       // Yet, we expect the mutation to be called.
       expect(mockMutate).toHaveBeenCalled()
@@ -245,7 +245,7 @@ describe('HeadlineOfferContext', () => {
       await userEvent.click(removeButton)
 
       // We are not testing display update since this happens after a re-render,
-      // which is triggered by the SWR mutate function on GET_OFFERER_HEADLINE_OFFER_QUERY_KEY.
+      // which is triggered by the SWR mutate function on GET_VENUE_HEADLINE_OFFER_QUERY_KEY.
       // This would be like testing the SWR library itself & its none of our concern.
       // Yet, we expect the mutation to be called.
       expect(mockMutate).toHaveBeenCalled()

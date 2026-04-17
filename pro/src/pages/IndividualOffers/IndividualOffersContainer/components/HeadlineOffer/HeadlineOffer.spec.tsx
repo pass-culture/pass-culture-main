@@ -21,7 +21,7 @@ describe('HeadlineOffer', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.spyOn(api, 'getOffererHeadlineOffer').mockResolvedValue({
+    vi.spyOn(api, 'getVenueHeadlineOffer').mockResolvedValue({
       id: 42,
       name: 'My offer',
       venueId: 1,

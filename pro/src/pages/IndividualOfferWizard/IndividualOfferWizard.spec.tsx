@@ -8,6 +8,7 @@ import { IndividualOfferWizard } from '@/pages/IndividualOfferWizard/IndividualO
 vi.mock('@/apiClient/api', () => ({
   api: {
     getCategories: vi.fn(),
+    getVenueHeadlineOffer: vi.fn().mockResolvedValue(null),
   },
 }))
 
