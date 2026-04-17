@@ -142,7 +142,7 @@ export const CollectiveOffersScreen = ({
     applyUrlFiltersAndRedirect(newFilters)
   }
 
-  const columns = getCollectiveOfferColumns(urlSearchFilters, true)
+  const columns = getCollectiveOfferColumns(true)
 
   const { contentWrapperRef, scrollToContentWrapper } = useAccessibleScroll({
     selector: '#content-wrapper',

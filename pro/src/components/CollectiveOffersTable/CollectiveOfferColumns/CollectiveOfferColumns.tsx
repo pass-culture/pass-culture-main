@@ -2,7 +2,6 @@ import {
   type CollectiveOffer,
   isCollectiveOfferBookable,
 } from '@/commons/core/OfferEducational/types'
-import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import type { Column } from '@/ui-kit/Table/Table'
 
 import { OfferActionsCell } from './OfferActionsCell/OfferActionsCell'
@@ -14,7 +13,6 @@ import { OfferStatusCell } from './OfferStatusCell/OfferStatusCell'
 import { PriceAndParticipantsCell } from './PriceAndParticipantsCell/PriceAndParticipantsCell'
 
 export function getCollectiveOfferColumns(
-  urlSearchFilters: Partial<CollectiveSearchFiltersParams>,
   isBookableTable?: boolean
 ): Column<CollectiveOffer>[] {
   const columns: Column<CollectiveOffer>[] = [
@@ -67,9 +65,7 @@ export function getCollectiveOfferColumns(
     {
       id: 'actions',
       label: 'Actions',
-      render: (offer: CollectiveOffer) => (
-        <OfferActionsCell offer={offer} urlSearchFilters={urlSearchFilters} />
-      ),
+      render: (offer: CollectiveOffer) => <OfferActionsCell offer={offer} />,
     },
   ]
   return columns

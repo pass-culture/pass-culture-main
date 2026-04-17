@@ -23,7 +23,7 @@ type UserState = {
   venuesWithPendingValidation: VenueListItemLiteResponseModel[] | null
 }
 
-export const initialState: UserState = {
+const initialState: UserState = {
   currentUser: null,
   access: null,
   selectedAdminOfferer: null,

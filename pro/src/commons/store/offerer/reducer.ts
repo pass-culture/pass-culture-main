@@ -16,7 +16,7 @@ export type OffererState = {
   offererNames: GetOffererNameResponseModel[] | null
 }
 
-export const initialState: OffererState = {
+const initialState: OffererState = {
   offererNamesValidated: null,
   currentOfferer: null,
   currentOffererName: null,

@@ -799,7 +799,7 @@ describe('CollectiveOffers', () => {
       await waitFor(() => {
         expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
           null,
-          offererId,
+          null,
           null,
           2,
           null,

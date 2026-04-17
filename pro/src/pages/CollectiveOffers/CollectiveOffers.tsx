@@ -2,39 +2,32 @@ import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import { GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   DEFAULT_PAGE,
 } from '@/commons/core/Offers/constants'
+import { useCollectiveOffersSwrKeys } from '@/commons/core/Offers/hooks/useCollectiveOffersSwrKeys'
 import { useQueryCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializeApiCollectiveFilters'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
-import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 
 import { CollectiveOffersScreen } from './components/CollectiveOffersScreen/CollectiveOffersScreen'
 
 export const CollectiveOffers = () => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-
   const urlSearchFilters = useQueryCollectiveSearchFilters()
-  const { storedFilters } = useStoredFilterConfig('collective')
-  const finalSearchFilters = {
-    ...(storedFilters as Partial<CollectiveSearchFiltersParams>),
-    ...urlSearchFilters,
-  }
 
   const navigate = useNavigate()
 
   const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
-  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
-  const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
+  const [queryKey, apiFilters] = useCollectiveOffersSwrKeys({
+    isInTemplateOffersPage: false,
+  })
+
+  const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
 
   const redirectWithUrlFilters = (
     filters: Partial<CollectiveSearchFiltersParams>
@@ -52,18 +45,8 @@ export const CollectiveOffers = () => {
     )
   }
 
-  const apiFilters: CollectiveSearchFiltersParams = {
-    ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-    ...finalSearchFilters,
-    ...{ offererId: selectedOffererId.toString() },
-    ...(withSwitchVenueFeature
-      ? { venueId: selectedPartnerVenue.id.toString() }
-      : {}),
-  }
-  delete apiFilters.page
-
   const offersQuery = useSWR(
-    [GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY, apiFilters],
+    [queryKey, apiFilters],
     () => {
       const params = serializeApiCollectiveFilters(apiFilters)
 
