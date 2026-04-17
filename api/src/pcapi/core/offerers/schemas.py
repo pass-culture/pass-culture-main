@@ -10,12 +10,10 @@ import pydantic.v1 as pydantic_v1
 from pydantic import BaseModel as BaseModelV2
 from pydantic import alias_generators
 from pydantic.v1 import validator
-from pydantic_core import PydanticCustomError
 
 from pcapi.routes.serialization import BaseModel
+from pcapi.serialization import utils as serialization_utils
 from pcapi.serialization.exceptions import PydanticError
-from pcapi.serialization.utils import HttpUrlString
-from pcapi.serialization.utils import to_camel
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.date import format_into_utc_date
 
@@ -27,7 +25,7 @@ MAX_LATITUDE = 90
 SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
 
 SocialMedias = dict[SocialMedia, pydantic_v1.HttpUrl]
-SocialMediasV2 = dict[SocialMedia, HttpUrlString]
+SocialMediasV2 = dict[SocialMedia, serialization_utils.HttpUrlString]
 
 
 def format_coordinate(value: typing.Any) -> Decimal:
@@ -82,7 +80,7 @@ COMPILED_WEBSITE_URL_REGEX = re.compile(WEBSITE_URL_REGEX, flags=re.IGNORECASE)
 # by others models...
 class VenueContactModel(BaseModel):
     class Config:
-        alias_generator = to_camel
+        alias_generator = serialization_utils.to_camel
         allow_population_by_field_name = True
         orm_mode = True
         anystr_strip_whitespace = True
@@ -120,12 +118,7 @@ class VenueContactModelV2(BaseModelV2):
 
     @pydantic_v2.field_validator("phone_number", mode="after")
     def validate_phone_number(cls, phone_number: str | None) -> str | None:
-        if not phone_number:
-            return None
-        try:
-            return phone_number_utils.ParsedPhoneNumber(phone_number).phone_number
-        except phone_number_utils.InvalidPhoneNumber:
-            raise PydanticCustomError("invalid_phone_number", "Phone number is not recognized")
+        return serialization_utils.validate_phone_number(phone_number)
 
     model_config = pydantic_v2.ConfigDict(
         alias_generator=alias_generators.to_camel,

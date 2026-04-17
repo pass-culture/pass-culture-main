@@ -14,6 +14,7 @@ from pcapi.models import db
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
+from pcapi.utils.phone_number import ParsedPhoneNumber
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -123,7 +124,7 @@ class Returns200Test:
         assert offer.mentalDisabilityCompliant is True
         assert offer.mentalDisabilityCompliant is True
         assert offer.contactEmail == "pouet@example.com"
-        assert offer.contactPhone == "01 99 00 25 68"
+        assert offer.contactPhone == ParsedPhoneNumber(offer.contactPhone).phone_number
         assert offer.interventionArea == ["75", "92", "93"]
         assert len(offer.students) == 2
         assert offer.students[0].value == "Lycée - Seconde"
@@ -153,7 +154,7 @@ class Returns200Test:
         offer = db.session.get(models.CollectiveOfferTemplate, offer_id)
 
         assert offer.contactEmail is None
-        assert offer.contactPhone == "01 99 00 25 68"
+        assert offer.contactPhone == "+33199002568"
 
     def test_with_tz_aware_dates(self, pro_client, payload, template_start, template_end):
         data = {
@@ -574,6 +575,22 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"location.location": ["location n'est pas autorisé pour cette valeur de locationType"]}
+        assert db.session.query(models.CollectiveOfferTemplate).count() == 0
+
+    def test_phone_number(self, pro_client, payload):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
+
+        data = {
+            **payload,
+            "contactPhone": "123",
+        }
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"contactPhone": ["Numéro de téléphone invalide"]}
         assert db.session.query(models.CollectiveOfferTemplate).count() == 0
 
 
