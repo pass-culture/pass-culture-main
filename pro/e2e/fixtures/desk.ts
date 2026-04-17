@@ -8,13 +8,12 @@ import {
 } from '@playwright/test'
 import * as path from 'node:path'
 
-import { login } from '../helpers/auth'
+import { doLogin } from '../helpers/auth'
 import {
   BASE_API_URL,
   createProUserWithBookings,
   type DeskBookingsData,
 } from '../helpers/sandbox'
-import { setFeatureFlags } from '../helpers/features'
 
 export interface AccessibilityResult {
   violations: Array<{
@@ -54,14 +53,11 @@ export const test = base.extend<{
       baseURL: BASE_API_URL,
     })
     const deskData = await createProUserWithBookings(requestContext)
-    await setFeatureFlags(requestContext, [
-      { name: 'WIP_SWITCH_VENUE', isActive: false },
-    ])
     await requestContext.dispose()
 
     const tempContext = await browser.newContext()
     const tempPage = await tempContext.newPage()
-    await login(tempPage, deskData.user.email)
+    await doLogin(tempPage, deskData.user.email, { retry: true })
 
     const storageStatePath = path.join(
       testInfo.project.outputDir,
@@ -98,12 +94,6 @@ export const test = base.extend<{
     const checkAccessibility = async (
       disabledRules: string[] = []
     ): Promise<AccessibilityResult> => {
-      const requestContext = await playwrightRequest.newContext({
-        baseURL: BASE_API_URL,
-      })
-      await setFeatureFlags(requestContext, [
-        { name: 'WIP_SWITCH_VENUE', isActive: false },
-      ])
       const axeBuilder = new AxeBuilder({ page: authenticatedPage })
 
       if (disabledRules.length > 0) {
