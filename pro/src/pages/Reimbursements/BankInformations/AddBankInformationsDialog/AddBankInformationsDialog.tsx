@@ -6,8 +6,11 @@ import {
   DS_BANK_ACCOUNT_PROCEDURE_ID,
   DS_NEW_CALEDONIA_BANK_ACCOUNT_PROCEDURE_ID,
 } from '@/commons/utils/config'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
+import fullLinkIcon from '@/icons/full-link.svg'
 import strokeLinkIcon from '@/icons/stroke-link.svg'
-import { RedirectDialog } from '@/ui-kit/RedirectDialog/RedirectDialog'
+import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 interface ReimbursmentPointDialogProps {
   closeDialog: () => void
@@ -27,29 +30,37 @@ export const AddBankInformationsDialog = ({
   const isCaledonian = useIsCaledonian(withSwitchVenueFeature)
 
   return (
-    <RedirectDialog
+    <ConfirmDialog
       title="Vous allez être redirigé vers le site demarche.numerique.gouv.fr"
       icon={strokeLinkIcon}
       onCancel={closeDialog}
       open={isDialogOpen}
       refToFocusOnClose={dialogTriggerRef}
-      redirectText={'Continuer sur demarche.numerique.gouv.fr'}
-      to={
-        isCaledonian
-          ? DS_NEW_CALEDONIA_BANK_ACCOUNT_PROCEDURE_ID
-          : DS_BANK_ACCOUNT_PROCEDURE_ID
+      overrideConfirm={
+        <Button
+          as="a"
+          to={
+            isCaledonian
+              ? DS_NEW_CALEDONIA_BANK_ACCOUNT_PROCEDURE_ID
+              : DS_BANK_ACCOUNT_PROCEDURE_ID
+          }
+          isExternal={true}
+          opensInNewTab={true}
+          variant={ButtonVariant.PRIMARY}
+          onClick={() => {
+            logEvent(BankAccountEvents.CLICKED_CONTINUE_TO_DS, {
+              offererId,
+            })
+          }}
+          icon={fullLinkIcon}
+          label={'Continuer sur demarche.numerique.gouv.fr'}
+        />
       }
-      isExternal={true}
-      onRedirect={() => {
-        logEvent(BankAccountEvents.CLICKED_CONTINUE_TO_DS, {
-          offererId,
-        })
-      }}
       cancelText={'Annuler'}
     >
       Démarche Numérique est une plateforme sécurisée de démarches
       administratives en ligne qui permet de déposer votre dossier de compte
       bancaire.
-    </RedirectDialog>
+    </ConfirmDialog>
   )
 }
