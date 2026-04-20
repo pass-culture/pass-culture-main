@@ -8,12 +8,12 @@ permissions: write-all
 jobs:
   compute-changes:
     name: Compute changes
-    uses: ./.github/workflows/ci_compute_changes.yml
+    uses: ./.github/workflows/ci_sub_compute_changes.yml
 
   test-changes:
     name: Test changes
     needs: compute-changes
-    uses: ./.github/workflows/ci_test_changes.yml
+    uses: ./.github/workflows/ci_sub_test_changes.yml
     secrets: inherit
     with:
       api-changed: ${{ needs.compute-changes.outputs.api-changed == 'true' }}
@@ -37,20 +37,20 @@ jobs:
     name: "Deploy Storybook"
     needs: [compute-changes, test-changes]
     if: ${{ always() && needs.compute-changes.outputs.pro-changed == 'true' }}
-    uses: ./.github/workflows/ci_deploy_storybook.yml
+    uses: ./.github/workflows/ci_sub_deploy_storybook.yml
 
   deploy-maintenance-site:
     name: "Deploy maintenance site"
     needs: [compute-changes, test-changes]
     if: ${{ always() && needs.compute-changes.outputs.maintenance-site-changed == 'true' }}
-    uses: ./.github/workflows/cd_deploy_maintenance_site.yml
+    uses: ./.github/workflows/cd_sub_deploy_maintenance_site.yml
     secrets: inherit
 
   ping-data-team-on-slack:
     name: "Ping data team on slack"
     needs: [compute-changes, test-changes]
     if: ${{ always() && needs.compute-changes.outputs.alembic-changed == 'true' }}
-    uses: ./.github/workflows/ci_ping_data_team.yml
+    uses: ./.github/workflows/ci_sub_ping_data_team.yml
     secrets: inherit
 
   tag-rc:

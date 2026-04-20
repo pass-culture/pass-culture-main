@@ -79,7 +79,7 @@ jobs:
     name: Build and tag version
     needs: check-docker-images-exist
     if: needs.check-docker-images-exist.outputs.pcapi-exists == 'false' || needs.check-docker-images-exist.outputs.pcapi-console-exists == 'false'
-    uses: ./.github/workflows/cd_create_docker_images_on_registry.yml
+    uses: ./.github/workflows/cd_sub_create_docker_images_on_registry.yml
     secrets: inherit
     with:
       base_ref: ${{ github.sha }}
@@ -91,7 +91,7 @@ jobs:
       - check-docker-images-exist
       - create-docker-images-on-registry
     if: always() && !failure() && !cancelled() && needs.check-docker-images-exist.result == 'success'
-    uses: ./.github/workflows/cd_deploy_app.yml
+    uses: ./.github/workflows/cd_sub_deploy_app.yml
     with:
       environment: testing
       environment_short_name: tst

@@ -1,4 +1,4 @@
-name: "3 [CD] Deploy maintenance site"
+name: 3 [CD] Deploy maintenance site
 
 on:
   workflow_call:

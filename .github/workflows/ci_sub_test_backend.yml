@@ -1,4 +1,4 @@
-name: "3 [CI] Test backend"
+name: 3 [CI] Test backend
 
 on:
   workflow_call:

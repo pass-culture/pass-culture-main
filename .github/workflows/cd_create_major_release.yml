@@ -78,7 +78,7 @@ jobs:
   create-release:
     name: Create major release
     needs: compute-major-version-variables
-    uses: ./.github/workflows/cd_create_release.yml
+    uses: ./.github/workflows/cd_sub_create_release.yml
     with:
       tag-number: ${{ needs.compute-major-version-variables.outputs.release-number }}.0.0
       ref: ${{ needs.compute-major-version-variables.outputs.sha }}

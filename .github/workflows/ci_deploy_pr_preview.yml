@@ -105,7 +105,7 @@ jobs:
   deploy-pro-on-firebase-preview-env:
     name: "[PRO] Deploy PR version for validation pr preview backend"
     needs: [deploy-preview-env-init]
-    uses: ./.github/workflows/cd_deploy_front_pro.yml
+    uses: ./.github/workflows/cd_sub_deploy_front_pro.yml
     permissions:
       id-token: write
       contents: read

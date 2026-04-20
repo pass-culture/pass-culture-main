@@ -1,4 +1,4 @@
-name: "3 [CI] Compute changes"
+name: 3 [CI] Compute changes
 
 on:
   workflow_call:

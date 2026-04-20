@@ -58,7 +58,7 @@ jobs:
   deploy:
     name: Deploy
     needs: version
-    uses: ./.github/workflows/cd_deploy_app.yml
+    uses: ./.github/workflows/cd_sub_deploy_app.yml
     strategy:
       matrix:
         include:
