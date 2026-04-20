@@ -8,12 +8,12 @@ permissions: write-all
 jobs:
   compute-changes:
     name: Compute changes
-    uses: ./.github/workflows/ci_compute_changes.yml
+    uses: ./.github/workflows/ci_sub_compute_changes.yml
 
   test-changes:
     name: Test changes
     needs: compute-changes
-    uses: ./.github/workflows/ci_test_changes.yml
+    uses: ./.github/workflows/ci_sub_test_changes.yml
     secrets: inherit
     with:
       api-changed: ${{ needs.compute-changes.outputs.api-changed == 'true' }}

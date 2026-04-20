@@ -31,7 +31,7 @@ jobs:
     name: Deploy to staging new infra
     needs: get-release-number
     if: always() && !failure() && !cancelled()
-    uses: ./.github/workflows/cd_deploy_app.yml
+    uses: ./.github/workflows/cd_sub_deploy_app.yml
     with:
       environment: staging
       environment_short_name: stg
