@@ -90,7 +90,7 @@ jobs:
           # On a feature branch, we must fetch the whole history to
           # find the common ancestor with master (see `git merge-base`
           # below). On master, the latest commit is enough.
-          fetch-depth: ${{ github.ref == 'master' && 1 || 0 }}
+          fetch-depth: ${{ github.ref == 'refs/heads/master' && 1 || 0 }}
           # By default, on a feature branch, the GitHub Action checks
           # out a merge commit of the pull request (i.e. an artificial
           # commit that would be the result of the merge of the
