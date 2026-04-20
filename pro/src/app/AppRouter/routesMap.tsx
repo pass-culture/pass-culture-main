@@ -22,7 +22,6 @@ import { routesSignup } from './subroutesSignupMap'
 import type { CustomRouteTree } from './types'
 import {
   isNewHomepageEnabled,
-  isSwitchVenueEnabled,
   mustBeAuthenticated,
   mustBeOnboardedWithSelectedPartnerVenue,
   mustBeUnauthenticated,
@@ -452,10 +451,7 @@ export const routes: CustomRouteTree = [
     children: routesSignupJourney,
   },
   {
-    lazy: () =>
-      isSwitchVenueEnabled()
-        ? import('@/pages/Sitemap/NewSitemap')
-        : import('@/pages/Sitemap/Sitemap'),
+    lazy: () => import('@/pages/Sitemap/Sitemap'),
     loader: withUserPermissions(mustBeAuthenticated),
     path: '/plan-du-site',
     title: 'Plan du site',

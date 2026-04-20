@@ -29,13 +29,5 @@ export const mustNotBeOnboardedWithSelectedPartnerVenue = (
 
 export const isNewHomepageEnabled = () => {
   const state = rootStore.getState()
-  return (
-    isSwitchVenueEnabled() && isFeatureActive(state, 'WIP_ENABLE_NEW_PRO_HOME')
-  )
-}
-
-// TODO (igabriele, 2026-03-31): Delete this helper once `WIP_SWITCH_VENUE` FF is enabled and removed.
-export const isSwitchVenueEnabled = () => {
-  const state = rootStore.getState()
-  return isFeatureActive(state, 'WIP_SWITCH_VENUE')
+  return isFeatureActive(state, 'WIP_ENABLE_NEW_PRO_HOME')
 }

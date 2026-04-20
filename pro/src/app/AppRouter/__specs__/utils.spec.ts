@@ -5,7 +5,6 @@ import { configureTestStore } from '@/commons/store/testUtils'
 
 import {
   isNewHomepageEnabled,
-  isSwitchVenueEnabled,
   mustBeAuthenticated,
   mustBeOnboardedWithSelectedPartnerVenue,
   mustBeUnauthenticated,
@@ -160,9 +159,7 @@ describe('utils', () => {
   describe('hasNewHomepage', () => {
     it.each([
       [false, undefined],
-      [false, ['WIP_SWITCH_VENUE']],
-      [false, ['WIP_ENABLE_NEW_PRO_HOME']],
-      [true, ['WIP_ENABLE_NEW_PRO_HOME', 'WIP_SWITCH_VENUE']],
+      [true, ['WIP_ENABLE_NEW_PRO_HOME']],
     ])('should return %s with features=%j', (expectedRes, features) => {
       const store = configureTestStore({
         features: {
@@ -178,28 +175,6 @@ describe('utils', () => {
       })
       vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
       expect(isNewHomepageEnabled()).toBe(expectedRes)
-    })
-  })
-
-  describe('isSwitchVenueEnabled', () => {
-    it.each([
-      [false, undefined],
-      [true, ['WIP_SWITCH_VENUE']],
-    ])('should return %s with features=%j', (expectedRes, features) => {
-      const store = configureTestStore({
-        features: {
-          list: (features ?? []).map(
-            (feature, index): FeatureResponseModel => ({
-              id: index,
-              isActive: true,
-              name: feature,
-            })
-          ),
-          lastLoaded: 0,
-        },
-      })
-      vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
-      expect(isSwitchVenueEnabled()).toBe(expectedRes)
     })
   })
 })
