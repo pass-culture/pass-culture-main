@@ -82,7 +82,9 @@ def get_pre_decree_eligibility(
     return None
 
 
-def get_age_at_first_registration(user: users_models.User, eligibility: users_models.EligibilityType) -> int | None:
+def get_age_at_first_registration(
+    user: users_models.User, eligibility: users_models.EligibilityType | None
+) -> int | None:
     if not user.birth_date:
         return None
 

@@ -185,9 +185,7 @@ def _recredit_grant_17_18_deposit_using_age(user: users_models.User) -> models.R
     if not current_age or not user.deposit:
         return None
 
-    age_at_first_registration = eligibility_api.get_age_at_first_registration(
-        user, users_models.EligibilityType.AGE17_18
-    )
+    age_at_first_registration = eligibility_api.get_age_at_first_registration(user, eligibility=None)
     latest_age_related_recredit: models.Recredit | None = None
     starting_age, end_age = sorted([age_at_first_registration or current_age, current_age])
     for age_to_recredit in range(starting_age, end_age + 1):
