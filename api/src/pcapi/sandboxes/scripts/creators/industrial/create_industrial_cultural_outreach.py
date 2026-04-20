@@ -69,9 +69,10 @@ def create_industrial_cultural_outreach() -> None:
             )
             offers_factories.StockFactory(offer=offer)
             kwargs = {"offer": offer, "status": status}
-            if not claimed:
+            if claimed:
+                cultural_outreach_factories.ClaimedCulturalOutreachFactory.create(**kwargs)
+            else:
                 cultural_outreach_factories.CulturalOutreachFactory.create(**kwargs)
-            cultural_outreach_factories.ClaimedCulturalOutreachFactory.create(**kwargs)
             created += 1
 
     logger.info("created %d cultural outreach offers", created)
