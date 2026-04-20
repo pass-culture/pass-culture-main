@@ -69,12 +69,6 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-const selectCurrentOffererId = vi.hoisted(() => vi.fn())
-vi.mock('@/commons/store/offerer/selectors', async (importOriginal) => ({
-  ...(await importOriginal()),
-  selectCurrentOffererId,
-}))
-
 const setSelectedOffererByIdMock = vi.hoisted(() => vi.fn())
 vi.mock('@/commons/store/user/dispatchers/setSelectedOffererById', () => ({
   setSelectedOffererById: (args: unknown) => {
@@ -129,6 +123,10 @@ const renderValidationScreen = (
           />
           <Route path="/accueil" element={<div>accueil</div>} />
           <Route path="/onboarding" element={<div>onboarding</div>} />
+          <Route
+            path="/rattachement-en-cours"
+            element={<div>rattachement</div>}
+          />
         </Routes>
       </SignupJourneyContext.Provider>
       <SnackBarContainer />
@@ -213,10 +211,51 @@ describe('ValidationScreen', () => {
     expect(await screen.findByText('Musée')).toBeInTheDocument()
     expect(screen.getByText('url1')).toBeInTheDocument()
     expect(screen.getByText('url2')).toBeInTheDocument()
+    expect(screen.getByText('nom')).toBeInTheDocument()
     expect(screen.getByText('nom public')).toBeInTheDocument()
-    expect(screen.getByText('123123123')).toBeInTheDocument()
+    expect(screen.getByText('123 123 123')).toBeInTheDocument()
     expect(screen.getByText('3 Rue de Valois, 75001 Paris')).toBeInTheDocument()
-    expect(screen.getByText('À des groupes scolaires')).toBeInTheDocument()
+    expect(
+      screen.getByText('Aux groupes scolaires via ADAGE')
+    ).toBeInTheDocument()
+  })
+
+  it('should display "non diffusée" if the offerer is not diffusible', async () => {
+    renderValidationScreen({
+      ...contextValue,
+      activity: {
+        activity: 'MUSEUM',
+        socialUrls: ['url1', 'url2'],
+        targetCustomer: Target.EDUCATIONAL,
+        phoneNumber: '',
+        culturalDomains: ['Domaine 1', 'Domaine 2', 'Domaine 3'],
+      },
+      offerer: {
+        name: '',
+        publicName: 'nom public',
+        siret: '123123123',
+        hasVenueWithSiret: false,
+        isDiffusible: false,
+        ...addressInformations,
+        street: 'Adresse non diffusée',
+      },
+    })
+    expect(await screen.findByText('Musée')).toBeInTheDocument()
+    expect(screen.getByText('url1')).toBeInTheDocument()
+    expect(screen.getByText('url2')).toBeInTheDocument()
+    expect(screen.getByText('Domaines d’activité')).toBeInTheDocument()
+    expect(screen.getByText('Domaine 1')).toBeInTheDocument()
+    expect(screen.getByText('Domaine 2')).toBeInTheDocument()
+    expect(screen.getByText('Domaine 3')).toBeInTheDocument()
+    expect(screen.getByText('Non diffusée')).toBeInTheDocument()
+    expect(screen.getByText('nom public')).toBeInTheDocument()
+    expect(screen.getByText('123 123 123')).toBeInTheDocument()
+    expect(
+      screen.getByText('Adresse non diffusée, 75001 Paris')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Aux groupes scolaires via ADAGE')
+    ).toBeInTheDocument()
   })
 
   describe('user actions', () => {
@@ -242,13 +281,12 @@ describe('ValidationScreen', () => {
         initialAddress,
         setInitialAddress: noop,
       }
-      selectCurrentOffererId.mockReturnValue(null)
     })
 
     it('should navigate to activity page with the previous step button', async () => {
       renderValidationScreen(contextValue)
 
-      await userEvent.click(screen.getByText('Étape précédente'))
+      await userEvent.click(screen.getByText('Retour'))
       expect(screen.getByText('Activite')).toBeInTheDocument()
     })
 
@@ -259,7 +297,7 @@ describe('ValidationScreen', () => {
       expect(screen.getByText('Authentification')).toBeInTheDocument()
     })
 
-    it('should navigate to activite page when clicking the second update button', async () => {
+    it('should navigate to activity page when clicking the second update button', async () => {
       renderValidationScreen(contextValue)
       await userEvent.click(screen.getAllByText('Modifier')[1])
 
@@ -407,12 +445,6 @@ describe('ValidationScreen', () => {
       expect(payload.activity).toBe('MUSEUM')
     })
 
-    it('should see the data from the previous forms for validation without public name', async () => {
-      renderValidationScreen(contextValue)
-      expect(await screen.findByText('Musée')).toBeInTheDocument()
-      expect(screen.getByText('nom')).toBeInTheDocument()
-    })
-
     it('should send cultural domains', async () => {
       if (contextValue.activity) {
         contextValue.activity.culturalDomains = [
@@ -435,9 +467,10 @@ describe('ValidationScreen', () => {
       vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
 
       renderValidationScreen(contextValue)
-      expect(
-        screen.getByText('Domaine 1, Domaine II, Domaine C')
-      ).toBeInTheDocument()
+      expect(screen.getByText('Domaines d’activité')).toBeInTheDocument()
+      expect(screen.getByText('Domaine 1')).toBeInTheDocument()
+      expect(screen.getByText('Domaine II')).toBeInTheDocument()
+      expect(screen.getByText('Domaine C')).toBeInTheDocument()
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
       expect(saveNewOnboardingDataMock).toHaveBeenCalledTimes(1)
       const [[payload]] = saveNewOnboardingDataMock.mock.calls
@@ -489,6 +522,54 @@ describe('ValidationScreen', () => {
         token: 'token',
         isOpenToPublic: false,
         phoneNumber: '',
+      })
+    })
+
+    describe('newAccess', () => {
+      beforeEach(() => {
+        vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+          offerersNames: [],
+          offerersNamesWithPendingValidation: [],
+        })
+        vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
+        vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
+          {} as PostOffererResponseModel
+        )
+        vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
+          remove: vi.fn(),
+        } as unknown as HTMLScriptElement)
+        vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
+      })
+
+      it('should navigate to home page if newAccess is full', async () => {
+        setSelectedOffererByIdMock.mockReturnValue(createMockPromise('full'))
+        renderValidationScreen(contextValue, {
+          storeOverrides: {
+            user: {
+              access: 'full',
+            },
+          },
+        })
+        await userEvent.click(screen.getByText('Valider et créer ma structure'))
+        expect(screen.getByText('accueil')).toBeInTheDocument()
+      })
+
+      it('should navigate to onboarding page if newAccess is no-onboarding', async () => {
+        setSelectedOffererByIdMock.mockReturnValue(
+          createMockPromise('no-onboarding')
+        )
+        renderValidationScreen(contextValue)
+        await userEvent.click(screen.getByText('Valider et créer ma structure'))
+        expect(screen.getByText('onboarding')).toBeInTheDocument()
+      })
+
+      it('should navigate to rattachement page if newAccess is unattached', async () => {
+        setSelectedOffererByIdMock.mockReturnValue(
+          createMockPromise('unattached')
+        )
+        renderValidationScreen(contextValue)
+        await userEvent.click(screen.getByText('Valider et créer ma structure'))
+        expect(screen.getByText('rattachement')).toBeInTheDocument()
       })
     })
   })

@@ -33,7 +33,9 @@ import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
 import { setSelectedOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
 import { updateUser } from '@/commons/store/user/reducer'
 import { ensureCurrentUser } from '@/commons/store/user/selectors'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
+import { humanizeSiret } from '@/commons/utils/siren'
 import {
   DEFAULT_ADDRESS_FORM_VALUES,
   DEFAULT_OFFERER_FORM_VALUES,
@@ -49,6 +51,7 @@ import {
 } from '@/design-system/Button/types'
 import fullEditIcon from '@/icons/full-edit.svg'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
+import { formatPhoneNumber } from '@/pages/User/UserProfile/UserPhone/UserPhone'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import styles from './Validation.module.scss'
@@ -76,10 +79,9 @@ export const Validation = (): JSX.Element | undefined => {
   const dispatch = useAppDispatch()
 
   const targetCustomerLabel = {
-    [Target.INDIVIDUAL]: 'Au grand public',
-    [Target.EDUCATIONAL]: 'À des groupes scolaires',
-    [Target.INDIVIDUAL_AND_EDUCATIONAL]:
-      'Au grand public et à des groupes scolaires',
+    [Target.INDIVIDUAL]: 'Aux jeunes via l’application pass Culture',
+    [Target.EDUCATIONAL]: 'Aux groupes scolaires via ADAGE',
+    [Target.INDIVIDUAL_AND_EDUCATIONAL]: 'Aux jeunes et aux groupes scolaires',
   }[activity?.targetCustomer ?? Target.INDIVIDUAL]
 
   useEffect(() => {
@@ -177,6 +179,7 @@ export const Validation = (): JSX.Element | undefined => {
           shouldRefetch: true,
         })
       ).unwrap()
+
       // if the new access is full, we redirect to the home page
       if (userAccess === newAccess && newAccess === 'full') {
         navigate('/accueil')
@@ -223,15 +226,32 @@ export const Validation = (): JSX.Element | undefined => {
           />
         </div>
 
-        <div className={styles['data-displaying']}>
-          <div className={styles['data-line']}>
+        <dl className={styles['data-displaying']}>
+          <dt className={styles['data-term']}>Numéro de SIRET</dt>
+          <dd className={styles['data-definition']}>
+            {humanizeSiret(offerer.siret)}
+          </dd>
+
+          <dt className={styles['data-term']}>Raison sociale</dt>
+          <dd className={styles['data-definition']}>
+            {offerer.name || 'Non diffusée'}
+          </dd>
+
+          <dt className={styles['data-term']}>Nom public</dt>
+          <dd className={styles['data-definition']}>
             {offerer.publicName || offerer.name}
-          </div>
-          <div className={styles['data-line']}>{offerer.siret}</div>
-          <div className={styles['data-line']}>
+          </dd>
+
+          <dt className={styles['data-term']}>Accueil du public</dt>
+          <dd className={styles['data-definition']}>
+            {offerer.isOpenToPublic === 'true' ? 'Oui' : 'Non'}
+          </dd>
+
+          <dt className={styles['data-term']}>Adresse</dt>
+          <dd className={styles['data-definition']}>
             {offerer.street}, {offerer.postalCode} {offerer.city}
-          </div>
-        </div>
+          </dd>
+        </dl>
       </section>
       <section className={styles['validation-screen']}>
         <div className={styles['validation-screen-subtitle']}>
@@ -254,29 +274,55 @@ export const Validation = (): JSX.Element | undefined => {
             label="Modifier"
           />
         </div>
-        <div className={styles['data-displaying']}>
-          <div className={styles['data-line']}>
-            {activityLabel}
-            {activity.activity === 'OTHER' &&
-              ` : ${activity.otherActivityComment}`}
-          </div>
+
+        <dl className={styles['data-displaying']}>
+          <dt className={styles['data-term']}>Activité principale</dt>
+          <dd className={styles['data-definition']}>{activityLabel}</dd>
+
           {(activity.culturalDomains ?? []).length > 0 && (
-            <div className={styles['data-line']}>
-              {activity.culturalDomains?.join(', ')}
-            </div>
+            <>
+              <dt className={styles['data-term']}>
+                {pluralizeFr(
+                  activity.culturalDomains?.length ?? 0,
+                  'Domaine d’activité',
+                  'Domaines d’activité'
+                )}
+              </dt>
+              <dd className={styles['data-definition']}>
+                {(activity.culturalDomains ?? []).map((domain) => (
+                  <div key={domain}>{domain}</div>
+                ))}
+              </dd>
+            </>
           )}
-          {activity.socialUrls.map((url) => (
-            <div className={styles['data-line']} key={url}>
-              {url}
-            </div>
-          ))}
-          <div className={styles['data-line']}>{targetCustomerLabel}</div>
-        </div>
+
+          <dt className={styles['data-term']}>Téléphone</dt>
+          <dd className={styles['data-definition']}>
+            {formatPhoneNumber(activity.phoneNumber)}
+          </dd>
+
+          {activity.socialUrls.length > 0 && (
+            <>
+              <dt className={styles['data-term']}>
+                {pluralizeFr(
+                  activity.socialUrls.length,
+                  'Site internet',
+                  'Sites internet'
+                )}
+              </dt>
+              <dd className={styles['data-definition']}>
+                {activity.socialUrls.map((url) => (
+                  <div key={url}>{url}</div>
+                ))}
+              </dd>
+            </>
+          )}
+
+          <dt className={styles['data-term']}>Public cible</dt>
+          <dd className={styles['data-definition']}>{targetCustomerLabel}</dd>
+        </dl>
       </section>
-      <Banner
-        title="Modification possible"
-        description="Ces informations pourront être modifiées dans la page dédiée de votre espace."
-      />
+      <Banner title="Vous pourrez modifier ces informations à tout moment depuis votre espace partenaire." />
 
       <ActionBar
         onClickPrevious={handlePreviousStep}
@@ -285,6 +331,7 @@ export const Validation = (): JSX.Element | undefined => {
         onClickNext={onSubmit}
         isDisabled={loading}
         withRightIcon={false}
+        previousStepTitle="Retour"
         nextStepTitle="Valider et créer ma structure"
       />
     </div>
