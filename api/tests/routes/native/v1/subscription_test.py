@@ -931,7 +931,7 @@ class BonusTest:
                 "firstNames": ["Alexis"],
                 "birthDate": "1982-12-27",
                 "gender": "Mme",
-                "birthCountryCogCode": "91100",
+                "birthCountryCogCode": "99100",
                 "birthCityCogCode": "08480",
             },
         )
@@ -951,7 +951,7 @@ class BonusTest:
                 "first_names": ["Alexis"],
                 "birth_date": "1982-12-27",
                 "gender": "Mme",
-                "birth_country_cog_code": "91100",
+                "birth_country_cog_code": "99100",
                 "birth_city_cog_code": "08480",
             },
         }
@@ -978,7 +978,7 @@ class BonusTest:
                 "firstNames": ["Alexis"],
                 "birthDate": "1982-12-27",
                 "gender": "Mme",
-                "birthCountryCogCode": "91100",
+                "birthCountryCogCode": "99100",
                 "birthCityCogCode": "08480",
             },
         )
@@ -999,7 +999,7 @@ class BonusTest:
                 "firstNames": ["Alexis"],
                 "birthDate": "1982-12-27",
                 "gender": "Mme",
-                "birthCountryCogCode": "91100",
+                "birthCountryCogCode": "99100",
                 "birthCityCogCode": "08480",
             },
         )
@@ -1019,7 +1019,7 @@ class BonusTest:
                 "firstNames": ["Alexis"],
                 "birthDate": "1982-12-27",
                 "gender": "Mme",
-                "birthCountryCogCode": "91100",
+                "birthCountryCogCode": "99100",
                 "birthCityCogCode": "08480",
             },
         )
