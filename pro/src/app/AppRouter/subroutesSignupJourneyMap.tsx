@@ -18,53 +18,35 @@ export const routesSignupJourney: CustomRouteGroupChild[] = [
     loader: withUserPermissions(mustBeAuthenticated),
     path: '/inscription/structure/recherche',
     title: 'Structure - Parcours d’inscription',
-    meta: {
-      canBeUnattached: true,
-    },
   },
   {
     element: <SignupJourneyOfferers />,
     loader: withUserPermissions(mustBeAuthenticated),
     path: '/inscription/structure/rattachement',
     title: 'Rattachement à une structure - Parcours d’inscription',
-    meta: {
-      canBeUnattached: true,
-    },
   },
   {
     element: <ConfirmedAttachment />,
     loader: withUserPermissions(mustBeAuthenticated),
     path: '/inscription/structure/rattachement/confirmation',
     title: 'Confirmation rattachement à une structure - Parcours d’inscription',
-    meta: {
-      canBeUnattached: true,
-    },
   },
   {
     element: <OffererAuthentication />,
     loader: withUserPermissions(mustBeAuthenticated),
     path: '/inscription/structure/identification',
     title: 'Identification - Parcours d’inscription',
-    meta: {
-      canBeUnattached: true,
-    },
   },
   {
     element: <Activity />,
     loader: withUserPermissions(mustBeAuthenticated),
     path: '/inscription/structure/activite',
     title: 'Activité - Parcours d’inscription',
-    meta: {
-      canBeUnattached: true,
-    },
   },
   {
     element: <Validation />,
     loader: withUserPermissions(mustBeAuthenticated),
     path: '/inscription/structure/confirmation',
     title: 'Validation - Parcours d’inscription',
-    meta: {
-      canBeUnattached: true,
-    },
   },
 ]
