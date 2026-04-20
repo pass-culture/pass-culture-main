@@ -72,7 +72,7 @@ runs:
         use_dns_based_endpoint: true
 
     - name: "Play pre-migrations"
-      uses: pass-culture/common-workflows/actions/pcapi-migration@73029c1421186a1367e310c3fae8517f193f52e0 # pcapi-migration/v0.3.1
+      uses: pass-culture/common-workflows/actions/pcapi-migration@b70ca9a61c1a2af1922beea0b08ae183dae26c71 # pcapi-migration/v0.3.2
       with:
         environment: "pcapi-${{ inputs.environment }}"
         app_version: ${{ inputs.app_version }}
@@ -108,7 +108,7 @@ runs:
         use_dns_based_endpoint: true
 
     - name: "Play post-migrations"
-      uses: pass-culture/common-workflows/actions/pcapi-migration@73029c1421186a1367e310c3fae8517f193f52e0 # pcapi-migration/v0.3.1
+      uses: pass-culture/common-workflows/actions/pcapi-migration@b70ca9a61c1a2af1922beea0b08ae183dae26c71 # pcapi-migration/v0.3.2
       with:
         environment: "pcapi-${{ inputs.environment }}"
         app_version: ${{ inputs.app_version }}
