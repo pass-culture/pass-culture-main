@@ -1,7 +1,6 @@
-name: "3 [on_workflow/API] MyPy cop"
+name: "3 [CI] MyPy cop"
 
-on:
-  workflow_call
+on: workflow_call
 
 jobs:
   run-mypy-cop:

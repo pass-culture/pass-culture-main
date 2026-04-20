@@ -43,14 +43,14 @@ jobs:
     name: "Deploy maintenance site"
     needs: [compute-changes, test-changes]
     if: ${{ always() && needs.compute-changes.outputs.maintenance-site-changed == 'true' }}
-    uses: ./.github/workflows/dev_on_workflow_deploy_maintenance_site.yml
+    uses: ./.github/workflows/cd_deploy_maintenance_site.yml
     secrets: inherit
 
   ping-data-team-on-slack:
     name: "Ping data team on slack"
     needs: [compute-changes, test-changes]
     if: ${{ always() && needs.compute-changes.outputs.alembic-changed == 'true' }}
-    uses: ./.github/workflows/dev_on_workflow_ping_data_team.yml
+    uses: ./.github/workflows/ci_ping_data_team.yml
     secrets: inherit
 
   tag-rc:

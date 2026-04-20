@@ -1,12 +1,10 @@
-name: "3 [on_workflow] Deploy maintenance site"
+name: "3 [CD] Deploy maintenance site"
 
 on:
   workflow_call:
     secrets:
-      GCP_EHP_SERVICE_ACCOUNT:
-        required: true
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
-        required: true
+      GCP_EHP_SERVICE_ACCOUNT: { required: true }
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: { required: true }
 
 jobs:
   deploy:
@@ -14,28 +12,28 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - name: 'Authenticate to Google Cloud'
+      - name: "Authenticate to Google Cloud"
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Get Secret"
-        id: 'secrets'
+        id: "secrets"
         uses: google-github-actions/get-secretmanager-secrets@bc9c54b29fdffb8a47776820a7d26e77b379d262 # v3.0.0
         with:
           secrets: |-
             MAINTENANCE_SITE_DEPLOY_SA:passculture-metier-ehp/passculture-main-production-maintenance-site-deploy-service-account
             MAINTENANCE_SITE_BUCKET:passculture-metier-ehp/passculture-main-production-maintenance-site-bucket
             GCP_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/gcp_metier_prod_workload_identity_provider
-      - name: 'Set up gcloud SDK'
+      - name: "Set up gcloud SDK"
         uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
-      - name: 'Authenticate to Google Cloud'
+      - name: "Authenticate to Google Cloud"
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
         with:
           workload_identity_provider: ${{ steps.secrets.outputs.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ steps.secrets.outputs.MAINTENANCE_SITE_DEPLOY_SA }}
-      - name: 'Set up Cloud SDK'
+      - name: "Set up Cloud SDK"
         uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
-      - name: 'Push web site files to bucket'
+      - name: "Push web site files to bucket"
         working-directory: maintenance-site
-        run:  gsutil rsync  -x '.*/\..*|^\..*' -r . gs://passculture-metier-prod-production-maintenance
+        run: gsutil rsync  -x '.*/\..*|^\..*' -r . gs://passculture-metier-prod-production-maintenance

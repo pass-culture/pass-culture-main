@@ -1,4 +1,4 @@
-name: "2 [on_schedule] Delete pullrequest deployments"
+name: 2 Delete PR deployments
 
 on:
   workflow_dispatch:

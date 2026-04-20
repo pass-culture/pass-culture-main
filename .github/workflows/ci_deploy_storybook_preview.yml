@@ -1,4 +1,4 @@
-name: "[on_dispatch] Deploy preview Storybook"
+name: "[CI] Deploy Storybook preview"
 
 on:
   workflow_dispatch:

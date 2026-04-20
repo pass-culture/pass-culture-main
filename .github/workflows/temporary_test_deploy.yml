@@ -13,7 +13,7 @@ permissions:
 jobs:
   deploy-to-ops:
     name: "Deploy to ops"
-    uses: ./.github/workflows/dev_on_workflow_deploy.yml
+    uses: ./.github/workflows/cd_deploy_app.yml
     with:
       environment: opsv2
       environment_short_name: opsv2

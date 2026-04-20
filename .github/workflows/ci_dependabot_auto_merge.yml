@@ -1,4 +1,4 @@
-name: "3 [on_workflow] Dependabot auto-merge"
+name: 3 [CI] Dependabot auto-merge
 
 permissions:
   contents: write
@@ -7,12 +7,8 @@ permissions:
 on:
   workflow_call:
     secrets:
-      PASSCULTURE_GITHUB_ACTION_APP_ID:
-        required: true
-        description: "Github Application ID to use to clone other repos"
-      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY:
-        required: true
-        description: "Private key for the Github application used to clone other repos"
+      PASSCULTURE_GITHUB_ACTION_APP_ID: { required: true }
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: { required: true }
 
 jobs:
   dependabot:

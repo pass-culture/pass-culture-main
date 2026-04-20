@@ -1,9 +1,7 @@
-name: "1 [on_pull_request] Ping data team on significant DB changes"
+name: 1 [CI] Ping data team on significant DB changes
 
 on:
-  pull_request:
-    types:
-      - closed
+  pull_request: { types: closed }
 
 permissions: write-all
 

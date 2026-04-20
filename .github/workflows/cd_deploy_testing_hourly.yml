@@ -91,7 +91,7 @@ jobs:
       - check-docker-images-exist
       - create-docker-images-on-registry
     if: always() && !failure() && !cancelled() && needs.check-docker-images-exist.result == 'success'
-    uses: ./.github/workflows/dev_on_workflow_deploy.yml
+    uses: ./.github/workflows/cd_deploy_app.yml
     with:
       environment: testing
       environment_short_name: tst

@@ -1,4 +1,4 @@
-name: "3 [on_workflow] Deploy"
+name: "3 [CD] Deploy"
 on:
   workflow_call:
     inputs:
@@ -165,7 +165,7 @@ jobs:
       always() &&
       inputs.environment == 'testing' &&
       inputs.deploy_pro == true
-    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
+    uses: ./.github/workflows/cd_deploy_front_pro.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -270,7 +270,6 @@ jobs:
           kubectl -n "$ENV" wait --for=condition=complete --timeout=1800s "job/${JOB_NAME}"
           echo "Job ${JOB_NAME} completed successfully"
           kubectl -n "$ENV" logs "job/${JOB_NAME}"
-
 
   apply-algolia-config:
     name: "apply Algolia settings"
