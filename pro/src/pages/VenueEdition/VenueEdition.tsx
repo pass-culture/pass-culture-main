@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { generatePath, useLocation, useNavigate, useParams } from 'react-router'
+import { useLocation, useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -26,8 +26,6 @@ import { CollectiveDataEdition } from '@/pages/Offerers/Offerer/VenueV1/VenueEdi
 import { formatAndOrderVenues } from '@/repository/venuesService'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
-import type { NavLinkItem } from '@/ui-kit/Tabs/NavLinkItems/NavLinkItems'
-import { Tabs } from '@/ui-kit/Tabs/Tabs'
 
 import { VenueEditionFormScreen } from './components/VenueEditionFormScreen'
 import { VenueEditionHeader } from './components/VenueEditionHeader'
@@ -73,9 +71,7 @@ export const VenueEdition = (): JSX.Element | null => {
 
   const context = location.pathname.includes('collectif')
     ? 'collective'
-    : location.pathname.includes('page-partenaire')
-      ? 'partnerPage'
-      : 'address'
+    : 'partnerPage'
 
   useEffect(() => {
     if (context === 'partnerPage' && !hasSeenVolunteeringSection) {
@@ -97,32 +93,8 @@ export const VenueEdition = (): JSX.Element | null => {
 
   const isNotReady = venueQuery.isLoading || !venue
 
-  const tabs: NavLinkItem<string>[] = [
-    {
-      key: 'individual',
-      label: 'Pour le grand public',
-      url: generatePath('/structures/:offererId/lieux/:venueId', {
-        offererId: String(venue?.managingOfferer.id),
-        venueId: String(venue?.id),
-      }),
-    },
-    {
-      key: 'collective',
-      label: 'Pour les enseignants',
-      url: generatePath('/structures/:offererId/lieux/:venueId/collectif', {
-        offererId: String(venue?.managingOfferer.id),
-        venueId: String(venue?.id),
-      }),
-    },
-  ]
-
   const titleText =
-    context === 'collective'
-      ? 'Page dans ADAGE'
-      : context === 'partnerPage'
-        ? 'Page sur l’application'
-        : 'Page adresse'
-
+    context === 'collective' ? 'Page dans ADAGE' : 'Page sur l’application'
   return (
     <BasicLayout mainHeading={titleText}>
       {isNotReady ? (
@@ -131,7 +103,7 @@ export const VenueEdition = (): JSX.Element | null => {
         <div>
           {!withSwitchVenueFeature && (
             <FormLayout>
-              {context !== 'address' && venuesOptions.length > 1 && (
+              {venuesOptions.length > 1 && (
                 <>
                   <FormLayout.Row mdSpaceAfter>
                     <Select
@@ -166,17 +138,6 @@ export const VenueEdition = (): JSX.Element | null => {
             </FormLayout>
           )}
           <VenueEditionHeader venue={venue} context={context} key={venue.id} />
-
-          {!venue.isPermanent && (
-            <Tabs
-              type="links"
-              items={tabs}
-              navLabel={`Sous menu - ${titleText}`}
-              selectedKey={
-                context === 'collective' ? 'collective' : 'individual'
-              }
-            />
-          )}
 
           {context === 'collective' ? (
             <CollectiveDataEdition venue={venue} />

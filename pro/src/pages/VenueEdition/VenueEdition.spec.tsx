@@ -40,17 +40,13 @@ const SECOND_VENUE = {
 }
 
 const renderVenueEdition = ({
-  context = 'address',
+  context,
   options,
 }: VenueEditionTestProps = {}) => {
   const offererId = defaultGetOffererResponseModel.id
   const venueId = defaultGetVenue.id
   const translatedContext =
-    context === 'adage'
-      ? '/collectif'
-      : context === 'partnerPage'
-        ? '/page-partenaire'
-        : ''
+    context === 'adage' ? '/collectif' : '/page-partenaire'
   const initialPath = `/structures/${offererId}/lieux/${venueId}${translatedContext}/edition`
 
   return renderWithProviders(
@@ -125,11 +121,6 @@ const baseVenue: GetVenueResponseModel = {
   isPermanent: true,
 }
 
-const notValidatedVenue: GetVenueResponseModel = {
-  ...defaultGetVenue,
-  isPermanent: false,
-}
-
 describe('VenueEdition', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getVenues').mockResolvedValue({
@@ -177,14 +168,6 @@ describe('VenueEdition', () => {
       expect(
         screen.getByRole('heading', { name: 'Page sur l’application' })
       ).toBeInTheDocument()
-    })
-
-    it('should display "Page adresse" for a non-permanent venue & individual partner page', async () => {
-      renderVenueEdition({ context: 'address' })
-
-      await waitForElementToBeRemoved(screen.getByTestId('spinner'))
-
-      expect(screen.getByText('Page adresse')).toBeInTheDocument()
     })
 
     it('should display "Page dans ADAGE" for a collective partner page', async () => {
@@ -285,28 +268,6 @@ describe('VenueEdition', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should not let choose an other partner page when on adress page', async () => {
-      renderVenueEdition({ context: 'address' })
-
-      await waitForElementToBeRemoved(screen.getByTestId('spinner'))
-
-      expect(screen.getByText('Page adresse')).toBeInTheDocument()
-      expect(
-        screen.queryByLabelText('Sélectionnez votre page partenaire')
-      ).not.toBeInTheDocument()
-    })
-
-    it('should display the selector only for new navigation', async () => {
-      vi.spyOn(api, 'getVenue').mockResolvedValue(notValidatedVenue)
-      renderVenueEdition()
-
-      await waitForElementToBeRemoved(screen.getByTestId('spinner'))
-
-      expect(
-        screen.queryByText('Page sur l’application')
-      ).not.toBeInTheDocument()
-    })
-
     it('should set HAS_SEEN_VOLUNTEERING_SECTION to true when visiting the partner page', async () => {
       renderVenueEdition({ context: 'partnerPage' })
 
@@ -315,32 +276,6 @@ describe('VenueEdition', () => {
       expect(
         localStorage.getItem('PASS_CULTURE_HAS_SEEN_VOLUNTEERING_SECTION')
       ).toBe('true')
-    })
-  })
-
-  describe('about tab navigation', () => {
-    it('should not display tab navigation for permanent venues', async () => {
-      vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
-        ...baseVenue,
-        isPermanent: true,
-      })
-      renderVenueEdition({ options: { user: sharedCurrentUserFactory() } })
-      await waitForElementToBeRemoved(screen.getByTestId('spinner'))
-
-      expect(screen.queryByText('Pour le grand public')).not.toBeInTheDocument()
-      expect(screen.queryByText('Pour les enseignants')).not.toBeInTheDocument()
-    })
-
-    it('should display tab navigation for not permanent venues', async () => {
-      vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
-        ...baseVenue,
-        isPermanent: false,
-      })
-      renderVenueEdition()
-      await waitForElementToBeRemoved(screen.getByTestId('spinner'))
-
-      expect(screen.getByText('Pour le grand public')).toBeInTheDocument()
-      expect(screen.getByText('Pour les enseignants')).toBeInTheDocument()
     })
   })
 
@@ -392,7 +327,7 @@ describe('VenueEdition', () => {
         ...baseVenue,
         isPermanent: true,
       })
-      renderVenueEdition({ context: 'address' })
+      renderVenueEdition()
 
       await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 
@@ -401,22 +336,6 @@ describe('VenueEdition', () => {
           /Complétez les modalités d'accessibilité de votre établissement sur acceslibre.beta.gouv.fr/
         )
       ).toBeInTheDocument()
-    })
-
-    it('should not display the acces libre callout for non permanent venues', async () => {
-      vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
-        ...baseVenue,
-        isPermanent: false,
-      })
-      renderVenueEdition({ context: 'address' })
-
-      await waitForElementToBeRemoved(screen.getByTestId('spinner'))
-
-      expect(
-        screen.queryByText(
-          'Renseignez facilement les modalités d’accessibilité de votre établissement sur la plateforme collaborative acceslibre.beta.gouv.fr'
-        )
-      ).not.toBeInTheDocument()
     })
   })
 })
