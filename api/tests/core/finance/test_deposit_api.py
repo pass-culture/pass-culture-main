@@ -587,6 +587,7 @@ class UserRecreditTest:
                 age=16, phoneNumber="+33600000000", deposit__amount=12, deposit__expirationDate=next_week
             )
             user_2 = users_factories.BeneficiaryFactory(age=17, deposit__expirationDate=next_week)
+            factories.RecreditFactory(deposit=user_2.deposit, recreditType=models.RecreditType.RECREDIT_17)
 
         with time_machine.travel(pcapi_settings.CREDIT_V3_DECREE_DATETIME):
             # finish steps for user 2

@@ -2270,11 +2270,18 @@ class ActivateBeneficiaryIfNoMissingStepTest:
     @time_machine.travel("2025-03-03")
     def test_underage_transition_to_18_after_decree(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
-        user = users_factories.Transition1718Factory(_phoneNumber="0123456789", dateCreated=before_decree)
-        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
-        subscription_factories.HonorStatementFraudCheckFactory(user=user)
+        with time_machine.travel(before_decree):
+            user = users_factories.BeneficiaryFactory(age=17, _phoneNumber="0123456789")
+            finance_factories.RecreditFactory(
+                deposit=user.deposit, recreditType=finance_models.RecreditType.RECREDIT_17
+            )
 
-        is_user_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+        year_when_user_reached_eighteen = before_decree + relativedelta(years=1)
+        with time_machine.travel(year_when_user_reached_eighteen):
+            subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+            subscription_factories.HonorStatementFraudCheckFactory(user=user)
+
+            is_user_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
 
         assert is_user_activated
         assert user.is_beneficiary
@@ -2297,8 +2304,29 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert recredit.recreditType == finance_models.RecreditType.RECREDIT_18
         assert user.recreditAmountToShow == 150
 
+    def test_post_decree_when_registration_started_at_16_before_decree(self):
+        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(weeks=1)
+        with time_machine.travel(before_decree):
+            user = users_factories.HonorStatementValidatedUserFactory(age=16, _phoneNumber="0123456789")
+
+        year_when_user_reached_eighteen = before_decree + relativedelta(years=2)
+        with time_machine.travel(year_when_user_reached_eighteen):
+            subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+            subscription_factories.HonorStatementFraudCheckFactory(user=user)
+
+            is_user_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+        assert is_user_activated
+        assert user.is_beneficiary
+        assert user.deposit.type == finance_models.DepositType.GRANT_17_18
+
+        recredit_types = [recredit.recreditType for recredit in user.deposit.recredits]
+        assert set(recredit_types) == {finance_models.RecreditType.RECREDIT_17, finance_models.RecreditType.RECREDIT_18}
+        assert user.deposit.amount == 50 + 150
+        assert user.recreditAmountToShow == 50 + 150
+
     @pytest.mark.parametrize("age", [18, 19, 20])
-    def test_post_decree_when_registration_started_at_17(self, age):
+    def test_post_decree_when_registration_started_at_17_after_decree(self, age):
         starting_age = 17
         user = users_factories.HonorStatementValidatedUserFactory(age=starting_age, _phoneNumber="0123456789")
 
