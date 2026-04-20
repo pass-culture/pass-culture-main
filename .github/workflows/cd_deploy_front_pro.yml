@@ -1,4 +1,4 @@
-name: "3 [on_workflow/PRO] Deploy PR version for validation"
+name: "3 [CD] Deploy front PRO"
 
 on:
   workflow_call:
@@ -36,7 +36,7 @@ on:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
     outputs:
-      pro_url: 
+      pro_url:
         description: "The pro (firebase) preview URL"
         value: ${{ jobs.deploy_on_firebase.outputs.pro_url }}
 

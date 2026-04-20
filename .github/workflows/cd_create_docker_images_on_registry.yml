@@ -31,7 +31,7 @@ jobs:
     strategy:
       matrix:
         image: [pcapi, pcapi-console]
-    uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
+    uses: ./.github/workflows/docker_build_image.yml
     with:
       image: ${{ matrix.image }}
       base_ref: ${{ inputs.base_ref }}
@@ -39,7 +39,7 @@ jobs:
 
   push-images:
     name: Push Docker images
-    uses: ./.github/workflows/dev_on_workflow_push_docker_image_passdirector.yml
+    uses: ./.github/workflows/docker_push_image_passdirector.yml
     needs: build-images
     strategy:
       matrix:

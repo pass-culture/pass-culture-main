@@ -1,4 +1,4 @@
-name: '3 [on_workflow] Build docker image'
+name: 3 Build docker image
 
 on:
   workflow_call:
@@ -18,7 +18,6 @@ on:
         # Can be a branch name, a tag or a commit.
         required: false
         type: string
-
 
 jobs:
   build-docker-image:

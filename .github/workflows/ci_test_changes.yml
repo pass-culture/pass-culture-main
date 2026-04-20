@@ -40,7 +40,7 @@ jobs:
   build-backend-image:
     name: Build backend image
     if: ${{ inputs.github-changed || inputs.api-changed || inputs.pro-changed }}
-    uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
+    uses: ./.github/workflows/docker_build_image.yml
     with:
       image: pcapi-tests
       tag: ${{ github.sha }}

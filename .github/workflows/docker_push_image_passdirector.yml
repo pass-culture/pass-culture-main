@@ -1,6 +1,6 @@
 # Ideally this would be an action and not a worklow since we could probably reuse the environment
 # and not reinstall everything everytime. But this does not fit the architecture of our CI well for now
-name: '3 [on_workflow] push docker image with passdirector'
+name: "3 [on_workflow] push docker image with passdirector"
 on:
   workflow_call:
     inputs:
@@ -16,10 +16,10 @@ on:
       tag_latest:
         required: false
         default: false
-        type: boolean 
+        type: boolean
     secrets:
       WORKLOAD_IDENTITY_PRD:
-        description: 'Workload Identity Provider for fetching secrets in Secret Manager'
+        description: "Workload Identity Provider for fetching secrets in Secret Manager"
         required: true
       PASSCULTURE_GITHUB_ACTION_APP_ID:
         required: true
@@ -33,7 +33,7 @@ permissions:
 jobs:
   push-images:
     runs-on: ubuntu-22.04
-    environment: 
+    environment:
       name: ${{ inputs.environment }}
       deployment: false
     steps:
@@ -50,8 +50,8 @@ jobs:
           cosign-release: "v3.0.5"
       - name: Install passdirector
         uses: ./.github/actions/setup-passdirector
-        with: 
-          version: IC-1020-docker-push 
+        with:
+          version: IC-1020-docker-push
           github_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID}}
           github_app_private_key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY}}
       - name: Download artifact

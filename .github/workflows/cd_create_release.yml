@@ -36,7 +36,7 @@ jobs:
     strategy:
       matrix:
         environment: [staging, production, integration]
-    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
+    uses: ./.github/workflows/cd_deploy_front_pro.yml
     with:
       ENV: ${{ matrix.environment }}
       CHANNEL: "${{ inputs.tag-number }}"
