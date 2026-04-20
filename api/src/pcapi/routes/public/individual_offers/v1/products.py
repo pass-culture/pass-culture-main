@@ -565,6 +565,9 @@ def edit_product(body: products_serializers.ProductOfferEdition) -> serializatio
 
     venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body)
 
+    if venue:
+        authorization.get_venue_provider_or_raise_404(venue.id)
+
     updates = body.dict(by_alias=True, exclude_unset=True)
     dc = updates.get("accessibility", {})
     extra_data = copy.deepcopy(offer.extraData)
