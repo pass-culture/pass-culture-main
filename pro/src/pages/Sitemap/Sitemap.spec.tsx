@@ -10,10 +10,10 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import { NewSitemap } from '../NewSitemap'
+import { Sitemap } from './Sitemap'
 
 const renderNewSitemap = (options: RenderWithProvidersOptions = {}) => {
-  return renderWithProviders(<NewSitemap />, {
+  return renderWithProviders(<Sitemap />, {
     ...options,
     user: sharedCurrentUserFactory(),
     storeOverrides: {

@@ -13,8 +13,8 @@
     margin-bottom: var(--size-spacing-s);
   }
 
-  &-title {
-    @include fonts.body-accent;
+  &-subtitle {
+    @include fonts.body;
   }
 }
 
@@ -26,7 +26,13 @@
 }
 
 .sitemap-link {
-  @include fonts.body-accent;
+  @include fonts.body;
+
+  text-decoration: underline;
+}
+
+.sitemap-section-link {
+  @include fonts.title4;
 
   text-decoration: underline;
 }

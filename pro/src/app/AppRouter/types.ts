@@ -1,16 +1,5 @@
 import type { IndexRouteObject, NonIndexRouteObject } from 'react-router'
 
-// TODO (igabriele, 2026-02-04): Delete this interface once `WIP_SWITCH_VENUE` FF is enabled and removed.
-/** @deprecated Replaced by `loader: withUserPermissions(...)`. */
-interface CustomRouteMeta {
-  public?: boolean
-  canBeLoggedIn?: boolean
-  unattachedOnly?: boolean
-  canBeUnattached?: boolean
-  onboardingOnly?: boolean
-  canBeOnboarding?: boolean
-}
-
 export interface CustomRouteHandle {
   isErrorPage?: boolean
   // TODO (igabriele, 2026-02-04): Make `title` required once the new route-based layout is fully implemented.
@@ -19,8 +8,6 @@ export interface CustomRouteHandle {
 
 interface CustomRouteBase extends NonIndexRouteObject {
   path: string
-  /** @deprecated Replaced by `loader: withUserPermissions(...)`. */
-  meta?: CustomRouteMeta
   /** FF necessary to access the route */
   featureName?: string
   /** FF that disables the route */

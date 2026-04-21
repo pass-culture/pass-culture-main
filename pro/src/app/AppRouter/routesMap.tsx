@@ -22,7 +22,6 @@ import { routesSignup } from './subroutesSignupMap'
 import type { CustomRouteTree } from './types'
 import {
   isNewHomepageEnabled,
-  isSwitchVenueEnabled,
   mustBeAuthenticated,
   mustBeOnboardedWithSelectedPartnerVenue,
   mustBeUnauthenticated,
@@ -43,9 +42,6 @@ export const routes: CustomRouteTree = [
     loader: withUserPermissions(mustBeUnauthenticated),
     path: '/',
     title: 'Espace acteurs culturels',
-    meta: {
-      public: true,
-    },
   },
   administrationRouteGroup,
   partnerRouteGroup,
@@ -59,12 +55,10 @@ export const routes: CustomRouteTree = [
   {
     path: '/adage-iframe/*',
     loader: withUserPermissions(mustBeUnauthenticated),
-    meta: { public: true },
     children: [
       {
         path: '*',
         loader: withUserPermissions(mustBeUnauthenticated),
-        meta: { public: true },
         title: 'ADAGE',
         lazy: () => import('@/pages/AdageIframe/app/App'),
       },
@@ -77,7 +71,6 @@ export const routes: CustomRouteTree = [
       ),
     path: '/adage-iframe/erreur',
     loader: withUserPermissions(mustBeUnauthenticated),
-    meta: { public: true },
     title: 'ADAGE',
   },
   {
@@ -85,7 +78,6 @@ export const routes: CustomRouteTree = [
     loader: withUserPermissions(mustBeUnauthenticated),
     path: '/inscription',
     title: 'Créez votre compte',
-    meta: { public: true },
     children: routesSignup,
   },
   {
@@ -93,7 +85,6 @@ export const routes: CustomRouteTree = [
     loader: noop,
     path: '/erreur/indisponible',
     title: 'Page indisponible',
-    meta: { public: true, canBeLoggedIn: true },
     handle: {
       isErrorPage: true,
     },
@@ -118,14 +109,12 @@ export const routes: CustomRouteTree = [
     loader: withUserPermissions(mustBeUnauthenticated),
     path: '/connexion',
     title: 'Connectez-vous',
-    meta: { public: true },
   },
   {
     lazy: () => import('@/pages/EmailChangeValidation/EmailChangeValidation'),
     loader: noop,
     path: '/email_validation',
     title: 'Valider l’adresse email',
-    meta: { public: true },
   },
   {
     element: <Navigate to="/collaborateurs" />,
@@ -195,9 +184,6 @@ export const routes: CustomRouteTree = [
     loader: withUserPermissions(mustHaveSelectedPartnerVenue),
     path: '/structures/:offererId/lieux/:venueId/parametres',
     title: 'Paramètres généraux',
-    meta: {
-      canBeOnboarding: true,
-    },
   },
   {
     lazy: () => import('@/pages/CollectiveOffer/CollectiveOfferType/OfferType'),
@@ -402,21 +388,18 @@ export const routes: CustomRouteTree = [
     loader: withUserPermissions(mustBeUnauthenticated),
     path: '/demande-mot-de-passe/:token',
     title: 'Réinitialisez votre mot de passe',
-    meta: { public: true },
   },
   {
     element: <NavigateToNewPasswordReset to="/demande-mot-de-passe" />,
     loader: withUserPermissions(mustBeUnauthenticated),
     path: '/mot-de-passe-perdu',
     title: 'Réinitialisez votre mot de passe',
-    meta: { public: true },
   },
   {
     lazy: () => import('@/pages/LostPassword/LostPassword'),
     loader: withUserPermissions(mustBeUnauthenticated),
     path: '/demande-mot-de-passe',
     title: 'Réinitialisez votre mot de passe',
-    meta: { public: true },
   },
   {
     lazy: () => import('@/pages/IndividualOfferWizard/IndividualOfferWizard'),
@@ -431,18 +414,12 @@ export const routes: CustomRouteTree = [
     path: '/onboarding/offre/individuelle',
     title: 'Offre étape par étape',
     children: routesOnboardingIndividualOfferWizard,
-    meta: {
-      onboardingOnly: true,
-    },
   },
   {
     lazy: () => import('@/pages/User/UserProfile'),
     loader: withUserPermissions(mustBeAuthenticated),
     path: '/profil',
     title: 'Profil',
-    meta: {
-      canBeOnboarding: true,
-    },
   },
   {
     lazy: () => import('@/pages/SignupJourneyRoutes/SignupJourneyRoutes'),
@@ -452,10 +429,7 @@ export const routes: CustomRouteTree = [
     children: routesSignupJourney,
   },
   {
-    lazy: () =>
-      isSwitchVenueEnabled()
-        ? import('@/pages/Sitemap/NewSitemap')
-        : import('@/pages/Sitemap/Sitemap'),
+    lazy: () => import('@/pages/Sitemap/Sitemap'),
     loader: withUserPermissions(mustBeAuthenticated),
     path: '/plan-du-site',
     title: 'Plan du site',
@@ -465,34 +439,29 @@ export const routes: CustomRouteTree = [
     loader: noop,
     path: '/accessibilite',
     title: 'Informations d’accessibilité',
-    meta: { public: true, canBeLoggedIn: true },
   },
   {
     lazy: () => import('@/pages/Accessibility/Commitment'),
     loader: noop,
     path: '/accessibilite/engagements',
     title: 'Les engagements du pass Culture',
-    meta: { public: true, canBeLoggedIn: true },
   },
   {
     lazy: () => import('@/pages/Accessibility/Declaration'),
     loader: noop,
     path: '/accessibilite/declaration',
     title: "Déclaration d'accessibilité",
-    meta: { public: true, canBeLoggedIn: true },
   },
   {
     lazy: () => import('@/pages/Accessibility/MultiyearScheme'),
     loader: noop,
     path: '/accessibilite/schema-pluriannuel',
     title: 'Schéma pluriannuel',
-    meta: { public: true, canBeLoggedIn: true },
   },
   {
     loader: noop,
     path: '/ecoconception',
     title: 'Déclaration d’écoconception de l’espace partenaires',
-    meta: { public: true, canBeLoggedIn: true },
     children: routesEcoDesign,
   },
   {
@@ -500,9 +469,6 @@ export const routes: CustomRouteTree = [
     loader: withUserPermissions(mustBeAuthenticated),
     path: '/collaborateurs',
     title: 'Collaborateurs',
-    meta: {
-      canBeOnboarding: true,
-    },
   },
   {
     lazy: () =>
@@ -512,9 +478,6 @@ export const routes: CustomRouteTree = [
     loader: withUserPermissions(mustNotBeOnboardedWithSelectedPartnerVenue),
     path: '/onboarding',
     title: 'Onboarding',
-    meta: {
-      onboardingOnly: true,
-    },
   },
   {
     lazy: () =>
@@ -527,9 +490,6 @@ export const routes: CustomRouteTree = [
     ),
     path: '/onboarding/individuel',
     title: 'Offre à destination des jeunes - Onboarding',
-    meta: {
-      onboardingOnly: true,
-    },
   },
   {
     lazy: () => import('@/pages/WelcomeCarousel/WelcomeCarousel'),
@@ -537,7 +497,6 @@ export const routes: CustomRouteTree = [
     path: '/bienvenue',
     title: 'Bienvenue sur pass Culture Pro',
     children: routesWelcomeCarousel,
-    meta: { public: true },
   },
   {
     lazy: () => import('@/pages/Simulator/Simulator'),
@@ -548,7 +507,6 @@ export const routes: CustomRouteTree = [
     },
     featureName: 'WIP_PRE_SIGNUP_SIMULATION',
     children: routesSimulator,
-    meta: { public: true },
   },
   {
     lazy: () => import('@/pages/Errors/NotFound/NotFound'),
@@ -566,8 +524,5 @@ export const routes: CustomRouteTree = [
     ),
     path: '/rattachement-en-cours',
     title: 'Rattachement en cours de traitement',
-    meta: {
-      unattachedOnly: true,
-    },
   },
 ]

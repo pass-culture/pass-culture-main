@@ -263,9 +263,6 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/onboarding/offre/individuelle/creation/description',
     title: 'Description - Créer une offre individuelle - Onboarding',
-    meta: {
-      onboardingOnly: true,
-    },
     loader: withUserPermissions(mustNotBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -275,9 +272,6 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/description',
     title: 'Description - Créer une offre individuelle - Onboarding',
-    meta: {
-      onboardingOnly: true,
-    },
     loader: withUserPermissions(mustNotBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -287,9 +281,6 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/pratiques',
     title: 'Informations pratiques - Créer une offre individuelle - Onboarding',
-    meta: {
-      onboardingOnly: true,
-    },
     loader: withUserPermissions(mustNotBeOnboardedWithSelectedPartnerVenue),
   },
   //  Localisation
@@ -300,9 +291,6 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/localisation',
     title: 'Localisation - Créer une offre individuelle - Onboarding',
-    meta: {
-      onboardingOnly: true,
-    },
     loader: withUserPermissions(mustNotBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -312,9 +300,6 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/media',
     title: 'Image et vidéo - Créer une offre individuelle - Onboarding',
-    meta: {
-      onboardingOnly: true,
-    },
     loader: withUserPermissions(mustNotBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -324,9 +309,6 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/tarifs',
     title: 'Tarifs - Créer une offre individuelle - Onboarding',
-    meta: {
-      onboardingOnly: true,
-    },
     loader: withUserPermissions(mustNotBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -336,9 +318,6 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/informations_pratiques',
     title: 'Informations pratiques - Créer une offre individuelle - Onboarding',
-    meta: {
-      onboardingOnly: true,
-    },
     loader: withUserPermissions(mustNotBeOnboardedWithSelectedPartnerVenue),
   },
   //  Stocks
@@ -349,9 +328,6 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/stocks',
     title: 'Stocks et prix - Créer une offre individuelle - Onboarding',
-    meta: {
-      onboardingOnly: true,
-    },
     loader: withUserPermissions(mustNotBeOnboardedWithSelectedPartnerVenue),
   },
   //  Timetable
@@ -362,9 +338,6 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/horaires',
     title: 'Horaires - Créer une offre individuelle - Onboarding',
-    meta: {
-      onboardingOnly: true,
-    },
     loader: withUserPermissions(mustNotBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -374,9 +347,6 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/recapitulatif',
     title: 'Récapitulatif - Créer une offre individuelle - Onboarding',
-    meta: {
-      onboardingOnly: true,
-    },
     loader: withUserPermissions(mustNotBeOnboardedWithSelectedPartnerVenue),
   },
 ]
