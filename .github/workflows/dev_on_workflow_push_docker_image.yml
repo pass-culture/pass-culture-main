@@ -16,11 +16,6 @@ on:
         type: boolean
         default: false
 
-      is_for_preview_environment:
-        required: false
-        type: boolean
-        default: false
-
     secrets:
       WORKLOAD_IDENTITY_PROVIDER:
         description: 'Workload Identity Provider for fetching secrets in Secret Manager'
@@ -40,23 +35,19 @@ jobs:
             project_id: passculture-infra-prod
             repository: pass-culture-artifact-registry
             cosign_kms_key_secret_name: passculture-metier-ehp/cosign_kms_key
-            is_for_preview_environment: false
           - registry: europe-docker.pkg.dev
             project_id: pc-infra-prd
             repository: pass-culture-artifact-registry
             cosign_kms_key_secret_name: pc-infra-prd/cosign_kms_key
-            is_for_preview_environment: false
           - registry: europe-docker.pkg.dev
             project_id: pc-infra-prd
             repository: pcapi-preview
             cosign_kms_key_secret_name: pc-infra-prd/cosign_kms_key
-            is_for_preview_environment: true
     steps:
       - name: Checkout new tag
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Push built docker image to Artifact Registry ${{ matrix.registry }}
-        if: ${{ !inputs.is_for_preview_environment || matrix.is_for_preview_environment }}
         uses: ./.github/actions/push-docker-image
         with:
           image: ${{ inputs.image }}
