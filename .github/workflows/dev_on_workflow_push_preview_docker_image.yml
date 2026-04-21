@@ -37,7 +37,7 @@ jobs:
             cosign_kms_key_secret_name: passculture-metier-ehp/cosign_kms_key
           - registry: europe-docker.pkg.dev
             project_id: pc-infra-prd
-            repository: pass-culture-artifact-registry
+            repository: pcapi-preview
             cosign_kms_key_secret_name: pc-infra-prd/cosign_kms_key
     steps:
       - name: Checkout new tag
