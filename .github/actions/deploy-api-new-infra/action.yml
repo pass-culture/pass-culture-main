@@ -50,8 +50,10 @@ runs:
 
     - name: "Setup ArgoWF CLI"
       shell: bash
+      env:
+        ARGO_CLI_VERSION: ${{ inputs.argo_cli_version }}
       run: |
-        curl -sSL -o argo-linux-amd64.gz https://github.com/argoproj/argo-workflows/releases/download/v${{ inputs.argo_cli_version }}/argo-linux-amd64.gz
+        curl -sSL -o argo-linux-amd64.gz https://github.com/argoproj/argo-workflows/releases/download/v$ARGO_CLI_VERSION/argo-linux-amd64.gz
         gunzip "argo-linux-amd64.gz"
         sudo install -m 555 argo-linux-amd64 /usr/local/bin/argo
         rm argo-linux-amd64
@@ -92,11 +94,15 @@ runs:
 
     - name: "🔀 Switch to ArgoCD namespace and Run Workflow 🚀"
       shell: bash
+      env:
+        ARGO_TEMPLATE: ${{ inputs.argo_template }}
+        ENVIRONMENT: ${{ inputs.environment }}
+        APP_VERSION: ${{ inputs.app_version }}
       run: |
-        argo submit --from wftmpl/${{ inputs.argo_template }} \
+        argo submit --from "wftmpl/$ARGO_TEMPLATE" \
           --log --wait \
-          -p environment=${{ inputs.environment }} \
-          -p pcapi_version=${{ inputs.app_version }}
+          -p "environment=$ENVIRONMENT" \
+          -p "pcapi_version=$APP_VERSION"
     # End Trigger WF #
     # Trigger post-migrations #
     - name: Authenticate to GKE cluster

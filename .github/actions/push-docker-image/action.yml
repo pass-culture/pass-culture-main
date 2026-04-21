@@ -89,9 +89,15 @@ runs:
     - name: Compute source and target docker image name and tag which is saved in artifact
       id: compute_image_name
       shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+        TAG: ${{ inputs.tag }}
+        REPOSITORY: ${{ inputs.repository }}
+        PROJECT_ID: ${{ inputs.project_id }}
+        REGISTRY: ${{ inputs.registry }}
       run: |
-        echo "source_image_name=${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
-        echo "target_image_name=${{ inputs.registry }}/${{ inputs.project_id }}/${{ inputs.repository }}/${{ inputs.image }}" | tee -a ${GITHUB_OUTPUT}
+        echo "source_image_name=$IMAGE:$TAG" | tee -a "${GITHUB_OUTPUT}"
+        echo "target_image_name=$REGISTRY/$PROJECT_ID/$REPOSITORY/$IMAGE" | tee -a "${GITHUB_OUTPUT}"
 
     - name: Download artifact
       uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -101,16 +107,22 @@ runs:
 
     - name: Load docker image from artifact
       shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+        TAG: ${{ inputs.tag }}
       run: |
-        docker load --input ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.tag }}.tar
+        docker load --input "${{ runner.temp }}/$IMAGE-$TAG.tar"
         docker images
 
     - name: Push docker images
       shell: bash
+      env:
+        TAG: ${{ inputs.tag }}
+        TAG_LATEST: ${{ inputs.tag_latest }}
       run: |
-        docker image tag ${{ steps.compute_image_name.outputs.source_image_name }} "${{ steps.compute_image_name.outputs.target_image_name }}:${{ inputs.tag }}"
+        docker image tag ${{ steps.compute_image_name.outputs.source_image_name }} "${{ steps.compute_image_name.outputs.target_image_name }}:$TAG"
 
-        if [ ${{ inputs.tag_latest }} == 'true' ]; then
+        if [ $TAG_LATEST == 'true' ]; then
           docker image tag ${{ steps.compute_image_name.outputs.source_image_name }} "${{ steps.compute_image_name.outputs.target_image_name }}:latest"
         fi
 
@@ -118,7 +130,7 @@ runs:
 
     - name: Get the image digest
       id: get_digest
-      run: echo "digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ steps.compute_image_name.outputs.source_image_name }})" | tee -a $GITHUB_OUTPUT
+      run: echo "digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ steps.compute_image_name.outputs.source_image_name }})" | tee -a "$GITHUB_OUTPUT"
       shell: bash
 
     - name: Sign image with a kms key
