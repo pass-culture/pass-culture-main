@@ -10,6 +10,7 @@ from pydantic.v1.class_validators import validator
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers.utils import is_venue_address
 from pcapi.routes.native.v1.serialization import common_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
@@ -45,12 +46,10 @@ def get_collective_offer_location_model(
     oa = offer.offererAddress
     venue = offer.venue
     if oa is not None:
-        is_venue_location = False
-        if venue.offererAddress.addressId == oa.addressId and (oa.label is None or oa.label == venue.publicName):
-            is_venue_location = True
+        is_venue_location = is_venue_address(oa, venue)
         location = address_serialize.LocationResponseModel(
             **address_serialize.retrieve_address_info_from_oa(oa),
-            label=offer.venue.publicName if is_venue_location else oa.label,
+            label=venue.publicName if is_venue_location else oa.label,
             isVenueLocation=is_venue_location,
         )
 

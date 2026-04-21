@@ -121,7 +121,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
         assert created_offer.offererAddressId != created_offer.venue.offererAddress.id
         assert created_offer.offererAddress.addressId == created_offer.venue.offererAddress.addressId
-        assert created_offer.offererAddress.label == created_offer.venue.publicName
+        assert created_offer.offererAddress.label == None
 
     def test_event_with_deprecated_music_type_triggers_warning_log(self, caplog):
         # TODO(jbaudet-pass): remove test once the deprecated enum

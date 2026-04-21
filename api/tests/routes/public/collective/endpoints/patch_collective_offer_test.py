@@ -772,7 +772,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert collective_offer.offererAddress.type == offerers_models.LocationType.OFFER_LOCATION
         assert collective_offer.offererAddressId != venue.offererAddress.id
         assert collective_offer.offererAddress.addressId == venue.offererAddress.addressId
-        assert collective_offer.offererAddress.label == venue.publicName
+        assert collective_offer.offererAddress.label == None
 
     def test_patch_offer_update_to_address_on_other_location(self):
         key, venue_provider = self.setup_active_venue_provider()
