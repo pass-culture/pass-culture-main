@@ -89,13 +89,13 @@ export const ConfirmDialog = ({
           <>
             <RadixDialog.Close asChild>{cancelButton}</RadixDialog.Close>
             <RadixDialog.Close asChild>
-              {overrideConfirm ? overrideConfirm : confirmButton}
+              {overrideConfirm ?? confirmButton}
             </RadixDialog.Close>
           </>
         ) : (
           <>
             {cancelButton}
-            {overrideConfirm ? overrideConfirm : confirmButton}
+            {overrideConfirm ?? confirmButton}
           </>
         )}
       </div>
