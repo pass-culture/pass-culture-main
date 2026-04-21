@@ -9,6 +9,7 @@ spec:
   template:
     spec:
       securityContext:
+        runAsUser: 1000
         runAsNonRoot: true
       serviceAccountName: ${SERVICE_ACCOUNT_NAME}
       containers:
