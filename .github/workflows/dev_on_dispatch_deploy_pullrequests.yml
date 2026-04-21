@@ -139,6 +139,7 @@ jobs:
       image: pcapi
       tag: ${{ github.sha }}
       tag_latest: true
+      is_for_preview: true
     secrets:
       WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
