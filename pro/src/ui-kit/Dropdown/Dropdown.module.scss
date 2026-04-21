@@ -36,4 +36,12 @@
     width: rem.torem(22px);
     margin-right: var(--size-spacing-s);
   }
+
+  &-danger {
+    color: var(--color-text-danger);
+
+    &[data-highlighted] {
+      color: var(--color-text-danger-hover);
+    }
+  }
 }

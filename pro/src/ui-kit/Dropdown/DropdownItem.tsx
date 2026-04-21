@@ -3,6 +3,7 @@ import cn from 'classnames'
 
 import { SvgIcon } from '../SvgIcon/SvgIcon'
 import styles from './Dropdown.module.scss'
+import { DropdownItemColor } from './types'
 
 /**
  * Props for the DropdownItem component.
@@ -26,8 +27,14 @@ type DropdownItemProps = DropdownMenu.DropdownMenuItemProps & {
    * Indicates if the dropdown item is disabled.
    */
   disabled?: boolean
-
+  /**
+   * The icon of the dropdown item
+   */
   icon?: string
+  /**
+   * The color of the dropdown item
+   */
+  color?: DropdownItemColor
 }
 
 /**
@@ -55,12 +62,14 @@ export function DropdownItem({
   onSelect,
   disabled,
   icon,
+  color = DropdownItemColor.NEUTRAL,
   ...radixDropdownItemProps
 }: DropdownItemProps): JSX.Element {
   return (
     <DropdownMenu.Item
       className={cn(styles['menu-item'], {
         [styles['menu-item-disabled']]: disabled,
+        [styles['menu-item-danger']]: color === DropdownItemColor.DANGER,
       })}
       onSelect={onSelect}
       disabled={disabled}
