@@ -1,7 +1,10 @@
 import cn from 'classnames'
 import { useMemo, useRef } from 'react'
 
-import type { GetOffererNameResponseModel } from '@/apiClient/v1'
+import {
+  type GetOffererNameResponseModel,
+  SimplifiedBankAccountStatus,
+} from '@/apiClient/v1'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useOffererNamesQuery } from '@/commons/hooks/swr/useOffererNamesQuery'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -56,6 +59,10 @@ export const Homepage = (): JSX.Element => {
   const shouldDisplayBankAccountCallout =
     selectedPartnerVenue.hasNonFreeOffers &&
     !selectedPartnerVenue.bankAccountStatus
+  const shouldDisplayBankAccountHasPendingCorrectionCallout =
+    selectedPartnerVenue.hasNonFreeOffers &&
+    selectedPartnerVenue.bankAccountStatus ===
+      SimplifiedBankAccountStatus.PENDING_CORRECTIONS
   const areHighlightsEnable = selectedOfferer?.canDisplayHighlights
 
   if (isNotReady) {
@@ -69,10 +76,11 @@ export const Homepage = (): JSX.Element => {
           <AddBankAccountCallout venue={selectedPartnerVenue} />
         )}
         <LinkVenueCallout offerer={selectedOfferer} />
-        <BankAccountHasPendingCorrectionCallout
-          offerer={selectedOfferer}
-          venue={selectedPartnerVenue}
-        />
+        {shouldDisplayBankAccountHasPendingCorrectionCallout && (
+          <BankAccountHasPendingCorrectionCallout
+            venue={selectedPartnerVenue}
+          />
+        )}
       </div>
       {selectedOfferer && <OffererBanners offerer={selectedOfferer} />}
 
