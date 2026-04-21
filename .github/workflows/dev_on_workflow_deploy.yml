@@ -320,7 +320,7 @@ jobs:
       - name: "Configure algolia"
         id: "set_algolia_settings"
         env:
-          ENV: ${{ inputs.environment }}
+          ENV: ${{ inputs.environment_short_name }}
           NS: pcapi-${{ inputs.environment_short_name }}
         run: |
           DATE=$(date +%Y%m%d-%H%M%S)
