@@ -116,7 +116,12 @@ export const OfferTypeScreen = () => {
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormLayout>
-            <CollectiveOfferType offerer={offerer} />
+            <CollectiveOfferType
+              offerer={offerer}
+              lastCollectiveDmsApplication={
+                selectedPartnerVenue.lastCollectiveDmsApplication
+              }
+            />
 
             <ActionsBar disableNextButton={!offerer?.allowedOnAdage} />
           </FormLayout>
