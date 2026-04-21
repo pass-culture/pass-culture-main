@@ -36,7 +36,7 @@ test.describe('Collaborator list feature', () => {
 
     const clearResponse = await requestContext.fetch(
       `${BASE_API_URL}/sandboxes/clear_email_list`,
-      { method: 'GET' }
+      { method: 'GET', headers: { 'x-api-key': process.env.E2E_API_KEY } }
     )
     expect(clearResponse.status()).toBe(200)
 

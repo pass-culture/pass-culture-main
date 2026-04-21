@@ -12,12 +12,14 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.transaction_manager import atomic
 
 from . import serializers
+from .e2e_account import api_key_required
 
 
 logger = logging.getLogger(__name__)
 
 
 @public_api.route("/testing/features", methods=["PATCH"])
+@api_key_required
 @atomic()
 @spectree_serialize(on_success_status=204)
 def set_features(body: serializers.FeaturesToggleRequest) -> None:
@@ -33,6 +35,7 @@ class AdageFakeToken(HttpBodyModel):
 
 
 @blueprint.adage_iframe.route("/testing/token", methods=["GET"])
+@api_key_required
 @atomic()
 @spectree_serialize(api=blueprint.api, on_error_statuses=[404])
 def create_adage_jwt_fake_token() -> AdageFakeToken:

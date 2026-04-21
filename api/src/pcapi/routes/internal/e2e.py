@@ -10,8 +10,11 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.sandboxes.scripts import getters
 
+from .e2e_account import api_key_required
+
 
 @private_api.route("/sandboxes/<module_name>/<getter_name>", methods=["GET"])
+@api_key_required
 def get_sandbox(module_name: str, getter_name: str) -> Response:
     if not hasattr(getters, module_name):
         errors = ApiErrors()
@@ -49,6 +52,7 @@ def get_sandbox(module_name: str, getter_name: str) -> Response:
 # otherwise the outbox will be empty
 # The next endpoints is only available if ENABLE_TEST_ROUTES is set to 1
 @private_api.route("/sandboxes/clear_email_list", methods=["GET"])
+@api_key_required
 def clear_email_list() -> str:
     if len(mails_testing.outbox) != 0:
         mails_testing.outbox.clear()
@@ -56,6 +60,7 @@ def clear_email_list() -> str:
 
 
 @private_api.route("/sandboxes/get_unique_email", methods=["GET"])
+@api_key_required
 def get_unique_email() -> dict:
     delay = 0
     while len(mails_testing.outbox) == 0 and delay <= 60:

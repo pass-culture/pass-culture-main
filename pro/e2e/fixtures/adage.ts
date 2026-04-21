@@ -43,6 +43,7 @@ export const test = base.extend<{
       'http://localhost:5001/adage-iframe/testing/token',
       {
         method: 'GET',
+        headers: { 'x-api-key': process.env.E2E_API_KEY },
       }
     )
     const body = await response.json()

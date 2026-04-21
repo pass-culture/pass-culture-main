@@ -13,6 +13,9 @@ export async function sandboxCall<T = unknown>(
     method,
     timeout: SANDBOX_TIMEOUT,
     failOnStatusCode: false,
+    headers: {
+      'x-api-key': process.env.E2E_API_KEY,
+    },
   })
 
   if (response.status() === 200) {
