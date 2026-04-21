@@ -924,17 +924,24 @@ class BonusTest:
     def test_create_bonus_fraud_check(self, mocked_task, client):
         user = users_factories.BeneficiaryFactory()
 
-        response = client.with_token(user).post(
-            "/native/v1/subscription/bonus/quotient_familial",
-            json={
-                "lastName": "Lefebvre",
-                "firstNames": ["Alexis"],
-                "birthDate": "1982-12-27",
-                "gender": "Mme",
-                "birthCountryCogCode": "99100",
-                "birthCityCogCode": "08480",
-            },
-        )
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # recredit
+        expected_num_queries += 1  # beneficiary_fraud_check
+        expected_num_queries += 1  # beneficiary_fraud_check (insert)
+        client.with_token(user)
+        with assert_num_queries(expected_num_queries):
+            response = client.post(
+                "/native/v1/subscription/bonus/quotient_familial",
+                json={
+                    "lastName": "Lefebvre",
+                    "firstNames": ["Alexis"],
+                    "birthDate": "1982-12-27",
+                    "gender": "Mme",
+                    "birthCountryCogCode": "99100",
+                    "birthCityCogCode": "08480",
+                },
+            )
 
         assert response.status_code == 204, response.json
 
@@ -1033,3 +1040,105 @@ class BonusTest:
             subscription_models.FraudCheckStatus.STARTED,
             subscription_models.FraudCheckStatus.KO,
         }
+
+    def test_bonus_qf_invalid_character(self, client):
+        user = users_factories.BeneficiaryFactory()
+
+        response = client.with_token(user).post(
+            "/native/v1/subscription/bonus/quotient_familial",
+            json={
+                "lastName": "Lefebvre",
+                "firstNames": ["Alexis", "ჯონ"],
+                "birthDate": "1982-12-27",
+                "gender": "Mme",
+                "birthCountryCogCode": "99100",
+                "birthCityCogCode": "08480",
+            },
+        )
+
+        assert response.status_code == 400
+
+    def test_bonus_qf_empty_first_names(self, client):
+        user = users_factories.BeneficiaryFactory()
+
+        response = client.with_token(user).post(
+            "/native/v1/subscription/bonus/quotient_familial",
+            json={
+                "lastName": "Lefebvre",
+                "firstNames": [],
+                "birthDate": "1982-12-27",
+                "gender": "Mme",
+                "birthCountryCogCode": "99100",
+                "birthCityCogCode": "08480",
+            },
+        )
+
+        assert response.status_code == 400
+
+    def test_bonus_qf_empty_field(self, client):
+        user = users_factories.BeneficiaryFactory()
+
+        response = client.with_token(user).post(
+            "/native/v1/subscription/bonus/quotient_familial",
+            json={
+                "lastName": "  ",
+                "firstNames": ["Alexis"],
+                "birthDate": "1982-12-27",
+                "gender": "Mme",
+                "birthCountryCogCode": "99100",
+                "birthCityCogCode": "08480",
+            },
+        )
+
+        assert response.status_code == 400
+
+    def test_bonus_qf_missing_field(self, client):
+        user = users_factories.BeneficiaryFactory()
+
+        response = client.with_token(user).post(
+            "/native/v1/subscription/bonus/quotient_familial",
+            json={
+                "lastName": "Lefebvre",
+                "firstNames": ["Alexis", "ჯონ"],
+                "birthDate": "1982-12-27",
+                "gender": "Mme",
+                "birthCountryCogCode": "99100",
+                "birthCityCogCode": "08480",
+            },
+        )
+
+        assert response.status_code == 400
+
+    def test_bonus_qf_invalid_country_cog_code(self, client):
+        user = users_factories.BeneficiaryFactory()
+
+        response = client.with_token(user).post(
+            "/native/v1/subscription/bonus/quotient_familial",
+            json={
+                "lastName": "Lefebvre",
+                "firstNames": ["Alexis", "ჯონ"],
+                "birthDate": "1982-12-27",
+                "gender": "Mme",
+                "birthCountryCogCode": "91100",
+                "birthCityCogCode": "08480",
+            },
+        )
+
+        assert response.status_code == 400
+
+    def test_bonus_qf_invalid_city_cog_code(self, client):
+        user = users_factories.BeneficiaryFactory()
+
+        response = client.with_token(user).post(
+            "/native/v1/subscription/bonus/quotient_familial",
+            json={
+                "lastName": "Lefebvre",
+                "firstNames": ["Alexis", "ჯონ"],
+                "birthDate": "1982-12-27",
+                "gender": "Mme",
+                "birthCountryCogCode": "91100",
+                "birthCityCogCode": "08E80",
+            },
+        )
+
+        assert response.status_code == 400
