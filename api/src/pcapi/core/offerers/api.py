@@ -1744,6 +1744,9 @@ def save_venue_banner(
         "image_credit": image_credit,
         "author_id": user.id,
         "original_image_url": f"{venue.thumbUrl}_{original_image_timestamp}",
+        "updated_at": updated_at.isoformat(),
+    }
+    if crop_params:
         # NOTE(jbaudet - 02/2026): the asdict has been added because of
         # the pydantic migration which leads to some models using
         # CropParams or CropParamsV2. For example some response models
@@ -1751,9 +1754,7 @@ def save_venue_banner(
         # mess.
         # Feel free to remove this explicit serialization once
         # the whole pydantic migration is done.
-        "crop_params": dataclasses.asdict(crop_params) if crop_params else None,
-        "updated_at": updated_at.isoformat(),
-    }
+        venue.bannerMeta["crop_params"] = dataclasses.asdict(crop_params)
 
     db.session.add(venue)
     db.session.flush()
