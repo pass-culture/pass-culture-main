@@ -1,12 +1,14 @@
 import contextlib
 
 import pytest
+import time_machine
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core.artist import factories as artist_factories
 from pcapi.core.categories import subcategories
+from pcapi.core.cultural_outreach.constants import CULTURAL_OUTREACH_ALLOWED_ACTIVITIES
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.testing import assert_num_queries
@@ -559,6 +561,33 @@ class CreateActivityRandomTest(CreateOfferBase):
         offer.showSubType == 101
 
 
+@pytest.mark.parametrize("activity", CULTURAL_OUTREACH_ALLOWED_ACTIVITIES)
+class CreateOfferWithCulturalOutreachClaimTest(CreateOfferBase):
+    endpoint = "/v2/offers"
+
+    @time_machine.travel("2026-04-20 12:00:00", tick=False)
+    def test_create_offer_with_cultural_outreach_claim(self, client, activity):
+        venue = offerers_factories.VenueFactory(activity=activity)
+        user = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer).user
+        auth_client = client.with_session_auth(user.email)
+
+        data = {
+            **offer_minimal_shared_data(subcategories.ESCAPE_GAME.id, venue),
+            "hasCulturalOutreachClaim": True,
+        }
+
+        with assert_changes(Offer, 1):
+            response = auth_client.post(self.endpoint, json=data)
+            assert response.status_code == 201
+
+        offer = db.session.query(Offer).one()
+
+        shared_response_json_checks(offer, response.json)
+        shared_offer_checks(offer, data)
+
+        assert offer.hasCulturalOutreachClaim is True
+
+
 @pytest.mark.parametrize("subcategory_id", CANNOT_BE_CREATED)
 class CannotCreateOfferTest:
     endpoint = "/v2/offers"
@@ -758,6 +787,23 @@ class Returns200Test:
             "artistName": "Custom Artist Name",
             "artistType": "author",
         }
+
+    @pytest.mark.parametrize("activity", CULTURAL_OUTREACH_ALLOWED_ACTIVITIES)
+    @time_machine.travel("2026-04-20 12:00:00", tick=False)
+    def test_create_offer_with_cultural_outreach_claim(self, client, activity):
+        venue = offerers_factories.VenueFactory(activity=activity)
+        user = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer).user
+        auth_client = client.with_session_auth(user.email)
+
+        data = {
+            **offer_minimal_shared_data(subcategories.ESCAPE_GAME.id, venue),
+            "hasCulturalOutreachClaim": True,
+        }
+
+        response = auth_client.post("/offers", json=data)
+
+        assert response.status_code == 201
+        assert response.json["hasCulturalOutreachClaim"] is True
 
 
 @pytest.mark.usefixtures("db_session")

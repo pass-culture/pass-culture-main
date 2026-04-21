@@ -718,6 +718,7 @@ class OfferVideo(ConfiguredBaseModel):
 class MinimalPostOfferBodyModel(ConfiguredBaseModel):
     name: str
     venue_id: int
+    has_cultural_outreach_claim: bool | None
     description: str | None
     subcategory_id: str
     duration_minutes: int | None

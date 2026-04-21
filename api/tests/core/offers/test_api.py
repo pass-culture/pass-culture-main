@@ -1659,6 +1659,47 @@ class CreateOfferTest:
             "artistOfferLinks": ["Le type d'artiste n'est pas autorisé pour cette sous catégorie"]
         }
 
+    @mock.patch("pcapi.core.cultural_outreach.api.create_cultural_outreach_claim")
+    def test_create_offer_with_cultural_outreach_claim(self, mocked_create_claim):
+        user = users_factories.ProFactory()
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+        offerer_address = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer)
+
+        body = offers_schemas.CreateOffer(
+            name="An offer with cultural outreach",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+            hasCulturalOutreachClaim=True,
+        )
+        offer = api.create_offer(body, venue=venue, offerer_address=offerer_address)
+
+        mocked_create_claim.assert_called_once_with(offer)
+
+    @mock.patch("pcapi.core.cultural_outreach.api.create_cultural_outreach_claim")
+    def test_create_offer_without_cultural_outreach_claim(self, mocked_create_claim):
+        user = users_factories.ProFactory()
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+        offerer_address = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer)
+
+        body = offers_schemas.CreateOffer(
+            name="An offer without cultural outreach",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+            hasCulturalOutreachClaim=False,
+        )
+
+        api.create_offer(body, venue=venue, offerer_address=offerer_address)
+
+        mocked_create_claim.assert_not_called()
+
 
 @pytest.mark.usefixtures("db_session")
 class UpdateOfferTest:

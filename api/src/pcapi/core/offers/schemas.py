@@ -35,6 +35,7 @@ class CreateOffer(BaseModel):
     external_ticket_office_url: HttpUrl | None = None
     ean: str | None
     extra_data: typing.Any = None
+    has_cultural_outreach_claim: bool | None = None
     id_at_provider: str | None = None
     is_duo: bool | None = None
     url: HttpUrl | None = None
