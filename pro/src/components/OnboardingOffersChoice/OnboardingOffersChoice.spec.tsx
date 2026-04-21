@@ -33,27 +33,33 @@ describe('OnboardingOffersChoice Component', () => {
   })
 
   it('renders the first card with correct title, description, and button', () => {
-    // Check for the first card's title
-    const firstCardTitle = screen.getByText(
-      'Sur l’application mobile à destination des jeunes'
-    )
-    expect(firstCardTitle).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', {
+        level: 3,
+        name: 'Sur l’application mobile à destination des jeunes',
+      })
+    ).toBeInTheDocument()
 
-    // Check for the first card's button
-    const firstCardButton = screen.getAllByText('Commencer')[0]
-    expect(firstCardButton).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', {
+        name: 'Commencer la création d’offre sur l’application mobile',
+      })
+    ).toHaveTextContent('Créer une offre individuelle')
   })
 
   it('renders the second card with correct title, description, and button', () => {
-    // Check for the second card's title
-    const secondCardTitle = screen.getByText(
-      'Sur ADAGE à destination des enseignants'
-    )
-    expect(secondCardTitle).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', {
+        level: 3,
+        name: 'Sur ADAGE à destination des enseignants',
+      })
+    ).toBeInTheDocument()
 
-    // Check for the second card's button
-    const secondCardButton = screen.getAllByText('Commencer')[1]
-    expect(secondCardButton).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', {
+        name: 'Commencer la création d’offre sur ADAGE',
+      })
+    ).toHaveTextContent('Déposer un dossier ADAGE')
   })
 
   it('displays the onboarding collective modal when the second button is clicked', async () => {

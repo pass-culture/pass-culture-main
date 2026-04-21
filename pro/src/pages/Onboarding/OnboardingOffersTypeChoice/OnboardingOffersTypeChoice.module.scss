@@ -1,14 +1,18 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/size.scss" as size;
+@use "styles/mixins/_rem.scss" as rem;
 
 .onboarding-offer-container {
   display: flex;
   flex-direction: column;
-  gap: var(--size-spacing-xxl);
   align-items: flex-start;
   justify-content: flex-start;
+  max-width: rem.torem(721px);
 }
 
 .onboarding-offer-header-subtitle {
   @include fonts.title3;
+
+  margin-top: var(--size-border-radius-xxl);
+  margin-bottom: var(--size-border-radius-l);
 }
