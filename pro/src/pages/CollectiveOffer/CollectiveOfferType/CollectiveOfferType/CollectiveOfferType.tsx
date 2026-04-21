@@ -1,12 +1,13 @@
 import { useFormContext } from 'react-hook-form'
-import { useLocation } from 'react-router'
 
-import type { GetOffererResponseModel } from '@/apiClient/v1'
+import type {
+  DMSApplicationForEAC,
+  GetOffererResponseModel,
+} from '@/apiClient/v1'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
 } from '@/commons/core/Offers/constants'
-import { getLastDmsApplicationForOfferer } from '@/commons/utils/getLastCollectiveDmsApplication'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import fullLinkIcon from '@/icons/full-link.svg'
@@ -20,20 +21,14 @@ import styles from './CollectiveOfferType.module.scss'
 
 interface CollectiveOfferTypeProps {
   offerer: GetOffererResponseModel | null
+  lastCollectiveDmsApplication?: DMSApplicationForEAC | null
 }
 
-export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
-  const location = useLocation()
+export const CollectiveOfferType = ({
+  offerer,
+  lastCollectiveDmsApplication,
+}: CollectiveOfferTypeProps) => {
   const { setValue, getValues, watch } = useFormContext()
-
-  const queryParams = new URLSearchParams(location.search)
-  const queryOffererId = offerer?.id
-  const queryVenueId = queryParams.get('lieu')
-
-  const lastDmsApplication = getLastDmsApplicationForOfferer(
-    queryVenueId,
-    offerer
-  )
 
   return (
     <>
@@ -133,13 +128,13 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
       )}
 
       {!offerer?.allowedOnAdage &&
-        (lastDmsApplication ? (
+        (lastCollectiveDmsApplication ? (
           <div className={styles['pending-offerer-callout']}>
             <Banner
               title="Référencement en cours"
               actions={[
                 {
-                  href: `/structures/${queryOffererId}/lieux/${lastDmsApplication.venueId}/collectif`,
+                  href: `/structures/${offerer?.id}/lieux/${lastCollectiveDmsApplication.venueId}/collectif`,
                   label: 'Voir ma demande de référencement',
                   type: 'link',
                   icon: fullNextIcon,

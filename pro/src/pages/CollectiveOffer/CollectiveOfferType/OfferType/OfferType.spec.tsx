@@ -3,7 +3,10 @@ import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
 import { api } from '@/apiClient/api'
-import type { GetOffererResponseModel } from '@/apiClient/v1'
+import type {
+  GetOffererResponseModel,
+  GetVenueResponseModel,
+} from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
@@ -13,7 +16,6 @@ import {
 } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
-  defaultGetOffererVenueResponseModel,
   getOffererNameFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -39,9 +41,8 @@ vi.mock('@/apiClient/api', () => ({
 }))
 
 const renderOfferTypes = (
-  structureId?: string,
-  venueId?: string,
-  offerer?: GetOffererResponseModel
+  offerer?: GetOffererResponseModel,
+  venueOverrides?: Partial<GetVenueResponseModel>
 ) => {
   renderWithProviders(
     <Routes>
@@ -67,7 +68,10 @@ const renderOfferTypes = (
       storeOverrides: {
         user: {
           currentUser: sharedCurrentUserFactory(),
-          selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
+          selectedPartnerVenue: makeGetVenueResponseModel({
+            id: 2,
+            ...venueOverrides,
+          }),
         },
         offerer: {
           currentOfferer: {
@@ -78,13 +82,7 @@ const renderOfferTypes = (
         },
       },
       user: sharedCurrentUserFactory(),
-      initialRouterEntries: [
-        `/creation${
-          structureId
-            ? `?structure=${structureId}${venueId ? `&lieu=${venueId}` : ''}`
-            : ''
-        }`,
-      ],
+      initialRouterEntries: ['/creation'],
     }
   )
 }
@@ -178,19 +176,15 @@ describe('OfferType', () => {
     const offerer: GetOffererResponseModel = {
       ...defaultGetOffererResponseModel,
       allowedOnAdage: false,
-      managedVenues: [
-        {
-          ...defaultGetOffererVenueResponseModel,
-          lastCollectiveDmsApplication: {
-            ...defaultDMSApplicationForEAC,
-            application: 1,
-            lastChangeDate: '2021-01-01T00:00:00Z',
-          },
-        },
-      ],
     }
 
-    renderOfferTypes('offererId', 'venueId', offerer)
+    renderOfferTypes(offerer, {
+      lastCollectiveDmsApplication: {
+        ...defaultDMSApplicationForEAC,
+        application: 1,
+        lastChangeDate: '2021-01-01T00:00:00Z',
+      },
+    })
 
     expect(
       await screen.findByText(
@@ -298,7 +292,7 @@ describe('OfferType', () => {
       isValidated: false,
     }
 
-    renderOfferTypes('123', 'venueId', offerer)
+    renderOfferTypes(offerer)
 
     expect(
       await screen.findByText(
@@ -313,7 +307,7 @@ describe('OfferType', () => {
       allowedOnAdage: false,
     }
 
-    renderOfferTypes('123', 'venueId', offerer)
+    renderOfferTypes(offerer)
 
     expect(
       await screen.findByText('Faire une demande de référencement')
