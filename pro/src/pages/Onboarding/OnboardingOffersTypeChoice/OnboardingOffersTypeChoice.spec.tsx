@@ -11,8 +11,15 @@ describe('OnboardingOffersChoice Component', () => {
     renderWithProviders(<OnboardingOffersTypeChoice />)
 
     expect(
-      screen.getByText('Bienvenue sur le pass Culture Pro !')
+      screen.getByText('Bienvenue sur pass Culture Pro !')
     ).toBeInTheDocument()
+
+    expect(
+      screen.getByText(
+        /Notre équipe vous contactera par email pour vous demander vos justificatifs d’inscription./
+      )
+    ).toBeInTheDocument()
+    expect(screen.getByText(/Pensez à vérifier vos spams./)).toBeInTheDocument()
 
     expect(
       screen.getByText('Où souhaitez-vous diffuser votre première offre ?')

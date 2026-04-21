@@ -13,8 +13,14 @@ test.describe('Didactic Onboarding feature', () => {
   test.beforeEach(async ({ authenticatedPage: page }) => {
     await page.goto('/accueil')
     await expect(
-      page.getByText('Bienvenue sur le pass Culture Pro !')
+      page.getByText('Bienvenue sur pass Culture Pro !')
     ).toBeVisible()
+    await expect(
+      page.getByText(
+        /Notre équipe vous contactera par email pour vous demander vos justificatifs d’inscription./
+      )
+    ).toBeVisible()
+    await expect(page.getByText(/Pensez à vérifier vos spams./)).toBeVisible()
     await expect(
       page.getByText('Où souhaitez-vous diffuser votre première offre ?')
     ).toBeVisible()

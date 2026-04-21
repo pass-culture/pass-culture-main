@@ -42,14 +42,17 @@ export const OnboardingOffersChoice = () => {
             to="/onboarding/individuel"
             aria-label="Commencer la création d’offre sur l’application mobile"
             fullWidth
-            label="Commencer"
+            label="Créer une offre individuelle"
           />
         </Card.Footer>
       </Card>
 
       <Card>
         <Card.Image src={collective} alt="" />
-        <Card.Header title="Sur ADAGE à destination des enseignants" />
+        <Card.Header
+          title="Sur ADAGE à destination des enseignants"
+          titleTag="h3"
+        />
         <Card.Content>
           <span>
             Vos offres seront visibles{' '}
@@ -75,7 +78,7 @@ export const OnboardingOffersChoice = () => {
                   setShowModal(true)
                 }}
                 fullWidth
-                label="Commencer"
+                label="Déposer un dossier ADAGE"
               />
             }
             open={showModal}
