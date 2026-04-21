@@ -34,13 +34,7 @@ test.describe('Search individual offers', () => {
 
     const expectedResults = [
       ['', 'Titre', 'Localisation', 'Stocks', 'Status'],
-      [
-        '',
-        offerName1.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
+      ['', offerName1.name, `${venue.fullAddress}`, '1 000', 'publiée'],
     ]
 
     await expectIndividualOffersOrBookingsAreFound(page, expectedResults)
@@ -66,13 +60,7 @@ test.describe('Search individual offers', () => {
 
     const expectedResults = [
       ['', 'Titre', 'Localisation', 'Stocks', 'Status'],
-      [
-        '',
-        offerName2.name + ean,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
+      ['', offerName2.name + ean, `${venue.fullAddress}`, '1 000', 'publiée'],
     ]
 
     await expectIndividualOffersOrBookingsAreFound(page, expectedResults)
@@ -104,13 +92,7 @@ test.describe('Search individual offers', () => {
 
     const expectedResults = [
       ['', 'Titre', 'Localisation', 'Stocks', 'Status'],
-      [
-        '',
-        offerName3.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
+      ['', offerName3.name, `${venue.fullAddress}`, '1 000', 'publiée'],
     ]
 
     await expectIndividualOffersOrBookingsAreFound(page, expectedResults)
@@ -148,48 +130,12 @@ test.describe('Search individual offers', () => {
 
     const expectedResults = [
       ['', 'Titre', 'Localisation', 'Stocks', 'Status'],
-      [
-        '',
-        offerName6.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
-      [
-        '',
-        offerName5.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
-      [
-        '',
-        offerName4.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
-      [
-        '',
-        offerName3.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
-      [
-        '',
-        offerName2.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
-      [
-        '',
-        offerName1.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
+      ['', offerName6.name, `${venue.fullAddress}`, '1 000', 'publiée'],
+      ['', offerName5.name, `${venue.fullAddress}`, '1 000', 'publiée'],
+      ['', offerName4.name, `${venue.fullAddress}`, '1 000', 'publiée'],
+      ['', offerName3.name, `${venue.fullAddress}`, '1 000', 'publiée'],
+      ['', offerName2.name, `${venue.fullAddress}`, '1 000', 'publiée'],
+      ['', offerName1.name, `${venue.fullAddress}`, '1 000', 'publiée'],
     ]
 
     await expectIndividualOffersOrBookingsAreFound(page, expectedResults)
@@ -218,13 +164,7 @@ test.describe('Search individual offers', () => {
 
     const expectedResults = [
       ['', 'Titre', 'Localisation', 'Stocks', 'Status'],
-      [
-        '',
-        offerName4.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
+      ['', offerName4.name, `${venue.fullAddress}`, '1 000', 'publiée'],
     ]
 
     await expectIndividualOffersOrBookingsAreFound(page, expectedResults)
@@ -261,55 +201,13 @@ test.describe('Search individual offers', () => {
 
     const expectedResults = [
       ['', 'Titre', 'Localisation', 'Stocks', 'Status'],
-      [
-        '',
-        offerName7.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '0',
-        'épuisée',
-      ],
-      [
-        '',
-        offerName6.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
-      [
-        '',
-        offerName5.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
-      [
-        '',
-        offerName4.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
-      [
-        '',
-        offerName3.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
-      [
-        '',
-        offerName2.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
-      [
-        '',
-        offerName1.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
+      ['', offerName7.name, `${venue.fullAddress}`, '0', 'épuisée'],
+      ['', offerName6.name, `${venue.fullAddress}`, '1 000', 'publiée'],
+      ['', offerName5.name, `${venue.fullAddress}`, '1 000', 'publiée'],
+      ['', offerName4.name, `${venue.fullAddress}`, '1 000', 'publiée'],
+      ['', offerName3.name, `${venue.fullAddress}`, '1 000', 'publiée'],
+      ['', offerName2.name, `${venue.fullAddress}`, '1 000', 'publiée'],
+      ['', offerName1.name, `${venue.fullAddress}`, '1 000', 'publiée'],
     ]
 
     await expectIndividualOffersOrBookingsAreFound(page, expectedResults)
@@ -362,20 +260,8 @@ test.describe('Search individual offers', () => {
 
     const expectedResults = [
       ['', 'Titre', 'Localisation', 'Stocks', 'Status'],
-      [
-        '',
-        offerName6.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
-      [
-        '',
-        offerName5.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
+      ['', offerName6.name, `${venue.fullAddress}`, '1 000', 'publiée'],
+      ['', offerName5.name, `${venue.fullAddress}`, '1 000', 'publiée'],
     ]
 
     await expectIndividualOffersOrBookingsAreFound(page, expectedResults)
@@ -406,55 +292,13 @@ test.describe('Search individual offers', () => {
 
     const expectedResults2 = [
       ['', 'Titre', 'Localisation', 'Stocks', 'Status'],
-      [
-        '',
-        offerName7.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '0',
-        'épuisée',
-      ],
-      [
-        '',
-        offerName6.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
-      [
-        '',
-        offerName5.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
-      [
-        '',
-        offerName4.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
-      [
-        '',
-        offerName3.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
-      [
-        '',
-        offerName2.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
-      [
-        '',
-        offerName1.name,
-        `${venue.name} - ${venue.fullAddress}`,
-        '1 000',
-        'publiée',
-      ],
+      ['', offerName7.name, `${venue.fullAddress}`, '0', 'épuisée'],
+      ['', offerName6.name, `${venue.fullAddress}`, '1 000', 'publiée'],
+      ['', offerName5.name, `${venue.fullAddress}`, '1 000', 'publiée'],
+      ['', offerName4.name, `${venue.fullAddress}`, '1 000', 'publiée'],
+      ['', offerName3.name, `${venue.fullAddress}`, '1 000', 'publiée'],
+      ['', offerName2.name, `${venue.fullAddress}`, '1 000', 'publiée'],
+      ['', offerName1.name, `${venue.fullAddress}`, '1 000', 'publiée'],
     ]
 
     await expectIndividualOffersOrBookingsAreFound(page, expectedResults2)

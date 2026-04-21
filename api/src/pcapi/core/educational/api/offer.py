@@ -351,7 +351,7 @@ def _get_location_from_public_model(
                 offerer_id=venue.managingOffererId,
                 venue_id=venue.id,
                 address_id=venue.offererAddress.addressId,
-                label=venue.publicName,
+                label=None,
             )
             location = CollectiveOfferLocation(
                 location_type=models.CollectiveLocationType.ADDRESS,

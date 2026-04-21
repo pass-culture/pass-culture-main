@@ -181,7 +181,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         assert created_offer.visualDisabilityCompliant == venue.visualDisabilityCompliant
         assert created_offer.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
         assert created_offer.offererAddress.addressId == venue.offererAddress.addressId
-        assert created_offer.offererAddress.label == venue.publicName
+        assert created_offer.offererAddress.label == None
         assert created_offer.publicationDatetime == datetime.datetime(2025, 7, 15, tzinfo=datetime.UTC)
         assert created_offer.bookingAllowedDatetime == None
 
