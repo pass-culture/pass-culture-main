@@ -2363,7 +2363,6 @@ class VenueBannerTest:
             "author_id": user.id,
             "image_credit": "none",
             "original_image_url": str(directory / f"{humanize(venue.id)}_1602720001"),
-            "crop_params": None,
             "updated_at": "2020-10-15T00:00:00",
         }
 
@@ -2393,7 +2392,6 @@ class VenueBannerTest:
             "author_id": user.id,
             "image_credit": "none",
             "original_image_url": str(directory / f"{humanize(venue.id)}_1602720001"),
-            "crop_params": None,
             "updated_at": "2020-10-15T00:00:00",
         }
 
