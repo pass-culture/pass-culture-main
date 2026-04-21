@@ -5,14 +5,16 @@ import { App } from '@/app/App/App'
 import { routes } from '@/app/AppRouter/routesMap'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectActiveFeatures } from '@/commons/store/features/selectors'
+import { noop } from '@/commons/utils/noop'
 
 import { ErrorBoundary } from './ErrorBoundary'
 import { redirectedRoutes } from './redirectedRoutes'
+import type { CustomRouteOrphan } from './types'
 
 const sentryCreateBrowserRouter =
   Sentry.wrapCreateBrowserRouterV7(createBrowserRouter)
 
-export const AppRouter = (): JSX.Element => {
+export const AppRouter = () => {
   const activeFeatures = useAppSelector(selectActiveFeatures)
 
   const activeRoutes = routes
@@ -43,8 +45,8 @@ export const AppRouter = (): JSX.Element => {
             lazy: () => import('@/pages/Errors/NotFound/NotFound'),
             path: '*',
             title: 'Erreur 404 - Page indisponible',
-            meta: { public: true, canBeLoggedIn: true },
-          },
+            loader: noop,
+          } satisfies CustomRouteOrphan,
         ],
       },
     ],

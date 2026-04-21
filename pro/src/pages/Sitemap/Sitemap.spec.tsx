@@ -12,7 +12,7 @@ import {
 
 import { Sitemap } from './Sitemap'
 
-const renderNewSitemap = (options: RenderWithProvidersOptions = {}) => {
+const renderSitemap = (options: RenderWithProvidersOptions = {}) => {
   return renderWithProviders(<Sitemap />, {
     ...options,
     user: sharedCurrentUserFactory(),
@@ -45,14 +45,14 @@ vi.mock('react-router', async () => {
 
 describe('Sitemap', () => {
   it('should render the sitemap heading', () => {
-    renderNewSitemap()
+    renderSitemap()
     expect(
       screen.getByRole('heading', { name: 'Plan du site' })
     ).toBeInTheDocument()
   })
 
   it('should render all main links in the sitemap', () => {
-    renderNewSitemap()
+    renderSitemap()
 
     const mainLinks = [
       { name: 'Hub', href: '/hub' },
@@ -109,7 +109,7 @@ describe('Sitemap', () => {
   })
 
   it('should display the back button and return to previous page on click', async () => {
-    renderNewSitemap()
+    renderSitemap()
 
     const retourBtn = screen.getByRole('button', {
       name: 'Retour',
