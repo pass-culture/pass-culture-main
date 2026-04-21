@@ -1,6 +1,7 @@
 import enum
 import re
 import typing
+from operator import itemgetter
 
 import wtforms
 from flask import url_for
@@ -19,12 +20,26 @@ class SuspensionUserType(enum.Enum):
     ADMIN = "admin_user"
 
 
+ANY_SUSPENSION_FORM_CHOICES = sorted(
+    [(opt.name, users_constants.SUSPENSION_REASON_CHOICES[opt]) for opt in users_constants.SuspensionReason],
+    key=itemgetter(1),
+)
+
+PRO_SUSPENSION_FORM_CHOICES = sorted(
+    [(k.name, v) for k, v in users_constants.PRO_SUSPENSION_REASON_CHOICES.items()],
+    key=itemgetter(1),
+)
+
+PUBLIC_SUSPENSION_FORM_CHOICES = sorted(
+    [(k.name, v) for k, v in users_constants.PUBLIC_SUSPENSION_REASON_CHOICES.items()],
+    key=itemgetter(1),
+)
+
+
 class SuspendUserForm(FlaskForm):
     reason = fields.PCSelectWithPlaceholderValueField(
         "Raison de la suspension",
-        choices=[
-            (opt.name, users_constants.SUSPENSION_REASON_CHOICES[opt]) for opt in users_constants.SuspensionReason
-        ],
+        choices=ANY_SUSPENSION_FORM_CHOICES,
     )
     comment = fields.PCOptCommentField("Commentaire interne optionnel")
     clear_email = fields.PCSwitchBooleanField(
@@ -35,15 +50,9 @@ class SuspendUserForm(FlaskForm):
         super().__init__(*args, **kwargs)
         suspension_type = kwargs.get("suspension_type")
         if suspension_type == SuspensionUserType.PRO:
-            self.reason.choices = [
-                (opt.name, users_constants.PRO_SUSPENSION_REASON_CHOICES[opt])
-                for opt in set(users_constants.PRO_SUSPENSION_REASON_CHOICES)
-            ]
+            self.reason.choices = PRO_SUSPENSION_FORM_CHOICES
         if suspension_type in (SuspensionUserType.PUBLIC, SuspensionUserType.ADMIN):
-            self.reason.choices = [
-                (opt.name, users_constants.PUBLIC_SUSPENSION_REASON_CHOICES[opt])
-                for opt in set(users_constants.PUBLIC_SUSPENSION_REASON_CHOICES)
-            ]
+            self.reason.choices = PUBLIC_SUSPENSION_FORM_CHOICES
         if suspension_type in (SuspensionUserType.PRO, SuspensionUserType.ADMIN):
             del self.clear_email
 
