@@ -70,10 +70,9 @@ class GetCollectiveOfferLocationModelV2(HttpBodyModel):
             is_venue_location = venue.offererAddress.addressId == oa.addressId and (
                 oa.label is None or oa.label == venue.publicName
             )
-
             location = address_serialize.LocationResponseModelV2.build(
                 offerer_address=oa,
-                label=venue.publicName if is_venue_location else oa.label,
+                label=None if is_venue_location else oa.label,
                 is_venue_location=is_venue_location,
             )
 

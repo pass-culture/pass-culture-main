@@ -135,7 +135,7 @@ def build_new_offer_from_product(
             offerer_id=venue.managingOffererId,
             venue_id=venue.id,
             address_id=venue.offererAddress.addressId,
-            label=venue.publicName,
+            label=None,
         ).id
 
     return models.Offer(
@@ -257,12 +257,11 @@ def create_offer(
             keys_to_remove |= {"extraData", "description", "durationMinutes"}
 
         fields = {k: v for k, v in fields.items() if k not in keys_to_remove}
-
     offerer_address = offerer_address or offerers_api.get_or_create_offer_location(
         offerer_id=venue.managingOffererId,
         venue_id=venue.id,
         address_id=venue.offererAddress.addressId,
-        label=venue.publicName,
+        label=None,
     )
 
     if body.subcategory_id in subcategories.ONLINE_SUBCATEGORIES:  # i.e. it is a digital offer
@@ -315,7 +314,7 @@ def get_or_create_offerer_address_from_address_body(
             offerer_id=venue.managingOffererId,
             venue_id=venue.id,
             address_id=venue.offererAddress.addressId,
-            label=venue.publicName,
+            label=None,
         )
 
     return offerers_api.get_offer_location_from_address(venue.managingOffererId, address_body, venue_id=venue.id)
@@ -2157,7 +2156,7 @@ def move_event_offer(
                 offerer_id=destination_venue.managingOffererId,
                 venue_id=destination_venue.id,
                 address_id=destination_venue.offererAddress.addressId,
-                label=destination_venue.publicName,
+                label=None,
             )
         else:
             if offer.offererAddress:

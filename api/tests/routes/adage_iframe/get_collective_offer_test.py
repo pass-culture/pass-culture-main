@@ -108,7 +108,7 @@ class CollectiveOfferTest:
                     "id": address.id,
                     "inseeCode": address.inseeCode,
                     "isManualEdition": address.isManualEdition,
-                    "label": venue.publicName,
+                    "label": None,
                     "latitude": float(address.latitude),
                     "longitude": float(address.longitude),
                     "postalCode": address.postalCode,

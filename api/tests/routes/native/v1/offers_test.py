@@ -1430,7 +1430,7 @@ class MovieCalendarTest:
                             "stockId": stock.id,
                         }
                     ],
-                    "label": stock.offer.offererAddress.label,
+                    "label": stock.offer.venue.publicName,
                     "nextScreening": {
                         "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
                         "features": [],
@@ -1446,7 +1446,7 @@ class MovieCalendarTest:
                     "address": f"{address.street}, {address.postalCode} {address.city}",
                     "distance": 0.0,
                     "dayScreenings": [],
-                    "label": stock.offer.offererAddress.label,
+                    "label": stock.offer.venue.publicName,
                     "nextScreening": {
                         "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
                         "features": [],

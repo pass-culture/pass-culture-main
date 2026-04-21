@@ -249,7 +249,7 @@ class OfferFactory(BaseFactory[models.Offer]):
                     offerer_id=venue.managingOffererId,
                     venue_id=venue.id,
                     address_id=venue.offererAddress.addressId,
-                    label=venue.publicName,
+                    label=None,
                 )
 
         kwargs.pop("isActive", None)

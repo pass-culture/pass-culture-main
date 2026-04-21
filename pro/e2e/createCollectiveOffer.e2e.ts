@@ -72,7 +72,7 @@ test.describe('Create collective offers', () => {
         format(commonOfferData.date, 'dd/MM/yyyy'),
         '10€',
         'COLLEGE 123 75000',
-        `${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        `1 boulevard Poissonnière 75002 Paris`,
         'publiée',
       ],
     ])
@@ -218,7 +218,6 @@ test.describe('Create collective offers', () => {
     await page.getByText('Étape suivante').click()
     await fillBasicOFferForm(page)
     await fillOfferDetails(page, checkAccessibility, true)
-    await expect(page.getByText('Intitulé : Mon Lieu A')).toBeVisible()
     await expect(page.getByText(`Adresse : ${venueFullAddress}`)).toBeVisible()
     await publishAndSearchOffer(
       page,
@@ -232,7 +231,7 @@ test.describe('Create collective offers', () => {
         '',
         `Offre vitrine${commonOfferData.title}`,
         'Toute l’année scolaire',
-        `${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        `1 boulevard Poissonnière 75002 Paris`,
         'publiée',
       ],
     ])
