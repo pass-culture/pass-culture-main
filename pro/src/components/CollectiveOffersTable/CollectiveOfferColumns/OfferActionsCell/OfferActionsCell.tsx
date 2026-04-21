@@ -46,6 +46,7 @@ import strokeCheckIcon from '@/icons/stroke-check.svg'
 import strokeThingIcon from '@/icons/stroke-thing.svg'
 import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
 import { DropdownItem } from '@/ui-kit/Dropdown/DropdownItem'
+import { DropdownItemColor } from '@/ui-kit/Dropdown/types'
 
 import { DuplicateOfferDialog } from './DuplicateOfferDialog/DuplicateOfferDialog'
 import styles from './OfferActionsCell.module.scss'
@@ -329,6 +330,7 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
               title="Annuler la réservation"
               icon={fullClearIcon}
               onSelect={() => setIsCancelledBookingModalOpen(true)}
+              color={DropdownItemColor.DANGER}
             />
           )}
           {canArchiveOffer && (
@@ -336,6 +338,7 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
               title="Archiver"
               icon={strokeThingIcon}
               onSelect={() => setIsArchivedModalOpen(true)}
+              color={DropdownItemColor.DANGER}
             />
           )}
         </Dropdown>
