@@ -1533,27 +1533,6 @@ export class DefaultService {
     });
   }
   /**
-   * get_offerer_headline_offer <GET>
-   * @param offererId
-   * @returns HeadLineOfferResponseModel OK
-   * @throws ApiError
-   */
-  public getOffererHeadlineOffer(
-    offererId: number,
-  ): CancelablePromise<HeadLineOfferResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/offerers/{offerer_id}/headline-offer',
-      path: {
-        'offerer_id': offererId,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
    * invite_member <POST>
    * @param offererId
    * @param requestBody
@@ -3081,6 +3060,27 @@ export class DefaultService {
       },
       body: requestBody,
       mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * get_venue_headline_offer <GET>
+   * @param venueId
+   * @returns HeadLineOfferResponseModel OK
+   * @throws ApiError
+   */
+  public getVenueHeadlineOffer(
+    venueId: number,
+  ): CancelablePromise<HeadLineOfferResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/venues/{venue_id}/headline-offer',
+      path: {
+        'venue_id': venueId,
+      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Content`,

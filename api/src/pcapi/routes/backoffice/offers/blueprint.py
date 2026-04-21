@@ -1898,6 +1898,7 @@ def edit_offer_venue(offer_id: int) -> response_utils.BackofficeResponse:
         db.session.query(offers_models.Offer)
         .filter_by(id=offer_id)
         .options(sa_orm.joinedload(offers_models.Offer.venue))
+        .options(sa_orm.joinedload(offers_models.Offer.headlineOffers))
         .one_or_none()
     )
     if not offer:

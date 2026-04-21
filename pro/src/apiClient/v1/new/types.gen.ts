@@ -3005,10 +3005,6 @@ export type GetOffererResponseModel = {
      */
     hasDigitalVenueAtLeastOneOffer: boolean;
     /**
-     * Hasheadlineoffer
-     */
-    hasHeadlineOffer: boolean;
-    /**
      * Hasnonfreeoffer
      */
     hasNonFreeOffer: boolean;
@@ -3635,9 +3631,9 @@ export type HeadlineOfferCreationBodyModel = {
  */
 export type HeadlineOfferDeleteBodyModel = {
     /**
-     * Offererid
+     * Venueid
      */
-    offererId: number;
+    venueId: number;
 };
 
 /**
@@ -8979,37 +8975,6 @@ export type getOfferersByOffererIdEligibilityResponses = {
 
 export type getOfferersByOffererIdEligibilityResponse = getOfferersByOffererIdEligibilityResponses[keyof getOfferersByOffererIdEligibilityResponses];
 
-export type getOfferersByOffererIdHeadlineOfferData = {
-    body?: never;
-    path: {
-        offerer_id: number;
-    };
-    query?: never;
-    url: '/offerers/{offerer_id}/headline-offer';
-};
-
-export type getOfferersByOffererIdHeadlineOfferErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type getOfferersByOffererIdHeadlineOfferError = getOfferersByOffererIdHeadlineOfferErrors[keyof getOfferersByOffererIdHeadlineOfferErrors];
-
-export type getOfferersByOffererIdHeadlineOfferResponses = {
-    /**
-     * OK
-     */
-    200: HeadLineOfferResponseModel;
-};
-
-export type getOfferersByOffererIdHeadlineOfferResponse = getOfferersByOffererIdHeadlineOfferResponses[keyof getOfferersByOffererIdHeadlineOfferResponses];
-
 export type postOfferersByOffererIdInviteData = {
     body: InviteMemberQueryModel;
     path: {
@@ -11236,6 +11201,37 @@ export type patchVenuesByVenueIdCollectiveDataResponses = {
 };
 
 export type patchVenuesByVenueIdCollectiveDataResponse = patchVenuesByVenueIdCollectiveDataResponses[keyof patchVenuesByVenueIdCollectiveDataResponses];
+
+export type getVenuesByVenueIdHeadlineOfferData = {
+    body?: never;
+    path: {
+        venue_id: number;
+    };
+    query?: never;
+    url: '/venues/{venue_id}/headline-offer';
+};
+
+export type getVenuesByVenueIdHeadlineOfferErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type getVenuesByVenueIdHeadlineOfferError = getVenuesByVenueIdHeadlineOfferErrors[keyof getVenuesByVenueIdHeadlineOfferErrors];
+
+export type getVenuesByVenueIdHeadlineOfferResponses = {
+    /**
+     * OK
+     */
+    200: HeadLineOfferResponseModel;
+};
+
+export type getVenuesByVenueIdHeadlineOfferResponse = getVenuesByVenueIdHeadlineOfferResponses[keyof getVenuesByVenueIdHeadlineOfferResponses];
 
 export type getVenuesByVenueIdLocationsData = {
     body?: never;

@@ -4,11 +4,10 @@ import useSWR, { useSWRConfig } from 'swr'
 import { api } from '@/apiClient/api'
 import type { HeadLineOfferResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { GET_OFFERER_HEADLINE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { GET_VENUE_HEADLINE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { noopAsync } from '@/commons/utils/noop'
 
@@ -41,17 +40,16 @@ type HeadlineOfferContextProviderProps = { children: React.ReactNode }
 export function HeadlineOfferContextProvider({
   children,
 }: Readonly<HeadlineOfferContextProviderProps>) {
-  const selectedOffererId = useAppSelector(selectCurrentOffererId)
   const { mutate } = useSWRConfig()
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const { data: rawHeadlineOffer, error } = useSWR(
-    selectedOffererId
-      ? [GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, selectedOffererId]
+    selectedPartnerVenue
+      ? [GET_VENUE_HEADLINE_OFFER_QUERY_KEY, selectedPartnerVenue.id]
       : null,
-    ([, offererId]) => api.getOffererHeadlineOffer(offererId),
+    ([, venueId]) => api.getVenueHeadlineOffer(venueId),
     {
       onError: (error) => {
         // 404 is expected when there is no headline offer.
@@ -77,7 +75,7 @@ export function HeadlineOfferContextProvider({
     async ({ offerId, context }: UpsertHeadlineOfferParams) => {
       try {
         await mutate(
-          [GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, selectedOffererId],
+          [GET_VENUE_HEADLINE_OFFER_QUERY_KEY, selectedPartnerVenue.id],
           api.upsertHeadlineOffer({ offerId }),
           { populateCache: true, revalidate: false, throwOnError: true }
         )
@@ -94,15 +92,15 @@ export function HeadlineOfferContextProvider({
         )
       }
     },
-    [selectedOffererId, selectedPartnerVenue.id, snackBar, logEvent, mutate]
+    [selectedPartnerVenue.id, snackBar, logEvent, mutate]
   )
 
   const removeHeadlineOffer = useCallback(async () => {
-    if (selectedOffererId) {
+    if (selectedPartnerVenue) {
       try {
         await mutate(
-          [GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, selectedOffererId],
-          api.deleteHeadlineOffer({ offererId: selectedOffererId }),
+          [GET_VENUE_HEADLINE_OFFER_QUERY_KEY, selectedPartnerVenue.id],
+          api.deleteHeadlineOffer({ venueId: selectedPartnerVenue.id }),
           {
             populateCache: () => null,
             revalidate: false,
@@ -121,7 +119,7 @@ export function HeadlineOfferContextProvider({
         )
       }
     }
-  }, [selectedOffererId, selectedPartnerVenue.id, snackBar, logEvent, mutate])
+  }, [selectedPartnerVenue, snackBar, logEvent, mutate])
 
   return (
     <HeadlineOfferContext.Provider

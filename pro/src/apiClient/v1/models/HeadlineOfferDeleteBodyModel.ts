@@ -3,6 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type HeadlineOfferDeleteBodyModel = {
-  offererId: number;
+  venueId: number;
 };
 

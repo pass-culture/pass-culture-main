@@ -18,4 +18,4 @@ class HeadlineOfferCreationBodyModel(HttpBodyModel):
 
 
 class HeadlineOfferDeleteBodyModel(HttpBodyModel):
-    offerer_id: int
+    venue_id: int

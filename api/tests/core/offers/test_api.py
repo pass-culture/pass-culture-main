@@ -4898,6 +4898,52 @@ class MoveOfferTest:
         assert offer.venue == new_venue
         assert offer.proAdvice is None
 
+    def test_move_offer_ends_active_headline_offer(self):
+        offer = factories.OfferFactory()
+        headline_offer = factories.HeadlineOfferFactory(offer=offer, venue=offer.venue)
+        assert headline_offer.isActive
+
+        new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
+        api.move_offer(offer, new_venue)
+
+        db.session.refresh(offer)
+        db.session.refresh(headline_offer)
+
+        assert offer.venue == new_venue
+
+        assert not headline_offer.isActive
+        assert headline_offer.venue == new_venue
+        assert headline_offer.timespan.upper is not None
+
+    def test_move_event_offer_ends_active_headline_offer(self):
+        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_factories.VenuePricingPointLinkFactory(
+            venue=venue,
+            pricingPoint=venue,
+            timespan=[date_utils.get_naive_utc_now() - timedelta(days=1), None],
+        )
+        offer = factories.EventOfferFactory(venue=venue)
+        headline_offer = factories.HeadlineOfferFactory(offer=offer, venue=offer.venue)
+        assert headline_offer.isActive
+
+        new_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_factories.VenuePricingPointLinkFactory(
+            venue=new_venue,
+            pricingPoint=new_venue,
+            timespan=[date_utils.get_naive_utc_now() - timedelta(days=1), None],
+        )
+        api.move_event_offer(offer, new_venue)
+
+        db.session.refresh(offer)
+        db.session.refresh(headline_offer)
+
+        assert offer.venue == new_venue
+
+        assert not headline_offer.isActive
+        assert headline_offer.venue == new_venue
+        assert headline_offer.timespan.upper is not None
+
     def create_offer_by_state(self, venue, state):
         offer = None
         if state == OfferValidationStatus.DRAFT:

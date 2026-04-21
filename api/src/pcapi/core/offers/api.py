@@ -654,8 +654,7 @@ def set_upper_timespan_of_inactive_headline_offers() -> None:
 
 
 def upsert_headline_offer(offer: models.Offer) -> models.HeadlineOffer:
-    offerer_id = offer.venue.managingOffererId
-    headline_offer = offers_repository.get_current_headline_offer(offerer_id)
+    headline_offer = offers_repository.get_current_headline_offer(offer.venueId)
     if headline_offer and headline_offer.offerId != offer.id:
         remove_headline_offer(headline_offer)
         logger.info(
@@ -2029,6 +2028,22 @@ def move_offer(
             db.session.add(destination_oa)
             offer.offererAddress = destination_oa
 
+        # End active headline offer before changing venue
+        for headline_offer in offer.headlineOffers:
+            headline_offer.venue = destination_venue
+            if headline_offer.isActive:
+                remove_headline_offer(headline_offer)
+                logger.info(
+                    "Headline Offer Deactivation",
+                    extra={
+                        "analyticsSource": "backoffice",
+                        "HeadlineOfferId": headline_offer.id,
+                        "Reason": "Offer venue was changed during regularization",
+                    },
+                    technical_message_id="headline_offer_deactivation",
+                )
+            db.session.flush()
+
         # Delete pro_advice when changing venue
         if offer.proAdvice is not None:
             db.session.delete(offer.proAdvice)
@@ -2137,6 +2152,22 @@ def move_event_offer(
                     label=offer.offererAddress.label,
                 )
                 offer.offererAddress = destination_oa
+
+        # End active headline offer before changing venue
+        for headline_offer in offer.headlineOffers:
+            headline_offer.venue = destination_venue
+            if headline_offer.isActive:
+                remove_headline_offer(headline_offer)
+                logger.info(
+                    "Headline Offer Deactivation",
+                    extra={
+                        "analyticsSource": "backoffice",
+                        "HeadlineOfferId": headline_offer.id,
+                        "Reason": "Offer venue was changed during regularization",
+                    },
+                    technical_message_id="headline_offer_deactivation",
+                )
+            db.session.flush()
 
         # Delete pro_advice when changing venue
         if offer.proAdvice is not None:

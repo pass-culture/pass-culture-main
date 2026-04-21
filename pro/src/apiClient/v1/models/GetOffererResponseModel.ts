@@ -10,7 +10,6 @@ export type GetOffererResponseModel = {
   hasAvailablePricingPoints: boolean;
   hasBankAccountWithPendingCorrections: boolean;
   hasDigitalVenueAtLeastOneOffer: boolean;
-  hasHeadlineOffer: boolean;
   hasNonFreeOffer: boolean;
   hasPartnerPage: boolean;
   hasPendingBankAccount: boolean;

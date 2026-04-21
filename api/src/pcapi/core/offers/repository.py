@@ -1157,19 +1157,11 @@ def get_offer_has_pro_advice_subquery() -> sa.sql.selectable.ScalarSelect:
     ).scalar_subquery()
 
 
-def get_current_headline_offer(offerer_id: int) -> models.HeadlineOffer | None:
+def get_current_headline_offer(venue_id: int) -> models.HeadlineOffer | None:
     return (
         db.session.query(models.HeadlineOffer)
-        .join(
-            offerers_models.Venue,
-            models.HeadlineOffer.venueId == offerers_models.Venue.id,
-        )
-        .join(
-            offerers_models.Offerer,
-            offerers_models.Venue.managingOffererId == offerers_models.Offerer.id,
-        )
         .filter(
-            offerers_models.Offerer.id == offerer_id,
+            models.HeadlineOffer.venueId == venue_id,
             models.HeadlineOffer.timespan.contains(date_utils.get_naive_utc_now()),
         )
         .one_or_none()

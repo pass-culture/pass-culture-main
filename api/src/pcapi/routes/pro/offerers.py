@@ -376,7 +376,7 @@ def get_offerer_addresses(
     )
 
 
-@private_api.route("/offerers/<int:offerer_id>/headline-offer", methods=["GET"])
+@private_api.route("/venues/<int:venue_id>/headline-offer", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
@@ -384,19 +384,17 @@ def get_offerer_addresses(
     api=blueprint.pro_private_schema,
     on_success_status=200,
 )
-def get_offerer_headline_offer(
-    offerer_id: int,
+def get_venue_headline_offer(
+    venue_id: int,
 ) -> headline_offer_serialize.HeadLineOfferResponseModel:
-    check_user_has_access_to_offerer(current_user, offerer_id)
+    check_user_has_access_to_venues(current_user, [venue_id])
 
     try:
-        offerer_headline_offer = repository.get_offerer_headline_offer(offerer_id)
-    except sa_orm.exc.MultipleResultsFound:
-        raise ResourceNotFoundError({"global": "Une entité juridique ne peut avoir qu’une seule offre à la une"})
+        venue_headline_offer = repository.get_venue_headline_offer(venue_id)
     except sa_orm.exc.NoResultFound:
         raise ResourceNotFoundError()
 
-    return headline_offer_serialize.HeadLineOfferResponseModel.model_validate(offerer_headline_offer)
+    return headline_offer_serialize.HeadLineOfferResponseModel.model_validate(venue_headline_offer)
 
 
 @private_api.route("/offerers/<int:offerer_id>/eligibility", methods=["GET"])

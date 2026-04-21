@@ -66,8 +66,8 @@ def upsert_headline_offer(
 )
 @atomic()
 def delete_headline_offer(body: headline_offer_serialize.HeadlineOfferDeleteBodyModel) -> None:
-    rest.check_user_has_access_to_offerer(current_user, body.offerer_id)
-    if active_headline_offer := offers_repository.get_current_headline_offer(body.offerer_id):
+    rest.check_user_has_access_to_venues(current_user, [body.venue_id])
+    if active_headline_offer := offers_repository.get_current_headline_offer(body.venue_id):
         offers_api.remove_headline_offer(active_headline_offer)
         logger.info(
             "Headline Offer Deactivation",

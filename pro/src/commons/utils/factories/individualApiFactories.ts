@@ -390,7 +390,6 @@ export const defaultGetOffererResponseModel: GetOffererResponseModel = {
   hasNonFreeOffer: true,
   hasActiveOffer: true,
   hasBankAccountWithPendingCorrections: false,
-  hasHeadlineOffer: false,
   venuesWithNonFreeOffersWithoutBankAccounts: [],
   isActive: false,
   isValidated: false,

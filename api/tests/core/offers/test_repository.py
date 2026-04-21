@@ -2007,24 +2007,22 @@ class GetHeadlineOfferFiltersTest:
         headline_offer_query_result = repository.get_inactive_headline_offers()
         assert headline_offer_query_result == [headline_offer_without_mediation]
 
-    def test_get_offerer_active_headline_offer_even_not_yet_disabled_by_cron_for_active_offer(
+    def test_get_venue_active_headline_offer_even_not_yet_disabled_by_cron_for_active_offer(
         self,
     ):
         offer = factories.OfferFactory(isActive=True)
-        user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory()
         headline_offer = factories.HeadlineOfferFactory(offer=offer, venue=venue)
-        headline_offer_query_result = repository.get_current_headline_offer(user_offerer.offerer.id)
+        headline_offer_query_result = repository.get_current_headline_offer(venue.id)
         assert headline_offer_query_result == headline_offer
 
-    def test_get_offerer_active_headline_offer_even_not_yet_disabled_by_cron_for_inactive_offer(
+    def test_get_venue_active_headline_offer_even_not_yet_disabled_by_cron_for_inactive_offer(
         self,
     ):
         offer = factories.OfferFactory(isActive=True)
-        user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory()
         headline_offer = factories.HeadlineOfferFactory(offer=offer, venue=venue, without_mediation=True)
-        headline_offer_query_result = repository.get_current_headline_offer(user_offerer.offerer.id)
+        headline_offer_query_result = repository.get_current_headline_offer(venue.id)
         assert headline_offer_query_result == headline_offer
 
 
