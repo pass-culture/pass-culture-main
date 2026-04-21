@@ -31,7 +31,11 @@ import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowe
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { ShareLinkDrawer } from '@/components/CollectiveOffer/ShareLinkDrawer/ShareLinkDrawer'
 import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import fullArchiveIcon from '@/icons/full-archive.svg'
 import fullCopyIcon from '@/icons/full-duplicate.svg'
 import fullPlusIcon from '@/icons/full-plus.svg'
@@ -172,8 +176,9 @@ export const CollectiveEditionOfferNavigation = ({
         {canPreviewOffer() && (
           <Button
             as="a"
-            variant={ButtonVariant.TERTIARY}
+            variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
+            size={ButtonSize.SMALL}
             to={`/offre/${id}/collectif${isTemplate ? '/vitrine' : ''}/apercu`}
             icon={fullShowIcon}
             ref={adagePreviewButtonRef}
@@ -185,8 +190,9 @@ export const CollectiveEditionOfferNavigation = ({
           <Button
             onClick={() => setIsArchiveModalOpen(true)}
             icon={fullArchiveIcon}
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.DANGER}
+            size={ButtonSize.SMALL}
             ref={archiveButtonRef}
             label="Archiver"
           />
@@ -194,9 +200,10 @@ export const CollectiveEditionOfferNavigation = ({
 
         {canDuplicateOffer() && (
           <Button
-            variant={ButtonVariant.TERTIARY}
+            variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
             icon={fullCopyIcon}
+            size={ButtonSize.SMALL}
             onClick={async () => {
               logEvent(Events.CLICKED_DUPLICATE_BOOKABLE_OFFER, {
                 from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_RECAP,
@@ -213,9 +220,10 @@ export const CollectiveEditionOfferNavigation = ({
 
         {canCreateBookableOffer && (
           <Button
-            variant={ButtonVariant.TERTIARY}
+            variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
             icon={fullPlusIcon}
+            size={ButtonSize.SMALL}
             onClick={() => {
               if (isTemplate) {
                 logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {

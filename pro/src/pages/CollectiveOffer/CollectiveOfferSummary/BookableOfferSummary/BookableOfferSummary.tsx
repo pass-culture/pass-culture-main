@@ -314,7 +314,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
                     onClick={() => setIsArchiveModalOpen(true)}
                     icon={fullArchiveIcon}
                     variant={ButtonVariant.SECONDARY}
-                    color={ButtonColor.NEUTRAL}
+                    color={ButtonColor.DANGER}
                     size={ButtonSize.SMALL}
                     ref={archiveButtonRef}
                     label="Archiver"
@@ -326,7 +326,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
                   <Button
                     icon={fullClearIcon}
                     variant={ButtonVariant.SECONDARY}
-                    color={ButtonColor.NEUTRAL}
+                    color={ButtonColor.DANGER}
                     size={ButtonSize.SMALL}
                     onClick={() => setIsCancelBookingModalOpen(true)}
                     ref={cancelBookingButtonRef}

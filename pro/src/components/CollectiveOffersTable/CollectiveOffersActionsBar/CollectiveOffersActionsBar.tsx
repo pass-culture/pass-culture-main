@@ -310,6 +310,7 @@ export function CollectiveOffersActionsBar<
             onClick={openArchiveOffersDialog}
             icon={strokeThingIcon}
             variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.DANGER}
             ref={archiveButtonRef}
             label="Archiver"
           />

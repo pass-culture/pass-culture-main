@@ -1,3 +1,4 @@
+import { ButtonColor } from '@/design-system/Button/types'
 import strokeTrashIcon from '@/icons/stroke-trash.svg'
 import strokeWrongIcon from '@/icons/stroke-wrong.svg'
 import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
@@ -29,6 +30,7 @@ export const CancelCollectiveBookingModal = ({
       onConfirm={onValidate}
       cancelText={isFromOffer ? 'Annuler' : 'Retour'}
       confirmText={isFromOffer ? 'Annuler la réservation' : 'Confirmer'}
+      confirmColor={ButtonColor.DANGER}
       icon={isFromOffer ? strokeWrongIcon : strokeTrashIcon}
       title={modalTitle}
       open={isDialogOpen}

@@ -2,7 +2,11 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { forwardRef, useState } from 'react'
 
 import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import connectStrokeIcon from '@/icons/stroke-connect.svg'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
@@ -11,8 +15,12 @@ import styles from './ShareLinkDrawer.module.scss'
 
 export const ShareLinkDrawer = forwardRef<
   HTMLButtonElement,
-  { offerId: number } & React.ComponentPropsWithoutRef<'button'>
->(({ offerId }, ref) => {
+  {
+    offerId: number
+    triggerButtonVariant?: ButtonVariant
+    triggerButtonSize?: ButtonSize
+  } & React.ComponentPropsWithoutRef<'button'>
+>(({ offerId, triggerButtonVariant, triggerButtonSize }, ref) => {
   const [isOpenDialog, setIsOpenDialog] = useState(false)
 
   return (
@@ -26,7 +34,8 @@ export const ShareLinkDrawer = forwardRef<
           <Button
             ref={ref}
             icon={connectStrokeIcon}
-            variant={ButtonVariant.TERTIARY}
+            variant={triggerButtonVariant || ButtonVariant.SECONDARY}
+            size={triggerButtonSize || ButtonSize.SMALL}
             color={ButtonColor.NEUTRAL}
             label="Partager l’offre"
             onClick={(e) => {
