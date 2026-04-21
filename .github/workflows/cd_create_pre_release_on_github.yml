@@ -19,9 +19,6 @@ on:
         type: boolean
         default: false
 
-    secrets:
-      GITHUB_TOKEN: { required: true }
-
 permissions:
   contents: write
   id-token: write
