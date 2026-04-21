@@ -2391,6 +2391,10 @@ export type GetIndividualOfferResponseModel = {
      */
     hasBookingLimitDatetimesPassed: boolean;
     /**
+     * Hasculturaloutreachclaim
+     */
+    hasCulturalOutreachClaim: boolean;
+    /**
      * Hasstocks
      */
     hasStocks: boolean;
@@ -2553,6 +2557,10 @@ export type GetIndividualOfferWithAddressResponseModel = {
      * Hasbookinglimitdatetimespassed
      */
     hasBookingLimitDatetimesPassed: boolean;
+    /**
+     * Hasculturaloutreachclaim
+     */
+    hasCulturalOutreachClaim: boolean;
     /**
      * Haspendingbookings
      */

@@ -111,6 +111,7 @@ export const getIndividualOfferFactory = (
     motorDisabilityCompliant: true,
     mentalDisabilityCompliant: true,
     hasPendingBookings: false,
+    hasCulturalOutreachClaim: false,
     priceCategories: [priceCategoryFactory()],
     externalTicketOfficeUrl: 'https://chuck.no',
     extraData: {
