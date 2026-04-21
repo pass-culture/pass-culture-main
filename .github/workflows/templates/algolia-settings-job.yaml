@@ -8,11 +8,15 @@ spec:
   activeDeadlineSeconds: 1800
   template:
     spec:
+      securityContext:
+        runAsNonRoot: true
       serviceAccountName: ${SERVICE_ACCOUNT_NAME}
       containers:
         - name: pcapi-algolia-settings
           image: ${IMAGE}
           imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
           resources:
             requests:
               memory: 512Mi
