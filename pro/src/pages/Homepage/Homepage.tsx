@@ -53,7 +53,9 @@ export const Homepage = (): JSX.Element => {
   }, [selectedOfferer])
 
   const isNotReady = offererNamesQuery.isLoading || !offererNamesValidated
-
+  const shouldDisplayBankAccountCallout =
+    selectedPartnerVenue.hasNonFreeOffers &&
+    !selectedPartnerVenue.bankAccountStatus
   const areHighlightsEnable = selectedOfferer?.canDisplayHighlights
 
   if (isNotReady) {
@@ -63,10 +65,9 @@ export const Homepage = (): JSX.Element => {
   return (
     <>
       <div className={styles['reimbursements-banners']}>
-        <AddBankAccountCallout
-          offerer={selectedOfferer}
-          venue={selectedPartnerVenue}
-        />
+        {shouldDisplayBankAccountCallout && (
+          <AddBankAccountCallout venue={selectedPartnerVenue} />
+        )}
         <LinkVenueCallout offerer={selectedOfferer} />
         <BankAccountHasPendingCorrectionCallout
           offerer={selectedOfferer}
