@@ -32,19 +32,17 @@ test.describe('Navigation', () => {
   }) => {
     await login(page, userEmail)
 
-    const nextStepsHeading = page.getByRole('heading', {
-      name: /Prochaines étapes/,
+    const collectivePageLink = page.getByRole('link', {
+      name: 'Gérer la page pour les enseignants',
     })
-    await expect(nextStepsHeading).toBeVisible()
-    await nextStepsHeading.scrollIntoViewIfNeeded()
+    await expect(collectivePageLink).toBeVisible()
+    await collectivePageLink.scrollIntoViewIfNeeded()
 
     const contentWrapper = page.locator('#content-wrapper')
     const scrollTopBefore = await contentWrapper.evaluate((el) => el.scrollTop)
     expect(scrollTopBefore).toBeGreaterThan(0)
 
-    await page
-      .getByRole('link', { name: 'Gérer la page pour les enseignants' })
-      .click()
+    await collectivePageLink.click()
 
     await expect(page).toHaveURL(/\/structures\/\d+\/lieux\/\d+\/collectif/)
 

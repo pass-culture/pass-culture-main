@@ -1,13 +1,11 @@
 import { screen } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
+import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import {
-  PublishedOfferStats,
-  type PublishedOfferStatsProps,
-} from '../components/PublishedOfferStats'
+import { PublishedOfferStats } from '../components/PublishedOfferStats'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -15,13 +13,15 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-const renderOfferStats = (props: Partial<PublishedOfferStatsProps> = {}) =>
-  renderWithProviders(
-    <PublishedOfferStats
-      offerer={{ ...defaultGetOffererResponseModel, isValidated: true }}
-      {...props}
-    />
-  )
+const renderOfferStats = () =>
+  renderWithProviders(<PublishedOfferStats />, {
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: defaultGetVenue,
+      },
+    },
+  })
 
 describe('OfferStats', () => {
   it('should render empty state when 0 everywhere', async () => {

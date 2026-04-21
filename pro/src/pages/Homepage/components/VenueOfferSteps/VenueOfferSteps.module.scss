@@ -7,12 +7,6 @@
   gap: var(--size-spacing-l);
 }
 
-.venue-offer-steps {
-  display: flex;
-  gap: var(--size-spacing-s);
-  flex-wrap: wrap;
-}
-
 .card-title {
   @include fonts.title3;
 

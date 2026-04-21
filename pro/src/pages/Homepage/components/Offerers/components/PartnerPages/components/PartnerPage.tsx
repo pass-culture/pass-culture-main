@@ -1,13 +1,9 @@
-import type {
-  GetOffererResponseModel,
-  GetVenueResponseModel,
-} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useOnVenueImageUpload } from '@/commons/core/Venue/hooks/useOnVenueImageUpload'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { getActivityLabel } from '@/commons/mappings/mappings'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { noop } from '@/commons/utils/noop'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
@@ -22,34 +18,27 @@ import fullParametersIcon from '@/icons/full-parameters.svg'
 import { VenueOfferSteps } from '@/pages/Homepage/components/VenueOfferSteps/VenueOfferSteps'
 import { Panel } from '@/ui-kit/Panel/Panel'
 
+import { shouldDisplayEACInformationSectionForVenue } from '../../VenueList/venueUtils'
 import styles from './PartnerPage.module.scss'
 import { PartnerPageCollectiveSection } from './PartnerPageCollectiveSection'
 import { PartnerPageIndividualSection } from './PartnerPageIndividualSection'
 
-export interface PartnerPageProps {
-  offerer: GetOffererResponseModel
-  venue: GetVenueResponseModel
-  venueHasPartnerPage: boolean
-}
-
-export const PartnerPage = ({
-  offerer,
-  venue,
-  venueHasPartnerPage,
-}: PartnerPageProps) => {
+export const PartnerPage = () => {
   const { logEvent } = useAnalytics()
-  const selectedOffererId = useAppSelector(selectCurrentOffererId)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const { imageValues, handleOnImageUpload } = useOnVenueImageUpload(
-    venue.id,
-    venue.bannerUrl,
-    venue.bannerMeta
+    selectedPartnerVenue.id,
+    selectedPartnerVenue.bannerUrl,
+    selectedPartnerVenue.bannerMeta
   )
+
+  const shouldDisplayVenueOfferSteps =
+    shouldDisplayEACInformationSectionForVenue(selectedPartnerVenue)
 
   const logButtonAddClick = () => {
     logEvent(Events.CLICKED_ADD_IMAGE, {
-      offererId: selectedOffererId?.toString(),
-      venueId: venue.id,
+      venueId: selectedPartnerVenue.id,
       imageType: UploaderModeEnum.VENUE,
       isEdition: true,
       imageCreationStage: 'add image',
@@ -69,41 +58,44 @@ export const PartnerPage = ({
         />
         <div className={styles['venue']}>
           <div className={styles['venue-type']}>
-            {venue.activity && getActivityLabel(venue.activity)}
+            {selectedPartnerVenue.activity &&
+              getActivityLabel(selectedPartnerVenue.activity)}
           </div>
-          <h3 className={styles['venue-name']}>{venue.publicName}</h3>
+          <h3 className={styles['venue-name']}>
+            {selectedPartnerVenue.publicName}
+          </h3>
 
-          {venue.location && (
-            <address data-testid="venue-address">
-              {withVenueHelpers(venue).fullAddressAsString}
-            </address>
-          )}
+          <address data-testid="venue-address">
+            {withVenueHelpers(selectedPartnerVenue).fullAddressAsString}
+          </address>
           <Button
             as="a"
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
             size={ButtonSize.SMALL}
             icon={fullParametersIcon}
-            to={`/structures/${venue.managingOfferer.id}/lieux/${venue.id}/parametres`}
+            to={`/structures/${selectedPartnerVenue.managingOfferer.id}/lieux/${selectedPartnerVenue.id}/parametres`}
             label="Paramètres généraux"
           />
         </div>
       </div>
 
-      <VenueOfferSteps offerer={offerer} venue={venue} hasVenue />
-      {venueHasPartnerPage && (
+      {shouldDisplayVenueOfferSteps && <VenueOfferSteps />}
+      {selectedPartnerVenue.hasPartnerPage && (
         <PartnerPageIndividualSection
-          venueId={venue.id}
-          venueName={venue.name}
-          offererId={offerer.id}
+          venueId={selectedPartnerVenue.id}
+          venueName={selectedPartnerVenue.name}
+          offererId={selectedPartnerVenue.managingOfferer.id}
         />
       )}
       <PartnerPageCollectiveSection
-        lastCollectiveDmsApplication={venue.lastCollectiveDmsApplication}
-        venueId={venue.id}
-        venueName={venue.name}
-        offererId={offerer.id}
-        allowedOnAdage={venue.allowedOnAdage}
+        lastCollectiveDmsApplication={
+          selectedPartnerVenue.lastCollectiveDmsApplication
+        }
+        venueId={selectedPartnerVenue.id}
+        venueName={selectedPartnerVenue.name}
+        offererId={selectedPartnerVenue.managingOfferer.id}
+        allowedOnAdage={selectedPartnerVenue.allowedOnAdage}
         isDisplayedInHomepage
       />
     </Panel>
