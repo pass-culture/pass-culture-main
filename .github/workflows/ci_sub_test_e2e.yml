@@ -138,6 +138,7 @@ jobs:
         env:
           IMAGE: ${{ inputs.image }}
           TAG: ${{ inputs.tag }}
+          E2E_API_KEY: DummyToken
         run: |
           if [ "$TAG" != "latest" ]; then
             docker load --input "${{ runner.temp }}/$IMAGE-$TAG.tar"
@@ -152,6 +153,7 @@ jobs:
             --publish 5001:5001 \
             --publish 10002:10002 \
             --entrypoint bash \
+            --env E2E_API_KEY=DummyToken \
             "${{ steps.compute-image-name.outputs.image_name }}" \
             -c "set -e ; flask install_postgres_extensions ; alembic upgrade pre@head ; alembic upgrade post@head ; flask install_data ; FLASK_USE_RELOADER=0 python src/pcapi/app.py"
 
@@ -176,7 +178,9 @@ jobs:
           timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:3001)" != "200" ]]; do sleep 5; done' || false
 
       - name: "Playwright run"
-        run: yarn test:e2e:ci --reporter=blob --shard="${{ matrix.shardIndex }}/${{matrix.shardTotal }}"
+        run: E2E_API_KEY=DummyToken yarn test:e2e:ci --reporter=blob --shard="${{ matrix.shardIndex }}/${{matrix.shardTotal }}"
+        env:
+          E2E_API_KEY: DummyToken
 
       - name: "Upload Playwright report"
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

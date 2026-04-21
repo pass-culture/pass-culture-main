@@ -20,16 +20,17 @@ from pcapi.routes.backoffice.dev.blueprint import get_token_expiration_timestamp
 from pcapi.utils import transaction_manager
 
 
-API_KEY_HEADER_NAME = "X-API-KEY"
+API_KEY_HEADER_NAME = "x-api-key"
 
 
 def api_key_required(route_function: typing.Callable) -> typing.Callable:
     @functools.wraps(route_function)
     def wrapper(*args: typing.Any, **kwargs: typing.Any) -> flask.Response:
-        if not (request.headers.get(API_KEY_HEADER_NAME) or "").strip():
+        token = request.headers.get(API_KEY_HEADER_NAME)
+        if not token:
             raise api_errors.UnauthorizedError(errors={"auth": "API key required"})
 
-        if request.headers[API_KEY_HEADER_NAME] != settings.E2E_API_KEY:
+        if token != settings.E2E_API_KEY:
             raise api_errors.ForbiddenError(errors={"auth": "Invalid API key"})
 
         return route_function(*args, **kwargs)

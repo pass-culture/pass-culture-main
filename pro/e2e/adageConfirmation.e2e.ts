@@ -47,7 +47,8 @@ test.describe('Adage confirmation', () => {
     const providerApiKey = userData.providerApiKey
 
     const clearEmailResponse = await requestContext.get(
-      `${BASE_API_URL}/sandboxes/clear_email_list`
+      `${BASE_API_URL}/sandboxes/clear_email_list`,
+      { headers: { 'x-api-key': process.env.E2E_API_KEY } }
     )
     expect(clearEmailResponse.status()).toBe(200)
 
@@ -134,7 +135,8 @@ test.describe('Adage confirmation', () => {
     ).toBeVisible()
 
     const clearEmailResponse2 = await requestContext.get(
-      `${BASE_API_URL}/sandboxes/clear_email_list`
+      `${BASE_API_URL}/sandboxes/clear_email_list`,
+      { headers: { 'x-api-key': process.env.E2E_API_KEY } }
     )
     expect(clearEmailResponse2.status()).toBe(200)
 
@@ -200,7 +202,8 @@ test.describe('Adage confirmation', () => {
     await expect(page.getByRole('button', { name: 'Statut' })).toBeVisible()
 
     const clearEmailResponse3 = await requestContext.get(
-      `${BASE_API_URL}/sandboxes/clear_email_list`
+      `${BASE_API_URL}/sandboxes/clear_email_list`,
+      { headers: { 'x-api-key': process.env.E2E_API_KEY } }
     )
     expect(clearEmailResponse3.status()).toBe(200)
 

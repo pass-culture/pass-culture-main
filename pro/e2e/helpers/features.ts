@@ -17,6 +17,7 @@ export async function setFeatureFlags(
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        'x-api-key': process.env.E2E_API_KEY,
       },
       data: { features },
     }
