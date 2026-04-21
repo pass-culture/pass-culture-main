@@ -52,18 +52,19 @@ def generate_error_response(errors: dict, backoffice_template_name: str = "error
     from pcapi.routes.backoffice.utils import request as request_utils
     from pcapi.routes.backoffice.utils import response as response_utils
 
-    content = ""
     # In case of a request coming from htmx, display errors as flash messages
     if request_utils.is_request_from_htmx():
         for error_line in response_utils.format_response_error_messages(errors):
             flash(error_line, "danger")
-    else:
-        content = render_template(
+        return make_response()
+
+    return make_response(
+        render_template(
             backoffice_template_name,
             errors=errors,
             static_hashes=static_utils.get_hashes(),
         )
-    return make_response(content)
+    )
 
 
 with app.app_context():
