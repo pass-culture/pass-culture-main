@@ -20,8 +20,7 @@ on:
         default: false
 
     secrets:
-      PASSCULTURE_GITHUB_ACTION_APP_ID: { required: true }
-      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: { required: true }
+      GITHUB_TOKEN: { required: true }
 
 permissions:
   contents: write
@@ -31,25 +30,15 @@ jobs:
   create-pre-release-on-github:
     runs-on: ubuntu-22.04
     steps:
-      - name: Authenticate through github app ghactionci
-        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
-        id: github-token
-        with:
-          app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
-          private-key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: pass-culture-main
-          permission-contents: write
-
       - name: Checkout ref
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ inputs.base_ref }}
-          token: ${{ steps.github-token.outputs.token }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Add version to api
         env:
-          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG_NUMBER: ${{ inputs.tag_number }}
         working-directory: api
         run: |
@@ -58,7 +47,7 @@ jobs:
 
       - name: Add version to pro
         env:
-          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG_NUMBER: ${{ inputs.tag_number }}
         working-directory: pro
         run: |
@@ -67,7 +56,7 @@ jobs:
 
       - name: Add version to image-resizing
         env:
-          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG_NUMBER: ${{ inputs.tag_number }}
         working-directory: app-engine/image-resizing
         run: |
@@ -76,7 +65,7 @@ jobs:
 
       - name: Configure git author
         env:
-          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GIT_CONFIG_EMAIL: ${{ vars.GH_ACTIONS_BOT_EMAIL }}
           GIT_CONFIG_NAME: ${{ github.actor }}
         run: |
@@ -85,7 +74,7 @@ jobs:
 
       - name: Tag release
         env:
-          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG_NAME: v${{ inputs.tag_number }}
         run: |
           git commit -m "🚀 $TAG_NAME" -n
@@ -94,7 +83,7 @@ jobs:
 
       - name: Push tag to base ref
         env:
-          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BASE_REF: ${{ inputs.base_ref }}
         if: ${{ inputs.base_ref_is_a_branch }}
         run: git push origin "$BASE_REF"
@@ -102,7 +91,7 @@ jobs:
       - name: Create Github prerelease
         continue-on-error: true
         env:
-          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # generate notes vs the latest release
         # beware of the order of the args !
         run: |

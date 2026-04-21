@@ -40,9 +40,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: Fetch tags
-        run: git fetch --tags
+        with: { fetch-tags: true }
 
       - name: Get release-number major version
         id: version
@@ -78,7 +76,7 @@ jobs:
     secrets: inherit
 
   create-release:
-    name: Create hotfix release
+    name: Create major release
     needs: compute-major-version-variables
     uses: ./.github/workflows/cd_create_release.yml
     with:
