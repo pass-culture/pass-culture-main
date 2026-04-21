@@ -72,9 +72,9 @@ class PatchProductTest(PublicAPIVenueEndpointHelper):
 
         response = self.make_request(
             plain_api_key,
-            {"offer_id": offer.id, "location": {"venue_id": venue.id}},
+            json_body={"offerId": offer.id, "location": {"type": "physical", "venue_id": venue.id}},
         )
-        assert response.status_code == 404
+        assert response.status_code == 404, response.json
 
     def test_deactivate_offer(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
