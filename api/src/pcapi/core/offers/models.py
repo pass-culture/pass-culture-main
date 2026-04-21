@@ -1089,6 +1089,10 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
         return sa.and_(cls.url.is_not(None), cls.url != "")
 
     @property
+    def hasCulturalOutreachClaim(self) -> bool:
+        return self.culturalOutreach is not None and self.culturalOutreach.claimedDatetime is not None
+
+    @property
     def isDigital(self) -> bool:
         return self.subcategory.online_offline_platform == models.OnlineOfflinePlatformChoices.ONLINE.value
 

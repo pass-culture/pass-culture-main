@@ -532,6 +532,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     isNonFreeOffer: bool | None
     videoData: VideoData
     highlightRequests: list[highlight_serialize.ShortHighlightResponseModel]
+    hasCulturalOutreachClaim: bool
 
     class Config:
         orm_mode = True
