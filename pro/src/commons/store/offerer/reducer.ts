@@ -35,13 +35,6 @@ const offererSlice = createSlice({
   name: 'offerer',
   initialState,
   reducers: {
-    setCurrentOffererName: (
-      state: OffererState,
-      action: PayloadAction<GetOffererNameResponseModel | null>
-    ) => {
-      state.currentOffererName = action.payload
-    },
-
     updateOffererNames: (
       state: OffererState,
       action: PayloadAction<UpdateOffererNamesPayload>
@@ -54,20 +47,9 @@ const offererSlice = createSlice({
       state.offerersNamesWithPendingValidation =
         action.payload.offerersNamesWithPendingValidation
     },
-
-    updateCurrentOfferer: (
-      state: OffererState,
-      action: PayloadAction<GetOffererResponseModel | null>
-    ) => {
-      state.currentOfferer = action.payload
-    },
   },
 })
 
 export const offererReducer = offererSlice.reducer
 
-export const {
-  setCurrentOffererName,
-  updateOffererNames,
-  updateCurrentOfferer,
-} = offererSlice.actions
+export const { updateOffererNames } = offererSlice.actions

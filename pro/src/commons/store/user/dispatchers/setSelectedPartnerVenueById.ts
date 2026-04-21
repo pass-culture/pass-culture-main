@@ -6,7 +6,6 @@ import type {
   GetOffererResponseModel,
   GetVenueResponseModel,
 } from '@/apiClient/v1'
-import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleError } from '@/commons/errors/handleError'
 import {
@@ -14,10 +13,6 @@ import {
   localStorageManager,
 } from '@/commons/utils/localStorageManager'
 
-import {
-  setCurrentOffererName,
-  updateCurrentOfferer,
-} from '../../offerer/reducer'
 import type { AppThunkApiConfig } from '../../store'
 import {
   setSelectedPartnerVenue,
@@ -50,8 +45,6 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
     try {
       const state = getState()
 
-      const offererNames = state.offerer.offererNames
-      assertOrFrontendError(offererNames, '`offererNames` is null.')
       const previousSelectedPartnerVenue = state.user.selectedPartnerVenue
       if (nextSelectedPartnerVenueId === previousSelectedPartnerVenue?.id) {
         return {
@@ -63,7 +56,7 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
       const venuesWithPendingValidationIds =
         state.user.venuesWithPendingValidation?.map((v) => v.id)
       let nextSelectedPartnerVenue: GetVenueResponseModel
-      let nextSelectedOfferer: GetOffererResponseModel
+      let nextSelectedAdminOfferer: GetOffererResponseModel
       let nextUserAccess: UserAccess
       if (
         venuesWithPendingValidationIds?.length &&
@@ -75,9 +68,11 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
         nextSelectedPartnerVenue = {
           id: nextSelectedPartnerVenueId,
           managingOfferer: { id: venue?.managingOffererId },
+          // TODO (igabriele, 2026-04-20): Remove this `as` and make that type-strict via a dedicated store prop for pending cases. This is likely causing some of the current Sentry errors.
         } as GetVenueResponseModel
-        nextSelectedOfferer = {
+        nextSelectedAdminOfferer = {
           id: venue?.managingOffererId,
+          // TODO (igabriele, 2026-04-2): Remove this `as` and make that type-strict via a dedicated store prop for pending cases. This is likely causing some of the current Sentry errors.
         } as GetOffererResponseModel
 
         // TODO (igabriele, 2026-02-04): Delete those 2 statements once `WIP_SWITCH_VENUE` FF is enabled and removed.
@@ -87,40 +82,25 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
         nextSelectedPartnerVenue = await api.getVenue(
           nextSelectedPartnerVenueId
         )
-        nextSelectedOfferer = await api.getOfferer(
+        nextSelectedAdminOfferer = await api.getOfferer(
           nextSelectedPartnerVenue.managingOfferer.id
         )
 
         // TODO (igabriele, 2026-02-04): Delete those 2 statements once `WIP_SWITCH_VENUE` FF is enabled and removed.
-        nextUserAccess = nextSelectedOfferer.isOnboarded
+        nextUserAccess = nextSelectedAdminOfferer.isOnboarded
           ? 'full'
           : 'no-onboarding'
         dispatch(updateUserAccess(nextUserAccess))
       }
 
-      dispatch(updateCurrentOfferer(nextSelectedOfferer))
-
       if (!shouldSkipSelectedAdminOffererUpdate) {
-        await dispatch(setSelectedAdminOffererById(nextSelectedOfferer))
+        await dispatch(setSelectedAdminOffererById(nextSelectedAdminOfferer))
       }
 
-      const nextSelectedOffererName = offererNames.find(
-        (offerer) => offerer.id === nextSelectedOfferer.id
-      )
-      assertOrFrontendError(
-        nextSelectedOffererName,
-        '`nextSelectedOffererName` is undefined.'
-      )
-      localStorageManager.setItem(
-        LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID,
-        String(nextSelectedOfferer.id)
-      )
       localStorageManager.setItem(
         LOCAL_STORAGE_KEY.SELECTED_VENUE_ID,
         String(nextSelectedPartnerVenue.id)
       )
-      // TODO (igabriele, 2026-02-04): Delete this statement once `WIP_SWITCH_VENUE` FF is enabled and removed.
-      dispatch(setCurrentOffererName(nextSelectedOffererName))
       dispatch(setSelectedPartnerVenue(nextSelectedPartnerVenue))
       return {
         selectedPartnerVenue: nextSelectedPartnerVenue,

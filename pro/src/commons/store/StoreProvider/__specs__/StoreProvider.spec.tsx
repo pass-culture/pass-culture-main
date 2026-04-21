@@ -82,7 +82,8 @@ describe('src | App', () => {
     expect(api.getProfile).toHaveBeenCalledTimes(1)
     expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
     expect(api.getVenuesLite).toHaveBeenCalledTimes(1)
-    expect(api.getOfferer).toHaveBeenCalledTimes(1)
+    // TODO (igabriele, 2026-04-20): Change back to 1 once `WIP_SWITCH_VENUE` FF is removed.
+    expect(api.getOfferer).toHaveBeenCalledTimes(2)
     expect(api.getVenue).toHaveBeenCalledTimes(1)
   })
 })

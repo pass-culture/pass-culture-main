@@ -11,12 +11,10 @@ export enum LOCAL_STORAGE_KEY {
   NEW_STRUCTURE_OFFERER = 'PASS_CULTURE_NEW_STRUCTURE_OFFERER',
   NEW_STRUCTURE_OFFERER_INITIAL_ADDRESS = 'PASS_CULTURE_NEW_STRUCTURE_OFFERER_INITIAL_ADDRESS',
   NEW_STRUCTURE_ACTIVITY = 'PASS_CULTURE_NEW_STRUCTURE_ACTIVITY',
-
-  // Legacy keys (will be removed in the future)
-  // TODO (igabriele, 2026-02-04): Move this key to a `LOCAL_STORAGE_KEY_TO_PRUNE` once `WIP_SWITCH_VENUE` FF is enabled and removed.
-  /** @deprecated Will be removed in the future in favor of `SELECTED_VENUE_ID`. */
-  SELECTED_OFFERER_ID = 'homepageSelectedOffererId',
 }
+
+// Legacy keys which don't follow the PASS_CULTURE_PREFIX prefix pattern
+const LOCAL_STORAGE_KEYS_TO_PRUNE = ['homepageSelectedOffererId']
 
 export const PASS_CULTURE_PREFIX = 'PASS_CULTURE_'
 
@@ -61,7 +59,8 @@ export const localStorageManager = {
     Object.keys(localStorage)
       .filter(
         (key) =>
-          key.startsWith(PASS_CULTURE_PREFIX) && !PERSISTENT_KEYS.has(key)
+          (key.startsWith(PASS_CULTURE_PREFIX) && !PERSISTENT_KEYS.has(key)) ||
+          LOCAL_STORAGE_KEYS_TO_PRUNE.includes(key)
       )
       .forEach((key) => {
         localStorage.removeItem(key)

@@ -1,14 +1,9 @@
 import { handleError } from '@/commons/errors/handleError'
 import { API_URL } from '@/commons/utils/config'
-import {
-  LOCAL_STORAGE_KEY,
-  localStorageManager,
-} from '@/commons/utils/localStorageManager'
+import { localStorageManager } from '@/commons/utils/localStorageManager'
 
 export const logout = async (redirect = true) => {
   localStorageManager.clearPassCultureKeys()
-  // TODO (smokhtari, 2026-02-18): remove manually until WIP_SWITCH_VENUE FF is enabled.
-  localStorageManager.removeItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)
 
   try {
     // we use fetch directly to avoid a circular import with request.ts

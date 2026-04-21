@@ -29,7 +29,6 @@ describe('logout', () => {
       },
     })
 
-    localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '1')
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '2')
   })
 
@@ -46,9 +45,6 @@ describe('logout', () => {
     )
     expect(windowLocationHrefMock).toHaveBeenCalledExactlyOnceWith('/connexion')
 
-    expect(
-      localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)
-    ).toBeNull()
     expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBeNull()
   })
 
@@ -66,9 +62,6 @@ describe('logout', () => {
     )
     expect(windowLocationHrefMock).toHaveBeenCalledExactlyOnceWith('/connexion')
 
-    expect(
-      localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)
-    ).toBeNull()
     expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBeNull()
   })
 })
