@@ -36,6 +36,7 @@ import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { CancelCollectiveBookingModal } from '@/components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
 import { ShareLinkDrawer } from '@/components/CollectiveOffer/ShareLinkDrawer/ShareLinkDrawer'
+import { ButtonSize, ButtonVariant } from '@/design-system/Button/types'
 import fullClearIcon from '@/icons/full-clear.svg'
 import fullCopyIcon from '@/icons/full-duplicate.svg'
 import fullPenIcon from '@/icons/full-edit.svg'
@@ -309,7 +310,11 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
           )}
           {!isCollectiveOfferBookable(offer) && canShareOffer && (
             <DropdownItem>
-              <ShareLinkDrawer offerId={offer.id} />
+              <ShareLinkDrawer
+                offerId={offer.id}
+                triggerButtonVariant={ButtonVariant.TERTIARY}
+                triggerButtonSize={ButtonSize.DEFAULT}
+              />
             </DropdownItem>
           )}
           {canHideOffer && (

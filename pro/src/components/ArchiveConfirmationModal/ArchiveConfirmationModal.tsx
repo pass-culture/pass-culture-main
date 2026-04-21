@@ -9,6 +9,7 @@ import type {
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { ButtonColor } from '@/design-system/Button/types'
 import strokeThingIcon from '@/icons/stroke-thing.svg'
 import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
@@ -69,6 +70,7 @@ export const ArchiveConfirmationModal = <T extends Offer>({
     <ConfirmDialog
       onCancel={onDismiss}
       onConfirm={onConfirmArchive}
+      confirmColor={ButtonColor.DANGER}
       cancelText="Annuler"
       confirmText={
         hasMultipleOffers ? 'Archiver les offres' : 'Archiver l’offre'
