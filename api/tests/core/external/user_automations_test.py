@@ -117,7 +117,7 @@ class UserAutomationsTest:
 
         mock_import_contacts.assert_called_once()
         call_kwargs = mock_import_contacts.call_args.kwargs
-        assert set(call_kwargs.keys()) == {"file_body", "list_ids", "notify_url", "request_options"}
+        assert set(call_kwargs.keys()) == {"file_body", "list_ids", "notify_url"}
         assert set(call_kwargs["file_body"].split("\n")) == {
             "EMAIL",
             users[1].email,
@@ -127,11 +127,8 @@ class UserAutomationsTest:
         assert call_kwargs["list_ids"] == [settings.SENDINBLUE_AUTOMATION_YOUNG_EX_BENEFICIARY_ID]
         assert (
             call_kwargs["notify_url"]
-            == f"{settings.API_URL}/webhooks/brevo/importcontacts/{settings.SENDINBLUE_AUTOMATION_YOUNG_EX_BENEFICIARY_ID}/1"
+            == f"{settings.API_URL}/webhooks/brevo/importcontacts/{settings.SENDINBLUE_AUTOMATION_YOUNG_EX_BENEFICIARY_ID}/1?token={settings.BREVO_WEBHOOK_SECRET_QUERY_PARAM}"
         )
-        assert call_kwargs["request_options"] == {
-            "additional_query_parameters": {"token": settings.BREVO_WEBHOOK_SECRET_QUERY_PARAM}
-        }
 
         assert result is True
 
