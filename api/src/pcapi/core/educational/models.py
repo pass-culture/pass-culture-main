@@ -576,7 +576,7 @@ class CollectiveOffer(
     )
 
     rejectionReason: sa_orm.Mapped[CollectiveOfferRejectionReason | None] = sa_orm.mapped_column(
-        db_utils.MagicEnum(CollectiveOfferRejectionReason), default=None, nullable=True
+        db_utils.MagicEnum(CollectiveOfferRejectionReason, use_values=True), default=None, nullable=True
     )
 
     isNonFreeOffer: sa_orm.Mapped["bool | None"] = sa_orm.query_expression()
@@ -592,7 +592,7 @@ class CollectiveOffer(
     # locationType = ADDRESS -> the offer is located at a specific address - offererAddressId is filled and locationComment is None
     # locationType = TO_BE_DEFINED -> the offer location is not precisely defined - offererAddressId is None and locationComment may be filled
     locationType: sa_orm.Mapped[CollectiveLocationType] = sa_orm.mapped_column(
-        db_utils.MagicEnum(CollectiveLocationType), nullable=False
+        db_utils.MagicEnum(CollectiveLocationType, use_values=True), nullable=False
     )
 
     locationComment: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
@@ -1024,14 +1024,14 @@ class CollectiveOfferTemplate(
     contactPhone: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     contactUrl: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     contactForm: sa_orm.Mapped[OfferContactFormEnum | None] = sa_orm.mapped_column(
-        db_utils.MagicEnum(OfferContactFormEnum),
+        db_utils.MagicEnum(OfferContactFormEnum, use_values=True),
         nullable=True,
         server_default=None,
         default=None,
     )
 
     rejectionReason: sa_orm.Mapped[CollectiveOfferRejectionReason | None] = sa_orm.mapped_column(
-        db_utils.MagicEnum(CollectiveOfferRejectionReason), default=None
+        db_utils.MagicEnum(CollectiveOfferRejectionReason, use_values=True), default=None
     )
 
     offererAddressId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
@@ -1042,7 +1042,7 @@ class CollectiveOfferTemplate(
     )
 
     locationType: sa_orm.Mapped[CollectiveLocationType] = sa_orm.mapped_column(
-        db_utils.MagicEnum(CollectiveLocationType), nullable=False
+        db_utils.MagicEnum(CollectiveLocationType, use_values=True), nullable=False
     )
 
     locationComment: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
@@ -1360,7 +1360,7 @@ class EducationalInstitution(PcObject, models.Model):
     )
 
     ruralLevel: sa_orm.Mapped[InstitutionRuralLevel | None] = sa_orm.mapped_column(
-        db_utils.MagicEnum(InstitutionRuralLevel), nullable=True, default=None
+        db_utils.MagicEnum(InstitutionRuralLevel, use_values=True), nullable=True, default=None
     )
 
     collective_playlists: sa_orm.Mapped[list["CollectivePlaylist"]] = sa_orm.relationship(
@@ -2110,7 +2110,9 @@ class EducationalInstitutionProgram(PcObject, models.Model):
 
 class CollectivePlaylist(PcObject, models.Model):
     __tablename__ = "collective_playlist"
-    type: sa_orm.Mapped[PlaylistType] = sa_orm.mapped_column(db_utils.MagicEnum(PlaylistType), nullable=False)
+    type: sa_orm.Mapped[PlaylistType] = sa_orm.mapped_column(
+        db_utils.MagicEnum(PlaylistType, use_values=True), nullable=False
+    )
     distanceInKm: sa_orm.Mapped[float | None] = sa_orm.mapped_column(sa.Float, nullable=True)
 
     institutionId: sa_orm.Mapped[int] = sa_orm.mapped_column(

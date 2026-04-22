@@ -368,10 +368,10 @@ class FinanceEvent(PcObject, Model):
     pricingOrderingDate: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
     status: sa_orm.Mapped[FinanceEventStatus] = sa_orm.mapped_column(
-        db_utils.MagicEnum(FinanceEventStatus), index=True, nullable=False
+        db_utils.MagicEnum(FinanceEventStatus, use_values=True), index=True, nullable=False
     )
     motive: sa_orm.Mapped[FinanceEventMotive] = sa_orm.mapped_column(
-        db_utils.MagicEnum(FinanceEventMotive), nullable=False
+        db_utils.MagicEnum(FinanceEventMotive, use_values=True), nullable=False
     )
 
     bookingId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
@@ -481,7 +481,7 @@ class CashflowPricing(Model):
 class Pricing(PcObject, Model):
     __tablename__ = "pricing"
     status: sa_orm.Mapped[PricingStatus] = sa_orm.mapped_column(
-        db_utils.MagicEnum(PricingStatus), index=True, nullable=False
+        db_utils.MagicEnum(PricingStatus, use_values=True), index=True, nullable=False
     )
 
     bookingId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
@@ -592,7 +592,7 @@ class PricingLine(PcObject, Model):
     amount: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.Integer, nullable=False)
 
     category: sa_orm.Mapped[PricingLineCategory] = sa_orm.mapped_column(
-        db_utils.MagicEnum(PricingLineCategory), nullable=False
+        db_utils.MagicEnum(PricingLineCategory, use_values=True), nullable=False
     )
 
 
@@ -610,9 +610,15 @@ class PricingLog(PcObject, Model):
     timestamp: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now()
     )
-    statusBefore: sa_orm.Mapped[PricingStatus] = sa_orm.mapped_column(db_utils.MagicEnum(PricingStatus), nullable=False)
-    statusAfter: sa_orm.Mapped[PricingStatus] = sa_orm.mapped_column(db_utils.MagicEnum(PricingStatus), nullable=False)
-    reason: sa_orm.Mapped[PricingLogReason] = sa_orm.mapped_column(db_utils.MagicEnum(PricingLogReason), nullable=False)
+    statusBefore: sa_orm.Mapped[PricingStatus] = sa_orm.mapped_column(
+        db_utils.MagicEnum(PricingStatus, use_values=True), nullable=False
+    )
+    statusAfter: sa_orm.Mapped[PricingStatus] = sa_orm.mapped_column(
+        db_utils.MagicEnum(PricingStatus, use_values=True), nullable=False
+    )
+    reason: sa_orm.Mapped[PricingLogReason] = sa_orm.mapped_column(
+        db_utils.MagicEnum(PricingLogReason, use_values=True), nullable=False
+    )
 
 
 class RuleGroup(enum.Enum):
@@ -854,7 +860,7 @@ class Cashflow(PcObject, Model):
         sa.DateTime, nullable=False, server_default=sa.func.now()
     )
     status: sa_orm.Mapped[CashflowStatus] = sa_orm.mapped_column(
-        db_utils.MagicEnum(CashflowStatus), index=True, nullable=False
+        db_utils.MagicEnum(CashflowStatus, use_values=True), index=True, nullable=False
     )
 
     bankAccountId: sa_orm.Mapped[int] = sa_orm.mapped_column(
@@ -988,7 +994,9 @@ class Invoice(PcObject, Model):
     cashflows: sa_orm.Mapped[list[Cashflow]] = sa_orm.relationship(
         "Cashflow", secondary=InvoiceCashflow.__table__, back_populates="invoices"
     )
-    status: sa_orm.Mapped[InvoiceStatus] = sa_orm.mapped_column(db_utils.MagicEnum(InvoiceStatus), nullable=False)
+    status: sa_orm.Mapped[InvoiceStatus] = sa_orm.mapped_column(
+        db_utils.MagicEnum(InvoiceStatus, use_values=True), nullable=False
+    )
     settlements: sa_orm.Mapped[list["Settlement"]] = sa_orm.relationship(
         "Settlement", secondary=InvoiceSettlement.__table__, back_populates="invoices"
     )
@@ -1038,7 +1046,7 @@ class Settlement(PcObject, Model):
         "Invoice", secondary=InvoiceSettlement.__table__, back_populates="settlements"
     )
     status: sa_orm.Mapped[SettlementStatus] = sa_orm.mapped_column(
-        db_utils.MagicEnum(SettlementStatus), nullable=False, default=SettlementStatus.ISSUED
+        db_utils.MagicEnum(SettlementStatus, use_values=True), nullable=False, default=SettlementStatus.ISSUED
     )
     batchId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("settlement_batch.id"), index=True, nullable=False
@@ -1231,7 +1239,7 @@ class FinanceIncident(PcObject, Model):
     zendeskId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.BigInteger, index=True, nullable=True)
 
     origin: sa_orm.Mapped[FinanceIncidentRequestOrigin] = sa_orm.mapped_column(
-        db_utils.MagicEnum(FinanceIncidentRequestOrigin),
+        db_utils.MagicEnum(FinanceIncidentRequestOrigin, use_values=True),
         nullable=False,
         index=True,
     )

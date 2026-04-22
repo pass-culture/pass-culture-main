@@ -43,7 +43,9 @@ class Achievement(PcObject, Model):
         "Booking", foreign_keys=[bookingId], back_populates="achievements"
     )
 
-    name: sa_orm.Mapped[AchievementEnum] = sa_orm.mapped_column(db_utils.MagicEnum(AchievementEnum), nullable=False)
+    name: sa_orm.Mapped[AchievementEnum] = sa_orm.mapped_column(
+        db_utils.MagicEnum(AchievementEnum, use_values=True), nullable=False
+    )
     unlockedDate: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now, server_default=sa.func.now()
     )

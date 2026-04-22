@@ -197,7 +197,7 @@ class Product(PcObject, Model, HasThumbMixin):
         "jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB), nullable=True
     )
     gcuCompatibilityType: sa_orm.Mapped[GcuCompatibilityType] = sa_orm.mapped_column(
-        db_utils.MagicEnum(GcuCompatibilityType),
+        db_utils.MagicEnum(GcuCompatibilityType, use_values=True),
         nullable=False,
         default=GcuCompatibilityType.COMPATIBLE,
         server_default=GcuCompatibilityType.COMPATIBLE.value,
@@ -1731,7 +1731,7 @@ class OfferCompliance(PcObject, Model):
         MutableList.as_mutable(postgresql.ARRAY(sa.String)), nullable=False
     )
     validation_status_prediction: sa_orm.Mapped[ComplianceValidationStatusPrediction | None] = sa_orm.mapped_column(
-        db_utils.MagicEnum(ComplianceValidationStatusPrediction), nullable=True
+        db_utils.MagicEnum(ComplianceValidationStatusPrediction, use_values=True), nullable=True
     )
     validation_status_prediction_reason: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
 

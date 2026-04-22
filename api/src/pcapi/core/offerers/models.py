@@ -1012,7 +1012,7 @@ class OpeningHours(PcObject, Model):
     )
 
     weekday: sa_orm.Mapped[Weekday] = sa_orm.mapped_column(
-        db_utils.MagicEnum(Weekday), nullable=False, default=Weekday.MONDAY
+        db_utils.MagicEnum(Weekday, use_values=True), nullable=False, default=Weekday.MONDAY
     )
     timespan: sa_orm.Mapped[list[psycopg2.extras.NumericRange] | None] = sa_orm.mapped_column(
         sa_psql.ARRAY(sa_psql.ranges.NUMRANGE), nullable=True
@@ -1164,7 +1164,7 @@ class VenueRegistration(PcObject, Model):
     )
     venue: sa_orm.Mapped[Venue] = sa_orm.relationship("Venue", foreign_keys=[venueId], back_populates="registration")
 
-    target: sa_orm.Mapped[Target] = sa_orm.mapped_column(db_utils.MagicEnum(Target), nullable=False)
+    target: sa_orm.Mapped[Target] = sa_orm.mapped_column(db_utils.MagicEnum(Target, use_values=True), nullable=False)
 
     webPresence: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
 
@@ -1507,7 +1507,9 @@ class OffererInvitation(PcObject, Model):
     user: sa_orm.Mapped["users_models.User"] = sa_orm.relationship(
         "User", foreign_keys=[userId], back_populates="OffererInvitations"
     )
-    status: sa_orm.Mapped[InvitationStatus] = sa_orm.mapped_column(db_utils.MagicEnum(InvitationStatus), nullable=False)
+    status: sa_orm.Mapped[InvitationStatus] = sa_orm.mapped_column(
+        db_utils.MagicEnum(InvitationStatus, use_values=True), nullable=False
+    )
 
     __table_args__ = (sa.UniqueConstraint("offererId", "email", name="unique_offerer_invitation"),)
 
@@ -1604,7 +1606,9 @@ class OffererAddress(PcObject, Model):
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False
     )
     offerer: sa_orm.Mapped["Offerer"] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
-    type: sa_orm.Mapped[LocationType] = sa_orm.mapped_column(db_utils.MagicEnum(LocationType), nullable=False)
+    type: sa_orm.Mapped[LocationType] = sa_orm.mapped_column(
+        db_utils.MagicEnum(LocationType, use_values=True), nullable=False
+    )
     venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=False
     )
@@ -1660,7 +1664,7 @@ class OffererConfidenceRule(PcObject, Model):
     )
 
     confidenceLevel: sa_orm.Mapped[OffererConfidenceLevel] = sa_orm.mapped_column(
-        db_utils.MagicEnum(OffererConfidenceLevel), nullable=False
+        db_utils.MagicEnum(OffererConfidenceLevel, use_values=True), nullable=False
     )
 
     __table_args__ = (sa.CheckConstraint('num_nonnulls("offererId", "venueId") = 1'),)
@@ -1724,15 +1728,17 @@ class NonPaymentNotice(PcObject, Model):
     emitterName: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)
     emitterEmail: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)
     reference: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)
-    noticeType: sa_orm.Mapped[NoticeType] = sa_orm.mapped_column(db_utils.MagicEnum(NoticeType), nullable=False)
+    noticeType: sa_orm.Mapped[NoticeType] = sa_orm.mapped_column(
+        db_utils.MagicEnum(NoticeType, use_values=True), nullable=False
+    )
     status: sa_orm.Mapped[NoticeStatus] = sa_orm.mapped_column(
-        db_utils.MagicEnum(NoticeStatus),
+        db_utils.MagicEnum(NoticeStatus, use_values=True),
         nullable=False,
         server_default=NoticeStatus.CREATED.value,
         default=NoticeStatus.CREATED,
     )
     motivation: sa_orm.Mapped[NoticeStatusMotivation | None] = sa_orm.mapped_column(
-        db_utils.MagicEnum(NoticeStatusMotivation), nullable=True
+        db_utils.MagicEnum(NoticeStatusMotivation, use_values=True), nullable=True
     )
     venueId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("venue.id", ondelete="SET NULL"), nullable=True, index=True

@@ -219,7 +219,7 @@ class Booking(PcObject, Model):
     )
 
     usedRecreditType: sa_orm.Mapped[BookingRecreditType | None] = sa_orm.mapped_column(
-        MagicEnum(BookingRecreditType), nullable=True
+        MagicEnum(BookingRecreditType, use_values=True), nullable=True
     )
 
     fraudulentBookingTag: sa_orm.Mapped["FraudulentBookingTag | None"] = sa_orm.relationship(

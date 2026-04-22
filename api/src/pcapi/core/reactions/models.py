@@ -21,7 +21,9 @@ class ReactionTypeEnum(enum.Enum):
 
 class Reaction(PcObject, Model):
     __tablename__ = "reaction"
-    reactionType: sa_orm.Mapped[ReactionTypeEnum] = sa_orm.mapped_column(MagicEnum(ReactionTypeEnum), nullable=False)
+    reactionType: sa_orm.Mapped[ReactionTypeEnum] = sa_orm.mapped_column(
+        MagicEnum(ReactionTypeEnum, use_values=True), nullable=False
+    )
     userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True
     )

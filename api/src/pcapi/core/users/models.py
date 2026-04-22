@@ -1163,7 +1163,7 @@ class UserAccountUpdateRequest(PcObject, Model):
     dsApplicationId: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, nullable=False, index=True, unique=True)
     dsTechnicalId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
     status: sa_orm.Mapped[dms_models.GraphQLApplicationStates] = sa_orm.mapped_column(
-        MagicEnum(dms_models.GraphQLApplicationStates), nullable=False
+        MagicEnum(dms_models.GraphQLApplicationStates, use_values=True), nullable=False
     )
     dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now, server_default=sa.func.now()
@@ -1185,7 +1185,7 @@ class UserAccountUpdateRequest(PcObject, Model):
     )
     # One or several changes may be requested
     updateTypes: sa_orm.Mapped[list[UserAccountUpdateType]] = sa_orm.mapped_column(
-        postgresql.ARRAY(MagicEnum(UserAccountUpdateType)), nullable=False, server_default="{}"
+        postgresql.ARRAY(MagicEnum(UserAccountUpdateType, use_values=True)), nullable=False, server_default="{}"
     )
     oldEmail: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     newEmail: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
@@ -1202,7 +1202,7 @@ class UserAccountUpdateRequest(PcObject, Model):
     dateLastInstructorMessage: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
     # Additional information to filter and/or show icons, badges...
     flags: sa_orm.Mapped[list[UserAccountUpdateFlag]] = sa_orm.mapped_column(
-        postgresql.ARRAY(MagicEnum(UserAccountUpdateFlag)), nullable=False, server_default="{}"
+        postgresql.ARRAY(MagicEnum(UserAccountUpdateFlag, use_values=True)), nullable=False, server_default="{}"
     )
 
     @property
