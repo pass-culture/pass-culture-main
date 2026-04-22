@@ -520,7 +520,7 @@ def validate_students(students: list[models.StudentLevels]) -> list[models.Stude
 class PostCollectiveOfferBodyModel(HttpBodyModel):
     venue_id: int
     name: str = pydantic_v2.Field(min_length=1, max_length=constants.MAX_COLLECTIVE_NAME_LENGTH)
-    booking_emails: list[pydantic_v2.EmailStr] = pydantic_v2.Field(min_length=1)
+    booking_emails: list[pydantic_v2.EmailStr] = pydantic_v2.Field(min_length=1, max_length=6)
     description: str = pydantic_v2.Field(max_length=constants.MAX_COLLECTIVE_DESCRIPTION_LENGTH)
     domains: list[int] = pydantic_v2.Field(min_length=1)
     duration_minutes: int | None = None
@@ -557,7 +557,7 @@ class PatchCollectiveOfferBodyModel(HttpBodyModel):
     mental_disability_compliant: bool | None = None
     motor_disability_compliant: bool | None = None
     visual_disability_compliant: bool | None = None
-    booking_emails: list[pydantic_v2.EmailStr] | None = pydantic_v2.Field(min_length=1, default=None)
+    booking_emails: list[pydantic_v2.EmailStr] | None = pydantic_v2.Field(min_length=1, max_length=6, default=None)
     description: str | None = pydantic_v2.Field(max_length=constants.MAX_COLLECTIVE_DESCRIPTION_LENGTH, default=None)
     name: str | None = pydantic_v2.Field(min_length=1, max_length=constants.MAX_COLLECTIVE_NAME_LENGTH, default=None)
     students: typing.Annotated[list[models.StudentLevels] | None, pydantic_v2.AfterValidator(validate_students)] = (
