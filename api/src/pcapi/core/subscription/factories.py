@@ -147,9 +147,9 @@ class ProfileCompletionContentFactory(factory.Factory):
     school_type: users_models.SchoolTypeEnum | None = None
 
 
-class QuotientFamilialCustodianFactory(factory.Factory):
+class ApiParticulierPersonFactory(factory.Factory):
     class Meta:
-        model = bonus_schemas.QuotientFamilialCustodian
+        model = bonus_schemas.Person
 
     last_name = factory.Faker("last_name")
     first_names = factory.Faker("random_elements", elements=["Jérôme", "Charles", "Bernard"])
@@ -176,7 +176,7 @@ class QuotientFamilialBonusCreditContentFactory(factory.Factory):
     class Meta:
         model = bonus_schemas.QuotientFamilialBonusCreditContent
 
-    custodian = factory.SubFactory(QuotientFamilialCustodianFactory)
+    custodian = factory.SubFactory(ApiParticulierPersonFactory)
     quotient_familial = factory.SubFactory(QuotientFamilialContentFactory)
 
 

@@ -22,7 +22,11 @@ class ParticulierApiException(Exception):
     pass
 
 
-class ParticulierApiQuotientFamilialNotFound(ParticulierApiException):
+class ParticulierApiForbidden(ParticulierApiException):
+    pass
+
+
+class ParticulierApiNotFound(ParticulierApiException):
     pass
 
 
@@ -78,7 +82,7 @@ class QuotientFamilialResponse(BaseModel):
 
 
 def get_quotient_familial(
-    custodian: bonus_schemas.QuotientFamilialCustodian, at_date: datetime.date | None = None
+    custodian: bonus_schemas.Person, at_date: datetime.date | None = None
 ) -> QuotientFamilialResponse:
     """
     Get the Quotient Familial from a tax household, using a custodian personal information.
@@ -100,7 +104,7 @@ def get_quotient_familial(
         "recipient": settings.PASS_CULTURE_SIRET,
         "nomNaissance": custodian.last_name.upper(),
         "prenoms[]": [first_name.upper() for first_name in custodian.first_names],
-        "nomUsage": custodian.common_name,
+        "nomUsage": custodian.common_name.upper() if custodian.common_name else None,
         "anneeDateNaissance": custodian.birth_date.year,
         "moisDateNaissance": custodian.birth_date.month,
         "jourDateNaissance": custodian.birth_date.day,
@@ -116,8 +120,10 @@ def get_quotient_familial(
         params={key: value for (key, value) in query_params.items() if value},
     )
 
+    if response.status_code == 403:
+        raise ParticulierApiForbidden("The API token does not have the correct permissions")
     if response.status_code == 404:
-        raise ParticulierApiQuotientFamilialNotFound("Custodian not found")
+        raise ParticulierApiNotFound("Custodian not found")
     if response.status_code == 429:
         raise ParticulierApiRateLimitExceeded("Particulier API rate limit exceeded")
 
