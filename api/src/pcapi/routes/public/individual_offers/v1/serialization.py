@@ -153,6 +153,9 @@ class AddressLocation(serialization.ConfiguredBaseModel):
             address_label=offer.offererAddress.label,  # type: ignore[arg-type]
         )
 
+    class Config:
+        extra = "forbid"
+
 
 class PhysicalLocation(serialization.ConfiguredBaseModel):
     """
