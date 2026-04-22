@@ -258,6 +258,7 @@ def cancel_latest_event(
         return None
     pricing = _cancel_event_pricing(event, models.PricingLogReason.MARK_AS_UNUSED)
     event.status = models.FinanceEventStatus.CANCELLED
+    db.session.add(event)
     db.session.flush()
     logger.info(
         "Cancelled finance event and its pricing",
