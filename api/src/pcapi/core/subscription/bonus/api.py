@@ -38,7 +38,7 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
     status = subscription_models.FraudCheckStatus.KO
     try:
         quotient_familial_response = _get_user_quotient_familial_response(source_data.custodian, user)
-    except api_particulier.ParticulierApiQuotientFamilialNotFound:
+    except api_particulier.ParticulierApiNotFound:
         reason_codes = [subscription_models.FraudReasonCode.CUSTODIAN_NOT_FOUND]
     except Exception:
         with atomic():
@@ -76,7 +76,7 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
 
 
 def _get_user_quotient_familial_response(
-    custodian: bonus_schemas.QuotientFamilialCustodian, user: users_models.User
+    custodian: bonus_schemas.Person, user: users_models.User
 ) -> api_particulier.QuotientFamilialResponse:
     """
     Calls the Quotient Familial API twelve times, returning the lowest one.

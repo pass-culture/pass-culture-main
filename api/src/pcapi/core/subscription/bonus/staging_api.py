@@ -15,7 +15,7 @@ from pcapi.core.users import models as users_models
 from pcapi.utils import countries as countries_utils
 
 
-NOT_FOUND_CUSTODIAN = bonus_schemas.QuotientFamilialCustodian(
+NOT_FOUND_CUSTODIAN = bonus_schemas.Person(
     last_name="dupont",
     common_name=None,
     first_names=["alexis"],
@@ -24,7 +24,7 @@ NOT_FOUND_CUSTODIAN = bonus_schemas.QuotientFamilialCustodian(
     birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
     birth_city_cog_code="08480",
 )
-CUSTODIAN_WITH_CHILDREN = bonus_schemas.QuotientFamilialCustodian(
+CUSTODIAN_WITH_CHILDREN = bonus_schemas.Person(
     last_name="lefebvre",
     common_name=None,
     first_names=["aleixs", "gréôme", "jean-philippe"],
@@ -36,7 +36,7 @@ CUSTODIAN_WITH_CHILDREN = bonus_schemas.QuotientFamilialCustodian(
 
 
 def get_and_mock_quotient_familial(
-    custodian: bonus_schemas.QuotientFamilialCustodian,
+    custodian: bonus_schemas.Person,
     at_date: datetime.date,
     user: users_models.User,
 ) -> api_particulier.QuotientFamilialResponse:

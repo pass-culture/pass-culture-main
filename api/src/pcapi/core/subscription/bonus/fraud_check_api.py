@@ -18,7 +18,7 @@ def create_bonus_credit_fraud_check(
     birth_city_cog_code: str | None = None,
     origin: str,
 ) -> subscription_models.BeneficiaryFraudCheck:
-    custodian = bonus_schemas.QuotientFamilialCustodian(
+    custodian = bonus_schemas.Person(
         last_name=last_name,
         common_name=common_name,
         first_names=first_names,

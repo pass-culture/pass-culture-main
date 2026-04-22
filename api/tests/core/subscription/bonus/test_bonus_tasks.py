@@ -18,7 +18,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 @patch("pcapi.connectors.api_particulier.get_quotient_familial")
 def test_get_quotient_familial_task(mocked_get_quotient_familial):
-    custodian = subscription_factories.QuotientFamilialCustodianFactory.create()
+    custodian = subscription_factories.ApiParticulierPersonFactory.create()
     fraud_check = subscription_factories.BonusFraudCheckFactory.create(
         status=subscription_models.FraudCheckStatus.STARTED,
         resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory.build(

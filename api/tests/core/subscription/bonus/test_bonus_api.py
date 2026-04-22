@@ -59,7 +59,7 @@ class GetQuotientFamilialTest:
 
         assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.OK
         assert bonus_fraud_check.source_data() == bonus_schemas.QuotientFamilialBonusCreditContent(
-            custodian=bonus_schemas.QuotientFamilialCustodian(
+            custodian=bonus_schemas.Person(
                 last_name="LEFEBVRE",
                 common_name=None,
                 first_names=["ALEIXS", "GRÉÔME", "JEAN-PHILIPPE"],
@@ -139,7 +139,7 @@ class GetQuotientFamilialTest:
 
     @patch("pcapi.connectors.api_particulier.get_quotient_familial")
     def test_get_quotient_familial_calls(self, mocked_get_quotient_familial):
-        custodian = subscription_factories.QuotientFamilialCustodianFactory()
+        custodian = subscription_factories.ApiParticulierPersonFactory()
         fraud_check = subscription_factories.BonusFraudCheckFactory(
             status=subscription_models.FraudCheckStatus.STARTED,
             resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory.build(

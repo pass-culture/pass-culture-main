@@ -2420,7 +2420,7 @@ class GetBonusCreditRequestFormTest(GetEndpointHelper):
             user=user,
             status=subscription_models.FraudCheckStatus.KO,
             resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory(
-                custodian=subscription_factories.QuotientFamilialCustodianFactory(
+                custodian=subscription_factories.ApiParticulierPersonFactory(
                     gender=users_models.GenderEnum.F,
                     first_names=["Augustine", "Pauline", "Henriette"],
                     last_name="Lansot",
