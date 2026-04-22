@@ -399,6 +399,19 @@ class Returns400Test:
             "bookingEmails.2": ["Saisissez un email valide"],
         }
 
+    def test_return_error_when_there_is_more_than_6_booking_emails(self, pro_client, payload):
+        data = {
+            **payload,
+            "bookingEmails": [f"test{i}@testmail.com" for i in range(1, 8)],
+        }
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "bookingEmails": ["Cette liste doit doit avoir une taille maximum de 6"],
+        }
+
     def test_description_invalid(self, pro_client, payload):
         data = {**payload, "description": "too_long" * 200}
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
