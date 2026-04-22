@@ -2,8 +2,10 @@ import decimal
 import logging
 from unittest.mock import patch
 
+import pydantic
 import pytest
 from brevo.core import ApiError as BrevoApiError
+from brevo.core import UncheckedBaseModel
 
 from pcapi.core.mails import models
 from pcapi.core.mails import send
@@ -11,6 +13,12 @@ from pcapi.core.mails import serialization
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.utils.module_loading import import_string
+
+
+class FakeGetContactInfoResponse(UncheckedBaseModel):
+    """This test class avoids filling all mandatory fields in GetContactInfoResponse for mocks"""
+
+    id: int = pydantic.Field()
 
 
 @pytest.mark.usefixtures("db_session")
@@ -152,6 +160,64 @@ class SendinblueBackendTest:
             email_blacklisted=False,
         )
         mock_delete_contact.assert_called_once_with("old.email@example.com", identifier_type="email_id")
+
+    @patch("brevo.contacts.client.ContactsClient.delete_contact")
+    def test_delete_contact(self, mock_delete_contact):
+        contact_email = "valid.email@example.com"
+
+        backend = self._get_backend_for_test()
+        backend(use_pro_subaccount=False).delete_contact(contact_email)
+
+        mock_delete_contact.assert_called_once_with(contact_email, identifier_type="email_id")
+
+    @patch("brevo.contacts.client.ContactsClient.delete_contact")
+    def test_delete_contact_invalid_email(self, mock_delete_contact):
+        contact_email = "invalid.email@example.com+1"
+
+        backend = self._get_backend_for_test()
+        backend(use_pro_subaccount=False).delete_contact(contact_email)
+
+        mock_delete_contact.assert_not_called()
+
+    @patch("brevo.contacts.client.ContactsClient.get_contact_info", return_value=FakeGetContactInfoResponse(id=123))
+    def test_get_contact_url(self, mock_get_contact_info):
+        contact_email = "valid.email@example.com"
+
+        backend = self._get_backend_for_test()
+        url = backend(use_pro_subaccount=False).get_contact_url(contact_email)
+
+        assert url == "https://app.brevo.com/contact/index/123"
+        mock_get_contact_info.assert_called_once_with(contact_email, identifier_type="email_id")
+
+    @patch("brevo.contacts.client.ContactsClient.get_contact_info")
+    def test_get_contact_url_invalid_email(self, mock_get_contact_info):
+        contact_email = "invalid.email@example.com+1"
+
+        backend = self._get_backend_for_test()
+        url = backend(use_pro_subaccount=False).get_contact_url(contact_email)
+
+        assert url is None
+        mock_get_contact_info.assert_not_called()
+
+    @patch("brevo.contacts.client.ContactsClient.get_contact_info", return_value=FakeGetContactInfoResponse(id=123))
+    def test_get_raw_contact_data(self, mock_get_contact_info):
+        contact_email = "valid.email@example.com"
+
+        backend = self._get_backend_for_test()
+        data = backend(use_pro_subaccount=False).get_raw_contact_data(contact_email)
+
+        assert data == {"id": 123}
+        mock_get_contact_info.assert_called_once_with(contact_email, identifier_type="email_id")
+
+    @patch("brevo.contacts.client.ContactsClient.get_contact_info")
+    def test_get_raw_contact_data_invalid_email(self, mock_get_contact_info):
+        contact_email = "invalid.email@example.com+1"
+
+        backend = self._get_backend_for_test()
+        data = backend(use_pro_subaccount=False).get_raw_contact_data(contact_email)
+
+        assert data == {}
+        mock_get_contact_info.assert_not_called()
 
 
 @pytest.mark.usefixtures("db_session")
