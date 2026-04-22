@@ -4449,6 +4449,10 @@ export type MinimalPostOfferBodyModel = {
         [key: string]: unknown;
     };
     /**
+     * Hasculturaloutreachclaim
+     */
+    hasCulturalOutreachClaim?: boolean;
+    /**
      * Mentaldisabilitycompliant
      */
     mentalDisabilityCompliant: boolean;
@@ -4982,6 +4986,10 @@ export type PatchOfferBodyModel = {
      */
     extraData?: unknown;
     /**
+     * Hasculturaloutreachclaim
+     */
+    hasCulturalOutreachClaim?: boolean;
+    /**
      * Isduo
      */
     isDuo?: boolean;
@@ -5290,6 +5298,10 @@ export type PostOfferBodyModel = {
     extraData?: {
         [key: string]: unknown;
     };
+    /**
+     * Hasculturaloutreachclaim
+     */
+    hasCulturalOutreachClaim?: boolean;
     /**
      * Isduo
      */
