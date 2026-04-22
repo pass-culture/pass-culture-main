@@ -87,24 +87,6 @@ def _toggle_marketing_email_subscription(subscribe: bool) -> None:
     update_external_user(user, skip_brevo=True)
 
 
-@public_api.route("/webhooks/sendinblue/unsubscribe", methods=["POST"])
-@spectree_serialize(on_success_status=204)
-def brevo_unsubscribe_user_legacy() -> None:
-    """
-    TODO (prouzet, 2026-04-16): remove this route when automations are migrated to /webhooks/brevo/unsubscribe
-    """
-    _toggle_marketing_email_subscription(False)
-
-
-@public_api.route("/webhooks/sendinblue/subscribe", methods=["POST"])
-@spectree_serialize(on_success_status=204)
-def brevo_subscribe_user_legacy() -> None:
-    """
-    TODO (prouzet, 2026-04-16): remove this route when automations are migrated to /webhooks/brevo/subscribe
-    """
-    _toggle_marketing_email_subscription(True)
-
-
 @public_api.route("/webhooks/brevo/unsubscribe", methods=["POST"])
 @require_brevo_token_as_query_param
 @spectree_serialize(on_success_status=204)
