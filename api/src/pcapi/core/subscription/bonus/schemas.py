@@ -26,11 +26,11 @@ class Person(BaseModelV2):
 
 
 class QuotientFamilialChild(BaseModelV2):
-    last_name: str
+    last_name: str | None = None
     common_name: str | None = None
     first_names: list[str]
-    birth_date: datetime.date
-    gender: users_models.GenderEnum
+    birth_date: datetime.date | None = None
+    gender: users_models.GenderEnum | None = None
 
 
 class QuotientFamilialContent(BaseModelV2):
@@ -46,4 +46,9 @@ class QuotientFamilialBonusCreditContent(BaseModelV2):
     custodian: Person
     quotient_familial: QuotientFamilialContent | None = None
     children: list[QuotientFamilialChild] | None = None
+    http_status_code: int | None = None
+
+
+class DisabilityBonusCreditContent(BaseModelV2):
+    person: Person
     http_status_code: int | None = None
