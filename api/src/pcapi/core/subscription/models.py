@@ -14,6 +14,7 @@ from pcapi.utils.db import MagicEnum
 
 
 if typing.TYPE_CHECKING:
+    from pcapi.core.subscription.bonus.schemas import DisabilityBonusCreditContent
     from pcapi.core.subscription.bonus.schemas import QuotientFamilialBonusCreditContent
     from pcapi.core.subscription.dms.schemas import DMSContent
     from pcapi.core.subscription.educonnect.schemas import EduconnectContent
@@ -33,6 +34,7 @@ class FraudCheckType(enum.Enum):
     PHONE_VALIDATION = "phone_validation"
     PROFILE_COMPLETION = "profile_completion"
     QF_BONUS_CREDIT = "qf_bonus_credit"
+    DISABILITY_BONUS_CREDIT = "disability_bonus_credit"
     UBBLE = "ubble"
     # Deprecated but kept for backwards compatibility
     JOUVE = "jouve"
@@ -143,6 +145,7 @@ VALID_IDENTITY_CHECK_TYPES_AFTER_UNDERAGE_DEPOSIT_EXPIRATION = [
 
 FraudCheckContent = typing.Union[
     "QuotientFamilialBonusCreditContent",
+    "DisabilityBonusCreditContent",
     "DMSContent",
     "EduconnectContent",
     "UbbleContent",
@@ -156,6 +159,7 @@ FraudCheckContent = typing.Union[
 
 
 def get_fraud_check_content_mapping() -> dict[FraudCheckType, type[FraudCheckContent]]:
+    from pcapi.core.subscription.bonus.schemas import DisabilityBonusCreditContent
     from pcapi.core.subscription.bonus.schemas import QuotientFamilialBonusCreditContent
     from pcapi.core.subscription.dms.schemas import DMSContent
     from pcapi.core.subscription.educonnect.schemas import EduconnectContent
@@ -168,6 +172,7 @@ def get_fraud_check_content_mapping() -> dict[FraudCheckType, type[FraudCheckCon
 
     return {
         FraudCheckType.QF_BONUS_CREDIT: QuotientFamilialBonusCreditContent,
+        FraudCheckType.DISABILITY_BONUS_CREDIT: DisabilityBonusCreditContent,
         FraudCheckType.PROFILE_COMPLETION: ProfileCompletionContent,
         FraudCheckType.DMS: DMSContent,
         FraudCheckType.EDUCONNECT: EduconnectContent,

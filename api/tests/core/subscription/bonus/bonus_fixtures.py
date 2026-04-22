@@ -87,3 +87,13 @@ CUSTODIAN_NOT_FOUND_FIXTURE = {
         }
     ]
 }
+
+
+AAH_ELIGIBLE_RESPONSE = {
+    "data": {"est_beneficiaire": True, "date_debut_droit": "2022-11-29"},
+    "links": {},
+    "meta": {},
+}
+
+
+AEEH_ELIGIBLE_RESPONSE = {"data": {"status": "allocataire", "date_debut_droit": "2023-06-15"}, "links": {}, "meta": {}}
