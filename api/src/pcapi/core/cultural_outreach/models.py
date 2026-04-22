@@ -31,7 +31,7 @@ class CulturalOutreach(PcObject, Model):
     )
     claimedDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
     status: sa_orm.Mapped[CulturalOutreachStatus] = sa_orm.mapped_column(
-        db_utils.MagicEnum(CulturalOutreachStatus),
+        db_utils.MagicEnum(CulturalOutreachStatus, use_values=True),
         nullable=False,
         default=CulturalOutreachStatus.PENDING,
         server_default=CulturalOutreachStatus.PENDING.value,

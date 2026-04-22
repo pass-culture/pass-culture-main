@@ -122,7 +122,9 @@ class ActionHistory(PcObject, Model):
 
     __tablename__ = "action_history"
 
-    actionType: sa_orm.Mapped[ActionType] = sa_orm.mapped_column(db_utils.MagicEnum(ActionType), nullable=False)
+    actionType: sa_orm.Mapped[ActionType] = sa_orm.mapped_column(
+        db_utils.MagicEnum(ActionType, use_values=True), nullable=False
+    )
 
     # nullable because of old suspensions without date migrated here; but mandatory for new actions
     actionDate = sa_orm.mapped_column(

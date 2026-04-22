@@ -81,7 +81,7 @@ class SpecialEventResponse(PcObject, Model):
     phoneNumber: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
     email: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
     status: sa_orm.Mapped[SpecialEventResponseStatus] = sa_orm.mapped_column(
-        MagicEnum(SpecialEventResponseStatus), nullable=False, default=SpecialEventResponseStatus.NEW
+        MagicEnum(SpecialEventResponseStatus, use_values=True), nullable=False, default=SpecialEventResponseStatus.NEW
     )
     userId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True

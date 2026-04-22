@@ -42,7 +42,9 @@ class ArtistOfferLink(PcObject, Model):
     offer: sa_orm.Mapped["Offer"] = sa_orm.relationship(
         "Offer", foreign_keys=[offer_id], back_populates="artistOfferLinks"
     )
-    artist_type: sa_orm.Mapped[ArtistType] = sa_orm.mapped_column(MagicEnum(ArtistType), nullable=False)
+    artist_type: sa_orm.Mapped[ArtistType] = sa_orm.mapped_column(
+        MagicEnum(ArtistType, use_values=True), nullable=False
+    )
     custom_name: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     artist_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(
         sa.Text, sa.ForeignKey("artist.id", ondelete="CASCADE"), nullable=True, index=True
@@ -84,7 +86,9 @@ class ArtistProductLink(PcObject, Model):
         sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), nullable=False, index=True
     )
     product: sa_orm.Mapped["Product"] = sa_orm.relationship("Product", back_populates="artistLinks", viewonly=True)
-    artist_type: sa_orm.Mapped[ArtistType | None] = sa_orm.mapped_column(MagicEnum(ArtistType), nullable=True)
+    artist_type: sa_orm.Mapped[ArtistType | None] = sa_orm.mapped_column(
+        MagicEnum(ArtistType, use_values=True), nullable=True
+    )
     date_created: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now()
     )
@@ -173,7 +177,9 @@ class ArtistAlias(PcObject, Model):
     artist: sa_orm.Mapped[Artist] = sa_orm.relationship(Artist, foreign_keys=[artist_id], back_populates="aliases")
     artist_alias_name: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     artist_cluster_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
-    artist_type: sa_orm.Mapped[ArtistType | None] = sa_orm.mapped_column(MagicEnum(ArtistType), nullable=True)
+    artist_type: sa_orm.Mapped[ArtistType | None] = sa_orm.mapped_column(
+        MagicEnum(ArtistType, use_values=True), nullable=True
+    )
     artist_wiki_data_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     offer_category_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     date_created: sa_orm.Mapped[datetime] = sa_orm.mapped_column(

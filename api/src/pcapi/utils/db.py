@@ -51,7 +51,7 @@ class MagicEnum(sa_types.TypeDecorator):
 
     cache_ok = True
 
-    def __init__(self, enum_class: type[enum.Enum], use_values: bool = True):
+    def __init__(self, enum_class: type[enum.Enum], use_values: bool = False):
         # WARNING: The attribute MUST have the same name as the
         # argument in `__init__()` for SQLAlchemy to produce a valid
         # cache key. See https://docs.sqlalchemy.org/en/14/core/type_api.html#sqlalchemy.types.ExternalType.cache_ok

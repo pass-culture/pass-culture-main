@@ -81,7 +81,7 @@ class Chronicle(PcObject, Model, DeactivableMixin):
     age: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.SmallInteger, nullable=True)
     city: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
     clubType: sa_orm.Mapped[ChronicleClubType] = sa_orm.mapped_column(
-        db_utils.MagicEnum(ChronicleClubType), nullable=False
+        db_utils.MagicEnum(ChronicleClubType, use_values=True), nullable=False
     )
     content: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
@@ -105,7 +105,7 @@ class Chronicle(PcObject, Model, DeactivableMixin):
         "Offer", back_populates="chronicles", secondary=OfferChronicle.__table__
     )
     productIdentifierType: sa_orm.Mapped[ChronicleProductIdentifierType] = sa_orm.mapped_column(
-        db_utils.MagicEnum(ChronicleProductIdentifierType), nullable=False
+        db_utils.MagicEnum(ChronicleProductIdentifierType, use_values=True), nullable=False
     )
     productIdentifier = sa_orm.mapped_column(sa.Text(), nullable=False, index=True)
     userId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
