@@ -686,10 +686,17 @@ def get_offers_by_filters(
             offerers_models.UserOfferer.isValidated,
         )
     )
-    if offerer_id is not None:
-        query = query.filter(offerers_models.Venue.managingOffererId == offerer_id)
+    # ignore offerer_id if venue_id is set:
+    # -> the offerer filter makes no sense since a venue belongs to an
+    # offerer
+    # -> /!\ for some unknown reasons, this could lead to a strange
+    # query that is insanely slow (venue_id + offerer_id
+    # + period_beginning_date + period_ending_date + .limit())
     if venue_id is not None:
         query = query.filter(models.Offer.venueId == venue_id)
+    elif offerer_id is not None:
+        query = query.filter(offerers_models.Venue.managingOffererId == offerer_id)
+
     if offerer_address_id is not None:
         query = query.filter(models.Offer.offererAddressId == offerer_address_id)
     if creation_mode is not None:
