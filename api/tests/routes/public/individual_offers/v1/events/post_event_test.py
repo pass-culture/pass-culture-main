@@ -609,6 +609,21 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             "location.AddressLocation.addressId": [f"There is no address with id {not_existing_address_id}"]
         }
 
+    def test_event_with_address_extra_field_are_not_allowed(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
+        payload = self._get_base_payload(venue_provider.venueId)
+        address = geography_factories.AddressFactory()
+        payload["location"] = {
+            "type": "address",
+            "venueId": venue_provider.venueId,
+            "addressId": address.id,
+            "adressLabel": "adressLabel should be addressLabel",
+        }
+
+        response = self.make_request(plain_api_key, json_body=payload)
+        assert response.status_code == 400
+        assert response.json["location.AddressLocation.adressLabel"] == ["extra fields not permitted"]
+
     def test_event_without_ticket(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
 

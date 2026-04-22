@@ -866,6 +866,7 @@
                 "type": "object"
             },
             "AddressLocation": {
+                "additionalProperties": false,
                 "description": "If your offer location is different from the venue location",
                 "properties": {
                     "addressId": {
