@@ -621,7 +621,7 @@ def get_music_types() -> offers_serialize.GetMusicTypesResponse:
 )
 @atomic()
 def replace_offer_price_categories(
-    offer_id: int, body: offers_serialize.PriceCategoryBody
+    offer_id: int, body: offers_serialize.PriceCategoryBodyV2
 ) -> offers_serialize.GetIndividualOfferWithAddressResponseModel:
     """
     Replace all price categories of an offer.

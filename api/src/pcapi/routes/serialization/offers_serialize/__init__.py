@@ -626,7 +626,7 @@ class CreatePriceCategoryModel(BaseModel):
     if typing.TYPE_CHECKING:
         label: str
     else:
-        label: constr(min_length=1, max_length=50)
+        label: constr(min_length=3, max_length=50)
     price: decimal.Decimal
 
     class Config:
@@ -664,6 +664,23 @@ class PriceCategoryBody(BaseModel):
 
     class Config:
         alias_generator = to_camel
+
+
+class CreatePriceCategoryModelV2(HttpBodyModel):
+    label: str = pydantic_v2.Field(min_length=3, max_length=50)
+    price: decimal.Decimal
+
+
+class EditPriceCategoryModelV2(HttpBodyModel):
+    id: int
+    label: str = pydantic_v2.Field(min_length=1, max_length=50)
+    price: decimal.Decimal
+
+
+class PriceCategoryBodyV2(HttpBodyModel):
+    price_categories: list[CreatePriceCategoryModelV2 | EditPriceCategoryModelV2] = Field(
+        max_items=offers_models.Offer.MAX_PRICE_CATEGORIES_PER_OFFER
+    )
 
 
 class MusicTypeResponse(BaseModel):

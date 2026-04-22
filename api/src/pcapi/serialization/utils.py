@@ -80,8 +80,13 @@ def before_handler(
             else:
                 message = error["msg"]
 
-            location = ".".join(str(loc) for loc in error["loc"])
-            api_errors.add_error(location, message)
+            # TODO: fix that
+            location = ".".join(
+                str(loc)
+                for loc in error["loc"]
+                if loc not in ["CreatePriceCategoryModelV2", "EditPriceCategoryModelV2"]
+            )
+            api_errors.add_error(location, {"type": error["type"], "message": message})
         raise api_errors
 
 

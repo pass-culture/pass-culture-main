@@ -2,12 +2,33 @@ import type { FieldValues, Path, UseFormSetError } from 'react-hook-form'
 
 import type { ApiError } from './v1'
 
+const ERROR_MESSAGE_MAPPER = {
+  string_too_short: 'Trop court !',
+}
+
+function getMessage(msg: ErrorMessage | string) {
+  // Handle old error messages
+  if (typeof msg === 'string') {
+    return msg
+  }
+  const { type, message } = msg
+  return ERROR_MESSAGE_MAPPER[type] || message
+}
+
+type ErrorMessage = {
+  type: string
+  message: string
+}
+
 export function serializeApiErrors<T extends FieldValues>(
-  errors: Record<string, string[]>,
+  errors: Record<string, ErrorMessage[] | string[]>,
   setError: UseFormSetError<T>
 ) {
   Object.entries(errors).forEach(([key, value]) => {
-    setError(key as Path<T>, { type: 'custom', message: value.join(' ') })
+    setError(key as Path<T>, {
+      type: 'custom',
+      message: value.map(getMessage).join(' '),
+    })
   })
 }
 
