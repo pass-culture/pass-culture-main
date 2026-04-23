@@ -30,7 +30,7 @@ class CheckOffererSirenCeleryTaskTest:
         offerer = offerers_factories.OffererFactory()
 
         offerers_tasks.check_offerer_siren_celery_task.run(
-            offerers_tasks.CheckOffererSirenRequest(siren=offerer.siren, close_or_tag_when_inactive=True)
+            offerers_tasks.CheckOffererSirenRequestV2(siren=offerer.siren, close_or_tag_when_inactive=True)
         )
 
         assert not offerer.tags
@@ -62,7 +62,7 @@ class CheckOffererSirenCeleryTaskTest:
             ),
         ):
             offerers_tasks.check_offerer_siren_celery_task.run(
-                offerers_tasks.CheckOffererSirenRequest(siren=offerer.siren, close_or_tag_when_inactive=True)
+                offerers_tasks.CheckOffererSirenRequestV2(siren=offerer.siren, close_or_tag_when_inactive=True)
             )
 
         assert not offerer.tags
@@ -74,7 +74,7 @@ class CheckOffererSirenCeleryTaskTest:
         offerers_factories.UserOffererFactory(offerer=offerer)
 
         offerers_tasks.check_offerer_siren_celery_task.run(
-            offerers_tasks.CheckOffererSirenRequest(siren=offerer.siren, close_or_tag_when_inactive=True)
+            offerers_tasks.CheckOffererSirenRequestV2(siren=offerer.siren, close_or_tag_when_inactive=True)
         )
 
         action = db.session.query(history_models.ActionHistory).one()
@@ -90,7 +90,7 @@ class CheckOffererSirenCeleryTaskTest:
         offerer = offerers_factories.PendingOffererFactory()
 
         offerers_tasks.check_offerer_siren_celery_task.run(
-            offerers_tasks.CheckOffererSirenRequest(siren=offerer.siren, close_or_tag_when_inactive=True)
+            offerers_tasks.CheckOffererSirenRequestV2(siren=offerer.siren, close_or_tag_when_inactive=True)
         )
 
         assert offerer.isWaitingForValidation
@@ -120,7 +120,7 @@ class CheckOffererSirenCeleryTaskTest:
             ),
         ):
             offerers_tasks.check_offerer_siren_celery_task.run(
-                offerers_tasks.CheckOffererSirenRequest(siren=offerer.siren, close_or_tag_when_inactive=True)
+                offerers_tasks.CheckOffererSirenRequestV2(siren=offerer.siren, close_or_tag_when_inactive=True)
             )
 
         mock_handle_closed_offerer.assert_called_once_with(
@@ -151,7 +151,7 @@ class CheckOffererSirenCeleryTaskTest:
             ),
         ):
             offerers_tasks.check_offerer_siren_celery_task.run(
-                offerers_tasks.CheckOffererSirenRequest(siren=offerer.siren, close_or_tag_when_inactive=False)
+                offerers_tasks.CheckOffererSirenRequestV2(siren=offerer.siren, close_or_tag_when_inactive=False)
             )
 
         assert not offerer.tags
@@ -163,7 +163,7 @@ class CheckOffererSirenCeleryTaskTest:
         offerer = offerers_factories.OffererFactory(siren="000000000")
 
         offerers_tasks.check_offerer_siren_celery_task.run(
-            offerers_tasks.CheckOffererSirenRequest(siren=offerer.siren, close_or_tag_when_inactive=True)
+            offerers_tasks.CheckOffererSirenRequestV2(siren=offerer.siren, close_or_tag_when_inactive=True)
         )
 
         assert not offerer.tags
@@ -173,7 +173,7 @@ class CheckOffererSirenCeleryTaskTest:
         offerer = offerers_factories.OffererFactory(siren="123456789")
 
         offerers_tasks.check_offerer_siren_celery_task.run(
-            offerers_tasks.CheckOffererSirenRequest(siren=offerer.siren, close_or_tag_when_inactive=False)
+            offerers_tasks.CheckOffererSirenRequestV2(siren=offerer.siren, close_or_tag_when_inactive=False)
         )
 
         assert caplog.records[0].message == "Invalid SIREN format in the database"
