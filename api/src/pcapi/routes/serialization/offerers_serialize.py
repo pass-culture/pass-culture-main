@@ -5,14 +5,12 @@ from datetime import datetime
 from typing import Iterable
 
 import pydantic as pydantic_v2
-import sqlalchemy.orm as sa_orm
 from sqlalchemy.engine import Row
 
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offerers.models import Target
-from pcapi.models import db
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.routes.serialization import address_serialize
@@ -110,21 +108,12 @@ class GetOffererResponseModel(HttpBodyModel):
         venues_with_non_free_offers_without_bank_accounts: list[int],
     ) -> typing.Self:
         offerer: offerers_models.Offerer = row.Offerer
-        venues = (
-            db.session.query(offerers_models.Venue)
-            .filter_by(managingOffererId=offerer.id)
-            .options(sa_orm.joinedload(offerers_models.Venue.collectiveDmsApplications))
-            .options(sa_orm.joinedload(offerers_models.Venue.venueProviders))
-            .options(sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo))
-            .order_by(offerers_models.Venue.publicName)
-            .all()
-        )
 
         return cls(
             allowed_on_adage=offerer.allowedOnAdage,
             can_display_highlights=row.canDisplayHighlights,
             has_active_offer=row.hasActiveOffer,
-            has_available_pricing_points=any(venue.siret for venue in venues),
+            has_available_pricing_points=any(venue.siret for venue in offerer.managedVenues),
             has_bank_account_with_pending_corrections=row.hasBankAccountWithPendingCorrections,
             has_digital_venue_at_least_one_offer=has_digital_venue_at_least_one_offer,
             has_non_free_offer=row.hasNonFreeOffer,
@@ -137,7 +126,10 @@ class GetOffererResponseModel(HttpBodyModel):
             is_onboarded=row.isOnboarded,
             # Behavior in PC Pro for a closed offerer should be the same as for a suspended validated offerer
             is_validated=offerer.isValidated or offerer.isClosed,  # do now show "en attente de traitement"
-            managed_venues=[GetOffererVenueResponseModel.build(venue, ids_of_venues_with_offers) for venue in venues],
+            managed_venues=[
+                GetOffererVenueResponseModel.build(venue, ids_of_venues_with_offers)
+                for venue in sorted(offerer.managedVenues, key=lambda v: v.publicName)
+            ],
             name=offerer.name,
             siren=offerer.siren,
             venues_with_non_free_offers_without_bank_accounts=venues_with_non_free_offers_without_bank_accounts,

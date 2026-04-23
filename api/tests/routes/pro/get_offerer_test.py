@@ -23,14 +23,18 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class GetOffererTest:
-    num_queries = testing.AUTHENTICATION_QUERIES
-    num_queries += 1  # check user_offerer exists
-    num_queries += 1  # select offerer
-    num_queries += 1  # select venue
-    num_queries += 1  # check offerer has non free offers (select venue ?)
-    num_queries += 1  # select venue_id
-    num_queries += 1  # select venues_id with active offers
-    num_queries += 1  # select offer to check if offerer has a partner page
+    num_queries_without_venue = testing.AUTHENTICATION_QUERIES
+    num_queries_without_venue += 1  # check user_offerer exists
+    num_queries_without_venue += 1  # select offerer
+    num_queries_without_venue += 1  # + selectinload venues + google_places_info
+    num_queries_without_venue += 1  # select venue.id with non draft offers
+    num_queries_without_venue += 1  # select virtual venue with one offer‡
+    num_queries_without_venue += 1  # select venues with offer and without bank account
+
+    num_queries = num_queries_without_venue
+    # both queries are linked to selectinload venues from select offerer
+    num_queries += 1  # selectinload provider
+    num_queries += 1  # selectinload collectiveDmsApplications
 
     def test_basics(self, client):
         pro = users_factories.ProFactory()
@@ -349,7 +353,7 @@ class GetOffererTest:
 
         http_client = client.with_session_auth(pro_user.email)
         offerer_id = offerer.id
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_without_venue):
             response = http_client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
 
@@ -451,7 +455,7 @@ class GetOffererTest:
         http_client = client.with_session_auth(pro_user.email)
         offerer_id = offerer.id
 
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_without_venue):
             response = http_client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
 
@@ -472,7 +476,7 @@ class GetOffererTest:
 
         http_client = client.with_session_auth(pro_user.email)
         offerer_id = offerer.id
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_without_venue):
             response = http_client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
 
@@ -492,7 +496,7 @@ class GetOffererTest:
 
         http_client = client.with_session_auth(pro_user.email)
         offerer_id = offerer.id
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_without_venue):
             response = http_client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
 
@@ -583,7 +587,7 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro_user.email)
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_without_venue):
             response = client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
 
@@ -705,7 +709,7 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(user_offerer.user.email)
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_without_venue):
             response = client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 200
 

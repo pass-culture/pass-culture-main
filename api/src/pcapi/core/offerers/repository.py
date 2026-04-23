@@ -793,8 +793,12 @@ def get_offerer_and_extradata(offerer_id: int) -> Row | None:
                 models.Offerer.isActive,
                 models.Offerer.allowedOnAdage,
             ),
-            sa_orm.selectinload(models.Offerer.managedVenues).with_expression(
-                models.Venue._has_partner_page, models.Venue.has_partner_page
+            sa_orm.selectinload(models.Offerer.managedVenues)
+            .with_expression(models.Venue._has_partner_page, models.Venue.has_partner_page)
+            .options(
+                sa_orm.selectinload(offerers_models.Venue.collectiveDmsApplications),
+                sa_orm.selectinload(offerers_models.Venue.venueProviders),
+                sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo),
             ),
         )
         .one_or_none()
