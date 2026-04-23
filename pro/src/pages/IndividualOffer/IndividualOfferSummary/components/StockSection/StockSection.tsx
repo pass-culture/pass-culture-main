@@ -47,6 +47,7 @@ export const StockSection = ({
       onError: () => snackBar.error(error),
     }
   )
+
   const getStocksEventStatsQuery = useSWR(
     offer.isEvent ? [GET_STOCKS_EVENT_STATS_QUERY_KEY, offer.id] : null,
     () => api.getStocksStats(offer.id),

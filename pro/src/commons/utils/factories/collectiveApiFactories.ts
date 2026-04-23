@@ -369,7 +369,6 @@ export const defaultGetVenue: GetVenueResponseModel = {
   activity: DisplayableActivity.CULTURAL_CENTRE,
   pricingPoint: null,
   visualDisabilityCompliant: true,
-  openingHours: null,
   isCaledonian: false,
   isValidated: true,
   isPermanent: true,
@@ -380,6 +379,7 @@ export const defaultGetVenue: GetVenueResponseModel = {
   canDisplayHighlights: true,
   hasNonDraftOffers: true,
   volunteeringUrl: null,
+  openingHours: null,
 }
 
 export const defaultGetCollectiveOfferRequest: GetCollectiveOfferRequestResponseModel =

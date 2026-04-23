@@ -1,7 +1,7 @@
 import type {
   ActivityOpenToPublic,
   EditVenueBodyModel,
-  WeekdayOpeningHoursTimespans,
+  WeekdayOpeningHoursTimespansV2,
 } from '@/apiClient/v1'
 import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNotOpenToPublic'
 import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
@@ -98,15 +98,15 @@ function serializeOpeningHours(
   return cleanOpeningHours(formValues.openingHours)
 }
 
-export function cleanOpeningHours(
-  openingHours?: WeekdayOpeningHoursTimespans | null
+function cleanOpeningHours(
+  openingHours?: WeekdayOpeningHoursTimespansV2 | null
 ) {
   //  React hook form creates empty arrays for each day of the week, while the api must receive null
   //  for week days without opening hours
-  const cleanedOpeningHours: WeekdayOpeningHoursTimespans = {}
+  const cleanedOpeningHours: WeekdayOpeningHoursTimespansV2 = {}
   OPENING_HOURS_DAYS.forEach((day) => {
     cleanedOpeningHours[day] =
-      !openingHours || !openingHours[day] || openingHours[day].length === 0
+      !openingHours?.[day] || openingHours[day].length === 0
         ? null
         : openingHours[day]
   })

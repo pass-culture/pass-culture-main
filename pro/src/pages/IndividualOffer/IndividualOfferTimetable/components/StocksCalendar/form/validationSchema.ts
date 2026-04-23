@@ -8,7 +8,7 @@ import {
   RecurrenceType,
 } from './types'
 
-export const quantityPerPriceCategoriesSchema = yup
+const quantityPerPriceCategoriesSchema = yup
   .array()
   .required()
   .of(

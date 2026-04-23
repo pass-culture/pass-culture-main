@@ -1,4 +1,4 @@
-import type { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
+import type { WeekdayOpeningHoursTimespansV2 } from '@/apiClient/v1'
 import type { AccessibilityFormValues } from '@/commons/core/shared/types'
 import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNotOpenToPublic'
 import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
@@ -12,7 +12,7 @@ export interface VenueEditionFormValues {
   phoneNumber?: string | null
   webSite?: string | null
   isOpenToPublic: string
-  openingHours?: WeekdayOpeningHoursTimespans | null
+  openingHours?: WeekdayOpeningHoursTimespansV2 | null
   activity?: ActivityOpenToPublicType | ActivityNotOpenToPublicType | null
   culturalDomains?: string[]
   volunteeringUrl?: string | null

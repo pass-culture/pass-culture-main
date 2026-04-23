@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import { useFormContext } from 'react-hook-form'
 
-import type { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
+import type { WeekdayOpeningHoursTimespansV2 } from '@/apiClient/v1'
 import { mapDayToFrench, OPENING_HOURS_DAYS } from '@/commons/utils/date'
 
 import styles from './OpeningHours.module.scss'
@@ -13,7 +13,7 @@ export function OpeningHours({
   hasErrorBecauseOfEmptyOpeningHours?: boolean
 }) {
   const form = useFormContext<{
-    openingHours: WeekdayOpeningHoursTimespans | null
+    openingHours: WeekdayOpeningHoursTimespansV2 | null
   }>()
 
   const openingHours = form.watch('openingHours')

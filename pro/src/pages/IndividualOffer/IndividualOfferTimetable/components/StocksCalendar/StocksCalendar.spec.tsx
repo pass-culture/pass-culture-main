@@ -55,7 +55,6 @@ function renderStocksCalendar(
           ],
         })}
         mode={OFFER_WIZARD_MODE.CREATION}
-        timetableTypeRadioGroupShown={false}
         {...props}
       />
       <SnackBarContainer />
@@ -506,7 +505,6 @@ describe('StocksCalendar', () => {
             ],
           })}
           mode={OFFER_WIZARD_MODE.CREATION}
-          timetableTypeRadioGroupShown={false}
         />
         <SnackBarContainer />
       </>
@@ -612,7 +610,6 @@ describe('StocksCalendar', () => {
             ],
           })}
           mode={OFFER_WIZARD_MODE.CREATION}
-          timetableTypeRadioGroupShown={false}
         />
         <SnackBarContainer />
       </>
@@ -677,18 +674,5 @@ describe('StocksCalendar', () => {
     expect(
       screen.queryByRole('button', { name: LABEL.noDateAction })
     ).not.toBeInTheDocument()
-  })
-
-  it('should show subtitle when timetableTypeRadioGroupShown is true', async () => {
-    renderStocksCalendar(defaultStocks, {
-      timetableTypeRadioGroupShown: true,
-    })
-
-    await waitFor(() => {
-      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
-    })
-
-    const heading = screen.getByRole('heading', { name: 'Horaires' })
-    expect(heading.tagName).toBe('H3')
   })
 })

@@ -65,7 +65,7 @@ const openingHoursDaySchema = yup
       value[0][1] < value[1][0]
   )
 
-export const openingHoursSchemaShape = {
+const openingHoursSchemaShape = {
   MONDAY: openingHoursDaySchema,
   TUESDAY: openingHoursDaySchema,
   WEDNESDAY: openingHoursDaySchema,
