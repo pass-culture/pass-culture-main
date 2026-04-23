@@ -103,9 +103,9 @@ describe('<AddressSelect />', () => {
       />
     )
 
-    expect(screen.getByTestId('description-addressText')).toHaveTextContent(
-      'Uniquement si vous souhaitez préciser l’adresse exacte'
-    )
+    expect(
+      screen.getByText('Uniquement si vous souhaitez préciser l’adresse exacte')
+    ).toBeInTheDocument()
   })
 
   it('should call "getDataFromAddress" internally with the correct parameters', async () => {

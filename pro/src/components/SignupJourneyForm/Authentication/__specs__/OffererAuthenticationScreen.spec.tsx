@@ -311,7 +311,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByLabelText('Adresse postale *')).toHaveValue(
+      expect(screen.getByLabelText(/Adresse postale/)).toHaveValue(
         '3 Rue de Valois 75001 Paris'
       )
     })

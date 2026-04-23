@@ -145,7 +145,7 @@ describe('FormLocation', () => {
 
     await userEvent.click(screen.getByText('Autre adresse'))
 
-    const addressInput = screen.getByLabelText('Adresse postale *')
+    const addressInput = screen.getByLabelText(/Adresse postale/)
 
     await userEvent.type(addressInput, '10 rue ')
 
