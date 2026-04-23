@@ -7,7 +7,6 @@ from pcapi.core.providers import tasks
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_EXTERNAL_BOOKING=True)
 def test_send_notification_task(requests_mock):
     data = {
         "action": "BOOK",

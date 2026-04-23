@@ -131,9 +131,6 @@ class FeatureToggle(enum.Enum):
     WIP_ASYNCHRONOUS_CELERY_CHECK_OFFERERS = (
         "Activer le backend de tâches asynchrones Celery pour la vérification automatique des entités juridiques"
     )
-    WIP_ASYNCHRONOUS_CELERY_EXTERNAL_BOOKING = (
-        "Activer le backend de tâches asynchrones Celery pour l'envoi de notification aux providers"
-    )
     WIP_ENABLE_FINANCE_SETTLEMENTS = "Active le workflow finance des règlements"
     WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK = "Active la nouvelle version du webhook de recommandation Brevo"
     WIP_ENABLE_NEW_PRO_HOME = "Activer la nouvelle page d'accueil du portail pro"
@@ -210,7 +207,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.VENUE_REGULARIZATION,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CHECK_OFFERERS,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CULTURAL_SURVEY,
-    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_EXTERNAL_BOOKING,
     FeatureToggle.WIP_ENABLE_CULTURAL_OUTREACH,
     FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS,
     FeatureToggle.WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK,
