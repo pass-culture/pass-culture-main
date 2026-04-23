@@ -565,7 +565,7 @@ class Returns400Test:
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"formats": ["Cette liste doit doit avoir une taille minimum de 1"]}
+        assert response.json == {"formats": ["Cette liste doit avoir une taille minimum de 1"]}
 
     def test_empty_educational_domains(self, client):
         offer_ctx = build_offer_context()
@@ -579,7 +579,7 @@ class Returns400Test:
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"domains": ["Cette liste doit doit avoir une taille minimum de 1"]}
+        assert response.json == {"domains": ["Cette liste doit avoir une taille minimum de 1"]}
 
     def test_unknown_national_program(self, client):
         offer_ctx = build_offer_context()
@@ -729,7 +729,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {
-            "bookingEmails": ["Cette liste doit doit avoir une taille maximum de 6"],
+            "bookingEmails": ["Cette liste doit avoir une taille maximum de 6"],
         }
 
     def test_update_collective_offer_booking_emails_empty(self, client):
@@ -742,7 +742,7 @@ class Returns400Test:
             response = pro_client.patch(f"/collective/offers/{offer_id}", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"bookingEmails": ["Cette liste doit doit avoir une taille minimum de 1"]}
+        assert response.json == {"bookingEmails": ["Cette liste doit avoir une taille minimum de 1"]}
 
     def test_description_invalid(self, client):
         offer_ctx = build_offer_context()

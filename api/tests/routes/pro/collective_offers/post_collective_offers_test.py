@@ -408,7 +408,7 @@ class Returns400Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"bookingEmails": ["Cette liste doit doit avoir une taille minimum de 1"]}
+        assert response.json == {"bookingEmails": ["Cette liste doit avoir une taille minimum de 1"]}
         assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_create_collective_offer_empty_contact_email(self, client):
@@ -444,7 +444,7 @@ class Returns400Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"formats": ["Cette liste doit doit avoir une taille minimum de 1"]}
+        assert response.json == {"formats": ["Cette liste doit avoir une taille minimum de 1"]}
         assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_create_collective_offer_no_domains(self, client):
@@ -456,7 +456,7 @@ class Returns400Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"domains": ["Cette liste doit doit avoir une taille minimum de 1"]}
+        assert response.json == {"domains": ["Cette liste doit avoir une taille minimum de 1"]}
         assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_create_collective_offer_description_invalid(self, client):

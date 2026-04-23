@@ -65,8 +65,8 @@ def before_handler(
         "less_than_equal": "Saisissez un nombre inférieur ou égal à {le}",
         "greater_than": "Saisissez un nombre supérieur à {gt}",
         "less_than": "Saisissez un nombre inférieur à {lt}",
-        "too_short": "Cette liste doit doit avoir une taille minimum de {min_length}",
-        "too_long": "Cette liste doit doit avoir une taille maximum de {max_length}",
+        "too_short": "Cette liste doit avoir une taille minimum de {min_length}",
+        "too_long": "Cette liste doit avoir une taille maximum de {max_length}",
         "model_attributes_type": "Format incorrect",
         "datetime_type": "Format de date invalide",
     }
