@@ -180,6 +180,22 @@ def get_individual_bookings(user: users_models.User) -> list[models.Booking]:
     return (db.session.query(models.Booking).filter_by(userId=user.id).options(*_get_booking_options())).all()
 
 
+def _sort_ended_bookings(bookings: list[models.Booking]) -> list[models.Booking]:
+    return sorted(
+        bookings,
+        key=lambda b: b.stock.beginningDatetime or b.dateUsed or b.cancellationDate or datetime.datetime.min,
+        reverse=True,
+    )
+
+
+def _sort_ongoing_bookings(bookings: list[models.Booking]) -> list[models.Booking]:
+    # put permanent bookings at the end with datetime.max
+    return sorted(
+        bookings,
+        key=lambda b: (b.expirationDate or b.stock.beginningDatetime or datetime.datetime.max, -b.id),
+    )
+
+
 def classify_and_sort_bookings(
     individual_bookings: list[models.Booking],
 ) -> tuple[list[models.Booking], list[models.Booking]]:
@@ -195,20 +211,7 @@ def classify_and_sort_bookings(
             ongoing_bookings.append(booking)
             booking.qrCodeData = utils.get_qr_code_data(booking.token)  # type: ignore [attr-defined]
 
-    sorted_ended_bookings = sorted(
-        ended_bookings,
-        key=lambda b: b.stock.beginningDatetime or b.dateUsed or b.cancellationDate or datetime.datetime.min,
-        reverse=True,
-    )
-    # put permanent bookings at the end with datetime.max
-    sorted_ongoing_bookings = sorted(
-        ongoing_bookings,
-        key=lambda b: (
-            b.expirationDate or b.stock.beginningDatetime or datetime.datetime.max,
-            -b.id,
-        ),
-    )
-    return (sorted_ended_bookings, sorted_ongoing_bookings)
+    return (_sort_ended_bookings(ended_bookings), _sort_ongoing_bookings(ongoing_bookings))
 
 
 def get_user_bookings_by_status(user: users_models.User, status: str) -> list[models.Booking]:
@@ -269,7 +272,7 @@ def get_user_bookings_by_status(user: users_models.User, status: str) -> list[mo
         )
     )
 
-    query_filter = sa.or_(
+    is_ended = sa.or_(
         models.Booking.displayAsEnded.is_(True),
         models.Booking.status.in_(
             [
@@ -282,8 +285,11 @@ def get_user_bookings_by_status(user: users_models.User, status: str) -> list[mo
     )
 
     if status == models.BookingsListStatus.ENDED.value:
-        return query.filter(query_filter).all()
-    return query.filter(sa.not_(query_filter)).all()
+        bookings = query.filter(is_ended).all()
+        return _sort_ended_bookings(bookings)
+
+    bookings = query.filter(sa.not_(is_ended)).all()
+    return _sort_ongoing_bookings(bookings)
 
 
 def _book_offer(

@@ -196,6 +196,109 @@ class GetBookingsTest:
             "totalAmount": 1010,
         }
 
+    def test_get_bookings_sorts_ended_bookings_by_date_desc(self, client):
+        user = users_factories.BeneficiaryFactory(email=self.identifier, age=18)
+
+        base_dt = datetime(2023, 3, 2)
+        older_ended = booking_factories.UsedBookingFactory(
+            user=user,
+            displayAsEnded=True,
+            dateUsed=base_dt,
+            stock__beginningDatetime=base_dt,
+        )
+        newer_ended = booking_factories.UsedBookingFactory(
+            user=user,
+            displayAsEnded=True,
+            dateUsed=base_dt + timedelta(days=1),
+            stock__beginningDatetime=base_dt + timedelta(days=1),
+        )
+
+        client.with_token(user)
+        with assert_num_queries(2):  # user, booking
+            response = client.get("/native/v2/bookings")
+
+        assert response.status_code == 200
+        ended_ids = [b["id"] for b in response.json["endedBookings"]]
+        assert ended_ids == [newer_ended.id, older_ended.id]
+
+    def test_get_bookings_list_sorts_ended_bookings(self, client):
+        user = users_factories.BeneficiaryFactory(email=self.identifier, age=18)
+
+        base_dt = datetime(2023, 3, 2)
+        booking_with_beginning_date = booking_factories.UsedBookingFactory(
+            user=user,
+            cancellation_date=None,
+            dateUsed=None,
+            stock__beginningDatetime=base_dt,
+        )
+        booking_with_date_used = booking_factories.UsedBookingFactory(
+            user=user,
+            cancellation_date=None,
+            dateUsed=base_dt + timedelta(days=1),
+            stock__beginningDatetime=None,
+        )
+        booking_with_cancellation_date = booking_factories.CancelledBookingFactory(
+            user=user,
+            cancellation_date=base_dt + timedelta(days=2),
+            dateUsed=None,
+            stock__beginningDatetime=None,
+        )
+
+        client.with_token(user)
+        with assert_num_queries(2):  # user, booking
+            response = client.get("/native/v2/bookings")
+
+        assert response.status_code == 200
+        booking_ids = [b["id"] for b in response.json["endedBookings"]]
+        assert booking_ids == [
+            booking_with_cancellation_date.id,
+            booking_with_date_used.id,
+            booking_with_beginning_date.id,
+        ]
+
+    def test_get_bookings_list_sorts_ongoing_bookings(self, client):
+        user = users_factories.BeneficiaryFactory(email=self.identifier, age=18)
+
+        base_dt = datetime(2023, 3, 2)
+        booking_with_expiration_date = booking_factories.BookingFactory(
+            user=user,
+            dateCreated=base_dt,
+            stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,  # SUPPORT_PHYSIQUE_FILM bookings can expire => expirationDate is not None and expirationDate is dateCreated + BOOKINGS_AUTO_EXPIRY_DELAY
+        )
+        booking_with_beginning_date = booking_factories.BookingFactory(
+            user=user,
+            stock__beginningDatetime=base_dt,
+            stock__offer__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,  # LIVRE_NUMERIQUE bookings can't expire => expirationDate is None
+        )
+        booking_without_date = booking_factories.BookingFactory(
+            user=user,
+            stock__beginningDatetime=None,
+            stock__offer__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
+        )
+        booking_without_date_with_higher_id = booking_factories.BookingFactory(
+            user=user,
+            stock__beginningDatetime=None,
+            stock__offer__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
+        )
+
+        assert booking_with_expiration_date.expirationDate is not None
+        assert booking_with_expiration_date.expirationDate > base_dt
+        assert booking_with_beginning_date.expirationDate is None
+        assert booking_without_date_with_higher_id.id > booking_without_date.id
+
+        client.with_token(user)
+        with assert_num_queries(2):  # user + booking
+            response = client.get("/native/v2/bookings")
+
+        assert response.status_code == 200
+        booking_ids = [b["id"] for b in response.json["ongoingBookings"]]
+        assert booking_ids == [
+            booking_with_beginning_date.id,
+            booking_with_expiration_date.id,
+            booking_without_date_with_higher_id.id,
+            booking_without_date.id,
+        ]
+
     def test_get_bookings_returns_user_reaction(self, client):
         now = date_utils.get_naive_utc_now()
         stock = offers_factories.EventStockFactory()
@@ -517,6 +620,49 @@ class GetBookingsListTest:
             "totalAmount": int(ongoing_booking.total_amount * 100),
         }
 
+    def test_get_bookings_list_sorts_ongoing_bookings(self, client):
+        user = users_factories.BeneficiaryFactory(email=self.identifier, age=18)
+
+        base_dt = datetime(2023, 3, 2)
+        booking_with_expiration_date = booking_factories.BookingFactory(
+            user=user,
+            dateCreated=base_dt,
+            stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,  # SUPPORT_PHYSIQUE_FILM bookings can expire => expirationDate is not None and expirationDate is dateCreated + BOOKINGS_AUTO_EXPIRY_DELAY
+        )
+        booking_with_beginning_date = booking_factories.BookingFactory(
+            user=user,
+            stock__beginningDatetime=base_dt,
+            stock__offer__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,  # LIVRE_NUMERIQUE bookings can't expire => expirationDate is None
+        )
+        booking_without_date = booking_factories.BookingFactory(
+            user=user,
+            stock__beginningDatetime=None,
+            stock__offer__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
+        )
+        booking_without_date_with_higher_id = booking_factories.BookingFactory(
+            user=user,
+            stock__beginningDatetime=None,
+            stock__offer__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
+        )
+
+        assert booking_with_expiration_date.expirationDate is not None
+        assert booking_with_expiration_date.expirationDate > base_dt
+        assert booking_with_beginning_date.expirationDate is None
+        assert booking_without_date_with_higher_id.id > booking_without_date.id
+
+        client.with_token(user)
+        with assert_num_queries(2):  # user + booking
+            response = client.get("/native/v2/bookings/ongoing")
+
+        assert response.status_code == 200
+        booking_ids = [b["id"] for b in response.json["bookings"]]
+        assert booking_ids == [
+            booking_with_beginning_date.id,
+            booking_with_expiration_date.id,
+            booking_without_date_with_higher_id.id,
+            booking_without_date.id,
+        ]
+
     def test_get_bookings_list_returns_ended_bookings(self, client):
         user = users_factories.BeneficiaryFactory(email=self.identifier, age=18)
 
@@ -622,6 +768,49 @@ class GetBookingsListTest:
             "userReaction": ended_booking.userReaction.value,
             "totalAmount": int(ended_booking.total_amount * 100),
         }
+
+    def test_get_bookings_list_sorts_ended_bookings(self, client):
+        user = users_factories.BeneficiaryFactory(email=self.identifier, age=18)
+
+        base_dt = datetime(2023, 3, 2)
+        booking_with_beginning_date = booking_factories.UsedBookingFactory(
+            user=user,
+            cancellation_date=None,
+            dateUsed=None,
+            stock__beginningDatetime=base_dt,
+        )
+        booking_with_date_used = booking_factories.UsedBookingFactory(
+            user=user,
+            cancellation_date=None,
+            dateUsed=base_dt + timedelta(days=1),
+            stock__beginningDatetime=None,
+        )
+        booking_with_cancellation_date = booking_factories.CancelledBookingFactory(
+            user=user,
+            cancellation_date=base_dt + timedelta(days=2),
+            dateUsed=None,
+            stock__beginningDatetime=None,
+        )
+        booking_without_date = booking_factories.BookingFactory(
+            user=user,
+            displayAsEnded=True,
+            cancellation_date=None,
+            dateUsed=None,
+            stock__beginningDatetime=None,
+        )
+
+        client.with_token(user)
+        with assert_num_queries(2):  # user, booking
+            response = client.get("/native/v2/bookings/ended")
+
+        assert response.status_code == 200
+        booking_ids = [b["id"] for b in response.json["bookings"]]
+        assert booking_ids == [
+            booking_with_cancellation_date.id,
+            booking_with_date_used.id,
+            booking_with_beginning_date.id,
+            booking_without_date.id,
+        ]
 
     booking_start_date = datetime(2023, 3, 2)
 
