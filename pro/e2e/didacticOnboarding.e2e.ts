@@ -1,3 +1,5 @@
+import { argosScreenshot } from '@argos-ci/playwright'
+
 import { expect, test } from './fixtures/didacticOnboarding'
 import {
   isGetCategoriesResponse,
@@ -12,6 +14,8 @@ import {
 test.describe('Didactic Onboarding feature', () => {
   test.beforeEach(async ({ authenticatedPage: page }) => {
     await page.goto('/accueil')
+    await argosScreenshot(page, 'homepage')
+
     await expect(
       page.getByText('Bienvenue sur pass Culture Pro !')
     ).toBeVisible()
