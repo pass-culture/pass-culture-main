@@ -148,43 +148,45 @@ export const IndividualOfferLayout = ({
           />
         </div>
       )}
-      <div className={styles['banner-container']}>
-        {isOfferRecommendationEnabled ? (
-          <>
-            {(shouldDisplayRecommendation ||
-              shouldDisplayHighlightsBanner ||
-              shouldDisplayHeadlineOfferCard) && (
-              <h2 className={styles['banner-container-title']}>
-                Mises en avant de votre offre
-              </h2>
-            )}
-            <div className={styles['cards-container']}>
-              {shouldDisplayRecommendation && (
-                <OfferRecommendationCard offerId={offer.id} />
+      {mode !== OFFER_WIZARD_MODE.CREATION && (
+        <div className={styles['banner-container']}>
+          {isOfferRecommendationEnabled ? (
+            <>
+              {(shouldDisplayRecommendation ||
+                shouldDisplayHighlightsBanner ||
+                shouldDisplayHeadlineOfferCard) && (
+                <h2 className={styles['banner-container-title']}>
+                  Mises en avant de votre offre
+                </h2>
               )}
-              {shouldDisplayHighlightsBanner && (
-                <OfferHighlightCard
-                  offerId={offer.id}
-                  highlightRequests={offer.highlightRequests}
-                />
-              )}
-              {shouldDisplayHeadlineOfferCard && (
-                <OfferHeadlineCard
-                  offerId={offer.id}
-                  hasThumb={!!offer.thumbUrl}
-                />
-              )}
-            </div>
-          </>
-        ) : (
-          shouldDisplayHighlightsBanner && (
-            <OfferHighlightBanner
-              offerId={offer.id}
-              highlightRequests={offer.highlightRequests}
-            />
-          )
-        )}
-      </div>
+              <div className={styles['cards-container']}>
+                {shouldDisplayRecommendation && (
+                  <OfferRecommendationCard offerId={offer.id} />
+                )}
+                {shouldDisplayHighlightsBanner && (
+                  <OfferHighlightCard
+                    offerId={offer.id}
+                    highlightRequests={offer.highlightRequests}
+                  />
+                )}
+                {shouldDisplayHeadlineOfferCard && (
+                  <OfferHeadlineCard
+                    offerId={offer.id}
+                    hasThumb={!!offer.thumbUrl}
+                  />
+                )}
+              </div>
+            </>
+          ) : (
+            shouldDisplayHighlightsBanner && (
+              <OfferHighlightBanner
+                offerId={offer.id}
+                highlightRequests={offer.highlightRequests}
+              />
+            )
+          )}
+        </div>
+      )}
 
       {offer?.lastProvider?.name && (
         <div className={styles['banner-container']}>
