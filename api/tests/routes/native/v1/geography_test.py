@@ -1,5 +1,10 @@
+import pytest
+
 from pcapi.core.users import factories as users_factories
 from pcapi.utils import countries as countries_utils
+
+
+pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class CountriesTest:

@@ -9,7 +9,6 @@ import pytest
 import sqlalchemy as sa
 import time_machine
 from dateutil.relativedelta import relativedelta
-from flask_jwt_extended.utils import create_access_token
 from sqlalchemy.orm import joinedload
 
 import pcapi.core.mails.testing as mails_testing
@@ -104,8 +103,6 @@ class EduconnectFlowTest:
     def test_educonnect_subscription(self, mock_get_educonnect_saml_client, client, app):
         ine_hash = "5ba682c0fc6a05edf07cd8ed0219258f"
         user = users_factories.UserFactory(dateOfBirth=datetime(2004, 1, 1), firstName=None, lastName=None)
-        access_token = create_access_token(identity=user.email, additional_claims={"user_claims": {"user_id": user.id}})
-        client.auth_header = {"Authorization": f"Bearer {access_token}"}
         mock_saml_client = MagicMock()
         mock_get_educonnect_saml_client.return_value = mock_saml_client
         mock_saml_client.prepare_for_authenticate.return_value = (
@@ -123,6 +120,7 @@ class EduconnectFlowTest:
             "postalCode": "77000",
         }
 
+        client.with_token(user)
         response = client.post("/native/v1/subscription/profile", profile_data)
 
         assert response.status_code == 204

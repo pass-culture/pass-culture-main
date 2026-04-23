@@ -1,8 +1,8 @@
 import pytest
-from flask_jwt_extended.utils import create_access_token
 
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
+from pcapi.models import db
 from pcapi.utils.string import u_nbsp
 
 
@@ -16,12 +16,9 @@ class SubscriptionStepperTest:
             assert response.status_code == 401
 
     def test_subscription_stepper_user_not_found(self, client, app):
-        users_factories.EmailValidatedUserFactory(email="this-email@example.com")
-
-        token = create_access_token("other-email@example.com", additional_claims={"user_claims": {"user_id": 0}})
-        client.auth_header = {
-            "Authorization": f"Bearer {token}",
-        }
+        user = users_factories.EmailValidatedUserFactory()
+        client.with_token(user)
+        db.session.delete(user)
 
         with assert_num_queries(1):  # user
             response = client.get("/native/v2/subscription/stepper")

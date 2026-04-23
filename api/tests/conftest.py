@@ -28,6 +28,7 @@ from faker import Faker
 from flask import Flask
 from flask import g
 from flask.testing import FlaskClient
+from flask_jwt_extended import decode_token
 from flask_jwt_extended.utils import create_access_token
 from requests.auth import _basic_auth_str  # noqa: TID251
 from sqlalchemy import orm as sa_orm
@@ -38,6 +39,7 @@ import pcapi.core.mails.testing as mails_testing
 import pcapi.core.object_storage.testing as object_storage_testing
 import pcapi.core.search.testing as search_testing
 import pcapi.core.testing
+import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.celery_tasks.celery import celery_init_app
 from pcapi.celery_tasks.config import CELERY_BASE_SETTINGS
@@ -379,8 +381,11 @@ class TestClient:
         }
         return self
 
-    def with_token(self, user) -> "TestClient":
-        token = create_access_token(user.email, additional_claims={"user_claims": {"user_id": user.id}})
+    def with_token(self, user, *, register_token: bool = True) -> "TestClient":
+        token = create_access_token(str(user.id))
+        if register_token:
+            users_factories.NativeUserSessionFactory(user=user, accessToken=decode_token(token)["jti"])
+
         self.auth_header = {
             "Authorization": f"Bearer {token}",
         }
