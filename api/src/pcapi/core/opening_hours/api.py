@@ -3,7 +3,6 @@ from datetime import time
 
 import pcapi.utils.date as date_utils
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offers import models as offers_models
 from pcapi.models import db
 from pcapi.utils.date import timespan_str_to_numrange
 
@@ -15,20 +14,12 @@ MappedWeekdayOpeningHours = typing.Mapping[offerers_models.Weekday, schemas.Open
 
 
 def upsert_opening_hours(
-    target: typing.Union[offers_models.Offer, offerers_models.Venue],
+    venue: offerers_models.Venue,
     *,
     opening_hours: schemas.WeekdayOpeningHoursTimespans | None = None,
 ) -> None:
-    """Upsert an offer or a venue's opening hours, deleting previous ones."""
-    offer = target if isinstance(target, offers_models.Offer) else None
-    venue = target if isinstance(target, offerers_models.Venue) else None
-
-    delete_query = db.session.query(offerers_models.OpeningHours)
-
-    if offer:
-        delete_query = delete_query.filter_by(offerId=offer.id)
-    elif venue:
-        delete_query = delete_query.filter_by(venueId=venue.id)
+    """Upsert a venue's opening hours, deleting previous ones."""
+    delete_query = db.session.query(offerers_models.OpeningHours).filter_by(venue=venue)
 
     delete_query.delete(synchronize_session="evaluate")
 
@@ -39,7 +30,6 @@ def upsert_opening_hours(
         weekday = offerers_models.Weekday[raw_weekday]
         db.session.add(
             offerers_models.OpeningHours(
-                offer=offer,
                 venue=venue,
                 weekday=weekday,
                 timespan=timespan_str_to_numrange(timespans),
@@ -50,13 +40,10 @@ def upsert_opening_hours(
 
 
 def get_current_opening_hours(
-    target: typing.Union[offers_models.Offer, offerers_models.Venue],
+    venue: offerers_models.Venue,
 ) -> dict[offerers_models.Weekday, schemas.OpeningHoursTimespans | None]:
     """Keep a track of an offer or a venue's existing opening hours"""
-    if isinstance(target, offers_models.Offer):
-        query = db.session.query(offerers_models.OpeningHours).filter_by(offer=target)
-    else:
-        query = db.session.query(offerers_models.OpeningHours).filter_by(venue=target)
+    query = db.session.query(offerers_models.OpeningHours).filter_by(venue=venue)
 
     current: dict[offerers_models.Weekday, schemas.OpeningHoursTimespans | None] = {}
     for opening_hours in query:
