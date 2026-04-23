@@ -33,7 +33,7 @@ class CheckOffererSirenRequestV2(BaseModelV2):
 
 @celery_async_task(
     name="tasks.offerers.default.check_offerer",
-    model=CheckOffererSirenRequest,
+    model=CheckOffererSirenRequestV2,
     max_per_time_window=settings.CHECK_OFFERER_RATE_LIMIT_THRESHOLD,
     time_window_size=settings.CHECK_OFFERER_RATE_LIMIT_TIME_WINDOW_SECONDS,
 )

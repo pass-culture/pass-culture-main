@@ -2,9 +2,11 @@ import datetime
 import decimal
 import typing
 
+from pydantic import BaseModel as BaseModelV2
+from pydantic import ConfigDict
+from pydantic import StrictInt
 from pydantic.v1 import EmailStr
 from pydantic.v1 import HttpUrl
-from pydantic.v1 import StrictInt
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
@@ -141,15 +143,19 @@ class SerializedProductsStock(typing.TypedDict):
     booking_limit_datetime: datetime.datetime | None
     publication_datetime: datetime.datetime | None
     booking_allowed_datetime: datetime.datetime | None
-    external_ticket_office_url: HttpUrl | None
+    external_ticket_office_url: serialization_utils.HttpUrlString | None
 
 
-class CreateOrUpdateEANOffersRequest(BaseModel):
+class CreateOrUpdateEANOffersRequest(BaseModelV2):
     serialized_products_stocks: dict[str, SerializedProductsStock]
     venue_id: int
     provider_id: int
-    address_id: int | None
-    address_label: str | None
+    address_id: int | None = None
+    address_label: str | None = None
+
+    model_config = ConfigDict(
+        url_preserve_empty_path=True,
+    )
 
 
 class CreateOfferHighlightRequestBodyModel(BaseModel):

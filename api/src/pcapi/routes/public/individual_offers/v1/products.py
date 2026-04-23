@@ -300,7 +300,7 @@ def post_product_offer_by_ean(body: products_serializers.ProductsOfferByEanCreat
             address_id=address_id,
             address_label=address_label,
         )
-        offers_tasks.create_or_update_ean_offers_celery.delay(payload.dict())
+        offers_tasks.create_or_update_ean_offers_celery.delay(payload.model_dump())
 
 
 def _serialize_products_from_body(

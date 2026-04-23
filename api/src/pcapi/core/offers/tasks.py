@@ -308,7 +308,9 @@ def _update_offer_and_related_stock(
         offer.offererAddress = offerer_address
         offer.publicationDatetime = stock_data["publication_datetime"]
         offer.bookingAllowedDatetime = stock_data["booking_allowed_datetime"]
-        offer.externalTicketOfficeUrl = stock_data["external_ticket_office_url"]
+        offer.externalTicketOfficeUrl = (
+            str(stock_data["external_ticket_office_url"]) if stock_data["external_ticket_office_url"] else None
+        )
 
     # Part 2 - Stock create or update
     current_stock = next((stock for stock in offer.activeStocks), None)
@@ -415,7 +417,9 @@ def _create_or_update_ean_offers(
                         offererAddress=offerer_address,
                         publicationDatetime=stock_data["publication_datetime"],
                         bookingAllowedDatetime=stock_data["booking_allowed_datetime"],
-                        externalTicketOfficeUrl=stock_data["external_ticket_office_url"],
+                        externalTicketOfficeUrl=str(stock_data["external_ticket_office_url"])
+                        if stock_data["external_ticket_office_url"]
+                        else None,
                     )
                     created_offers.append(created_offer)
 
