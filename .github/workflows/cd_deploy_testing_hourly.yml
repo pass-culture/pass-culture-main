@@ -83,7 +83,7 @@ jobs:
     secrets: inherit
     with:
       base_ref: ${{ github.sha }}
-      tag_number: ${{ needs.check-docker-images-exist.outputs.checksum-tag }}
+      tag_number: ${{ github.sha }}
 
   deploy:
     name: Deploy to testing
