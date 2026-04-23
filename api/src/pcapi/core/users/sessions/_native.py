@@ -73,15 +73,24 @@ class SessionManager(_common.AbstractSessionManager):
             # invalid token
             return None
 
-        try:
-            # new token with user id as sub
-            user_id = int(jwt.data.sub)
-        except ValueError:
-            if jwt.data.user_claims is None:
-                return None
-            # legacy token with email as sub and user_id in user claim
-            user_id = jwt.data.user_claims["user_id"]
-        return db.session.query(users_models.User).filter(users_models.User.id == user_id).one_or_none()
+        if not (isinstance(jwt.data.sub, str) and jwt.data.sub.isdigit()):
+            # legacy token, it should be long expired but let's be defensive
+            return None
+
+        return (
+            db.session.query(
+                users_models.User,
+            )
+            .join(
+                users_models.NativeUserSession,
+                users_models.User.id == users_models.NativeUserSession.userId,
+            )
+            .filter(
+                users_models.User.id == int(jwt.data.sub),
+                users_models.NativeUserSession.accessToken == jwt.data.jti,
+            )
+            .one_or_none()
+        )
 
 
 def load_jwt(request: flask.Request, *, jwt_type: JwtType) -> JwtContainer | None:

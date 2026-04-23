@@ -12,6 +12,7 @@ import jwt
 import pytest
 import time_machine
 from dateutil.relativedelta import relativedelta
+from flask_jwt_extended import decode_token
 from flask_jwt_extended.utils import create_access_token
 
 import pcapi.core.finance.models as finance_models
@@ -54,6 +55,14 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class AccountTest:
     identifier = "email@example.com"
+    # user
+    # achievement
+    # booking
+    # deposit
+    # beneficiary_fraud_check
+    # beneficiary_fraud_review
+    # action_history
+    expected_num_queries = 7
 
     def test_get_user_profile_without_authentication(self, client, app):
         users_factories.UserFactory(email=self.identifier)
@@ -63,13 +72,30 @@ class AccountTest:
             assert response.status_code == 401
 
     def test_get_user_profile_not_found(self, client, app):
-        users_factories.UserFactory(email=self.identifier)
+        token = create_access_token(identity="0")
+        # we cannot use the factory as the user does not exists
+        db.session.add(
+            users_models.NativeUserSession(
+                userId="0",
+                deviceId="",
+                accessToken=decode_token(token)["jti"],
+                refreshToken="",
+                expirationDatetime=date_utils.get_naive_utc_now(),
+            )
+        )
 
-        token = create_access_token("other-email@example.com", additional_claims={"user_claims": {"user_id": 0}})
-        client.auth_header = {
-            "Authorization": f"Bearer {token}",
-        }
+        client.with_explicit_token(token)
+        with assert_num_queries(1):  # user
+            response = client.get("/native/v1/me")
+            assert response.status_code == 403
 
+        assert response.json["email"] == ["Utilisateur introuvable"]
+
+    def test_get_user_profile_token_not_found(self, client, app):
+        user = users_factories.UserFactory()
+        token = create_access_token(identity=str(user.id))
+
+        client.with_explicit_token(token)
         with assert_num_queries(1):  # user
             response = client.get("/native/v1/me")
             assert response.status_code == 403
@@ -77,7 +103,7 @@ class AccountTest:
         assert response.json["email"] == ["Utilisateur introuvable"]
 
     def test_get_user_profile_not_active(self, client, app):
-        user = users_factories.UserFactory(email=self.identifier, isActive=False)
+        user = users_factories.UserFactory(isActive=False)
 
         client.with_token(user)
         with assert_num_queries(1):  # user
@@ -236,14 +262,16 @@ class AccountTest:
         expected_num_queries = 1  # user
         expected_num_queries += 1  # achievements
         expected_num_queries += 1  # bookings (from _get_booked_offers)
+        expected_num_queries += 1  # deposit
         expected_num_queries += 1  # bookings (from get_domains_credit)
         expected_num_queries += 1  # beneficiary fraud checks
         expected_num_queries += 1  # user_profile_refresh_campaign.
         expected_num_queries += 1  # recredit
 
         client.with_token(user)
-        with assert_num_queries(expected_num_queries, expire_session=False):
+        with assert_num_queries(expected_num_queries):
             me_response = client.get("/native/v1/me")
+            assert me_response.status_code == 200
 
         assert user.age == 17
         assert me_response.json["recreditAmountToShow"] == 5000
@@ -346,8 +374,13 @@ class AccountTest:
     @pytest.mark.features(ENABLE_CULTURAL_SURVEY=False, ENABLE_NATIVE_CULTURAL_SURVEY=False)
     def test_cultural_survey_disabled(self, client):
         user = users_factories.UserFactory(age=18)
-
-        expected_num_queries = 6  # user + booking + deposit + beneficiary_fraud_review * 2 + achievement
+        # user
+        # achievement
+        # booking
+        # deposit
+        # beneficiary_fraud_check
+        # beneficiary_fraud_review
+        expected_num_queries = 6
 
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
@@ -370,41 +403,28 @@ class AccountTest:
             status=subscription_models.FraudCheckStatus.SUSPICIOUS,
             reasonCodes=[subscription_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
         )
-        client.with_token(user)
 
+        client.with_token(user)
         response = client.get("/native/v1/me")
         assert response.status_code == 200
-        client.with_token(user)
-        n_queries = 1  # get user
-        n_queries += 1  # get bookings
 
-        with assert_num_queries(n_queries, expire_session=False):
+        with assert_num_queries(self.expected_num_queries):
             response = client.get("/native/v1/me")
+            assert response.status_code == 200
 
     def test_num_queries_beneficiary(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
 
         client.with_token(user)
-
-        n_queries = 1  # user
-        n_queries += 1  # user bookings
-        n_queries += 1  # deposit
-        n_queries += 1  # deposit bookings
-        n_queries += 1  # achievement
-        n_queries += 1  # fraud check
-        n_queries += 1  # action history
-        with assert_num_queries(n_queries):
+        with assert_num_queries(self.expected_num_queries):
             response = client.get("/native/v1/me")
             assert response.status_code == 200
 
     def should_display_cultural_survey_if_beneficiary(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
 
-        expected_num_queries = 7  # user + deposit + booking(from _get_booked_offers) + booking (from get_domains_credit) + achievement + fraud check + action history
-
         client.with_token(user)
-
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(self.expected_num_queries):
             response = client.get("/native/v1/me")
             assert response.status_code == 200
         assert response.json["needsToFillCulturalSurvey"] is True
@@ -425,8 +445,7 @@ class AccountTest:
     def test_currency_pacific_franc(self, client):
         user = users_factories.UserFactory(departementCode="988", postalCode="98818")
 
-        expected_num_queries = 6  # user*2 + achievements + bookings + deposit + fraud check
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(self.expected_num_queries):
             response = client.with_token(user).get("/native/v1/me")
 
         assert response.status_code == 200, response.json

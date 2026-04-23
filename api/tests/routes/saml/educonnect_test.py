@@ -6,7 +6,6 @@ from unittest.mock import patch
 import pytest
 import time_machine
 from dateutil.relativedelta import relativedelta
-from flask_jwt_extended.utils import create_access_token
 
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.subscription.models as subscription_models
@@ -35,11 +34,9 @@ class EduconnectTest:
 
     def connect_to_educonnect(self, client, app):
         user = users_factories.UserFactory(email=self.email, activity="Collégien")
-        access_token = create_access_token(user.email, additional_claims={"user_claims": {"user_id": user.id}})
-        client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
         # Calling /saml/educonnect/login redirects to educonnect login
-        response = client.get("/saml/educonnect/login")
+        response = client.with_token(user).get("/saml/educonnect/login")
         assert response.status_code == 302
         assert response.location.startswith("https://pr4.educonnect.phm.education.gouv.fr/idp")
         prefixed_request_id = app.redis_client.keys(f"{self.request_id_key_prefix}*")[0]
@@ -53,9 +50,8 @@ class EduconnectTest:
 
     def test_educonnect_login_no_redirect(self, client):
         user = users_factories.UserFactory(email=self.email)
-        access_token = create_access_token(user.email, additional_claims={"user_claims": {"user_id": user.id}})
-        client.auth_header = {"Authorization": f"Bearer {access_token}"}
-        response = client.get("/saml/educonnect/login?redirect=false")
+
+        response = client.with_token(user).get("/saml/educonnect/login?redirect=false")
 
         assert response.status_code == 204
         assert response.headers["educonnect-redirect"].startswith("https://pr4.educonnect.phm.education.gouv.fr/idp")
@@ -67,10 +63,8 @@ class EduconnectTest:
     )
     def test_get_educonnect_login_production(self, client, app):
         user = users_factories.UserFactory(email=self.email)
-        access_token = create_access_token(user.email, additional_claims={"user_claims": {"user_id": user.id}})
-        client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
-        response = client.get("/saml/educonnect/login")
+        response = client.with_token(user).get("/saml/educonnect/login")
         assert response.status_code == 302
         assert response.location.startswith("https://educonnect.education.gouv.fr/idp")
         assert len(app.redis_client.keys(f"{self.request_id_key_prefix}*")) == 1

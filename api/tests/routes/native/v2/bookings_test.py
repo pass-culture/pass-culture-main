@@ -236,7 +236,7 @@ class GetBookingsTest:
         )
         ReactionFactory(reactionType=ReactionTypeEnum.LIKE, user=ongoing_booking.user, product=stock.offer.product)
         client = client.with_token(ongoing_booking.user)
-        with assert_num_queries(3, expire_session=False):
+        with assert_num_queries(4):
             # select user, booking, offer
             response = client.get("/native/v2/bookings")
 
