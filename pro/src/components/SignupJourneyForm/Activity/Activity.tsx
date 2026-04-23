@@ -167,6 +167,8 @@ export const Activity = () => {
             isDisabled={methods.formState.isSubmitting}
             previousTo={SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION}
             nextTo={SIGNUP_JOURNEY_STEP_IDS.CONFIRMATION}
+            nextStepTitle="Continuer"
+            previousStepTitle="Retour"
           />
         </form>
       </FormProvider>

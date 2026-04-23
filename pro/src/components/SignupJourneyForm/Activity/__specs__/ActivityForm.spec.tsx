@@ -98,12 +98,12 @@ describe('screens:SignupJourney::ActivityForm', () => {
       await screen.findByRole('button', { name: 'Ajouter un lien' })
     ).toBeInTheDocument()
     expect(
-      screen.getByLabelText('Au grand public', {
+      screen.getByLabelText('Aux jeunes via l’application pass Culture', {
         exact: false,
       })
     ).not.toBeChecked()
     expect(
-      screen.getByLabelText('À des groupes scolaires', {
+      screen.getByLabelText('Aux groupes scolaires via ADAGE', {
         exact: false,
       })
     ).not.toBeChecked()
@@ -138,12 +138,12 @@ describe('screens:SignupJourney::ActivityForm', () => {
     expect(screen.getByText('Musée')).toBeInTheDocument()
     expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(2)
     expect(
-      screen.getByLabelText('Au grand public', {
+      screen.getByLabelText('Aux jeunes via l’application pass Culture', {
         exact: false,
       })
     ).not.toBeChecked()
     expect(
-      screen.getByLabelText('À des groupes scolaires', {
+      screen.getByLabelText('Aux groupes scolaires via ADAGE', {
         exact: false,
       })
     ).not.toBeChecked()
@@ -197,8 +197,12 @@ describe('screens:SignupJourney::ActivityForm', () => {
   it('should change targetCustomer value on click', async () => {
     renderActivityForm(initialValues, contextValue)
 
-    const publicTarget = screen.getByLabelText('Au grand public')
-    const schoolTarget = screen.getByLabelText('À des groupes scolaires')
+    const publicTarget = screen.getByLabelText(
+      'Aux jeunes via l’application pass Culture'
+    )
+    const schoolTarget = screen.getByLabelText(
+      'Aux groupes scolaires via ADAGE'
+    )
 
     expect(publicTarget).not.toBeChecked()
     expect(schoolTarget).not.toBeChecked()
