@@ -63,7 +63,7 @@
     "libphonenumber-js": "1.12.41",
     "lodash.invert": "4.3.0",
     "react": "19.2.5",
-    "react-avatar-editor": "14.0.0",
+    "react-avatar-editor": "15.1.0",
     "react-chartjs-2": "5.3.1",
     "react-dom": "19.2.5",
     "react-dropzone": "15.0.0",
