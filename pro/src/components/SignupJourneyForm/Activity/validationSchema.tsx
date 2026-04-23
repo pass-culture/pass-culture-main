@@ -30,12 +30,14 @@ export const validationSchema = (
     activity: activityValidator.required(
       'Veuillez sélectionner une activité principale'
     ),
+
     otherActivityComment: yup.string().when('activity', {
       is: (activity: ActivityOpenToPublicType | ActivityNotOpenToPublicType) =>
         activity === 'OTHER',
       then: (schema) =>
         schema.required('Veuillez préciser votre type d’activité'),
     }),
+
     culturalDomains: yup
       .array()
       .of(yup.string().required())
@@ -49,19 +51,19 @@ export const validationSchema = (
         }
         return schema
       }),
+
     socialUrls: yup
       .array()
       .of(
-        yup.object().shape({
+        yup.object({
           url: yup
             .string()
-            .default('')
-            .url(
-              'Veuillez renseigner une URL valide. Ex : https://exemple.com'
-            ),
+            .url('Veuillez renseigner une URL valide. Ex : https://exemple.com')
+            .required('Veuillez renseigner au moins une URL'),
         })
       )
       .required(),
+
     targetCustomer: yup
       .object()
       .test({
@@ -75,6 +77,7 @@ export const validationSchema = (
         educational: yup.boolean().required(),
       })
       .required('Veuillez sélectionner au moins une option'),
+
     phoneNumber: yup
       .string()
       .min(10, 'Veuillez renseigner au moins 10 chiffres')

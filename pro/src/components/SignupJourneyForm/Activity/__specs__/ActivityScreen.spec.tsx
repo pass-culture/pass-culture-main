@@ -166,20 +166,20 @@ describe('screens:SignupJourney::Activity', () => {
       await screen.findByRole('button', { name: 'Ajouter un lien' })
     ).toBeInTheDocument()
     expect(
-      screen.getByLabelText('Au grand public', {
+      screen.getByLabelText('Aux jeunes via l’application pass Culture', {
         exact: false,
       })
     ).not.toBeChecked()
     expect(
-      screen.getByLabelText('À des groupes scolaires', {
+      screen.getByLabelText('Aux groupes scolaires via ADAGE', {
         exact: false,
       })
     ).not.toBeChecked()
     expect(
-      await screen.findByRole('button', { name: 'Étape suivante' })
+      await screen.findByRole('button', { name: 'Continuer' })
     ).toBeInTheDocument()
     expect(
-      await screen.findByRole('button', { name: 'Étape précédente' })
+      await screen.findByRole('button', { name: 'Retour' })
     ).toBeInTheDocument()
   })
 
@@ -251,7 +251,7 @@ describe('screens:SignupJourney::Activity', () => {
   it('should display validation screen on click next step button', async () => {
     contextValue.activity = {
       activity: 'MUSEUM',
-      socialUrls: [],
+      socialUrls: ['http://example.com'],
       targetCustomer: Target.INDIVIDUAL_AND_EDUCATIONAL,
       phoneNumber: '0605120510',
       culturalDomains: undefined,
@@ -266,9 +266,7 @@ describe('screens:SignupJourney::Activity', () => {
       })
     ).toBeInTheDocument()
 
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape suivante' })
-    )
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
     await waitFor(() => {
       expect(screen.getByText('Validation screen')).toBeInTheDocument()
@@ -278,7 +276,7 @@ describe('screens:SignupJourney::Activity', () => {
   it('should go next step with individual target customer', async () => {
     contextValue.activity = {
       activity: 'MUSEUM',
-      socialUrls: [],
+      socialUrls: ['http://example.com'],
       targetCustomer: Target.INDIVIDUAL,
       phoneNumber: '0605120510',
       culturalDomains: undefined,
@@ -292,12 +290,14 @@ describe('screens:SignupJourney::Activity', () => {
         name: 'Et enfin, définissez l’activité de votre structure',
       })
     ).toBeInTheDocument()
-    expect(screen.getByLabelText('Au grand public')).toBeChecked()
-    expect(screen.getByLabelText('À des groupes scolaires')).not.toBeChecked()
+    expect(
+      screen.getByLabelText('Aux jeunes via l’application pass Culture')
+    ).toBeChecked()
+    expect(
+      screen.getByLabelText('Aux groupes scolaires via ADAGE')
+    ).not.toBeChecked()
 
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape suivante' })
-    )
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
     expect(screen.getByText('Validation screen')).toBeInTheDocument()
   })
@@ -305,7 +305,7 @@ describe('screens:SignupJourney::Activity', () => {
   it('should go next step with educational target customer', async () => {
     contextValue.activity = {
       activity: 'MUSEUM',
-      socialUrls: [],
+      socialUrls: ['http://example.com'],
       targetCustomer: Target.EDUCATIONAL,
       phoneNumber: '0605120510',
       culturalDomains: undefined,
@@ -319,12 +319,14 @@ describe('screens:SignupJourney::Activity', () => {
         name: 'Et enfin, définissez l’activité de votre structure',
       })
     ).toBeInTheDocument()
-    expect(screen.getByLabelText('Au grand public')).not.toBeChecked()
-    expect(screen.getByLabelText('À des groupes scolaires')).toBeChecked()
+    expect(
+      screen.getByLabelText('Aux jeunes via l’application pass Culture')
+    ).not.toBeChecked()
+    expect(
+      screen.getByLabelText('Aux groupes scolaires via ADAGE')
+    ).toBeChecked()
 
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape suivante' })
-    )
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
     expect(screen.getByText('Validation screen')).toBeInTheDocument()
   })
@@ -339,9 +341,7 @@ describe('screens:SignupJourney::Activity', () => {
       })
     ).toBeInTheDocument()
 
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape précédente' })
-    )
+    await userEvent.click(screen.getByRole('button', { name: 'Retour' }))
 
     expect(screen.getByText('Authentication screen')).toBeInTheDocument()
   })
