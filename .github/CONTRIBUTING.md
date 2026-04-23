@@ -4,8 +4,8 @@ Nous utilisons les GitHub actions pour la CI et la CD du backend et du front pro
 
 Les workflows sont divisés en 4 grandes catégories :
 - les workflows **d'intégration continue (CI)**, préfixés par `ci_`
-- les workflows **de déploiement continue (CD)**, préfixés par `cd_`
-- les workflows **partagés dédiés à des services particuliers**, préfixés par le nom du service, par exemple `slack_` ou `docker`
+- les workflows **de déploiement continu (CD)**, préfixés par `cd_`
+- les workflows **partagés dédiés à des services particuliers**, préfixés par le nom du service, par exemple `slack_` ou `docker_`
 - les workflows **dédiés aux tests de job et de GitHub actions**, préfixés par `test_`
 
 Au sein de ces catégories, les sous-workflows, ie. les workflows qui sont appelés par d'autres workflows (qui ont la configugration `on: workflow_call`), sont préfixés avec `sub_`.
