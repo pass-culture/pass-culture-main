@@ -1,4 +1,4 @@
-name: 1 [CI] Ping data team on significant DB changes
+name: 2 [CI] Ping data team on significant DB changes
 
 on:
   pull_request: { types: closed }

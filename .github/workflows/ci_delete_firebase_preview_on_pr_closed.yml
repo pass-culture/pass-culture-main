@@ -1,4 +1,4 @@
-name: "1 [CI] Delete PR preview deployment"
+name: 2 [CI] Delete PR preview deployment
 
 on:
   pull_request: { types: closed }

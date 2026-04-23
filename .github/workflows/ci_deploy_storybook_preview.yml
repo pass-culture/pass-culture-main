@@ -1,4 +1,4 @@
-name: "[CI] Deploy Storybook preview"
+name: 0 [CI] Deploy Storybook preview
 
 on:
   workflow_dispatch:

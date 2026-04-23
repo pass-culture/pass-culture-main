@@ -1,4 +1,4 @@
-name: "3 [CI] Check API documentation can be built"
+name: 3 [CI] Check API documentation can be built
 
 on:
   workflow_call:

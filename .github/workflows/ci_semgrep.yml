@@ -1,4 +1,4 @@
-name: 3 [CI] Semgrep
+name: 2 [CI] Semgrep
 
 on: pull_request
 
