@@ -115,7 +115,7 @@ const renderNewHomepage = (
   })
   const { storeOverrides, ...restOptions } = options ?? {}
   return renderWithProviders(null, {
-    features: ['WIP_ENABLE_NEW_PRO_HOME', 'WIP_SWITCH_VENUE'],
+    features: ['WIP_ENABLE_NEW_PRO_HOME'],
     routes: newHomepageRoutes,
     initialRouterEntries: ['/accueil'],
     user,

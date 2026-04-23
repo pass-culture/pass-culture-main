@@ -1,50 +1,26 @@
 import { useLocation } from 'react-router'
 
-import type {
-  GetOffererResponseModel,
-  GetVenueResponseModel,
-} from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import fullNextIcon from '@/icons/full-next.svg'
 
 import styles from '../../Homepage.module.scss'
 
 interface AddBankAccountCalloutProps {
-  offerer?: GetOffererResponseModel | null
-  venue?: GetVenueResponseModel | null
+  venue: GetVenueResponseModel
 }
-
 export const AddBankAccountCallout = ({
-  offerer = null,
-  venue = null,
-}: AddBankAccountCalloutProps): JSX.Element | null => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+  venue,
+}: Readonly<AddBankAccountCalloutProps>) => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
-
-  const displayBankAccountBanner = withSwitchVenueFeature
-    ? venue?.hasNonFreeOffers && !venue.bankAccountStatus
-    : offerer &&
-      offerer?.venuesWithNonFreeOffersWithoutBankAccounts.length > 0 &&
-      !offerer.hasValidBankAccount &&
-      !offerer.hasBankAccountWithPendingCorrections &&
-      !offerer.hasPendingBankAccount
-
-  if (!displayBankAccountBanner) {
-    return null
-  }
 
   return (
     <div className={styles['reimbursements-banner']}>
       <Banner
-        title={
-          withSwitchVenueFeature
-            ? 'Aucun compte bancaire configuré pour percevoir vos remboursements'
-            : 'Compte bancaire manquant'
-        }
+        title="Aucun compte bancaire configuré pour percevoir vos remboursements"
         variant={BannerVariants.ERROR}
         actions={[
           {
@@ -55,17 +31,11 @@ export const AddBankAccountCallout = ({
             onClick: () => {
               logEvent(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT, {
                 from: location.pathname,
-                ...(!withSwitchVenueFeature && { offererId: offerer?.id }),
-                ...(withSwitchVenueFeature && { venueId: venue?.id }),
+                venueId: venue.id,
               })
             },
           },
         ]}
-        description={
-          withSwitchVenueFeature
-            ? ''
-            : 'Configurez un compte bancaire pour recevoir vos remboursements.'
-        }
       />
     </div>
   )

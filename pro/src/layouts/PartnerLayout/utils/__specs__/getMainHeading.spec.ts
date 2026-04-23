@@ -26,7 +26,7 @@ describe('getMainHeading', () => {
     expect(result).toBeUndefined()
   })
 
-  describe('WIP_SWITCH_VENUE and WIP_ENABLE_NEW_PRO_HOME feature flags ', () => {
+  describe('WIP_ENABLE_NEW_PRO_HOME feature flags ', () => {
     it('should return venue public name heading on /accueil when new homepage is enabled', () => {
       vi.spyOn(routerUtils, 'isNewHomepageEnabled').mockReturnValue(true)
 

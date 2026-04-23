@@ -1,84 +1,85 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { DisplayableActivity } from '@/apiClient/v1/new'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
+import { DMSApplicationstatus } from '@/apiClient/v1/models/DMSApplicationstatus'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
-import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+  defaultDMSApplicationForEACV2,
+  defaultGetVenue,
+} from '@/commons/utils/factories/collectiveApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { PartnerPage, type PartnerPageProps } from '../PartnerPage'
+import { PartnerPage } from '../PartnerPage'
 
 const mockLogEvent = vi.fn()
 
-const renderPartnerPages = (
-  props: Partial<PartnerPageProps>,
-  features?: string[]
-) => {
-  renderWithProviders(
-    <PartnerPage
-      offerer={{ ...defaultGetOffererResponseModel }}
-      venue={{ ...defaultGetVenue }}
-      venueHasPartnerPage={false}
-      {...props}
-    />,
-    {
-      storeOverrides: {
-        user: { currentUser: sharedCurrentUserFactory() },
-        offerer: currentOffererFactory(),
+const renderPartnerPage = (
+  venueOverrides: Partial<GetVenueResponseModel> = {}
+) =>
+  renderWithProviders(<PartnerPage />, {
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: { ...defaultGetVenue, ...venueOverrides },
       },
-      features,
-    }
-  )
-}
+    },
+  })
 
-describe('PartnerPages', () => {
-  it('should display image upload if no image', async () => {
+describe('PartnerPage', () => {
+  beforeEach(() => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
+  })
 
-    renderPartnerPages({
-      venue: {
-        ...defaultGetVenue,
-        activity: DisplayableActivity.FESTIVAL,
-      },
+  it('should display the venue public name and the address', () => {
+    renderPartnerPage()
+
+    expect(
+      screen.getByRole('heading', { name: 'Nom public de la structure' })
+    ).toBeInTheDocument()
+    expect(screen.getByTestId('venue-address')).toBeInTheDocument()
+  })
+
+  it('should link "Paramètres généraux" to the venue settings page', () => {
+    renderPartnerPage({
+      id: 42,
+      managingOfferer: { ...defaultGetVenue.managingOfferer, id: 7 },
     })
 
-    expect(screen.getByText(/Ajouter une image/)).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Paramètres généraux' })
+    ).toHaveAttribute('href', '/structures/7/lieux/42/parametres')
+  })
+
+  it('should display image upload and log CLICKED_ADD_IMAGE on click when no image', async () => {
+    renderPartnerPage({ id: 42, bannerUrl: null })
+
     await userEvent.click(screen.getByText(/Ajouter une image/))
 
     expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_ADD_IMAGE, {
-      offererId: '1',
-      venueId: defaultGetVenue.id,
+      venueId: 42,
       imageType: UploaderModeEnum.VENUE,
       isEdition: true,
       imageCreationStage: 'add image',
     })
   })
 
-  it('should display the image if its present', () => {
-    renderPartnerPages({
-      venue: {
-        ...defaultGetVenue,
-        activity: DisplayableActivity.FESTIVAL,
-        bannerUrl: 'https://www.example.com/image.png',
-        bannerMeta: {
-          image_credit: null,
-          original_image_url: 'https://www.example.com/image.png',
-          crop_params: {
-            x_crop_percent: 0,
-            y_crop_percent: 0,
-            width_crop_percent: 0,
-            height_crop_percent: 0,
-          },
+  it('should display the image when present', () => {
+    renderPartnerPage({
+      bannerUrl: 'https://www.example.com/image.png',
+      bannerMeta: {
+        image_credit: null,
+        original_image_url: 'https://www.example.com/image.png',
+        crop_params: {
+          x_crop_percent: 0,
+          y_crop_percent: 0,
+          width_crop_percent: 0,
+          height_crop_percent: 0,
         },
       },
     })
@@ -89,62 +90,42 @@ describe('PartnerPages', () => {
     )
   })
 
-  it('should display a "Grand public" section with address', () => {
-    renderPartnerPages({
-      venueHasPartnerPage: true,
-      venue: {
-        ...defaultGetVenue,
-        location: getLocationResponseModel(),
-      },
-    })
+  it('should display the "Grand public" section when the venue has a partner page', () => {
+    renderPartnerPage({ hasPartnerPage: true })
 
     expect(screen.getByText('Grand public')).toBeInTheDocument()
-    expect(screen.getByTestId('venue-address')).toBeInTheDocument()
-    expect(screen.getByText(/ma super rue, 75008/)).toBeInTheDocument()
   })
 
-  it('should display a "Grand public" section', () => {
-    renderPartnerPages({ venueHasPartnerPage: true })
+  it('should not display the "Grand public" section when the venue does not have a partner page', () => {
+    renderPartnerPage({ hasPartnerPage: false })
 
-    expect(screen.getByText('Grand public')).toBeInTheDocument()
-    expect(screen.getByText('Paramètres généraux')).toBeInTheDocument()
+    expect(screen.queryByText('Grand public')).not.toBeInTheDocument()
   })
 
-  it('should display the EAC section', () => {
-    renderPartnerPages({
-      venue: {
-        ...defaultGetVenue,
-        lastCollectiveDmsApplication: null,
-        allowedOnAdage: false,
-      },
-      offerer: {
-        ...defaultGetOffererResponseModel,
-      },
+  it('should display the EAC section with the "Déposer un dossier ADAGE" link when not referenced yet', () => {
+    renderPartnerPage({
+      allowedOnAdage: false,
+      lastCollectiveDmsApplication: null,
     })
 
     expect(screen.getByText('Non référencé dans ADAGE')).toBeInTheDocument()
     expect(screen.getByText('Déposer un dossier ADAGE')).toBeInTheDocument()
   })
 
-  it('should display the "Grand public" section when the venue has a partner page', () => {
-    renderPartnerPages({
-      venue: {
-        ...defaultGetVenue,
+  it('should render VenueOfferSteps when the venue has a DMS application in instruction', () => {
+    renderPartnerPage({
+      lastCollectiveDmsApplication: {
+        ...defaultDMSApplicationForEACV2,
+        state: DMSApplicationstatus.EN_INSTRUCTION,
       },
-      venueHasPartnerPage: true,
     })
 
-    expect(screen.getByText('Grand public')).toBeInTheDocument()
+    expect(screen.getByText('Démarche en cours :')).toBeInTheDocument()
   })
 
-  it('should not display the "Grand public" section when the venue does not have a partner page', () => {
-    renderPartnerPages({
-      venue: {
-        ...defaultGetVenue,
-      },
-      venueHasPartnerPage: false,
-    })
+  it('should not render VenueOfferSteps when the venue has no in-flight DMS application', () => {
+    renderPartnerPage({ lastCollectiveDmsApplication: null })
 
-    expect(screen.queryByText('Grand public')).not.toBeInTheDocument()
+    expect(screen.queryByText('Démarche en cours :')).not.toBeInTheDocument()
   })
 })

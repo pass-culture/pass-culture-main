@@ -2,119 +2,45 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import * as useAnalytics from '@/app/App/analytics/firebase'
-import { Events, VenueEvents } from '@/commons/core/FirebaseEvents/constants'
-import {
-  defaultGetOffererResponseModel,
-  defaultGetOffererVenueResponseModel,
-} from '@/commons/utils/factories/individualApiFactories'
-import {
-  type RenderWithProvidersOptions,
-  renderWithProviders,
-} from '@/commons/utils/renderWithProviders'
-import * as venueUtils from '@/pages/Homepage/components/Offerers/components/VenueList/venueUtils'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { VenueOfferSteps, type VenueOfferStepsProps } from '../VenueOfferSteps'
+import { VenueOfferSteps } from '../VenueOfferSteps'
 
 const mockLogEvent = vi.fn()
 
-const renderVenueOfferSteps = (
-  props?: Partial<VenueOfferStepsProps>,
-  options?: RenderWithProvidersOptions
-) => {
-  return renderWithProviders(
-    <VenueOfferSteps
-      hasVenue={false}
-      offerer={{
-        ...defaultGetOffererResponseModel,
-        hasPendingBankAccount: false,
-        hasValidBankAccount: false,
-        hasNonFreeOffer: false,
-      }}
-      {...props}
-    />,
-    { initialRouterEntries: ['/accueil'], ...options }
-  )
-}
+const renderVenueOfferSteps = () =>
+  renderWithProviders(<VenueOfferSteps />, {
+    initialRouterEntries: ['/accueil'],
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: defaultGetVenue,
+      },
+    },
+  })
 
-describe('VenueOfferSteps', () => {
-  const venueId = 1
-  const venue = {
-    ...defaultGetOffererVenueResponseModel,
-    id: venueId,
-  }
-
+describe('VenueOfferSteps tracking', () => {
   beforeEach(() => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.spyOn(
-      venueUtils,
-      'shouldDisplayEACInformationSectionForVenue'
-    ).mockReturnValue(true)
   })
 
-  it('should track creation venue', async () => {
-    renderVenueOfferSteps()
-
-    await userEvent.click(screen.getByText(/Créer une structure/))
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_CREATE_VENUE,
-      {
-        from: '/',
-        is_first_venue: true,
-      }
-    )
-  })
-
-  it('should track ReimbursementPoint', async () => {
-    renderVenueOfferSteps({
-      venue: { ...venue },
-      hasVenue: true,
-    })
-
-    await userEvent.click(screen.getByText(/Ajouter un compte bancaire/))
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenCalledWith(
-      VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON,
-      {
-        venue_id: venueId,
-        from: 'Home',
-      }
-    )
-  })
-
-  it('should track "I have no venue"', async () => {
+  it('should log CLICKED_EAC_DMS_TIMELINE when clicking on the DMS timeline link', async () => {
     renderVenueOfferSteps()
 
     await userEvent.click(
-      screen.getByText(
-        /Je ne dispose pas de structure propre, quel type de structure créer ?/
-      )
+      screen.getByRole('link', {
+        name: 'Suivre ma demande de référencement ADAGE',
+      })
     )
 
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_NO_VENUE, {
-      from: location.pathname,
-    })
-  })
-
-  it('should track click on dms timeline link', async () => {
-    renderVenueOfferSteps({
-      venue: { ...venue },
-      hasVenue: true,
-    })
-
-    await userEvent.click(
-      screen.getByText('Suivre ma demande de référencement ADAGE')
+    expect(mockLogEvent).toHaveBeenCalledExactlyOnceWith(
+      Events.CLICKED_EAC_DMS_TIMELINE,
+      { from: window.location.pathname }
     )
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_EAC_DMS_TIMELINE, {
-      from: location.pathname,
-    })
   })
 })

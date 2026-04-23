@@ -6,13 +6,12 @@ import { isNewHomepageEnabled } from '@/app/AppRouter/utils'
 
 import { PARTNER_HEADING_OVERRIDES } from '../commons/constants'
 
-// TODO (cmoinier): remove null typing once WIP_SWITCH_VENUE is enabled and selectedPartnerVenue is always defined
 export function getMainHeading(
   currentRoute: UIMatch<unknown, CustomRouteHandle | undefined>,
-  selectedPartnerVenue: GetVenueResponseModel | null
+  selectedPartnerVenue: GetVenueResponseModel
 ) {
   if (currentRoute.pathname === '/accueil' && isNewHomepageEnabled()) {
-    return `Votre espace ${selectedPartnerVenue?.publicName}`
+    return `Votre espace ${selectedPartnerVenue.publicName}`
   }
 
   return PARTNER_HEADING_OVERRIDES[currentRoute.pathname]

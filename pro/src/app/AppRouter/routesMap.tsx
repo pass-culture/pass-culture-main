@@ -131,6 +131,8 @@ export const routes: CustomRouteTree = [
   {
     lazy: () => import('@/pages/VenueEdition/VenueEdition'),
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    // TODO (igabriele, 2026-04-21): Rename this path to '/partenaire/page-partenaire' (WIP_SWITCH_VENUE).
+    // Partner space page should never use Offerer info anymore and there is always a single selected partner venue.
     path: '/structures/:offererId/lieux/:venueId/page-partenaire',
     children: [
       {
@@ -144,6 +146,8 @@ export const routes: CustomRouteTree = [
   {
     lazy: () => import('@/pages/VenueEdition/VenueEdition'),
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    // TODO (igabriele, 2026-04-21): Rename this path to '/partenaire/page-collective' (WIP_SWITCH_VENUE).
+    // Partner space page should never use Offerer info anymore and there is always a single selected partner venue.
     path: '/structures/:offererId/lieux/:venueId/collectif',
     children: [
       {
@@ -157,6 +161,8 @@ export const routes: CustomRouteTree = [
   {
     lazy: () => import('@/pages/VenueEdition/VenueEdition'),
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    // TODO (igabriele, 2026-04-21): Rename this path to '/partenaire/page-individuelle' (WIP_SWITCH_VENUE).
+    // Partner space page should never use Offerer info anymore and there is always a single selected partner venue.
     path: '/structures/:offererId/lieux/:venueId',
     children: [
       {
@@ -170,18 +176,24 @@ export const routes: CustomRouteTree = [
   {
     lazy: () => import('@/pages/VenueSettings/VenueSettings'),
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    // TODO (igabriele, 2026-04-21): Rename this path to '/partenaire/page-partenaire/parametres' (WIP_SWITCH_VENUE).
+    // Partner space page should never use Offerer info anymore and there is always a single selected partner venue.
     path: '/structures/:offererId/lieux/:venueId/page-partenaire/parametres',
     title: 'Paramètres généraux',
   },
   {
     lazy: () => import('@/pages/VenueSettings/VenueSettings'),
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    // TODO (igabriele, 2026-04-21): Rename this path to '/partenaire/page-collective/parametres' (WIP_SWITCH_VENUE).
+    // Partner space page should never use Offerer info anymore and there is always a single selected partner venue.
     path: '/structures/:offererId/lieux/:venueId/collectif/parametres',
     title: 'Paramètres généraux',
   },
   {
     lazy: () => import('@/pages/VenueSettings/VenueSettings'),
     loader: withUserPermissions(mustHaveSelectedPartnerVenue),
+    // TODO (igabriele, 2026-04-21): Rename this path to '/partenaire/page-individuelle/parametres' (WIP_SWITCH_VENUE).
+    // Partner space page should never use Offerer info anymore and there is always a single selected partner venue.
     path: '/structures/:offererId/lieux/:venueId/parametres',
     title: 'Paramètres généraux',
   },

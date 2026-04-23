@@ -1,29 +1,19 @@
 import cn from 'classnames'
-import { useMemo, useRef } from 'react'
+import { useRef } from 'react'
 
-import type { GetOffererNameResponseModel } from '@/apiClient/v1'
-import type { SelectOption } from '@/commons/custom_types/form'
+import { SimplifiedBankAccountStatus } from '@/apiClient/v1'
 import { useOffererNamesQuery } from '@/commons/hooks/swr/useOffererNamesQuery'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { sortByLabel } from '@/commons/utils/strings'
 import { Newsletter } from '@/components/Newsletter/Newsletter'
 import { AddBankAccountCallout } from '@/pages/Homepage/components/AddBankAccountCallout/AddBankAccountCallout'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { BankAccountHasPendingCorrectionCallout } from './components/BankAccountHasPendingCorrectionCallout/BankAccountHasPendingCorrectionCallout'
 import { HighlightHome } from './components/HighlightHome/HighlightHome'
-import { LinkVenueCallout } from './components/LinkVenueCallout/LinkVenueCallout'
-import { OffererBanners } from './components/Offerers/components/OffererBanners/OffererBanners'
-import {
-  getPhysicalVenuesFromOfferer,
-  getVirtualVenueFromOfferer,
-} from './components/Offerers/components/VenueList/venueUtils'
-import { Offerers } from './components/Offerers/Offerers'
+import { PartnerPage } from './components/Offerers/components/PartnerPages/components/PartnerPage'
 import { PublishedOfferStats } from './components/StatisticsDashboard/components/PublishedOfferStats'
 import { StatisticsDashboard } from './components/StatisticsDashboard/StatisticsDashboard'
-import { VenueOfferSteps } from './components/VenueOfferSteps/VenueOfferSteps'
 import styles from './Homepage.module.scss'
 
 export const Homepage = (): JSX.Element => {
@@ -34,27 +24,16 @@ export const Homepage = (): JSX.Element => {
 
   const offererNamesValidated = offererNamesQuery.data
 
-  const offererOptions = sortByLabel(
-    offererNamesValidated?.map((item: GetOffererNameResponseModel) => ({
-      value: item.id.toString(),
-      label: item.name,
-    })) ?? []
-  ) as SelectOption[]
-
-  const selectedOfferer = useAppSelector(selectCurrentOfferer)
-
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
-  const hasNoVenueVisible = useMemo(() => {
-    const physicalVenues = getPhysicalVenuesFromOfferer(selectedOfferer)
-    const virtualVenue = getVirtualVenueFromOfferer(selectedOfferer)
-
-    return physicalVenues.length === 0 && !virtualVenue
-  }, [selectedOfferer])
-
   const isNotReady = offererNamesQuery.isLoading || !offererNamesValidated
-
-  const areHighlightsEnable = selectedOfferer?.canDisplayHighlights
+  const shouldDisplayBankAccountCallout =
+    selectedPartnerVenue.hasNonFreeOffers &&
+    !selectedPartnerVenue.bankAccountStatus
+  const shouldDisplayBankAccountHasPendingCorrectionCallout =
+    selectedPartnerVenue.hasNonFreeOffers &&
+    selectedPartnerVenue.bankAccountStatus ===
+      SimplifiedBankAccountStatus.PENDING_CORRECTIONS
 
   if (isNotReady) {
     return <Spinner />
@@ -63,52 +42,37 @@ export const Homepage = (): JSX.Element => {
   return (
     <>
       <div className={styles['reimbursements-banners']}>
-        <AddBankAccountCallout
-          offerer={selectedOfferer}
-          venue={selectedPartnerVenue}
-        />
-        <LinkVenueCallout offerer={selectedOfferer} />
-        <BankAccountHasPendingCorrectionCallout
-          offerer={selectedOfferer}
-          venue={selectedPartnerVenue}
-        />
+        {shouldDisplayBankAccountCallout && (
+          <AddBankAccountCallout venue={selectedPartnerVenue} />
+        )}
+        {shouldDisplayBankAccountHasPendingCorrectionCallout && (
+          <BankAccountHasPendingCorrectionCallout
+            venue={selectedPartnerVenue}
+          />
+        )}
       </div>
-      {selectedOfferer && <OffererBanners offerer={selectedOfferer} />}
 
-      {selectedOfferer?.isValidated && selectedOfferer.isActive && (
-        <section className={styles.section}>
-          <div className={styles['header']}>
-            <h2 className={styles['title']}>
-              Présence sur l’application pass Culture
-            </h2>
-          </div>
-          <div
-            className={cn(styles['container-stats'], {
-              [styles['container-stats-with-highlights']]: areHighlightsEnable,
-            })}
-          >
-            <StatisticsDashboard venue={selectedPartnerVenue} />
-            {areHighlightsEnable && <HighlightHome />}
-          </div>
-          <PublishedOfferStats offerer={selectedOfferer} />
-        </section>
-      )}
-
-      <section className={styles.section} ref={offerersRef}>
-        <Offerers
-          selectedOfferer={selectedOfferer}
-          offererOptions={offererOptions}
-        />
+      <section className={styles.section}>
+        <div className={styles['header']}>
+          <h2 className={styles['title']}>
+            Présence sur l’application pass Culture
+          </h2>
+        </div>
+        <div
+          className={cn(styles['container-stats'], {
+            [styles['container-stats-with-highlights']]:
+              selectedPartnerVenue.canDisplayHighlights,
+          })}
+        >
+          <StatisticsDashboard venue={selectedPartnerVenue} />
+          {selectedPartnerVenue.canDisplayHighlights && <HighlightHome />}
+        </div>
+        <PublishedOfferStats />
       </section>
 
-      {hasNoVenueVisible && selectedOfferer !== null && (
-        <section className={styles['step-section']}>
-          <VenueOfferSteps
-            hasVenue={!hasNoVenueVisible}
-            offerer={selectedOfferer}
-          />
-        </section>
-      )}
+      <section className={styles.section} ref={offerersRef}>
+        <PartnerPage />
+      </section>
 
       <section className={styles.section} ref={profileRef}>
         <div className={styles.newsletter}>
