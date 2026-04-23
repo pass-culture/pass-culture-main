@@ -227,9 +227,6 @@ class User(PcObject, Model, DeactivableMixin):
         "Favorite", foreign_keys="Favorite.userId", back_populates="user"
     )
     firstName: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(128), nullable=True)
-    hasSeenProRgs: sa_orm.Mapped[bool] = sa_orm.mapped_column(
-        sa.Boolean, nullable=False, server_default=expression.false()
-    )
     idPieceNumber: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String, nullable=True, unique=True)
     ineHash: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True, unique=True)
     irisFranceId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(

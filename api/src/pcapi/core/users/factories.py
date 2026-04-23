@@ -185,8 +185,6 @@ class ProfileCompletedUserFactory(PhoneValidatedUserFactory):
     - profile completion
     """
 
-    hasSeenProRgs = True
-
     address: str | factory.declarations.BaseDeclaration = factory.Faker("street_address", locale="fr_FR")
     city: str | factory.declarations.BaseDeclaration = factory.Faker("city", locale="fr_FR")
     # locale is set to "en_UK" not to have accents, 'ç' or other french fantaisies
@@ -608,7 +606,6 @@ class BeneficiaryGrant18Factory(BaseFactory):
     lastName = "Doux"
     isEmailValidated = True
     roles = [models.UserRole.BENEFICIARY]
-    hasSeenProRgs = False
 
     @classmethod
     def _create(
