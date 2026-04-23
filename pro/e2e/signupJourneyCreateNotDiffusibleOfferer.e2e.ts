@@ -51,7 +51,7 @@ test.describe('Signup journey with not diffusible offerer siret', () => {
     await expect(page.getByLabel(/Adresse postale/)).toHaveCount(0)
 
     await page.getByText('Étape suivante').click()
-    await page.getByText('Étape précédente').click()
+    await page.getByText('Retour').click()
     await expect(page.getByLabel('Non')).toBeChecked()
     await page.getByText('Étape suivante').click()
 
@@ -63,8 +63,11 @@ test.describe('Signup journey with not diffusible offerer siret', () => {
 
     await page.getByLabel(/Activité principale/).selectOption('Festival')
     await page.getByLabel('Numéro de téléphone').fill('612345678')
-    await page.getByText('Au grand public').click()
-    await page.getByText('Étape suivante').click()
+    await page
+      .getByLabel('Site internet, réseau social')
+      .fill('http://example.com')
+    await page.getByText('Aux jeunes via l’application pass Culture').click()
+    await page.getByText('Continuer').click()
 
     await expect(page).toHaveURL(/\/inscription\/structure\/confirmation/)
 
@@ -108,15 +111,18 @@ test.describe('Signup journey with not diffusible offerer siret', () => {
     await page.getByTestId('list').getByText(MOCKED_BACK_ADDRESS_LABEL).click()
 
     await page.getByText('Étape suivante').click()
-    await page.getByText('Étape précédente').click()
+    await page.getByText('Retour').click()
     await page.getByLabel('Oui').click()
     await page.getByText('Étape suivante').click()
 
     await expect(page).toHaveURL(/\/inscription\/structure\/activite/)
     await page.getByLabel(/Activité principale/).selectOption('Galerie d’art')
     await page.getByLabel('Numéro de téléphone').fill('612345678')
-    await page.getByText('Au grand public').click()
-    await page.getByText('Étape suivante').click()
+    await page
+      .getByLabel('Site internet, réseau social')
+      .fill('http://example.com')
+    await page.getByText('Aux jeunes via l’application pass Culture').click()
+    await page.getByText('Continuer').click()
 
     await expect(page).toHaveURL(/\/inscription\/structure\/confirmation/)
 
