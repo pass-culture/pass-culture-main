@@ -1,5 +1,4 @@
 /* istanbul ignore file */
-import merge from 'lodash/merge'
 
 import type {
   GetEducationalOffererResponseModel,
@@ -14,26 +13,24 @@ export const managedVenueFactory = (
   userVenueExtends: Partial<GetEducationalOffererVenueResponseModel> = {}
 ): GetEducationalOffererVenueResponseModel => {
   const currentVenueId = venueId++
-  return merge(
-    {},
-    {
-      id: currentVenueId,
-      name: 'Nom de la structure',
-      publicName: 'Nom public de la structure',
-      street: '2 bis Street Name',
-      postalCode: '93100',
-      city: 'Montreuil',
-      isVirtual: false,
-      audioDisabilityCompliant: null,
-      collectiveEmail: null,
-      collectiveInterventionArea: null,
-      collectivePhone: null,
-      mentalDisabilityCompliant: null,
-      motorDisabilityCompliant: null,
-      visualDisabilityCompliant: null,
-    },
-    userVenueExtends
-  )
+
+  return {
+    id: currentVenueId,
+    name: 'Nom de la structure',
+    publicName: 'Nom public de la structure',
+    street: '2 bis Street Name',
+    postalCode: '93100',
+    city: 'Montreuil',
+    isVirtual: false,
+    audioDisabilityCompliant: null,
+    collectiveEmail: null,
+    collectiveInterventionArea: null,
+    collectivePhone: null,
+    mentalDisabilityCompliant: null,
+    motorDisabilityCompliant: null,
+    visualDisabilityCompliant: null,
+    ...userVenueExtends,
+  }
 }
 
 export const managedVenuesFactory = (
