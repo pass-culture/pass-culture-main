@@ -71,8 +71,8 @@ class ArtistOfferLink(PcObject, Model):
     )
 
     @property
-    def artist_name(self) -> str:
-        return self.artist.name if self.artist else self.custom_name  # type: ignore[return-value]
+    def artist_name(self) -> str | None:
+        return self.artist.name if self.artist else self.custom_name
 
 
 class ArtistProductLink(PcObject, Model):
