@@ -79,8 +79,8 @@ def add_custom_offer_reimbursement_rule(
     force: bool = False,
 ) -> None:
     """Add a custom reimbursement rule that is linked to an offer."""
-    offer_original_amount = decimal.Decimal(offer_original_amount.replace(",", "."))  # type: ignore[assignment]
-    reimbursed_amount = decimal.Decimal(reimbursed_amount.replace(",", "."))  # type: ignore[assignment]
+    offer_original_decimal_amount = decimal.Decimal(offer_original_amount.replace(",", "."))
+    reimbursed_decimal_amount = decimal.Decimal(reimbursed_amount.replace(",", "."))
 
     offer = (
         db.session.query(offers_models.Offer)
@@ -103,8 +103,8 @@ def add_custom_offer_reimbursement_rule(
     if len(stock_amounts) > 1:
         warnings.append(f"Possible mismatch on original amount: found multiple amounts in database: {stock_amounts}")
     stock_amount = stock_amounts.pop()
-    if offer_original_amount != stock_amount:
-        warnings.append(f"Mismatch on original amount: given {offer_original_amount}, expected {stock_amount}")
+    if offer_original_decimal_amount != stock_amount:
+        warnings.append(f"Mismatch on original amount: given {offer_original_decimal_amount}, expected {stock_amount}")
 
     if warnings:
         print("Found multiple warnings. Double-check that the command has been given the right information.")
@@ -131,7 +131,7 @@ def add_custom_offer_reimbursement_rule(
 
     rule = finance_api.create_offer_reimbursement_rule(
         offer_id=offer.id,
-        amount=reimbursed_amount,  # type: ignore[arg-type]
+        amount=reimbursed_decimal_amount,
         start_date=valid_from_dt,
         end_date=valid_until_dt,
     )

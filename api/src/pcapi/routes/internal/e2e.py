@@ -1,5 +1,6 @@
 import time
 
+from flask import Response
 from flask import jsonify
 
 import pcapi.core.mails.testing as mails_testing
@@ -11,7 +12,7 @@ from pcapi.sandboxes.scripts import getters
 
 
 @private_api.route("/sandboxes/<module_name>/<getter_name>", methods=["GET"])
-def get_sandbox(module_name, getter_name):  # type: ignore [no-untyped-def]
+def get_sandbox(module_name: str, getter_name: str) -> Response:
     if not hasattr(getters, module_name):
         errors = ApiErrors()
         errors.add_error("module", 'Il n\'existe pas de tel "{}" module de getters pour la sandbox'.format(module_name))
@@ -48,14 +49,14 @@ def get_sandbox(module_name, getter_name):  # type: ignore [no-untyped-def]
 # otherwise the outbox will be empty
 # The next endpoints is only available if ENABLE_TEST_ROUTES is set to 1
 @private_api.route("/sandboxes/clear_email_list", methods=["GET"])
-def clear_email_list():  # type: ignore [no-untyped-def]
+def clear_email_list() -> str:
     if len(mails_testing.outbox) != 0:
         mails_testing.outbox.clear()
     return "Outbox cleared"
 
 
 @private_api.route("/sandboxes/get_unique_email", methods=["GET"])
-def get_unique_email():  # type: ignore [no-untyped-def]
+def get_unique_email() -> dict:
     delay = 0
     while len(mails_testing.outbox) == 0 and delay <= 60:
         time.sleep(5)
