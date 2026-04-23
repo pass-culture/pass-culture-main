@@ -5,7 +5,7 @@ import styles from './FieldHeader.module.scss'
 
 type FieldHeaderProps = {
   fieldId: string
-  label: string
+  label: string | JSX.Element
   required: boolean
   requiredIndicator?: RequiredIndicator
   description?: string

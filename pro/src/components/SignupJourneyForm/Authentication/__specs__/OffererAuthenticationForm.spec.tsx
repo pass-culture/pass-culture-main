@@ -249,7 +249,7 @@ describe('OffererAuthenticationForm', () => {
     await userEvent.click(await screen.findByRole('radio', { name: 'Non' }))
 
     await waitFor(() => {
-      const addressField = screen.queryByLabelText('Adresse postale *')
+      const addressField = screen.queryByLabelText(/Adresse postale/)
       expect(addressField).not.toBeInTheDocument()
     })
   })
@@ -272,7 +272,7 @@ describe('OffererAuthenticationForm', () => {
     expect(noRadio).not.toBeChecked()
     await userEvent.click(yesRadio)
     await waitFor(() => {
-      expect(screen.getByLabelText('Adresse postale *')).toHaveValue('')
+      expect(screen.getByLabelText(/Adresse postale/)).toHaveValue('')
     })
   })
 })

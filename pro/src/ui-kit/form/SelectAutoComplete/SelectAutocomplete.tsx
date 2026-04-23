@@ -12,6 +12,7 @@ import {
 
 import type { SelectOption } from '@/commons/custom_types/form'
 import { noop } from '@/commons/utils/noop'
+import { FieldHeader } from '@/design-system/common/FieldHeader/FieldHeader'
 import type { RequiredIndicator } from '@/design-system/common/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
@@ -230,25 +231,13 @@ export const SelectAutocomplete = forwardRef(
 
     return (
       <div>
-        <label
-          className={classNames(styles['field-layout-label'])}
-          htmlFor={name}
-        >
-          {label}
-          {required && requiredIndicator === 'symbol' && <>&nbsp;*</>}
-          {required && requiredIndicator === 'explicit' && (
-            <span className={styles['field-header-right']}>Obligatoire</span>
-          )}
-        </label>
-        {description && (
-          <span
-            id={`description-${name}`}
-            data-testid={`description-${name}`}
-            className={styles['field-layout-input-description']}
-          >
-            {description}
-          </span>
-        )}
+        <FieldHeader
+          fieldId={name}
+          label={label}
+          description={description}
+          required={required}
+          requiredIndicator={requiredIndicator}
+        />
 
         <div
           className={classNames(

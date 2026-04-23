@@ -427,7 +427,7 @@ describe('VenueSettingsScreen', () => {
       },
     })
 
-    const addressInput = screen.getByLabelText('Adresse postale *')
+    const addressInput = screen.getByLabelText(/Adresse postale/)
 
     await userEvent.clear(addressInput)
     await userEvent.type(addressInput, '10 rue ')
