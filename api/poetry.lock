@@ -1917,14 +1917,14 @@ woff = ["brotli (>=1.0.1) ; platform_python_implementation == \"CPython\"", "bro
 
 [[package]]
 name = "geoalchemy2"
-version = "0.18.4"
+version = "0.19.0"
 description = "Using SQLAlchemy with Spatial Databases"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "geoalchemy2-0.18.4-py3-none-any.whl", hash = "sha256:89e6680dcbb6b8d8c784dcaa889e48ab2783aa42487ee5730fdbd7a7c7ddf6ec"},
-    {file = "geoalchemy2-0.18.4.tar.gz", hash = "sha256:5719e2bb040d5c406d5d03425fec87997ce9351843b053ca11373a0f5a31971b"},
+    {file = "geoalchemy2-0.19.0-py3-none-any.whl", hash = "sha256:878a5859e23ae632fe20ea35412cda40f50c94fa69c9242587574941e4d4ec32"},
+    {file = "geoalchemy2-0.19.0.tar.gz", hash = "sha256:c88be59cdb90af9d74278bdd33a5f58acb23859f0f1380726593eed0f343f4a8"},
 ]
 
 [package.dependencies]
@@ -4248,6 +4248,9 @@ files = [
     {file = "psycopg-3.2.10-py3-none-any.whl", hash = "sha256:ab5caf09a9ec42e314a21f5216dbcceac528e0e05142e42eea83a3b28b320ac3"},
     {file = "psycopg-3.2.10.tar.gz", hash = "sha256:0bce99269d16ed18401683a8569b2c5abd94f72f8364856d56c0389bcd50972a"},
 ]
+
+[package.dependencies]
+tzdata = {version = "*", markers = "sys_platform == \"win32\""}
 
 [package.extras]
 binary = ["psycopg-binary (==3.2.10) ; implementation_name != \"pypy\""]
@@ -6604,7 +6607,7 @@ files = [
     {file = "tzdata-2025.2-py2.py3-none-any.whl", hash = "sha256:1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8"},
     {file = "tzdata-2025.2.tar.gz", hash = "sha256:b60a638fcc0daffadf82fe0f57e53d06bdec2f36c4df66280ae79bce6bd6f2b9"},
 ]
-markers = {dev = "platform_system == \"Windows\""}
+markers = {dev = "platform_system == \"Windows\" or sys_platform == \"win32\""}
 
 [[package]]
 name = "tzlocal"
@@ -7330,4 +7333,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "1516dde45338bc781a5cde76e75e0de74ce36d986bfae7aab3fa7cc61a99f947"
+content-hash = "52f8e229d0d4ab46939b0fd67df64a05ef20eb43ffbb338fc9f7c8b529c0f398"
