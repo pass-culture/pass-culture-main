@@ -5,7 +5,7 @@ import type { AdresseData } from '@/apiClient/adresse/types'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
-import type { TextInputProps } from '@/design-system/TextInput/TextInput'
+import type { RequiredIndicator } from '@/design-system/common/types'
 import fullBackIcon from '@/icons/full-back.svg'
 import fullNextIcon from '@/icons/full-next.svg'
 import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
@@ -24,7 +24,7 @@ type AddressFieldsProps = {
   onManualChange?: (next: boolean) => void
 
   renderManual: () => React.ReactNode
-  requiredIndicator?: TextInputProps['requiredIndicator']
+  requiredIndicator?: RequiredIndicator
 }
 
 export const AddressFields = ({

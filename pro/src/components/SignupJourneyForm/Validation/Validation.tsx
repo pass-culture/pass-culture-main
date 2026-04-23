@@ -52,7 +52,7 @@ import {
 import fullEditIcon from '@/icons/full-edit.svg'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 import { formatPhoneNumber } from '@/pages/User/UserProfile/UserPhone/UserPhone'
-import { DataDisplaying } from '@/ui-kit/DataDisplaying/DataDisplaying'
+import { DescriptionList } from '@/ui-kit/DescriptionList/DescriptionList'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import styles from './Validation.module.scss'
@@ -203,10 +203,10 @@ export const Validation = (): JSX.Element | undefined => {
     navigate('/inscription/structure/activite')
   }
 
-  const venueData = [
+  const venueLines = [
     { label: 'Numéro de SIRET', value: humanizeSiret(offerer.siret) },
     { label: 'Raison sociale', value: offerer.name || 'Non diffusée' },
-    { label: 'Nom public', value: offerer.publicName || offerer.name },
+    { label: 'Nom public', value: (offerer.publicName || offerer.name) ?? '' },
     {
       label: 'Accueil du public',
       value: offerer.isOpenToPublic === 'true' ? 'Oui' : 'Non',
@@ -227,7 +227,7 @@ export const Validation = (): JSX.Element | undefined => {
     'Site internet',
     'Sites internet'
   )
-  const activityData = [
+  const activityLines = [
     { label: 'Activité principale', value: activityLabel },
     (activity.culturalDomains ?? []).length > 0
       ? {
@@ -274,7 +274,7 @@ export const Validation = (): JSX.Element | undefined => {
           />
         </div>
 
-        <DataDisplaying lines={venueData} />
+        <DescriptionList lines={venueLines} />
       </section>
       <section className={styles['validation-screen']}>
         <div className={styles['validation-screen-subtitle']}>
@@ -298,7 +298,7 @@ export const Validation = (): JSX.Element | undefined => {
           />
         </div>
 
-        <DataDisplaying lines={activityData} />
+        <DescriptionList lines={activityLines} />
       </section>
       <Banner title="Vous pourrez modifier ces informations à tout moment depuis votre espace partenaire." />
 

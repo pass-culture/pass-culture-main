@@ -143,17 +143,9 @@ describe('OffererAuthenticationForm', () => {
       contextValue: contextValue,
     })
 
-    const siretField = screen.getByLabelText(/Numéro de SIRET/)
-    const nameField = screen.getByLabelText(/Raison sociale/)
     const addressField = screen.getByLabelText(/Adresse postale/)
 
     await waitFor(() => {
-      expect(siretField).toBeDisabled()
-      expect(siretField).toHaveValue('123 456 789 33333')
-
-      expect(nameField).toBeDisabled()
-      expect(nameField).toHaveValue('Test name')
-
       expect(screen.getByText('Nom public')).toBeInTheDocument()
 
       expect(addressField).toBeInTheDocument()
@@ -161,9 +153,7 @@ describe('OffererAuthenticationForm', () => {
       expect(addressField).not.toBeDisabled()
 
       expect(
-        screen.getByText(
-          'À remplir si le nom de votre structure est différent de la raison sociale. C’est ce nom qui sera visible du public.'
-        )
+        screen.getByText('Ce nom sera affiché sur le pass Culture.')
       ).toBeInTheDocument()
     })
   })

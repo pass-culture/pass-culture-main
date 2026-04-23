@@ -1,17 +1,19 @@
 import React from 'react'
 
-import styles from './DataDisplaying.module.scss'
+import styles from './DescriptionList.module.scss'
 
-type DataDisplayingLines = {
+type DescriptionListData = {
   lines: {
     label: string
     value: string | JSX.Element[]
   }[]
 }
 
-export const DataDisplaying = ({ lines }: DataDisplayingLines): JSX.Element => {
+export const DescriptionList = ({
+  lines,
+}: DescriptionListData): JSX.Element => {
   return (
-    <dl className={styles['data-displaying']}>
+    <dl className={styles['description-list']}>
       {lines.map(({ label, value }) => (
         <React.Fragment key={label}>
           <dt className={styles['data-term']}>{label}</dt>

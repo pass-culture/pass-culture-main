@@ -271,7 +271,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
     ).toBeInTheDocument()
 
     expect(
-      screen.queryByRole('button', { name: 'Étape suivante' })
+      screen.queryByRole('button', { name: 'Continuer' })
     ).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Retour' })).toBeInTheDocument()
 
@@ -282,17 +282,14 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
       })
     ).toBeInTheDocument()
 
-    const siretField = screen.getByLabelText(/Numéro de SIRET/)
-    const nameField = screen.getByLabelText(/Raison sociale/)
+    expect(screen.getByText(/Numéro de SIRET/)).toBeInTheDocument()
+    expect(screen.getByText('123 456 789 33333')).toBeInTheDocument()
 
-    expect(siretField).toBeDisabled()
-    expect(siretField).toHaveValue('123 456 789 33333')
-
-    expect(nameField).toBeDisabled()
-    expect(nameField).toHaveValue('Test name')
+    expect(screen.getByText(/Raison sociale/)).toBeInTheDocument()
+    expect(screen.getByText('Test name')).toBeInTheDocument()
 
     expect(
-      await screen.findByRole('button', { name: 'Étape suivante' })
+      await screen.findByRole('button', { name: 'Continuer' })
     ).toBeInTheDocument()
 
     expect(screen.queryByRole('button', { name: 'Retour' })).toBeInTheDocument()
@@ -325,9 +322,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
         name: 'Complétez les informations de votre structure',
       })
     ).toBeInTheDocument()
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape suivante' })
-    )
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
     await waitFor(() => {
       expect(screen.getByText('Activity screen')).toBeInTheDocument()
     })

@@ -24,6 +24,7 @@ export interface Offerer
   apeCode?: string
   siren?: string | null
   isDiffusible: boolean
+  name?: string
 }
 
 export interface InitialAddress extends Address {

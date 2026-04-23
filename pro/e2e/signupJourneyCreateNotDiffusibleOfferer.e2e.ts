@@ -50,10 +50,10 @@ test.describe('Signup journey with not diffusible offerer siret', () => {
     await page.getByLabel('Non').click()
     await expect(page.getByLabel(/Adresse postale/)).toHaveCount(0)
 
-    await page.getByText('Étape suivante').click()
+    await page.getByText('Continuer').click()
     await page.getByText('Retour').click()
     await expect(page.getByLabel('Non')).toBeChecked()
-    await page.getByText('Étape suivante').click()
+    await page.getByText('Continuer').click()
 
     await expect(page).toHaveURL(/\/inscription\/structure\/activite/)
     await page
@@ -110,10 +110,10 @@ test.describe('Signup journey with not diffusible offerer siret', () => {
     await addressSearchPromise
     await page.getByTestId('list').getByText(MOCKED_BACK_ADDRESS_LABEL).click()
 
-    await page.getByText('Étape suivante').click()
+    await page.getByText('Continuer').click()
     await page.getByText('Retour').click()
     await page.getByLabel('Oui').click()
-    await page.getByText('Étape suivante').click()
+    await page.getByText('Continuer').click()
 
     await expect(page).toHaveURL(/\/inscription\/structure\/activite/)
     await page.getByLabel(/Activité principale/).selectOption('Galerie d’art')
