@@ -1,4 +1,4 @@
-import invert from 'lodash/invert'
+import invert from 'lodash.invert'
 
 import { CollectiveOfferDisplayedStatus, OfferStatus } from '@/apiClient/v1'
 import type {
