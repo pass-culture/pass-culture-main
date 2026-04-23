@@ -270,7 +270,7 @@ def test_too_many_invoices_searched_returns_an_error(client):
     response = client.get(f"/v2/reimbursements/csv?{references}")
 
     assert response.status_code == 400
-    assert response.json == {"invoicesReferences": ["Cette liste doit doit avoir une taille maximum de 75"]}
+    assert response.json == {"invoicesReferences": ["Cette liste doit avoir une taille maximum de 75"]}
 
 
 def test_booking_with_empty_use_date_should_be_ok(client):

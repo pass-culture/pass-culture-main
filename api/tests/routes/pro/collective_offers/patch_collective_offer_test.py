@@ -467,7 +467,7 @@ class Returns400Test:
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"formats": ["Cette liste doit doit avoir une taille minimum de 1"]}
+        assert response.json == {"formats": ["Cette liste doit avoir une taille minimum de 1"]}
 
     def test_patch_offer_with_empty_educational_domain(self, client):
         offer = educational_factories.CollectiveOfferFactory(
@@ -628,7 +628,7 @@ class Returns400Test:
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"bookingEmails": ["Cette liste doit doit avoir une taille minimum de 1"]}
+        assert response.json == {"bookingEmails": ["Cette liste doit avoir une taille minimum de 1"]}
 
     def test_patch_collective_offer_replacing_by_venue_with_no_pricing_point(self, auth_client, venue):
         offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue)
