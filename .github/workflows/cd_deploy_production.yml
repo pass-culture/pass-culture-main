@@ -33,6 +33,8 @@ jobs:
     name: "Version"
     needs: check-ref-is-a-version-tag
     runs-on: ubuntu-22.04
+    # `deploy` is an artificial environment with protection rules, which allows a single required review instead of many
+    environment: "deploy"
     outputs:
       APP_VERSION: ${{ steps.app-version.outputs.APP_VERSION }}
     steps:
