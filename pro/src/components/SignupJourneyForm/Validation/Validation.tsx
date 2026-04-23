@@ -52,6 +52,7 @@ import {
 import fullEditIcon from '@/icons/full-edit.svg'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 import { formatPhoneNumber } from '@/pages/User/UserProfile/UserPhone/UserPhone'
+import { DataDisplaying } from '@/ui-kit/DataDisplaying/DataDisplaying'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import styles from './Validation.module.scss'
@@ -202,6 +203,53 @@ export const Validation = (): JSX.Element | undefined => {
     navigate('/inscription/structure/activite')
   }
 
+  const venueData = [
+    { label: 'Numéro de SIRET', value: humanizeSiret(offerer.siret) },
+    { label: 'Raison sociale', value: offerer.name || 'Non diffusée' },
+    { label: 'Nom public', value: offerer.publicName || offerer.name },
+    {
+      label: 'Accueil du public',
+      value: offerer.isOpenToPublic === 'true' ? 'Oui' : 'Non',
+    },
+    {
+      label: 'Adresse',
+      value: `${offerer.street}, ${offerer.postalCode} ${offerer.city}`,
+    },
+  ]
+
+  const domainsLabel = pluralizeFr(
+    activity.culturalDomains?.length ?? 0,
+    'Domaine d’activité',
+    'Domaines d’activité'
+  )
+  const socialUrlsLabel = pluralizeFr(
+    activity.socialUrls?.length ?? 0,
+    'Site internet',
+    'Sites internet'
+  )
+  const activityData = [
+    { label: 'Activité principale', value: activityLabel },
+    (activity.culturalDomains ?? []).length > 0
+      ? {
+          label: domainsLabel,
+          value: (activity.culturalDomains ?? []).map((domain) => (
+            <div key={domain}>{domain}</div>
+          )),
+        }
+      : null,
+    {
+      label: 'Téléphone',
+      value: formatPhoneNumber(activity.phoneNumber) ?? '',
+    },
+    activity.socialUrls.length > 0
+      ? {
+          label: socialUrlsLabel,
+          value: activity.socialUrls.map((url) => <div key={url}>{url}</div>),
+        }
+      : null,
+    { label: 'Public cible', value: targetCustomerLabel },
+  ].filter((line) => line !== null)
+
   return (
     <div className={styles['validation-screen']}>
       <section>
@@ -226,32 +274,7 @@ export const Validation = (): JSX.Element | undefined => {
           />
         </div>
 
-        <dl className={styles['data-displaying']}>
-          <dt className={styles['data-term']}>Numéro de SIRET</dt>
-          <dd className={styles['data-definition']}>
-            {humanizeSiret(offerer.siret)}
-          </dd>
-
-          <dt className={styles['data-term']}>Raison sociale</dt>
-          <dd className={styles['data-definition']}>
-            {offerer.name || 'Non diffusée'}
-          </dd>
-
-          <dt className={styles['data-term']}>Nom public</dt>
-          <dd className={styles['data-definition']}>
-            {offerer.publicName || offerer.name}
-          </dd>
-
-          <dt className={styles['data-term']}>Accueil du public</dt>
-          <dd className={styles['data-definition']}>
-            {offerer.isOpenToPublic === 'true' ? 'Oui' : 'Non'}
-          </dd>
-
-          <dt className={styles['data-term']}>Adresse</dt>
-          <dd className={styles['data-definition']}>
-            {offerer.street}, {offerer.postalCode} {offerer.city}
-          </dd>
-        </dl>
+        <DataDisplaying lines={venueData} />
       </section>
       <section className={styles['validation-screen']}>
         <div className={styles['validation-screen-subtitle']}>
@@ -275,52 +298,7 @@ export const Validation = (): JSX.Element | undefined => {
           />
         </div>
 
-        <dl className={styles['data-displaying']}>
-          <dt className={styles['data-term']}>Activité principale</dt>
-          <dd className={styles['data-definition']}>{activityLabel}</dd>
-
-          {(activity.culturalDomains ?? []).length > 0 && (
-            <>
-              <dt className={styles['data-term']}>
-                {pluralizeFr(
-                  activity.culturalDomains?.length ?? 0,
-                  'Domaine d’activité',
-                  'Domaines d’activité'
-                )}
-              </dt>
-              <dd className={styles['data-definition']}>
-                {(activity.culturalDomains ?? []).map((domain) => (
-                  <div key={domain}>{domain}</div>
-                ))}
-              </dd>
-            </>
-          )}
-
-          <dt className={styles['data-term']}>Téléphone</dt>
-          <dd className={styles['data-definition']}>
-            {formatPhoneNumber(activity.phoneNumber)}
-          </dd>
-
-          {activity.socialUrls.length > 0 && (
-            <>
-              <dt className={styles['data-term']}>
-                {pluralizeFr(
-                  activity.socialUrls.length,
-                  'Site internet',
-                  'Sites internet'
-                )}
-              </dt>
-              <dd className={styles['data-definition']}>
-                {activity.socialUrls.map((url) => (
-                  <div key={url}>{url}</div>
-                ))}
-              </dd>
-            </>
-          )}
-
-          <dt className={styles['data-term']}>Public cible</dt>
-          <dd className={styles['data-definition']}>{targetCustomerLabel}</dd>
-        </dl>
+        <DataDisplaying lines={activityData} />
       </section>
       <Banner title="Vous pourrez modifier ces informations à tout moment depuis votre espace partenaire." />
 
