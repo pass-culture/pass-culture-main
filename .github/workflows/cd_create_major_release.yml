@@ -1,4 +1,4 @@
-name: "2 [CD] Create major release"
+name: 0 [CD] Create major release
 
 on:
   schedule:

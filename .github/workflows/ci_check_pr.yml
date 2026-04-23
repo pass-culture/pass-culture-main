@@ -1,4 +1,4 @@
-name: "1 [CI] PR checks"
+name: 1 [CI] PR checks
 
 on:
   pull_request:

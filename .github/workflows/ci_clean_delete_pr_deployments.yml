@@ -1,4 +1,4 @@
-name: 2 Delete PR deployments
+name: 2 [CI] Delete PR deployments
 
 on:
   workflow_dispatch:

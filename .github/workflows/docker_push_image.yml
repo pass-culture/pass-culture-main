@@ -1,4 +1,4 @@
-name: 3 Push docker image
+name: 4 [Docker] Push image
 
 on:
   workflow_call:

@@ -1,4 +1,4 @@
-name: "1 [CI] Push on master checks"
+name: 1 [CI] Push on master checks
 
 on:
   push: { branches: master }

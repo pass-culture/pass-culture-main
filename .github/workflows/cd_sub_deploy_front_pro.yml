@@ -1,4 +1,4 @@
-name: "3 [CD] Deploy front PRO"
+name: 3 [CD] Deploy front PRO
 
 on:
   workflow_call:

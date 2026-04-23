@@ -1,4 +1,4 @@
-name: "3 [CI] Test changes"
+name: 3 [CI] Test changes
 
 on:
   workflow_call:

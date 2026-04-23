@@ -1,4 +1,4 @@
-name: " -> Post Slack message"
+name: 4 [Slack] Post message
 
 on:
   workflow_call:

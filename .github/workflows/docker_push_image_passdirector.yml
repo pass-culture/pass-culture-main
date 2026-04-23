@@ -1,6 +1,6 @@
 # Ideally this would be an action and not a worklow since we could probably reuse the environment
 # and not reinstall everything everytime. But this does not fit the architecture of our CI well for now
-name: "3 [on_workflow] push docker image with passdirector"
+name: 4 [Docker] Push image with passdirector
 on:
   workflow_call:
     inputs:

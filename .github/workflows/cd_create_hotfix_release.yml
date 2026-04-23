@@ -1,4 +1,4 @@
-name: "0 [CD] Create hotfix release"
+name: 0 [CD] Create hotfix release
 
 run-name: "Create a hotfix release from ${{ github.ref }}"
 

@@ -1,4 +1,4 @@
-name: " -> Update Slack message"
+name: 4 [Slack] Update message
 
 on:
   workflow_call:

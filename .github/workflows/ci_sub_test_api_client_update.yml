@@ -1,4 +1,4 @@
-name: "3 [CI] Check API Client is up-to-date"
+name: 3 [CI] Check API Client is up-to-date
 
 on:
   workflow_call:

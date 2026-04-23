@@ -1,4 +1,4 @@
-name: "2 [CD] Deploy testing on hourly basis"
+name: 1 [CD] Deploy testing on hourly basis
 
 on:
   workflow_dispatch:
