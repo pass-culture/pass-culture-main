@@ -1,7 +1,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
 
-.data-displaying {
+.description-list {
   @include fonts.body-accent-s;
 
   margin-top: var(--size-spacing-s);

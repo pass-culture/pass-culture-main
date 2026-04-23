@@ -16,7 +16,7 @@ import type {
 import { getDataFromAddress } from '@/apiClient/api'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { normalizeStrForSearch } from '@/commons/utils/normalizeStrForSearch'
-import type { TextInputProps } from '@/design-system/TextInput/TextInput'
+import type { RequiredIndicator } from '@/design-system/common/types'
 import {
   type CustomEvent,
   SelectAutocomplete,
@@ -51,7 +51,7 @@ export type AddressSelectProps = {
   /** Indicates if the field is required */
   required?: boolean
 
-  requiredIndicator?: TextInputProps['requiredIndicator']
+  requiredIndicator?: RequiredIndicator
 }
 
 export const AddressSelect = forwardRef(

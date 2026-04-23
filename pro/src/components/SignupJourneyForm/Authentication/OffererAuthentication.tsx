@@ -25,7 +25,16 @@ import {
 } from '@/components/SignupJourneyForm/Offerer/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+  IconPositionEnum,
+} from '@/design-system/Button/types'
+import fullEditIcon from '@/icons/full-edit.svg'
 import fullLinkIcon from '@/icons/full-link.svg'
+import { DescriptionList } from '@/ui-kit/DescriptionList/DescriptionList'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import styles from './OffererAuthentication.module.scss'
@@ -155,6 +164,21 @@ export const OffererAuthentication = (): JSX.Element => {
     navigate,
   ])
 
+  const venueLines = [
+    { label: 'Numéro de SIRET', value: offerer?.siret ?? '' },
+    {
+      label: 'Raison sociale',
+      value: offerer?.isDiffusible ? (offerer?.name ?? '') : 'Non-diffusée',
+    },
+  ]
+
+  if (!offerer?.isDiffusible) {
+    venueLines.push(
+      { label: 'Code postal', value: offerer?.postalCode ?? '' },
+      { label: 'Ville', value: offerer?.city ?? '' }
+    )
+  }
+
   return (
     <FormLayout>
       <FormProvider {...methods}>
@@ -192,12 +216,29 @@ export const OffererAuthentication = (): JSX.Element => {
               />
             </div>
           )}
+          <div className={styles['displaying-data']}>
+            <div className={styles['displaying-data-header']}>
+              <h2 className={styles['title']}>Informations</h2>
+              <Button
+                as="a"
+                to="/inscription/structure/recherche"
+                variant={ButtonVariant.SECONDARY}
+                color={ButtonColor.NEUTRAL}
+                size={ButtonSize.SMALL}
+                iconPosition={IconPositionEnum.LEFT}
+                icon={fullEditIcon}
+                label="Modifier le SIRET"
+              />
+            </div>
+            <DescriptionList lines={venueLines} />
+          </div>
           <OffererAuthenticationForm />
           <ActionBar
             onClickPrevious={handlePreviousStep}
             previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
             nextTo={SIGNUP_JOURNEY_STEP_IDS.ACTIVITY}
             previousStepTitle="Retour"
+            nextStepTitle="Continuer"
             isDisabled={methods.formState.isSubmitting}
           />
         </form>

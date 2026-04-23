@@ -46,7 +46,7 @@ test.describe('Signup journey with unknown offerer and unknown venue', () => {
     // Make the venue open to public
     await page.getByText('Oui').click()
 
-    await page.getByText('Étape suivante').click()
+    await page.getByText('Continuer').click()
 
     await checkAccessibility(page)
 
@@ -125,7 +125,7 @@ test.describe('Signup journey with unknown offerer and unknown venue', () => {
       page.getByText('Contrôlez la précision de vos coordonnées GPS.')
     ).toBeVisible()
 
-    await page.getByText('Étape suivante').click()
+    await page.getByText('Continuer').click()
 
     await expect(page).toHaveURL(/\/inscription\/structure\/activite/)
     await page.getByLabel(/Activité principale/).selectOption('Galerie d’art')
@@ -188,7 +188,7 @@ test.describe('Signup journey with known offerer...', () => {
       // Make the venue open to public
       await page.getByText('Oui').click()
 
-      await page.getByText('Étape suivante').click()
+      await page.getByText('Continuer').click()
 
       await expect(page).toHaveURL(/\/inscription\/structure\/activite/)
       await page.getByLabel(/Activité principale/).selectOption('Galerie d’art')
@@ -269,7 +269,7 @@ test.describe('Signup journey with known offerer...', () => {
       // Make the venue open to public
       await page.getByText('Oui').click()
 
-      await page.getByText('Étape suivante').click()
+      await page.getByText('Continuer').click()
 
       await expect(page).toHaveURL(/\/inscription\/structure\/activite$/)
       await page

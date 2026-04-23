@@ -55,19 +55,6 @@
   height: 0;
 }
 
-.field-layout-label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--size-spacing-s);
-}
-
-.field-header-right {
-  @include fonts.body-accent-xs;
-
-  color: var(--color-text-subtle);
-}
-
 .field-error {
   @include fonts.body-accent-xs;
 
@@ -81,13 +68,4 @@
     height: var(--typography-body-font-size);
     margin-right: var(--size-spacing-xs);
   }
-}
-
-.field-layout-input-description {
-  @include fonts.body-accent-xs;
-
-  display: block;
-  color: var(--color-text-subtle);
-  margin-top: var(--size-spacing-xs);
-  margin-bottom: var(--size-spacing-s);
 }
