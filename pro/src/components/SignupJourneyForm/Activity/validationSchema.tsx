@@ -59,8 +59,13 @@ export const validationSchema = (
           url: yup
             .string()
             .url('Veuillez renseigner une URL valide. Ex : https://exemple.com')
-            .required('Veuillez renseigner au moins une URL'),
+            .defined(),
         })
+      )
+      .test(
+        'at-least-one-url',
+        'Veuillez renseigner au moins une URL',
+        (value) => (value ?? []).some((item) => Boolean(item.url.trim()))
       )
       .required(),
 
