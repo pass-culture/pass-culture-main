@@ -74,7 +74,7 @@ export const OffererAuthentication = (): JSX.Element => {
     latitude: offerer?.latitude || 0,
     longitude: offerer?.longitude || 0,
     banId: offerer?.banId || '',
-    inseeCode: offerer?.inseeCode || '',
+    inseeCode: offerer?.inseeCode || null,
   }
 
   const handlePreviousStep = useCallback(() => {
