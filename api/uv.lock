@@ -2349,7 +2349,7 @@ requires-dist = [
     { name = "sentry-sdk", extras = ["flask", "celery"], specifier = "==2.58.0" },
     { name = "shapely", specifier = "==2.1.2" },
     { name = "slack-sdk", specifier = "==3.41.0" },
-    { name = "spectree", specifier = "==1.5.8" },
+    { name = "spectree", specifier = "==2.0.1" },
     { name = "sqlalchemy", extras = ["mypy"], specifier = "==2.0.49" },
     { name = "sqlalchemy-easy-softdelete", git = "https://github.com/pass-culture/sqlalchemy-easy-softdelete.git" },
     { name = "time-machine", specifier = "==3.2.0" },
@@ -3679,14 +3679,14 @@ wheels = [
 
 [[package]]
 name = "spectree"
-version = "1.5.8"
+version = "2.0.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/17/d7/4bc84a1e372489973da20bf849b6e09530ddccc41bd268ece0037bd9ba8a/spectree-1.5.8.tar.gz", hash = "sha256:3c1e23dbb5bdd22a7eaf14879e7812483e88e0d2d6090b749ff985f053f73cdf", size = 59883, upload-time = "2025-10-02T15:52:13.515Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/72/3d/1380581a90b714a56cb1669982e5889557b6edcda85e9ee3d538804f4726/spectree-2.0.1.tar.gz", hash = "sha256:280dd6beb10a9c5f023254650d3d8f4494077d556f7de92c1fbebd1203efe39c", size = 58970, upload-time = "2025-12-16T01:38:52.428Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/bc/af/28f84caa8ec2093c2b4a38731bbabf36955119599164f9799520fbb56676/spectree-1.5.8-py3-none-any.whl", hash = "sha256:5740547426556fe7964aecc9f9bede85e03fa8e3a78d85919387da57c0a54503", size = 45326, upload-time = "2025-10-02T15:52:12.268Z" },
+    { url = "https://files.pythonhosted.org/packages/ca/9c/889999a8e8c1c9c56b55f20038e807e234199887b3ba706bd708b57ce9d8/spectree-2.0.1-py3-none-any.whl", hash = "sha256:fd30dadca93afdd82573d886365ae27f0b3eea4ed43a9daf6f6616483520b673", size = 44438, upload-time = "2025-12-16T01:38:51.011Z" },
 ]
 
 [[package]]
