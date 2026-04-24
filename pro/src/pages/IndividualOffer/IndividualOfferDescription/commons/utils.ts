@@ -6,16 +6,14 @@ import {
   OfferStatus,
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
-  type VenueListItemResponseModel,
 } from '@/apiClient/v1'
-import type { DisplayableActivity } from '@/apiClient/v1/new'
+import { DisplayableActivity } from '@/apiClient/v1/new'
 import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import type { AccessibilityFormValues } from '@/commons/core/shared/types'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { getAccessibilityInfoFromVenue } from '@/commons/utils/getAccessibilityInfoFromVenue'
-import type { Option } from '@/pages/AdageIframe/app/types'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
 import { deSerializeDurationMinutes } from './serializers'
@@ -103,30 +101,6 @@ export const completeSubcategoryConditionalFields = (
     ...(subcategory?.isEvent ? ['durationMinutes'] : []),
   ] as (keyof DetailsFormValues)[]
 
-export function filterAvailableVenues(
-  venues: VenueListItemResponseModel[],
-  isOfferVirtual: boolean | undefined = undefined
-): VenueListItemResponseModel[] {
-  const physicalVenues = venues.filter((v) => !v.isVirtual)
-
-  if (isOfferVirtual !== false && physicalVenues.length === 0) {
-    return venues
-  }
-
-  return physicalVenues
-}
-
-export function getVenuesAsOptions(
-  venues: readonly VenueListItemResponseModel[]
-): Option[] {
-  return venues
-    .map((v) => ({
-      value: String(v.id),
-      label: v.publicName,
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
-}
-
 export function getInitialValuesFromVenue(
   venue: GetVenueResponseModel
 ): DetailsFormValues {
@@ -134,22 +108,6 @@ export function getInitialValuesFromVenue(
     ...DEFAULT_DETAILS_FORM_VALUES,
     accessibility: getAccessibilityInfoFromVenue(venue).accessibility,
     venueId: venue.id.toString(),
-  }
-}
-
-// TODO (igabriele, 2026-02-04): Delete this util once `WIP_SWITCH_VENUE` FF is enabled and removed.
-export function getInitialValuesFromVenues(
-  availableVenues: VenueListItemResponseModel[]
-): DetailsFormValues {
-  //  When there is only one venue available, we can automatically use this venue as the initially selected one.
-  const onlyVenue =
-    availableVenues.length === 1 ? availableVenues[0] : undefined
-  const venueId = onlyVenue?.id.toString() ?? ''
-
-  return {
-    ...DEFAULT_DETAILS_FORM_VALUES,
-    venueId,
-    accessibility: getAccessibilityInfoFromVenue(onlyVenue).accessibility,
   }
 }
 
@@ -220,7 +178,7 @@ export function getAccessibilityFormValuesFromOffer(
 export function getFormReadOnlyFields(
   offer: GetIndividualOfferResponseModel | null,
   hasSelectedProduct: boolean,
-  venue?: VenueListItemResponseModel
+  venue: GetVenueResponseModel
 ): string[] {
   const isNewOfferDraft = offer === null
 
@@ -254,7 +212,7 @@ export function getFormReadOnlyFields(
     // To unblock the synchronization of EPNs we, for now,
     // authorize the edition of synchronized offers' name and description
     // when the venue is a MUSEUM
-    if (venue?.activity === ('MUSEUM' as DisplayableActivity)) {
+    if (venue.activity === DisplayableActivity.MUSEUM) {
       return allFieldsExceptAccessibility.filter(
         (field) => field !== 'name' && field !== 'description'
       )

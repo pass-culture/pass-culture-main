@@ -5,7 +5,7 @@ import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { VenueListItemResponseModel } from '@/apiClient/v1'
+import { DisplayableActivity } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -19,14 +19,12 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { isRecordStore } from '@/pages/IndividualOffer/commons/isRecordStore'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import type {
   DetailsFormValues,
@@ -34,12 +32,9 @@ import type {
 } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/types'
 import { useIndividualOfferImageUpload } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/useIndividualOfferImageUpload'
 import {
-  filterAvailableVenues,
   getFormReadOnlyFields,
   getInitialValuesFromOffer,
   getInitialValuesFromVenue,
-  getInitialValuesFromVenues,
-  getVenuesAsOptions,
   hasMusicType,
 } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/utils'
 import { getValidationSchema } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/validationSchema'
@@ -52,15 +47,7 @@ import { DetailsEanSearch } from './DetailsEanSearch/DetailsEanSearch'
 import { DetailsForm } from './DetailsForm/DetailsForm'
 import { EanSearchCallout } from './EanSearchCallout/EanSearchCallout'
 
-export type IndividualOfferDescriptionScreenProps = {
-  venues: VenueListItemResponseModel[]
-}
-
-export const IndividualOfferDescriptionScreen = ({
-  venues,
-}: IndividualOfferDescriptionScreenProps): JSX.Element => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-
+export const IndividualOfferDescriptionScreen = () => {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const isOnboarding = pathname.includes('onboarding')
@@ -79,14 +66,10 @@ export const IndividualOfferDescriptionScreen = ({
   const { handleEanImage } = useIndividualOfferImageUpload(initialOfferImage)
 
   const isNewOfferDraft = !initialOffer
-  const availableVenues = filterAvailableVenues(venues)
-  const availableVenuesAsOptions = getVenuesAsOptions(availableVenues)
 
   const getInitialValues = () => {
     return isNewOfferDraft
-      ? withSwitchVenueFeature
-        ? getInitialValuesFromVenue(selectedPartnerVenue)
-        : getInitialValuesFromVenues(availableVenues)
+      ? getInitialValuesFromVenue(selectedPartnerVenue)
       : getInitialValuesFromOffer({
           offer: initialOffer,
           subcategories: subCategories,
@@ -103,17 +86,16 @@ export const IndividualOfferDescriptionScreen = ({
 
   const hasSelectedProduct = !!form.watch('productId')
   const selectedSubcategoryId = form.watch('subcategoryId')
-  const isEanSearchAvailable = isRecordStore(availableVenues)
+  const isEanSearchAvailable =
+    selectedPartnerVenue.activity === DisplayableActivity.RECORD_STORE
   const isEanSearchInputDisplayed =
     isEanSearchAvailable && mode === OFFER_WIZARD_MODE.CREATION
   const isEanSearchCalloutDisplayed =
     isEanSearchAvailable && mode === OFFER_WIZARD_MODE.EDITION
-  const venueId = form.watch('venueId')
-  const venue = venues.find((venue) => venue.id === Number(venueId))
   const readOnlyFields = getFormReadOnlyFields(
     initialOffer,
     hasSelectedProduct,
-    venue
+    selectedPartnerVenue
   )
 
   const onSubmit = async (formValues: DetailsFormValues): Promise<void> => {
@@ -284,8 +266,6 @@ export const IndividualOfferDescriptionScreen = ({
               hasSelectedProduct={hasSelectedProduct}
               isEanSearchDisplayed={isEanSearchInputDisplayed}
               readOnlyFields={readOnlyFields}
-              venues={venues}
-              venuesOptions={availableVenuesAsOptions}
             />
           </FormLayout>
 
