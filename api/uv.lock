@@ -2000,7 +2000,7 @@ dev = [
     { name = "requests-mock", specifier = "==1.12.1" },
     { name = "ruff", specifier = "==0.15.9" },
     { name = "squawk-cli", specifier = "==2.35.0" },
-    { name = "types-protobuf", specifier = "==7.34.1.20260402" },
+    { name = "types-protobuf", specifier = "==7.34.1.20260408" },
     { name = "types-python-dateutil", specifier = "==2.9.0.20260408" },
     { name = "types-pytz", specifier = "==2026.1.1.20260402" },
     { name = "types-pyyaml", specifier = "==6.0.12.20260408" },
@@ -3261,11 +3261,11 @@ wheels = [
 
 [[package]]
 name = "types-protobuf"
-version = "7.34.1.20260402"
+version = "7.34.1.20260408"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/40/43/19261b537cfc8db9f39f92b31dba961462a034412aafafa630aa54191db7/types_protobuf-7.34.1.20260402.tar.gz", hash = "sha256:7270594b4bc28dfe85602d97849b28a2fe7905d77b1d91b418924ed6f83f857c", size = 68767, upload-time = "2026-04-02T04:18:25.025Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5b/b1/4521e68c2cc17703d80eb42796751345376dd4c706f84007ef5e7c707774/types_protobuf-7.34.1.20260408.tar.gz", hash = "sha256:e2c0a0430e08c75b52671a6f0035abfdcc791aad12af16274282de1b721758ab", size = 68835, upload-time = "2026-04-08T04:26:43.613Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/15/34/9bc4fcb26be938a4d678a1e5364e6a6b36e84c1d9b6aaf4d6bb5082ad86a/types_protobuf-7.34.1.20260402-py3-none-any.whl", hash = "sha256:5a1094907ca0d19202f7bca6db06ff69779873db695ddd73f2dde718cd8df1fa", size = 86007, upload-time = "2026-04-02T04:18:23.673Z" },
+    { url = "https://files.pythonhosted.org/packages/ef/b5/0bc9874d89c58fb0ce851e150055ce732d254dbb10b06becbc7635d0d635/types_protobuf-7.34.1.20260408-py3-none-any.whl", hash = "sha256:ebbcd4e27b145aef6a59bc0cb6c013b3528151c1ba5e7f7337aeee355d276a5e", size = 86012, upload-time = "2026-04-08T04:26:42.566Z" },
 ]
 
 [[package]]
