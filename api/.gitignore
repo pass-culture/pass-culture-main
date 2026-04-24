@@ -75,9 +75,6 @@ target/
 .ipython
 !.ipython/profile_default/ipython_config.py
 
-# pyenv
-.python-version
-
 # celery beat schedule file
 celerybeat-schedule
 
