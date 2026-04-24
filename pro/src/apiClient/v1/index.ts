@@ -213,7 +213,6 @@ export { OffererMemberStatus } from './models/OffererMemberStatus';
 export type { OfferHomeResponseModel } from './models/OfferHomeResponseModel';
 export type { OfferImage } from './models/OfferImage';
 export type { OfferImageV2 } from './models/OfferImageV2';
-export type { OfferOpeningHoursSchema } from './models/OfferOpeningHoursSchema';
 export { OfferStatus } from './models/OfferStatus';
 export type { PatchAllOffersActiveStatusBodyModel } from './models/PatchAllOffersActiveStatusBodyModel';
 export type { PatchCollectiveOfferActiveStatusBodyModel } from './models/PatchCollectiveOfferActiveStatusBodyModel';
@@ -291,7 +290,6 @@ export type { VideoData } from './models/VideoData';
 export type { VideoMetatdataQueryModel } from './models/VideoMetatdataQueryModel';
 export type { VisualDisabilityModel } from './models/VisualDisabilityModel';
 export type { VisualDisabilityModelV2 } from './models/VisualDisabilityModelV2';
-export type { WeekdayOpeningHoursTimespans } from './models/WeekdayOpeningHoursTimespans';
 export type { WeekdayOpeningHoursTimespansV2 } from './models/WeekdayOpeningHoursTimespansV2';
 export { WithdrawalTypeEnum } from './models/WithdrawalTypeEnum';
 

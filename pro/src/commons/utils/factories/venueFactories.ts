@@ -120,7 +120,6 @@ export const makeGetVenueResponseModel = <
     mentalDisabilityCompliant: false,
     motorDisabilityCompliant: false,
     name: `Nom de la structure ${override.id}`,
-    openingHours: null,
     publicName: `Nom public de la structure ${override.id}`,
     activity: DisplayableActivity.OTHER,
     pricingPoint: null,
@@ -130,6 +129,7 @@ export const makeGetVenueResponseModel = <
     hasNonDraftOffers: false,
     volunteeringUrl: null,
     withdrawalDetails: null,
+    openingHours: null,
   }
 
   return {

@@ -42,9 +42,8 @@ import { StocksCalendarTable } from './StocksCalendarTable/StocksCalendarTable'
 const STOCKS_PER_PAGE = 20
 
 export type StocksCalendarProps = {
-  offer: GetIndividualOfferWithAddressResponseModel
-  mode: OFFER_WIZARD_MODE
-  timetableTypeRadioGroupShown: boolean
+  readonly offer: GetIndividualOfferWithAddressResponseModel
+  readonly mode: OFFER_WIZARD_MODE
 }
 
 export type stockQueryKeysType = [
@@ -55,11 +54,7 @@ export type stockQueryKeysType = [
   StocksTableSort,
 ]
 
-export function StocksCalendar({
-  offer,
-  mode,
-  timetableTypeRadioGroupShown,
-}: StocksCalendarProps) {
+export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
   const [page, setPage] = useState(1)
   const [checkedStocks, setCheckedStocks] = useState(new Set<number>())
   const [appliedFilters, setAppliedFilters] = useState<StocksTableFilters>({})
@@ -192,11 +187,7 @@ export function StocksCalendar({
       {mode !== OFFER_WIZARD_MODE.READ_ONLY && (
         //  When the mode is read only, the title is already inside the SummarySection layout
         <div className={styles['header']}>
-          {timetableTypeRadioGroupShown ? (
-            <h3 className={styles['subtitle']}>{'Horaires'}</h3>
-          ) : (
-            <h2 className={styles['title']}>{'Horaires'}</h2>
-          )}
+          <h2 className={styles['title']}>{'Horaires'}</h2>
           {hasStocks && !isOfferSynchronized(offer) && (
             <DialogBuilderButton
               triggerLabel="Ajouter une ou plusieurs dates"

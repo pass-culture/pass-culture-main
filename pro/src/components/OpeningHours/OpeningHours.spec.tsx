@@ -2,12 +2,12 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import type { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
+import type { WeekdayOpeningHoursTimespansV2 } from '@/apiClient/v1'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { OpeningHours } from './OpeningHours'
 
-const DEFAULT_OPENING_HOURS: WeekdayOpeningHoursTimespans = {
+const DEFAULT_OPENING_HOURS: WeekdayOpeningHoursTimespansV2 = {
   MONDAY: [
     ['10:10', '11:11'],
     ['12:12', '13:13'],
@@ -25,7 +25,7 @@ const DEFAULT_OPENING_HOURS: WeekdayOpeningHoursTimespans = {
 
 function renderOpeningHours(
   initialValues: Partial<{
-    openingHours: WeekdayOpeningHoursTimespans | null
+    openingHours: WeekdayOpeningHoursTimespansV2 | null
   }> = { openingHours: DEFAULT_OPENING_HOURS }
 ) {
   function OpeningHoursFormWrapper() {

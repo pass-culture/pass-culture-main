@@ -4703,13 +4703,6 @@ export type OfferImageV2 = {
 };
 
 /**
- * OfferOpeningHoursSchema
- */
-export type OfferOpeningHoursSchema = {
-    openingHours: WeekdayOpeningHoursTimespans;
-};
-
-/**
  * OfferStatus
  *
  * An enumeration.
@@ -6815,61 +6808,6 @@ export type VisualDisabilityModelV2 = {
      * Soundbeacon
      */
     soundBeacon?: string;
-};
-
-/**
- * WeekdayOpeningHoursTimespans
- */
-export type WeekdayOpeningHoursTimespans = {
-    /**
-     * Friday
-     */
-    FRIDAY?: Array<[
-        string,
-        string
-    ]>;
-    /**
-     * Monday
-     */
-    MONDAY?: Array<[
-        string,
-        string
-    ]>;
-    /**
-     * Saturday
-     */
-    SATURDAY?: Array<[
-        string,
-        string
-    ]>;
-    /**
-     * Sunday
-     */
-    SUNDAY?: Array<[
-        string,
-        string
-    ]>;
-    /**
-     * Thursday
-     */
-    THURSDAY?: Array<[
-        string,
-        string
-    ]>;
-    /**
-     * Tuesday
-     */
-    TUESDAY?: Array<[
-        string,
-        string
-    ]>;
-    /**
-     * Wednesday
-     */
-    WEDNESDAY?: Array<[
-        string,
-        string
-    ]>;
 };
 
 /**
@@ -9647,68 +9585,6 @@ export type postOffersByOfferIdHighlightRequestsResponses = {
 };
 
 export type postOffersByOfferIdHighlightRequestsResponse = postOffersByOfferIdHighlightRequestsResponses[keyof postOffersByOfferIdHighlightRequestsResponses];
-
-export type getOffersByOfferIdOpeningHoursData = {
-    body?: never;
-    path: {
-        offer_id: number;
-    };
-    query?: never;
-    url: '/offers/{offer_id}/opening-hours';
-};
-
-export type getOffersByOfferIdOpeningHoursErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type getOffersByOfferIdOpeningHoursError = getOffersByOfferIdOpeningHoursErrors[keyof getOffersByOfferIdOpeningHoursErrors];
-
-export type getOffersByOfferIdOpeningHoursResponses = {
-    /**
-     * OK
-     */
-    200: OfferOpeningHoursSchema;
-};
-
-export type getOffersByOfferIdOpeningHoursResponse = getOffersByOfferIdOpeningHoursResponses[keyof getOffersByOfferIdOpeningHoursResponses];
-
-export type patchOffersByOfferIdOpeningHoursData = {
-    body: OfferOpeningHoursSchema;
-    path: {
-        offer_id: number;
-    };
-    query?: never;
-    url: '/offers/{offer_id}/opening-hours';
-};
-
-export type patchOffersByOfferIdOpeningHoursErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type patchOffersByOfferIdOpeningHoursError = patchOffersByOfferIdOpeningHoursErrors[keyof patchOffersByOfferIdOpeningHoursErrors];
-
-export type patchOffersByOfferIdOpeningHoursResponses = {
-    /**
-     * OK
-     */
-    200: OfferOpeningHoursSchema;
-};
-
-export type patchOffersByOfferIdOpeningHoursResponse = patchOffersByOfferIdOpeningHoursResponses[keyof patchOffersByOfferIdOpeningHoursResponses];
 
 export type putOffersByOfferIdPriceCategoriesData = {
     body: PriceCategoryBody;

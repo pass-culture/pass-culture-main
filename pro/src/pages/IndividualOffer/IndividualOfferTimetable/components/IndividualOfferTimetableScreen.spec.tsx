@@ -16,7 +16,6 @@ import {
 const defaultProps: IndividualOfferTimetableScreenProps = {
   mode: OFFER_WIZARD_MODE.CREATION,
   offer: getIndividualOfferFactory(),
-  openingHours: null,
 }
 
 function renderIndividualOfferTimetableScreen(
@@ -30,26 +29,7 @@ function renderIndividualOfferTimetableScreen(
 }
 
 describe('IndividualOfferTimetableScreen', () => {
-  it('should render the timetable type choice', async () => {
-    vi.spyOn(api, 'getStocks').mockResolvedValue(
-      getStocksResponseFactory({ totalStockCount: 0, stocks: [] })
-    )
-
-    renderIndividualOfferTimetableScreen(
-      { offer: getIndividualOfferFactory({ isEvent: true, hasStocks: false }) },
-      ['WIP_ENABLE_OHO']
-    )
-
-    await waitFor(() => {
-      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
-    })
-
-    expect(
-      screen.getByRole('group', { name: /Quand profiter de l’offre/ })
-    ).toBeInTheDocument()
-  })
-
-  it('should not render the timetable type choice if the WIP_ENABLE_OHO FF is disabled', async () => {
+  it('should render the stocks calendar', async () => {
     vi.spyOn(api, 'getStocks').mockResolvedValue(
       getStocksResponseFactory({ totalStockCount: 0, stocks: [] })
     )
@@ -63,7 +43,7 @@ describe('IndividualOfferTimetableScreen', () => {
     })
 
     expect(
-      screen.queryByRole('group', { name: /Quand profiter de l’offre/ })
-    ).not.toBeInTheDocument()
+      screen.getByRole('heading', { name: 'Horaires' })
+    ).toBeInTheDocument()
   })
 })

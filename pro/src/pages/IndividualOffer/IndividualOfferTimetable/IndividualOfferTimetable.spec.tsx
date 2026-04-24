@@ -78,18 +78,4 @@ describe('IndividualOfferTimetable', () => {
       screen.getByRole('heading', { name: 'Horaires' })
     ).toBeInTheDocument()
   })
-
-  it('should not get the venue and openingHours if the FF WIP_ENABLE_OHO is disabled', async () => {
-    const venuesSpy = vi.spyOn(api, 'getVenues')
-    const oHsSpy = vi.spyOn(api, 'getOfferOpeningHours')
-
-    renderIndividualOfferTimetable(contextOverride)
-
-    await waitFor(() => {
-      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
-    })
-
-    expect(venuesSpy).not.toHaveBeenCalled()
-    expect(oHsSpy).not.toHaveBeenCalled()
-  })
 })

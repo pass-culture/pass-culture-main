@@ -329,11 +329,11 @@ export const subcategoryFactory = (
   conditionalFields: [],
   canBeDuo: false,
   canBeWithdrawable: false,
+  canHaveOpeningHours: false,
   onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
   reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
   isSelectable: true,
   canExpire: true,
-  canHaveOpeningHours: false,
   isDigitalDeposit: false,
   isPhysicalDeposit: true,
   ...customSubcategory,
@@ -494,7 +494,6 @@ export const defaultGetVenueResponseModel: GetVenueResponseModel = {
   },
   hasActiveIndividualOffer: true,
   isCaledonian: false,
-  openingHours: null,
   isValidated: true,
   allowedOnAdage: true,
   bankAccountStatus: null,
@@ -503,6 +502,7 @@ export const defaultGetVenueResponseModel: GetVenueResponseModel = {
   canDisplayHighlights: true,
   hasNonDraftOffers: true,
   volunteeringUrl: null,
+  openingHours: null,
 }
 
 export const defaultGetBookingResponse: GetBookingResponse = {

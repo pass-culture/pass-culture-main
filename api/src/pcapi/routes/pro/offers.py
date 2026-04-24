@@ -10,7 +10,6 @@ import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.constants as offers_constants
 import pcapi.core.offers.repository as offers_repository
-import pcapi.core.opening_hours.api as opening_hours_api
 import pcapi.core.pro_advice.api as pro_advice_api
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
@@ -717,58 +716,6 @@ def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProduct
     )
     validation.check_product_cgu_and_offerer(product, ean, offerer)
     return offers_serialize.GetProductInformations.from_orm(product=typing.cast(models.Product, product))
-
-
-@private_api.route("/offers/<int:offer_id>/opening-hours", methods=["PATCH"])
-@login_required
-@spectree_serialize(
-    response_model=offers_schemas.OfferOpeningHoursSchema,
-    on_success_status=200,
-    api=blueprint.pro_private_schema,
-)
-@atomic()
-def upsert_offer_opening_hours(
-    offer_id: int,
-    body: offers_schemas.OfferOpeningHoursSchema,
-) -> offers_schemas.OfferOpeningHoursSchema:
-    """Create or update an offer's opening hours (erase existing if any)
-
-    For each day of the week, there can be at most two pairs of
-    timespans (opening hours start and end).
-
-    Week days might have null/empty opening hours: in that case, no
-    data will be inserted. This allows a more flexible way to send data.
-
-    The output data will always contain every week day. If no opening
-    hours has been set, the timespan data will be null.
-
-    Note: since opening hours should always be erased before any new
-    data is inserted, this route can also be used as a DELETE one.
-    """
-    offer = offers_repository.get_offer_by_id(offer_id, load_options={"venue", "openingHours"})
-    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-
-    opening_hours_api.upsert_opening_hours(offer, opening_hours=body.openingHours)
-
-    offer = offers_repository.get_offer_by_id(offer.id, load_options={"openingHours"})
-    opening_hours = opening_hours_api.format_opening_hours(offer.openingHours)
-    return offers_schemas.OfferOpeningHoursSchema(openingHours=opening_hours)
-
-
-@private_api.route("/offers/<int:offer_id>/opening-hours", methods=["GET"])
-@login_required
-@spectree_serialize(
-    response_model=offers_schemas.OfferOpeningHoursSchema,
-    on_success_status=200,
-    api=blueprint.pro_private_schema,
-)
-@atomic()
-def get_offer_opening_hours(offer_id: int) -> offers_schemas.OfferOpeningHoursSchema:
-    offer = offers_repository.get_offer_by_id(offer_id, load_options={"venue", "openingHours"})
-    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-
-    opening_hours = opening_hours_api.format_opening_hours(offer.openingHours)
-    return offers_schemas.OfferOpeningHoursSchema(openingHours=opening_hours)
 
 
 @private_api.route("/get-offer-video-data", methods=["GET"])

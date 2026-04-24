@@ -29,11 +29,7 @@ export function IndividualOfferSummaryStocksCalendarScreen({
     >
       {getStockWarningText(offer)}
 
-      <StocksCalendar
-        offer={offer}
-        mode={OFFER_WIZARD_MODE.READ_ONLY}
-        timetableTypeRadioGroupShown={false}
-      />
+      <StocksCalendar offer={offer} mode={OFFER_WIZARD_MODE.READ_ONLY} />
     </SummarySection>
   )
 }
