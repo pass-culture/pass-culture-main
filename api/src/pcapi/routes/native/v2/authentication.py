@@ -1,3 +1,4 @@
+from flask import g
 from flask_login import current_user
 
 from pcapi.connectors import api_recaptcha
@@ -7,8 +8,10 @@ from pcapi.core.users import models as user_models
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.sessions import create_user_jwt_tokens
 from pcapi.core.users.sessions import refresh_user_jwt_tokens
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
+from pcapi.routes.native.security import _raise_forbidden
 from pcapi.routes.native.security import authenticated_with_refresh_token
 from pcapi.routes.native.v2.serialization import authentication
 from pcapi.serialization.decorator import spectree_serialize
@@ -59,6 +62,21 @@ def signin(body: authentication.SigninRequestV2) -> authentication.SigninRespons
 @spectree_serialize(response_model=authentication.RefreshResponseV2, api=blueprint.api, on_error_statuses=[401])
 @atomic()
 def refresh(body: authentication.RefreshRequestV2) -> authentication.RefreshResponseV2:
+    # TODO rpa : after removing `v1/refresh_access_token` move that code in authenticated_with_refresh_token
+    if g.jwt.data.sub.isdigit():  # after 07/2027 this condition will always be True
+        native_user_session = (
+            db.session.query(user_models.NativeUserSession)
+            .filter(user_models.NativeUserSession.refreshToken == g.jwt.data.jti)
+            .one_or_none()
+        )
+        if not native_user_session:
+            _raise_forbidden(g.jwt.data.sub)
+        assert native_user_session is not None  # helps mypy
+
+        if native_user_session.deviceId and native_user_session.deviceId != body.device_info.device_id:
+            # sometime we don't have the deviceId when generating the token but if we do let's check it
+            _raise_forbidden(g.jwt.data.sub)
+
     users_api.update_last_connection_date(current_user)
     tokens = refresh_user_jwt_tokens(
         user=current_user,
