@@ -25,6 +25,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import exceptions as providers_exceptions
+from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.clients import cgr_client
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
@@ -1645,7 +1646,7 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.CREATE_INCIDENTS
     error_message_template = "Erreur %s Annuler"
 
-    expected_num_queries = 5
+    expected_num_queries = 6
 
     @pytest.mark.parametrize(
         "venue_factory,show_xfp_amount",
@@ -1723,9 +1724,9 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
         object_ids = str(booking.id)
 
         # don't query the number of BookingFinanceIncident with FinanceIncident's status in
-        # (CREATED, VALIDATED)
-        # but adds 1 query for the rollback
-        with assert_num_queries(self.expected_num_queries):
+        # (CREATED, VALIDATED), nor the providers (-2 queries)
+        # but adds 1 query for rollback
+        with assert_num_queries(self.expected_num_queries - 2 + 1):
             response = self.post_to_endpoint(
                 authenticated_client,
                 form={"object_ids": object_ids},
@@ -1743,9 +1744,9 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
         object_ids = ",".join(str(booking.id) for booking in selected_bookings)
 
         # don't query the number of BookingFinanceIncident with FinanceIncident's status in
-        # (CREATED, VALIDATED)
+        # (CREATED, VALIDATED), nor the providers (-2 queries)
         # but adds 1 query for rollback
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries - 2 + 1):
             response = self.post_to_endpoint(
                 authenticated_client,
                 form={"object_ids": object_ids},
@@ -1869,6 +1870,39 @@ class CreateOverpaymentTest(PostEndpointHelper):
         )
 
         assert db.session.query(finance_models.FinanceIncident).count() == 1  # didn't create new incident
+        assert db.session.query(history_models.ActionHistory).count() == 0
+
+    def test_not_creating_incident_if_booking_comes_from_cinema_provider(self, authenticated_client):
+        provider = db.session.query(providers_models.Provider).filter_by(localClass="BoostStocks").first()
+
+        booking = bookings_factories.ReimbursedBookingFactory(
+            pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-1000)],
+            stock__lastProvider=provider,
+            stock__idAtProviders="PifpafpoufBoost",
+        )
+
+        object_ids = str(booking.id)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "total_amount": booking.amount,
+                "origin": finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name,
+                "comment": "Commentaire facultatif",
+                "kind": finance_models.IncidentType.OVERPAYMENT.name,
+                "object_ids": object_ids,
+            },
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
+        assert cells[2] == str(booking.id)
+
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert "Au moins une des réservations est liée à un cinéma synchronisé via CGR/EMS/Boost." in alerts["warning"]
+
+        assert db.session.query(finance_models.FinanceIncident).count() == 0
         assert db.session.query(history_models.ActionHistory).count() == 0
 
     @pytest.mark.parametrize(
