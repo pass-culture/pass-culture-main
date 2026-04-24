@@ -1,3 +1,4 @@
+import { createArgosReporterOptions } from '@argos-ci/playwright/reporter'
 import { defineConfig, devices } from '@playwright/test'
 
 const BASE_URL = process.env.BASE_URL ?? 'http://localhost:3001'
@@ -9,7 +10,23 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   fullyParallel: false,
   maxFailures: 0,
-  reporter: process.env.CI ? 'html' : 'list',
+  // Reporter to use
+  // Reporter to use
+  reporter: [
+    // Use "dot" reporter on CI, "list" otherwise (Playwright default).
+    process.env.CI ? ['html'] : ['list'],
+    // Add Argos reporter.
+    [
+      '@argos-ci/playwright/reporter',
+      createArgosReporterOptions({
+        // Upload to Argos on CI only.
+        uploadToArgos: !!process.env.CI,
+
+        // Set your Argos token (required if not using GitHub Actions).
+        token: '<YOUR-ARGOS-TOKEN>',
+      }),
+    ],
+  ],
   testDir: '../e2e',
   testMatch: '**/*.e2e.ts',
   timeout: 60000,
