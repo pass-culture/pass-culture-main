@@ -396,9 +396,7 @@ def validate_passwordless_token(token: str) -> dict:
         raise exc
     except jwt.PyJWTError as exc:
         # Base exception for all others case we might be interested on
-        logger.warning(
-            "%s (reason: %s) raised while decoding passwordless login token: %s", exc.__class__.__name__, exc, token
-        )
+        logger.warning("%s (reason: %s) raised while decoding passwordless login token", exc.__class__.__name__, exc)
         raise users_exceptions.InvalidToken from exc
 
     value = json.dumps({"user_id": payload["sub"], "jti": payload["jti"]})
@@ -422,8 +420,11 @@ def validate_passwordless_token(token: str) -> dict:
     if redis_value["user_id"] != payload["sub"] or redis_value["jti"] != payload["jti"]:
         # Aborting
         logger.error(
-            "Mismatch between the payload of an authentic passwordless login token and the corresponding redis value. Token: %s",
-            token,
+            "Mismatch between the payload of an authentic passwordless login token and the corresponding redis value. Token jti: %s ; Redis jti: %s ; Token sub: %s ; Redis sub: %s",
+            payload["jti"],
+            redis_value["jti"],
+            payload["sub"],
+            redis_value["user_id"],
         )
         raise users_exceptions.InvalidToken
 
