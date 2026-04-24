@@ -6,7 +6,7 @@ license = "MPL-2.0"
 authors = [
   { name = "Equipe pass Culture", email = "<contact@passculture.app>" },
 ]
-requires-python = ">=3.13,<4.0"
+requires-python = ">=3.13,<3.14"
 
 dependencies = [
   "alembic ==1.18.4",
