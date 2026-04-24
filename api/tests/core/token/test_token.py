@@ -459,7 +459,7 @@ class PasswordLessLoginTokenTest:
 
         assert (
             caplog.records[0].message
-            == f"Mismatch between the payload of an authentic passwordless login token and the corresponding redis value. Token: {token}"
+            == f"Mismatch between the payload of an authentic passwordless login token and the corresponding redis value. Token jti: {expected_jti} ; Redis jti: {expected_jti} ; Token sub: {expected_user_id} ; Redis sub: {wrong_user_id}"
         )
 
     @pytest.mark.settings(
