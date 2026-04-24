@@ -240,7 +240,7 @@ jobs:
       # retry the exact same tests, even if the cache has been updated in the meantime).
       - name: Upload test durations
         if: steps.restore-test-durations.outputs.cache-hit != ''
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: test-durations-before
           path: /tests/.test_durations
@@ -358,7 +358,7 @@ jobs:
 
       - name: Upload test durations
         if: github.run_attempt == 1
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: "test-durations-after-partial-${{ matrix.pytest_args.description }}-${{ matrix.group }}"
           path: "${{ runner.workspace }}/pass-culture-main/api/tests/.test_durations"
@@ -398,7 +398,7 @@ jobs:
       # This step uploads the final file as an artifact.
       # We can download it from the GitHub GUI, and we would then commit it if we implemented a fallback mechanism
       - name: Upload final test durations
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: test-durations-after
           path: ${{ runner.temp }}/.test_durations
