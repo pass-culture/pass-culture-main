@@ -107,12 +107,16 @@ describe('<CollectiveOffersBookableLine />', () => {
       }
     }
 
-    it('should have the thumbnail line clickable', async () => {
+    it('should have the line clickable', async () => {
       const { user, collectiveOfferHome } =
         renderCollectiveOffersBookableLineWithRouter()
-      expect(screen.getByText(collectiveOfferHome.name)).toBeVisible()
+      expect(screen.getByRole('img')).toBeVisible()
 
-      await user.click(screen.getByRole('img'))
+      await user.click(
+        screen.getByRole('link', {
+          name: `Expire dans 1 jour - ${collectiveOfferHome.name} - Prévu le 10/05/2026 - 100 participants - publiée`,
+        })
+      )
 
       expect(
         screen.getByText(`Detail de mon offre ${collectiveOfferHome.id}`)
@@ -125,18 +129,6 @@ describe('<CollectiveOffersBookableLine />', () => {
       expect(screen.getByText(collectiveOfferHome.name)).toBeVisible()
 
       await user.click(screen.getByText(collectiveOfferHome.name))
-
-      expect(
-        screen.getByText(`Detail de mon offre ${collectiveOfferHome.id}`)
-      ).toBeVisible()
-    })
-
-    it('should have the displayedStatus line clickable', async () => {
-      const { user, collectiveOfferHome } =
-        renderCollectiveOffersBookableLineWithRouter()
-      expect(screen.getByText(collectiveOfferHome.name)).toBeVisible()
-
-      await user.click(screen.getByText('publiée'))
 
       expect(
         screen.getByText(`Detail de mon offre ${collectiveOfferHome.id}`)

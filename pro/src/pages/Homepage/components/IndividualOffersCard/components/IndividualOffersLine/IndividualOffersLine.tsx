@@ -7,8 +7,12 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
-import { StatusLabel } from '@/components/StatusLabel/StatusLabel'
+import {
+  OFFER_STATUS_PROPERTIES,
+  StatusLabel,
+} from '@/components/StatusLabel/StatusLabel'
 import { Thumb } from '@/ui-kit/Thumb/Thumb'
 
 import { IndividualOffersCTA } from '../IndividualOffersCTA/IndividualOffersCTA'
@@ -55,29 +59,43 @@ export const IndividualOffersLine = ({
   })
 
   const offerLocalDate = getOfferLocalDate(offer, venueDepartmentCode)
+  const bookingsLabel = `${offer.bookingsCount} ${pluralizeFr(offer.bookingsCount, 'réservation', 'réservations')}`
 
   return (
     <div key={offer.id} className={styles['offer-line']}>
-      <Link
+      <Thumb
         className={styles['offer-line-thumb']}
-        to={offerLink}
-        aria-label="Détail de l'offre"
-      >
-        <Thumb url={offer.thumbUrl} alt={`Thumbnail for ${offer.name}`} />
-      </Link>
-      <Link className={styles['offer-line-content']} to={offerLink}>
+        url={offer.thumbUrl}
+        alt={`Thumbnail for ${offer.name}`}
+      />
+      <div className={styles['offer-line-content']}>
         <IndividualOffersTag
           offer={offer}
           venueDepartmentCode={venueDepartmentCode}
         />
-        <div className={styles['offer-line-content-primary']}>{offer.name}</div>
+        <h4 className={styles['offer-line-content-primary']}>
+          <Link
+            className={styles['offer-line-link']}
+            to={offerLink}
+            aria-label={[
+              bookingsLabel,
+              offer.name,
+              offerLocalDate,
+              OFFER_STATUS_PROPERTIES[offer.status]?.label,
+            ]
+              .filter(Boolean)
+              .join(' - ')}
+          >
+            {offer.name}
+          </Link>
+        </h4>
         <div className={styles['offer-line-content-secondary']}>
           {offerLocalDate}
         </div>
-      </Link>
-      <Link className={styles['offer-line-status']} to={offerLink}>
+      </div>
+      <div className={styles['offer-line-status']}>
         <StatusLabel status={offer.status} />
-      </Link>
+      </div>
       <IndividualOffersCTA offerId={offer.id} offerStatus={offer.status} />
     </div>
   )

@@ -5,12 +5,18 @@ import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/uti
 import { getCollectiveOfferLink } from '@/commons/core/OfferEducational/utils/getCollectiveOfferLink'
 import { formatDateTimeParts } from '@/commons/utils/date'
 import { pluralizeFr } from '@/commons/utils/pluralize'
-import { CollectiveStatusLabel } from '@/components/CollectiveStatusLabel/CollectiveStatusLabel'
+import {
+  COLLECTIVE_OFFER_STATUS_PROPERTIES,
+  CollectiveStatusLabel,
+} from '@/components/CollectiveStatusLabel/CollectiveStatusLabel'
 import { Thumb } from '@/ui-kit/Thumb/Thumb'
 
 import styles from '../../../CollectiveOffersLine.module.scss'
 import { CollectiveOffersBookableCTA } from '../CollectiveOffersBookableCTA/CollectiveOffersBookableCTA'
-import { CollectiveOffersBookableTag } from '../CollectiveOffersBookableTag/CollectiveOffersBookableTag'
+import {
+  CollectiveOffersBookableTag,
+  getTagInfo,
+} from '../CollectiveOffersBookableTag/CollectiveOffersBookableTag'
 
 export type CollectiveOffersBookableLineProps = {
   offer: CollectiveOfferHomeResponseModel
@@ -35,30 +41,47 @@ export const CollectiveOffersBookableLine = ({
 
   const dateAndTicketsCount = getDateAndTicketsCount(offer.collectiveStock)
 
+  const tagLabel = offer.collectiveStock
+    ? getTagInfo(offer.displayedStatus, offer.collectiveStock).label
+    : ''
+
   return (
     <div key={offer.id} className={styles['offer-line']}>
-      <Link
+      <Thumb
         className={styles['offer-line-thumb']}
-        to={offerLink}
-        aria-label="Détail de l'offre"
-      >
-        <Thumb url={offer.imageUrl} alt={`Thumbnail for ${offer.name}`} />
-      </Link>
-      <Link className={styles['offer-line-content']} to={offerLink}>
+        url={offer.imageUrl}
+        alt={`Thumbnail for ${offer.name}`}
+      />
+      <div className={styles['offer-line-content']}>
         {offer.collectiveStock && (
           <CollectiveOffersBookableTag
             displayedStatus={offer.displayedStatus}
             stock={offer.collectiveStock}
           />
         )}
-        <div className={styles['offer-line-content-primary']}>{offer.name}</div>
+        <h4 className={styles['offer-line-content-primary']}>
+          <Link
+            className={styles['offer-line-link']}
+            to={offerLink}
+            aria-label={[
+              tagLabel,
+              offer.name,
+              dateAndTicketsCount,
+              COLLECTIVE_OFFER_STATUS_PROPERTIES[offer.displayedStatus].label,
+            ]
+              .filter(Boolean)
+              .join(' - ')}
+          >
+            {offer.name}
+          </Link>
+        </h4>
         <div className={styles['offer-line-content-secondary']}>
           {dateAndTicketsCount}
         </div>
-      </Link>
-      <Link className={styles['offer-line-status']} to={offerLink}>
+      </div>
+      <div className={styles['offer-line-status']}>
         <CollectiveStatusLabel offerDisplayedStatus={offer.displayedStatus} />
-      </Link>
+      </div>
       <CollectiveOffersBookableCTA
         stock={offer.collectiveStock}
         displayedStatus={offer.displayedStatus}
