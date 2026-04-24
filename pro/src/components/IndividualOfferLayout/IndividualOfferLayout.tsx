@@ -11,6 +11,7 @@ import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { canRequestHighlight } from '@/commons/utils/canRequestHighlight'
 import { SynchronizedProviderInformation } from '@/components/SynchronisedProviderInformation/SynchronizedProviderInformation'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
@@ -60,11 +61,7 @@ export const IndividualOfferLayout = ({
     ].includes(offer.status)
 
   const shouldDisplayHighlightsBanner =
-    !!offer &&
-    offer.isEvent &&
-    ![OfferStatus.PENDING, OfferStatus.REJECTED, OfferStatus.DRAFT].includes(
-      offer.status
-    )
+    !!offer && canRequestHighlight({ offer })
 
   const shouldDisplayRecommendation =
     !!offer &&

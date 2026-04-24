@@ -16,6 +16,7 @@ import fullWaitIcon from '@/icons/full-wait.svg'
 import strokePartyIcon from '@/icons/stroke-party.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
+import { canRequestHighlight } from '../../../../commons/utils/canRequestHighlight'
 import styles from './IndividualOfferConfirmationScreen.module.scss'
 
 interface IndividualOfferConfirmationScreenProps {
@@ -29,6 +30,12 @@ export const IndividualOfferConfirmationScreen = ({
     isDateValid(offer.publicationDate) &&
     new Date() < new Date(offer.publicationDate)
   const isPendingOffer = offer.status === OfferStatus.PENDING
+
+  const offerReadOnlyUrl = getIndividualOfferUrl({
+    offerId: offer.id,
+    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+    mode: OFFER_WIZARD_MODE.READ_ONLY,
+  })
 
   return (
     <div className={styles['confirmation-container']}>
@@ -85,6 +92,14 @@ export const IndividualOfferConfirmationScreen = ({
 
         <Button as="a" to="/offres" label="Voir la liste des offres" />
       </div>
+      <br />
+      {canRequestHighlight({ offer }) && (
+        <Button
+          as="a"
+          to={`${offerReadOnlyUrl}?highlightDialog=open`}
+          label="Valorisez votre évènement en l’associant à un temps fort"
+        />
+      )}
     </div>
   )
 }

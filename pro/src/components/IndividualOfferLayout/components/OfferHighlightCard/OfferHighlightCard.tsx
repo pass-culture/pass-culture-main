@@ -1,10 +1,11 @@
 import cn from 'classnames'
-import { type JSX, useState } from 'react'
+import type { JSX } from 'react'
 
 import type { ShortHighlightResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { useUrlDialogState } from '@/commons/hooks/useUrlDialogState'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { Button } from '@/design-system/Button/Button'
@@ -30,7 +31,7 @@ export const OfferHighlightCard = ({
   offerId,
   highlightRequests,
 }: OfferHighlightCardProps): JSX.Element => {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useUrlDialogState('highlightDialog')
   const { logEvent } = useAnalytics()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
