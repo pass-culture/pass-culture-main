@@ -83,7 +83,7 @@ export const RadioButton = forwardRef(
             <input
               type="radio"
               value={value}
-              className={styles[`radio-button-input`]}
+              className={styles['radio-button-input']}
               id={id}
               ref={ref}
               onChange={onChange}

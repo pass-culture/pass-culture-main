@@ -50,7 +50,7 @@ export const WelcomeStepAdvantages = (): JSX.Element => {
           tout moment de l’année
         </InfoPanel>
       </div>
-      <div className={commonStyles[`actionbar-container`]}>
+      <div className={commonStyles['actionbar-container']}>
         <Button
           as="a"
           to="/bienvenue/offres-scolaires"

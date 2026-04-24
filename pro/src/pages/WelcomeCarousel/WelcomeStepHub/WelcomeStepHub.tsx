@@ -42,8 +42,8 @@ export const WelcomeStepHub = (): JSX.Element => {
           </div>
           <div
             className={cn(
-              commonStyles[`actionbar-container`],
-              commonStyles[`actionbar-container-single`]
+              commonStyles['actionbar-container'],
+              commonStyles['actionbar-container-single']
             )}
           >
             <Button
@@ -124,8 +124,8 @@ export const WelcomeStepHub = (): JSX.Element => {
           </div>
           <div
             className={cn(
-              commonStyles[`actionbar-container`],
-              commonStyles[`actionbar-container-single`]
+              commonStyles['actionbar-container'],
+              commonStyles['actionbar-container-single']
             )}
           >
             <Button

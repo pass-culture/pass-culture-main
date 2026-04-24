@@ -62,7 +62,7 @@ export const OnboardingCollectiveModal = ({
 
   return (
     <div
-      className={cn(styles[`onboarding-collective-modal`], className)}
+      className={cn(styles['onboarding-collective-modal'], className)}
       data-testid="onboarding-collective-modal"
     >
       <h1 className={styles['onboarding-collective-title']}>
