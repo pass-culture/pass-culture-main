@@ -7,7 +7,10 @@ import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/c
 import { getCollectiveOfferLink } from '@/commons/core/OfferEducational/utils/getCollectiveOfferLink'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { formatDateTimeParts } from '@/commons/utils/date'
-import { CollectiveStatusLabel } from '@/components/CollectiveStatusLabel/CollectiveStatusLabel'
+import {
+  COLLECTIVE_OFFER_STATUS_PROPERTIES,
+  CollectiveStatusLabel,
+} from '@/components/CollectiveStatusLabel/CollectiveStatusLabel'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
@@ -42,23 +45,32 @@ export const CollectiveOffersTemplateLine = ({
 
   return (
     <div key={offer.id} className={styles['offer-line']}>
-      <Link
-        className={styles['offer-line-thumb']}
-        to={offerLink}
-        aria-label="Détail de l'offre"
-      >
-        <Thumb url={offer.imageUrl} alt={`Thumbnail for ${offer.name}`} />
-      </Link>
-      <Link className={styles['offer-line-content']} to={offerLink}>
+      <Thumb url={offer.imageUrl} alt={`Thumbnail for ${offer.name}`} />
+      <div className={styles['offer-line-content']}>
         <Tag variant={TagVariant.DEFAULT} label="Offre vitrine" />
-        <div className={styles['offer-line-content-primary']}>{offer.name}</div>
+        <h3 className={styles['offer-line-content-primary']}>
+          <Link
+            className={styles['offer-line-link']}
+            to={offerLink}
+            aria-label={[
+              'Offre vitrine',
+              offer.name,
+              formattedOfferDates,
+              COLLECTIVE_OFFER_STATUS_PROPERTIES[offer.displayedStatus].label,
+            ]
+              .filter(Boolean)
+              .join(' - ')}
+          >
+            {offer.name}
+          </Link>
+        </h3>
         <div className={styles['offer-line-content-secondary']}>
           {formattedOfferDates}
         </div>
-      </Link>
-      <Link className={styles['offer-line-status']} to={offerLink}>
+      </div>
+      <div className={styles['offer-line-status']}>
         <CollectiveStatusLabel offerDisplayedStatus={offer.displayedStatus} />
-      </Link>
+      </div>
       {offer.displayedStatus === CollectiveOfferDisplayedStatus.PUBLISHED ? (
         <Button
           variant={ButtonVariant.SECONDARY}

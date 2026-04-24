@@ -13,39 +13,44 @@ type CollectiveOffersBookableTagProps = {
   displayedStatus: CollectiveOfferHomeResponseModel['displayedStatus']
 }
 
+export function getTagInfo(
+  displayedStatus: CollectiveOfferHomeResponseModel['displayedStatus'],
+  stock: NonNullable<CollectiveOfferHomeResponseModel['collectiveStock']>
+): { label: string; isExpiring: boolean } {
+  if (canExpire({ displayedStatus })) {
+    const daysBeforeExpiration = differenceInCalendarDays(
+      new Date(stock.bookingLimitDatetime),
+      new Date()
+    )
+    const expirationText = getExpirationText(daysBeforeExpiration)
+    if (expirationText) {
+      return { label: expirationText, isExpiring: true }
+    }
+  }
+
+  const daysBeforeStart = differenceInCalendarDays(
+    new Date(stock.startDatetime),
+    new Date()
+  )
+  const label =
+    daysBeforeStart > 0
+      ? `Dans ${daysBeforeStart} ${pluralizeFr(daysBeforeStart, 'jour', 'jours')}`
+      : "Aujourd'hui"
+
+  return { label, isExpiring: false }
+}
+
 export const CollectiveOffersBookableTag = ({
   displayedStatus,
   stock,
 }: CollectiveOffersBookableTagProps): JSX.Element => {
-  if (canExpire({ displayedStatus })) {
-    const daysCountBeforeExpiration = differenceInCalendarDays(
-      new Date(stock.bookingLimitDatetime),
-      new Date()
-    )
-    const expirationText = getExpirationText(daysCountBeforeExpiration)
-
-    if (expirationText) {
-      return (
-        <Tag
-          variant={TagVariant.WARNING}
-          icon={waitIcon}
-          label={expirationText}
-        />
-      )
-    }
-  }
-
-  const daysCountBeforeStart = differenceInCalendarDays(
-    new Date(stock.startDatetime),
-    new Date()
-  )
-
-  const tagLabel =
-    daysCountBeforeStart > 0
-      ? `Dans ${daysCountBeforeStart} ${pluralizeFr(daysCountBeforeStart, 'jour', 'jours')}`
-      : "Aujourd'hui"
+  const { label, isExpiring } = getTagInfo(displayedStatus, stock)
 
   return (
-    <Tag variant={TagVariant.DEFAULT} icon={calendarIcon} label={tagLabel} />
+    <Tag
+      variant={isExpiring ? TagVariant.WARNING : TagVariant.DEFAULT}
+      icon={isExpiring ? waitIcon : calendarIcon}
+      label={label}
+    />
   )
 }

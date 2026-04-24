@@ -160,29 +160,15 @@ describe('<IndividualOffersLine />', () => {
       }
     }
 
-    it('should have the thumbnail line clickable', async () => {
+    it('should have the line clickable', async () => {
       const { user, offer } = renderIndividualOffersLineWithRouter()
-      expect(screen.getByText(offer.name)).toBeVisible()
+      expect(screen.getByRole('img')).toBeVisible()
 
-      await user.click(screen.getByRole('img'))
-
-      expect(screen.getByText(`Detail de mon offre ${offer.id}`)).toBeVisible()
-    })
-
-    it('should have the content line clickable', async () => {
-      const { user, offer } = renderIndividualOffersLineWithRouter()
-      expect(screen.getByText(offer.name)).toBeVisible()
-
-      await user.click(screen.getByText(offer.name))
-
-      expect(screen.getByText(`Detail de mon offre ${offer.id}`)).toBeVisible()
-    })
-
-    it('should have the status line clickable', async () => {
-      const { user, offer } = renderIndividualOffersLineWithRouter()
-      expect(screen.getByText(offer.name)).toBeVisible()
-
-      await user.click(screen.getByText('publiée'))
+      await user.click(
+        screen.getByRole('link', {
+          name: `12 réservations - ${offer.name} - Le 15/10/2021 14:00 - publiée`,
+        })
+      )
 
       expect(screen.getByText(`Detail de mon offre ${offer.id}`)).toBeVisible()
     })

@@ -1,7 +1,7 @@
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 
-const COLLECTIVE_OFFER_STATUS_PROPERTIES: Record<
+export const COLLECTIVE_OFFER_STATUS_PROPERTIES: Record<
   string,
   {
     variant: TagVariant
