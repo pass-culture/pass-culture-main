@@ -90,7 +90,6 @@ def pytest_addoption(parser):
 def _clean_g_between_requests(exc: BaseException | None = None) -> None:
     WHITELIST = {
         "_query_logger",
-        "csrf_token",  # FIXME transmit csrf in query for tests
         "_session_to_commit",  # atomic is executed after this teardown
         "_managed_session",  # atomic is executed after this teardown
         "_on_commit_callbacks",  # atomic is executed after this teardown
@@ -115,12 +114,14 @@ def build_backoffice_app():
         @csrf.exempt
         def signin(user_id: int):
             from flask_login import login_user
+            from flask_wtf.csrf import generate_csrf
 
             from pcapi.core.users.models import User
 
+            generate_csrf()
             user = db.session.query(User).filter_by(id=user_id).one()
             login_user(user, remember=True)
-            return ""
+            return g.get("csrf_token", "")
 
         yield app
 
@@ -260,8 +261,6 @@ def client_fixture(app: Flask):
     # for some reason, it seams that keeping the csrf token causes some
     # trouble during tests (backoffice only, api routes do not have the
     # the csrf protection enabled during tests)
-    g.pop("csrf_token", default=None)
-    g.pop("jwt", default=None)
     return TestClient(app.test_client())
 
 
@@ -368,6 +367,7 @@ class TestClient:
     def with_bo_session_auth(self, user: users_models.User) -> "TestClient":
         response = self.post(f"/signin/{user.id}")
         assert response.status_code == 200
+        self.csrf_token = response.text
 
         return self
 
