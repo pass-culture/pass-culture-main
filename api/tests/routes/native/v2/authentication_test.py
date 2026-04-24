@@ -11,6 +11,7 @@ from pcapi import settings
 from pcapi.core.history import factories as history_factories
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as brevo_testing
 from pcapi.core.users.models import AccountState
 from pcapi.core.users.models import NativeUserSession
@@ -313,11 +314,17 @@ class RefreshAccessTokenTest:
         )
 
         refresh_token = create_refresh_token(identity=str(user.id))
+        users_factories.NativeUserSessionFactory(
+            user=user,
+            refreshToken=decode_token(refresh_token)["jti"],
+            deviceId=self.device_info["deviceId"],
+        )
 
-        client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
+        client.with_explicit_token(refresh_token)
         refresh_response = client.post("/native/v2/refresh_access_token", json={"device_info": self.device_info})
         assert refresh_response.status_code == 200
 
+        assert refresh_response.json["refreshToken"] != refresh_token
         assert user.lastConnectionDate == datetime(2020, 3, 15)
         assert len(brevo_testing.brevo_requests) == 1
 
@@ -348,7 +355,7 @@ class RefreshAccessTokenTest:
         access_token = response.json["accessToken"]
 
         # Ensure the access token is valid
-        client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        client.with_explicit_token(access_token)
         response = client.get("/native/v1/me")
         assert response.status_code == 200
 
@@ -357,7 +364,7 @@ class RefreshAccessTokenTest:
         assert decoded["sub"] == str(user.id)
 
         # Ensure the refresh token can generate a new access token
-        client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
+        client.with_explicit_token(refresh_token)
         response = client.post("/native/v2/refresh_access_token", json={"device_info": self.device_info})
         assert response.status_code == 200, response.json
         assert db.session.query(NativeUserSession).count() == 1
@@ -374,7 +381,7 @@ class RefreshAccessTokenTest:
         access_token = response.json["accessToken"]
 
         # Ensure the new access token is valid
-        client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        client.with_explicit_token(access_token)
         response = client.get("/native/v1/me")
         assert response.status_code == 200
 
@@ -408,20 +415,68 @@ class RefreshAccessTokenTest:
         refresh_token = response.json["refreshToken"]
 
         # Ensure the device_info is needed for access token refresh
-        client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
+        client.with_explicit_token(refresh_token)
         response = client.post("/native/v2/refresh_access_token", json={})
         assert response.status_code == 400, response.json
 
         # Ensure the device_id is mandatory for access token refresh
-        client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
         response = client.post("/native/v2/refresh_access_token", json={"device_info": {"os": "iOS", "source": "app"}})
         assert response.status_code == 400, response.json
+
+    def test_invalid_device_id(self, client):
+        user = users_factories.UserFactory()
+
+        refresh_token = create_refresh_token(identity=str(user.id))
+        old_session = users_factories.NativeUserSessionFactory(
+            user=user,
+            refreshToken=decode_token(refresh_token)["jti"],
+            deviceId="something different",
+        )
+
+        client.with_explicit_token(refresh_token)
+        refresh_response = client.post("/native/v2/refresh_access_token", json={"device_info": self.device_info})
+        assert refresh_response.status_code == 403
+
+        assert db.session.query(users_models.NativeUserSession).count() == 1
+        assert (
+            db.session.query(users_models.NativeUserSession)
+            .filter(users_models.NativeUserSession.id == old_session.id)
+            .count()
+            == 1
+        )
+
+    def test_no_device_id(self, client):
+        user = users_factories.UserFactory()
+
+        refresh_token = create_refresh_token(identity=str(user.id))
+        users_factories.NativeUserSessionFactory(
+            user=user,
+            refreshToken=decode_token(refresh_token)["jti"],
+            deviceId="",
+        )
+
+        client.with_explicit_token(refresh_token)
+        refresh_response = client.post("/native/v2/refresh_access_token", json={"device_info": self.device_info})
+        assert refresh_response.status_code == 200
+
+        assert db.session.query(users_models.NativeUserSession).count() == 1
+        assert refresh_response.json["refreshToken"] != refresh_token
+
+    def test_no_session(self, client):
+        user = users_factories.UserFactory()
+        refresh_token = create_refresh_token(identity=str(user.id))
+
+        client.with_explicit_token(refresh_token)
+        refresh_response = client.post("/native/v2/refresh_access_token", json={"device_info": self.device_info})
+        assert refresh_response.status_code == 403
+
+        assert db.session.query(users_models.NativeUserSession).count() == 0
 
     def test_with_legacy_token(self, client):
         user = users_factories.UserFactory(email="user@test.com")
         refresh_token = create_refresh_token(identity=user.email, additional_claims={"user_id": user.id})
 
-        client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
+        client.with_explicit_token(refresh_token)
         response = client.post("/native/v2/refresh_access_token", json={"device_info": self.device_info})
         assert response.status_code == 200
         assert db.session.query(NativeUserSession).count() == 1
