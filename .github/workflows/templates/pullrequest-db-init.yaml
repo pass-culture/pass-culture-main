@@ -7,11 +7,15 @@ spec:
   ttlSecondsAfterFinished: 60
   template:
     spec:
+      securityContext:
+        runAsNonRoot: true
       activeDeadlineSeconds: 10800
       containers:
       - name: pcapi
         image: ${IMAGE}
         imagePullPolicy: Always
+        securityContext:
+          allowPrivilegeEscalation: false
         resources:
           requests:
             memory: 1024Mi
