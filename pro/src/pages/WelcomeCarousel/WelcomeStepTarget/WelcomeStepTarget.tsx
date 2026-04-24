@@ -53,7 +53,7 @@ const WelcomeStepTarget = (): JSX.Element => {
           Culture Pro."
         />
 
-        <div className={commonStyles[`actionbar-container`]}>
+        <div className={commonStyles['actionbar-container']}>
           <Button
             as="a"
             to="/bienvenue"

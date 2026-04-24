@@ -56,7 +56,7 @@ const WelcomeStepCollective = (): JSX.Element => {
           />
         </div>
       </div>
-      <div className={commonStyles[`actionbar-container`]}>
+      <div className={commonStyles['actionbar-container']}>
         <Button
           as="a"
           to="/bienvenue/offres-jeunes"

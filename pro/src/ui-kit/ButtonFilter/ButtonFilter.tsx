@@ -57,8 +57,8 @@ export const ButtonFilter = ({
     <button
       className={cn(
         styles['button-filter'],
-        { [styles[`button-filter-open`]]: isOpen },
-        { [styles[`button-filter-active`]]: isActive },
+        { [styles['button-filter-open']]: isOpen },
+        { [styles['button-filter-active']]: isActive },
         className
       )}
       type={type}

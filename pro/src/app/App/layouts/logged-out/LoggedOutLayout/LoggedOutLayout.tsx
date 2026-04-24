@@ -45,7 +45,7 @@ export const LoggedOutLayout = ({
           </header>
           <div className={styles['content-container']}>
             <main id="content" tabIndex={-1}>
-              <div className={cn(styles.content, styles[`content-logged-out`])}>
+              <div className={cn(styles.content, styles['content-logged-out'])}>
                 <MainHeading mainHeading={mainHeading} />
                 {children}
               </div>

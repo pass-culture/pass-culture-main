@@ -90,7 +90,7 @@ export const SignUpLayout = ({ children, mainHeading }: SignUpLayoutProps) => {
               />
             </NavLink>
             <main id="content" tabIndex={-1}>
-              <div className={cn(styles.content, styles[`content-sign-up`])}>
+              <div className={cn(styles.content, styles['content-sign-up'])}>
                 <MainHeading mainHeading={mainHeading} />
                 {children}
               </div>

@@ -91,9 +91,9 @@ export const OnboardingLayout = ({
                 {isEntryScreen ? (
                   <div
                     className={cn(
-                      styles[`onboarding-layout`],
+                      styles['onboarding-layout'],
                       verticallyCentered
-                        ? styles[`vertically-centered`]
+                        ? styles['vertically-centered']
                         : undefined
                     )}
                   >
