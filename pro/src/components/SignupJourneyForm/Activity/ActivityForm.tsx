@@ -158,7 +158,12 @@ export const ActivityForm = (): JSX.Element => {
                 description="Format : https://www.siteinternet.com"
                 type="url"
                 required
-                error={formState.errors.socialUrls?.[index]?.url?.message}
+                error={
+                  formState.errors.socialUrls?.[index]?.url?.message ??
+                  (index === 0
+                    ? formState.errors.socialUrls?.root?.message
+                    : undefined)
+                }
                 extension={
                   watchSocialUrls.length > 1 && (
                     <div
@@ -221,10 +226,11 @@ export const ActivityForm = (): JSX.Element => {
             variant="detailed"
             error={formState.errors.targetCustomer?.message}
           />
+          <div className={styles['banner-container']}>
+            <Banner title="Vous pourrez cumuler les deux types d'offres avec un seul compte pass Culture Pro." />
+          </div>
         </FormLayout.Row>
       </FormLayout.Section>
-
-      <Banner title="Vous pourrez cumuler les deux types d'offres avec un seul compte pass Culture Pro." />
     </>
   )
 }
