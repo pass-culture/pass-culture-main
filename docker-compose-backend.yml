@@ -27,6 +27,18 @@ services:
     networks:
       - db_nw
 
+  pcapi-tests:
+    build:
+      context: ./api
+      target: pcapi-tests
+      args:
+        network_mode: ${DOCKER_NETWORK_MODE:-default}
+    profiles: ["test"]  # don't start with compose up
+    env_file:
+      - env_file
+    networks:
+      - db_nw
+
   flask:
     build:
       context: ./api
