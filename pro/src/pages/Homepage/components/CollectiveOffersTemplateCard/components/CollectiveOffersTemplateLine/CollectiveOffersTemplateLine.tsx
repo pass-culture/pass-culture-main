@@ -42,9 +42,12 @@ export const CollectiveOffersTemplateLine = ({
 
   return (
     <div key={offer.id} className={styles['offer-line']}>
-      <Link className={styles['offer-line-thumb']} to={offerLink}>
+      <Link
+        className={styles['offer-line-thumb']}
+        to={offerLink}
+        aria-label="Détail de l'offre"
+      >
         <Thumb url={offer.imageUrl} alt={`Thumbnail for ${offer.name}`} />
-        <span className={styles['visually-hidden']}>Voir l'offre</span>
       </Link>
       <Link className={styles['offer-line-content']} to={offerLink}>
         <Tag variant={TagVariant.DEFAULT} label="Offre vitrine" />

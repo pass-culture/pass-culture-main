@@ -1,13 +1,13 @@
 import { differenceInCalendarDays } from 'date-fns'
 
+import type { CollectiveOfferHomeResponseModel } from '@/apiClient/v1'
 import { canExpire } from '@/commons/core/OfferEducational/utils/canExpire'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
-import type { CollectiveOffersVariantMap } from '@/pages/Homepage/components/types'
 
 type CollectiveOffersBookableCTAProps = {
-  stock: CollectiveOffersVariantMap['BOOKABLE']['collectiveStock']
-  displayedStatus: CollectiveOffersVariantMap['BOOKABLE']['displayedStatus']
+  stock: CollectiveOfferHomeResponseModel['collectiveStock']
+  displayedStatus: CollectiveOfferHomeResponseModel['displayedStatus']
   offerId: number
   offerLink: string
 }
