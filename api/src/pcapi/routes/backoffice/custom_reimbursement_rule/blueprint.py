@@ -43,11 +43,9 @@ custom_reimbursement_rules_blueprint = backoffice_blueprint.child_backoffice_blu
 
 def get_error_message(exception: Exception) -> str:
     if isinstance(exception, finance_exceptions.ConflictingReimbursementRule):
-        msg = str(exception)
-        msg += " Identifiant(s) technique(s) : "
-        msg += ", ".join(str(rule_id) for rule_id in exception.conflicts)
-        msg += "."
-        return Markup(msg)  # noqa: S704
+        return Markup("{exc} Identifiant(s) technique(s) : {rule_ids}.").format(
+            exc=str(exception), rule_ids=", ".join(str(rule_id) for rule_id in exception.conflicts)
+        )
     return str(exception)
 
 

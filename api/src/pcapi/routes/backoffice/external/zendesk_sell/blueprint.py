@@ -93,7 +93,7 @@ def update_offerer(offerer_id: int) -> response_utils.BackofficeResponse:
                 siren=item["custom_fields"][zendesk_sell_api.ZendeskCustomFieldsShort.SIREN.value],
             )
         message += Markup("</ul>")
-        flash(Markup(message), "warning")  # noqa: S704
+        flash(message, "warning")
         return redirect(url, code=303)
     except zendesk_sell_api.ContactNotFoundError:
         flash("L'entité juridique n'a pas été trouvée dans Zendesk Sell", "warning")
