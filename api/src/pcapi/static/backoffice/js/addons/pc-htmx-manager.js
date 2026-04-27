@@ -8,6 +8,13 @@ addonList.push(
     static LOADING_MODAL_ID = "loading-htmx-modal"
 
     initialize = () => {
+      // documentation for the array https://htmx.org/docs/#response-handling
+      htmx.config.responseHandling = [
+        {code:"204", swap: false},   // 204 - No Content by default does nothing, but is not an error
+        {code:"[23]..", swap: true}, // 200 & 300 responses are non-errors and are swapped
+        {code:"4..", swap: true, error:true}, // 400 responses are swapped and are errors
+        {code:"5..", swap: false, error:true}, // 500 responses are not swapped and are errors
+      ]
       EventHandler.on(document.body, "htmx:beforeRequest", this.#displayLoadingSpinner)
       EventHandler.on(document.body, "htmx:afterRequest", this.#reloadPageOnUnauthorizedError)
       EventHandler.on(document.body, "htmx:afterRequest", this.#hideLoadingSpinner)
