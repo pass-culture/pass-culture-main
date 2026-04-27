@@ -135,6 +135,7 @@ export function OfferHighlightForm({
                 description: highlight.description,
                 checked: isChecked,
                 sizing: 'fill',
+                className: styles['highlight-checkbox-label'],
                 asset: {
                   variant: 'tag',
                   tag: {

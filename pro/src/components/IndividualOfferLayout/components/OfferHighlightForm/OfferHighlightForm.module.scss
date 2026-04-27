@@ -1,3 +1,5 @@
+@use "styles/mixins/_size.scss" as size;
+
 .form {
   display: flex;
   flex-direction: column;
@@ -25,6 +27,16 @@
 
     &-list {
       padding-left: var(--size-spacing-s);
+    }
+  }
+}
+
+.highlight-checkbox-label.highlight-checkbox-label {
+  @media (max-width: size.$tablet) {
+    // set the tag below the label on mobile.
+    > :last-child {
+      align-items: flex-start;
+      flex-direction: column;
     }
   }
 }
