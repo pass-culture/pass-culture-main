@@ -853,7 +853,7 @@ class UpdateForFraudTest(PostEndpointHelper):
 # 22.12 x 4 past years x 2 (indiv and collective)
 # + 13.12 for current year x 2 (indiv and collective)
 TOTAL_CA = "203,20"
-TOTAL_CA_XPF = 24250
+TOTAL_CA_XPF = "24 250"
 
 
 class GetOffererStatsTest(GetEndpointHelper):

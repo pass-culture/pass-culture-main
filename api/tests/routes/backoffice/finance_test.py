@@ -78,7 +78,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Statut de l'incident"] == "Créé"
         assert rows[0]["Type d'incident"] == "Trop Perçu"
         assert rows[0]["Nature"] == "Total"
-        assert rows[0]["Montant total"] == "10,10 € (1205 CFP)"
+        assert rows[0]["Montant total"] == "10,10 € (1 205 CFP)"
         assert rows[0]["Ticket Zendesk"] == "2"
         assert rows[1]["ID"] == str(partial_booking_incident.incident.id)
         assert rows[1]["Statut de l'incident"] == "Créé"
@@ -1411,7 +1411,7 @@ class GetOverpaymentIncidentTest(GetEndpointHelper):
 
     @pytest.mark.parametrize(
         "venue_factory,expected_xpf_text",
-        [(offerers_factories.VenueFactory, ""), (offerers_factories.CaledonianVenueFactory, "(1205 CFP)")],
+        [(offerers_factories.VenueFactory, ""), (offerers_factories.CaledonianVenueFactory, "(1 205 CFP)")],
     )
     @pytest.mark.parametrize("zendesk_id", [None, "1"])
     def test_get_incident(self, authenticated_client, venue_factory, expected_xpf_text, zendesk_id):
@@ -1527,7 +1527,7 @@ class GetCommercialGestureTest(GetEndpointHelper):
         "venue_factory,expected_xpf_text",
         [
             (offerers_factories.VenueFactory, ""),
-            (offerers_factories.CaledonianVenueFactory, "(1205 CFP)"),
+            (offerers_factories.CaledonianVenueFactory, "(1 205 CFP)"),
         ],
     )
     @pytest.mark.parametrize("zendesk_id", [None, "1"])
@@ -1681,8 +1681,8 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
         assert f"Nom de l'offre : {offer.name}" in additional_data_text
         assert f"Bénéficiaire : {booking.user.full_name}" in additional_data_text
         if show_xfp_amount:
-            assert "Montant de la réservation : 10,10 € (1205 CFP)" in additional_data_text
-            assert "Montant remboursé à l'acteur : 10,00 € (1195 CFP)" in additional_data_text
+            assert "Montant de la réservation : 10,10 € (1 205 CFP)" in additional_data_text
+            assert "Montant remboursé à l'acteur : 10,00 € (1 195 CFP)" in additional_data_text
         else:
             assert "Montant de la réservation : 10,10 €" in additional_data_text
             assert "Montant remboursé à l'acteur : 10,00 €" in additional_data_text
@@ -2096,8 +2096,8 @@ class GetCommercialGestureCreationFormTest(PostEndpointHelper):
         assert "Nom de l'offre : Offre ++" in additional_data_text
         assert "Bénéficiaire : John Doe" in additional_data_text
         if show_xfp_amount:
-            assert "Montant de la réservation : 200,00 € (23865 CFP)" in additional_data_text
-            assert "Montant remboursé à l'acteur : 10,00 € (1195 CFP)" in additional_data_text
+            assert "Montant de la réservation : 200,00 € (23 865 CFP)" in additional_data_text
+            assert "Montant remboursé à l'acteur : 10,00 € (1 195 CFP)" in additional_data_text
         else:
             assert "Montant de la réservation : 200,00 €" in additional_data_text
             assert "Montant remboursé à l'acteur : 10,00 €" in additional_data_text
