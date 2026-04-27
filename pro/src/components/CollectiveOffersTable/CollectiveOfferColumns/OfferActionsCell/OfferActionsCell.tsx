@@ -352,7 +352,6 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
       <CancelCollectiveBookingModal
         onDismiss={() => setIsCancelledBookingModalOpen(false)}
         onValidate={cancelBooking}
-        isFromOffer
         isDialogOpen={isCancelledBookingModalOpen}
         refToFocusOnClose={dropdownTriggerRef}
       />

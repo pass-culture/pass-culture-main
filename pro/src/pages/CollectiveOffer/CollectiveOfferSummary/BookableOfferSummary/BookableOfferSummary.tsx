@@ -374,7 +374,6 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
       <CancelCollectiveBookingModal
         onDismiss={() => setIsCancelBookingModalOpen(false)}
         onValidate={cancelBooking}
-        isFromOffer
         isDialogOpen={isCancelBookingModalOpen}
         refToFocusOnClose={
           archiveButtonRef.current ? archiveButtonRef : duplicateButtonRef
