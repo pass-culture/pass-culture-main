@@ -2,8 +2,16 @@
 
 $confirmed-attachment-gap: var(--size-spacing-xxl);
 
+.title {
+  @include fonts.title1;
+
+  margin-bottom: var(--size-spacing-l);
+}
+
 .subtitle {
-  @include fonts.title3;
+  color: var(--color-text-subtle);
+
+  @include fonts.body-xs;
 }
 
 .confirmed-attachment-layout {

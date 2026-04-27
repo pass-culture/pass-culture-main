@@ -65,6 +65,7 @@ $connect-as-header-height: rem.torem(52px);
           size.$action-bar-sticky-height
       )
   );
+  width: 100%;
   padding: var(--size-spacing-xl);
 
   @media screen and (min-width: size.$tablet) {

@@ -73,7 +73,7 @@ describe('Offerers trackers', () => {
     await userEvent.click(await screen.findByText('Rejoindre cet espace'))
 
     expect(
-      await screen.findByText('Êtes-vous sûr de vouloir rejoindre cet espace ?')
+      await screen.findByText('Rejoindre cet espace ?')
     ).toBeInTheDocument()
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -94,7 +94,7 @@ describe('Offerers trackers', () => {
     await userEvent.click(await screen.findByText('Rejoindre cet espace'))
 
     expect(
-      await screen.findByText('Êtes-vous sûr de vouloir rejoindre cet espace ?')
+      await screen.findByText('Rejoindre cet espace ?')
     ).toBeInTheDocument()
 
     await userEvent.click(await screen.findByText('Annuler'))

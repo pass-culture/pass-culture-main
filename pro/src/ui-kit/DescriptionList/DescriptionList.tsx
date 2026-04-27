@@ -5,7 +5,7 @@ import styles from './DescriptionList.module.scss'
 type DescriptionListData = {
   lines: {
     label: string
-    value: string | string[] | JSX.Element[]
+    value: string | JSX.Element | (string | JSX.Element)[]
   }[]
 }
 

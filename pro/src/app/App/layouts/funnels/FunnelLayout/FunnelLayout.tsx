@@ -73,7 +73,7 @@ export const FunnelLayout = ({
               }
               tabIndex={-1}
             >
-              <MainHeading mainHeading={mainHeading} />
+              {mainHeading && <MainHeading mainHeading={mainHeading} />}
 
               {children}
             </main>

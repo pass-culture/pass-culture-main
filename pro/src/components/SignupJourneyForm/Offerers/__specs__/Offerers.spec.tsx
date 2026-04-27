@@ -87,11 +87,11 @@ vi.mock('@/commons/store/user/dispatchers/setSelectedOffererById', () => ({
   }),
 }))
 
-const renderOfferersScreen = (
+const renderOfferersScreen = async (
   contextValue: SignupJourneyContextValues,
   options?: RenderWithProvidersOptions
 ) => {
-  return renderWithProviders(
+  renderWithProviders(
     <SignupJourneyContext.Provider value={contextValue}>
       <Routes>
         <Route
@@ -107,7 +107,7 @@ const renderOfferersScreen = (
           element={<div>Authentication screen</div>}
         />
         <Route
-          path="/inscription/structure/rattachement/confirmation"
+          path="/inscription/structure/rattachement/confirmation-rattachement"
           element={<div>Confirmation screen</div>}
         />
       </Routes>
@@ -118,6 +118,8 @@ const renderOfferersScreen = (
       ...options,
     }
   )
+
+  expect(await screen.findByText('Ce SIRET est déjà inscrit')).toBeVisible()
 }
 describe('screens:SignupJourney::Offerers', () => {
   let contextValue: SignupJourneyContextValues
@@ -152,51 +154,23 @@ describe('screens:SignupJourney::Offerers', () => {
       },
       {
         id: 1,
-        siret: '12345678913333',
+        siret: null,
         name: 'Venue Name 1',
         publicName: 'Venue Public Name 1',
         isPermanent: true,
       },
       {
         id: 2,
-        siret: '12345678923333',
+        siret: null,
         name: 'Venue Name 2',
         publicName: 'Venue Public Name 2',
         isPermanent: true,
       },
       {
         id: 3,
-        siret: '12345678933333',
+        siret: null,
         name: 'Venue Name 3',
         publicName: 'Venue Public Name 3',
-        isPermanent: true,
-      },
-      {
-        id: 4,
-        siret: '12345678943333',
-        name: 'Venue Name 4',
-        publicName: 'Venue Public Name 4',
-        isPermanent: true,
-      },
-      {
-        id: 5,
-        siret: '12345678953333',
-        name: 'Venue Name 5',
-        publicName: 'Venue Public Name 5',
-        isPermanent: true,
-      },
-      {
-        id: 6,
-        siret: '12345678963333',
-        name: 'Venue Name 6',
-        publicName: 'Venue Public Name 6',
-        isPermanent: true,
-      },
-      {
-        id: 7,
-        siret: '12345678973333',
-        name: 'Venue Name 7',
-        publicName: 'Venue Public Name 7',
         isPermanent: true,
       },
     ]
@@ -209,30 +183,18 @@ describe('screens:SignupJourney::Offerers', () => {
   })
 
   it('should render component', async () => {
-    renderOfferersScreen(contextValue)
-
-    expect(
-      await screen.findByText(
-        'Nous avons trouvé un espace déjà inscrit comprenant le SIRET',
-        { exact: false }
-      )
-    ).toBeInTheDocument()
-
+    await renderOfferersScreen(contextValue)
     expect(screen.getByText('Offerer Name')).toBeInTheDocument()
-
-    expect(screen.getAllByRole('listitem')).toHaveLength(4)
-    expect(screen.queryByText('Venue Public Name 5')).not.toBeVisible()
-    expect(screen.queryByText('Venue Public Name 6')).not.toBeVisible()
 
     expect(
       await screen.findByRole('button', {
-        name: 'Afficher plus de structures',
+        name: 'Voir plus de structures',
       })
     ).toBeInTheDocument()
 
     expect(
       screen.queryByRole('button', {
-        name: 'Afficher moins de structures',
+        name: 'Voir moins de structures',
       })
     ).not.toBeInTheDocument()
 
@@ -253,14 +215,14 @@ describe('screens:SignupJourney::Offerers', () => {
     ).not.toBeInTheDocument()
 
     expect(
-      screen.queryByRole('button', {
-        name: 'Retour',
+      screen.getByRole('button', {
+        name: 'Retour à la recherche de SIRET',
       })
-    ).toBeInTheDocument()
+    ).toBeVisible()
   })
 
   it('should render component without venue creation', async () => {
-    renderOfferersScreen(contextValue)
+    await renderOfferersScreen(contextValue)
 
     expect(
       await screen.findByRole('button', { name: 'Rejoindre cet espace' })
@@ -279,25 +241,20 @@ describe('screens:SignupJourney::Offerers', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should not display non permanent venues', async () => {
-    renderOfferersScreen(contextValue)
-    expect(
-      await screen.findByText(
-        'Nous avons trouvé un espace déjà inscrit comprenant le SIRET',
-        { exact: false }
-      )
-    ).toBeInTheDocument()
+  it('should not display venues with sirets', async () => {
+    await renderOfferersScreen(contextValue)
+
     expect(screen.queryByText('Venue Public Name 0')).not.toBeInTheDocument()
   })
 
-  it('should not display venueListToggle', async () => {
-    // toggle venues list is displayed only when venues length > 5
+  it('should not display "show more"', async () => {
+    // toggle venues list is displayed only when venues length > 2
     venues.pop()
-    venues.pop()
-    renderOfferersScreen(contextValue)
+    await renderOfferersScreen(contextValue)
 
-    expect(await screen.findAllByRole('listitem')).toHaveLength(5)
-    expect(screen.queryByText('Venue Public Name 5')).toBeVisible()
+    expect(screen.getByText('Offerer Name')).toBeInTheDocument()
+
+    expect(screen.getByText('Venue Public Name 2')).toBeInTheDocument()
 
     expect(
       screen.queryByRole('button', {
@@ -313,43 +270,39 @@ describe('screens:SignupJourney::Offerers', () => {
   })
 
   it('should toggle venues list', async () => {
-    renderOfferersScreen(contextValue)
+    await renderOfferersScreen(contextValue)
 
-    expect(await screen.findAllByRole('listitem')).toHaveLength(4)
-    expect(screen.queryByText('Venue Public Name 5')).not.toBeVisible()
-    expect(screen.queryByText('Venue Public Name 6')).not.toBeVisible()
+    expect(screen.queryByText('Venue Public Name 3')).not.toBeInTheDocument()
 
-    await userEvent.click(screen.getByText('Afficher plus de structures'))
+    await userEvent.click(screen.getByText('Voir plus de structures'))
 
     await waitFor(() => {
       expect(
         screen.queryByRole('button', {
-          name: 'Afficher plus de structures',
+          name: 'Voir plus de structures',
         })
       ).not.toBeInTheDocument()
     })
 
     expect(
       screen.getByRole('button', {
-        name: 'Afficher moins de structures',
+        name: 'Voir moins de structures',
       })
     ).toBeInTheDocument()
 
-    expect(await screen.findAllByRole('listitem')).toHaveLength(7)
-    expect(screen.queryByText('Venue Public Name 5')).toBeVisible()
-    expect(screen.queryByText('Venue Public Name 6')).toBeVisible()
+    expect(screen.queryByText('Venue Public Name 3')).toBeVisible()
 
-    await userEvent.click(screen.getByText('Afficher moins de structures'))
+    await userEvent.click(screen.getByText('Voir moins de structures'))
 
     expect(
       screen.getByRole('button', {
-        name: 'Afficher plus de structures',
+        name: 'Voir plus de structures',
       })
     ).toBeInTheDocument()
 
     expect(
       screen.queryByRole('button', {
-        name: 'Afficher moins de structures',
+        name: 'Voir moins de structures',
       })
     ).not.toBeInTheDocument()
   })
@@ -369,14 +322,7 @@ describe('screens:SignupJourney::Offerers', () => {
       setInitialAddress: noop,
     }
 
-    renderOfferersScreen(contextValueForLocalAuthority)
-
-    expect(
-      await screen.findByText(
-        'Nous avons trouvé un espace déjà inscrit comprenant le SIRET',
-        { exact: false }
-      )
-    ).toBeInTheDocument()
+    await renderOfferersScreen(contextValueForLocalAuthority)
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -388,37 +334,15 @@ describe('screens:SignupJourney::Offerers', () => {
   })
 
   it('should redirect to offerer on back button click', async () => {
-    renderOfferersScreen(contextValue)
-
-    expect(
-      await screen.findByText(
-        'Nous avons trouvé un espace déjà inscrit comprenant le SIRET',
-        { exact: false }
-      )
-    ).toBeInTheDocument()
+    await renderOfferersScreen(contextValue)
 
     await userEvent.click(
       screen.getByRole('button', {
-        name: 'Retour',
+        name: 'Retour à la recherche de SIRET',
       })
     )
 
     expect(screen.getByText('Offerer screen')).toBeInTheDocument()
-  })
-
-  it('should redirect user if there is no siret', async () => {
-    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockRejectedValueOnce(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          status: 404,
-          body: [{ error: ['No SIRET found'] }],
-        } as ApiResult,
-        ''
-      )
-    )
-    renderOfferersScreen(contextValue)
-    expect(await screen.findByText('Offerer screen')).toBeInTheDocument()
   })
 
   it('should display add a venue button for local authority', async () => {
@@ -436,7 +360,7 @@ describe('screens:SignupJourney::Offerers', () => {
       setInitialAddress: noop,
     }
 
-    renderOfferersScreen(contextValueForLocalAuthority)
+    await renderOfferersScreen(contextValueForLocalAuthority)
     expect(
       await screen.findByText('Ajouter une nouvelle structure')
     ).toBeInTheDocument()
@@ -444,32 +368,28 @@ describe('screens:SignupJourney::Offerers', () => {
 
   describe('modal handling', () => {
     it('should display confirmation dialog when user want to be linked to the structure', async () => {
-      renderOfferersScreen(contextValue)
+      await renderOfferersScreen(contextValue)
 
       await userEvent.click(await screen.findByText('Rejoindre cet espace'))
 
       expect(
-        await screen.findByText(
-          'Êtes-vous sûr de vouloir rejoindre cet espace ?'
-        )
+        await screen.findByText('Rejoindre cet espace ?')
       ).toBeInTheDocument()
     })
 
     it('should not link offerer to user when they cancel', async () => {
-      renderOfferersScreen(contextValue)
+      await renderOfferersScreen(contextValue)
 
       await userEvent.click(await screen.findByText('Rejoindre cet espace'))
 
       expect(
-        await screen.findByText(
-          'Êtes-vous sûr de vouloir rejoindre cet espace ?'
-        )
+        await screen.findByText('Rejoindre cet espace ?')
       ).toBeInTheDocument()
 
       await userEvent.click(await screen.findByText('Annuler'))
 
       expect(
-        screen.queryByText('Êtes-vous sûr de vouloir rejoindre cet espace ?')
+        screen.queryByText('Rejoindre cet espace ?')
       ).not.toBeInTheDocument()
       expect(api.createOfferer).not.toHaveBeenCalled()
     })
@@ -478,7 +398,7 @@ describe('screens:SignupJourney::Offerers', () => {
       vi.spyOn(storageAvailable, 'storageAvailable').mockImplementation(
         () => false
       )
-      renderOfferersScreen(contextValue)
+      await renderOfferersScreen(contextValue)
       vi.spyOn(api, 'createOfferer').mockResolvedValue(expect.anything())
       vi.spyOn(api, 'listOfferersNames').mockResolvedValue(expect.anything())
       vi.spyOn(api, 'getVenues').mockResolvedValue(expect.anything())
@@ -487,9 +407,7 @@ describe('screens:SignupJourney::Offerers', () => {
       await userEvent.click(await screen.findByText('Rejoindre cet espace'))
 
       expect(
-        await screen.findByText(
-          'Êtes-vous sûr de vouloir rejoindre cet espace ?'
-        )
+        await screen.findByText('Rejoindre cet espace ?')
       ).toBeInTheDocument()
 
       await userEvent.click(
@@ -515,7 +433,7 @@ describe('screens:SignupJourney::Offerers', () => {
       vi.spyOn(storageAvailable, 'storageAvailable').mockImplementation(
         () => false
       )
-      renderOfferersScreen(contextValue)
+      await renderOfferersScreen(contextValue)
 
       const apiError = new ApiError(
         {} as ApiRequestOptions,
@@ -530,9 +448,7 @@ describe('screens:SignupJourney::Offerers', () => {
       await userEvent.click(await screen.findByText('Rejoindre cet espace'))
 
       expect(
-        await screen.findByText(
-          'Êtes-vous sûr de vouloir rejoindre cet espace ?'
-        )
+        await screen.findByText('Rejoindre cet espace ?')
       ).toBeInTheDocument()
 
       await userEvent.click(

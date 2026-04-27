@@ -4,5 +4,6 @@ export enum SIGNUP_JOURNEY_STEP_IDS {
   AUTHENTICATION = 'identification',
   ACTIVITY = 'activite',
   CONFIRMATION = 'confirmation',
+  CONFIRMATION_LINK = 'confirmation-rattachement',
   COMPLETED = 'completed',
 }
