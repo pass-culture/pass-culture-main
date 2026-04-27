@@ -34,7 +34,7 @@ $action-gap: var(--size-spacing-m);
     @include fonts.button;
 
     text-align: center;
-    border-radius: var(--size-border-radius-xl);
+    border-radius: var(--size-border-radius-m);
     border: rem.torem(2px) solid var(--color-border-brand-primary);
     padding: 0 var(--size-spacing-l);
     min-height: rem.torem(40px);
@@ -199,7 +199,7 @@ $action-gap: var(--size-spacing-m);
 
           &[aria-disabled="true"] {
             background: var(--color-background-disabled);
-            border-color: var(--color-border-disabled);
+            border: 1px solid var(--color-border-disabled);
             color: var(--color-text-disabled);
             opacity: 1;
             cursor: default;
