@@ -62,6 +62,7 @@ import strokeAccessibilityEarIcon from '@/icons/stroke-accessibility-ear.svg'
 import strokeAccessibilityEyeIcon from '@/icons/stroke-accessibility-eye.svg'
 import strokeAccessibilityLegIcon from '@/icons/stroke-accessibility-leg.svg'
 import strokeAddCalendarIcon from '@/icons/stroke-add-calendar.svg'
+import strokeArchiveIcon from '@/icons/stroke-archive.svg'
 import strokeArticleIcon from '@/icons/stroke-article.svg'
 import strokeBagIcon from '@/icons/stroke-bag.svg'
 import strokeBarcodeIcon from '@/icons/stroke-barcode.svg'
@@ -198,6 +199,7 @@ export const fullIcons: IconListItem[] = [
 ]
 
 export const strokeIcons: IconListItem[] = [
+  { src: strokeArchiveIcon },
   { src: strokeUserIcon },
   { src: strokeFraudIcon },
   { src: strokeErrorIcon },

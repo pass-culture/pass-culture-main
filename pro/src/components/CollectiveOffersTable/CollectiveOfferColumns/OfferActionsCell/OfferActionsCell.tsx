@@ -37,13 +37,13 @@ import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/
 import { CancelCollectiveBookingModal } from '@/components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
 import { ShareLinkDrawer } from '@/components/CollectiveOffer/ShareLinkDrawer/ShareLinkDrawer'
 import { ButtonSize, ButtonVariant } from '@/design-system/Button/types'
+import fullArchiveIcon from '@/icons/full-archive.svg'
 import fullClearIcon from '@/icons/full-clear.svg'
 import fullCopyIcon from '@/icons/full-duplicate.svg'
 import fullPenIcon from '@/icons/full-edit.svg'
 import fullHideIcon from '@/icons/full-hide.svg'
 import fullPlusIcon from '@/icons/full-plus.svg'
 import strokeCheckIcon from '@/icons/stroke-check.svg'
-import strokeThingIcon from '@/icons/stroke-thing.svg'
 import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
 import { DropdownItem } from '@/ui-kit/Dropdown/DropdownItem'
 import { DropdownItemColor } from '@/ui-kit/Dropdown/types'
@@ -336,7 +336,7 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
           {canArchiveOffer && (
             <DropdownItem
               title="Archiver"
-              icon={strokeThingIcon}
+              icon={fullArchiveIcon}
               onSelect={() => setIsArchivedModalOpen(true)}
               color={DropdownItemColor.DANGER}
             />

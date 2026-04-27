@@ -10,7 +10,7 @@ import type {
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { ButtonColor } from '@/design-system/Button/types'
-import strokeThingIcon from '@/icons/stroke-thing.svg'
+import strokeArchiveIcon from '@/icons/stroke-archive.svg'
 import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 interface Offer {
@@ -75,7 +75,7 @@ export const ArchiveConfirmationModal = <T extends Offer>({
       confirmText={
         hasMultipleOffers ? 'Archiver les offres' : 'Archiver l’offre'
       }
-      icon={strokeThingIcon}
+      icon={strokeArchiveIcon}
       title={
         hasMultipleOffers
           ? 'Êtes-vous sûr de vouloir archiver ces offres ?'
@@ -84,10 +84,8 @@ export const ArchiveConfirmationModal = <T extends Offer>({
       open={isDialogOpen}
       refToFocusOnClose={refToFocusOnClose}
     >
-      <p>
-        Une offre archivée ne peut pas être désarchivée, cette action est
-        irréversible
-      </p>
+      <p>Une offre archivée ne peut pas être désarchivée.</p>
+      <strong>Cette action est irréversible.</strong>
       <p>
         Vous pourrez la retrouver facilement en filtrant sur le statut
         “archivée”.
