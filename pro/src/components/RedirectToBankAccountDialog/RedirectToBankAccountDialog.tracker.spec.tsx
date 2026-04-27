@@ -19,7 +19,7 @@ describe('screen Offers', () => {
   beforeEach(() => {
     props = {
       cancelRedirectUrl: '/url',
-      offerId: 1,
+      offererId: 1,
       venueId: 2,
       isDialogOpen: true,
     }

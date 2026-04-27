@@ -12,9 +12,9 @@ import * as useOfferWizardModeHook from '@/commons/hooks/useOfferWizardMode'
 import {
   getIndividualOfferFactory,
   getOfferVenueFactory,
-  makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderComponentFunction,
   type RenderWithProvidersOptions,
@@ -46,28 +46,24 @@ const renderIndividualOfferLocationScreen: RenderComponentFunction<
   IndividualOfferContextValues
 > = (params) => {
   const offer = getIndividualOfferFactory()
-  const venues = [
-    {
-      ...makeVenueListItem({
-        id: 1,
-        publicName: 'Lieu Nom Public Pour Test',
-      }),
-      location: {
-        banId: '75101_9575_00003',
-        city: 'Paris',
-        id: 945,
-        inseeCode: '75056',
-        isVenueLocation: false,
-        isManualEdition: false,
-        label: 'MINISTERE DE LA CULTURE',
-        latitude: 48.87171,
-        longitude: 2.30829,
-        postalCode: '75001',
-        street: '3 Rue de Valois',
-        departmentCode: '75',
-      },
+  const selectedPartnerVenue = makeGetVenueResponseModel({
+    id: 1,
+    publicName: 'Lieu Nom Public Pour Test',
+    location: {
+      banId: '75101_9575_00003',
+      city: 'Paris',
+      id: 945,
+      inseeCode: '75056',
+      isVenueLocation: false,
+      isManualEdition: false,
+      label: 'MINISTERE DE LA CULTURE',
+      latitude: 48.87171,
+      longitude: 2.30829,
+      postalCode: '75001',
+      street: '3 Rue de Valois',
+      departmentCode: '75',
     },
-  ]
+  })
   const contextValues: IndividualOfferContextValues = {
     categories: MOCKED_CATEGORIES,
     hasPublishedOfferWithSameEan: false,
@@ -81,10 +77,16 @@ const renderIndividualOfferLocationScreen: RenderComponentFunction<
   const options: RenderWithProvidersOptions = {
     user: sharedCurrentUserFactory(),
     ...params.options,
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue,
+      },
+      ...(params.options?.storeOverrides ?? {}),
+    },
   }
   const props: IndividualOfferLocationScreenProps = {
     offer,
-    venues,
     ...params.props,
   }
 

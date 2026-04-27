@@ -11,10 +11,12 @@ import {
   getCollectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
 } from '@/commons/utils/factories/userOfferersFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -54,6 +56,16 @@ const renderCollectiveOfferPreviewCreation = (
     {
       ...options,
       initialRouterEntries: [path],
+      storeOverrides: {
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedPartnerVenue: makeGetVenueResponseModel({
+            id: 1,
+            allowedOnAdage: true,
+          }),
+        },
+        ...options?.storeOverrides,
+      },
     }
   )
 }

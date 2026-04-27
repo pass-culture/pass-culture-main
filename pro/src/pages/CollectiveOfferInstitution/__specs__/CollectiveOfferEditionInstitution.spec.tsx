@@ -1,6 +1,8 @@
 import { screen } from '@testing-library/react'
 
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { CollectiveOfferEditionInstitution } from '../CollectiveOfferEditionInstitution'
@@ -19,7 +21,16 @@ const renderCollectiveOfferEditionInstitution = (
 ) => {
   renderWithProviders(<CollectiveOfferEditionInstitution {...defaultProps} />, {
     initialRouterEntries: [path],
-    storeOverrides: storeOverride,
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: makeGetVenueResponseModel({
+          id: 1,
+          allowedOnAdage: true,
+        }),
+      },
+      ...storeOverride,
+    },
   })
 }
 

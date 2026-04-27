@@ -6,7 +6,8 @@ import type {
   GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
-import { useIsAllowedOnAdage } from '@/commons/hooks/useIsAllowedOnAdage'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { Tag } from '@/design-system/Tag/Tag'
 import { CollectiveCreationOfferNavigation } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
 import { getActiveStep } from '@/pages/CollectiveOfferRoutes/utils/getActiveStep'
@@ -34,9 +35,9 @@ export const CollectiveOfferLayout = ({
   offer,
 }: CollectiveOfferLayoutProps): JSX.Element => {
   const location = useLocation()
-  const isSummaryPage = location.pathname.includes('recapitulatif')
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
-  const allowedOnAdage = useIsAllowedOnAdage()
+  const isSummaryPage = location.pathname.includes('recapitulatif')
 
   const { offerId: offerIdFromParams } = useParams<{
     offerId: string
@@ -68,23 +69,30 @@ export const CollectiveOfferLayout = ({
       mainSubHeading={subTitle}
       isStickyActionBarInChild
     >
-      {!allowedOnAdage ? null : navigationProps.isCreatingOffer ? (
-        <CollectiveCreationOfferNavigation
-          activeStep={navigationProps.activeStep}
-          className={styles['eac-layout-navigation']}
-          offerId={navigationProps.offerId}
-          isTemplate={isTemplate}
-          requestId={requestId}
-          offer={offer}
-        />
-      ) : (
-        <CollectiveEditionOfferNavigation
-          isTemplate={isTemplate}
-          offer={offer}
-          offerId={navigationProps.offerId}
-          activeStep={navigationProps.activeStep}
-        />
+      {/* TODO (igabriele, 2026-04-27): Isn't that the role of routing permissions to guarantee this prop is true? */}
+      {selectedPartnerVenue.allowedOnAdage && (
+        <>
+          {navigationProps.isCreatingOffer && (
+            <CollectiveCreationOfferNavigation
+              activeStep={navigationProps.activeStep}
+              className={styles['eac-layout-navigation']}
+              offerId={navigationProps.offerId}
+              isTemplate={isTemplate}
+              requestId={requestId}
+              offer={offer}
+            />
+          )}
+          {!navigationProps.isCreatingOffer && (
+            <CollectiveEditionOfferNavigation
+              isTemplate={isTemplate}
+              offer={offer}
+              offerId={navigationProps.offerId}
+              activeStep={navigationProps.activeStep}
+            />
+          )}
+        </>
       )}
+
       {children}
     </BasicLayout>
   )

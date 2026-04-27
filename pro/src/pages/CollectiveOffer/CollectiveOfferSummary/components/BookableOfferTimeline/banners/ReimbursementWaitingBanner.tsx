@@ -1,6 +1,9 @@
 import fullEditIcon from 'icons/full-edit.svg'
 import fullNextIcon from 'icons/full-next.svg'
 
+import { SimplifiedBankAccountStatus } from '@/apiClient/v1/new'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import {
   Banner,
   type BannerLink,
@@ -56,16 +59,16 @@ const getBannerConfig = (
   return config['hasNoBankAccount']
 }
 
-export const ReimbursementWaitingBanner = ({
-  hasValidBankAccount,
-  hasPendingBankAccount,
-}: {
-  hasValidBankAccount?: boolean
-  hasPendingBankAccount?: boolean
-}) => {
+export const ReimbursementWaitingBanner = () => {
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+
   const { message, link } = getBannerConfig(
-    hasValidBankAccount,
-    hasPendingBankAccount
+    selectedPartnerVenue.bankAccountStatus ===
+      SimplifiedBankAccountStatus.VALID,
+    selectedPartnerVenue.bankAccountStatus ===
+      SimplifiedBankAccountStatus.PENDING ||
+      selectedPartnerVenue.bankAccountStatus ===
+        SimplifiedBankAccountStatus.PENDING_CORRECTIONS
   )
 
   return (

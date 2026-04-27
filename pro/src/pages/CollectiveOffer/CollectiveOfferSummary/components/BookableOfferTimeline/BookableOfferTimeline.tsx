@@ -2,7 +2,6 @@ import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   type GetCollectiveOfferResponseModel,
-  type GetOffererResponseModel,
 } from '@/apiClient/v1'
 import { FORMAT_DD_MMMM_YYYY } from '@/commons/utils/date'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
@@ -24,7 +23,6 @@ import { UnderReviewBanner } from './banners/UnderReviewBanner'
 
 type BookableOfferTimeline = {
   offer: GetCollectiveOfferResponseModel
-  offerer?: GetOffererResponseModel | null
 }
 
 const statusLabelMapping = {
@@ -49,10 +47,7 @@ const isMoreThan48hAgo = (dateString: string) => {
   return diffMs > 48 * 60 * 60 * 1000
 }
 
-export const BookableOfferTimeline = ({
-  offer,
-  offerer,
-}: BookableOfferTimeline) => {
+export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
   const { past, future } = offer.history
 
   const venueDepartmentCode =
@@ -350,10 +345,7 @@ export const BookableOfferTimeline = ({
           content: (
             <>
               <StatusWithDate status={waitingWording[lastPastStepStatus]} />
-              <ReimbursementWaitingBanner
-                hasValidBankAccount={offerer?.hasValidBankAccount}
-                hasPendingBankAccount={offerer?.hasPendingBankAccount}
-              />
+              <ReimbursementWaitingBanner />
             </>
           ),
         }

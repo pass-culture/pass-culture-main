@@ -13,14 +13,14 @@ import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 export interface RedirectToBankAccountDialogProps {
   cancelRedirectUrl: string
-  offerId: number
+  offererId: number
   venueId: number
   isDialogOpen: boolean
 }
 
 export const RedirectToBankAccountDialog = ({
   cancelRedirectUrl,
-  offerId,
+  offererId,
   venueId,
   isDialogOpen,
 }: RedirectToBankAccountDialogProps): JSX.Element => {
@@ -37,7 +37,7 @@ export const RedirectToBankAccountDialog = ({
       overrideConfirm={
         <Button
           as="a"
-          to={`/remboursements/informations-bancaires?structure=${offerId}`}
+          to={`/remboursements/informations-bancaires?structure=${offererId}`}
           variant={ButtonVariant.PRIMARY}
           onClick={() => {
             logEvent(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {

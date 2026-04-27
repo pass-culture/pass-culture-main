@@ -21,6 +21,7 @@ import {
   currentOffererFactory,
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -44,7 +45,10 @@ const renderBookableOfferSummary = (
 ) =>
   renderWithProviders(<BookableOfferSummary {...props} />, {
     storeOverrides: {
-      user: { currentUser: sharedCurrentUserFactory() },
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+      },
       offerer: currentOffererFactory(),
     },
     ...options,
@@ -267,7 +271,7 @@ describe('BookableOfferSummary', () => {
       .spyOn(api, 'patchCollectiveOffersArchive')
       .mockResolvedValueOnce()
 
-    renderWithProviders(<BookableOfferSummary {...props} />)
+    renderBookableOfferSummary(props)
 
     const archiveButton = screen.getByText('Archiver')
     expect(archiveButton).toBeInTheDocument()

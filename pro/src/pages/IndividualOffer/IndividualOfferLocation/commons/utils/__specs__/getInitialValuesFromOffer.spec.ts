@@ -1,20 +1,17 @@
 import { computeAddressDisplayName } from 'repository/venuesService'
 
 import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
-import {
-  getIndividualOfferFactory,
-  makeVenueListItem,
-} from '@/commons/utils/factories/individualApiFactories'
+import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { OFFER_LOCATION } from '@/pages/IndividualOffer/commons/constants'
 
-import { EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES } from '../../constants'
 import { getInitialValuesFromOffer } from '../getInitialValuesFromOffer'
 
 describe('getInitialValuesFromOffer', () => {
   const offerBase = getIndividualOfferFactory()
 
   const paramsBase = {
-    offerVenue: makeVenueListItem({ id: 2 }),
+    offerVenue: makeGetVenueResponseModel({ id: 2 }),
   }
 
   describe('when offer subcategory is not digital', () => {
@@ -95,7 +92,7 @@ describe('getInitialValuesFromOffer', () => {
         }
         const params = {
           ...paramsWithOfflineSubcategory,
-          offerVenue: makeVenueListItem({
+          offerVenue: makeGetVenueResponseModel({
             id: 2,
             location: getLocationResponseModel({
               id,
@@ -120,7 +117,7 @@ describe('getInitialValuesFromOffer', () => {
       }
 
       it('should include selected venue address when available', () => {
-        const offerVenue = makeVenueListItem({
+        const offerVenue = makeGetVenueResponseModel({
           id: 2,
           location: getLocationResponseModel(),
         })
@@ -150,7 +147,7 @@ describe('getInitialValuesFromOffer', () => {
       })
 
       it('should handle missing address props in selected venue', () => {
-        const offerVenue = makeVenueListItem({
+        const offerVenue = makeGetVenueResponseModel({
           id: 2,
           location: getLocationResponseModel({
             banId: undefined,
@@ -179,7 +176,7 @@ describe('getInitialValuesFromOffer', () => {
     })
 
     it('should accept any url format when offline', () => {
-      const offerVenue = makeVenueListItem({
+      const offerVenue = makeGetVenueResponseModel({
         id: 2,
         location: getLocationResponseModel(),
       })
@@ -220,20 +217,5 @@ describe('getInitialValuesFromOffer', () => {
       location: null,
       url: 'https://passculture.app',
     })
-  })
-
-  it('should return EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES when neither offer nor venue has address (offline)', () => {
-    const offer = { ...offerBase, location: undefined }
-    const params = {
-      offerVenue: makeVenueListItem({
-        id: 2,
-        location: null,
-      }),
-      isDigital: false,
-    }
-
-    const result = getInitialValuesFromOffer(offer, params)
-
-    expect(result.location).toEqual(EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES)
   })
 })
