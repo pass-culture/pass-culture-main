@@ -1,5 +1,4 @@
 import { screen, waitFor } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
 import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
@@ -47,7 +46,7 @@ function renderComponent(props: OfferEducationalProps) {
 describe('screens | OfferEducational : accessibility step', () => {
   let props: OfferEducationalProps
 
-  const firstVenueId = 12
+  const firstVenueId = 43
   const secondVenueId = 13
   const offererId = 15
 
@@ -65,12 +64,20 @@ describe('screens | OfferEducational : accessibility step', () => {
   })
 
   it('should prefill intervention and accessibility fields with venue intervention field when selecting venue', async () => {
+    props = {
+      ...props,
+      venues: [
+        makeVenueListItem({ id: firstVenueId }),
+        makeVenueListItem({ id: secondVenueId }),
+      ],
+    }
+
     props.userOfferer = userOffererFactory({
       id: offererId,
       managedVenues: [
         managedVenueFactory({}),
         managedVenueFactory({
-          id: 43,
+          id: firstVenueId,
           mentalDisabilityCompliant: true,
           motorDisabilityCompliant: true,
           visualDisabilityCompliant: false,
@@ -80,13 +87,12 @@ describe('screens | OfferEducational : accessibility step', () => {
     })
     renderComponent(props)
 
-    const venuesSelect = await screen.findByLabelText(/Structure/)
-    await userEvent.selectOptions(venuesSelect, ['43'])
-
-    const accessibilityCheckboxes = screen.queryAllByRole('checkbox', {
-      checked: true,
+    await waitFor(() => {
+      expect(
+        screen.queryAllByRole('checkbox', {
+          checked: true,
+        })
+      ).toHaveLength(2)
     })
-
-    await waitFor(() => expect(accessibilityCheckboxes).toHaveLength(2))
   })
 })

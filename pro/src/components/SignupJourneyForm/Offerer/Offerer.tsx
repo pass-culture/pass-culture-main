@@ -25,7 +25,6 @@ import {
   GET_DATA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
 import { getSiretData } from '@/commons/core/Venue/utils/getSiretData'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import {
   LOCAL_STORAGE_KEY,
@@ -55,8 +54,6 @@ interface OffererFormValues {
 }
 
 export const Offerer = (): JSX.Element => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const navigate = useNavigate()
@@ -313,14 +310,10 @@ export const Offerer = (): JSX.Element => {
         />
         <ActionBar
           isDisabled={isSubmitting}
-          onClickPrevious={
-            withSwitchVenueFeature ? () => navigate('/hub') : undefined
-          }
+          onClickPrevious={() => navigate('/hub')}
           onClickNext={handleNextStep}
           nextStepTitle="Continuer"
-          previousStepTitle={
-            withSwitchVenueFeature ? 'Annuler et quitter' : undefined
-          }
+          previousStepTitle="Annuler et quitter"
         />
       </form>
     </FormLayout>

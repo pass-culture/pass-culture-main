@@ -42,7 +42,6 @@ export const initializeUser = createAsyncThunk<
   AppThunkApiConfig
 >('user/initializeUser', async ({ newOffererId, user }, { dispatch }) => {
   try {
-    /// TODO (igabriele, 2025-10-28): Simplify this Backend route and its core method once `WIP_SWITCH_VENUE` FF is enabled and removed (no need for query params anymore).
     const offererNamesResponse = await api.listOfferersNames()
     const venuesResponse = await api.getVenuesLite()
     const offererNames = offererNamesResponse.offerersNames.concat(
@@ -72,11 +71,7 @@ export const initializeUser = createAsyncThunk<
     if (!initialVenueId) {
       // We want to unselect any previously selected venue in this case
       dispatch(unsetSelectedPartnerVenue())
-    }
 
-    // setSelectedPartnerVenueById already called setSelectedAdminOffererById
-    // internally, so only call it here when no venue was selected.
-    if (!initialVenueId) {
       const initialAdminOffererId =
         newOffererId ??
         getInitialAdminOffererId({

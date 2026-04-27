@@ -42,54 +42,49 @@ export const HeaderDropdown = () => {
           <SvgIcon src={fullProfilIcon} alt="Profil" width="18" />
         </button>
       </DropdownMenu.Trigger>
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content
-          className={styles['pop-in']}
-          align="end"
-          sideOffset={7}
-        >
-          <div
-            className={styles['menu']}
-            data-testid="header-dropdown-menu-div"
-          >
-            <DropdownMenu.Item className={styles['close-item']}>
-              <button
-                type="button"
-                aria-label="fermer"
-                className={styles['close-button']}
-              >
-                <SvgIcon src={fullCloseIcon} alt="" width="24" />
-              </button>
-            </DropdownMenu.Item>
-            <DropdownMenu.Label className={styles['menu-title']}>
-              Profil
-            </DropdownMenu.Label>
-            <div className={styles['menu-email']}>{currentUser?.email}</div>
-            {!IN_STRUCTURE_CREATION_FUNNEL && (
-              <DropdownMenu.Item className={styles['menu-item']}>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  icon={fullProfilIcon}
-                  to="/profil"
-                  label="Voir mon profil"
-                />
-              </DropdownMenu.Item>
-            )}
-            <DropdownMenu.Separator className={styles['separator']} />
+      <DropdownMenu.Content
+        className={styles['pop-in']}
+        align="end"
+        sideOffset={7}
+      >
+        <div className={styles['menu']} data-testid="header-dropdown-menu-div">
+          <DropdownMenu.Item className={styles['close-item']}>
+            <button
+              type="button"
+              aria-label="fermer"
+              className={styles['close-button']}
+            >
+              <SvgIcon src={fullCloseIcon} alt="" width="24" />
+            </button>
+          </DropdownMenu.Item>
+          <DropdownMenu.Label className={styles['menu-title']}>
+            Profil
+          </DropdownMenu.Label>
+          <div className={styles['menu-email']}>{currentUser?.email}</div>
+          {!IN_STRUCTURE_CREATION_FUNNEL && (
             <DropdownMenu.Item className={styles['menu-item']}>
               <Button
-                icon={fullLogoutIcon}
+                as="a"
                 variant={ButtonVariant.TERTIARY}
                 color={ButtonColor.NEUTRAL}
-                onClick={logEventAndLogout}
-                label="Se déconnecter"
+                icon={fullProfilIcon}
+                to="/profil"
+                label="Voir mon profil"
               />
             </DropdownMenu.Item>
-          </div>
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
+          )}
+          <DropdownMenu.Separator className={styles['separator']} />
+          <DropdownMenu.Item className={styles['menu-item']}>
+            <Button
+              icon={fullLogoutIcon}
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
+              onClick={logEventAndLogout}
+              label="Se déconnecter"
+            />
+          </DropdownMenu.Item>
+        </div>
+      </DropdownMenu.Content>
     </DropdownMenu.Root>
   )
 }

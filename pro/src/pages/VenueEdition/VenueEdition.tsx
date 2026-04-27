@@ -48,9 +48,7 @@ export const VenueEdition = (): JSX.Element | null => {
     context === 'collective' ? 'Page dans ADAGE' : 'Page sur l’application'
   return (
     <BasicLayout mainHeading={titleText}>
-      {!selectedPartnerVenue ? (
-        <Spinner />
-      ) : (
+      {selectedPartnerVenue ? (
         <div>
           <VenueEditionHeader
             venue={selectedPartnerVenue}
@@ -64,6 +62,8 @@ export const VenueEdition = (): JSX.Element | null => {
             <VenueEditionFormScreen venue={selectedPartnerVenue} />
           )}
         </div>
+      ) : (
+        <Spinner />
       )}
     </BasicLayout>
   )

@@ -33,11 +33,6 @@ export const managedVenueFactory = (
   }
 }
 
-export const managedVenuesFactory = (
-  managedVenuesExtends: Partial<GetEducationalOffererVenueResponseModel>[]
-): GetEducationalOffererVenueResponseModel[] =>
-  managedVenuesExtends.map(managedVenueFactory)
-
 let offererId = 1
 
 export const userOffererFactory = (

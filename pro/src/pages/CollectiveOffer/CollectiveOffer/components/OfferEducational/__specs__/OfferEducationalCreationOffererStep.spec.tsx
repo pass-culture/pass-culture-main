@@ -6,10 +6,6 @@ import {
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
 import {
-  managedVenuesFactory,
-  userOffererFactory,
-} from '@/commons/utils/factories/userOfferersFactories'
-import {
   makeGetVenueResponseModel,
   makeVenueListItemLiteResponseModel,
 } from '@/commons/utils/factories/venueFactories'
@@ -60,37 +56,6 @@ describe('screens | OfferEducational : creation offerer step', () => {
           /La création d'offres collectives nécessite la validation de votre entité juridique./
         )
       ).toBeInTheDocument()
-    })
-  })
-
-  describe('when there is multiple venues managed by an offerer', () => {
-    it('should display venues by alphabetical order', async () => {
-      const venues = [
-        makeVenueListItem({ id: 1 }),
-        makeVenueListItem({ id: 2 }),
-        makeVenueListItem({ id: 3 }),
-      ]
-
-      const props: OfferEducationalProps = {
-        ...defaultCreationProps,
-        userOfferer: userOffererFactory({
-          managedVenues: managedVenuesFactory([
-            { name: 'Venue 1', id: 1 },
-            { name: 'Venue 2', id: 2 },
-            { name: 'A - Venue 3', id: 3 },
-          ]),
-        }),
-        venues,
-      }
-
-      renderOfferEducational(props)
-
-      const venueSelect = await screen.findByLabelText(/Structure/)
-      const venuesOptions = venueSelect.children
-      expect(venuesOptions[0].textContent).toEqual('Sélectionner une structure')
-      expect(venuesOptions[1].textContent).toEqual('A - Venue 3')
-      expect(venuesOptions[2].textContent).toEqual('Venue 1')
-      expect(venuesOptions[3].textContent).toEqual('Venue 2')
     })
   })
 })
