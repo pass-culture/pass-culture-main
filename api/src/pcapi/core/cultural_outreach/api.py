@@ -55,3 +55,33 @@ def create_cultural_outreach_claim(
         )
     )
     return cultural_outreach
+
+
+def update_cultural_outreach_claim(
+    claim_datetime: datetime.datetime | None,
+    offer: offers_models.Offer,
+) -> models.CulturalOutreach:
+    _check_can_claim_cultural_outreach(offer)
+
+    cultural_outreach = offer.culturalOutreach
+
+    if cultural_outreach is None:
+        raise CulturalOutreachException({"global": ["Aucune action de médiation n'a été déclarée pour cette offre"]})
+
+    # we do not want to update the claim datetime if it is already set
+    if cultural_outreach.claimedDatetime is not None and claim_datetime is not None:
+        return cultural_outreach
+
+    cultural_outreach.claimedDatetime = claim_datetime
+
+    db.session.flush()
+
+    on_commit(
+        functools.partial(
+            logger.info,
+            "Update cultural outreach claim",
+            extra={"offer_id": offer.id, "venue_id": offer.venueId, "claim_datetime": claim_datetime},
+            technical_message_id="cultural_outreach.claim_updated",
+        )
+    )
+    return cultural_outreach

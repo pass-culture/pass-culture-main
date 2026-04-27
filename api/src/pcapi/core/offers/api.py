@@ -331,7 +331,9 @@ def update_offer(
     aliases = set(body.dict(by_alias=True))
     fields = body.dict(by_alias=True, exclude_unset=True)
     fields.pop("artistOfferLinks", None)
+    fields.pop("hasCulturalOutreachClaim", None)
     artist_offer_links = body.artist_offer_links
+    has_cultural_outreach_claim = body.has_cultural_outreach_claim
 
     # updated using the pro interface
     if body.location:
@@ -393,6 +395,14 @@ def update_offer(
                     technical_message_id="offer.artistOfferLinks.created",
                 )
             )
+
+    if has_cultural_outreach_claim is not None:
+        if offer.culturalOutreach is None:
+            if has_cultural_outreach_claim:
+                cultural_outreach_api.create_cultural_outreach_claim(offer)
+        else:
+            claim_datetime = get_naive_utc_now() if has_cultural_outreach_claim else None
+            cultural_outreach_api.update_cultural_outreach_claim(claim_datetime, offer)
 
     if not updates:
         return offer

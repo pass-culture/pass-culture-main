@@ -86,6 +86,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     location: address_serialize.LocationBodyModel | address_serialize.LocationOnlyOnVenueBodyModel | None
     bookingContact: EmailStr | None
     bookingEmail: EmailStr | None
+    hasCulturalOutreachClaim: bool | None
     description: str | None
     isNational: bool | None
     name: str | None

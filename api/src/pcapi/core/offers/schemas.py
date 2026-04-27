@@ -89,6 +89,7 @@ class UpdateOffer(BaseModel):
     external_ticket_office_url: HttpUrl | None = None
     ean: str | None = None
     extra_data: typing.Any = None
+    has_cultural_outreach_claim: bool | None = None
     id_at_provider: str | None = None
     is_duo: bool | None = None
     offerer_address: offerers_models.OffererAddress | None
