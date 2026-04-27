@@ -9,6 +9,7 @@ import {
   managedVenueFactory,
   userOffererFactory,
 } from '@/commons/utils/factories/userOfferersFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import type { MandatoryCollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 
@@ -25,7 +26,13 @@ const renderCollectiveStockEdition = (
   renderWithProviders(<CollectiveOfferStockEdition {...props} />, {
     initialRouterEntries: [path],
     storeOverrides: {
-      user: { currentUser: sharedCurrentUserFactory() },
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: makeGetVenueResponseModel({
+          id: 1,
+          allowedOnAdage: true,
+        }),
+      },
       offerer: currentOffererFactory({
         currentOfferer: { id: 10 },
       }),

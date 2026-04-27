@@ -5,6 +5,8 @@ import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import type { MandatoryCollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 
@@ -24,6 +26,15 @@ const renderCollectiveStockCreation = (
 ) => {
   renderWithProviders(<CollectiveOfferStockCreation {...props} />, {
     initialRouterEntries: [path],
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: makeGetVenueResponseModel({
+          id: 1,
+          allowedOnAdage: true,
+        }),
+      },
+    },
   })
 }
 
