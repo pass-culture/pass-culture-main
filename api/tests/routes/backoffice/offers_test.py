@@ -1420,8 +1420,8 @@ class ListOffersTest(GetEndpointHelper):
             (offerers_factories.VenueFactory, "10,00 €", "10,00 € - 15,00 €"),
             (
                 offerers_factories.CaledonianVenueFactory,
-                "10,00 € (1195 CFP)",
-                "10,00 € (1195 CFP) - 15,00 € (1790 CFP)",
+                "10,00 € (1 195 CFP)",
+                "10,00 € (1 195 CFP) - 15,00 € (1 790 CFP)",
             ),
         ],
     )
@@ -4480,7 +4480,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             (1000, 50, "950", offerers_factories.VenueFactory, "10,10 €", "Paris"),
             (1000, 1000, "0", offerers_factories.VenueFactory, "10,10 €", "Paris"),
             (None, 0, "Illimité", offerers_factories.VenueFactory, "10,10 €", "Paris"),
-            (None, 50, "Illimité", offerers_factories.CaledonianVenueFactory, "10,10 € (1205 CFP)", "Noumea"),
+            (None, 50, "Illimité", offerers_factories.CaledonianVenueFactory, "10,10 € (1 205 CFP)", "Noumea"),
         ],
     )
     def test_get_offer_details_with_one_bookable_stock(
@@ -4543,9 +4543,9 @@ class GetOfferDetailsTest(GetEndpointHelper):
             (
                 offerers_factories.CaledonianVenueFactory,
                 "0,00 € (0 CFP)",
-                "13,00 € (1550 CFP)",
-                "42,00 € (5010 CFP)",
-                "66,60 € (7945 CFP)",
+                "13,00 € (1 550 CFP)",
+                "42,00 € (5 010 CFP)",
+                "66,60 € (7 945 CFP)",
             ),
         ],
     )

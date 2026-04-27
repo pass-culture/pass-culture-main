@@ -1110,8 +1110,8 @@ class GetPublicAccountTest(GetEndpointHelper):
             ),
             (
                 users_factories.CaledonianBeneficiaryFactory,
-                "137,50 € (16410 CFP)restants sur 150,00 € (17900 CFP)",
-                "Dont 100,00 € (11935 CFP) en offres numériques",
+                "137,50 € (16 410 CFP)restants sur 150,00 € (17 900 CFP)",
+                "Dont 100,00 € (11 935 CFP) en offres numériques",
             ),
         ],
     )
@@ -1177,7 +1177,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         "user_factory,expected_price_1,expected_price_2",
         [
             (users_factories.BeneficiaryFactory, "20,00 €", "12,50 €"),
-            (users_factories.CaledonianBeneficiaryFactory, "20,00 € (2385 CFP)", "12,50 € (1490 CFP)"),
+            (users_factories.CaledonianBeneficiaryFactory, "20,00 € (2 385 CFP)", "12,50 € (1 490 CFP)"),
         ],
     )
     def test_get_beneficiary_bookings(self, authenticated_client, user_factory, expected_price_1, expected_price_2):
