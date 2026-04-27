@@ -127,6 +127,7 @@
     {% endif %}
     {{ build_details_tab("history", "Historique du compte", active_tab == 'history') }}
     {% if bookings is defined %}{{ build_details_tab("bookings", "Suivi des réservations", active_tab == "bookings") }}{% endif %}
+    {% if report is defined %}{{ build_details_tab("report", "Suivi du crédit", active_tab == "report") }}{% endif %}
     {% if roles is defined %}{{ build_details_tab("roles", "Rôles BackOffice", active_tab == "roles") }}{% endif %}
     {{ build_details_tab("activity", "Activité", active_tab == "activity") }}
   {% endcall %}
@@ -144,6 +145,11 @@
     {% if bookings is defined %}
       {% call build_details_tab_content("bookings", active_tab == 'bookings') %}
         {% include "accounts/get/details/bookings.html" %}
+      {% endcall %}
+    {% endif %}
+    {% if report is defined %}
+      {% call build_details_tab_content("report", active_tab == 'report') %}
+        {% include "accounts/get/details/report.html" %}
       {% endcall %}
     {% endif %}
     {% if roles is defined %}

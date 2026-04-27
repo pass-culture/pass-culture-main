@@ -1297,6 +1297,26 @@ class FinanceIncident(PcObject, Model):
         return author_full_name or ""
 
     @property
+    def validation_date(self) -> datetime.datetime | None:
+        from pcapi.core.history import models as history_models
+
+        if self.status not in [IncidentStatus.VALIDATED, IncidentStatus.INVOICED]:
+            return None
+
+        if validated_actions := [
+            action
+            for action in self.action_history
+            if action.actionType == history_models.ActionType.FINANCE_INCIDENT_VALIDATED
+        ]:
+            return validated_actions[0].actionDate
+
+        # Fallback in case we do no longer have the history (missing on staging after anonymize.sql)
+        if created_at := self.details.get("createdAt"):
+            return datetime.datetime.fromisoformat(created_at)
+
+        return None  # (should never happen)
+
+    @property
     def cashflow_batch_label(self) -> str | None:
         for booking_finance_incident in self.booking_finance_incidents:
             for finance_event in booking_finance_incident.finance_events:
