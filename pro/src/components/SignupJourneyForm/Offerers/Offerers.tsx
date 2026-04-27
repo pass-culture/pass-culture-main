@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
@@ -26,15 +25,20 @@ import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
 import { setSelectedOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
 import { updateUser } from '@/commons/store/user/reducer'
 import { ensureCurrentUser } from '@/commons/store/user/selectors'
+import { pluralizeFr } from '@/commons/utils/pluralize'
+import { generateVenueDataLines } from '@/components/SignupJourneyForm/Offerers/utils'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
-import fullDownIcon from '@/icons/full-down.svg'
-import fullUpIcon from '@/icons/full-up.svg'
-import strokeCollaboratorIcon from '@/icons/stroke-collaborator.svg'
+import {
+  ButtonColor,
+  ButtonVariant,
+  IconPositionEnum,
+} from '@/design-system/Button/types'
+import fullNextIcon from '@/icons/full-next.svg'
 import { MAYBE_LOCAL_AUTHORITY_APE_CODE } from '@/pages/Signup/SignupContainer/constants'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
+import { DescriptionList } from '@/ui-kit/DescriptionList/DescriptionList'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { ActionBar } from '../ActionBar/ActionBar'
@@ -53,8 +57,8 @@ export const Offerers = (): JSX.Element => {
   const dispatch = useAppDispatch()
   const currentUser = useAppSelector(ensureCurrentUser)
 
-  const [isVenueListOpen, setIsVenueListOpen] = useState<boolean>(false)
   const [showLinkDialog, setShowLinkDialog] = useState<boolean>(false)
+  const [showAllVenues, setShowAllVenues] = useState<boolean>(false)
 
   const { offerer, initialAddress, setOfferer, setInitialAddress } =
     useSignupJourneyContext()
@@ -78,9 +82,19 @@ export const Offerers = (): JSX.Element => {
     { isPaused: () => offerer?.siret === null }
   )
 
-  const permanentVenues =
-    venuesOfOfferer?.venues.filter((venue) => venue.isPermanent) ?? []
-  const displayToggleVenueList = permanentVenues.length > 5
+  const displayedVenuesNames = [
+    venuesOfOfferer?.offererName ?? '',
+    ...(venuesOfOfferer?.venues
+      .filter((venue) => venue.siret === null)
+      .map((venue) => venue.publicName) ?? []),
+  ].sort((a, b) => a.localeCompare(b))
+
+  const venuesLines = generateVenueDataLines(
+    offerer,
+    displayedVenuesNames,
+    showAllVenues,
+    setShowAllVenues
+  )
 
   useEffect(() => {
     if (
@@ -133,7 +147,7 @@ export const Offerers = (): JSX.Element => {
   const doLinkAccount = async () => {
     logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
       from: location.pathname,
-      to: '/inscription/structure/rattachement/confirmation',
+      to: '/inscription/structure/rattachement/confirmation-rattachement',
       used: SignupJourneyAction.JoinModal,
     })
     /* istanbul ignore next: venuesOfOfferer will always be defined here or else,
@@ -170,7 +184,7 @@ export const Offerers = (): JSX.Element => {
         ).unwrap()
       }
 
-      navigate('/inscription/structure/rattachement/confirmation')
+      navigate('/inscription/structure/rattachement/confirmation-rattachement')
     } catch (e) {
       snackBar.error(
         getHumanReadableApiError(
@@ -201,46 +215,25 @@ export const Offerers = (): JSX.Element => {
 
   return (
     <div className={styles['existing-offerers-layout-wrapper']}>
+      <div>
+        <h1 className={styles['title']}>Ce SIRET est déjà inscrit</h1>
+        <h2 className={styles['subtitle']}>
+          Ce SIRET est déjà associé à{' '}
+          {pluralizeFr(
+            displayedVenuesNames.length,
+            'une structure',
+            'plusieurs structures'
+          )}{' '}
+          sur le pass Culture Pro.
+        </h2>
+      </div>
+
       <div className={styles['existing-offerers-layout']}>
-        <div className={styles['title-4']}>
-          Nous avons trouvé un espace déjà inscrit comprenant le SIRET{' '}
-          {offerer.siret} :
-        </div>
         <div className={styles['venues-layout']}>
-          <div>{venuesOfOfferer?.offererName}</div>
-          {permanentVenues.length > 0 && (
-            <ul className={styles['venue-list']}>
-              {permanentVenues.map((venue, index) => (
-                <li
-                  className={styles['venue-list-item']}
-                  key={venue.id}
-                  hidden={
-                    displayToggleVenueList && !isVenueListOpen && index >= 4
-                  }
-                >
-                  {venue.publicName}
-                </li>
-              ))}
-            </ul>
-          )}
-          {displayToggleVenueList && (
-            <Button
-              onClick={() => {
-                setIsVenueListOpen(!isVenueListOpen)
-              }}
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
-              icon={isVenueListOpen ? fullUpIcon : fullDownIcon}
-              label={
-                isVenueListOpen
-                  ? 'Afficher moins de structures'
-                  : 'Afficher plus de structures'
-              }
-            />
-          )}
+          <DescriptionList lines={venuesLines} />
         </div>
         <Button
-          variant={ButtonVariant.SECONDARY}
+          variant={ButtonVariant.PRIMARY}
           onClick={doLinkUserToOfferer}
           ref={joinSpaceButtonRef}
           label="Rejoindre cet espace"
@@ -249,18 +242,21 @@ export const Offerers = (): JSX.Element => {
 
       {isLocalAuthority && (
         <>
-          <div className={cn(styles['wrong-offerer-title'], styles['title-4'])}>
+          <div className={styles['wrong-offerer-title']}>
             Vous souhaitez ajouter une nouvelle structure à cet espace ?
           </div>
           <Button
             onClick={redirectToOnboarding}
-            variant={ButtonVariant.SECONDARY}
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
             label="Ajouter une nouvelle structure"
+            iconPosition={IconPositionEnum.LEFT}
+            icon={fullNextIcon}
           />
         </>
       )}
       <ActionBar
-        previousStepTitle="Retour"
+        previousStepTitle="Retour à la recherche de SIRET"
         hideRightButton
         onClickPrevious={() => {
           setOfferer(null)
@@ -270,9 +266,9 @@ export const Offerers = (): JSX.Element => {
         isDisabled={false}
       />
       <ConfirmDialog
-        icon={strokeCollaboratorIcon}
+        hideIcon={true}
         onCancel={cancelLinkUserToOfferer}
-        title="Êtes-vous sûr de vouloir rejoindre cet espace ?"
+        title="Rejoindre cet espace ?"
         onConfirm={doLinkAccount}
         confirmText="Rejoindre cet espace"
         cancelText="Annuler"
@@ -281,7 +277,8 @@ export const Offerers = (): JSX.Element => {
         refToFocusOnClose={joinSpaceButtonRef}
       >
         <div className={styles['dialog-info']}>
-          Votre demande sera prise en compte et analysée par nos équipes.
+          Votre demande sera transmise à nos équipes, qui valideront votre
+          rattachement par email.
         </div>
       </ConfirmDialog>
     </div>

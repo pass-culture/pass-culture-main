@@ -13,41 +13,12 @@ $small-gap: var(--size-spacing-s);
 }
 
 .venues-layout {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  background-color: var(--color-background-subtle);
-  padding: $medium-gap;
-  gap: $medium-gap;
-  border-radius: var(--size-border-radius-m);
   width: 100%;
-
-  .venue-list {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: $small-gap;
-
-    &-item::before {
-      content: "-";
-      display: inline-block;
-      width: 1em;
-      margin-left: $small-gap;
-    }
-  }
 }
 
 .wrong-offerer-title {
-  margin-bottom: $medium-gap;
+  margin-bottom: var(--size-spacing-s);
   margin-top: var(--size-spacing-xxl);
-
-  &.title-4 {
-    margin-top: var(--size-spacing-xxxl);
-  }
-}
-
-.title-4 {
-  @include fonts.title4;
 }
 
 .dialog-content {
@@ -60,4 +31,21 @@ $small-gap: var(--size-spacing-s);
 
 .existing-offerers-layout-wrapper {
   margin-bottom: var(--size-spacing-xxxl);
+}
+
+.title {
+  @include fonts.title1;
+
+  margin-bottom: var(--size-spacing-s);
+}
+
+.subtitle {
+  @include fonts.body-xs;
+
+  color: var(--color-text-subtle, #696a6f);
+  margin-bottom: var(--size-spacing-xxl);
+}
+
+.view-move-button {
+  text-align: right;
 }

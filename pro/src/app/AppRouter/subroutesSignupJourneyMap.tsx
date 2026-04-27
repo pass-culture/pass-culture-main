@@ -28,7 +28,7 @@ export const routesSignupJourney: CustomRouteGroupChild[] = [
   {
     element: <ConfirmedAttachment />,
     loader: withUserPermissions(mustBeAuthenticated),
-    path: '/inscription/structure/rattachement/confirmation',
+    path: '/inscription/structure/rattachement/confirmation-rattachement',
     title: 'Confirmation rattachement à une structure - Parcours d’inscription',
   },
   {
