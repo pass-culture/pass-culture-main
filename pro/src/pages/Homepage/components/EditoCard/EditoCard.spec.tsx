@@ -31,7 +31,6 @@ vi.mock('../HighlightHome/ModalHighlight/ModalHighlight', () => ({
 }))
 
 const defaultProps = {
-  venueId: 1,
   canDisplayHighlights: false,
 }
 
@@ -182,7 +181,6 @@ describe('EditoCard', () => {
       expect(mockLogEvent).toHaveBeenCalledWith(
         EngagementEvents.HAS_REQUESTED_HIGHLIGHTS,
         {
-          venueId: 1,
           action: 'discover',
         }
       )
@@ -207,8 +205,7 @@ describe('EditoCard', () => {
       await user.click(links[0])
 
       expect(mockLogEvent).toHaveBeenCalledWith(
-        HomepageEvents.CLICKED_HEADLINE_OFFER,
-        { venueId: 1 }
+        HomepageEvents.CLICKED_HEADLINE_OFFER
       )
     })
 
@@ -220,8 +217,7 @@ describe('EditoCard', () => {
       await user.click(screen.getByRole('link', { name: /Lire l’enquête/ }))
 
       expect(mockLogEvent).toHaveBeenCalledWith(
-        HomepageEvents.CLICKED_CULTURAL_SURVEY,
-        { venueId: 1 }
+        HomepageEvents.CLICKED_CULTURAL_SURVEY
       )
     })
     it('should log CLICKED_RECOMMENDATION on recommendation "Choisir une offre" click', async () => {
@@ -235,8 +231,7 @@ describe('EditoCard', () => {
       await user.click(links[1])
 
       expect(mockLogEvent).toHaveBeenCalledWith(
-        HomepageEvents.CLICKED_RECOMMENDATION,
-        { venueId: 1 }
+        HomepageEvents.CLICKED_RECOMMENDATION
       )
     })
   })

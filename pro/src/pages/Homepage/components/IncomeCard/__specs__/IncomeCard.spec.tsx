@@ -184,11 +184,7 @@ describe('IncomeCard', () => {
     await user.click(link)
 
     expect(mockLogEvent).toHaveBeenCalledWith(
-      BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT,
-      {
-        from: '/accueil',
-        venueId: 1,
-      }
+      BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT
     )
   })
 
@@ -213,11 +209,7 @@ describe('IncomeCard', () => {
     await user.click(link)
 
     expect(mockLogEvent).toHaveBeenCalledWith(
-      BankAccountEvents.CLICKED_BANK_ACCOUNT_HAS_PENDING_CORRECTIONS,
-      {
-        from: '/accueil',
-        venueId: 1,
-      }
+      BankAccountEvents.CLICKED_BANK_ACCOUNT_HAS_PENDING_CORRECTIONS
     )
   })
 })

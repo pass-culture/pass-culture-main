@@ -62,7 +62,6 @@ describe('PartnerPage', () => {
     await userEvent.click(screen.getByText(/Ajouter une image/))
 
     expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_ADD_IMAGE, {
-      venueId: 42,
       imageType: UploaderModeEnum.VENUE,
       isEdition: true,
       imageCreationStage: 'add image',

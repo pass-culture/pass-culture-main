@@ -73,10 +73,7 @@ describe('PartnerPageIndividualSection', () => {
     await userEvent.click(previewLink)
 
     expect(logEventMock).toHaveBeenCalledWith(
-      Events.CLICKED_PARTNER_BLOCK_PREVIEW_VENUE_LINK,
-      {
-        venueId: 7,
-      }
+      Events.CLICKED_PARTNER_BLOCK_PREVIEW_VENUE_LINK
     )
   })
 
@@ -101,10 +98,7 @@ describe('PartnerPageIndividualSection', () => {
     )
     expect(await screen.findByText('Lien copié !')).toBeInTheDocument()
     expect(logEventMock).toHaveBeenCalledWith(
-      Events.CLICKED_PARTNER_BLOCK_COPY_VENUE_LINK,
-      {
-        venueId: 7,
-      }
+      Events.CLICKED_PARTNER_BLOCK_COPY_VENUE_LINK
     )
   })
 })

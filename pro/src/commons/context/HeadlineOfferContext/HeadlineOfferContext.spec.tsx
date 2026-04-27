@@ -224,7 +224,6 @@ describe('HeadlineOfferContext', () => {
       expect(logEvent).toHaveBeenCalledWith(
         EngagementEvents.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER,
         {
-          venueId: 2,
           action: 'add',
           requiredImageUpload: false,
         }
@@ -305,7 +304,6 @@ describe('HeadlineOfferContext', () => {
       expect(logEvent).toHaveBeenCalledWith(
         EngagementEvents.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER,
         {
-          venueId: 2,
           action: 'deleted',
         }
       )

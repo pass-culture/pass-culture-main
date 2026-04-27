@@ -90,7 +90,6 @@ describe('ModalHighlight', () => {
     expect(mockLogEvent).toBeCalledWith(
       EngagementEvents.HAS_REQUESTED_HIGHLIGHTS,
       {
-        venueId: 2,
         action: 'seeMoreInfo',
       }
     )
@@ -100,7 +99,6 @@ describe('ModalHighlight', () => {
     expect(mockLogEvent).toBeCalledWith(
       EngagementEvents.HAS_REQUESTED_HIGHLIGHTS,
       {
-        venueId: 2,
         action: 'seeCalendar',
       }
     )
@@ -110,7 +108,6 @@ describe('ModalHighlight', () => {
     expect(mockLogEvent).toBeCalledWith(
       EngagementEvents.HAS_REQUESTED_HIGHLIGHTS,
       {
-        venueId: 2,
         action: 'goToOffersList',
       }
     )

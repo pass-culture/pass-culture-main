@@ -10,10 +10,7 @@ import {
   type CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import {
-  COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
-  Events,
-} from '@/commons/core/FirebaseEvents/constants'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
   type CollectiveOffer,
   isCollectiveOfferBookable,
@@ -24,9 +21,7 @@ import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/du
 import { getCollectiveOfferLink } from '@/commons/core/OfferEducational/utils/getCollectiveOfferLink'
 import { useCollectiveOffersSwrKeys } from '@/commons/core/Offers/hooks/useCollectiveOffersSwrKeys'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import {
   isActionAllowedOnCollectiveOffer,
   isCollectiveOfferEditable,
@@ -63,7 +58,6 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
   const navigate = useNavigate()
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
-  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -94,8 +88,7 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
 
   const onDialogConfirm = async (shouldNotDisplayModalAgain: boolean) => {
     logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
-      from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFERS_MODAL,
-      offererId: selectedPartnerVenue.managingOfferer.id.toString(),
+      from: 'OffersListModal',
       offerId: offer.id,
       offerType: 'collective',
       offerStatus: offer.displayedStatus,
@@ -116,8 +109,6 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
     if (isTemplateTable) {
       if (!shouldDisplayModal) {
         logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
-          from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFERS,
-          offererId: selectedPartnerVenue.managingOfferer.id.toString(),
           offerId: offer.id,
           offerType: 'collective',
           offerStatus: offer.displayedStatus,
@@ -133,8 +124,6 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
       setIsModalOpen(true)
     } else {
       logEvent(Events.CLICKED_DUPLICATE_BOOKABLE_OFFER, {
-        from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFERS,
-        offererId: selectedPartnerVenue.managingOfferer.id.toString(),
         offerId: offer.id,
         offerStatus: offer.displayedStatus,
         offerType: 'collective',
@@ -191,7 +180,6 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
 
   const handleEditOfferClick = (to: string) => {
     logEvent(Events.CLICKED_EDIT_COLLECTIVE_OFFER, {
-      from: location.pathname,
       offerId: offer.id,
       offerType: 'collective',
       status: offer.displayedStatus,

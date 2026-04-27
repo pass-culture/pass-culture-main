@@ -36,7 +36,6 @@ describe('DisplayOfferInAppLink', () => {
 
   it('should log event when clicked', async () => {
     const offerId = 456
-    const originalPathname = window.location.pathname
 
     renderWithProviders(
       <DisplayOfferInAppLink id={offerId} label="View in app" />
@@ -47,7 +46,6 @@ describe('DisplayOfferInAppLink', () => {
 
     expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_VIEW_APP_OFFER, {
       offerId,
-      from: originalPathname,
     })
   })
 

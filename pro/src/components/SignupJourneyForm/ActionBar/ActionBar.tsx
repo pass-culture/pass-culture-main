@@ -1,5 +1,3 @@
-import { useLocation } from 'react-router'
-
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
@@ -33,12 +31,10 @@ export const ActionBar = ({
   previousTo,
   withRightIcon = true,
 }: ActionBarProps) => {
-  const location = useLocation()
   const { logEvent } = useAnalytics()
 
   const logActionBarNavigation = (to: SIGNUP_JOURNEY_STEP_IDS) => {
     logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-      from: location.pathname,
       to,
       used: SignupJourneyAction.ActionBar,
     })

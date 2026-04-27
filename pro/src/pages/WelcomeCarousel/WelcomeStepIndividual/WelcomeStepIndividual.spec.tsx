@@ -32,10 +32,7 @@ describe('<WelcomeStepNextSteps />', () => {
     await userEvent.click(link)
 
     expect(mockLogEvent).toHaveBeenCalledWith(
-      WelcomeCarouselEvents.CLICKED_SEE_INDIV_OFFERS,
-      {
-        from: '/',
-      }
+      WelcomeCarouselEvents.CLICKED_SEE_INDIV_OFFERS
     )
   })
 })

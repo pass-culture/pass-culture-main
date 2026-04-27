@@ -1,7 +1,7 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: Header is used once per page. There cannot be id duplications. */
 import cn from 'classnames'
 import { type ForwardedRef, forwardRef } from 'react'
-import { NavLink, useLocation } from 'react-router'
+import { NavLink } from 'react-router'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -52,7 +52,6 @@ export const Header = forwardRef(
     openButtonRef: ForwardedRef<HTMLButtonElement>
   ) => {
     const { logEvent } = useAnalytics()
-    const location = useLocation()
 
     const showBurgerMenu = !disableBurgerMenu && !disableHomeLink
 
@@ -108,7 +107,7 @@ export const Header = forwardRef(
                 className={styles.logo}
                 to="/accueil"
                 onClick={() => {
-                  logEvent(Events.CLICKED_PRO, { from: location.pathname })
+                  logEvent(Events.CLICKED_PRO)
                 }}
               >
                 <SvgIcon
@@ -138,9 +137,7 @@ export const Header = forwardRef(
                     icon={isAdminArea ? fullBackIcon : strokeRepaymentIcon}
                     onClick={() => {
                       if (!isAdminArea) {
-                        logEvent(Events.CLICKED_HEADER_ADMIN_BUTTON, {
-                          from: location.pathname,
-                        })
+                        logEvent(Events.CLICKED_HEADER_ADMIN_BUTTON)
                       }
                     }}
                     {...adminButtonLabelProps}

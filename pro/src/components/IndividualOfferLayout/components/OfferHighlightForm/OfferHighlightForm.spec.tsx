@@ -200,7 +200,6 @@ describe('OfferHighlightForm', () => {
       EngagementEvents.HAS_REQUESTED_HIGHLIGHTS,
       {
         offerId: 1,
-        venueId: 2,
         action: 'validated',
       }
     )

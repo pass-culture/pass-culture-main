@@ -6,10 +6,7 @@ import {
   CollectiveOfferDisplayedStatus,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
-import {
-  COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
-  Events,
-} from '@/commons/core/FirebaseEvents/constants'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as duplicateBookableOffer from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -116,8 +113,6 @@ describe('CancelledBanner', () => {
       1,
       Events.CLICKED_DUPLICATE_BOOKABLE_OFFER,
       {
-        from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_TIMELINE,
-        offererId: '1',
         offerId: 2,
         offerType: 'collective',
         offerStatus: CollectiveOfferDisplayedStatus.CANCELLED,

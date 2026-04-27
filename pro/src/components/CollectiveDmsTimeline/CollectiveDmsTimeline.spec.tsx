@@ -146,7 +146,6 @@ describe('CollectiveDmsTimeline', () => {
 
     await userEvent.click(dmsLink)
     expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_EAC_DMS_LINK, {
-      from: '/',
       dmsApplicationStatus: dmsState,
     })
   })

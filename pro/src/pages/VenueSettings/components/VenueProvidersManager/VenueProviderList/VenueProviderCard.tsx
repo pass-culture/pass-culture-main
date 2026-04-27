@@ -18,7 +18,6 @@ export interface VenueProviderCardProps {
   venueProvider: VenueProviderResponse
   venue: GetVenueResponseModel
   venueDepartmentCode?: string | null
-  offererId: number
   selectSoftwareButtonRef: React.RefObject<HTMLButtonElement | null>
 }
 
@@ -26,7 +25,6 @@ export const VenueProviderCard = ({
   venueProvider,
   venue,
   venueDepartmentCode,
-  offererId,
   selectSoftwareButtonRef,
 }: VenueProviderCardProps): JSX.Element => {
   const { lastSyncDate, provider, venueIdAtOfferProvider, dateCreated } =
@@ -98,7 +96,6 @@ export const VenueProviderCard = ({
             showAdvancedFields={isAllocineProvider(venueProvider.provider)}
             venueProvider={venueProvider}
             venue={venue}
-            offererId={offererId}
           />
         )}
         <div className={style['provider-actions-delete-and-inactivate']}>

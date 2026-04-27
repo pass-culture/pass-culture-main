@@ -46,10 +46,7 @@ describe('Header', () => {
         screen.getByRole('link', { name: 'Espace administration' })
       )
       expect(mockLogEvent).toHaveBeenCalledWith(
-        Events.CLICKED_HEADER_ADMIN_BUTTON,
-        {
-          from: '/',
-        }
+        Events.CLICKED_HEADER_ADMIN_BUTTON
       )
     })
 

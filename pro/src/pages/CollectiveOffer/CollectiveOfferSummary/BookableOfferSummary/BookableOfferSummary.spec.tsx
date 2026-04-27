@@ -8,10 +8,7 @@ import {
   CollectiveOfferDisplayedStatus,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
-import {
-  COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
-  Events,
-} from '@/commons/core/FirebaseEvents/constants'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   getCollectiveOfferFactory,
@@ -385,8 +382,6 @@ describe('BookableOfferSummary', () => {
       1,
       Events.CLICKED_DUPLICATE_BOOKABLE_OFFER,
       {
-        from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_RECAP,
-        offererId: '1',
         offerId: props.offer.id,
         offerType: 'collective',
         offerStatus: CollectiveOfferDisplayedStatus.PUBLISHED,

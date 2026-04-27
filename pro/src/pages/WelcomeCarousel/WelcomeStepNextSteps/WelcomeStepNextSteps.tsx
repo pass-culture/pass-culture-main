@@ -67,9 +67,7 @@ const WelcomeStepNextSteps = (): JSX.Element => {
                 label: 'Participez à notre prochain webinaire',
                 type: 'link',
                 onClick() {
-                  logEvent(WelcomeCarouselEvents.CLICKED_SEE_WEBINAR, {
-                    from: location.pathname,
-                  })
+                  logEvent(WelcomeCarouselEvents.CLICKED_SEE_WEBINAR)
                 },
               },
             ]}

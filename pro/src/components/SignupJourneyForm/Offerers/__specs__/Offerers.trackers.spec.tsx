@@ -81,7 +81,6 @@ describe('Offerers trackers', () => {
       1,
       Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
       {
-        from: '/',
         to: 'LinkModal',
         used: SignupJourneyAction.LinkModalActionButton,
       }

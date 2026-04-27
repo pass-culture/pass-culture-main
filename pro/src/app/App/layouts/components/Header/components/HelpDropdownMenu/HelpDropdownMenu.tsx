@@ -12,11 +12,7 @@ export const HelpDropdownMenu = () => {
     <>
       <DropdownItem
         icon={fullLinkIcon}
-        onSelect={() =>
-          logEvent(Events.CLICKED_CONSULT_HELP, {
-            from: location.pathname,
-          })
-        }
+        onSelect={() => logEvent(Events.CLICKED_CONSULT_HELP)}
       >
         <Link target="_blank" to={'https://aide.passculture.app'}>
           Consulter le centre d’aide
@@ -24,11 +20,7 @@ export const HelpDropdownMenu = () => {
       </DropdownItem>
       <DropdownItem
         icon={fullLinkIcon}
-        onSelect={() =>
-          logEvent(Events.CLICKED_CONTACT_OUR_TEAMS, {
-            from: location.pathname,
-          })
-        }
+        onSelect={() => logEvent(Events.CLICKED_CONTACT_OUR_TEAMS)}
       >
         <Link
           target="_blank"
@@ -39,11 +31,7 @@ export const HelpDropdownMenu = () => {
       </DropdownItem>
       <DropdownItem
         icon={fullLinkIcon}
-        onSelect={() =>
-          logEvent(Events.CLICKED_BEST_PRACTICES_STUDIES, {
-            from: location.pathname,
-          })
-        }
+        onSelect={() => logEvent(Events.CLICKED_BEST_PRACTICES_STUDIES)}
       >
         <Link
           target="_blank"
@@ -54,11 +42,7 @@ export const HelpDropdownMenu = () => {
       </DropdownItem>
       <DropdownItem
         icon={fullLinkIcon}
-        onSelect={() =>
-          logEvent(Events.CLICKED_NEW_EVOLUTIONS, {
-            from: location.pathname,
-          })
-        }
+        onSelect={() => logEvent(Events.CLICKED_NEW_EVOLUTIONS)}
       >
         <Link
           target="_blank"

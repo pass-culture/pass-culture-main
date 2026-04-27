@@ -57,7 +57,6 @@ describe('HeadlineOffer', () => {
       EngagementEvents.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER,
       {
         offerId: 42,
-        venueId: 2,
         action: 'seeInApp',
       }
     )

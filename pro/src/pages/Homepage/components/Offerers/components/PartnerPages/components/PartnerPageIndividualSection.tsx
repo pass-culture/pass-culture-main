@@ -23,17 +23,13 @@ export function PartnerPageIndividualSection({
   const { logEvent } = useAnalytics()
   const venuePreviewLink = `${WEBAPP_URL}/lieu/${venueId}`
   const logVenueLinkClick = () => {
-    logEvent(Events.CLICKED_PARTNER_BLOCK_PREVIEW_VENUE_LINK, {
-      venueId: venueId,
-    })
+    logEvent(Events.CLICKED_PARTNER_BLOCK_PREVIEW_VENUE_LINK)
   }
 
   const copyVenueLink = async () => {
     await copyTextToClipboard(venuePreviewLink)
     snackBar.success('Lien copié !')
-    logEvent(Events.CLICKED_PARTNER_BLOCK_COPY_VENUE_LINK, {
-      venueId: venueId,
-    })
+    logEvent(Events.CLICKED_PARTNER_BLOCK_COPY_VENUE_LINK)
   }
 
   return (
@@ -49,11 +45,7 @@ export function PartnerPageIndividualSection({
           to={`/partenaire/page-partenaire`}
           aria-label={`Gérer la page ${venueName}`}
           icon={fullNextIcon}
-          onClick={() =>
-            logEvent(Events.CLICKED_PAGE_FOR_APP_HOME, {
-              from: location.pathname,
-            })
-          }
+          onClick={() => logEvent(Events.CLICKED_PAGE_FOR_APP_HOME)}
           label="Gérer votre page pour le grand public"
         />
       </div>

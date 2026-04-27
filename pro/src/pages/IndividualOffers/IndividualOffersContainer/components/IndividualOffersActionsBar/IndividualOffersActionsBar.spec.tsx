@@ -200,7 +200,6 @@ describe('ActionsBar', () => {
       1,
       Events.CLICKED_DISABLED_SELECTED_OFFERS,
       {
-        from: '/offres',
         has_selected_all_offers: false,
       }
     )
@@ -282,7 +281,6 @@ describe('ActionsBar', () => {
       1,
       Events.CLICKED_DISABLED_SELECTED_OFFERS,
       {
-        from: '/offres',
         has_selected_all_offers: true,
       }
     )
@@ -306,7 +304,6 @@ describe('ActionsBar', () => {
       1,
       Events.CLICKED_CANCELED_SELECTED_OFFERS,
       {
-        from: '/offres',
         has_selected_all_offers: true,
       }
     )
@@ -326,7 +323,6 @@ describe('ActionsBar', () => {
       1,
       Events.CLICKED_CANCELED_SELECTED_OFFERS,
       {
-        from: '/offres',
         has_selected_all_offers: false,
       }
     )

@@ -160,7 +160,7 @@ export const PreFilters = ({
                 variant={ButtonVariant.PRIMARY}
                 onClick={() => {
                   applyNow()
-                  logEvent('CLICKED_SHOW_BOOKINGS', { from: location.pathname })
+                  logEvent('CLICKED_SHOW_BOOKINGS')
                 }}
                 label="Rechercher les réservations"
               />

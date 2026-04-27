@@ -58,7 +58,6 @@ describe('ConfirmedAttachment trackers', () => {
       1,
       Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
       {
-        from: '/',
         to: SIGNUP_JOURNEY_STEP_IDS.COMPLETED,
         used: SignupJourneyAction.WaitingLinkButton,
       }

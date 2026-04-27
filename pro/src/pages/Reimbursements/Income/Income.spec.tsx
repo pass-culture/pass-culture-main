@@ -103,15 +103,14 @@ describe('Income', () => {
     })
 
     it('should attempt to fetch income data with all venues and display a loading spinner meanwhile', async () => {
-      vi.spyOn(apiNew, 'getStatistics').mockResolvedValue({
-        incomeByYear: MOCK_DATA.incomeByYear,
-      })
+      vi.spyOn(apiNew, 'getStatistics').mockImplementation(
+        // Keep the fetch pending so the spinner stays mounted while we assert to avoid race conditions flakiness.
+        () => new Promise(() => {})
+      )
 
       renderIncome()
 
-      await waitFor(() =>
-        expect(screen.getByTestId('income-spinner')).toBeInTheDocument()
-      )
+      expect(await screen.findByTestId('income-spinner')).toBeInTheDocument()
       expect(apiNew.getStatistics).toHaveBeenNthCalledWith(1, {
         query: { venueIds: MOCK_DATA.venues.map((venue) => venue.id) },
       })

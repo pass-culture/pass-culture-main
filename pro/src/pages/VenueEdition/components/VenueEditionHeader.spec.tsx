@@ -140,8 +140,6 @@ describe('VenueEditionHeader', () => {
 
     await waitFor(() => {
       expect(mockLogEvent).toHaveBeenCalledWith(Events.DRAG_OR_SELECTED_IMAGE, {
-        offererId: '1',
-        venueId: defaultGetVenue.id,
         imageType: UploaderModeEnum.VENUE,
         isEdition: true,
         imageCreationStage: 'add image',

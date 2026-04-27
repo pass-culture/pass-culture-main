@@ -40,9 +40,7 @@ export const IncomeNoData = ({ type }: IncomeNoDataProps) => {
                   variant={ButtonVariant.TERTIARY}
                   color={ButtonColor.NEUTRAL}
                   onClick={() =>
-                    logEvent(Events.CLICKED_BEST_PRACTICES_STUDIES, {
-                      from: location.pathname,
-                    })
+                    logEvent(Events.CLICKED_BEST_PRACTICES_STUDIES)
                   }
                   label="Bonnes pratiques & Études"
                 />

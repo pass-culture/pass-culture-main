@@ -380,7 +380,6 @@ export const RecurrenceForm = ({
                     )
                     if (bookingLimitDateInterval) {
                       logEvent(Events.UPDATED_BOOKING_LIMIT_DATE, {
-                        from: location.pathname,
                         bookingLimitDateInterval: bookingLimitDateInterval,
                       })
                     }

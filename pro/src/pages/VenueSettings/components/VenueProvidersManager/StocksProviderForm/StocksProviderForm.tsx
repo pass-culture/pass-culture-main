@@ -13,11 +13,9 @@ import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import styles from './StocksProviderForm.module.scss'
 
 export interface StocksProviderFormProps {
-  offererId: number
   providerId: number
   saveVenueProvider: (payload: PostVenueProviderBody) => Promise<boolean>
   siret?: string | null
-  venueId: number
   hasOffererProvider: boolean
 }
 
@@ -25,9 +23,7 @@ export const StocksProviderForm = ({
   saveVenueProvider,
   providerId,
   siret,
-  venueId,
   hasOffererProvider,
-  offererId,
 }: StocksProviderFormProps) => {
   const { logEvent } = useAnalytics()
   const [isCheckingApi, setIsCheckingApi] = useState(false)
@@ -41,8 +37,6 @@ export const StocksProviderForm = ({
     event.preventDefault()
     event.stopPropagation()
     logEvent(SynchronizationEvents.CLICKED_IMPORT, {
-      offererId: offererId,
-      venueId: venueId,
       providerId: providerId,
     })
     setIsConfirmDialogOpened(true)
@@ -63,8 +57,6 @@ export const StocksProviderForm = ({
 
     const isSuccess = await saveVenueProvider(payload)
     logEvent(SynchronizationEvents.CLICKED_VALIDATE_IMPORT, {
-      offererId: offererId,
-      venueId: venueId,
       providerId: providerId,
       saved: isSuccess,
     })

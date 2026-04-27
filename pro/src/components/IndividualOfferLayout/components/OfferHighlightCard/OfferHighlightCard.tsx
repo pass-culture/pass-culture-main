@@ -4,8 +4,6 @@ import { type JSX, useState } from 'react'
 import type { ShortHighlightResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
-import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { Button } from '@/design-system/Button/Button'
 import {
@@ -32,7 +30,6 @@ export const OfferHighlightCard = ({
 }: OfferHighlightCardProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false)
   const { logEvent } = useAnalytics()
-  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const hasHighlights = highlightRequests.length > 0
 
@@ -96,13 +93,11 @@ export const OfferHighlightCard = ({
               if (hasHighlights) {
                 logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
                   offerId,
-                  venueId: selectedPartnerVenue.id,
                   action: 'edited',
                 })
               } else {
                 logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
                   offerId,
-                  venueId: selectedPartnerVenue.id,
                   action: 'started',
                 })
               }

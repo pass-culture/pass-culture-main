@@ -133,8 +133,6 @@ describe('FormOfferType', () => {
       1,
       Events.CLICKED_GENERATE_TEMPLATE_DESCRIPTION,
       {
-        offererId: '1',
-        venueId: '2',
         domainIds: [1, 2],
       }
     )
@@ -180,8 +178,6 @@ describe('FormOfferType', () => {
       1,
       Events.CLICKED_SEE_TEMPLATE_OFFER_EXAMPLE,
       {
-        offererId: '1',
-        venueId: '2',
         domainIds: [1, 2],
       }
     )

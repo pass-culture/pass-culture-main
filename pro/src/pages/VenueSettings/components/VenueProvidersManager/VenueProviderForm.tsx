@@ -64,8 +64,6 @@ export const VenueProviderForm = ({
         showAdvancedFields={isAllocineProvider(provider)}
         providerId={Number(provider.id)}
         saveVenueProvider={createVenueProvider}
-        venueId={venue.id}
-        offererId={venue.managingOfferer.id}
       />
     </DialogBuilder>
   ) : (
@@ -73,9 +71,7 @@ export const VenueProviderForm = ({
       providerId={Number(provider.id)}
       saveVenueProvider={createVenueProvider}
       siret={venue.siret}
-      venueId={venue.id}
       hasOffererProvider={provider.hasOffererProvider}
-      offererId={venue.managingOfferer.id}
     />
   )
 }

@@ -1,5 +1,3 @@
-import { useLocation } from 'react-router'
-
 import {
   BankAccountApplicationStatus,
   type BankAccountResponseModel,
@@ -23,7 +21,6 @@ interface ReimbursementBankAccountProps {
   bankAccount: BankAccountResponseModel
   managedVenues: ManagedVenue[]
   onUpdateButtonClick?: (id: number) => void
-  offererId?: number
   hasWarning?: boolean
   updateButtonRef?: React.RefObject<HTMLButtonElement | null>
 }
@@ -31,13 +28,11 @@ interface ReimbursementBankAccountProps {
 export const ReimbursementBankAccount = ({
   bankAccount,
   onUpdateButtonClick,
-  offererId,
   managedVenues,
   hasWarning = false,
   updateButtonRef,
 }: ReimbursementBankAccountProps): JSX.Element => {
   const { logEvent } = useAnalytics()
-  const location = useLocation()
   const venuesNotLinkedToBankAccount = managedVenues.filter(
     (venue) => !venue.bankAccountId
   ).length
@@ -52,17 +47,11 @@ export const ReimbursementBankAccount = ({
 
   const handleUpdateClick = () => {
     onUpdateButtonClick?.(bankAccount.id)
-    logEvent(BankAccountEvents.CLICKED_CHANGE_VENUE_TO_BANK_ACCOUNT, {
-      from: location.pathname,
-      offererId,
-    })
+    logEvent(BankAccountEvents.CLICKED_CHANGE_VENUE_TO_BANK_ACCOUNT)
   }
 
   const handleAttachClick = () => {
-    logEvent(BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT, {
-      from: location.pathname,
-      offererId,
-    })
+    logEvent(BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT)
     onUpdateButtonClick?.(bankAccount.id)
   }
 
@@ -118,11 +107,7 @@ export const ReimbursementBankAccount = ({
                 iconAlt: 'Nouvelle fenêtre',
                 onClick: () => {
                   logEvent(
-                    BankAccountEvents.CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP,
-                    {
-                      from: location.pathname,
-                      offererId: offererId,
-                    }
+                    BankAccountEvents.CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP
                   )
                 },
               },

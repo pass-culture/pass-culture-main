@@ -261,7 +261,6 @@ export const PriceTableForm = ({
                     getValues(`priceCategories.${index}.bookingLimitDatetime`)
                   ) {
                     logEvent(Events.UPDATED_BOOKING_LIMIT_DATE, {
-                      from: location.pathname,
                       bookingLimitDatetime:
                         getValues(
                           `priceCategories.${index}.bookingLimitDatetime`

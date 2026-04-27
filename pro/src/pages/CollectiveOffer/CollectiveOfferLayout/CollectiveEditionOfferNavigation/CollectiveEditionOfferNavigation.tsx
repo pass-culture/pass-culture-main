@@ -15,18 +15,13 @@ import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
-import {
-  COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
-  Events,
-} from '@/commons/core/FirebaseEvents/constants'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { ShareLinkDrawer } from '@/components/CollectiveOffer/ShareLinkDrawer/ShareLinkDrawer'
@@ -66,8 +61,6 @@ export const CollectiveEditionOfferNavigation = ({
   const navigate = useNavigate()
   const location = useLocation()
   const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
-
-  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false)
 
@@ -206,8 +199,6 @@ export const CollectiveEditionOfferNavigation = ({
             size={ButtonSize.SMALL}
             onClick={async () => {
               logEvent(Events.CLICKED_DUPLICATE_BOOKABLE_OFFER, {
-                from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_RECAP,
-                offererId: selectedPartnerVenue.managingOfferer.id.toString(),
                 offerId,
                 offerStatus: offer?.displayedStatus,
                 offerType: 'collective',
@@ -227,8 +218,6 @@ export const CollectiveEditionOfferNavigation = ({
             onClick={() => {
               if (isTemplate) {
                 logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
-                  from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_RECAP,
-                  offererId: selectedPartnerVenue.managingOfferer.id.toString(),
                   offerId,
                   offerType: 'collective',
                   offerStatus: offer.displayedStatus,

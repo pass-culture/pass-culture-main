@@ -4,39 +4,23 @@ import {
   initializeAnalytics,
   isSupported,
   setUserId,
-  setUserProperties,
 } from '@firebase/analytics'
 import * as firebase from '@firebase/app'
 import {
   fetchAndActivate,
-  getAll,
   getRemoteConfig,
   type RemoteConfig,
 } from '@firebase/remote-config'
 import { useCallback, useEffect, useState } from 'react'
+import { useLocation } from 'react-router'
 
 import { isError } from '@/apiClient/helpers'
 import { firebaseConfig } from '@/commons/config/firebase'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useUtmQueryParams } from '@/commons/hooks/useUtmQueryParams'
-import { selectCurrentUser } from '@/commons/store/user/selectors'
 
 let firebaseApp: firebase.FirebaseApp | undefined
 let firebaseRemoteConfig: RemoteConfig | undefined
-
-const getRemoteConfigParams = (): Record<string, string> => {
-  if (!firebaseRemoteConfig) {
-    return {}
-  }
-
-  const remoteConfigValues = getAll(firebaseRemoteConfig)
-  const remoteConfigParams: Record<string, string> = {}
-  Object.keys(remoteConfigValues).forEach((k) => {
-    remoteConfigParams[k] = remoteConfigValues[k].asString()
-  })
-
-  return remoteConfigParams
-}
 
 export const destroyFirebase = async () => {
   if (firebaseApp) {
@@ -47,10 +31,8 @@ export const destroyFirebase = async () => {
 }
 
 export const useFirebase = (consentedToFirebase: boolean) => {
-  const currentUser = useAppSelector(selectCurrentUser)
-  const selectedPartnerVenue = useAppSelector(
-    (state) => state.user.selectedPartnerVenue
-  )
+  const currentUser = useAppSelector((state) => state.user.currentUser)
+
   const [isFirebaseInitialized, setIsFirebaseInitialized] =
     useState<boolean>(false)
 
@@ -89,44 +71,21 @@ export const useFirebase = (consentedToFirebase: boolean) => {
   }, [consentedToFirebase])
 
   useEffect(() => {
-    if (isFirebaseInitialized && currentUser) {
-      setUserId(getAnalytics(firebaseApp), currentUser.id.toString())
+    if (isFirebaseInitialized) {
+      setUserId(getAnalytics(firebaseApp), currentUser?.id.toString() ?? null)
     }
   }, [currentUser, isFirebaseInitialized])
-
-  useEffect(() => {
-    if (isFirebaseInitialized && selectedPartnerVenue) {
-      setUserProperties(getAnalytics(firebaseApp), {
-        offerer_id: selectedPartnerVenue.managingOfferer.id.toString(),
-      })
-    }
-  }, [selectedPartnerVenue, isFirebaseInitialized])
 }
 
-export const useRemoteConfigParams = () => {
-  const [remoteConfigParams, setRemoteConfigParams] = useState<
-    Record<string, string>
-  >({})
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      if (firebaseRemoteConfig) {
-        clearInterval(intervalId)
-        setRemoteConfigParams(getRemoteConfigParams())
-      }
-    }, 1000)
-
-    return () => clearInterval(intervalId)
-  }, [])
-
-  if (firebaseRemoteConfig) {
-    return getRemoteConfigParams()
-  }
-
-  return remoteConfigParams
-}
-
+// TODO (igabriele, 2026-05-12): This should be a pure function "grabbing" store values + using native `location` when called, there is absolutely no need to use a hook here which will re-render on every state change.
 export const useAnalytics = () => {
+  const selectedPartnerVenue = useAppSelector(
+    (state) => state.user.selectedPartnerVenue
+  )
+  const selectedAdminOfferer = useAppSelector(
+    (state) => state.user.selectedAdminOfferer
+  )
+  const location = useLocation()
   const utmParameters = useUtmQueryParams()
 
   const logEvent = useCallback(
@@ -147,14 +106,20 @@ export const useAnalytics = () => {
         return
       }
 
-      const remoteConfigParams = getRemoteConfigParams()
       analyticsLogEvent(getAnalytics(firebaseApp), event, {
+        from: location.pathname,
+        offererId: selectedAdminOfferer?.id.toString() ?? null,
+        venueId: selectedPartnerVenue?.id.toString() ?? null,
         ...params,
         ...utmParameters,
-        ...remoteConfigParams,
       })
     },
-    [utmParameters]
+    [
+      location.pathname,
+      selectedAdminOfferer,
+      selectedPartnerVenue,
+      utmParameters,
+    ]
   )
 
   return { logEvent }

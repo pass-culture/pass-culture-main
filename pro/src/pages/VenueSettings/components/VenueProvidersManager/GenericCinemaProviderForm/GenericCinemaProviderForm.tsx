@@ -25,8 +25,6 @@ export interface GenericCinemaProviderFormValues {
 export interface GenericCinemaProviderFormProps {
   saveVenueProvider: (payload: PostVenueProviderBody) => Promise<boolean>
   providerId: number
-  venueId: number
-  offererId: number
   isCreatedEntity?: boolean
   initialValues?: GenericCinemaProviderFormValues
   onCancel?: () => void
@@ -36,8 +34,6 @@ export interface GenericCinemaProviderFormProps {
 export const GenericCinemaProviderForm = ({
   saveVenueProvider,
   providerId,
-  venueId,
-  offererId,
   isCreatedEntity = false,
   initialValues,
   onCancel,
@@ -62,8 +58,6 @@ export const GenericCinemaProviderForm = ({
     const isSuccess = await saveVenueProvider(payload)
 
     logEvent(SynchronizationEvents.CLICKED_IMPORT, {
-      offererId,
-      venueId,
       providerId,
       saved: isSuccess,
     })

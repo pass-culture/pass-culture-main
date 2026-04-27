@@ -6,8 +6,6 @@ import { apiNew } from '@/apiClient/api'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_HIGHLIGHTS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
-import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { HighlightDatespanTag } from '@/components/HighlightDatespanTag/HighlightDatespanTag'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
@@ -31,7 +29,6 @@ export const ModalHighlight = ({
   const { data, isLoading } = useSWR([GET_HIGHLIGHTS_QUERY_KEY], () =>
     apiNew.getHighlights()
   )
-  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   return (
     <DialogBuilder
@@ -102,7 +99,6 @@ export const ModalHighlight = ({
           opensInNewTab
           onClick={() =>
             logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
-              venueId: selectedPartnerVenue.id,
               action: 'seeMoreInfo',
             })
           }
@@ -117,7 +113,6 @@ export const ModalHighlight = ({
           opensInNewTab
           onClick={() =>
             logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
-              venueId: selectedPartnerVenue.id,
               action: 'seeCalendar',
             })
           }
@@ -141,7 +136,6 @@ export const ModalHighlight = ({
             variant={ButtonVariant.PRIMARY}
             onClick={() =>
               logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
-                venueId: selectedPartnerVenue.id,
                 action: 'goToOffersList',
               })
             }

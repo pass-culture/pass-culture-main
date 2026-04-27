@@ -1,5 +1,3 @@
-import { useLocation } from 'react-router'
-
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
@@ -25,13 +23,11 @@ export const SignupJourneyStepper = () => {
 
   const everyStepActivated = !isActivityStepDisabled && !isOffererStepDisabled
 
-  const location = useLocation()
   const activeStep = useActiveStep()
 
   const logBreadcrumbClick = (to: SIGNUP_JOURNEY_STEP_IDS, stepUrl: string) => {
     if (stepUrl.indexOf(activeStep) === -1) {
       logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-        from: location.pathname,
         to,
         used: SignupJourneyAction.Breadcrumb,
       })

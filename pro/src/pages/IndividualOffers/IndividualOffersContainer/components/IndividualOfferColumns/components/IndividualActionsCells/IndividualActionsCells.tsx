@@ -12,7 +12,6 @@ import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
   Events,
-  OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from '@/commons/core/FirebaseEvents/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
@@ -97,7 +96,6 @@ export const IndividualActionsCells = ({
       })
       snackBar.success(computeDeletionSuccessMessage(1))
       logEvent(Events.DELETE_DRAFT_OFFER, {
-        from: OFFER_FORM_NAVIGATION_IN.OFFERS,
         used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_TRASH_ICON,
         offerId: offer.id,
         offerType: 'individual',

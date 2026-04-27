@@ -57,9 +57,7 @@ describe('DownloadDropdown', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Télécharger' }))
 
-    expect(mockLogEvent).toHaveBeenCalledWith('downloadToggle', {
-      from: '/test-page',
-    })
+    expect(mockLogEvent).toHaveBeenCalledWith('downloadToggle')
   })
 
   it('should display XLS and CSV options when dropdown is open', async () => {
@@ -85,9 +83,7 @@ describe('DownloadDropdown', () => {
     )
 
     expect(onSelect).toHaveBeenCalledWith('XLS')
-    expect(mockLogEvent).toHaveBeenCalledWith('downloadXls', {
-      from: '/test-page',
-    })
+    expect(mockLogEvent).toHaveBeenCalledWith('downloadXls')
   })
 
   it('should call onSelect with CSV and log event when clicking CSV option', async () => {
@@ -100,8 +96,6 @@ describe('DownloadDropdown', () => {
     )
 
     expect(onSelect).toHaveBeenCalledWith('CSV')
-    expect(mockLogEvent).toHaveBeenCalledWith('downloadCsv', {
-      from: '/test-page',
-    })
+    expect(mockLogEvent).toHaveBeenCalledWith('downloadCsv')
   })
 })

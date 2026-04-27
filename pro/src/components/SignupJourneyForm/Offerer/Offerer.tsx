@@ -231,7 +231,6 @@ export const Offerer = (): JSX.Element => {
       const { to } = navigateToNextStep(hasVenueWithSiret)
 
       logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-        from: location.pathname,
         to,
         used: SignupJourneyAction.ActionBar,
       })
@@ -280,11 +279,7 @@ export const Offerer = (): JSX.Element => {
               to="https://annuaire-entreprises.data.gouv.fr/"
               isExternal
               opensInNewTab
-              onClick={() =>
-                logEvent(Events.CLICKED_UNKNOWN_SIRET, {
-                  from: location.pathname,
-                })
-              }
+              onClick={() => logEvent(Events.CLICKED_UNKNOWN_SIRET)}
               label="Vous ne connaissez pas votre SIRET ? Consultez l'Annuaire des Entreprises."
             />
           </FormLayout.Row>

@@ -177,7 +177,6 @@ describe('ActionsBar', () => {
       1,
       Events.CLICKED_DISABLED_SELECTED_OFFERS,
       {
-        from: '/offres/collectives',
         has_selected_all_offers: false,
       }
     )
@@ -284,7 +283,6 @@ describe('ActionsBar', () => {
       1,
       Events.CLICKED_ARCHIVE_COLLECTIVE_OFFER,
       {
-        from: '/offres/collectives',
         offerType: 'collective',
         selected_offers: JSON.stringify([
           {

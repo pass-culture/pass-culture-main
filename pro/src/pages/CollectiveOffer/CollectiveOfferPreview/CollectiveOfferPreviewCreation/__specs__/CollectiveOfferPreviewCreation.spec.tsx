@@ -156,7 +156,6 @@ describe('CollectiveOfferPreviewCreation', () => {
     expect(mockLogEvent).toHaveBeenCalledWith(
       Events.CLICKED_SAVE_DRAFT_AND_EXIT_COLLECTIVE_OFFER,
       {
-        from: '/',
         offerId: defaultProps.offer.id,
         offerType: 'collective',
       }

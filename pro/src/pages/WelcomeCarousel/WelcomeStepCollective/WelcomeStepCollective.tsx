@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import { useLocation } from 'react-router'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { WelcomeCarouselEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -16,7 +15,6 @@ import styles from './WelcomeStepCollective.module.scss'
 
 const WelcomeStepCollective = (): JSX.Element => {
   const { logEvent } = useAnalytics()
-  const location = useLocation()
   return (
     <>
       <h1 className={commonStyles.title}>Offres pour les groupes scolaires</h1>
@@ -47,9 +45,7 @@ const WelcomeStepCollective = (): JSX.Element => {
             size={ButtonSize.SMALL}
             isExternal
             onClick={() => {
-              logEvent(WelcomeCarouselEvents.CLICKED_SEE_COLLECTIVE_OFFERS, {
-                from: location.pathname,
-              })
+              logEvent(WelcomeCarouselEvents.CLICKED_SEE_COLLECTIVE_OFFERS)
             }}
             opensInNewTab
             to="https://aide.passculture.app/hc/fr/articles/21872145727388--Acteurs-culturels-Consulter-des-exemples-d-offres-r%C3%A9servables"

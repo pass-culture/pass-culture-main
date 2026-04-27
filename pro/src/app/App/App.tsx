@@ -2,7 +2,6 @@ import { Outlet, useLocation, useNavigate } from 'react-router'
 import { SWRConfig } from 'swr'
 
 import { isErrorAPIError } from '@/apiClient/helpers'
-import { useLogExtraProData } from '@/app/App/hook/useLogExtraProData'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { SkipLinksProvider } from '@/components/SkipLinks/SkipLinksContext'
@@ -35,7 +34,6 @@ export const App = (): JSX.Element | null => {
   useBeamer(consentedToBeamer)
   useFirebase(consentedToFirebase)
   useLogNavigation()
-  useLogExtraProData()
 
   return (
     <>

@@ -1,5 +1,7 @@
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
 import {
   DS_BANK_ACCOUNT_PROCEDURE_ID,
   DS_NEW_CALEDONIA_BANK_ACCOUNT_PROCEDURE_ID,
@@ -12,20 +14,17 @@ import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 interface ReimbursmentPointDialogProps {
   closeDialog: () => void
-  offererId?: number
-  isCaledonian: boolean
   isDialogOpen: boolean
   dialogTriggerRef?: React.RefObject<HTMLButtonElement | null>
 }
 
 export const AddBankInformationsDialog = ({
   closeDialog,
-  offererId,
-  isCaledonian = false,
   isDialogOpen,
   dialogTriggerRef,
 }: ReimbursmentPointDialogProps) => {
   const { logEvent } = useAnalytics()
+  const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
 
   return (
     <ConfirmDialog
@@ -38,7 +37,7 @@ export const AddBankInformationsDialog = ({
         <Button
           as="a"
           to={
-            isCaledonian
+            selectedAdminOfferer.isCaledonian
               ? DS_NEW_CALEDONIA_BANK_ACCOUNT_PROCEDURE_ID
               : DS_BANK_ACCOUNT_PROCEDURE_ID
           }
@@ -46,9 +45,7 @@ export const AddBankInformationsDialog = ({
           opensInNewTab={true}
           variant={ButtonVariant.PRIMARY}
           onClick={() => {
-            logEvent(BankAccountEvents.CLICKED_CONTINUE_TO_DS, {
-              offererId,
-            })
+            logEvent(BankAccountEvents.CLICKED_CONTINUE_TO_DS)
           }}
           icon={fullLinkIcon}
           label={'Continuer sur demarche.numerique.gouv.fr'}

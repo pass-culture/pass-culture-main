@@ -2,7 +2,6 @@ import { useLocation, useNavigate } from 'react-router'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events, VenueEvents } from '@/commons/core/FirebaseEvents/constants'
-import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from '@/commons/core/Offers/constants'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { updateUserAccess } from '@/commons/store/user/reducer'
 import { Button } from '@/design-system/Button/Button'
@@ -14,14 +13,12 @@ import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 export interface RedirectToBankAccountDialogProps {
   cancelRedirectUrl: string
   offererId: number
-  venueId: number
   isDialogOpen: boolean
 }
 
 export const RedirectToBankAccountDialog = ({
   cancelRedirectUrl,
   offererId,
-  venueId,
   isDialogOpen,
 }: RedirectToBankAccountDialogProps): JSX.Element => {
   const navigate = useNavigate()
@@ -40,10 +37,7 @@ export const RedirectToBankAccountDialog = ({
           to={`/administration/remboursements/informations-bancaires?structure=${offererId}`}
           variant={ButtonVariant.PRIMARY}
           onClick={() => {
-            logEvent(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
-              venue_id: venueId,
-              from: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-            })
+            logEvent(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON)
             if (isOnboarding) {
               dispatch(updateUserAccess('full'))
             }
@@ -52,9 +46,7 @@ export const RedirectToBankAccountDialog = ({
         />
       }
       onCancel={() => {
-        logEvent(Events.CLICKED_SEE_LATER_FROM_SUCCESS_OFFER_CREATION_MODAL, {
-          from: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-        })
+        logEvent(Events.CLICKED_SEE_LATER_FROM_SUCCESS_OFFER_CREATION_MODAL)
         if (isOnboarding) {
           dispatch(updateUserAccess('full'))
         }

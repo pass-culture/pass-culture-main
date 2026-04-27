@@ -1,5 +1,3 @@
-import { useLocation } from 'react-router'
-
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { Banner } from '@/design-system/Banner/Banner'
@@ -8,7 +6,6 @@ import fullLinkIcon from '@/icons/full-link.svg'
 import styles from './OperationProcedures.module.scss'
 
 export const OperatingProcedures = (): JSX.Element => {
-  const location = useLocation()
   const { logEvent } = useAnalytics()
 
   return (
@@ -23,8 +20,7 @@ export const OperatingProcedures = (): JSX.Element => {
             icon: fullLinkIcon,
             iconAlt: 'Nouvelle fenêtre',
             type: 'link',
-            onClick: () =>
-              logEvent(Events.CLICKED_HELP_CENTER, { from: location.pathname }),
+            onClick: () => logEvent(Events.CLICKED_HELP_CENTER),
           },
         ]}
         description={

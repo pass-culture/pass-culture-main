@@ -118,7 +118,6 @@ describe('test renderSignupJourneyStepper', () => {
       1,
       Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
       {
-        from: '/inscription/structure/activite',
         to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
         used: SignupJourneyAction.Breadcrumb,
       }
@@ -175,7 +174,6 @@ describe('test renderSignupJourneyStepper', () => {
       1,
       Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
       {
-        from: '/inscription/structure/confirmation',
         to: SIGNUP_JOURNEY_STEP_IDS.ACTIVITY,
         used: SignupJourneyAction.Breadcrumb,
       }
@@ -189,7 +187,6 @@ describe('test renderSignupJourneyStepper', () => {
       2,
       Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
       {
-        from: '/inscription/structure/activite',
         to: SIGNUP_JOURNEY_STEP_IDS.CONFIRMATION,
         used: SignupJourneyAction.Breadcrumb,
       }
@@ -203,7 +200,6 @@ describe('test renderSignupJourneyStepper', () => {
       3,
       Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
       {
-        from: '/inscription/structure/confirmation',
         to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
         used: SignupJourneyAction.Breadcrumb,
       }

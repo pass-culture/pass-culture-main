@@ -19,11 +19,9 @@ const renderVenueProviderCard = async (props: VenueProviderCardProps) => {
 
 describe('VenueProviderCard', () => {
   let props: VenueProviderCardProps
-  const offererId = 3
 
   beforeEach(() => {
     props = {
-      offererId: offererId,
       venue: defaultGetVenue,
       venueProvider: defaultVenueProvider,
       selectSoftwareButtonRef: createRef(),

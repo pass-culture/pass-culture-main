@@ -233,7 +233,6 @@ export const Validation = (): JSX.Element | undefined => {
             to="/inscription/structure/identification"
             onClick={() => {
               logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-                from: location.pathname,
                 to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
                 used: SignupJourneyAction.UpdateFromValidation,
               })
@@ -257,7 +256,6 @@ export const Validation = (): JSX.Element | undefined => {
             to="/inscription/structure/activite"
             onClick={() => {
               logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-                from: location.pathname,
                 to: SIGNUP_JOURNEY_STEP_IDS.ACTIVITY,
                 used: SignupJourneyAction.UpdateFromValidation,
               })

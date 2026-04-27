@@ -45,13 +45,9 @@ export const Homepage = (): JSX.Element => {
       <MainHeading mainHeading="Bienvenue sur votre espace partenaire" />
 
       <div className={styles['reimbursements-banners']}>
-        {shouldDisplayBankAccountCallout && (
-          <AddBankAccountCallout venue={selectedPartnerVenue} />
-        )}
+        {shouldDisplayBankAccountCallout && <AddBankAccountCallout />}
         {shouldDisplayBankAccountHasPendingCorrectionCallout && (
-          <BankAccountHasPendingCorrectionCallout
-            venue={selectedPartnerVenue}
-          />
+          <BankAccountHasPendingCorrectionCallout />
         )}
       </div>
 
