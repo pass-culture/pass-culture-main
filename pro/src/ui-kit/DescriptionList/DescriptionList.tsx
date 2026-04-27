@@ -5,7 +5,7 @@ import styles from './DescriptionList.module.scss'
 type DescriptionListData = {
   lines: {
     label: string
-    value: string | JSX.Element[]
+    value: string | string[] | JSX.Element[]
   }[]
 }
 
@@ -17,7 +17,20 @@ export const DescriptionList = ({
       {lines.map(({ label, value }) => (
         <React.Fragment key={label}>
           <dt className={styles['data-term']}>{label}</dt>
-          <dd className={styles['data-definition']}>{value}</dd>
+          {Array.isArray(value) ? (
+            value.map((definition) => (
+              <dd
+                className={styles['data-definition']}
+                key={
+                  typeof definition === 'string' ? definition : definition.key
+                }
+              >
+                {definition}
+              </dd>
+            ))
+          ) : (
+            <dd className={styles['data-definition']}>{value}</dd>
+          )}
         </React.Fragment>
       ))}
     </dl>
