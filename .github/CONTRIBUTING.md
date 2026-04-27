@@ -21,7 +21,7 @@ Les 3 workflows principaux sont :
         - deploie la nouvelle version du storybook sur [GitHub pages](https://pass-culture.github.io/pass-culture-main)
         - déploie le site de maintenance
         - ajoute le tag RC qui est utilisé lors de la création d'une nouvelle release (voir [`cd_create_major_release.yml`](workflows/cd_create_major_release.yml))
-- [`ci_check_pr.yml`](workflows/ci_check_pr.yml) : lance les tests sur les changements apportés à chaque push sur une branche de maintenance (branche de la forme `maint/v*`)
+- [`ci_check_push_on_maint.yml`](workflows/ci_check_push_on_maint.yml) : lance les tests sur les changements apportés à chaque push sur une branche de maintenance (branche de la forme `maint/v*`)
 
 Il y a également 2 workflows pour créer des environnements de preview, qui peuvent être lancés à la demande :
 - [`ci_deploy_pr_preview.yml`](workflows/ci_deploy_pr_preview.yml) ([:arrow_forward: lancer le workflow](https://github.com/pass-culture/pass-culture-main/actions/workflows/ci_deploy_pr_preview.yml)): déploie un environnement de preview pour tester fonctionnement les changements apportés par la PR
@@ -36,5 +36,5 @@ Il y a 2 workflows de création de release :
 
 Il y a 3 workflows de déploiement d'une release:
 - [`cd_deploy_production.yml`](workflows/cd_deploy_production.yml) ([:arrow_forward: lancer le workflow](https://github.com/pass-culture/pass-culture-main/actions/workflows/cd_deploy_production.yml)): déploie le tag sélectionné en production
-- [`cd_deploy_staging_on_major_release.yml`](workflows/cd_deploy_staging_on_major_release.yml) ([:arrow_forward: lancer le workflow](https://github.com/pass-culture/pass-culture-main/actions/workflows/cd_deploy_staging_on_major_release.yml)): déploie automatiquement sur staging la nouvelle version du code tagguée comme majeur au push du tag
-- [`cd_deploy_testing_hourly.yml`](workflows/cd_deploy_testing_hourly.yml) ([:arrow_forward: lancer le workflow](https://github.com/pass-culture/pass-culture-main/actions/workflows/cd_deploy_testing_hourly.yml)): déploie le code de `master` toutes les heures sur testing
+- [`cd_deploy_staging.yml`](workflows/cd_deploy_staging.yml) ([:arrow_forward: lancer le workflow](https://github.com/pass-culture/pass-culture-main/actions/workflows/cd_deploy_staging.yml)): déploie le code d'un tag sur staging. Ce workflow se déclenche automatiquement à chaque pose de tag de version majeure.
+- [`cd_deploy_testing.yml`](workflows/cd_deploy_testing.yml) ([:arrow_forward: lancer le workflow](https://github.com/pass-culture/pass-culture-main/actions/workflows/cd_deploy_testing.yml)): déploie le code d'une branche sur testing. `master` est automatiquement déployé toutes les heures sur testing.
