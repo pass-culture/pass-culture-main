@@ -76,14 +76,17 @@ describe('Sitemap', () => {
       },
       {
         name: 'Espace administration',
-        href: '/remboursements',
+        href: '/administration/remboursements',
       },
-      { name: 'Justificatifs', href: '/remboursements' },
+      { name: 'Justificatifs', href: '/administration/remboursements' },
       {
         name: 'Informations bancaires',
-        href: '/remboursements/informations-bancaires',
+        href: '/administration/remboursements/informations-bancaires',
       },
-      { name: 'Chiffre d’affaires', href: '/remboursements/revenus' },
+      {
+        name: 'Chiffre d’affaires',
+        href: '/administration/remboursements/revenus',
+      },
       { name: 'Individuel', href: '/donnees-activité/individuel' },
       { name: 'Collectif', href: '/donnees-activité/collectif' },
       { name: 'Collaborateurs', href: '/administration/collaborateurs' },

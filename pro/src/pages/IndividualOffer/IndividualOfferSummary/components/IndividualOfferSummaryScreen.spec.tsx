@@ -567,7 +567,7 @@ describe('IndividualOfferSummaryScreen', () => {
         })
       ).toHaveAttribute(
         'href',
-        `/remboursements/informations-bancaires?structure=${expectedOffererId}`
+        `/administration/remboursements/informations-bancaires?structure=${expectedOffererId}`
       )
     })
 

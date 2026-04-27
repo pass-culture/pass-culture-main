@@ -37,7 +37,7 @@ export const RedirectToBankAccountDialog = ({
       overrideConfirm={
         <Button
           as="a"
-          to={`/remboursements/informations-bancaires?structure=${offererId}`}
+          to={`/administration/remboursements/informations-bancaires?structure=${offererId}`}
           variant={ButtonVariant.PRIMARY}
           onClick={() => {
             logEvent(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {

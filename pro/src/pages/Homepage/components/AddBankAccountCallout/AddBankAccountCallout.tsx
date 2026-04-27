@@ -24,7 +24,7 @@ export const AddBankAccountCallout = ({
         variant={BannerVariants.ERROR}
         actions={[
           {
-            href: '/remboursements/informations-bancaires',
+            href: '/administration/remboursements/informations-bancaires',
             label: 'Ajouter un compte bancaire',
             type: 'link',
             icon: fullNextIcon,

@@ -74,7 +74,7 @@ def build_pc_pro_venue_link(venue: offerers_models.Venue) -> str:
 
 
 def build_pc_pro_bank_account_path(bank_account: finance_models.BankAccount) -> str:
-    return f"/remboursements/informations-bancaires?structure={bank_account.offererId}"
+    return f"/administration/remboursements/informations-bancaires?structure={bank_account.offererId}"
 
 
 def build_pc_pro_bank_account_link(bank_account: finance_models.BankAccount) -> str:
