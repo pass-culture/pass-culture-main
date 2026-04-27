@@ -1924,6 +1924,7 @@ class SuspensionStatusTest:
 
 
 class UnsuspendAccountTest:
+    @pytest.mark.features(ENABLE_UNSUSPEND_ACCOUNT=True)
     def test_suspended_upon_user_request(self, client):
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
         history_factories.SuspendedUserActionHistoryFactory(
@@ -1944,12 +1945,14 @@ class UnsuspendAccountTest:
         assert mail["template"] == dataclasses.asdict(TransactionalEmail.ACCOUNT_UNSUSPENDED.value)
         assert mail["To"] == user.email
 
+    @pytest.mark.features(ENABLE_UNSUSPEND_ACCOUNT=True)
     def test_error_when_not_suspended(self, client):
         user = users_factories.BeneficiaryGrant18Factory(isActive=True)
 
         response = client.with_token(user).post("/native/v1/account/unsuspend")
         self.assert_code(response, "ALREADY_UNSUSPENDED")
 
+    @pytest.mark.features(ENABLE_UNSUSPEND_ACCOUNT=True)
     @pytest.mark.parametrize(
         "suspension_reason",
         [
@@ -1964,6 +1967,7 @@ class UnsuspendAccountTest:
         response = client.with_token(user).post("/native/v1/account/unsuspend")
         self.assert_code_and_not_active(response, user, "UNSUSPENSION_NOT_ALLOWED")
 
+    @pytest.mark.features(ENABLE_UNSUSPEND_ACCOUNT=True)
     def test_error_when_suspension_time_limit_reached(self, client):
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
 
@@ -1974,6 +1978,15 @@ class UnsuspendAccountTest:
 
         response = client.with_token(user).post("/native/v1/account/unsuspend")
         self.assert_code_and_not_active(response, user, "UNSUSPENSION_LIMIT_REACHED")
+
+    def test_unsuspend_account_disabled_by_default(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(isActive=False)
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
+        )
+
+        response = client.with_token(user).post("/native/v1/account/unsuspend")
+        self.assert_code(response, "UNSUSPENSION_NOT_ALLOWED")
 
     def assert_code(self, response, code):
         assert response.status_code == 403
