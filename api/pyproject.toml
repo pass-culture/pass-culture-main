@@ -57,7 +57,7 @@ dependencies = [
   "py7zr ==1.1.0",
   # required by schwifty, upgraded manually because of setuptools
   "pycountry ==26.2.16",
-  "pydantic[email]==2.13.1",
+  "pydantic[email]==2.13.2",
   "pyjwt[crypto] ==2.12.1",
   "pyopenssl ==26.0.0",
   "pypdf ==6.10.2",
