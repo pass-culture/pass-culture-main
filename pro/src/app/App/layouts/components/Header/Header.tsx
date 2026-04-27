@@ -5,7 +5,6 @@ import { NavLink, useLocation } from 'react-router'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import {
   TABLET_MEDIA_QUERY,
   useMediaQuery,
@@ -20,14 +19,11 @@ import {
 } from '@/design-system/Button/types'
 import fullBackIcon from '@/icons/full-back.svg'
 import fullBurgerIcon from '@/icons/full-burger.svg'
-import fullSmsIcon from '@/icons/full-sms.svg'
 import logoPassCultureProIcon from '@/icons/logo-pass-culture-pro.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
-import { UserReviewDialog } from '../../BasicLayout/LateralPanel/SideNavLinks/components/UserReviewDialog/UserReviewDialog'
 import { HeaderDropdown } from './components/HeaderDropdown/HeaderDropdown'
-import { HeaderHelpDropdown } from './components/HeaderHelpDropdown/HeaderHelpDropdown'
 import styles from './Header.module.scss'
 
 interface HeaderProps {
@@ -55,9 +51,6 @@ export const Header = forwardRef(
     }: Readonly<HeaderProps>,
     openButtonRef: ForwardedRef<HTMLButtonElement>
   ) => {
-    const isProFeedbackEnabled = useActiveFeature('ENABLE_PRO_FEEDBACK')
-    const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-
     const { logEvent } = useAnalytics()
     const location = useLocation()
 
@@ -130,29 +123,7 @@ export const Header = forwardRef(
           <div className={styles['top-right-menu']}>
             {!isUnauthenticated && (
               <>
-                {!withSwitchVenueFeature && (
-                  <div className={styles['top-right-menu-links']}>
-                    <div className={styles['tablet-and-above']}>
-                      {isProFeedbackEnabled && (
-                        <UserReviewDialog
-                          dialogTrigger={
-                            <Button
-                              color={ButtonColor.NEUTRAL}
-                              icon={fullSmsIcon}
-                              label="Donner mon avis"
-                              size={ButtonSize.SMALL}
-                              variant={ButtonVariant.TERTIARY}
-                            />
-                          }
-                        />
-                      )}
-                    </div>
-                    <div className={styles['tablet-and-above']}>
-                      <HeaderHelpDropdown />
-                    </div>
-                  </div>
-                )}
-                {withSwitchVenueFeature && !hideAdminButton && (
+                {!hideAdminButton && (
                   <Button
                     as="a"
                     variant={ButtonVariant.SECONDARY}
