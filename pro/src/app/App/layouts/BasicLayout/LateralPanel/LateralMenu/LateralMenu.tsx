@@ -153,7 +153,6 @@ const generateNavItems = (
 }
 
 export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
   const isVolunteeringActive = useActiveFeature('WIP_VOLUNTEERING')
 
   const selectedOfferer = useAppSelector(
@@ -162,14 +161,9 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const selectedPartnerVenue = useAppSelector(
     (state) => state.user.selectedPartnerVenue
   )
-
-  const permanentVenues =
-    selectedOfferer?.managedVenues?.filter((v) => v.isPermanent) ?? []
   const hasPartnerPageVenues =
     selectedOfferer?.managedVenues?.filter((v) => v.hasPartnerPage) ?? []
-  const venueId = withSwitchVenueFeature
-    ? selectedPartnerVenue?.id
-    : permanentVenues[0]?.id
+  const venueId = selectedPartnerVenue?.id
 
   const reduxStoredPartnerPageId = useAppSelector(selectSelectedPartnerPageId)
   const savedPartnerPageVenueId = getSavedPartnerPageVenueId(
@@ -197,31 +191,23 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   return (
     <div
       className={classnames(styles['nav-links'], {
-        [styles['nav-links-with-padding-top']]: !withSwitchVenueFeature,
         [styles['nav-links-open']]: isLateralPanelOpen,
       })}
     >
-      {withSwitchVenueFeature && (
-        <div className={styles['back-to-admin']}>
-          <Button
-            as="a"
-            variant={ButtonVariant.SECONDARY}
-            to="/remboursements"
-            iconPosition={IconPositionEnum.LEFT}
-            icon={strokeRepaymentIcon}
-            label="Espace Administration"
-            fullWidth
-          />
-        </div>
-      )}
+      <div className={styles['back-to-admin']}>
+        <Button
+          as="a"
+          variant={ButtonVariant.SECONDARY}
+          to="/remboursements"
+          iconPosition={IconPositionEnum.LEFT}
+          icon={strokeRepaymentIcon}
+          label="Espace Administration"
+          fullWidth
+        />
+      </div>
       {selectedOfferer && (
-        <div
-          className={classnames({
-            [styles['nav-links-group-switch-venue']]: withSwitchVenueFeature,
-            [styles['nav-links-group']]: !withSwitchVenueFeature,
-          })}
-        >
-          {withSwitchVenueFeature && selectedPartnerVenue && (
+        <div className={styles['nav-links-group-switch-venue']}>
+          {selectedPartnerVenue && (
             <div className={styles['nav-links-switch-venue-button']}>
               <Button
                 as="a"
@@ -272,10 +258,7 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
         </div>
       )}
 
-      <SideNavLinks
-        navItems={navItems}
-        withSwitchVenueFeature={withSwitchVenueFeature}
-      />
+      <SideNavLinks navItems={navItems} />
     </div>
   )
 }

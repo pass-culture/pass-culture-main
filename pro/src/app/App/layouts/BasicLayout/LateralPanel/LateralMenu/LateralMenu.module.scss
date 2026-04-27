@@ -14,25 +14,11 @@
   height: 100%;
   border-right: rem.torem(1px) solid var(--color-border-subtle);
 
-  &-with-padding-top {
-    padding-top: var(--size-spacing-xl);
-  }
-
   &-open {
     height: calc(100% - #{size.$top-menu-height});
 
     @media (min-width: size.$laptop) {
       min-height: 100%;
-    }
-  }
-
-  &-group {
-    display: flex;
-    flex-direction: column;
-
-    &:nth-child(2),
-    &:nth-child(3) {
-      height: 100%;
     }
   }
 
