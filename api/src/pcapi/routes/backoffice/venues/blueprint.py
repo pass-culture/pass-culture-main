@@ -1117,6 +1117,7 @@ def _render_remove_pricing_point_content(
         }
     )
     return (
+        # Always return status code 200 so that htmx shows the response
         render_template(
             "components/dynamic/modal_form.html",
             div_id="remove-venue-pricing-point",  # must be consistent with parameter passed to build_lazy_modal
@@ -1125,8 +1126,7 @@ def _render_remove_pricing_point_content(
             alert=error,
             ajax_submit=False,
             **kwargs,
-        ),
-        400 if error or (form and form.errors) else 200,
+        )
     )
 
 

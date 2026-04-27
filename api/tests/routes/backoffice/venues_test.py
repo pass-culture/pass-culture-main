@@ -2607,6 +2607,8 @@ class GetRemovePricingPointFormTest(GetEndpointHelper):
         assert f"Point de valorisation : {venue_with_no_siret.current_pricing_point.name}" in content
         assert f"SIRET de valorisation : {venue_with_no_siret.current_pricing_point.siret}" in content
 
+        assert html_parser.extract_buttons(response.data) == ["Annuler", "Confirmer"]
+
     def test_venue_with_siret(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
         offerers_factories.VenuePricingPointLinkFactory(
@@ -2617,21 +2619,23 @@ class GetRemovePricingPointFormTest(GetEndpointHelper):
 
         response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
 
-        assert response.status_code == 400
+        assert response.status_code == 200
         assert (
             html_parser.extract_alert(response.data)
             == "Vous ne pouvez supprimer le point de valorisation d'un partenaire culturel avec SIRET"
         )
+        assert html_parser.extract_buttons(response.data) == ["Annuler"]
 
     def test_venue_with_no_pricing_point(self, authenticated_client):
         venue = offerers_factories.VenueWithoutSiretFactory()
 
         response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
 
-        assert response.status_code == 400
+        assert response.status_code == 200
         assert (
             html_parser.extract_alert(response.data) == "Ce partenaire culturel n'a pas de point de valorisation actif"
         )
+        assert html_parser.extract_buttons(response.data) == ["Annuler"]
 
     def test_venue_with_high_yearly_revenue(self, authenticated_client, venue_with_no_siret):
         rich_beneficiary = users_factories.BeneficiaryFactory(deposit__amount=25_000)
@@ -2641,11 +2645,12 @@ class GetRemovePricingPointFormTest(GetEndpointHelper):
 
         response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_with_no_siret.id))
 
-        assert response.status_code == 400
+        assert response.status_code == 200
         assert (
             html_parser.extract_alert(response.data)
             == "Ce partenaire culturel a un chiffre d'affaires de l'année élevé : 10800.00"
         )
+        assert html_parser.extract_buttons(response.data) == ["Annuler"]
 
 
 class GetSetPricingPointFormTest(GetEndpointHelper):
@@ -2843,7 +2848,7 @@ class RemovePricingPointTest(PostEndpointHelper):
             },
         )
 
-        assert response.status_code == 400
+        assert response.status_code == 200
         assert (
             html_parser.extract_alert(response.data)
             == "Vous ne pouvez supprimer le point de valorisation d'un partenaire culturel avec SIRET"
@@ -2861,7 +2866,7 @@ class RemovePricingPointTest(PostEndpointHelper):
             },
         )
 
-        assert response.status_code == 400
+        assert response.status_code == 200
         assert (
             html_parser.extract_alert(response.data) == "Ce partenaire culturel n'a pas de point de valorisation actif"
         )
@@ -2881,7 +2886,7 @@ class RemovePricingPointTest(PostEndpointHelper):
             },
         )
 
-        assert response.status_code == 400
+        assert response.status_code == 200
         assert (
             html_parser.extract_alert(response.data)
             == "Ce partenaire culturel a un chiffre d'affaires de l'année élevé : 10800.00"

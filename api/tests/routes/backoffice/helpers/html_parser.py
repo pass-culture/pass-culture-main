@@ -271,6 +271,19 @@ def extract_input_value(html_content: str, name: str) -> str:
     return input_field["value"]
 
 
+def extract_buttons(html_content: str, raise_if_not_found: bool = True) -> list[str]:
+    """
+    Extract buttons texts
+    """
+    soup = get_soup(html_content)
+
+    buttons = soup.find_all("button")
+    if raise_if_not_found:
+        assert buttons
+
+    return [filter_whitespaces(button.text) for button in buttons if "btn-close" not in button["class"]]
+
+
 def extract_descriptions(html_content: str) -> dict[str, str]:
     description_titles = extract(html_content, tag="dt")
     description_details = extract(html_content, tag="dd")
