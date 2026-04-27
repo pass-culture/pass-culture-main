@@ -12,10 +12,10 @@ import { Card } from '@/ui-kit/Card/Card'
 import newsletter from './assets/newsletter.png'
 import styles from './NewsletterCard.module.scss'
 
-export const NewsletterCard = ({ venueId }: { venueId: number }) => {
+export const NewsletterCard = () => {
   const { logEvent } = useAnalytics()
   const logNewsletterClick = useFunctionOnce(() =>
-    logEvent(HomepageEvents.CLICKED_NEWSLETTER, { venueId })
+    logEvent(HomepageEvents.CLICKED_NEWSLETTER)
   )
 
   return (

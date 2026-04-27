@@ -4,7 +4,6 @@ import userEvent from '@testing-library/user-event'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events, HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
-import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -48,7 +47,6 @@ const renderPartnerPageCard = (
     <PartnerPageCard
       venueId={venue.id}
       venueName={venue.name}
-      offererId={venue.managingOfferer.id}
       venueBannerUrl={venue.bannerUrl}
       venueBannerMeta={venue.bannerMeta}
       variant={variant}
@@ -101,8 +99,6 @@ describe('PartnerPageCard', () => {
 
     await waitFor(() => {
       expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_ADD_IMAGE, {
-        offererId: '1',
-        venueId: defaultGetVenue.id,
         imageType: UploaderModeEnum.VENUE,
         isEdition: true,
         imageCreationStage: 'add image',
@@ -170,8 +166,7 @@ describe('PartnerPageCard', () => {
     await user.click(screen.getByRole('link', { name: /Voir ma page/ }))
 
     expect(mockLogEvent).toHaveBeenCalledWith(
-      HomepageEvents.CLICKED_PARTNER_PAGE,
-      { venueId: baseVenue.id }
+      HomepageEvents.CLICKED_PARTNER_PAGE
     )
   })
 

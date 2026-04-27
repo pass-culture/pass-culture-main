@@ -33,8 +33,8 @@ const offererNamesValidated = [
   },
 ]
 
-const renderCollaborators = async (options?: RenderWithProvidersOptions) => {
-  await renderWithProviders(
+const renderCollaborators = (options?: RenderWithProvidersOptions) => {
+  renderWithProviders(
     <>
       <Collaborators />
       <SnackBarContainer />
@@ -64,8 +64,8 @@ describe('Collaborators', () => {
     }))
   })
 
-  it('should display a button to open invite form', async () => {
-    await renderCollaborators()
+  it('should display a button to open invite form', () => {
+    renderCollaborators()
 
     expect(
       screen.getByRole('button', { name: 'Ajouter un collaborateur' })
@@ -85,7 +85,7 @@ describe('Collaborators', () => {
   })
 
   it('should display the invite form on click', async () => {
-    await renderCollaborators()
+    renderCollaborators()
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Ajouter un collaborateur' })
@@ -99,7 +99,7 @@ describe('Collaborators', () => {
   })
 
   it('should display validation error on invalid email', async () => {
-    await renderCollaborators()
+    renderCollaborators()
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Ajouter un collaborateur' })
@@ -117,15 +117,13 @@ describe('Collaborators', () => {
   })
 
   it('should invite collaborator successfully, log events and display email', async () => {
-    await renderCollaborators()
+    renderCollaborators()
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Ajouter un collaborateur' })
     )
 
-    expect(mockLogEvent).toHaveBeenCalledWith('hasClickedAddCollaborator', {
-      offererId: 1,
-    })
+    expect(mockLogEvent).toHaveBeenCalledWith('hasClickedAddCollaborator')
 
     await userEvent.type(screen.getByLabelText('Adresse email'), 'test@test.fr')
 
@@ -139,9 +137,7 @@ describe('Collaborators', () => {
       ).toBeInTheDocument()
     })
 
-    expect(mockLogEvent).toHaveBeenCalledWith('hasSentInvitation', {
-      offererId: 1,
-    })
+    expect(mockLogEvent).toHaveBeenCalledWith('hasSentInvitation')
 
     expect(screen.getByText('test@test.fr')).toBeInTheDocument()
   })
@@ -160,7 +156,7 @@ describe('Collaborators', () => {
       )
     )
 
-    await renderCollaborators()
+    renderCollaborators()
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Ajouter un collaborateur' })
@@ -182,7 +178,7 @@ describe('Collaborators', () => {
   it('should display default error message on server error', async () => {
     vi.spyOn(apiNew, 'inviteMember').mockRejectedValue({})
 
-    await renderCollaborators()
+    renderCollaborators()
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Ajouter un collaborateur' })
@@ -225,7 +221,7 @@ describe('ViewAllList', () => {
       ],
     })
 
-    await renderCollaborators()
+    renderCollaborators()
 
     await waitFor(() => {
       expect(screen.getByText('email1@gmail.com')).toBeInTheDocument()
@@ -269,7 +265,7 @@ describe('ViewAllList', () => {
       ],
     })
 
-    await renderCollaborators()
+    renderCollaborators()
 
     expect(await screen.findByText('validated@test.fr')).toBeInTheDocument()
     expect(screen.getByText('pending@test.fr')).toBeInTheDocument()
@@ -286,7 +282,7 @@ describe('ViewAllList', () => {
       })),
     })
 
-    await renderCollaborators()
+    renderCollaborators()
 
     expect(await screen.findByText('user0@test.fr')).toBeInTheDocument()
 

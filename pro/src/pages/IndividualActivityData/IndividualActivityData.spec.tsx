@@ -103,9 +103,7 @@ describe('IndividualActivityData', () => {
       screen.getByRole('button', { name: 'Réinitialiser les filtres' })
     )
 
-    expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_RESET_FILTERS, {
-      from: '/administration/donnees-activite/individuel',
-    })
+    expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_RESET_FILTERS)
   })
 
   it('should pass admin offerer id to CSV download', async () => {
@@ -152,8 +150,6 @@ describe('IndividualActivityData', () => {
   })
 
   it('should track download clicks', async () => {
-    const FROM = '/administration/donnees-activite/individuel'
-
     vi.spyOn(api, 'getBookingsCsv').mockResolvedValue({})
     vi.spyOn(api, 'getBookingsExcel').mockResolvedValue({})
     renderIndividualActivityData()
@@ -162,16 +158,14 @@ describe('IndividualActivityData', () => {
       screen.getByRole('button', { name: 'Télécharger les réservations' })
     )
     expect(mockLogEvent).toHaveBeenCalledWith(
-      Events.CLICKED_ADMIN_DOWNLOAD_BOOKINGS,
-      { from: FROM }
+      Events.CLICKED_ADMIN_DOWNLOAD_BOOKINGS
     )
 
     await userEvent.click(
       screen.getByRole('menuitem', { name: 'Microsoft Excel (.xls)' })
     )
     expect(mockLogEvent).toHaveBeenCalledWith(
-      Events.CLICKED_ADMIN_DOWNLOAD_BOOKINGS_XLS,
-      { from: FROM }
+      Events.CLICKED_ADMIN_DOWNLOAD_BOOKINGS_XLS
     )
 
     await userEvent.click(
@@ -181,8 +175,7 @@ describe('IndividualActivityData', () => {
       screen.getByRole('menuitem', { name: 'Fichier CSV (.csv)' })
     )
     expect(mockLogEvent).toHaveBeenCalledWith(
-      Events.CLICKED_ADMIN_DOWNLOAD_BOOKINGS_CSV,
-      { from: FROM }
+      Events.CLICKED_ADMIN_DOWNLOAD_BOOKINGS_CSV
     )
   })
 })

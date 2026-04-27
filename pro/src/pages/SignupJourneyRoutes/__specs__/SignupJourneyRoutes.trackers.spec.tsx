@@ -45,8 +45,6 @@ describe('SignupJourneyRoutes::trackers', () => {
 
     expect(logoutSpy).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_LOGOUT, {
-      from: '/inscription/structure/recherche',
-    })
+    expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_LOGOUT)
   })
 })

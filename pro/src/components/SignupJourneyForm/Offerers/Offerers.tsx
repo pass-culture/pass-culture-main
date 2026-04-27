@@ -131,7 +131,6 @@ export const Offerers = (): JSX.Element => {
       createVenueWithoutSiret: true,
     }
     logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-      from: location.pathname,
       to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
       used: SignupJourneyAction.NewOfferer,
     })
@@ -141,8 +140,7 @@ export const Offerers = (): JSX.Element => {
 
   const doLinkAccount = async () => {
     logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-      from: location.pathname,
-      to: '/inscription/structure/rattachement/confirmation-rattachement',
+      to: '/inscription/structure/rattachement/confirmation',
       used: SignupJourneyAction.JoinModal,
     })
     /* istanbul ignore next: venuesOfOfferer will always be defined here or else,
@@ -182,7 +180,6 @@ export const Offerers = (): JSX.Element => {
 
   const doLinkUserToOfferer = () => {
     logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-      from: location.pathname,
       to: 'LinkModal',
       used: SignupJourneyAction.LinkModalActionButton,
     })

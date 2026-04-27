@@ -92,9 +92,7 @@ const Collaborators = () => {
         status: OffererMemberStatus.PENDING,
       })
       reset()
-      logEvent(OffererLinkEvents.CLICKED_SEND_INVITATION, {
-        offererId: offererId,
-      })
+      logEvent(OffererLinkEvents.CLICKED_SEND_INVITATION)
       snackBar.success(SUCCESS_MESSAGE)
       setIsDialogOpen(false)
     } catch (error) {
@@ -200,9 +198,7 @@ const Collaborators = () => {
               <Button
                 variant={ButtonVariant.PRIMARY}
                 onClick={() => {
-                  logEvent(OffererLinkEvents.CLICKED_ADD_COLLABORATOR, {
-                    offererId: offererId,
-                  })
+                  logEvent(OffererLinkEvents.CLICKED_ADD_COLLABORATOR)
                 }}
                 label="Ajouter un collaborateur"
               />

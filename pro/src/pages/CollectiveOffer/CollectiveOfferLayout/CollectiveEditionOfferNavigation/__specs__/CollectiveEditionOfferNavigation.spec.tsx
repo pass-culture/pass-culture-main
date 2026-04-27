@@ -14,10 +14,7 @@ import {
   type GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
-import {
-  COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
-  Events,
-} from '@/commons/core/FirebaseEvents/constants'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
@@ -152,8 +149,6 @@ describe('CollectiveEditionOfferNavigation', () => {
       1,
       Events.CLICKED_DUPLICATE_BOOKABLE_OFFER,
       {
-        from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_RECAP,
-        offererId: '1',
         offerId: 1,
         offerType: 'collective',
         offerStatus: CollectiveOfferDisplayedStatus.PUBLISHED,

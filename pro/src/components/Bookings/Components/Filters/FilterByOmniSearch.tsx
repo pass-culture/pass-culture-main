@@ -68,7 +68,6 @@ export const FilterByOmniSearch = ({
     const newOmniSearchCriteria = event.target.value.toLowerCase()
     updateOmniSearchKeywords(newOmniSearchCriteria, keywords)
     logEvent(Events.CLICKED_OMNI_SEARCH_CRITERIA, {
-      from: location.pathname,
       criteria: newOmniSearchCriteria,
     })
   }

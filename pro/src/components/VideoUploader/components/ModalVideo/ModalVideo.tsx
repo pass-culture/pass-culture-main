@@ -3,8 +3,6 @@ import { useState } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
@@ -26,7 +24,6 @@ export const ModalVideo = ({
   const [error, setError] = useState<string>()
   const { videoUrl, onVideoUpload, setVideoUrl, offerId } =
     useVideoUploaderContext()
-  const currentUser = useAppSelector(selectCurrentUser)
   const { logEvent } = useAnalytics()
 
   return (
@@ -50,7 +47,6 @@ export const ModalVideo = ({
               if (value && getUrlYoutubeError(value)) {
                 logEvent(Events.OFFER_FORM_VIDEO_URL_ERROR, {
                   offerId: offerId,
-                  userId: currentUser?.id,
                   videoUrl: value,
                 })
               }

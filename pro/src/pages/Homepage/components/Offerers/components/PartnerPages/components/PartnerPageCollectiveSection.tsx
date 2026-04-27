@@ -21,15 +21,11 @@ export const PartnerPageCollectiveSection = ({
   const { logEvent } = useAnalytics()
 
   const logCollectiveHelpLinkClick = () => {
-    logEvent(Events.CLICKED_PARTNER_BLOCK_COLLECTIVE_HELP_LINK, {
-      venueId: selectedPartnerVenue.id,
-    })
+    logEvent(Events.CLICKED_PARTNER_BLOCK_COLLECTIVE_HELP_LINK)
   }
 
   const logDMSApplicationLinkClick = () => {
-    logEvent(Events.CLICKED_PARTNER_BLOCK_DMS_APPLICATION_LINK, {
-      venueId: selectedPartnerVenue.id,
-    })
+    logEvent(Events.CLICKED_PARTNER_BLOCK_DMS_APPLICATION_LINK)
   }
 
   if (selectedPartnerVenue.allowedOnAdage) {
@@ -173,11 +169,7 @@ function AdageInformations({
             to={`/partenaire/page-collective`}
             aria-label={`Gérer la page pour les enseignants ${venueName}`}
             icon={fullNextIcon}
-            onClick={() =>
-              logEvent(Events.CLICKED_PAGE_FOR_ADAGE_HOME, {
-                from: location.pathname,
-              })
-            }
+            onClick={() => logEvent(Events.CLICKED_PAGE_FOR_ADAGE_HOME)}
             label="Gérer votre page pour les enseignants"
           />
         </div>

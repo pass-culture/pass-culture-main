@@ -139,18 +139,17 @@ describe('DownloadBookingModal', () => {
     })
 
     await userEvent.click(downLoadCsvButton)
-    expect(api.exportBookingsForOfferAsCsv).toBeCalledWith(
+    expect(api.exportBookingsForOfferAsCsv).toHaveBeenCalledWith(
       MOCK_OFFER_ID,
       'validated',
       '2022-01-01'
     )
 
-    expect(mockLogEvent).toBeCalledWith('hasDownloadedBookings', {
+    expect(mockLogEvent).toHaveBeenCalledWith('hasDownloadedBookings', {
       format: 'csv',
       bookingStatus: 'validated',
       offerId: MOCK_OFFER_ID,
       offerType: 'individual',
-      offererId: '1',
     })
   })
 
@@ -217,18 +216,17 @@ describe('DownloadBookingModal', () => {
     })
 
     await userEvent.click(downLoadXlsxButton)
-    expect(api.exportBookingsForOfferAsExcel).toBeCalledWith(
+    expect(api.exportBookingsForOfferAsExcel).toHaveBeenCalledWith(
       MOCK_OFFER_ID,
       'all',
       '2022-01-02'
     )
 
-    expect(mockLogEvent).toBeCalledWith('hasDownloadedBookings', {
+    expect(mockLogEvent).toHaveBeenCalledWith('hasDownloadedBookings', {
       format: 'excel',
       bookingStatus: 'all',
       offerId: MOCK_OFFER_ID,
       offerType: 'individual',
-      offererId: '1',
     })
   })
 })

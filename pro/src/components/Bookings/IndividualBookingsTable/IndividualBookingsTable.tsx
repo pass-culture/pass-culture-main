@@ -102,13 +102,9 @@ export const IndividualBookingsTable = ({
             scrollToContentWrapper()
 
             if (currentPage + 1 === newPage) {
-              logEvent(Events.CLICKED_PAGINATION_NEXT_PAGE, {
-                from: location.pathname,
-              })
+              logEvent(Events.CLICKED_PAGINATION_NEXT_PAGE)
             } else if (currentPage - 1 === newPage) {
-              logEvent(Events.CLICKED_PAGINATION_PREVIOUS_PAGE, {
-                from: location.pathname,
-              })
+              logEvent(Events.CLICKED_PAGINATION_PREVIOUS_PAGE)
             }
           },
         }}

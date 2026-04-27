@@ -86,7 +86,6 @@ export const LinkVenuesDialog = ({
       })
 
       logEvent(BankAccountEvents.CLICKED_SAVE_VENUE_TO_BANK_ACCOUNT, {
-        id: offererId,
         HasUncheckedVenue: hasUnchecked,
       })
 

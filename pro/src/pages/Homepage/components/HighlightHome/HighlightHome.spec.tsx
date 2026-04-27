@@ -62,7 +62,6 @@ describe('HighlightHome', () => {
     expect(mockLogEvent).toBeCalledWith(
       EngagementEvents.HAS_REQUESTED_HIGHLIGHTS,
       {
-        venueId: 2,
         action: 'discover',
       }
     )

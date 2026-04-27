@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import { useLocation } from 'react-router'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -19,7 +18,6 @@ interface LegalInfoProps {
 }
 
 export const LegalInfos = ({ className }: LegalInfoProps): JSX.Element => {
-  const location = useLocation()
   const { logEvent } = useAnalytics()
 
   const DPOMail = 'dpo@passculture.app'
@@ -39,11 +37,7 @@ export const LegalInfos = ({ className }: LegalInfoProps): JSX.Element => {
                 size={ButtonSize.SMALL}
                 opensInNewTab
                 isExternal
-                onClick={() =>
-                  logEvent(Events.CLICKED_CONSULT_CGU, {
-                    from: location.pathname,
-                  })
-                }
+                onClick={() => logEvent(Events.CLICKED_CONSULT_CGU)}
                 to="https://pass.culture.fr/cgu-professionnels/"
                 label="Conditions générales d’utilisation."
               />

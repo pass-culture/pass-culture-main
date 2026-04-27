@@ -11,10 +11,7 @@ import {
   CollectiveOfferTemplateAllowedAction,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
-import {
-  COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
-  Events,
-} from '@/commons/core/FirebaseEvents/constants'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   collectiveOfferFactory,
@@ -304,11 +301,9 @@ describe('OfferActionsCells', () => {
         1,
         Events.CLICKED_DUPLICATE_BOOKABLE_OFFER,
         {
-          from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFERS,
           offerId: 200,
           offerStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           offerType: 'collective',
-          offererId: '1',
         }
       )
     })

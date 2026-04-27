@@ -39,9 +39,7 @@ export const VenueOfferSteps = () => {
           icon={fullNextIcon}
           to={`/partenaire/page-collective`}
           onClick={() => {
-            logEvent(Events.CLICKED_EAC_DMS_TIMELINE, {
-              from: location.pathname,
-            })
+            logEvent(Events.CLICKED_EAC_DMS_TIMELINE)
           }}
           label="Suivre ma demande de référencement ADAGE"
         />

@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMemo } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { useLocation, useNavigate } from 'react-router'
+import { useNavigate } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
@@ -10,11 +10,9 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import { getActivities } from '@/commons/mappings/mappings'
-import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { buildSelectOptions } from '@/commons/utils/buildSelectOptions'
 import { getFormattedAddress } from '@/commons/utils/getFormattedAddress'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
@@ -57,13 +55,10 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const isVolunteeringActive = useActiveFeature('WIP_VOLUNTEERING')
 
   const navigate = useNavigate()
-  const location = useLocation()
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   const { data: educationalDomains, isLoading: isLoadingEducationalDomains } =
     useEducationalDomains()
-
-  const currentUser = useAppSelector(selectCurrentUser)
 
   const initialValues: VenueEditionFormValues = setInitialFormValues(venue)
 
@@ -118,7 +113,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
       navigate(path)
 
       logEvent(Events.CLICKED_SAVE_VENUE, {
-        from: location.pathname,
         saved: true,
         isEdition: true,
       })
@@ -152,7 +146,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
       }
 
       logEvent(Events.CLICKED_SAVE_VENUE, {
-        from: location.pathname,
         saved: false,
         isEdition: true,
       })
@@ -231,8 +224,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                           message: error,
                         })
                         logEvent(Events.VENUE_FORM_VOLUNTEERING_URL_ERROR, {
-                          venueId: venue.id,
-                          userId: currentUser?.id,
                           volunteeringUrl: value,
                         })
                       }

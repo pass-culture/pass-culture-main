@@ -193,8 +193,7 @@ describe('SignIn', () => {
         expect(mockLogEvent).toHaveBeenCalledTimes(1)
         expect(mockLogEvent).toHaveBeenNthCalledWith(
           1,
-          Events.CLICKED_CREATE_ACCOUNT,
-          { from: '/connexion' }
+          Events.CLICKED_CREATE_ACCOUNT
         )
       })
     })
@@ -423,8 +422,7 @@ describe('SignIn', () => {
         expect(mockLogEvent).toHaveBeenCalledTimes(1)
         expect(mockLogEvent).toHaveBeenNthCalledWith(
           1,
-          Events.CLICKED_CREATE_ACCOUNT,
-          { from: '/connexion' }
+          Events.CLICKED_CREATE_ACCOUNT
         )
       })
     })
@@ -440,8 +438,7 @@ describe('SignIn', () => {
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
       expect(mockLogEvent).toHaveBeenNthCalledWith(
         1,
-        Events.CLICKED_FORGOTTEN_PASSWORD,
-        { from: '/connexion' }
+        Events.CLICKED_FORGOTTEN_PASSWORD
       )
     })
   })

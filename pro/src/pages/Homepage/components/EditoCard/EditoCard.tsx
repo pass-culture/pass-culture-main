@@ -24,21 +24,19 @@ import styles from './EditoCard.module.scss'
 
 export const EditoCard = ({
   canDisplayHighlights,
-  venueId,
 }: {
   canDisplayHighlights: boolean
-  venueId: number
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { logEvent } = useAnalytics()
   const logHeadlineOfferClick = useFunctionOnce(() =>
-    logEvent(HomepageEvents.CLICKED_HEADLINE_OFFER, { venueId })
+    logEvent(HomepageEvents.CLICKED_HEADLINE_OFFER)
   )
   const logCulturalSurveyClick = useFunctionOnce(() =>
-    logEvent(HomepageEvents.CLICKED_CULTURAL_SURVEY, { venueId })
+    logEvent(HomepageEvents.CLICKED_CULTURAL_SURVEY)
   )
   const logRecommendationClick = useFunctionOnce(() =>
-    logEvent(HomepageEvents.CLICKED_RECOMMENDATION, { venueId })
+    logEvent(HomepageEvents.CLICKED_RECOMMENDATION)
   )
 
   const highlightOfferCard = (
@@ -58,7 +56,6 @@ export const EditoCard = ({
               fullWidth={true}
               onClick={() =>
                 logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
-                  venueId,
                   action: 'discover',
                 })
               }

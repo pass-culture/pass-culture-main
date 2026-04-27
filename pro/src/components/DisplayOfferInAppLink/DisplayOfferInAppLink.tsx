@@ -33,7 +33,6 @@ export const DisplayOfferInAppLink: FunctionComponent<
         event.preventDefault()
         logEvent(Events.CLICKED_VIEW_APP_OFFER, {
           offerId: id,
-          from: location.pathname,
         })
         onClick?.()
 

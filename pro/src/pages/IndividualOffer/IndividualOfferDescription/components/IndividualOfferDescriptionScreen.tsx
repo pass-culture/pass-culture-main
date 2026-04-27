@@ -157,9 +157,7 @@ export const IndividualOfferDescriptionScreen = () => {
           : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION
 
       logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
         offerId,
-        venueId: form.getValues('venueId'),
         offerType: 'individual',
         subcategoryId: form.getValues('subcategoryId'),
       })

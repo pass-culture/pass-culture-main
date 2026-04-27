@@ -1,5 +1,3 @@
-import { useLocation } from 'react-router'
-
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { NBSP } from '@/commons/core/shared/constants'
@@ -25,7 +23,6 @@ export const CollectiveDeactivationConfirmDialog = ({
   refToFocusOnClose,
 }: CollectiveDeactivationConfirmDialogProps): JSX.Element => {
   const { logEvent } = useAnalytics()
-  const location = useLocation()
 
   return (
     <ConfirmDialog
@@ -33,14 +30,12 @@ export const CollectiveDeactivationConfirmDialog = ({
       confirmText={'Mettre en pause'}
       onCancel={() => {
         logEvent(Events.CLICKED_CANCELED_SELECTED_OFFERS, {
-          from: location.pathname,
           has_selected_all_offers: areAllOffersSelected,
         })
         onCancel(false)
       }}
       onConfirm={() => {
         logEvent(Events.CLICKED_DISABLED_SELECTED_OFFERS, {
-          from: location.pathname,
           has_selected_all_offers: areAllOffersSelected,
         })
         onConfirm()

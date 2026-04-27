@@ -10,7 +10,7 @@ import { NewsletterCard } from './NewsletterCard'
 const mockLogEvent = vi.fn()
 
 it('should render correctly', () => {
-  renderWithProviders(<NewsletterCard venueId={1} />)
+  renderWithProviders(<NewsletterCard />)
 
   expect(screen.getByText('Suivez notre actualité !')).toBeVisible()
   expect(
@@ -22,7 +22,7 @@ it('should render correctly', () => {
 })
 
 it('should render newsletter subscription link', () => {
-  renderWithProviders(<NewsletterCard venueId={1} />)
+  renderWithProviders(<NewsletterCard />)
 
   expect(
     screen.getByRole('link', { name: /S’abonner à la newsletter/ })
@@ -38,13 +38,11 @@ it('should log CLICKED_NEWSLETTER on click', async () => {
     logEvent: mockLogEvent,
   }))
 
-  renderWithProviders(<NewsletterCard venueId={1} />)
+  renderWithProviders(<NewsletterCard />)
 
   await user.click(
     screen.getByRole('link', { name: /S.abonner à la newsletter/ })
   )
 
-  expect(mockLogEvent).toHaveBeenCalledWith(HomepageEvents.CLICKED_NEWSLETTER, {
-    venueId: 1,
-  })
+  expect(mockLogEvent).toHaveBeenCalledWith(HomepageEvents.CLICKED_NEWSLETTER)
 })

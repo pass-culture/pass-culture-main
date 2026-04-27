@@ -1,5 +1,5 @@
 import type { UseFormReturn } from 'react-hook-form'
-import { useLocation, useNavigate } from 'react-router'
+import { useNavigate } from 'react-router'
 
 import { isErrorAPIError } from '@/apiClient/helpers'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
@@ -22,7 +22,6 @@ export const useSaveVenueSettings = ({
   venue: GetVenueResponseModel
 }) => {
   const navigate = useNavigate()
-  const location = useLocation()
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
 
@@ -36,7 +35,6 @@ export const useSaveVenueSettings = ({
       navigate(getVenuePagePathToNavigateTo())
 
       logEvent(Events.CLICKED_SAVE_VENUE, {
-        from: location.pathname,
         saved: true,
         isEdition: true,
       })
@@ -62,7 +60,6 @@ export const useSaveVenueSettings = ({
       }
 
       logEvent(Events.CLICKED_SAVE_VENUE, {
-        from: location.pathname,
         saved: false,
         isEdition: true,
       })

@@ -19,16 +19,12 @@ const renderStocksProviderForm = (props: StocksProviderFormProps) => {
 describe('StocksProviderForm', () => {
   let props: StocksProviderFormProps
   const providerId = 66
-  const venueId = 1
-  const offererId = 3
 
   beforeEach(() => {
     props = {
-      offererId: offererId,
       providerId: providerId,
       saveVenueProvider: vi.fn().mockReturnValue(true),
       siret: '12345678901234',
-      venueId: venueId,
       hasOffererProvider: true,
     }
 
@@ -88,8 +84,6 @@ describe('StocksProviderForm', () => {
         1,
         SynchronizationEvents.CLICKED_IMPORT,
         {
-          offererId: offererId,
-          venueId: venueId,
           providerId: providerId,
         }
       )
@@ -104,8 +98,6 @@ describe('StocksProviderForm', () => {
         2,
         SynchronizationEvents.CLICKED_VALIDATE_IMPORT,
         {
-          offererId: offererId,
-          venueId: venueId,
           providerId: providerId,
           saved: true,
         }

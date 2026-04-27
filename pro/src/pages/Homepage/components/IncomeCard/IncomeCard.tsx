@@ -1,5 +1,3 @@
-import { useLocation } from 'react-router'
-
 import type {
   CollectiveRevenue,
   IndividualRevenue,
@@ -40,11 +38,9 @@ interface IncomeCardProps {
 }
 
 const BankAccountBanner = ({
-  venueId,
   bankAccountStatus,
-}: IncomeCardProps): JSX.Element | null => {
+}: Pick<IncomeCardProps, 'bankAccountStatus'>): JSX.Element | null => {
   const { logEvent } = useAnalytics()
-  const location = useLocation()
 
   switch (bankAccountStatus) {
     case null:
@@ -59,10 +55,7 @@ const BankAccountBanner = ({
               type: 'link',
               icon: fullNextIcon,
               onClick: () => {
-                logEvent(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT, {
-                  from: location.pathname,
-                  venueId,
-                })
+                logEvent(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT)
               },
             },
           ]}
@@ -81,11 +74,7 @@ const BankAccountBanner = ({
               icon: fullNextIcon,
               onClick: () => {
                 logEvent(
-                  BankAccountEvents.CLICKED_BANK_ACCOUNT_HAS_PENDING_CORRECTIONS,
-                  {
-                    from: location.pathname,
-                    venueId,
-                  }
+                  BankAccountEvents.CLICKED_BANK_ACCOUNT_HAS_PENDING_CORRECTIONS
                 )
               },
             },
@@ -174,10 +163,7 @@ export const IncomeCard = ({
       {!isEmptyState && cardHeader}
 
       <Card.Content>
-        <BankAccountBanner
-          venueId={venueId}
-          bankAccountStatus={bankAccountStatus}
-        />
+        <BankAccountBanner bankAccountStatus={bankAccountStatus} />
 
         {isEmptyState && (
           <div className={styles['income-card-empty']}>

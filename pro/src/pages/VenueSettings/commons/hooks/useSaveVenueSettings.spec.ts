@@ -186,7 +186,6 @@ describe('useSaveVenueSettings', () => {
     )
     expect(useNavigateMock).not.toHaveBeenCalled()
     expect(logEvent).toHaveBeenCalledWith(Events.CLICKED_SAVE_VENUE, {
-      from: '/lieux/id',
       saved: false,
       isEdition: true,
     })

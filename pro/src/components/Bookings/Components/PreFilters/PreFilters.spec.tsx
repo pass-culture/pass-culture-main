@@ -268,9 +268,7 @@ describe('filter bookings by bookings period', () => {
       await user.click(
         screen.getByRole('button', { name: 'Rechercher les réservations' })
       )
-      expect(mockLogEvent).toHaveBeenCalledWith('CLICKED_SHOW_BOOKINGS', {
-        from: '/',
-      })
+      expect(mockLogEvent).toHaveBeenCalledWith('CLICKED_SHOW_BOOKINGS')
     })
   })
 })

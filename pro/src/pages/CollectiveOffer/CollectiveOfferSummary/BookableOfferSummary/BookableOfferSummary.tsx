@@ -12,16 +12,11 @@ import {
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { GET_COLLECTIVE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
-import {
-  COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
-  Events,
-} from '@/commons/core/FirebaseEvents/constants'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { getCollectiveOfferLink } from '@/commons/core/OfferEducational/utils/getCollectiveOfferLink'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
-import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
 import {
   isActionAllowedOnCollectiveOffer,
@@ -70,7 +65,6 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const navigate = useNavigate()
-  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const archiveButtonRef = useRef<HTMLButtonElement>(null)
   const duplicateButtonRef = useRef<HTMLButtonElement>(null)
@@ -297,9 +291,6 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
                     icon={fullCopyIcon}
                     onClick={async () => {
                       logEvent(Events.CLICKED_DUPLICATE_BOOKABLE_OFFER, {
-                        from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_RECAP,
-                        offererId:
-                          selectedPartnerVenue.managingOfferer.id.toString(),
                         offerId: offer.id,
                         offerStatus: offer.displayedStatus,
                         offerType: 'collective',

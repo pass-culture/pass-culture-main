@@ -154,7 +154,6 @@ export const NewHomepage = (): JSX.Element => {
             <StatsCard venue={selectedPartnerVenue} />
             <EditoCard
               canDisplayHighlights={selectedPartnerVenue.canDisplayHighlights}
-              venueId={selectedPartnerVenue.id}
             />
           </div>
 
@@ -170,7 +169,6 @@ export const NewHomepage = (): JSX.Element => {
             <PartnerPageCard
               venueId={selectedPartnerVenue.id}
               venueName={selectedPartnerVenue.name}
-              offererId={selectedPartnerVenue.managingOfferer.id}
               venueBannerUrl={selectedPartnerVenue.bannerUrl}
               venueBannerMeta={selectedPartnerVenue.bannerMeta}
               variant={HomepageVariant.INDIVIDUAL}
@@ -178,7 +176,7 @@ export const NewHomepage = (): JSX.Element => {
             {shouldDisplayWebinarCard && (
               <WebinarCard variant={HomepageVariant.INDIVIDUAL} />
             )}
-            <NewsletterCard venueId={selectedPartnerVenue.id} />
+            <NewsletterCard />
           </div>
         </div>
       )}
@@ -235,7 +233,6 @@ export const NewHomepage = (): JSX.Element => {
                 <PartnerPageCard
                   venueId={selectedPartnerVenue.id}
                   venueName={selectedPartnerVenue.name}
-                  offererId={selectedPartnerVenue.managingOfferer.id}
                   venueBannerUrl={selectedPartnerVenue.bannerUrl}
                   venueBannerMeta={selectedPartnerVenue.bannerMeta}
                   variant={HomepageVariant.COLLECTIVE}
@@ -243,7 +240,7 @@ export const NewHomepage = (): JSX.Element => {
                 {shouldDisplayCollectiveWebinarCard && (
                   <WebinarCard variant={HomepageVariant.COLLECTIVE} />
                 )}
-                <NewsletterCard venueId={selectedPartnerVenue.id} />
+                <NewsletterCard />
               </>
             )}
           </div>

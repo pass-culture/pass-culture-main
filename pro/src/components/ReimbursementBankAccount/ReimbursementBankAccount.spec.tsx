@@ -23,7 +23,6 @@ const mockUpdateButtonClick = vi.fn()
 const renderReimbursementBankAccount = (
   bankAccount: BankAccountResponseModel,
   managedVenues: ManagedVenue[],
-  offererId = 0,
   hasWarning = false,
   options: RenderWithProvidersOptions = {}
 ) =>
@@ -34,7 +33,6 @@ const renderReimbursementBankAccount = (
         element={
           <ReimbursementBankAccount
             bankAccount={bankAccount}
-            offererId={offererId}
             onUpdateButtonClick={mockUpdateButtonClick}
             managedVenues={managedVenues}
             hasWarning={hasWarning}
@@ -144,7 +142,7 @@ describe('ReimbursementBankAccount', () => {
 
   it('should render without venues linked to bank account and with all venues linked to another account', () => {
     bankAccount.linkedVenues = []
-    renderReimbursementBankAccount(bankAccount, managedVenues, 2)
+    renderReimbursementBankAccount(bankAccount, managedVenues)
 
     expect(
       screen.getByText(
@@ -192,7 +190,7 @@ describe('ReimbursementBankAccount', () => {
     managedVenues.push({
       ...defaultManagedVenue,
     })
-    renderReimbursementBankAccount(bankAccount, managedVenues, 1, true)
+    renderReimbursementBankAccount(bankAccount, managedVenues, true)
 
     expect(
       screen.getByRole('img', { name: 'Une action est requise' })
@@ -241,11 +239,7 @@ describe('ReimbursementBankAccount', () => {
         screen.getByRole('button', { name: 'Rattacher une structure' })
       )
       expect(mockLogEvent).toHaveBeenCalledWith(
-        BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT,
-        {
-          from: '/administration/remboursements/informations-bancaires',
-          offererId: 0,
-        }
+        BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT
       )
     })
 
@@ -254,11 +248,7 @@ describe('ReimbursementBankAccount', () => {
 
       await userEvent.click(screen.getByRole('button', { name: 'Modifier' }))
       expect(mockLogEvent).toHaveBeenCalledWith(
-        BankAccountEvents.CLICKED_CHANGE_VENUE_TO_BANK_ACCOUNT,
-        {
-          from: '/administration/remboursements/informations-bancaires',
-          offererId: 0,
-        }
+        BankAccountEvents.CLICKED_CHANGE_VENUE_TO_BANK_ACCOUNT
       )
     })
 
@@ -274,11 +264,7 @@ describe('ReimbursementBankAccount', () => {
         screen.getByRole('link', { name: /Nouvelle fenêtre/ })
       )
       expect(mockLogEvent).toHaveBeenCalledWith(
-        BankAccountEvents.CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP,
-        {
-          from: '/administration/remboursements/informations-bancaires',
-          offererId: 0,
-        }
+        BankAccountEvents.CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP
       )
     })
   })
@@ -330,7 +316,7 @@ describe('ReimbursementBankAccount', () => {
   it('should display the correct button', () => {
     bankAccount.linkedVenues = []
     managedVenues[0].bankAccountId = null
-    renderReimbursementBankAccount(bankAccount, managedVenues, 0, false)
+    renderReimbursementBankAccount(bankAccount, managedVenues, false)
 
     expect(
       screen.getByText(/Aucune structure n’est rattachée à ce compte bancaire./)
@@ -351,7 +337,7 @@ describe('ReimbursementBankAccount', () => {
       managedVenues.push({
         ...defaultManagedVenue,
       })
-      renderReimbursementBankAccount(bankAccount, managedVenues, 0, false)
+      renderReimbursementBankAccount(bankAccount, managedVenues, false)
 
       expect(screen.getByText(/Structures rattachées/)).toBeInTheDocument()
     })

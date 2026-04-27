@@ -40,7 +40,6 @@ export const FormOfferType = ({
     useFormContext<OfferEducationalFormValues>()
 
   const domainsValue = watch('domains')
-  const venueIdValue = watch('venueId')
 
   const { logEvent } = useAnalytics()
 
@@ -77,8 +76,6 @@ export const FormOfferType = ({
 
   const logHasClickedGenerateTemplateDescription = useFunctionOnce(() => {
     logEvent(Events.CLICKED_GENERATE_TEMPLATE_DESCRIPTION, {
-      venueId: venueIdValue,
-      offererId: watch('offererId'),
       ...(domainsValue &&
         domainsValue.length > 0 && {
           domainIds: domainsValue.map((id) => Number(id)),
@@ -88,8 +85,6 @@ export const FormOfferType = ({
 
   const logHasClickedSeeTemplateOfferExample = () => {
     logEvent(Events.CLICKED_SEE_TEMPLATE_OFFER_EXAMPLE, {
-      venueId: venueIdValue,
-      offererId: watch('offererId'),
       ...(domainsValue &&
         domainsValue.length > 0 && {
           domainIds: domainsValue.map((id) => Number(id)),

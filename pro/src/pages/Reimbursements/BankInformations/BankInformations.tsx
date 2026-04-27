@@ -1,6 +1,5 @@
 import classNames from 'classnames'
 import { useRef, useState } from 'react'
-import { useLocation } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { apiNew } from '@/apiClient/api'
@@ -28,7 +27,6 @@ import { LinkVenuesDialog } from './LinkVenuesDialog/LinkVenuesDialog'
 
 const BankInformations = (): JSX.Element => {
   const { logEvent } = useAnalytics()
-  const location = useLocation()
   const { mutate } = useSWRConfig()
   const { syncVenue } = useSyncVenueCache()
   const snackBar = useSnackBar()
@@ -147,10 +145,7 @@ const BankInformations = (): JSX.Element => {
         }
         onClick={() => {
           setShowAddBankInformationsDialog(true)
-          logEvent(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT, {
-            from: location.pathname,
-            offererId: selectedAdminOfferer.id,
-          })
+          logEvent(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT)
         }}
         ref={addBankAccountButtonRef}
         label="Ajouter un compte bancaire"
@@ -167,7 +162,6 @@ const BankInformations = (): JSX.Element => {
             {selectedOffererBankAccounts.bankAccounts.map((bankAccount) => (
               <ReimbursementBankAccount
                 bankAccount={bankAccount}
-                offererId={selectedAdminOfferer.id}
                 key={bankAccount.id}
                 onUpdateButtonClick={(bankAccountId) => {
                   setSelectedBankAccount(
@@ -191,8 +185,6 @@ const BankInformations = (): JSX.Element => {
         closeDialog={() => {
           setShowAddBankInformationsDialog(false)
         }}
-        offererId={selectedAdminOfferer.id}
-        isCaledonian={selectedAdminOfferer.isCaledonian}
         isDialogOpen={showAddBankInformationsDialog}
         dialogTriggerRef={addBankAccountButtonRef}
       />

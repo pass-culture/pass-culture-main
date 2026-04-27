@@ -34,7 +34,6 @@ export const OffersSynchronization = ({
               venueProvider={venueProvider}
               venue={venue}
               venueDepartmentCode={venue.location?.departmentCode}
-              offererId={venue.managingOfferer.id}
               selectSoftwareButtonRef={selectSoftwareButtonRef}
             />
           ))}

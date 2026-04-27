@@ -38,7 +38,6 @@ export const PartnerPage = () => {
 
   const logButtonAddClick = () => {
     logEvent(Events.CLICKED_ADD_IMAGE, {
-      venueId: selectedPartnerVenue.id,
       imageType: UploaderModeEnum.VENUE,
       isEdition: true,
       imageCreationStage: 'add image',

@@ -99,7 +99,7 @@ describe('OfferRecommendationForm', () => {
     )
     expect(mockLogEvent).toBeCalledWith(
       EngagementEvents.HAS_MADE_RECOMMENDATION,
-      { offerId: 1, venueId: 2, action: 'validated' }
+      { offerId: 1, action: 'validated' }
     )
   })
 
@@ -157,7 +157,7 @@ describe('OfferRecommendationForm', () => {
     )
     expect(mockLogEvent).toBeCalledWith(
       EngagementEvents.HAS_MADE_RECOMMENDATION,
-      { offerId: 1, venueId: 2, action: 'deleted' }
+      { offerId: 1, action: 'deleted' }
     )
   })
 

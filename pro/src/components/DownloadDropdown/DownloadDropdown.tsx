@@ -1,7 +1,6 @@
 import { useState } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { useCurrentRoute } from '@/commons/hooks/useCurrentRoute'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant, IconPositionEnum } from '@/design-system/Button/types'
 import fullDownIcon from '@/icons/full-down.svg'
@@ -29,7 +28,6 @@ export const DownloadDropdown = ({
   title,
 }: Readonly<DownloadDropdownProps>) => {
   const { logEvent } = useAnalytics()
-  const currentRoute = useCurrentRoute()
 
   const [isOpen, setIsOpen] = useState(false)
 
@@ -45,11 +43,7 @@ export const DownloadDropdown = ({
           variant={ButtonVariant.PRIMARY}
           icon={isOpen ? fullUpIcon : fullDownIcon}
           iconPosition={IconPositionEnum.RIGHT}
-          onClick={() =>
-            logEvent(logEventName.onToggle, {
-              from: currentRoute.pathname,
-            })
-          }
+          onClick={() => logEvent(logEventName.onToggle)}
           disabled={isDisabled}
         />
       }
@@ -58,9 +52,7 @@ export const DownloadDropdown = ({
         title="Microsoft Excel (.xls)"
         icon={fullDownloadIcon}
         onSelect={() => {
-          logEvent(logEventName.onSelectXls, {
-            from: currentRoute.pathname,
-          })
+          logEvent(logEventName.onSelectXls)
           onSelect('XLS')
         }}
       />
@@ -68,9 +60,7 @@ export const DownloadDropdown = ({
         title="Fichier CSV (.csv)"
         icon={fullDownloadIcon}
         onSelect={() => {
-          logEvent(logEventName.onSelectCsv, {
-            from: currentRoute.pathname,
-          })
+          logEvent(logEventName.onSelectCsv)
           onSelect('CSV')
         }}
       />

@@ -182,15 +182,13 @@ describe('CollectiveActivityData', () => {
         screen.getByRole('button', { name: LABEL.button.downloadDropdown })
       )
       expect(mockLogEvent).toHaveBeenCalledWith(
-        Events.CLICKED_ADMIN_DOWNLOAD_COLLECTIVE_OFFERS,
-        { from: '/administration/donnees-activite/collectif' }
+        Events.CLICKED_ADMIN_DOWNLOAD_COLLECTIVE_OFFERS
       )
       await userEvent.click(
         screen.getByRole('menuitem', { name: LABEL.button.downloadXls })
       )
       expect(mockLogEvent).toHaveBeenCalledWith(
-        Events.CLICKED_ADMIN_DOWNLOAD_COLLECTIVE_OFFERS_XLS,
-        { from: '/administration/donnees-activite/collectif' }
+        Events.CLICKED_ADMIN_DOWNLOAD_COLLECTIVE_OFFERS_XLS
       )
 
       await userEvent.click(
@@ -200,8 +198,7 @@ describe('CollectiveActivityData', () => {
         screen.getByRole('menuitem', { name: LABEL.button.downloadCsv })
       )
       expect(mockLogEvent).toHaveBeenCalledWith(
-        Events.CLICKED_ADMIN_DOWNLOAD_COLLECTIVE_OFFERS_CSV,
-        { from: '/administration/donnees-activite/collectif' }
+        Events.CLICKED_ADMIN_DOWNLOAD_COLLECTIVE_OFFERS_CSV
       )
     })
   })

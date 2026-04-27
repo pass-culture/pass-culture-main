@@ -637,8 +637,6 @@ describe('VenueEditionFormScreen', () => {
       expect(mockLogEvent).toHaveBeenCalledWith(
         Events.VENUE_FORM_VOLUNTEERING_URL_ERROR,
         {
-          venueId: baseVenue.id,
-          userId: expect.any(Number),
           volunteeringUrl: 'any-url',
         }
       )

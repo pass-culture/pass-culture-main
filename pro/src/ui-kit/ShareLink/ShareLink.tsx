@@ -1,5 +1,4 @@
 import { useRef } from 'react'
-import { useLocation } from 'react-router'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -28,11 +27,9 @@ export const ShareLink = ({
   const inputRef = useRef<HTMLInputElement>(null)
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
-  const location = useLocation()
 
   const logCopyEvent = useFunctionOnce(() => {
     logEvent(Events.CLICKED_COPY_TEMPLATE_OFFER_LINK, {
-      from: location.pathname,
       offerId,
     })
   })

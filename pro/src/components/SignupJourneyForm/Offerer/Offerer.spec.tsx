@@ -637,9 +637,7 @@ describe('Offerer', () => {
         /Vous ne connaissez pas votre SIRET \? Consultez l'Annuaire des Entreprises\./
       )
     )
-    expect(mockLogEvent).toHaveBeenNthCalledWith(1, 'hasClickedUnknownSiret', {
-      from: '/',
-    })
+    expect(mockLogEvent).toHaveBeenNthCalledWith(1, 'hasClickedUnknownSiret')
   })
 
   const lenErrorCondition = ['22223333', '1234567891234567']

@@ -2,12 +2,8 @@ import cn from 'classnames'
 import { type JSX, useState } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
-// import { useAnalytics } from '@/app/App/analytics/firebase'
 import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
-import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-// import { headlineEvents } from '@/commons/core/FirebaseEvents/constants'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -34,7 +30,6 @@ export const OfferHeadlineCard = ({
   hasThumb,
 }: OfferHeadlineCardProps): JSX.Element | undefined => {
   const { logEvent } = useAnalytics()
-  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const [
     isConfirmDialogReplaceHeadlineOfferOpen,
     setIsConfirmDialogReplaceHeadlineOfferOpen,
@@ -113,7 +108,6 @@ export const OfferHeadlineCard = ({
               removeHeadlineOffer()
               logEvent(EngagementEvents.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
                 offerId,
-                venueId: selectedPartnerVenue.id,
                 action: 'deleted',
               })
             } else if (hasHeadlineOffer && hasThumb) {

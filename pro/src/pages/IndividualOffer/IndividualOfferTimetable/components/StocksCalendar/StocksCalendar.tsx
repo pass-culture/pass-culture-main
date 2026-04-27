@@ -167,7 +167,6 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
     logEvent(Events.CLICKED_VALIDATE_ADD_RECURRENCE_DATES, {
       recurrenceType: values.recurrenceType,
       offerId: offer.id,
-      venueId: offer.venue.id,
     })
 
     await onSubmit(values, departmentCode, offer.id, snackBar, stockQueryKeys)

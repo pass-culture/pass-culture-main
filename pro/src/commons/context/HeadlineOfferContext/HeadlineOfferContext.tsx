@@ -84,7 +84,6 @@ export function HeadlineOfferContextProvider({
         logEvent(EngagementEvents.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
           action: context.actionType,
           requiredImageUpload: !!context.requiredImageUpload,
-          venueId: selectedPartnerVenue.id,
         })
       } catch {
         snackBar.error(
@@ -111,7 +110,6 @@ export function HeadlineOfferContextProvider({
         snackBar.success('Votre offre n’est plus à la une')
         logEvent(EngagementEvents.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
           action: 'deleted',
-          venueId: selectedPartnerVenue.id,
         })
       } catch {
         snackBar.error(

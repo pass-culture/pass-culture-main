@@ -2,14 +2,9 @@ import { useNavigate } from 'react-router'
 
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import {
-  COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
-  Events,
-} from '@/commons/core/FirebaseEvents/constants'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
-import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import fullDuplicateIcon from '@/icons/full-duplicate.svg'
 
@@ -24,7 +19,6 @@ export const RejectedBanner = ({
 }) => {
   const { logEvent } = useAnalytics()
   const navigate = useNavigate()
-  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const snackBar = useSnackBar()
 
   return (
@@ -43,9 +37,6 @@ export const RejectedBanner = ({
                   href: '',
                   onClick: async () => {
                     logEvent(Events.CLICKED_DUPLICATE_BOOKABLE_OFFER, {
-                      from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_TIMELINE,
-                      offererId:
-                        selectedPartnerVenue.managingOfferer.id.toString(),
                       offerId,
                       offerStatus: CollectiveOfferDisplayedStatus.REJECTED,
                       offerType: 'collective',

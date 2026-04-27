@@ -32,15 +32,11 @@ const renderCinemaProviderForm = async (
 describe('GenericCinemaProviderForm', () => {
   let props: GenericCinemaProviderFormProps
   const providerId = 66
-  const venueId = 1
-  const offererId = 3
 
   beforeEach(() => {
     props = {
       saveVenueProvider: vi.fn().mockReturnValue(true),
       providerId: providerId,
-      venueId: venueId,
-      offererId: offererId,
       isCreatedEntity: true,
       onCancel: vi.fn(),
       initialValues: {
@@ -91,8 +87,6 @@ describe('GenericCinemaProviderForm', () => {
           1,
           SynchronizationEvents.CLICKED_IMPORT,
           {
-            offererId: offererId,
-            venueId: venueId,
             providerId: providerId,
             saved: true,
           }

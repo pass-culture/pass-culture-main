@@ -21,7 +21,6 @@ import styles from './PartnerPageCard.module.scss'
 type PartnerPageProps = {
   venueId: number
   venueName: string
-  offererId: number
   venueBannerUrl?: string | null
   venueBannerMeta?: BannerMetaModel | null
   variant: HomepageVariant
@@ -30,14 +29,13 @@ type PartnerPageProps = {
 export const PartnerPageCard = ({
   venueId,
   venueName,
-  offererId,
   venueBannerUrl,
   venueBannerMeta,
   variant,
 }: PartnerPageProps) => {
   const { logEvent } = useAnalytics()
   const logPartnerPageClick = useFunctionOnce(() =>
-    logEvent(HomepageEvents.CLICKED_PARTNER_PAGE, { venueId })
+    logEvent(HomepageEvents.CLICKED_PARTNER_PAGE)
   )
   const { imageValues, handleOnImageUpload } = useOnVenueImageUpload(
     venueId,
@@ -53,8 +51,6 @@ export const PartnerPageCard = ({
 
   const logButtonAddClick = () => {
     logEvent(Events.CLICKED_ADD_IMAGE, {
-      offererId: offererId.toString(),
-      venueId,
       imageType: UploaderModeEnum.VENUE,
       isEdition: true,
       imageCreationStage: 'add image',

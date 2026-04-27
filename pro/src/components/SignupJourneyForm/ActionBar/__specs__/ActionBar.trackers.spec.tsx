@@ -50,7 +50,6 @@ describe('screens:SignupJourney::ActionBar', () => {
       1,
       Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
       {
-        from: '/inscription/structure/activite',
         to: SIGNUP_JOURNEY_STEP_IDS.CONFIRMATION,
         used: SignupJourneyAction.ActionBar,
       }
@@ -90,7 +89,6 @@ describe('screens:SignupJourney::ActionBar', () => {
       1,
       Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
       {
-        from: '/inscription/structure/activite',
         to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
         used: SignupJourneyAction.ActionBar,
       }

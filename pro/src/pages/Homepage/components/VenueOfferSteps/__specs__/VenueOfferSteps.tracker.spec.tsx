@@ -39,8 +39,7 @@ describe('VenueOfferSteps tracking', () => {
     )
 
     expect(mockLogEvent).toHaveBeenCalledExactlyOnceWith(
-      Events.CLICKED_EAC_DMS_TIMELINE,
-      { from: window.location.pathname }
+      Events.CLICKED_EAC_DMS_TIMELINE
     )
   })
 })

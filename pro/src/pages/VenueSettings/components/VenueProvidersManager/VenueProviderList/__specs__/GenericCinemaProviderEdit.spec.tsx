@@ -19,12 +19,10 @@ vi.mock('@/commons/hooks/useSnackBar', () => ({
 }))
 
 describe('GenericCinemaProviderEdit', () => {
-  const offererId = 3
   let props: GenericCinemaProviderEditProps
 
   beforeEach(() => {
     props = {
-      offererId,
       venue: defaultGetVenue,
       venueProvider: defaultVenueProvider,
       showAdvancedFields: false,

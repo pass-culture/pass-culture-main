@@ -68,7 +68,7 @@ describe('OfferHighlightBanner', () => {
       ).toBeInTheDocument()
       expect(mockLogEvent).toBeCalledWith(
         EngagementEvents.HAS_REQUESTED_HIGHLIGHTS,
-        { offerId: 1, venueId: 2, action: 'started' }
+        { offerId: 1, action: 'started' }
       )
     })
   })
@@ -122,7 +122,7 @@ describe('OfferHighlightBanner', () => {
       ).toBeInTheDocument()
       expect(mockLogEvent).toBeCalledWith(
         EngagementEvents.HAS_REQUESTED_HIGHLIGHTS,
-        { offerId: 1, venueId: 2, action: 'edited' }
+        { offerId: 1, action: 'edited' }
       )
     })
   })

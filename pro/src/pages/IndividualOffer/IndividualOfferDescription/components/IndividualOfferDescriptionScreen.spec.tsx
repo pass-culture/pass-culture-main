@@ -478,11 +478,9 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     expect(mockLogEvent).toHaveBeenCalledWith(
       Events.CLICKED_OFFER_FORM_NAVIGATION,
       {
-        from: 'description',
         offerId: 12,
         offerType: 'individual',
         subcategoryId: 'physical',
-        venueId: '189',
       }
     )
   })

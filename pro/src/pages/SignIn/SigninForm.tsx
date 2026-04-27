@@ -1,5 +1,4 @@
 import { Form, useFormContext } from 'react-hook-form'
-import { useLocation } from 'react-router'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -21,7 +20,6 @@ type SigninFormProps = {
 }
 
 export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
-  const location = useLocation()
   const { logEvent } = useAnalytics()
   const isAccountCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
 
@@ -68,11 +66,7 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
           to="/demande-mot-de-passe"
-          onClick={() =>
-            logEvent(Events.CLICKED_FORGOTTEN_PASSWORD, {
-              from: location.pathname,
-            })
-          }
+          onClick={() => logEvent(Events.CLICKED_FORGOTTEN_PASSWORD)}
           label="Réinitialisez votre mot de passe"
         />
         <div className={styles['buttons-field']}>
@@ -92,11 +86,7 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
             icon={iconFullNext}
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
-            onClick={() =>
-              logEvent(Events.CLICKED_CREATE_ACCOUNT, {
-                from: location.pathname,
-              })
-            }
+            onClick={() => logEvent(Events.CLICKED_CREATE_ACCOUNT)}
             label="S’inscrire"
           />
         </aside>

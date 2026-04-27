@@ -39,9 +39,7 @@ describe('HelpDropdownMenu', () => {
         screen.getByRole('menuitem', { name: 'Consulter le centre d’aide' })
       )
 
-      expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_CONSULT_HELP, {
-        from: '/',
-      })
+      expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_CONSULT_HELP)
     })
 
     it('should track contact our teams click', async () => {
@@ -55,10 +53,7 @@ describe('HelpDropdownMenu', () => {
       )
 
       expect(mockLogEvent).toHaveBeenCalledWith(
-        Events.CLICKED_CONTACT_OUR_TEAMS,
-        {
-          from: '/',
-        }
+        Events.CLICKED_CONTACT_OUR_TEAMS
       )
     })
 
@@ -73,10 +68,7 @@ describe('HelpDropdownMenu', () => {
       )
 
       expect(mockLogEvent).toHaveBeenCalledWith(
-        Events.CLICKED_BEST_PRACTICES_STUDIES,
-        {
-          from: '/',
-        }
+        Events.CLICKED_BEST_PRACTICES_STUDIES
       )
     })
 
@@ -90,9 +82,7 @@ describe('HelpDropdownMenu', () => {
         screen.getByRole('menuitem', { name: 'Bonnes pratiques et études' })
       )
 
-      expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_NEW_EVOLUTIONS, {
-        from: '/',
-      })
+      expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_NEW_EVOLUTIONS)
     })
   })
 })

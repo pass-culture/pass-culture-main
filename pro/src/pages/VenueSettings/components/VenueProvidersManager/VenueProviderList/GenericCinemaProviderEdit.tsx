@@ -23,14 +23,12 @@ import styles from './GenericCinemaProviderEdit.module.scss'
 export interface GenericCinemaProviderEditProps {
   venueProvider: VenueProviderResponse
   venue: GetVenueResponseModel
-  offererId: number
   showAdvancedFields: boolean
 }
 
 export const GenericCinemaProviderEdit = ({
   venueProvider,
   venue,
-  offererId,
   showAdvancedFields = false,
 }: GenericCinemaProviderEditProps): JSX.Element => {
   const snackBar = useSnackBar()
@@ -107,8 +105,6 @@ export const GenericCinemaProviderEdit = ({
           initialValues={initialValues}
           saveVenueProvider={onConfirmDialog}
           providerId={venueProvider.provider.id}
-          venueId={venueProvider.venueId}
-          offererId={offererId}
         />
       </div>
     </DialogBuilder>

@@ -4,7 +4,11 @@ import { userEvent } from '@testing-library/user-event'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import * as useIsCaledonian from '@/commons/hooks/useIsCaledonian'
-import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
+import {
+  type RenderWithProvidersOptions,
+  renderWithProviders,
+} from '@/commons/utils/renderWithProviders'
 
 import { AddBankInformationsDialog } from './AddBankInformationsDialog'
 
@@ -19,16 +23,24 @@ vi.mock('@/commons/utils/config', async () => {
   }
 })
 
+const renderAddBankInformationsDialog = (
+  options?: RenderWithProvidersOptions
+) =>
+  renderWithProviders(
+    <AddBankInformationsDialog closeDialog={vi.fn()} isDialogOpen />,
+    {
+      storeOverrides: {
+        user: {
+          selectedAdminOfferer: { ...defaultGetOffererResponseModel },
+        },
+      },
+      ...options,
+    }
+  )
+
 describe('AddBankInformationsDialog', () => {
   it('should render dialog', () => {
-    renderWithProviders(
-      <AddBankInformationsDialog
-        closeDialog={vi.fn()}
-        offererId={0}
-        isDialogOpen
-        isCaledonian={false}
-      />
-    )
+    renderAddBankInformationsDialog()
 
     expect(
       screen.getByText(
@@ -50,38 +62,30 @@ describe('AddBankInformationsDialog', () => {
       logEvent: mockLogEvent,
     }))
 
-    renderWithProviders(
-      <AddBankInformationsDialog
-        closeDialog={vi.fn()}
-        offererId={0}
-        isDialogOpen
-        isCaledonian={false}
-      />
-    )
+    renderAddBankInformationsDialog()
 
     await userEvent.click(
       screen.getByText('Continuer sur demarche.numerique.gouv.fr')
     )
 
     expect(mockLogEvent).toHaveBeenCalledWith(
-      BankAccountEvents.CLICKED_CONTINUE_TO_DS,
-      {
-        offererId: 0,
-      }
+      BankAccountEvents.CLICKED_CONTINUE_TO_DS
     )
   })
 
   it('should use DS_NEW_CALEDONIA_BANK_ACCOUNT_PROCEDURE_ID if isCaledonian is true', () => {
     vi.spyOn(useIsCaledonian, 'useIsCaledonian').mockReturnValueOnce(true)
 
-    renderWithProviders(
-      <AddBankInformationsDialog
-        closeDialog={vi.fn()}
-        offererId={0}
-        isDialogOpen
-        isCaledonian={true}
-      />
-    )
+    renderAddBankInformationsDialog({
+      storeOverrides: {
+        user: {
+          selectedAdminOfferer: {
+            ...defaultGetOffererResponseModel,
+            isCaledonian: true,
+          },
+        },
+      },
+    })
 
     const link = screen.getByRole('link', {
       name: /Continuer sur demarche.numerique.gouv.fr/,
@@ -93,14 +97,8 @@ describe('AddBankInformationsDialog', () => {
   it('should use DS_BANK_ACCOUNT_PROCEDURE_ID if isCaledonian is false', () => {
     vi.spyOn(useIsCaledonian, 'useIsCaledonian').mockReturnValueOnce(false)
 
-    renderWithProviders(
-      <AddBankInformationsDialog
-        closeDialog={vi.fn()}
-        offererId={0}
-        isDialogOpen
-        isCaledonian={false}
-      />
-    )
+    renderAddBankInformationsDialog()
+
     const link = screen.getByRole('link', {
       name: /Continuer sur demarche.numerique.gouv.fr/,
     })

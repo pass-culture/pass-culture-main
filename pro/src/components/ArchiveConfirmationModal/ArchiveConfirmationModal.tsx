@@ -1,5 +1,3 @@
-import { useLocation } from 'react-router'
-
 import type {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
@@ -42,12 +40,10 @@ export const ArchiveConfirmationModal = <T extends Offer>({
   isDialogOpen,
   refToFocusOnClose,
 }: OfferEducationalModalProps<T>): JSX.Element => {
-  const location = useLocation()
   const { logEvent } = useAnalytics()
 
   function onConfirmArchive() {
     logEvent(Events.CLICKED_ARCHIVE_COLLECTIVE_OFFER, {
-      from: location.pathname,
       offerType: 'collective',
       selected_offers: JSON.stringify(
         selectedOffers.length > 0

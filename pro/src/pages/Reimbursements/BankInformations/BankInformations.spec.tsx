@@ -168,10 +168,9 @@ describe('BankInformations page', () => {
     )
     expect(mockLogEvent).toHaveBeenCalledWith(
       'HasClickedSaveVenueToBankAccount',
-      expect.objectContaining({
-        id: 1,
+      {
         HasUncheckedVenue: true,
-      })
+      }
     )
   })
 
@@ -334,11 +333,7 @@ describe('BankInformations page', () => {
 
     await user.click(screen.getByText('Ajouter un compte bancaire'))
     expect(mockLogEvent).toHaveBeenCalledWith(
-      BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT,
-      {
-        from: '/administration/remboursements/informations-bancaires',
-        offererId: 1,
-      }
+      BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT
     )
   })
 

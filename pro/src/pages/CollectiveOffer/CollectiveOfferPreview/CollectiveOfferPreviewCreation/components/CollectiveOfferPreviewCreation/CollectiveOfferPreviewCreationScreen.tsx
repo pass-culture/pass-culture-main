@@ -143,7 +143,6 @@ export const CollectiveOfferPreviewCreationScreen = ({
             variant={ButtonVariant.SECONDARY}
             onClick={() => {
               logEvent(Events.CLICKED_SAVE_DRAFT_AND_EXIT_COLLECTIVE_OFFER, {
-                from: location.pathname,
                 offerId: offer.id,
                 offerType: 'collective',
               })
@@ -159,7 +158,6 @@ export const CollectiveOfferPreviewCreationScreen = ({
         <RedirectToBankAccountDialog
           cancelRedirectUrl={confirmationUrl}
           offererId={offerer.id}
-          venueId={offer.venue.id}
           isDialogOpen={displayRedirectDialog}
         />
       )}

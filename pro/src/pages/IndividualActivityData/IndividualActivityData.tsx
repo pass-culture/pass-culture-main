@@ -8,7 +8,6 @@ import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { formatAndOrderAddresses } from '@/commons/format/venuesService'
 import { useVenueAddresses } from '@/commons/hooks/swr/useVenueAddresses'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useCurrentRoute } from '@/commons/hooks/useCurrentRoute'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
 import { PreFilters } from '@/components/Bookings/Components/PreFilters/PreFilters'
@@ -21,7 +20,6 @@ import styles from './IndividualActivityData.module.scss'
 const IndividualActivityData = () => {
   const { logEvent } = useAnalytics()
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
-  const currentRoute = useCurrentRoute()
   const snackBar = useSnackBar()
   const [isDownloading, setIsDownloading] = useState(false)
 
@@ -50,7 +48,7 @@ const IndividualActivityData = () => {
 
   const resetPreFiltersAndLog = () => {
     resetPreFilters()
-    logEvent(Events.CLICKED_RESET_FILTERS, { from: currentRoute.pathname })
+    logEvent(Events.CLICKED_RESET_FILTERS)
   }
 
   const download = useCallback(

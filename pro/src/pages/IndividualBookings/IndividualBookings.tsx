@@ -149,7 +149,7 @@ export const IndividualBookings = () => {
 
   const resetPreFiltersWithLog = () => {
     resetPreFilters()
-    logEvent(Events.CLICKED_RESET_FILTERS, { from: location.pathname })
+    logEvent(Events.CLICKED_RESET_FILTERS)
   }
 
   if (hasBookingsQueryLoading || !hasBookingsQuery) {

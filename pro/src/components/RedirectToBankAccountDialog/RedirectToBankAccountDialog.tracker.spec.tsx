@@ -20,7 +20,6 @@ describe('screen Offers', () => {
     props = {
       cancelRedirectUrl: '/url',
       offererId: 1,
-      venueId: 2,
       isDialogOpen: true,
     }
 
@@ -35,10 +34,7 @@ describe('screen Offers', () => {
     await userEvent.click(screen.getByText('Plus tard'))
 
     expect(mockLogEvent).toHaveBeenCalledWith(
-      'hasClickedSeeLaterFromSuccessOfferCreationModal',
-      {
-        from: 'recapitulatif',
-      }
+      'hasClickedSeeLaterFromSuccessOfferCreationModal'
     )
   })
   it('should track event on redirect', async () => {
@@ -46,9 +42,6 @@ describe('screen Offers', () => {
 
     await userEvent.click(screen.getByText('Ajouter un compte bancaire'))
 
-    expect(mockLogEvent).toHaveBeenCalledWith('hasClickedVenueAddRibButton', {
-      from: 'recapitulatif',
-      venue_id: 2,
-    })
+    expect(mockLogEvent).toHaveBeenCalledWith('hasClickedVenueAddRibButton')
   })
 })

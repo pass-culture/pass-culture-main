@@ -91,7 +91,7 @@ describe('OfferRecommendationCard', () => {
     ).toBeInTheDocument()
     expect(mockLogEvent).toBeCalledWith(
       EngagementEvents.HAS_MADE_RECOMMENDATION,
-      { offerId: 769, venueId: 2, action: 'started' }
+      { offerId: 769, action: 'started' }
     )
   })
 
@@ -119,7 +119,7 @@ describe('OfferRecommendationCard', () => {
     })
     expect(mockLogEvent).toBeCalledWith(
       EngagementEvents.HAS_MADE_RECOMMENDATION,
-      { offerId: 769, venueId: 2, action: 'edited' }
+      { offerId: 769, action: 'edited' }
     )
   })
 })

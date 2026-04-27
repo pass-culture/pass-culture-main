@@ -32,9 +32,7 @@ export const FilterByBookingStatus = <T extends BookingRecapResponseModel>({
 
   const showTooltip = () => {
     setIsToolTipVisible(true)
-    logEvent(Events.CLICKED_SHOW_STATUS_FILTER, {
-      from: location.pathname,
-    })
+    logEvent(Events.CLICKED_SHOW_STATUS_FILTER)
   }
 
   const hideTooltip = () => {

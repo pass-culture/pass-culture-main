@@ -24,9 +24,7 @@ export const HeaderDropdown = () => {
   )
 
   const logEventAndLogout = async () => {
-    logEvent(Events.CLICKED_LOGOUT, {
-      from: pathname,
-    })
+    logEvent(Events.CLICKED_LOGOUT)
 
     await logout()
   }

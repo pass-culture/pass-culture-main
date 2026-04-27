@@ -89,7 +89,6 @@ describe('ShareLink Component', () => {
     expect(logEventMock).toHaveBeenCalledWith(
       Events.CLICKED_COPY_TEMPLATE_OFFER_LINK,
       {
-        from: '/',
         offerId,
       }
     )
