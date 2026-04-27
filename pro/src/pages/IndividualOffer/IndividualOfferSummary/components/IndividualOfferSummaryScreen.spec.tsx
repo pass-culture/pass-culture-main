@@ -10,6 +10,7 @@ import {
   CancelablePromise,
   type GetIndividualOfferResponseModel,
   OfferStatus,
+  SimplifiedBankAccountStatus,
   type StockStatsResponseModel,
 } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
@@ -28,16 +29,13 @@ import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
-  defaultGetOffererResponseModel,
   getIndividualOfferFactory,
   getOfferManagingOffererFactory,
   getOfferVenueFactory,
   getStocksResponseFactory,
 } from '@/commons/utils/factories/individualApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderComponentFunction,
   type RenderWithProvidersOptions,
@@ -71,9 +69,15 @@ const ERROR_MESSAGES = {
 
 const mockLogEvent = vi.fn()
 
+type ExtraParams = {
+  selectedPartnerVenueBankAccountStatus?: SimplifiedBankAccountStatus | null
+  selectedPartnerVenueHasNonFreeOffers?: boolean
+}
+
 const renderIndividualOfferSummaryScreen: RenderComponentFunction<
   void,
-  IndividualOfferContextValues
+  IndividualOfferContextValues,
+  ExtraParams
 > = (params) => {
   const offer =
     params.contextValues?.offer ??
@@ -95,10 +99,10 @@ const renderIndividualOfferSummaryScreen: RenderComponentFunction<
       url: 'https://offer-url.example.com',
       venue: getOfferVenueFactory({
         name: 'ma venue',
-        publicName: 'ma venue (nom public)',
+        publicName: 'Nom public de la structure',
         isVirtual: true,
         managingOfferer: getOfferManagingOffererFactory({
-          name: 'mon offerer',
+          name: "Nom de l'entité",
         }),
       }),
       visualDisabilityCompliant: false,
@@ -125,8 +129,18 @@ const renderIndividualOfferSummaryScreen: RenderComponentFunction<
     initialRouterEntries: [path],
     user: sharedCurrentUserFactory(),
     storeOverrides: {
-      user: { currentUser: sharedCurrentUserFactory() },
-      offerer: currentOffererFactory(),
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: makeGetVenueResponseModel({
+          id: offer.venue.id,
+          bankAccountStatus:
+            params.selectedPartnerVenueBankAccountStatus === undefined
+              ? SimplifiedBankAccountStatus.VALID
+              : params.selectedPartnerVenueBankAccountStatus,
+          hasNonFreeOffers:
+            params.selectedPartnerVenueHasNonFreeOffers ?? false,
+        }),
+      },
     },
     ...params.options,
   }
@@ -147,6 +161,13 @@ const renderIndividualOfferSummaryScreen: RenderComponentFunction<
               step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
               mode: OFFER_WIZARD_MODE.CREATION,
             })}
+            element={<IndividualOfferSummaryScreen offer={offer} />}
+          />
+          <Route
+            path={`/onboarding${getIndividualOfferPath({
+              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
+              mode: OFFER_WIZARD_MODE.CREATION,
+            })}`}
             element={<IndividualOfferSummaryScreen offer={offer} />}
           />
           <Route
@@ -189,10 +210,10 @@ describe('IndividualOfferSummaryScreen', () => {
     url: 'https://offer-url.example.com',
     venue: getOfferVenueFactory({
       name: 'ma venue',
-      publicName: 'ma venue (nom public)',
+      publicName: 'Nom public de la structure',
       isVirtual: true,
       managingOfferer: getOfferManagingOffererFactory({
-        name: 'mon offerer',
+        name: "Nom de l'entité",
       }),
     }),
     visualDisabilityCompliant: false,
@@ -239,8 +260,8 @@ describe('IndividualOfferSummaryScreen', () => {
     vi.spyOn(api, 'getStocks').mockResolvedValue(
       getStocksResponseFactory({ totalStockCount: 0, stocks: [] })
     )
-    vi.spyOn(api, 'getOfferer').mockResolvedValue(
-      defaultGetOffererResponseModel
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({ id: 1 })
     )
   })
 
@@ -305,10 +326,6 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it('should render component with new sections', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(
-        defaultGetOffererResponseModel
-      )
-
       renderIndividualOfferSummaryScreen({
         contextValues: { offer: draftOfferBase },
         path,
@@ -336,10 +353,6 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it('should link to creation confirmation page', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(
-        defaultGetOffererResponseModel
-      )
-
       const contextValues = { offer: draftOfferBase }
 
       renderIndividualOfferSummaryScreen({ contextValues, path })
@@ -375,9 +388,6 @@ describe('IndividualOfferSummaryScreen', () => {
       vi.spyOn(api, 'patchPublishOffer').mockImplementationOnce(
         () => mockResponse
       )
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(
-        defaultGetOffererResponseModel
-      )
       await userEvent.click(buttonPublish)
       expect(api.patchPublishOffer).toHaveBeenCalled()
       expect(buttonPublish).toBeDisabled()
@@ -390,10 +400,6 @@ describe('IndividualOfferSummaryScreen', () => {
     it('should allow to publish offer later', async () => {
       // Mock current date to avoid DST issues
       vi.setSystemTime(new Date('2024-01-15T12:00:00.000Z'))
-
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(
-        defaultGetOffererResponseModel
-      )
 
       const contextValues = { offer: draftOfferBase }
 
@@ -442,10 +448,6 @@ describe('IndividualOfferSummaryScreen', () => {
     it('should allow to maker offer bookable later', async () => {
       // Mock current date to avoid DST issues
       vi.setSystemTime(new Date('2024-01-15T12:00:00.000Z'))
-
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(
-        defaultGetOffererResponseModel
-      )
 
       const contextValues = {
         offer: draftOfferBase,
@@ -523,13 +525,7 @@ describe('IndividualOfferSummaryScreen', () => {
       ).toBeInTheDocument()
     })
 
-    it('should display redirect modal if first offer', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
-        ...defaultGetOffererResponseModel,
-        hasNonFreeOffer: false,
-        hasValidBankAccount: false,
-        hasPendingBankAccount: false,
-      })
+    it('should display redirect modal when the partner venue has no bank account and the offer is non-free', async () => {
       vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
         getIndividualOfferFactory({
           isNonFreeOffer: true,
@@ -548,12 +544,13 @@ describe('IndividualOfferSummaryScreen', () => {
             }),
           }),
         },
-        showVenuePopin: {
-          [venueId]: true,
-        },
       }
 
-      renderIndividualOfferSummaryScreen({ contextValues, path })
+      renderIndividualOfferSummaryScreen({
+        contextValues,
+        path,
+        selectedPartnerVenueBankAccountStatus: null,
+      })
 
       await userEvent.click(
         screen.getByRole('button', { name: /Publier l’offre/ })
@@ -574,61 +571,19 @@ describe('IndividualOfferSummaryScreen', () => {
       )
     })
 
-    it('should display redirect modal if first non free offer', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...defaultGetOffererResponseModel,
-        hasValidBankAccount: false,
-        hasPendingBankAccount: false,
-        hasNonFreeOffer: false,
-      })
+    it('should not display redirect modal when the partner venue already has a bank account', async () => {
       vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
         getIndividualOfferFactory({ isNonFreeOffer: true })
       )
 
-      const expectedOffererId = 2
-
-      const contextValues = {
-        offer: {
-          ...offerBase,
-          venue: getOfferVenueFactory({
-            id: 1,
-            managingOfferer: getOfferManagingOffererFactory({
-              id: expectedOffererId,
-            }),
-          }),
-        },
-      }
-
-      renderIndividualOfferSummaryScreen({ contextValues, path })
-
-      await userEvent.click(
-        screen.getByRole('button', { name: /Publier l’offre/ })
-      )
-
-      expect(
-        await screen.findByText('Félicitations, vous avez créé votre offre !')
-      ).toBeInTheDocument()
-      expect(
-        screen.getByRole('link', { name: 'Ajouter un compte bancaire' })
-      ).toHaveAttribute(
-        'href',
-        `/remboursements/informations-bancaires?structure=${expectedOffererId}`
-      )
-    })
-
-    it('should not display redirect modal if hasPendingBankAccount is true', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...defaultGetOffererResponseModel,
-        hasValidBankAccount: true,
-        hasPendingBankAccount: false,
-      })
-      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
-        getIndividualOfferFactory({ isNonFreeOffer: false })
-      )
-
       const contextValues = { offer: draftOfferBase }
 
-      renderIndividualOfferSummaryScreen({ contextValues, path })
+      renderIndividualOfferSummaryScreen({
+        contextValues,
+        path,
+        selectedPartnerVenueBankAccountStatus:
+          SimplifiedBankAccountStatus.VALID,
+      })
 
       await userEvent.click(
         screen.getByRole('button', { name: /Publier l’offre/ })
@@ -646,7 +601,11 @@ describe('IndividualOfferSummaryScreen', () => {
 
       const contextValues = { offer: draftOfferBase }
 
-      renderIndividualOfferSummaryScreen({ contextValues, path })
+      renderIndividualOfferSummaryScreen({
+        contextValues,
+        path,
+        selectedPartnerVenueBankAccountStatus: null,
+      })
 
       await userEvent.click(
         screen.getByRole('button', { name: /Publier l’offre/ })
@@ -657,15 +616,19 @@ describe('IndividualOfferSummaryScreen', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should not display redirect modal if venue hasNonFreeOffers', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...defaultGetOffererResponseModel,
-        hasNonFreeOffer: true,
-      })
+    it('should not display redirect modal if the partner venue already has non-free offers', async () => {
+      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
+        getIndividualOfferFactory({ isNonFreeOffer: true })
+      )
 
       const contextValues = { offer: draftOfferBase }
 
-      renderIndividualOfferSummaryScreen({ contextValues, path })
+      renderIndividualOfferSummaryScreen({
+        contextValues,
+        path,
+        selectedPartnerVenueBankAccountStatus: null,
+        selectedPartnerVenueHasNonFreeOffers: true,
+      })
 
       await userEvent.click(
         screen.getByRole('button', { name: /Publier l’offre/ })
@@ -676,11 +639,39 @@ describe('IndividualOfferSummaryScreen', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should render component with new sections and right address data', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(
-        defaultGetOffererResponseModel
+    it('should display redirect modal in onboarding mode regardless of bank account or non-free offers', async () => {
+      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
+        getIndividualOfferFactory({ isNonFreeOffer: false })
       )
 
+      const onboardingPath = generatePath(
+        `/onboarding${getIndividualOfferPath({
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}`,
+        { offerId: 1 }
+      )
+
+      const contextValues = { offer: draftOfferBase }
+
+      renderIndividualOfferSummaryScreen({
+        contextValues,
+        path: onboardingPath,
+        selectedPartnerVenueBankAccountStatus:
+          SimplifiedBankAccountStatus.VALID,
+        selectedPartnerVenueHasNonFreeOffers: true,
+      })
+
+      await userEvent.click(
+        screen.getByRole('button', { name: /Publier l’offre/ })
+      )
+
+      expect(
+        await screen.findByText('Félicitations, vous avez créé votre offre !')
+      ).toBeInTheDocument()
+    })
+
+    it('should render component with new sections and right address data', async () => {
       const contextValues = {
         offer: {
           ...offerBase,
@@ -720,10 +711,6 @@ describe('IndividualOfferSummaryScreen', () => {
 
     // TODO (igabriele, 2025-08-08): Is this case even possible?
     it('should render component with new sections and empty address data', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(
-        defaultGetOffererResponseModel
-      )
-
       contextValuesWithDraftOffer.offer = getIndividualOfferFactory({
         isEvent: true,
         location: null,
@@ -780,7 +767,6 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it("should validate publication date and time when it's a scheduled publication", async () => {
-      vi.spyOn(api, 'getOfferer').mockImplementation(vi.fn())
       vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
         getIndividualOfferFactory()
       )
@@ -844,7 +830,6 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it("should require publication date to be in the future when it's a scheduled publication", async () => {
-      vi.spyOn(api, 'getOfferer').mockImplementation(vi.fn())
       vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
         getIndividualOfferFactory()
       )
@@ -901,7 +886,6 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it("should require publication date to be within two years when it's a scheduled publication", async () => {
-      vi.spyOn(api, 'getOfferer').mockImplementation(vi.fn())
       vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
         getIndividualOfferFactory()
       )

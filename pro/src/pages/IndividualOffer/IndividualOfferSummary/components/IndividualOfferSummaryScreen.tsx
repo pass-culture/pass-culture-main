@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { useLocation, useNavigate, useSearchParams } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -18,9 +18,8 @@ import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
-import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
-import { getOffererData } from '@/commons/utils/offererStoreHelper'
 import { serializeDateTimeToUTCFromLocalDepartment } from '@/commons/utils/timezone'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { OfferAppPreview } from '@/components/OfferAppPreview/OfferAppPreview'
@@ -59,19 +58,12 @@ export const IndividualOfferSummaryScreen = ({
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const { subCategories, hasPublishedOfferWithSameEan } =
     useIndividualOfferContext()
-  const [searchParams, setSearchParams] = useSearchParams()
-  const currentOfferer = useAppSelector(selectCurrentOfferer)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const onPublish = async (values: EventPublicationFormValues) => {
     const departmentCode = getDepartmentCode(offer)
 
     try {
-      const offererId = offer.venue.managingOfferer.id
-      const offererResponse = await getOffererData(
-        offererId,
-        currentOfferer,
-        () => api.getOfferer(offererId)
-      )
       const publishIndividualOfferResponse = await api.patchPublishOffer({
         id: offer.id,
         publicationDatetime:
@@ -103,15 +95,10 @@ export const IndividualOfferSummaryScreen = ({
       const shouldDisplayRedirectDialog =
         isOnboarding ||
         (publishIndividualOfferResponse.isNonFreeOffer &&
-          !offererResponse?.hasNonFreeOffer &&
-          !offererResponse?.hasValidBankAccount &&
-          !offererResponse?.hasPendingBankAccount)
+          !selectedPartnerVenue.hasNonFreeOffers &&
+          !selectedPartnerVenue.bankAccountStatus)
 
       if (shouldDisplayRedirectDialog) {
-        setSearchParams(
-          { ...searchParams, userHasJustOnBoarded: '1' },
-          { replace: true }
-        )
         setDisplayRedirectDialog(true)
       } else {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -132,10 +119,6 @@ export const IndividualOfferSummaryScreen = ({
     },
     resolver: yupResolver(validationSchema),
   })
-
-  if (offer === null) {
-    return null
-  }
 
   const canBeDuo = subCategories.find(
     (subCategory) => subCategory.id === offer.subcategoryId
@@ -239,7 +222,7 @@ export const IndividualOfferSummaryScreen = ({
 
         <RedirectToBankAccountDialog
           cancelRedirectUrl={offerConfirmationStepUrl}
-          offerId={offer.venue.managingOfferer.id}
+          offererId={offer.venue.managingOfferer.id}
           venueId={offer.venue.id}
           isDialogOpen={displayRedirectDialog}
         />
