@@ -32,6 +32,7 @@ import zeep
 from requests.adapters import HTTPAdapter  # noqa: TID251
 from urllib3.util.retry import Retry
 
+from pcapi.settings import ALLOW_REQUESTS_REDIRECT
 from pcapi.utils.metrics import HttpMetricsContext
 
 
@@ -203,6 +204,7 @@ def request(
     log_info: bool = True,
     record_metrics: bool = False,
     metric_name_suffix: str | None = None,
+    allow_redirects: bool = ALLOW_REQUESTS_REDIRECT,
     **kwargs: Any,
 ) -> requests.Response:
     with Session(
@@ -211,7 +213,7 @@ def request(
         record_metrics=record_metrics,
         metric_name_suffix=metric_name_suffix,
     ) as session:
-        return session.request(method=method, url=url, **kwargs)
+        return session.request(method=method, url=url, allow_redirects=allow_redirects, **kwargs)
 
 
 class Session(requests.Session):
