@@ -47,7 +47,7 @@ test.describe('Collaborator list feature', () => {
     await login(page, userData.user.email)
     await navigateToAdministrationSpace(page)
     await page.getByRole('link', { name: 'Collaborateurs' }).click()
-    await expect(page).toHaveURL(/\/collaborateurs$/)
+    await expect(page).toHaveURL(/\/administration\/collaborateurs$/)
 
     await checkAccessibility(page)
 

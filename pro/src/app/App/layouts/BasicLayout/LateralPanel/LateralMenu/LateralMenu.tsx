@@ -12,7 +12,6 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { selectSelectedPartnerPageId } from '@/commons/store/nav/selector'
 import {
   LOCAL_STORAGE_KEY,
@@ -29,9 +28,6 @@ import fullDownIcon from '@/icons/full-down.svg'
 import fullLeftIcon from '@/icons/full-left.svg'
 import fullUpIcon from '@/icons/full-up.svg'
 import strokeBagIcon from '@/icons/stroke-bag.svg'
-import strokeCollaboratorIcon from '@/icons/stroke-collaborator.svg'
-import strokeEuroIcon from '@/icons/stroke-euro.svg'
-import strokeFrancIcon from '@/icons/stroke-franc.svg'
 import strokeHomeIcon from '@/icons/stroke-home.svg'
 import strokePhoneIcon from '@/icons/stroke-phone.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
@@ -50,27 +46,13 @@ const generateNavItems = (
   selectedOfferer?: GetOffererResponseModel | null,
   selectedPartnerPageVenueId?: string | number,
   venueId?: string | number,
-  isCaledonian?: boolean,
   isVolunteeringActive?: boolean
 ): NavItem[] => {
-  const navItems: NavItem[] = []
-
   const hasSeenVolunteeringSection =
     localStorageManager.getItem(
       LOCAL_STORAGE_KEY.HAS_SEEN_VOLUNTEERING_SECTION
     ) === 'true'
 
-  // ===== MAIN LINKS =====
-  navItems.push({
-    key: 'home',
-    type: 'link',
-    group: 'main',
-    title: 'Accueil',
-    to: '/accueil',
-    icon: strokeHomeIcon,
-  })
-
-  // ===== Individuel Section =====
   const individuelChildren: NavItem[] = [
     {
       key: 'offers',
@@ -95,30 +77,22 @@ const generateNavItems = (
       title: 'Guichet',
       to: '/guichet',
     },
+    ...(selectedOfferer && selectedPartnerPageVenueId
+      ? [
+          {
+            key: 'page',
+            type: 'link',
+            group: 'main' as const,
+            title: 'Page sur l’application',
+            to: `/structures/${selectedOfferer.id}/lieux/${selectedPartnerPageVenueId}/page-partenaire`,
+            end: true,
+            showNotification:
+              isVolunteeringActive && !hasSeenVolunteeringSection,
+          },
+        ]
+      : []),
   ]
 
-  if (selectedOfferer && selectedPartnerPageVenueId) {
-    individuelChildren.push({
-      key: 'page',
-      type: 'link',
-      group: 'main',
-      title: 'Page sur l’application',
-      to: `/structures/${selectedOfferer.id}/lieux/${selectedPartnerPageVenueId}/page-partenaire`,
-      end: true,
-      showNotification: isVolunteeringActive && !hasSeenVolunteeringSection,
-    })
-  }
-
-  navItems.push({
-    type: 'section',
-    group: 'main',
-    title: 'Individuel',
-    icon: strokePhoneIcon,
-    key: 'individual',
-    children: individuelChildren,
-  })
-
-  // ===== Collectif Section =====
   const collectifChildren: NavItem[] = [
     {
       key: 'showcase_offers',
@@ -134,48 +108,46 @@ const generateNavItems = (
       title: 'Offres réservables',
       to: '/offres/collectives',
     },
+    ...(selectedOfferer && venueId
+      ? [
+          {
+            key: 'adage_page',
+            type: 'link',
+            group: 'main' as const,
+            title: 'Page dans ADAGE',
+            to: `/structures/${selectedOfferer.id}/lieux/${venueId}/collectif`,
+            end: true,
+          },
+        ]
+      : []),
   ]
 
-  if (selectedOfferer && venueId) {
-    collectifChildren.push({
-      key: 'adage_page',
+  const navItems: NavItem[] = [
+    {
+      key: 'home',
       type: 'link',
       group: 'main',
-      title: 'Page dans ADAGE',
-      to: `/structures/${selectedOfferer.id}/lieux/${venueId}/collectif`,
-      end: true,
-    })
-  }
-
-  navItems.push({
-    type: 'section',
-    group: 'main',
-    title: 'Collectif',
-    icon: strokeTeacherIcon,
-    key: 'collective',
-    children: collectifChildren,
-  })
-
-  // ===== FOOTER =====
-
-  navItems.push(
-    {
-      key: 'refunds',
-      group: 'footer',
-      type: 'link',
-      title: 'Gestion financière',
-      to: '/remboursements',
-      icon: isCaledonian ? strokeFrancIcon : strokeEuroIcon,
+      title: 'Accueil',
+      to: '/accueil',
+      icon: strokeHomeIcon,
     },
     {
-      key: 'collaborators',
-      group: 'footer',
-      type: 'link',
-      title: 'Collaborateurs',
-      to: '/collaborateurs',
-      icon: strokeCollaboratorIcon,
-    }
-  )
+      type: 'section',
+      group: 'main',
+      title: 'Individuel',
+      icon: strokePhoneIcon,
+      key: 'individual',
+      children: individuelChildren,
+    },
+    {
+      type: 'section',
+      group: 'main',
+      title: 'Collectif',
+      icon: strokeTeacherIcon,
+      key: 'collective',
+      children: collectifChildren,
+    },
+  ]
 
   return navItems
 }
@@ -183,7 +155,6 @@ const generateNavItems = (
 export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
   const isVolunteeringActive = useActiveFeature('WIP_VOLUNTEERING')
-  const isCaledonian = useIsCaledonian()
 
   const selectedOfferer = useAppSelector(
     (state) => state.offerer.currentOfferer
@@ -220,7 +191,6 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     selectedOfferer,
     selectedPartnerPageVenueId,
     venueId,
-    isCaledonian,
     isVolunteeringActive
   )
 

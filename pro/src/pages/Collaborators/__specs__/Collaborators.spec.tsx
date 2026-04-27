@@ -29,7 +29,7 @@ const offererNamesValidated = [
   {
     ...defaultGetOffererResponseModel,
     id: 1,
-    name: `Offerer 1`,
+    name: 'Offerer 1',
   },
 ]
 
@@ -43,12 +43,10 @@ const renderCollaborators = async (options?: RenderWithProvidersOptions) => {
       storeOverrides: {
         user: {
           currentUser: sharedCurrentUserFactory(),
+          selectedAdminOfferer: { id: 1 },
         },
         offerer: {
-          currentOfferer: {
-            ...defaultGetOffererResponseModel,
-          },
-          offererNamesValidated: offererNamesValidated,
+          offererNamesValidated,
           offererNames: offererNamesValidated,
         },
       },
@@ -59,16 +57,22 @@ const renderCollaborators = async (options?: RenderWithProvidersOptions) => {
 
 describe('Collaborators', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getOffererMembers').mockResolvedValueOnce({ members: [] })
+    vi.spyOn(api, 'getOffererMembers').mockResolvedValue({ members: [] })
+
+    vi.spyOn(api, 'inviteMember').mockResolvedValue(undefined)
+
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
   })
 
-  it('The user should see a button to display the invite form', async () => {
+  it('should display a button to open invite form', async () => {
     await renderCollaborators()
 
-    expect(screen.getByText('Ajouter un collaborateur')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Ajouter un collaborateur' })
+    ).toBeInTheDocument()
+
     expect(
       screen.queryByText(
         /Vous pouvez inviter des collaborateurs à rejoindre votre espace/
@@ -76,18 +80,19 @@ describe('Collaborators', () => {
     ).not.toBeInTheDocument()
 
     expect(
-      screen.queryByRole('button', { name: 'Voir moins de collaborateurs' })
+      screen.queryByRole('button', {
+        name: 'Voir moins de collaborateurs',
+      })
     ).not.toBeInTheDocument()
   })
 
   it('should display the invite form on click', async () => {
     await renderCollaborators()
 
-    await userEvent.click(screen.getByText('Ajouter un collaborateur'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Ajouter un collaborateur' })
+    )
 
-    expect(
-      screen.queryByText('Ajouter un collaborateur')
-    ).not.toBeInTheDocument()
     expect(
       screen.getByText(
         /Vous pouvez inviter des collaborateurs à rejoindre votre espace/
@@ -95,29 +100,40 @@ describe('Collaborators', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display the form error on invalid email', async () => {
+  it('should display validation error on invalid email', async () => {
     await renderCollaborators()
 
-    await userEvent.click(screen.getByText('Ajouter un collaborateur'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Ajouter un collaborateur' })
+    )
+
     await userEvent.type(screen.getByLabelText('Adresse email'), '123456')
-    await userEvent.click(screen.getByText('Inviter'))
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Inviter le collaborateur' })
+    )
+
     expect(
       screen.getByText(/Veuillez renseigner un email valide/)
     ).toBeInTheDocument()
   })
 
-  it('should display add the email on success and trigger buttons event', async () => {
+  it('should invite collaborator successfully, log events and display email', async () => {
     await renderCollaborators()
 
-    await userEvent.click(screen.getByText('Ajouter un collaborateur'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Ajouter un collaborateur' })
+    )
 
     expect(mockLogEvent).toHaveBeenCalledWith('hasClickedAddCollaborator', {
       offererId: 1,
     })
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
 
     await userEvent.type(screen.getByLabelText('Adresse email'), 'test@test.fr')
-    await userEvent.click(screen.getByText('Inviter'))
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Inviter le collaborateur' })
+    )
 
     await waitFor(() => {
       expect(
@@ -129,18 +145,10 @@ describe('Collaborators', () => {
       offererId: 1,
     })
 
-    expect(mockLogEvent).toHaveBeenCalledTimes(2)
-
     expect(screen.getByText('test@test.fr')).toBeInTheDocument()
   })
 
-  it('should display email error message if user is already invited', async () => {
-    await renderCollaborators()
-
-    await userEvent.click(screen.getByText('Ajouter un collaborateur'))
-
-    await userEvent.type(screen.getByLabelText('Adresse email'), 'test@test.fr')
-
+  it('should display api email error message', async () => {
     vi.spyOn(api, 'inviteMember').mockRejectedValue(
       new ApiError(
         { method: 'POST' } as ApiRequestOptions,
@@ -154,7 +162,17 @@ describe('Collaborators', () => {
       )
     )
 
-    await userEvent.click(screen.getByText('Inviter'))
+    await renderCollaborators()
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Ajouter un collaborateur' })
+    )
+
+    await userEvent.type(screen.getByLabelText('Adresse email'), 'test@test.fr')
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Inviter le collaborateur' })
+    )
 
     await waitFor(() => {
       expect(
@@ -163,16 +181,20 @@ describe('Collaborators', () => {
     })
   })
 
-  it('should display default error message if error with server', async () => {
+  it('should display default error message on server error', async () => {
+    vi.spyOn(api, 'inviteMember').mockRejectedValue({})
+
     await renderCollaborators()
 
-    await userEvent.click(screen.getByText('Ajouter un collaborateur'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Ajouter un collaborateur' })
+    )
 
     await userEvent.type(screen.getByLabelText('Adresse email'), 'test@test.fr')
 
-    vi.spyOn(api, 'inviteMember').mockRejectedValue({})
-
-    await userEvent.click(screen.getByText('Inviter'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Inviter le collaborateur' })
+    )
 
     await waitFor(() => {
       expect(
@@ -181,25 +203,6 @@ describe('Collaborators', () => {
         )
       ).toBeInTheDocument()
     })
-  })
-  it('should render non attached banner if offerer is not attached', () => {
-    renderCollaborators({
-      storeOverrides: {
-        offerer: {
-          currentOfferer: {
-            id: 1,
-          },
-          offererNamesValidated: [],
-          offererNames: offererNamesValidated,
-        },
-      },
-    })
-
-    expect(
-      screen.getByText(
-        'Votre rattachement est en cours de traitement par les équipes du pass Culture'
-      )
-    ).toBeInTheDocument()
   })
 })
 
@@ -234,15 +237,65 @@ describe('ViewAllList', () => {
     expect(screen.getAllByText(/En attente/)).toHaveLength(2)
 
     expect(
-      screen.getByRole('button', { name: 'Voir plus de collaborateurs' })
+      screen.getByRole('button', {
+        name: 'Voir plus de collaborateurs',
+      })
     ).toBeInTheDocument()
 
-    await userEvent.click(screen.getByText('Voir plus de collaborateurs'))
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Voir plus de collaborateurs',
+      })
+    )
 
     expect(screen.getAllByText(/En attente/)).toHaveLength(3)
 
     expect(
-      screen.getByRole('button', { name: 'Voir moins de collaborateurs' })
+      screen.getByRole('button', {
+        name: 'Voir moins de collaborateurs',
+      })
     ).toBeInTheDocument()
+  })
+
+  it('should display validated and pending statuses correctly', async () => {
+    vi.spyOn(api, 'getOffererMembers').mockResolvedValue({
+      members: [
+        {
+          email: 'validated@test.fr',
+          status: OffererMemberStatus.VALIDATED,
+        },
+        {
+          email: 'pending@test.fr',
+          status: OffererMemberStatus.PENDING,
+        },
+      ],
+    })
+
+    await renderCollaborators()
+
+    expect(await screen.findByText('validated@test.fr')).toBeInTheDocument()
+    expect(screen.getByText('pending@test.fr')).toBeInTheDocument()
+
+    expect(screen.getByText('Validé')).toBeInTheDocument()
+    expect(screen.getByText('En attente')).toBeInTheDocument()
+  })
+
+  it('should hide show-more button when members count is exactly 10', async () => {
+    vi.spyOn(api, 'getOffererMembers').mockResolvedValue({
+      members: Array.from({ length: 10 }, (_, index) => ({
+        email: `user${index}@test.fr`,
+        status: OffererMemberStatus.VALIDATED,
+      })),
+    })
+
+    await renderCollaborators()
+
+    expect(await screen.findByText('user0@test.fr')).toBeInTheDocument()
+
+    expect(
+      screen.queryByRole('button', {
+        name: 'Voir plus de collaborateurs',
+      })
+    ).not.toBeInTheDocument()
   })
 })

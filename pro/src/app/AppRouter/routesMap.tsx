@@ -25,7 +25,6 @@ import {
   mustBeAuthenticated,
   mustBeOnboardedWithSelectedPartnerVenue,
   mustBeUnauthenticated,
-  mustHaveSelectedAdminOfferer,
   mustHaveSelectedPartnerVenue,
   mustNotBeOnboardedWithSelectedPartnerVenue,
 } from './utils'
@@ -115,12 +114,6 @@ export const routes: CustomRouteTree = [
     loader: noop,
     path: '/email_validation',
     title: 'Valider l’adresse email',
-  },
-  {
-    element: <Navigate to="/collaborateurs" />,
-    loader: withUserPermissions(mustHaveSelectedAdminOfferer),
-    path: '/structures/:offererId',
-    title: 'Détails de la structure',
   },
   {
     element: <Navigate to="/inscription/structure/recherche" />,
@@ -475,12 +468,6 @@ export const routes: CustomRouteTree = [
     path: '/ecoconception',
     title: 'Déclaration d’écoconception de l’espace partenaires',
     children: routesEcoDesign,
-  },
-  {
-    lazy: () => import('@/pages/Collaborators/Collaborators'),
-    loader: withUserPermissions(mustBeAuthenticated),
-    path: '/collaborateurs',
-    title: 'Collaborateurs',
   },
   {
     lazy: () =>

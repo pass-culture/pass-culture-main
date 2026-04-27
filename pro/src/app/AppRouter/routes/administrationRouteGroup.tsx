@@ -10,6 +10,13 @@ export const administrationRouteGroup: CustomRouteGroup = {
   Component: AdministrationLayout,
   children: [
     {
+      path: 'collaborateurs',
+      handle: {
+        title: 'Collaborateurs',
+      },
+      lazy: () => import('@/pages/Collaborators/Collaborators'),
+    },
+    {
       path: 'donnees-activite/individuel',
       handle: {
         title: "Données d'activité : individuel",
