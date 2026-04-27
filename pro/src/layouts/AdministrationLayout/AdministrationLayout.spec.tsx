@@ -57,7 +57,10 @@ const renderAdministrationLayout = (
     initialRouterEntries: ['/administration/donnees-activite/individuel'],
     user,
     storeOverrides: {
-      user: { currentUser: user },
+      user: {
+        currentUser: user,
+        selectedAdminOfferer: offererNamesValidated[0],
+      },
       offerer: {
         offererNamesValidated,
         offererNames: offererNamesValidated,

@@ -1,7 +1,6 @@
 import { Outlet } from 'react-router'
 
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useCurrentRoute } from '@/commons/hooks/useCurrentRoute'
 import {
@@ -12,17 +11,11 @@ import { NonAttachedBanner } from '@/components/NonAttachedBanner/NonAttachedBan
 import { OffererSelect } from '@/components/OffererSelect/OffererSelect'
 
 export const AdministrationLayout = () => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
   const offererNames = useAppSelector(ensureOffererNames)
-  const currentOffererId = useAppSelector(
-    (state) => state.offerer.currentOfferer
-  )?.id
   const adminSelectedOfferer = useAppSelector(
     (store) => store.user.selectedAdminOfferer
   )
-  const offererId = withSwitchVenueFeature
-    ? adminSelectedOfferer?.id
-    : currentOffererId
+  const offererId = adminSelectedOfferer?.id
   const offererNamesValidated = useAppSelector(ensureOffererNamesValidated)
   const isSelectedOffererValidated = offererNamesValidated.some(
     (offerer) => offerer.id === offererId
