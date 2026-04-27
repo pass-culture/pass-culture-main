@@ -2,13 +2,11 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useMemo } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
-import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
@@ -56,14 +54,12 @@ interface VenueFormProps {
 
 export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const { syncVenueWithData } = useSyncVenueCache()
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
   const isVolunteeringActive = useActiveFeature('WIP_VOLUNTEERING')
 
   const navigate = useNavigate()
   const location = useLocation()
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
-  const { mutate } = useSWRConfig()
   const { data: educationalDomains, isLoading: isLoadingEducationalDomains } =
     useEducationalDomains()
 
@@ -115,11 +111,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
         )
       )
 
-      if (withSwitchVenueFeature) {
-        await syncVenueWithData(venue.id, updatedVenue)
-      } else {
-        await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
-      }
+      await syncVenueWithData(venue.id, updatedVenue)
 
       const path = getVenuePagePathToNavigateTo(
         venue.managingOfferer.id,

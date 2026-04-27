@@ -7,7 +7,6 @@ import {
   ActivityOpenToPublic,
   type GetVenueResponseModel,
 } from '@/apiClient/v1'
-import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   type RenderWithProvidersOptions,
@@ -144,7 +143,7 @@ describe('CollectiveDataForm', () => {
     expect(activityField).toHaveValue('')
   })
 
-  it('should dispatch setSelectedPartnerVenue when WIP_SWITCH_VENUE is enabled', async () => {
+  it('should dispatch setSelectedPartnerVenue', async () => {
     mockMutate.mockClear()
     const updatedVenue = {
       ...defaultGetVenue,
@@ -152,9 +151,7 @@ describe('CollectiveDataForm', () => {
     }
     vi.mocked(api.editVenueCollectiveData).mockResolvedValue(updatedVenue)
 
-    const { store } = renderCollectiveDataForm({
-      features: ['WIP_SWITCH_VENUE'],
-    })
+    const { store } = renderCollectiveDataForm()
 
     const submitButton = screen.getByRole('button', { name: 'Enregistrer' })
     await userEvent.click(submitButton)
@@ -173,31 +170,5 @@ describe('CollectiveDataForm', () => {
     })
 
     expect(mockMutate).not.toHaveBeenCalled()
-  })
-
-  it('should call mutate when WIP_SWITCH_VENUE is disabled', async () => {
-    mockMutate.mockClear()
-    const updatedVenue = {
-      ...defaultGetVenue,
-      collectiveDescription: 'Updated',
-    }
-    vi.mocked(api.editVenueCollectiveData).mockResolvedValue(updatedVenue)
-
-    renderCollectiveDataForm()
-
-    const submitButton = screen.getByRole('button', { name: 'Enregistrer' })
-    await userEvent.click(submitButton)
-
-    await waitFor(() => {
-      expect(api.editVenueCollectiveData).toHaveBeenCalledWith(
-        defaultGetVenue.id,
-        expect.any(Object)
-      )
-    })
-
-    expect(mockMutate).toHaveBeenCalledWith([
-      GET_VENUE_QUERY_KEY,
-      String(defaultGetVenue.id),
-    ])
   })
 })

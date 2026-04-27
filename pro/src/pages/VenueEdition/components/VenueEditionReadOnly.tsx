@@ -11,9 +11,9 @@ import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptio
 import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
 import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 
-import styles from '../VenueEdition.module.scss'
 import { AccessibilityReadOnly } from './AccessibilityReadOnly/AccessibilityReadOnly'
 import { OpeningHoursAndAddressReadOnly } from './OpeningHoursAndAddressReadOnly/OpeningHoursAndAddressReadOnly'
+import styles from './VenueEditionReadOnly.module.scss'
 
 interface VenueEditionReadOnlyProps {
   venue: GetVenueResponseModel
