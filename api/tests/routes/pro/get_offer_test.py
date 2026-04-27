@@ -6,6 +6,7 @@ import pytest
 import time_machine
 
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.cultural_outreach.factories as cultural_outreach_factories
 import pcapi.core.highlights.factories as highlights_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
@@ -147,6 +148,7 @@ class Returns200Test:
             "bookingContact": None,
             "bookingsCount": 0,
             "bookingEmail": "offer.booking.email@example.com",
+            "hasCulturalOutreachClaim": False,
             "dateCreated": "2020-10-15T00:00:00Z",
             "productId": None,
             "publicationDate": "2020-10-01T00:00:00Z",
@@ -519,3 +521,41 @@ class Returns200Test:
             "artistName": "Simone",
             "artistType": "author",
         }
+
+    def test_returns_has_cultural_outreach_true(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=user_offerer.offerer)
+        cultural_outreach_factories.ClaimedCulturalOutreachFactory(offer=offer)
+
+        client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(f"/offers/{offer_id}")
+            assert response.status_code == 200
+
+        assert response.json["hasCulturalOutreachClaim"] is True
+
+    def test_returns_has_cultural_outreach_false_when_no_cultural_outreach(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=user_offerer.offerer)
+
+        client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(f"/offers/{offer_id}")
+            assert response.status_code == 200
+
+        assert response.json["hasCulturalOutreachClaim"] is False
+
+    def test_returns_has_cultural_outreach_false_when_not_claimed(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=user_offerer.offerer)
+        cultural_outreach_factories.CulturalOutreachFactory(offer=offer)
+
+        client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(f"/offers/{offer_id}")
+            assert response.status_code == 200
+
+        assert response.json["hasCulturalOutreachClaim"] is False

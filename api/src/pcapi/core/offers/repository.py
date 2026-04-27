@@ -66,6 +66,7 @@ OFFER_LOAD_OPTIONS = typing.Iterable[
         "highlight_requests",
         "artists",
         "pro_advice",
+        "cultural_outreach",
     ]
 ]
 
@@ -1314,6 +1315,8 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
             )
         if "pro_advice" in load_options:
             query = query.options(sa_orm.joinedload(models.Offer.proAdvice))
+        if "cultural_outreach" in load_options:
+            query = query.options(sa_orm.joinedload(models.Offer.culturalOutreach))
         return query.one()
     except sa_orm.exc.NoResultFound:
         raise exceptions.OfferNotFound(offer_id=offer_id)
@@ -1354,6 +1357,7 @@ def get_offer_and_extradata(offer_id: int) -> models.Offer | None:
                 artist_models.Artist.name,
             )
         )
+        .options(sa_orm.joinedload(models.Offer.culturalOutreach))
         .one_or_none()
     )
 

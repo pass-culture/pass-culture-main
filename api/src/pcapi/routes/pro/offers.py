@@ -113,6 +113,7 @@ def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferWithAddressRe
         "meta_data",
         "highlight_requests",
         "artists",
+        "cultural_outreach",
     ]
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options=load_all)
@@ -522,6 +523,7 @@ def patch_offer(
             "venue",
             "highlight_requests",
             "artists",
+            "cultural_outreach",
         ],
     )
 
@@ -652,6 +654,7 @@ def replace_offer_price_categories(
         "pending_bookings",
         "headline_offer",
         "meta_data",
+        "cultural_outreach",
     ]
     offer = offers_repository.get_offer_by_id(offer.id, load_options=load_options)
 
@@ -795,6 +798,7 @@ def post_highlight_request_offer(
 
     load_options: offers_repository.OFFER_LOAD_OPTIONS = [
         "bookings_count",
+        "cultural_outreach",
         "headline_offer",
         "is_non_free_offer",
         "meta_data",
