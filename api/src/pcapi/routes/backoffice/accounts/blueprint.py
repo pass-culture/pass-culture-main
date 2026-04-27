@@ -72,6 +72,7 @@ from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from pcapi.utils.transaction_manager import on_commit
 
 from . import forms as account_forms
+from . import report
 from . import serialization
 
 
@@ -401,7 +402,9 @@ def _apply_bookings_joined_loads(query: OptionableType) -> OptionableType:
         .load_only()
         .joinedload(offerers_models.OffererAddress.address)
         .load_only(geography_models.Address.timezone),
-        sa_orm.joinedload(bookings_models.Booking.incidents).joinedload(finance_models.BookingFinanceIncident.incident),
+        sa_orm.joinedload(bookings_models.Booking.incidents)
+        .joinedload(finance_models.BookingFinanceIncident.incident)
+        .subqueryload(finance_models.FinanceIncident.action_history),
         sa_orm.joinedload(bookings_models.Booking.offerer, innerjoin=True).load_only(offerers_models.Offerer.name),
         sa_orm.joinedload(bookings_models.Booking.venue, innerjoin=True)
         .load_only(offerers_models.Venue.bookingEmail)
@@ -572,6 +575,9 @@ def render_public_account_details(
         key=lambda action: action["creationDate"],
         reverse=True,
     )
+
+    if user.is_beneficiary:
+        kwargs["report"] = report.Report(user, domains_credit)
 
     is_user_expired = users_api.has_profile_expired(user)
     return render_template(

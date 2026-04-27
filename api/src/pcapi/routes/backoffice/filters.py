@@ -206,6 +206,42 @@ def format_user_profile_refresh_campaign_action_type(action_type: history_models
             return action_type.value
 
 
+def format_deposit_type(deposit: finance_models.Deposit) -> str:
+    match deposit.type:
+        case finance_models.DepositType.GRANT_15_17:
+            return "ancien crédit 15-17"
+        case finance_models.DepositType.GRANT_18:
+            return "ancien crédit 18"
+        case finance_models.DepositType.GRANT_17_18:
+            return "crédit 17-18"
+        case finance_models.DepositType.GRANT_FREE:
+            return "crédit gratuit"
+        case _:
+            return "crédit d'origine inconnue"
+
+
+def format_recredit_type(recredit: finance_models.Recredit) -> str:
+    match recredit.recreditType:
+        case finance_models.RecreditType.RECREDIT_15:
+            return "Recrédit à 15 ans"
+        case finance_models.RecreditType.RECREDIT_16:
+            return "Recrédit à 16 ans"
+        case finance_models.RecreditType.RECREDIT_17:
+            return "Recrédit à 17 ans"
+        case finance_models.RecreditType.RECREDIT_18:
+            return "Recrédit à 18 ans"
+        case finance_models.RecreditType.BONUS_CREDIT:
+            return "Recrédit issu de la bonification"
+        case finance_models.RecreditType.MANUAL_MODIFICATION:
+            return "Recrédit par une action manuelle"
+        case finance_models.RecreditType.PREVIOUS_DEPOSIT:
+            return "Recrédit de l'argent restant du crédit précédent"
+        case finance_models.RecreditType.FINANCE_INCIDENT_RECREDIT:
+            return "Recrédit suite à un incident finance sur l'ancien crédit expiré"
+        case _:
+            return "Recrédit d'origine inconnue"
+
+
 def format_deposit_used(booking: bookings_models.Booking) -> str:
     if booking.usedRecreditType:
         if booking.usedRecreditType == bookings_models.BookingRecreditType.RECREDIT_17:
@@ -363,17 +399,33 @@ def format_timezone(address: geography_models.Address) -> str:
 def format_amount(
     amount: float | decimal.Decimal | None,
     target: users_models.User | offerers_models.Offerer | offerers_models.Venue | None = None,
+    is_signed: bool = False,
 ) -> str:
     if amount is None:
         amount = 0.0
+    sign = color_class = ""
+    if amount and is_signed:
+        if amount > 0:
+            sign = "+ "
+            color_class = " text-success"
+        elif amount < 0:
+            amount = -amount
+            sign = "− "
+            color_class = " text-danger"
 
-    display = Markup('<span class="text-nowrap">{formatted_amount}</span>').format(
-        formatted_amount=finance_utils.format_currency_for_backoffice(amount)
+    display = Markup('<span class="text-nowrap{color_class}">{sign}{formatted_amount}</span>').format(
+        color_class=color_class,
+        sign=sign,
+        formatted_amount=finance_utils.format_currency_for_backoffice(amount),
     )
 
     if target is not None and target.is_caledonian:
-        display += Markup(' <span class="text-nowrap text-muted">({formatted_amount})</span>').format(
-            formatted_amount=finance_utils.format_currency_for_backoffice(amount, use_xpf=True)
+        display += Markup(
+            ' <span class="text-nowrap{color_class} text-muted">({sign}{formatted_amount})</span>'
+        ).format(
+            color_class=color_class,
+            sign=sign,
+            formatted_amount=finance_utils.format_currency_for_backoffice(amount, use_xpf=True),
         )
 
     return display
