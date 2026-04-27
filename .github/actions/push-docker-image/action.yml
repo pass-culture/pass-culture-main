@@ -133,6 +133,10 @@ runs:
       run: echo "digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ steps.compute_image_name.outputs.source_image_name }})" | tee -a "$GITHUB_OUTPUT"
       shell: bash
 
+    - name: Create cosign signing config (required for cosign v3+)
+      shell: bash
+      run: cosign signing-config create -d --with-default-services=false --out=kms-only-config.json
+
     - name: Sign image with a kms key
-      run: cosign sign --key gcpkms://${{ steps.secrets.outputs.cosign_kms_key }} ${{ steps.get_digest.outputs.digest }}
+      run: cosign sign --signing-config kms-only-config.json --key gcpkms://${{ steps.secrets.outputs.cosign_kms_key }} ${{ steps.get_digest.outputs.digest }}
       shell: bash
