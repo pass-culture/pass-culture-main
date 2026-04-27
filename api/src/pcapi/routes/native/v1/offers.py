@@ -14,6 +14,7 @@ from pcapi.core.external.batch import transactional_notifications
 from pcapi.core.offers import repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Product
+from pcapi.core.users import api as users_api
 from pcapi.models import db
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -86,6 +87,48 @@ def get_movie_screenings(query: serializers.MovieScreeningsRequest) -> serialize
 
     return serializers.MovieCalendarResponse.from_raw_screenings(
         [serializers.RawScreening(**row) for row in results], query.from_datetime, query.to_datetime
+    )
+
+
+@blueprint.native_route("/movie/calendar/me", methods=["GET"])
+@authenticated_and_active_user_required
+@spectree_serialize(
+    response_model=serializers.MovieCalendarForUserResponse, api=blueprint.api, on_error_statuses=[400, 404]
+)
+def get_movie_screenings_for_user(
+    query: serializers.MovieScreeningsRequest,
+) -> serializers.MovieCalendarForUserResponse:
+    if query.allocine_id:
+        product_query = db.session.query(Product).filter(Product.extraData.op("->")("allocineId") == query.allocine_id)
+    elif query.visa:
+        product_query = db.session.query(Product).filter(Product.extraData["visa"].astext == query.visa)
+    else:
+        raise BadRequest()  # shoud not happen
+
+    product = first_or_404(product_query)
+    results = repository.get_nearby_bookable_screenings_from_product(
+        product,
+        query.latitude,
+        query.longitude,
+        query.around_radius,
+        query.from_datetime,
+        query.to_datetime,
+    )
+
+    has_completed_subscription, is_user_allowed_to_book = users_api.get_user_ability_to_book(current_user)
+    raw_screenings = []
+    for row in results:
+        has_already_booked_offer, has_enough_credit = users_api.get_user_ability_to_book_stock(
+            current_user, row["offer_id"], row["price"]
+        )
+        raw_screenings.append(
+            serializers.RawScreeningForUser(
+                **row, user_has_already_booked_offer=has_already_booked_offer, user_has_enough_credit=has_enough_credit
+            )
+        )
+
+    return serializers.MovieCalendarForUserResponse.from_raw_screenings(
+        raw_screenings, query.from_datetime, query.to_datetime, has_completed_subscription, is_user_allowed_to_book
     )
 
 

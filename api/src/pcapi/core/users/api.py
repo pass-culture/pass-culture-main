@@ -37,6 +37,7 @@ from pcapi.core.external.brevo import update_contact_attributes
 from pcapi.core.finance import deposit_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.dms import api as dms_subscription_api
@@ -48,6 +49,7 @@ from pcapi.core.users import sessions
 from pcapi.core.users.email.update import check_email_address_does_not_exist
 from pcapi.core.users.password_utils import check_password_strength
 from pcapi.core.users.password_utils import random_password
+from pcapi.core.users.young_status import YoungStatusType
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import users as users_serialization
@@ -1596,3 +1598,26 @@ def extend_deposit_validity(user: models.User, new_expiration_date: datetime.dat
     db.session.flush()
 
     external_attributes_api.update_external_user(user)
+
+
+def get_user_ability_to_book(user: models.User) -> typing.Tuple[bool, bool]:
+    young_status = subscription_api.get_user_subscription_state(user).young_status
+    has_completed_subscription = getattr(young_status, "subscription_status", None) in (
+        None,
+        YoungStatusType.SUSPENDED,
+        YoungStatusType.NON_ELIGIBLE,
+    )
+    has_valid_deposit = bool(
+        user.is_beneficiary
+        and user.deposit_expiration_date
+        and user.deposit_expiration_date > date_utils.get_naive_utc_now()
+    )
+    is_user_allowed_to_book = has_valid_deposit
+    return has_completed_subscription, is_user_allowed_to_book
+
+
+def get_user_ability_to_book_stock(user: models.User, offer_id: int, price: float) -> typing.Tuple[bool, bool]:
+    domains_credit = get_domains_credit(user, user.userBookings)
+    has_already_booked_offer = offer_id in [booking.stock.offerId for booking in user.userBookings]
+    has_enough_credit = domains_credit is not None and domains_credit.all.remaining >= price
+    return has_already_booked_offer, has_enough_credit

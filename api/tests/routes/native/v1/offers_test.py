@@ -1780,6 +1780,205 @@ class MovieCalendarTest:
         assert calendar[today.isoformat()][0]["isBookingDisabled"] is True
 
 
+class MovieCalendarForUserTest:
+    def test_get_movie_shows_for_user(self, client):
+        user = users_factories.BeneficiaryFactory()
+        product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
+        address = AddressFactory(latitude=48.85, longitude=2.35)
+        stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            offer__venue__offererAddress__address=address,
+            offer__venue__offererAddress__label="Cinéma Parisien",
+            beginningDatetime=datetime.now() + timedelta(hours=1),
+        )
+        today = date.today()
+        tomorrow = date.today() + timedelta(days=1)
+        params = {
+            "allocineId": "12345",
+            "latitude": 48.85,
+            "longitude": 2.35,
+            "from": today,
+            "to": tomorrow,
+        }
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # product
+        expected_num_queries += 1  # product stocks
+        expected_num_queries += 1  # screenings
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # user bookings
+        client.with_token(user)
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/movie/calendar/me", params=params)
+            assert response.status_code == 200
+
+        assert response.json == {
+            "userIsAllowedToBook": True,
+            "userHasCompletedSubscription": True,
+            "calendar": {
+                today.isoformat(): [
+                    {
+                        "address": f"{address.street}, {address.postalCode} {address.city}",
+                        "distance": 0.0,
+                        "dayScreenings": [
+                            {
+                                "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                                "features": [],
+                                "isSoldOut": False,
+                                "price": float(stock.price),
+                                "stockId": stock.id,
+                                "userHasEnoughCredit": True,
+                            }
+                        ],
+                        "isBookingDisabled": False,
+                        "label": stock.offer.offererAddress.label,
+                        "nextScreening": {
+                            "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                            "features": [],
+                            "isSoldOut": False,
+                            "price": float(stock.price),
+                            "stockId": stock.id,
+                            "userHasEnoughCredit": True,
+                        },
+                        "offerId": stock.offer.id,
+                        "thumbUrl": None,
+                        "userHasAlreadyBookedOffer": False,
+                        "venueId": stock.offer.venue.id,
+                    },
+                ],
+                tomorrow.isoformat(): [
+                    {
+                        "address": f"{address.street}, {address.postalCode} {address.city}",
+                        "distance": 0.0,
+                        "dayScreenings": [],
+                        "isBookingDisabled": False,
+                        "label": stock.offer.offererAddress.label,
+                        "nextScreening": {
+                            "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                            "features": [],
+                            "isSoldOut": False,
+                            "price": 10.1,
+                            "stockId": stock.id,
+                            "userHasEnoughCredit": True,
+                        },
+                        "offerId": stock.offer.id,
+                        "thumbUrl": None,
+                        "userHasAlreadyBookedOffer": False,
+                        "venueId": stock.offer.venue.id,
+                    },
+                ],
+            },
+        }
+
+    def test_when_user_is_not_eligible(self, client):
+        user = users_factories.UserFactory(age=100)
+        product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
+        address = AddressFactory(latitude=48.85, longitude=2.35)
+        _stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            offer__venue__offererAddress__address=address,
+            offer__venue__offererAddress__label="Cinéma Parisien",
+            beginningDatetime=datetime.now() + timedelta(hours=1),
+        )
+        today = date.today()
+        tomorrow = date.today() + timedelta(days=1)
+        params = {
+            "allocineId": "12345",
+            "latitude": 48.85,
+            "longitude": 2.35,
+            "from": today,
+            "to": tomorrow,
+        }
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # product
+        expected_num_queries += 1  # product stocks
+        expected_num_queries += 1  # screenings
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # user bookings
+        client.with_token(user)
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/movie/calendar/me", params=params)
+            assert response.status_code == 200
+
+        assert response.json["userIsAllowedToBook"] is False
+        assert response.json["userHasCompletedSubscription"] is True
+        assert response.json["calendar"][today.isoformat()][0]["userHasAlreadyBookedOffer"] is False
+        assert response.json["calendar"][today.isoformat()][0]["dayScreenings"][0]["userHasEnoughCredit"] is False
+
+    def test_when_user_has_not_completed_subscription(self, client):
+        user = users_factories.ProfileCompletedUserFactory(age=18)
+        product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
+        address = AddressFactory(latitude=48.85, longitude=2.35)
+        _stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            offer__venue__offererAddress__address=address,
+            offer__venue__offererAddress__label="Cinéma Parisien",
+            beginningDatetime=datetime.now() + timedelta(hours=1),
+        )
+        today = date.today()
+        tomorrow = date.today() + timedelta(days=1)
+        params = {
+            "allocineId": "12345",
+            "latitude": 48.85,
+            "longitude": 2.35,
+            "from": today,
+            "to": tomorrow,
+        }
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # product
+        expected_num_queries += 1  # product stocks
+        expected_num_queries += 1  # screenings
+        expected_num_queries += 1  # beneficiary fraud reviews
+        expected_num_queries += 1  # beneficiary fraud checks
+        expected_num_queries += 1  # action history
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # user bookings
+        client.with_token(user)
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/movie/calendar/me", params=params)
+            assert response.status_code == 200
+
+        assert response.json["userIsAllowedToBook"] is False
+        assert response.json["userHasCompletedSubscription"] is False
+        assert response.json["calendar"][today.isoformat()][0]["userHasAlreadyBookedOffer"] is False
+        assert response.json["calendar"][today.isoformat()][0]["dayScreenings"][0]["userHasEnoughCredit"] is False
+
+    def test_when_user_has_not_enough_credit(self, client):
+        user = users_factories.BeneficiaryFactory()
+        product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
+        address = AddressFactory(latitude=48.85, longitude=2.35)
+        _stock = offers_factories.EventStockFactory(
+            price=1000,
+            offer__product=product,
+            offer__venue__offererAddress__address=address,
+            offer__venue__offererAddress__label="Cinéma Parisien",
+            beginningDatetime=datetime.now() + timedelta(hours=1),
+        )
+        today = date.today()
+        tomorrow = date.today() + timedelta(days=1)
+        params = {
+            "allocineId": "12345",
+            "latitude": 48.85,
+            "longitude": 2.35,
+            "from": today,
+            "to": tomorrow,
+        }
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # product
+        expected_num_queries += 1  # product stocks
+        expected_num_queries += 1  # screenings
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # user bookings
+        client.with_token(user)
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/movie/calendar/me", params=params)
+            assert response.status_code == 200
+
+        assert response.json["userIsAllowedToBook"] is True
+        assert response.json["userHasCompletedSubscription"] is True
+        assert response.json["calendar"][today.isoformat()][0]["userHasAlreadyBookedOffer"] is False
+        assert response.json["calendar"][today.isoformat()][0]["dayScreenings"][0]["userHasEnoughCredit"] is False
+
+
 class VenueMovieCalendarTest:
     def test_get_venue_movie_calendar(self, client):
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)

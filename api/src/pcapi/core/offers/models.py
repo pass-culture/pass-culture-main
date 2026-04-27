@@ -782,7 +782,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     lastProviderId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True
     )
-    lastProvider: sa_orm.Mapped["Provider|None"] = sa_orm.relationship("Provider", foreign_keys=[lastProviderId])
+    lastProvider: sa_orm.Mapped["Provider | None"] = sa_orm.relationship("Provider", foreign_keys=[lastProviderId])
     idAtProvider: sa_orm.Mapped[str | None] = sa_orm.mapped_column(
         sa.Text,
         sa.CheckConstraint(

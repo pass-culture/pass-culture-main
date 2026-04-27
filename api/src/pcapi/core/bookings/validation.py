@@ -1,6 +1,8 @@
 import datetime
 from decimal import Decimal
 
+import sqlalchemy as sa
+
 import pcapi.core.finance.repository as finance_repository
 import pcapi.utils.date as date_utils
 from pcapi.core.bookings import constants
@@ -30,16 +32,11 @@ def check_can_book_free_offer(user: User, stock: Stock) -> None:
 
 def check_offer_already_booked(user: User, offer: Offer) -> None:
     """Raise ``OfferIsAlreadyBooked`` if the user already booked this offer."""
-    if db.session.query(
-        db.session.query(Booking)
-        .filter(
-            Booking.userId == user.id,
-            Booking.status != BookingStatus.CANCELLED,
-        )
-        .join(Stock)
-        .filter(Stock.offerId == offer.id)
-        .exists()
-    ).scalar():
+    if db.session.scalar(
+        sa.select(sa.exists(Booking))
+        .join(Booking.stock)
+        .where(Booking.userId == user.id, Stock.offerId == offer.id, Booking.status != BookingStatus.CANCELLED)
+    ):
         raise exceptions.OfferIsAlreadyBooked()
 
 
