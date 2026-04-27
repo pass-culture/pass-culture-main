@@ -25,12 +25,14 @@ interface AdageMultiselectProps {
   ) => ItemProps[]
 }
 
-const filterItems = (items: ItemProps[], inputValue: string) => {
-  const regExp = new RegExp(
-    inputValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, ''),
-    'i'
+const filterItems = (items: ItemProps[], searchQuery: string) => {
+  const normalizedSearchQuery = searchQuery
+    .replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '')
+    .toLocaleLowerCase()
+
+  return items.filter((item) =>
+    item.label.toLocaleLowerCase().includes(normalizedSearchQuery)
   )
-  return items.filter((item) => item.label.match(regExp))
 }
 
 const defaultSortOptions = (
