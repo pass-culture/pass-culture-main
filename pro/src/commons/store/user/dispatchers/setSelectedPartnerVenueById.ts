@@ -30,23 +30,14 @@ import { setSelectedAdminOffererById } from './setSelectedAdminOffererById'
 export const setSelectedPartnerVenueById = createAsyncThunk<
   {
     selectedPartnerVenue: GetVenueResponseModel | null
-    // TODO (igabriele, 2026-02-04): Delete this prop once `WIP_SWITCH_VENUE` FF is enabled and removed.
-    newUserAccess: UserAccess | null
   },
   {
     nextSelectedPartnerVenueId: number
-    shouldSkipSelectedAdminOffererUpdate?: boolean
   },
   AppThunkApiConfig
 >(
   'user/setSelectedPartnerVenueById',
-  async (
-    {
-      nextSelectedPartnerVenueId,
-      shouldSkipSelectedAdminOffererUpdate = false,
-    },
-    { dispatch, getState }
-  ) => {
+  async ({ nextSelectedPartnerVenueId }, { dispatch, getState }) => {
     try {
       const state = getState()
 
@@ -100,9 +91,7 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
 
       dispatch(updateCurrentOfferer(nextSelectedOfferer))
 
-      if (!shouldSkipSelectedAdminOffererUpdate) {
-        await dispatch(setSelectedAdminOffererById(nextSelectedOfferer))
-      }
+      await dispatch(setSelectedAdminOffererById(nextSelectedOfferer))
 
       const nextSelectedOffererName = offererNames.find(
         (offerer) => offerer.id === nextSelectedOfferer.id
