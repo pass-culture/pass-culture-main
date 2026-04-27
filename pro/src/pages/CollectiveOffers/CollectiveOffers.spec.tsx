@@ -11,7 +11,7 @@ import {
   type CollectiveOfferResponseModel,
   type CollectiveOfferStockResponseModel,
   EacFormat,
-  type GetOffererAddressResponseModel,
+  type GetVenueAddressResponseModel,
 } from '@/apiClient/v1'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
@@ -21,12 +21,14 @@ import {
   defaultGetOffererResponseModel,
   makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
-import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
-import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
+import {
+  makeGetVenueResponseModel,
+  venueAddressFactory,
+} from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { PartnerLayout } from '@/layouts/PartnerLayout/PartnerLayout'
 
@@ -65,20 +67,16 @@ vi.mock('@/apiClient/api', () => {
     api: {
       getCollectiveOffers: vi.fn(),
       getOfferer: vi.fn(),
-      getOffererAddresses: vi.fn(),
+      getVenueAddresses: vi.fn(),
       getVenues: vi.fn(),
       listOfferersNames: vi.fn(),
     },
   }
 })
 
-const offererAddress: GetOffererAddressResponseModel[] = [
-  offererAddressFactory({
-    label: 'Label',
-  }),
-  offererAddressFactory({
-    city: 'New York',
-  }),
+const venueAddresses: GetVenueAddressResponseModel[] = [
+  venueAddressFactory(2, { label: 'Label' }),
+  venueAddressFactory(2, { city: 'New York' }),
 ]
 
 const renderOffers = (
@@ -114,7 +112,7 @@ describe('CollectiveOffers', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
     })
-    vi.spyOn(api, 'getOffererAddresses').mockResolvedValue(offererAddress)
+    vi.spyOn(api, 'getVenueAddresses').mockResolvedValue(venueAddresses)
   })
 
   afterEach(() => {
@@ -267,12 +265,12 @@ describe('CollectiveOffers', () => {
 
         await userEvent.selectOptions(
           localisationSelect,
-          offererAddress[0].id.toString()
+          venueAddresses[0].id.toString()
         )
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
           expect(localisationSelect).toHaveValue(
-            offererAddress[0].id.toString()
+            venueAddresses[0].id.toString()
           )
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             null,
@@ -283,7 +281,7 @@ describe('CollectiveOffers', () => {
             null,
             null,
             CollectiveLocationType.ADDRESS,
-            offererAddress[0].id
+            venueAddresses[0].id
           )
         })
       })
@@ -790,25 +788,21 @@ describe('CollectiveOffers', () => {
     })
   })
 
-  describe('with WIP_SWITCH_VENUE feature flag', () => {
-    const features = ['WIP_SWITCH_VENUE']
+  it('should call getCollectiveOffers with the expected venueId', async () => {
+    renderOffers()
 
-    it('should call getCollectiveOffers with the expected venueId', async () => {
-      renderOffers({}, features)
-
-      await waitFor(() => {
-        expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-          null,
-          null,
-          null,
-          2,
-          null,
-          null,
-          null,
-          null,
-          null
-        )
-      })
+    await waitFor(() => {
+      expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+        null,
+        1,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      )
     })
   })
 })

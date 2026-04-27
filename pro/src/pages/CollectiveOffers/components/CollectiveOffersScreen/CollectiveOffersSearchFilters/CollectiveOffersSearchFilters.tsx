@@ -4,7 +4,6 @@ import {
   CollectiveLocationType,
   CollectiveOfferDisplayedStatus,
   EacFormat,
-  GetOffererAddressesWithOffersOption,
   GetVenueAddressesWithOffersOption,
 } from '@/apiClient/v1'
 import {
@@ -14,9 +13,7 @@ import {
 } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import type { SelectOption } from '@/commons/custom_types/form'
-import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
 import { useVenueAddresses } from '@/commons/hooks/swr/useVenueAddresses'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OffersTableFilterBar } from '@/components/OffersTableFilterBar/OffersTableFilterBar'
 import { OffersTableSearch } from '@/components/OffersTableSearch/OffersTableSearch'
@@ -50,16 +47,10 @@ export const CollectiveOffersSearchFilters = ({
   disableAllFilters = false,
   searchButtonRef,
 }: Readonly<CollectiveOffersSearchFiltersProps>): JSX.Element => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-  const offererAddressQuery = useOffererAddresses(
-    GetOffererAddressesWithOffersOption.COLLECTIVE_OFFERS_ONLY
-  )
   const venueAddressQuery = useVenueAddresses(
     GetVenueAddressesWithOffersOption.COLLECTIVE_OFFERS_ONLY
   )
-  const offererAddresses = formatAndOrderAddresses(
-    withSwitchVenueFeature ? venueAddressQuery.data : offererAddressQuery.data
-  )
+  const offererAddresses = formatAndOrderAddresses(venueAddressQuery.data)
 
   const locationOptions = [
     {

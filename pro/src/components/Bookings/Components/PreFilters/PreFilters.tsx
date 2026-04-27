@@ -8,7 +8,6 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { ALL_OFFERER_ADDRESS_OPTION } from '@/commons/core/Offers/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import type { SelectOption } from '@/commons/custom_types/form'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isDateValid } from '@/commons/utils/date'
 import { DownloadDropdown } from '@/components/DownloadDropdown/DownloadDropdown'
@@ -57,8 +56,6 @@ export const PreFilters = ({
   resetPreFilters,
   offererAddresses,
 }: PreFiltersProps): JSX.Element => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
 
@@ -182,21 +179,6 @@ export const PreFilters = ({
         )}
         <div className={styles['button-group']}>
           <div className={styles['button-group-buttons']}>
-            {!withSwitchVenueFeature && (
-              <DownloadDropdown
-                isDisabled={
-                  isDownloading || isFiltersDisabled || isLocalLoading
-                }
-                logEventNames={{
-                  onSelectCsv: Events.CLICKED_DOWNLOAD_BOOKINGS_CSV,
-                  onSelectXls: Events.CLICKED_DOWNLOAD_BOOKINGS_XLS,
-                  onToggle: Events.CLICKED_DOWNLOAD_BOOKINGS,
-                }}
-                onSelect={download}
-                title="Télécharger les réservations"
-              />
-            )}
-
             {!isAdministrationSpace && (
               <Button
                 disabled={isTableLoading || isLocalLoading || isFiltersDisabled}
