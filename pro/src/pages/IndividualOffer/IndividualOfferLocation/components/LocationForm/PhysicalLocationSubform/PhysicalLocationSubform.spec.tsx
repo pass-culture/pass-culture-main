@@ -3,16 +3,13 @@ import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 import { vi } from 'vitest'
 
-import type { VenueListItemResponseModel } from '@/apiClient/v1'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
-import {
-  individualOfferContextValuesFactory,
-  makeVenueListItem,
-} from '@/commons/utils/factories/individualApiFactories'
+import { individualOfferContextValuesFactory } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderComponentFunction,
   renderWithProviders,
@@ -48,40 +45,33 @@ vi.mock('@/ui-kit/form/AddressSelect/AddressSelect', () => ({
     />
   ),
 }))
-vi.mock('@/commons/errors/handleUnexpectedError', () => ({
-  handleUnexpectedError: vi.fn(),
-}))
-vi.mock('@/commons/errors/FrontendError', () => ({
-  FrontendError: class FrontendError extends Error {},
-}))
 
 type ExtraParams = { formDefaults?: Partial<LocationFormValues> }
+
+const defaultPartnerVenue = makeGetVenueResponseModel({
+  id: 2,
+  publicName: 'Lieu Nom Public Pour Test',
+  location: {
+    id: 10,
+    city: 'Paris',
+    isManualEdition: false,
+    label: '10 Rue de Paris 75000 Paris',
+    postalCode: '75000',
+    street: '10 Rue de Paris',
+    latitude: 48.8566,
+    longitude: 2.3522,
+    isVenueLocation: false,
+    banId: null,
+    departmentCode: '75',
+    inseeCode: null,
+  },
+})
 
 const renderPhysicalLocationSubform: RenderComponentFunction<
   PhysicalLocationSubformProps,
   IndividualOfferContextValues,
   ExtraParams
 > = ({ contextValues, options, props, formDefaults }) => {
-  const venue: VenueListItemResponseModel = props?.venue
-    ? (props.venue as VenueListItemResponseModel)
-    : makeVenueListItem({
-        id: 2,
-        location: {
-          id: 10,
-          city: 'Paris',
-          isManualEdition: false,
-          label: '10 Rue de Paris 75000 Paris',
-          postalCode: '75000',
-          street: '10 Rue de Paris',
-          latitude: 48.8566,
-          longitude: 2.3522,
-          isVenueLocation: false,
-          banId: null,
-          departmentCode: '75',
-          inseeCode: '75',
-        },
-      })
-
   const defaultValues = makeLocationFormValues({
     location: {
       addressAutocomplete: null,
@@ -94,7 +84,7 @@ const renderPhysicalLocationSubform: RenderComponentFunction<
       label: null,
       latitude: '48.8566',
       longitude: '2.3522',
-      offerLocation: venue.location?.id?.toString() || '',
+      offerLocation: defaultPartnerVenue.location.id.toString(),
       postalCode: '75000',
       'search-addressAutocomplete': null,
       street: '10 Rue de Paris',
@@ -106,10 +96,7 @@ const renderPhysicalLocationSubform: RenderComponentFunction<
     const methods = useForm<LocationFormValues>({ defaultValues })
     return (
       <FormProvider {...methods}>
-        <PhysicalLocationSubform
-          isDisabled={props?.isDisabled ?? false}
-          venue={venue}
-        />
+        <PhysicalLocationSubform isDisabled={props?.isDisabled ?? false} />
       </FormProvider>
     )
   }
@@ -123,7 +110,17 @@ const renderPhysicalLocationSubform: RenderComponentFunction<
     <IndividualOfferContext.Provider value={contextValue}>
       <Wrapper />
     </IndividualOfferContext.Provider>,
-    { user: sharedCurrentUserFactory(), ...options }
+    {
+      user: sharedCurrentUserFactory(),
+      ...options,
+      storeOverrides: {
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedPartnerVenue: defaultPartnerVenue,
+        },
+        ...(options?.storeOverrides ?? {}),
+      },
+    }
   )
 }
 
@@ -408,52 +405,6 @@ describe('<PhysicalLocationSubform />', () => {
     expect(
       screen.queryByRole('textbox', { name: /Adresse postale/i })
     ).not.toBeInTheDocument()
-  })
-
-  it('should call handleUnexpectedError when toggling back to venue address but venue.address is missing', async () => {
-    const { handleUnexpectedError } = await import(
-      '@/commons/errors/handleUnexpectedError'
-    )
-    // Start on venue address, go to other, then back (error path when venue.address is undefined)
-    const venueWithoutAddress = makeVenueListItem({
-      id: 2,
-      location: undefined,
-    })
-    renderPhysicalLocationSubform({
-      props: {
-        venue: venueWithoutAddress as unknown as VenueListItemResponseModel,
-      },
-      formDefaults: {
-        location: {
-          addressAutocomplete: null,
-          banId: null,
-          city: '',
-          coords: '',
-          inseeCode: null,
-          isManualEdition: false,
-          isVenueLocation: true,
-          label: null,
-          latitude: '',
-          longitude: '',
-          offerLocation: '',
-          postalCode: '',
-          'search-addressAutocomplete': null,
-          street: '',
-        },
-      },
-    })
-
-    // First click switches to other address
-    await userEvent.click(
-      screen.getByRole('radio', { name: 'À une autre adresse' })
-    )
-    expect(
-      screen.getByLabelText(/Intitulé de la localisation/i)
-    ).toBeInTheDocument()
-
-    // Second click attempts to switch back to venue address triggering error
-    await userEvent.click(screen.getByRole('radio', { name: / – null/i }))
-    expect(handleUnexpectedError).toHaveBeenCalled()
   })
 
   it('should render manual edition fields on mount when defaults set isManualEdition=true', () => {

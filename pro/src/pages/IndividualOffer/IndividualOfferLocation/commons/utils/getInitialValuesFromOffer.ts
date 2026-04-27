@@ -2,11 +2,10 @@ import { computeAddressDisplayName } from 'repository/venuesService'
 
 import type {
   GetIndividualOfferWithAddressResponseModel,
-  VenueListItemResponseModel,
+  GetVenueResponseModel,
 } from '@/apiClient/v1'
 
 import { OFFER_LOCATION } from '../../../commons/constants'
-import { EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES } from '../constants'
 import type { LocationFormValues, PhysicalAddressSubformValues } from '../types'
 
 // TODO (igabriele, 2025-08-25): Integrate the last rules in Yup schema and use schema.cast() here instead.
@@ -15,7 +14,7 @@ function getPhysicalAddressSubformInitialValuesFromOffer(
   {
     offerVenue,
   }: {
-    offerVenue: VenueListItemResponseModel
+    offerVenue: GetVenueResponseModel
   }
 ): PhysicalAddressSubformValues | null {
   if (offer.isDigital) {
@@ -52,28 +51,25 @@ function getPhysicalAddressSubformInitialValuesFromOffer(
       // @ts-expect-error
       street: offer.location.street,
     }
-  } else if (offerVenue.location) {
-    return {
-      addressAutocomplete: null,
-      banId: offerVenue.location.banId ?? null,
-      city: offerVenue.location.city,
-      coords: `${offerVenue.location.latitude}, ${offerVenue.location.longitude}`,
-      inseeCode: offerVenue.location.inseeCode ?? null,
-      isManualEdition: false,
-      isVenueLocation: true,
-      label: offerVenue.location.label ?? null,
-      latitude: String(offerVenue.location.latitude),
-      longitude: String(offerVenue.location.longitude),
-      offerLocation: String(offerVenue.location.id),
-      postalCode: offerVenue.location.postalCode,
-      'search-addressAutocomplete': null,
-      // TODO (igabriele, 2025-08-25): This should not be nullable. Investigate why we can receive a venue address without street since it's mandatory.
-
-      street: offerVenue.location.street ?? null,
-    }
   }
 
-  return EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES
+  return {
+    addressAutocomplete: null,
+    banId: offerVenue.location.banId ?? null,
+    city: offerVenue.location.city,
+    coords: `${offerVenue.location.latitude}, ${offerVenue.location.longitude}`,
+    inseeCode: offerVenue.location.inseeCode ?? null,
+    isManualEdition: false,
+    isVenueLocation: true,
+    label: offerVenue.location.label ?? null,
+    latitude: String(offerVenue.location.latitude),
+    longitude: String(offerVenue.location.longitude),
+    offerLocation: String(offerVenue.location.id),
+    postalCode: offerVenue.location.postalCode,
+    'search-addressAutocomplete': null,
+    // TODO (igabriele, 2025-08-25): This should not be nullable. Investigate why we can receive a venue address without street since it's mandatory.
+    street: offerVenue.location.street ?? null,
+  }
 }
 
 export function getInitialValuesFromOffer(
@@ -81,7 +77,7 @@ export function getInitialValuesFromOffer(
   {
     offerVenue,
   }: {
-    offerVenue: VenueListItemResponseModel
+    offerVenue: GetVenueResponseModel
   }
 ): LocationFormValues {
   const physicalAddressInitialValues =
