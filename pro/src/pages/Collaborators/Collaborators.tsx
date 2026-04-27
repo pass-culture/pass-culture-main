@@ -1,4 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import * as Dialog from '@radix-ui/react-dialog'
 import classNames from 'classnames'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -8,26 +9,21 @@ import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import { OffererMemberStatus } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { GET_MEMBERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { OffererLinkEvents } from '@/commons/core/FirebaseEvents/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import {
-  ensureOffererNames,
-  ensureOffererNamesValidated,
-} from '@/commons/store/offerer/selectors'
+import { ensureOffererNamesValidated } from '@/commons/store/offerer/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { OffererSelect } from '@/components/OffererSelect/OffererSelect'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullDownIcon from '@/icons/full-down.svg'
 import fullUpIcon from '@/icons/full-up.svg'
 import { validationSchema } from '@/pages/Collaborators/validationSchema'
+import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
-import { NonAttachedBanner } from '../../components/NonAttachedBanner/NonAttachedBanner'
 import styles from './Collaborators.module.scss'
 
 const SUCCESS_MESSAGE = "L'invitation a bien été envoyée."
@@ -37,26 +33,17 @@ type UserEmailFormValues = {
   email: string
 }
 
-// TODO (igabriele, 2026-02-10): Merge that within `<AdministrationLayout />` once `WIP_SWITCH_VENUE` FF is enabled and removed.
 const Collaborators = () => {
-  const currentOffererId = useAppSelector(
-    (state) => state.offerer.currentOfferer
-  )?.id
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const [displayAllMembers, setDisplayAllMembers] = useState(false)
-  const [showInvitationForm, setShowInvitationForm] = useState(false)
 
   const adminSelectedOfferer = useAppSelector(
     (store) => store.user.selectedAdminOfferer
   )
 
-  const offererId = withSwitchVenueFeature
-    ? adminSelectedOfferer?.id
-    : currentOffererId
+  const offererId = adminSelectedOfferer?.id
 
-  const offererNames = useAppSelector(ensureOffererNames)
   const offererNamesValidated = useAppSelector(ensureOffererNamesValidated)
   const isSelectedOffererValidated = offererNamesValidated.some(
     (offerer) => offerer.id === offererId
@@ -113,21 +100,11 @@ const Collaborators = () => {
   }
 
   const MAX_COLLABORATORS = 10
-  // TODO (cmoinier, 2026-03-13): Remove this once `WIP_SWITCH_VENUE` FF is enabled and removed.
-  if (!offererId) {
-    return null
-  }
 
   return (
-    <BasicLayout
-      mainHeading="Collaborateurs"
-      isAdminArea={withSwitchVenueFeature}
-    >
-      {withSwitchVenueFeature && offererNames && offererNames.length > 1 && (
-        <OffererSelect />
-      )}
+    <>
       {isSelectedOffererValidated && (
-        <section className={styles['section']}>
+        <section>
           <h2 className={styles['main-list-title']}>
             Liste des collaborateurs
           </h2>
@@ -171,9 +148,17 @@ const Collaborators = () => {
                               styles['members-list-td']
                             )}
                           >
-                            {status === OffererMemberStatus.VALIDATED
-                              ? 'Validé'
-                              : 'En attente'}
+                            {status === OffererMemberStatus.VALIDATED ? (
+                              <Tag
+                                variant={TagVariant.SUCCESS}
+                                label="Validé"
+                              />
+                            ) : (
+                              <Tag
+                                variant={TagVariant.DEFAULT}
+                                label="En attente"
+                              />
+                            )}
                           </td>
                         </tr>
                       )
@@ -197,63 +182,69 @@ const Collaborators = () => {
             </div>
           )}
 
-          {!showInvitationForm ? (
-            <Button
-              variant={ButtonVariant.SECONDARY}
-              onClick={() => {
-                logEvent(OffererLinkEvents.CLICKED_ADD_COLLABORATOR, {
-                  offererId: offererId,
-                })
-                setShowInvitationForm(true)
-              }}
-              label="Ajouter un collaborateur"
-            />
-          ) : (
-            <>
-              <h3 className={styles['subtitle']}>Ajout de collaborateurs</h3>
-              <p className={styles['description']}>
-                Vous pouvez inviter des collaborateurs à rejoindre votre espace.
-                Une invitation leur sera envoyée par email. Vous serez notifié
-                quand ils auront rejoint l’espace.
-              </p>
-              <form
-                className={styles['invitation-form']}
-                onSubmit={handleSubmit(onSubmit)}
-              >
+          <DialogBuilder
+            variant="drawer"
+            title="Ajout de collaborateurs"
+            trigger={
+              <Button
+                variant={ButtonVariant.PRIMARY}
+                onClick={() => {
+                  logEvent(OffererLinkEvents.CLICKED_ADD_COLLABORATOR, {
+                    offererId: offererId,
+                  })
+                }}
+                label="Ajouter un collaborateur"
+              />
+            }
+          >
+            <form
+              className={styles['invitation-form']}
+              onSubmit={handleSubmit(onSubmit)}
+            >
+              <div className={styles['invitation-form']}>
+                <p className={styles['description']}>
+                  Vous pouvez inviter des collaborateurs à rejoindre votre
+                  espace. Une invitation leur sera envoyée par email. Vous serez
+                  notifié quand ils auront rejoint l’espace.
+                </p>
+
                 <FormLayout>
-                  <FormLayout.Row
-                    className={styles['invitation-email-wrapper']}
-                  >
-                    <div className={styles['invitation-email-field']}>
-                      <TextInput
-                        label="Adresse email"
-                        type="email"
-                        description="Format : email@exemple.com"
-                        error={errors.email?.message}
-                        required
-                        requiredIndicator="explicit"
-                        {...register('email')}
-                        extension={
-                          <Button
-                            type="submit"
-                            isLoading={isSubmitting}
-                            data-error={
-                              errors.email?.message ? 'true' : 'false'
-                            }
-                            label="Inviter"
-                          />
-                        }
-                      />
-                    </div>
+                  <FormLayout.Row>
+                    <TextInput
+                      label="Adresse email"
+                      type="email"
+                      description="Format : email@exemple.com"
+                      error={errors.email?.message}
+                      required
+                      requiredIndicator="explicit"
+                      {...register('email')}
+                    />
                   </FormLayout.Row>
                 </FormLayout>
-              </form>
-            </>
-          )}
+              </div>
+
+              <DialogBuilder.Footer>
+                <div className={styles['action-buttons']}>
+                  <Dialog.Close asChild>
+                    <Button
+                      variant={ButtonVariant.SECONDARY}
+                      color={ButtonColor.NEUTRAL}
+                      label="Annuler"
+                    />
+                  </Dialog.Close>
+                  <Button
+                    type="submit"
+                    isLoading={isSubmitting}
+                    data-error={errors.email?.message ? 'true' : 'false'}
+                    label="Inviter le collaborateur"
+                  />
+                </div>
+              </DialogBuilder.Footer>
+            </form>
+          </DialogBuilder>
         </section>
       )}
-      {!isSelectedOffererValidated && <NonAttachedBanner></NonAttachedBanner>}
-    </BasicLayout>
+    </>
   )
 }
 
