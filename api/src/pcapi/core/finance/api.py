@@ -3391,11 +3391,7 @@ def _create_finance_events_from_incident(
                 incident_validation_date=incident_validation_date,
             )
         )
-    elif booking_finance_incident.incident.kind in (
-        models.IncidentType.OVERPAYMENT,
-        models.IncidentType.OFFER_PRICE_REGULATION,
-        models.IncidentType.FRAUD,
-    ):
+    elif booking_finance_incident.incident.kind == models.IncidentType.OVERPAYMENT:
         # Retrieve initial amount of the booking
         finance_events.append(
             add_event(

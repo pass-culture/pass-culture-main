@@ -1833,12 +1833,8 @@ def format_finance_incident_type_str(incident_kind: finance_models.IncidentType)
     match incident_kind:
         case finance_models.IncidentType.OVERPAYMENT:
             return "Trop Perçu"
-        case finance_models.IncidentType.FRAUD:
-            return "Fraude"
         case finance_models.IncidentType.COMMERCIAL_GESTURE:
             return "Geste Commercial"
-        case finance_models.IncidentType.OFFER_PRICE_REGULATION:
-            return "Régulation du prix de l'offre"
         case _:
             return incident_kind.value
 
@@ -1848,12 +1844,8 @@ def format_finance_incident_type(incident_kind: finance_models.IncidentType) -> 
     match incident_kind:
         case finance_models.IncidentType.OVERPAYMENT:
             return format_badge(kind_str, "warning")
-        case finance_models.IncidentType.FRAUD:
-            return format_badge(kind_str, "danger")
         case finance_models.IncidentType.COMMERCIAL_GESTURE:
             return format_badge(kind_str, "success")
-        case finance_models.IncidentType.OFFER_PRICE_REGULATION:
-            return format_badge(kind_str, "secondary")
         case _:
             return incident_kind.value
 

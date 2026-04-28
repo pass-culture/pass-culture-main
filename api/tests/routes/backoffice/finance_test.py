@@ -1240,21 +1240,13 @@ class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
 
 
 class CreateIncidentFinanceEventTest:
-    @pytest.mark.parametrize(
-        "incident_type",
-        [
-            finance_models.IncidentType.OVERPAYMENT,
-            finance_models.IncidentType.OFFER_PRICE_REGULATION,
-            finance_models.IncidentType.FRAUD,
-        ],
-    )
-    def test_create_event_on_total_booking_incident(self, incident_type):
+    def test_create_event_on_total_booking_incident(self):
         total_booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
             booking__pricings=[
                 finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-1000)
             ],
             booking__amount=10.10,
-            incident__kind=incident_type,
+            incident__kind=finance_models.IncidentType.OVERPAYMENT,
             newTotalAmount=0,
         )
         validation_date = date_utils.get_naive_utc_now()
@@ -1267,20 +1259,12 @@ class CreateIncidentFinanceEventTest:
         assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
         assert finance_events[0].valueDate == validation_date
 
-    @pytest.mark.parametrize(
-        "incident_type",
-        [
-            finance_models.IncidentType.OVERPAYMENT,
-            finance_models.IncidentType.OFFER_PRICE_REGULATION,
-            finance_models.IncidentType.FRAUD,
-        ],
-    )
-    def test_create_event_on_total_collective_booking_incident(self, incident_type):
+    def test_create_event_on_total_collective_booking_incident(self):
         total_booking_incident = finance_factories.CollectiveBookingFinanceIncidentFactory(
             collectiveBooking__pricings=[
                 finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-10000)
             ],
-            incident__kind=incident_type,
+            incident__kind=finance_models.IncidentType.OVERPAYMENT,
         )
 
         validation_date = date_utils.get_naive_utc_now()
@@ -1294,20 +1278,12 @@ class CreateIncidentFinanceEventTest:
         assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
         assert finance_events[0].valueDate == validation_date
 
-    @pytest.mark.parametrize(
-        "incident_type",
-        [
-            finance_models.IncidentType.OVERPAYMENT,
-            finance_models.IncidentType.OFFER_PRICE_REGULATION,
-            finance_models.IncidentType.FRAUD,
-        ],
-    )
-    def test_create_event_on_partial_booking_incident(self, incident_type):
+    def test_create_event_on_partial_booking_incident(self):
         partial_booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
             booking__pricings=[
                 finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-1000)
             ],
-            incident__kind=incident_type,
+            incident__kind=finance_models.IncidentType.OVERPAYMENT,
             newTotalAmount=600,
         )
 
@@ -1389,16 +1365,6 @@ class GetIncidentTest(GetEndpointHelper):
                 "backoffice_web.finance_incidents.get_commercial_gesture", finance_incident_id=commercial_gesture.id
             )
         )
-
-    def test_get_unhandled_incident_kind(self, authenticated_client):
-        incident = finance_factories.FinanceIncidentFactory(kind=finance_models.IncidentType.OFFER_PRICE_REGULATION)
-        bank_account = finance_factories.BankAccountFactory(offerer=incident.venue.managingOfferer)
-        offerers_factories.VenueBankAccountLinkFactory(venue=incident.venue, bankAccount=bank_account)
-        url = url_for(self.endpoint, finance_incident_id=incident.id)
-
-        with assert_num_queries(self.expected_num_queries + 1):  # rollback
-            response = authenticated_client.get(url)
-            assert response.status_code == 404
 
 
 class GetOverpaymentIncidentTest(GetEndpointHelper):
