@@ -1003,14 +1003,6 @@ class OpeningHours(PcObject, Model):
     venue: sa_orm.Mapped[Venue | None] = sa_orm.relationship(
         "Venue", foreign_keys=[venueId], back_populates="openingHours"
     )
-
-    offerId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=True, index=True
-    )
-    offer: sa_orm.Mapped["offers_models.Offer | None"] = sa_orm.relationship(
-        "Offer", foreign_keys=[offerId], back_populates="openingHours"
-    )
-
     weekday: sa_orm.Mapped[Weekday] = sa_orm.mapped_column(
         db_utils.MagicEnum(Weekday, use_values=True), nullable=False, default=Weekday.MONDAY
     )
