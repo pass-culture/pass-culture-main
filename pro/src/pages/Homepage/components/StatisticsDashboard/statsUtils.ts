@@ -2,6 +2,8 @@ import type { ChartOptions, TooltipItem } from 'chart.js'
 import { fr } from 'date-fns/locale'
 import { format } from 'date-fns-tz'
 
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
+
 import { formatNumberLabel } from '../../../../commons/utils/formatNumber'
 
 const MONTH_FORMAT = 'LLLL'
@@ -125,6 +127,7 @@ export const computeGraphSteps = (maxViews: number, minViews: number) => {
   const magnitude = 10 ** Math.floor(Math.log10(roughStep))
   const niceSteps = [1, 2, 5, 10].map((n) => n * magnitude)
 
-  const lastStep = niceSteps.at(-1) as number
+  const lastStep = niceSteps[niceSteps.length - 1]
+  assertOrFrontendError(lastStep, '`lastStep` is undefined.')
   return niceSteps.find((step) => step >= roughStep) ?? lastStep
 }

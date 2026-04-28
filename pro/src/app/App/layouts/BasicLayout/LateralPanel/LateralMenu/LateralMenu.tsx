@@ -177,7 +177,7 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const selectedPartnerPageVenueId =
     reduxStoredPartnerPageId ||
     stillRelevantSavedPartnerPageVenueId ||
-    hasPartnerPageVenues.at(0)?.id
+    hasPartnerPageVenues[0]?.id
 
   const [isOpen, setIsOpen] = useState(false)
 
