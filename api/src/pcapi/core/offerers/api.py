@@ -2109,11 +2109,12 @@ class VenueOffersStatisticsModel:
 
 def get_venue_offers_statistics(venue_id: int) -> VenueOffersStatisticsModel:
     daily_views = clickhouse_queries.OfferConsultationCountQuery().execute({"venue_id": str(venue_id)})
+    sorted_daily_views = sorted(daily_views, key=lambda x: x.day)
     views_count = clickhouse_queries.VenueOffersMonthlyViewsQuery().execute({"venue_id": str(venue_id)})
     top_offers = clickhouse_queries.TopOffersByViewsQuery().execute({"venue_id": str(venue_id)})
 
     return VenueOffersStatisticsModel(
-        daily_views=[DailyViewsModel(day=row.day, views=row.views) for row in daily_views],
+        daily_views=[DailyViewsModel(day=row.day, views=row.views) for row in sorted_daily_views],
         total_views_last_30_days=views_count[0].total if len(views_count) > 0 else 0,
         top_offers=[OfferViewsModel(offer_id=row.id, views=row.views, rank=row.rank) for row in top_offers],
     )
