@@ -1,0 +1,32 @@
+name: "[OPS] Test CD auth"
+
+on:
+  push:
+    branches:
+      - feat/pro-auth
+# secrets:
+#   GCP_EHP_SERVICE_ACCOUNT:
+#     required: true
+#   GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
+#     required: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  test_cd_auth:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: "OpenID Connect Authentication"
+        id: "openid-auth"
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          create_credentials_file: true
+          workload_identity_provider: ${{ secrets.V2_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: argo-wf-infra-cd@pc-infra-tst.iam.gserviceaccount.com
+          delegates: sa-pro-deployer-testing@pc-pro-testing.iam.gserviceaccount.com
+      - name: "Test Authentication"
+        run: |
+          gcloud config set project pc-pro-testing
+          gcloud iam service-accounts list
