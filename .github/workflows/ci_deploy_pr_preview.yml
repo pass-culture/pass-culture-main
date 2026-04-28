@@ -118,6 +118,7 @@ jobs:
       REF: "${{ github.ref }}"
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
       resource_label: ${{ needs.deploy-preview-env-init.outputs.testing_label }}
+      version: "${{ github.sha }}"
 
   build-pcapi:
     name: "[pcapi] build docker image."

@@ -1,4 +1,4 @@
-name: 0 [CD] Deploy release to production
+name: 0 [CD] Deploy production
 
 run-name: "Deploy ${{ github.ref }} to production by @${{ github.actor }}"
 

@@ -30,11 +30,12 @@ on:
         type: boolean
         required: false
         default: false
+      version:
+        type: string
+        required: true
     secrets:
-      GCP_EHP_SERVICE_ACCOUNT:
-        required: true
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
-        required: true
+      GCP_EHP_SERVICE_ACCOUNT: { required: true }
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: { required: true }
     outputs:
       pro_url:
         description: "The pro (firebase) preview URL"
@@ -104,6 +105,7 @@ jobs:
           # Increases the limit so that the build doesnt fail
           NODE_OPTIONS: --max_old_space_size=4096
           ENV: ${{ inputs.ENV }}
+          VITE_APP_VERSION: ${{ inputs.version }}
       - if: inputs.ENV != 'testing'
         run: |
           grep -E '"version": "[0-9]+.[0-9]+.[0-9]+"' package.json | grep -Eo '[0-9]+.[0-9]+.[0-9]+' > build/version.txt
