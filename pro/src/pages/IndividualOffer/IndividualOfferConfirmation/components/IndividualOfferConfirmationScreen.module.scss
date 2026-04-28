@@ -1,3 +1,4 @@
+@use "styles/mixins/_a11y.scss" as a11y;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
@@ -15,7 +16,7 @@
   align-items: center;
   text-align: center;
   gap: var(--size-spacing-xs) var(--size-spacing-s);
-  width: 100%; 
+  width: 100%;
   margin-bottom: var(--size-spacing-xxl);
 
   &-icon {
@@ -39,6 +40,10 @@
   > :last-child {
     margin-bottom: var(--size-spacing-l);
   }
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
 }
 
 @media (min-width: size.$tablet) {

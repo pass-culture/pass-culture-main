@@ -1,3 +1,5 @@
+import { useId } from 'react'
+
 import {
   type GetIndividualOfferResponseModel,
   OfferStatus,
@@ -36,6 +38,7 @@ export const IndividualOfferConfirmationScreen = ({
     step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
     mode: OFFER_WIZARD_MODE.READ_ONLY,
   })
+  const highlightDialogHintId = useId()
 
   return (
     <div className={styles['confirmation-container']}>
@@ -94,11 +97,22 @@ export const IndividualOfferConfirmationScreen = ({
       </div>
       <br />
       {canRequestHighlight({ offer }) && (
-        <Button
-          as="a"
-          to={`${offerReadOnlyUrl}?highlightDialog=open`}
-          label="Valorisez votre évènement en l’associant à un temps fort"
-        />
+        <>
+          <span
+            id={highlightDialogHintId}
+            className={styles['visually-hidden']}
+            aria-hidden="true"
+          >
+            Cette action ouvrira une boîte de dialogue sur la page de votre
+            offre
+          </span>
+          <Button
+            as="a"
+            to={`${offerReadOnlyUrl}?highlightDialog=open`}
+            label="Relier l’offre à un temps fort"
+            aria-describedby={highlightDialogHintId}
+          />
+        </>
       )}
     </div>
   )
