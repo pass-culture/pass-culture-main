@@ -51,12 +51,15 @@ export const ApiSelect = forwardRef(function ApiSelect<T extends ApiOption>(
     onSelect,
     onSearch,
     searchApi,
-    value,
+    value: initialValue,
     thumbPlaceholder,
   }: ApiSelectProps<T>,
   ref: Ref<HTMLInputElement>
 ) {
   const [options, setOptions] = useState<SelectOption[]>([])
+  const [value, setValue] = useState<string | undefined>(
+    initialValue ?? undefined
+  )
   const inputRef = useRef<HTMLInputElement>(null)
   const optionsMap = useRef<Map<string, T>>(new Map())
 
@@ -88,7 +91,6 @@ export const ApiSelect = forwardRef(function ApiSelect<T extends ApiOption>(
 
   const debouncedOnSearch = useDebouncedCallback((searchText: string) => {
     fetchOptions(searchText)
-    onSearch?.(searchText)
   }, DEBOUNCE_TIME_BEFORE_REQUEST)
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: only run on mount
@@ -106,11 +108,19 @@ export const ApiSelect = forwardRef(function ApiSelect<T extends ApiOption>(
       thumbPlaceholder={thumbPlaceholder}
       description={description}
       onSearch={(searchText) => {
+        setValue(searchText)
         debouncedOnSearch(searchText)
       }}
       onChange={(event) => {
         const selectedOption = optionsMap.current.get(event.target.value)
-        onSelect(selectedOption)
+        if (selectedOption) {
+          onSelect(selectedOption)
+        } else {
+          onSearch?.(event.target.value)
+        }
+      }}
+      onBlur={() => {
+        setValue?.('')
       }}
       disabled={disabled}
       className={className}
