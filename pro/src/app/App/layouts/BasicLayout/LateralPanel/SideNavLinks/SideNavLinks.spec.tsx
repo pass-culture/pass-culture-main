@@ -26,11 +26,17 @@ vi.mock('./components/SideNavLink', () => ({
   ),
 }))
 
+vi.mock('./components/UserReviewDialog/UserReviewDialog', () => ({
+  UserReviewDialog: ({ dialogTrigger }: any) => (
+    <div data-testid="user-review-mock">{dialogTrigger}</div>
+  ),
+}))
+
 vi.mock('./components/HelpDropdownNavItem', () => ({
   HelpDropdownNavItem: ({ isMobileScreen }: { isMobileScreen: boolean }) => (
-    <li data-testid="help-dropdown">
+    <div data-testid="help-dropdown">
       Help - {isMobileScreen ? 'mobile' : 'desktop'}
-    </li>
+    </div>
   ),
 }))
 
@@ -41,14 +47,16 @@ const navItems: NavItem[] = [
 ]
 
 describe('SideNavLinks', () => {
-  it('renders main nav items', () => {
-    render(<SideNavLinks navItems={navItems} withSwitchVenueFeature={false} />)
+  it('renders main nav items and footer items', () => {
+    render(<SideNavLinks navItems={navItems} />)
 
-    const renderedItems = screen.getAllByTestId('render-nav-item')
+    const mainItems = screen.getAllByTestId('render-nav-item')
 
-    expect(renderedItems).toHaveLength(3)
+    expect(mainItems).toHaveLength(2)
     expect(screen.getByText('Main 1')).toBeInTheDocument()
     expect(screen.getByText('Main 2')).toBeInTheDocument()
+    expect(screen.getByTestId('user-review-mock')).toBeInTheDocument()
+    expect(screen.getByTestId('help-dropdown')).toBeInTheDocument()
   })
 
   it('should pass showNotification to nav items', () => {
@@ -62,22 +70,9 @@ describe('SideNavLinks', () => {
       },
     ]
 
-    render(
-      <SideNavLinks
-        navItems={itemsWithNotification}
-        withSwitchVenueFeature={false}
-      />
-    )
+    render(<SideNavLinks navItems={itemsWithNotification} />)
 
     expect(screen.getByTestId('nav-item-notification')).toBeInTheDocument()
-  })
-
-  it('renders footer nav items when switch venue feature is false', () => {
-    render(<SideNavLinks navItems={navItems} withSwitchVenueFeature={false} />)
-
-    expect(screen.getByText('Footer 1')).toBeInTheDocument()
-    expect(screen.queryByTestId('user-review-dialog')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('help-dropdown')).not.toBeInTheDocument()
   })
 
   it('should toggle active section correctly', async () => {
@@ -86,7 +81,7 @@ describe('SideNavLinks', () => {
     // On force explicitement MOBILE (donc état initial = CLOSED)
     vi.mocked(mediaQueryHook.useMediaQuery).mockReturnValue(true)
 
-    render(<SideNavLinks navItems={navItems} withSwitchVenueFeature={false} />)
+    render(<SideNavLinks navItems={navItems} />)
 
     const toggleBtn1 = screen.getByTestId('toggle-1')
 

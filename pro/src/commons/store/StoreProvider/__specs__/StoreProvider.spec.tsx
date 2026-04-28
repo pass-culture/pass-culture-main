@@ -73,7 +73,7 @@ describe('src | App', () => {
     vi.spyOn(apiNew, 'listFeatures').mockResolvedValue([])
   })
 
-  it('should load current user, its offerers and', async () => {
+  it('should load current user, its offerers and venues', async () => {
     renderStoreProvider()
 
     await screen.findByText('Sub component')

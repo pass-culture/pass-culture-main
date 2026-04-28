@@ -330,14 +330,6 @@ describe('CollectiveOffersScreen', () => {
     expect(newFirstOfferEventDate).toEqual('30/06/2024')
   })
 
-  it('should render download button', () => {
-    renderOffers(props)
-    const downloadButton = screen.getByRole('button', {
-      name: 'Télécharger',
-    })
-    expect(downloadButton).toBeInTheDocument()
-  })
-
   describe('ExpirationCell', () => {
     it('should render expiration row when offer is PREBOOKED and has a booking limit', () => {
       const offer = collectiveOfferFactory({
@@ -414,36 +406,28 @@ describe('CollectiveOffersScreen', () => {
     })
   })
 
-  describe('with WIP_SWITCH_VENUE feature flag', () => {
-    const optionsBase: RenderWithProvidersOptions = {
-      features: ['WIP_SWITCH_VENUE'],
-    }
+  it('should not display the filters button as active when no filters are applied', () => {
+    renderOffers(props)
 
-    it('should not display the filters button as active when no filters are applied', () => {
-      renderOffers(props, optionsBase)
+    const filtersButton = screen.getByRole('button', { name: /Filtrer/ })
+    expect(filtersButton).toBeInTheDocument()
+    expect(within(filtersButton).queryByText('actifs')).not.toBeInTheDocument()
+  })
+  it('should not render downloads moved banner without results', () => {
+    renderOffers({ ...props, offers: [] })
+    expect(
+      screen.queryByText(
+        'Télécharger vos offres réservables dans l’onglet “Données d’activité” de votre Espace Administration accessible en haut à droite.'
+      )
+    ).not.toBeInTheDocument()
+  })
 
-      const filtersButton = screen.getByRole('button', { name: /Filtrer/ })
-      expect(filtersButton).toBeInTheDocument()
-      expect(
-        within(filtersButton).queryByText('actifs')
-      ).not.toBeInTheDocument()
-    })
-    it('should not render downloads moved banner without results', () => {
-      renderOffers({ ...props, offers: [] }, optionsBase)
-      expect(
-        screen.queryByText(
-          'Télécharger vos offres réservables dans l’onglet “Données d’activité” de votre Espace Administration accessible en haut à droite.'
-        )
-      ).not.toBeInTheDocument()
-    })
-
-    it('should render downloads moved banner', () => {
-      renderOffers(props, optionsBase)
-      expect(
-        screen.getByText(
-          'Télécharger vos offres réservables dans l’onglet “Données d’activité” de votre Espace Administration accessible en haut à droite.'
-        )
-      ).toBeInTheDocument()
-    })
+  it('should render downloads moved banner', () => {
+    renderOffers(props)
+    expect(
+      screen.getByText(
+        'Télécharger vos offres réservables dans l’onglet “Données d’activité” de votre Espace Administration accessible en haut à droite.'
+      )
+    ).toBeInTheDocument()
   })
 })

@@ -5,19 +5,12 @@ import type { SharedCurrentUserResponseModel } from '@/apiClient/v1'
 import type { SharedCurrentUserResponseModel as SharedCurrentUserResponseModelNew } from '@/apiClient/v1/new'
 import { updateOffererNames } from '@/commons/store/offerer/reducer'
 import { setSelectedAdminOffererById } from '@/commons/store/user/dispatchers/setSelectedAdminOffererById'
-import {
-  setVenues,
-  updateUser,
-  updateUserAccess,
-} from '@/commons/store/user/reducer'
+import { setVenues, updateUser } from '@/commons/store/user/reducer'
 
-import { isFeatureActive } from '../../features/selectors'
 import type { AppThunkApiConfig } from '../../store'
 import { getInitialAdminOffererId } from '../utils/getInitialAdminOffererId'
-import { getInitialOffererIdAndVenueId } from '../utils/getInitialOffererIdAndVenueId'
 import { getInitialPartnerVenueId } from '../utils/getInitialPartnerVenueId'
 import { logout } from './logout'
-import { setSelectedOffererById } from './setSelectedOffererById'
 import { setSelectedPartnerVenueById } from './setSelectedPartnerVenueById'
 import { unsetSelectedPartnerVenue } from './unsetSelectedPartnerVenue'
 
@@ -47,90 +40,51 @@ export const initializeUser = createAsyncThunk<
     user: SharedCurrentUserResponseModel | SharedCurrentUserResponseModelNew
   },
   AppThunkApiConfig
->(
-  'user/initializeUser',
-  async ({ newOffererId, user }, { dispatch, getState }) => {
-    try {
-      const withSwitchVenueFeature = isFeatureActive(
-        getState(),
-        'WIP_SWITCH_VENUE'
-      ) /// TODO (igabriele, 2025-10-28): Simplify this Backend route and its core method once `WIP_SWITCH_VENUE` FF is enabled and removed (no need for query params anymore).
-      const offererNamesResponse = await api.listOfferersNames()
-      const venuesResponse = await api.getVenuesLite()
-      const offererNames = offererNamesResponse.offerersNames.concat(
-        offererNamesResponse.offerersNamesWithPendingValidation
-      )
-      const allVenues = venuesResponse.venues.concat(
-        venuesResponse.venuesWithPendingValidation
-      )
-      dispatch(updateOffererNames(offererNamesResponse))
-      dispatch(setVenues(venuesResponse))
-      dispatch(updateUser(user))
+>('user/initializeUser', async ({ newOffererId, user }, { dispatch }) => {
+  try {
+    const offererNamesResponse = await api.listOfferersNames()
+    const venuesResponse = await api.getVenuesLite()
+    const offererNames = offererNamesResponse.offerersNames.concat(
+      offererNamesResponse.offerersNamesWithPendingValidation
+    )
+    const allVenues = venuesResponse.venues.concat(
+      venuesResponse.venuesWithPendingValidation
+    )
+    dispatch(updateOffererNames(offererNamesResponse))
+    dispatch(setVenues(venuesResponse))
+    dispatch(updateUser(user))
 
-      const { initialOffererId, initialVenueId } = withSwitchVenueFeature
-        ? {
-            // TODO (igabriele, 2025-10-28): Delete this prop once `WIP_SWITCH_VENUE` FF is enabled and removed.
-            initialOffererId: null,
-            initialVenueId: getInitialPartnerVenueId(allVenues, newOffererId),
-          }
-        : getInitialOffererIdAndVenueId(offererNames, allVenues)
-
-      // Initialize the Partner Space selected venue if any
-      const { selectedPartnerVenue } = initialVenueId
-        ? await dispatch(
-            setSelectedPartnerVenueById({
-              nextSelectedPartnerVenueId: initialVenueId,
-              // If the user has a `selectedAdminOffererId` in the Local Storage
-              // that doesn't match the computed initial Venue parent Offerer ID,
-              // we don't want to override it to keep it consistent with their last session.
-              shouldSkipSelectedAdminOffererUpdate: withSwitchVenueFeature,
-            })
-          ).unwrap()
-        : {
-            selectedPartnerVenue: null,
-          }
-
-      if (withSwitchVenueFeature) {
-        if (!initialVenueId) {
-          // We want to unselect any previously selected venue in this case
-          dispatch(unsetSelectedPartnerVenue())
-        }
-
-        const initialAdminOffererId =
-          newOffererId ??
-          getInitialAdminOffererId({
-            selectedPartnerVenue,
-            offererNames: offererNames,
-          })
-
-        // Initialize the Administration Space selected offerer if any
-        if (initialAdminOffererId) {
-          await dispatch(setSelectedAdminOffererById(initialAdminOffererId))
-        }
-
-        return
-      }
-
-      // TODO (igabriele, 2025-10-28): Delete this block once `WIP_SWITCH_VENUE` FF is enabled and removed.
-      if (initialVenueId) {
-        return
-      }
-
-      // TODO (igabriele, 2025-10-28): Delete this block once `WIP_SWITCH_VENUE` FF is enabled and removed.
-      if (initialOffererId) {
-        await dispatch(
-          setSelectedOffererById({
-            nextSelectedOffererId: initialOffererId,
-          })
-        )
-
-        return
-      }
-
-      // TODO (igabriele, 2025-10-28): Delete this statement once `WIP_SWITCH_VENUE` FF is enabled and removed.
-      dispatch(updateUserAccess('no-offerer'))
-    } catch (_err: unknown) {
-      await logout()
+    const { initialVenueId } = {
+      initialVenueId: getInitialPartnerVenueId(allVenues, newOffererId),
     }
+
+    // Initialize the Partner Space selected venue if any
+    const { selectedPartnerVenue } = initialVenueId
+      ? await dispatch(
+          setSelectedPartnerVenueById({
+            nextSelectedPartnerVenueId: initialVenueId,
+          })
+        ).unwrap()
+      : {
+          selectedPartnerVenue: null,
+        }
+    if (!initialVenueId) {
+      // We want to unselect any previously selected venue in this case
+      dispatch(unsetSelectedPartnerVenue())
+
+      const initialAdminOffererId =
+        newOffererId ??
+        getInitialAdminOffererId({
+          selectedPartnerVenue,
+          offererNames: offererNames,
+        })
+
+      // Initialize the Administration Space selected offerer if any
+      if (initialAdminOffererId) {
+        await dispatch(setSelectedAdminOffererById(initialAdminOffererId))
+      }
+    }
+  } catch (_err: unknown) {
+    await logout()
   }
-)
+})

@@ -54,7 +54,6 @@ describe('screens | OfferEducational: edition', () => {
         },
       },
     })
-    await screen.findByLabelText(/Structure/)
 
     const inputs = [
       screen.getByLabelText(`Formats`),
@@ -62,7 +61,6 @@ describe('screens | OfferEducational: edition', () => {
       screen.getByLabelText('Indiquez la durée de l’évènement', {
         exact: false,
       }),
-      screen.getByLabelText(/Structure/),
       screen.getByLabelText('Collège'), // one of every option
       screen.getByLabelText('Visuel'), // one of every option
       screen.getByLabelText('Téléphone', { exact: false }),

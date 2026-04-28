@@ -1,7 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
-import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import {
@@ -10,7 +9,6 @@ import {
   type GetVenueResponseModel,
   StudentLevels,
 } from '@/apiClient/v1'
-import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   DEFAULT_MARSEILLE_STUDENTS,
   SENT_DATA_ERROR_MESSAGE,
@@ -57,13 +55,11 @@ export const CollectiveDataForm = ({
 }: CollectiveDataFormProps): JSX.Element | null => {
   const snackBar = useSnackBar()
   const navigate = useNavigate()
-  const { mutate } = useSWRConfig()
   const dispatch = useAppDispatch()
 
   const initialValues = extractInitialValuesFromVenue(venue)
 
   const isMarseilleEnabled = useActiveFeature('ENABLE_MARSEILLE')
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
   const studentOptions = isMarseilleEnabled
     ? studentLevels
@@ -98,11 +94,7 @@ export const CollectiveDataForm = ({
           : null,
       })
 
-      if (withSwitchVenueFeature) {
-        dispatch(setSelectedPartnerVenue(updatedVenue))
-      } else {
-        await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
-      }
+      dispatch(setSelectedPartnerVenue(updatedVenue))
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(

@@ -72,21 +72,4 @@
   display: flex;
   align-items: center;
   gap: var(--size-spacing-xxl);
-
-  &-links {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-end;
-    column-gap: var(--size-spacing-xxl);
-  }
-}
-
-.tablet-and-above {
-  display: none;
-
-  @media (min-width: size.$tablet) {
-    display: flex;
-    align-items: center;
-  }
 }

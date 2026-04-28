@@ -38,733 +38,433 @@ describe('initializeUser', () => {
     window.history.pushState({}, '', '/')
   })
 
-  describe('without WIP_SWITCH_VENUE feature flag (legacy behavior)', () => {
-    it('should prioritize BO URL params when `structure` search param is present', async () => {
-      window.history.pushState({}, '', '/?structure=200')
-
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
-        offerersNames: [getOffererNameFactory({ id: 200 })],
-        offerersNamesWithPendingValidation: [],
-      })
-      vi.spyOn(api, 'getVenuesLite').mockResolvedValueOnce({
-        venues: [
-          makeVenueListItemLiteResponseModel({
-            id: 201,
-            managingOffererId: 200,
-          }),
-        ],
-        venuesWithPendingValidation: [],
-      })
-
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...defaultGetOffererResponseModel,
-        id: 200,
-        isOnboarded: true,
-      })
-      vi.spyOn(api, 'getVenue').mockResolvedValue(
-        makeGetVenueResponseModel({
-          id: 201,
-          managingOfferer: makeGetVenueManagingOffererResponseModel({
-            id: 200,
-          }),
-        })
-      )
-
-      localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '100')
-      localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '101')
-
-      const store = configureTestStore()
-
-      await store.dispatch(initializeUser({ user })).unwrap()
-
-      const state = store.getState()
-      expect(state.user.access).toBe('full')
-      expect(state.offerer.currentOfferer?.id).toBe(200)
-      expect(state.offerer.currentOffererName?.id).toBe(200)
-      expect(state.user.selectedPartnerVenue?.id).toBe(201)
-
-      expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)).toBe(
-        '200'
-      )
-      expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBe(
-        '201'
-      )
+  it('should use saved venue id from localStorage when present and valid', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNamesWithPendingValidation: [],
+      offerersNames: [getOffererNameFactory({ id: 100 })],
     })
-
-    it('should use saved venue id when present and set full access', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNamesWithPendingValidation: [],
-        offerersNames: [
-          getOffererNameFactory({ id: 100 }),
-          getOffererNameFactory({ id: 200 }),
-        ],
-      })
-      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
-        venues: [
-          makeVenueListItemLiteResponseModel({
-            id: 101,
-            managingOffererId: 100,
-          }),
-          makeVenueListItemLiteResponseModel({
-            id: 201,
-            managingOffererId: 200,
-          }),
-          makeVenueListItemLiteResponseModel({
-            id: 202,
-            managingOffererId: 200,
-          }),
-        ],
-        venuesWithPendingValidation: [],
-      })
-      vi.spyOn(api, 'getVenue').mockResolvedValue(
-        makeGetVenueResponseModel({
-          id: 201,
-          managingOfferer: makeGetVenueManagingOffererResponseModel({
-            id: 200,
-          }),
-        })
-      )
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...defaultGetOffererResponseModel,
-        id: 200,
-        isOnboarded: true,
-      })
-
-      localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '200')
-      localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '201')
-
-      const store = configureTestStore()
-
-      await store.dispatch(initializeUser({ user })).unwrap()
-
-      const state = store.getState()
-      expect(state.user.access).toBe('full')
-      expect(state.offerer.currentOfferer?.id).toBe(200)
-      expect(state.offerer.currentOffererName?.id).toBe(200)
-      expect(state.user.selectedPartnerVenue?.id).toBe(201)
-
-      expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)).toBe(
-        '200'
-      )
-      expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBe(
-        '201'
-      )
-    })
-
-    it('should use saved offerer id when no saved venue id and pick first venue of that offerer', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNamesWithPendingValidation: [],
-        offerersNames: [
-          getOffererNameFactory({ id: 100 }),
-          getOffererNameFactory({ id: 200 }),
-        ],
-      })
-      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
-        venues: [
-          makeVenueListItemLiteResponseModel({
-            id: 101,
-            managingOffererId: 100,
-          }),
-          makeVenueListItemLiteResponseModel({
-            id: 201,
-            managingOffererId: 200,
-          }),
-          makeVenueListItemLiteResponseModel({
-            id: 202,
-            managingOffererId: 200,
-          }),
-        ],
-        venuesWithPendingValidation: [],
-      })
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...defaultGetOffererResponseModel,
-        id: 200,
-        isOnboarded: true,
-      })
-      vi.spyOn(api, 'getVenue').mockResolvedValue(
-        makeGetVenueResponseModel({
-          id: 201,
-          managingOfferer: makeGetVenueManagingOffererResponseModel({
-            id: 200,
-          }),
-        })
-      )
-
-      localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '200')
-
-      const store = configureTestStore()
-
-      await store.dispatch(initializeUser({ user })).unwrap()
-
-      const state = store.getState()
-      expect(state.user.access).toBe('full')
-      expect(state.offerer.currentOfferer?.id).toBe(200)
-      expect(state.user.selectedPartnerVenue?.id).toBe(201)
-
-      expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)).toBe(
-        '200'
-      )
-      expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBe(
-        '201'
-      )
-    })
-
-    it('should prefer first venue when no saved IDs and mark access according to onboarding=false', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNamesWithPendingValidation: [],
-        offerersNames: [
-          getOffererNameFactory({ id: 100 }),
-          getOffererNameFactory({ id: 200 }),
-        ],
-      })
-      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
-        venues: [
-          makeVenueListItemLiteResponseModel({
-            id: 101,
-            managingOffererId: 100,
-          }),
-          makeVenueListItemLiteResponseModel({
-            id: 201,
-            managingOffererId: 200,
-          }),
-          makeVenueListItemLiteResponseModel({
-            id: 202,
-            managingOffererId: 200,
-          }),
-        ],
-        venuesWithPendingValidation: [],
-      })
-      vi.spyOn(api, 'getVenue').mockResolvedValue(
-        makeGetVenueResponseModel({
+    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+      venues: [
+        makeVenueListItemLiteResponseModel({
           id: 101,
-          managingOfferer: makeGetVenueManagingOffererResponseModel({
-            id: 100,
-          }),
-        })
-      )
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...defaultGetOffererResponseModel,
-        id: 100,
-        isOnboarded: false,
+          managingOffererId: 100,
+        }),
+        makeVenueListItemLiteResponseModel({
+          id: 102,
+          managingOffererId: 100,
+        }),
+      ],
+      venuesWithPendingValidation: [],
+    })
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({
+        id: 101,
+        managingOfferer: makeGetVenueManagingOffererResponseModel({
+          id: 100,
+        }),
       })
-
-      const store = configureTestStore()
-
-      await store.dispatch(initializeUser({ user })).unwrap()
-
-      const state = store.getState()
-      expect(state.user.access).toBe('no-onboarding')
-      expect(state.offerer.currentOfferer?.id).toBe(100)
-      expect(state.user.selectedPartnerVenue?.id).toBe(101)
-
-      expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)).toBe(
-        '100'
-      )
-      expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBe(
-        '101'
-      )
+    )
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      id: 100,
+      isOnboarded: true,
     })
 
-    it('should set no-offerer when no offerers and no venues', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNamesWithPendingValidation: [],
-        offerersNames: [],
-      })
-      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
-        venues: [],
-        venuesWithPendingValidation: [],
-      })
-      const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
-      const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
+    localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '101')
 
-      const store = configureTestStore()
+    const store = configureTestStore()
 
-      await store.dispatch(initializeUser({ user })).unwrap()
+    await store.dispatch(initializeUser({ user })).unwrap()
 
-      expect(apiGetOffererSpy).not.toHaveBeenCalled()
-      expect(apiGetVenueSpy).not.toHaveBeenCalled()
+    const state = store.getState()
+    expect(state.user.access).toBe('full')
+    expect(state.user.selectedPartnerVenue?.id).toBe(101)
+    expect(state.offerer.currentOfferer?.id).toBe(100)
 
-      const state = store.getState()
-      expect(state.user.access).toBe('no-offerer')
-    })
-
-    it('should set unattached when getOfferer rejects with 403 on first-offerer path', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNamesWithPendingValidation: [],
-        offerersNames: [getOffererNameFactory({ id: 100 })],
-      })
-      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
-        venues: [],
-        venuesWithPendingValidation: [],
-      })
-      vi.spyOn(api, 'getOfferer').mockRejectedValue({
-        name: 'ApiError',
-        message: 'Forbidden',
-        status: 403,
-        body: {},
-      })
-      const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
-
-      const store = configureTestStore()
-      await store.dispatch(initializeUser({ user })).unwrap()
-
-      expect(apiGetVenueSpy).not.toHaveBeenCalled()
-
-      const state = store.getState()
-      expect(state.user.access).toBe('unattached')
-      expect(state.offerer.currentOfferer).toBeNull()
-      expect(state.offerer.currentOffererName?.id).toBe(100)
-      expect(state.user.selectedPartnerVenue).toBeNull()
-
-      expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)).toBe(
-        '100'
-      )
-      expect(
-        localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)
-      ).toBeNull()
-    })
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBe(
+      '101'
+    )
   })
 
-  describe('with WIP_SWITCH_VENUE feature flag', () => {
-    const configureStoreWithSwitchVenueFeature = () =>
-      configureTestStore({
-        features: {
-          list: [{ id: 1, isActive: true, name: 'WIP_SWITCH_VENUE' }],
-        },
-      })
-
-    it('should use saved venue id from localStorage when present and valid', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNamesWithPendingValidation: [],
-        offerersNames: [getOffererNameFactory({ id: 100 })],
-      })
-      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
-        venues: [
-          makeVenueListItemLiteResponseModel({
-            id: 101,
-            managingOffererId: 100,
-          }),
-          makeVenueListItemLiteResponseModel({
-            id: 102,
-            managingOffererId: 100,
-          }),
-        ],
-        venuesWithPendingValidation: [],
-      })
-      vi.spyOn(api, 'getVenue').mockResolvedValue(
-        makeGetVenueResponseModel({
+  it('should auto-select venue when user has only one venue', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNamesWithPendingValidation: [],
+      offerersNames: [getOffererNameFactory({ id: 100 })],
+    })
+    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+      venues: [
+        makeVenueListItemLiteResponseModel({
           id: 101,
-          managingOfferer: makeGetVenueManagingOffererResponseModel({
-            id: 100,
-          }),
-        })
-      )
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...defaultGetOffererResponseModel,
-        id: 100,
-        isOnboarded: true,
+          managingOffererId: 100,
+        }),
+      ],
+      venuesWithPendingValidation: [],
+    })
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({
+        id: 101,
+        managingOfferer: makeGetVenueManagingOffererResponseModel({
+          id: 100,
+        }),
       })
-
-      localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '101')
-
-      const store = configureStoreWithSwitchVenueFeature()
-
-      await store.dispatch(initializeUser({ user })).unwrap()
-
-      const state = store.getState()
-      expect(state.user.access).toBe('full')
-      expect(state.user.selectedPartnerVenue?.id).toBe(101)
-      expect(state.offerer.currentOfferer?.id).toBe(100)
-
-      expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBe(
-        '101'
-      )
+    )
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      id: 100,
+      isOnboarded: true,
     })
 
-    it('should auto-select venue when user has only one venue', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNamesWithPendingValidation: [],
-        offerersNames: [getOffererNameFactory({ id: 100 })],
-      })
-      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
-        venues: [
-          makeVenueListItemLiteResponseModel({
-            id: 101,
-            managingOffererId: 100,
-          }),
-        ],
-        venuesWithPendingValidation: [],
-      })
-      vi.spyOn(api, 'getVenue').mockResolvedValue(
-        makeGetVenueResponseModel({
-          id: 101,
-          managingOfferer: makeGetVenueManagingOffererResponseModel({
-            id: 100,
-          }),
-        })
-      )
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...defaultGetOffererResponseModel,
-        id: 100,
-        isOnboarded: true,
-      })
+    const store = configureTestStore()
 
-      const store = configureStoreWithSwitchVenueFeature()
+    await store.dispatch(initializeUser({ user })).unwrap()
 
-      await store.dispatch(initializeUser({ user })).unwrap()
-
-      const state = store.getState()
-      expect(state.user.access).toBe('full')
-      expect(state.user.selectedPartnerVenue?.id).toBe(101)
-    })
-
-    it('should return early without selection when user has multiple venues and no localStorage selection', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNamesWithPendingValidation: [],
-        offerersNames: [getOffererNameFactory({ id: 100 })],
-      })
-      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
-        venues: [
-          makeVenueListItemLiteResponseModel({
-            id: 101,
-            managingOffererId: 100,
-          }),
-          makeVenueListItemLiteResponseModel({
-            id: 102,
-            managingOffererId: 100,
-          }),
-        ],
-        venuesWithPendingValidation: [],
-      })
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...defaultGetOffererResponseModel,
-        id: 100,
-        isOnboarded: true,
-      })
-
-      const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
-
-      const store = configureStoreWithSwitchVenueFeature()
-
-      await store.dispatch(initializeUser({ user })).unwrap()
-
-      expect(apiGetVenueSpy).not.toHaveBeenCalled()
-
-      const state = store.getState()
-      expect(state.user.access).toBeNull()
-      expect(state.user.selectedPartnerVenue).toBeNull()
-    })
-
-    it('should return early without selection when user has no venues', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNamesWithPendingValidation: [],
-        offerersNames: [getOffererNameFactory({ id: 100 })],
-      })
-      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
-        venues: [],
-        venuesWithPendingValidation: [],
-      })
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...defaultGetOffererResponseModel,
-        id: 100,
-        isOnboarded: true,
-      })
-
-      const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
-
-      const store = configureStoreWithSwitchVenueFeature()
-
-      await store.dispatch(initializeUser({ user })).unwrap()
-
-      expect(apiGetVenueSpy).not.toHaveBeenCalled()
-
-      const state = store.getState()
-      expect(state.user.access).toBeNull()
-    })
-
-    it('should return early without selection when no offerers and no venues', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNamesWithPendingValidation: [],
-        offerersNames: [],
-      })
-      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
-        venues: [],
-        venuesWithPendingValidation: [],
-      })
-      const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
-      const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
-
-      const store = configureStoreWithSwitchVenueFeature()
-
-      await store.dispatch(initializeUser({ user })).unwrap()
-
-      expect(apiGetOffererSpy).not.toHaveBeenCalled()
-      expect(apiGetVenueSpy).not.toHaveBeenCalled()
-
-      const state = store.getState()
-      expect(state.user.access).toBeNull()
-    })
-
-    it('should auto-select single venue and set admin offerer when newOffererId is provided', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNamesWithPendingValidation: [],
-        offerersNames: [getOffererNameFactory({ id: 100 })],
-      })
-      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
-        venues: [
-          makeVenueListItemLiteResponseModel({
-            id: 101,
-            managingOffererId: 100,
-          }),
-        ],
-        venuesWithPendingValidation: [],
-      })
-      vi.spyOn(api, 'getVenue').mockResolvedValue(
-        makeGetVenueResponseModel({
-          id: 101,
-          managingOfferer: makeGetVenueManagingOffererResponseModel({
-            id: 100,
-          }),
-        })
-      )
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...defaultGetOffererResponseModel,
-        id: 100,
-        isOnboarded: true,
-      })
-
-      const store = configureStoreWithSwitchVenueFeature()
-
-      await store.dispatch(initializeUser({ newOffererId: 100, user })).unwrap()
-
-      const state = store.getState()
-      expect(state.user.selectedPartnerVenue?.id).toBe(101)
-      expect(state.user.selectedAdminOfferer?.id).toBe(100)
-    })
-
-    it('should unset venue and set admin offerer when newOffererId has multiple venues', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNamesWithPendingValidation: [],
-        offerersNames: [getOffererNameFactory({ id: 100 })],
-      })
-      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
-        venues: [
-          makeVenueListItemLiteResponseModel({
-            id: 101,
-            managingOffererId: 100,
-          }),
-          makeVenueListItemLiteResponseModel({
-            id: 102,
-            managingOffererId: 100,
-          }),
-        ],
-        venuesWithPendingValidation: [],
-      })
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...defaultGetOffererResponseModel,
-        id: 100,
-        isOnboarded: true,
-      })
-
-      const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
-
-      localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '101')
-
-      const store = configureStoreWithSwitchVenueFeature()
-
-      await store.dispatch(initializeUser({ newOffererId: 100, user })).unwrap()
-
-      expect(apiGetVenueSpy).not.toHaveBeenCalled()
-
-      const state = store.getState()
-      expect(state.user.selectedPartnerVenue).toBeNull()
-      expect(state.user.selectedAdminOfferer?.id).toBe(100)
-      expect(
-        localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)
-      ).toBeNull()
-    })
-
-    it('should set admin offerer from newOffererId even when venue is not selected', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNamesWithPendingValidation: [],
-        offerersNames: [
-          getOffererNameFactory({ id: 100 }),
-          getOffererNameFactory({ id: 200 }),
-        ],
-      })
-      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
-        venues: [],
-        venuesWithPendingValidation: [],
-      })
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...defaultGetOffererResponseModel,
-        id: 200,
-        isOnboarded: false,
-      })
-
-      const store = configureStoreWithSwitchVenueFeature()
-
-      await store.dispatch(initializeUser({ newOffererId: 200, user })).unwrap()
-
-      const state = store.getState()
-      expect(state.user.selectedPartnerVenue).toBeNull()
-      expect(state.user.selectedAdminOfferer?.id).toBe(200)
-    })
-
-    it('should ignore invalid venue id from localStorage and return early', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNamesWithPendingValidation: [],
-        offerersNames: [getOffererNameFactory({ id: 100 })],
-      })
-      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
-        venues: [
-          makeVenueListItemLiteResponseModel({
-            id: 101,
-            managingOffererId: 100,
-          }),
-          makeVenueListItemLiteResponseModel({
-            id: 102,
-            managingOffererId: 100,
-          }),
-        ],
-        venuesWithPendingValidation: [],
-      })
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...defaultGetOffererResponseModel,
-        id: 100,
-        isOnboarded: true,
-      })
-
-      localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '999')
-
-      const store = configureStoreWithSwitchVenueFeature()
-
-      await store.dispatch(initializeUser({ user })).unwrap()
-
-      const state = store.getState()
-      expect(state.user.access).toBeNull()
-      expect(state.user.selectedPartnerVenue).toBeNull()
-    })
-
-    it('should get the venue id from URL params for backoffice switcher', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNamesWithPendingValidation: [],
-        offerersNames: [getOffererNameFactory({ id: 100 })],
-      })
-      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
-        venues: [
-          makeVenueListItemLiteResponseModel({
-            id: 101,
-            managingOffererId: 100,
-          }),
-          makeVenueListItemLiteResponseModel({
-            id: 201,
-            managingOffererId: 100,
-          }),
-        ],
-        venuesWithPendingValidation: [],
-      })
-      vi.spyOn(api, 'getVenue').mockResolvedValue(
-        makeGetVenueResponseModel({
-          id: 201,
-          managingOfferer: makeGetVenueManagingOffererResponseModel({
-            id: 100,
-          }),
-        })
-      )
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...defaultGetOffererResponseModel,
-        id: 100,
-        isOnboarded: true,
-      })
-
-      window.history.pushState({}, '', '/?venue=201')
-
-      const store = configureStoreWithSwitchVenueFeature()
-
-      await store.dispatch(initializeUser({ user })).unwrap()
-
-      const state = store.getState()
-      expect(state.user.access).toBe('full')
-      expect(state.user.selectedPartnerVenue?.id).toBe(201)
-    })
+    const state = store.getState()
+    expect(state.user.access).toBe('full')
+    expect(state.user.selectedPartnerVenue?.id).toBe(101)
   })
 
-  describe('error handling', () => {
-    it('should logout when getOfferer rejects with non-403 error', async () => {
-      vi.spyOn(console, 'error').mockImplementation(() => {})
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNamesWithPendingValidation: [],
-        offerersNames: [getOffererNameFactory({ id: 100 })],
-      })
-      vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
-        venues: [
-          makeVenueListItemLiteResponseModel({
-            id: 101,
-            managingOffererId: 100,
-          }),
-        ],
-        venuesWithPendingValidation: [],
-      })
-      vi.spyOn(api, 'getVenue').mockResolvedValue(
-        makeGetVenueResponseModel({
+  it('should return early without selection when user has multiple venues and no localStorage selection', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNamesWithPendingValidation: [],
+      offerersNames: [getOffererNameFactory({ id: 100 })],
+    })
+    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+      venues: [
+        makeVenueListItemLiteResponseModel({
           id: 101,
-          managingOfferer: makeGetVenueManagingOffererResponseModel({
-            id: 100,
-          }),
-        })
-      )
-      vi.spyOn(api, 'getOfferer').mockRejectedValue(
-        new ApiError(
-          { method: 'DELETE', url: '' },
-          {} as unknown as ApiResult,
-          'error'
-        )
-      )
-
-      localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '101')
-
-      const store = configureTestStore()
-
-      await store.dispatch(initializeUser({ user })).unwrap()
-
-      expect(
-        localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)
-      ).toBeNull()
-      expect(
-        localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)
-      ).toBeNull()
+          managingOffererId: 100,
+        }),
+        makeVenueListItemLiteResponseModel({
+          id: 102,
+          managingOffererId: 100,
+        }),
+      ],
+      venuesWithPendingValidation: [],
+    })
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      id: 100,
+      isOnboarded: true,
     })
 
-    it('should dispatch logout when initialization fails before selection', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockRejectedValue(new Error())
-      const logoutSpy = vi.spyOn(logoutModule, 'logout')
-      vi.spyOn(api, 'signout').mockResolvedValue()
+    const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
 
-      localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '12')
-      localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '34')
+    const store = configureTestStore()
 
-      const store = configureTestStore()
+    await store.dispatch(initializeUser({ user })).unwrap()
 
-      await store.dispatch(initializeUser({ user })).unwrap()
+    expect(apiGetVenueSpy).not.toHaveBeenCalled()
 
-      expect(logoutSpy).toHaveBeenCalledTimes(1)
+    const state = store.getState()
+    expect(state.user.access).toBeNull()
+    expect(state.user.selectedPartnerVenue).toBeNull()
+  })
 
-      const state = store.getState()
-      expect(state.user.access).toBeNull()
-      expect(state.user.currentUser).toBeNull()
-      expect(state.offerer.currentOfferer).toBeNull()
-      expect(state.offerer.currentOffererName).toBeNull()
-      expect(state.offerer.offererNamesValidated).toBeNull()
-      expect(state.user.selectedPartnerVenue).toBeNull()
-      expect(state.user.venues).toBeNull()
-
-      expect(
-        localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)
-      ).toBeNull()
-      expect(
-        localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)
-      ).toBeNull()
+  it('should return early without selection when user has no venues', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNamesWithPendingValidation: [],
+      offerersNames: [getOffererNameFactory({ id: 100 })],
     })
+    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+      venues: [],
+      venuesWithPendingValidation: [],
+    })
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      id: 100,
+      isOnboarded: true,
+    })
+
+    const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
+
+    const store = configureTestStore()
+
+    await store.dispatch(initializeUser({ user })).unwrap()
+
+    expect(apiGetVenueSpy).not.toHaveBeenCalled()
+
+    const state = store.getState()
+    expect(state.user.access).toBeNull()
+  })
+
+  it('should return early without selection when no offerers and no venues', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNamesWithPendingValidation: [],
+      offerersNames: [],
+    })
+    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+      venues: [],
+      venuesWithPendingValidation: [],
+    })
+    const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
+    const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
+
+    const store = configureTestStore()
+
+    await store.dispatch(initializeUser({ user })).unwrap()
+
+    expect(apiGetOffererSpy).not.toHaveBeenCalled()
+    expect(apiGetVenueSpy).not.toHaveBeenCalled()
+
+    const state = store.getState()
+    expect(state.user.access).toBeNull()
+  })
+
+  it('should auto-select single venue and set admin offerer when newOffererId is provided', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNamesWithPendingValidation: [],
+      offerersNames: [getOffererNameFactory({ id: 100 })],
+    })
+    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+      venues: [
+        makeVenueListItemLiteResponseModel({
+          id: 101,
+          managingOffererId: 100,
+        }),
+      ],
+      venuesWithPendingValidation: [],
+    })
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({
+        id: 101,
+        managingOfferer: makeGetVenueManagingOffererResponseModel({
+          id: 100,
+        }),
+      })
+    )
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      id: 100,
+      isOnboarded: true,
+    })
+
+    const store = configureTestStore()
+
+    await store.dispatch(initializeUser({ newOffererId: 100, user })).unwrap()
+
+    const state = store.getState()
+    expect(state.user.selectedPartnerVenue?.id).toBe(101)
+    expect(state.user.selectedAdminOfferer?.id).toBe(100)
+  })
+
+  it('should unset venue and set admin offerer when newOffererId has multiple venues', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNamesWithPendingValidation: [],
+      offerersNames: [getOffererNameFactory({ id: 100 })],
+    })
+    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+      venues: [
+        makeVenueListItemLiteResponseModel({
+          id: 101,
+          managingOffererId: 100,
+        }),
+        makeVenueListItemLiteResponseModel({
+          id: 102,
+          managingOffererId: 100,
+        }),
+      ],
+      venuesWithPendingValidation: [],
+    })
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      id: 100,
+      isOnboarded: true,
+    })
+
+    const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
+
+    localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '101')
+
+    const store = configureTestStore()
+
+    await store.dispatch(initializeUser({ newOffererId: 100, user })).unwrap()
+
+    expect(apiGetVenueSpy).not.toHaveBeenCalled()
+
+    const state = store.getState()
+    expect(state.user.selectedPartnerVenue).toBeNull()
+    expect(state.user.selectedAdminOfferer?.id).toBe(100)
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBeNull()
+  })
+
+  it('should set admin offerer from newOffererId even when venue is not selected', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNamesWithPendingValidation: [],
+      offerersNames: [
+        getOffererNameFactory({ id: 100 }),
+        getOffererNameFactory({ id: 200 }),
+      ],
+    })
+    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+      venues: [],
+      venuesWithPendingValidation: [],
+    })
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      id: 200,
+      isOnboarded: false,
+    })
+
+    const store = configureTestStore()
+
+    await store.dispatch(initializeUser({ newOffererId: 200, user })).unwrap()
+
+    const state = store.getState()
+    expect(state.user.selectedPartnerVenue).toBeNull()
+    expect(state.user.selectedAdminOfferer?.id).toBe(200)
+  })
+
+  it('should ignore invalid venue id from localStorage and return early', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNamesWithPendingValidation: [],
+      offerersNames: [getOffererNameFactory({ id: 100 })],
+    })
+    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+      venues: [
+        makeVenueListItemLiteResponseModel({
+          id: 101,
+          managingOffererId: 100,
+        }),
+        makeVenueListItemLiteResponseModel({
+          id: 102,
+          managingOffererId: 100,
+        }),
+      ],
+      venuesWithPendingValidation: [],
+    })
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      id: 100,
+      isOnboarded: true,
+    })
+
+    localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '999')
+
+    const store = configureTestStore()
+
+    await store.dispatch(initializeUser({ user })).unwrap()
+
+    const state = store.getState()
+    expect(state.user.access).toBeNull()
+    expect(state.user.selectedPartnerVenue).toBeNull()
+  })
+
+  it('should get the venue id from URL params for backoffice switcher', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNamesWithPendingValidation: [],
+      offerersNames: [getOffererNameFactory({ id: 100 })],
+    })
+    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+      venues: [
+        makeVenueListItemLiteResponseModel({
+          id: 101,
+          managingOffererId: 100,
+        }),
+        makeVenueListItemLiteResponseModel({
+          id: 201,
+          managingOffererId: 100,
+        }),
+      ],
+      venuesWithPendingValidation: [],
+    })
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({
+        id: 201,
+        managingOfferer: makeGetVenueManagingOffererResponseModel({
+          id: 100,
+        }),
+      })
+    )
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      id: 100,
+      isOnboarded: true,
+    })
+
+    window.history.pushState({}, '', '/?venue=201')
+
+    const store = configureTestStore()
+
+    await store.dispatch(initializeUser({ user })).unwrap()
+
+    const state = store.getState()
+    expect(state.user.access).toBe('full')
+    expect(state.user.selectedPartnerVenue?.id).toBe(201)
+  })
+})
+
+describe('error handling', () => {
+  const user = sharedCurrentUserFactory({ email: 'user@pro.fr', id: 1 })
+
+  it('should logout when getOfferer rejects with non-403 error', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNamesWithPendingValidation: [],
+      offerersNames: [getOffererNameFactory({ id: 100 })],
+    })
+    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+      venues: [
+        makeVenueListItemLiteResponseModel({
+          id: 101,
+          managingOffererId: 100,
+        }),
+      ],
+      venuesWithPendingValidation: [],
+    })
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({
+        id: 101,
+        managingOfferer: makeGetVenueManagingOffererResponseModel({
+          id: 100,
+        }),
+      })
+    )
+    vi.spyOn(api, 'getOfferer').mockRejectedValue(
+      new ApiError(
+        { method: 'DELETE', url: '' },
+        {} as unknown as ApiResult,
+        'error'
+      )
+    )
+
+    localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '101')
+
+    const store = configureTestStore()
+
+    await store.dispatch(initializeUser({ user })).unwrap()
+
+    expect(
+      localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)
+    ).toBeNull()
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBeNull()
+  })
+
+  it('should dispatch logout when initialization fails before selection', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockRejectedValue(new Error())
+    const logoutSpy = vi.spyOn(logoutModule, 'logout')
+    vi.spyOn(api, 'signout').mockResolvedValue()
+
+    localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '12')
+    localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '34')
+
+    const store = configureTestStore()
+
+    await store.dispatch(initializeUser({ user })).unwrap()
+
+    expect(logoutSpy).toHaveBeenCalledTimes(1)
+
+    const state = store.getState()
+    expect(state.user.access).toBeNull()
+    expect(state.user.currentUser).toBeNull()
+    expect(state.offerer.currentOfferer).toBeNull()
+    expect(state.offerer.currentOffererName).toBeNull()
+    expect(state.offerer.offererNamesValidated).toBeNull()
+    expect(state.user.selectedPartnerVenue).toBeNull()
+    expect(state.user.venues).toBeNull()
+
+    expect(
+      localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)
+    ).toBeNull()
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBeNull()
   })
 })

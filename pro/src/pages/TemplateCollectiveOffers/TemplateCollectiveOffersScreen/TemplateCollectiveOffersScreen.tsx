@@ -12,7 +12,6 @@ import {
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { hasCollectiveSearchFilters } from '@/commons/core/Offers/utils/hasSearchFilters'
 import { useAccessibleScroll } from '@/commons/hooks/useAccessibleScroll'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useColumnSorting } from '@/commons/hooks/useColumnSorting'
 import { usePagination } from '@/commons/hooks/usePagination'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
@@ -52,8 +51,6 @@ export const TemplateCollectiveOffersScreen = ({
   urlSearchFilters,
   offers,
 }: TemplateCollectiveOffersScreenProps): JSX.Element => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('template')
   const [selectedOffers, setSelectedOffers] = useState<
     CollectiveOfferTemplateResponseModel[]
@@ -74,9 +71,7 @@ export const TemplateCollectiveOffersScreen = ({
     defaultFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
     ignore: [
       'name',
-      ...((withSwitchVenueFeature
-        ? ['venueId']
-        : []) satisfies (keyof CollectiveSearchFiltersParams)[]),
+      ...(['venueId'] satisfies (keyof CollectiveSearchFiltersParams)[]),
     ],
   })
   const hasFiltersOrNameSearch = hasFilters || !!initialSearchFilters.name

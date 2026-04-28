@@ -228,7 +228,7 @@ describe('OfferType', () => {
         null,
         1,
         null,
-        null,
+        2,
         null,
         null,
         null,

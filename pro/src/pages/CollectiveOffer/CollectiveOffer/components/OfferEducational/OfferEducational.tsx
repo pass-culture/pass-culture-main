@@ -56,7 +56,6 @@ export interface OfferEducationalProps {
   mode: Mode
   domainsOptions: DomainOption[]
   isTemplate: boolean
-  isOfferCreated?: boolean
   venues: VenueListItemResponseModel[]
 }
 
@@ -75,18 +74,17 @@ export const OfferEducational = ({
     useCollectiveOfferImageUpload(offer, isTemplate)
 
   const isMarseilleEnabled = useActiveFeature('ENABLE_MARSEILLE')
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const { mutate } = useSWRConfig()
 
-  const { lieu: venueId, requete: requestId } = queryParamsFromOfferer(location)
+  const { requete: requestId } = queryParamsFromOfferer(location)
 
   const baseInitialValues = computeInitialValuesFromOffer(
     userOfferer,
     isTemplate,
     venues,
     offer,
-    withSwitchVenueFeature ? selectedPartnerVenue.id.toString() : venueId,
+    selectedPartnerVenue.id.toString(),
     isMarseilleEnabled
   )
   const isOfferCreated = offer !== undefined
@@ -199,7 +197,6 @@ export const OfferEducational = ({
             imageOffer={imageOffer}
             onImageDelete={onImageDelete}
             onImageUpload={onImageUpload}
-            isOfferCreated={isOfferCreated}
             offer={offer}
             isSubmitting={form.formState.isSubmitting}
             venues={venues}

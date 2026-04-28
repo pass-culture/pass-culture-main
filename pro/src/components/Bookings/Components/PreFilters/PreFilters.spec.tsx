@@ -109,7 +109,7 @@ describe('filter bookings by bookings period', () => {
 
   it('should filter with a combination of filters', async () => {
     const user = userEvent.setup()
-    renderPreFilters(props, ['WIP_SWITCH_VENUE'])
+    renderPreFilters(props)
 
     const offerEventDateInput = screen.getByLabelText('Date de l’évènement')
     await user.clear(offerEventDateInput)
@@ -148,7 +148,7 @@ describe('filter bookings by bookings period', () => {
 
   it('should be able to filter by offererAddress', async () => {
     const user = userEvent.setup()
-    renderPreFilters(props, ['WIP_SWITCH_VENUE'])
+    renderPreFilters(props)
 
     const offererAddressInput = screen.getByLabelText('Localisation')
     await user.selectOptions(offererAddressInput, '21')
@@ -260,32 +260,16 @@ describe('filter bookings by bookings period', () => {
       }))
     })
 
-    it('should track download clicks on non admin page', async () => {
+    it('should track search click on non admin page', async () => {
       const user = userEvent.setup()
       renderPreFilters(props)
 
-      await user.click(screen.getByRole('button', { name: 'Télécharger' }))
-      expect(mockLogEvent).toHaveBeenCalledWith(
-        Events.CLICKED_DOWNLOAD_BOOKINGS,
-        { from: '/' }
-      )
-
       await user.click(
-        screen.getByRole('menuitem', { name: 'Microsoft Excel (.xls)' })
+        screen.getByRole('button', { name: 'Rechercher les réservations' })
       )
-      expect(mockLogEvent).toHaveBeenCalledWith(
-        Events.CLICKED_DOWNLOAD_BOOKINGS_XLS,
-        { from: '/' }
-      )
-
-      await user.click(screen.getByRole('button', { name: 'Télécharger' }))
-      await user.click(
-        screen.getByRole('menuitem', { name: 'Fichier CSV (.csv)' })
-      )
-      expect(mockLogEvent).toHaveBeenCalledWith(
-        Events.CLICKED_DOWNLOAD_BOOKINGS_CSV,
-        { from: '/' }
-      )
+      expect(mockLogEvent).toHaveBeenCalledWith('CLICKED_SHOW_BOOKINGS', {
+        from: '/',
+      })
     })
 
     it('should track download clicks on admin page', async () => {

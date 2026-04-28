@@ -828,7 +828,7 @@ describe('Offerer', () => {
     })
   })
 
-  it('should display a new button but not a previous one', async () => {
+  it('should display nav buttons', async () => {
     renderOffererScreen(contextValue)
 
     expect(
@@ -836,31 +836,27 @@ describe('Offerer', () => {
     ).toBeInTheDocument()
     expect(
       screen.queryByRole('button', { name: 'Annuler et quitter' })
-    ).not.toBeInTheDocument()
+    ).toBeInTheDocument()
   })
 
-  describe('with WIP_SWITCH_VENUE feature flag', () => {
-    const features = ['WIP_SWITCH_VENUE']
+  it('should display both a new button and a previous one', async () => {
+    renderOffererScreen(contextValue)
 
-    it('should display both a new button and a previous one', async () => {
-      renderOffererScreen(contextValue, features)
+    expect(
+      await screen.findByRole('button', { name: 'Continuer' })
+    ).toBeInTheDocument()
+    expect(
+      await screen.findByRole('button', { name: 'Annuler et quitter' })
+    ).toBeInTheDocument()
+  })
 
-      expect(
-        await screen.findByRole('button', { name: 'Continuer' })
-      ).toBeInTheDocument()
-      expect(
-        await screen.findByRole('button', { name: 'Annuler et quitter' })
-      ).toBeInTheDocument()
-    })
+  it('should navigate to /hub when clicking previous button', async () => {
+    renderOffererScreen(contextValue)
 
-    it('should navigate to /hub when clicking previous button', async () => {
-      renderOffererScreen(contextValue, features)
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Annuler et quitter' })
+    )
 
-      await userEvent.click(
-        await screen.findByRole('button', { name: 'Annuler et quitter' })
-      )
-
-      expect(screen.getByText('Hub screen')).toBeInTheDocument()
-    })
+    expect(screen.getByText('Hub screen')).toBeInTheDocument()
   })
 })

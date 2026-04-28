@@ -23,15 +23,12 @@ import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getActivityLabel } from '@/commons/mappings/mappings'
 import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
-import { setSelectedOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
-import { updateUser } from '@/commons/store/user/reducer'
 import { ensureCurrentUser } from '@/commons/store/user/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
@@ -58,14 +55,11 @@ import { ActionBar } from '../ActionBar/ActionBar'
 import styles from './Validation.module.scss'
 
 export const Validation = (): JSX.Element | undefined => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-
   const [loading, setLoading] = useState(false)
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const navigate = useNavigate()
   const currentUser = useAppSelector(ensureCurrentUser)
-  const userAccess = useAppSelector((state) => state.user.access)
 
   const {
     activity,
@@ -157,38 +151,17 @@ export const Validation = (): JSX.Element | undefined => {
 
       cleanSignupJourneyStorage()
 
-      if (withSwitchVenueFeature) {
-        await dispatch(
-          initializeUser({
-            newOffererId: createdOfferer.id,
-            user: {
-              ...currentUser,
-              hasUserOfferer: true,
-            },
-          })
-        ).unwrap()
-
-        navigate(getUserDefaultPath())
-
-        return
-      }
-
-      dispatch(updateUser({ ...currentUser, hasUserOfferer: true }))
-      const newAccess = await dispatch(
-        setSelectedOffererById({
-          nextSelectedOffererId: createdOfferer.id,
-          shouldRefetch: true,
+      await dispatch(
+        initializeUser({
+          newOffererId: createdOfferer.id,
+          user: {
+            ...currentUser,
+            hasUserOfferer: true,
+          },
         })
       ).unwrap()
 
-      // if the new access is full, we redirect to the home page
-      if (userAccess === newAccess && newAccess === 'full') {
-        navigate('/accueil')
-      } else if (newAccess === 'no-onboarding') {
-        navigate('/onboarding')
-      } else if (newAccess === 'unattached') {
-        navigate('/rattachement-en-cours')
-      }
+      navigate(getUserDefaultPath())
     } catch (e: unknown) {
       if (e === RECAPTCHA_ERROR) {
         snackBar.error(RECAPTCHA_ERROR_MESSAGE)

@@ -15,7 +15,7 @@ type StoredFilterConfig = {
 
 export type FilterConfigType = 'individual' | 'collective' | 'template'
 
-export const locallyStoredFilterConfig: Record<FilterConfigType, string> = {
+const locallyStoredFilterConfig: Record<FilterConfigType, string> = {
   individual: 'INDIVIDUAL_OFFERS_FILTER_CONFIG',
   collective: 'COLLECTIVE_OFFERS_FILTER_CONFIG',
   template: 'TEMPLATE_OFFERS_FILTER_CONFIG',

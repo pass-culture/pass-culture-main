@@ -69,13 +69,6 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-const setSelectedOffererByIdMock = vi.hoisted(() => vi.fn())
-vi.mock('@/commons/store/user/dispatchers/setSelectedOffererById', () => ({
-  setSelectedOffererById: (args: unknown) => {
-    return () => setSelectedOffererByIdMock(args)
-  },
-}))
-
 const initializeUserMock = vi.hoisted(() => vi.fn())
 vi.mock('@/commons/store/user/dispatchers/initializeUser', () => ({
   initializeUser: (args: unknown) => {
@@ -139,12 +132,11 @@ const renderValidationScreen = (
   )
 }
 
-const createMockPromise = (value: string) => {
+const createMockInitializeUserPromise = () => {
   const p: any = Promise.resolve({
-    type: 'user/setSelectedOffererById/fulfilled',
-    payload: value,
+    type: 'user/initializeUser/fulfilled',
   })
-  p.unwrap = () => Promise.resolve(value)
+  p.unwrap = () => Promise.resolve()
   return p
 }
 
@@ -160,7 +152,6 @@ describe('ValidationScreen', () => {
       initialAddress,
       setInitialAddress: noop,
     }
-    setSelectedOffererByIdMock.mockReset()
     initializeUserMock.mockReset()
   })
 
@@ -329,8 +320,7 @@ describe('ValidationScreen', () => {
         initialAddress,
         setInitialAddress: noop,
       }
-      // Mock par défaut pour setSelectedOffererById
-      setSelectedOffererByIdMock.mockReturnValue(createMockPromise('full'))
+      initializeUserMock.mockReturnValue(createMockInitializeUserPromise())
     })
 
     it('should send data with public name', async () => {
@@ -525,7 +515,7 @@ describe('ValidationScreen', () => {
       })
     })
 
-    describe('newAccess', () => {
+    describe('navigation after creation', () => {
       beforeEach(() => {
         vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
           offerersNames: [],
@@ -539,10 +529,10 @@ describe('ValidationScreen', () => {
           remove: vi.fn(),
         } as unknown as HTMLScriptElement)
         vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
+        initializeUserMock.mockReturnValue(createMockInitializeUserPromise())
       })
 
-      it('should navigate to home page if newAccess is full', async () => {
-        setSelectedOffererByIdMock.mockReturnValue(createMockPromise('full'))
+      it('should navigate to user default path after creation', async () => {
         renderValidationScreen(contextValue, {
           storeOverrides: {
             user: {
@@ -551,30 +541,15 @@ describe('ValidationScreen', () => {
           },
         })
         await userEvent.click(screen.getByText('Valider et créer ma structure'))
+        await waitFor(() => {
+          expect(initializeUserMock).toHaveBeenCalled()
+        })
         expect(screen.getByText('accueil')).toBeInTheDocument()
-      })
-
-      it('should navigate to onboarding page if newAccess is no-onboarding', async () => {
-        setSelectedOffererByIdMock.mockReturnValue(
-          createMockPromise('no-onboarding')
-        )
-        renderValidationScreen(contextValue)
-        await userEvent.click(screen.getByText('Valider et créer ma structure'))
-        expect(screen.getByText('onboarding')).toBeInTheDocument()
-      })
-
-      it('should navigate to rattachement page if newAccess is unattached', async () => {
-        setSelectedOffererByIdMock.mockReturnValue(
-          createMockPromise('unattached')
-        )
-        renderValidationScreen(contextValue)
-        await userEvent.click(screen.getByText('Valider et créer ma structure'))
-        expect(screen.getByText('rattachement')).toBeInTheDocument()
       })
     })
   })
 
-  describe('with WIP_SWITCH_VENUE', () => {
+  describe('venue handling', () => {
     beforeEach(() => {
       contextValue = {
         activity: {
@@ -612,9 +587,7 @@ describe('ValidationScreen', () => {
       initPromise.unwrap = () => Promise.resolve()
       initializeUserMock.mockReturnValue(initPromise)
 
-      renderValidationScreen(contextValue, {
-        features: ['WIP_SWITCH_VENUE'],
-      })
+      renderValidationScreen(contextValue)
 
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
 
@@ -624,7 +597,6 @@ describe('ValidationScreen', () => {
         )
       })
       expect(screen.getByText('accueil')).toBeInTheDocument()
-      expect(setSelectedOffererByIdMock).not.toHaveBeenCalled()
     })
   })
 

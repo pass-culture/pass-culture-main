@@ -16,7 +16,6 @@ import {
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { hasCollectiveSearchFilters } from '@/commons/core/Offers/utils/hasSearchFilters'
 import { useAccessibleScroll } from '@/commons/hooks/useAccessibleScroll'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useColumnSorting } from '@/commons/hooks/useColumnSorting'
 import { usePagination } from '@/commons/hooks/usePagination'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
@@ -27,7 +26,6 @@ import { AccessibleScrollContainer } from '@/components/AccessibleScrollContaine
 import { getCollectiveOfferColumns } from '@/components/CollectiveOffersTable/CollectiveOfferColumns/CollectiveOfferColumns'
 import { ExpirationCell } from '@/components/CollectiveOffersTable/CollectiveOfferColumns/ExpirationCell/ExpirationCell'
 import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
-import { CollectiveOffersDownloadDrawer } from '@/components/CollectiveOffersTable/CollectiveOffersDownloadDrawer/CollectiveOffersDownloadDrawer'
 import { DownloadsMovedBanner } from '@/components/DownloadsMovedBanner/DownloadsMovedBanner'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import { Banner } from '@/design-system/Banner/Banner'
@@ -60,8 +58,6 @@ export const CollectiveOffersScreen = ({
   urlSearchFilters,
   offers,
 }: Readonly<CollectiveOffersScreenProps>) => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('collective')
   const [selectedOffers, setSelectedOffers] = useState<
     CollectiveOfferResponseModel[]
@@ -84,9 +80,7 @@ export const CollectiveOffersScreen = ({
     defaultFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
     ignore: [
       'name',
-      ...((withSwitchVenueFeature
-        ? ['venueId']
-        : []) satisfies (keyof CollectiveSearchFiltersParams)[]),
+      ...(['venueId'] satisfies (keyof CollectiveSearchFiltersParams)[]),
     ],
   })
   const hasFiltersOrNameSearch = hasFilters || !!initialSearchFilters.name
@@ -160,7 +154,7 @@ export const CollectiveOffersScreen = ({
         setSelectedFilters={setSelectedFilters}
         searchButtonRef={searchButtonRef}
       />
-      {withSwitchVenueFeature && currentPageItems.length > 0 && (
+      {currentPageItems.length > 0 && (
         <div className={styles['downloads-banner']}>
           <DownloadsMovedBanner />
         </div>
@@ -185,12 +179,6 @@ export const CollectiveOffersScreen = ({
                 {pluralizeFr(offers.length, 'offre', 'offres')}
               </div>
             </div>
-            {!withSwitchVenueFeature && (
-              <CollectiveOffersDownloadDrawer
-                isDisabled={userHasNoOffers}
-                filters={selectedFilters}
-              />
-            )}
           </div>
         )}
       </output>
