@@ -1650,7 +1650,9 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
                     # collective booking offer info
                     sa_orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
                     .load_only(
-                        educational_models.CollectiveStock.startDatetime, educational_models.CollectiveStock.price
+                        educational_models.CollectiveStock.startDatetime,
+                        educational_models.CollectiveStock.price,
+                        educational_models.CollectiveStock.collectiveOfferId,
                     )
                     .joinedload(educational_models.CollectiveStock.collectiveOffer)
                     .load_only(
