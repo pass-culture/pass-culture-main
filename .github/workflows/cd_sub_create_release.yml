@@ -44,6 +44,7 @@ jobs:
       PUSH_RELEASE_TO_SENTRY: true
       REF: ${{ inputs.ref }}
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+      version: "${{ inputs.tag-number }}"
     secrets: inherit
 
   create-pre-release-on-github:
