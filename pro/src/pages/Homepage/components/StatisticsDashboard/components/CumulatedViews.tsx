@@ -48,10 +48,15 @@ export const CumulatedViews = ({
   totalViewsLast30Days,
   showTitle = true,
 }: CumulatedViewsProps) => {
+  const sortedDailyViews = dailyViews.toSorted(
+    (a, b) => new Date(a.day).getTime() - new Date(b.day).getTime()
+  )
+
   const chartRef = useRef<ChartJS<'line', XYPoint[], unknown> | null>(null)
 
   const hasNoViews =
-    dailyViews.length < 2 || dailyViews.every((view) => view.views === 0)
+    sortedDailyViews.length < 2 ||
+    sortedDailyViews.every((view) => view.views === 0)
 
   const { recentViews, minViews, maxViews, firstMonth } = useMemo(() => {
     const cutoff = startOfMonth(subMonths(new Date(), 5))
@@ -62,7 +67,7 @@ export const CumulatedViews = ({
     let min = Infinity
     let max = -Infinity
 
-    for (const view of dailyViews) {
+    for (const view of sortedDailyViews) {
       const date = new Date(view.day)
       if (date >= cutoff) {
         const views = view.views
@@ -99,7 +104,7 @@ export const CumulatedViews = ({
         month: 'long',
       }),
     }
-  }, [dailyViews])
+  }, [sortedDailyViews])
 
   const data = useMemo(() => buildDatasets(recentViews), [recentViews])
 
@@ -154,7 +159,7 @@ export const CumulatedViews = ({
                 </tr>
               </thead>
               <tbody>
-                {dailyViews.map((dailyView) => (
+                {sortedDailyViews.map((dailyView) => (
                   <tr key={dailyView.day}>
                     <td>{dailyView.day}</td>
                     <td>{dailyView.views}</td>
