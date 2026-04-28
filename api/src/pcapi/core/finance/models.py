@@ -1200,8 +1200,6 @@ class IncidentStatus(enum.Enum):
 class IncidentType(enum.Enum):
     OVERPAYMENT = "overpayment"
     COMMERCIAL_GESTURE = "commercial gesture"
-    OFFER_PRICE_REGULATION = "offer price regulation"
-    FRAUD = "fraud"
 
 
 class FinanceIncidentRequestOrigin(enum.Enum):
