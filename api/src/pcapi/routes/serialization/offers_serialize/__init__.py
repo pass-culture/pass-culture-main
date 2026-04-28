@@ -86,6 +86,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     location: address_serialize.LocationBodyModel | address_serialize.LocationOnlyOnVenueBodyModel | None
     bookingContact: EmailStr | None
     bookingEmail: EmailStr | None
+    hasCulturalOutreachClaim: bool | None
     description: str | None
     isNational: bool | None
     name: str | None
@@ -718,6 +719,7 @@ class OfferVideo(ConfiguredBaseModel):
 class MinimalPostOfferBodyModel(ConfiguredBaseModel):
     name: str
     venue_id: int
+    has_cultural_outreach_claim: bool | None
     description: str | None
     subcategory_id: str
     duration_minutes: int | None

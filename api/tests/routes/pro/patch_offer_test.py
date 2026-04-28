@@ -6,8 +6,10 @@ import pytest
 import time_machine
 
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.cultural_outreach.factories as cultural_outreach_factories
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
@@ -937,6 +939,61 @@ class Returns200Test:
             assert len(mails_testing.outbox) == 0
         else:
             assert len(mails_testing.outbox) == 3
+
+    @time_machine.travel(datetime.datetime(2026, 4, 21, 12, 0, 0), tick=False)
+    def test_patch_offer_turns_cultural_outreach_claim_to_true(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, activity=offerers_models.Activity.MUSEUM
+        )
+        offer = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.ESCAPE_GAME.id)
+        cultural_outreach_factories.CulturalOutreachFactory(offer=offer)
+
+        data = {
+            "hasCulturalOutreachClaim": True,
+        }
+        response = client.with_session_auth(user_offerer.user.email).patch(
+            self.endpoint.format(offer_id=offer.id), json=data
+        )
+
+        assert response.status_code == 200
+        assert response.json["hasCulturalOutreachClaim"] is True
+
+    def test_patch_offer_turns_cultural_outreach_claim_to_false(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, activity=offerers_models.Activity.MUSEUM
+        )
+        offer = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.ESCAPE_GAME.id)
+        cultural_outreach_factories.ClaimedCulturalOutreachFactory(offer=offer)
+
+        data = {
+            "hasCulturalOutreachClaim": False,
+        }
+
+        response = client.with_session_auth(user_offerer.user.email).patch(
+            self.endpoint.format(offer_id=offer.id), json=data
+        )
+
+        assert response.status_code == 200
+        assert response.json["hasCulturalOutreachClaim"] is False
+
+    def test_patch_offer_creates_cultural_outreach_claim(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, activity=offerers_models.Activity.MUSEUM
+        )
+        offer = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.ESCAPE_GAME.id)
+
+        data = {
+            "hasCulturalOutreachClaim": True,
+        }
+        response = client.with_session_auth(user_offerer.user.email).patch(
+            self.endpoint.format(offer_id=offer.id), json=data
+        )
+
+        assert response.status_code == 200
+        assert response.json["hasCulturalOutreachClaim"] is True
 
 
 class Returns400Test:

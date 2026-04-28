@@ -24,6 +24,7 @@ import pcapi.core.chronicles.factories as chronicles_factories
 import pcapi.core.chronicles.models as chronicles_models
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.criteria.models as criteria_models
+import pcapi.core.cultural_outreach.factories as cultural_outreach_factories
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 import pcapi.core.finance.factories as finance_factories
@@ -1659,6 +1660,47 @@ class CreateOfferTest:
             "artistOfferLinks": ["Le type d'artiste n'est pas autorisé pour cette sous catégorie"]
         }
 
+    @mock.patch("pcapi.core.cultural_outreach.api.create_cultural_outreach_claim")
+    def test_create_offer_with_cultural_outreach_claim(self, mocked_create_claim):
+        user = users_factories.ProFactory()
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+        offerer_address = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer)
+
+        body = offers_schemas.CreateOffer(
+            name="An offer with cultural outreach",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+            hasCulturalOutreachClaim=True,
+        )
+        offer = api.create_offer(body, venue=venue, offerer_address=offerer_address)
+
+        mocked_create_claim.assert_called_once_with(offer)
+
+    @mock.patch("pcapi.core.cultural_outreach.api.create_cultural_outreach_claim")
+    def test_create_offer_without_cultural_outreach_claim(self, mocked_create_claim):
+        user = users_factories.ProFactory()
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+        offerer_address = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer)
+
+        body = offers_schemas.CreateOffer(
+            name="An offer without cultural outreach",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+            hasCulturalOutreachClaim=False,
+        )
+
+        api.create_offer(body, venue=venue, offerer_address=offerer_address)
+
+        mocked_create_claim.assert_not_called()
+
 
 @pytest.mark.usefixtures("db_session")
 class UpdateOfferTest:
@@ -2203,6 +2245,36 @@ class UpdateOfferTest:
             "links": [str(ArtistOfferLinkKey(artist_type="author", artist_id="artist-id", custom_name=None))],
         }
         assert log_record.technical_message_id == "offer.artistOfferLinks.created"
+
+    @mock.patch("pcapi.core.cultural_outreach.api.update_cultural_outreach_claim")
+    @time_machine.travel("2026-04-21 12:00:00", tick=False)
+    def test_update_offer_turns_cultural_outreach_claim_to_true(self, mocked_update_claim):
+        offer = factories.OfferFactory(subcategoryId=subcategories.ESCAPE_GAME.id)
+        cultural_outreach_factories.CulturalOutreachFactory(offer=offer)
+
+        body = offers_schemas.UpdateOffer(hasCulturalOutreachClaim=True)
+        api.update_offer(offer, body)
+
+        mocked_update_claim.assert_called_once_with(datetime(2026, 4, 21, 12, 0, 0), offer)
+
+    @mock.patch("pcapi.core.cultural_outreach.api.update_cultural_outreach_claim")
+    def test_update_offer_turns_cultural_outreach_claim_to_false(self, mocked_update_claim):
+        offer = factories.OfferFactory(subcategoryId=subcategories.ESCAPE_GAME.id)
+        cultural_outreach_factories.ClaimedCulturalOutreachFactory(offer=offer)
+
+        body = offers_schemas.UpdateOffer(hasCulturalOutreachClaim=False)
+        api.update_offer(offer, body)
+
+        mocked_update_claim.assert_called_once_with(None, offer)
+
+    @mock.patch("pcapi.core.cultural_outreach.api.create_cultural_outreach_claim")
+    def test_update_offer_creates_cultural_outreach_claim(self, mocked_create_claim):
+        offer = factories.OfferFactory(subcategoryId=subcategories.ESCAPE_GAME.id)
+
+        body = offers_schemas.UpdateOffer(hasCulturalOutreachClaim=True)
+        api.update_offer(offer, body)
+
+        mocked_create_claim.assert_called_once_with(offer)
 
 
 now_datetime_with_tz = datetime.now(timezone.utc)

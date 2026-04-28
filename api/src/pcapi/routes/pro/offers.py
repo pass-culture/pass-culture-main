@@ -338,6 +338,7 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
         visualDisabilityCompliant=body.visual_disability_compliant,
         bookingContact=body.booking_contact,
         bookingEmail=body.booking_email,
+        hasCulturalOutreachClaim=body.has_cultural_outreach_claim,
         description=body.description,
         durationMinutes=body.duration_minutes,
         externalTicketOfficeUrl=body.external_ticket_office_url,
@@ -487,6 +488,7 @@ def patch_offer(
             offer_id,
             load_options=[
                 "bookings_count",
+                "cultural_outreach",
                 "is_non_free_offer",
                 "meta_data",
                 "offerer_address",
