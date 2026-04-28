@@ -43,6 +43,10 @@ $animation-timing-function: ease-in-out;
 
   margin-bottom: var(--size-spacing-l);
   padding-right: rem.torem(36px);
+
+  &:focus {
+    outline: none;
+  }
 }
 
 .dialog-builder-section {

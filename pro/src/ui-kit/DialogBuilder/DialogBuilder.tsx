@@ -94,6 +94,7 @@ const DialogBuilderBase = ({
   refToFocusOnClose,
 }: Readonly<DialogBuilderProps>) => {
   const contentRef = useRef<HTMLDivElement>(null)
+  const titleRef = useRef<HTMLHeadingElement>(null)
 
   return (
     <Dialog.Root
@@ -113,7 +114,7 @@ const DialogBuilderBase = ({
           <Dialog.Content
             className={cn(styles['dialog-builder-content'], className)}
             aria-describedby={undefined}
-            aria-labelledby={ariaLabelledby}
+            {...(ariaLabelledby ? { 'aria-labelledby': ariaLabelledby } : {})}
             ref={contentRef}
             onPointerDownOutside={(e) => {
               if (!contentRef.current) {
@@ -135,6 +136,12 @@ const DialogBuilderBase = ({
                 e.preventDefault()
               }
             }}
+            onOpenAutoFocus={(ev) => {
+              if (titleRef.current) {
+                ev.preventDefault()
+                titleRef.current.focus()
+              }
+            }}
             onCloseAutoFocus={(ev: Event) => {
               if (!refToFocusOnClose) {
                 return
@@ -144,9 +151,6 @@ const DialogBuilderBase = ({
               refToFocusOnClose.current?.focus()
             }}
           >
-            <DialogBuilderCloseButton
-              closeButtonClassName={closeButtonClassName}
-            />
             <section className={styles['dialog-builder-section']}>
               {title && (
                 <Dialog.Title asChild>
@@ -157,12 +161,21 @@ const DialogBuilderBase = ({
                       ]]: isTitleHidden,
                     })}
                   >
-                    <h1 className={styles['dialog-builder-title']}>{title}</h1>
+                    <h1
+                      ref={titleRef}
+                      tabIndex={-1}
+                      className={styles['dialog-builder-title']}
+                    >
+                      {title}
+                    </h1>
                     {imageTitle}
                   </div>
                 </Dialog.Title>
               )}
               {children}
+              <DialogBuilderCloseButton
+                closeButtonClassName={closeButtonClassName}
+              />
             </section>
           </Dialog.Content>
         </Dialog.Overlay>
