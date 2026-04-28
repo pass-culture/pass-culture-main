@@ -52,7 +52,7 @@ export const getInitialPartnerVenueId = (
   // ---------------------------------------------------------------------------
   // Priority 4: If the user has only one venue, we select it.
 
-  const firstVenue = venues.at(0)
+  const firstVenue = venues[0]
   if (firstVenue && venues.length === 1) {
     return firstVenue.id
   }

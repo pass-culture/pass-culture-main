@@ -69,5 +69,5 @@ export const getInitialAdminOffererId = ({
   // as the initial Administration Space selected offerer ID,
   // Priority 5: or none if there are no offerers at all (= new user signup).
 
-  return offererNames.at(0)?.id ?? null
+  return offererNames[0]?.id ?? null
 }
