@@ -39,4 +39,6 @@ export const saveNonEventOfferPriceTable = async (
     ),
     { revalidate: false }
   )
+
+  await mutate([GET_OFFER_QUERY_KEY, offer.id])
 }
