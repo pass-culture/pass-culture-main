@@ -129,7 +129,11 @@ export const Header = forwardRef(
                     variant={ButtonVariant.SECONDARY}
                     color={ButtonColor.BRAND}
                     size={ButtonSize.SMALL}
-                    to={isAdminArea ? '/accueil' : '/remboursements'}
+                    to={
+                      isAdminArea
+                        ? '/accueil'
+                        : '/administration/remboursements'
+                    }
                     iconPosition={IconPositionEnum.LEFT}
                     icon={isAdminArea ? fullBackIcon : strokeRepaymentIcon}
                     onClick={() => {

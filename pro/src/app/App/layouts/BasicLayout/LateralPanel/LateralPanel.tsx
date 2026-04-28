@@ -148,7 +148,7 @@ export const LateralPanel = ({
             <Button
               as="a"
               variant={ButtonVariant.SECONDARY}
-              to="/remboursements"
+              to="/administration/remboursements"
               iconPosition={IconPositionEnum.LEFT}
               icon={strokeRepaymentIcon}
               label="Espace Administration"

@@ -13,7 +13,7 @@ export const ReimbursedBanner = () => {
         actions={[
           {
             label: 'Consulter les remboursements',
-            href: '/remboursements',
+            href: '/administration/remboursements',
             icon: fullNextIcon,
             type: 'link',
           },

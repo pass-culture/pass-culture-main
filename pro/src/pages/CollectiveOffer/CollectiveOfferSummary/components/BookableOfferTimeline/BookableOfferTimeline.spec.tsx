@@ -539,7 +539,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
         screen.getByRole('link', {
           name: /Consulter les remboursements/,
         })
-      ).toHaveAttribute('href', '/remboursements')
+      ).toHaveAttribute('href', '/administration/remboursements')
     })
 
     it('should render a banner when current step is archived', () => {

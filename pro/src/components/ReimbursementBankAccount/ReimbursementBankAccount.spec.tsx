@@ -30,7 +30,7 @@ const renderReimbursementBankAccount = (
   renderWithProviders(
     <Routes>
       <Route
-        path="/remboursements/informations-bancaires"
+        path="/administration/remboursements/informations-bancaires"
         element={
           <ReimbursementBankAccount
             bankAccount={bankAccount}
@@ -44,7 +44,9 @@ const renderReimbursementBankAccount = (
     </Routes>,
     {
       storeOverrides: {},
-      initialRouterEntries: ['/remboursements/informations-bancaires'],
+      initialRouterEntries: [
+        '/administration/remboursements/informations-bancaires',
+      ],
       ...options,
     }
   )
@@ -241,7 +243,7 @@ describe('ReimbursementBankAccount', () => {
       expect(mockLogEvent).toHaveBeenCalledWith(
         BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT,
         {
-          from: '/remboursements/informations-bancaires',
+          from: '/administration/remboursements/informations-bancaires',
           offererId: 0,
         }
       )
@@ -254,7 +256,7 @@ describe('ReimbursementBankAccount', () => {
       expect(mockLogEvent).toHaveBeenCalledWith(
         BankAccountEvents.CLICKED_CHANGE_VENUE_TO_BANK_ACCOUNT,
         {
-          from: '/remboursements/informations-bancaires',
+          from: '/administration/remboursements/informations-bancaires',
           offererId: 0,
         }
       )
@@ -274,7 +276,7 @@ describe('ReimbursementBankAccount', () => {
       expect(mockLogEvent).toHaveBeenCalledWith(
         BankAccountEvents.CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP,
         {
-          from: '/remboursements/informations-bancaires',
+          from: '/administration/remboursements/informations-bancaires',
           offererId: 0,
         }
       )

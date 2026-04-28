@@ -30,7 +30,7 @@ const config = {
       'Vos coordonnées bancaires sont en cours de vérification par nos équipes.',
     link: {
       label: 'Suivre la validation de vos coordonnées bancaires',
-      href: '/remboursements/informations-bancaires',
+      href: '/administration/remboursements/informations-bancaires',
       icon: fullNextIcon,
       type: 'link',
     },
@@ -39,7 +39,7 @@ const config = {
     message: 'Ajoutez un compte bancaire pour débloquer le remboursement.',
     link: {
       label: 'Ajouter un compte bancaire',
-      href: '/remboursements/informations-bancaires',
+      href: '/administration/remboursements/informations-bancaires',
       icon: fullEditIcon,
       type: 'link',
     },

@@ -22,7 +22,7 @@ export const BankAccountHasPendingCorrectionCallout = ({
       <Banner
         actions={[
           {
-            href: '/remboursements/informations-bancaires',
+            href: '/administration/remboursements/informations-bancaires',
             label: 'Voir les corrections attendues',
             type: 'link',
             icon: fullNextIcon,

@@ -19,7 +19,10 @@ describe('BankAccountHasPendingCorrectionCallout', () => {
     expect(screen.getByText(/Compte bancaire incomplet/)).toBeInTheDocument()
     expect(
       screen.getByRole('link', { name: 'Voir les corrections attendues' })
-    ).toHaveAttribute('href', '/remboursements/informations-bancaires')
+    ).toHaveAttribute(
+      'href',
+      '/administration/remboursements/informations-bancaires'
+    )
   })
 
   it('should log CLICKED_BANK_ACCOUNT_HAS_PENDING_CORRECTIONS when clicking on the pending corrections link', async () => {
