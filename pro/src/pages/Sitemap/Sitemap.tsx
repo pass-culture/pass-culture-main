@@ -124,7 +124,7 @@ export const Sitemap = () => {
     },
     {
       title: 'Collaborateurs',
-      path: '/collaborateurs',
+      path: '/administration/collaborateurs',
       children: [],
     },
     {

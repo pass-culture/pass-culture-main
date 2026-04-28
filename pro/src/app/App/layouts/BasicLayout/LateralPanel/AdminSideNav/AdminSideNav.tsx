@@ -47,7 +47,7 @@ export const AdminSideNavLinks = () => {
       type: 'link',
       icon: strokeCollaboratorIcon,
       title: 'Collaborateurs',
-      to: '/collaborateurs',
+      to: '/administration/collaborateurs',
     },
   ]
 
