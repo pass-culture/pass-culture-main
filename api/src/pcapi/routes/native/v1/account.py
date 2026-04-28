@@ -435,6 +435,9 @@ def get_account_suspension_status() -> serializers.UserSuspensionStatusResponse:
 @spectree_serialize(api=blueprint.api, on_success_status=204)
 @authenticated_maybe_inactive_user_required
 def unsuspend_account() -> None:
+    if not FeatureToggle.ENABLE_UNSUSPEND_ACCOUNT.is_active():
+        raise api_errors.ForbiddenError({"code": "UNSUSPENSION_NOT_ALLOWED"})
+
     try:
         api.check_can_unsuspend(current_user)
     except exceptions.NotSuspended:
