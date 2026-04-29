@@ -7,7 +7,6 @@ import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
 import { noop } from '@/commons/utils/noop'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { useIncome } from '@/pages/Reimbursements/Income/useIncome'
-import { formatAndOrderVenues } from '@/repository/venuesService'
 import { MultiSelect } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
@@ -32,14 +31,15 @@ const Income = () => {
   const venues = useAppSelector((state) => state.user.venues)
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
 
-  const venueValues = formatAndOrderVenues(
-    (venues ?? []).filter(
-      (venue) => venue.managingOffererId === selectedAdminOfferer?.id
+  const venueValues = (venues ?? [])
+    .filter((venue) => venue.managingOffererId === selectedAdminOfferer?.id)
+    .map((venue) => ({
+      id: String(venue.id),
+      label: venue.publicName,
+    }))
+    .sort((a, b) =>
+      a.label.localeCompare(b.label, 'fr', { sensitivity: 'base' })
     )
-  ).map((venue) => ({
-    id: String(venue.value),
-    label: venue.label,
-  }))
 
   const {
     register,

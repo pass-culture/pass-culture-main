@@ -1,5 +1,4 @@
-import { computeAddressDisplayName } from 'repository/venuesService'
-
+import { computeAddressDisplayName } from '@/commons/format/venuesService'
 import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'

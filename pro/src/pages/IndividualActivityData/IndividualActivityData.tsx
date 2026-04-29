@@ -4,6 +4,7 @@ import {
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { formatAndOrderAddresses } from '@/commons/format/venuesService'
 import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
 import { useVenueAddresses } from '@/commons/hooks/swr/useVenueAddresses'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
@@ -12,7 +13,6 @@ import { useCurrentRoute } from '@/commons/hooks/useCurrentRoute'
 import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
 import { PreFilters } from '@/components/Bookings/Components/PreFilters/PreFilters'
 import { useBookingsFilters } from '@/components/Bookings/Components/useBookingsFilters'
-import { formatAndOrderAddresses } from '@/repository/venuesService'
 
 import styles from './IndividualActivityData.module.scss'
 

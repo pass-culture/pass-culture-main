@@ -430,4 +430,35 @@ describe('Income', () => {
       ).not.toBeInTheDocument()
     })
   })
+
+  it('should filter venues by selected offerer and sort alphabetically by publicName', async () => {
+    const venues = [
+      makeVenueListItemLiteResponseModel({
+        id: 1,
+        name: 'B venue name',
+        publicName: 'Boris Librairie',
+      }),
+      makeVenueListItemLiteResponseModel({
+        id: 2,
+        name: 'A venue name',
+        publicName: 'Arristide Librairie',
+      }),
+    ]
+
+    renderIncome(venues)
+
+    const selector = await screen.findByRole('button', {
+      name: /Partenaire\(s\) sélectionné\(s\)/i,
+    })
+
+    await userEvent.click(selector)
+
+    const checkbox = screen.getAllByRole('checkbox')
+
+    const label1 = checkbox[0].closest('label')
+    const label2 = checkbox[1].closest('label')
+
+    expect(label1).toHaveTextContent('Arristide Librairie')
+    expect(label2).toHaveTextContent('Boris Librairie')
+  })
 })

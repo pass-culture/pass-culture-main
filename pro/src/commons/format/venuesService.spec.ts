@@ -1,34 +1,12 @@
 import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
 import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
-import { makeVenueListItemLiteResponseModel } from '@/commons/utils/factories/venueFactories'
 
 import {
   computeAddressDisplayName,
   formatAndOrderAddresses,
-  formatAndOrderVenues,
-} from '../venuesService'
+} from './venuesService'
 
 describe('formatAndOrderVenues', () => {
-  it('should sort venues alphabetically', () => {
-    const venues = [
-      makeVenueListItemLiteResponseModel({
-        id: 1,
-        name: 'a venue name',
-        publicName: 'Librairie Fnac',
-        offererName: 'gilbert Joseph',
-      }),
-    ]
-
-    const sortingValues = formatAndOrderVenues(venues)
-
-    expect(sortingValues).toStrictEqual([
-      {
-        label: 'Librairie Fnac',
-        value: venues[0].id.toString(),
-      },
-    ])
-  })
-
   describe('formatAndOrderAddresses', () => {
     it('should sort offerer addresses alphabetically', () => {
       const offererAddress = [
