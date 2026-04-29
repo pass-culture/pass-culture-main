@@ -34,6 +34,8 @@ ACCOUNT_CREATION_MINIMUM_AGE = 15
 
 ACCOUNT_UNSUSPENSION_DELAY = 60  # days
 
+MAX_DEPOSIT_EXTENSION_DAYS = 90
+
 EDUCONNECT_SAML_REQUEST_ID_TTL = 24 * 60 * 60  # 1 day in seconds
 
 # During the process of bonification, the beneficiary is allowed to retry in case of a mistake but not indefinitely.

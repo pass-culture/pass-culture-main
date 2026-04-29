@@ -1554,3 +1554,45 @@ def get_user_remaining_bonus_attempts(user: models.User) -> int:
         if not (fraud_check.reason and fraud_check.reason.startswith(bonus_constants.BACKOFFICE_ORIGIN_START))
     ]
     return constants.MAX_QF_BONUS_RETRIES - len(ko_qf_bonus_credit_fraud_checks)
+
+
+def can_extend_deposit_validity(user: models.User) -> bool:
+    if not (deposit := user.deposit):
+        return False
+
+    assert deposit.expirationDate is not None  # helps mypy
+
+    if deposit.expirationDate >= date_utils.get_naive_utc_now() + datetime.timedelta(
+        days=constants.MAX_DEPOSIT_EXTENSION_DAYS
+    ):
+        return False
+
+    return True
+
+
+def extend_deposit_validity(user: models.User, new_expiration_date: datetime.date, *, author: models.User) -> None:
+    deposit = user.deposit
+
+    # should be ensured by caller, but helps mypy:
+    assert deposit is not None
+    assert deposit.expirationDate is not None
+
+    # Expire at the end of the day, local time for the beneficiary
+    new_expiration_datetime = date_utils.local_datetime_to_default_timezone(
+        datetime.datetime.combine(new_expiration_date, datetime.time.max),
+        date_utils.get_department_timezone(user.departementCode),
+    ).replace(tzinfo=None)
+
+    history_api.add_action(
+        history_models.ActionType.INFO_MODIFIED,
+        author=author,
+        user=user,
+        modified_info={
+            "deposit.expirationDate": {"old_info": deposit.expirationDate.date(), "new_info": new_expiration_date}
+        },
+    )
+    deposit.expirationDate = new_expiration_datetime
+    db.session.add(deposit)
+    db.session.flush()
+
+    external_attributes_api.update_external_user(user)

@@ -99,6 +99,7 @@ class AccountDetailsActionType(enum.StrEnum):
     INVALIDATE_PASSWORD = enum.auto()
     ANONYMIZE = enum.auto()
     TAG = enum.auto()
+    EXTEND_DEPOSIT = enum.auto()
 
 
 def _get_account_details_actions(user: users_models.User) -> DetailsActions:
@@ -137,6 +138,10 @@ def _get_account_details_actions(user: users_models.User) -> DetailsActions:
         account_details_actions.add_action(AccountDetailsActionType.ANONYMIZE)
     if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_ACCOUNT_TAGS):
         account_details_actions.add_action(AccountDetailsActionType.TAG)
+    if access_control.has_current_user_permission(
+        perm_models.Permissions.EXTEND_DEPOSIT_VALIDITY
+    ) and users_api.can_extend_deposit_validity(user):
+        account_details_actions.add_action(AccountDetailsActionType.EXTEND_DEPOSIT)
 
     return account_details_actions
 
@@ -562,6 +567,15 @@ def render_public_account_details(
         search_form.tag.choices = list(tag_account_form.tags.iter_choices())
     else:
         search_form.tag.choices = [(tag.id, str(tag)) for tag in get_user_tags()]
+
+    if AccountDetailsActionType.EXTEND_DEPOSIT in allowed_actions:
+        assert user.deposit  # helps mypy
+        kwargs.update(
+            {
+                "extend_deposit_form": account_forms.ExtendCreditForm(user.deposit),
+                "extend_deposit_dst": url_for(".extend_deposit_validity", user_id=user.id),
+            },
+        )
 
     kwargs.update(user_forms.get_toggle_suspension_args(user, suspension_type=user_forms.SuspensionUserType.PUBLIC))
 
@@ -1861,6 +1875,34 @@ def request_bonus_credit(user_id: int) -> response_utils.BackofficeResponse:
     on_commit(partial(bonus_tasks.apply_for_quotient_familial_bonus_task.delay, payload))
 
     flash("La demande de bonification est en cours.", "success")
+    return redirect(get_public_account_link(user_id), code=303)
+
+
+@public_accounts_blueprint.route("/<int:user_id>/extend-deposit", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.EXTEND_DEPOSIT_VALIDITY)
+def extend_deposit_validity(user_id: int) -> response_utils.BackofficeResponse:
+    user = (
+        db.session.query(users_models.User)
+        .filter_by(id=user_id)
+        .options(sa_orm.joinedload(users_models.User.deposits))
+        .one_or_none()
+    )
+    if not user or not user.deposit:
+        raise NotFound()
+
+    form = account_forms.ExtendCreditForm(user.deposit)
+    if not form.validate():
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return redirect(get_public_account_link(user_id), code=303)
+
+    users_api.extend_deposit_validity(user, form.expiration_date.data, author=current_user)
+
+    flash(
+        Markup("La validité du crédit a été prolongée jusqu'au {date}.").format(
+            date=form.expiration_date.data.strftime("%d/%m/%Y")
+        ),
+        "success",
+    )
     return redirect(get_public_account_link(user_id), code=303)
 
 
