@@ -10,6 +10,16 @@
   color: var(--color-text-default);
 
   @include fonts.title1;
+
+  margin-bottom: var(--size-spacing-l);
+}
+
+.subtitle {
+  color: var(--color-text-subtle, #696a6f);
+
+  @include fonts.body-xs;
+
+  margin-bottom: var(--size-spacing-xxl);
 }
 
 .action-bar {

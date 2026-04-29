@@ -8,6 +8,11 @@ export const SimulatorSiret = (): JSX.Element => {
     <>
       <div className={commonStyles['content']}>
         <h1 className={commonStyles['title']}>Renseignez votre SIRET</h1>
+        <h2 className={commonStyles['subtitle']}>
+          Le SIRET est un identifiant à 14 chiffres attribué à chaque structure.
+          Vous le trouverez sur vos documents administratifs (avis de situation
+          SIRENE, factures, contrats).
+        </h2>
       </div>
       <div className={commonStyles['action-bar']}>
         <Button
