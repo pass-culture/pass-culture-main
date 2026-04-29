@@ -1,14 +1,10 @@
-import { yupResolver } from '@hookform/resolvers/yup'
-import cn from 'classnames'
 import { useCallback, useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { isError } from '@/apiClient/helpers'
 import type { StructureDataBodyModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   type Offerer as OffererType,
@@ -22,11 +18,7 @@ import {
   tryRestoreOffererFromStorage,
 } from '@/commons/context/SignupJourneyContext/storage'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import {
-  FORM_ERROR_MESSAGE,
-  GET_DATA_ERROR_MESSAGE,
-} from '@/commons/core/shared/constants'
-import { getSiretData } from '@/commons/core/Venue/utils/getSiretData'
+import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import {
@@ -34,24 +26,17 @@ import {
   localStorageManager,
 } from '@/commons/utils/localStorageManager'
 import { unhumanizeSiret } from '@/commons/utils/siren'
-import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import { SIGNUP_STEP_IDS } from '@/components/SignupStepper/constants'
-import { Banner } from '@/design-system/Banner/Banner'
-import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
-import { TextInput } from '@/design-system/TextInput/TextInput'
-import fullLinkIcon from '@/icons/full-link.svg'
+import { SiretInputForm } from '@/components/SiretInputForm/SiretInputForm'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 
 import { ActionBar } from '../ActionBar/ActionBar'
-import { BannerInvisibleSiren } from './BannerInvisibleSiren/BannerInvisibleSiren'
 import {
   DEFAULT_ADDRESS_FORM_VALUES,
   DEFAULT_OFFERER_FORM_VALUES,
 } from './constants'
 import styles from './Offerer.module.scss'
-import { validationSchema } from './validationSchema'
 
 interface OffererFormValues {
   siret: string
@@ -71,34 +56,11 @@ export const Offerer = (): JSX.Element => {
   const isSignupSimulationEnabled = useActiveFeature(
     'WIP_PRE_SIGNUP_SIMULATION'
   )
-  const [showInvisibleBanner, setShowInvisibleBanner] = useState<boolean>(false)
-
-  const initialValues: OffererFormValues = offerer
-    ? { siret: offerer.siret }
-    : { siret: DEFAULT_OFFERER_FORM_VALUES.siret }
-
-  const hookForm = useForm({
-    resolver: yupResolver(validationSchema),
-    defaultValues: initialValues,
-    mode: 'onBlur',
-  })
-
-  const {
-    register,
-    setValue,
-    handleSubmit,
-    setError,
-    watch,
-    reset,
-    formState: { errors, isSubmitting },
-  } = hookForm
-
-  const handleNextStep = useCallback(() => {
-    if (Object.keys(errors).length !== 0) {
-      snackBar.error(FORM_ERROR_MESSAGE)
-      return
-    }
-  }, [errors, snackBar])
+  const [initialValues, setInitialValues] = useState<OffererFormValues>(
+    offerer
+      ? { siret: offerer.siret }
+      : { siret: DEFAULT_OFFERER_FORM_VALUES.siret }
+  )
 
   const navigateToNextStep = useCallback(
     (hasVenueWithSiret: boolean): { to: string; path: string } => {
@@ -132,7 +94,7 @@ export const Offerer = (): JSX.Element => {
     ) {
       try {
         const storedOfferer = tryRestoreOffererFromStorage(setOfferer)
-        reset(storedOfferer)
+        setInitialValues(storedOfferer)
         tryRestoreInitialAddressFromStorage(setInitialAddress)
       } catch {
         cleanSignupJourneyStorage()
@@ -140,22 +102,16 @@ export const Offerer = (): JSX.Element => {
         return
       }
     }
-  }, [offerer, initialAddress, setOfferer, setInitialAddress, reset, navigate])
+  }, [
+    offerer,
+    initialAddress,
+    setOfferer,
+    setInitialAddress,
+    setInitialValues,
+    navigate,
+  ])
 
-  const unHumanizeSiretOnChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (
-        watch('siret').length === 0 ||
-        e.target.value.replace(/(\d|\s)*/, '').length > 0 ||
-        e.target.value.length === 14
-      ) {
-        setValue('siret', unhumanizeSiret(e.target.value))
-      }
-    },
-    [watch, setValue]
-  )
-
-  const onSubmit = async (formValues: OffererFormValues): Promise<void> => {
+  const beforeCallCheck = (formValues: OffererFormValues) => {
     // Check here if the siret we've just submitted is the same as already stored in localStorage
     // In that case, we don't need to fetch the siret data again and we can immediately redirect the user to the next step
     try {
@@ -171,30 +127,14 @@ export const Offerer = (): JSX.Element => {
     } catch {
       // Any error while parsing localStorage is considered as a fallback to the normal flow
     }
+  }
 
-    // If we're here, it means the siret we've just submitted is different from the one already stored in localStorage
-
+  const handleSiretData = async (
+    formValues: OffererFormValues,
+    offererSiretData: StructureDataBodyModel
+  ): Promise<void> => {
     const formattedSiret = unhumanizeSiret(formValues.siret)
 
-    let offererSiretData: StructureDataBodyModel
-
-    try {
-      offererSiretData = await getSiretData(formattedSiret)
-
-      if (!offererSiretData) {
-        snackBar.error('Une erreur est survenue')
-        return
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        setShowInvisibleBanner(
-          error.message ===
-            "Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public"
-        )
-        setError('siret', { message: error.message })
-      }
-      return
-    }
     try {
       const venueOfOffererProvidersResponse =
         await api.getVenuesOfOffererFromSiret(formattedSiret)
@@ -256,6 +196,7 @@ export const Offerer = (): JSX.Element => {
       const { to } = navigateToNextStep(hasVenueWithSiret)
 
       logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+        from: location.pathname,
         to,
         used: isSignupSimulationEnabled
           ? 'Continuer'
@@ -272,104 +213,23 @@ export const Offerer = (): JSX.Element => {
   }
 
   return (
-    <div
-      className={cn({
-        [styles['offerer-container']]: isSignupSimulationEnabled,
-      })}
-    >
-      {isSignupSimulationEnabled && (
-        <>
-          <MainHeading
-            mainHeading="Votre numéro SIRET"
-            className={styles['main-heading']}
+    <div>
+      <h2 className={styles['subtitle']}>
+        Dites-nous pour quelle structure vous travaillez
+      </h2>
+      <SiretInputForm
+        submitElement={(isSubmitting) => (
+          <ActionBar
+            isDisabled={isSubmitting}
+            onClickPrevious={() => navigate('/hub')}
+            nextStepTitle="Continuer"
+            previousStepTitle="Annuler et quitter"
           />
-          <p className={styles['subheading-description']}>
-            Le SIRET est un identifiant à 14 chiffres attribué à chaque
-            structure. Vous le trouverez sur vos documents administratifs (avis
-            de situation SIRENE, factures, contrats).
-          </p>
-        </>
-      )}
-
-      <FormLayout>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          data-testid="signup-offerer-form"
-        >
-          <FormLayout.Section>
-            {!isSignupSimulationEnabled && (
-              <h2 className={styles['subtitle']}>
-                Dites-nous pour quelle structure vous travaillez
-              </h2>
-            )}
-            <FormLayout.Row mdSpaceAfter>
-              <div className={styles['input-siret']}>
-                <TextInput
-                  {...register('siret')}
-                  label={`Numéro de SIRET${isSignupSimulationEnabled ? '' : ' à 14 chiffres'}`}
-                  type="text"
-                  required
-                  requiredIndicator={
-                    isSignupSimulationEnabled ? 'explicit' : 'symbol'
-                  }
-                  error={errors.siret?.message}
-                  onChange={unHumanizeSiretOnChange}
-                />
-              </div>
-            </FormLayout.Row>
-            <FormLayout.Row>
-              <Button
-                as="a"
-                variant={ButtonVariant.TERTIARY}
-                color={ButtonColor.NEUTRAL}
-                to="https://annuaire-entreprises.data.gouv.fr/"
-                isExternal
-                opensInNewTab
-                onClick={() => logEvent(Events.CLICKED_UNKNOWN_SIRET)}
-                label="Vous ne connaissez pas votre SIRET ? Consultez l'Annuaire des Entreprises."
-              />
-            </FormLayout.Row>
-          </FormLayout.Section>
-          {showInvisibleBanner && <BannerInvisibleSiren />}
-          <Banner
-            title="Vous êtes un équipement d’une collectivité ou d’un établissement public ?"
-            actions={[
-              {
-                href: 'https://aide.passculture.app/hc/fr/articles/4633420022300--Acteurs-Culturels-Collectivit%C3%A9-Lieu-rattach%C3%A9-%C3%A0-une-collectivit%C3%A9-S-inscrire-et-param%C3%A9trer-son-compte-pass-Culture-',
-                label: 'En savoir plus',
-                isExternal: true,
-                type: 'link',
-                icon: fullLinkIcon,
-                iconAlt: 'Nouvelle fenêtre',
-              },
-            ]}
-            description={
-              <p>
-                Renseignez le SIRET de la structure à laquelle vous êtes
-                rattaché.
-              </p>
-            }
-          />
-          {isSignupSimulationEnabled ? (
-            <div className={styles['next-actions']}>
-              <Button
-                type="submit"
-                onClick={handleNextStep}
-                label="Continuer"
-                disabled={isSubmitting}
-              />
-            </div>
-          ) : (
-            <ActionBar
-              isDisabled={isSubmitting}
-              onClickPrevious={() => navigate('/hub')}
-              onClickNext={handleNextStep}
-              nextStepTitle="Continuer"
-              previousStepTitle="Annuler et quitter"
-            />
-          )}
-        </form>
-      </FormLayout>
+        )}
+        initialValues={initialValues}
+        beforeCallCheck={beforeCallCheck}
+        handleSiretData={handleSiretData}
+      />
     </div>
   )
 }
