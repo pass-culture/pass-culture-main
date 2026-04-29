@@ -1,4 +1,4 @@
-import { useLocation, useParams } from 'react-router'
+import { useLocation } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -6,6 +6,8 @@ import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { GET_EDUCATIONAL_STATUSES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
 import { CollectiveDmsTimeline } from '@/components/CollectiveDmsTimeline/CollectiveDmsTimeline'
 import { Banner } from '@/design-system/Banner/Banner'
 import { PartnerPageCollectiveSection } from '@/pages/Homepage/components/Offerers/components/PartnerPages/components/PartnerPageCollectiveSection'
@@ -17,16 +19,13 @@ import { CollectiveDataEditionReadOnly } from './CollectiveDataEditionReadOnly'
 import { CollectiveDataForm } from './CollectiveDataForm/CollectiveDataForm'
 
 export interface CollectiveDataEditionProps {
-  venue?: GetVenueResponseModel
+  venue: GetVenueResponseModel
 }
 
 export const CollectiveDataEdition = ({
   venue,
 }: CollectiveDataEditionProps): JSX.Element | null => {
-  const { offererId, venueId } = useParams<{
-    offererId: string
-    venueId: string
-  }>()
+  const offerer = useAppSelector(ensureSelectedAdminOfferer)
 
   const { data: educationalDomains, isLoading: areEducationalDomainsLoading } =
     useEducationalDomains()
@@ -52,8 +51,8 @@ export const CollectiveDataEdition = ({
   const location = useLocation()
 
   if (
-    !venueId ||
-    !offererId ||
+    !venue.id ||
+    !offerer.id ||
     !venue ||
     areEducationalDomainsLoading ||
     educationalStatusesQuery.isLoading
@@ -77,7 +76,6 @@ export const CollectiveDataEdition = ({
       <PartnerPageCollectiveSection
         venueId={venue.id}
         venueName={venue.name}
-        offererId={venue.managingOfferer.id}
         lastCollectiveDmsApplication={venue.lastCollectiveDmsApplication}
         allowedOnAdage={venue.allowedOnAdage}
       />

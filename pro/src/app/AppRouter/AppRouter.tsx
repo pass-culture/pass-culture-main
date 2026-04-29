@@ -44,7 +44,9 @@ export const AppRouter = () => {
           {
             lazy: () => import('@/pages/Errors/NotFound/NotFound'),
             path: '*',
-            title: 'Erreur 404 - Page indisponible',
+            handle: {
+              title: 'Erreur 404 - Page indisponible',
+            },
             loader: noop,
           } satisfies CustomRouteOrphan,
         ],

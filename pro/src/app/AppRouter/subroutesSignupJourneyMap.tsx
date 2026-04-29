@@ -17,36 +17,49 @@ export const routesSignupJourney: CustomRouteGroupChild[] = [
     element: <Offerer />,
     loader: withUserPermissions(mustBeAuthenticated),
     path: '/inscription/structure/recherche',
-    title: 'Structure - Parcours d’inscription',
+    handle: {
+      title: 'Structure - Parcours d’inscription',
+    },
   },
   {
     element: <SignupJourneyOfferers />,
     loader: withUserPermissions(mustBeAuthenticated),
     path: '/inscription/structure/rattachement',
-    title: 'Rattachement à une structure - Parcours d’inscription',
+    handle: {
+      title: 'Rattachement à une structure - Parcours d’inscription',
+    },
   },
   {
     element: <ConfirmedAttachment />,
     loader: withUserPermissions(mustBeAuthenticated),
     path: '/inscription/structure/rattachement/confirmation-rattachement',
-    title: 'Confirmation rattachement à une structure - Parcours d’inscription',
+    handle: {
+      title:
+        'Confirmation rattachement à une structure - Parcours d’inscription',
+    },
   },
   {
     element: <OffererAuthentication />,
     loader: withUserPermissions(mustBeAuthenticated),
     path: '/inscription/structure/identification',
-    title: 'Identification - Parcours d’inscription',
+    handle: {
+      title: 'Identification - Parcours d’inscription',
+    },
   },
   {
     element: <Activity />,
     loader: withUserPermissions(mustBeAuthenticated),
     path: '/inscription/structure/activite',
-    title: 'Activité - Parcours d’inscription',
+    handle: {
+      title: 'Activité - Parcours d’inscription',
+    },
   },
   {
     element: <Validation />,
     loader: withUserPermissions(mustBeAuthenticated),
     path: '/inscription/structure/confirmation',
-    title: 'Validation - Parcours d’inscription',
+    handle: {
+      title: 'Validation - Parcours d’inscription',
+    },
   },
 ]

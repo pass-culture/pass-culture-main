@@ -97,9 +97,7 @@ export const CollectiveDataForm = ({
       dispatch(setSelectedPartnerVenue(updatedVenue))
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      navigate(
-        `/structures/${venue.managingOfferer.id}/lieux/${venue.id}/collectif`
-      )
+      navigate(`/partenaire/page-collective`)
     } catch {
       snackBar.error(SENT_DATA_ERROR_MESSAGE)
     }
@@ -276,7 +274,7 @@ export const CollectiveDataForm = ({
             as="a"
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
-            to={`/structures/${venue.managingOfferer.id}/lieux/${venue.id}/collectif`}
+            to={`/partenaire/page-collective`}
             label="Annuler"
           />
 

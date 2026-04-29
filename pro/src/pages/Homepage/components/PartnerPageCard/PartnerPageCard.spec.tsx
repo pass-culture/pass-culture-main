@@ -122,10 +122,7 @@ describe('PartnerPageCard', () => {
 
       expect(
         screen.getByRole('link', { name: 'Compléter ma page' })
-      ).toHaveAttribute(
-        'href',
-        `/structures/${baseVenue.managingOffererId}/lieux/${baseVenue.id}/page-partenaire`
-      )
+      ).toHaveAttribute('href', `/partenaire/page-partenaire`)
     })
 
     it('should render venue page preview link', () => {
@@ -133,7 +130,7 @@ describe('PartnerPageCard', () => {
 
       expect(
         screen.getByRole('link', { name: /Voir ma page/ })
-      ).toHaveAttribute('href', `https://mon-url-de-base/lieu/${baseVenue.id}`)
+      ).toHaveAttribute('href', `https://mon-url-de-base/partenaire`)
     })
   })
 
@@ -149,10 +146,7 @@ describe('PartnerPageCard', () => {
 
       expect(
         screen.getByRole('link', { name: 'Compléter ma page' })
-      ).toHaveAttribute(
-        'href',
-        `/structures/${baseVenue.managingOffererId}/lieux/${baseVenue.id}/collectif`
-      )
+      ).toHaveAttribute('href', `/partenaire/page-collective`)
     })
 
     it('should not render venue page preview link', () => {

@@ -33,7 +33,7 @@ export const useSaveVenueSettings = ({
     try {
       await saveVenueSettings(formValues, formContext, { venue })
 
-      navigate(getVenuePagePathToNavigateTo(venue.managingOfferer.id, venue.id))
+      navigate(getVenuePagePathToNavigateTo())
 
       logEvent(Events.CLICKED_SAVE_VENUE, {
         from: location.pathname,

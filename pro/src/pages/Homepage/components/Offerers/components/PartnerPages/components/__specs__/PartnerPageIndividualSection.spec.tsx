@@ -49,7 +49,6 @@ describe('PartnerPageIndividualSection', () => {
   it('should display right info when is visible and in homepage', () => {
     const props: PartnerPageIndividualSectionProps = {
       venueId: 7,
-      offererId: 8,
       venueName: 'Venue name',
     }
 
@@ -65,7 +64,6 @@ describe('PartnerPageIndividualSection', () => {
   it('should log event when clicking on preview venue link', async () => {
     const props: PartnerPageIndividualSectionProps = {
       venueId: 7,
-      offererId: 8,
       venueName: 'Venue name',
     }
 
@@ -90,7 +88,6 @@ describe('PartnerPageIndividualSection', () => {
 
     const props: PartnerPageIndividualSectionProps = {
       venueId: 7,
-      offererId: 8,
       venueName: 'Venue name',
     }
 

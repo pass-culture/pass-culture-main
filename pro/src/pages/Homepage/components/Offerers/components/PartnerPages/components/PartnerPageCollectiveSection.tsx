@@ -11,7 +11,6 @@ import styles from './PartnerPage.module.scss'
 export type PartnerPageCollectiveSectionProps = {
   lastCollectiveDmsApplication: DMSApplicationForEAC | null
   venueId: number
-  offererId: number
   venueName: string
   allowedOnAdage: boolean
   isDisplayedInHomepage?: boolean
@@ -19,7 +18,6 @@ export type PartnerPageCollectiveSectionProps = {
 
 export function PartnerPageCollectiveSection({
   venueId,
-  offererId,
   venueName,
   allowedOnAdage,
   lastCollectiveDmsApplication,
@@ -50,8 +48,6 @@ export function PartnerPageCollectiveSection({
             ? 'Les enseignants voient les offres vitrines et celles que vous adressez à leur établissement sur ADAGE. Complétez vos informations à destination des enseignants pour qu’ils vous contactent !'
             : undefined
         }
-        offererId={offererId}
-        venueId={venueId}
         venueName={venueName}
       />
     )
@@ -62,8 +58,6 @@ export function PartnerPageCollectiveSection({
         variant={TagVariant.DEFAULT}
         isDisplayedInHomepage={isDisplayedInHomepage}
         description="Pour pouvoir adresser des offres aux enseignants, vous devez être référencé dans ADAGE, l’application du ministère de l’Éducation nationale dédiée à l’EAC."
-        offererId={offererId}
-        venueId={venueId}
         venueName={venueName}
       >
         <div className={styles['details-link']}>
@@ -105,8 +99,6 @@ export function PartnerPageCollectiveSection({
         description="Pour pouvoir adresser des offres aux enseignants, vous devez être
         référencé dans ADAGE, l’application du ministère de l’Éducation
         nationale dédiée à l’EAC."
-        offererId={offererId}
-        venueId={venueId}
         venueName={venueName}
       />
     )
@@ -121,8 +113,6 @@ export function PartnerPageCollectiveSection({
       variant={TagVariant.WARNING}
       isDisplayedInHomepage={isDisplayedInHomepage}
       description="Votre démarche de référencement est en cours de traitement par ADAGE."
-      offererId={offererId}
-      venueId={venueId}
       venueName={venueName}
     >
       <div className={styles['details-link']}>
@@ -147,8 +137,6 @@ type AdageInformationsProps = {
   tagText: string
   isDisplayedInHomepage: boolean
   description?: string
-  offererId: number
-  venueId: number
   venueName: string
 }
 
@@ -158,8 +146,6 @@ function AdageInformations({
   variant,
   isDisplayedInHomepage,
   description,
-  offererId,
-  venueId,
   venueName,
 }: AdageInformationsProps) {
   const { logEvent } = useAnalytics()
@@ -186,7 +172,7 @@ function AdageInformations({
             as="a"
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
-            to={`/structures/${offererId}/lieux/${venueId}/collectif`}
+            to={`/partenaire/page-collective`}
             aria-label={`Gérer la page pour les enseignants ${venueName}`}
             icon={fullNextIcon}
             onClick={() =>

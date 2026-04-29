@@ -16,7 +16,6 @@ const renderPartnerPageCollectiveSection = (
     <PartnerPageCollectiveSection
       lastCollectiveDmsApplication={defaultDMSApplicationForEAC}
       venueId={7}
-      offererId={8}
       venueName="Venue name"
       allowedOnAdage={false}
       {...props}

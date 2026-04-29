@@ -44,12 +44,12 @@ export const PartnerPageCard = ({
     venueBannerUrl,
     venueBannerMeta
   )
-  const venuePreviewLink = `${WEBAPP_URL}/lieu/${venueId}`
-  const baseVenueEditionLink = `/structures/${offererId}/lieux/${venueId}`
+  const venuePreviewLink = `${WEBAPP_URL}/partenaire`
+  const baseVenueEditionLink = `/partenaire`
   const venueEditionLink =
     variant === HomepageVariant.INDIVIDUAL
       ? `${baseVenueEditionLink}/page-partenaire`
-      : `${baseVenueEditionLink}/collectif`
+      : `${baseVenueEditionLink}/page-collective`
 
   const logButtonAddClick = () => {
     logEvent(Events.CLICKED_ADD_IMAGE, {

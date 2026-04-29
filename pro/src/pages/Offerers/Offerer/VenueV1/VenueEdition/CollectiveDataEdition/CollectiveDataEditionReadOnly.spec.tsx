@@ -197,7 +197,7 @@ describe('<CollectiveDataEditionReadOnly />', () => {
     })
     expect(editLink).toHaveAttribute(
       'href',
-      '/structures/10/lieux/42/collectif/edition'
+      '/partenaire/page-collective/edition'
     )
   })
 })

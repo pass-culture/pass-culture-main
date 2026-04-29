@@ -44,7 +44,7 @@ test.describe('Navigation', () => {
 
     await collectivePageLink.click()
 
-    await expect(page).toHaveURL(/\/structures\/\d+\/lieux\/\d+\/collectif/)
+    await expect(page).toHaveURL(/\/partenaire\/page-collective/)
 
     const backToNavLink = page.locator('#top-page')
     await expect(backToNavLink).toBeFocused({ timeout: 1000 })

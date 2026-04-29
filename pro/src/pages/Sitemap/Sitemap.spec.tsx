@@ -66,13 +66,13 @@ describe('Sitemap', () => {
       { name: 'Guichet', href: '/guichet' },
       {
         name: `Page sur l'application (si offre individuelle créée)`,
-        href: `/structures/42/lieux/2/page-partenaire`,
+        href: `/partenaire/page-partenaire`,
       },
       { name: 'Offres vitrines', href: '/offres/vitrines' },
       { name: 'Offres réservables', href: '/offres/collectives' },
       {
         name: `Page sur ADAGE (si validé ADAGE)`,
-        href: `/structures/42/lieux/123/collectif`,
+        href: `/partenaire/page-collective`,
       },
       {
         name: 'Espace administration',
@@ -92,7 +92,7 @@ describe('Sitemap', () => {
       { name: 'Collaborateurs', href: '/administration/collaborateurs' },
       {
         name: 'Paramètres généraux',
-        href: `/structures/42/lieux/123/parametres`,
+        href: `/partenaire/page-individuelle/parametres`,
       },
       { name: 'Profil', href: '/profil' },
     ]

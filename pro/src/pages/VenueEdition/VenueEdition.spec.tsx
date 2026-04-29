@@ -40,15 +40,13 @@ const renderVenueEdition = ({
   context,
   options,
 }: VenueEditionTestProps = {}) => {
-  const offererId = defaultGetOffererResponseModel.id
-  const venueId = defaultGetVenue.id
   const translatedContext =
-    context === 'adage' ? '/collectif' : '/page-partenaire'
-  const initialPath = `/structures/${offererId}/lieux/${venueId}${translatedContext}/edition`
+    context === 'adage' ? '/page-collective' : '/page-partenaire'
+  const initialPath = `/partenaire${translatedContext}/edition`
 
   return renderWithProviders(
     <Routes>
-      <Route path="/structures/:offererId/lieux/:venueId/*">
+      <Route path="/partenaire/*">
         <Route path="*" element={<VenueEdition />} />
       </Route>
       <Route path="/accueil" element={<h1>Home</h1>} />
@@ -58,10 +56,11 @@ const renderVenueEdition = ({
       initialRouterEntries: [initialPath],
       ...{
         storeOverrides: {
-          offerer: {
-            currentOfferer: { ...defaultGetOffererResponseModel, id: 100 },
-          },
           user: {
+            selectedAdminOfferer: {
+              ...defaultGetOffererResponseModel,
+              id: 100,
+            },
             selectedPartnerVenue: makeGetVenueResponseModel({
               id: FIRST_VENUE.id,
               name: FIRST_VENUE.name,
@@ -89,10 +88,6 @@ const renderVenueEdition = ({
 const mockUseNavigate = vi.fn()
 vi.mock('react-router', async () => ({
   ...(await vi.importActual('react-router')),
-  useParams: () => ({
-    offererId: '1',
-    venueId: defaultGetVenue.id,
-  }),
   useNavigate: () => mockUseNavigate,
 }))
 

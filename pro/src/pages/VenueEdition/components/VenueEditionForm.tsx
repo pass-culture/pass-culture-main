@@ -113,10 +113,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
 
       await syncVenueWithData(venue.id, updatedVenue)
 
-      const path = getVenuePagePathToNavigateTo(
-        venue.managingOfferer.id,
-        venue.id
-      )
+      const path = getVenuePagePathToNavigateTo()
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(path)
 
@@ -415,10 +412,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
           </FormLayout.Section>
         </FormLayout>
 
-        <VenueFormActionBar
-          venue={venue}
-          isSubmitting={methods.formState.isSubmitting}
-        />
+        <VenueFormActionBar isSubmitting={methods.formState.isSubmitting} />
         <RouteLeavingGuardVenueEdition
           shouldBlock={
             methods.formState.isDirty && !methods.formState.isSubmitting

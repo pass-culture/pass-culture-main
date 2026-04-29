@@ -32,13 +32,17 @@ export const routesSignup: CustomRouteGroupChild[] = [
     element: <SignupContainer />,
     loader: noop,
     path: '/inscription/compte/creation',
-    title: 'Créer un compte',
+    handle: {
+      title: 'Créer un compte',
+    },
   },
   {
     element: <SignupConfirmation />,
     loader: noop,
     path: '/inscription/compte/confirmation',
-    title: 'Validez votre adresse email',
+    handle: {
+      title: 'Validez votre adresse email',
+    },
   },
   {
     element: <SignupValidation />,
@@ -46,7 +50,9 @@ export const routesSignup: CustomRouteGroupChild[] = [
     // loader: withUserPermissions(() => true, validateSignupActivation),
     loader: noop,
     path: '/inscription/compte/confirmation/:token',
-    title: 'Confirmation de création de compte',
+    handle: {
+      title: 'Confirmation de création de compte',
+    },
   },
   // Redirects until pages are changed in organization website
   {
@@ -55,12 +61,16 @@ export const routesSignup: CustomRouteGroupChild[] = [
     ),
     loader: noop,
     path: '/inscription/validation/:token',
-    title: 'Confirmation de création de compte',
+    handle: {
+      title: 'Confirmation de création de compte',
+    },
   },
   {
     element: <Navigate to="/inscription/compte/confirmation" />,
     loader: noop,
     path: '/inscription/confirmation',
-    title: 'Confirmation de création de compte',
+    handle: {
+      title: 'Confirmation de création de compte',
+    },
   },
 ]

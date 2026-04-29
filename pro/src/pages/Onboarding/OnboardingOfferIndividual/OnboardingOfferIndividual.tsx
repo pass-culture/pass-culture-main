@@ -47,7 +47,7 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
 
   // Assumed choice to redirect offerers without permanent venues (old cases) to /accueil
   const synchronizedLink = physicalVenue
-    ? `/structures/${selectedOfferer.id}/lieux/${physicalVenue.id}/parametres`
+    ? `/partenaire/page-individuelle/parametres`
     : '/onboarding'
 
   return (

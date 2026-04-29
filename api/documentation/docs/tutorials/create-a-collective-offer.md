@@ -23,7 +23,7 @@ The **API key** and the **HMAC key** are sensitive pieces of information, so **y
 
 If you have not already created a pro account in the integration test environment, create one following [**this process**](/docs/mandatory-steps/create-test-accounts).
 
-Then log with this account [**on the pro interface in the integration test environment**](https://integration.passculture.pro/connexion). 
+Then log with this account [**on the pro interface in the integration test environment**](https://integration.passculture.pro/connexion).
 
 **Create a venue**
 
@@ -31,7 +31,7 @@ Then log with this account [**on the pro interface in the integration test envir
 
 To be able to create a collective offer for a venue, you need to give access to this venue to your provider.
 
-Go to the venue settings page (the URL of this settings page has the following pattern `https://pro.intergration.passculture.pro/structures/{offerer_id}/lieux/{venue_id}/parametres`), and add your provider in `Gestion des synchronisations` section using the `Selectionner un logiciel` button. You provider has now access to the venue.
+Go to the venue settings page (the URL of this settings page has the following pattern `https://pro.intergration.passculture.pro/partenaire/page-individuelle/parametres`), and add your provider in `Gestion des synchronisations` section using the `Selectionner un logiciel` button. You provider has now access to the venue.
 
 ## Phase 2: Build your integration
 

@@ -10,7 +10,6 @@ import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
@@ -238,7 +237,7 @@ describe('VenueEditionHeader', () => {
     expect(link).toBeInTheDocument()
     expect(link).toHaveAttribute(
       'href',
-      `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}/parametres`
+      `/partenaire/page-individuelle/parametres`
     )
   })
 

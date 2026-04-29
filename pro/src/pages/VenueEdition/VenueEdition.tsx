@@ -31,7 +31,7 @@ export const VenueEdition = (): JSX.Element | null => {
     }
   }, [selectedVenueId])
 
-  const context = location.pathname.includes('collectif')
+  const context = location.pathname.includes('page-collective')
     ? 'collective'
     : 'partnerPage'
 
