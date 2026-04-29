@@ -1,12 +1,16 @@
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
+  CULTURAL_OUTREACH_ALLOWED_ACTIVITIES,
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useMusicTypes } from '@/commons/hooks/useMusicTypes'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { Markdown } from '@/components/Markdown/Markdown'
@@ -47,6 +51,17 @@ export function IndividualOfferSummaryDetailsScreen({
     musicTypes
   )
 
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+
+  const isCulturalOutreachEnabled = useActiveFeature(
+    'WIP_ENABLE_CULTURAL_OUTREACH'
+  )
+
+  const canClaimCulturalOutreach =
+    isCulturalOutreachEnabled &&
+    selectedPartnerVenue.activity !== null &&
+    CULTURAL_OUTREACH_ALLOWED_ACTIVITIES.has(selectedPartnerVenue.activity)
+
   const subcategory = subCategories.find(
     (sucategory) => sucategory.id === offer.subcategoryId
   )
@@ -58,6 +73,14 @@ export function IndividualOfferSummaryDetailsScreen({
       text: offerData.venuePublicName,
     },
     { title: 'Titre de l’offre', text: offerData.name },
+    ...(canClaimCulturalOutreach
+      ? [
+          {
+            title: 'Inclut une action de médiation spécifique',
+            text: offer.hasCulturalOutreachClaim ? 'Oui' : 'Non',
+          },
+        ]
+      : []),
     {
       title: 'Description',
       text: !offerData.description ? (
