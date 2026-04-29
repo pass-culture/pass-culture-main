@@ -26,9 +26,9 @@ class SubscriptionStepperTest:
 
         with assert_num_queries(1):  # user
             response = client.get("/native/v3/subscription/stepper")
-            assert response.status_code == 403
+            assert response.status_code == 401
 
-        assert response.json["email"] == ["Utilisateur introuvable"]
+        assert response.json == {}
 
     def test_subscription_stepper_user_not_active(self, client):
         user = users_factories.EmailValidatedUserFactory(isActive=False)
@@ -36,9 +36,9 @@ class SubscriptionStepperTest:
         client.with_token(user)
         with assert_num_queries(1):  # user
             response = client.get("/native/v3/subscription/stepper")
-            assert response.status_code == 403
+            assert response.status_code == 401
 
-        assert response.json["email"] == ["Utilisateur introuvable"]
+        assert response.json == {}
 
     def test_subscription_stepper_for_17yo_with_just_email_validated(self, client):
         user = users_factories.EmailValidatedUserFactory(age=17)

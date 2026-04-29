@@ -435,7 +435,7 @@ class RefreshAccessTokenTest:
 
         client.with_explicit_token(refresh_token)
         refresh_response = client.post("/native/v2/refresh_access_token", json={"device_info": self.device_info})
-        assert refresh_response.status_code == 403
+        assert refresh_response.status_code == 401
 
         assert db.session.query(users_models.NativeUserSession).count() == 1
         assert (
@@ -468,7 +468,7 @@ class RefreshAccessTokenTest:
 
         client.with_explicit_token(refresh_token)
         refresh_response = client.post("/native/v2/refresh_access_token", json={"device_info": self.device_info})
-        assert refresh_response.status_code == 403
+        assert refresh_response.status_code == 401
 
         assert db.session.query(users_models.NativeUserSession).count() == 0
 

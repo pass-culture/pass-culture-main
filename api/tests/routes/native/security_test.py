@@ -65,7 +65,7 @@ def test_inactive_user_when_active_required(client):
     client.with_token(user)
     with patch("pcapi.core.users.sessions._common.NATIVE_FOLDERS", ["/test-blueprint/"]):
         response = client.get(path)
-    assert response.status_code == 403
+    assert response.status_code == 401
 
 
 def test_inactive_user_when_may_be_inactive(client):
@@ -103,8 +103,8 @@ class UserConnectedTest:
         user = users_factories.BeneficiaryFactory()
         response = client.with_token(user, register_token=False).get("/native/v1/me")
 
-        assert response.status_code == 403
-        assert response.json
+        assert response.status_code == 401
+        assert response.json == {}
 
     def test_user_connected_with_no_token(self, client):
         response = client.without_token().get("/native/v1/me")

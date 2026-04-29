@@ -87,9 +87,9 @@ class AccountTest:
         client.with_explicit_token(token)
         with assert_num_queries(1):  # user
             response = client.get("/native/v1/me")
-            assert response.status_code == 403
+            assert response.status_code == 401
 
-        assert response.json["email"] == ["Utilisateur introuvable"]
+        assert response.json == {}
 
     def test_get_user_profile_token_not_found(self, client, app):
         user = users_factories.UserFactory()
@@ -98,9 +98,9 @@ class AccountTest:
         client.with_explicit_token(token)
         with assert_num_queries(1):  # user
             response = client.get("/native/v1/me")
-            assert response.status_code == 403
+            assert response.status_code == 401
 
-        assert response.json["email"] == ["Utilisateur introuvable"]
+        assert response.json == {}
 
     def test_get_user_profile_not_active(self, client, app):
         user = users_factories.UserFactory(isActive=False)
@@ -108,9 +108,9 @@ class AccountTest:
         client.with_token(user)
         with assert_num_queries(1):  # user
             response = client.get("/native/v1/me")
-            assert response.status_code == 403
+            assert response.status_code == 401
 
-        assert response.json["email"] == ["Utilisateur introuvable"]
+        assert response.json == {}
 
     @time_machine.travel("2018-06-01", tick=False)
     @pytest.mark.features(ENABLE_NATIVE_CULTURAL_SURVEY=True)
@@ -1756,7 +1756,7 @@ class SuspendAccountTest:
         response = client.post("/native/v1/account/suspend")
 
         # Any API call is forbidden for suspended user
-        assert response.status_code == 403
+        assert response.status_code == 401
         db.session.refresh(user)
         assert not user.isActive
         assert user.suspension_reason == reason

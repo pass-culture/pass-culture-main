@@ -46,7 +46,7 @@ class BannerTest:
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/banner")
-            assert response.status_code == 403
+            assert response.status_code == 401
 
     def should_be_allowed_to_get_banner_when_active(self, client):
         user = users_factories.UserFactory()

@@ -1325,7 +1325,7 @@ class RefreshTest:
 
         response = client.with_explicit_token(token).post("/native/v1/refresh_access_token", json={})
 
-        assert response.status_code == 403
+        assert response.status_code == 401
         assert db.session.query(NativeUserSession).count() == 0
 
     def test_with_access_token(self, client):
