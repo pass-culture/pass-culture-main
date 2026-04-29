@@ -32,8 +32,7 @@ const getSiretDataRequest = async (
     throw new Error(error)
   }
   try {
-    const response = await api.getStructureData(siret)
-    return response
+    return await api.getStructureData(siret)
   } catch (e) {
     let message = 'Impossible de vérifier le SIRET saisi.'
     if (isErrorAPIError(e) && e.status === 400) {
