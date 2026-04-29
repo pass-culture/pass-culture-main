@@ -26,6 +26,7 @@ describe('AddBankInformationsDialog', () => {
         closeDialog={vi.fn()}
         offererId={0}
         isDialogOpen
+        isCaledonian={false}
       />
     )
 
@@ -54,6 +55,7 @@ describe('AddBankInformationsDialog', () => {
         closeDialog={vi.fn()}
         offererId={0}
         isDialogOpen
+        isCaledonian={false}
       />
     )
 
@@ -77,6 +79,7 @@ describe('AddBankInformationsDialog', () => {
         closeDialog={vi.fn()}
         offererId={0}
         isDialogOpen
+        isCaledonian={true}
       />
     )
 
@@ -95,6 +98,7 @@ describe('AddBankInformationsDialog', () => {
         closeDialog={vi.fn()}
         offererId={0}
         isDialogOpen
+        isCaledonian={false}
       />
     )
     const link = screen.getByRole('link', {

@@ -186,6 +186,7 @@ const BankInformations = (): JSX.Element => {
           setShowAddBankInformationsDialog(false)
         }}
         offererId={selectedAdminOfferer.id}
+        isCaledonian={selectedAdminOfferer.isCaledonian}
         isDialogOpen={showAddBankInformationsDialog}
         dialogTriggerRef={addBankAccountButtonRef}
       />

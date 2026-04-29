@@ -222,7 +222,7 @@ describe('reimbursementsWithFilters', () => {
       bankAccounts: BASE_BANK_ACCOUNTS,
       managedVenues: [],
     })
-    renderReimbursementsInvoices(undefined, true)
+    renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(
