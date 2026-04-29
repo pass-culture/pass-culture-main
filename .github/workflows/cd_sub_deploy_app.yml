@@ -166,9 +166,6 @@ jobs:
       inputs.environment == 'testing' &&
       inputs.deploy_pro == true
     uses: ./.github/workflows/cd_sub_deploy_front_pro.yml
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
     with:
       ENV: testing
       CHANNEL: "live"
