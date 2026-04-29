@@ -24,7 +24,7 @@ export const EcoDesignMenu = () => {
   }
 
   return (
-    <EcoDesignLayout mainHeading="Déclaration d'écoconception de l'espace partenaires">
+    <EcoDesignLayout mainHeading="Déclaration d'écoconception de l'espace partenaire">
       <div className={styles['page-content']}>
         <Button
           onClick={() => backToDefault()}

@@ -25,7 +25,7 @@ describe('Statement of EcoDesign page', () => {
     renderEcoDesignMenu({})
 
     expect(
-      screen.getByText("Déclaration d'écoconception de l'espace partenaires")
+      screen.getByText("Déclaration d'écoconception de l'espace partenaire")
     ).toBeVisible()
   })
 
