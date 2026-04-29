@@ -148,6 +148,7 @@ class _FIELDS_V2:
     STREET = Field(description="Street name and number", example="182 Rue Saint-Honoré")
     ADDRESS_ID = Field(description="Address id in the pass Culture DB", example=1)
     ADDRESS_LABEL = Field(description="Address label", example="Zénith Paris")
+    ADDRESS_LABEL_WITH_DEFAULT = Field(description="Address label", example="Zénith Paris", default=None)
 
     # Booking fields
     BOOKING_ID = Field(description="Booking id", example=12346)
