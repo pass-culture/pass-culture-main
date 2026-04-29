@@ -12,6 +12,7 @@ describe('getValidationSchema', () => {
 
   const validDetailsFormValuesBase: Partial<DetailsFormValues> = {
     name: 'Valid Offer Name',
+    hasCulturalOutreachClaim: false,
     categoryId: 'MUSIQUE',
     subcategoryId: 'CONCERT',
     venueId: 'venue-123',

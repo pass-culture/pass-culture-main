@@ -282,6 +282,7 @@ describe('getInitialValuesFromOffer', () => {
       durationMinutes: '',
       ean: '1234567891234',
       gtl_id: '',
+      hasCulturalOutreachClaim: false,
       name: 'Le nom de l’offre 1',
       performer: 'Le Poing de Chuck',
       showSubType: 'PEGI 18',
@@ -400,6 +401,7 @@ describe('getFormReadOnlyFields', () => {
 
   it('should disable all fields except name & description for provided offers when the venue is a museum', () => {
     const expectedValues = [
+      'hasCulturalOutreachClaim',
       'venueId',
       'categoryId',
       'subcategoryId',

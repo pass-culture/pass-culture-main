@@ -161,6 +161,7 @@ describe('serializeExtraData', () => {
 describe('serializeDetailsPostData', () => {
   const formValuesBase: DetailsFormValues = {
     name: ' Festival de la Musique ',
+    hasCulturalOutreachClaim: false,
     description: ' Ancien festival annuel musical ',
     venueId: '0',
     categoryId: 'anything',
@@ -210,6 +211,7 @@ describe('serializeDetailsPostData', () => {
         visa: '123456789',
         ean: 'any ean',
       },
+      hasCulturalOutreachClaim: false,
       productId: 12,
       audioDisabilityCompliant: true,
       mentalDisabilityCompliant: false,
@@ -273,6 +275,7 @@ describe('serializeDetailsPostData', () => {
 describe('serializeDetailsPatchData', () => {
   const formValuesBase: DetailsFormValues = {
     name: ' Festival de la Musique ',
+    hasCulturalOutreachClaim: false,
     description: ' Ancien festival annuel musical ',
     venueId: '0',
     categoryId: 'anything',
@@ -321,6 +324,7 @@ describe('serializeDetailsPatchData', () => {
         visa: '123456789',
         ean: 'any ean',
       },
+      hasCulturalOutreachClaim: false,
       audioDisabilityCompliant: true,
       mentalDisabilityCompliant: false,
       motorDisabilityCompliant: true,

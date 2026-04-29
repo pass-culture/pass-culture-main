@@ -3,6 +3,7 @@ import { ArtistType } from '@/apiClient/v1'
 // TODO (igabriele, 2025-07-24): Either remove useless initialized props or make them strict and non-optional once the FF is enabled in production.
 export const DEFAULT_DETAILS_FORM_VALUES = {
   name: '',
+  hasCulturalOutreachClaim: false,
   description: '',
   venueId: '',
   categoryId: '',

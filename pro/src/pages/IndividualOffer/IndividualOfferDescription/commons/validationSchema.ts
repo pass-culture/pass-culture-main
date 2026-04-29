@@ -43,6 +43,7 @@ const isAnyTrue = (values: Record<string, boolean>): boolean =>
 
 const commonValidationShape = {
   name: yup.string().trim().max(90).required('Veuillez renseigner un titre'),
+  hasCulturalOutreachClaim: yup.boolean(),
   description: yup.string(),
   author: yup.string(),
   artistOfferLinks: yup
