@@ -110,8 +110,7 @@ jobs:
       id-token: write
       contents: read
     secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      WORKLOAD_IDENTITY_PRD: ${{ secrets.WORKLOAD_IDENTITY_PRD }}
     with:
       ENV: "testing"
       CHANNEL: ${{ needs.deploy-preview-env-init.outputs.resource_label }}
