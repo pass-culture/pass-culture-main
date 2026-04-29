@@ -72,6 +72,9 @@
   {% if allowed_actions.actions.TAG in allowed_actions.inline_actions %}
     {{ action_bar_button("tag", "Tagger", modal_id="#tag-public-account-modal") }}
   {% endif %}
+  {% if allowed_actions.actions.EXTEND_DEPOSIT in allowed_actions.inline_actions %}
+    {{ action_bar_button("calendar-plus", "Étendre la validité", modal_id="#extend-deposit-modal") }}
+  {% endif %}
   <!-- ADDITIONAL BUTTONS TO PUT IN DROPDOWN MENU -->
   {% if allowed_actions.additional_actions %}
     <ul class="dropdown-menu">
@@ -110,6 +113,9 @@
       {% endif %}
       {% if allowed_actions.actions.TAG in allowed_actions.additional_actions %}
         <li>{{ action_bar_additional_button("tag", "Tagger", modal_id="#tag-public-account-modal") }}</li>
+      {% endif %}
+      {% if allowed_actions.actions.EXTEND_DEPOSIT in allowed_actions.additional_actions %}
+        <li>{{ action_bar_additional_button("calendar-plus", "Étendre la validité", modal_id="#extend-deposit-modal") }}</li>
       {% endif %}
     </ul>
     <button type="button"
@@ -326,5 +332,8 @@
   {% endif %}
   {% if allowed_actions.actions.TAG in allowed_actions %}
     {{ build_simple_modal_form("tag-public-account", tag_public_account_dst, tag_public_account_form, "Taguer", "Enregistrer") }}
+  {% endif %}
+  {% if allowed_actions.actions.EXTEND_DEPOSIT in allowed_actions %}
+    {{ build_simple_modal_form("extend-deposit", extend_deposit_dst, extend_deposit_form, "Étendre la validité", "Enregistrer") }}
   {% endif %}
 {% endblock extra_main_content %}

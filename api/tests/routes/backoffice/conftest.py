@@ -65,6 +65,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     ],
     "support_n3": [
         perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT,
+        perm_models.Permissions.EXTEND_DEPOSIT_VALIDITY,
     ],
     "support_pro": [
         perm_models.Permissions.READ_PRO_ENTITY,
@@ -150,6 +151,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW,
         perm_models.Permissions.READ_BENEFICIARY_BONUS_CREDIT,
         perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT,
+        perm_models.Permissions.EXTEND_DEPOSIT_VALIDITY,
         perm_models.Permissions.MANAGE_BOOKINGS,
         perm_models.Permissions.READ_BOOKINGS,
         perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO,
@@ -236,6 +238,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW,
         perm_models.Permissions.READ_BENEFICIARY_BONUS_CREDIT,
         perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT,
+        perm_models.Permissions.EXTEND_DEPOSIT_VALIDITY,
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT,
         perm_models.Permissions.SUSPEND_USER,

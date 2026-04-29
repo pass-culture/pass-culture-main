@@ -1533,6 +1533,8 @@ def format_modified_info_name(info_name: str) -> str:
             return "Activité principale"
         case "isReimbursementSuspended":
             return "Remboursements gelés"
+        case "deposit.expirationDate":
+            return "Date d'expiration du crédit"
 
     if day := match_opening_hours(info_name):
         return f"Horaires du {day}"

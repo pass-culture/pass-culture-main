@@ -2610,6 +2610,103 @@ class BonusCreditRequestTest(PostEndpointHelper):
         assert response.status_code == 404
 
 
+class ExtendDepositValidityTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.extend_deposit_validity"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.EXTEND_DEPOSIT_VALIDITY
+
+    @pytest.mark.parametrize(
+        "original_offset, requested_offset",
+        [
+            (-1, 15),
+            (0, 1),
+            (89, 90),
+        ],
+    )
+    def test_extend_deposit_validity(self, legit_user, authenticated_client, original_offset, requested_offset):
+        original_expiration_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=original_offset)
+        user = users_factories.BeneficiaryFactory(deposit__expirationDate=original_expiration_date)
+
+        new_expiration_date = datetime.date.today() + datetime.timedelta(days=requested_offset)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            user_id=user.id,
+            form={"expiration_date": new_expiration_date.isoformat()},
+            follow_redirects=True,
+        )
+        assert response.status_code == 200  # after redirect
+
+        assert user.deposit.expirationDate.date() == new_expiration_date
+        assert len(user.action_history) == 1
+        action = user.action_history[0]
+        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.authorUser == legit_user
+        assert action.extraData == {
+            "modified_info": {
+                "deposit.expirationDate": {
+                    "old_info": original_expiration_date.date().isoformat(),
+                    "new_info": new_expiration_date.isoformat(),
+                }
+            }
+        }
+
+        assert (
+            html_parser.extract_alert(response.data)
+            == f"La validité du crédit a été prolongée jusqu'au {new_expiration_date.strftime('%d/%m/%Y')}."
+        )
+
+    @pytest.mark.parametrize(
+        "original_offset, requested_offset, expected_error",
+        [
+            (31, 30, "La nouvelle date doit être postérieure à la date d'expiration actuelle."),
+            (-1, 91, "Le crédit peut être prolongé jusqu'à 90 jours à compter d'aujourd'hui."),
+            (-30, -1, "Le crédit peut être prolongé jusqu'à 90 jours à compter d'aujourd'hui."),
+        ],
+    )
+    def test_extend_deposit_validity_fails(
+        self, authenticated_client, original_offset, requested_offset, expected_error
+    ):
+        original_expiration_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=original_offset)
+        user = users_factories.BeneficiaryFactory(deposit__expirationDate=original_expiration_date)
+
+        new_expiration_date = datetime.date.today() + datetime.timedelta(days=requested_offset)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            user_id=user.id,
+            form={"expiration_date": new_expiration_date.isoformat()},
+            follow_redirects=True,
+        )
+        assert response.status_code == 200  # after redirect
+
+        assert user.deposit.expirationDate == original_expiration_date
+        assert len(user.action_history) == 0
+
+        assert (
+            html_parser.extract_alert(response.data)
+            == f"Les données envoyées comportent des erreurs. Nouvelle date d'expiration du crédit : {expected_error} ;"
+        )
+
+    def test_extend_deposit_validity_when_user_does_not_exist(self, authenticated_client):
+        response = self.post_to_endpoint(
+            authenticated_client,
+            user_id=524288,
+            form={"expiration_date": "2027-12-31"},
+        )
+        assert response.status_code == 404
+
+    def test_extend_deposit_validity_when_user_has_no_deposit(self, authenticated_client):
+        user = users_factories.UserFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            user_id=user.id,
+            form={"expiration_date": "2027-12-31"},
+        )
+        assert response.status_code == 404
+
+
 class GetPublicAccountHistoryTest:
     def test_history_contains_creation_date(self):
         user = users_factories.UserFactory()

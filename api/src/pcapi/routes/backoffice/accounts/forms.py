@@ -1,13 +1,17 @@
 import datetime
 import enum
+import typing
 
 import sqlalchemy.orm as sa_orm
 import wtforms
 from flask import flash
 from flask_wtf import FlaskForm
+from wtforms import validators
 
 from pcapi.connectors.dms import models as dms_models
+from pcapi.core.finance import models as finance_models
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice import autocomplete
@@ -127,6 +131,31 @@ class BonusCreditRequestForm(FlaskForm):
             self.birth_city.errors = ["doit rester vide lorsque le représentant légal n'est pas né en France"]
             return False
         return super().validate(extra_validators)
+
+
+class ExtendCreditForm(FlaskForm):
+    expiration_date = fields.PCDateField(
+        "Nouvelle date d'expiration du crédit",
+        validators=[
+            validators.DataRequired("Information obligatoire"),
+            fields.DateRangeValidator(
+                message=f"Le crédit peut être prolongé jusqu'à {users_constants.MAX_DEPOSIT_EXTENSION_DAYS} jours à compter d'aujourd'hui.",
+                min=datetime.date.today(),
+                max=datetime.date.today() + datetime.timedelta(days=users_constants.MAX_DEPOSIT_EXTENSION_DAYS),
+            ),
+        ],
+    )
+
+    def __init__(self, deposit: finance_models.Deposit, **kwargs: typing.Any):
+        super().__init__(**kwargs)
+        assert deposit.expirationDate is not None  # helps mypy
+        self._current_expiration_date = deposit.expirationDate
+
+    def validate_expiration_date(self, field: fields.PCDateField) -> fields.PCDateField:
+        if field.data <= self._current_expiration_date.date():
+            raise wtforms.ValidationError("La nouvelle date doit être postérieure à la date d'expiration actuelle.")
+
+        return field
 
 
 class CommentForm(FlaskForm):
