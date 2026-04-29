@@ -2,8 +2,8 @@ import classnames from 'classnames'
 import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
 import { noop } from '@/commons/utils/noop'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { useIncome } from '@/pages/Reimbursements/Income/useIncome'
@@ -28,18 +28,11 @@ type VenueFormValues = {
 const Income = () => {
   const firstYearFilterRef = useRef<HTMLButtonElement>(null)
   const [activeYear, setActiveYear] = useState<number>()
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-  const selectedOffererId = useAppSelector(
-    (state) => state.offerer.currentOfferer
-  )?.id
-  const venues = useAppSelector((state) => state.user.venues)
-  const adminSelectedOfferer = useAppSelector(
-    (state) => state.user.selectedAdminOfferer
-  )
 
-  const offererId = withSwitchVenueFeature
-    ? adminSelectedOfferer?.id
-    : selectedOffererId
+  const venues = useAppSelector((state) => state.user.venues)
+  const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
+
+  const offererId = selectedAdminOfferer?.id
 
   const venueValues = formatAndOrderVenues(
     (venues ?? []).filter((venue) => venue.managingOffererId === offererId)
