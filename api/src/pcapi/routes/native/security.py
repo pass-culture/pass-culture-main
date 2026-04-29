@@ -10,7 +10,6 @@ from flask_login import login_user
 from pcapi.core.users import models as users_models
 from pcapi.core.users import sessions as user_session_manager
 from pcapi.models import db
-from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import UnauthorizedError
 from pcapi.routes.native.blueprint import JWT_AUTH
 from pcapi.serialization.spec_tree import add_security_scheme
@@ -28,7 +27,7 @@ def authenticated_and_active_user_required(route_function: RouteFunc) -> RouteDe
     @authenticated_maybe_inactive_user_required
     def retrieve_authenticated_user(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
         if not current_user.isActive:
-            _raise_forbidden(current_user.email)
+            _raise_forbidden(current_user.id)
         return route_function(*args, **kwargs)
 
     return retrieve_authenticated_user
@@ -41,7 +40,7 @@ def authenticated_maybe_inactive_user_required(route_function: RouteFunc) -> Rou
     def retrieve_authenticated_user(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
         if current_user.is_anonymous:
             if not hasattr(flask.g, "jwt"):
-                raise UnauthorizedError("Invalid token")
+                raise UnauthorizedError()
             _raise_forbidden(flask.g.jwt.data.sub)
         return route_function(*args, **kwargs)
 
@@ -57,7 +56,7 @@ def authenticated_with_refresh_token(route_function: RouteFunc) -> RouteDecorato
         )
 
         if not hasattr(flask.g, "jwt"):
-            raise UnauthorizedError("Invalid token")
+            raise UnauthorizedError()
 
         try:
             user = (
@@ -89,6 +88,6 @@ def authenticated_with_refresh_token(route_function: RouteFunc) -> RouteDecorato
     return _authenticated_with_refresh_token
 
 
-def _raise_forbidden(user_email: str) -> None:
-    logger.info("Authenticated user with email %s not found or inactive", user_email)
-    raise ForbiddenError({"email": ["Utilisateur introuvable"]})
+def _raise_forbidden(user_id: str) -> None:
+    logger.info("Authenticated user with id %s not found or inactive", user_id)
+    raise UnauthorizedError()
