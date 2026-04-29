@@ -88,7 +88,7 @@ class PublicAPIEndpointBaseHelper:
         """
         with testing.assert_num_queries(0):
             response = self.make_request(
-                json_body={} if self.endpoint_method in ("post", "patch") else None,
+                json_body={} if self.endpoint_method in ("post", "patch", "put") else None,
             )
             assert response.status_code == 401
 

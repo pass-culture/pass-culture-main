@@ -5,19 +5,23 @@ import typing
 import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
 from pydantic.v1.utils import GetterDict
+from typing_extensions import Annotated
 
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offers import models as offers_models
+from pcapi.core.providers.etls.cinema_etl_template import ShowFeatures
 from pcapi.core.videos import api as videos_api
 from pcapi.core.videos import exceptions as videos_exceptions
 from pcapi.routes import serialization
+from pcapi.routes.public.documentation_constants import descriptions
 from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.public.documentation_constants.fields_v2 import fields_v2
 from pcapi.routes.public.individual_offers.v1 import base_serialization
 from pcapi.routes.public.individual_offers.v1 import serialization as v1_serialization
 from pcapi.routes.public.serialization.utils import StrEnum
 from pcapi.serialization import utils as serialization_utils
+from pcapi.serialization.exceptions import PydanticError
 
 
 class EventCategoryEnum(StrEnum):
@@ -360,3 +364,173 @@ class EventCategoryResponse(serialization.HttpBodyModel):
 
 class GetEventCategoriesResponse(pydantic_v2.RootModel):
     root: list[EventCategoryResponse]
+
+
+# Cinema serializers
+
+
+def _validate_datetime(value: datetime.datetime) -> datetime.datetime:
+    formatted_value = serialization_utils.check_date_in_future_and_remove_timezone(value, pydantic_version="v2")
+    assert formatted_value  # to make mypy happy
+    return formatted_value
+
+
+def _validate_features(value: list[ShowFeatures]) -> list[ShowFeatures]:
+    if ShowFeatures.VF not in value and ShowFeatures.VO not in value:
+        raise PydanticError("You must indicate if cinema session is in `VF` or in `VO`")
+
+    if ShowFeatures.VF in value and ShowFeatures.VO in value:
+        raise PydanticError("The cinema session cannot be both in `VF` and in `VO`")
+
+    return list(set(value))  # to remove duplicates
+
+
+class CinemaStock(serialization.HttpBodyModel):
+    quantity: Annotated[
+        int,
+        pydantic_v2.Field(
+            ge=0,
+            le=offers_models.Stock.MAX_STOCK_QUANTITY,
+            example=10,
+            description="Quantity of seats currently available for given session",
+        ),
+    ]
+    price_category_id_at_provider: Annotated[
+        str,
+        pydantic_v2.Field(
+            min_length=1,
+            max_length=70,
+            description='The price category id on your side that you indicated in `"priceCategories"`',
+            example="PC_pricing",
+        ),
+    ]
+    id_at_provider: Annotated[str, pydantic_v2.Field(min_length=1, max_length=70)] = fields_v2.ID_AT_PROVIDER
+    features: Annotated[
+        list[ShowFeatures],
+        pydantic_v2.AfterValidator(_validate_features),
+        pydantic_v2.Field(
+            description='Show/session features. You must indicate the show/session language: either `"VF"` or `"VO"`.'
+        ),
+    ]
+    beginning_datetime: Annotated[
+        datetime.datetime,
+        pydantic_v2.AfterValidator(_validate_datetime),
+    ] = fields_v2.BEGINNING_DATETIME
+
+
+class CinemaPriceCategory(serialization.HttpBodyModel):
+    price: Annotated[int, pydantic_v2.Field(ge=0, le=30000)] = fields_v2.PRICE
+    label: Annotated[
+        str,
+        pydantic_v2.Field(
+            min_length=0,
+            max_length=50,
+            description="Price category label",
+            example="Tarif pass Culture",
+        ),
+    ]
+    id_at_provider: Annotated[
+        str,
+        pydantic_v2.Field(
+            min_length=1,
+            max_length=70,
+            description="Price category id on your side",
+            example="PC_pricing",
+        ),
+    ]
+
+
+class CinemaOfferAddress(serialization.HttpBodyModel):
+    id: int = fields_v2.ADDRESS_ID
+    label: Annotated[str, pydantic_v2.Field(min_length=1, max_length=200)] | None = fields_v2.ADDRESS_LABEL_WITH_DEFAULT
+
+
+def _validate_ids_at_provider_are_unique(
+    value: list[CinemaPriceCategory] | list[CinemaStock],
+) -> list[CinemaPriceCategory] | list[CinemaStock]:
+    id_at_providers = set()
+
+    for item in value:
+        if item.id_at_provider in id_at_providers:
+            raise PydanticError(f'`idAtProvider` "{item.id_at_provider}" is duplicated')
+        id_at_providers.add(item.id_at_provider)
+
+    return value
+
+
+class CinemaOffer(serialization.HttpBodyModel):
+    film_id: Annotated[  # either CNC visa or Allociné id
+        str,
+        pydantic_v2.Field(
+            pattern=r"^(visa|allocine_id)\:[0-9]+",
+            max_length=100,
+            description=descriptions.FILM_ID,
+            examples=["allocine_id:1000015954", "visa:164478"],
+        ),
+    ]
+    address: Annotated[
+        CinemaOfferAddress | None,
+        pydantic_v2.Field(default=None, description="Offer address if different from venue address"),
+    ]
+    stocks: Annotated[
+        list[CinemaStock],
+        pydantic_v2.Field(min_length=1, max_length=850, description="List of sessions/shows for given offer"),
+        pydantic_v2.AfterValidator(_validate_ids_at_provider_are_unique),
+    ]
+    price_categories: Annotated[
+        list[CinemaPriceCategory],
+        pydantic_v2.Field(min_length=1, max_length=10, description="Price categories available for offer stocks"),
+        pydantic_v2.AfterValidator(_validate_ids_at_provider_are_unique),
+    ]
+
+    @pydantic_v2.model_validator(mode="after")
+    def validate_price_categories(self) -> typing.Self:
+        price_categories_ids_in_stocks = {stock.price_category_id_at_provider for stock in self.stocks}
+        price_categories_ids = {price_category.id_at_provider for price_category in self.price_categories}
+        missing_price_categories_ids = price_categories_ids_in_stocks - price_categories_ids
+
+        if missing_price_categories_ids:
+            orderer_missing_ids = list(missing_price_categories_ids)
+            orderer_missing_ids.sort()
+            raise PydanticError(f"Missing `priceCategoryIdAtProvider`: {', '.join(orderer_missing_ids)}")
+
+        return self
+
+
+def _validate_there_is_no_duplicated_film_id_for_location(value: list[CinemaOffer]) -> list[CinemaOffer]:
+    """
+    Check that the venue or an address does not have two offers with the same `filmId`
+    """
+    venue_film_ids = set()
+    addresses_film_ids: dict[int, set[str]] = {}
+
+    for offer in value:
+        if offer.address:
+            address_films_ids = addresses_film_ids.get(offer.address.id, set())
+
+            # check for duplicate
+            if offer.film_id in address_films_ids:
+                raise PydanticError(
+                    f'Film id "{offer.film_id}" is duplicated in payload for address {offer.address.id}'
+                )
+
+            # store filmd_id
+            address_films_ids.add(offer.film_id)
+            addresses_film_ids[offer.address.id] = address_films_ids
+        else:
+            # check for duplicate
+            if offer.film_id in venue_film_ids:
+                raise PydanticError(f'Film id "{offer.film_id}" is duplicated in payload')
+
+            # store film_id
+            venue_film_ids.add(offer.film_id)
+    return value
+
+
+class PutCinemaSessions(serialization.HttpBodyModel):
+    venue_id: int = fields_v2.VENUE_ID
+    offers: Annotated[
+        list[CinemaOffer],
+        pydantic_v2.Field(min_length=1, max_length=250, description=descriptions.CINEMA_OFFER_LIST),
+        pydantic_v2.AfterValidator(_validate_there_is_no_duplicated_film_id_for_location),
+    ]

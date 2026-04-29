@@ -96,3 +96,18 @@ The date and time when the offer becomes bookable in the beneficiary application
 - Must be a timezone-aware datetime in **[ISO 8601 format](https://fr.wikipedia.org/wiki/ISO_8601)**.
 - Must be a datetime in the future. Offer bookability is updated every 15 minutes. As a result, there may be a short delay between the specified datetime and the actual moment the offer becomes bookable.
 """
+
+# Cinema descriptions
+
+FILM_ID = """
+Can be either a **CNC visa** or an **Allociné id**:
+
+- pattern for a **CNC visa**: `"visa:{visa_number}"`
+- pattern for an **Allociné id**: `"allocine_id:{id}"`
+"""
+
+CINEMA_OFFER_LIST = """
+List of cinema offers identified either by a CNC visa or an Allocine Id.
+
+**ℹ️ Important notice:** For a given identifier, there can be only one offer per location (ie. per venue/address).
+"""

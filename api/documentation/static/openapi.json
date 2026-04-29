@@ -1628,6 +1628,182 @@
                 "title": "CONFERENCE_read",
                 "type": "object"
             },
+            "CinemaOffer": {
+                "additionalProperties": false,
+                "properties": {
+                    "address": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/CinemaOfferAddress"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "description": "Offer address if different from venue address"
+                    },
+                    "filmId": {
+                        "description": "\nCan be either a **CNC visa** or an **Allocin\u00e9 id**:\n\n- pattern for a **CNC visa**: `\"visa:{visa_number}\"`\n- pattern for an **Allocin\u00e9 id**: `\"allocine_id:{id}\"`\n",
+                        "examples": [
+                            "allocine_id:1000015954",
+                            "visa:164478"
+                        ],
+                        "maxLength": 100,
+                        "pattern": "^(visa|allocine_id)\\:[0-9]+",
+                        "title": "Filmid",
+                        "type": "string"
+                    },
+                    "priceCategories": {
+                        "description": "Price categories available for offer stocks",
+                        "items": {
+                            "$ref": "#/components/schemas/CinemaPriceCategory"
+                        },
+                        "maxItems": 10,
+                        "minItems": 1,
+                        "title": "Pricecategories",
+                        "type": "array"
+                    },
+                    "stocks": {
+                        "description": "List of sessions/shows for given offer",
+                        "items": {
+                            "$ref": "#/components/schemas/CinemaStock"
+                        },
+                        "maxItems": 850,
+                        "minItems": 1,
+                        "title": "Stocks",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "filmId",
+                    "stocks",
+                    "priceCategories"
+                ],
+                "title": "CinemaOffer",
+                "type": "object"
+            },
+            "CinemaOfferAddress": {
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "description": "Address id in the pass Culture DB",
+                        "example": 1,
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "label": {
+                        "anyOf": [
+                            {
+                                "maxLength": 200,
+                                "minLength": 1,
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "description": "Address label",
+                        "example": "Z\u00e9nith Paris",
+                        "title": "Label"
+                    }
+                },
+                "required": [
+                    "id"
+                ],
+                "title": "CinemaOfferAddress",
+                "type": "object"
+            },
+            "CinemaPriceCategory": {
+                "additionalProperties": false,
+                "properties": {
+                    "idAtProvider": {
+                        "description": "Price category id on your side",
+                        "example": "PC_pricing",
+                        "maxLength": 70,
+                        "minLength": 1,
+                        "title": "Idatprovider",
+                        "type": "string"
+                    },
+                    "label": {
+                        "description": "Price category label",
+                        "example": "Tarif pass Culture",
+                        "maxLength": 50,
+                        "minLength": 0,
+                        "title": "Label",
+                        "type": "string"
+                    },
+                    "price": {
+                        "description": "Offer price in euro cents",
+                        "example": 1000,
+                        "maximum": 30000,
+                        "minimum": 0,
+                        "title": "Price",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "price",
+                    "label",
+                    "idAtProvider"
+                ],
+                "title": "CinemaPriceCategory",
+                "type": "object"
+            },
+            "CinemaStock": {
+                "additionalProperties": false,
+                "properties": {
+                    "beginningDatetime": {
+                        "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2025-07-24T14:00:00+02:00",
+                        "format": "date-time",
+                        "title": "Beginningdatetime",
+                        "type": "string"
+                    },
+                    "features": {
+                        "description": "Show/session features. You must indicate the show/session language: either `\"VF\"` or `\"VO\"`.",
+                        "items": {
+                            "$ref": "#/components/schemas/ShowFeatures"
+                        },
+                        "title": "Features",
+                        "type": "array"
+                    },
+                    "idAtProvider": {
+                        "description": "Id of the object (product, event...) on your side. It should not be more than 70 characters long.",
+                        "example": "Your own id",
+                        "maxLength": 70,
+                        "minLength": 1,
+                        "title": "Idatprovider",
+                        "type": "string"
+                    },
+                    "priceCategoryIdAtProvider": {
+                        "description": "The price category id on your side that you indicated in `\"priceCategories\"`",
+                        "example": "PC_pricing",
+                        "maxLength": 70,
+                        "minLength": 1,
+                        "title": "Pricecategoryidatprovider",
+                        "type": "string"
+                    },
+                    "quantity": {
+                        "description": "Quantity of seats currently available for given session",
+                        "example": 10,
+                        "maximum": 1000000,
+                        "minimum": 0,
+                        "title": "Quantity",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "quantity",
+                    "priceCategoryIdAtProvider",
+                    "idAtProvider",
+                    "features",
+                    "beginningDatetime"
+                ],
+                "title": "CinemaStock",
+                "type": "object"
+            },
             "CollectiveBookingResponseModel": {
                 "properties": {
                     "cancellationLimitDate": {
@@ -7883,6 +8059,33 @@
                 "title": "ProviderUpdate",
                 "type": "object"
             },
+            "PutCinemaSessions": {
+                "additionalProperties": false,
+                "properties": {
+                    "offers": {
+                        "description": "\nList of cinema offers identified either by a CNC visa or an Allocine Id.\n\n**\u2139\ufe0f Important notice:** For a given identifier, there can be only one offer per location (ie. per venue/address).\n",
+                        "items": {
+                            "$ref": "#/components/schemas/CinemaOffer"
+                        },
+                        "maxItems": 250,
+                        "minItems": 1,
+                        "title": "Offers",
+                        "type": "array"
+                    },
+                    "venueId": {
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
+                        "example": 535,
+                        "title": "Venueid",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "venueId",
+                    "offers"
+                ],
+                "title": "PutCinemaSessions",
+                "type": "object"
+            },
             "RENCONTRE_EN_LIGNE_create": {
                 "description": "Rencontre en ligne",
                 "properties": {
@@ -8706,6 +8909,16 @@
                 ],
                 "title": "SearchAddressResponse",
                 "type": "object"
+            },
+            "ShowFeatures": {
+                "enum": [
+                    "VF",
+                    "VO",
+                    "3D",
+                    "ICE"
+                ],
+                "title": "ShowFeatures",
+                "type": "string"
             },
             "ShowTypeEnum": {
                 "description": "An enumeration.",
@@ -10599,6 +10812,59 @@
                 "summary": "Get Event Categories",
                 "tags": [
                     "Offer Attributes"
+                ]
+            }
+        },
+        "/public/offers/v1/events/cinema_sessions": {
+            "put": {
+                "description": "**\u26a0\ufe0f WARNING: This endpoint is not yet functional (offers & stocks will not be created), this is an endpoint preview to test its interface.**\n\nThis endpoint allows for the batch update (update/insert/delete) cinema sessions for a venue.\n\n**\u2139\ufe0fImportant information:**\n\n- On pass Culture side, a film corresponds to an offer and a session/show corresponds to a stock. Therefore, **for a given `\"filmId\"`, there can be only one offer in each location** (a location being the venue address or an address specified in the `\"address\"` section of the payload).\n\n- As it is a batch update, **for each film we expect you to send _all_ the sessions scheduled in the future**. Any missing session in subsequent calls will be considered as cancelled and soft deleted on our side.",
+                "operationId": "PutBatchUpdateCinemaSessions",
+                "parameters": [],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PutCinemaSessions"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "Payload successfully received"
+                    },
+                    "400": {
+                        "description": "The request is invalid. The response body contains a list of errors."
+                    },
+                    "401": {
+                        "description": "Authentication is necessary to use this API."
+                    },
+                    "404": {
+                        "description": "The venue could not found for your API key."
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "(PREVIEW) Batch Update Cinema Sessions",
+                "tags": [
+                    "Event Offers"
                 ]
             }
         },
