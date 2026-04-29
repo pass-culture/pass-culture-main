@@ -3,6 +3,7 @@ from datetime import timedelta
 
 import flask
 import pytest
+from flask_jwt_extended.utils import create_access_token
 from flask_jwt_extended.utils import create_refresh_token
 from flask_jwt_extended.utils import decode_token
 
@@ -181,3 +182,35 @@ class DeleteExpiredJwtTest:
 
         assert db.session.query(users_models.NativeUserSession).count() == 1
         assert db.session.query(users_models.NativeUserSession.id).scalar() == valid_session.id
+
+
+class DeleteJwtTest:
+    def test_delete_jwt(self):
+        user = users_factories.BaseUserFactory()
+        access_token = create_access_token(identity=str(user.id))
+        decoded_access_token = decode_token(access_token)
+        flask.g.jwt = _native.JwtContainer(
+            raw=access_token,
+            data=_native.JwtData(
+                fresh=False,
+                iat=datetime.fromtimestamp(decoded_access_token["iat"]),
+                jti=decoded_access_token["jti"],
+                type=_native.JwtType.REFRESH,
+                sub=decoded_access_token["sub"],
+                nbf=datetime.fromtimestamp(decoded_access_token["nbf"]),
+                csrf=decoded_access_token["csrf"],
+                exp=datetime.fromtimestamp(decoded_access_token["exp"]),
+                user_claims=None,
+            ),
+        )
+        users_factories.NativeUserSessionFactory(user=user, accessToken=decoded_access_token["jti"])
+
+        user_2 = users_factories.BaseUserFactory()
+        user_2_session = users_factories.NativeUserSessionFactory(user=user_2)
+
+        assert db.session.query(users_models.NativeUserSession).count() == 2
+
+        _native.delete_jwt()
+
+        assert db.session.query(users_models.NativeUserSession).count() == 1
+        assert db.session.query(users_models.NativeUserSession.id).scalar() == user_2_session.id

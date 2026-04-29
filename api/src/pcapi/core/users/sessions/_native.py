@@ -206,3 +206,9 @@ def delete_expired_jwt() -> None:
     db.session.query(users_models.NativeUserSession).filter(
         users_models.NativeUserSession.expirationDatetime < date_utils.get_naive_utc_now()
     ).delete(synchronize_session=False)
+
+
+def delete_jwt() -> None:
+    db.session.query(users_models.NativeUserSession).filter(
+        users_models.NativeUserSession.accessToken == flask.g.jwt.data.jti,
+    ).delete(synchronize_session=False)
