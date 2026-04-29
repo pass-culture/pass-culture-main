@@ -6,7 +6,7 @@ import {
   GetOffererAddressesWithOffersOption,
   GetVenueAddressesWithOffersOption,
 } from '@/apiClient/v1'
-import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import {
   GET_CATEGORIES_QUERY_KEY,
   GET_OFFERS_QUERY_KEY,
@@ -23,6 +23,7 @@ import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
 import { useVenueAddresses } from '@/commons/hooks/swr/useVenueAddresses'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { useGracefulSwrResponse } from '@/commons/hooks/useGracefulSwrResponse'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { sortByLabel } from '@/commons/utils/strings'
@@ -117,22 +118,35 @@ export const IndividualOffers = (): JSX.Element => {
     )
   })
 
-  const offers = offersQuery.error ? [] : offersQuery.data || []
+  const offersResponse = useGracefulSwrResponse(
+    offersQuery,
+    'Une erreur est survenue pendant le rafraîchissement des offres.'
+  )
+  if (offersResponse.hasFirstLoadError) {
+    return (
+      <>
+        <MainHeading mainHeading="Offres individuelles" />
+        <p>Nous n'avons pas pu récupérer la liste des offres.</p>
+      </>
+    )
+  }
 
   return (
-    <HeadlineOfferContextProvider>
-      <BasicLayout mainHeading="Offres individuelles">
+    <>
+      <MainHeading mainHeading="Offres individuelles" />
+
+      <HeadlineOfferContextProvider>
         <IndividualOffersContainer
           categories={categoriesOptions}
           currentPageNumber={currentPageNumber}
           initialSearchFilters={apiFilters}
-          isLoading={offersQuery.isLoading}
-          offers={offers}
+          isLoading={offersResponse.isFirstLoading}
+          offers={offersResponse.data}
           redirectWithSelectedFilters={redirectWithSelectedFilters}
           offererAddresses={offererAddresses}
         />
-      </BasicLayout>
-    </HeadlineOfferContextProvider>
+      </HeadlineOfferContextProvider>
+    </>
   )
 }
 

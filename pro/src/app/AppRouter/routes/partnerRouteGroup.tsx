@@ -27,6 +27,13 @@ export const partnerRouteGroup: CustomRouteGroup = {
     // Individual
 
     {
+      path: 'offres',
+      lazy: () => import('@/pages/IndividualOffers/IndividualOffers'),
+      handle: {
+        title: 'Offres individuelles',
+      },
+    },
+    {
       path: 'reservations',
       handle: {
         title: 'Réservations individuelles',

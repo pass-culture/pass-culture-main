@@ -1,47 +1,32 @@
 import { screen } from '@testing-library/react'
 import type { RouteObject } from 'react-router'
 
-import { defaultGetOffererVenueResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { PartnerLayout } from './PartnerLayout'
 
-vi.mock('@/app/AppRouter/utils', async () => ({
-  ...(await vi.importActual('@/app/AppRouter/utils')),
-  hasNewHomepage: () => false,
-}))
-
 const user = sharedCurrentUserFactory()
 
-const buildRoutes = (childPath: string, childTitle: string): RouteObject[] => [
+const routes: RouteObject[] = [
   {
     path: '/',
     Component: PartnerLayout,
     children: [
       {
-        path: childPath,
-        handle: { title: childTitle },
+        path: 'accueil',
         element: <div data-testid="outlet-content">Page content</div>,
       },
     ],
   },
 ]
 
-const renderPartnerLayout = (
-  childPath = 'accueil',
-  childTitle = 'Espace acteurs culturels'
-) => {
+const renderPartnerLayout = () => {
   renderWithProviders(null, {
-    routes: buildRoutes(childPath, childTitle),
-    initialRouterEntries: [`/${childPath}`],
+    routes,
+    initialRouterEntries: ['/accueil'],
     user,
-    storeOverrides: {
-      user: {
-        currentUser: user,
-        selectedPartnerVenue: defaultGetOffererVenueResponseModel,
-      },
-    },
+    storeOverrides: { user: { currentUser: user } },
   })
 }
 
@@ -52,23 +37,9 @@ describe('PartnerLayout', () => {
     expect(screen.getByTestId('outlet-content')).toBeInTheDocument()
   })
 
-  it('should display the legacy heading on /accueil', () => {
+  it('should not render any main heading on its own', () => {
     renderPartnerLayout()
 
-    expect(
-      screen.getByRole('heading', {
-        name: 'Bienvenue sur votre espace partenaire',
-      })
-    ).toBeInTheDocument()
-  })
-
-  it('should display the route handle title as heading for non-homepage routes', () => {
-    renderPartnerLayout('reservations', 'Réservations individuelles')
-
-    expect(
-      screen.getByRole('heading', {
-        name: 'Réservations individuelles',
-      })
-    ).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { level: 1 })).not.toBeInTheDocument()
   })
 })

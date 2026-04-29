@@ -18,6 +18,7 @@ import {
 import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeIndividualOffersUrl } from '@/commons/core/Offers/utils/computeIndividualOffersUrl'
 import type { Audience } from '@/commons/core/shared/types'
+import * as useAccessibleScrollModule from '@/commons/hooks/useAccessibleScroll'
 import {
   defaultGetOffererResponseModel,
   listOffersOfferFactory,
@@ -126,17 +127,17 @@ const renderIndividualOffers = async (
 }
 
 describe('IndividualOffers', () => {
+  const scrollToContentWrapperMock = vi.fn()
+
   let offersRecap: ListOffersOfferResponseModel[]
   offersRecap = [listOffersOfferFactory({ venue: proVenues[0] })]
 
-  // Necessary because JSDOM doesn't implement the `scrollTo` method
-  // (which is used by the `useAccessibleScroll` hook in that component's scope)
-  beforeAll(() => {
-    Element.prototype.scrollTo = () => {}
-    window.scrollTo = () => {}
-  })
-
   beforeEach(() => {
+    vi.spyOn(useAccessibleScrollModule, 'useAccessibleScroll').mockReturnValue({
+      contentWrapperRef: { current: null },
+      scrollToContentWrapper: scrollToContentWrapperMock,
+    })
+
     vi.spyOn(api, 'getCategories').mockResolvedValue(categoriesAndSubcategories)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [],
@@ -766,6 +767,7 @@ describe('IndividualOffers', () => {
 
       expect(screen.getByLabelText(offers[10].name)).toBeInTheDocument()
       expect(screen.queryByLabelText(offers[0].name)).not.toBeInTheDocument()
+      expect(scrollToContentWrapperMock).toHaveBeenCalledTimes(1)
     })
 
     it('should display previous page when clicking on left arrow', async () => {
@@ -783,6 +785,7 @@ describe('IndividualOffers', () => {
 
       expect(screen.getByLabelText(offers[0].name)).toBeInTheDocument()
       expect(screen.queryByText(offers[10].name)).not.toBeInTheDocument()
+      expect(scrollToContentWrapperMock).toHaveBeenCalledTimes(2)
     })
 
     describe('when 101 offers are fetched', () => {

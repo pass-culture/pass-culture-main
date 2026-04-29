@@ -5,6 +5,7 @@ import {
   DMSApplicationstatus,
   type GetVenueResponseModel,
 } from '@/apiClient/v1'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -117,6 +118,10 @@ export const NewHomepage = (): JSX.Element => {
 
   return (
     <>
+      <MainHeading
+        mainHeading={`Votre espace ${selectedPartnerVenue.publicName}`}
+      />
+
       {shouldDisplayVenueValidationBanner && (
         <div className={styles['venue-validation-banner']}>
           <VenueValidationBanner />

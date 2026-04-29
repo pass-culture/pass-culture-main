@@ -16,14 +16,13 @@ vi.mock('@/commons/hooks/swr/useOffererNamesQuery', () => ({
 
 const user = sharedCurrentUserFactory()
 
-const buildRoutes = (childTitle: string): RouteObject[] => [
+const buildRoutes = (): RouteObject[] => [
   {
     path: '/administration',
     Component: AdministrationLayout,
     children: [
       {
         path: 'donnees-activite/individuel',
-        handle: { title: childTitle },
         element: <div data-testid="outlet-content">Page content</div>,
       },
     ],
@@ -39,7 +38,6 @@ const offererNamesValidated = [
 ]
 
 const renderAdministrationLayout = (
-  childTitle = "Données d'activité : individuel",
   offererCount = 1,
   options?: RenderWithProvidersOptions
 ) => {
@@ -53,7 +51,7 @@ const renderAdministrationLayout = (
   )
 
   renderWithProviders(null, {
-    routes: buildRoutes(childTitle),
+    routes: buildRoutes(),
     initialRouterEntries: ['/administration/donnees-activite/individuel'],
     user,
     storeOverrides: {
@@ -78,29 +76,19 @@ describe('AdministrationLayout', () => {
     expect(screen.getByTestId('outlet-content')).toBeInTheDocument()
   })
 
-  it('should display the route handle title as heading', () => {
-    renderAdministrationLayout("Données d'activité : individuel")
-
-    expect(
-      screen.getByRole('heading', {
-        name: "Données d'activité : individuel",
-      })
-    ).toBeInTheDocument()
-  })
-
   it('should not display offerer select when there is only one offerer', () => {
-    renderAdministrationLayout(undefined, 1)
+    renderAdministrationLayout(1)
 
     expect(screen.queryByLabelText('Entité juridique')).not.toBeInTheDocument()
   })
 
   it('should display offerer select when there are multiple offerers', () => {
-    renderAdministrationLayout(undefined, 2)
+    renderAdministrationLayout(2)
 
     expect(screen.getByLabelText('Entité juridique')).toBeInTheDocument()
   })
   it('should render non attached banner if offerer is not attached', () => {
-    renderAdministrationLayout(undefined, 2, {
+    renderAdministrationLayout(2, {
       storeOverrides: {
         offerer: {
           currentOfferer: {

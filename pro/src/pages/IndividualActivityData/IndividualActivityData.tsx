@@ -3,6 +3,7 @@ import {
   GetVenueAddressesWithOffersOption,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { formatAndOrderAddresses } from '@/commons/format/venuesService'
 import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
@@ -53,6 +54,7 @@ const IndividualActivityData = () => {
 
   return (
     <>
+      <MainHeading mainHeading="Données d'activité : individuel" />
       <h2 className={styles['subtitle']}>
         Téléchargement des réservations individuelles
       </h2>
