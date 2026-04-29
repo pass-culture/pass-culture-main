@@ -1,4 +1,5 @@
 import copy
+import logging
 from datetime import datetime
 from datetime import timezone
 
@@ -9,6 +10,7 @@ import pcapi.utils.date as date_utils
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import utils as finance_utils
+from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers import schemas as offerers_schemas
@@ -36,6 +38,9 @@ from pcapi.utils.transaction_manager import atomic
 
 from . import serialization
 from . import utils
+
+
+logger = logging.getLogger(__name__)
 
 
 def _deserialize_has_ticket(
@@ -805,3 +810,54 @@ def get_event_categories() -> events_serializers.GetEventCategoriesResponse:
                 )
             )
     return events_serializers.GetEventCategoriesResponse(root=event_categories_response)
+
+
+def _get_address(address_id: int) -> geography_models.Address | None:
+    return db.session.query(geography_models.Address).filter(geography_models.Address.id == address_id).one_or_none()
+
+
+@blueprints.public_api.route("/public/offers/v1/events/cinema_sessions", methods=["PUT"])
+@atomic()
+@api_key_required
+@spectree_serialize(
+    api=spectree_schemas.public_api_schema,
+    tags=[tags.EVENT_OFFERS],
+    on_success_status=204,
+    resp=SpectreeResponse(
+        **(
+            {"HTTP_204": (None, "Payload successfully received")}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_400_BAD_REQUEST
+            | http_responses.HTTP_404_VENUE_NOT_FOUND
+        )
+    ),
+)
+def put_batch_update_cinema_sessions(body: events_serializers.PutCinemaSessions) -> None:
+    """
+    (PREVIEW) Batch Update Cinema Sessions
+
+    **⚠️ WARNING: This endpoint is not yet functional (offers & stocks will not be created), this is an endpoint preview to test
+    its interface.**
+
+    This endpoint allows for the batch update (update/insert/delete) cinema sessions for a venue.
+
+    **ℹ️Important information:**
+
+    - On pass Culture side, a film corresponds to an offer and a session/show corresponds to a stock. Therefore, **for a given `"filmId"`,
+    there can be only one offer in each location** (a location being the venue address or an address specified in the `"address"` section of the payload).
+
+    - As it is a batch update, **for each film we expect you to send _all_ the sessions scheduled in the future**. Any missing session in subsequent calls
+    will be considered as cancelled and soft deleted on our side.
+    """
+    venue_provider = authorization.get_venue_provider_or_raise_404(body.venue_id)
+    venue = utils.get_venue_with_offerer_address(venue_provider.venueId)
+
+    for index, offer in enumerate(body.offers):
+        # Check addresses exist in DB
+        if offer.address:
+            address = _get_address(offer.address.id)
+            if not address:
+                raise api_errors.ResourceNotFoundError({f"offers.{index}.address.id": ["Address not found"]})
+
+    logger.info("Update cinema sessions", extra={"venue_id": venue.id, "payload": body.model_dump()})
