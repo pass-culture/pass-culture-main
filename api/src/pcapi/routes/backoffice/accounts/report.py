@@ -28,10 +28,10 @@ def _get_token_link(booking: bookings_models.Booking) -> str:
 
 
 def _get_incident_link(finance_incident: finance_models.FinanceIncident) -> str:
-    if True or not access_control.has_current_user_permission(perm_models.Permissions.READ_INCIDENTS):
+    if not access_control.has_current_user_permission(perm_models.Permissions.READ_INCIDENTS):
         return f"#{finance_incident.id}"
     return Markup('<a class="link-primary" href="{url}">#{incident_id}</a>').format(
-        token=finance_incident.id,
+        incident_id=finance_incident.id,
         url=url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident.id),
     )
 
