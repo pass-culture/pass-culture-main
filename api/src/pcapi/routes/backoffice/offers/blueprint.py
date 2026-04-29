@@ -1194,10 +1194,11 @@ def edit_offer(offer_id: int) -> response_utils.BackofficeResponse:
 
     flash("L'offre a été modifiée", "success")
 
-    if request_utils.is_request_from_htmx():
-        return _render_offer_rows([offer_id])
-
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.offer.list_offers"))
+    return request_utils.htmx_or_redirect(
+        url=url_for("backoffice_web.offer.list_offers"),
+        renderer=functools.partial(_render_offer_rows, [offer_id]),
+        follow_referer=True,
+    )
 
 
 @list_offers_blueprint.route("/<int:offer_id>/validate", methods=["GET"])
@@ -1244,10 +1245,11 @@ def _render_offer_rows(offer_ids: list[int]) -> response_utils.BackofficeRespons
 def validate_offer(offer_id: int) -> response_utils.BackofficeResponse:
     _batch_validate_offers([offer_id])
     flash("L'offre a été validée", "success")
-
-    if request_utils.is_request_from_htmx():
-        return _render_offer_rows([offer_id])
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.offer.list_offers"))
+    return request_utils.htmx_or_redirect(
+        url=url_for("backoffice_web.offer.list_offers"),
+        renderer=functools.partial(_render_offer_rows, [offer_id]),
+        follow_referer=True,
+    )
 
 
 @list_offers_blueprint.route("/<int:offer_id>/pending", methods=["GET"])
@@ -1281,10 +1283,11 @@ def pending_offer(offer_id: int) -> response_utils.BackofficeResponse:
         "L’offre est repassée en instruction et n'est plus réservable. Les réservations en cours ne sont pas annulées",
         "success",
     )
-
-    if request_utils.is_request_from_htmx():
-        return _render_offer_rows([offer_id])
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.offer.list_offers"))
+    return request_utils.htmx_or_redirect(
+        url=url_for("backoffice_web.offer.list_offers"),
+        renderer=functools.partial(_render_offer_rows, [offer_id]),
+        follow_referer=True,
+    )
 
 
 @list_offers_blueprint.route("/<int:offer_id>/reject", methods=["GET"])
@@ -1314,10 +1317,11 @@ def get_reject_offer_form(offer_id: int) -> response_utils.BackofficeResponse:
 def reject_offer(offer_id: int) -> response_utils.BackofficeResponse:
     _batch_reject_offers([offer_id])
     flash("L'offre a été rejetée", "success")
-
-    if request_utils.is_request_from_htmx():
-        return _render_offer_rows([offer_id])
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.offer.list_offers"))
+    return request_utils.htmx_or_redirect(
+        url=url_for("backoffice_web.offer.list_offers"),
+        renderer=functools.partial(_render_offer_rows, [offer_id]),
+        follow_referer=True,
+    )
 
 
 def _get_offer_recipients(offer: offers_models.Offer) -> list[str]:
@@ -2081,9 +2085,11 @@ def _batch_update_activation_offers(offer_ids: list[int], *, is_active: bool) ->
 def activate_offer(offer_id: int) -> response_utils.BackofficeResponse:
     _batch_update_activation_offers([offer_id], is_active=True)
     flash("L'offre a été publiée", "success")
-    if request_utils.is_request_from_htmx():
-        return _render_offer_rows([offer_id])
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.offer.list_offers"))
+    return request_utils.htmx_or_redirect(
+        url=url_for("backoffice_web.offer.list_offers"),
+        renderer=functools.partial(_render_offer_rows, [offer_id]),
+        follow_referer=True,
+    )
 
 
 @list_offers_blueprint.route("/batch-activate", methods=["POST"])
@@ -2105,9 +2111,11 @@ def batch_activate_offers() -> response_utils.BackofficeResponse:
 def deactivate_offer(offer_id: int) -> response_utils.BackofficeResponse:
     _batch_update_activation_offers([offer_id], is_active=False)
     flash("L'offre a été mise en pause, l’acteur pourra la réactiver", "success")
-    if request_utils.is_request_from_htmx():
-        return _render_offer_rows([offer_id])
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.offer.list_offers"))
+    return request_utils.htmx_or_redirect(
+        url=url_for("backoffice_web.offer.list_offers"),
+        renderer=functools.partial(_render_offer_rows, [offer_id]),
+        follow_referer=True,
+    )
 
 
 @list_offers_blueprint.route("/batch-deactivate", methods=["POST"])

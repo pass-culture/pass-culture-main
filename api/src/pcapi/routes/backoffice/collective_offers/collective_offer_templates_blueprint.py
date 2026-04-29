@@ -244,10 +244,9 @@ def get_validate_collective_offer_template_form(collective_offer_template_id: in
 def validate_collective_offer_template(collective_offer_template_id: int) -> response_utils.BackofficeResponse:
     _batch_validate_or_reject_collective_offer_templates(OfferValidationStatus.APPROVED, [collective_offer_template_id])
 
-    if request_utils.is_request_from_htmx():
-        return _render_collective_offers_templates([collective_offer_template_id])
-    return request_utils.safe_redirect_back(
-        request, url_for("backoffice_web.collective_offer_template.list_collective_offer_templates")
+    return request_utils.htmx_or_redirect(
+        url=url_for("backoffice_web.collective_offer_template.list_collective_offer_templates"),
+        renderer=functools.partial(_render_collective_offers_templates, [collective_offer_template_id]),
     )
 
 
@@ -290,10 +289,10 @@ def reject_collective_offer_template(collective_offer_template_id: int) -> respo
     form = collective_offer_forms.RejectCollectiveOfferForm()
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
-        if request_utils.is_request_from_htmx():
-            return _render_collective_offers_templates()
-        return request_utils.safe_redirect_back(
-            request, url_for("backoffice_web.collective_offer_template.list_collective_offer_templates")
+
+        return request_utils.htmx_or_redirect(
+            url=url_for("backoffice_web.collective_offer_template.list_collective_offer_templates"),
+            renderer=_render_collective_offers_templates,
         )
 
     _batch_validate_or_reject_collective_offer_templates(
@@ -301,10 +300,10 @@ def reject_collective_offer_template(collective_offer_template_id: int) -> respo
         [collective_offer_template_id],
         educational_models.CollectiveOfferRejectionReason(form.reason.data),
     )
-    if request_utils.is_request_from_htmx():
-        return _render_collective_offers_templates([collective_offer_template_id])
-    return request_utils.safe_redirect_back(
-        request, url_for("backoffice_web.collective_offer_template.list_collective_offer_templates")
+
+    return request_utils.htmx_or_redirect(
+        url=url_for("backoffice_web.collective_offer_template.list_collective_offer_templates"),
+        renderer=functools.partial(_render_collective_offers_templates, [collective_offer_template_id]),
     )
 
 

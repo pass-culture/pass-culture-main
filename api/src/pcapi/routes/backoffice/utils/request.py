@@ -8,7 +8,7 @@ from flask import url_for
 from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.wrappers import Response as WerkzeugResponse
 
-from .response import BackofficeResponse
+from pcapi.routes.backoffice.utils import response as response_utils
 
 
 def get_query_params() -> ImmutableMultiDict[str, str]:
@@ -24,13 +24,21 @@ def is_request_from_htmx() -> bool:
     return request.headers.get("hx-request") == "true" and not request.args.get("redirect", False)
 
 
-def redirect_if_not_htmx(route: str, render_function: Callable) -> BackofficeResponse:
+def htmx_or_redirect(
+    renderer: Callable, url: str, *, follow_referer: bool = False
+) -> response_utils.BackofficeResponse:
     if is_request_from_htmx():
-        return render_function()
-    return redirect(route, code=303)
+        return renderer()
+    return safe_redirect_back(
+        request=request,
+        default_url=url,
+        follow_referer=follow_referer,
+    )
 
 
-def safe_redirect_back(request: Request, default_url: str | None = None, *, code: int = 303) -> WerkzeugResponse:
+def safe_redirect_back(
+    request: Request, default_url: str | None = None, *, code: int = 303, follow_referer: bool = True
+) -> WerkzeugResponse:
     """
     Ensures that the referrer is from the same host before redirecting.
     """

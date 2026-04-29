@@ -1,6 +1,7 @@
 import typing
 from collections import defaultdict
 from datetime import datetime
+from functools import partial
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -811,14 +812,12 @@ def create_collective_booking_overpayment(collective_booking_id: int) -> respons
         # it is forbidden to create an overpayment on a booking with status PENDING_REIMBURSEMENT
         flash("Un incident ne peut être créé que sur une réservation remboursée", "warning")
         mark_transaction_as_invalid()
-        if request_utils.is_request_from_htmx():
-            return _render_collective_bookings([collective_booking_id])
-        return redirect(
-            url_for(
+        return request_utils.htmx_or_redirect(
+            url=url_for(
                 "backoffice_web.collective_offer.get_collective_offer_details",
                 collective_offer_id=collective_booking.collectiveStock.collectiveOfferId,
             ),
-            code=303,
+            renderer=partial(_render_collective_bookings, [collective_booking_id]),
         )
 
     form = forms.CollectiveOverPaymentIncidentCreationForm()
@@ -826,28 +825,24 @@ def create_collective_booking_overpayment(collective_booking_id: int) -> respons
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
         mark_transaction_as_invalid()
-        if request_utils.is_request_from_htmx():
-            return _render_collective_bookings([collective_booking_id])
-        return redirect(
-            url_for(
+        return request_utils.htmx_or_redirect(
+            url=url_for(
                 "backoffice_web.collective_offer.get_collective_offer_details",
                 collective_offer_id=collective_booking.collectiveStock.collectiveOfferId,
             ),
-            code=303,
+            renderer=partial(_render_collective_bookings, [collective_booking_id]),
         )
 
     if not (valid := validation.check_incident_collective_booking(collective_booking)):
         for message in valid.messages:
             flash(message, "warning")
         mark_transaction_as_invalid()
-        if request_utils.is_request_from_htmx():
-            return _render_collective_bookings([collective_booking_id])
-        return redirect(
-            url_for(
+        return request_utils.htmx_or_redirect(
+            url=url_for(
                 "backoffice_web.collective_offer.get_collective_offer_details",
                 collective_offer_id=collective_booking.collectiveStock.collectiveOfferId,
             ),
-            code=303,
+            renderer=partial(_render_collective_bookings, [collective_booking_id]),
         )
 
     incident = finance_api.create_overpayment_finance_incident_collective_booking(
@@ -863,14 +858,12 @@ def create_collective_booking_overpayment(collective_booking_id: int) -> respons
     )
 
     flash(Markup('Un nouvel <a href="{url}">incident</a> a été créé.').format(url=incident_url), "success")
-    if request_utils.is_request_from_htmx():
-        return _render_collective_bookings([collective_booking_id])
-    return redirect(
-        url_for(
+    return request_utils.htmx_or_redirect(
+        url=url_for(
             "backoffice_web.collective_offer.get_collective_offer_details",
             collective_offer_id=collective_booking.collectiveStock.collectiveOfferId,
         ),
-        code=303,
+        renderer=partial(_render_collective_bookings, [collective_booking_id]),
     )
 
 
@@ -900,14 +893,12 @@ def create_collective_booking_commercial_gesture(collective_booking_id: int) -> 
     if collective_booking.status != educational_models.CollectiveBookingStatus.CANCELLED:
         flash("Un geste commercial ne peut être créé que sur une réservation annulée", "warning")
         mark_transaction_as_invalid()
-        if request_utils.is_request_from_htmx():
-            return _render_collective_bookings([collective_booking_id])
-        return redirect(
-            url_for(
+        return request_utils.htmx_or_redirect(
+            url=url_for(
                 "backoffice_web.collective_offer.get_collective_offer_details",
                 collective_offer_id=collective_booking.collectiveStock.collectiveOfferId,
             ),
-            code=303,
+            renderer=partial(_render_collective_bookings, [collective_booking_id]),
         )
 
     form = forms.CollectiveCommercialGestureCreationForm()
@@ -915,28 +906,24 @@ def create_collective_booking_commercial_gesture(collective_booking_id: int) -> 
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
         mark_transaction_as_invalid()
-        if request_utils.is_request_from_htmx():
-            return _render_collective_bookings([collective_booking_id])
-        return redirect(
-            url_for(
+        return request_utils.htmx_or_redirect(
+            url=url_for(
                 "backoffice_web.collective_offer.get_collective_offer_details",
                 collective_offer_id=collective_booking.collectiveStock.collectiveOfferId,
             ),
-            code=303,
+            renderer=partial(_render_collective_bookings, [collective_booking_id]),
         )
 
     if not (valid := validation.check_commercial_gesture_collective_booking(collective_booking)):
         for message in valid.messages:
             flash(message, "warning")
         mark_transaction_as_invalid()
-        if request_utils.is_request_from_htmx():
-            return _render_collective_bookings([collective_booking_id])
-        return redirect(
-            url_for(
+        return request_utils.htmx_or_redirect(
+            url=url_for(
                 "backoffice_web.collective_offer.get_collective_offer_details",
                 collective_offer_id=collective_booking.collectiveStock.collectiveOfferId,
             ),
-            code=303,
+            renderer=partial(_render_collective_bookings, [collective_booking_id]),
         )
 
     incident = finance_api.create_finance_commercial_gesture_collective_booking(
@@ -952,14 +939,12 @@ def create_collective_booking_commercial_gesture(collective_booking_id: int) -> 
     )
 
     flash(Markup('Un nouveau <a href="{url}">geste commercial</a> a été créé.').format(url=incident_url), "success")
-    if request_utils.is_request_from_htmx():
-        return _render_collective_bookings([collective_booking_id])
-    return redirect(
-        url_for(
+    return request_utils.htmx_or_redirect(
+        url=url_for(
             "backoffice_web.collective_offer.get_collective_offer_details",
             collective_offer_id=collective_booking.collectiveStock.collectiveOfferId,
         ),
-        code=303,
+        renderer=partial(_render_collective_bookings, [collective_booking_id]),
     )
 
 
