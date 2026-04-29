@@ -98,3 +98,11 @@ tr:has([type="checkbox"]:checked) {
   /* fix for tomselect bug */
     min-height:2.25em;
 }
+
+.bg-primary-emphasis {
+  background-color: $purple-400;
+}
+
+.bg-secondary-emphasis {
+  background-color: $gray-100;
+}
