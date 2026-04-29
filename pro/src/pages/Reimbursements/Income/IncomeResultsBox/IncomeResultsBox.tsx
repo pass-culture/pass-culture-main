@@ -4,8 +4,6 @@ import type {
   IndividualRevenue,
   TotalRevenue,
 } from '@/apiClient/v1'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import {
   convertEuroToPacificFranc,
   formatPacificFranc,
@@ -59,12 +57,14 @@ const IncomeResultsSubBox = ({ title, number, help }: IncomeSubBoxProps) => {
 type IncomeResultsBoxProps = {
   type: keyof AggregatedRevenueModel
   income: TotalRevenue | CollectiveRevenue | IndividualRevenue
+  isCaledonian?: boolean
 }
 
-export const IncomeResultsBox = ({ type, income }: IncomeResultsBoxProps) => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-  const isCaledonian = useIsCaledonian(withSwitchVenueFeature)
-
+export const IncomeResultsBox = ({
+  type,
+  income,
+  isCaledonian = false,
+}: IncomeResultsBoxProps) => {
   const totalLabel =
     type === 'revenue'
       ? 'Chiffre d’affaires total réalisé'

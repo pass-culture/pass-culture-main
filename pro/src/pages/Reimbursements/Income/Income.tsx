@@ -32,10 +32,10 @@ const Income = () => {
   const venues = useAppSelector((state) => state.user.venues)
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
 
-  const offererId = selectedAdminOfferer?.id
-
   const venueValues = formatAndOrderVenues(
-    (venues ?? []).filter((venue) => venue.managingOffererId === offererId)
+    (venues ?? []).filter(
+      (venue) => venue.managingOffererId === selectedAdminOfferer?.id
+    )
   ).map((venue) => ({
     id: String(venue.value),
     label: venue.label,
@@ -181,6 +181,7 @@ const Income = () => {
                       <IncomeResultsBox
                         type="revenue"
                         income={activeYearIncome.revenue}
+                        isCaledonian={selectedAdminOfferer?.isCaledonian}
                       />
                     </div>
                   )}

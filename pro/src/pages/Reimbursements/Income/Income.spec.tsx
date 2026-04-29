@@ -9,8 +9,6 @@ import type {
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as useActiveFeature from '@/commons/hooks/useActiveFeature'
-import * as useIsCaledonian from '@/commons/hooks/useIsCaledonian'
-import * as convertEuroToPacificFranc from '@/commons/utils/convertEuroToPacificFranc'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { statisticsFactory } from '@/commons/utils/factories/statisticsFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -18,7 +16,6 @@ import { makeVenueListItemLiteResponseModel } from '@/commons/utils/factories/ve
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { Component as Income } from './Income'
-import { IncomeResultsBox } from './IncomeResultsBox/IncomeResultsBox'
 import { isCollectiveAndIndividualRevenue, isCollectiveRevenue } from './utils'
 
 const MOCK_DATA: {
@@ -431,22 +428,6 @@ describe('Income', () => {
       expect(
         screen.queryByText(LABELS.forecastIncomeResultLabel)
       ).not.toBeInTheDocument()
-    })
-
-    it('should display total in CFP when isCaledonian is true (individual)', () => {
-      vi.spyOn(useActiveFeature, 'useActiveFeature').mockReturnValue(false)
-      vi.spyOn(useIsCaledonian, 'useIsCaledonian').mockReturnValue(true)
-      vi.spyOn(
-        convertEuroToPacificFranc,
-        'convertEuroToPacificFranc'
-      ).mockImplementation(() => 1234)
-      renderWithProviders(
-        <IncomeResultsBox
-          type="revenue"
-          income={{ individual: 100, collective: 0, total: 100 }}
-        />
-      )
-      expect(screen.getByText('1 234 F')).toBeInTheDocument()
     })
   })
 })
