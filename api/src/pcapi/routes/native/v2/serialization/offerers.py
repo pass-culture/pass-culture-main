@@ -6,6 +6,27 @@ from pcapi.core.offerers.schemas import SocialMedia
 from pcapi.routes.serialization import HttpBodyModel
 
 
+EDUCATIONAL_DOMAIN_LABELS_FOR_NATIVE: dict[str, str] = {
+    "Architecture": "Architecture",
+    "Arts du cirque et arts de la rue": "Cirque et arts de la rue",
+    "Arts numériques": "Arts numériques",
+    "Arts visuels, arts plastiques, arts appliqués": "Arts visuels et plastiques",
+    "Cinéma, audiovisuel": "Cinéma",
+    "Culture scientifique, technique et industrielle": "Culture scientifique",
+    "Danse": "Danse",
+    "Design": "Design",
+    "Développement durable": "Développement durable",
+    "Univers du livre, de la lecture et des écritures": "Lecture et écriture",
+    "Musique": "Musique",
+    "Patrimoine": "Patrimoine",
+    "Photographie": "Photographie",
+    "Théâtre, expression dramatique, marionnettes": "Spectacle vivant",
+    "Bande dessinée": "Bande dessinée",
+    "Média et information": "Média et information",
+    "Mémoire": "Mémoire",
+}
+
+
 class VenueContact(HttpBodyModel):
     email: str | None = None
     phone_number: str | None = None
@@ -44,6 +65,11 @@ class AccessibilityData(HttpBodyModel):
     visual_disability: VisualDisability | None = None
 
 
+class CulturalDomainItem(HttpBodyModel):
+    id: int
+    name: str
+
+
 class VenueResponse(HttpBodyModel):
     id: int
     accessibility_data: AccessibilityData
@@ -53,6 +79,7 @@ class VenueResponse(HttpBodyModel):
     banner_url: pydantic_v2.HttpUrl | None = None
     contact: VenueContact | None = None
     city: str | None = None
+    cultural_domains: list[CulturalDomainItem] | None = None
     description: str | None = None
     external_accessibility_data: AccessibilityData | None = None
     external_accessibility_id: str | None = None
@@ -122,4 +149,13 @@ class VenueResponse(HttpBodyModel):
             timezone=venue.offererAddress.address.timezone,
             volunteering_url=venue.volunteeringUrl,
             withdrawal_details=venue.withdrawalDetails,
+            cultural_domains=[
+                CulturalDomainItem(
+                    id=domain.id,
+                    name=EDUCATIONAL_DOMAIN_LABELS_FOR_NATIVE.get(domain.name, domain.name),
+                )
+                for domain in sorted(venue.collectiveDomains, key=lambda d: d.id)
+            ]
+            if not venue.isOpenToPublic
+            else None,
         )
