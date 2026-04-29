@@ -67,3 +67,7 @@ class DateTimeCastError(ApiErrors):
 
 class UuidCastError(ApiErrors):
     status_code = 400
+
+
+class InternalError(ApiErrors):
+    status_code = 500
