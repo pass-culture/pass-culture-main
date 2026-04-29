@@ -466,7 +466,7 @@ export const routes: CustomRouteTree = [
   {
     loader: noop,
     path: '/ecoconception',
-    title: 'Déclaration d’écoconception de l’espace partenaires',
+    title: 'Déclaration d’écoconception de l’espace partenaire',
     children: routesEcoDesign,
   },
   {
