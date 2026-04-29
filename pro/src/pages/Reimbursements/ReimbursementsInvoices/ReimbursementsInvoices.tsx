@@ -9,10 +9,8 @@ import {
   GET_INVOICES_QUERY_KEY,
   GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
 import { FORMAT_ISO_DATE_ONLY, getToday } from '@/commons/utils/date'
 import { isEqual } from '@/commons/utils/isEqual'
 import { sortByLabel } from '@/commons/utils/strings'
@@ -26,16 +24,10 @@ import { InvoiceTable } from './InvoiceTable/InvoiceTable'
 
 const ReimbursementsInvoices = (): JSX.Element => {
   const [, setSearchParams] = useSearchParams()
-  const selectedOffererId = useAppSelector(selectCurrentOffererId)
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-  const adminSelectedOfferer = useAppSelector(
-    (store) => store.user.selectedAdminOfferer
-  )
-  const isCaledonian = useIsCaledonian(withSwitchVenueFeature)
+  const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
+  const isCaledonian = selectedAdminOfferer.isCaledonian
 
-  const offererId = withSwitchVenueFeature
-    ? adminSelectedOfferer?.id
-    : selectedOffererId
+  const offererId = selectedAdminOfferer?.id
 
   const INITIAL_FILTERS = useMemo(() => {
     const today = getToday()
