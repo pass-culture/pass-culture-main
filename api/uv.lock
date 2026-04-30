@@ -291,7 +291,7 @@ wheels = [
 
 [[package]]
 name = "brevo-python"
-version = "4.0.9"
+version = "4.0.10"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
@@ -299,9 +299,9 @@ dependencies = [
     { name = "pydantic-core" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/66/5c/ee3954c5542e5959c932969018b364c2a1f53b5492d3154a32ded6c33db4/brevo_python-4.0.9.tar.gz", hash = "sha256:2102a1cc5ae689e145bcf25447e4ce17a64c413d71813938ebe60e78cc4de75e", size = 427998, upload-time = "2026-03-27T14:08:23.072Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/92/79/573272ac0ac158e5498690daf06452fbca1785dcd1f85bdcb7bcda86d090/brevo_python-4.0.10.tar.gz", hash = "sha256:3ba2808937556b02d7afe4aaf6392438e1af3a8db77ef97349e46307bbf27311", size = 428199, upload-time = "2026-04-10T14:10:25.699Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/30/fe/e6a47aad9d20ac1452b68ad3ce95e6e26a92489069ff3a4fe3ed4ca72163/brevo_python-4.0.9-py3-none-any.whl", hash = "sha256:33ccc80e47526d9326935da2670bdbba17eeffcb1715bbd4fb62c3696ec9eb43", size = 877391, upload-time = "2026-03-27T14:08:21.785Z" },
+    { url = "https://files.pythonhosted.org/packages/ad/b7/cf28d6ac954cc98f2f5297f52bc57f3032f6360e0ad77d1fb36518ef4691/brevo_python-4.0.10-py3-none-any.whl", hash = "sha256:4fb38f4143ce2c440b35e574696f2ae667cf6454d592409af7750eb675703de0", size = 877575, upload-time = "2026-04-10T14:10:24.21Z" },
 ]
 
 [[package]]
@@ -1911,7 +1911,7 @@ requires-dist = [
     { name = "bcrypt", specifier = "==5.0.0" },
     { name = "beautifulsoup4", specifier = "==4.14.3" },
     { name = "boto3", specifier = "==1.42.8" },
-    { name = "brevo-python", specifier = "==4.0.9" },
+    { name = "brevo-python", specifier = "==4.0.10" },
     { name = "celery", extras = ["redis"], specifier = "==5.6.3" },
     { name = "click", specifier = "==8.3.3" },
     { name = "clickhouse-sqlalchemy", specifier = "==0.3.2" },

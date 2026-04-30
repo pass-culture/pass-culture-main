@@ -16,7 +16,7 @@ dependencies = [
   "bcrypt ==5.0.0",
   "beautifulsoup4 ==4.14.3",
   "boto3 ==1.42.8",
-  "brevo-python ==4.0.9",
+  "brevo-python==4.0.10",
   "celery[redis] ==5.6.3",
   "click==8.3.3",
   "clickhouse-sqlalchemy ==0.3.2",
