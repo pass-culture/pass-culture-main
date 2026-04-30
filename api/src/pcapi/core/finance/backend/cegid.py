@@ -8,7 +8,6 @@ from pcapi.core.finance import exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.finance.backend.base import BaseFinanceBackend
-from pcapi.core.finance.backend.base import InvoicePayload
 from pcapi.core.finance.backend.base import SettlementPayload
 from pcapi.core.finance.backend.base import SettlementType
 from pcapi.utils import cache as cache_utils
@@ -219,15 +218,16 @@ class CegidFinanceBackend(BaseFinanceBackend):
             return True
         return False
 
-    def push_invoice(self, invoice_payload: InvoicePayload) -> dict:
+    def push_invoice(self, invoice: finance_models.Invoice) -> dict:
         """
         Create a new invoice.
         """
+        assert invoice.bankAccountId  # helps mypy
         url = f"{self._base_url}/{self._interface}/Bill"
         params = {"$expand": "Details"}
 
-        is_debit_note = invoice_payload.reference.startswith("A")
-        invoice_lines = self.get_invoice_lines(invoice_payload.invoice_id)
+        is_debit_note = invoice.reference.startswith("A")
+        invoice_lines = self.get_invoice_lines(invoice)
         lines = [
             {
                 "Amount": {"value": self._format_amount(line["amount"], is_debit_note)},
@@ -243,6 +243,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
         ]
 
         total_amount_str = self._format_amount(sum(e["amount"] for e in invoice_lines), is_debit_note)
+        invoice_description = self._get_formatted_invoice_description(invoice)
 
         body = {
             "Amount": {"value": total_amount_str},
@@ -250,19 +251,19 @@ class CegidFinanceBackend(BaseFinanceBackend):
             "Balance": {"value": total_amount_str},
             "BranchID": {"value": "PASSCULT"},
             "CurrencyID": {"value": "EUR"},
-            "Date": {"value": self.format_datetime(invoice_payload.invoice_date)},
-            "Description": {"value": invoice_payload.description},
+            "Date": {"value": self.format_datetime(invoice.date)},
+            "Description": {"value": invoice_description},  # VIRXXX - <01/12-15/12>
             "Details": lines,
             "Hold": {"value": False},
-            "PostPeriod": {"value": f"{invoice_payload.invoice_date:%m%Y}"},
+            "PostPeriod": {"value": f"{invoice.date:%m%Y}"},
             # "ReferenceNbr": {"value": invoice.reference},  # This has no effect because XRP generates an incremental ID that cannot be overriden
-            "RefNbr": {"value": invoice_payload.reference},
+            "RefNbr": {"value": invoice.reference},
             "Status": {"value": "Open"},
             "TaxTotal": {"value": "0"},
             "Terms": {"value": "30J"},
-            "Type": {"value": invoice_payload.invoice_external_type},
-            "Vendor": {"value": invoice_payload.bank_account_id},
-            "VendorRef": {"value": invoice_payload.reference},
+            "Type": {"value": "ADR" if is_debit_note else "INV"},
+            "Vendor": {"value": str(invoice.bankAccountId)},
+            "VendorRef": {"value": invoice.reference},
         }
 
         response = self._request("PUT", url, params=params, json=body)
@@ -273,8 +274,8 @@ class CegidFinanceBackend(BaseFinanceBackend):
         ):
             # If the invoice is already pushed, we might be in a retry due to a timeout from the first PUT query
             # We thus get the id necessary for the POST
-            logger.warning("Invoice '%s' already pushed", invoice_payload.reference)
-            response_json = self.get_invoice(invoice_payload.reference)
+            logger.warning("Invoice '%s' already pushed", invoice.reference)
+            response_json = self.get_invoice(invoice.reference)
 
         elif response.status_code != 200:
             raise exceptions.FinanceBackendBadRequest(response, "Error in invoice creation payload")
@@ -284,7 +285,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
 
         if response_json.get("Status", {}).get("value") == "Balanced":
             # Set invoice to Open in Cegid
-            logger.info("Set %s invoice to Open", invoice_payload.reference)
+            logger.info("Set %s invoice to Open", invoice.reference)
             set_open_url = f"{self._base_url}/{self._interface}/Bill/ReleaseBill"
             set_open_response = self._request("POST", set_open_url, json={"Entity": {"id": response_json["id"]}})
 
@@ -297,6 +298,12 @@ class CegidFinanceBackend(BaseFinanceBackend):
         utc_source_datetime = date_utils.make_timezone_aware_utc(source_datetime)
 
         return utc_source_datetime.strftime("%Y-%m-%dT%H:%M:%S%:z")
+
+    def _get_formatted_invoice_description(self, invoice: finance_models.Invoice) -> str:
+        invoice_batch = invoice.cashflows[0].batch
+        start_date, end_date = self._get_invoice_daterange(invoice_batch.cutoff)
+
+        return f"{invoice_batch.label} - {start_date:%d/%m}-{end_date:%d/%m}"
 
     def get_invoice(self, reference: str) -> dict:
         url = f"{self._base_url}/{self._interface}/Bill"
@@ -355,7 +362,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
                     payload = SettlementPayload(
                         bank_account_id=int(settlement_data["VendorID"]["value"]),
                         external_settlement_id=settlement_data["adjgRefNbr"]["value"],
-                        invoice_external_reference=re.sub(r"_R\d?$", "", ref_fourn_fact),
+                        invoice_external_reference=re.sub(r"_R$", "", ref_fourn_fact),
                         settlement_type=SettlementType(settlement_data["AdjgDocType"]["value"]),
                         settlement_batch_external_id=settlement_data.get("BatchNbr", {}).get(
                             "value", constants.MISSING_BATCH_EXTERNAL_ID_VALUE

@@ -86,20 +86,3 @@ def test_format_raw_iban():
 )
 def test_get_cutoff_as_datetime(last_day_as_str, expected_result):
     assert utils.get_cutoff_as_datetime(last_day_as_str) == expected_result
-
-
-@pytest.mark.parametrize(
-    "cutoff_date, expected_start_date, expected_end_date",
-    [
-        (datetime.datetime(2025, 8, 31), datetime.date(2025, 8, 16), datetime.date(2025, 8, 31)),
-        (datetime.datetime(2025, 9, 1), datetime.date(2025, 9, 1), datetime.date(2025, 9, 15)),
-        (datetime.datetime(2025, 9, 15), datetime.date(2025, 9, 1), datetime.date(2025, 9, 15)),
-        (datetime.datetime(2025, 9, 16), datetime.date(2025, 9, 16), datetime.date(2025, 9, 30)),
-        (datetime.datetime(2025, 9, 30), datetime.date(2025, 9, 16), datetime.date(2025, 9, 30)),
-    ],
-)
-def test_get_invoice_daterange(cutoff_date, expected_start_date, expected_end_date):
-    start_date, end_date = utils.get_invoice_daterange(cutoff_date)
-
-    assert start_date == expected_start_date
-    assert end_date == expected_end_date

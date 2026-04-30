@@ -9,14 +9,11 @@ from pcapi.core.finance import external
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.backend import constants as finance_backend_constants
-from pcapi.core.finance.backend.base import ExternalType
-from pcapi.core.finance.backend.base import InvoicePayload
 from pcapi.core.finance.backend.base import SettlementPayload
 from pcapi.core.finance.backend.base import SettlementType
 from pcapi.core.finance.backend.dummy import DummyFinanceBackend
 from pcapi.core.finance.backend.dummy import bank_accounts as dummy_bank_accounts
 from pcapi.core.finance.backend.dummy import invoices as dummy_invoices
-from pcapi.core.finance.backend.dummy import invoices as test_invoices
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.models import db
 from pcapi.utils import date as date_utils
@@ -31,7 +28,7 @@ pytestmark = [
 ]
 
 
-class PushBankAccountsTest:
+class ExternalFinanceTest:
     def test_push_bank_accounts(self):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
@@ -46,26 +43,18 @@ class PushBankAccountsTest:
         assert len(dummy_bank_accounts) == 1
         assert dummy_bank_accounts[0] == bank_account
 
-
-class PushInvoicesTest:
     def test_push_invoices(self):
-        batch = finance_factories.CashflowBatchFactory(cutoff=datetime.date(2026, 5, 30), label="VIRXXX")
         invoice1 = finance_factories.InvoiceFactory(
-            status=finance_models.InvoiceStatus.PENDING,
-            cashflows=[finance_factories.CashflowFactory(batch=batch)],
-            bankAccount=finance_factories.BankAccountFactory(),
+            status=finance_models.InvoiceStatus.PENDING, cashflows=[finance_factories.CashflowFactory()]
         )
         invoice2 = finance_factories.InvoiceFactory(
-            status=finance_models.InvoiceStatus.PAID, cashflows=[finance_factories.CashflowFactory(batch=batch)]
+            status=finance_models.InvoiceStatus.PAID, cashflows=[finance_factories.CashflowFactory()]
         )
         invoice3 = finance_factories.InvoiceFactory(
-            status=finance_models.InvoiceStatus.PENDING_PAYMENT,
-            cashflows=[finance_factories.CashflowFactory(batch=batch)],
+            status=finance_models.InvoiceStatus.PENDING_PAYMENT, cashflows=[finance_factories.CashflowFactory()]
         )
         free_invoice = finance_factories.InvoiceFactory(
-            status=finance_models.InvoiceStatus.PENDING,
-            cashflows=[finance_factories.CashflowFactory(batch=batch)],
-            amount=0,
+            status=finance_models.InvoiceStatus.PENDING, cashflows=[finance_factories.CashflowFactory()], amount=0
         )
 
         external.push_invoices(10)
@@ -79,42 +68,22 @@ class PushInvoicesTest:
         assert invoice3.status == finance_models.InvoiceStatus.PENDING_PAYMENT
         assert free_invoice.status == finance_models.InvoiceStatus.PAID
 
-        assert dummy_invoices == [
-            InvoicePayload(
-                invoice_id=invoice1.id,
-                reference=invoice1.reference,
-                bank_account_id=str(invoice1.bankAccountId),
-                invoice_date=invoice1.date,
-                description="VIRXXX - 16/05-31/05",
-                invoice_external_type=ExternalType.INV,
-            ),
-            InvoicePayload(
-                invoice_id=free_invoice.id,
-                reference=free_invoice.reference,
-                bank_account_id=str(free_invoice.bankAccountId),
-                invoice_date=free_invoice.date,
-                description="VIRXXX - 16/05-31/05",
-                invoice_external_type=ExternalType.INV,
-            ),
-        ]
+        assert len(dummy_invoices) == 2
+        assert set(dummy_invoices) == {invoice1, free_invoice}
 
     @pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=True)
     def test_push_invoices_with_FF(self):
-        batch = finance_factories.CashflowBatchFactory(cutoff=datetime.date(2026, 5, 30), label="VIRXXX")
         invoice1 = finance_factories.InvoiceFactory(
-            status=finance_models.InvoiceStatus.PENDING, cashflows=[finance_factories.CashflowFactory(batch=batch)]
+            status=finance_models.InvoiceStatus.PENDING, cashflows=[finance_factories.CashflowFactory()]
         )
         invoice2 = finance_factories.InvoiceFactory(
-            status=finance_models.InvoiceStatus.PAID, cashflows=[finance_factories.CashflowFactory(batch=batch)]
+            status=finance_models.InvoiceStatus.PAID, cashflows=[finance_factories.CashflowFactory()]
         )
         invoice3 = finance_factories.InvoiceFactory(
-            status=finance_models.InvoiceStatus.PENDING_PAYMENT,
-            cashflows=[finance_factories.CashflowFactory(batch=batch)],
+            status=finance_models.InvoiceStatus.PENDING_PAYMENT, cashflows=[finance_factories.CashflowFactory()]
         )
         free_invoice = finance_factories.InvoiceFactory(
-            status=finance_models.InvoiceStatus.PENDING,
-            cashflows=[finance_factories.CashflowFactory(batch=batch)],
-            amount=0,
+            status=finance_models.InvoiceStatus.PENDING, cashflows=[finance_factories.CashflowFactory()], amount=0
         )
 
         external.push_invoices(10)
@@ -128,24 +97,8 @@ class PushInvoicesTest:
         assert invoice3.status == finance_models.InvoiceStatus.PENDING_PAYMENT
         assert free_invoice.status == finance_models.InvoiceStatus.PAID
 
-        assert dummy_invoices == [
-            InvoicePayload(
-                invoice_id=invoice1.id,
-                reference=invoice1.reference,
-                bank_account_id=str(invoice1.bankAccountId),
-                invoice_date=invoice1.date,
-                description="VIRXXX - 16/05-31/05",
-                invoice_external_type=ExternalType.INV,
-            ),
-            InvoicePayload(
-                invoice_id=free_invoice.id,
-                reference=free_invoice.reference,
-                bank_account_id=str(free_invoice.bankAccountId),
-                invoice_date=free_invoice.date,
-                description="VIRXXX - 16/05-31/05",
-                invoice_external_type=ExternalType.INV,
-            ),
-        ]
+        assert len(dummy_invoices) == 2
+        assert set(dummy_invoices) == {invoice1, free_invoice}
 
     @pytest.mark.settings(SLACK_GENERATE_INVOICES_FINISHED_CHANNEL="channel")
     @patch("pcapi.core.internal_notifications.transactional.notify_invoices_finished.send_internal_message")
@@ -194,8 +147,6 @@ class PushInvoicesTest:
 
         assert invoice.status == expected_status
 
-
-class GetSettlementsTest:
     def test_get_settlements(self):
         first_bank_account = offerers_factories.VenueBankAccountLinkFactory(bankAccount__label="First").bankAccount
         second_bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount
@@ -556,165 +507,6 @@ class GetSettlementsTest:
         assert len(caplog.records) == 1
         assert caplog.records[0].levelname == "WARNING"
         assert caplog.records[0].message == "No settlement to cancel found"
-
-
-class TransferDebtAfterRejectedSettlementsTest:
-    def test_transfer_debt_after_rejected_settlements(self):
-        now = date_utils.get_naive_utc_now()
-        day_1 = now - datetime.timedelta(days=45)
-        day_2 = now - datetime.timedelta(days=30)
-        day_3 = now - datetime.timedelta(days=10)
-        day_4 = now - datetime.timedelta(days=5)
-        day_5 = now - datetime.timedelta(days=2)
-
-        venue = offerers_factories.VenueFactory()
-        venue_2 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
-
-        old_ba = offerers_factories.VenueBankAccountLinkFactory(
-            venue=venue,
-            timespan=(day_1, day_4),
-        ).bankAccount
-        offerers_factories.VenueBankAccountLinkFactory(venue=venue_2, timespan=(day_1, day_3))
-        paid_invoice = finance_factories.InvoiceFactory(date=day_2, status=finance_models.InvoiceStatus.PAID)
-        pending_invoice_1 = finance_factories.InvoiceFactory(
-            date=day_3, status=finance_models.InvoiceStatus.PENDING_PAYMENT
-        )
-        pending_invoice_2 = finance_factories.InvoiceFactory(
-            date=day_3, status=finance_models.InvoiceStatus.PENDING_PAYMENT
-        )
-        offerers_factories.VenueBankAccountLinkFactory(venue=venue_2, timespan=(day_3,))
-        offerers_factories.VenueBankAccountLinkFactory(venue=venue, timespan=(day_4, day_5))
-        new_ba = offerers_factories.VenueBankAccountLinkFactory(venue=venue, timespan=(day_5,)).bankAccount
-
-        finance_factories.SettlementFactory(
-            bankAccount=old_ba, invoices=[paid_invoice], status=finance_models.SettlementStatus.EXECUTED
-        )
-        finance_factories.SettlementFactory(
-            bankAccount=old_ba, invoices=[pending_invoice_1], status=finance_models.SettlementStatus.ISSUED
-        )
-        finance_factories.SettlementFactory(
-            bankAccount=old_ba, invoices=[pending_invoice_2], status=finance_models.SettlementStatus.REJECTED
-        )
-
-        external.transfer_debt_after_rejected_settlements()
-
-        assert len(test_invoices) == 2
-        for payload in test_invoices:
-            assert isinstance(payload, InvoicePayload)
-            assert payload.invoice_id == pending_invoice_2.id
-            assert payload.invoice_date.timestamp() == pytest.approx(now.timestamp(), rel=1)
-            assert (
-                payload.description
-                == f"REC_{pending_invoice_2.reference} - Changement BA de {old_ba.id} \xe0 {new_ba.id}"
-            )
-        assert test_invoices[0].reference == f"{pending_invoice_2.reference}_A"
-        assert test_invoices[0].bank_account_id == str(old_ba.id)
-        assert test_invoices[0].invoice_external_type == ExternalType.ADR.value
-        assert test_invoices[1].reference == f"{pending_invoice_2.reference}_R"
-        assert test_invoices[1].bank_account_id == str(new_ba.id)
-        assert test_invoices[1].invoice_external_type == ExternalType.ACR.value
-
-    def test_transfer_debt_select_first_link_which_replaces(self):
-        now = date_utils.get_naive_utc_now()
-        day_1 = now - datetime.timedelta(days=45)
-        day_2 = now - datetime.timedelta(days=30)
-        day_3 = now - datetime.timedelta(days=10)
-        day_4 = now - datetime.timedelta(days=5)
-
-        old_ba = finance_factories.BankAccountFactory()
-        venue_1 = offerers_factories.VenueFactory(managingOfferer=old_ba.offerer)
-        venue_2 = offerers_factories.VenueFactory(managingOfferer=old_ba.offerer)
-        offerers_factories.VenueBankAccountLinkFactory(venue=venue_1, bankAccount=old_ba, timespan=(day_1, day_4))
-        offerers_factories.VenueBankAccountLinkFactory(venue=venue_2, bankAccount=old_ba, timespan=(day_1, day_3))
-        invoice = finance_factories.InvoiceFactory(date=day_2, status=finance_models.InvoiceStatus.PENDING_PAYMENT)
-        offerers_factories.VenueBankAccountLinkFactory(venue=venue_2, timespan=(day_3,))
-        new_ba = offerers_factories.VenueBankAccountLinkFactory(venue=venue_1, timespan=(day_4,)).bankAccount
-        finance_factories.SettlementFactory(
-            bankAccount=old_ba, invoices=[invoice], status=finance_models.SettlementStatus.REJECTED
-        )
-
-        external.transfer_debt_after_rejected_settlements()
-
-        assert len(test_invoices) == 2
-        for payload in test_invoices:
-            assert isinstance(payload, InvoicePayload)
-            assert payload.invoice_id == invoice.id
-            assert payload.invoice_date.timestamp() == pytest.approx(now.timestamp(), rel=1)
-            assert payload.description == f"REC_{invoice.reference} - Changement BA de {old_ba.id} \xe0 {new_ba.id}"
-        assert test_invoices[0].reference == f"{invoice.reference}_A"
-        assert test_invoices[0].bank_account_id == str(old_ba.id)
-        assert test_invoices[0].invoice_external_type == ExternalType.ADR.value
-        assert test_invoices[1].reference == f"{invoice.reference}_R"
-        assert test_invoices[1].bank_account_id == str(new_ba.id)
-        assert test_invoices[1].invoice_external_type == ExternalType.ACR.value
-
-    @pytest.mark.parametrize("timespan_end", [None, date_utils.get_naive_utc_now() - datetime.timedelta(days=10)])
-    def test_transfer_debt_no_new_bank_account(self, timespan_end):
-        venue = offerers_factories.VenueFactory()
-        old_ba = offerers_factories.VenueBankAccountLinkFactory(
-            venue=venue, timespan=(date_utils.get_naive_utc_now() - datetime.timedelta(days=60), timespan_end)
-        ).bankAccount
-        invoice = finance_factories.InvoiceFactory(
-            date=date_utils.get_naive_utc_now() - datetime.timedelta(days=15),
-            status=finance_models.InvoiceStatus.PENDING_PAYMENT,
-        )
-        finance_factories.SettlementFactory(
-            bankAccount=old_ba, invoices=[invoice], status=finance_models.SettlementStatus.REJECTED
-        )
-
-        external.transfer_debt_after_rejected_settlements()
-
-        assert len(test_invoices) == 0
-
-    @pytest.mark.parametrize(
-        "status",
-        [
-            status
-            for status in finance_models.BankAccountApplicationStatus
-            if status != finance_models.BankAccountApplicationStatus.ACCEPTED
-        ],
-    )
-    def test_transfer_debt_new_bank_account_not_accepted(self, status):
-        now = date_utils.get_naive_utc_now()
-        venue = offerers_factories.VenueFactory()
-        old_ba = offerers_factories.VenueBankAccountLinkFactory(
-            venue=venue,
-            timespan=(now - datetime.timedelta(days=60), now - datetime.timedelta(days=10)),
-        ).bankAccount
-        invoice = finance_factories.InvoiceFactory(
-            date=now - datetime.timedelta(days=15),
-            status=finance_models.InvoiceStatus.PENDING_PAYMENT,
-        )
-        finance_factories.SettlementFactory(
-            bankAccount=old_ba, invoices=[invoice], status=finance_models.SettlementStatus.REJECTED
-        )
-        offerers_factories.VenueBankAccountLinkFactory(
-            venue=venue, bankAccount__status=status, timespan=(now - datetime.timedelta(days=10),)
-        )
-
-        external.transfer_debt_after_rejected_settlements()
-
-        assert len(test_invoices) == 0
-
-    def test_transfer_debt_new_bank_account_does_not_replace_old(self):
-        now = date_utils.get_naive_utc_now()
-        venue_1 = offerers_factories.VenueFactory()
-        venue_2 = offerers_factories.VenueFactory()
-        old_ba = offerers_factories.VenueBankAccountLinkFactory(
-            venue=venue_1, timespan=(now - datetime.timedelta(days=60), now - datetime.timedelta(days=10))
-        ).bankAccount
-        invoice = finance_factories.InvoiceFactory(
-            date=now - datetime.timedelta(days=15),
-            status=finance_models.InvoiceStatus.PENDING_PAYMENT,
-        )
-        finance_factories.SettlementFactory(
-            bankAccount=old_ba, invoices=[invoice], status=finance_models.SettlementStatus.REJECTED
-        )
-        offerers_factories.VenueBankAccountLinkFactory(venue=venue_2, timespan=(now - datetime.timedelta(days=10),))
-
-        external.transfer_debt_after_rejected_settlements()
-
-        assert len(test_invoices) == 0
 
 
 class ExternalFinanceCommandTest:

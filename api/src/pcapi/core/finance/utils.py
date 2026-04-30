@@ -1,4 +1,3 @@
-import calendar
 import datetime
 import decimal
 import enum
@@ -117,13 +116,6 @@ def get_cutoff_as_datetime(last_day: datetime.date) -> datetime.datetime:
     next_day = last_day + datetime.timedelta(days=1)
     first_second = datetime.datetime.combine(next_day, datetime.time.min)
     return ACCOUNTING_TIMEZONE.localize(first_second).astimezone(pytz.utc)
-
-
-def get_invoice_daterange(cutoff_date: datetime.datetime) -> tuple[datetime.date, datetime.date]:
-    if cutoff_date.day < 16:
-        return cutoff_date.replace(day=1).date(), cutoff_date.replace(day=15).date()
-    last_day_of_the_month = calendar.monthrange(cutoff_date.year, cutoff_date.month)[1]
-    return cutoff_date.replace(day=16).date(), cutoff_date.replace(day=last_day_of_the_month).date()
 
 
 def clean_names_for_SEPA(name: str) -> str:
