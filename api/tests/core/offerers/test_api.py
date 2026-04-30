@@ -3045,6 +3045,12 @@ class CreateFromOnboardingDataTest:
         onboarding_data.siret = "77708411200031"
         offerers_api.create_from_onboarding_data(user, onboarding_data)
 
+        created_venue = next(venue for venue in offerer.managedVenues if venue.siret is None)
+        pricing_point_link = (
+            db.session.query(offerers_models.VenuePricingPointLink).filter_by(venue=created_venue).one()
+        )
+        assert pricing_point_link.pricingPoint.siret == "77708411200031"
+
     def test_existing_siren_existing_siret(self):
         offerer = offerers_factories.OffererFactory(siren="853318459")
         _venue_with_siret = offerers_factories.VenueFactory(managingOfferer=offerer, siret="85331845900031")

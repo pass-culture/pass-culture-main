@@ -2212,6 +2212,7 @@ def create_from_onboarding_data(
         and not APE_TAG_MAPPING.get(siret_info.ape_code, False)
     ):
         raise exceptions.NotACollectivity()
+
     if not venue or onboarding_data.create_venue_without_siret:
         address = onboarding_data.address
         if not address.street:
@@ -2246,7 +2247,11 @@ def create_from_onboarding_data(
             )
         venue_kwargs = common_kwargs | comment_and_siret
         venue_creation_info = venue_serialize.PostVenueBodyModel(**venue_kwargs)
+        pricing_point_id = venue.id if venue else None
         venue = create_venue(venue_creation_info, user)
+        db.session.flush()
+        if onboarding_data.create_venue_without_siret and pricing_point_id:
+            link_venue_to_pricing_point(venue, pricing_point_id)
         create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
 
     # Log the other activity comment if activity is OTHER
