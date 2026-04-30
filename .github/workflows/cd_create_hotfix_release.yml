@@ -59,7 +59,7 @@ jobs:
     uses: ./.github/workflows/slack_post_message_workflow.yml
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
-      message: ":github-success: Release `v${{ needs.compute-hotfix-tag-number.outputs.hotfix-tag-number }}` créée avec succès. <https://github.com/pass-culture/pass-culture-main/actions/workflows/cd_deploy_production.yml|Déployer> :rocket:"
+      message: ":github-success: Release `v${{ needs.compute-hotfix-tag-number.outputs.hotfix-tag-number }}` créée avec succès. <https://github.com/pass-culture/pass-culture-main/actions/workflows/cd_deploy_staging.yml|Déployer> :rocket:"
     secrets: inherit
 
   notify-failure:
