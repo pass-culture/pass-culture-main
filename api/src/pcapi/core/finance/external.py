@@ -2,6 +2,8 @@ import datetime
 import logging
 import time
 
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from flask import current_app as app
 
 from pcapi import settings
@@ -12,6 +14,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.backend import constants as finance_backend_constants
 from pcapi.core.finance.backend.base import SettlementType
 from pcapi.core.internal_notifications.transactional import notify_invoices_finished
+from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
@@ -357,3 +360,80 @@ def get_or_create_settlement_batch(
         settlement_batch = finance_models.SettlementBatch(externalId=external_id, name=batch_name, label=batch_label)
         db.session.add(settlement_batch)
     return settlement_batch
+
+
+def transfer_debt_after_rejected_settlements() -> None:
+    aliased_link = sa_orm.aliased(offerers_models.VenueBankAccountLink)
+
+    new_bank_account_subquery = (
+        sa.select(aliased_link.bankAccountId)
+        .select_from(offerers_models.VenueBankAccountLink)
+        .join(
+            aliased_link,
+            sa.and_(
+                aliased_link.venueId == offerers_models.VenueBankAccountLink.venueId,
+                aliased_link.bankAccountId != offerers_models.VenueBankAccountLink.bankAccountId,
+                aliased_link.timespan.contains(date_utils.get_naive_utc_now()),
+            ),
+        )
+        .join(aliased_link.bankAccount)
+        .where(
+            offerers_models.VenueBankAccountLink.bankAccountId == finance_models.Settlement.bankAccountId,
+            offerers_models.VenueBankAccountLink.timespan.contains(finance_models.Invoice.date),
+            finance_models.BankAccount.status == finance_models.BankAccountApplicationStatus.ACCEPTED,
+        )
+        .order_by(offerers_models.VenueBankAccountLink.id)
+        .limit(1)
+        .correlate(finance_models.Invoice, finance_models.Settlement)
+        .scalar_subquery()
+    )
+
+    data = (
+        db.session.query(
+            finance_models.Invoice.id.label("invoiceId"),
+            finance_models.Settlement.bankAccountId.label("oldBankAccountId"),
+            new_bank_account_subquery.label("newBankAccountId"),
+        )
+        .join(
+            finance_models.Settlement,
+            finance_models.Settlement.id
+            == (
+                sa.select(sa.func.max(finance_models.InvoiceSettlement.settlementId))
+                .select_from(finance_models.InvoiceSettlement)
+                .where(finance_models.InvoiceSettlement.invoiceId == finance_models.Invoice.id)
+                .scalar_subquery()
+            ),
+        )
+        .filter(
+            finance_models.Invoice.status == finance_models.InvoiceStatus.PENDING_PAYMENT,
+            finance_models.Settlement.status == finance_models.SettlementStatus.REJECTED,
+        )
+        .cte()
+    )
+
+    query = db.session.query(data).filter(data.c.newBankAccountId.is_not(None))
+    results = query.all()
+
+    if not results:
+        return
+
+    backend_name = finance_backend.get_backend_name()
+
+    for result in results:
+        extra = {
+            "invoice_id": result.invoiceId,
+            "old_bank_account_id": result.oldBankAccountId,
+            "new_bank_account_id": result.newBankAccountId,
+            "backend": backend_name,
+        }
+        try:
+            logger.info("Push invoice debt cancellation", extra=extra)
+            finance_backend.push_invoice_debt_cancellation(
+                result.invoiceId, result.oldBankAccountId, result.newBankAccountId
+            )
+            logger.info("Push invoice debt recreation", extra=extra)
+            finance_backend.push_invoice_debt_recreation(
+                result.invoiceId, result.oldBankAccountId, result.newBankAccountId
+            )
+        except Exception as exc:
+            logger.exception("Unable to push invoice", extra=extra | {"exc": str(exc)})
