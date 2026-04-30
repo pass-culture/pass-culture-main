@@ -2,6 +2,13 @@ import cx from 'classnames'
 import { type Ref, useState } from 'react'
 
 import type { SelectOption } from '@/commons/custom_types/form'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
+import fullMoreIcon from '@/icons/full-more.svg'
 
 import styles from './OptionsList.module.scss'
 
@@ -14,6 +21,8 @@ export interface OptionsListProps {
   listRef: Ref<HTMLUListElement>
   hoveredOptionIndex: number | null
   selectOption: (option: SelectOption) => void
+  searchValue: string
+  onAdd: (value: string) => void
 }
 
 export const OptionsList = ({
@@ -25,57 +34,70 @@ export const OptionsList = ({
   listRef,
   hoveredOptionIndex,
   selectOption,
+  searchValue,
+  onAdd,
 }: OptionsListProps): JSX.Element => (
-  <ul
-    className={cx(styles['menu'], className)}
-    data-testid="list"
-    id={`list-${fieldName}`}
-    ref={listRef}
-    // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: Seems to be the only solution for combobox pattern
-    role="listbox"
-    aria-label="options"
-  >
-    {filteredOptions.length > 0 ? (
-      filteredOptions.map((option: SelectOption, index: number) => {
-        const isSelected = hoveredOptionIndex === index
-        return (
-          // biome-ignore lint/a11y/useKeyWithClickEvents: the onKeyDown is handled in the parent component
-          <li
-            aria-selected={isSelected}
-            aria-posinset={index + 1}
-            aria-setsize={filteredOptions.length}
-            className={
-              hoveredOptionIndex === index ? styles['option-hovered'] : ''
-            }
-            data-value={option.value}
-            data-selected={isSelected}
-            id={`option-${fieldName}-${index}`}
-            key={option.value}
-            onMouseEnter={() => setHoveredOptionIndex(index)}
-            onFocus={() => setHoveredOptionIndex(index)}
-            onClick={() => {
-              selectOption(option)
-            }}
-            // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: Seems to be the only solution for combobox pattern
-            role="option"
-            tabIndex={-1}
-          >
-            <span className={styles['options-item']}>
-              {(option.thumbUrl || thumbPlaceholder) && (
-                <ThumbWithPlaceholder
-                  thumbUrl={option.thumbUrl}
-                  thumbPlaceholder={thumbPlaceholder}
-                />
-              )}
-              <span>{option.label}</span>
-            </span>
-          </li>
-        )
-      })
-    ) : (
-      <li className={styles['menu--no-results']}>Aucun résultat</li>
+  <div className={cx(styles['menu'], className)}>
+    {searchValue.length > 0 && (
+      <Button
+        label={`Ajouter ${searchValue}`}
+        size={ButtonSize.DEFAULT}
+        variant={ButtonVariant.TERTIARY}
+        color={ButtonColor.NEUTRAL}
+        icon={fullMoreIcon}
+        onClick={() => {} /*onAdd(searchValue)*/}
+      />
     )}
-  </ul>
+    <ul
+      data-testid="list"
+      id={`list-${fieldName}`}
+      ref={listRef}
+      // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: Seems to be the only solution for combobox pattern
+      role="listbox"
+      aria-label="options"
+    >
+      {filteredOptions.length > 0 ? (
+        filteredOptions.map((option: SelectOption, index: number) => {
+          const isSelected = hoveredOptionIndex === index
+          return (
+            // biome-ignore lint/a11y/useKeyWithClickEvents: the onKeyDown is handled in the parent component
+            <li
+              aria-selected={isSelected}
+              aria-posinset={index + 1}
+              aria-setsize={filteredOptions.length}
+              className={
+                hoveredOptionIndex === index ? styles['option-hovered'] : ''
+              }
+              data-value={option.value}
+              data-selected={isSelected}
+              id={`option-${fieldName}-${index}`}
+              key={option.value}
+              onMouseEnter={() => setHoveredOptionIndex(index)}
+              onFocus={() => setHoveredOptionIndex(index)}
+              onClick={() => {
+                selectOption(option)
+              }}
+              // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: Seems to be the only solution for combobox pattern
+              role="option"
+              tabIndex={-1}
+            >
+              <span className={styles['options-item']}>
+                {(option.thumbUrl || thumbPlaceholder) && (
+                  <ThumbWithPlaceholder
+                    thumbUrl={option.thumbUrl}
+                    thumbPlaceholder={thumbPlaceholder}
+                  />
+                )}
+                <span>{option.label}</span>
+              </span>
+            </li>
+          )
+        })
+      ) : (
+        <li className={styles['menu--no-results']}>Aucun résultat</li>
+      )}
+    </ul>
+  </div>
 )
 
 const ThumbWithPlaceholder = ({

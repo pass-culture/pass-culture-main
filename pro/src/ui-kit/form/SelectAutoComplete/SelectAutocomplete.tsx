@@ -213,6 +213,13 @@ export const SelectAutocomplete = forwardRef(
       }
     }
 
+    const handleAdd = useCallback(
+      (customValue: string) => {
+        selectOption({ label: customValue, value: customValue })
+      },
+      [selectOption]
+    )
+
     const toggleDropdown = () => {
       setIsDropdownOpen(!isDropdownOpen)
       inputRef.current?.focus()
@@ -304,7 +311,7 @@ export const SelectAutocomplete = forwardRef(
 
                 onBlur({
                   type: 'blur',
-                  target: { name, value },
+                  target: { name, value: value || '' },
                 })
               }}
             />
@@ -327,6 +334,8 @@ export const SelectAutocomplete = forwardRef(
                 hoveredOptionIndex={hoveredOptionIndex}
                 selectOption={selectOption}
                 thumbPlaceholder={thumbPlaceholder}
+                searchValue={searchField}
+                onAdd={handleAdd}
               />
             )}
           </div>

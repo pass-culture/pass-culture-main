@@ -51,12 +51,15 @@ export const ApiSelect = forwardRef(function ApiSelect<T extends ApiOption>(
     onSelect,
     onSearch,
     searchApi,
-    value,
+    value: initialValue,
     thumbPlaceholder,
   }: ApiSelectProps<T>,
   ref: Ref<HTMLInputElement>
 ) {
   const [options, setOptions] = useState<SelectOption[]>([])
+  const [value, setValue] = useState<string | undefined>(
+    initialValue ?? undefined
+  )
   const inputRef = useRef<HTMLInputElement>(null)
   const optionsMap = useRef<Map<string, T>>(new Map())
 
@@ -106,11 +109,18 @@ export const ApiSelect = forwardRef(function ApiSelect<T extends ApiOption>(
       thumbPlaceholder={thumbPlaceholder}
       description={description}
       onSearch={(searchText) => {
+        setValue(searchText)
         debouncedOnSearch(searchText)
       }}
       onChange={(event) => {
         const selectedOption = optionsMap.current.get(event.target.value)
         onSelect(selectedOption)
+        if (!selectedOption) {
+          onSearch?.('')
+        }
+      }}
+      onBlur={() => {
+        setValue?.('')
       }}
       disabled={disabled}
       className={className}
