@@ -246,6 +246,26 @@ def update_venue(
         assert venue.activity  # helps mypy, activity has been modified, is not null if we are here and set above
         venue.venueTypeCode = offerers_utils.get_venue_type_code_from_activity(venue.activity)
 
+    if "volunteeringUrl" in modifications:
+        if modifications["volunteeringUrl"]:
+            on_commit(
+                partial(
+                    logger.info,
+                    "Volunteering URL has been added",
+                    extra={"venue_id": venue.id, "volunteeringUrl": modifications["volunteeringUrl"]},
+                    technical_message_id="venue.volunteering_add",
+                )
+            )
+        else:
+            on_commit(
+                partial(
+                    logger.info,
+                    "Volunteering URL has been removed",
+                    extra={"venue_id": venue.id},
+                    technical_message_id="venue.volunteering_delete",
+                )
+            )
+
     db.session.add(venue)
     if is_managed_transaction():
         db.session.flush()
