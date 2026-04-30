@@ -23,11 +23,11 @@ describe('formatAndOrderVenues', () => {
       expect(sortingValues).toStrictEqual([
         {
           label: '2 rue de Montreuil 75001 Paris',
-          value: offererAddress[1].id.toString(),
+          value: offererAddress[1].id,
         },
         {
           label: 'Adresse - 1 Rue de paris 75001 Paris',
-          value: offererAddress[0].id.toString(),
+          value: offererAddress[0].id,
         },
       ])
     })

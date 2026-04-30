@@ -1,19 +1,18 @@
+import type { ListOffersQueryModel } from '@/apiClient/v1/new'
+
 import { DEFAULT_SEARCH_FILTERS } from '../constants'
-import type {
-  CollectiveSearchFiltersParams,
-  IndividualSearchFiltersParams,
-} from '../types'
+import type { CollectiveSearchFiltersParams, SearchListParams } from '../types'
+
+type IndividualFilterShape = ListOffersQueryModel & SearchListParams
 
 type HasSearchFiltersParams = {
-  searchFilters: Partial<IndividualSearchFiltersParams>
-  lookup?: (keyof IndividualSearchFiltersParams)[]
-  ignore?: (keyof IndividualSearchFiltersParams)[]
+  searchFilters: Partial<IndividualFilterShape>
+  lookup?: (keyof IndividualFilterShape)[]
+  ignore?: (keyof IndividualFilterShape)[]
 }
 export const hasSearchFilters = ({
   searchFilters,
-  lookup = Object.keys(
-    searchFilters
-  ) as (keyof IndividualSearchFiltersParams)[],
+  lookup = Object.keys(searchFilters) as (keyof IndividualFilterShape)[],
   ignore = [],
 }: HasSearchFiltersParams): boolean => {
   // Those "filters" are ignored because none are to be interpreted
@@ -22,7 +21,7 @@ export const hasSearchFilters = ({
 
   return lookup.some(
     (filterName) =>
-      searchFilters[filterName] &&
+      searchFilters[filterName] !== undefined &&
       searchFilters[filterName] !== { ...DEFAULT_SEARCH_FILTERS }[filterName] &&
       !finalIgnore.has(filterName)
   )

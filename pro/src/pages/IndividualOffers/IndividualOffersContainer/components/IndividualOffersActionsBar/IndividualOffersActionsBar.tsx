@@ -6,10 +6,11 @@ import {
   OfferStatus,
   type PatchAllOffersActiveStatusBodyModel,
 } from '@/apiClient/v1'
+import type { ListOffersQueryModel } from '@/apiClient/v1/new'
 import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { MAX_OFFERS_TO_DISPLAY } from '@/commons/core/Offers/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
-import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
+import type { SearchListParams } from '@/commons/core/Offers/types'
 import { serializeApiIndividualFilters } from '@/commons/core/Offers/utils/serializeApiIndividualFilters'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -61,7 +62,7 @@ const updateIndividualOffersStatus = async (
   areAllOffersSelected: boolean,
   selectedOfferIds: number[],
   snackBar: ReturnType<typeof useSnackBar>,
-  apiFilters: IndividualSearchFiltersParams
+  apiFilters: ListOffersQueryModel & SearchListParams
 ) => {
   const filters = serializeApiIndividualFilters(apiFilters)
   const payload: PatchAllOffersActiveStatusBodyModel = {
@@ -131,7 +132,7 @@ export const IndividualOffersActionsBar = ({
   const { storedFilters } = useStoredFilterConfig('individual')
   const finalSearchFilters = {
     ...urlSearchFilters,
-    ...(storedFilters as Partial<IndividualSearchFiltersParams>),
+    ...(storedFilters as Partial<ListOffersQueryModel & SearchListParams>),
   }
 
   const { mutate } = useSWRConfig()

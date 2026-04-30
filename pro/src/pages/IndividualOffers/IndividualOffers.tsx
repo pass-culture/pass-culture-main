@@ -1,11 +1,9 @@
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
-import {
-  GetOffererAddressesWithOffersOption,
-  GetVenueAddressesWithOffersOption,
-} from '@/apiClient/v1'
+import { api, apiNew } from '@/apiClient/api'
+import { GetVenueAddressesWithOffersOption } from '@/apiClient/v1'
+import type { ListOffersQueryModel } from '@/apiClient/v1/new'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import {
   GET_CATEGORIES_QUERY_KEY,
@@ -14,17 +12,14 @@ import {
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { DEFAULT_PAGE } from '@/commons/core/Offers/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
-import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
+import type { SearchListParams } from '@/commons/core/Offers/types'
 import { computeIndividualOffersUrl } from '@/commons/core/Offers/utils/computeIndividualOffersUrl'
 import { serializeApiIndividualFilters } from '@/commons/core/Offers/utils/serializeApiIndividualFilters'
 import type { Audience } from '@/commons/core/shared/types'
 import { formatAndOrderAddresses } from '@/commons/format/venuesService'
-import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
 import { useVenueAddresses } from '@/commons/hooks/swr/useVenueAddresses'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useGracefulSwrResponse } from '@/commons/hooks/useGracefulSwrResponse'
-import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { sortByLabel } from '@/commons/utils/strings'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
@@ -32,24 +27,19 @@ import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import { IndividualOffersContainer } from './IndividualOffersContainer/IndividualOffersContainer'
 import { computeIndividualApiFilters } from './utils/computeIndividualApiFilters'
 
-export const IndividualOffers = (): JSX.Element => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-
+export const IndividualOffers = () => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const urlSearchFilters = useQuerySearchFilters()
   const { storedFilters } = useStoredFilterConfig('individual')
   const finalSearchFilters = {
     ...urlSearchFilters,
-    ...(storedFilters as Partial<IndividualSearchFiltersParams>),
-    ...(withSwitchVenueFeature
-      ? { venueId: selectedPartnerVenue.id.toString() }
-      : {}),
+    ...(storedFilters as Partial<ListOffersQueryModel & SearchListParams>),
+    venueId: selectedPartnerVenue.id,
   }
 
   const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
   const navigate = useNavigate()
-  const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
 
   const categoriesQuery = useSWR(
     [GET_CATEGORIES_QUERY_KEY],
@@ -67,7 +57,9 @@ export const IndividualOffers = (): JSX.Element => {
   )
 
   const redirectWithSelectedFilters = (
-    filters: Partial<IndividualSearchFiltersParams> & { audience?: Audience }
+    filters: Partial<ListOffersQueryModel & SearchListParams> & {
+      audience?: Audience
+    }
   ) => {
     // We dont need to pass the offererId in the URL since
     // its already present in the redux store (useSelector(selectCurrentOfferer))
@@ -77,46 +69,19 @@ export const IndividualOffers = (): JSX.Element => {
     navigate(computeIndividualOffersUrl(filters), { replace: true })
   }
 
-  const offererAddressQuery = useOffererAddresses(
-    GetOffererAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
-  )
   const venueAddressQuery = useVenueAddresses(
     GetVenueAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
   )
-  const offererAddresses = formatAndOrderAddresses(
-    withSwitchVenueFeature ? venueAddressQuery.data : offererAddressQuery.data
-  )
+  const offererAddresses = formatAndOrderAddresses(venueAddressQuery.data)
 
   const apiFilters = computeIndividualApiFilters(
     finalSearchFilters,
-    selectedOffererId
+    selectedPartnerVenue.managingOfferer.id
   )
 
-  const offersQuery = useSWR([GET_OFFERS_QUERY_KEY, apiFilters], () => {
-    const {
-      nameOrIsbn,
-      offererId,
-      venueId,
-      categoryId,
-      status,
-      creationMode,
-      periodBeginningDate,
-      periodEndingDate,
-      offererAddressId,
-    } = serializeApiIndividualFilters(apiFilters)
-
-    return api.listOffers(
-      nameOrIsbn,
-      offererId,
-      status,
-      venueId,
-      categoryId,
-      creationMode,
-      periodBeginningDate,
-      periodEndingDate,
-      offererAddressId
-    )
-  })
+  const offersQuery = useSWR([GET_OFFERS_QUERY_KEY, apiFilters], () =>
+    apiNew.listOffers({ query: serializeApiIndividualFilters(apiFilters) })
+  )
 
   const offersResponse = useGracefulSwrResponse(
     offersQuery,

@@ -1,9 +1,10 @@
 import { act, renderHook } from '@testing-library/react'
 import { Provider } from 'react-redux'
 
+import type { ListOffersQueryModel } from '@/apiClient/v1/new'
 import type {
   CollectiveSearchFiltersParams,
-  IndividualSearchFiltersParams,
+  SearchListParams,
 } from '@/commons/core/Offers/types'
 import { configureTestStore } from '@/commons/store/testUtils'
 import { isEqual } from '@/commons/utils/isEqual'
@@ -26,18 +27,17 @@ const renderStoredFilterConfigHook = (venueId = 1) => {
 }
 
 const MOCKED_FILTERS:
-  | IndividualSearchFiltersParams
+  | (ListOffersQueryModel & SearchListParams)
   | CollectiveSearchFiltersParams = {
   nameOrIsbn: 'nameOrIsbn',
-  offererId: 'offererId',
-  venueId: 'venueId',
+  offererId: 1,
+  venueId: 2,
   categoryId: 'categoryId',
   format: 'all',
-  status: 'all',
   creationMode: 'creationMode',
   periodBeginningDate: 'periodBeginningDate',
   periodEndingDate: 'periodEndingDate',
-  offererAddressId: 'offererAddressId',
+  offererAddressId: 3,
 }
 
 describe('getStoredFilterConfig', () => {

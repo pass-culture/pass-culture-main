@@ -1,16 +1,17 @@
+import type { ListOffersQueryModel } from '@/apiClient/v1/new'
 import type {
   CollectiveSearchFiltersParams,
-  IndividualSearchFiltersParams,
+  SearchListParams,
 } from '@/commons/core/Offers/types'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 
+type IndividualFilterShape = ListOffersQueryModel & SearchListParams
+
 type StoredFilterConfig = {
   filtersVisibility: boolean
-  storedFilters: Partial<
-    IndividualSearchFiltersParams | CollectiveSearchFiltersParams
-  >
+  storedFilters: Partial<IndividualFilterShape | CollectiveSearchFiltersParams>
 }
 
 export type FilterConfigType = 'individual' | 'collective' | 'template'
@@ -107,7 +108,7 @@ export function useStoredFilterConfig<
 
   const onApplyFilters = (
     selectedFilters: Partial<
-      IndividualSearchFiltersParams | CollectiveSearchFiltersParams
+      IndividualFilterShape | CollectiveSearchFiltersParams
     >
   ) => {
     const newFilterConfig: StoredFilterConfig & {
@@ -117,7 +118,7 @@ export function useStoredFilterConfig<
       storedFilters: {
         ...filterConfig.storedFilters,
         ...selectedFilters,
-      },
+      } as StoredFilterConfig['storedFilters'],
       storedVenueId: selectedPartnerVenue.id,
     }
 

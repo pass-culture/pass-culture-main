@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
 
-import type { ListOffersOfferResponseModel } from '@/apiClient/v1'
-import { OFFER_STATUS_SOLD_OUT } from '@/commons/core/Offers/constants'
+import { OfferStatus } from '@/apiClient/v1'
+import type { ListOffersOfferResponseModel } from '@/apiClient/v1/new'
 import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { pluralizeFr } from '@/commons/utils/pluralize'
@@ -48,7 +48,7 @@ export const OfferNameCell = ({ offer, offerLink }: OfferNameCellProps) => {
   ).length
 
   const shouldShowIndividualWarning =
-    numberOfSoldOutStocks > 0 && offer.status !== OFFER_STATUS_SOLD_OUT
+    numberOfSoldOutStocks > 0 && offer.status !== OfferStatus.SOLD_OUT
 
   return (
     <div className={styles['title-column']}>

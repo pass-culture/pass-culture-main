@@ -1,24 +1,15 @@
-import { type ListOffersQueryModel, OfferStatus } from '@/apiClient/v1'
-import { nullifyEmptyProps } from '@/commons/utils/nullifyEmptyProps'
-import { toEnumOrNull } from '@/commons/utils/toEnumOrNull'
-import { toNumberOrNull } from '@/commons/utils/toNumberOrNull'
+import type { ListOffersQueryModel } from '@/apiClient/v1/new'
 
-import type { IndividualSearchFiltersParams } from '../types'
+import type { SearchListParams } from '../types'
 
+/**
+ * Strips the frontend-only `format` and `page` fields from the merged
+ * filter shape so what is sent to the backend matches `ListOffersQueryModel`.
+ */
 export const serializeApiIndividualFilters = (
-  searchFilters: Partial<IndividualSearchFiltersParams>
-): Omit<ListOffersQueryModel, 'collectiveOfferType'> => {
-  const { format: _format, page: _page, ...params } = searchFilters
+  searchFilters: ListOffersQueryModel & SearchListParams
+): ListOffersQueryModel => {
+  const { format: _format, page: _page, ...query } = searchFilters
 
-  return nullifyEmptyProps({
-    ...params,
-    categoryId:
-      searchFilters.categoryId === 'all' ? null : searchFilters.categoryId,
-    creationMode:
-      searchFilters.creationMode === 'all' ? null : searchFilters.creationMode,
-    offererAddressId: toNumberOrNull(searchFilters.offererAddressId),
-    offererId: toNumberOrNull(searchFilters.offererId),
-    status: toEnumOrNull(searchFilters.status, OfferStatus),
-    venueId: toNumberOrNull(searchFilters.venueId),
-  })
+  return query
 }

@@ -1,9 +1,10 @@
 import invert from 'lodash.invert'
 
 import { CollectiveOfferDisplayedStatus, OfferStatus } from '@/apiClient/v1'
+import type { ListOffersQueryModel } from '@/apiClient/v1/new'
 import type {
   CollectiveSearchFiltersParams,
-  IndividualSearchFiltersParams,
+  SearchListParams,
 } from '@/commons/core/Offers/types'
 import { Audience } from '@/commons/core/shared/types'
 
@@ -90,7 +91,9 @@ export const translateQueryParamsToApiParams = (
 ) => translateObjectKeysAndValues(queryParams, mapBrowserToApi(audience))
 
 export const translateApiParamsToQueryParams = <
-  T extends CollectiveSearchFiltersParams | IndividualSearchFiltersParams,
+  T extends
+    | CollectiveSearchFiltersParams
+    | (ListOffersQueryModel & SearchListParams),
 >(
   apiParams: Partial<T>,
   audience: Audience

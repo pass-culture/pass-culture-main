@@ -1,29 +1,12 @@
 import type { EacFormat } from '@/apiClient/adage'
-import type {
-  CollectiveOfferDisplayedStatus,
-  OfferStatus,
-} from '@/apiClient/v1'
+import type { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import type { CropParams } from '@/commons/utils/imageUploadTypes'
 
-import type { ALL_FORMATS, ALL_STATUS } from './constants'
+import type { ALL_FORMATS } from './constants'
 
-type SearchListParams = {
+export type SearchListParams = {
   format: EacFormat | typeof ALL_FORMATS
   page?: number
-}
-
-export type IndividualSearchFiltersParams = SearchListParams & {
-  nameOrIsbn: string
-  // TODO (igabriele, 2025-11-07): Should be a number. "all" is a case that never happens since there is always a `currentOfferer` in the store.
-  offererId: string
-  // TODO (igabriele, 2025-11-07): Should be a number. "all" is a case that will disappear once `WIP_SWITCH_VENUE` is enabled in production.
-  venueId: string
-  categoryId: string
-  status: OfferStatus | typeof ALL_STATUS
-  creationMode: string
-  periodBeginningDate: string
-  periodEndingDate: string
-  offererAddressId: string
 }
 
 export type CollectiveSearchFiltersParams = SearchListParams & {

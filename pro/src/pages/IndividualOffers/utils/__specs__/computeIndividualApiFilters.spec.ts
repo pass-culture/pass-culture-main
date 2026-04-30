@@ -12,17 +12,16 @@ describe('computeIndividualApiFilters', () => {
     vi.restoreAllMocks()
   })
 
-  it('returns defaults with offererId coerced to string and removes page', () => {
+  it('returns defaults with offererId set to selected offerer and removes page', () => {
     const selectedOffererId = 123
     const result = computeIndividualApiFilters({}, selectedOffererId)
 
     expect('page' in result).toBe(false)
-
-    expect(result.offererId).toBe('123')
+    expect(result.offererId).toBe(123)
 
     const expected = {
       ...(DEFAULT_SEARCH_FILTERS as unknown as Record<string, unknown>),
-      offererId: '123',
+      offererId: 123,
     } as Record<string, unknown>
     delete expected.page
     expect(result).toEqual(expected)
@@ -38,7 +37,7 @@ describe('computeIndividualApiFilters', () => {
         creationMode: 'manual',
         periodBeginningDate: '2020-01-01',
         periodEndingDate: '2020-12-31',
-        offererAddressId: 'a1',
+        offererAddressId: 1,
         page: 7,
       },
       selectedOffererId
@@ -51,20 +50,20 @@ describe('computeIndividualApiFilters', () => {
       creationMode: 'manual',
       periodBeginningDate: '2020-01-01',
       periodEndingDate: '2020-12-31',
-      offererAddressId: 'a1',
+      offererAddressId: 1,
     })
 
-    expect(result.offererId).toBe('5')
+    expect(result.offererId).toBe(5)
   })
 
   it('selected offererId overrides any provided offererId in finalSearchFilters', () => {
     const result = computeIndividualApiFilters(
       {
-        offererId: 'should-not-stick',
+        offererId: 42,
       },
       999
     )
 
-    expect(result.offererId).toBe('999')
+    expect(result.offererId).toBe(999)
   })
 })
