@@ -52,7 +52,7 @@ dependencies = [
   "pillow ==12.2.0",
   "prometheus-flask-exporter ==0.23.2",
   "protobuf ==6.33.6",
-  "psycopg2 ==2.9.11",
+  "psycopg2==2.9.12",
   "py7zr ==1.1.0",
   # required by schwifty, upgraded manually because of setuptools
   "pycountry ==26.2.16",
