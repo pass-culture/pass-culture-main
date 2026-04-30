@@ -1,7 +1,7 @@
+import calendar
 import datetime
 import enum
 
-import pydantic
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 import sqlalchemy.sql.functions as sa_func
@@ -152,45 +152,6 @@ class SettlementType(enum.Enum):
     VOIDED_PAYMENT = "Voided Payment"
 
 
-class ExternalType(enum.Enum):
-    ACR = "ACR"
-    ADR = "ADR"
-    INV = "INV"
-
-
-class InvoicePayload(BaseModelV2):
-    invoice_id: int
-    reference: str
-    bank_account_id: str
-    invoice_date: datetime.datetime
-    description: str
-    invoice_external_type: ExternalType
-
-    model_config = pydantic.ConfigDict(
-        use_enum_values=True,
-    )
-
-    @classmethod
-    def build(
-        cls,
-        invoice: finance_models.Invoice,
-        invoice_external_type: ExternalType,
-        invoice_description: str,
-        reference: str | None = None,
-        bank_account_id: str | None = None,
-        invoice_date: datetime.datetime | None = None,
-    ) -> "InvoicePayload":
-
-        return cls(
-            invoice_id=invoice.id,
-            reference=reference or invoice.reference,
-            bank_account_id=bank_account_id or str(invoice.bankAccountId),
-            invoice_date=invoice_date or invoice.date,
-            description=invoice_description,
-            invoice_external_type=invoice_external_type,
-        )
-
-
 class SettlementPayload(BaseModelV2):
     bank_account_id: int
     external_settlement_id: str
@@ -204,7 +165,16 @@ class SettlementPayload(BaseModelV2):
 
 
 class BaseFinanceBackend:
-    def get_invoice_lines(self, invoice_id: int) -> list[dict]:
+    @staticmethod
+    def _get_invoice_daterange(cutoff_date: datetime.datetime) -> tuple[datetime.date, datetime.date]:
+        if cutoff_date.day < 16:
+            return cutoff_date.replace(day=1).date(), cutoff_date.replace(day=15).date()
+        last_day_of_the_month = calendar.monthrange(cutoff_date.year, cutoff_date.month)[1]
+        return cutoff_date.replace(day=16).date(), cutoff_date.replace(day=last_day_of_the_month).date()
+
+    def get_invoice_lines(self, invoice: finance_models.Invoice) -> list[dict]:
+        invoice_id = invoice.id
+
         indiv_data = self._get_indiv_data(
             invoice_id,
             db.session.query(finance_models.PricingLine)
@@ -333,7 +303,7 @@ class BaseFinanceBackend:
     def check_can_push_invoice(self) -> bool:
         return True
 
-    def push_invoice(self, invoice_payload: InvoicePayload) -> dict | None:
+    def push_invoice(self, invoice: finance_models.Invoice) -> dict | None:
         raise NotImplementedError()
 
     def push_bank_account(self, bank_account: finance_models.BankAccount) -> dict | None:

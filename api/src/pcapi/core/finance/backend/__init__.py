@@ -6,15 +6,11 @@ from sqlalchemy import orm as sa_orm
 from pcapi import settings
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import models as finance_models
-from pcapi.core.finance import utils as finance_utils
-from pcapi.core.finance.backend.base import ExternalType
-from pcapi.core.finance.backend.base import InvoicePayload
 from pcapi.core.finance.backend.base import SettlementPayload
 from pcapi.core.finance.backend.cegid import CegidFinanceBackend
 from pcapi.core.finance.backend.dummy import DummyFinanceBackend
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
-from pcapi.utils import date as date_utils
 
 
 type Backend = CegidFinanceBackend | DummyFinanceBackend
@@ -39,62 +35,7 @@ def push_invoice(invoice_id: int) -> dict | None:
     backend = _get_backend()
     invoice = db.session.get(finance_models.Invoice, invoice_id)
     assert invoice  # helps mypy
-
-    invoice_external_type = ExternalType.ADR if invoice.reference.startswith("A") else ExternalType.INV
-    invoice_batch = invoice.cashflows[0].batch
-    start_date, end_date = finance_utils.get_invoice_daterange(invoice_batch.cutoff)
-    invoice_description = f"{invoice_batch.label} - {start_date:%d/%m}-{end_date:%d/%m}"
-
-    payload = InvoicePayload.build(invoice, invoice_external_type, invoice_description)
-    return backend.push_invoice(payload)
-
-
-def push_invoice_debt_cancellation(invoice_id: int, old_bank_account_id: int, bank_account_id: int) -> dict | None:
-    backend = _get_backend()
-    invoice = (
-        db.session.query(finance_models.Invoice)
-        .filter(finance_models.Invoice.id == invoice_id)
-        .options(sa_orm.joinedload(finance_models.Invoice.settlements))
-    ).one()
-
-    invoice_external_type = ExternalType.ACR if invoice.reference.startswith("A") else ExternalType.ADR
-    invoice_description = f"REC_{invoice.reference} - Changement BA de {old_bank_account_id} à {bank_account_id}"
-    settlements_nb = len(invoice.settlements)
-    reference_suffix = "_A" + (str(settlements_nb) if settlements_nb > 1 else "")
-
-    payload = InvoicePayload.build(
-        invoice=invoice,
-        invoice_external_type=invoice_external_type,
-        invoice_description=invoice_description,
-        reference=invoice.reference + reference_suffix,
-        bank_account_id=str(old_bank_account_id),
-        invoice_date=date_utils.get_naive_utc_now(),
-    )
-    return backend.push_invoice(payload)
-
-
-def push_invoice_debt_recreation(invoice_id: int, old_bank_account_id: int, bank_account_id: int) -> dict | None:
-    backend = _get_backend()
-    invoice = (
-        db.session.query(finance_models.Invoice)
-        .filter(finance_models.Invoice.id == invoice_id)
-        .options(sa_orm.joinedload(finance_models.Invoice.settlements))
-    ).one()
-
-    invoice_external_type = ExternalType.ADR if invoice.reference.startswith("A") else ExternalType.ACR
-    invoice_description = f"REC_{invoice.reference} - Changement BA de {old_bank_account_id} à {bank_account_id}"
-    settlements_nb = len(invoice.settlements)
-    reference_suffix = "_R" + (str(settlements_nb) if settlements_nb > 1 else "")
-
-    payload = InvoicePayload.build(
-        invoice=invoice,
-        invoice_external_type=invoice_external_type,
-        invoice_description=invoice_description,
-        reference=invoice.reference + reference_suffix,
-        bank_account_id=str(bank_account_id),
-        invoice_date=date_utils.get_naive_utc_now(),
-    )
-    return backend.push_invoice(payload)
+    return backend.push_invoice(invoice)
 
 
 def push_bank_account(bank_account_id: int) -> dict | None:
