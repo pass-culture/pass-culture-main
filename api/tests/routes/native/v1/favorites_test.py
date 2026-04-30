@@ -11,11 +11,13 @@ from pcapi.core.categories import subcategories
 from pcapi.core.external.batch import models as batch_models
 from pcapi.core.external.batch import testing as push_testing
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as users_testing
 from pcapi.core.users.models import Favorite
 from pcapi.models import db
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
 
@@ -362,7 +364,7 @@ class GetTest:
             assert response.status_code == 401
 
 
-class PostTest:
+class CreateFavoriteTest:
     def when_user_creates_a_favorite(self, client):
         # Given
         user = users_factories.UserFactory()
@@ -451,6 +453,58 @@ class PostTest:
         assert response.status_code == 400, response.data
         assert response.json == {"code": "MAX_FAVORITES_REACHED"}
         assert db.session.query(Favorite).count() == 1
+
+    def test_offer_does_not_exist(self, client):
+        user = users_factories.UserFactory()
+
+        # When
+        response = client.with_token(user).post(FAVORITES_URL, json={"offerId": 0})
+
+        # Then
+        assert response.status_code == 404
+        assert db.session.query(Favorite).count() == 0
+
+    @pytest.mark.parametrize(
+        "validation_status, status_code, count",
+        (
+            (offers_models.OfferValidationStatus.APPROVED, 200, 1),
+            (offers_models.OfferValidationStatus.DRAFT, 404, 0),
+            (offers_models.OfferValidationStatus.PENDING, 404, 0),
+            (offers_models.OfferValidationStatus.REJECTED, 404, 0),
+        ),
+    )
+    def test_offer_is_not_approved(self, client, validation_status, status_code, count):
+        user = users_factories.UserFactory()
+        offer = offers_factories.EventOfferFactory(validation=validation_status)
+
+        # When
+        response = client.with_token(user).post(FAVORITES_URL, json={"offerId": offer.id})
+
+        # Then
+        assert response.status_code == status_code
+        assert db.session.query(Favorite).count() == count
+
+    @pytest.mark.parametrize(
+        "validation_status, status_code, count",
+        (
+            (ValidationStatus.NEW, 404, 0),
+            (ValidationStatus.PENDING, 404, 0),
+            (ValidationStatus.VALIDATED, 200, 1),
+            (ValidationStatus.REJECTED, 404, 0),
+            (ValidationStatus.DELETED, 404, 0),
+            (ValidationStatus.CLOSED, 404, 0),
+        ),
+    )
+    def test_offerer_is_not_validated(self, client, validation_status, status_code, count):
+        user = users_factories.UserFactory()
+        offer = offers_factories.EventOfferFactory(venue__managingOfferer__validationStatus=validation_status)
+
+        # When
+        response = client.with_token(user).post(FAVORITES_URL, json={"offerId": offer.id})
+
+        # Then
+        assert response.status_code == status_code
+        assert db.session.query(Favorite).count() == count
 
 
 class DeleteTest:
