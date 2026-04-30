@@ -153,9 +153,15 @@ def create_favorite(body: serializers.FavoriteRequest) -> serializers.FavoriteRe
             raise ApiErrors({"code": "MAX_FAVORITES_REACHED"})
 
     try:
-        offer = get_offer_by_id(body.offer_id)
+        offer = get_offer_by_id(body.offer_id, load_options={"venue"})
     except OfferNotFound as exception:
         raise ResourceNotFoundError() from exception
+
+    if not offer.isApproved:
+        raise ResourceNotFoundError()
+
+    if not (offer.venue.managingOfferer.isActive and offer.venue.managingOfferer.isValidated):
+        raise ResourceNotFoundError()
 
     favorite = db.session.query(Favorite).filter_by(offerId=body.offer_id, userId=current_user.id).one_or_none()
     if not favorite:
