@@ -257,3 +257,10 @@ def sync_settlements(since: str | None = None) -> None:
         raise ValueError(f"Can't fetch settlements from {from_date.isoformat()}")
 
     finance_external.sync_settlements(from_date=from_date, to_date=yesterday)
+
+
+@blueprint.cli.command("transfer_debt_after_rejected_settlements")
+@cron_decorators.log_cron
+@cron_decorators.cron_require_feature(FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS)
+def transfer_debt_after_rejected_settlements() -> None:
+    finance_external.transfer_debt_after_rejected_settlements()

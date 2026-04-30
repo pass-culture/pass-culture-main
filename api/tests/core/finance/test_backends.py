@@ -15,6 +15,8 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.backend import constants
 from pcapi.core.finance.backend.base import BaseFinanceBackend
+from pcapi.core.finance.backend.base import ExternalType
+from pcapi.core.finance.backend.base import InvoicePayload
 from pcapi.core.finance.backend.base import SettlementPayload
 from pcapi.core.finance.backend.base import SettlementType
 from pcapi.core.finance.backend.dummy import bank_accounts as dummy_bank_accounts
@@ -79,9 +81,96 @@ class DummyFinanceBackendTest:
         assert isinstance(current_backend, finance_backend.DummyFinanceBackend)
 
     def test_push_invoice(self):
-        invoice = finance_factories.InvoiceFactory()
+        invoice = finance_factories.InvoiceFactory(
+            cashflows=[
+                finance_factories.CashflowFactory(batch__cutoff=datetime.date(2026, 5, 30), batch__label="VIRXXX")
+            ]
+        )
         finance_backend.push_invoice(invoice.id)
-        assert invoice in dummy_invoices
+        assert (
+            InvoicePayload(
+                invoice_id=invoice.id,
+                reference=invoice.reference,
+                bank_account_id=str(invoice.bankAccountId),
+                invoice_date=invoice.date,
+                description="VIRXXX - 16/05-31/05",
+                invoice_external_type=ExternalType.INV,
+            )
+            in dummy_invoices
+        )
+
+    def test_push_invoice_debt_cancellation(self):
+        now = date_utils.get_naive_utc_now()
+        invoice = finance_factories.InvoiceFactory(reference="F260000001")
+        old_bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount
+        finance_factories.SettlementFactory(
+            bankAccount=old_bank_account, invoices=[invoice], status=finance_models.SettlementStatus.REJECTED
+        )
+        new_bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount
+
+        with time_machine.travel(now, tick=False):
+            finance_backend.push_invoice_debt_cancellation(invoice.id, old_bank_account.id, new_bank_account.id)
+        assert (
+            InvoicePayload(
+                invoice_id=invoice.id,
+                reference=invoice.reference + "_A",
+                bank_account_id=str(old_bank_account.id),
+                invoice_date=now,
+                description=f"REC_{invoice.reference} - Changement BA de {old_bank_account.id} à {new_bank_account.id}",
+                invoice_external_type=ExternalType.ADR,
+            )
+            in dummy_invoices
+        )
+
+    def test_push_invoice_debt_recreation(self):
+        now = date_utils.get_naive_utc_now()
+        invoice = finance_factories.InvoiceFactory(reference="F260000001")
+        old_bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount
+        finance_factories.SettlementFactory(
+            bankAccount=old_bank_account, invoices=[invoice], status=finance_models.SettlementStatus.REJECTED
+        )
+        new_bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount
+
+        with time_machine.travel(now, tick=False):
+            finance_backend.push_invoice_debt_recreation(invoice.id, old_bank_account.id, new_bank_account.id)
+        assert (
+            InvoicePayload(
+                invoice_id=invoice.id,
+                reference=invoice.reference + "_R",
+                bank_account_id=str(new_bank_account.id),
+                invoice_date=now,
+                description=f"REC_{invoice.reference} - Changement BA de {old_bank_account.id} à {new_bank_account.id}",
+                invoice_external_type=ExternalType.ACR,
+            )
+            in dummy_invoices
+        )
+
+    def test_push_invoice_multiple_debt_cancellation(self):
+        now = date_utils.get_naive_utc_now()
+        invoice = finance_factories.InvoiceFactory(reference="A260000001")
+        oldest_bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount
+        finance_factories.SettlementFactory(
+            bankAccount=oldest_bank_account, invoices=[invoice], status=finance_models.SettlementStatus.REJECTED
+        )
+        older_bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount
+        finance_factories.SettlementFactory(
+            bankAccount=older_bank_account, invoices=[invoice], status=finance_models.SettlementStatus.REJECTED
+        )
+        new_bank_account = offerers_factories.VenueBankAccountLinkFactory().bankAccount
+
+        with time_machine.travel(now, tick=False):
+            finance_backend.push_invoice_debt_cancellation(invoice.id, older_bank_account.id, new_bank_account.id)
+        assert (
+            InvoicePayload(
+                invoice_id=invoice.id,
+                reference=invoice.reference + "_A2",
+                bank_account_id=str(older_bank_account.id),
+                invoice_date=now,
+                description=f"REC_{invoice.reference} - Changement BA de {older_bank_account.id} à {new_bank_account.id}",
+                invoice_external_type=ExternalType.ACR,
+            )
+            in dummy_invoices
+        )
 
     def test_push_bank_account(self):
         bank_account = finance_factories.BankAccountFactory()
@@ -247,7 +336,7 @@ class BaseBackendTest:
         invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account)
 
         backend = BaseFinanceBackend()
-        invoice_lines = backend.get_invoice_lines(invoice)
+        invoice_lines = backend.get_invoice_lines(invoice.id)
         assert len(invoice_lines) == 1
         invoice_line = invoice_lines[0]
         assert len(invoice_line) == 3
@@ -285,7 +374,7 @@ class BaseBackendTest:
         invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account)
 
         backend = BaseFinanceBackend()
-        invoice_lines = backend.get_invoice_lines(invoice)
+        invoice_lines = backend.get_invoice_lines(invoice.id)
         assert len(invoice_lines) == 1
         invoice_line = invoice_lines[0]
         assert len(invoice_line) == 3
@@ -342,7 +431,7 @@ class BaseBackendTest:
         invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account)
 
         backend = BaseFinanceBackend()
-        invoice_lines = backend.get_invoice_lines(invoice)
+        invoice_lines = backend.get_invoice_lines(invoice.id)
         assert len(invoice_lines) == 2
         assert {"OCINDGRANT_18", "ORINDGRANT_18"} == {e["product_id"] for e in invoice_lines}
         offerer_revenue_line = [e for e in invoice_lines if e["product_id"] == "ORINDGRANT_18"][0]
@@ -465,7 +554,7 @@ class BaseBackendTest:
         invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account)
 
         backend = BaseFinanceBackend()
-        invoice_lines = backend.get_invoice_lines(invoice)
+        invoice_lines = backend.get_invoice_lines(invoice.id)
         assert len(invoice_lines) == 1
         invoice_line = invoice_lines[0]
         assert len(invoice_line) == 3
@@ -520,7 +609,7 @@ class BaseBackendTest:
         invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account)
 
         backend = BaseFinanceBackend()
-        invoice_lines = backend.get_invoice_lines(invoice)
+        invoice_lines = backend.get_invoice_lines(invoice.id)
         assert len(invoice_lines) == 1
         invoice_line = invoice_lines[0]
         assert len(invoice_line) == 3
@@ -580,7 +669,7 @@ class BaseBackendTest:
         invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account)
 
         backend = BaseFinanceBackend()
-        invoice_lines = backend.get_invoice_lines(invoice)
+        invoice_lines = backend.get_invoice_lines(invoice.id)
         assert len(invoice_lines) == 1
         invoice_line = invoice_lines[0]
         assert len(invoice_line) == 3
@@ -628,7 +717,7 @@ class BaseBackendTest:
         invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account)
 
         backend = BaseFinanceBackend()
-        invoice_lines = backend.get_invoice_lines(invoice)
+        invoice_lines = backend.get_invoice_lines(invoice.id)
         assert len(invoice_lines) == 1
         invoice_line = invoice_lines[0]
         assert len(invoice_line) == 3
@@ -659,30 +748,13 @@ class BaseBackendTest:
         invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account)
 
         backend = BaseFinanceBackend()
-        invoice_lines = backend.get_invoice_lines(invoice)
+        invoice_lines = backend.get_invoice_lines(invoice.id)
         assert len(invoice_lines) == 1
         invoice_line = invoice_lines[0]
         assert len(invoice_line) == 3
         assert invoice_line["amount"] == -55_66
         assert invoice_line["product_id"] == "ORINDGRANT_18"
         assert invoice_line["title"] == "Réservations"
-
-    @pytest.mark.parametrize(
-        "cutoff_date, expected_start_date, expected_end_date",
-        [
-            (datetime.datetime(2025, 8, 31), datetime.date(2025, 8, 16), datetime.date(2025, 8, 31)),
-            (datetime.datetime(2025, 9, 1), datetime.date(2025, 9, 1), datetime.date(2025, 9, 15)),
-            (datetime.datetime(2025, 9, 15), datetime.date(2025, 9, 1), datetime.date(2025, 9, 15)),
-            (datetime.datetime(2025, 9, 16), datetime.date(2025, 9, 16), datetime.date(2025, 9, 30)),
-            (datetime.datetime(2025, 9, 30), datetime.date(2025, 9, 16), datetime.date(2025, 9, 30)),
-        ],
-    )
-    def test_get_invoice_daterange(self, cutoff_date, expected_start_date, expected_end_date):
-        backend = BaseFinanceBackend()
-        start_date, end_date = backend._get_invoice_daterange(cutoff_date)
-
-        assert start_date == expected_start_date
-        assert end_date == expected_end_date
 
 
 @pytest.mark.settings(

@@ -258,7 +258,7 @@ class InvoiceFactory(BaseFactory):
         model = models.Invoice
 
     amount = 1000
-    reference = factory.Sequence("{:09}".format)
+    reference = factory.Sequence("F26{:07}".format)
     token = factory.LazyFunction(secrets.token_urlsafe)
     status = models.InvoiceStatus.PAID
 
@@ -295,7 +295,7 @@ class SettlementFactory(BaseFactory[models.Settlement]):
         model = models.Settlement
 
     settlementDate = factory.LazyFunction(date_utils.get_naive_utc_now)
-    externalSettlementId = "0101234"
+    externalSettlementId = factory.Sequence("1{:06}".format)
     bankAccount = factory.SubFactory(BankAccountFactory)
     amount = 10000
     batch = factory.SubFactory(SettlementBatchFactory)
