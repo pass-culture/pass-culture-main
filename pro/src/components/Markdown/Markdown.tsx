@@ -40,12 +40,14 @@ export const Markdown = ({
   maxLength?: number
   croppedTextEnding?: string
 }) => {
-  const html = markdownToHtml(
-    DOMPurify.sanitize(markdownText, {
-      ALLOWED_TAGS: [],
-      ALLOWED_ATTR: [],
-    })
-  )
+  const sanitizedInput = DOMPurify.sanitize(markdownText, {
+    ALLOWED_TAGS: [],
+    ALLOWED_ATTR: [],
+  })
+  const html = DOMPurify.sanitize(markdownToHtml(sanitizedInput), {
+    ALLOWED_TAGS: ['a', 'strong', 'em'],
+    ALLOWED_ATTR: ['href', 'rel', 'target', 'class'],
+  })
 
   return (
     <span
