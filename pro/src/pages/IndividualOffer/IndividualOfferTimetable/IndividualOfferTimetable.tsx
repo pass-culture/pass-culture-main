@@ -5,7 +5,7 @@ import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
-import { IndividualOfferTimetableScreen } from './components/IndividualOfferTimetableScreen'
+import { StocksCalendar } from './components/StocksCalendar/StocksCalendar'
 
 export const IndividualOfferTimetable = (): JSX.Element | null => {
   const { offer } = useIndividualOfferContext()
@@ -22,7 +22,7 @@ export const IndividualOfferTimetable = (): JSX.Element | null => {
 
   return (
     <IndividualOfferLayout offer={offer}>
-      <IndividualOfferTimetableScreen offer={offer} mode={mode} />
+      <StocksCalendar offer={offer} mode={mode} />
     </IndividualOfferLayout>
   )
 }
