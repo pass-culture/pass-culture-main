@@ -3,7 +3,6 @@ import useSWR from 'swr'
 
 import { api, apiNew } from '@/apiClient/api'
 import { GetVenueAddressesWithOffersOption } from '@/apiClient/v1'
-import type { ListOffersQueryModel } from '@/apiClient/v1/new'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import {
   GET_CATEGORIES_QUERY_KEY,
@@ -12,7 +11,6 @@ import {
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { DEFAULT_PAGE } from '@/commons/core/Offers/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
-import type { SearchListParams } from '@/commons/core/Offers/types'
 import { computeIndividualOffersUrl } from '@/commons/core/Offers/utils/computeIndividualOffersUrl'
 import { serializeApiIndividualFilters } from '@/commons/core/Offers/utils/serializeApiIndividualFilters'
 import type { Audience } from '@/commons/core/shared/types'
@@ -24,6 +22,7 @@ import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { sortByLabel } from '@/commons/utils/strings'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 
+import type { IndividualOffersFilters } from './common/types'
 import { IndividualOffersContainer } from './IndividualOffersContainer/IndividualOffersContainer'
 import { computeIndividualApiFilters } from './utils/computeIndividualApiFilters'
 
@@ -34,7 +33,7 @@ export const IndividualOffers = () => {
   const { storedFilters } = useStoredFilterConfig('individual')
   const finalSearchFilters = {
     ...urlSearchFilters,
-    ...(storedFilters as Partial<ListOffersQueryModel & SearchListParams>),
+    ...(storedFilters as Partial<IndividualOffersFilters>),
     venueId: selectedPartnerVenue.id,
   }
 
@@ -57,7 +56,7 @@ export const IndividualOffers = () => {
   )
 
   const redirectWithSelectedFilters = (
-    filters: Partial<ListOffersQueryModel & SearchListParams> & {
+    filters: Partial<IndividualOffersFilters> & {
       audience?: Audience
     }
   ) => {

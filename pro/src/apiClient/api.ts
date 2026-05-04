@@ -56,6 +56,6 @@ export {
  * Plain object wrapper around the generated v1 SDK so consumers can spy on it via `vi.spyOn(apiNew, '...')`.
  * ES module namespace objects are frozen which prevents spying on them directly.
  */
-// TODO (igabriele, 2026-04-30): Take a decision here.
-// The originally frozen ES module namespace objects prevented any accidental mutation, which we lose with the spread.
+// Careful here:
+// The originally frozen ES module namespace objects prevented any accidental mutation, which we lose with this spread.
 export const apiNew = { ...v1NewSdk }

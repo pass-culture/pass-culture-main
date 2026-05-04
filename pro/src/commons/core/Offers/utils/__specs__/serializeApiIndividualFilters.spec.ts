@@ -1,15 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
 import { OfferStatus } from '@/apiClient/v1'
-import type { ListOffersQueryModel } from '@/apiClient/v1/new'
-import { ALL_FORMATS } from '@/commons/core/Offers/constants'
-import type { SearchListParams } from '@/commons/core/Offers/types'
 import { serializeApiIndividualFilters } from '@/commons/core/Offers/utils/serializeApiIndividualFilters'
+import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/types'
 
-const baseFilters: ListOffersQueryModel & SearchListParams = {
+const baseFilters: IndividualOffersFilters = {
   categoryId: undefined,
   creationMode: undefined,
-  format: ALL_FORMATS,
   nameOrIsbn: undefined,
   offererAddressId: undefined,
   offererId: undefined,

@@ -5,8 +5,9 @@ import type { ListOffersQueryModel } from '@/apiClient/v1/new'
 import { Audience } from '@/commons/core/shared/types'
 import { parseUrlParams } from '@/commons/utils/parseUrlParams'
 import { translateQueryParamsToApiParams } from '@/commons/utils/translate'
+import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/types'
 
-import type { CollectiveSearchFiltersParams, SearchListParams } from '../types'
+import type { CollectiveSearchFiltersParams } from '../types'
 
 const NUMERIC_INDIVIDUAL_FIELDS = [
   'offererId',
@@ -25,9 +26,7 @@ const parseNumericField = (value: unknown): number | undefined => {
   return undefined
 }
 
-export const useQuerySearchFilters = (): Partial<
-  ListOffersQueryModel & SearchListParams
-> => {
+export const useQuerySearchFilters = (): Partial<IndividualOffersFilters> => {
   const { search } = useLocation()
 
   return useMemo(() => {
@@ -39,8 +38,8 @@ export const useQuerySearchFilters = (): Partial<
       Audience.INDIVIDUAL
     ) as Record<string, unknown>
 
-    const result: Partial<ListOffersQueryModel & SearchListParams> = {
-      ...(translated as Partial<ListOffersQueryModel & SearchListParams>),
+    const result: Partial<IndividualOffersFilters> = {
+      ...(translated as Partial<IndividualOffersFilters>),
     }
 
     for (const field of NUMERIC_INDIVIDUAL_FIELDS) {

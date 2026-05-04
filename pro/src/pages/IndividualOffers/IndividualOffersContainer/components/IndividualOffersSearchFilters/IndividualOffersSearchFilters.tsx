@@ -1,23 +1,20 @@
 import type { ChangeEvent, Dispatch, SetStateAction, SubmitEvent } from 'react'
 
 import { OfferStatus } from '@/apiClient/v1'
-import type { ListOffersQueryModel } from '@/apiClient/v1/new'
 import { DEFAULT_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
-import type { SearchListParams } from '@/commons/core/Offers/types'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OffersTableSearch } from '@/components/OffersTableSearch/OffersTableSearch'
 import { TypedSelect } from '@/components/TypedSelect/TypedSelect'
+import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/types'
 import styles from '@/pages/IndividualOffers/IndividualOffersContainer/IndividualOffersContainer.module.scss'
 import { PeriodSelector } from '@/ui-kit/form/PeriodSelector/PeriodSelector'
 
-type IndividualFilterShape = ListOffersQueryModel & SearchListParams
-
 interface IndividualOffersSearchFiltersProps {
   hasFilters: boolean
-  applyFilters: (filters: IndividualFilterShape) => void
-  selectedFilters: IndividualFilterShape
-  setSelectedFilters: Dispatch<SetStateAction<IndividualFilterShape>>
+  applyFilters: (filters: IndividualOffersFilters) => void
+  selectedFilters: IndividualOffersFilters
+  setSelectedFilters: Dispatch<SetStateAction<IndividualOffersFilters>>
   disableAllFilters: boolean
   resetFilters: () => void
   offererAddresses: SelectOption<number>[]
@@ -52,7 +49,7 @@ export const IndividualOffersSearchFilters = ({
   categories,
   searchButtonRef,
 }: Readonly<IndividualOffersSearchFiltersProps>) => {
-  const updateSearchFilters = (patch: Partial<IndividualFilterShape>) => {
+  const updateSearchFilters = (patch: Partial<IndividualOffersFilters>) => {
     setSelectedFilters((prev) => ({ ...prev, ...patch }))
   }
 

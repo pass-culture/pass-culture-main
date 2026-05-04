@@ -3,14 +3,12 @@ import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import type { ListOffersOfferResponseModel } from '@/apiClient/v1'
-import type { ListOffersQueryModel } from '@/apiClient/v1/new'
 import {
   GET_OFFER_QUERY_KEY,
   GET_OFFERS_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
-import type { SearchListParams } from '@/commons/core/Offers/types'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
@@ -21,6 +19,7 @@ import {
 } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import strokeVisualArtIcon from '@/icons/stroke-visual-art.svg'
+import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/types'
 import { computeIndividualApiFilters } from '@/pages/IndividualOffers/utils/computeIndividualApiFilters'
 import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
@@ -49,7 +48,7 @@ export const HeadlineOfferImageDialogs = ({
   const urlSearchFilters = useQuerySearchFilters()
   const finalSearchFilters = {
     ...urlSearchFilters,
-    ...(storedFilters as Partial<ListOffersQueryModel & SearchListParams>),
+    ...(storedFilters as Partial<IndividualOffersFilters>),
   }
 
   const apiFilters = computeIndividualApiFilters(

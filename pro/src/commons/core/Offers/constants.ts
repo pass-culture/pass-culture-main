@@ -1,8 +1,8 @@
 import { WithdrawalTypeEnum } from '@/apiClient/v1'
-import type { ListOffersQueryModel } from '@/apiClient/v1/new'
 import type { SelectOption } from '@/commons/custom_types/form'
+import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/types'
 
-import type { CollectiveSearchFiltersParams, SearchListParams } from './types'
+import type { CollectiveSearchFiltersParams } from './types'
 
 export enum INDIVIDUAL_OFFER_SUBTYPE {
   PHYSICAL_GOOD = 'PHYSICAL_GOOD',
@@ -54,12 +54,11 @@ export const NUMBER_OF_OFFERS_PER_PAGE = 10
 export const MAX_TOTAL_PAGES = 10
 export const MAX_OFFERS_TO_DISPLAY = MAX_TOTAL_PAGES * NUMBER_OF_OFFERS_PER_PAGE
 
-export const DEFAULT_SEARCH_FILTERS: ListOffersQueryModel & SearchListParams = {
+export const DEFAULT_SEARCH_FILTERS: IndividualOffersFilters = {
   nameOrIsbn: undefined,
   offererId: undefined,
   venueId: undefined,
   categoryId: undefined,
-  format: ALL_FORMATS,
   status: undefined,
   creationMode: undefined,
   periodBeginningDate: undefined,

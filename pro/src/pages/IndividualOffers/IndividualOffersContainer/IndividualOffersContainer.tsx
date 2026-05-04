@@ -1,10 +1,7 @@
 import { useRef, useState } from 'react'
 
 import { OfferStatus } from '@/apiClient/v1'
-import type {
-  ListOffersOfferResponseModel,
-  ListOffersQueryModel,
-} from '@/apiClient/v1/new'
+import type { ListOffersOfferResponseModel } from '@/apiClient/v1/new'
 import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
   DEFAULT_PAGE,
@@ -13,7 +10,6 @@ import {
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
 } from '@/commons/core/Offers/constants'
-import type { SearchListParams } from '@/commons/core/Offers/types'
 import { hasSearchFilters } from '@/commons/core/Offers/utils/hasSearchFilters'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import type { Audience } from '@/commons/core/shared/types'
@@ -28,6 +24,7 @@ import { Banner } from '@/design-system/Banner/Banner'
 import strokeNoBooking from '@/icons/stroke-no-booking.svg'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
+import type { IndividualOffersFilters } from '../common/types'
 import { HeadlineOffer } from './components/HeadlineOffer/HeadlineOffer'
 import { getIndividualOfferColumns } from './components/IndividualOfferColumns/IndividualOfferColumns'
 import { IndividualOfferRecommendationBanner } from './components/IndividualOfferRecommendationBanner/IndividualOfferRecommendationBanner'
@@ -38,10 +35,9 @@ import styles from './IndividualOffersContainer.module.scss'
 export type IndividualOffersContainerProps = {
   currentPageNumber: number
   isLoading: boolean
-  initialSearchFilters: ListOffersQueryModel & SearchListParams
+  initialSearchFilters: IndividualOffersFilters
   redirectWithSelectedFilters: (
-    filters: Partial<ListOffersQueryModel & SearchListParams> & {
-      page?: number
+    filters: Partial<IndividualOffersFilters> & {
       audience?: Audience
     }
   ) => void
@@ -98,14 +94,14 @@ export const IndividualOffersContainer = ({
   const pageCount = Math.min(numberOfPages, MAX_TOTAL_PAGES)
 
   const applySelectedFiltersAndRedirect = (
-    filters: Partial<ListOffersQueryModel & SearchListParams> & {
+    filters: Partial<IndividualOffersFilters> & {
       audience?: Audience
     }
   ) => {
     redirectWithSelectedFilters(filters)
   }
 
-  const applyFilters = (filters: ListOffersQueryModel & SearchListParams) => {
+  const applyFilters = (filters: IndividualOffersFilters) => {
     onApplyFilters(filters)
     applySelectedFiltersAndRedirect({ ...filters, page: DEFAULT_PAGE })
   }

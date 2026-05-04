@@ -1,12 +1,9 @@
 import invert from 'lodash.invert'
 
 import { CollectiveOfferDisplayedStatus, OfferStatus } from '@/apiClient/v1'
-import type { ListOffersQueryModel } from '@/apiClient/v1/new'
-import type {
-  CollectiveSearchFiltersParams,
-  SearchListParams,
-} from '@/commons/core/Offers/types'
+import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { Audience } from '@/commons/core/shared/types'
+import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/types'
 
 const translateObjectKeysAndValues = (
   // biome-ignore lint/suspicious/noExplicitAny: Too generic to type.
@@ -91,9 +88,7 @@ export const translateQueryParamsToApiParams = (
 ) => translateObjectKeysAndValues(queryParams, mapBrowserToApi(audience))
 
 export const translateApiParamsToQueryParams = <
-  T extends
-    | CollectiveSearchFiltersParams
-    | (ListOffersQueryModel & SearchListParams),
+  T extends CollectiveSearchFiltersParams | IndividualOffersFilters,
 >(
   apiParams: Partial<T>,
   audience: Audience

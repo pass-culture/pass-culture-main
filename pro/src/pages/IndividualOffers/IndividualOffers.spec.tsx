@@ -12,7 +12,6 @@ import {
   OfferStatus,
 } from '@/apiClient/v1/new'
 import { DEFAULT_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
-import type { SearchListParams } from '@/commons/core/Offers/types'
 import { computeIndividualOffersUrl } from '@/commons/core/Offers/utils/computeIndividualOffersUrl'
 import type { Audience } from '@/commons/core/shared/types'
 import * as useAccessibleScrollModule from '@/commons/hooks/useAccessibleScroll'
@@ -32,6 +31,7 @@ import {
 } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
+import type { IndividualOffersFilters } from './common/types'
 import { IndividualOffers } from './IndividualOffers'
 
 const makeQuery = (
@@ -97,7 +97,7 @@ const LABELS = {
 }
 
 const renderIndividualOffers = async (
-  filters: Partial<ListOffersQueryModel & SearchListParams> & {
+  filters: Partial<IndividualOffersFilters> & {
     audience?: Audience
   } = DEFAULT_SEARCH_FILTERS,
   features: string[] = [],

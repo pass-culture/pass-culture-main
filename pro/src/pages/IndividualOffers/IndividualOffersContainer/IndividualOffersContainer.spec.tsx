@@ -7,16 +7,12 @@ import {
   type GetOffererAddressResponseModel,
   OfferStatus,
 } from '@/apiClient/v1'
-import type {
-  ListOffersOfferResponseModel,
-  ListOffersQueryModel,
-} from '@/apiClient/v1/new'
+import type { ListOffersOfferResponseModel } from '@/apiClient/v1/new'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
   ALL_OFFERER_ADDRESS_OPTION,
   DEFAULT_SEARCH_FILTERS,
 } from '@/commons/core/Offers/constants'
-import type { SearchListParams } from '@/commons/core/Offers/types'
 import { computeAddressDisplayName } from '@/commons/format/venuesService'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
@@ -34,6 +30,7 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
+import type { IndividualOffersFilters } from '../common/types'
 import {
   IndividualOffersContainer,
   type IndividualOffersContainerProps,
@@ -231,7 +228,7 @@ describe('IndividualOffersScreen', () => {
     await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
 
     const searchAndChecked = async (
-      params: Partial<ListOffersQueryModel & SearchListParams>
+      params: Partial<IndividualOffersFilters>
     ) => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
       expect(redirectWithSelectedFiltersSpy).toHaveBeenCalled()

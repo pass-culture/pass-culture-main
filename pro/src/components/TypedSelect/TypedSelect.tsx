@@ -47,12 +47,15 @@ export function TypedSelect<Value extends number | string>({
 
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
-      const normalizedNextValue =
-        event.currentTarget.value === EMPTY_OPTION_VALUE
-          ? undefined
-          : isNumber
-            ? Number(event.currentTarget.value)
-            : event.currentTarget.value
+      if (event.currentTarget.value === EMPTY_OPTION_VALUE) {
+        onChange(undefined)
+
+        return
+      }
+
+      const normalizedNextValue = isNumber
+        ? Number(event.currentTarget.value)
+        : event.currentTarget.value
 
       onChange(normalizedNextValue as Parameters<typeof onChange>[0])
     },

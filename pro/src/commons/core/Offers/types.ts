@@ -4,12 +4,11 @@ import type { CropParams } from '@/commons/utils/imageUploadTypes'
 
 import type { ALL_FORMATS } from './constants'
 
-export type SearchListParams = {
-  format: EacFormat | typeof ALL_FORMATS
+export type Pagination = {
   page?: number
 }
 
-export type CollectiveSearchFiltersParams = SearchListParams & {
+export type CollectiveSearchFiltersParams = Pagination & {
   name: string
   // TODO (igabriele, 2025-11-07): Should be a number. "all" is a case that never happens since there is always a `currentOfferer` in the store.
   offererId?: string | 'all'
@@ -20,6 +19,7 @@ export type CollectiveSearchFiltersParams = SearchListParams & {
   periodEndingDate: string
   locationType?: string
   offererAddressId?: string
+  format: EacFormat | typeof ALL_FORMATS
 }
 
 export interface CategorySubtypeItem {

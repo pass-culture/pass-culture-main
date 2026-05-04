@@ -4,7 +4,6 @@ import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import { type ListOffersOfferResponseModel, OfferStatus } from '@/apiClient/v1'
-import type { ListOffersQueryModel } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
@@ -14,7 +13,6 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from '@/commons/core/FirebaseEvents/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
-import type { SearchListParams } from '@/commons/core/Offers/types'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
@@ -24,6 +22,7 @@ import fullStockIcon from '@/icons/full-stock.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import strokeStarIcon from '@/icons/stroke-star.svg'
 import strokeTrashIcon from '@/icons/stroke-trash.svg'
+import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/types'
 import { computeDeletionErrorMessage } from '@/pages/IndividualOffers/utils/computeDeletionErrorMessage'
 import { computeDeletionSuccessMessage } from '@/pages/IndividualOffers/utils/computeDeletionSuccessMessage'
 import { computeIndividualApiFilters } from '@/pages/IndividualOffers/utils/computeIndividualApiFilters'
@@ -52,7 +51,7 @@ export const IndividualActionsCells = ({
   const urlSearchFilters = useQuerySearchFilters()
   const finalSearchFilters = {
     ...urlSearchFilters,
-    ...(storedFilters as Partial<ListOffersQueryModel & SearchListParams>),
+    ...(storedFilters as Partial<IndividualOffersFilters>),
   }
 
   const dropdownTriggerRef = useRef<HTMLButtonElement>(null)

@@ -1,18 +1,16 @@
-import type { ListOffersQueryModel } from '@/apiClient/v1/new'
+import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/types'
 
 import { DEFAULT_SEARCH_FILTERS } from '../constants'
-import type { CollectiveSearchFiltersParams, SearchListParams } from '../types'
-
-type IndividualFilterShape = ListOffersQueryModel & SearchListParams
+import type { CollectiveSearchFiltersParams } from '../types'
 
 type HasSearchFiltersParams = {
-  searchFilters: Partial<IndividualFilterShape>
-  lookup?: (keyof IndividualFilterShape)[]
-  ignore?: (keyof IndividualFilterShape)[]
+  searchFilters: Partial<IndividualOffersFilters>
+  lookup?: (keyof IndividualOffersFilters)[]
+  ignore?: (keyof IndividualOffersFilters)[]
 }
 export const hasSearchFilters = ({
   searchFilters,
-  lookup = Object.keys(searchFilters) as (keyof IndividualFilterShape)[],
+  lookup = Object.keys(searchFilters) as (keyof IndividualOffersFilters)[],
   ignore = [],
 }: HasSearchFiltersParams): boolean => {
   // Those "filters" are ignored because none are to be interpreted

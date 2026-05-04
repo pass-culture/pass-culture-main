@@ -6,11 +6,9 @@ import {
   OfferStatus,
   type PatchAllOffersActiveStatusBodyModel,
 } from '@/apiClient/v1'
-import type { ListOffersQueryModel } from '@/apiClient/v1/new'
 import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { MAX_OFFERS_TO_DISPLAY } from '@/commons/core/Offers/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
-import type { SearchListParams } from '@/commons/core/Offers/types'
 import { serializeApiIndividualFilters } from '@/commons/core/Offers/utils/serializeApiIndividualFilters'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -23,6 +21,7 @@ import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullHideIcon from '@/icons/full-hide.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import fullValidateIcon from '@/icons/full-validate.svg'
+import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/types'
 import { computeDeletionErrorMessage } from '@/pages/IndividualOffers/utils/computeDeletionErrorMessage'
 import { computeDeletionSuccessMessage } from '@/pages/IndividualOffers/utils/computeDeletionSuccessMessage'
 import { computeIndividualApiFilters } from '@/pages/IndividualOffers/utils/computeIndividualApiFilters'
@@ -62,7 +61,7 @@ const updateIndividualOffersStatus = async (
   areAllOffersSelected: boolean,
   selectedOfferIds: number[],
   snackBar: ReturnType<typeof useSnackBar>,
-  apiFilters: ListOffersQueryModel & SearchListParams
+  apiFilters: IndividualOffersFilters
 ) => {
   const filters = serializeApiIndividualFilters(apiFilters)
   const payload: PatchAllOffersActiveStatusBodyModel = {
@@ -132,7 +131,7 @@ export const IndividualOffersActionsBar = ({
   const { storedFilters } = useStoredFilterConfig('individual')
   const finalSearchFilters = {
     ...urlSearchFilters,
-    ...(storedFilters as Partial<ListOffersQueryModel & SearchListParams>),
+    ...(storedFilters as Partial<IndividualOffersFilters>),
   }
 
   const { mutate } = useSWRConfig()
