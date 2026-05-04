@@ -334,8 +334,6 @@ def edit_collective_offer(
     # edition errors
     except exceptions.CollectiveOfferForbiddenAction:
         raise ApiErrors({"offer": "This collective offer status does not allow editing details"}, 403)
-    except exceptions.CollectiveOfferIsPublicApi:
-        raise ApiErrors({"global": ["Collective offer created by public API is only editable via API."]}, 403)
     except (
         offers_exceptions.OfferException
     ) as error:  # (tcoudray-pass, 14/05/2025) TODO: Refactor, should not raise this kind of error
