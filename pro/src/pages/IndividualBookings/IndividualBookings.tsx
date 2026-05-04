@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
 import { useLocation } from 'react-router'
-import { formatAndOrderAddresses } from 'repository/venuesService'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -11,6 +10,7 @@ import {
   GET_HAS_BOOKINGS_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { formatAndOrderAddresses } from '@/commons/format/venuesService'
 import { useVenueAddresses } from '@/commons/hooks/swr/useVenueAddresses'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'

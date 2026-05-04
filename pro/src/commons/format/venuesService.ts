@@ -1,11 +1,7 @@
 import type {
   GetOffererAddressesResponseModel,
-  GetOffererVenueResponseModel,
   LocationResponseModel,
-  VenueListItemLiteResponseModel,
-  VenueListItemResponseModel,
 } from '@/apiClient/v1'
-import type { SelectOption } from '@/commons/custom_types/form'
 
 type MinimalAddressResponseModelToDisplay = Pick<
   LocationResponseModel,
@@ -22,27 +18,6 @@ export const computeAddressDisplayName = (
   )
 }
 
-const sortAlphabeticallyByLabel = (a: SelectOption, b: SelectOption) => {
-  const aLabel = a.label.toLowerCase()
-  const bLabel = b.label.toLowerCase()
-
-  return aLabel < bLabel ? -1 : aLabel > bLabel ? 1 : 0
-}
-
-export const formatAndOrderVenues = (
-  venues: (
-    | VenueListItemLiteResponseModel
-    | GetOffererVenueResponseModel
-    | VenueListItemResponseModel
-  )[]
-) =>
-  venues
-    .map((venue) => ({
-      value: venue.id.toString(),
-      label: venue.publicName,
-    }))
-    .sort(sortAlphabeticallyByLabel)
-
 export const formatAndOrderAddresses = (
   addresses: GetOffererAddressesResponseModel
 ) =>
@@ -51,4 +26,6 @@ export const formatAndOrderAddresses = (
       value: offerAddress.id.toString(),
       label: computeAddressDisplayName(offerAddress),
     }))
-    .sort(sortAlphabeticallyByLabel)
+    .sort((a, b) =>
+      a.label.localeCompare(b.label, 'fr', { sensitivity: 'base' })
+    )

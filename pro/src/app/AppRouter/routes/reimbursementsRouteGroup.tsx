@@ -6,8 +6,6 @@ import { Reimbursements } from '@/pages/Reimbursements/Reimbursements'
 import type { CustomRouteGroup } from '../types'
 import { mustHaveSelectedAdminOfferer } from '../utils'
 
-// TODO (igabriele, 2026-02-10): Move that within `administrationRouteGroup` once `WIP_SWITCH_VENUE` FF is enabled and removed:
-// 4. Maybe move `@/pages/Reimbursements/*` pages at the top level of `@/pages`?
 export const reimbursementsRouteGroup: CustomRouteGroup = {
   path: '/administration/remboursements',
   loader: withUserPermissions(mustHaveSelectedAdminOfferer),

@@ -1,7 +1,7 @@
 import { useFormContext } from 'react-hook-form'
-import { computeAddressDisplayName } from 'repository/venuesService'
 
 import type { AdresseData } from '@/apiClient/adresse/types.ts'
+import { computeAddressDisplayName } from '@/commons/format/venuesService'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { AddressFields } from '@/components/AddressFields/AddressFields'

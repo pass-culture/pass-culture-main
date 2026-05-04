@@ -1,6 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { computeAddressDisplayName } from 'repository/venuesService'
 import { expect } from 'vitest'
 
 import { api } from '@/apiClient/api'
@@ -15,6 +14,7 @@ import {
   DEFAULT_SEARCH_FILTERS,
 } from '@/commons/core/Offers/constants'
 import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
+import { computeAddressDisplayName } from '@/commons/format/venuesService'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   listOffersOfferFactory,

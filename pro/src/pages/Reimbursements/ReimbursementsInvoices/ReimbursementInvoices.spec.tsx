@@ -10,11 +10,11 @@ import { api } from '@/apiClient/api'
 import type { BankAccountResponseModel } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { defaultBankAccount } from '@/commons/utils/factories/individualApiFactories'
 import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+  defaultBankAccount,
+  defaultGetOffererResponseModel,
+} from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -30,20 +30,17 @@ vi.mock('@/commons/utils/date', async () => ({
   getToday: vi.fn(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
-const renderReimbursementsInvoices = (
-  options?: RenderWithProvidersOptions,
-  allowedOnAdage?: boolean
-) => {
+const renderReimbursementsInvoices = (options?: RenderWithProvidersOptions) => {
   const user = sharedCurrentUserFactory()
 
   renderWithProviders(<ReimbursementsInvoices />, {
     user,
     ...options,
     storeOverrides: {
-      user: { currentUser: user },
-      offerer: currentOffererFactory({
-        currentOfferer: { allowedOnAdage },
-      }),
+      user: {
+        currentUser: user,
+        selectedAdminOfferer: defaultGetOffererResponseModel,
+      },
     },
   })
 }
@@ -225,7 +222,7 @@ describe('reimbursementsWithFilters', () => {
       bankAccounts: BASE_BANK_ACCOUNTS,
       managedVenues: [],
     })
-    renderReimbursementsInvoices(undefined, true)
+    renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(
@@ -369,6 +366,7 @@ describe('reimbursementsWithFilters', () => {
     )
 
     vi.spyOn(api, 'getCombinedInvoices').mockResolvedValueOnce({})
+
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))

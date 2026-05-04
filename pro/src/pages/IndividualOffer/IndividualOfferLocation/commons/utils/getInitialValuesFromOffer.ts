@@ -1,9 +1,8 @@
-import { computeAddressDisplayName } from 'repository/venuesService'
-
 import type {
   GetIndividualOfferWithAddressResponseModel,
   GetVenueResponseModel,
 } from '@/apiClient/v1'
+import { computeAddressDisplayName } from '@/commons/format/venuesService'
 
 import { OFFER_LOCATION } from '../../../commons/constants'
 import type { LocationFormValues, PhysicalAddressSubformValues } from '../types'

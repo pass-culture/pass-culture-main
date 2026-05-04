@@ -9,7 +9,7 @@
   min-height: 300px;
 
   &-icon {
-    margin-bottom: rem.torem(20px);
+    margin: var(--size-spacing-l);
   }
 
   &-text-with-link {

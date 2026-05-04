@@ -1,5 +1,4 @@
 import { useLocation } from 'react-router'
-import { computeAddressDisplayName } from 'repository/venuesService'
 
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -9,6 +8,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { computeAddressDisplayName } from '@/commons/format/venuesService'
 import { useMusicTypes } from '@/commons/hooks/useMusicTypes'
 import { getDelayToFrenchText } from '@/commons/utils/date'
 import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'

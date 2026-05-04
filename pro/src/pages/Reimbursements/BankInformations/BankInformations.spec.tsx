@@ -37,6 +37,8 @@ const defaultBankAccountResponseModel: BankAccountResponseModel = {
   status: BankAccountApplicationStatus.ACCEPTE,
 }
 
+const user = sharedCurrentUserFactory()
+
 function renderBankInformations({
   hasValidBankAccount = false,
   hasPendingBankAccount = false,
@@ -50,14 +52,14 @@ function renderBankInformations({
       <SnackBarContainer />
     </>,
     {
-      user: sharedCurrentUserFactory(),
+      user,
       initialRouterEntries: [
         '/administration/remboursements/informations-bancaires',
       ],
       storeOverrides: {
-        user: { currentUser: sharedCurrentUserFactory() },
-        offerer: {
-          currentOfferer: {
+        user: {
+          currentUser: user,
+          selectedAdminOfferer: {
             ...defaultGetOffererResponseModel,
             hasValidBankAccount,
             hasPendingBankAccount,
@@ -397,9 +399,7 @@ describe('BankInformations page', () => {
           user: {
             currentUser: sharedCurrentUserFactory(),
             selectedPartnerVenue: venue,
-          },
-          offerer: {
-            currentOfferer: {
+            selectedAdminOfferer: {
               ...defaultGetOffererResponseModel,
               hasValidBankAccount: true,
             },

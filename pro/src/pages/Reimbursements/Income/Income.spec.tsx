@@ -9,18 +9,13 @@ import type {
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as useActiveFeature from '@/commons/hooks/useActiveFeature'
-import * as useIsCaledonian from '@/commons/hooks/useIsCaledonian'
-import * as convertEuroToPacificFranc from '@/commons/utils/convertEuroToPacificFranc'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { statisticsFactory } from '@/commons/utils/factories/statisticsFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeVenueListItemLiteResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { Component as Income } from './Income'
-import { IncomeResultsBox } from './IncomeResultsBox/IncomeResultsBox'
 import { isCollectiveAndIndividualRevenue, isCollectiveRevenue } from './utils'
 
 const MOCK_DATA: {
@@ -31,13 +26,13 @@ const MOCK_DATA: {
   venues: [
     makeVenueListItemLiteResponseModel({
       id: 1,
-      managingOffererId: 100,
+      managingOffererId: defaultGetOffererResponseModel.id,
       isPermanent: true,
       hasCreatedOffer: true,
     }),
     makeVenueListItemLiteResponseModel({
       id: 2,
-      managingOffererId: 100,
+      managingOffererId: defaultGetOffererResponseModel.id,
       isPermanent: true,
       hasCreatedOffer: true,
     }),
@@ -57,23 +52,26 @@ const LABELS = {
   venuesSelectorError: /Vous devez sélectionner au moins un partenaire/,
   incomeResultsLabel: /Chiffre d’affaires total/,
   forecastIncomeResultLabel: /Chiffre d’affaires total prévisionnel/,
-  emptyScreen: /Vous n’avez aucune réservation/,
+  emptyScreen: /Aucun remboursement n'a été effectué/,
+  emptyYearScreen: /Vous n’avez aucune réservation sur cette période/,
   mandatoryHelper: /\* sont obligatoires/,
 }
+
+const user = sharedCurrentUserFactory()
 
 const renderIncome = (
   venues: VenueListItemLiteResponseModel[] = MOCK_DATA.venues
 ) => {
   renderWithProviders(<Income />, {
-    user: sharedCurrentUserFactory(),
+    user,
     storeOverrides: {
       user: {
-        currentUser: sharedCurrentUserFactory(),
         venues,
+        currentUser: user,
+        selectedAdminOfferer: {
+          ...defaultGetOffererResponseModel,
+        },
       },
-      offerer: currentOffererFactory({
-        currentOfferer: { id: MOCK_DATA.selectedOffererId },
-      }),
     },
   })
 }
@@ -399,7 +397,7 @@ describe('Income', () => {
       )
 
       await waitFor(() =>
-        expect(screen.getByText(LABELS.emptyScreen)).toBeInTheDocument()
+        expect(screen.getByText(LABELS.emptyYearScreen)).toBeInTheDocument()
       )
     })
 
@@ -432,21 +430,36 @@ describe('Income', () => {
         screen.queryByText(LABELS.forecastIncomeResultLabel)
       ).not.toBeInTheDocument()
     })
+  })
 
-    it('should display total in CFP when isCaledonian is true (individual)', () => {
-      vi.spyOn(useActiveFeature, 'useActiveFeature').mockReturnValue(false)
-      vi.spyOn(useIsCaledonian, 'useIsCaledonian').mockReturnValue(true)
-      vi.spyOn(
-        convertEuroToPacificFranc,
-        'convertEuroToPacificFranc'
-      ).mockImplementation(() => 1234)
-      renderWithProviders(
-        <IncomeResultsBox
-          type="revenue"
-          income={{ individual: 100, collective: 0, total: 100 }}
-        />
-      )
-      expect(screen.getByText('1 234 F')).toBeInTheDocument()
+  it('should filter venues by selected offerer and sort alphabetically by publicName', async () => {
+    const venues = [
+      makeVenueListItemLiteResponseModel({
+        id: 1,
+        name: 'B venue name',
+        publicName: 'Boris Librairie',
+      }),
+      makeVenueListItemLiteResponseModel({
+        id: 2,
+        name: 'A venue name',
+        publicName: 'Arristide Librairie',
+      }),
+    ]
+
+    renderIncome(venues)
+
+    const selector = await screen.findByRole('button', {
+      name: /Partenaire\(s\) sélectionné\(s\)/i,
     })
+
+    await userEvent.click(selector)
+
+    const checkbox = screen.getAllByRole('checkbox')
+
+    const label1 = checkbox[0].closest('label')
+    const label2 = checkbox[1].closest('label')
+
+    expect(label1).toHaveTextContent('Arristide Librairie')
+    expect(label2).toHaveTextContent('Boris Librairie')
   })
 })
