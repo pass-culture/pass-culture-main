@@ -27,7 +27,7 @@ import {
 import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
-import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
+import { getLocationResponseModelV2 } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   getIndividualOfferFactory,
   getOfferManagingOffererFactory,
@@ -676,7 +676,7 @@ describe('IndividualOfferSummaryScreen', () => {
         offer: {
           ...offerBase,
           location: {
-            ...getLocationResponseModel({
+            ...getLocationResponseModelV2({
               label: 'mon adresse',
               city: 'ma ville',
               street: 'ma street',

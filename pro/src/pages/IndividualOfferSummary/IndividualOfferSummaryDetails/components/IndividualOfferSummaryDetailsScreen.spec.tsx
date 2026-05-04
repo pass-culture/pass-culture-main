@@ -3,7 +3,7 @@ import { expect } from 'vitest'
 
 import type { IndividualOfferContextValues } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { IndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
-import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
+import { getLocationResponseModelV2 } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   getIndividualOfferFactory,
   getOfferVenueFactory,
@@ -117,7 +117,7 @@ describe('<IndividualOfferSummaryDetailsScreen />', () => {
       ...offerBase,
       subcategoryId: MOCKED_SUBCATEGORY.NON_EVENT_OFFLINE.id,
       location: {
-        ...getLocationResponseModel({
+        ...getLocationResponseModelV2({
           label: 'mon adresse',
           city: 'ma ville',
           street: 'ma street',
@@ -140,7 +140,7 @@ describe('<IndividualOfferSummaryDetailsScreen />', () => {
       ...offerBase,
       subcategoryId: MOCKED_SUBCATEGORY.NON_EVENT_OFFLINE.id,
       location: {
-        ...getLocationResponseModel({
+        ...getLocationResponseModelV2({
           label: 'mon adresse',
           city: 'ma ville',
           street: 'ma street',

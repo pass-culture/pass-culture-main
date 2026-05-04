@@ -1,5 +1,5 @@
 import { computeAddressDisplayName } from '@/commons/format/venuesService'
-import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
+import { getLocationResponseModelV2 } from '@/commons/utils/factories/commonOffersApiFactories'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { OFFER_LOCATION } from '@/pages/IndividualOffer/commons/constants'
@@ -93,7 +93,7 @@ describe('getInitialValuesFromOffer', () => {
           ...paramsWithOfflineSubcategory,
           offerVenue: makeGetVenueResponseModel({
             id: 2,
-            location: getLocationResponseModel({
+            location: getLocationResponseModelV2({
               id,
             }),
           }),
@@ -118,7 +118,7 @@ describe('getInitialValuesFromOffer', () => {
       it('should include selected venue address when available', () => {
         const offerVenue = makeGetVenueResponseModel({
           id: 2,
-          location: getLocationResponseModel(),
+          location: getLocationResponseModelV2(),
         })
 
         const params = {
@@ -148,7 +148,7 @@ describe('getInitialValuesFromOffer', () => {
       it('should handle missing address props in selected venue', () => {
         const offerVenue = makeGetVenueResponseModel({
           id: 2,
-          location: getLocationResponseModel({
+          location: getLocationResponseModelV2({
             banId: undefined,
             inseeCode: undefined,
             label: undefined,
@@ -177,7 +177,7 @@ describe('getInitialValuesFromOffer', () => {
     it('should accept any url format when offline', () => {
       const offerVenue = makeGetVenueResponseModel({
         id: 2,
-        location: getLocationResponseModel(),
+        location: getLocationResponseModelV2(),
       })
       const params = { ...paramsWithOfflineSubcategory, offerVenue }
 
