@@ -3,19 +3,39 @@ import { screen } from '@testing-library/react'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
-  type GetOffererResponseModel,
+  SimplifiedBankAccountStatus,
 } from '@/apiClient/v1'
 import {
   getCollectiveOfferBookingFactory,
   getCollectiveOfferFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
-import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
+import {
+  type RenderWithProvidersOptions,
+  renderWithProviders,
+} from '@/commons/utils/renderWithProviders'
 
 import { BookableOfferTimeline } from './BookableOfferTimeline'
 
+const renderBookableOfferTimeline = (
+  ui: React.ReactElement,
+  options?: RenderWithProvidersOptions
+) =>
+  renderWithProviders(ui, {
+    ...options,
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+      },
+      ...options?.storeOverrides,
+    },
+  })
+
 describe('BookableOfferTimeline', () => {
   it("should render the 'Suivi de l’offre' title", () => {
-    renderWithProviders(
+    renderBookableOfferTimeline(
       <BookableOfferTimeline offer={getCollectiveOfferFactory()} />
     )
     expect(screen.getByText('Suivi de l’offre')).toBeInTheDocument()
@@ -70,7 +90,7 @@ describe('BookableOfferTimeline', () => {
     status,
     expectedText,
   }) => {
-    renderWithProviders(
+    renderBookableOfferTimeline(
       <BookableOfferTimeline
         offer={getCollectiveOfferFactory({
           booking: getCollectiveOfferBookingFactory(),
@@ -118,7 +138,7 @@ describe('BookableOfferTimeline', () => {
     lastStatus,
     expectedWaiting,
   }) => {
-    renderWithProviders(
+    renderBookableOfferTimeline(
       <BookableOfferTimeline
         offer={getCollectiveOfferFactory({
           history: {
@@ -137,7 +157,7 @@ describe('BookableOfferTimeline', () => {
   })
 
   it('should not render a waiting step for statuses that do not require it', () => {
-    renderWithProviders(
+    renderBookableOfferTimeline(
       <BookableOfferTimeline
         offer={getCollectiveOfferFactory({
           history: {
@@ -160,7 +180,7 @@ describe('BookableOfferTimeline', () => {
     const date49hAgo = new Date(
       now.getTime() - 49 * 60 * 60 * 1000
     ).toISOString()
-    renderWithProviders(
+    renderBookableOfferTimeline(
       <BookableOfferTimeline
         offer={getCollectiveOfferFactory({
           history: {
@@ -179,7 +199,7 @@ describe('BookableOfferTimeline', () => {
   })
 
   it('should render the waiting step "En attente de préréservation" after PUBLISHED', () => {
-    renderWithProviders(
+    renderBookableOfferTimeline(
       <BookableOfferTimeline
         offer={getCollectiveOfferFactory({
           history: {
@@ -198,7 +218,7 @@ describe('BookableOfferTimeline', () => {
   })
 
   it('should render the waiting step "En attente de réservation" after PREBOOKED', () => {
-    renderWithProviders(
+    renderBookableOfferTimeline(
       <BookableOfferTimeline
         offer={getCollectiveOfferFactory({
           history: {
@@ -221,7 +241,7 @@ describe('BookableOfferTimeline', () => {
     const date47hAgo = new Date(
       now.getTime() - 47 * 60 * 60 * 1000
     ).toISOString()
-    renderWithProviders(
+    renderBookableOfferTimeline(
       <BookableOfferTimeline
         offer={getCollectiveOfferFactory({
           history: {
@@ -254,7 +274,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
     { status: CollectiveOfferDisplayedStatus.EXPIRED, label: 'Expirée' },
     { status: CollectiveOfferDisplayedStatus.REJECTED, label: 'Non conforme' },
   ])('should render an error icon for status $status', ({ status, label }) => {
-    renderWithProviders(
+    renderBookableOfferTimeline(
       <BookableOfferTimeline
         offer={getCollectiveOfferFactory({
           history: {
@@ -294,7 +314,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
     { status: CollectiveOfferDisplayedStatus.REIMBURSED, label: 'Remboursée' },
     { status: CollectiveOfferDisplayedStatus.ARCHIVED, label: 'Archivée' },
   ])('should render a success icon for status $status', ({ status, label }) => {
-    renderWithProviders(
+    renderBookableOfferTimeline(
       <BookableOfferTimeline
         offer={getCollectiveOfferFactory({
           booking: getCollectiveOfferBookingFactory(),
@@ -322,7 +342,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
       label: 'En instruction',
     },
   ])('should render a waiting icon for status $status', ({ status, label }) => {
-    renderWithProviders(
+    renderBookableOfferTimeline(
       <BookableOfferTimeline
         offer={getCollectiveOfferFactory({
           history: {
@@ -343,7 +363,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
   })
 
   it('should render a disabled icon for future steps', () => {
-    renderWithProviders(
+    renderBookableOfferTimeline(
       <BookableOfferTimeline
         offer={getCollectiveOfferFactory({
           history: {
@@ -366,7 +386,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
 
   describe('timeline banners', () => {
     it('should render a banner when current step is draft', () => {
-      renderWithProviders(
+      renderBookableOfferTimeline(
         <BookableOfferTimeline
           offer={getCollectiveOfferFactory({
             history: {
@@ -391,7 +411,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
     })
 
     it('should render a banner when current step is published', () => {
-      renderWithProviders(
+      renderBookableOfferTimeline(
         <BookableOfferTimeline
           offer={getCollectiveOfferFactory({
             allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DATES],
@@ -419,7 +439,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
     })
 
     it('should render a banner when current step is prebooked', () => {
-      renderWithProviders(
+      renderBookableOfferTimeline(
         <BookableOfferTimeline
           offer={getCollectiveOfferFactory({
             allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DATES],
@@ -448,7 +468,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
     })
 
     it('should render a banner when current step is rejected', () => {
-      renderWithProviders(
+      renderBookableOfferTimeline(
         <BookableOfferTimeline
           offer={getCollectiveOfferFactory({
             history: {
@@ -472,7 +492,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
     })
 
     it('should render a banner when current step is under review', () => {
-      renderWithProviders(
+      renderBookableOfferTimeline(
         <BookableOfferTimeline
           offer={getCollectiveOfferFactory({
             history: {
@@ -496,7 +516,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
     })
 
     it('should render a banner when current step is reimbursed', () => {
-      renderWithProviders(
+      renderBookableOfferTimeline(
         <BookableOfferTimeline
           offer={getCollectiveOfferFactory({
             history: {
@@ -519,11 +539,11 @@ describe('BookableOfferTimeline - step type rendering', () => {
         screen.getByRole('link', {
           name: /Consulter les remboursements/,
         })
-      ).toHaveAttribute('href', '/remboursements')
+      ).toHaveAttribute('href', '/administration/remboursements')
     })
 
     it('should render a banner when current step is archived', () => {
-      renderWithProviders(
+      renderBookableOfferTimeline(
         <BookableOfferTimeline
           offer={getCollectiveOfferFactory({
             history: {
@@ -556,7 +576,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
       const date47hAgo = new Date(
         now.getTime() - 47 * 60 * 60 * 1000
       ).toISOString()
-      renderWithProviders(
+      renderBookableOfferTimeline(
         <BookableOfferTimeline
           offer={getCollectiveOfferFactory({
             history: {
@@ -581,11 +601,10 @@ describe('BookableOfferTimeline - step type rendering', () => {
 
     it('should render the reimbursement waiting banner when offer ended more than 48 hours ago', () => {
       const now = new Date()
-      const offerer = { hasValidBankAccount: true } as GetOffererResponseModel
       const date49hAgo = new Date(
         now.getTime() - 49 * 60 * 60 * 1000
       ).toISOString()
-      renderWithProviders(
+      renderBookableOfferTimeline(
         <BookableOfferTimeline
           offer={getCollectiveOfferFactory({
             history: {
@@ -598,8 +617,18 @@ describe('BookableOfferTimeline - step type rendering', () => {
               future: [],
             },
           })}
-          offerer={offerer}
-        />
+        />,
+        {
+          storeOverrides: {
+            user: {
+              currentUser: sharedCurrentUserFactory(),
+              selectedPartnerVenue: makeGetVenueResponseModel({
+                id: 1,
+                bankAccountStatus: SimplifiedBankAccountStatus.VALID,
+              }),
+            },
+          },
+        }
       )
       expect(
         screen.getByText(

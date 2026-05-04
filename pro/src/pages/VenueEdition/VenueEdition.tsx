@@ -1,73 +1,35 @@
 import { useEffect } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router'
-import useSWR from 'swr'
+import { useLocation } from 'react-router'
 
-import { api } from '@/apiClient/api'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
-import {
-  GET_VENUE_QUERY_KEY,
-  GET_VENUES_QUERY_KEY,
-} from '@/commons/config/swrQueryKeys'
-import type { SelectOption } from '@/commons/custom_types/form'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
-import { setSelectedPartnerPageId } from '@/commons/store/nav/reducer'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import {
   LOCAL_STORAGE_KEY,
   localStorageManager,
 } from '@/commons/utils/localStorageManager'
-import { setSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenueId'
-import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { CollectiveDataEdition } from '@/pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
-import { formatAndOrderVenues } from '@/repository/venuesService'
-import { Select } from '@/ui-kit/form/Select/Select'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { VenueEditionFormScreen } from './components/VenueEditionFormScreen'
 import { VenueEditionHeader } from './components/VenueEditionHeader'
-import styles from './VenueEdition.module.scss'
 
 export const VenueEdition = (): JSX.Element | null => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-
-  const dispatch = useAppDispatch()
-  const navigate = useNavigate()
   const location = useLocation()
   const hasSeenVolunteeringSection =
     localStorageManager.getItem(
       LOCAL_STORAGE_KEY.HAS_SEEN_VOLUNTEERING_SECTION
     ) === 'true'
-
-  const { venueId: selectedVenueIdFromQueryParams } = useParams<{
-    offererId: string
-    venueId: string
-  }>()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const selectedVenueId = withSwitchVenueFeature
-    ? selectedPartnerVenue.id
-    : selectedVenueIdFromQueryParams
-
-  const venuesQuery = useSWR(
-    withSwitchVenueFeature ? null : [GET_VENUES_QUERY_KEY],
-    () => api.getVenues()
-  )
+  const selectedVenueId = selectedPartnerVenue.id
 
   const { syncVenue } = useSyncVenueCache()
   useEffect(() => {
-    if (withSwitchVenueFeature && selectedVenueId) {
+    if (selectedVenueId) {
       syncVenue(Number(selectedVenueId))
     }
-  }, [selectedVenueId, withSwitchVenueFeature])
-
-  const venueQuery = useSWR(
-    withSwitchVenueFeature ? null : [GET_VENUE_QUERY_KEY, selectedVenueId],
-    ([, venueIdParam]) => api.getVenue(Number(venueIdParam))
-  )
-  const venue = withSwitchVenueFeature ? selectedPartnerVenue : venueQuery.data
+  }, [selectedVenueId])
 
   const context = location.pathname.includes('collectif')
     ? 'collective'
@@ -82,69 +44,26 @@ export const VenueEdition = (): JSX.Element | null => {
     }
   }, [context, hasSeenVolunteeringSection])
 
-  const venuesOptions: SelectOption[] = formatAndOrderVenues(
-    (venuesQuery.data?.venues ?? []).filter(
-      (venue) => venue.hasCreatedOffer && venue.isPermanent
-    )
-  ).map((venue) => ({
-    value: String(venue.value),
-    label: venue.label,
-  }))
-
-  const isNotReady = venueQuery.isLoading || !venue
-
   const titleText =
     context === 'collective' ? 'Page dans ADAGE' : 'Page sur l’application'
   return (
     <BasicLayout mainHeading={titleText}>
-      {isNotReady ? (
-        <Spinner />
-      ) : (
+      {selectedPartnerVenue ? (
         <div>
-          {!withSwitchVenueFeature && (
-            <FormLayout>
-              {venuesOptions.length > 1 && (
-                <>
-                  <FormLayout.Row mdSpaceAfter>
-                    <Select
-                      label={`Sélectionnez votre page ${context === 'collective' ? 'dans ADAGE' : 'partenaire'}`}
-                      name="venues"
-                      options={venuesOptions}
-                      value={selectedVenueId?.toString() ?? ''}
-                      onChange={(e) => {
-                        const venueId = e.target.value
-
-                        if (context === 'partnerPage') {
-                          setSavedPartnerPageVenueId(
-                            'partnerPage',
-                            venue.managingOfferer.id,
-                            venueId
-                          )
-
-                          dispatch(setSelectedPartnerPageId(venueId))
-                        }
-
-                        const path = getVenuePagePathToNavigateTo(
-                          venue.managingOfferer.id,
-                          venueId
-                        )
-                        navigate(path)
-                      }}
-                    />
-                  </FormLayout.Row>
-                  <hr className={styles['separator']} />
-                </>
-              )}
-            </FormLayout>
-          )}
-          <VenueEditionHeader venue={venue} context={context} key={venue.id} />
+          <VenueEditionHeader
+            venue={selectedPartnerVenue}
+            context={context}
+            key={selectedPartnerVenue.id}
+          />
 
           {context === 'collective' ? (
-            <CollectiveDataEdition venue={venue} />
+            <CollectiveDataEdition venue={selectedPartnerVenue} />
           ) : (
-            <VenueEditionFormScreen venue={venue} />
+            <VenueEditionFormScreen venue={selectedPartnerVenue} />
           )}
         </div>
+      ) : (
+        <Spinner />
       )}
     </BasicLayout>
   )

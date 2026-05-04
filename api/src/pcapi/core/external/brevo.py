@@ -69,7 +69,6 @@ class BrevoAttributes(Enum):
     IS_PRO = "IS_PRO"
     IS_UNDERAGE_BENEFICIARY = "IS_UNDERAGE_BENEFICIARY"
     IS_USER_EMAIL = "IS_USER_EMAIL"
-    IS_VIRTUAL = "IS_VIRTUAL"
     LAST_BOOKING_DATE = "LAST_BOOKING_DATE"
     LAST_FAVORITE_CREATION_DATE = "LAST_FAVORITE_CREATION_DATE"
     LAST_RECREDIT_TYPE = "LAST_RECREDIT_TYPE"
@@ -235,7 +234,6 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
             attributes, "roles", lambda v: users_models.UserRole.UNDERAGE_BENEFICIARY.value in v
         ),
         BrevoAttributes.IS_USER_EMAIL.value: _get_attr(attributes, "is_user_email"),
-        BrevoAttributes.IS_VIRTUAL.value: _get_attr(attributes, "isVirtual"),
         BrevoAttributes.LAST_BOOKING_DATE.value: _get_attr(attributes, "last_booking_date"),
         BrevoAttributes.LAST_FAVORITE_CREATION_DATE.value: _get_attr(attributes, "last_favorite_creation_date"),
         BrevoAttributes.LAST_RECREDIT_TYPE.value: _get_attr(attributes, "last_recredit_type", format_enum),
@@ -288,7 +286,6 @@ def format_pro_attributes(attributes: attributes_models.ProAttributes) -> dict:
         BrevoAttributes.IS_OPEN_TO_PUBLIC.value: _get_attr(attributes, "isOpenToPublic"),
         BrevoAttributes.IS_PRO.value: _get_attr(attributes, "is_pro"),
         BrevoAttributes.IS_USER_EMAIL.value: _get_attr(attributes, "is_user_email"),
-        BrevoAttributes.IS_VIRTUAL.value: _get_attr(attributes, "isVirtual"),
         BrevoAttributes.LASTNAME.value: _get_attr(attributes, "last_name"),
         BrevoAttributes.MARKETING_EMAIL_SUBSCRIPTION.value: _get_attr(attributes, "marketing_email_subscription"),
         BrevoAttributes.OFFERER_NAME.value: _get_attr(attributes, "offerers_names", format_list),

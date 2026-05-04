@@ -1,6 +1,5 @@
 from functools import partial
 
-import flask
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from flask import request
@@ -24,6 +23,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import tasks as offers_tasks
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.api_errors import resource_not_found_error
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.utils import get_or_404
 from pcapi.routes.apis import private_api
@@ -80,7 +80,7 @@ def get_venue(venue_id: int) -> venue_serialize.GetVenueResponseModel:
         .options(sa_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address))
     ).one_or_none()
     if not venue:
-        flask.abort(404)
+        raise resource_not_found_error()
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 

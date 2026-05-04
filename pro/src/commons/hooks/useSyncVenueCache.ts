@@ -6,6 +6,7 @@ import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { setSelectedPartnerVenue } from '@/commons/store/user/reducer'
 
+// TODO (igabriele, 2026-04-27): Replace this hook with dispatchers, what we're doing here is precisely what dispatchers are for.
 export const useSyncVenueCache = () => {
   const { mutate } = useSWRConfig()
   const dispatch = useAppDispatch()

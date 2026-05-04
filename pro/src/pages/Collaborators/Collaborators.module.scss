@@ -1,22 +1,10 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 
-.section {
-  margin-bottom: var(--size-spacing-xxl);
-  padding-bottom: 0;
-  padding-top: 0;
-}
-
 .main-list-title {
   @include fonts.title2;
 
   margin: var(--size-spacing-xxl) 0;
-}
-
-.subtitle {
-  @include fonts.title4;
-
-  margin-bottom: var(--size-spacing-s);
 }
 
 .description {
@@ -24,18 +12,14 @@
 }
 
 .invitation-form {
-  margin-bottom: var(--size-spacing-xxl);
-}
-
-.invitation-email-wrapper {
+  flex-grow: 1;
   display: flex;
-  align-items: flex-end;
-  gap: var(--size-spacing-s);
+  flex-direction: column;
 }
 
-.invitation-email-field {
-  width: 100%;
-  margin-bottom: var(--size-spacing-s);
+.action-buttons {
+  display: flex;
+  gap: var(--size-spacing-l);
 }
 
 .members-container {

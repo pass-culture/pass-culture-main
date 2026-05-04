@@ -406,14 +406,20 @@ class Booking(PcObject, Model):
             ).label("isExternal")
         ).label("number_of_externalBookings")
 
-    @hybrid_property
-    def validated_incident_id(self) -> int | None:
+    @property
+    def validated_booking_incident(self) -> finance_models.BookingFinanceIncident | None:
         for booking_incident in self.incidents:
             if booking_incident.incident.status in (
                 finance_models.IncidentStatus.VALIDATED,
                 finance_models.IncidentStatus.INVOICED,
             ):
-                return booking_incident.incident.id
+                return booking_incident
+        return None
+
+    @hybrid_property
+    def validated_incident_id(self) -> int | None:
+        if booking_incident := self.validated_booking_incident:
+            return booking_incident.incident.id
         return None
 
     @validated_incident_id.inplace.expression

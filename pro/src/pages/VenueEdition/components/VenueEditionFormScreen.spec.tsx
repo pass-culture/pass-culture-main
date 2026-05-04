@@ -427,6 +427,47 @@ describe('VenueEditionFormScreen', () => {
 
   // See VenueEdition.spec.tsx for additional tests.
   describe('on edition (VenueEditionForm)', () => {
+    describe('about accessibility', () => {
+      it('should check none accessibility', async () => {
+        renderForm({
+          ...baseVenue,
+          siret: null,
+          visualDisabilityCompliant: false,
+          mentalDisabilityCompliant: false,
+          audioDisabilityCompliant: false,
+          motorDisabilityCompliant: false,
+        })
+
+        expect(
+          await screen.findByLabelText('Non accessible', { exact: false })
+        ).toBeChecked()
+      })
+
+      it('should not check none accessibility if every accessibility parameters are null', async () => {
+        renderForm({
+          ...baseVenue,
+          visualDisabilityCompliant: null,
+          mentalDisabilityCompliant: null,
+          audioDisabilityCompliant: null,
+          motorDisabilityCompliant: null,
+        })
+
+        expect(
+          await screen.findByLabelText('Non accessible', { exact: false })
+        ).not.toBeChecked()
+      })
+
+      it('should display the acces libre callout for permanent venues', async () => {
+        renderForm({ ...baseVenue, isPermanent: true })
+
+        expect(
+          await screen.findByText(
+            /Complétez les modalités d'accessibilité de votre établissement sur acceslibre.beta.gouv.fr/
+          )
+        ).toBeInTheDocument()
+      })
+    })
+
     it('should display an error when the venue could not be updated', async () => {
       renderForm(baseVenue)
       vi.spyOn(api, 'editVenue').mockRejectedValue(

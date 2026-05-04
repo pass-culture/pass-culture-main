@@ -8,6 +8,7 @@ from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.api_errors import resource_not_found_error
 from pcapi.routes.apis import private_api
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.rest import check_user_has_access_to_offerer
@@ -31,9 +32,7 @@ def cancel_collective_offer_booking(offer_id: int) -> None:
     try:
         offerer = offerers_api.get_offerer_by_collective_offer_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ApiErrors(
-            {"code": "NO_COLLECTIVE_OFFER_FOUND", "message": "No collective offer has been found with this id"}, 404
-        )
+        raise resource_not_found_error()
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
@@ -45,9 +44,7 @@ def cancel_collective_offer_booking(offer_id: int) -> None:
             {"code": "NO_ACTIVE_STOCK_FOUND", "message": "No active stock has been found with this id"}, 404
         )
     except collective_exceptions.CollectiveOfferNotFound:
-        raise ApiErrors(
-            {"code": "NO_COLLECTIVE_OFFER_FOUND", "message": "No collective offer has been found with this id"}, 404
-        )
+        raise resource_not_found_error()
     except collective_exceptions.NoCollectiveBookingToCancel:
         raise ApiErrors({"code": "NO_BOOKING", "message": "This collective offer has no booking to cancel"}, 400)
     except collective_exceptions.CollectiveOfferForbiddenAction:

@@ -102,7 +102,7 @@ export const Pagination = ({
         </li>
 
         {/* Separation dots (if applicable) */}
-        {(centerPages.at(0) as number) > 2 && (
+        {typeof centerPages[0] === 'number' && centerPages[0] > 2 && (
           <li className={styles['pagination-list-item']}>
             <SvgIcon src={threeDotsIcon} alt="" width="16" />
           </li>
@@ -133,11 +133,12 @@ export const Pagination = ({
         ))}
 
         {/* Separation dots (if applicable) */}
-        {(centerPages.at(-1) as number) < pageCount - 1 && (
-          <li className={styles['pagination-list-item']}>
-            <SvgIcon src={threeDotsIcon} alt="" width="16" />
-          </li>
-        )}
+        {centerPages.length > 0 &&
+          centerPages[centerPages.length - 1] < pageCount - 1 && (
+            <li className={styles['pagination-list-item']}>
+              <SvgIcon src={threeDotsIcon} alt="" width="16" />
+            </li>
+          )}
 
         {/* Always display the last page */}
         <li

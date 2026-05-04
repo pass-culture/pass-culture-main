@@ -175,7 +175,7 @@ export const EcoDesignPolicy = () => {
           <li className={styles['list-item-spaced']}>
             Établir une feuille de route pluriannuelle d'améliorations
             techniques afin de réduire l'empreinte carbone et hydrique des
-            parcours critiques de l’Espace Partenaires en se basant sur les
+            parcours critiques de l’espace partenaire en se basant sur les
             mesures effectuées par l’EcoIndex
           </li>
         </ul>

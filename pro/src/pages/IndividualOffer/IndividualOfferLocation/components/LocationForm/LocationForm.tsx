@@ -1,6 +1,6 @@
 import { useFormContext } from 'react-hook-form'
 
-import { OfferStatus, type VenueListItemResponseModel } from '@/apiClient/v1'
+import { OfferStatus } from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
@@ -12,10 +12,7 @@ import { TextInput } from '@/design-system/TextInput/TextInput'
 import type { LocationFormValues } from '../../commons/types'
 import { PhysicalLocationSubform } from './PhysicalLocationSubform/PhysicalLocationSubform'
 
-interface LocationFormProps {
-  offerVenue: VenueListItemResponseModel
-}
-export const LocationForm = ({ offerVenue }: LocationFormProps) => {
+export const LocationForm = () => {
   const {
     register,
     formState: { errors },
@@ -35,10 +32,7 @@ export const LocationForm = ({ offerVenue }: LocationFormProps) => {
     <FormLayout.Section title="Où profiter de l’offre ?">
       <FormLayout.Row>
         {!offer.isDigital && (
-          <PhysicalLocationSubform
-            isDisabled={isFormReadOnly}
-            venue={offerVenue}
-          />
+          <PhysicalLocationSubform isDisabled={isFormReadOnly} />
         )}
 
         {offer.isDigital && (

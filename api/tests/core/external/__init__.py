@@ -82,7 +82,6 @@ common_pro_attributes = attributes_models.ProAttributes(
     postal_code=["04000", "06400"],
     dms_application_submitted=False,
     dms_application_approved=True,
-    isVirtual=False,
     isPermanent=True,
     isOpenToPublic=True,
     has_individual_offers=True,

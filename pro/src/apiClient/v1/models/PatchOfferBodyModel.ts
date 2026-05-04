@@ -16,6 +16,7 @@ export type PatchOfferBodyModel = {
   durationMinutes?: number | null;
   externalTicketOfficeUrl?: string | null;
   extraData?: any;
+  hasCulturalOutreachClaim?: boolean | null;
   isDuo?: boolean | null;
   isNational?: boolean | null;
   location?: (LocationBodyModel | LocationOnlyOnVenueBodyModel) | null;

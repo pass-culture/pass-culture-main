@@ -9,12 +9,6 @@ import styles from './Icons.module.scss'
 import { fullIcons, otherIcons, strokeIcons } from './iconsList'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 
-const fuzzyMatch = (pattern: string, str: string) => {
-  pattern = '.*' + pattern.toLowerCase().split('').join('.*') + '.*'
-  const re = new RegExp(pattern)
-  return re.test(str.toLowerCase())
-}
-
 const iconsSections = [
   { title: 'Full icons', icons: fullIcons },
   { title: 'Stroke icons', icons: strokeIcons },
@@ -22,6 +16,7 @@ const iconsSections = [
 ]
 
 export const Icons = () => {
+
   const [searchInput, setSearchInput] = useState('')
 
   const onClick = async (e: React.MouseEvent<HTMLDivElement>) => {
@@ -51,7 +46,7 @@ export const Icons = () => {
 
       {iconsSections.map((section) => {
         const filteredIcons = section.icons.filter((iconListItem) =>
-          fuzzyMatch(searchInput, iconListItem.src)
+          iconListItem.src.toLowerCase().includes(searchInput.toLowerCase())
         )
 
         if (filteredIcons.length === 0) {

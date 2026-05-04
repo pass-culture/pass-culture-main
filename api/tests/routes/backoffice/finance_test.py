@@ -25,6 +25,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import exceptions as providers_exceptions
+from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.clients import cgr_client
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
@@ -77,7 +78,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Statut de l'incident"] == "Créé"
         assert rows[0]["Type d'incident"] == "Trop Perçu"
         assert rows[0]["Nature"] == "Total"
-        assert rows[0]["Montant total"] == "10,10 € (1205 CFP)"
+        assert rows[0]["Montant total"] == "10,10 € (1 205 CFP)"
         assert rows[0]["Ticket Zendesk"] == "2"
         assert rows[1]["ID"] == str(partial_booking_incident.incident.id)
         assert rows[1]["Statut de l'incident"] == "Créé"
@@ -1239,21 +1240,13 @@ class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
 
 
 class CreateIncidentFinanceEventTest:
-    @pytest.mark.parametrize(
-        "incident_type",
-        [
-            finance_models.IncidentType.OVERPAYMENT,
-            finance_models.IncidentType.OFFER_PRICE_REGULATION,
-            finance_models.IncidentType.FRAUD,
-        ],
-    )
-    def test_create_event_on_total_booking_incident(self, incident_type):
+    def test_create_event_on_total_booking_incident(self):
         total_booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
             booking__pricings=[
                 finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-1000)
             ],
             booking__amount=10.10,
-            incident__kind=incident_type,
+            incident__kind=finance_models.IncidentType.OVERPAYMENT,
             newTotalAmount=0,
         )
         validation_date = date_utils.get_naive_utc_now()
@@ -1266,20 +1259,12 @@ class CreateIncidentFinanceEventTest:
         assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
         assert finance_events[0].valueDate == validation_date
 
-    @pytest.mark.parametrize(
-        "incident_type",
-        [
-            finance_models.IncidentType.OVERPAYMENT,
-            finance_models.IncidentType.OFFER_PRICE_REGULATION,
-            finance_models.IncidentType.FRAUD,
-        ],
-    )
-    def test_create_event_on_total_collective_booking_incident(self, incident_type):
+    def test_create_event_on_total_collective_booking_incident(self):
         total_booking_incident = finance_factories.CollectiveBookingFinanceIncidentFactory(
             collectiveBooking__pricings=[
                 finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-10000)
             ],
-            incident__kind=incident_type,
+            incident__kind=finance_models.IncidentType.OVERPAYMENT,
         )
 
         validation_date = date_utils.get_naive_utc_now()
@@ -1293,20 +1278,12 @@ class CreateIncidentFinanceEventTest:
         assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
         assert finance_events[0].valueDate == validation_date
 
-    @pytest.mark.parametrize(
-        "incident_type",
-        [
-            finance_models.IncidentType.OVERPAYMENT,
-            finance_models.IncidentType.OFFER_PRICE_REGULATION,
-            finance_models.IncidentType.FRAUD,
-        ],
-    )
-    def test_create_event_on_partial_booking_incident(self, incident_type):
+    def test_create_event_on_partial_booking_incident(self):
         partial_booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
             booking__pricings=[
                 finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-1000)
             ],
-            incident__kind=incident_type,
+            incident__kind=finance_models.IncidentType.OVERPAYMENT,
             newTotalAmount=600,
         )
 
@@ -1389,16 +1366,6 @@ class GetIncidentTest(GetEndpointHelper):
             )
         )
 
-    def test_get_unhandled_incident_kind(self, authenticated_client):
-        incident = finance_factories.FinanceIncidentFactory(kind=finance_models.IncidentType.OFFER_PRICE_REGULATION)
-        bank_account = finance_factories.BankAccountFactory(offerer=incident.venue.managingOfferer)
-        offerers_factories.VenueBankAccountLinkFactory(venue=incident.venue, bankAccount=bank_account)
-        url = url_for(self.endpoint, finance_incident_id=incident.id)
-
-        with assert_num_queries(self.expected_num_queries + 1):  # rollback
-            response = authenticated_client.get(url)
-            assert response.status_code == 404
-
 
 class GetOverpaymentIncidentTest(GetEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.get_incident_overpayment"
@@ -1410,7 +1377,7 @@ class GetOverpaymentIncidentTest(GetEndpointHelper):
 
     @pytest.mark.parametrize(
         "venue_factory,expected_xpf_text",
-        [(offerers_factories.VenueFactory, ""), (offerers_factories.CaledonianVenueFactory, "(1205 CFP)")],
+        [(offerers_factories.VenueFactory, ""), (offerers_factories.CaledonianVenueFactory, "(1 205 CFP)")],
     )
     @pytest.mark.parametrize("zendesk_id", [None, "1"])
     def test_get_incident(self, authenticated_client, venue_factory, expected_xpf_text, zendesk_id):
@@ -1526,7 +1493,7 @@ class GetCommercialGestureTest(GetEndpointHelper):
         "venue_factory,expected_xpf_text",
         [
             (offerers_factories.VenueFactory, ""),
-            (offerers_factories.CaledonianVenueFactory, "(1205 CFP)"),
+            (offerers_factories.CaledonianVenueFactory, "(1 205 CFP)"),
         ],
     )
     @pytest.mark.parametrize("zendesk_id", [None, "1"])
@@ -1645,7 +1612,7 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.CREATE_INCIDENTS
     error_message_template = "Erreur %s Annuler"
 
-    expected_num_queries = 5
+    expected_num_queries = 6
 
     @pytest.mark.parametrize(
         "venue_factory,show_xfp_amount",
@@ -1680,8 +1647,8 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
         assert f"Nom de l'offre : {offer.name}" in additional_data_text
         assert f"Bénéficiaire : {booking.user.full_name}" in additional_data_text
         if show_xfp_amount:
-            assert "Montant de la réservation : 10,10 € (1205 CFP)" in additional_data_text
-            assert "Montant remboursé à l'acteur : 10,00 € (1195 CFP)" in additional_data_text
+            assert "Montant de la réservation : 10,10 € (1 205 CFP)" in additional_data_text
+            assert "Montant remboursé à l'acteur : 10,00 € (1 195 CFP)" in additional_data_text
         else:
             assert "Montant de la réservation : 10,10 €" in additional_data_text
             assert "Montant remboursé à l'acteur : 10,00 €" in additional_data_text
@@ -1723,9 +1690,9 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
         object_ids = str(booking.id)
 
         # don't query the number of BookingFinanceIncident with FinanceIncident's status in
-        # (CREATED, VALIDATED)
-        # but adds 1 query for the rollback
-        with assert_num_queries(self.expected_num_queries):
+        # (CREATED, VALIDATED), nor the providers (-2 queries)
+        # but adds 1 query for rollback
+        with assert_num_queries(self.expected_num_queries - 2 + 1):
             response = self.post_to_endpoint(
                 authenticated_client,
                 form={"object_ids": object_ids},
@@ -1743,9 +1710,9 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
         object_ids = ",".join(str(booking.id) for booking in selected_bookings)
 
         # don't query the number of BookingFinanceIncident with FinanceIncident's status in
-        # (CREATED, VALIDATED)
+        # (CREATED, VALIDATED), nor the providers (-2 queries)
         # but adds 1 query for rollback
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries - 2 + 1):
             response = self.post_to_endpoint(
                 authenticated_client,
                 form={"object_ids": object_ids},
@@ -1869,6 +1836,39 @@ class CreateOverpaymentTest(PostEndpointHelper):
         )
 
         assert db.session.query(finance_models.FinanceIncident).count() == 1  # didn't create new incident
+        assert db.session.query(history_models.ActionHistory).count() == 0
+
+    def test_not_creating_incident_if_booking_comes_from_cinema_provider(self, authenticated_client):
+        provider = db.session.query(providers_models.Provider).filter_by(localClass="BoostStocks").first()
+
+        booking = bookings_factories.ReimbursedBookingFactory(
+            pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-1000)],
+            stock__lastProvider=provider,
+            stock__idAtProviders="PifpafpoufBoost",
+        )
+
+        object_ids = str(booking.id)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "total_amount": booking.amount,
+                "origin": finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name,
+                "comment": "Commentaire facultatif",
+                "kind": finance_models.IncidentType.OVERPAYMENT.name,
+                "object_ids": object_ids,
+            },
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
+        assert cells[2] == str(booking.id)
+
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert "Au moins une des réservations est liée à un cinéma synchronisé via CGR/EMS/Boost." in alerts["warning"]
+
+        assert db.session.query(finance_models.FinanceIncident).count() == 0
         assert db.session.query(history_models.ActionHistory).count() == 0
 
     @pytest.mark.parametrize(
@@ -2062,8 +2062,8 @@ class GetCommercialGestureCreationFormTest(PostEndpointHelper):
         assert "Nom de l'offre : Offre ++" in additional_data_text
         assert "Bénéficiaire : John Doe" in additional_data_text
         if show_xfp_amount:
-            assert "Montant de la réservation : 200,00 € (23865 CFP)" in additional_data_text
-            assert "Montant remboursé à l'acteur : 10,00 € (1195 CFP)" in additional_data_text
+            assert "Montant de la réservation : 200,00 € (23 865 CFP)" in additional_data_text
+            assert "Montant remboursé à l'acteur : 10,00 € (1 195 CFP)" in additional_data_text
         else:
             assert "Montant de la réservation : 200,00 €" in additional_data_text
             assert "Montant remboursé à l'acteur : 10,00 €" in additional_data_text

@@ -4,6 +4,8 @@ import typing
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
+from pcapi.core.offers import models as offers_models
+from pcapi.core.providers import models as providers_models
 from pcapi.models import db
 
 
@@ -55,6 +57,18 @@ def _bookings_have_pending_incident(bookings: list[bookings_models.Booking]) -> 
     ).scalar()
 
 
+def _bookings_are_linked_to_incompatible_providers(bookings: list[bookings_models.Booking]) -> bool:
+    return db.session.query(
+        db.session.query(offers_models.Stock)
+        .join(providers_models.Provider)
+        .filter(
+            offers_models.Stock.id.in_([booking.stockId for booking in bookings]),
+            offers_models.Provider.localClass.in_(["CGRStocks", "EMSStocks", "BoostStocks"]),
+        )
+        .exists()
+    ).scalar()
+
+
 def get_overpayment_incident_amount_interval(
     bookings: list[bookings_models.Booking],
 ) -> tuple[decimal.Decimal, decimal.Decimal | typing.Literal[0]]:
@@ -90,6 +104,12 @@ def check_incident_bookings(bookings: list[bookings_models.Booking]) -> Valid:
         return Valid(
             is_valid=False,
             message="Au moins une des réservations fait déjà l'objet d'un incident ou geste commercial non annulé.",
+        )
+
+    if _bookings_are_linked_to_incompatible_providers(bookings):
+        return Valid(
+            is_valid=False,
+            message="Au moins une des réservations est liée à un cinéma synchronisé via CGR/EMS/Boost.",
         )
 
     return Valid(True)

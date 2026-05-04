@@ -8,10 +8,12 @@ import { Dialog, type DialogProps } from '@/ui-kit/Dialog/Dialog'
 import styles from './ConfirmDialog.module.scss'
 
 type ConfirmDialogProps = DialogProps & {
-  onConfirm: () => void
-  confirmText: string
+  overrideConfirm?: React.ReactNode
+  onConfirm?: () => void
+  confirmText?: string
   confirmColor?: ButtonColor
   cancelText: string
+  cancelIcon?: string
   isLoading?: boolean
   leftButtonAction?: () => void
   confirmButtonDisabled?: boolean
@@ -28,6 +30,7 @@ export const ConfirmDialog = ({
   confirmText,
   confirmColor,
   cancelText,
+  cancelIcon,
   children,
   icon,
   hideIcon = false,
@@ -37,6 +40,7 @@ export const ConfirmDialog = ({
   trigger,
   open,
   refToFocusOnClose,
+  overrideConfirm,
 }: ConfirmDialogProps): JSX.Element => {
   const cancelButton = (
     <Button
@@ -51,6 +55,7 @@ export const ConfirmDialog = ({
           : ButtonColor.BRAND
       }
       label={cancelText}
+      icon={cancelIcon}
     />
   )
 
@@ -83,12 +88,14 @@ export const ConfirmDialog = ({
         {trigger ? (
           <>
             <RadixDialog.Close asChild>{cancelButton}</RadixDialog.Close>
-            <RadixDialog.Close asChild>{confirmButton}</RadixDialog.Close>
+            <RadixDialog.Close asChild>
+              {overrideConfirm ?? confirmButton}
+            </RadixDialog.Close>
           </>
         ) : (
           <>
             {cancelButton}
-            {confirmButton}
+            {overrideConfirm ?? confirmButton}
           </>
         )}
       </div>

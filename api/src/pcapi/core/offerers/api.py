@@ -246,6 +246,26 @@ def update_venue(
         assert venue.activity  # helps mypy, activity has been modified, is not null if we are here and set above
         venue.venueTypeCode = offerers_utils.get_venue_type_code_from_activity(venue.activity)
 
+    if "volunteeringUrl" in modifications:
+        if modifications["volunteeringUrl"]:
+            on_commit(
+                partial(
+                    logger.info,
+                    "Volunteering URL has been added",
+                    extra={"venue_id": venue.id, "volunteeringUrl": modifications["volunteeringUrl"]},
+                    technical_message_id="venue.volunteering_add",
+                )
+            )
+        else:
+            on_commit(
+                partial(
+                    logger.info,
+                    "Volunteering URL has been removed",
+                    extra={"venue_id": venue.id},
+                    technical_message_id="venue.volunteering_delete",
+                )
+            )
+
     db.session.add(venue)
     if is_managed_transaction():
         db.session.flush()
@@ -2109,11 +2129,12 @@ class VenueOffersStatisticsModel:
 
 def get_venue_offers_statistics(venue_id: int) -> VenueOffersStatisticsModel:
     daily_views = clickhouse_queries.OfferConsultationCountQuery().execute({"venue_id": str(venue_id)})
+    sorted_daily_views = sorted(daily_views, key=lambda x: x.day)
     views_count = clickhouse_queries.VenueOffersMonthlyViewsQuery().execute({"venue_id": str(venue_id)})
     top_offers = clickhouse_queries.TopOffersByViewsQuery().execute({"venue_id": str(venue_id)})
 
     return VenueOffersStatisticsModel(
-        daily_views=[DailyViewsModel(day=row.day, views=row.views) for row in daily_views],
+        daily_views=[DailyViewsModel(day=row.day, views=row.views) for row in sorted_daily_views],
         total_views_last_30_days=views_count[0].total if len(views_count) > 0 else 0,
         top_offers=[OfferViewsModel(offer_id=row.id, views=row.views, rank=row.rank) for row in top_offers],
     )
@@ -2211,6 +2232,7 @@ def create_from_onboarding_data(
         and not APE_TAG_MAPPING.get(siret_info.ape_code, False)
     ):
         raise exceptions.NotACollectivity()
+
     if not venue or onboarding_data.create_venue_without_siret:
         address = onboarding_data.address
         if not address.street:
@@ -2245,7 +2267,11 @@ def create_from_onboarding_data(
             )
         venue_kwargs = common_kwargs | comment_and_siret
         venue_creation_info = venue_serialize.PostVenueBodyModel(**venue_kwargs)
+        pricing_point_id = venue.id if venue else None
         venue = create_venue(venue_creation_info, user)
+        db.session.flush()
+        if onboarding_data.create_venue_without_siret and pricing_point_id:
+            link_venue_to_pricing_point(venue, pricing_point_id)
         create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
 
     # Log the other activity comment if activity is OTHER

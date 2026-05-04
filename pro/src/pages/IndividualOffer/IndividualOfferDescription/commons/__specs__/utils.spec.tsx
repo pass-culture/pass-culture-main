@@ -3,12 +3,10 @@ import {
   ArtistType,
   OfferStatus,
   SubcategoryIdEnum,
-  type VenueListItemResponseModel,
 } from '@/apiClient/v1'
-import type { DisplayableActivity } from '@/apiClient/v1/new'
+import { DisplayableActivity } from '@/apiClient/v1/new'
 import {
   getIndividualOfferFactory,
-  makeVenueListItem,
   subcategoryFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { getOfferLastProvider } from '@/commons/utils/factories/providerFactories'
@@ -23,17 +21,16 @@ import {
   buildShowSubTypeOptions,
   buildSubcategoryOptions,
   completeSubcategoryConditionalFields,
-  filterAvailableVenues,
   getAccessibilityFormValuesFromOffer,
   getFormReadOnlyFields,
   getInitialArtistOfferLinks,
   getInitialValuesFromOffer,
   getInitialValuesFromVenue,
-  getInitialValuesFromVenues,
-  getVenuesAsOptions,
   hasMusicType,
   isSubCategoryCD,
 } from '../utils'
+
+const defaultVenue = makeGetVenueResponseModel({ id: 1 })
 
 describe('isSubCategoryCD', () => {
   it('should return true for SUPPORT_PHYSIQUE_MUSIQUE_CD subcategory', () => {
@@ -232,114 +229,6 @@ describe('getInitialArtistOfferLinks', () => {
   })
 })
 
-describe('filterAvailableVenues', () => {
-  const physicalVenue = makeVenueListItem({
-    id: 1,
-    name: 'Physical Venue',
-    isVirtual: false,
-  })
-  const virtualVenue = makeVenueListItem({
-    id: 2,
-    name: 'Virtual Venue',
-    isVirtual: true,
-  })
-
-  it('should return only physical venues if at least one exists', () => {
-    const venues = [physicalVenue, virtualVenue]
-
-    const physicalOfferResult = filterAvailableVenues(venues, false)
-
-    expect(physicalOfferResult).toEqual([physicalVenue])
-
-    const virtualOfferResult = filterAvailableVenues(venues, true)
-
-    expect(virtualOfferResult).toEqual([physicalVenue])
-  })
-
-  it('should return an empty array for a physical offer with only virtual venues', () => {
-    const venues = [virtualVenue]
-
-    const physicalOfferResult = filterAvailableVenues(venues, false)
-
-    expect(physicalOfferResult).toEqual([])
-  })
-
-  it('should return virtual venues for a virtual offer if NO physical venues exist', () => {
-    const venues = [virtualVenue]
-
-    const virtualOfferResult = filterAvailableVenues(venues, true)
-
-    expect(virtualOfferResult).toEqual([virtualVenue])
-  })
-
-  it('should return all venues when isOfferVirtual is undefined and no physical venues exist', () => {
-    const venues = [virtualVenue]
-
-    const result = filterAvailableVenues(venues)
-
-    expect(result).toEqual([virtualVenue])
-  })
-
-  it('should return physical venues when isOfferVirtual is undefined and physical venues exist', () => {
-    const venues = [physicalVenue, virtualVenue]
-
-    const result = filterAvailableVenues(venues)
-
-    expect(result).toEqual([physicalVenue])
-  })
-
-  it('should return all physical venues if only physical venues are provided', () => {
-    const anotherPhysicalVenue = makeVenueListItem({
-      id: 3,
-      name: 'Another Physical',
-      isVirtual: false,
-    })
-    const venues = [physicalVenue, anotherPhysicalVenue]
-
-    const physicalOfferResult = filterAvailableVenues(venues, false)
-
-    expect(physicalOfferResult).toEqual(venues)
-
-    const virtualOfferResult = filterAvailableVenues(venues, true)
-
-    expect(virtualOfferResult).toEqual(venues)
-  })
-})
-
-describe('getVenuesAsOptions', () => {
-  it('should correctly map a list of venues to an array of Option objects', () => {
-    const venues = [
-      makeVenueListItem({ id: 10, publicName: 'My Venue' }),
-      makeVenueListItem({ id: 20, publicName: 'Your Venue' }),
-    ]
-    const options = getVenuesAsOptions(venues)
-
-    expect(options).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ value: '10', label: 'My Venue' }),
-        expect.objectContaining({ value: '20', label: 'Your Venue' }),
-      ])
-    )
-    expect(options.length).toBe(2)
-  })
-
-  it('should sort the resulting options by label using French locale rules', () => {
-    const venues = [
-      makeVenueListItem({ id: 1, publicName: 'Zoo' }),
-      makeVenueListItem({ id: 2, publicName: 'Cinéma' }),
-      makeVenueListItem({ id: 3, publicName: 'À la ferme' }),
-    ]
-
-    const optionsResult = getVenuesAsOptions(venues)
-
-    expect(optionsResult.map((o) => o.label)).toEqual([
-      'À la ferme',
-      'Cinéma',
-      'Zoo',
-    ])
-  })
-})
-
 describe('getInitialValuesFromVenue', () => {
   it('should return default form values with venue id and accessibility from the venue', () => {
     const venue = makeGetVenueResponseModel({
@@ -462,85 +351,36 @@ describe('getInitialValuesFromOffer', () => {
   })
 })
 
-describe('getInitialValuesFromVenues', () => {
-  it('should return an empty `venueId` and none `accessibility` options if multiple venues are available', () => {
-    const venues = [makeVenueListItem({ id: 1 }), makeVenueListItem({ id: 2 })]
-
-    const initialValuesResult = getInitialValuesFromVenues(venues)
-
-    expect(initialValuesResult.venueId).toBe('')
-    expect(initialValuesResult.accessibility).toEqual({
-      audio: false,
-      visual: false,
-      motor: false,
-      mental: false,
-      none: true,
-    })
-  })
-
-  it('should return an empty `venueId` and none `accessibility` options if no venues are available', () => {
-    const venues: VenueListItemResponseModel[] = []
-
-    const initialValuesResult = getInitialValuesFromVenues(venues)
-
-    expect(initialValuesResult.venueId).toBe('')
-    expect(initialValuesResult.accessibility).toEqual({
-      audio: false,
-      visual: false,
-      motor: false,
-      mental: false,
-      none: true,
-    })
-  })
-
-  it('should return a default `venueId` and its `accessibility` props if only one venue is available', () => {
-    const venues = [
-      makeVenueListItem({
-        id: 789,
-        audioDisabilityCompliant: true,
-        visualDisabilityCompliant: false,
-        motorDisabilityCompliant: true,
-        mentalDisabilityCompliant: false,
-      }),
-    ]
-
-    const initialValuesResult = getInitialValuesFromVenues(venues)
-
-    expect(initialValuesResult.venueId).toBe('789')
-    expect(initialValuesResult.accessibility).toEqual({
-      audio: true,
-      visual: false,
-      motor: true,
-      mental: false,
-      none: false,
-    })
-  })
-})
-
 describe('getFormReadOnlyFields', () => {
   it('should disable all fields except venue when an ean search filled the form and offer is not yet created', () => {
     const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES).filter(
       (key) => key !== 'venueId'
     )
 
-    expect(getFormReadOnlyFields(null, true)).toStrictEqual(expectedValues)
+    expect(getFormReadOnlyFields(null, true, defaultVenue)).toStrictEqual(
+      expectedValues
+    )
   })
 
   it('should disable all field when offer has been created and was created by ean', () => {
     const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES)
 
     expect(
-      getFormReadOnlyFields(getIndividualOfferFactory({ productId: 1 }), true)
+      getFormReadOnlyFields(
+        getIndividualOfferFactory({ productId: 1 }),
+        true,
+        defaultVenue
+      )
     ).toStrictEqual(expectedValues)
   })
 
   it('should not disable fields when there is no offer and no ean search was performed', () => {
-    expect(getFormReadOnlyFields(null, false)).toStrictEqual([])
+    expect(getFormReadOnlyFields(null, false, defaultVenue)).toStrictEqual([])
   })
 
   it('should disable category/subcategory/venue fields when updating a regular offer', () => {
     expect(
-      getFormReadOnlyFields(getIndividualOfferFactory({}), false)
+      getFormReadOnlyFields(getIndividualOfferFactory({}), false, defaultVenue)
     ).toStrictEqual(['categoryId', 'subcategoryId', 'venueId'])
   })
 
@@ -552,7 +392,8 @@ describe('getFormReadOnlyFields', () => {
         getIndividualOfferFactory({
           lastProvider: { name: 'provider' },
         }),
-        false
+        false,
+        defaultVenue
       )
     ).toStrictEqual(expectedValues)
   })
@@ -583,9 +424,9 @@ describe('getFormReadOnlyFields', () => {
           lastProvider: { name: 'provider' },
         }),
         false,
-        makeVenueListItem({
+        makeGetVenueResponseModel({
           id: 1,
-          activity: 'MUSEUM' as DisplayableActivity,
+          activity: DisplayableActivity.MUSEUM,
         })
       )
     ).toStrictEqual(expectedValues)
@@ -601,21 +442,21 @@ describe('getFormReadOnlyFields', () => {
 
     let isProductBased = false
 
-    expect(getFormReadOnlyFields(pendingOffer, isProductBased)).toContain(
-      'accessibility'
-    )
-    expect(getFormReadOnlyFields(rejectedOffer, isProductBased)).toContain(
-      'accessibility'
-    )
+    expect(
+      getFormReadOnlyFields(pendingOffer, isProductBased, defaultVenue)
+    ).toContain('accessibility')
+    expect(
+      getFormReadOnlyFields(rejectedOffer, isProductBased, defaultVenue)
+    ).toContain('accessibility')
 
     isProductBased = true
 
-    expect(getFormReadOnlyFields(pendingOffer, isProductBased)).toContain(
-      'accessibility'
-    )
-    expect(getFormReadOnlyFields(rejectedOffer, isProductBased)).toContain(
-      'accessibility'
-    )
+    expect(
+      getFormReadOnlyFields(pendingOffer, isProductBased, defaultVenue)
+    ).toContain('accessibility')
+    expect(
+      getFormReadOnlyFields(rejectedOffer, isProductBased, defaultVenue)
+    ).toContain('accessibility')
   })
 
   it('should exclude accessibility for all other cases', () => {
@@ -626,20 +467,20 @@ describe('getFormReadOnlyFields', () => {
 
     let isProductBased = false
 
-    expect(getFormReadOnlyFields(nullOffer, isProductBased)).not.toContain(
-      'accessibility'
-    )
     expect(
-      getFormReadOnlyFields(synchronizedOffer, isProductBased)
+      getFormReadOnlyFields(nullOffer, isProductBased, defaultVenue)
+    ).not.toContain('accessibility')
+    expect(
+      getFormReadOnlyFields(synchronizedOffer, isProductBased, defaultVenue)
     ).not.toContain('accessibility')
 
     isProductBased = true
 
-    expect(getFormReadOnlyFields(nullOffer, isProductBased)).not.toContain(
-      'accessibility'
-    )
     expect(
-      getFormReadOnlyFields(synchronizedOffer, isProductBased)
+      getFormReadOnlyFields(nullOffer, isProductBased, defaultVenue)
+    ).not.toContain('accessibility')
+    expect(
+      getFormReadOnlyFields(synchronizedOffer, isProductBased, defaultVenue)
     ).not.toContain('accessibility')
   })
 })

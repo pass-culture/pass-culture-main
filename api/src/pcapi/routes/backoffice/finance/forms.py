@@ -12,12 +12,6 @@ from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils as forms_utils
 
 
-not_implemented_incident_types = [
-    finance_models.IncidentType.FRAUD,
-    finance_models.IncidentType.OFFER_PRICE_REGULATION,
-]
-
-
 class IncidentCompensationModes(enum.Enum):
     FORCE_DEBIT_NOTE = "Générer une note de débit à la prochaine échéance"
     COMPENSATE_ON_BOOKINGS = "Récupérer l'argent sur les prochaines réservations"

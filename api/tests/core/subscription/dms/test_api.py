@@ -14,6 +14,7 @@ from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import factories as dms_factories
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.dms import serializer as dms_serializer
+from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.subscription import factories as subscription_factories
@@ -1321,6 +1322,16 @@ class RunIntegrationTest:
                 phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
                 deposit__expirationDate=date_utils.get_naive_utc_now() + relativedelta(years=2),
             )
+            finance_factories.RecreditFactory(
+                deposit=user.deposit, recreditType=finance_models.RecreditType.RECREDIT_15
+            )
+            finance_factories.RecreditFactory(
+                deposit=user.deposit, recreditType=finance_models.RecreditType.RECREDIT_16
+            )
+            finance_factories.RecreditFactory(
+                deposit=user.deposit, recreditType=finance_models.RecreditType.RECREDIT_17
+            )
+
         subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
         details = fixtures.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
         details.draft_date = date_utils.get_naive_utc_now().isoformat()

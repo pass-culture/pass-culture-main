@@ -2,6 +2,7 @@ import logging
 
 from flask import request
 from flask_login import current_user
+from sqlalchemy import exc as sa_exc
 
 import pcapi.core.token as token_utils
 from pcapi.connectors import api_recaptcha
@@ -22,6 +23,7 @@ from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
+from pcapi.models.api_errors import InternalError
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.security import authenticated_with_refresh_token
@@ -86,7 +88,10 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
 @spectree_serialize(response_model=authentication.RefreshResponse, api=blueprint.api, on_error_statuses=[401])
 def refresh() -> authentication.RefreshResponse:
     users_api.update_last_connection_date(current_user)
-    tokens = refresh_user_jwt_tokens(user=current_user, device_info=None, legacy=True)
+    try:
+        tokens = refresh_user_jwt_tokens(user=current_user, device_info=None, legacy=True)
+    except sa_exc.IntegrityError:
+        raise InternalError()
     return authentication.RefreshResponse(access_token=tokens.access)
 
 

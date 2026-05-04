@@ -9,6 +9,7 @@ from pcapi.core.testing import AUTHENTICATION_QUERIES
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import offer_mixin
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils.date import format_into_utc_date
 
 from tests.conftest import TestClient
@@ -302,7 +303,7 @@ class Returns200Test:
         ]
 
 
-class Return400Test:
+class Return404Test:
     def test_user_has_no_access(self, client: TestClient):
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
@@ -316,8 +317,8 @@ class Return400Test:
         num_queries += 1  # rollback
         with assert_num_queries(num_queries):
             response = client.get(f"{URL}?venueId={venue_id}")
-
-        assert response.status_code == 403
+            assert response.status_code == 404
+            assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
     def test_return_error_when_no_venue_given(self, client: TestClient):
         user_offerer = offerers_factories.UserOffererFactory()

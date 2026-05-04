@@ -1,10 +1,9 @@
 import { useFormContext } from 'react-hook-form'
-import { computeAddressDisplayName } from 'repository/venuesService'
 
 import type { AdresseData } from '@/apiClient/adresse/types.ts'
-import type { VenueListItemResponseModel } from '@/apiClient/v1'
-import { FrontendError } from '@/commons/errors/FrontendError'
-import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
+import { computeAddressDisplayName } from '@/commons/format/venuesService'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { AddressFields } from '@/components/AddressFields/AddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
@@ -18,13 +17,13 @@ import styles from './PhysicalLocationSubform.module.scss'
 
 export interface PhysicalLocationSubformProps {
   isDisabled: boolean
-  venue: VenueListItemResponseModel
 }
 
 export const PhysicalLocationSubform = ({
   isDisabled,
-  venue,
 }: PhysicalLocationSubformProps): JSX.Element => {
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+
   const {
     register,
     resetField,
@@ -43,26 +42,32 @@ export const PhysicalLocationSubform = ({
     const willBeVenueAddress = !isVenueAddress
 
     if (willBeVenueAddress) {
-      if (!venue.location) {
-        return handleUnexpectedError(
-          new FrontendError('`venue.location` is nullish.')
-        )
-      }
-
-      setValue('location.inseeCode', venue.location.inseeCode ?? null)
-      setValue('location.banId', venue.location.banId ?? null)
-      setValue('location.city', venue.location.city)
-      setValue('location.latitude', venue.location.latitude.toString())
-      setValue('location.longitude', venue.location.longitude.toString())
+      setValue(
+        'location.inseeCode',
+        selectedPartnerVenue.location.inseeCode ?? null
+      )
+      setValue('location.banId', selectedPartnerVenue.location.banId ?? null)
+      setValue('location.city', selectedPartnerVenue.location.city)
+      setValue(
+        'location.latitude',
+        selectedPartnerVenue.location.latitude.toString()
+      )
+      setValue(
+        'location.longitude',
+        selectedPartnerVenue.location.longitude.toString()
+      )
       setValue(
         'location.coords',
-        `${venue.location.latitude}, ${venue.location.longitude}`
+        `${selectedPartnerVenue.location.latitude}, ${selectedPartnerVenue.location.longitude}`
       )
-      setValue('location.postalCode', venue.location.postalCode)
+      setValue('location.postalCode', selectedPartnerVenue.location.postalCode)
       // TODO (igabriele, 2025-08-25): This should not be nullable. Investigate why we can receive a venue location without street since it's mandatory.
-      setValue('location.street', venue.location.street ?? null)
-      setValue('location.label', venue.location.label ?? null)
-      setValue('location.offerLocation', venue.location.id.toString())
+      setValue('location.street', selectedPartnerVenue.location.street ?? null)
+      setValue('location.label', selectedPartnerVenue.location.label ?? null)
+      setValue(
+        'location.offerLocation',
+        selectedPartnerVenue.location.id.toString()
+      )
     } else {
       setValue('location', EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES)
     }
@@ -100,9 +105,10 @@ export const PhysicalLocationSubform = ({
     })
   }
 
-  const venueFullText = `${venue.publicName} – ${
-    venue.location ? computeAddressDisplayName(venue.location, false) : null
-  }`
+  const venueFullText = `${selectedPartnerVenue.publicName} – ${computeAddressDisplayName(
+    selectedPartnerVenue.location,
+    false
+  )}`
 
   return (
     <>
@@ -114,7 +120,7 @@ export const PhysicalLocationSubform = ({
           options={[
             {
               label: venueFullText,
-              value: venue?.location?.id.toString() ?? '',
+              value: selectedPartnerVenue.location.id.toString(),
             },
             {
               label: 'À une autre adresse',

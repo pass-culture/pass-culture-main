@@ -6,6 +6,7 @@ import pytest
 import time_machine
 
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.cultural_outreach.factories as cultural_outreach_factories
 import pcapi.core.highlights.factories as highlights_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
@@ -15,13 +16,14 @@ from pcapi.core.artist import factories as artist_factories
 from pcapi.core.artist import models as artist_models
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.models import WithdrawalTypeEnum
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 from pcapi.utils.human_ids import humanize
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns403Test:
+class Returns404Test:
     # get user_session + user
     # get offer
     # get artist
@@ -38,7 +40,8 @@ class Returns403Test:
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{offer_id}")
-            assert response.status_code == 403
+            assert response.status_code == 404
+            assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
     def test_access_by_unauthorized_pro_user(self, client):
         pro_user = users_factories.ProFactory()
@@ -48,7 +51,15 @@ class Returns403Test:
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{offer_id}")
-            assert response.status_code == 403
+            assert response.status_code == 404
+            assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
+
+    def test_offer_not_found(self, client):
+        pro_user = users_factories.ProFactory()
+        auth_client = client.with_session_auth(email=pro_user.email)
+        response = auth_client.get("/offers/123456789")
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
 
 @pytest.mark.usefixtures("db_session")
@@ -147,6 +158,7 @@ class Returns200Test:
             "bookingContact": None,
             "bookingsCount": 0,
             "bookingEmail": "offer.booking.email@example.com",
+            "hasCulturalOutreachClaim": False,
             "dateCreated": "2020-10-15T00:00:00Z",
             "productId": None,
             "publicationDate": "2020-10-01T00:00:00Z",
@@ -427,7 +439,7 @@ class Returns200Test:
             response = auth_client.get(f"/offers/{offer_id}")
             assert response.status_code == 200
 
-        assert response.json["publicationDate"] == publication_date.strftime("%Y-%m-%dT%H:%M:%SZ")
+        assert response.json["publicationDatetime"] == publication_date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     @pytest.mark.parametrize("has_pending_bookings", [True, False])
     def test_pending_booking(self, client, has_pending_bookings):
@@ -519,3 +531,41 @@ class Returns200Test:
             "artistName": "Simone",
             "artistType": "author",
         }
+
+    def test_returns_has_cultural_outreach_true(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=user_offerer.offerer)
+        cultural_outreach_factories.ClaimedCulturalOutreachFactory(offer=offer)
+
+        client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(f"/offers/{offer_id}")
+            assert response.status_code == 200
+
+        assert response.json["hasCulturalOutreachClaim"] is True
+
+    def test_returns_has_cultural_outreach_false_when_no_cultural_outreach(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=user_offerer.offerer)
+
+        client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(f"/offers/{offer_id}")
+            assert response.status_code == 200
+
+        assert response.json["hasCulturalOutreachClaim"] is False
+
+    def test_returns_has_cultural_outreach_false_when_not_claimed(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=user_offerer.offerer)
+        cultural_outreach_factories.CulturalOutreachFactory(offer=offer)
+
+        client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(f"/offers/{offer_id}")
+            assert response.status_code == 200
+
+        assert response.json["hasCulturalOutreachClaim"] is False

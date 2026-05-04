@@ -53,18 +53,52 @@ class ExternalFinanceTest:
         invoice3 = finance_factories.InvoiceFactory(
             status=finance_models.InvoiceStatus.PENDING_PAYMENT, cashflows=[finance_factories.CashflowFactory()]
         )
+        free_invoice = finance_factories.InvoiceFactory(
+            status=finance_models.InvoiceStatus.PENDING, cashflows=[finance_factories.CashflowFactory()], amount=0
+        )
 
         external.push_invoices(10)
         db.session.flush()
         db.session.refresh(invoice1)
         db.session.refresh(invoice2)
         db.session.refresh(invoice3)
+        db.session.refresh(free_invoice)
         assert invoice1.status == finance_models.InvoiceStatus.PAID
         assert invoice2.status == finance_models.InvoiceStatus.PAID
         assert invoice3.status == finance_models.InvoiceStatus.PENDING_PAYMENT
+        assert free_invoice.status == finance_models.InvoiceStatus.PAID
 
-        assert len(dummy_invoices) == 1
-        assert dummy_invoices[0] == invoice1
+        assert len(dummy_invoices) == 2
+        assert set(dummy_invoices) == {invoice1, free_invoice}
+
+    @pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=True)
+    def test_push_invoices_with_FF(self):
+        invoice1 = finance_factories.InvoiceFactory(
+            status=finance_models.InvoiceStatus.PENDING, cashflows=[finance_factories.CashflowFactory()]
+        )
+        invoice2 = finance_factories.InvoiceFactory(
+            status=finance_models.InvoiceStatus.PAID, cashflows=[finance_factories.CashflowFactory()]
+        )
+        invoice3 = finance_factories.InvoiceFactory(
+            status=finance_models.InvoiceStatus.PENDING_PAYMENT, cashflows=[finance_factories.CashflowFactory()]
+        )
+        free_invoice = finance_factories.InvoiceFactory(
+            status=finance_models.InvoiceStatus.PENDING, cashflows=[finance_factories.CashflowFactory()], amount=0
+        )
+
+        external.push_invoices(10)
+        db.session.flush()
+        db.session.refresh(invoice1)
+        db.session.refresh(invoice2)
+        db.session.refresh(invoice3)
+        db.session.refresh(free_invoice)
+        assert invoice1.status == finance_models.InvoiceStatus.PENDING_PAYMENT
+        assert invoice2.status == finance_models.InvoiceStatus.PAID
+        assert invoice3.status == finance_models.InvoiceStatus.PENDING_PAYMENT
+        assert free_invoice.status == finance_models.InvoiceStatus.PAID
+
+        assert len(dummy_invoices) == 2
+        assert set(dummy_invoices) == {invoice1, free_invoice}
 
     @pytest.mark.settings(SLACK_GENERATE_INVOICES_FINISHED_CHANNEL="channel")
     @patch("pcapi.core.internal_notifications.transactional.notify_invoices_finished.send_internal_message")

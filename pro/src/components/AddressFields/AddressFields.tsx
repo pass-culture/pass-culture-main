@@ -5,6 +5,7 @@ import type { AdresseData } from '@/apiClient/adresse/types'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import type { RequiredIndicator } from '@/design-system/common/types'
 import fullBackIcon from '@/icons/full-back.svg'
 import fullNextIcon from '@/icons/full-next.svg'
 import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
@@ -23,6 +24,7 @@ type AddressFieldsProps = {
   onManualChange?: (next: boolean) => void
 
   renderManual: () => React.ReactNode
+  requiredIndicator?: RequiredIndicator
 }
 
 export const AddressFields = ({
@@ -36,6 +38,7 @@ export const AddressFields = ({
   manual,
   onManualChange,
   renderManual,
+  requiredIndicator = 'symbol',
 }: AddressFieldsProps): JSX.Element => {
   const [internalManual, setInternalManual] = useState(false)
   const isManual = manual ?? internalManual
@@ -58,6 +61,7 @@ export const AddressFields = ({
           label={label}
           description={description}
           onAddressChosen={onAddressChosen}
+          requiredIndicator={requiredIndicator}
         />
       </FormLayout.Row>
       <FormLayout.Row>

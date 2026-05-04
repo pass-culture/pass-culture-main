@@ -25,6 +25,7 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.core.search.commands.settings",
         "pcapi.core.subscription.commands",
         "pcapi.core.users.commands",
+        "pcapi.routes.backoffice.utils.commands",
         "pcapi.scripts.backoffice_users.add_permissions_to_staging_specific_roles",
         "pcapi.scripts.beneficiary.import_test_users",
         "pcapi.scripts.check_pre_migrations",

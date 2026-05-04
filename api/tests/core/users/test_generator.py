@@ -1,4 +1,5 @@
 import decimal
+import re
 
 import pytest
 from dateutil.relativedelta import relativedelta
@@ -157,7 +158,10 @@ class UserGeneratorTest:
             step=users_generator.GeneratedSubscriptionStep.PROFILE_COMPLETION,
         )
         user = users_generator.generate_user(user_data)
-        assert user.email == f"{user.firstName}.{user.lastName}.{user.id}@passculture.gen".lower()
+        assert (
+            user.email
+            == f"{re.sub(r'\W+', '', user.firstName or '')}.{re.sub(r'\W+', '', user.lastName or '')}.{user.id}@passculture.gen".lower()
+        )
 
     def test_id_piece_number_is_valid(self):
         user_data = users_generator.GenerateUserData(

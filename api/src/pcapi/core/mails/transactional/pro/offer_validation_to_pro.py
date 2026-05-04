@@ -11,8 +11,8 @@ from pcapi.utils.urls import build_pc_pro_offer_link
 def retrieve_data_for_offer_approval_email(
     offer: Offer | educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
 ) -> models.TransactionalEmailData:
-    if isinstance(offer, Offer) and offer.publicationDate:
-        publication_date = get_date_formatted_for_email(offer.publicationDate)
+    if isinstance(offer, Offer) and offer.publicationDatetime:
+        publication_date = get_date_formatted_for_email(offer.publicationDatetime)
     else:
         publication_date = None
     return models.TransactionalEmailData(

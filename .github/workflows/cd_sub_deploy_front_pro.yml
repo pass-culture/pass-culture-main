@@ -65,7 +65,7 @@ jobs:
         with:
           export_environment_variables: 'true'
           create_credentials_file: 'true'
-          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PRD }}
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PRD }}
           service_account: ${{ vars.PRO_DEPLOY_SERVICE_ACCOUNT }}
       - name: "Get Secret"
         id: "secrets"
@@ -104,6 +104,7 @@ jobs:
           # Increases the limit so that the build doesnt fail
           NODE_OPTIONS: --max_old_space_size=4096
           ENV: ${{ inputs.ENV }}
+          VITE_APP_VERSION: ${{ inputs.version }}
       - if: inputs.ENV != 'testing'
         run: |
           grep -E '"version": "[0-9]+.[0-9]+.[0-9]+"' package.json | grep -Eo '[0-9]+.[0-9]+.[0-9]+' > build/version.txt

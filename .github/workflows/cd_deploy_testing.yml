@@ -1,0 +1,124 @@
+name: 1 [CD] Deploy testing
+
+on:
+  workflow_dispatch:
+  schedule:
+    # This cron is defined in UTC timezone. It means that it will run:
+    # - during summer hours between 8:28am - 7:28pm
+    # - during winter hours between 7:28am - 6:28pm
+    # we cannot yet specify timezone :
+    # https://github.com/orgs/community/discussions/13454
+    # Why 27? Choosing an exact hour or half-hour is discouraged by GitHub due to high load.
+    # Cron jobs might be delayed or even completely skipped.
+    - cron: "27 6-17 * * 1-5"
+
+permissions: write-all
+
+jobs:
+  check-docker-images-exist:
+    name: Check docker images exist for sha ${{ github.sha }}
+    runs-on: ubuntu-latest
+    outputs:
+      checksum-tag: ${{ steps.compute-api-checksum.outputs.checksum-tag }}
+      pcapi-exists: ${{ steps.check-pcapi-exists.outputs.tag-exists }}
+      pcapi-console-exists: ${{ steps.check-pcapi-console-exists.outputs.tag-exists }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-tags: false
+          ref: "master"
+      - name: Compute API checksum
+        id: compute-api-checksum
+        run: |
+          API_CHECKSUM="$(tar --sort=name --owner=0 --group=0 --mtime='UTC 2019-01-01' -cf - api | sha1sum | awk '{ print $1 }')"
+          echo "checksum-tag=$API_CHECKSUM" >> "$GITHUB_OUTPUT"
+      - name: "Authentification to Google"
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: "Get Secret"
+        id: secrets
+        uses: google-github-actions/get-secretmanager-secrets@bc9c54b29fdffb8a47776820a7d26e77b379d262 # v3.0.0
+        with:
+          secrets: |-
+            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
+      - name: "OpenID Connect Authentication"
+        id: "openid-auth"
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          create_credentials_file: false
+          token_format: "access_token"
+          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      - name: Check pcapi-console image exists
+        id: check-pcapi-console-exists
+        run: ./.github/workflows/scripts/check-image-tag-exists.sh
+        env:
+          image: pcapi-console
+          tag: ${{ github.sha }}
+          token: ${{ steps.openid-auth.outputs.access_token }}
+      - name: Check pcapi image exists
+        id: check-pcapi-exists
+        run: ./.github/workflows/scripts/check-image-tag-exists.sh
+        env:
+          image: pcapi
+          tag: ${{ github.sha }}
+          token: ${{ steps.openid-auth.outputs.access_token }}
+      - name: "Summary"
+        run: |
+          echo "checksum-tag : \`${{ steps.compute-api-checksum.outputs.checksum-tag }}\`"
+          echo ""
+          echo "| Image           | Exists                                                                                             |"
+          echo "|-----------------|----------------------------------------------------------------------------------------------------|"
+          echo "|\`pcapi\`        | ${{ steps.check-pcapi-exists.outputs.tag-exists && ':white_check_mark: Yes' || ':x: No' }}         |"
+          echo "|\`pcapi-console\`| ${{ steps.check-pcapi-console-exists.outputs.tag-exists && ':white_check_mark: Yes' || ':x: No' }} |"
+
+  create-docker-images-on-registry:
+    name: Build and tag version
+    needs: check-docker-images-exist
+    if: needs.check-docker-images-exist.outputs.pcapi-exists == 'false' || needs.check-docker-images-exist.outputs.pcapi-console-exists == 'false'
+    uses: ./.github/workflows/cd_sub_create_docker_images_on_registry.yml
+    secrets: inherit
+    with:
+      base_ref: ${{ github.sha }}
+      tag_number: ${{ github.sha }}
+
+  deploy:
+    name: Deploy to testing
+    needs:
+      - check-docker-images-exist
+      - create-docker-images-on-registry
+    if: always() && !failure() && !cancelled() && needs.check-docker-images-exist.result == 'success'
+    uses: ./.github/workflows/cd_sub_deploy_app.yml
+    with:
+      environment: testing
+      environment_short_name: tst
+      app_version: ${{ github.sha }}
+      workflow_cluster_name: gke-infra-prd-eu9
+      workflow_project_id: pc-infra-prd
+      app_cluster_name: gke-backend-tst-eu9
+      app_project_id: pc-backend-tst
+      location: europe-west9
+      is_new_infra: true
+      workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
+      apply_algolia_config: true
+      deploy_api: true
+      deploy_pro: true
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      NEW_INFRA_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PRD }}
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+
+  notify-deployment-failure-on-slack:
+    name: Post failure notification on \#alertes-deploiement
+    needs: deploy
+    if: ${{ always() && failure() }}
+    uses: ./.github/workflows/slack_post_message_workflow.yml
+    with:
+      channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
+      message: ":github-failure: Le <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `master` sur `testing` a échoué"
+    secrets: inherit

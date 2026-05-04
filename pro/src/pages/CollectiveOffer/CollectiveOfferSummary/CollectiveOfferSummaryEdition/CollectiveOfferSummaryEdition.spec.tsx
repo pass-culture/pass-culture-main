@@ -16,6 +16,7 @@ import {
   managedVenueFactory,
   userOffererFactory,
 } from '@/commons/utils/factories/userOfferersFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -41,6 +42,16 @@ const renderCollectiveOfferSummaryEdition = (
   renderWithProviders(<CollectiveOfferSummaryEdition offer={offer} />, {
     user: sharedCurrentUserFactory(),
     ...options,
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: makeGetVenueResponseModel({
+          id: 1,
+          allowedOnAdage: true,
+        }),
+      },
+      ...options?.storeOverrides,
+    },
   })
 }
 

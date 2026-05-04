@@ -74,7 +74,7 @@ runs:
         service_account: ${{ steps.secrets.outputs.artifact_registry_service_account }}
 
     - name: Docker login
-      uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # v4.0.0
+      uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
       id: docker-login
       with:
         registry: ${{ inputs.registry }}
@@ -82,7 +82,7 @@ runs:
         password: ${{ steps.openid-auth.outputs.access_token }}
 
     - name: Install Cosign
-      uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
+      uses: sigstore/cosign-installer@cad07c2e89fa2edd6e2d7bab4c1aa38e53f76003 # v4.1.1
       with:
         cosign-release: "v3.0.5"
 
@@ -133,6 +133,10 @@ runs:
       run: echo "digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ steps.compute_image_name.outputs.source_image_name }})" | tee -a "$GITHUB_OUTPUT"
       shell: bash
 
+    - name: Create cosign signing config (required for cosign v3+)
+      shell: bash
+      run: cosign signing-config create -d --with-default-services=false --out=kms-only-config.json
+
     - name: Sign image with a kms key
-      run: cosign sign --key gcpkms://${{ steps.secrets.outputs.cosign_kms_key }} ${{ steps.get_digest.outputs.digest }}
+      run: cosign sign --signing-config kms-only-config.json --key gcpkms://${{ steps.secrets.outputs.cosign_kms_key }} ${{ steps.get_digest.outputs.digest }}
       shell: bash

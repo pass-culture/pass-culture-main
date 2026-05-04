@@ -1,5 +1,4 @@
 import type { Page } from '@playwright/test'
-import { request as playwrightRequest } from '@playwright/test'
 import { addDays, format } from 'date-fns'
 import type { Response } from 'playwright-core'
 
@@ -18,19 +17,16 @@ import {
   expectCollectiveOffersAreFound,
   expectSuccessSnackbar,
 } from './helpers/assertions'
-import { setFeatureFlags } from './helpers/features'
+import { navigateToHubAndPickVenue } from './helpers/navigateToHubAndPickVenue'
 import {
   isGetCollectiveOffersBookableResponse,
   isGetCollectiveOffersTemplateResponse,
   isGetDomainsResponse,
   isGetInstitutionalRedactorsResponse,
-  isGetVenuesReponse,
   isPostCollectiveStocksResponse,
 } from './helpers/requests'
-import { BASE_API_URL } from './helpers/sandbox'
 
 const newOfferName = 'Ma nouvelle offre collective créée'
-const otherVenueName = 'Mon Lieu B'
 const venueName = 'Mon Lieu A'
 const venueFullAddress = '1 boulevard Poissonnière, 75002, Paris'
 const defaultDate = addDays(new Date(), 2)
@@ -51,12 +47,7 @@ const commonOfferData = {
 
 test.describe('Create collective offers', () => {
   test.beforeEach(async ({ authenticatedPage: page }) => {
-    const requestContext = await playwrightRequest.newContext({
-      baseURL: BASE_API_URL,
-    })
-    await setFeatureFlags(requestContext, [
-      { name: 'WIP_SWITCH_VENUE', isActive: false },
-    ])
+    await navigateToHubAndPickVenue(page, venueName)
     await page.goto('/offre/creation')
     await mockAddressSearch(page)
   })
@@ -366,19 +357,6 @@ async function fillBasicOFferForm(page: Page) {
     page.waitForResponse(isGetDomainsResponse),
     page.getByText('Étape suivante').click(),
   ])
-
-  await page.waitForResponse(isGetVenuesReponse)
-
-  await page.getByLabel(/Structure/).selectOption(otherVenueName)
-  await page.getByLabel(/Structure/).selectOption(otherVenueName)
-  await expect(
-    page.getByText('Mon Lieu B - 1 boulevard Poissonnière 75002 Paris')
-  ).toBeVisible()
-
-  await page.getByLabel(/Structure/).selectOption(venueName)
-  await expect(
-    page.getByText('Mon Lieu A - 1 boulevard Poissonnière 75002 Paris')
-  ).toBeVisible()
 
   await page.getByLabel('Domaines artistiques').click()
   await page.getByLabel('Danse').click()

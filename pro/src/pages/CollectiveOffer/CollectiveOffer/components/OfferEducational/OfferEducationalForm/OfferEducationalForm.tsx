@@ -17,11 +17,8 @@ import {
   type OfferEducationalFormValues,
 } from '@/commons/core/OfferEducational/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
-import type { SelectOption } from '@/commons/custom_types/form'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
-import { sortByLabel } from '@/commons/utils/strings'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { BannerPublicApi } from '@/components/BannerPublicApi/BannerPublicApi'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -43,7 +40,6 @@ import { FormLocation } from './FormLocation/FormLocation'
 import { FormNotifications } from './FormNotifications/FormNotifications'
 import { FormOfferType } from './FormOfferType/FormOfferType'
 import { FormParticipants } from './FormParticipants/FormParticipants'
-import { FormVenue } from './FormVenue/FormVenue'
 import styles from './OfferEducationalForm.module.scss'
 
 export type OfferEducationalFormProps = {
@@ -54,7 +50,6 @@ export type OfferEducationalFormProps = {
   imageOffer: ImageUploaderOfferProps['imageOffer']
   onImageUpload: ImageUploaderOfferProps['onImageUpload']
   onImageDelete: ImageUploaderOfferProps['onImageDelete']
-  isOfferCreated?: boolean
   offer?:
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
@@ -70,18 +65,14 @@ export const OfferEducationalForm = ({
   imageOffer,
   onImageUpload,
   onImageDelete,
-  isOfferCreated = false,
   offer,
   isSubmitting,
   venues,
 }: OfferEducationalFormProps): JSX.Element => {
   const { logEvent } = useAnalytics()
-  const [venuesOptions, setVenuesOptions] = useState<SelectOption[]>([])
   const [isEligible, setIsEligible] = useState<boolean>()
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
-  const { setValue, formState, watch } =
-    useFormContext<OfferEducationalFormValues>()
+  const { formState, watch } = useFormContext<OfferEducationalFormValues>()
 
   const canEditDetails =
     !offer ||
@@ -93,50 +84,16 @@ export const OfferEducationalForm = ({
     )
 
   useEffect(() => {
-    function handleOffererValues() {
-      if (userOfferer) {
-        if (mode === Mode.EDITION || mode === Mode.READ_ONLY) {
-          setIsEligible(true)
-        } else {
-          setIsEligible(userOfferer.allowedOnAdage)
-        }
-
-        if (withSwitchVenueFeature) {
-          return
-        }
-
-        let newVenuesOptions = userOfferer.managedVenues.map((item) => ({
-          value: item['id'].toString(),
-          label: item['name'] as string,
-        }))
-        if (newVenuesOptions.length > 1) {
-          newVenuesOptions = [
-            {
-              value: '',
-              label: `Sélectionner une structure`,
-            },
-            ...sortByLabel(newVenuesOptions),
-          ]
-        }
-        setVenuesOptions(newVenuesOptions)
-        if (newVenuesOptions.length === 1) {
-          setValue('venueId', newVenuesOptions[0].value)
-        } else {
-          setValue('venueId', formState.defaultValues?.venueId || '')
-        }
+    if (userOfferer) {
+      if (mode === Mode.EDITION || mode === Mode.READ_ONLY) {
+        setIsEligible(true)
       } else {
-        setIsEligible(false)
-        setVenuesOptions([])
+        setIsEligible(userOfferer.allowedOnAdage)
       }
+    } else {
+      setIsEligible(false)
     }
-
-    // as the call is async, it can create refresh issues.
-    // This is to prevent these issues
-    setTimeout(() => {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      handleOffererValues()
-    })
-  }, [userOfferer?.id])
+  }, [userOfferer, mode])
 
   const logOnImageDropOrSelected = () => {
     logEvent(Events.DRAG_OR_SELECTED_IMAGE, {
@@ -160,17 +117,6 @@ export const OfferEducationalForm = ({
         ) : (
           <>
             <FormLayout.MandatoryInfo />
-            {!withSwitchVenueFeature && venuesOptions.length > 1 && (
-              <FormVenue
-                isEligible={isEligible}
-                disableForm={!canEditDetails}
-                isOfferCreated={isOfferCreated}
-                userOfferer={userOfferer}
-                venuesOptions={venuesOptions}
-                offer={offer}
-                venues={venues}
-              />
-            )}
             {watch('offererId') && watch('venueId') && isEligible ? (
               <>
                 <FormOfferType

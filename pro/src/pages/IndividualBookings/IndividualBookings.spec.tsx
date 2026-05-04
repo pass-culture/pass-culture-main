@@ -7,16 +7,12 @@ import {
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
-import {
-  ApiError,
-  type GetOffererAddressResponseModel,
-  type GetVenueAddressResponseModel,
+import type {
+  GetOffererAddressResponseModel,
+  GetVenueAddressResponseModel,
 } from '@/apiClient/v1'
-import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import { ALL_OFFERER_ADDRESS_OPTION } from '@/commons/core/Offers/constants'
-import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import type { DeepPartial } from '@/commons/custom_types/utils'
 import type { RootState } from '@/commons/store/store'
 import {
@@ -357,58 +353,6 @@ describe('components | BookingsRecap | Pro user', () => {
     ).toBeInTheDocument()
   })
 
-  it('should have a CSV download button', async () => {
-    renderBookingsRecap()
-    await waitForCompleteLoading()
-
-    expect(
-      screen.getByRole('button', { name: 'Télécharger' })
-    ).toBeInTheDocument()
-  })
-
-  it('should fetch API for CSV when clicking on the download button and disable button while its loading', async () => {
-    renderBookingsRecap()
-    await waitForCompleteLoading()
-
-    // submit utils method wait for button to become disabled then enabled.
-    await userEvent.click(screen.getByRole('button', { name: 'Télécharger' }))
-    const downloadSubButton = await screen.findByRole('menuitem', {
-      name: 'Fichier CSV (.csv)',
-    })
-    await userEvent.click(downloadSubButton)
-
-    expect(api.getBookingsCsv).toHaveBeenCalledWith(
-      1,
-      1,
-      null,
-      null,
-      null,
-      DEFAULT_PRE_FILTERS.bookingStatusFilter,
-      DEFAULT_PRE_FILTERS.bookingBeginningDate,
-      DEFAULT_PRE_FILTERS.bookingEndingDate,
-      null
-    )
-  })
-
-  it('should display an error message on CSV download when API returns a status other than 200', async () => {
-    vi.spyOn(api, 'getBookingsCsv').mockRejectedValueOnce(
-      new ApiError({} as ApiRequestOptions, { status: 400 } as ApiResult, '')
-    )
-
-    renderBookingsRecap()
-    await waitForCompleteLoading()
-
-    await userEvent.click(screen.getByRole('button', { name: 'Télécharger' }))
-    const downloadSubButton = await screen.findByRole('menuitem', {
-      name: 'Fichier CSV (.csv)',
-    })
-    await userEvent.click(downloadSubButton)
-
-    expect(
-      await screen.findByText(GET_DATA_ERROR_MESSAGE, { exact: false })
-    ).toBeInTheDocument()
-  })
-
   it('should fetch bookings for the filtered venue as many times as the number of pages', async () => {
     const bookings1 = bookingRecapFactory()
     const bookings2 = bookingRecapFactory()
@@ -717,7 +661,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     await userEvent.selectOptions(
       screen.getByLabelText('Localisation'),
-      '1 Rue de paris 75001 New York'
+      'ma venue - 1 Rue de paris 75001 New York'
     )
 
     const informationalMessage = await screen.findByTestId(
@@ -732,7 +676,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     await userEvent.selectOptions(
       screen.getByLabelText('Localisation'),
-      '1 Rue de paris 75001 New York'
+      'ma venue - 1 Rue de paris 75001 New York'
     )
 
     await userEvent.selectOptions(
@@ -752,7 +696,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     await userEvent.selectOptions(
       screen.getByLabelText('Localisation'),
-      '1 Rue de paris 75001 New York'
+      'ma venue - 1 Rue de paris 75001 New York'
     )
 
     const informationalMessage = screen.queryByText(
@@ -776,142 +720,95 @@ describe('components | BookingsRecap | Pro user', () => {
       })
     ).toBeDisabled()
     expect(
-      screen.getByRole('button', {
-        name: 'Télécharger',
-      })
-    ).toBeDisabled()
-    expect(
       await screen.findByText('Vous n’avez aucune réservation pour le moment')
     ).toBeInTheDocument()
   })
-
-  it('should fetch API for CSV using selectedOffererId', async () => {
-    renderBookingsRecap({
-      offerer: currentOffererFactory({ currentOfferer: { id: 42 } }),
-    })
+  it('should not render downloads moved banner or filters without search', async () => {
+    renderBookingsRecap()
     await waitForCompleteLoading()
 
-    // submit utils method wait for button to become disabled then enabled.
-    await userEvent.click(screen.getByRole('button', { name: 'Télécharger' }))
-    const downloadSubButton = await screen.findByRole('menuitem', {
-      name: 'Fichier CSV (.csv)',
-    })
-    await userEvent.click(downloadSubButton)
+    expect(
+      screen.queryByText(
+        'Télécharger vos réservations dans l’onglet “Données d’activité” de votre Espace Administration accessible en haut à droite.'
+      )
+    ).not.toBeInTheDocument()
 
-    expect(api.getBookingsCsv).toHaveBeenCalledWith(
-      42,
-      1,
-      null,
-      null,
-      null,
-      DEFAULT_PRE_FILTERS.bookingStatusFilter,
-      DEFAULT_PRE_FILTERS.bookingBeginningDate,
-      DEFAULT_PRE_FILTERS.bookingEndingDate,
-      null
-    )
+    expect(screen.queryByLabelText('Critère')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Recherche')).not.toBeInTheDocument()
   })
-  describe('with WIP_SWITCH_VENUE feature flag', () => {
-    it('should not render downloads moved banner or filters without search', async () => {
-      renderBookingsRecap({}, ['WIP_SWITCH_VENUE'])
-      await waitForCompleteLoading()
 
-      expect(
-        screen.queryByText(
-          'Télécharger vos réservations dans l’onglet “Données d’activité” de votre Espace Administration accessible en haut à droite.'
-        )
-      ).not.toBeInTheDocument()
-
-      expect(screen.queryByLabelText('Critère')).not.toBeInTheDocument()
-      expect(screen.queryByLabelText('Recherche')).not.toBeInTheDocument()
+  it('should render downloads moved banner and filters after search', async () => {
+    const bookingRecap = bookingRecapFactory()
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
+      page: 1,
+      pages: 1,
+      total: 1,
+      bookingsRecap: [bookingRecap],
     })
+    renderBookingsRecap()
+    await waitForCompleteLoading()
 
-    it('should render downloads moved banner and filters after search', async () => {
-      const bookingRecap = bookingRecapFactory()
-      vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Rechercher les réservations' })
+    )
+
+    await screen.findAllByText(bookingRecap.stock.offerName)
+
+    expect(
+      screen.queryByText(
+        'Télécharger vos réservations dans l’onglet “Données d’activité” de votre Espace Administration accessible en haut à droite.'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should fetch bookings using both offererId and venueId when clicking "Afficher"', async () => {
+    const bookingRecap = bookingRecapFactory()
+    const spyGetBookingsPro = vi
+      .spyOn(api, 'getBookingsPro')
+      .mockResolvedValue({
         page: 1,
         pages: 1,
         total: 1,
         bookingsRecap: [bookingRecap],
       })
-      renderBookingsRecap({}, ['WIP_SWITCH_VENUE'])
-      await waitForCompleteLoading()
+    renderBookingsRecap()
+    await waitForCompleteLoading()
 
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Rechercher les réservations' })
-      )
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Rechercher les réservations' })
+    )
 
-      await screen.findAllByText(bookingRecap.stock.offerName)
+    await screen.findAllByText(bookingRecap.stock.offerName)
+    const callArgs = spyGetBookingsPro.mock.calls[0]
+    expect(callArgs[0]).toBe('1')
+    expect(callArgs[2]).toBe(defaultGetOffererVenueResponseModel.id.toString())
+  })
 
-      expect(
-        screen.queryByText(
-          'Télécharger vos réservations dans l’onglet “Données d’activité” de votre Espace Administration accessible en haut à droite.'
-        )
-      ).toBeInTheDocument()
-
-      expect(screen.queryByLabelText('Critère')).toBeInTheDocument()
-      expect(screen.queryByLabelText('Recherche')).toBeInTheDocument()
+  it('should reset filters to venue-scoped defaults', async () => {
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
+      page: 1,
+      pages: 0,
+      total: 0,
+      bookingsRecap: [],
     })
+    renderBookingsRecap()
+    await waitForCompleteLoading()
 
-    it('should not show download dropdown', async () => {
-      renderBookingsRecap({}, ['WIP_SWITCH_VENUE'])
-      await waitForCompleteLoading()
+    await userEvent.selectOptions(
+      screen.getByLabelText('Localisation'),
+      offererAddress[0].id.toString()
+    )
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Rechercher les réservations' })
+    )
 
-      expect(
-        screen.queryByRole('button', { name: 'Télécharger' })
-      ).not.toBeInTheDocument()
-    })
+    const resetButton = await screen.findByText(
+      'Afficher toutes les réservations'
+    )
+    await userEvent.click(resetButton)
 
-    it('should fetch bookings using both offererId and venueId when clicking "Afficher"', async () => {
-      const bookingRecap = bookingRecapFactory()
-      const spyGetBookingsPro = vi
-        .spyOn(api, 'getBookingsPro')
-        .mockResolvedValue({
-          page: 1,
-          pages: 1,
-          total: 1,
-          bookingsRecap: [bookingRecap],
-        })
-      renderBookingsRecap({}, ['WIP_SWITCH_VENUE'])
-      await waitForCompleteLoading()
-
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Rechercher les réservations' })
-      )
-
-      await screen.findAllByText(bookingRecap.stock.offerName)
-      const callArgs = spyGetBookingsPro.mock.calls[0]
-      expect(callArgs[0]).toBe('1')
-      expect(callArgs[2]).toBe(
-        defaultGetOffererVenueResponseModel.id.toString()
-      )
-    })
-
-    it('should reset filters to venue-scoped defaults', async () => {
-      vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
-        page: 1,
-        pages: 0,
-        total: 0,
-        bookingsRecap: [],
-      })
-      renderBookingsRecap({}, ['WIP_SWITCH_VENUE'])
-      await waitForCompleteLoading()
-
-      await userEvent.selectOptions(
-        screen.getByLabelText('Localisation'),
-        offererAddress[0].id.toString()
-      )
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Rechercher les réservations' })
-      )
-
-      const resetButton = await screen.findByText(
-        'Afficher toutes les réservations'
-      )
-      await userEvent.click(resetButton)
-
-      expect(screen.getByLabelText('Localisation')).toHaveValue(
-        DEFAULT_PRE_FILTERS.offererAddressId
-      )
-    })
+    expect(screen.getByLabelText('Localisation')).toHaveValue(
+      DEFAULT_PRE_FILTERS.offererAddressId
+    )
   })
 })

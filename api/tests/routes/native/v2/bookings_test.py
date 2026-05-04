@@ -196,6 +196,109 @@ class GetBookingsTest:
             "totalAmount": 1010,
         }
 
+    def test_get_bookings_sorts_ended_bookings_by_date_desc(self, client):
+        user = users_factories.BeneficiaryFactory(email=self.identifier, age=18)
+
+        base_dt = datetime(2023, 3, 2)
+        older_ended = booking_factories.UsedBookingFactory(
+            user=user,
+            displayAsEnded=True,
+            dateUsed=base_dt,
+            stock__beginningDatetime=base_dt,
+        )
+        newer_ended = booking_factories.UsedBookingFactory(
+            user=user,
+            displayAsEnded=True,
+            dateUsed=base_dt + timedelta(days=1),
+            stock__beginningDatetime=base_dt + timedelta(days=1),
+        )
+
+        client.with_token(user)
+        with assert_num_queries(2):  # user, booking
+            response = client.get("/native/v2/bookings")
+
+        assert response.status_code == 200
+        ended_ids = [b["id"] for b in response.json["endedBookings"]]
+        assert ended_ids == [newer_ended.id, older_ended.id]
+
+    def test_get_bookings_list_sorts_ended_bookings(self, client):
+        user = users_factories.BeneficiaryFactory(email=self.identifier, age=18)
+
+        base_dt = datetime(2023, 3, 2)
+        booking_with_beginning_date = booking_factories.UsedBookingFactory(
+            user=user,
+            cancellation_date=None,
+            dateUsed=None,
+            stock__beginningDatetime=base_dt,
+        )
+        booking_with_date_used = booking_factories.UsedBookingFactory(
+            user=user,
+            cancellation_date=None,
+            dateUsed=base_dt + timedelta(days=1),
+            stock__beginningDatetime=None,
+        )
+        booking_with_cancellation_date = booking_factories.CancelledBookingFactory(
+            user=user,
+            cancellation_date=base_dt + timedelta(days=2),
+            dateUsed=None,
+            stock__beginningDatetime=None,
+        )
+
+        client.with_token(user)
+        with assert_num_queries(2):  # user, booking
+            response = client.get("/native/v2/bookings")
+
+        assert response.status_code == 200
+        booking_ids = [b["id"] for b in response.json["endedBookings"]]
+        assert booking_ids == [
+            booking_with_cancellation_date.id,
+            booking_with_date_used.id,
+            booking_with_beginning_date.id,
+        ]
+
+    def test_get_bookings_list_sorts_ongoing_bookings(self, client):
+        user = users_factories.BeneficiaryFactory(email=self.identifier, age=18)
+
+        base_dt = datetime(2023, 3, 2)
+        booking_with_expiration_date = booking_factories.BookingFactory(
+            user=user,
+            dateCreated=base_dt,
+            stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,  # SUPPORT_PHYSIQUE_FILM bookings can expire => expirationDate is not None and expirationDate is dateCreated + BOOKINGS_AUTO_EXPIRY_DELAY
+        )
+        booking_with_beginning_date = booking_factories.BookingFactory(
+            user=user,
+            stock__beginningDatetime=base_dt,
+            stock__offer__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,  # LIVRE_NUMERIQUE bookings can't expire => expirationDate is None
+        )
+        booking_without_date = booking_factories.BookingFactory(
+            user=user,
+            stock__beginningDatetime=None,
+            stock__offer__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
+        )
+        booking_without_date_with_higher_id = booking_factories.BookingFactory(
+            user=user,
+            stock__beginningDatetime=None,
+            stock__offer__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
+        )
+
+        assert booking_with_expiration_date.expirationDate is not None
+        assert booking_with_expiration_date.expirationDate > base_dt
+        assert booking_with_beginning_date.expirationDate is None
+        assert booking_without_date_with_higher_id.id > booking_without_date.id
+
+        client.with_token(user)
+        with assert_num_queries(2):  # user + booking
+            response = client.get("/native/v2/bookings")
+
+        assert response.status_code == 200
+        booking_ids = [b["id"] for b in response.json["ongoingBookings"]]
+        assert booking_ids == [
+            booking_with_beginning_date.id,
+            booking_with_expiration_date.id,
+            booking_without_date_with_higher_id.id,
+            booking_without_date.id,
+        ]
+
     def test_get_bookings_returns_user_reaction(self, client):
         now = date_utils.get_naive_utc_now()
         stock = offers_factories.EventStockFactory()
@@ -236,7 +339,7 @@ class GetBookingsTest:
         )
         ReactionFactory(reactionType=ReactionTypeEnum.LIKE, user=ongoing_booking.user, product=stock.offer.product)
         client = client.with_token(ongoing_booking.user)
-        with assert_num_queries(3, expire_session=False):
+        with assert_num_queries(4):
             # select user, booking, offer
             response = client.get("/native/v2/bookings")
 
@@ -517,6 +620,49 @@ class GetBookingsListTest:
             "totalAmount": int(ongoing_booking.total_amount * 100),
         }
 
+    def test_get_bookings_list_sorts_ongoing_bookings(self, client):
+        user = users_factories.BeneficiaryFactory(email=self.identifier, age=18)
+
+        base_dt = datetime(2023, 3, 2)
+        booking_with_expiration_date = booking_factories.BookingFactory(
+            user=user,
+            dateCreated=base_dt,
+            stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,  # SUPPORT_PHYSIQUE_FILM bookings can expire => expirationDate is not None and expirationDate is dateCreated + BOOKINGS_AUTO_EXPIRY_DELAY
+        )
+        booking_with_beginning_date = booking_factories.BookingFactory(
+            user=user,
+            stock__beginningDatetime=base_dt,
+            stock__offer__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,  # LIVRE_NUMERIQUE bookings can't expire => expirationDate is None
+        )
+        booking_without_date = booking_factories.BookingFactory(
+            user=user,
+            stock__beginningDatetime=None,
+            stock__offer__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
+        )
+        booking_without_date_with_higher_id = booking_factories.BookingFactory(
+            user=user,
+            stock__beginningDatetime=None,
+            stock__offer__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
+        )
+
+        assert booking_with_expiration_date.expirationDate is not None
+        assert booking_with_expiration_date.expirationDate > base_dt
+        assert booking_with_beginning_date.expirationDate is None
+        assert booking_without_date_with_higher_id.id > booking_without_date.id
+
+        client.with_token(user)
+        with assert_num_queries(2):  # user + booking
+            response = client.get("/native/v2/bookings/ongoing")
+
+        assert response.status_code == 200
+        booking_ids = [b["id"] for b in response.json["bookings"]]
+        assert booking_ids == [
+            booking_with_beginning_date.id,
+            booking_with_expiration_date.id,
+            booking_without_date_with_higher_id.id,
+            booking_without_date.id,
+        ]
+
     def test_get_bookings_list_returns_ended_bookings(self, client):
         user = users_factories.BeneficiaryFactory(email=self.identifier, age=18)
 
@@ -622,6 +768,49 @@ class GetBookingsListTest:
             "userReaction": ended_booking.userReaction.value,
             "totalAmount": int(ended_booking.total_amount * 100),
         }
+
+    def test_get_bookings_list_sorts_ended_bookings(self, client):
+        user = users_factories.BeneficiaryFactory(email=self.identifier, age=18)
+
+        base_dt = datetime(2023, 3, 2)
+        booking_with_beginning_date = booking_factories.UsedBookingFactory(
+            user=user,
+            cancellation_date=None,
+            dateUsed=None,
+            stock__beginningDatetime=base_dt,
+        )
+        booking_with_date_used = booking_factories.UsedBookingFactory(
+            user=user,
+            cancellation_date=None,
+            dateUsed=base_dt + timedelta(days=1),
+            stock__beginningDatetime=None,
+        )
+        booking_with_cancellation_date = booking_factories.CancelledBookingFactory(
+            user=user,
+            cancellation_date=base_dt + timedelta(days=2),
+            dateUsed=None,
+            stock__beginningDatetime=None,
+        )
+        booking_without_date = booking_factories.BookingFactory(
+            user=user,
+            displayAsEnded=True,
+            cancellation_date=None,
+            dateUsed=None,
+            stock__beginningDatetime=None,
+        )
+
+        client.with_token(user)
+        with assert_num_queries(2):  # user, booking
+            response = client.get("/native/v2/bookings/ended")
+
+        assert response.status_code == 200
+        booking_ids = [b["id"] for b in response.json["bookings"]]
+        assert booking_ids == [
+            booking_with_cancellation_date.id,
+            booking_with_date_used.id,
+            booking_with_beginning_date.id,
+            booking_without_date.id,
+        ]
 
     booking_start_date = datetime(2023, 3, 2)
 
@@ -993,45 +1182,22 @@ class GetBookingTicketTest:
         assert ticket["withdrawal"]["type"] == "on_site"
         assert ticket["withdrawal"]["delay"] == 60 * 30
 
-    def test_get_booking_no_ticket(self, client):
-        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        booking = booking_factories.BookingFactory(
-            user=user,
-            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
-            stock__offer__withdrawalType=offer_models.WithdrawalTypeEnum.NO_TICKET,
-        )
-
-        client.with_token(user)
-        with assert_num_queries(2):  # user + booking
-            response = client.get("/native/v2/bookings")
-            assert response.status_code == 200
-
-        ticket = response.json["ongoingBookings"][0]["ticket"]
-        assert ticket["display"] == "voucher"
-        assert ticket["voucher"] == {"data": f"PASSCULTURE:v3;TOKEN:{booking.token}"}
-        assert ticket["token"] == {
-            "data": booking.token,
-        }
-        assert ticket["activationCode"] is None
-
     def test_get_booking_event_no_ticket(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         booking = booking_factories.BookingFactory(
             user=user,
-            stock__offer__subcategoryId=subcategories.VISITE_GUIDEE.id,
+            stock__offer__subcategoryId=subcategories.CONCERT.id,
             stock__offer__withdrawalType=offer_models.WithdrawalTypeEnum.NO_TICKET,
         )
 
         client.with_token(user)
-        with assert_num_queries(2):  # user + booking
-            response = client.get("/native/v2/bookings")
+        with assert_num_queries(3):  # user + bookings + booking
+            response = client.get(f"/native/v2/bookings/{booking.id}")
             assert response.status_code == 200
 
-        ticket = response.json["ongoingBookings"][0]["ticket"]
-        assert ticket["display"] == "ticket"
-        assert ticket["token"] == {
-            "data": booking.token,
-        }
+        ticket = response.json["ticket"]
+        assert ticket["display"] == "no_ticket"
+        assert ticket["token"] is None
         assert ticket["voucher"] is None
         assert ticket["activationCode"] is None
 
@@ -1043,8 +1209,9 @@ class GetBookingTicketTest:
         )
 
         client.with_token(user)
-        response = client.get(f"/native/v2/bookings/{booking.id}")
-        assert response.status_code == 200
+        with assert_num_queries(3):  # user + bookings + booking
+            response = client.get(f"/native/v2/bookings/{booking.id}")
+            assert response.status_code == 200
 
         ticket = response.json["ticket"]
         assert ticket["display"] == "voucher"
@@ -1064,7 +1231,7 @@ class GetBookingTicketTest:
     def test_get_booking_ticket_by_email(self, client, withdrawal_delay, delta, display):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         beginningDatetime = date_utils.get_naive_utc_now() + timedelta(days=delta)
-        booking_factories.BookingFactory(
+        booking = booking_factories.BookingFactory(
             user=user,
             stock__offer__subcategoryId=subcategories.CONCERT.id,
             stock__offer__withdrawalType=offer_models.WithdrawalTypeEnum.BY_EMAIL,
@@ -1073,11 +1240,11 @@ class GetBookingTicketTest:
         )
 
         client.with_token(user)
-        with assert_num_queries(2):  # user + booking
-            response = client.get("/native/v2/bookings")
+        with assert_num_queries(3):  # user + bookings + booking
+            response = client.get(f"/native/v2/bookings/{booking.id}")
             assert response.status_code == 200
 
-        ticket = response.json["ongoingBookings"][0]["ticket"]
+        ticket = response.json["ticket"]
         assert ticket["token"] is None
         assert ticket["voucher"] is None
         assert ticket["display"] == display
@@ -1086,22 +1253,21 @@ class GetBookingTicketTest:
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 
         digital_stock = offers_factories.StockWithActivationCodesFactory()
-        booking_factories.BookingFactory(
+        booking = booking_factories.BookingFactory(
             user=user,
             stock=digital_stock,
             activationCode=digital_stock.activationCodes[0],
         )
 
         client.with_token(user)
-        with assert_num_queries(2):  # user + booking
-            response = client.get("/native/v2/bookings")
+        with assert_num_queries(3):  # user + bookings + booking
+            response = client.get(f"/native/v2/bookings/{booking.id}")
             assert response.status_code == 200
 
-        ticket = response.json["ongoingBookings"][0]["ticket"]
+        ticket = response.json["ticket"]
         assert ticket["token"] is None
         assert ticket["voucher"] is None
-        booking_id = response.json["ongoingBookings"][0]["id"]
-        booking_activation_code = next(code for code in digital_stock.activationCodes if code.bookingId == booking_id)
+        booking_activation_code = next(code for code in digital_stock.activationCodes if code.bookingId == booking.id)
         assert ticket["activationCode"] == {
             "code": booking_activation_code.code,
             "expirationDate": None,
@@ -1149,52 +1315,44 @@ class GetBookingTicketTest:
         assert ticket["voucher"] == {"data": f"PASSCULTURE:v3;TOKEN:{booking.token}"}
         assert ticket["display"] == "voucher"
 
-    @pytest.mark.parametrize(
-        "subcategory,withdrawal_type,voucher,display",
-        [
-            (subcategories.CONCERT.id, offer_models.WithdrawalTypeEnum.ON_SITE, False, "ticket"),
-            (
-                subcategories.EVENEMENT_CINE.id,
-                offer_models.WithdrawalTypeEnum.ON_SITE,
-                False,
-                "ticket",
-            ),
-            (
-                subcategories.SEANCE_CINE.id,
-                offer_models.WithdrawalTypeEnum.ON_SITE,
-                True,
-                "qr_code",
-            ),
-            (
-                subcategories.FESTIVAL_MUSIQUE.id,
-                offer_models.WithdrawalTypeEnum.ON_SITE,
-                False,
-                "ticket",
-            ),
-        ],
-    )
-    def test_get_internal_event_ticket(self, client, subcategory, withdrawal_type, voucher, display):
+    def test_get_internal_event_ticket(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         booking = booking_factories.BookingFactory(
             user=user,
-            stock__offer__subcategoryId=subcategory,
-            stock__offer__withdrawalType=withdrawal_type,
+            stock__offer__subcategoryId=subcategories.CONCERT.id,
+            stock__offer__withdrawalType=offer_models.WithdrawalTypeEnum.ON_SITE,
         )
 
         client.with_token(user)
-        with assert_num_queries(2):  # user + booking
-            response = client.get("/native/v2/bookings")
+        with assert_num_queries(3):  # user + bookings + booking
+            response = client.get(f"/native/v2/bookings/{booking.id}")
             assert response.status_code == 200
 
-        ticket = response.json["ongoingBookings"][0]["ticket"]
-        if voucher:
-            assert ticket["voucher"] == {"data": f"PASSCULTURE:v3;TOKEN:{booking.token}"}
-        else:
-            assert ticket["voucher"] == None
+        ticket = response.json["ticket"]
+
+        assert ticket["voucher"] is None
         assert ticket["token"] == {
             "data": booking.token,
         }
-        assert ticket["display"] == display
+        assert ticket["display"] == "ticket"
+
+    def test_get_physical_event_no_ticket(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        booking = booking_factories.BookingFactory(
+            user=user,
+            stock__offer__subcategoryId=subcategories.CONCERT.id,
+            stock__offer__withdrawalType=offer_models.WithdrawalTypeEnum.NO_TICKET,
+        )
+
+        client.with_token(user)
+        with assert_num_queries(3):  # user + bookings + booking
+            response = client.get(f"/native/v2/bookings/{booking.id}")
+            assert response.status_code == 200
+
+        ticket = response.json["ticket"]
+        assert ticket["token"] is None
+        assert ticket["voucher"] is None
+        assert ticket["display"] == "no_ticket"
 
     @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_get_external_event_ticket_visible(self, client):
@@ -1215,11 +1373,11 @@ class GetBookingTicketTest:
         ExternalBookingFactory(booking=booking, barcode="111111112", seat="A_2")
 
         client.with_token(user)
-        with assert_num_queries(2):  # user + booking
-            response = client.get("/native/v2/bookings")
+        with assert_num_queries(3):  # user + bookings + booking
+            response = client.get(f"/native/v2/bookings/{booking.id}")
             assert response.status_code == 200
 
-        ticket = response.json["ongoingBookings"][0]["ticket"]
+        ticket = response.json["ticket"]
         response_data = sorted(ticket["externalBooking"]["data"], key=lambda x: x["seat"])
         assert response_data == [
             {"barcode": "111111111", "seat": "A_1"},
@@ -1228,7 +1386,7 @@ class GetBookingTicketTest:
 
         assert ticket["token"] is None
         assert ticket["voucher"] is None
-        assert ticket["display"] == "qr_code"
+        assert ticket["display"] == "external_ticket"
 
     @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_get_external_event_ticket_hidden(self, client):
@@ -1249,15 +1407,34 @@ class GetBookingTicketTest:
         ExternalBookingFactory(booking=booking, barcode="111111112", seat="A_2")
 
         client.with_token(user)
-        with assert_num_queries(2):  # user + booking
-            response = client.get("/native/v2/bookings")
+        with assert_num_queries(3):  # user + bookings + booking
+            response = client.get(f"/native/v2/bookings/{booking.id}")
             assert response.status_code == 200
 
-        ticket = response.json["ongoingBookings"][0]["ticket"]
+        ticket = response.json["ticket"]
         assert ticket["externalBooking"] == {
             "data": None,
         }
 
         assert ticket["token"] is None
         assert ticket["voucher"] is None
-        assert ticket["display"] == "not_visible"
+        assert ticket["display"] == "hidden_external_ticket"
+
+    def test_get_cinema_voucher(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        booking = booking_factories.BookingFactory(
+            user=user,
+            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
+        )
+
+        client.with_token(user)
+        with assert_num_queries(3):  # user + bookings + booking
+            response = client.get(f"/native/v2/bookings/{booking.id}")
+            assert response.status_code == 200
+
+        ticket = response.json["ticket"]
+        assert ticket["token"] == {
+            "data": booking.token,
+        }
+        assert ticket["voucher"] == {"data": f"PASSCULTURE:v3;TOKEN:{booking.token}"}
+        assert ticket["display"] == "cinema_voucher"

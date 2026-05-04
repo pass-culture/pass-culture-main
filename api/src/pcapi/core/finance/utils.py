@@ -98,7 +98,7 @@ def install_template_filters(app: Flask) -> None:
 
 def format_currency_for_backoffice(amount: float | decimal.Decimal, use_xpf: bool = False) -> str:
     if use_xpf:
-        return f"{euros_to_xpf(amount)} CFP".replace(",", "\u202f")
+        return f"{euros_to_xpf(amount):,.0f} CFP".replace(",", "\u202f")
     return f"{amount:,.2f} €".replace(",", "\u202f").replace(".", ",")
 
 

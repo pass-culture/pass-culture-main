@@ -16,6 +16,7 @@ export type PostOfferBodyModel = {
   durationMinutes?: number | null;
   externalTicketOfficeUrl?: string | null;
   extraData?: Record<string, any> | null;
+  hasCulturalOutreachClaim?: boolean | null;
   isDuo?: boolean | null;
   isNational?: boolean | null;
   mentalDisabilityCompliant: boolean;

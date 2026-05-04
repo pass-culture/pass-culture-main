@@ -37,6 +37,8 @@ const defaultBankAccountResponseModel: BankAccountResponseModel = {
   status: BankAccountApplicationStatus.ACCEPTE,
 }
 
+const user = sharedCurrentUserFactory()
+
 function renderBankInformations({
   hasValidBankAccount = false,
   hasPendingBankAccount = false,
@@ -50,12 +52,14 @@ function renderBankInformations({
       <SnackBarContainer />
     </>,
     {
-      user: sharedCurrentUserFactory(),
-      initialRouterEntries: ['/remboursements/informations-bancaires'],
+      user,
+      initialRouterEntries: [
+        '/administration/remboursements/informations-bancaires',
+      ],
       storeOverrides: {
-        user: { currentUser: sharedCurrentUserFactory() },
-        offerer: {
-          currentOfferer: {
+        user: {
+          currentUser: user,
+          selectedAdminOfferer: {
             ...defaultGetOffererResponseModel,
             hasValidBankAccount,
             hasPendingBankAccount,
@@ -327,7 +331,7 @@ describe('BankInformations page', () => {
     expect(mockLogEvent).toHaveBeenCalledWith(
       BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT,
       {
-        from: '/remboursements/informations-bancaires',
+        from: '/administration/remboursements/informations-bancaires',
         offererId: 1,
       }
     )
@@ -388,14 +392,14 @@ describe('BankInformations page', () => {
       </>,
       {
         user: sharedCurrentUserFactory(),
-        initialRouterEntries: ['/remboursements/informations-bancaires'],
+        initialRouterEntries: [
+          '/administration/remboursements/informations-bancaires',
+        ],
         storeOverrides: {
           user: {
             currentUser: sharedCurrentUserFactory(),
             selectedPartnerVenue: venue,
-          },
-          offerer: {
-            currentOfferer: {
+            selectedAdminOfferer: {
               ...defaultGetOffererResponseModel,
               hasValidBankAccount: true,
             },

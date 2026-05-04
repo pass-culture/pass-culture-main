@@ -62,10 +62,10 @@ OFFER_LOAD_OPTIONS = typing.Iterable[
         "stock",
         "venue",
         "meta_data",
-        "openingHours",
         "highlight_requests",
         "artists",
         "pro_advice",
+        "cultural_outreach",
     ]
 ]
 
@@ -686,10 +686,17 @@ def get_offers_by_filters(
             offerers_models.UserOfferer.isValidated,
         )
     )
-    if offerer_id is not None:
-        query = query.filter(offerers_models.Venue.managingOffererId == offerer_id)
+    # ignore offerer_id if venue_id is set:
+    # -> the offerer filter makes no sense since a venue belongs to an
+    # offerer
+    # -> /!\ for some unknown reasons, this could lead to a strange
+    # query that is insanely slow (venue_id + offerer_id
+    # + period_beginning_date + period_ending_date + .limit())
     if venue_id is not None:
         query = query.filter(models.Offer.venueId == venue_id)
+    elif offerer_id is not None:
+        query = query.filter(offerers_models.Venue.managingOffererId == offerer_id)
+
     if offerer_address_id is not None:
         query = query.filter(models.Offer.offererAddressId == offerer_address_id)
     if creation_mode is not None:
@@ -1295,8 +1302,6 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
                     get_pending_bookings_subquery(offer_id),
                 )
             )
-        if "openingHours" in load_options:
-            query = query.options(sa_orm.joinedload(models.Offer.openingHours))
         if "highlight_requests" in load_options:
             query = query.options(
                 sa_orm.joinedload(models.Offer.highlight_requests).joinedload(
@@ -1314,6 +1319,8 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
             )
         if "pro_advice" in load_options:
             query = query.options(sa_orm.joinedload(models.Offer.proAdvice))
+        if "cultural_outreach" in load_options:
+            query = query.options(sa_orm.joinedload(models.Offer.culturalOutreach))
         return query.one()
     except sa_orm.exc.NoResultFound:
         raise exceptions.OfferNotFound(offer_id=offer_id)
@@ -1354,6 +1361,7 @@ def get_offer_and_extradata(offer_id: int) -> models.Offer | None:
                 artist_models.Artist.name,
             )
         )
+        .options(sa_orm.joinedload(models.Offer.culturalOutreach))
         .one_or_none()
     )
 

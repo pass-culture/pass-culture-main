@@ -1110,8 +1110,8 @@ class GetPublicAccountTest(GetEndpointHelper):
             ),
             (
                 users_factories.CaledonianBeneficiaryFactory,
-                "137,50 € (16410 CFP)restants sur 150,00 € (17900 CFP)",
-                "Dont 100,00 € (11935 CFP) en offres numériques",
+                "137,50 € (16 410 CFP)restants sur 150,00 € (17 900 CFP)",
+                "Dont 100,00 € (11 935 CFP) en offres numériques",
             ),
         ],
     )
@@ -1177,7 +1177,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         "user_factory,expected_price_1,expected_price_2",
         [
             (users_factories.BeneficiaryFactory, "20,00 €", "12,50 €"),
-            (users_factories.CaledonianBeneficiaryFactory, "20,00 € (2385 CFP)", "12,50 € (1490 CFP)"),
+            (users_factories.CaledonianBeneficiaryFactory, "20,00 € (2 385 CFP)", "12,50 € (1 490 CFP)"),
         ],
     )
     def test_get_beneficiary_bookings(self, authenticated_client, user_factory, expected_price_1, expected_price_2):
@@ -1252,6 +1252,250 @@ class GetPublicAccountTest(GetEndpointHelper):
 
         assert not html_parser.extract_table_rows(response.data, parent_class="bookings-tab-pane")
         assert "Aucune réservation à ce jour" in response.data.decode("utf-8")
+
+    def test_get_credit_report_empty(self, authenticated_client):
+        user = users_factories.UserFactory()
+
+        user_id = user.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
+
+        assert html_parser.get_soup(response.data).find(class_="report-tab-pane") is None
+
+    def test_get_credit_report_with_bookings(self, authenticated_client):
+        user = users_factories.BeneficiaryFactory(
+            deposit__dateCreated=datetime.datetime(2026, 1, 1, 12, 34),
+        )
+        booking_1 = bookings_factories.CancelledBookingFactory(
+            user=user,
+            amount=12.5,
+            dateCreated=datetime.datetime(2026, 1, 2, 20, 30),
+            cancellationDate=datetime.datetime(2026, 1, 4, 23, 10),
+        )
+        booking_2 = bookings_factories.UsedBookingFactory(
+            user=user, amount=20, dateCreated=datetime.datetime(2026, 1, 3, 17, 15)
+        )
+        bookings_factories.UsedBookingFactory()
+
+        user_id = user.id
+        # check if user should update their account
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data, parent_class="report-tab-pane")
+        assert len(rows) == 4
+
+        assert rows[-1]["Type d'opération"] == "Attribution d'un crédit 17-18"
+        assert rows[-1]["Date"] == "01/01/2026 à 13h34"
+        assert rows[-1]["Montant"] == "+ 150,00 €"
+        assert rows[-1]["Solde du crédit"] == "150,00 €"
+
+        assert rows[-2]["Type d'opération"] == f"Réservation {booking_1.token}"
+        assert rows[-2]["Date"] == "02/01/2026 à 21h30"
+        assert rows[-2]["Montant"] == "− 12,50 €"
+        assert rows[-2]["Solde du crédit"] == "137,50 €"
+
+        assert rows[-3]["Type d'opération"] == f"Réservation {booking_2.token}"
+        assert rows[-3]["Date"] == "03/01/2026 à 18h15"
+        assert rows[-3]["Montant"] == "− 20,00 €"
+        assert rows[-3]["Solde du crédit"] == "117,50 €"
+
+        assert rows[-4]["Type d'opération"] == f"Annulation de la réservation {booking_1.token}"
+        assert rows[-4]["Date"] == "05/01/2026 à 00h10"
+        assert rows[-4]["Montant"] == "+ 12,50 €"
+        assert rows[-4]["Solde du crédit"] == "130,00 €"
+
+    def test_get_credit_report_with_expired_deposit(self, authenticated_client):
+        user = users_factories.UnderageBeneficiaryFactory(
+            deposit__dateCreated=datetime.datetime(2025, 3, 1, 12),
+            deposit__expirationDate=datetime.datetime(2026, 4, 1, 12),
+        )
+
+        user_id = user.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data, parent_class="report-tab-pane")
+        assert len(rows) == 2
+
+        assert rows[-1]["Type d'opération"] == "Attribution d'un ancien crédit 15-17"
+        assert rows[-1]["Date"] == "01/03/2025 à 13h00"
+        assert rows[-1]["Montant"] == "+ 20,00 €"
+        assert rows[-1]["Solde du crédit"] == "20,00 €"
+
+        assert rows[-2]["Type d'opération"] == "Expiration d'un ancien crédit 15-17"
+        assert rows[-2]["Date"] == "01/04/2026 à 14h00"
+        assert rows[-2]["Montant"] == "− 20,00 €"
+        assert rows[-2]["Solde du crédit"] == "0,00 €"
+
+    def test_get_credit_report_with_booking_cancelled_on_expired_deposit(self, authenticated_client):
+        user = users_factories.BeneficiaryFactory(
+            deposit__dateCreated=datetime.datetime(2026, 1, 1),
+        )
+        booking = bookings_factories.CancelledBookingFactory(
+            user=user,
+            amount=decimal.Decimal("29.99"),
+            dateCreated=datetime.datetime(2026, 2, 1),
+            cancellationDate=datetime.datetime(2026, 4, 1),
+        )
+        user.deposit.expirationDate = datetime.datetime(2026, 3, 1)
+        db.session.flush()
+
+        user_id = user.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data, parent_class="report-tab-pane")
+        assert len(rows) == 4
+
+        assert rows[-1]["Type d'opération"] == "Attribution d'un crédit 17-18"
+        assert rows[-1]["Date"] == "01/01/2026 à 01h00"
+        assert rows[-1]["Montant"] == "+ 150,00 €"
+        assert rows[-1]["Solde du crédit"] == "150,00 €"
+
+        assert rows[-2]["Type d'opération"] == f"Réservation {booking.token}"
+        assert rows[-2]["Date"] == "01/02/2026 à 01h00"
+        assert rows[-2]["Montant"] == "− 29,99 €"
+        assert rows[-2]["Solde du crédit"] == "120,01 €"
+
+        assert rows[-3]["Type d'opération"] == "Expiration d'un crédit 17-18"
+        assert rows[-3]["Date"] == "01/03/2026 à 01h00"
+        assert rows[-3]["Montant"] == "− 120,01 €"
+        assert rows[-3]["Solde du crédit"] == "0,00 €"
+
+        assert (
+            rows[-4]["Type d'opération"]
+            == f"Annulation de la réservation {booking.token} (crédit expiré depuis le 01/03/2026)"
+        )
+        assert rows[-4]["Date"] == "01/04/2026 à 02h00"
+        assert rows[-4]["Montant"] == "0,00 €"
+        assert rows[-4]["Solde du crédit"] == "0,00 €"
+
+    def test_get_credit_report_with_bonus(self, authenticated_client):
+        user = users_factories.BeneficiaryFactory(
+            deposit__type=finance_models.DepositType.GRANT_17_18,
+            deposit__dateCreated=datetime.datetime(2026, 4, 1, 12),
+            deposit__amount=decimal.Decimal(200),
+        )
+        finance_factories.RecreditFactory(
+            deposit=user.deposit,
+            recreditType=finance_models.RecreditType.BONUS_CREDIT,
+            dateCreated=datetime.datetime(2026, 4, 15, 17),
+        )
+
+        user_id = user.id
+        # check if user should update their account
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data, parent_class="report-tab-pane")
+        assert len(rows) == 2
+
+        assert rows[-1]["Type d'opération"] == "Attribution d'un crédit 17-18"
+        assert rows[-1]["Date"] == "01/04/2026 à 14h00"
+        assert rows[-1]["Montant"] == "+ 150,00 €"
+        assert rows[-1]["Solde du crédit"] == "150,00 €"
+
+        assert rows[-2]["Type d'opération"] == "Recrédit issu de la bonification"
+        assert rows[-2]["Date"] == "15/04/2026 à 19h00"
+        assert rows[-2]["Montant"] == "+ 50,00 €"
+        assert rows[-2]["Solde du crédit"] == "200,00 €"
+
+    @pytest.mark.parametrize("status", [finance_models.IncidentStatus.CREATED, finance_models.IncidentStatus.CANCELLED])
+    def test_get_credit_report_with_non_validated_incident(self, authenticated_client, status):
+        user = users_factories.BeneficiaryFactory(
+            deposit__dateCreated=datetime.datetime(2026, 3, 1, 12),
+        )
+        booking = bookings_factories.ReimbursedBookingFactory(
+            user=user,
+            amount=decimal.Decimal("49.90"),
+            dateCreated=datetime.datetime(2026, 3, 10, 19),
+        )
+        finance_factories.IndividualBookingFinanceIncidentFactory(booking=booking, incident__status=status)
+
+        user_id = user.id
+        # + check if user should update their account
+        # + fetch incident history (subqueryload only in case of incidents)
+        with assert_num_queries(self.expected_num_queries + 2):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data, parent_class="report-tab-pane")
+        assert len(rows) == 2
+
+        assert rows[-1]["Type d'opération"] == "Attribution d'un crédit 17-18"
+        assert rows[-1]["Date"] == "01/03/2026 à 13h00"
+        assert rows[-1]["Montant"] == "+ 150,00 €"
+        assert rows[-1]["Solde du crédit"] == "150,00 €"
+
+        assert rows[-2]["Type d'opération"] == f"Réservation {booking.token}"
+        assert rows[-2]["Date"] == "10/03/2026 à 20h00"
+        assert rows[-2]["Montant"] == "− 49,90 €"
+        assert rows[-2]["Solde du crédit"] == "100,10 €"
+
+    @pytest.mark.parametrize(
+        "status", [finance_models.IncidentStatus.VALIDATED, finance_models.IncidentStatus.INVOICED]
+    )
+    def test_get_credit_report_with_validated_incident(self, authenticated_client, status):
+        user = users_factories.BeneficiaryFactory(
+            deposit__dateCreated=datetime.datetime(2026, 3, 1, 12),
+        )
+        booking = bookings_factories.ReimbursedBookingFactory(
+            user=user,
+            amount=decimal.Decimal("49.90"),
+            dateCreated=datetime.datetime(2026, 3, 10, 19),
+        )
+        incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+            booking=booking,
+            newTotalAmount=3950,
+            incident__status=status,
+        ).incident
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2026, 4, 2),
+            actionType=history_models.ActionType.FINANCE_INCIDENT_CREATED,
+            financeIncident=incident,
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2026, 4, 4, 15),
+            actionType=history_models.ActionType.FINANCE_INCIDENT_VALIDATED,
+            financeIncident=incident,
+        )
+        user.deposit.expirationDate = datetime.datetime(2026, 4, 25)
+        db.session.flush()
+
+        user_id = user.id
+        # + fetch incident history (subqueryload only in case of incidents)
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data, parent_class="report-tab-pane")
+        assert len(rows) == 4
+
+        assert rows[-1]["Type d'opération"] == "Attribution d'un crédit 17-18"
+        assert rows[-1]["Date"] == "01/03/2026 à 13h00"
+        assert rows[-1]["Montant"] == "+ 150,00 €"
+        assert rows[-1]["Solde du crédit"] == "150,00 €"
+
+        assert rows[-2]["Type d'opération"] == f"Réservation {booking.token}"
+        assert rows[-2]["Date"] == "10/03/2026 à 20h00"
+        assert rows[-2]["Montant"] == "− 49,90 €"
+        assert rows[-2]["Solde du crédit"] == "100,10 €"
+
+        assert rows[-3]["Type d'opération"] == f"Incident #{incident.id} lié à la réservation {booking.token}"
+        assert rows[-3]["Date"] == "04/04/2026 à 17h00"
+        assert rows[-3]["Montant"] == "+ 10,40 €"
+        assert rows[-3]["Solde du crédit"] == "110,50 €"
+
+        assert rows[-4]["Type d'opération"] == "Expiration d'un crédit 17-18"
+        assert rows[-4]["Date"] == "25/04/2026 à 02h00"
+        assert rows[-4]["Montant"] == "− 110,50 €"
+        assert rows[-4]["Solde du crédit"] == "0,00 €"
 
     def test_get_public_account_history(self, legit_user, authenticated_client):
         # More than 30 days ago to have deterministic order because "Import ubble" is generated randomly between
@@ -2366,6 +2610,103 @@ class BonusCreditRequestTest(PostEndpointHelper):
         assert response.status_code == 404
 
 
+class ExtendDepositValidityTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.extend_deposit_validity"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.EXTEND_DEPOSIT_VALIDITY
+
+    @pytest.mark.parametrize(
+        "original_offset, requested_offset",
+        [
+            (-1, 15),
+            (0, 1),
+            (89, 90),
+        ],
+    )
+    def test_extend_deposit_validity(self, legit_user, authenticated_client, original_offset, requested_offset):
+        original_expiration_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=original_offset)
+        user = users_factories.BeneficiaryFactory(deposit__expirationDate=original_expiration_date)
+
+        new_expiration_date = datetime.date.today() + datetime.timedelta(days=requested_offset)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            user_id=user.id,
+            form={"expiration_date": new_expiration_date.isoformat()},
+            follow_redirects=True,
+        )
+        assert response.status_code == 200  # after redirect
+
+        assert user.deposit.expirationDate.date() == new_expiration_date
+        assert len(user.action_history) == 1
+        action = user.action_history[0]
+        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.authorUser == legit_user
+        assert action.extraData == {
+            "modified_info": {
+                "deposit.expirationDate": {
+                    "old_info": original_expiration_date.date().isoformat(),
+                    "new_info": new_expiration_date.isoformat(),
+                }
+            }
+        }
+
+        assert (
+            html_parser.extract_alert(response.data)
+            == f"La validité du crédit a été prolongée jusqu'au {new_expiration_date.strftime('%d/%m/%Y')}."
+        )
+
+    @pytest.mark.parametrize(
+        "original_offset, requested_offset, expected_error",
+        [
+            (31, 30, "La nouvelle date doit être postérieure à la date d'expiration actuelle."),
+            (-1, 91, "Le crédit peut être prolongé jusqu'à 90 jours à compter d'aujourd'hui."),
+            (-30, -1, "Le crédit peut être prolongé jusqu'à 90 jours à compter d'aujourd'hui."),
+        ],
+    )
+    def test_extend_deposit_validity_fails(
+        self, authenticated_client, original_offset, requested_offset, expected_error
+    ):
+        original_expiration_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=original_offset)
+        user = users_factories.BeneficiaryFactory(deposit__expirationDate=original_expiration_date)
+
+        new_expiration_date = datetime.date.today() + datetime.timedelta(days=requested_offset)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            user_id=user.id,
+            form={"expiration_date": new_expiration_date.isoformat()},
+            follow_redirects=True,
+        )
+        assert response.status_code == 200  # after redirect
+
+        assert user.deposit.expirationDate == original_expiration_date
+        assert len(user.action_history) == 0
+
+        assert (
+            html_parser.extract_alert(response.data)
+            == f"Les données envoyées comportent des erreurs. Nouvelle date d'expiration du crédit : {expected_error} ;"
+        )
+
+    def test_extend_deposit_validity_when_user_does_not_exist(self, authenticated_client):
+        response = self.post_to_endpoint(
+            authenticated_client,
+            user_id=524288,
+            form={"expiration_date": "2027-12-31"},
+        )
+        assert response.status_code == 404
+
+    def test_extend_deposit_validity_when_user_has_no_deposit(self, authenticated_client):
+        user = users_factories.UserFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            user_id=user.id,
+            form={"expiration_date": "2027-12-31"},
+        )
+        assert response.status_code == 404
+
+
 class GetPublicAccountHistoryTest:
     def test_history_contains_creation_date(self):
         user = users_factories.UserFactory()
@@ -2714,7 +3055,7 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert response.status_code == 200
 
         soup = html_parser.get_soup(response.data)
-        assert soup.select(f'[data-registration-steps-id="{expected_steps_id}"]')
+        assert soup.select(".pc-tunnel-history")
         steps = soup.select(".steps")
         assert len(steps) == len(expected_texts_and_icons)
 

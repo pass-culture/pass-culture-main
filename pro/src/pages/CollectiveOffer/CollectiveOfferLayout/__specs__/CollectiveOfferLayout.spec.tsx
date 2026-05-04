@@ -7,6 +7,8 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
@@ -16,7 +18,8 @@ import {
 
 const renderCollectiveOfferLayout = (
   path: string,
-  props: Partial<CollectiveOfferLayoutProps>
+  props: Partial<CollectiveOfferLayoutProps>,
+  isAllowedOnAdage = true
 ) => {
   renderWithProviders(
     <CollectiveOfferLayout subTitle="Ma super offre" {...props}>
@@ -26,8 +29,12 @@ const renderCollectiveOfferLayout = (
       initialRouterEntries: [path],
 
       storeOverrides: {
-        offerer: {
-          currentOfferer: { allowedOnAdage: true },
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedPartnerVenue: makeGetVenueResponseModel({
+            id: 1,
+            allowedOnAdage: isAllowedOnAdage,
+          }),
         },
       },
     }
@@ -88,5 +95,17 @@ describe('CollectiveOfferLayout', () => {
     })
 
     expect(title).toBeInTheDocument()
+  })
+
+  it('should not render the navigation when the partner venue is not allowed on Adage', () => {
+    renderCollectiveOfferLayout(
+      '/offre/A1/collectif/',
+      { isCreation: true },
+      false
+    )
+
+    expect(
+      screen.queryByRole('navigation', { name: /Création d’offre/i })
+    ).not.toBeInTheDocument()
   })
 })

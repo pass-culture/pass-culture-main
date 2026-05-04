@@ -1,12 +1,12 @@
 import pytest
 import time_machine
-from flask_jwt_extended.utils import create_access_token
 
 from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.utils.string import u_nbsp
 
 
@@ -20,18 +20,15 @@ class SubscriptionStepperTest:
             assert response.status_code == 401
 
     def test_subscription_stepper_user_not_found(self, client, app):
-        users_factories.EmailValidatedUserFactory(email="this-email@example.com")
-
-        token = create_access_token("other-email@example.com", additional_claims={"user_claims": {"user_id": 0}})
-        client.auth_header = {
-            "Authorization": f"Bearer {token}",
-        }
+        user = users_factories.EmailValidatedUserFactory()
+        client.with_token(user)
+        db.session.delete(user)
 
         with assert_num_queries(1):  # user
             response = client.get("/native/v3/subscription/stepper")
-            assert response.status_code == 403
+            assert response.status_code == 401
 
-        assert response.json["email"] == ["Utilisateur introuvable"]
+        assert response.json == {}
 
     def test_subscription_stepper_user_not_active(self, client):
         user = users_factories.EmailValidatedUserFactory(isActive=False)
@@ -39,9 +36,9 @@ class SubscriptionStepperTest:
         client.with_token(user)
         with assert_num_queries(1):  # user
             response = client.get("/native/v3/subscription/stepper")
-            assert response.status_code == 403
+            assert response.status_code == 401
 
-        assert response.json["email"] == ["Utilisateur introuvable"]
+        assert response.json == {}
 
     def test_subscription_stepper_for_17yo_with_just_email_validated(self, client):
         user = users_factories.EmailValidatedUserFactory(age=17)

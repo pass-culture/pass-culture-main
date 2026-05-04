@@ -47,6 +47,7 @@ from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
 from pcapi.routes.backoffice.accounts import serialization as serialization_accounts
 from pcapi.utils import date as date_utils
+from pcapi.utils import postal_code as postal_code_utils
 from pcapi.utils import urls
 from pcapi.utils.csr import Csr
 from pcapi.utils.csr import get_csr
@@ -205,6 +206,42 @@ def format_user_profile_refresh_campaign_action_type(action_type: history_models
             return action_type.value
 
 
+def format_deposit_type(deposit: finance_models.Deposit) -> str:
+    match deposit.type:
+        case finance_models.DepositType.GRANT_15_17:
+            return "ancien crédit 15-17"
+        case finance_models.DepositType.GRANT_18:
+            return "ancien crédit 18"
+        case finance_models.DepositType.GRANT_17_18:
+            return "crédit 17-18"
+        case finance_models.DepositType.GRANT_FREE:
+            return "crédit gratuit"
+        case _:
+            return "crédit d'origine inconnue"
+
+
+def format_recredit_type(recredit: finance_models.Recredit) -> str:
+    match recredit.recreditType:
+        case finance_models.RecreditType.RECREDIT_15:
+            return "Recrédit à 15 ans"
+        case finance_models.RecreditType.RECREDIT_16:
+            return "Recrédit à 16 ans"
+        case finance_models.RecreditType.RECREDIT_17:
+            return "Recrédit à 17 ans"
+        case finance_models.RecreditType.RECREDIT_18:
+            return "Recrédit à 18 ans"
+        case finance_models.RecreditType.BONUS_CREDIT:
+            return "Recrédit issu de la bonification"
+        case finance_models.RecreditType.MANUAL_MODIFICATION:
+            return "Recrédit par une action manuelle"
+        case finance_models.RecreditType.PREVIOUS_DEPOSIT:
+            return "Recrédit de l'argent restant du crédit précédent"
+        case finance_models.RecreditType.FINANCE_INCIDENT_RECREDIT:
+            return "Recrédit suite à un incident finance sur l'ancien crédit expiré"
+        case _:
+            return "Recrédit d'origine inconnue"
+
+
 def format_deposit_used(booking: bookings_models.Booking) -> str:
     if booking.usedRecreditType:
         if booking.usedRecreditType == bookings_models.BookingRecreditType.RECREDIT_17:
@@ -253,9 +290,14 @@ def format_date(
 
 
 def format_date_time(
-    data: datetime.date | datetime.datetime | None, address: geography_models.Address | None = None
+    data: datetime.date | datetime.datetime | None,
+    address: geography_models.Address | None = None,
+    force_two_lines: bool = False,
 ) -> str:
     local_date_time = format_date(data, strformat="%d/%m/%Y à %Hh%M", address=address)
+
+    if local_date_time and force_two_lines:
+        local_date_time = Markup("{}<br/>{}").format(*local_date_time.split(" ", 1))
 
     if not local_date_time or not address or address.timezone == METROPOLE_TIMEZONE:
         return local_date_time
@@ -297,6 +339,43 @@ def format_timespan(timespan: psycopg2.extras.DateTimeRange) -> str:
     return f"{start} → {end}"
 
 
+def format_time(time: int, unit: str = "seconds") -> str:
+    DAY = 86400
+    HOUR = 3600
+    MINUTE = 60
+
+    def compute_intermediary(output: str, delta_seconds: int, symbole: str, multiplier: int) -> tuple[str, int]:
+        if delta_seconds:
+            if delta_step := delta_seconds // multiplier:
+                if output:
+                    output += f"{str(delta_step).zfill(2)} {symbole}"
+                else:
+                    output += f"{delta_step} {symbole}"
+                output += f"{pluralize(delta_step)} "
+                delta_seconds %= multiplier
+            elif output:
+                output += f"00 {symbole}s "
+        return output, delta_seconds
+
+    match unit:
+        case "seconds":
+            delta_seconds = time
+        case "minutes":
+            delta_seconds = time * MINUTE
+        case "hours":
+            delta_seconds = time * HOUR
+        case "days":
+            delta_seconds = time * DAY
+        case _:
+            raise ValueError(f"Unknown unit {unit}")
+
+    output, delta_seconds = compute_intermediary("", delta_seconds, "jour", DAY)
+    output, delta_seconds = compute_intermediary(output, delta_seconds, "heure", HOUR)
+    output, delta_seconds = compute_intermediary(output, delta_seconds, "minute", MINUTE)
+    output, delta_seconds = compute_intermediary(output, delta_seconds, "seconde", 1)
+    return output
+
+
 def format_datespan(datespan: psycopg2.extras.DateRange) -> str:
     if not datespan:
         return ""
@@ -320,17 +399,33 @@ def format_timezone(address: geography_models.Address) -> str:
 def format_amount(
     amount: float | decimal.Decimal | None,
     target: users_models.User | offerers_models.Offerer | offerers_models.Venue | None = None,
+    is_signed: bool = False,
 ) -> str:
     if amount is None:
         amount = 0.0
+    sign = color_class = ""
+    if amount and is_signed:
+        if amount > 0:
+            sign = "+ "
+            color_class = " text-success"
+        elif amount < 0:
+            amount = -amount
+            sign = "− "
+            color_class = " text-danger"
 
-    display = Markup('<span class="text-nowrap">{formatted_amount}</span>').format(
-        formatted_amount=finance_utils.format_currency_for_backoffice(amount)
+    display = Markup('<span class="text-nowrap{color_class}">{sign}{formatted_amount}</span>').format(
+        color_class=color_class,
+        sign=sign,
+        formatted_amount=finance_utils.format_currency_for_backoffice(amount),
     )
 
     if target is not None and target.is_caledonian:
-        display += Markup(' <span class="text-nowrap text-muted">({formatted_amount})</span>').format(
-            formatted_amount=finance_utils.format_currency_for_backoffice(amount, use_xpf=True)
+        display += Markup(
+            ' <span class="text-nowrap{color_class} text-muted">({sign}{formatted_amount})</span>'
+        ).format(
+            color_class=color_class,
+            sign=sign,
+            formatted_amount=finance_utils.format_currency_for_backoffice(amount, use_xpf=True),
         )
 
     return display
@@ -1438,6 +1533,8 @@ def format_modified_info_name(info_name: str) -> str:
             return "Activité principale"
         case "isReimbursementSuspended":
             return "Remboursements gelés"
+        case "deposit.expirationDate":
+            return "Date d'expiration du crédit"
 
     if day := match_opening_hours(info_name):
         return f"Horaires du {day}"
@@ -1833,12 +1930,8 @@ def format_finance_incident_type_str(incident_kind: finance_models.IncidentType)
     match incident_kind:
         case finance_models.IncidentType.OVERPAYMENT:
             return "Trop Perçu"
-        case finance_models.IncidentType.FRAUD:
-            return "Fraude"
         case finance_models.IncidentType.COMMERCIAL_GESTURE:
             return "Geste Commercial"
-        case finance_models.IncidentType.OFFER_PRICE_REGULATION:
-            return "Régulation du prix de l'offre"
         case _:
             return incident_kind.value
 
@@ -1848,12 +1941,8 @@ def format_finance_incident_type(incident_kind: finance_models.IncidentType) -> 
     match incident_kind:
         case finance_models.IncidentType.OVERPAYMENT:
             return format_badge(kind_str, "warning")
-        case finance_models.IncidentType.FRAUD:
-            return format_badge(kind_str, "danger")
         case finance_models.IncidentType.COMMERCIAL_GESTURE:
             return format_badge(kind_str, "success")
-        case finance_models.IncidentType.OFFER_PRICE_REGULATION:
-            return format_badge(kind_str, "secondary")
         case _:
             return incident_kind.value
 
@@ -2094,6 +2183,18 @@ def format_last_validation_action_name(status: offer_mixin.OfferValidationStatus
             return status.value
 
 
+def format_postal_code_to_departement_name(postal_code: str | int) -> str:
+    try:
+        return postal_code_utils.PostalCode(str(postal_code)).get_departement_name()
+    except postal_code_utils.DepartementNameNotFound:
+        logger.error("Department name not found for postal code : %s", postal_code)
+        return "Département inconnu"
+
+
+def format_postal_code_to_departement_code(postal_code: str | int) -> str:
+    return postal_code_utils.PostalCode(str(postal_code)).get_departement_code()
+
+
 # Keep consistency with pro/src/commons/mappings/DisplayableActivity.ts
 ACTIVITY_MAPPING = {
     offerers_models.Activity.ART_GALLERY: "Galerie d’art",
@@ -2262,3 +2363,6 @@ def install_template_filters(app: Flask) -> None:
     )
     app.jinja_env.filters["format_filter_status"] = format_filter_status
     app.jinja_env.filters["is_user_offerer_action_type"] = is_user_offerer_action_type
+    app.jinja_env.filters["format_postal_code_to_departement_name"] = format_postal_code_to_departement_name
+    app.jinja_env.filters["format_postal_code_to_departement_code"] = format_postal_code_to_departement_code
+    app.jinja_env.filters["format_time"] = format_time

@@ -36,15 +36,17 @@ import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { CancelCollectiveBookingModal } from '@/components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
 import { ShareLinkDrawer } from '@/components/CollectiveOffer/ShareLinkDrawer/ShareLinkDrawer'
+import { ButtonSize, ButtonVariant } from '@/design-system/Button/types'
+import fullArchiveIcon from '@/icons/full-archive.svg'
 import fullClearIcon from '@/icons/full-clear.svg'
 import fullCopyIcon from '@/icons/full-duplicate.svg'
 import fullPenIcon from '@/icons/full-edit.svg'
 import fullHideIcon from '@/icons/full-hide.svg'
 import fullPlusIcon from '@/icons/full-plus.svg'
 import strokeCheckIcon from '@/icons/stroke-check.svg'
-import strokeThingIcon from '@/icons/stroke-thing.svg'
 import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
 import { DropdownItem } from '@/ui-kit/Dropdown/DropdownItem'
+import { DropdownItemColor } from '@/ui-kit/Dropdown/types'
 
 import { DuplicateOfferDialog } from './DuplicateOfferDialog/DuplicateOfferDialog'
 import styles from './OfferActionsCell.module.scss'
@@ -309,7 +311,11 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
           )}
           {!isCollectiveOfferBookable(offer) && canShareOffer && (
             <DropdownItem>
-              <ShareLinkDrawer offerId={offer.id} />
+              <ShareLinkDrawer
+                offerId={offer.id}
+                triggerButtonVariant={ButtonVariant.TERTIARY}
+                triggerButtonSize={ButtonSize.DEFAULT}
+              />
             </DropdownItem>
           )}
           {canHideOffer && (
@@ -324,13 +330,15 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
               title="Annuler la réservation"
               icon={fullClearIcon}
               onSelect={() => setIsCancelledBookingModalOpen(true)}
+              color={DropdownItemColor.DANGER}
             />
           )}
           {canArchiveOffer && (
             <DropdownItem
               title="Archiver"
-              icon={strokeThingIcon}
+              icon={fullArchiveIcon}
               onSelect={() => setIsArchivedModalOpen(true)}
+              color={DropdownItemColor.DANGER}
             />
           )}
         </Dropdown>
@@ -344,7 +352,6 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
       <CancelCollectiveBookingModal
         onDismiss={() => setIsCancelledBookingModalOpen(false)}
         onValidate={cancelBooking}
-        isFromOffer
         isDialogOpen={isCancelledBookingModalOpen}
         refToFocusOnClose={dropdownTriggerRef}
       />

@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 import { Route, Routes } from 'react-router'
@@ -28,14 +28,9 @@ import {
   categoryFactory,
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
-  makeVenueListItem,
   subcategoryFactory,
-  venueListItemFactory,
 } from '@/commons/utils/factories/individualApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
@@ -43,10 +38,7 @@ import {
 } from '@/commons/utils/renderWithProviders'
 import * as imageUploadModule from '@/pages/IndividualOffer/IndividualOfferDescription/commons/useIndividualOfferImageUpload'
 
-import {
-  IndividualOfferDescriptionScreen,
-  type IndividualOfferDescriptionScreenProps,
-} from './IndividualOfferDescriptionScreen'
+import { IndividualOfferDescriptionScreen } from './IndividualOfferDescriptionScreen'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -84,10 +76,6 @@ const mockNavigate = vi.fn()
 const MOCK_DATA = {
   title: 'My super offer',
   description: 'My super description',
-  venues: [
-    venueListItemFactory({ id: 189 }),
-    venueListItemFactory({ id: 190 }),
-  ],
   categories: [
     categoryFactory({
       id: 'A',
@@ -141,7 +129,6 @@ const MOCK_DATA = {
 const LABELS = {
   title: /Titre de l’offre/,
   description: /Description/,
-  venue: /Qui propose l’offre ? */,
   category: /Catégorie/,
   subcategory: /Sous-catégorie/,
   ean: /EAN/,
@@ -150,9 +137,16 @@ const LABELS = {
   musicType: /Genre musical/,
 }
 
+const defaultPartnerVenue = makeGetVenueResponseModel({
+  id: 189,
+  audioDisabilityCompliant: true,
+  mentalDisabilityCompliant: true,
+  motorDisabilityCompliant: true,
+  visualDisabilityCompliant: true,
+})
+
 const renderDetailsScreen = ({
   contextValue,
-  props = {},
   mode = DEFAULTS.mode,
   options = {},
   path = getIndividualOfferPath({
@@ -161,23 +155,17 @@ const renderDetailsScreen = ({
   }),
 }: {
   contextValue: IndividualOfferContextValues
-  props?: Partial<IndividualOfferDescriptionScreenProps>
   mode?: OFFER_WIZARD_MODE
   options?: RenderWithProvidersOptions
   path?: string
 }) => {
-  const controlledProps = {
-    venues: props.venues || MOCK_DATA.venues,
-    ...props,
-  }
   const controlledOptions: RenderWithProvidersOptions = {
     initialRouterEntries: [path],
     storeOverrides: {
       user: {
         currentUser: sharedCurrentUserFactory(),
-        selectedPartnerVenue: makeGetVenueResponseModel({ id: 189 }),
+        selectedPartnerVenue: defaultPartnerVenue,
       },
-      offerer: currentOffererFactory(),
     },
     user: sharedCurrentUserFactory(),
     ...options,
@@ -185,7 +173,7 @@ const renderDetailsScreen = ({
 
   const element = (
     <IndividualOfferContext.Provider value={contextValue}>
-      <IndividualOfferDescriptionScreen {...controlledProps} />
+      <IndividualOfferDescriptionScreen />
     </IndividualOfferContext.Provider>
   )
 
@@ -210,20 +198,11 @@ const renderDetailsScreen = ({
   )
 }
 
-// User always selects 'physical' subcategory and fills related fields
-// (e.g: EAN, showType, showSubType, musicType conditional fields).
-// Mind that vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
-// { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
-// ]) must be added to the test file where this function is called.
 const userFillsEverything = async () => {
   await userEvent.type(screen.getByLabelText(LABELS.title), MOCK_DATA.title)
   await userEvent.type(
     screen.getByLabelText(LABELS.description),
     MOCK_DATA.description
-  )
-  await userEvent.selectOptions(
-    await screen.findByLabelText(LABELS.venue),
-    MOCK_DATA.venues[0].id.toString()
   )
 
   await userEvent.selectOptions(
@@ -267,20 +246,6 @@ describe('<IndividualOfferDescriptionScreen />', () => {
       offer: null,
     })
     vi.spyOn(api, 'patchOffer').mockResolvedValue(getIndividualOfferFactory())
-  })
-
-  it('should render banner when no venue available', async () => {
-    renderDetailsScreen({
-      props: {
-        venues: [],
-      },
-      contextValue,
-    })
-
-    expect(
-      await screen.findByRole('heading', { name: 'À propos de votre offre' })
-    ).toBeInTheDocument()
-    expect(await screen.findByText(/Ajouter une structure/)).toBeInTheDocument()
   })
 
   it('should render the component', async () => {
@@ -352,6 +317,12 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     ).toBeInTheDocument()
   })
 
+  it('should not display the venues select (the venue is already selected via the partner venue switcher)', () => {
+    renderDetailsScreen({ contextValue })
+
+    expect(screen.queryByText(/Qui propose l’offre ? */)).toBeFalsy()
+  })
+
   it('should display the full form when categories, and subcategories has been selected', async () => {
     renderDetailsScreen({ contextValue })
     const categoriesInput = await screen.findByLabelText(/Catégorie/)
@@ -365,17 +336,6 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     expect(
       await screen.findByRole('heading', { name: 'Informations artistiques' })
     ).toBeInTheDocument()
-  })
-
-  it('should not display the venues list when venues is <= 1', () => {
-    renderDetailsScreen({
-      props: {
-        venues: [venueListItemFactory({ id: 189 })],
-      },
-      contextValue,
-    })
-
-    expect(screen.queryByText(/Qui propose l’offre ? */)).toBeFalsy()
   })
 
   it('should show errors in the form when not all field has been filled', async () => {
@@ -403,9 +363,6 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
     expect(screen.getByText('Veuillez renseigner un titre')).toBeInTheDocument()
     expect(
-      screen.getByText('Veuillez sélectionner une structure')
-    ).toBeInTheDocument()
-    expect(
       screen.getByText('Veuillez sélectionner un type de spectacle')
     ).toBeInTheDocument()
     expect(
@@ -414,93 +371,6 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     expect(
       screen.getByText('Veuillez sélectionner un genre musical')
     ).toBeInTheDocument()
-  })
-
-  it('should clear errors in the form when all fields have been filled', async () => {
-    renderDetailsScreen({ contextValue })
-
-    await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
-    expect(
-      screen.getByText('Veuillez sélectionner une catégorie')
-    ).toBeInTheDocument()
-
-    await userEvent.selectOptions(
-      await screen.findByLabelText(/Catégorie/),
-      'A'
-    )
-
-    await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
-
-    expect(
-      screen.getByText('Veuillez sélectionner une sous-catégorie')
-    ).toBeInTheDocument()
-
-    await userEvent.selectOptions(
-      await screen.findByLabelText(/Sous-catégorie/),
-      'physical'
-    )
-
-    await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
-    expect(screen.getByText('Veuillez renseigner un titre')).toBeInTheDocument()
-    expect(
-      screen.getByText('Veuillez sélectionner une structure')
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText('Veuillez sélectionner un type de spectacle')
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText('Veuillez sélectionner un sous-type de spectacle')
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText('Veuillez sélectionner un genre musical')
-    ).toBeInTheDocument()
-
-    await userEvent.selectOptions(
-      await screen.findByLabelText(LABELS.venue),
-      'Nom public de la structure 189'
-    )
-
-    await userEvent.selectOptions(
-      await screen.findByLabelText(/Catégorie/),
-      'A'
-    )
-    await userEvent.selectOptions(
-      await screen.findByLabelText(/Sous-catégorie/),
-      'physical'
-    )
-    await userEvent.type(
-      screen.getByRole('textbox', {
-        name: /Titre de l’offre/,
-      }),
-      'Mon super spectacle'
-    )
-    await userEvent.selectOptions(
-      await screen.findByLabelText(/Type de spectacle/),
-      'Cirque'
-    )
-    await userEvent.selectOptions(
-      await screen.findByLabelText(/Sous-type/),
-      'Mentaliste'
-    )
-
-    expect(
-      screen.queryByText('Veuillez sélectionner une structure')
-    ).not.toBeInTheDocument()
-
-    expect(
-      screen.queryByText('Veuillez renseigner un titre')
-    ).not.toBeInTheDocument()
-
-    expect(
-      screen.queryByText('Veuillez sélectionner une catégorie')
-    ).not.toBeInTheDocument()
-
-    expect(
-      screen.queryByText('Veuillez sélectionner un type de spectacle')
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByText('Veuillez sélectionner un sous-type de spectacle')
-    ).not.toBeInTheDocument()
   })
 
   it('should display error from api on fields', async () => {
@@ -525,11 +395,6 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     await userEvent.type(
       screen.getByLabelText(/Description/),
       'My super description'
-    )
-
-    await userEvent.selectOptions(
-      await screen.findByLabelText(/Qui propose l’offre ? */),
-      '189'
     )
 
     await userEvent.selectOptions(
@@ -712,27 +577,13 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     it('should render an error when no selection has been made', async () => {
       renderDetailsScreen({ contextValue })
 
-      // User selects fills the title.
       const titleInput = screen.getByLabelText(LABELS.title)
       await userEvent.type(titleInput, MOCK_DATA.title)
 
-      // User doesn't select anything and submits.
       await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
       const error = screen.getByText('Veuillez sélectionner une catégorie')
       expect(error).toBeInTheDocument()
     })
-  })
-
-  it('should display first venue banner when venues are empty', () => {
-    renderDetailsScreen({
-      props: {
-        venues: [],
-      },
-      contextValue,
-    })
-    expect(
-      screen.getByText('Créez une structure avant de pouvoir créer une offre.')
-    ).toBeInTheDocument()
   })
 
   describe('on creation', () => {
@@ -742,27 +593,37 @@ describe('<IndividualOfferDescriptionScreen />', () => {
       const eanSearchButtonLabel = /Rechercher/
       const eanResetButtonLabel = /Effacer/
 
-      it('should render EAN search for record stores as a venue', async () => {
+      const renderWithRecordStoreVenue = (
+        overrides: Partial<IndividualOfferContextValues> = {}
+      ) => {
         const context = individualOfferContextValuesFactory({
           categories: MOCK_DATA.categories,
           subCategories: MOCK_DATA.subCategories,
           offer: null,
+          ...overrides,
         })
         renderDetailsScreen({
-          props: {
-            venues: [
-              makeVenueListItem({
-                id: 2,
-                activity: 'RECORD_STORE' as DisplayableActivity,
-              }),
-            ],
-          },
           contextValue: context,
           path: getIndividualOfferPath({
             step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
+          options: {
+            storeOverrides: {
+              user: {
+                currentUser: sharedCurrentUserFactory(),
+                selectedPartnerVenue: makeGetVenueResponseModel({
+                  id: 2,
+                  activity: DisplayableActivity.RECORD_STORE,
+                }),
+              },
+            },
+          },
         })
+      }
+
+      it('should render EAN search for record stores as a venue', async () => {
+        renderWithRecordStoreVenue()
 
         await waitFor(() => {
           expect(screen.getByText(eanSearchTitle)).toBeInTheDocument()
@@ -770,24 +631,27 @@ describe('<IndividualOfferDescriptionScreen />', () => {
       })
 
       it('should not render EAN search for other venues', () => {
-        const context = individualOfferContextValuesFactory({
-          categories: MOCK_DATA.categories,
-          subCategories: MOCK_DATA.subCategories,
-          offer: null,
-        })
         renderDetailsScreen({
-          props: {
-            venues: [
-              venueListItemFactory({
-                activity: DisplayableActivity.FESTIVAL,
-              }),
-            ],
-          },
-          contextValue: context,
+          contextValue: individualOfferContextValuesFactory({
+            categories: MOCK_DATA.categories,
+            subCategories: MOCK_DATA.subCategories,
+            offer: null,
+          }),
           path: getIndividualOfferPath({
             step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
+          options: {
+            storeOverrides: {
+              user: {
+                currentUser: sharedCurrentUserFactory(),
+                selectedPartnerVenue: makeGetVenueResponseModel({
+                  id: 3,
+                  activity: DisplayableActivity.FESTIVAL,
+                }),
+              },
+            },
+          },
         })
         expect(screen.queryByText(eanSearchTitle)).toBeFalsy()
       })
@@ -807,39 +671,19 @@ describe('<IndividualOfferDescriptionScreen />', () => {
               recto: 'https://www.example.com/image.jpg',
             },
           }
-          const context = individualOfferContextValuesFactory({
-            categories: MOCK_DATA.categories,
-            subCategories: MOCK_DATA.subCategories,
-            offer: null,
-          })
           vi.spyOn(api, 'getProductByEan').mockResolvedValue(productData)
-          renderDetailsScreen({
-            props: {
-              venues: [
-                venueListItemFactory({
-                  activity: 'RECORD_STORE' as DisplayableActivity,
-                }),
-              ],
-            },
-            contextValue: context,
-            path: getIndividualOfferPath({
-              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-              mode: OFFER_WIZARD_MODE.CREATION,
-            }),
-          })
+          renderWithRecordStoreVenue()
           const button = screen.getByRole('button', {
             name: eanSearchButtonLabel,
           })
           const input = screen.getByRole('textbox', { name: eanInputLabel })
           await userEvent.type(input, ean)
           await userEvent.click(button)
-          // Inputs are filled with the product data and image is displayed.
           const nameInputLabel = /Titre de l’offre/
           const inputName = screen.getByRole('textbox', {
             name: nameInputLabel,
           })
           expect(inputName).toHaveValue(productData.name)
-          // Name input is disabled.
           expect(inputName).toBeDisabled()
         })
 
@@ -857,26 +701,8 @@ describe('<IndividualOfferDescriptionScreen />', () => {
               recto: 'https://www.example.com/image.jpg',
             },
           }
-          const context = individualOfferContextValuesFactory({
-            categories: MOCK_DATA.categories,
-            subCategories: MOCK_DATA.subCategories,
-            offer: null,
-          })
           vi.spyOn(api, 'getProductByEan').mockResolvedValue(productData)
-          renderDetailsScreen({
-            props: {
-              venues: [
-                venueListItemFactory({
-                  activity: 'RECORD_STORE' as DisplayableActivity,
-                }),
-              ],
-            },
-            contextValue: context,
-            path: getIndividualOfferPath({
-              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-              mode: OFFER_WIZARD_MODE.CREATION,
-            }),
-          })
+          renderWithRecordStoreVenue()
           const button = screen.getByRole('button', {
             name: eanSearchButtonLabel,
           })
@@ -887,7 +713,6 @@ describe('<IndividualOfferDescriptionScreen />', () => {
             name: eanResetButtonLabel,
           })
           await userEvent.click(resetButton)
-          // Inputs and image should be cleared.
           const nameInputLabel = /Titre de l’offre/
           const inputName = screen.getByRole('textbox', {
             name: nameInputLabel,
@@ -906,28 +731,11 @@ describe('<IndividualOfferDescriptionScreen />', () => {
             status: OfferStatus.DRAFT,
             subcategoryId: SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE,
           })
-          const context = individualOfferContextValuesFactory({
-            categories: MOCK_DATA.categories,
-            subCategories: MOCK_DATA.subCategories,
+          renderWithRecordStoreVenue({
             hasPublishedOfferWithSameEan: true,
             offer: getIndividualOfferFactory({
-              subcategoryId:
-                'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE' as SubcategoryIdEnum,
+              subcategoryId: SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE,
               productId: 1,
-            }),
-          })
-          renderDetailsScreen({
-            props: {
-              venues: [
-                venueListItemFactory({
-                  activity: 'RECORD_STORE' as DisplayableActivity,
-                }),
-              ],
-            },
-            contextValue: context,
-            path: getIndividualOfferPath({
-              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-              mode: OFFER_WIZARD_MODE.CREATION,
             }),
           })
 
@@ -942,30 +750,13 @@ describe('<IndividualOfferDescriptionScreen />', () => {
 
       describe('when the draft offer being created is no longer local but posted', () => {
         it('should render EAN search when the draft offer is product-based', async () => {
-          const context = individualOfferContextValuesFactory({
-            categories: MOCK_DATA.categories,
-            subCategories: MOCK_DATA.subCategories,
+          renderWithRecordStoreVenue({
             offer: getIndividualOfferFactory({
-              subcategoryId:
-                'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE' as SubcategoryIdEnum,
+              subcategoryId: SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE,
               productId: 1,
             }),
           })
 
-          renderDetailsScreen({
-            props: {
-              venues: [
-                venueListItemFactory({
-                  activity: 'RECORD_STORE' as DisplayableActivity,
-                }),
-              ],
-            },
-            contextValue: context,
-            path: getIndividualOfferPath({
-              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-              mode: OFFER_WIZARD_MODE.CREATION,
-            }),
-          })
           await waitFor(() => {
             expect(screen.getByText(eanSearchTitle)).toBeInTheDocument()
           })
@@ -973,133 +764,23 @@ describe('<IndividualOfferDescriptionScreen />', () => {
       })
     })
 
-    const contextValue = individualOfferContextValuesFactory({
-      categories: MOCK_DATA.categories,
-      subCategories: MOCK_DATA.subCategories,
-      offer: null,
-    })
-
-    const venueWithoutExternalAccessibilityData = venueListItemFactory({
-      id: 1,
-      publicName: 'Structure sans données d’accessibilité externe',
-      audioDisabilityCompliant: true,
-      mentalDisabilityCompliant: false,
-      motorDisabilityCompliant: true,
-      visualDisabilityCompliant: false,
-    })
-    const venueWithExternalAccessibilityData = venueListItemFactory({
-      id: 2,
-      publicName: 'Structure avec données d’accessibilité externe',
-      audioDisabilityCompliant: true,
-      mentalDisabilityCompliant: false,
-      motorDisabilityCompliant: true,
-      visualDisabilityCompliant: false,
-      externalAccessibilityData: {
-        isAccessibleAudioDisability: false,
-        isAccessibleMentalDisability: true,
-        isAccessibleMotorDisability: false,
-        isAccessibleVisualDisability: true,
-      },
-    })
-
-    const props = {
-      venues: [
-        venueWithoutExternalAccessibilityData,
-        venueWithExternalAccessibilityData,
-      ],
-    }
-
-    it('should display the accessibility field', () => {
+    it('should initialize the accessibility field with the selected partner venue data', async () => {
       renderDetailsScreen({
         contextValue,
-        props,
-      })
-
-      expect(
-        screen.getByRole('heading', {
-          name: 'Modalités d’accessibilité',
-        })
-      ).toBeVisible()
-
-      expect(screen.getByRole('checkbox', { name: 'Visuel' })).not.toBeChecked()
-      expect(
-        screen.getByRole('checkbox', { name: 'Psychique ou cognitif' })
-      ).not.toBeChecked()
-      expect(screen.getByRole('checkbox', { name: 'Moteur' })).not.toBeChecked()
-      expect(
-        screen.getByRole('checkbox', { name: 'Auditif' })
-      ).not.toBeChecked()
-      expect(
-        screen.getByRole('checkbox', { name: 'Non accessible' })
-      ).toBeChecked()
-    })
-
-    // For some reason that may require further investigation, `userEvent` does't work here
-    // (more precisely, the change event is not triggered on venueId select).
-    it('should update the accessibility field depending on the selected venue', async () => {
-      renderDetailsScreen({
-        contextValue,
-        props,
-      })
-
-      fireEvent.change(screen.getByLabelText(LABELS.venue), {
-        target: {
-          value: screen.getByRole<HTMLOptionElement>('option', {
-            name: 'Structure sans données d’accessibilité externe',
-          }).value,
+        options: {
+          storeOverrides: {
+            user: {
+              currentUser: sharedCurrentUserFactory(),
+              selectedPartnerVenue: makeGetVenueResponseModel({
+                id: 1,
+                audioDisabilityCompliant: true,
+                mentalDisabilityCompliant: false,
+                motorDisabilityCompliant: true,
+                visualDisabilityCompliant: false,
+              }),
+            },
+          },
         },
-      })
-
-      expect(
-        await screen.findByRole('checkbox', { name: 'Auditif' })
-      ).toBeChecked()
-      expect(
-        await screen.findByRole('checkbox', { name: 'Psychique ou cognitif' })
-      ).not.toBeChecked()
-      expect(
-        await screen.findByRole('checkbox', { name: 'Moteur' })
-      ).toBeChecked()
-      expect(
-        await screen.findByRole('checkbox', { name: 'Visuel' })
-      ).not.toBeChecked()
-      expect(
-        await screen.findByRole('checkbox', { name: 'Non accessible' })
-      ).not.toBeChecked()
-
-      fireEvent.change(screen.getByLabelText(LABELS.venue), {
-        target: {
-          value: screen.getByRole<HTMLOptionElement>('option', {
-            name: 'Structure avec données d’accessibilité externe',
-          }).value,
-        },
-      })
-
-      // Venue's external accessibility data should take precedence
-      expect(
-        await screen.findByRole('checkbox', { name: 'Auditif' })
-      ).not.toBeChecked()
-      expect(
-        await screen.findByRole('checkbox', { name: 'Psychique ou cognitif' })
-      ).toBeChecked()
-      expect(
-        await screen.findByRole('checkbox', { name: 'Moteur' })
-      ).not.toBeChecked()
-      expect(
-        await screen.findByRole('checkbox', { name: 'Visuel' })
-      ).toBeChecked()
-      expect(
-        await screen.findByRole('checkbox', { name: 'Non accessible' })
-      ).not.toBeChecked()
-    })
-
-    it('should initialize the accessibility field with the default venue data when there is only one venue', async () => {
-      const props = {
-        venues: [venueWithoutExternalAccessibilityData],
-      }
-
-      renderDetailsScreen({
-        contextValue,
-        props,
       })
 
       expect(
@@ -1167,16 +848,10 @@ describe('<IndividualOfferDescriptionScreen />', () => {
         }),
         subCategories: MOCK_DATA.subCategories,
       })
-      const mode = OFFER_WIZARD_MODE.EDITION
-
-      const props = {
-        venues: [venueListItemFactory()],
-      }
 
       renderDetailsScreen({
         contextValue,
-        mode,
-        props,
+        mode: OFFER_WIZARD_MODE.EDITION,
       })
 
       expect(
@@ -1185,81 +860,31 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     })
   })
 
-  it('should not render venue field when there is just one virtual venue', () => {
+  it('should use selectedPartnerVenue from Redux store for initial values on creation', () => {
     renderDetailsScreen({
-      props: {
-        venues: [venueListItemFactory({ id: 189, isVirtual: true })],
-      },
       contextValue,
-    })
-
-    expect(screen.queryByText(/Qui propose l’offre ? */)).toBeFalsy()
-  })
-
-  it('should not render venue field when there is just one physical venue', () => {
-    vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
-      SUGGESTED_CATEGORIES: 'true',
-    })
-
-    renderDetailsScreen({
-      props: {
-        venues: [venueListItemFactory({ id: 189, isVirtual: false })],
-      },
-      contextValue,
-    })
-
-    expect(screen.queryByText(/Qui propose l’offre ? */)).toBeFalsy()
-  })
-
-  it('should not render venue field when there is one physical venue and one virtual venue', () => {
-    vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
-      SUGGESTED_CATEGORIES: 'true',
-    })
-
-    renderDetailsScreen({
-      props: {
-        venues: [
-          venueListItemFactory({ id: 189, isVirtual: false }),
-          venueListItemFactory({ id: 190, isVirtual: true }),
-        ],
-      },
-      contextValue,
-    })
-
-    expect(screen.queryByText(/Qui propose l’offre ? */)).toBeFalsy()
-  })
-
-  describe('with WIP_SWITCH_VENUE feature flag', () => {
-    it('should use selectedPartnerVenue from Redux store for initial values on creation', () => {
-      renderDetailsScreen({
-        contextValue,
-        options: {
-          features: ['WIP_SWITCH_VENUE'],
-          storeOverrides: {
-            user: {
-              currentUser: sharedCurrentUserFactory(),
-              selectedPartnerVenue: makeGetVenueResponseModel({
-                id: 777,
-                audioDisabilityCompliant: true,
-                mentalDisabilityCompliant: false,
-                motorDisabilityCompliant: true,
-                visualDisabilityCompliant: false,
-              }),
-            },
-            offerer: currentOffererFactory(),
+      options: {
+        storeOverrides: {
+          user: {
+            currentUser: sharedCurrentUserFactory(),
+            selectedPartnerVenue: makeGetVenueResponseModel({
+              id: 777,
+              audioDisabilityCompliant: true,
+              mentalDisabilityCompliant: false,
+              motorDisabilityCompliant: true,
+              visualDisabilityCompliant: false,
+            }),
           },
         },
-      })
-
-      expect(screen.getByRole('checkbox', { name: /Auditif/ })).toBeChecked()
-      expect(screen.getByRole('checkbox', { name: /Moteur/ })).toBeChecked()
-      expect(screen.getByRole('checkbox', { name: /Visuel/ })).not.toBeChecked()
-      expect(
-        screen.getByRole('checkbox', { name: /Psychique ou cognitif/ })
-      ).not.toBeChecked()
-
-      expect(screen.queryByLabelText(LABELS.venue)).not.toBeInTheDocument()
+      },
     })
+
+    expect(screen.getByRole('checkbox', { name: /Auditif/ })).toBeChecked()
+    expect(screen.getByRole('checkbox', { name: /Moteur/ })).toBeChecked()
+    expect(screen.getByRole('checkbox', { name: /Visuel/ })).not.toBeChecked()
+    expect(
+      screen.getByRole('checkbox', { name: /Psychique ou cognitif/ })
+    ).not.toBeChecked()
   })
 
   describe('onboarding', () => {
@@ -1268,12 +893,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     })
 
     it('should display with the lateral bar', async () => {
-      renderDetailsScreen({
-        props: {
-          venues: [venueListItemFactory({ id: 189 })],
-        },
-        contextValue,
-      })
+      renderDetailsScreen({ contextValue })
       await userEvent.click(screen.getByText('Retour'))
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalledWith('/offre/creation')
@@ -1282,11 +902,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
 
     it('should redirect to the offer creation type screen', async () => {
       renderDetailsScreen({
-        props: {
-          venues: [venueListItemFactory({ id: 189 })],
-        },
         contextValue,
-        options: {},
         mode: OFFER_WIZARD_MODE.CREATION,
         path: `/onboarding${getIndividualOfferPath({
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,

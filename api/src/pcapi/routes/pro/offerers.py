@@ -23,7 +23,7 @@ from pcapi.core.offerers import api
 from pcapi.core.offerers import repository
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.models.api_errors import resource_not_found_error
 from pcapi.models.utils import get_or_404
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import finance_serialize
@@ -85,16 +85,14 @@ def get_offerer(offerer_id: int) -> offerers_serialize.GetOffererResponseModel:
     check_user_has_access_to_offerer(current_user, offerer_id)
     row = repository.get_offerer_and_extradata(offerer_id)
     if not row:
-        raise ResourceNotFoundError()
+        raise resource_not_found_error()
     ids_of_venues_with_offers = offerers_repository.get_ids_of_venues_with_offers([row.Offerer.id])
-    has_digital_venue_at_least_one_offer = offerers_repository.has_digital_venue_with_at_least_one_offer(row.Offerer.id)
     venues_with_non_free_offers_without_bank_accounts = (
         offerers_repository.get_venues_with_non_free_offers_without_bank_accounts(row.Offerer.id)
     )
     return offerers_serialize.GetOffererResponseModel.build(
         row,
         ids_of_venues_with_offers,
-        has_digital_venue_at_least_one_offer,
         venues_with_non_free_offers_without_bank_accounts,
     )
 
@@ -217,7 +215,7 @@ def get_offerer_bank_accounts_and_attached_venues(
     check_user_has_access_to_offerer(current_user, offerer_id)
     offerer = repository.get_offerer_with_bank_accounts(offerer_id)
     if not offerer:
-        raise ResourceNotFoundError()
+        raise resource_not_found_error()
 
     return offerers_serialize.GetOffererBankAccountsResponseModel(
         id=offerer.id,
@@ -249,7 +247,7 @@ def link_venue_to_bank_account(
     check_user_has_access_to_offerer(current_user, offerer_id)
     bank_account = finance_repository.get_bank_account_with_current_venues_links(offerer_id, bank_account_id)
     if bank_account is None:
-        raise ResourceNotFoundError()
+        raise resource_not_found_error()
     try:
         finance_api.update_bank_account_venues_links(current_user, bank_account, body.venues_ids)
     except finance_exceptions.VenueAlreadyLinkedToAnotherBankAccount as exc:
@@ -349,7 +347,8 @@ def get_offerer_v2_stats(offerer_id: int) -> offerers_serialize.GetOffererV2Stat
     try:
         stats = api.get_offerer_v2_stats(offerer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ResourceNotFoundError()
+        raise resource_not_found_error()
+
     return offerers_serialize.GetOffererV2StatsResponseModel.model_validate(stats)
 
 
@@ -392,7 +391,7 @@ def get_venue_headline_offer(
     try:
         venue_headline_offer = repository.get_venue_headline_offer(venue_id)
     except sa_orm.exc.NoResultFound:
-        raise ResourceNotFoundError()
+        raise resource_not_found_error()
 
     return headline_offer_serialize.HeadLineOfferResponseModel.model_validate(venue_headline_offer)
 

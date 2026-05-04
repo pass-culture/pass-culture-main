@@ -8,6 +8,9 @@ from pcapi.core import testing
 from pcapi.utils import requests
 
 
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 class SimilarOffersTest:
     def test_get_recommendation_playlist(self, requests_mock, client):
         response = client.get("/native/v1/recommendation/similar_offers/2")

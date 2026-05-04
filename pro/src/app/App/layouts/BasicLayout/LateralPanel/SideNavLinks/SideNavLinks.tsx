@@ -26,13 +26,7 @@ export interface NavItem {
   showNotification?: boolean
 }
 
-export const SideNavLinks = ({
-  navItems,
-  withSwitchVenueFeature,
-}: {
-  navItems: NavItem[]
-  withSwitchVenueFeature: boolean
-}) => {
+export const SideNavLinks = ({ navItems }: { navItems: NavItem[] }) => {
   const mainItems = navItems.filter((i) => i.group === 'main')
   const footerItems = navItems.filter((i) => i.group === 'footer')
 
@@ -93,34 +87,23 @@ export const SideNavLinks = ({
             <div aria-hidden="true">
               <div className={styles['separator-line']} />
             </div>
-
-            {withSwitchVenueFeature ? (
-              <ul>
-                <li className={styles['review']}>
-                  <UserReviewDialog
-                    dialogTrigger={
-                      <Button
-                        icon={fullSmsIcon}
-                        label="Donner mon avis"
-                        variant={ButtonVariant.TERTIARY}
-                        color={ButtonColor.NEUTRAL}
-                      />
-                    }
-                  />
-                </li>
-                <li>
-                  <HelpDropdownNavItem
-                    isMobileScreen={isMobileScreen ?? false}
-                  />
-                </li>
-              </ul>
-            ) : (
-              <ul>
-                {footerItems.map((item) => (
-                  <RenderNavItem key={item.key} item={item} />
-                ))}
-              </ul>
-            )}
+            <ul>
+              <li className={styles['review']}>
+                <UserReviewDialog
+                  dialogTrigger={
+                    <Button
+                      icon={fullSmsIcon}
+                      label="Donner mon avis"
+                      variant={ButtonVariant.TERTIARY}
+                      color={ButtonColor.NEUTRAL}
+                    />
+                  }
+                />
+              </li>
+              <li>
+                <HelpDropdownNavItem isMobileScreen={isMobileScreen ?? false} />
+              </li>
+            </ul>
           </div>
         )}
       </div>

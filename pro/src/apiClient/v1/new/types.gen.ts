@@ -2391,6 +2391,10 @@ export type GetIndividualOfferResponseModel = {
      */
     hasBookingLimitDatetimesPassed: boolean;
     /**
+     * Hasculturaloutreachclaim
+     */
+    hasCulturalOutreachClaim: boolean;
+    /**
      * Hasstocks
      */
     hasStocks: boolean;
@@ -2553,6 +2557,10 @@ export type GetIndividualOfferWithAddressResponseModel = {
      * Hasbookinglimitdatetimespassed
      */
     hasBookingLimitDatetimesPassed: boolean;
+    /**
+     * Hasculturaloutreachclaim
+     */
+    hasCulturalOutreachClaim: boolean;
     /**
      * Haspendingbookings
      */
@@ -2952,10 +2960,6 @@ export type GetOffererResponseModel = {
      * Hasbankaccountwithpendingcorrections
      */
     hasBankAccountWithPendingCorrections: boolean;
-    /**
-     * Hasdigitalvenueatleastoneoffer
-     */
-    hasDigitalVenueAtLeastOneOffer: boolean;
     /**
      * Hasnonfreeoffer
      */
@@ -4441,6 +4445,10 @@ export type MinimalPostOfferBodyModel = {
         [key: string]: unknown;
     };
     /**
+     * Hasculturaloutreachclaim
+     */
+    hasCulturalOutreachClaim?: boolean;
+    /**
      * Mentaldisabilitycompliant
      */
     mentalDisabilityCompliant: boolean;
@@ -4974,6 +4982,10 @@ export type PatchOfferBodyModel = {
      */
     extraData?: unknown;
     /**
+     * Hasculturaloutreachclaim
+     */
+    hasCulturalOutreachClaim?: boolean;
+    /**
      * Isduo
      */
     isDuo?: boolean;
@@ -5282,6 +5294,10 @@ export type PostOfferBodyModel = {
     extraData?: {
         [key: string]: unknown;
     };
+    /**
+     * Hasculturaloutreachclaim
+     */
+    hasCulturalOutreachClaim?: boolean;
     /**
      * Isduo
      */

@@ -18,13 +18,10 @@ import {
   tryRestoreOffererFromStorage,
 } from '@/commons/context/SignupJourneyContext/storage'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
-import { setSelectedOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
-import { updateUser } from '@/commons/store/user/reducer'
 import { ensureCurrentUser } from '@/commons/store/user/selectors'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import { Button } from '@/design-system/Button/Button'
@@ -45,8 +42,6 @@ import {
 import styles from './Offerers.module.scss'
 
 export const Offerers = (): JSX.Element => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const navigate = useNavigate()
@@ -150,25 +145,15 @@ export const Offerers = (): JSX.Element => {
 
       cleanSignupJourneyStorage()
 
-      if (withSwitchVenueFeature) {
-        await dispatch(
-          initializeUser({
-            newOffererId: createdOfferer.id,
-            user: {
-              ...currentUser,
-              hasUserOfferer: true,
-            },
-          })
-        ).unwrap()
-      } else {
-        dispatch(updateUser({ ...currentUser, hasUserOfferer: true }))
-        await dispatch(
-          setSelectedOffererById({
-            nextSelectedOffererId: createdOfferer.id,
-            shouldRefetch: true,
-          })
-        ).unwrap()
-      }
+      await dispatch(
+        initializeUser({
+          newOffererId: createdOfferer.id,
+          user: {
+            ...currentUser,
+            hasUserOfferer: true,
+          },
+        })
+      ).unwrap()
 
       navigate('/inscription/structure/rattachement/confirmation')
     } catch (e) {

@@ -8,7 +8,6 @@ import {
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
 } from '@/commons/core/Offers/constants'
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializeApiCollectiveFilters'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import {
@@ -24,14 +23,10 @@ import styles from './OfferType.module.scss'
 import type { OfferTypeFormValues } from './types'
 
 export const OfferTypeScreen = () => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-
   const navigate = useNavigate()
   const location = useLocation()
-  const queryParams = new URLSearchParams(location.search)
   const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const queryVenueId = queryParams.get('lieu')
 
   const snackBar = useSnackBar()
 
@@ -64,9 +59,7 @@ export const OfferTypeScreen = () => {
       const apiFilters = {
         ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
         offererId: selectedOffererId.toString(),
-        venueId: withSwitchVenueFeature
-          ? selectedPartnerVenue.id.toString()
-          : (queryVenueId ?? undefined),
+        venueId: selectedPartnerVenue.id.toString(),
       }
       const {
         name,

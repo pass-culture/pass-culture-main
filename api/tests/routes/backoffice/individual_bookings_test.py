@@ -684,13 +684,13 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert rows[0]["ID résa"] == str(nc_booking.id)
-        assert rows[0]["Montant"] == "150,00 € (17900 CFP)"
+        assert rows[0]["Montant"] == "150,00 € (17 900 CFP)"
         assert rows[0]["Date de réservation"] == f"{(datetime.date.today()).strftime('%d/%m/%Y')} à 11h00"
         assert rows[0]["Date de l'évènement"] == "01/01/2036 à 07h30"
 
         reimbursement_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
-        assert "Total payé par l'utilisateur : 150,00 € (17900 CFP)" in reimbursement_data
-        assert "Montant remboursé : 150,00 € (17900 CFP)" in reimbursement_data
+        assert "Total payé par l'utilisateur : 150,00 € (17 900 CFP)" in reimbursement_data
+        assert "Montant remboursé : 150,00 € (17 900 CFP)" in reimbursement_data
 
     @pytest.mark.parametrize(
         "has_incident, expected_results",

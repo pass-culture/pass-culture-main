@@ -299,6 +299,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW,
         perm_models.Permissions.READ_BENEFICIARY_BONUS_CREDIT,
         perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT,
+        perm_models.Permissions.EXTEND_DEPOSIT_VALIDITY,
         perm_models.Permissions.CREATE_INCIDENTS,
         perm_models.Permissions.CLOSE_OFFERER,
         perm_models.Permissions.READ_NON_PAYMENT_NOTICES,

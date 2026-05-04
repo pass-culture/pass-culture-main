@@ -40,6 +40,7 @@ class Permissions(enum.Enum):
     READ_PRO_REIMBURSEMENT_SUSPENSION = "visualiser les informations sur le blocage des remboursements"
     READ_BENEFICIARY_BONUS_CREDIT = "visualiser les détails des demandes de bonification"
     REQUEST_BENEFICIARY_BONUS_CREDIT = "demander la bonification pour un bénéficiaire"
+    EXTEND_DEPOSIT_VALIDITY = "étendre la validité d'un crédit"
 
     READ_PUBLIC_ACCOUNT = "visualiser un compte bénéficiaire/grand public"
     MANAGE_PUBLIC_ACCOUNT = "gérer un compte bénéficiaire/grand public"

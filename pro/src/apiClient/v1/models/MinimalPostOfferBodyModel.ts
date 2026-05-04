@@ -9,6 +9,7 @@ export type MinimalPostOfferBodyModel = {
   description?: string | null;
   durationMinutes?: number | null;
   extraData?: Record<string, any> | null;
+  hasCulturalOutreachClaim?: boolean | null;
   mentalDisabilityCompliant: boolean;
   motorDisabilityCompliant: boolean;
   name: string;

@@ -1,23 +1,29 @@
 import { Link } from 'react-router'
 
+import type { CollectiveOfferHomeResponseModel } from '@/apiClient/v1'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { getCollectiveOfferLink } from '@/commons/core/OfferEducational/utils/getCollectiveOfferLink'
 import { formatDateTimeParts } from '@/commons/utils/date'
 import { pluralizeFr } from '@/commons/utils/pluralize'
-import { CollectiveStatusLabel } from '@/components/CollectiveStatusLabel/CollectiveStatusLabel'
-import type { CollectiveOffersVariantMap } from '@/pages/Homepage/components/types'
+import {
+  COLLECTIVE_OFFER_STATUS_PROPERTIES,
+  CollectiveStatusLabel,
+} from '@/components/CollectiveStatusLabel/CollectiveStatusLabel'
 import { Thumb } from '@/ui-kit/Thumb/Thumb'
 
 import styles from '../../../CollectiveOffersLine.module.scss'
 import { CollectiveOffersBookableCTA } from '../CollectiveOffersBookableCTA/CollectiveOffersBookableCTA'
-import { CollectiveOffersBookableTag } from '../CollectiveOffersBookableTag/CollectiveOffersBookableTag'
+import {
+  CollectiveOffersBookableTag,
+  getTagInfo,
+} from '../CollectiveOffersBookableTag/CollectiveOffersBookableTag'
 
 export type CollectiveOffersBookableLineProps = {
-  offer: CollectiveOffersVariantMap['BOOKABLE']
+  offer: CollectiveOfferHomeResponseModel
 }
 
-function getSecondaryContent(
-  collectiveStock: CollectiveOffersVariantMap['BOOKABLE']['collectiveStock']
+function getDateAndTicketsCount(
+  collectiveStock: CollectiveOfferHomeResponseModel['collectiveStock']
 ): string {
   if (!collectiveStock) {
     return ''
@@ -33,29 +39,49 @@ export const CollectiveOffersBookableLine = ({
   const offerId = computeURLCollectiveOfferId(offer.id)
   const offerLink = getCollectiveOfferLink(offerId, offer.displayedStatus)
 
-  const secondaryContent = getSecondaryContent(offer.collectiveStock)
+  const dateAndTicketsCount = getDateAndTicketsCount(offer.collectiveStock)
+
+  const tagLabel = offer.collectiveStock
+    ? getTagInfo(offer.displayedStatus, offer.collectiveStock).label
+    : ''
 
   return (
     <div key={offer.id} className={styles['offer-line']}>
-      <Link className={styles['offer-line-thumb']} to={offerLink}>
-        <Thumb url={offer.imageUrl} alt={`Thumbnail for ${offer.name}`} />
-        <span className={styles['visually-hidden']}>Voir l'offre</span>
-      </Link>
-      <Link className={styles['offer-line-content']} to={offerLink}>
+      <Thumb
+        className={styles['offer-line-thumb']}
+        url={offer.imageUrl}
+        alt={`Thumbnail for ${offer.name}`}
+      />
+      <div className={styles['offer-line-content']}>
         {offer.collectiveStock && (
           <CollectiveOffersBookableTag
             displayedStatus={offer.displayedStatus}
             stock={offer.collectiveStock}
           />
         )}
-        <div className={styles['offer-line-content-primary']}>{offer.name}</div>
+        <h4 className={styles['offer-line-content-primary']}>
+          <Link
+            className={styles['offer-line-link']}
+            to={offerLink}
+            aria-label={[
+              tagLabel,
+              offer.name,
+              dateAndTicketsCount,
+              COLLECTIVE_OFFER_STATUS_PROPERTIES[offer.displayedStatus].label,
+            ]
+              .filter(Boolean)
+              .join(' - ')}
+          >
+            {offer.name}
+          </Link>
+        </h4>
         <div className={styles['offer-line-content-secondary']}>
-          {secondaryContent}
+          {dateAndTicketsCount}
         </div>
-      </Link>
-      <Link className={styles['offer-line-status']} to={offerLink}>
+      </div>
+      <div className={styles['offer-line-status']}>
         <CollectiveStatusLabel offerDisplayedStatus={offer.displayedStatus} />
-      </Link>
+      </div>
       <CollectiveOffersBookableCTA
         stock={offer.collectiveStock}
         displayedStatus={offer.displayedStatus}

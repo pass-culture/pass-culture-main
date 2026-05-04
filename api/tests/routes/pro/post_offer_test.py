@@ -1,16 +1,19 @@
 import contextlib
 
 import pytest
+import time_machine
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core.artist import factories as artist_factories
 from pcapi.core.categories import subcategories
+from pcapi.core.cultural_outreach.constants import CULTURAL_OUTREACH_ALLOWED_ACTIVITIES
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
@@ -29,7 +32,6 @@ def shared_offer_checks(offer, payload):
     assert offer.name == payload["name"]
     assert offer.venueId == payload["venueId"]
     assert offer.subcategoryId == payload["subcategoryId"]
-    assert not offer.publicationDate
     assert not offer.publicationDatetime
     assert not offer.bookingAllowedDatetime
     assert not offer.isActive
@@ -85,8 +87,6 @@ def auth_client_fixture(client, user):
     return client.with_session_auth(user.email)
 
 
-# TODO(jbaudet - 09/2025): warning: this might not be accurate
-# delete this TODO if nothing has changed in a couple of months
 THINGS_WITH_EAN = {
     subcategories.LIVRE_PAPIER.id,
     subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
@@ -94,8 +94,6 @@ THINGS_WITH_EAN = {
 }
 
 
-# TODO(jbaudet - 09/2025): warning: this might not be accurate
-# delete this TODO if nothing has changed in a couple of months
 THINGS_RANDOM = {
     subcategories.ABO_BIBLIOTHEQUE.id,
     subcategories.ABO_CONCERT.id,
@@ -118,8 +116,6 @@ THINGS_RANDOM = {
 THINGS = THINGS_WITH_EAN | THINGS_RANDOM
 
 
-# TODO(jbaudet - 09/2025): warning: this might not be accurate
-# delete this TODO if nothing has changed in a couple of months
 DIGITAL_THING = {
     subcategories.TELECHARGEMENT_MUSIQUE.id,
     subcategories.LIVRE_NUMERIQUE.id,
@@ -142,8 +138,6 @@ DIGITAL_THING = {
 }
 
 
-# TODO(jbaudet - 09/2025): warning: this might not be accurate
-# delete this TODO if nothing has changed in a couple of months
 DIGITAL_ACTIVITY = {
     subcategories.SPECTACLE_ENREGISTRE.id,
     subcategories.SPECTACLE_VENTE_DISTANCE.id,
@@ -153,8 +147,6 @@ DIGITAL_ACTIVITY = {
 DIGITAL = DIGITAL_THING | DIGITAL_ACTIVITY
 
 
-# TODO(jbaudet - 09/2025): warning: this might not be accurate
-# delete this TODO if nothing has changed in a couple of months
 CANNOT_BE_CREATED = {
     subcategories.ACTIVATION_EVENT.id,
     subcategories.CAPTATION_MUSIQUE.id,
@@ -167,15 +159,11 @@ CANNOT_BE_CREATED = {
 }
 
 
-# TODO(jbaudet - 09/2025): warning: this might not be accurate
-# delete this TODO if nothing has changed in a couple of months
 ACTIVITY_SUBSCRIPTION = {
     subcategories.ABO_SPECTACLE.id,
 }
 
 
-# TODO(jbaudet - 09/2025): warning: this might not be accurate
-# delete this TODO if nothing has changed in a couple of months
 ACTIVITY_ONLINE = {
     subcategories.LIVESTREAM_MUSIQUE.id,
     subcategories.RENCONTRE_EN_LIGNE.id,
@@ -183,15 +171,11 @@ ACTIVITY_ONLINE = {
 }
 
 
-# TODO(jbaudet - 09/2025): warning: this might not be accurate
-# delete this TODO if nothing has changed in a couple of months
 ACTIVITY_ONLINE_EVENT = {
     subcategories.LIVESTREAM_EVENEMENT.id,
 }
 
 
-# TODO(jbaudet - 09/2025): warning: this might not be accurate
-# delete this TODO if nothing has changed in a couple of months
 ACTIVITY_WITHDRAWABLE = {
     subcategories.SPECTACLE_REPRESENTATION.id,
     subcategories.FESTIVAL_SPECTACLE.id,
@@ -202,8 +186,6 @@ ACTIVITY_WITHDRAWABLE = {
 }
 
 
-# TODO(jbaudet - 09/2025): warning: this might not be accurate
-# delete this TODO if nothing has changed in a couple of months
 ACTIVITY_RANDOM = {
     subcategories.ATELIER_PRATIQUE_ART.id,
     subcategories.CINE_PLEIN_AIR.id,
@@ -230,6 +212,10 @@ ACTIVITY = ACTIVITY_SUBSCRIPTION | ACTIVITY_ONLINE | ACTIVITY_ONLINE_EVENT | ACT
 ALL = THINGS | DIGITAL | ACTIVITY
 
 
+# The following test classes (thoses who rely on THINGS_*, DIGITAL_*,
+# etc.) were added to figure out some implicit offer definitions: what
+# is a LIVRE_PAPIER? what is a SALON? etc. Feel free to remove these
+# once those definitions are explicit.
 class CreateOfferBase:
     endpoint = "/v2/offers"
 
@@ -245,6 +231,7 @@ class CreateOfferBase:
     success_num_queries += 1  # fetch price categories
     success_num_queries += 1  # fetch offer meta data
     success_num_queries += 1  # fetch highlight requests
+    success_num_queries += 1  # fetch cultural outreach
     success_num_queries += 1  # fetch user
     success_num_queries += 1  # fetch offerer
     success_num_queries += 1  # check national program (?)
@@ -575,6 +562,33 @@ class CreateActivityRandomTest(CreateOfferBase):
         offer.showSubType == 101
 
 
+@pytest.mark.parametrize("activity", CULTURAL_OUTREACH_ALLOWED_ACTIVITIES)
+class CreateOfferWithCulturalOutreachClaimTest(CreateOfferBase):
+    endpoint = "/v2/offers"
+
+    @time_machine.travel("2026-04-20 12:00:00", tick=False)
+    def test_create_offer_with_cultural_outreach_claim(self, client, activity):
+        venue = offerers_factories.VenueFactory(activity=activity)
+        user = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer).user
+        auth_client = client.with_session_auth(user.email)
+
+        data = {
+            **offer_minimal_shared_data(subcategories.ESCAPE_GAME.id, venue),
+            "hasCulturalOutreachClaim": True,
+        }
+
+        with assert_changes(Offer, 1):
+            response = auth_client.post(self.endpoint, json=data)
+            assert response.status_code == 201
+
+        offer = db.session.query(Offer).one()
+
+        shared_response_json_checks(offer, response.json)
+        shared_offer_checks(offer, data)
+
+        assert offer.hasCulturalOutreachClaim is True
+
+
 @pytest.mark.parametrize("subcategory_id", CANNOT_BE_CREATED)
 class CannotCreateOfferTest:
     endpoint = "/v2/offers"
@@ -655,7 +669,7 @@ class Returns200Test:
         offer = db.session.get(Offer, offer_id)
         assert offer.bookingContact == None
         assert offer.bookingEmail == None
-        assert offer.publicationDate is None
+        assert offer.publicationDatetime is None
         assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
         assert offer.extraData == {"showType": 200, "showSubType": 201}
         assert offer.externalTicketOfficeUrl == None
@@ -775,6 +789,23 @@ class Returns200Test:
             "artistType": "author",
         }
 
+    @pytest.mark.parametrize("activity", CULTURAL_OUTREACH_ALLOWED_ACTIVITIES)
+    @time_machine.travel("2026-04-20 12:00:00", tick=False)
+    def test_create_offer_with_cultural_outreach_claim(self, client, activity):
+        venue = offerers_factories.VenueFactory(activity=activity)
+        user = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer).user
+        auth_client = client.with_session_auth(user.email)
+
+        data = {
+            **offer_minimal_shared_data(subcategories.ESCAPE_GAME.id, venue),
+            "hasCulturalOutreachClaim": True,
+        }
+
+        response = auth_client.post("/offers", json=data)
+
+        assert response.status_code == 201
+        assert response.json["hasCulturalOutreachClaim"] is True
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
@@ -805,6 +836,7 @@ class Returns400Test:
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
         assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
     @pytest.mark.parametrize(
         "input_json,expected_json",
@@ -839,7 +871,7 @@ class Returns400Test:
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns403Test:
+class Returns404Test:
     def test_when_user_is_not_attached_to_offerer(self, client):
         users_factories.ProFactory(email="user@example.com")
         venue = offerers_factories.VenueFactory()
@@ -855,7 +887,5 @@ class Returns403Test:
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
-        assert response.status_code == 403
-        assert response.json["global"] == [
-            "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
-        ]
+        assert response.status_code == 404
+        assert response.json["global"] == [OBJECT_NOT_FOUND_ERROR_MESSAGE]

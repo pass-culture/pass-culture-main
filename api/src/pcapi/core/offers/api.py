@@ -26,6 +26,7 @@ import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.chronicles.models as chronicles_models
 import pcapi.core.criteria.models as criteria_models
+import pcapi.core.cultural_outreach.api as cultural_outreach_api
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.highlights.models as highlights_models
 import pcapi.core.mails.transactional as transactional_mails
@@ -205,6 +206,7 @@ def create_offer(
     validation.check_offer_subcategory_is_valid(body.subcategory_id)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
     artist_offer_links = body.artist_offer_links
+    has_cultural_outreach_claim = body.has_cultural_outreach_claim
 
     if is_from_private_api:
         # TODO(jbaudet): should be ok to remove from this if-block since
@@ -241,6 +243,7 @@ def create_offer(
     fields = body.dict(by_alias=True)
     fields.pop("videoUrl", None)
     fields.pop("artistOfferLinks", None)
+    fields.pop("hasCulturalOutreachClaim", None)
 
     if is_from_private_api:
         if not body.withdrawal_details:
@@ -285,6 +288,9 @@ def create_offer(
             link_key = artist_api.get_artist_offer_link_key(artist_offer_link)
             artist_api.create_artist_offer_link(offer.id, link_key)
 
+    if has_cultural_outreach_claim:
+        cultural_outreach_api.create_cultural_outreach_claim(offer)
+
     # This log is used for analytics purposes.
     # If you need to make a 'breaking change' of this log, please contact the data team.
     # Otherwise, you will break some dashboards
@@ -325,7 +331,9 @@ def update_offer(
     aliases = set(body.dict(by_alias=True))
     fields = body.dict(by_alias=True, exclude_unset=True)
     fields.pop("artistOfferLinks", None)
+    fields.pop("hasCulturalOutreachClaim", None)
     artist_offer_links = body.artist_offer_links
+    has_cultural_outreach_claim = body.has_cultural_outreach_claim
 
     # updated using the pro interface
     if body.location:
@@ -387,6 +395,14 @@ def update_offer(
                     technical_message_id="offer.artistOfferLinks.created",
                 )
             )
+
+    if has_cultural_outreach_claim is not None:
+        if offer.culturalOutreach is None:
+            if has_cultural_outreach_claim:
+                cultural_outreach_api.create_cultural_outreach_claim(offer)
+        else:
+            claim_datetime = get_naive_utc_now() if has_cultural_outreach_claim else None
+            cultural_outreach_api.update_cultural_outreach_claim(claim_datetime, offer)
 
     if not updates:
         return offer

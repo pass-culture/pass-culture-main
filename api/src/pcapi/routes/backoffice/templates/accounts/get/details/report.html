@@ -1,0 +1,40 @@
+{% if report and report.length > 0 %}
+  {% if not report.is_consistent %}
+    <div class="alert alert-warning mb-2 text-center"
+         style="max-width: 100%">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      Le solde final est différent du crédit restant. Cette incohérence est remontée à l'équipe technique.
+      <i class="bi bi-exclamation-triangle-fill"></i>
+    </div>
+  {% endif %}
+  {% with %}
+    {% set hide_search_block = True %}
+    {% set rows_count = 1 %}
+    {% set pagination = False %}
+    {% set table_name = "report-table" %}
+    {% set table_id = table_name %}
+    {% set hide_count = True %}
+    {% set hide_menu = True %}
+    {% set table_header %}
+      <th scope="col">Type d'opération</th>
+      <th scope="col">Date</th>
+      <th scope="col" class="text-end">Montant</th>
+      <th scope="col" class="text-end">Solde du crédit</th>
+    {% endset %}
+    {% set table_body %}
+      {% for row in report.rows %}
+        <tr>
+          <td>{{ row.description }}</td>
+          <td>{{ row.date | format_date_time }}</td>
+          <td class="text-end">{{ row.amount | format_amount(user, true) }}</td>
+          <td class="text-end">{{ row.remaining_credit | format_amount(user) }}</td>
+        </tr>
+      {% endfor %}
+    {% endset %}
+    {% set after_table %}
+    {% endset %}
+    {% include "components/presentation/list.html" %}
+  {% endwith %}
+{% else %}
+  <p class="m-5">Aucun crédit à ce jour</p>
+{% endif %}

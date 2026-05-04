@@ -32,7 +32,7 @@ export const ReimbursementsTabs = ({
       {
         id: STEP_ID_INVOICES,
         label: 'Justificatifs',
-        url: '/remboursements',
+        url: '/administration/remboursements',
       },
       {
         id: STEP_ID_BANK_INFORMATIONS,
@@ -49,12 +49,12 @@ export const ReimbursementsTabs = ({
             )}
           </>
         ),
-        url: '/remboursements/informations-bancaires',
+        url: '/administration/remboursements/informations-bancaires',
       },
       {
         id: STEP_ID_INCOMES,
         label: 'Chiffre d’affaires',
-        url: '/remboursements/revenus',
+        url: '/administration/remboursements/revenus',
       },
     ]
 

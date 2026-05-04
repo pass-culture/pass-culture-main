@@ -14,7 +14,6 @@ import styles from './OffererAuthenticationForm.module.scss'
 
 export interface OffererAuthenticationFormValues extends Address {
   siret: string
-  name: string
   publicName?: string
   addressAutocomplete: string
   'search-addressAutocomplete': string
@@ -66,50 +65,11 @@ export const OffererAuthenticationForm = (): JSX.Element => {
       <FormLayout.Section>
         <FormLayout.Row mdSpaceAfter>
           <TextInput
-            {...register('siret')}
-            label="Numéro de SIRET"
-            type="text"
-            required={true}
-            disabled
-          />
-        </FormLayout.Row>
-        {offerer?.isDiffusible ? (
-          <FormLayout.Row mdSpaceAfter>
-            <TextInput
-              {...register('name')}
-              label="Raison sociale"
-              type="text"
-              value={offerer?.name}
-              required
-              disabled
-            />
-          </FormLayout.Row>
-        ) : (
-          <FormLayout.Row mdSpaceAfter inline>
-            <TextInput
-              value={offerer?.postalCode}
-              name="initial-postalCode"
-              label="Code postal"
-              disabled
-            />
-            <TextInput
-              name="initial-city"
-              label="Ville"
-              disabled
-              value={offerer?.city}
-            />
-          </FormLayout.Row>
-        )}
-        <FormLayout.Row mdSpaceAfter>
-          <TextInput
             {...register('publicName')}
             label="Nom public"
             required={!offerer?.isDiffusible}
-            description={
-              offerer?.isDiffusible
-                ? 'À remplir si le nom de votre structure est différent de la raison sociale. C’est ce nom qui sera visible du public.'
-                : ''
-            }
+            requiredIndicator="explicit"
+            description="Ce nom sera affiché sur le pass Culture."
             error={errors.publicName?.message}
           />
         </FormLayout.Row>
@@ -173,10 +133,11 @@ export const OffererAuthenticationForm = (): JSX.Element => {
             description={
               watch('isOpenToPublic') === 'false'
                 ? notOpenToPublicLabel
-                : 'Cette adresse postale sera visible.'
+                : 'Cette adresse postale sera affichée sur le pass Culture.'
             }
             error={errors.addressAutocomplete?.message}
             manual={manuallySetAddress}
+            requiredIndicator="explicit"
           />
         )}
       </FormLayout.Section>

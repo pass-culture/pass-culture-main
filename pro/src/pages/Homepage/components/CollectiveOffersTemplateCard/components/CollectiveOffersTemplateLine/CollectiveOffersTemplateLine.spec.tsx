@@ -95,11 +95,19 @@ describe('<CollectiveOffersTemplateLine />', () => {
       }
     }
 
-    it('should have the thumbnail line clickable', async () => {
+    it('should have the line clickable', async () => {
       const { user, offer } = renderCollectiveOffersTemplateLineWithRouter()
-      expect(screen.getByText(offer.name)).toBeVisible()
+      expect(screen.getByRole('img')).toBeVisible()
 
-      await user.click(screen.getByRole('img'))
+      const { date: start } = formatDateTimeParts(new Date().toISOString())
+      const { date: end } = formatDateTimeParts(
+        addDays(new Date(), 30).toISOString()
+      )
+      await user.click(
+        screen.getByRole('link', {
+          name: `Offre vitrine - ${offer.name} - Du ${start} au ${end} - publiée`,
+        })
+      )
 
       expect(
         screen.getByText(`Detail de mon offre T-${offer.id}`)
@@ -111,17 +119,6 @@ describe('<CollectiveOffersTemplateLine />', () => {
       expect(screen.getByText(offer.name)).toBeVisible()
 
       await user.click(screen.getByText(offer.name))
-
-      expect(
-        screen.getByText(`Detail de mon offre T-${offer.id}`)
-      ).toBeVisible()
-    })
-
-    it('should have the displayedStatus line clickable', async () => {
-      const { user, offer } = renderCollectiveOffersTemplateLineWithRouter()
-      expect(screen.getByText(offer.name)).toBeVisible()
-
-      await user.click(screen.getByText('publiée'))
 
       expect(
         screen.getByText(`Detail de mon offre T-${offer.id}`)

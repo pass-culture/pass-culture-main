@@ -111,6 +111,7 @@ export const getIndividualOfferFactory = (
     motorDisabilityCompliant: true,
     mentalDisabilityCompliant: true,
     hasPendingBookings: false,
+    hasCulturalOutreachClaim: false,
     priceCategories: [priceCategoryFactory()],
     externalTicketOfficeUrl: 'https://chuck.no',
     extraData: {
@@ -384,7 +385,6 @@ export function getOffererNameFactory(
 
 export const defaultGetOffererResponseModel: GetOffererResponseModel = {
   hasAvailablePricingPoints: false,
-  hasDigitalVenueAtLeastOneOffer: false,
   hasValidBankAccount: true,
   hasPendingBankAccount: false,
   hasNonFreeOffer: true,

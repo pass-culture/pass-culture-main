@@ -71,6 +71,7 @@ class FeatureToggle(enum.Enum):
         "Active la synchronisation des demandes de modifications avec Démarche Numérique (ex-DMS)"
     )
     ENABLE_EDUCONNECT_AUTHENTICATION = "Active l'authentification via educonnect sur l'app native"
+    ENABLE_UNSUSPEND_ACCOUNT = "Active le point d'api /native/v1/account/unsuspend"
     ENABLE_FRONT_IMAGE_RESIZING = "Active le redimensionnement sur demande des images par l'app et le web"
     ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION = "Active l'utilisation du lien avec redirection pour les offres (nécessaires pour contourner des restrictions d'iOS)"
     ENABLE_INVOICE_SYNC = (
@@ -192,6 +193,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE,
     FeatureToggle.ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION,
     FeatureToggle.ENABLE_DS_SYNC_FOR_USER_ACCOUNT_UPDATE_REQUESTS,
+    FeatureToggle.ENABLE_UNSUSPEND_ACCOUNT,
     FeatureToggle.ENABLE_EMS_INTEGRATION,
     FeatureToggle.ENABLE_EXPERIMENTAL_ASYNC_OFFER_INDEXING,
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,

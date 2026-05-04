@@ -22,5 +22,3 @@ const navSlice = createSlice({
 })
 
 export const navReducer = navSlice.reducer
-
-export const { setSelectedPartnerPageId } = navSlice.actions

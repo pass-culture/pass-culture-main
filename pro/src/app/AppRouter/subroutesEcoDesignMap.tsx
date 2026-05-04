@@ -10,7 +10,7 @@ export const routesEcoDesign: CustomRouteGroupChild[] = [
     lazy: () => import('@/pages/EcoDesign/EcoDesignMenu'),
     loader: noop,
     path: '',
-    title: 'Déclaration d\u2019écoconception de l\u2019espace partenaires',
+    title: 'Déclaration d\u2019écoconception de l\u2019espace partenaire',
   },
   {
     lazy: () => import('@/pages/EcoDesign/Policy'),

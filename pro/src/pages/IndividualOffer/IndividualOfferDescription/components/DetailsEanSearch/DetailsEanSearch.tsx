@@ -4,8 +4,8 @@ import { useForm } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
 import { getError, isErrorAPIError } from '@/apiClient/helpers'
-import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Button } from '@/design-system/Button/Button'
 import { TextInput } from '@/design-system/TextInput/TextInput'
@@ -41,9 +41,8 @@ export const DetailsEanSearch = ({
   onEanSearch,
   onEanReset,
 }: DetailsEanSearchProps): JSX.Element => {
-  const selectedOffererId = useAppSelector(
-    (state) => state.offerer.currentOfferer
-  )?.id
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+
   const [wasCleared, setWasCleared] = useState(false)
   const [subcatError, setSubcatError] = useState<string | null>(null)
 
@@ -95,14 +94,9 @@ export const DetailsEanSearch = ({
   const onSearch = async (data: EanSearchForm) => {
     if (data.eanSearch) {
       try {
-        assertOrFrontendError(
-          selectedOffererId,
-          'Offerer should have already been selected.'
-        )
-
         const product = await api.getProductByEan(
           data.eanSearch,
-          selectedOffererId
+          selectedPartnerVenue.managingOfferer.id
         )
         onEanSearch(data.eanSearch, product)
       } catch (err) {

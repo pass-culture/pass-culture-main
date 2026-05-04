@@ -16,7 +16,11 @@ import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { CollectiveStatusLabel } from '@/components/CollectiveStatusLabel/CollectiveStatusLabel'
 import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import fullHideIcon from '@/icons/full-hide.svg'
 import strokeCheckIcon from '@/icons/stroke-check.svg'
 
@@ -95,7 +99,8 @@ export const OfferEducationalActions = ({
             <Button
               icon={fullHideIcon}
               onClick={() => setIsOfferActive(false)}
-              variant={ButtonVariant.TERTIARY}
+              variant={ButtonVariant.SECONDARY}
+              size={ButtonSize.SMALL}
               color={ButtonColor.NEUTRAL}
               label="Mettre en pause"
             />

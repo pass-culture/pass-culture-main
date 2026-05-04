@@ -99,7 +99,7 @@ describe('CollectiveOfferConfirmation', () => {
         CollectiveOfferDisplayedStatus.HIDDEN,
         CollectiveOfferDisplayedStatus.ENDED,
       ],
-      null,
+      2,
       null,
       null,
       null,

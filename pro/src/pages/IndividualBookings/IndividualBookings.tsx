@@ -1,22 +1,17 @@
 import { useMemo, useState } from 'react'
 import { useLocation } from 'react-router'
-import { formatAndOrderAddresses } from 'repository/venuesService'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import {
-  GetOffererAddressesWithOffersOption,
-  GetVenueAddressesWithOffersOption,
-} from '@/apiClient/v1'
+import { GetVenueAddressesWithOffersOption } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_BOOKINGS_QUERY_KEY,
   GET_HAS_BOOKINGS_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
+import { formatAndOrderAddresses } from '@/commons/format/venuesService'
 import { useVenueAddresses } from '@/commons/hooks/swr/useVenueAddresses'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
@@ -45,7 +40,6 @@ import styles from './IndividualBookings.module.scss'
 const MAX_LOADED_PAGES = 10
 
 export const IndividualBookings = () => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   const location = useLocation()
@@ -67,24 +61,14 @@ export const IndividualBookings = () => {
     resetPreFilters,
     resetAndApplyPreFilters,
     updateUrl,
-  } = useBookingsFilters(
-    withSwitchVenueFeature
-      ? {
-          venueId: selectedPartnerVenue.id.toString(),
-          offererId: selectedOfferer.id.toString(),
-        }
-      : { offererId: selectedOfferer.id.toString() }
-  )
-
-  const offererAddressQuery = useOffererAddresses(
-    GetOffererAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
-  )
+  } = useBookingsFilters({
+    venueId: selectedPartnerVenue.id.toString(),
+    offererId: selectedOfferer.id.toString(),
+  })
   const venueAddressQuery = useVenueAddresses(
     GetVenueAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
   )
-  const offererAddresses = formatAndOrderAddresses(
-    withSwitchVenueFeature ? venueAddressQuery.data : offererAddressQuery.data
-  )
+  const offererAddresses = formatAndOrderAddresses(venueAddressQuery.data)
 
   const { data: bookingsQuery, isLoading } = useSWR(
     isEqual(appliedPreFilters, initialAppliedFilters)
@@ -191,24 +175,24 @@ export const IndividualBookings = () => {
         wereBookingsRequested={wereBookingsRequested}
         hasResult={(bookingsQuery ?? []).length > 0}
         isFiltersDisabled={!hasBookingsQuery.hasBookings}
-        isLocalLoading={offererAddressQuery.isLoading}
+        isLocalLoading={venueAddressQuery.isLoading}
         isTableLoading={isLoading}
         offererAddresses={offererAddresses}
         urlParams={urlParams}
         updateUrl={updateUrl}
       />
-      {withSwitchVenueFeature && wereBookingsRequested && (
-        <div className={styles['downloads-banner']}>
-          <DownloadsMovedBanner isIndividual={true} />
-        </div>
-      )}
-      {(!withSwitchVenueFeature || wereBookingsRequested) && (
-        <FilterByOmniSearch
-          isDisabled={isLoading}
-          keywords={filters.keywords}
-          selectedOmniSearchCriteria={filters.selectedOmniSearchCriteria}
-          updateFilters={updateFilters}
-        />
+      {wereBookingsRequested && (
+        <>
+          <div className={styles['downloads-banner']}>
+            <DownloadsMovedBanner isIndividual={true} />
+          </div>
+          <FilterByOmniSearch
+            isDisabled={isLoading}
+            keywords={filters.keywords}
+            selectedOmniSearchCriteria={filters.selectedOmniSearchCriteria}
+            updateFilters={updateFilters}
+          />
+        </>
       )}
       {filteredBookings.length !== 0 && (
         <Header

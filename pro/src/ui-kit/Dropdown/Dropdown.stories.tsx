@@ -6,6 +6,7 @@ import { Dropdown } from './Dropdown'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import { DropdownItem } from './DropdownItem'
+import { DropdownItemColor } from './types'
 
 const meta: Meta<typeof Dropdown> = {
   title: '@/ui-kit/Dropdown',
@@ -82,4 +83,19 @@ export const LongContent: Story = {
         </DropdownItem>
     ))}
   </Dropdown>,
+}
+
+export const WithDangerChildren: Story = {
+  args: {
+    trigger: <Button label="Ouvrir" variant={ButtonVariant.PRIMARY} />,
+  },
+  render: (args) => (
+    <Dropdown {...args}>
+      <DropdownItem onSelect={() => console.log('Profil')}>Profil</DropdownItem>
+
+      <DropdownItem  color={DropdownItemColor.DANGER} onSelect={() => console.log('Déconnexion')}>
+        Déconnexion
+      </DropdownItem>
+    </Dropdown>
+  ),
 }

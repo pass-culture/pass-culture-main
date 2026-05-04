@@ -1,7 +1,7 @@
 {% extends "layouts/connected.html" %}
 {% import "components/badges.html" as badges with context %}
 {% macro action_bar_button(icon, title, modal_id=none, submit_form=none) %}
-  <button class="btn btn-outline-primary-subtle-bg d-flex align-items-center gap-2"
+  <button class="btn btn-outline-primary-subtle-bg d-flex align-items-center gap-2 pc-action"
           {% if modal_id %}data-bs-toggle="modal" data-bs-target="{{ modal_id }}"{% endif %}
           {% if submit_form %}href="#" data-submit-form="{{ submit_form }}"{% endif %}
           type="button">
@@ -10,7 +10,7 @@
   </button>
 {% endmacro %}
 {% macro action_bar_additional_button(icon, title, modal_id=none, submit_form=none) %}
-  <button class="dropdown-item d-flex align-items-center gap-2"
+  <button class="dropdown-item d-flex align-items-center gap-2 pc-action"
           {% if modal_id %}data-bs-toggle="modal" data-bs-target="{{ modal_id }}"{% endif %}
           {% if submit_form %}href="#" data-submit-form="{{ submit_form }}"{% endif %}
           type="button">

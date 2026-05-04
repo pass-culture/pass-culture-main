@@ -17,3 +17,19 @@
     @include fonts.body;
   }
 }
+
+.displaying-data {
+  margin-bottom: var(--size-spacing-l);
+
+  &-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .title {
+      @include fonts.title4;
+
+      margin-bottom: 0;
+    }
+  }
+}

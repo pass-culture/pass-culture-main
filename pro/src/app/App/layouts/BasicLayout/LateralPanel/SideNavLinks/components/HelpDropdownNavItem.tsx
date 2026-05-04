@@ -1,4 +1,4 @@
-import { HelpDropdownMenu } from '@/app/App/layouts/components/Header/components/HeaderHelpDropdown/HelpDropdownMenu'
+import { HelpDropdownMenu } from '@/app/App/layouts/components/Header/components/HelpDropdownMenu/HelpDropdownMenu'
 import fullHelpIcon from '@/icons/full-help.svg'
 import fullRightIcon from '@/icons/full-right.svg'
 import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'

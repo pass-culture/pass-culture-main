@@ -1,0 +1,48 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
+
+.description-list {
+  @include fonts.body-accent-s;
+
+  margin-top: var(--size-spacing-s);
+  padding: var(--size-spacing-l);
+  background: var(--color-background-subtle);
+  color: var(--color-text-default);
+  border-radius: var(--size-border-radius-m);
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
+
+  @media (min-width: size.$tablet) {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    row-gap: var(--size-spacing-s);
+  }
+
+  .data-term {
+    margin-bottom: var(--size-spacing-xs);
+
+    @media (min-width: size.$tablet) {
+      margin-bottom: initial;
+    }
+  }
+
+  .data-definition {
+    color: var(--color-text-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-spacing-xs);
+
+    &:not(:last-child) {
+      margin-bottom: var(--size-spacing-l);
+
+      @media (min-width: size.$tablet) {
+        margin-bottom: initial;
+      }
+    }
+
+    @media (min-width: size.$tablet) {
+      text-align: right;
+    }
+  }
+}

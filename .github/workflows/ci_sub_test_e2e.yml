@@ -47,7 +47,7 @@ jobs:
         run: yarn run "build:$ENV"
 
       - name: Save build folder
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: build-playwright
           if-no-files-found: error
@@ -179,7 +179,7 @@ jobs:
         run: yarn test:e2e:ci --reporter=blob --shard="${{ matrix.shardIndex }}/${{matrix.shardTotal }}"
 
       - name: "Upload Playwright report"
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: ${{ !cancelled() }}
         with:
           name: report-chromium-${{ matrix.shardIndex }}
@@ -235,7 +235,7 @@ jobs:
         run: npx playwright merge-reports --reporter html ./all-blob-reports
 
       - name: Upload HTML report
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: html-report--attempt-${{ github.run_attempt }}
           path: pro/playwright-report

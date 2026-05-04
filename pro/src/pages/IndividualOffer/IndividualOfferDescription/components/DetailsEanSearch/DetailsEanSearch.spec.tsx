@@ -7,10 +7,8 @@ import {
   type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { subcategoryFactory } from '@/commons/utils/factories/individualApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/constants'
 
@@ -75,8 +73,10 @@ const renderDetailsEanSearch = (props: DetailsEanSearchTestProps = {}) => {
     </IndividualOfferContext.Provider>,
     {
       storeOverrides: {
-        user: { currentUser: sharedCurrentUserFactory() },
-        offerer: currentOffererFactory(),
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
+        },
       },
     }
   )

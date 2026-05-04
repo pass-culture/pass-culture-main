@@ -12,7 +12,7 @@ import { Reimbursements } from './Reimbursements'
 
 const reimbursementsRoutes = [
   {
-    path: '/remboursements',
+    path: '/administration/remboursements',
     Component: Reimbursements,
     children: [
       {
@@ -32,18 +32,20 @@ const offererNamesValidated = [
   },
 ]
 
+const user = sharedCurrentUserFactory()
+
 function renderReimbursements(options?: RenderWithProvidersOptions) {
   renderWithProviders(<Reimbursements />, {
     routes: reimbursementsRoutes,
-    user: sharedCurrentUserFactory(),
-    initialRouterEntries: ['/remboursements'],
+    initialRouterEntries: ['/administration/remboursements'],
     storeOverrides: {
-      user: { currentUser: sharedCurrentUserFactory() },
+      user: {
+        currentUser: user,
+        selectedAdminOfferer: defaultGetOffererResponseModel,
+      },
       offerer: {
-        currentOfferer: {
-          ...defaultGetOffererResponseModel,
-        },
-        offererNamesValidated: offererNamesValidated,
+        currentOfferer: defaultGetOffererResponseModel,
+        offererNamesValidated: [defaultGetOffererResponseModel],
         offererNames: offererNamesValidated,
       },
     },
@@ -67,12 +69,17 @@ describe('Reimbursement page', () => {
   it('should render breadcrumb with error icon', async () => {
     renderReimbursements({
       storeOverrides: {
-        offerer: {
-          currentOfferer: {
-            id: 1,
+        user: {
+          currentUser: user,
+          selectedAdminOfferer: {
+            ...defaultGetOffererResponseModel,
             venuesWithNonFreeOffersWithoutBankAccounts: [2],
+            hasBankAccountWithPendingCorrections: true,
           },
-          offererNamesValidated: offererNamesValidated,
+        },
+        offerer: {
+          currentOfferer: defaultGetOffererResponseModel,
+          offererNamesValidated: [defaultGetOffererResponseModel],
           offererNames: offererNamesValidated,
         },
       },
@@ -110,13 +117,9 @@ describe('Reimbursement page', () => {
   it('should render non attached banner if offerer is not attached', () => {
     renderReimbursements({
       storeOverrides: {
-        offerer: {
-          currentOfferer: {
-            id: 1,
-            venuesWithNonFreeOffersWithoutBankAccounts: [2],
-          },
-          offererNamesValidated: [],
-          offererNames: offererNamesValidated,
+        user: {
+          currentUser: user,
+          selectedAdminOfferer: defaultGetOffererResponseModel,
         },
       },
     })

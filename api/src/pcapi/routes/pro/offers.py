@@ -23,7 +23,6 @@ from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers import tasks
 from pcapi.core.offers import validation
 from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
-from pcapi.core.users import repository as users_repository
 from pcapi.core.videos import api as videos_api
 from pcapi.core.videos import exceptions as videos_exceptions
 from pcapi.models import api_errors
@@ -113,16 +112,12 @@ def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferWithAddressRe
         "meta_data",
         "highlight_requests",
         "artists",
+        "cultural_outreach",
     ]
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options=load_all)
     except exceptions.OfferNotFound:
-        raise api_errors.ApiErrors(
-            errors={
-                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
-            },
-            status_code=404,
-        )
+        raise api_errors.resource_not_found_error()
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     return offers_serialize.GetIndividualOfferWithAddressResponseModel.from_orm(offer)
@@ -139,12 +134,7 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options=["offerer_address"])
     except exceptions.OfferNotFound:
-        raise api_errors.ApiErrors(
-            errors={
-                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
-            },
-            status_code=404,
-        )
+        raise api_errors.resource_not_found_error()
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     filtered_stocks = offers_repository.get_filtered_stocks(
@@ -187,12 +177,7 @@ def upsert_offer_stocks(
     try:
         offer = offers_repository.get_offer_by_id(offer_id)
     except exceptions.OfferNotFound:
-        raise api_errors.ApiErrors(
-            errors={
-                "global": "No offer found for this id",
-            },
-            status_code=404,
-        )
+        raise api_errors.resource_not_found_error()
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     stock_inputs: list[offers_schemas.ThingStockUpsertInput] = []
@@ -222,12 +207,7 @@ def delete_stocks(offer_id: int, body: offers_serialize.DeleteStockListBody) -> 
     try:
         offer = offers_repository.get_offer_by_id(offer_id)
     except exceptions.OfferNotFound:
-        raise api_errors.ApiErrors(
-            errors={
-                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
-            },
-            status_code=404,
-        )
+        raise api_errors.resource_not_found_error()
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     stocks_to_delete = [stock for stock in offer.stocks if stock.id in body.ids_to_delete]
@@ -251,12 +231,7 @@ def get_stocks_stats(offer_id: int) -> offers_serialize.StockStatsResponseModel:
     try:
         offer = offers_repository.get_offer_by_id(offer_id)
     except exceptions.OfferNotFound:
-        raise api_errors.ApiErrors(
-            errors={
-                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
-            },
-            status_code=404,
-        )
+        raise api_errors.resource_not_found_error()
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     try:
         stocks_stats = offers_api.get_stocks_stats(offer_id=offer_id)
@@ -283,9 +258,7 @@ def get_stocks_stats(offer_id: int) -> offers_serialize.StockStatsResponseModel:
 @atomic()
 def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
     if not body.ids:
-        raise api_errors.ResourceNotFoundError(
-            {"global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"]}
-        )
+        raise api_errors.resource_not_found_error()
     query = offers_repository.get_offers_by_ids(current_user, body.ids)  # type: ignore[arg-type]
     offers_api.batch_delete_draft_offers(query)
 
@@ -337,6 +310,7 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
         visualDisabilityCompliant=body.visual_disability_compliant,
         bookingContact=body.booking_contact,
         bookingEmail=body.booking_email,
+        hasCulturalOutreachClaim=body.has_cultural_outreach_claim,
         description=body.description,
         durationMinutes=body.duration_minutes,
         externalTicketOfficeUrl=body.external_ticket_office_url,
@@ -395,7 +369,7 @@ def post_offer(
 @login_required
 @spectree_serialize(
     on_success_status=200,
-    on_error_statuses=[404, 403],
+    on_error_statuses=[404],
     api=blueprint.pro_private_schema,
     response_model=offers_serialize.GetIndividualOfferResponseModel,
 )
@@ -406,13 +380,13 @@ def patch_publish_offer(
     try:
         offerer = offerers_repository.get_by_offer_id(body.id)
     except offerers_exceptions.CannotFindOffererForOfferId:
-        raise api_errors.ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+        raise api_errors.resource_not_found_error()
 
     rest.check_user_has_access_to_offerer(current_user, offerer.id)
 
     offer = offers_repository.get_offer_and_extradata(body.id)
     if offer is None:
-        raise api_errors.ApiErrors({"offer": ["Cette offre n’existe pas"]}, status_code=404)
+        raise api_errors.resource_not_found_error()
     if not offers_repository.offer_has_bookable_stocks(offer.id):
         raise api_errors.ApiErrors({"offer": "Cette offre n’a pas de stock réservable"}, 400)
 
@@ -486,6 +460,7 @@ def patch_offer(
             offer_id,
             load_options=[
                 "bookings_count",
+                "cultural_outreach",
                 "is_non_free_offer",
                 "meta_data",
                 "offerer_address",
@@ -497,7 +472,7 @@ def patch_offer(
             ],
         )
     except exceptions.OfferNotFound:
-        raise api_errors.ResourceNotFoundError()
+        raise api_errors.resource_not_found_error()
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
@@ -522,6 +497,7 @@ def patch_offer(
             "venue",
             "highlight_requests",
             "artists",
+            "cultural_outreach",
         ],
     )
 
@@ -540,9 +516,7 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
     try:
         offer = offers_repository.get_offer_by_id(form.offer_id)
     except exceptions.OfferNotFound:
-        raise api_errors.ResourceNotFoundError(
-            errors={"global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"]}
-        )
+        raise api_errors.resource_not_found_error()
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     if "thumb" not in request.files:
@@ -631,7 +605,7 @@ def replace_offer_price_categories(
     try:
         offer = offers_repository.get_offer_by_id(offer_id)
     except exceptions.OfferNotFound:
-        raise api_errors.ResourceNotFoundError(errors={"offer_id": "Offer not found"})
+        raise api_errors.resource_not_found_error()
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     price_category_inputs: list[offers_schemas.PriceCategoryInput] = []
@@ -652,6 +626,7 @@ def replace_offer_price_categories(
         "pending_bookings",
         "headline_offer",
         "meta_data",
+        "cultural_outreach",
     ]
     offer = offers_repository.get_offer_by_id(offer.id, load_options=load_options)
 
@@ -668,12 +643,11 @@ def replace_offer_price_categories(
 def get_active_venue_offer_by_ean(venue_id: int, ean: str) -> offers_serialize.GetActiveEANOfferResponseModel:
     try:
         venue = get_or_404(offerers_models.Venue, venue_id)
-        rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
         offer = offers_repository.get_active_offer_by_venue_id_and_ean(venue_id, ean)
     except exceptions.OfferNotFound:
-        raise api_errors.ResourceNotFoundError(
-            errors={"global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"]}
-        )
+        raise api_errors.resource_not_found_error()
+
+    rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     return offers_serialize.GetActiveEANOfferResponseModel.from_orm(offer)
 
@@ -770,10 +744,7 @@ def post_highlight_request_offer(
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options={"venue"})
     except exceptions.OfferNotFound:
-        raise api_errors.ApiErrors(
-            errors={"global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"]},
-            status_code=404,
-        )
+        raise api_errors.resource_not_found_error()
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     validation.check_offer_can_ask_for_highlight_request(offer)
 
@@ -795,6 +766,7 @@ def post_highlight_request_offer(
 
     load_options: offers_repository.OFFER_LOAD_OPTIONS = [
         "bookings_count",
+        "cultural_outreach",
         "headline_offer",
         "is_non_free_offer",
         "meta_data",
@@ -819,10 +791,9 @@ def get_offer_pro_advice(offer_id: int) -> offers_serialize.GetProAdviceResponse
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options=["venue", "pro_advice"])
     except exceptions.OfferNotFound:
-        raise api_errors.ResourceNotFoundError()
+        raise api_errors.resource_not_found_error()
 
-    if not users_repository.has_access(current_user, offer.venue.managingOffererId):
-        raise api_errors.ResourceNotFoundError()
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     pro_advice = offers_serialize.ProAdviceModel.model_validate(offer.proAdvice) if offer.proAdvice else None
     return offers_serialize.GetProAdviceResponseModel(pro_advice=pro_advice)
@@ -842,10 +813,9 @@ def create_offer_pro_advice(
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options=["venue", "pro_advice"])
     except exceptions.OfferNotFound:
-        raise api_errors.ResourceNotFoundError()
+        raise api_errors.resource_not_found_error()
 
-    if not users_repository.has_access(current_user, offer.venue.managingOffererId):
-        raise api_errors.ResourceNotFoundError()
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     user = current_user._get_current_object()
     pro_advice = pro_advice_api.create_pro_advice(offer, body.content, body.author, user.id)
@@ -865,10 +835,9 @@ def update_offer_pro_advice(
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options=["venue", "pro_advice"])
     except exceptions.OfferNotFound:
-        raise api_errors.ResourceNotFoundError()
+        raise api_errors.resource_not_found_error()
 
-    if not users_repository.has_access(current_user, offer.venue.managingOffererId):
-        raise api_errors.ResourceNotFoundError()
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     user = current_user._get_current_object()
     pro_advice = pro_advice_api.update_pro_advice(offer, body.content, body.author, user.id)
@@ -886,10 +855,9 @@ def delete_offer_pro_advice(offer_id: int) -> None:
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options=["venue", "pro_advice"])
     except exceptions.OfferNotFound:
-        raise api_errors.ResourceNotFoundError()
+        raise api_errors.resource_not_found_error()
 
-    if not users_repository.has_access(current_user, offer.venue.managingOffererId):
-        raise api_errors.ResourceNotFoundError()
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     user = current_user._get_current_object()
     pro_advice_api.delete_pro_advice(offer, user.id)

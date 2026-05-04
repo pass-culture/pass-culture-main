@@ -19,7 +19,7 @@
         <tr>
           <th scope="row">{{ build_booking_toggle_extra_row_button(booking_finance_incident.collectiveBooking) }}</th>
           <td>
-            <a href="{{ url_for('backoffice_web.collective_bookings.list_collective_bookings', q=booking_finance_incident.collectiveBooking.id) }}"
+            <a href="{{ url_for('backoffice_web.collective_offer.get_collective_offer_details', collective_offer_id=booking_finance_incident.collectiveBooking.collectiveStock.collectiveOfferId) }}"
                class="link-primary">{{ booking_finance_incident.collectiveBooking.id }}</a>
           </td>
           <td>{{ booking_finance_incident.collectiveBooking.educationalInstitution.name }}</td>

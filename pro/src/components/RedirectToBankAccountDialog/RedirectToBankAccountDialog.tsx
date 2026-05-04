@@ -5,20 +5,22 @@ import { Events, VenueEvents } from '@/commons/core/FirebaseEvents/constants'
 import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from '@/commons/core/Offers/constants'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { updateUserAccess } from '@/commons/store/user/reducer'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import fullWaitIcon from '@/icons/full-wait.svg'
 import strokePartyIcon from '@/icons/stroke-party.svg'
-import { RedirectDialog } from '@/ui-kit/RedirectDialog/RedirectDialog'
+import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 export interface RedirectToBankAccountDialogProps {
   cancelRedirectUrl: string
-  offerId: number
+  offererId: number
   venueId: number
   isDialogOpen: boolean
 }
 
 export const RedirectToBankAccountDialog = ({
   cancelRedirectUrl,
-  offerId,
+  offererId,
   venueId,
   isDialogOpen,
 }: RedirectToBankAccountDialogProps): JSX.Element => {
@@ -29,8 +31,26 @@ export const RedirectToBankAccountDialog = ({
   const dispatch = useAppDispatch()
 
   return (
-    <RedirectDialog
+    <ConfirmDialog
+      title="Félicitations, vous avez créé votre offre !"
       icon={strokePartyIcon}
+      overrideConfirm={
+        <Button
+          as="a"
+          to={`/administration/remboursements/informations-bancaires?structure=${offererId}`}
+          variant={ButtonVariant.PRIMARY}
+          onClick={() => {
+            logEvent(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
+              venue_id: venueId,
+              from: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
+            })
+            if (isOnboarding) {
+              dispatch(updateUserAccess('full'))
+            }
+          }}
+          label={'Ajouter un compte bancaire'}
+        />
+      }
       onCancel={() => {
         logEvent(Events.CLICKED_SEE_LATER_FROM_SUCCESS_OFFER_CREATION_MODAL, {
           from: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
@@ -41,22 +61,8 @@ export const RedirectToBankAccountDialog = ({
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         navigate(cancelRedirectUrl)
       }}
-      title="Félicitations, vous avez créé votre offre !"
-      redirectText="Ajouter un compte bancaire"
-      to={`/remboursements/informations-bancaires?structure=${offerId}`}
-      isExternal={false}
-      onRedirect={() => {
-        logEvent(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
-          venue_id: venueId,
-          from: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-        })
-        if (isOnboarding) {
-          dispatch(updateUserAccess('full'))
-        }
-      }}
       cancelText="Plus tard"
       cancelIcon={fullWaitIcon}
-      withRedirectLinkIcon={false}
       open={isDialogOpen}
     >
       <p>Vous pouvez dès à présent ajouter un compte bancaire.</p>
@@ -64,6 +70,6 @@ export const RedirectToBankAccountDialog = ({
         Vos remboursements seront rétroactifs une fois votre compte bancaire
         validé.
       </p>
-    </RedirectDialog>
+    </ConfirmDialog>
   )
 }

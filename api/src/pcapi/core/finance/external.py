@@ -81,12 +81,8 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
         )
         return
 
-    invoices_query = (
-        db.session.query(finance_models.Invoice)
-        .filter(
-            finance_models.Invoice.status == finance_models.InvoiceStatus.PENDING,
-        )
-        .with_entities(finance_models.Invoice.id)
+    invoices_query = db.session.query(finance_models.Invoice).filter(
+        finance_models.Invoice.status == finance_models.InvoiceStatus.PENDING,
     )
     if count != 0:
         invoices_query = invoices_query.limit(count)
@@ -99,10 +95,9 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
 
     app.redis_client.set(conf.REDIS_PUSH_INVOICE_LOCK, "1", ex=conf.REDIS_PUSH_INVOICE_LOCK_TIMEOUT)
 
-    invoice_ids = [e[0] for e in invoices]
-
     try:
-        for invoice_id in invoice_ids:
+        for invoice in invoices:
+            invoice_id = invoice.id
             try:
                 backend_name = finance_backend.get_backend_name()
                 logger.info("Push invoice", extra={"invoice_id": invoice_id, "backend": backend_name})
@@ -128,14 +123,17 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
                     {"status": finance_models.InvoiceStatus.PENDING_PAYMENT},
                     synchronize_session=False,
                 )
-                if not FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS.is_active():
+                # We validate all dependent objects if the FF is inactive, and free ones only if the FF is active
+                if not FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS.is_active() or invoice.amount == 0:
                     finance_api.validate_invoices([invoice_id])
+
                 db.session.commit()
                 time_to_sleep = finance_backend.get_time_to_sleep_between_two_sync_requests()
                 time.sleep(time_to_sleep)
 
         # no break, all invoices processed without error
         else:
+            invoice_ids = [invoice.id for invoice in invoices]
             cashflow = (
                 db.session.query(finance_models.Cashflow)
                 .join(finance_models.Cashflow.invoices)

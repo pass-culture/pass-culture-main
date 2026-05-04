@@ -8,7 +8,7 @@ import strokeCloseIcon from '@/icons/stroke-close.svg'
 import strokeDraftIcon from '@/icons/stroke-draft.svg'
 import strokeWarningIcon from '@/icons/stroke-warning.svg'
 
-const OFFER_STATUS_PROPERTIES: Record<
+export const OFFER_STATUS_PROPERTIES: Record<
   string,
   | {
       variant: TagVariant

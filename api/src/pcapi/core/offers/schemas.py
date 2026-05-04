@@ -12,7 +12,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offers_validation
-from pcapi.core.opening_hours import schemas as opening_hours_schemas
 from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_v1_serialization
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import artist_serialize
@@ -35,6 +34,7 @@ class CreateOffer(BaseModel):
     external_ticket_office_url: HttpUrl | None = None
     ean: str | None
     extra_data: typing.Any = None
+    has_cultural_outreach_claim: bool | None = None
     id_at_provider: str | None = None
     is_duo: bool | None = None
     url: HttpUrl | None = None
@@ -88,6 +88,7 @@ class UpdateOffer(BaseModel):
     external_ticket_office_url: HttpUrl | None = None
     ean: str | None = None
     extra_data: typing.Any = None
+    has_cultural_outreach_claim: bool | None = None
     id_at_provider: str | None = None
     is_duo: bool | None = None
     offerer_address: offerers_models.OffererAddress | None
@@ -132,13 +133,6 @@ class UpdateOffer(BaseModel):
         arbitrary_types_allowed = True
         alias_generator = serialization_utils.to_camel
         extra = "forbid"
-
-
-class OfferOpeningHoursSchema(BaseModel):
-    openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespans
-
-    class Config:
-        use_enum_values = True
 
 
 class SerializedProductsStock(typing.TypedDict):

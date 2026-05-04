@@ -11,6 +11,7 @@
  * @see ./CollectiveOffersList.module.scss
  */
 .offer-line {
+  position: relative; // ESSENTIAL: defines the click boundary
   display: grid; // In mobile, every line has its own grid
   align-items: center;
   grid-template-columns: max-content 1fr;
@@ -57,11 +58,37 @@
     margin-top: var(--size-spacing-s);
   }
 
+  // Covers the entire offer-line
+  &-link {
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+  }
+
+  &:hover {
+    .offer-line-content,
+    .offer-line-status {
+      text-decoration: underline;
+    }
+
+    &:has(> *:last-child:hover) {
+      .offer-line-content,
+      .offer-line-status {
+        text-decoration: none;
+      }
+    }
+  }
+
   // CTA button
   & > *:last-child {
     grid-column: 1 / span 2;
     grid-row: 3;
     width: 100%;
+    position: relative; // To go above the link
+    z-index: 2;
 
     // To be sure that all CTAs have the same width even
     // when there is only one kind of CTA
@@ -133,8 +160,4 @@
       grid-row: auto;
     }
   }
-}
-
-.visually-hidden {
-  @include a11y.visually-hidden;
 }

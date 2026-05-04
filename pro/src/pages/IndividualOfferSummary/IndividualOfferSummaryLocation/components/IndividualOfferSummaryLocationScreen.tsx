@@ -4,12 +4,12 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { computeAddressDisplayName } from '@/commons/format/venuesService'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { OfferAppPreview } from '@/components/OfferAppPreview/OfferAppPreview'
 import { ButtonVariant } from '@/design-system/Button/types'
 import phoneStrokeIcon from '@/icons/stroke-phone.svg'
-import { computeAddressDisplayName } from '@/repository/venuesService'
 import { SummaryAside } from '@/ui-kit/SummaryLayout/SummaryAside'
 import { SummaryContent } from '@/ui-kit/SummaryLayout/SummaryContent'
 import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'

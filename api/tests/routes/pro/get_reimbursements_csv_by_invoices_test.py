@@ -280,6 +280,9 @@ def test_booking_with_empty_use_date_should_be_ok(client):
     CSV can still be build.
     """
 
+    # There must be a shorter and easier way to setup all of this + not
+    # sure that this is perfectly realistic. Feel free to clean and
+    # update all of this.
     offerer = offerers_factories.OffererFactory()
     venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
 

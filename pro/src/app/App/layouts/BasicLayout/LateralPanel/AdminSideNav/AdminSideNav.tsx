@@ -16,7 +16,7 @@ export const AdminSideNavLinks = () => {
       type: 'link',
       icon: strokeRepaymentIcon,
       title: 'Gestion financière',
-      to: '/remboursements',
+      to: '/administration/remboursements',
     },
     {
       key: 'activity_data',
@@ -47,7 +47,7 @@ export const AdminSideNavLinks = () => {
       type: 'link',
       icon: strokeCollaboratorIcon,
       title: 'Collaborateurs',
-      to: '/collaborateurs',
+      to: '/administration/collaborateurs',
     },
   ]
 
@@ -67,7 +67,7 @@ export const AdminSideNavLinks = () => {
 
       <div className={styles['nav-links-header']}>Espace Administration</div>
 
-      <SideNavLinks navItems={navItems} withSwitchVenueFeature={true} />
+      <SideNavLinks navItems={navItems} />
     </nav>
   )
 }

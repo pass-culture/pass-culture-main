@@ -2,6 +2,7 @@ from datetime import timedelta
 from unittest.mock import patch
 
 import pytest
+from flask_jwt_extended import decode_token
 from flask_jwt_extended.utils import create_access_token
 from flask_jwt_extended.utils import create_refresh_token
 
@@ -64,7 +65,7 @@ def test_inactive_user_when_active_required(client):
     client.with_token(user)
     with patch("pcapi.core.users.sessions._common.NATIVE_FOLDERS", ["/test-blueprint/"]):
         response = client.get(path)
-    assert response.status_code == 403
+    assert response.status_code == 401
 
 
 def test_inactive_user_when_may_be_inactive(client):
@@ -81,9 +82,10 @@ class UserConnectedTest:
     def test_user_connected_with_refresh_token(self, client):
         user = users_factories.BeneficiaryFactory()
         token = create_refresh_token(
-            identity=user.email,
+            identity=str(user.id),
             expires_delta=timedelta(seconds=30),
         )
+        users_factories.NativeUserSessionFactory(user=user, refreshToken=decode_token(token)["jti"])
 
         response = client.with_explicit_token(token).get("/native/v1/me")
 
@@ -92,16 +94,17 @@ class UserConnectedTest:
 
     def test_user_connected_with_access_token(self, client):
         user = users_factories.BeneficiaryFactory()
-        token = create_access_token(
-            identity=user.email,
-            expires_delta=timedelta(seconds=30),
-            additional_claims={"user_claims": {"user_id": user.id}},
-        )
-
-        response = client.with_explicit_token(token).get("/native/v1/me")
+        response = client.with_token(user).get("/native/v1/me")
 
         assert response.status_code == 200
         assert response.json
+
+    def test_user_connected_with_unregistred_access_token(self, client):
+        user = users_factories.BeneficiaryFactory()
+        response = client.with_token(user, register_token=False).get("/native/v1/me")
+
+        assert response.status_code == 401
+        assert response.json == {}
 
     def test_user_connected_with_no_token(self, client):
         response = client.without_token().get("/native/v1/me")
@@ -112,12 +115,12 @@ class UserConnectedTest:
     def test_user_connected_with_invalid_token(self, client):
         user = users_factories.BeneficiaryFactory()
         token = create_access_token(
-            identity=user.email,
+            identity=str(user.id),
             expires_delta=timedelta(seconds=30),
-            additional_claims={"user_claims": {"user_id": user.id}},
-        )[:-4]
+        )
+        users_factories.NativeUserSessionFactory(user=user, accessToken=decode_token(token)["jti"])
 
-        response = client.with_explicit_token(token).get("/native/v1/me")
+        response = client.with_explicit_token(token[:-4]).get("/native/v1/me")
 
         assert response.status_code == 401
         assert response.json == {}
@@ -125,9 +128,8 @@ class UserConnectedTest:
     def test_user_connected_with_expired_token(self, client):
         user = users_factories.BeneficiaryFactory()
         token = create_access_token(
-            identity=user.email,
+            identity=str(user.id),
             expires_delta=timedelta(seconds=-30),
-            additional_claims={"user_claims": {"user_id": user.id}},
         )
 
         response = client.with_explicit_token(token).get("/native/v1/me")

@@ -27,6 +27,7 @@ export type GetIndividualOfferResponseModel = {
   externalTicketOfficeUrl?: string | null;
   extraData?: any;
   hasBookingLimitDatetimesPassed: boolean;
+  hasCulturalOutreachClaim: boolean;
   hasStocks: boolean;
   highlightRequests: Array<ShortHighlightResponseModel>;
   id: number;

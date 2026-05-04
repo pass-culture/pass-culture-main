@@ -2,11 +2,28 @@ import { screen } from '@testing-library/react'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { describe, expect, it } from 'vitest'
 
+import { SimplifiedBankAccountStatus } from '@/apiClient/v1'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
+
 import { ReimbursementWaitingBanner } from './ReimbursementWaitingBanner'
 
+const renderBanner = (bankAccountStatus: SimplifiedBankAccountStatus | null) =>
+  renderWithProviders(<ReimbursementWaitingBanner />, {
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: makeGetVenueResponseModel({
+          id: 1,
+          bankAccountStatus,
+        }),
+      },
+    },
+  })
+
 describe('ReimbursementWaitingBanner', () => {
-  it('should show valid bank account message and faq link when hasValidBankAccount', () => {
-    renderWithProviders(<ReimbursementWaitingBanner hasValidBankAccount />)
+  it('should show valid bank account message and faq link when the selected partner venue has a valid bank account', () => {
+    renderBanner(SimplifiedBankAccountStatus.VALID)
     expect(
       screen.getByText(
         /Les remboursements sont effectués toutes les 2 à 3 semaines/i
@@ -21,8 +38,8 @@ describe('ReimbursementWaitingBanner', () => {
     )
   })
 
-  it('should show pending bank account message and internal link when hasPendingBankAccount', () => {
-    renderWithProviders(<ReimbursementWaitingBanner hasPendingBankAccount />)
+  it('should show pending bank account message and internal link when the selected partner venue has a pending bank account', () => {
+    renderBanner(SimplifiedBankAccountStatus.PENDING)
     expect(
       screen.getByText(
         /Vos coordonnées bancaires sont en cours de vérification/i
@@ -33,12 +50,21 @@ describe('ReimbursementWaitingBanner', () => {
     })
     expect(link).toHaveAttribute(
       'href',
-      '/remboursements/informations-bancaires'
+      '/administration/remboursements/informations-bancaires'
     )
   })
 
-  it('should show no bank account message and internal link when offerer has no registered bank account', () => {
-    renderWithProviders(<ReimbursementWaitingBanner />)
+  it('should show pending bank account message when the selected partner venue has a bank account with pending corrections', () => {
+    renderBanner(SimplifiedBankAccountStatus.PENDING_CORRECTIONS)
+    expect(
+      screen.getByText(
+        /Vos coordonnées bancaires sont en cours de vérification/i
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should show no bank account message and internal link when the selected partner venue has no registered bank account', () => {
+    renderBanner(null)
     expect(
       screen.getByText(
         /Ajoutez un compte bancaire pour débloquer le remboursement/i
@@ -49,7 +75,7 @@ describe('ReimbursementWaitingBanner', () => {
     })
     expect(link).toHaveAttribute(
       'href',
-      '/remboursements/informations-bancaires'
+      '/administration/remboursements/informations-bancaires'
     )
   })
 })

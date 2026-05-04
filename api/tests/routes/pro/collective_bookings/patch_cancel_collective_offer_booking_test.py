@@ -8,6 +8,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import factories as user_factories
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -118,14 +119,9 @@ class Returns404Test:
         response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
 
         assert response.status_code == 404
-        assert response.json == {
-            "code": "NO_COLLECTIVE_OFFER_FOUND",
-            "message": "No collective offer has been found with this id",
-        }
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
         assert len(testing.adage_requests) == 0
 
-
-class Returns403Test:
     def test_user_does_not_have_access_to_offerer(self, client):
         user = user_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
@@ -137,12 +133,12 @@ class Returns403Test:
         client = client.with_session_auth(user.email)
         response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
 
-        assert response.status_code == 403
-        assert response.json == {
-            "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
-        }
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
         assert len(testing.adage_requests) == 0
 
+
+class Returns403Test:
     @pytest.mark.parametrize("status", testing.STATUSES_NOT_ALLOWING_CANCEL)
     def test_cancel_unallowed_action(self, client, status):
         offer = factories.create_collective_offer_by_status(status)

@@ -50,7 +50,8 @@ CSS_FILES = [
 def generate_bundles() -> None:
     if os.environ.get("WERKZEUG_RUN_MAIN") != "true" and settings.IS_RUNNING_TESTS is not True:
         preprocess_scss()
-        print("💅auto rebuild bundles by settings ENABLE_BO_BUNDLES_AUTORELOAD to 1", flush=True)
+        print("compile scss with: flask compile css", flush=True)
+        print("auto rebuild bundles by settings ENABLE_BO_BUNDLES_AUTORELOAD to 1", flush=True)
         generate_bundle(JS_FILES, JS_BUNDLE)
         generate_bundle(CSS_FILES, CSS_BUNDLE)
 
@@ -58,7 +59,6 @@ def generate_bundles() -> None:
 def preprocess_scss() -> None:
     source = Path("src/pcapi/static/backoffice/scss")
     destination = Path("src/pcapi/static/backoffice/css/compiled")
-    configuration = Path("src/pcapi/static/backoffice/scss/boussole.yml")
 
     Path(destination).mkdir(parents=True, exist_ok=True)
 
@@ -69,7 +69,6 @@ def preprocess_scss() -> None:
         source_map_embed=True,
         source_map_root=destination,
     )
-    print(f"💅compile scss with: boussole compile --config {configuration} --backend yaml", flush=True)
 
 
 def get_hashes() -> HashesContainer:

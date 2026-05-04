@@ -93,6 +93,21 @@ describe('CumulatedViews', () => {
     expect(rows).toHaveLength(11)
   })
 
+  it('should sort daily views by ascendent date', () => {
+    const end = new Date('2026-04-28')
+
+    const dailyViews = Array.from({ length: 10 }, (_, index) => ({
+      views: 100 + index,
+      day: format(add(end, { days: -index }), FORMAT_ISO_DATE_ONLY),
+    }))
+
+    renderCumulatedViews({ dailyViews, totalViewsLast30Days: 0 })
+
+    const rows = screen.getAllByRole('row')
+
+    expect(rows[1]).toHaveTextContent('2026-04-19')
+  })
+
   it('should render chart when all views have the same value', () => {
     const today = new Date()
     const start = subMonths(today, 2)

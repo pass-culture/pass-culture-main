@@ -89,7 +89,8 @@ def create_industrial_app_beneficiaries() -> dict[str, User]:
         )
         users_factories.DepositGrantFactory.create(
             user=user,
-            expirationDate=date_utils.get_naive_utc_now(),
+            dateCreated=date_utils.get_naive_utc_now() - relativedelta(years=1),
+            expirationDate=date_utils.get_naive_utc_now() - relativedelta(months=1),
             source="sandbox",
             type=finance_models.DepositType.GRANT_15_17,
         )

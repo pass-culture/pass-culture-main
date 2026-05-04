@@ -1,13 +1,13 @@
+import type { CollectiveOfferHomeResponseModel } from '@/apiClient/v1'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Card } from '@/ui-kit/Card/Card'
 
 import styles from '../CollectiveOffersList.module.scss'
-import type { CollectiveOffersVariantMap } from '../types'
 import { CollectiveOffersBookableLine } from './components/CollectiveOffersBookableLine/CollectiveOffersBookableLine'
 
 type CollectiveOffersBookableCardProps = {
-  offers: CollectiveOffersVariantMap['BOOKABLE'][]
+  offers: CollectiveOfferHomeResponseModel[]
 }
 
 export const CollectiveOffersBookableCard = ({

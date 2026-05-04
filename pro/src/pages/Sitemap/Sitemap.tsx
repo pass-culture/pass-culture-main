@@ -85,21 +85,25 @@ export const Sitemap = () => {
     },
     {
       title: 'Espace administration',
-      path: '/remboursements',
+      path: '/administration/remboursements',
       children: [
         {
           title: 'Gestion financière',
           path: null,
           children: [
-            { title: 'Justificatifs', path: '/remboursements', children: [] },
+            {
+              title: 'Justificatifs',
+              path: '/administration/remboursements',
+              children: [],
+            },
             {
               title: 'Informations bancaires',
-              path: '/remboursements/informations-bancaires',
+              path: '/administration/remboursements/informations-bancaires',
               children: [],
             },
             {
               title: 'Chiffre d’affaires',
-              path: '/remboursements/revenus',
+              path: '/administration/remboursements/revenus',
               children: [],
             },
           ],
@@ -124,7 +128,7 @@ export const Sitemap = () => {
     },
     {
       title: 'Collaborateurs',
-      path: '/collaborateurs',
+      path: '/administration/collaborateurs',
       children: [],
     },
     {

@@ -1,12 +1,5 @@
 import type { Response } from 'playwright-core'
 
-export function isGetVenuesReponse(response: Response) {
-  return (
-    response.url().includes('/venues') &&
-    response.request().method() === 'GET' &&
-    response.status() === 200
-  )
-}
 export function isGetOffersResponse(response: Response) {
   return (
     response.url().includes('/offers?') &&

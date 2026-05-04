@@ -10,6 +10,7 @@ import { buildSelectOptions } from '@/commons/utils/buildSelectOptions'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
@@ -156,7 +157,13 @@ export const ActivityForm = (): JSX.Element => {
                 label="Site internet, réseau social"
                 description="Format : https://www.siteinternet.com"
                 type="url"
-                error={formState.errors.socialUrls?.[index]?.url?.message}
+                required
+                error={
+                  formState.errors.socialUrls?.[index]?.url?.message ??
+                  (index === 0
+                    ? formState.errors.socialUrls?.root?.message
+                    : undefined)
+                }
                 extension={
                   watchSocialUrls.length > 1 && (
                     <div
@@ -194,11 +201,11 @@ export const ActivityForm = (): JSX.Element => {
 
         <FormLayout.Row className={styles['target-customer-row']}>
           <CheckboxGroup
-            label="À qui souhaitez-vous destiner vos offres sur le pass Culture ? Cette information est collectée à titre informatif."
+            label="À qui souhaitez-vous destiner vos offres sur le pass Culture ? *"
             description="Sélectionnez au moins une option"
             options={[
               {
-                label: 'Au grand public',
+                label: 'Aux jeunes via l’application pass Culture',
                 sizing: 'fill',
                 checked: watch('targetCustomer.individual'),
                 onChange: async (e) => {
@@ -207,7 +214,7 @@ export const ActivityForm = (): JSX.Element => {
                 },
               },
               {
-                label: 'À des groupes scolaires',
+                label: 'Aux groupes scolaires via ADAGE',
                 sizing: 'fill',
                 checked: watch('targetCustomer.educational'),
                 onChange: async (e) => {
@@ -219,6 +226,9 @@ export const ActivityForm = (): JSX.Element => {
             variant="detailed"
             error={formState.errors.targetCustomer?.message}
           />
+          <div className={styles['banner-container']}>
+            <Banner title="Vous pourrez cumuler les deux types d'offres avec un seul compte pass Culture Pro." />
+          </div>
         </FormLayout.Row>
       </FormLayout.Section>
     </>

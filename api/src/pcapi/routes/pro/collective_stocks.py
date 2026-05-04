@@ -11,7 +11,7 @@ from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
-from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.models.api_errors import resource_not_found_error
 from pcapi.routes.apis import private_api
 from pcapi.routes.pro import blueprint
 from pcapi.routes.serialization import collective_stock_serialize
@@ -38,7 +38,7 @@ def create_collective_stock(
     try:
         offerer = offerers_repository.get_by_collective_offer_id(body.offerId)
     except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ResourceNotFoundError({"offerer": ["Aucune structure trouvée à partir de cette offre"]})
+        raise resource_not_found_error()
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
@@ -71,12 +71,12 @@ def edit_collective_stock(
 ) -> collective_stock_serialize.CollectiveStockResponseModel:
     collective_stock = repository.get_collective_stock(collective_stock_id)
     if collective_stock is None:
-        raise ResourceNotFoundError({"code": "COLLECTIVE_STOCK_NOT_FOUND"})
+        raise resource_not_found_error()
 
     try:
         offerer = offerers_repository.get_by_collective_stock_id(collective_stock.id)
     except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ResourceNotFoundError({"offerer": ["Aucune structure trouvée à partir de cette offre"]})
+        raise resource_not_found_error()
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
@@ -84,8 +84,6 @@ def edit_collective_stock(
             stock=collective_stock, stock_data=body.model_dump(exclude_unset=True)
         )
         return collective_stock_serialize.CollectiveStockResponseModel.model_validate(collective_stock)
-    except exceptions.CollectiveOfferIsPublicApi:
-        raise ForbiddenError({"global": ["Les stocks créés par l'api publique ne sont pas editables."]})
     except exceptions.CollectiveOfferForbiddenAction:
         raise ForbiddenError({"global": ["Cette action n'est pas autorisée sur l'offre collective liée à ce stock."]})
     except exceptions.EndDatetimeBeforeStartDatetime:

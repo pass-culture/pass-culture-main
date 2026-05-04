@@ -80,7 +80,6 @@ class GetOffererVenueResponseModel(HttpBodyModel):
 # access to the offerer. During subscription process, use PostOffererResponseModel
 class GetOffererResponseModel(HttpBodyModel):
     has_available_pricing_points: bool
-    has_digital_venue_at_least_one_offer: bool
     is_validated: bool
     is_active: bool
     managed_venues: list[GetOffererVenueResponseModel]
@@ -104,7 +103,6 @@ class GetOffererResponseModel(HttpBodyModel):
         cls,
         row: Row,
         ids_of_venues_with_offers: Iterable[int],
-        has_digital_venue_at_least_one_offer: bool,
         venues_with_non_free_offers_without_bank_accounts: list[int],
     ) -> typing.Self:
         offerer: offerers_models.Offerer = row.Offerer
@@ -115,7 +113,6 @@ class GetOffererResponseModel(HttpBodyModel):
             has_active_offer=row.hasActiveOffer,
             has_available_pricing_points=any(venue.siret for venue in offerer.managedVenues),
             has_bank_account_with_pending_corrections=row.hasBankAccountWithPendingCorrections,
-            has_digital_venue_at_least_one_offer=has_digital_venue_at_least_one_offer,
             has_non_free_offer=row.hasNonFreeOffer,
             has_partner_page=row.hasPartnerPage,
             has_pending_bank_account=row.hasPendingBankAccount,

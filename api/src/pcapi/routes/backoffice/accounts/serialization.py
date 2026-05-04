@@ -20,6 +20,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
+from pcapi.routes.backoffice import filters
 from pcapi.routes.serialization import BaseModel
 
 
@@ -283,16 +284,7 @@ class DepositAction(AccountAction):
 
     @property
     def comment(self) -> str | None:
-        match self._deposit.type:
-            case finance_models.DepositType.GRANT_15_17:
-                deposit_type = "ancien crédit 15-17"
-            case finance_models.DepositType.GRANT_18:
-                deposit_type = "ancien crédit 18"
-            case finance_models.DepositType.GRANT_17_18:
-                deposit_type = "crédit 17-18"
-            case _:
-                deposit_type = "crédit d'origine inconnue"
-
+        deposit_type = filters.format_deposit_type(self._deposit)
         initial_recredit = self._deposit.initial_recredit
         initial_amount = self._deposit.amount - sum(
             recredit.amount for recredit in self._deposit.recredits if recredit != initial_recredit
@@ -315,36 +307,8 @@ class RecreditAction(AccountAction):
 
     @property
     def comment(self) -> str | None:
-        match self._recredit.recreditType:
-            case finance_models.RecreditType.RECREDIT_15:
-                recredit_type = "Recrédit à 15 ans"
-            case finance_models.RecreditType.RECREDIT_16:
-                recredit_type = "Recrédit à 16 ans"
-            case finance_models.RecreditType.RECREDIT_17:
-                recredit_type = "Recrédit à 17 ans"
-            case finance_models.RecreditType.RECREDIT_18:
-                recredit_type = "Recrédit à 18 ans"
-            case finance_models.RecreditType.BONUS_CREDIT:
-                recredit_type = "Recrédit issu de la bonification"
-            case finance_models.RecreditType.MANUAL_MODIFICATION:
-                recredit_type = "Recrédit par une action manuelle"
-            case finance_models.RecreditType.PREVIOUS_DEPOSIT:
-                recredit_type = "Recrédit de l'argent restant du crédit précédent"
-            case finance_models.RecreditType.FINANCE_INCIDENT_RECREDIT:
-                recredit_type = "Recrédit suite à un incident finance sur l'ancien crédit expiré"
-            case _:
-                recredit_type = "Recrédit d'origine inconnue"
-
-        match self._recredit.deposit.type:
-            case finance_models.DepositType.GRANT_15_17:
-                deposit_type = "ancien crédit 15-17"
-            case finance_models.DepositType.GRANT_18:
-                deposit_type = "ancien crédit 18"
-            case finance_models.DepositType.GRANT_17_18:
-                deposit_type = "crédit 17-18"
-            case _:
-                deposit_type = "crédit inconnu"
-
+        recredit_type = filters.format_recredit_type(self._recredit)
+        deposit_type = filters.format_deposit_type(self._recredit.deposit)
         return (
             f"{recredit_type} de {_format_amount_for_recredit_action(self._recredit.amount, self._recredit.deposit.user)} sur un {deposit_type}"
             + (f" ({self._recredit.comment})" if self._recredit.comment else "")

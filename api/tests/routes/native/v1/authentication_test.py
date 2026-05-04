@@ -1065,10 +1065,7 @@ class ResetPasswordTest:
         new_password = "New_password1998!"
         user = users_factories.UserFactory()
 
-        access_token = create_access_token(user.email, additional_claims={"user_claims": {"user_id": user.id}})
-        client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = client.post(
+        response = client.with_token(user).post(
             "/native/v1/change_password",
             json={"currentPassword": settings.TEST_DEFAULT_PASSWORD, "newPassword": new_password},
         )
@@ -1081,10 +1078,7 @@ class ResetPasswordTest:
         new_password = "New_password1998!"
         user = users_factories.UserFactory()
 
-        access_token = create_access_token(user.email, additional_claims={"user_claims": {"user_id": user.id}})
-        client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = client.post(
+        response = client.with_token(user).post(
             "/native/v1/change_password",
             json={"currentPassword": "wrong_password", "newPassword": new_password},
         )
@@ -1105,10 +1099,7 @@ class ResetPasswordTest:
     def test_change_password_failure_when_user_has_no_password(self, client):
         user = users_factories.UserFactory(password=None)
 
-        access_token = create_access_token(user.email, additional_claims={"user_claims": {"user_id": user.id}})
-        client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = client.post(
+        response = client.with_token(user).post(
             "/native/v1/change_password",
             json={"currentPassword": "", "newPassword": "New_password1998!"},
         )
@@ -1334,7 +1325,7 @@ class RefreshTest:
 
         response = client.with_explicit_token(token).post("/native/v1/refresh_access_token", json={})
 
-        assert response.status_code == 403
+        assert response.status_code == 401
         assert db.session.query(NativeUserSession).count() == 0
 
     def test_with_access_token(self, client):

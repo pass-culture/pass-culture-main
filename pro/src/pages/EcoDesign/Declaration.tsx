@@ -42,7 +42,7 @@ export const EcoDesignDeclaration = () => {
             color={ButtonColor.NEUTRAL}
             to={`${ASSETS_BUCKET_URL}/assets/declaration-rgesn-pass-culture.pdf`}
             icon={fullDownloadIcon}
-            label="Télécharger la déclaration RGESN de l'espace partenaires"
+            label="Télécharger la déclaration RGESN de l'espace partenaire"
             isExternal
             opensInNewTab
           />
@@ -124,7 +124,7 @@ export const EcoDesignDeclaration = () => {
         </p>
 
         <p className={styles['body-accent']}>
-          Cibles utilisatrices de l'espace partenaires du pass Culture
+          Cibles utilisatrices de l'espace partenaire du pass Culture
         </p>
         <p className={styles['paragraph']}>
           <em>• critère 1.2 - Validé</em>
@@ -206,10 +206,9 @@ export const EcoDesignDeclaration = () => {
           />
         </p>
         <p className={styles['paragraph']}>
-          Les langages de développement de l'espace partenaires sont des
-          langages standards et généralistes : Python et React. Une API Rest
-          largement documentée est disponible pour interfacer le service avec
-          d’autres.
+          Les langages de développement de l'espace partenaire sont des langages
+          standards et généralistes : Python et React. Une API Rest largement
+          documentée est disponible pour interfacer le service avec d’autres.
         </p>
 
         <h3 className={styles['heading3']}>2. Spécifications</h3>

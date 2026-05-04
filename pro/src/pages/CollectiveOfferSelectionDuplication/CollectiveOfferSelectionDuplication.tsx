@@ -36,7 +36,6 @@ type SearchFormValues = {
 
 export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
   const snackBar = useSnackBar()
   const navigate = useNavigate()
@@ -49,10 +48,8 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
 
   const { handleSubmit: handleSubmitSearch } = form
 
-  const queryParams = new URLSearchParams(location.search)
   const currentOffererId = useAppSelector(ensureCurrentOfferer).id
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const queryVenueId = queryParams.get('lieu')
 
   const {
     name,
@@ -68,9 +65,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
     ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
     name: searchedOfferName,
     offererId: currentOffererId.toString(),
-    venueId: withSwitchVenueFeature
-      ? selectedPartnerVenue.id.toString()
-      : (queryVenueId ?? undefined),
+    venueId: selectedPartnerVenue.id.toString(),
     status: [
       CollectiveOfferDisplayedStatus.PUBLISHED,
       CollectiveOfferDisplayedStatus.HIDDEN,

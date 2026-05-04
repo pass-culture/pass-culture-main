@@ -46,7 +46,7 @@ test.describe('Signup journey with unknown offerer and unknown venue', () => {
     // Make the venue open to public
     await page.getByText('Oui').click()
 
-    await page.getByText('Étape suivante').click()
+    await page.getByText('Continuer').click()
 
     await checkAccessibility(page)
 
@@ -54,15 +54,18 @@ test.describe('Signup journey with unknown offerer and unknown venue', () => {
     await expect(page).toHaveURL(/\/inscription\/structure\/activite/)
     await page.getByLabel(/Activité principale/).selectOption('Galerie d’art')
     await page.getByLabel('Numéro de téléphone').fill('612345678')
-    await page.getByText('Étape suivante').click()
+    await page
+      .getByLabel('Site internet, réseau social')
+      .fill('http://example.com')
+    await page.getByText('Continuer').click()
     await expect(
       page.getByText('Veuillez sélectionner au moins une option')
     ).toBeVisible()
 
     await expect(page).toHaveURL(/\/inscription\/structure\/activite/)
-    await page.getByText('Au grand public').click()
+    await page.getByText('Aux jeunes via l’application pass Culture').click()
     await checkAccessibility(page)
-    await page.getByText('Étape suivante').click()
+    await page.getByText('Continuer').click()
 
     await expect(page).toHaveURL(/\/inscription\/structure\/confirmation/)
     await expect(page.getByText('5 Rue Curial, 75019 Paris')).toBeVisible()
@@ -122,13 +125,16 @@ test.describe('Signup journey with unknown offerer and unknown venue', () => {
       page.getByText('Contrôlez la précision de vos coordonnées GPS.')
     ).toBeVisible()
 
-    await page.getByText('Étape suivante').click()
+    await page.getByText('Continuer').click()
 
     await expect(page).toHaveURL(/\/inscription\/structure\/activite/)
     await page.getByLabel(/Activité principale/).selectOption('Galerie d’art')
     await page.getByLabel('Numéro de téléphone').fill('612345678')
-    await page.getByText('Au grand public').click()
-    await page.getByText('Étape suivante').click()
+    await page
+      .getByLabel('Site internet, réseau social')
+      .fill('http://example.com')
+    await page.getByText('Aux jeunes via l’application pass Culture').click()
+    await page.getByText('Continuer').click()
 
     await expect(page).toHaveURL(/\/inscription\/structure\/confirmation/)
     await expect(page.getByText('10 Rue du test, 75002 Paris')).toBeVisible()
@@ -182,13 +188,16 @@ test.describe('Signup journey with known offerer...', () => {
       // Make the venue open to public
       await page.getByText('Oui').click()
 
-      await page.getByText('Étape suivante').click()
+      await page.getByText('Continuer').click()
 
       await expect(page).toHaveURL(/\/inscription\/structure\/activite/)
       await page.getByLabel(/Activité principale/).selectOption('Galerie d’art')
       await page.getByLabel('Numéro de téléphone').fill('612345678')
-      await page.getByText('Au grand public').click()
-      await page.getByText('Étape suivante').click()
+      await page
+        .getByLabel('Site internet, réseau social')
+        .fill('http://example.com')
+      await page.getByText('Aux jeunes via l’application pass Culture').click()
+      await page.getByText('Continuer').click()
 
       await expect(page).toHaveURL(/\/inscription\/structure\/confirmation/)
 
@@ -260,20 +269,23 @@ test.describe('Signup journey with known offerer...', () => {
       // Make the venue open to public
       await page.getByText('Oui').click()
 
-      await page.getByText('Étape suivante').click()
+      await page.getByText('Continuer').click()
 
       await expect(page).toHaveURL(/\/inscription\/structure\/activite$/)
       await page
         .getByLabel(/Activité principale/)
         .selectOption('Sélectionnez votre activité principale')
       await page.getByLabel('Numéro de téléphone').fill('612345678')
-      await page.getByText('Au grand public').click()
-      await page.getByText('Étape suivante').click()
+      await page
+        .getByLabel('Site internet, réseau social')
+        .fill('http://example.com')
+      await page.getByText('Aux jeunes via l’application pass Culture').click()
+      await page.getByText('Continuer').click()
       await expect(page.getByText('Activité non valide')).toBeVisible()
 
       await expect(page).toHaveURL(/\/inscription\/structure\/activite/)
       await page.getByLabel(/Activité principale/).selectOption('Galerie d’art')
-      await page.getByText('Étape suivante').click()
+      await page.getByText('Continuer').click()
 
       await expect(page).toHaveURL(/\/inscription\/structure\/confirmation$/)
 
