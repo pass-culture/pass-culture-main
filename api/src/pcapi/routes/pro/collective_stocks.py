@@ -84,8 +84,6 @@ def edit_collective_stock(
             stock=collective_stock, stock_data=body.model_dump(exclude_unset=True)
         )
         return collective_stock_serialize.CollectiveStockResponseModel.model_validate(collective_stock)
-    except exceptions.CollectiveOfferIsPublicApi:
-        raise ForbiddenError({"global": ["Les stocks créés par l'api publique ne sont pas editables."]})
     except exceptions.CollectiveOfferForbiddenAction:
         raise ForbiddenError({"global": ["Cette action n'est pas autorisée sur l'offre collective liée à ce stock."]})
     except exceptions.EndDatetimeBeforeStartDatetime:
