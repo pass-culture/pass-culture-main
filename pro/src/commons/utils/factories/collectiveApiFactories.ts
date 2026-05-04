@@ -25,10 +25,9 @@ import {
   type GetVenueResponseModel,
   StudentLevels,
 } from '@/apiClient/v1'
-import {
-  DisplayableActivity,
-  type ListOffersVenueResponseModelV2,
-} from '@/apiClient/v1/new'
+import { DisplayableActivity } from '@/apiClient/v1/new'
+
+import { listOffersVenueV2Factory } from './commonOffersApiFactories'
 
 let offerId = 1
 let stockId = 1
@@ -93,15 +92,6 @@ export const collectiveOfferTemplateFactory = (
     ...customCollectiveOfferTemplate,
   }
 }
-
-export const listOffersVenueV2Factory = (
-  customListOffersVenue: Partial<ListOffersVenueResponseModelV2> = {}
-): ListOffersVenueResponseModelV2 => ({
-  id: 1,
-  name: 'Nom de la structure',
-  departementCode: '33',
-  ...customListOffersVenue,
-})
 
 const sharedCollectiveOfferData = {
   displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
