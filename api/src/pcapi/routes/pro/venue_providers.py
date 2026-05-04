@@ -96,6 +96,9 @@ def create_venue_provider(
     provider = _get_provider_or_404(body.provider_id)
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
+    if not provider.isActive or not provider.enabledForPro:
+        raise ResourceNotFoundError()
+
     try:
         new_venue_provider = api.create_venue_provider(
             provider=provider,

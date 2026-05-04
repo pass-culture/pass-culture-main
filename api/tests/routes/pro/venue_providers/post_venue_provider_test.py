@@ -183,24 +183,6 @@ class Returns201Test:
         mock_synchronize_cinema_sessions_task.assert_not_called()
 
     @pytest.mark.usefixtures("db_session")
-    def test_when_add_same_provider(self, client):
-        provider = providers_factories.PublicApiProviderFactory()
-        venue_provider = providers_factories.VenueProviderFactory(provider=provider, venueIdAtOfferProvider=None)
-        user = user_factories.ProFactory()
-        offerers_factories.UserOffererFactory(user=user, offerer=venue_provider.venue.managingOfferer)
-
-        client = client.with_session_auth(email=user.email)
-
-        response = client.post(
-            f"/venues/{venue_provider.venueId}/venue-providers",
-            json={"providerId": venue_provider.providerId},
-        )
-
-        assert response.status_code == 400
-        assert response.json == {"global": ["Votre lieu est déjà lié à cette source."]}
-        assert venue_provider.venue.venueProviders == [venue_provider]
-
-    @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.providers.clients.cds_client.CineDigitalServiceAPIClient.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
@@ -380,6 +362,24 @@ class Returns400Test:
         assert response.json["price"] == ["Saisissez un nombre supérieur ou égal à 0.0"]
         assert db.session.query(VenueProvider).count() == 0
 
+    @pytest.mark.usefixtures("db_session")
+    def test_when_add_same_provider(self, client):
+        provider = providers_factories.PublicApiProviderFactory()
+        venue_provider = providers_factories.VenueProviderFactory(provider=provider, venueIdAtOfferProvider=None)
+        user = user_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue_provider.venue.managingOfferer)
+
+        client = client.with_session_auth(email=user.email)
+
+        response = client.post(
+            f"/venues/{venue_provider.venueId}/venue-providers",
+            json={"providerId": venue_provider.providerId},
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"global": ["Votre structure est déjà liée à cette source."]}
+        assert venue_provider.venue.venueProviders == [venue_provider]
+
 
 class Returns401Test:
     @pytest.mark.usefixtures("db_session")
@@ -431,6 +431,40 @@ class Returns404Test:
                 "Ce lieu n'est pas autorisé à être synchronisé avec Allociné. Veuillez contacter le support si vous souhaitez le faire."
             ]
         }
+        assert db.session.query(VenueProvider).count() == 0
+
+    @pytest.mark.usefixtures("db_session")
+    def test_when_provider_is_inactive(self, client):
+        user = user_factories.ProFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+        provider = providers_factories.PublicApiProviderFactory(isActive=False)
+
+        auth_request = client.with_session_auth(email=user.email)
+
+        response = auth_request.post(
+            f"/venues/{venue.id}/venue-providers",
+            json={"providerId": provider.id},
+        )
+
+        assert response.status_code == 404
+        assert db.session.query(VenueProvider).count() == 0
+
+    @pytest.mark.usefixtures("db_session")
+    def test_when_provider_is_not_enabled_for_pro(self, client):
+        user = user_factories.ProFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+        provider = providers_factories.PublicApiProviderFactory(enabledForPro=False)
+
+        auth_request = client.with_session_auth(email=user.email)
+
+        response = auth_request.post(
+            f"/venues/{venue.id}/venue-providers",
+            json={"providerId": provider.id},
+        )
+
+        assert response.status_code == 404
         assert db.session.query(VenueProvider).count() == 0
 
 

@@ -47,7 +47,7 @@ def create_venue_provider(
         .one_or_none()
     )
     if existing_venue_provider:
-        raise providers_exceptions.ProviderException({"global": ["Votre lieu est déjà lié à cette source."]})
+        raise providers_exceptions.ProviderException({"global": ["Votre structure est déjà liée à cette source."]})
 
     new_venue_provider: providers_models.VenueProvider
     if provider.localClass == "AllocineStocks":
