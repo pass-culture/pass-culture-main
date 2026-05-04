@@ -58,7 +58,7 @@ dependencies = [
   "pycountry ==26.2.16",
   "pydantic[email]==2.13.3",
   "pyjwt[crypto] ==2.12.1",
-  "pyopenssl ==26.0.0",
+  "pyopenssl==26.1.0",
   "pypdf ==6.10.2",
   "pyproj ==3.7.2",
   "pysaml2 ==7.5.0",
