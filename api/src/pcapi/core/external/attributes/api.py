@@ -322,7 +322,6 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
             {
                 "dms_application_submitted": any(venue.hasPendingBankAccountApplication for venue in venues),
                 "dms_application_approved": all(venue.hasAcceptedBankAccountApplication for venue in venues),
-                "isVirtual": any(venue.isVirtual for venue in venues),
                 "isPermanent": any(venue.isPermanent for venue in venues),
                 "isOpenToPublic": any(venue.isOpenToPublic for venue in venues),
                 "has_offers": has_bookable_individual_offers or has_bookable_collective_offers,

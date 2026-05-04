@@ -87,7 +87,6 @@ class ProAttributes:
     # which only take venues in which contact email is set as bookingEmail into account:
     dms_application_submitted: bool | None = None  # At last one bank info is waiting for approval in DMS in venues
     dms_application_approved: bool | None = None  # All venues have bank information approved
-    isVirtual: bool | None = None  # At least one venue is virtual
     isPermanent: bool | None = None  # At least one venue is permanent
     isOpenToPublic: bool | None = None  # At least one venue is open to public
     has_bookings: bool | None = None  # At least one venue has at least one booking not canceled, at least once
