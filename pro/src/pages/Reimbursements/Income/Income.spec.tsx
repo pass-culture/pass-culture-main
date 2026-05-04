@@ -52,7 +52,8 @@ const LABELS = {
   venuesSelectorError: /Vous devez sélectionner au moins un partenaire/,
   incomeResultsLabel: /Chiffre d’affaires total/,
   forecastIncomeResultLabel: /Chiffre d’affaires total prévisionnel/,
-  emptyScreen: /Vous n’avez aucune réservation/,
+  emptyScreen: /Aucun remboursement n'a été effectué/,
+  emptyYearScreen: /Vous n’avez aucune réservation sur cette période/,
   mandatoryHelper: /\* sont obligatoires/,
 }
 
@@ -396,7 +397,7 @@ describe('Income', () => {
       )
 
       await waitFor(() =>
-        expect(screen.getByText(LABELS.emptyScreen)).toBeInTheDocument()
+        expect(screen.getByText(LABELS.emptyYearScreen)).toBeInTheDocument()
       )
     })
 

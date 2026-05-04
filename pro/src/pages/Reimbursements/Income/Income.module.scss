@@ -30,6 +30,8 @@
         align-items: center;
         background: none;
         cursor: pointer;
+        width: rem.torem(80px);
+        height: rem.torem(40px);
         padding: rem.torem(10px);
         color: var(--color-text-default);
         border: solid rem.torem(1px) var(--color-border-default);

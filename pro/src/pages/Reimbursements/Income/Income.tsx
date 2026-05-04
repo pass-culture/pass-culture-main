@@ -41,6 +41,10 @@ const Income = () => {
       a.label.localeCompare(b.label, 'fr', { sensitivity: 'base' })
     )
 
+  const form = useForm<VenueFormValues>({
+    values: { selectedVenues: venueValues },
+  })
+
   const {
     register,
     watch,
@@ -48,20 +52,16 @@ const Income = () => {
     setError,
     clearErrors,
     formState: { errors },
-  } = useForm<VenueFormValues>({
-    values: {
-      selectedVenues: venueValues,
-    },
-  })
+  } = form
 
-  const selectedWatch = watch('selectedVenues')
-  const selected = selectedWatch.map((v) => v.id)
+  const selected = watch('selectedVenues').map((v) => v.id)
 
-  const hasVenuesData = venueValues.length > 0
+  const hasVenues = venueValues.length > 0
   const hasSingleVenue = venueValues.length === 1
+  const hasNoVenuesSelected = selected.length === 0
 
-  const onChange = (selectedOption: Option[]) => {
-    if (selectedOption.length === 0) {
+  const onChange = (options: Option[]) => {
+    if (options.length === 0) {
       setError('selectedVenues', {
         message: 'Vous devez sélectionner au moins un partenaire',
       })
@@ -69,13 +69,7 @@ const Income = () => {
       clearErrors('selectedVenues')
     }
 
-    const debounced = setTimeout(() => {
-      setValue(
-        'selectedVenues',
-        selectedOption.map((v) => v)
-      )
-    }, 1000)
-    return () => clearTimeout(debounced)
+    setTimeout(() => setValue('selectedVenues', options), 1000)
   }
 
   const {
@@ -100,100 +94,100 @@ const Income = () => {
     }
   }, [hasSingleVenue, incomeDataReady])
 
+  if (!hasVenues) {
+    return <IncomeNoData type="venues" />
+  }
+
   return (
     <>
-      {!hasVenuesData ? (
-        <IncomeNoData type="venues" />
+      {!hasSingleVenue && (
+        <>
+          <FormLayout.MandatoryInfo />
+          <div className={styles['income-filters']}>
+            <MultiSelect
+              {...register('selectedVenues', { minLength: 1 })}
+              required={true}
+              buttonLabel="Partenaire(s) sélectionné(s)"
+              className={styles['income-input']}
+              label="Partenaire(s) sélectionné(s)"
+              options={venueValues}
+              defaultOptions={venueValues}
+              hasSearch
+              searchLabel="Rechercher un partenaire"
+              onSelectedOptionsChanged={(selectedOption) =>
+                onChange(selectedOption)
+              }
+              error={errors.selectedVenues?.message}
+              onBlur={() => noop}
+            />
+          </div>
+        </>
+      )}
+
+      {isIncomeLoading ? (
+        <Spinner testId="income-spinner" />
+      ) : incomeApiError ? (
+        <div role="alert">
+          <IncomeError />
+        </div>
+      ) : hasNoVenuesSelected ? (
+        <IncomeNoData type="no-venues-selected" />
+      ) : !hasIncomeData ? (
+        <IncomeNoData type="income" />
       ) : (
         <>
-          {!hasSingleVenue && (
-            <>
-              <FormLayout.MandatoryInfo />
-              <div className={styles['income-filters']}>
-                <MultiSelect
-                  {...register('selectedVenues', { minLength: 1 })}
-                  required={true}
-                  buttonLabel="Partenaire(s) sélectionné(s)"
-                  className={styles['income-input']}
-                  label="Partenaire(s) sélectionné(s)"
-                  options={venueValues}
-                  defaultOptions={venueValues}
-                  hasSearch
-                  searchLabel="Rechercher un partenaire"
-                  onSelectedOptionsChanged={(selectedOption) =>
-                    onChange(selectedOption)
-                  }
-                  error={errors.selectedVenues?.message}
-                  onBlur={() => noop}
-                />
-              </div>
-            </>
-          )}
+          <ul
+            className={classnames(
+              styles['income-filters'],
+              styles['income-filters-by-year']
+            )}
+            aria-label="Filtrage par année"
+          >
+            {years.map((year) => (
+              <li key={year}>
+                <button
+                  id={`income-filter-by-year-${year}-${year === finalActiveYear}`}
+                  {...(year === finalActiveYear
+                    ? { ref: firstYearFilterRef }
+                    : {})}
+                  type="button"
+                  onClick={() => setActiveYear(year)}
+                  aria-label={`Afficher les revenus de l'année ${year}`}
+                  aria-current={year === finalActiveYear}
+                  className={classnames(
+                    styles['income-filters-by-year-button'],
+                    {
+                      [styles['income-filters-by-year-button-active']]:
+                        year === finalActiveYear,
+                    }
+                  )}
+                >
+                  {year}
+                </button>
+              </li>
+            ))}
+          </ul>
 
-          {isIncomeLoading ? (
-            <Spinner testId="income-spinner" />
-          ) : incomeApiError ? (
-            <div role="alert">
-              <IncomeError />
-            </div>
-          ) : !hasIncomeData ? (
-            <IncomeNoData type="income" />
+          {!activeYearHasData ? (
+            <IncomeNoData type="income-year" />
           ) : (
-            <>
-              <ul
-                className={classnames(
-                  styles['income-filters'],
-                  styles['income-filters-by-year']
-                )}
-                aria-label="Filtrage par année"
-              >
-                {years.map((year) => (
-                  <li key={year}>
-                    <button
-                      id={`income-filter-by-year-${year}-${year === finalActiveYear}`}
-                      {...(year === finalActiveYear
-                        ? { ref: firstYearFilterRef }
-                        : {})}
-                      type="button"
-                      onClick={() => setActiveYear(year)}
-                      aria-label={`Afficher les revenus de l'année ${year}`}
-                      aria-current={year === finalActiveYear}
-                      className={classnames(
-                        styles['income-filters-by-year-button'],
-                        {
-                          [styles['income-filters-by-year-button-active']]:
-                            year === finalActiveYear,
-                        }
-                      )}
-                    >
-                      {year}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-
-              {!activeYearHasData ? (
-                <IncomeNoData type="income-year" />
-              ) : (
-                <div>
-                  {activeYearIncome.revenue && (
-                    <div className={styles['income-box']}>
-                      <IncomeResultsBox
-                        type="revenue"
-                        income={activeYearIncome.revenue}
-                        isCaledonian={selectedAdminOfferer?.isCaledonian}
-                      />
-                    </div>
-                  )}
-                  {activeYearIncome.expectedRevenue && (
-                    <IncomeResultsBox
-                      type="expectedRevenue"
-                      income={activeYearIncome.expectedRevenue}
-                    />
-                  )}
+            <div>
+              {activeYearIncome.revenue && (
+                <div className={styles['income-box']}>
+                  <IncomeResultsBox
+                    type="revenue"
+                    income={activeYearIncome.revenue}
+                    isCaledonian={selectedAdminOfferer?.isCaledonian}
+                  />
                 </div>
               )}
-            </>
+              {activeYearIncome.expectedRevenue && (
+                <IncomeResultsBox
+                  type="expectedRevenue"
+                  income={activeYearIncome.expectedRevenue}
+                />
+              )}
+            </div>
           )}
         </>
       )}
