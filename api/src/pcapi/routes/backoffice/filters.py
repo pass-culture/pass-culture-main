@@ -1525,6 +1525,8 @@ def format_modified_info_name(info_name: str) -> str:
             return "Actif"
         case "adageId":
             return "ID ADAGE"
+        case "adageInscriptionDate":
+            return "Date d'inscription ADAGE"
         case "isOpenToPublic":
             return "Accueil du public"
         case "campaignDate":

@@ -48,10 +48,6 @@ class AdageCulturalPartner(BaseModel):
     domaineIds: str | None
 
 
-class AdageCulturalPartners(BaseModel):
-    partners: list[AdageCulturalPartner]
-
-
 class Contact(AdageBaseResponseModel):
     email: str | None
     phone: str | None
