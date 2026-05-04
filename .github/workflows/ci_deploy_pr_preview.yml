@@ -109,8 +109,8 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    secrets:
-      WORKLOAD_IDENTITY_PRD: ${{ secrets.WORKLOAD_IDENTITY_PRD }}
+    # secrets:
+    #   WORKLOAD_IDENTITY_PRD: ${{ secrets.WORKLOAD_IDENTITY_PRD }}
     with:
       ENV: "testing"
       CHANNEL: ${{ needs.deploy-preview-env-init.outputs.resource_label }}

@@ -30,9 +30,9 @@ on:
         type: boolean
         required: false
         default: false
-    secrets:
-      WORKLOAD_IDENTITY_PRD:
-        required: true
+    # secrets:
+    #   WORKLOAD_IDENTITY_PRD:
+    #     required: true
     outputs:
       pro_url:
         description: "The pro (firebase) preview URL"
@@ -65,7 +65,7 @@ jobs:
         with:
           export_environment_variables: 'true'
           create_credentials_file: 'true'
-          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PRD }}
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PRD }}
           service_account: ${{ vars.PRO_DEPLOY_SERVICE_ACCOUNT }}
       - name: "Get Secret"
         id: "secrets"
