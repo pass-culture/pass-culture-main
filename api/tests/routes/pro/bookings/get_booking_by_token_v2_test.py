@@ -98,25 +98,6 @@ class Returns401Test:
 
 
 class Returns403Test:
-    def test_when_user_doesnt_have_rights_and_token_exists(self, client):
-        booking = bookings_factories.BookingFactory()
-        another_pro_user = users_factories.ProFactory()
-
-        url = f"/bookings/token/{booking.token}"
-        client = client.with_session_auth(another_pro_user.email)
-        num_queries = 1  # select user_session + user
-        num_queries += 1  # select booking
-        num_queries += 1  # check user has rights on offerer
-        num_queries += 1  # rollback atomic
-        num_queries += 1  # rollback atomic
-        with testing.assert_num_queries(num_queries):
-            response = client.get(url)
-            assert response.status_code == 404
-
-        assert response.json["global"] == [
-            "La contremarque n'existe pas, ou vous n'avez pas les droits nécessaires pour y accéder."
-        ]
-
     def test_when_booking_not_confirmed(self, client):
         next_week = date_utils.get_naive_utc_now() + timedelta(weeks=1)
         booking = bookings_factories.BookingFactory(stock__beginningDatetime=next_week)
@@ -205,6 +186,25 @@ class Returns403Test:
 
 
 class Returns404Test:
+    def test_when_user_doesnt_have_rights_and_token_exists(self, client):
+        booking = bookings_factories.BookingFactory()
+        another_pro_user = users_factories.ProFactory()
+
+        url = f"/bookings/token/{booking.token}"
+        client = client.with_session_auth(another_pro_user.email)
+        num_queries = 1  # select user_session + user
+        num_queries += 1  # select booking
+        num_queries += 1  # check user has rights on offerer
+        num_queries += 1  # rollback atomic
+        num_queries += 1  # rollback atomic
+        with testing.assert_num_queries(num_queries):
+            response = client.get(url)
+            assert response.status_code == 404
+
+        assert response.json["global"] == [
+            "La contremarque n'existe pas, ou vous n'avez pas les droits nécessaires pour y accéder."
+        ]
+
     def test_missing_token(self, client):
         with testing.assert_num_queries(0):
             response = client.get("/bookings/token/")
