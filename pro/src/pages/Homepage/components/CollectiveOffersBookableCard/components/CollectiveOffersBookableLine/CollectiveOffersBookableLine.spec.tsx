@@ -112,9 +112,12 @@ describe('<CollectiveOffersBookableLine />', () => {
         renderCollectiveOffersBookableLineWithRouter()
       expect(screen.getByRole('img')).toBeVisible()
 
+      const { date: expectedDate } = formatDateTimeParts(
+        addDays(new Date(), 11).toISOString()
+      )
       await user.click(
         screen.getByRole('link', {
-          name: `Expire dans 1 jour - ${collectiveOfferHome.name} - Prévu le 10/05/2026 - 100 participants - publiée`,
+          name: `Expire dans 1 jour - ${collectiveOfferHome.name} - Prévu le ${expectedDate} - 100 participants - publiée`,
         })
       )
 

@@ -99,9 +99,13 @@ describe('<CollectiveOffersTemplateLine />', () => {
       const { user, offer } = renderCollectiveOffersTemplateLineWithRouter()
       expect(screen.getByRole('img')).toBeVisible()
 
+      const { date: start } = formatDateTimeParts(new Date().toISOString())
+      const { date: end } = formatDateTimeParts(
+        addDays(new Date(), 30).toISOString()
+      )
       await user.click(
         screen.getByRole('link', {
-          name: `Offre vitrine - ${offer.name} - Du 29/04/2026 au 29/05/2026 - publiée`,
+          name: `Offre vitrine - ${offer.name} - Du ${start} au ${end} - publiée`,
         })
       )
 
