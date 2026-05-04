@@ -8,7 +8,6 @@ import click
 
 from pcapi.core import search
 from pcapi.core.educational import models
-from pcapi.core.educational import schemas
 from pcapi.core.educational.adage import client as adage_client
 from pcapi.core.educational.api import adage as adage_api
 from pcapi.core.educational.api import booking as educational_api_booking
@@ -171,21 +170,6 @@ def synchronize_adage_cultural_partners(apply: bool = False) -> None:
 
         if not apply:
             mark_transaction_as_invalid()
-
-
-@blueprint.cli.command("synchronize_venues_from_adage_cultural_partners")
-@click.option(
-    "--debug",
-    is_flag=True,
-    help="Activate debugging (add logs)",
-)
-@click.option("--with-timestamp", is_flag=True, help="Add timestamp (couple days ago)")
-@cron_decorators.log_cron
-def synchronize_venues_from_adage_cultural_partners(debug: bool = False, with_timestamp: bool = False) -> None:
-    since_date = date_utils.get_naive_utc_now() - datetime.timedelta(days=2)
-    adage_cultural_partners = adage_client.get_cultural_partners(since_date=since_date)
-
-    adage_api.synchronize_adage_ids_on_venues(schemas.AdageCulturalPartners(partners=adage_cultural_partners))
 
 
 @blueprint.cli.command("synchronize_offerers_from_adage_cultural_partners")
