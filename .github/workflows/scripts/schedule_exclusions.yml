@@ -26,6 +26,9 @@
 - date: 2026-05-01
   day_of_week: Friday
   comment: Fête du travail
+- date: 2026-05-07
+  day_of_week: Thursday
+  comment: Veille de pont
 - date: 2026-05-08
   day_of_week: Friday
   comment: Victoire 1945
