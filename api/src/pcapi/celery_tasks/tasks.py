@@ -4,7 +4,6 @@ import time
 import typing
 from functools import wraps
 
-import pydantic.v1 as pydantic_v1
 from celery import Task
 from celery import shared_task
 from pydantic import BaseModel as BaseModelV2
@@ -31,8 +30,7 @@ class CloudTaskRetryException(Exception):
 
 def celery_async_task(
     name: str,
-    # (tcoudray-pass, 10/11/25) TODO: Remove `type[pydantic_v1.BaseModel]` when all models are using pydantic V2
-    model: type[pydantic_v1.BaseModel | BaseModelV2] | None = None,
+    model: type[BaseModelV2] | None = None,
     autoretry_for: tuple[type[Exception], ...] = tuple(),
     retry_backoff: bool = True,
     retry_backoff_max: int = settings.CELERY_TASK_RETRY_BACKOFF_MAX,
@@ -75,22 +73,16 @@ def celery_async_task(
             metrics.tasks_in_progress.labels(task=name).inc()
             start_time = time.time()
             try:
-                parsed_payload: pydantic_v1.BaseModel | BaseModelV2 | None = None
-                # (tcoudray-pass, 10/11/25) TODO: Remove block when all models are using pydantic V2
+                parsed_payload: BaseModelV2 | None = None
                 if model is not None:
-                    if issubclass(model, pydantic_v1.BaseModel):
-                        # We want to ensure payload is JSON serializable, we do that by encoding and decoding
-                        # to and from json. This is needed because Celery uses the __repr__ of the task to pass
-                        # it so values like dates and Decimal will be preserved instead of being transformed to their
-                        # JSON representation.
-                        # This is the same behavior that we had on cloud_tasks
-                        parsed_payload = model.parse_obj(payload)
-                        parsed_payload = json.loads(parsed_payload.json())
-                        parsed_payload = model.parse_obj(parsed_payload)
-                    elif issubclass(model, BaseModelV2):
-                        parsed_payload = model.model_validate(payload)
-                        parsed_payload = json.loads(parsed_payload.model_dump_json())
-                        parsed_payload = model.model_validate(parsed_payload)
+                    # We want to ensure payload is JSON serializable, we do that by encoding and decoding
+                    # to and from json. This is needed because Celery uses the __repr__ of the task to pass
+                    # it so values like dates and Decimal will be preserved instead of being transformed to their
+                    # JSON representation.
+                    # This is the same behavior that we had on cloud_tasks
+                    parsed_payload = model.model_validate(payload)
+                    parsed_payload = json.loads(parsed_payload.model_dump_json())
+                    parsed_payload = model.model_validate(parsed_payload)
                 if max_per_time_window:
                     with rate_limit(f"celery:bucket:{name}", time_window_size, max_per_time_window):
                         f(parsed_payload)
