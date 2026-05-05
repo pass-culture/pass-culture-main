@@ -21,12 +21,12 @@ Voici le nouveau flux d'initialisation d'un utilisateur sous le FF `WIP_SWITCH_V
 flowchart TD
 
 FUNCTION1("Récupération des données de l'utilisateur")
---- FUNCTION2("➖ [Espace Partenaire] Récupération de la liste des structures SEULEMENT autorisées<br>➕ [Espace Partenaire] Récupération de la liste des structures autorisées OU NON")
---- FUNCTION3("➖ [Espace Administration] Récupération de la liste des entités autorisées OU NON<br>➕ [Espace Administration] Récupération de la liste des entités SEULEMENT autorisées")
+--- FUNCTION2("➖ [Espace partenaire] Récupération de la liste des structures SEULEMENT autorisées<br>➕ [Espace partenaire] Récupération de la liste des structures autorisées OU NON")
+--- FUNCTION3("➖ [Espace administration] Récupération de la liste des entités autorisées OU NON<br>➕ [Espace administration] Récupération de la liste des entités SEULEMENT autorisées")
 ==> STEP2(("ÉTAPE 2"))
 ```
 
-### Étape 2 - [Espace Partenaire] Initialisation de la structure sélectionnée
+### Étape 2 - [Espace partenaire] Initialisation de la structure sélectionnée
 
 ```mermaid
 flowchart TD
@@ -53,7 +53,7 @@ C0 ==> STEP3
 STEP3(("ÉTAPE 3"))
 ```
 
-### Étape 3 - [Espace Administration] Initialisation de l'entité sélectionnée
+### Étape 3 - [Espace administration] Initialisation de l'entité sélectionnée
 
 ```mermaid
 flowchart TD
@@ -61,7 +61,7 @@ flowchart TD
 FUNCTION1["getInitialAdminOffererId()"]
 FUNCTION1 --- A{"Ai-je une entité précédemment sélectionnée<br>dans mon Local Storage ?"}
 A -->|Oui| A1["Retourne cet ID d'entité"]
-A -->|Non| B{"Ai-je une structure précédemment sélectionnée<br>pour mon Espace Partenaire (ÉTAPE 2) ?"}
+A -->|Non| B{"Ai-je une structure précédemment sélectionnée<br>pour mon Espace partenaire (ÉTAPE 2) ?"}
 B -->|Oui| B1["Retourne l'ID de l'entité parente à cette structure"]
 B -->|Non| C{"Ai-je au moins une structure ?"}
 C -->|Oui| C1["Retourne l'ID de la première entité<br>selon l'ordre alphabétique"]

@@ -60,12 +60,12 @@ export const AdminSideNavLinks = () => {
           to="/accueil"
           iconPosition={IconPositionEnum.LEFT}
           icon={fullBackIcon}
-          label="Revenir à l’Espace Partenaire"
+          label="Revenir à l’Espace partenaire"
           fullWidth
         />
       </div>
 
-      <div className={styles['nav-links-header']}>Espace Administration</div>
+      <div className={styles['nav-links-header']}>Espace administration</div>
 
       <SideNavLinks navItems={navItems} />
     </nav>

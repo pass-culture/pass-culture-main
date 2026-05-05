@@ -417,7 +417,7 @@ describe('CollectiveOffersScreen', () => {
     renderOffers({ ...props, offers: [] })
     expect(
       screen.queryByText(
-        'Télécharger vos offres réservables dans l’onglet “Données d’activité” de votre Espace Administration accessible en haut à droite.'
+        'Télécharger vos offres réservables dans l’onglet “Données d’activité” de votre Espace administration accessible en haut à droite.'
       )
     ).not.toBeInTheDocument()
   })
@@ -426,7 +426,7 @@ describe('CollectiveOffersScreen', () => {
     renderOffers(props)
     expect(
       screen.getByText(
-        'Télécharger vos offres réservables dans l’onglet “Données d’activité” de votre Espace Administration accessible en haut à droite.'
+        'Télécharger vos offres réservables dans l’onglet “Données d’activité” de votre Espace administration accessible en haut à droite.'
       )
     ).toBeInTheDocument()
   })

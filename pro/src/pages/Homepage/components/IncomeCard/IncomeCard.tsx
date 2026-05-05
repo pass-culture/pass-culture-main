@@ -213,7 +213,7 @@ export const IncomeCard = ({
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
             size={ButtonSize.DEFAULT}
-            label="Accéder à la gestion financière"
+            label="Accéder à la Gestion financière"
           />
         </Card.Footer>
       )}

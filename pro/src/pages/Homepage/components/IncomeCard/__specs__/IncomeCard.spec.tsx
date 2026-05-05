@@ -123,7 +123,7 @@ describe('IncomeCard', () => {
 
     expect(
       await screen.findByRole('link', {
-        name: 'Accéder à la gestion financière',
+        name: 'Accéder à la Gestion financière',
       })
     ).toBeVisible()
   })
