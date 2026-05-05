@@ -38,6 +38,7 @@ import type { EventStocksBulkUpdateBodyModel } from '../models/EventStocksBulkUp
 import type { FinanceBankAccountListResponseModel } from '../models/FinanceBankAccountListResponseModel';
 import type { GetActiveEANOfferResponseModel } from '../models/GetActiveEANOfferResponseModel';
 import type { GetBookingResponse } from '../models/GetBookingResponse';
+import type { GetBookingsProResponseModel } from '../models/GetBookingsProResponseModel';
 import type { GetCollectiveOfferRequestResponseModel } from '../models/GetCollectiveOfferRequestResponseModel';
 import type { GetCollectiveOfferResponseModel } from '../models/GetCollectiveOfferResponseModel';
 import type { GetCollectiveOfferTemplateResponseModel } from '../models/GetCollectiveOfferTemplateResponseModel';
@@ -72,7 +73,6 @@ import type { InviteMemberQueryModel } from '../models/InviteMemberQueryModel';
 import type { InvoiceListV2ResponseModel } from '../models/InvoiceListV2ResponseModel';
 import type { LinkVenueToBankAccountBodyModel } from '../models/LinkVenueToBankAccountBodyModel';
 import type { LinkVenueToPricingPointBodyModel } from '../models/LinkVenueToPricingPointBodyModel';
-import type { ListBookingsResponseModel } from '../models/ListBookingsResponseModel';
 import type { ListCollectiveOffersHomeResponseModel } from '../models/ListCollectiveOffersHomeResponseModel';
 import type { ListCollectiveOffersResponseModel } from '../models/ListCollectiveOffersResponseModel';
 import type { ListCollectiveOfferTemplatesResponseModel } from '../models/ListCollectiveOfferTemplatesResponseModel';
@@ -157,13 +157,13 @@ export class DefaultService {
    * get_bookings_csv <GET>
    * @param offererId
    * @param page
-   * @param venueId
    * @param offerId
    * @param eventDate
    * @param bookingStatusFilter
    * @param bookingPeriodBeginningDate
    * @param bookingPeriodEndingDate
    * @param offererAddressId
+   * @param venueId
    * @param exportType
    * @returns any OK
    * @throws ApiError
@@ -171,13 +171,13 @@ export class DefaultService {
   public getBookingsCsv(
     offererId: number,
     page: number = 1,
-    venueId?: (number | null),
     offerId?: (number | null),
     eventDate?: (string | null),
     bookingStatusFilter?: (BookingStatusFilter | null),
     bookingPeriodBeginningDate?: (string | null),
     bookingPeriodEndingDate?: (string | null),
     offererAddressId?: (number | null),
+    venueId?: (number | null),
     exportType?: (BookingExportType | null),
   ): CancelablePromise<any> {
     return this.httpRequest.request({
@@ -185,14 +185,14 @@ export class DefaultService {
       url: '/bookings/csv',
       query: {
         'page': page,
-        'offererId': offererId,
-        'venueId': venueId,
         'offerId': offerId,
         'eventDate': eventDate,
         'bookingStatusFilter': bookingStatusFilter,
         'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
         'bookingPeriodEndingDate': bookingPeriodEndingDate,
         'offererAddressId': offererAddressId,
+        'offererId': offererId,
+        'venueId': venueId,
         'exportType': exportType,
       },
       errors: {
@@ -226,13 +226,13 @@ export class DefaultService {
    * get_bookings_excel <GET>
    * @param offererId
    * @param page
-   * @param venueId
    * @param offerId
    * @param eventDate
    * @param bookingStatusFilter
    * @param bookingPeriodBeginningDate
    * @param bookingPeriodEndingDate
    * @param offererAddressId
+   * @param venueId
    * @param exportType
    * @returns any OK
    * @throws ApiError
@@ -240,13 +240,13 @@ export class DefaultService {
   public getBookingsExcel(
     offererId: number,
     page: number = 1,
-    venueId?: (number | null),
     offerId?: (number | null),
     eventDate?: (string | null),
     bookingStatusFilter?: (BookingStatusFilter | null),
     bookingPeriodBeginningDate?: (string | null),
     bookingPeriodEndingDate?: (string | null),
     offererAddressId?: (number | null),
+    venueId?: (number | null),
     exportType?: (BookingExportType | null),
   ): CancelablePromise<any> {
     return this.httpRequest.request({
@@ -254,14 +254,14 @@ export class DefaultService {
       url: '/bookings/excel',
       query: {
         'page': page,
-        'offererId': offererId,
-        'venueId': venueId,
         'offerId': offerId,
         'eventDate': eventDate,
         'bookingStatusFilter': bookingStatusFilter,
         'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
         'bookingPeriodEndingDate': bookingPeriodEndingDate,
         'offererAddressId': offererAddressId,
+        'offererId': offererId,
+        'venueId': venueId,
         'exportType': exportType,
       },
       errors: {
@@ -353,45 +353,39 @@ export class DefaultService {
   }
   /**
    * get_bookings_pro <GET>
-   * @param offererId
-   * @param page
    * @param venueId
+   * @param page
    * @param offerId
    * @param eventDate
    * @param bookingStatusFilter
    * @param bookingPeriodBeginningDate
    * @param bookingPeriodEndingDate
    * @param offererAddressId
-   * @param exportType
-   * @returns ListBookingsResponseModel OK
+   * @returns GetBookingsProResponseModel OK
    * @throws ApiError
    */
   public getBookingsPro(
-    offererId: number,
+    venueId: number,
     page: number = 1,
-    venueId?: (number | null),
     offerId?: (number | null),
     eventDate?: (string | null),
     bookingStatusFilter?: (BookingStatusFilter | null),
     bookingPeriodBeginningDate?: (string | null),
     bookingPeriodEndingDate?: (string | null),
     offererAddressId?: (number | null),
-    exportType?: (BookingExportType | null),
-  ): CancelablePromise<ListBookingsResponseModel> {
+  ): CancelablePromise<GetBookingsProResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/bookings/pro',
       query: {
         'page': page,
-        'offererId': offererId,
-        'venueId': venueId,
         'offerId': offerId,
         'eventDate': eventDate,
         'bookingStatusFilter': bookingStatusFilter,
         'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
         'bookingPeriodEndingDate': bookingPeriodEndingDate,
         'offererAddressId': offererAddressId,
-        'exportType': exportType,
+        'venueId': venueId,
       },
       errors: {
         403: `Forbidden`,

@@ -76,6 +76,7 @@ export type { DeleteStockListBody } from './models/DeleteStockListBody';
 export { DisplayableActivity } from './models/DisplayableActivity';
 export type { DMSApplicationForEAC } from './models/DMSApplicationForEAC';
 export { DMSApplicationstatus } from './models/DMSApplicationstatus';
+export type { DownloadBookingsQueryModel } from './models/DownloadBookingsQueryModel';
 export { EacFormat } from './models/EacFormat';
 export type { EditPriceCategoryModel } from './models/EditPriceCategoryModel';
 export type { EditVenueBodyModel } from './models/EditVenueBodyModel';
@@ -102,6 +103,8 @@ export type { FinanceBankAccountResponseModel } from './models/FinanceBankAccoun
 export { GenderEnum } from './models/GenderEnum';
 export type { GetActiveEANOfferResponseModel } from './models/GetActiveEANOfferResponseModel';
 export type { GetBookingResponse } from './models/GetBookingResponse';
+export type { GetBookingsProQueryModel } from './models/GetBookingsProQueryModel';
+export type { GetBookingsProResponseModel } from './models/GetBookingsProResponseModel';
 export type { GetCollectiveOfferBookingResponseModel } from './models/GetCollectiveOfferBookingResponseModel';
 export type { GetCollectiveOfferCollectiveStockResponseModel } from './models/GetCollectiveOfferCollectiveStockResponseModel';
 export type { GetCollectiveOfferLocationModelV2 } from './models/GetCollectiveOfferLocationModelV2';
@@ -169,8 +172,6 @@ export type { LegalStatusResponseModel } from './models/LegalStatusResponseModel
 export type { LinkedVenue } from './models/LinkedVenue';
 export type { LinkVenueToBankAccountBodyModel } from './models/LinkVenueToBankAccountBodyModel';
 export type { LinkVenueToPricingPointBodyModel } from './models/LinkVenueToPricingPointBodyModel';
-export type { ListBookingsQueryModel } from './models/ListBookingsQueryModel';
-export type { ListBookingsResponseModel } from './models/ListBookingsResponseModel';
 export type { ListCollectiveOffersHomeQueryModel } from './models/ListCollectiveOffersHomeQueryModel';
 export type { ListCollectiveOffersHomeResponseModel } from './models/ListCollectiveOffersHomeResponseModel';
 export type { ListCollectiveOffersQueryModel } from './models/ListCollectiveOffersQueryModel';
