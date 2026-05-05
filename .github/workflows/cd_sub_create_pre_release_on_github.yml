@@ -27,15 +27,27 @@ jobs:
   create-pre-release-on-github:
     runs-on: ubuntu-22.04
     steps:
+      # we use a GH app token so that another workflow (deploy on staging) can be triggered on push
+      # https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow#triggering-a-workflow-from-a-workflow
+      - name: Authenticate through github app ghactionci
+        uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3.0.0
+        id: github-token
+        with:
+          app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+          private-key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: pass-culture-main
+          permission-contents: write
+
       - name: Checkout ref
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ inputs.base_ref }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.github-token.outputs.token }}
 
       - name: Add version to api
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
           TAG_NUMBER: ${{ inputs.tag_number }}
         working-directory: api
         run: |
@@ -44,7 +56,7 @@ jobs:
 
       - name: Add version to pro
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
           TAG_NUMBER: ${{ inputs.tag_number }}
         working-directory: pro
         run: |
@@ -53,7 +65,7 @@ jobs:
 
       - name: Add version to image-resizing
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
           TAG_NUMBER: ${{ inputs.tag_number }}
         working-directory: app-engine/image-resizing
         run: |
@@ -62,7 +74,7 @@ jobs:
 
       - name: Configure git author
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
           GIT_CONFIG_EMAIL: ${{ vars.GH_ACTIONS_BOT_EMAIL }}
           GIT_CONFIG_NAME: ${{ github.actor }}
         run: |
@@ -71,7 +83,7 @@ jobs:
 
       - name: Tag release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
           TAG_NAME: v${{ inputs.tag_number }}
         run: |
           git commit -m "🚀 $TAG_NAME" -n
@@ -80,7 +92,7 @@ jobs:
 
       - name: Push tag to base ref
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
           BASE_REF: ${{ inputs.base_ref }}
         if: ${{ inputs.base_ref_is_a_branch }}
         run: git push origin "$BASE_REF"
@@ -88,7 +100,7 @@ jobs:
       - name: Create Github prerelease
         continue-on-error: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
           TAG_NAME: v${{ inputs.tag_number }}
         # generate notes vs the latest release
         # beware of the order of the args !
