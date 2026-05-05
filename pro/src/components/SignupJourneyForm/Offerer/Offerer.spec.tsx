@@ -286,6 +286,33 @@ describe('Offerer', () => {
     ).toHaveAttribute('href', 'https://annuaire-entreprises.data.gouv.fr/')
   })
 
+  describe('when WIP_PRE_SIGNUP_SIMULATION is enabled', () => {
+    it('should display new heading and hide old subtitle and ActionBar', async () => {
+      contextValue.offerer = null
+      renderOffererScreen(contextValue, ['WIP_PRE_SIGNUP_SIMULATION'])
+
+      expect(
+        await screen.findByRole('heading', { name: 'Votre numéro SIRET' })
+      ).toBeInTheDocument()
+
+      expect(
+        screen.getByText(/Le SIRET est un identifiant à 14 chiffres/)
+      ).toBeInTheDocument()
+
+      expect(
+        screen.queryByText('Dites-nous pour quelle structure vous travaillez')
+      ).not.toBeInTheDocument()
+
+      expect(
+        screen.queryByRole('button', { name: 'Annuler et quitter' })
+      ).not.toBeInTheDocument()
+
+      expect(
+        screen.getByRole('button', { name: 'Continuer' })
+      ).toBeInTheDocument()
+    })
+  })
+
   it('should not display authentication screen on submit with form error', async () => {
     vi.spyOn(api, 'getStructureData').mockRejectedValue(
       new ApiError(

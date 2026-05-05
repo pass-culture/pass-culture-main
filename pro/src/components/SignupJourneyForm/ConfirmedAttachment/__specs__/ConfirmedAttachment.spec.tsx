@@ -30,7 +30,7 @@ describe('screens:SignupJourney::ConfirmedAttachment', () => {
   it('should redirect user on offerer page on continue button click', async () => {
     renderConfirmedAttachmentScreen()
 
-    await userEvent.click(screen.getByText('Accéder à votre espace'))
+    await userEvent.click(screen.getByText('Accéder à mon espace'))
 
     // getUserDefaultPath uses `rootStore.getState()` and it isn't overridden.
     // Thus, we only check if navigate is called

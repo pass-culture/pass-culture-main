@@ -183,6 +183,29 @@ describe('screens:SignupJourney::Activity', () => {
     ).toBeInTheDocument()
   })
 
+  describe('when WIP_PRE_SIGNUP_SIMULATION is enabled', () => {
+    it('should display new heading and description instead of old subtitle', async () => {
+      contextValue.activity = null
+      renderActivityScreen(contextValue, ['WIP_PRE_SIGNUP_SIMULATION'])
+
+      expect(
+        await screen.findByRole('heading', { name: 'Votre activité' })
+      ).toBeInTheDocument()
+
+      expect(
+        screen.getByText(
+          /Ces informations déterminent la visibilité de vos offres/
+        )
+      ).toBeInTheDocument()
+
+      expect(
+        screen.queryByRole('heading', {
+          name: /définissez l'activité de votre structure/,
+        })
+      ).not.toBeInTheDocument()
+    })
+  })
+
   describe('Restore contexts from storage', () => {
     it('should try to restore offerer and initialAddress when context is missing', async () => {
       const setOfferer = vi.fn()

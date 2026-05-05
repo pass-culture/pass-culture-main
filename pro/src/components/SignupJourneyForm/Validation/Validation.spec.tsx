@@ -249,6 +249,47 @@ describe('ValidationScreen', () => {
     ).toBeInTheDocument()
   })
 
+  describe('when WIP_PRE_SIGNUP_SIMULATION is enabled', () => {
+    it('should display new heading and subtitle', () => {
+      renderValidationScreen(
+        {
+          ...contextValue,
+          activity: {
+            activity: 'MUSEUM',
+            socialUrls: ['url1'],
+            targetCustomer: Target.EDUCATIONAL,
+            phoneNumber: '',
+            culturalDomains: undefined,
+          },
+          offerer: {
+            name: 'nom',
+            publicName: 'nom public',
+            siret: '123123123',
+            hasVenueWithSiret: false,
+            isDiffusible: true,
+            ...addressInformations,
+          },
+        },
+        { features: ['WIP_PRE_SIGNUP_SIMULATION'] }
+      )
+
+      expect(
+        screen.getByRole('heading', {
+          level: 1,
+          name: 'Vérifiez vos informations',
+        })
+      ).toBeInTheDocument()
+
+      expect(
+        screen.getByRole('heading', { level: 2, name: 'Votre structure' })
+      ).toBeInTheDocument()
+
+      expect(
+        screen.queryByRole('heading', { level: 2, name: 'Vos informations' })
+      ).not.toBeInTheDocument()
+    })
+  })
+
   describe('user actions', () => {
     beforeEach(() => {
       contextValue = {

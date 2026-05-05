@@ -80,6 +80,46 @@ describe('Signup', () => {
     Element.prototype.scrollIntoView = vi.fn()
   })
 
+  describe('when WIP_PRE_SIGNUP_SIMULATION is enabled', () => {
+    it('should hide OperatingProcedures and show stepper with new heading', () => {
+      renderSignUp({
+        features: ['WIP_PRE_SIGNUP_SIMULATION'],
+      })
+
+      expect(
+        screen.queryByRole('link', {
+          name: /Consulter notre centre d'aide/,
+        })
+      ).not.toBeInTheDocument()
+
+      expect(
+        screen.getByRole('heading', { name: 'Créez votre compte' })
+      ).toBeInTheDocument()
+
+      expect(
+        screen.getByText(
+          'Ces informations vous permettront de vous connecter à pass Culture Pro.'
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('should display "Retour" and "Continuer" buttons instead of "S\'inscrire"', () => {
+      renderSignUp({
+        features: ['WIP_PRE_SIGNUP_SIMULATION'],
+      })
+
+      expect(
+        screen.queryByRole('button', { name: /S'inscrire/ })
+      ).not.toBeInTheDocument()
+
+      expect(screen.getByRole('link', { name: 'Retour' })).toBeInTheDocument()
+
+      expect(
+        screen.getByRole('button', { name: 'Continuer' })
+      ).toBeInTheDocument()
+    })
+  })
+
   describe('render', () => {
     it('should render with all information', () => {
       // when the user sees the form
