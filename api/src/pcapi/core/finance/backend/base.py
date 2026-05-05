@@ -249,7 +249,7 @@ class BaseFinanceBackend:
         data = (
             query.join(bookings_models.Booking.deposit)
             .filter(
-                finance_models.Pricing.status == finance_models.PricingStatus.PROCESSED,
+                # finance_models.Pricing.status == finance_models.PricingStatus.PROCESSED,
                 finance_models.Invoice.id == invoice_id,
             )
             .join(finance_models.Pricing.cashflows)
@@ -285,7 +285,7 @@ class BaseFinanceBackend:
         data = (
             query.join(educational_models.CollectiveBooking.collectiveStock)
             .filter(
-                finance_models.Pricing.status == finance_models.PricingStatus.PROCESSED,
+                # finance_models.Pricing.status == finance_models.PricingStatus.PROCESSED,
                 finance_models.Invoice.id == invoice_id,
             )
             .join(finance_models.Pricing.cashflows)
