@@ -1,7 +1,32 @@
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+
+.activity-container {
+  max-width: rem.torem(640px);
+  margin-left: auto;
+  margin-right: auto;
+}
 
 .subtitle {
   @include fonts.title3;
 
   margin-bottom: var(--size-spacing-m);
+}
+
+.main-heading {
+  margin-top: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-s);
+}
+
+.subheading-description {
+  @include fonts.body-xs;
+
+  color: var(--color-text-subtle);
+  margin-bottom: var(--size-spacing-xxl);
+}
+
+.next-actions {
+  margin-top: var(--size-spacing-xxl);
+  display: flex;
+  justify-content: space-between;
 }

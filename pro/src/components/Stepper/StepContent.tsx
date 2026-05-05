@@ -24,7 +24,7 @@ export const StepContent = ({
       </div>
     </>
   )
-  return step.url ? (
+  return step.url && !step.disabled ? (
     <Link
       className={styles['step']}
       onClick={step.onClick ? step.onClick : undefined}

@@ -1,9 +1,12 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import cn from 'classnames'
 import { useCallback, useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
 import { Target } from '@/apiClient/v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   type ActivityContext,
@@ -17,8 +20,15 @@ import {
   tryRestoreInitialAddressFromStorage,
   tryRestoreOffererFromStorage,
 } from '@/commons/context/SignupJourneyContext/storage'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { REGISTRATION_STEP_IDS } from '@/components/RegistrationStepper/constants'
+import { RegistrationStepper } from '@/components/RegistrationStepper/RegistrationStepper'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
+import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import {
@@ -79,6 +89,12 @@ export const Activity = () => {
     initialAddress,
     setInitialAddress,
   } = useSignupJourneyContext()
+
+  const isSignupSimulationEnabled = useActiveFeature(
+    'WIP_PRE_SIGNUP_SIMULATION'
+  )
+
+  const { logEvent } = useAnalytics()
 
   const methods = useForm<ActivityFormValues>({
     defaultValues: activity
@@ -151,27 +167,84 @@ export const Activity = () => {
   ])
 
   return (
-    <FormLayout>
-      <FormProvider {...methods}>
-        <form
-          onSubmit={methods.handleSubmit(onSubmit)}
-          data-testid="signup-activity-form"
-        >
-          <h2 className={styles['subtitle']}>
-            Et enfin, définissez l’activité de votre structure
-          </h2>
-          <FormLayout.MandatoryInfo />
-          <ActivityForm />
-          <ActionBar
-            onClickPrevious={handlePreviousStep}
-            isDisabled={methods.formState.isSubmitting}
-            previousTo={SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION}
-            nextTo={SIGNUP_JOURNEY_STEP_IDS.CONFIRMATION}
-            nextStepTitle="Continuer"
-            previousStepTitle="Retour"
+    <div
+      className={cn({
+        [styles['activity-container']]: isSignupSimulationEnabled,
+      })}
+    >
+      {isSignupSimulationEnabled && (
+        <>
+          <RegistrationStepper />
+          <MainHeading
+            mainHeading="Votre activité"
+            className={styles['main-heading']}
           />
-        </form>
-      </FormProvider>
-    </FormLayout>
+          <p className={styles['subheading-description']}>
+            Ces informations déterminent la visibilité de vos offres auprès des
+            jeunes et des enseignants. Les champs suivis d’un * sont
+            obligatoires.
+          </p>
+        </>
+      )}
+
+      <FormLayout>
+        <FormProvider {...methods}>
+          <form
+            onSubmit={methods.handleSubmit(onSubmit)}
+            data-testid="signup-activity-form"
+          >
+            {!isSignupSimulationEnabled && (
+              <>
+                <h2 className={styles['subtitle']}>
+                  Et enfin, définissez l’activité de votre structure
+                </h2>
+                <FormLayout.MandatoryInfo />
+              </>
+            )}
+            <ActivityForm />
+
+            {isSignupSimulationEnabled ? (
+              <div className={styles['next-actions']}>
+                <Button
+                  type="button"
+                  label="Retour"
+                  variant={ButtonVariant.SECONDARY}
+                  onClick={() => {
+                    logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+                      from: location.pathname,
+                      to: REGISTRATION_STEP_IDS.STRUCTURE,
+                      used: SignupJourneyAction.ActionBar,
+                    })
+                    handlePreviousStep()
+                  }}
+                  disabled={methods.formState.isSubmitting}
+                />
+                <Button
+                  type="submit"
+                  label="Continuer"
+                  onClick={() => {
+                    logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+                      from: location.pathname,
+                      to: REGISTRATION_STEP_IDS.VALIDATION,
+                      used: SignupJourneyAction.ActionBar,
+                    })
+                  }}
+                  disabled={methods.formState.isSubmitting}
+                />
+              </div>
+            ) : (
+              <ActionBar
+                onClickPrevious={handlePreviousStep}
+                isDisabled={methods.formState.isSubmitting}
+                previousTo={SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION}
+                nextTo={SIGNUP_JOURNEY_STEP_IDS.CONFIRMATION}
+                nextStepTitle="Continuer"
+                previousStepTitle="Retour"
+              />
+            )}
+          </form>
+        </FormProvider>
+      </FormLayout>
+    </div>
   )
 }

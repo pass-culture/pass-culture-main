@@ -1,11 +1,13 @@
 import { useEffect } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 
+import { FullPageLayout } from '@/app/App/layouts/funnels/FullPageLayout/FullPageLayout'
 import { FunnelLayout } from '@/app/App/layouts/funnels/FunnelLayout/FunnelLayout'
 import {
   SignupJourneyContextProvider,
   useSignupJourneyContext,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { SignupJourneyStepper } from '@/components/SignupJourneyStepper/SignupJourneyStepper'
 
 import styles from './SignupJourneyRoutes.module.scss'
@@ -26,6 +28,9 @@ export const SignupJourneyRoutes = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const { offerer, setOfferer } = useSignupJourneyContext()
+  const isSignupSimulationEnabled = useActiveFeature(
+    'WIP_PRE_SIGNUP_SIMULATION'
+  )
 
   useEffect(() => {
     if (!location.pathname.includes('/inscription/structure/recherche')) {
@@ -36,6 +41,17 @@ export const SignupJourneyRoutes = () => {
     }
   }, [offerer?.siren, offerer?.siret, location.pathname, navigate, setOfferer])
 
+  if (isSignupSimulationEnabled) {
+    return (
+      <FullPageLayout>
+        <SignupJourneyContextProvider>
+          <Outlet />
+        </SignupJourneyContextProvider>
+      </FullPageLayout>
+    )
+  }
+
+  // TODO: (jclery, 2026-04-29): Remove this with WIP_PRE_SIGNUP_SIMULATION once the feature is enabled
   return (
     <FunnelLayout
       mainHeading={

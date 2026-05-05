@@ -2,6 +2,12 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
 
+.simulator-container {
+  max-width: rem.torem(640px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .step-title {
   color: var(--color-text-subtle, #696a6f);
 

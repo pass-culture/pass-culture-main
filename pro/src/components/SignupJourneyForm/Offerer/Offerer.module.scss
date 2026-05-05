@@ -1,4 +1,11 @@
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+
+.offerer-container {
+  max-width: rem.torem(640px);
+  margin-left: auto;
+  margin-right: auto;
+}
 
 .subtitle {
   @include fonts.title3;
@@ -6,4 +13,20 @@
 
 .input-siret {
   margin-top: var(--size-spacing-xxl);
+}
+
+.main-heading {
+  margin-bottom: var(--size-spacing-s);
+}
+
+.subheading-description {
+  @include fonts.body-xs;
+
+  color: var(--color-text-subtle);
+}
+
+.next-actions {
+  margin-top: var(--size-spacing-xxl);
+  display: flex;
+  justify-content: center;
 }

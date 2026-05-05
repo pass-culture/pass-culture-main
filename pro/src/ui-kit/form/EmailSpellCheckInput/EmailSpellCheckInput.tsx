@@ -3,7 +3,10 @@ import { type ForwardedRef, forwardRef, useState } from 'react'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
-import { TextInput } from '@/design-system/TextInput/TextInput'
+import {
+  TextInput,
+  type TextInputProps,
+} from '@/design-system/TextInput/TextInput'
 import fullNextIcon from '@/icons/full-next.svg'
 import { suggestEmail } from '@/ui-kit/form/EmailSpellCheckInput/suggestEmail'
 
@@ -15,9 +18,9 @@ type EmailSpellCheckInputProps = {
   label: string
   onApplyTip(tip: string): void
   required?: boolean
+  requiredIndicator?: TextInputProps['requiredIndicator']
   error?: string
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void
-  currentCount: number
 }
 
 export const EmailSpellCheckInput = forwardRef(
@@ -28,8 +31,8 @@ export const EmailSpellCheckInput = forwardRef(
       label,
       onApplyTip,
       required,
+      requiredIndicator,
       error,
-      currentCount,
       ...props
     }: EmailSpellCheckInputProps,
     ref: ForwardedRef<HTMLInputElement>
@@ -65,8 +68,8 @@ export const EmailSpellCheckInput = forwardRef(
           name={name}
           description={description}
           autoComplete="email"
-          maxCharactersCount={255}
           required={required}
+          requiredIndicator={requiredIndicator}
           error={error}
           {...props}
           onBlur={handleEmailValidationOnBlur} // Override props.onBlur() to handle internal behavior that shows the tip

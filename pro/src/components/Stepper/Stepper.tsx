@@ -2,7 +2,6 @@ import cn from 'classnames'
 import type React from 'react'
 import { useRef } from 'react'
 
-import { findLastIndex } from '@/commons/utils/findLastIndex'
 import { StepContent } from '@/components/Stepper/StepContent'
 
 import styles from './Stepper.module.scss'
@@ -13,6 +12,7 @@ export type Step = {
   onClick?: (e: React.MouseEvent) => void
   url?: string
   hash?: string
+  disabled?: boolean
 }
 
 export interface StepperProps {
@@ -29,7 +29,12 @@ export const Stepper = ({
   const listRef = useRef<HTMLOListElement>(null)
 
   const lastStepIndex = steps.length - 1
-  const lastLineToActivate = findLastIndex(steps, (step: Step) => !!step.url)
+  const activeStepIndex = steps.findIndex((step) => step.id === activeStep)
+  const lastLineToActivate = steps.reduce(
+    (last, step, index) =>
+      !step.disabled && !(index > activeStepIndex && !step.url) ? index : last,
+    -1
+  )
 
   return (
     // biome-ignore lint/correctness/useUniqueElementIds: We assume stepper is used once per page. There cannot be id duplications.
@@ -42,7 +47,9 @@ export const Stepper = ({
       {steps.map((step, stepIndex) => {
         const isActive = activeStep === step.id
         const isLastStep = lastStepIndex === stepIndex
-        const isSelectionnable = !!step.url
+        const isPendingWithoutUrl = stepIndex > activeStepIndex && !step.url
+        const isSelectionnable = !step.disabled && !isPendingWithoutUrl
+        const isClickable = !!step.url && !step.disabled
 
         return (
           <li
@@ -50,6 +57,7 @@ export const Stepper = ({
             className={cn(
               styles['step-container'],
               isSelectionnable && styles.selectionnable,
+              isClickable && styles.clickable,
               isActive && styles.active
             )}
             key={`step-${step.id}`}
