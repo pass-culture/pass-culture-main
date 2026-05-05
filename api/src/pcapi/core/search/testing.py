@@ -1,5 +1,3 @@
-import typing
-
 from pcapi import settings
 
 
