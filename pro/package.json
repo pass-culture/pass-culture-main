@@ -117,7 +117,7 @@
     "tree-dump": "1.1.0",
     "ts-unused-exports": "11.0.1",
     "typescript": "5.9.3",
-    "vite": "8.0.8",
+    "vite": "8.0.10",
     "vite-plugin-html": "3.2.2",
     "vitest": "4.1.4",
     "vitest-axe": "0.1.0",
