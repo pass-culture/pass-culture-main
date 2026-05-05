@@ -1667,7 +1667,7 @@ export class DefaultService {
   public listOffers(
     nameOrIsbn?: string | null,
     offererId?: number | null,
-    status?: (OfferStatus | CollectiveOfferDisplayedStatus) | null,
+    status?: OfferStatus | null,
     venueId?: number | null,
     categoryId?: string | null,
     creationMode?: string | null,

@@ -1,6 +1,6 @@
 import type { ChangeEvent, Dispatch, SetStateAction, SubmitEvent } from 'react'
 
-import { OfferStatus } from '@/apiClient/v1'
+import { OfferStatus } from '@/apiClient/v1/new'
 import { DEFAULT_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -22,7 +22,7 @@ interface IndividualOffersSearchFiltersProps {
   searchButtonRef?: React.RefObject<HTMLButtonElement | null>
 }
 
-const individualFilterStatus: SelectOption[] = [
+const individualFilterStatus: SelectOption<OfferStatus>[] = [
   { label: 'Brouillon', value: OfferStatus.DRAFT },
   { label: 'Publiée', value: OfferStatus.ACTIVE },
   { label: 'Programmée', value: OfferStatus.SCHEDULED },
@@ -93,9 +93,7 @@ export const IndividualOffersSearchFilters = ({
           emptyOptionLabel="Tous"
           options={individualFilterStatus}
           value={selectedFilters.status}
-          onChange={(value) =>
-            updateSearchFilters({ status: value as OfferStatus | undefined })
-          }
+          onChange={(status) => updateSearchFilters({ status })}
           disabled={disableAllFilters}
           className={styles['select-filter']}
         />

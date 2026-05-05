@@ -290,7 +290,7 @@ class ListOffersQueryModel(BaseModel):
     # is shared on the offer search page
     name_or_ean: str | None = Field(alias="nameOrIsbn")
     offerer_id: int | None
-    status: OfferStatus | CollectiveOfferDisplayedStatus | None
+    status: OfferStatus | None
     venue_id: int | None
     categoryId: str | None
     creation_mode: str | None

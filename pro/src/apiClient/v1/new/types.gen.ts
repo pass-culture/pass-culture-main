@@ -4010,10 +4010,7 @@ export type ListOffersQueryModel = {
      * Periodendingdate
      */
     periodEndingDate?: string;
-    /**
-     * Status
-     */
-    status?: OfferStatus | CollectiveOfferDisplayedStatus;
+    status?: OfferStatus;
     /**
      * Venueid
      */
@@ -8998,10 +8995,7 @@ export type getOffersData = {
          * Offererid
          */
         offererId?: number;
-        /**
-         * Status
-         */
-        status?: OfferStatus | CollectiveOfferDisplayedStatus;
+        status?: OfferStatus;
         /**
          * Venueid
          */

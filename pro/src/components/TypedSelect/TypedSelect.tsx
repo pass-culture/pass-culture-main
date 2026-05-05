@@ -2,7 +2,7 @@ import { type ChangeEvent, useCallback, useMemo } from 'react'
 
 import { Select, type SelectProps } from '@/ui-kit/form/Select/Select'
 
-const EMPTY_OPTION_VALUE = '__EMPTY_OPTION__' as const
+import { EMPTY_OPTION_VALUE } from './constants'
 
 interface TypedSelectProps<Value extends number | string>
   extends Omit<SelectProps<Value>, 'onChange' | 'value'> {
@@ -11,17 +11,23 @@ interface TypedSelectProps<Value extends number | string>
   onChange: (value: Value | undefined) => void
   value: Value | undefined
 }
-interface TypedNumberSelectProps extends TypedSelectProps<number> {
+interface TypedNumberSelectProps<Value extends number>
+  extends TypedSelectProps<Value> {
   isNumber: true
-  onChange: (value: number | undefined) => void
+  onChange: (value: Value | undefined) => void
 }
-interface TypedStringSelectProps extends TypedSelectProps<string> {
+interface TypedStringSelectProps<Value extends string>
+  extends TypedSelectProps<Value> {
   isNumber?: false
-  onChange: (value: string | undefined) => void
+  onChange: (value: Value | undefined) => void
 }
 
-export function TypedSelect(props: TypedNumberSelectProps): JSX.Element
-export function TypedSelect(props: TypedStringSelectProps): JSX.Element
+export function TypedSelect<Value extends number>(
+  props: TypedNumberSelectProps<Value>
+): JSX.Element
+export function TypedSelect<Value extends string>(
+  props: TypedStringSelectProps<Value>
+): JSX.Element
 export function TypedSelect<Value extends number | string>({
   emptyOptionLabel,
   isNumber = false,

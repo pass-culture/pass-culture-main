@@ -1,5 +1,6 @@
 import { addDays, format } from 'date-fns'
 
+import { EMPTY_OPTION_VALUE } from '../src/components/TypedSelect/constants'
 import { expect, test } from './fixtures/searchIndividualOffer'
 import { checkAccessibility } from './helpers/accessibility'
 import { expectIndividualOffersOrBookingsAreFound } from './helpers/assertions'
@@ -383,15 +384,15 @@ test.describe('Search individual offers', () => {
 
     await expect(
       page.getByRole('combobox', { name: 'Localisation' })
-    ).toHaveValue('all')
+    ).toHaveValue(EMPTY_OPTION_VALUE)
     await expect(page.getByRole('combobox', { name: 'Catégorie' })).toHaveValue(
-      'all'
+      EMPTY_OPTION_VALUE
     )
     await expect(
       page.getByRole('combobox', { name: 'Mode de création' })
-    ).toHaveValue('all')
+    ).toHaveValue(EMPTY_OPTION_VALUE)
     await expect(page.getByRole('combobox', { name: 'Statut' })).toHaveValue(
-      'all'
+      EMPTY_OPTION_VALUE
     )
     await expect(page.getByLabel('Début de la période')).toHaveValue('')
     await expect(page.getByLabel('Fin de la période')).toHaveValue('')
