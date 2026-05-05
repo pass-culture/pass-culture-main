@@ -1,1 +1,0 @@
-import{n as e}from"./chunk-BneVvdWh.js";var t,n=e((()=>{t=``+new URL(`full-location-CXTffjx5.svg`,import.meta.url).href}));export{n,t};

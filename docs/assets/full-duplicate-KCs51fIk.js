@@ -1,0 +1,1 @@
+import{n as e}from"./chunk-DnJy8xQt.js";var t,n=e((()=>{t=``+new URL(`full-duplicate-CW2I2qO_.svg`,import.meta.url).href}));export{n,t};

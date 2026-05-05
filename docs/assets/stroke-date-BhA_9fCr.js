@@ -1,0 +1,1 @@
+import{n as e}from"./chunk-DnJy8xQt.js";var t,n=e((()=>{t=``+new URL(`stroke-date-BxGr780D.svg`,import.meta.url).href}));export{t as n,n as t};
