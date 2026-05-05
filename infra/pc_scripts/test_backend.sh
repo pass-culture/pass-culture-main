@@ -5,7 +5,7 @@ function test_backend {
   docker stop pc-postgres-pytest
   docker rm -v pc-postgres-pytest
   docker compose -f "$ROOT_PATH/docker-compose-backend.yml" up -d postgres-test
-  docker compose -f "$ROOT_PATH/docker-compose-backend.yml" build pcapi-tests --build-arg="network_mode=${DOCKER_NETWORK_MODE:-default}" --build-arg="uid=$UID"
+  docker compose -f "$ROOT_PATH/docker-compose-backend.yml" build flask --build-arg="network_mode=${DOCKER_NETWORK_MODE:-default}" --build-arg="uid=$UID"
 
   until docker compose -f "$ROOT_PATH/docker-compose-backend.yml" logs postgres-test 2>/dev/null | grep -q "PostgreSQL init process complete; ready for start up."; do
     echo "waiting for test-database"
@@ -14,7 +14,7 @@ function test_backend {
 
   docker compose -f "$ROOT_PATH/docker-compose-backend.yml" run --rm \
     -e RUN_ENV=tests -e SQLALCHEMY_WARN_20=1 \
-    pcapi-tests \
+    flask \
     bash -c "rm -rf static/object_store_data/thumbs* && \
              pytest -m 'not backoffice' --durations=5 --color=yes -rsx -v $pytest_args"
 }
@@ -24,7 +24,7 @@ function test_backoffice {
   docker stop pc-postgres-pytest
   docker rm -v pc-postgres-pytest
   docker compose -f "$ROOT_PATH/docker-compose-backend.yml" up -d postgres-test
-  docker compose -f "$ROOT_PATH/docker-compose-backend.yml" build pcapi-tests --build-arg="network_mode=${DOCKER_NETWORK_MODE:-default}" --build-arg="uid=$UID"
+  docker compose -f "$ROOT_PATH/docker-compose-backend.yml" build backoffice --build-arg="network_mode=${DOCKER_NETWORK_MODE:-default}" --build-arg="uid=$UID"
 
   until docker compose -f "$ROOT_PATH/docker-compose-backend.yml" logs postgres-test 2>/dev/null | grep -q "PostgreSQL init process complete; ready for start up."; do
     echo "waiting for test-database"
@@ -32,7 +32,7 @@ function test_backoffice {
   done
 
   docker compose -f "$ROOT_PATH/docker-compose-backend.yml" run --rm -e RUN_ENV=tests -e SQLALCHEMY_WARN_20=1 \
-    pcapi-tests \
+    backoffice \
     bash -c "rm -rf static/object_store_data/thumbs* && \
              pytest -m backoffice --durations=5 --color=yes -rsx -v $pytest_args"
 }

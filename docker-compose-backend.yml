@@ -27,18 +27,6 @@ services:
     networks:
       - db_nw
 
-  pcapi-tests:
-    build:
-      context: ./api
-      target: pcapi-tests
-      args:
-        network_mode: ${DOCKER_NETWORK_MODE:-default}
-    profiles: ["test"]  # don't start with compose up
-    env_file:
-      - env_file
-    networks:
-      - db_nw
-
   flask:
     build:
       context: ./api
@@ -48,6 +36,9 @@ services:
     working_dir: /usr/src/app
     container_name: pc-api
     command: ["./start-api-when-database-is-ready.sh"]
+    volumes:
+      - ./api/documentation/static/openapi.json:/usr/src/app/documentation/static/openapi.json
+      - ./api/tests:/usr/src/app/tests
     develop:
       watch:
         - action: sync
@@ -83,6 +74,8 @@ services:
     working_dir: /usr/src/app
     container_name: pc-backoffice
     command: ["./start-backoffice-when-api-is-ready.sh"]
+    volumes:
+      - ./api/tests:/usr/src/app/tests
     develop:
       watch:
         - action: sync
