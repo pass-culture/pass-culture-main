@@ -62,26 +62,12 @@
   margin-bottom: var(--size-spacing-xl);
 }
 
-.content {
-  text-align: center;
+.onboarding-title {
+  @include fonts.title2;
+
+  margin-bottom: var(--size-spacing-xl);
 }
 
-.error-icon {
-  width: rem.torem(350px);
-  max-width: 100%;
-  color: var(--color-icon-brand-primary);
-
-  @media (max-width: size.$tablet) {
-    width: rem.torem(200px);
-  }
-}
-
-.title {
-  @include fonts.title1;
-
-  margin: var(--size-spacing-xxl) 0 var(--size-spacing-l);
-}
-
-.description {
-  @include fonts.title4;
+.onboarding-container {
+  max-width: rem.torem(721px);
 }
