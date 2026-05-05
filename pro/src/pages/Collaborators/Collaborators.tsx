@@ -14,8 +14,10 @@ import { GET_MEMBERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { OffererLinkEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { ensureOffererNamesValidated } from '@/commons/store/offerer/selectors'
-import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
+import {
+  ensureOffererNamesValidated,
+  ensureSelectedAdminOfferer,
+} from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'

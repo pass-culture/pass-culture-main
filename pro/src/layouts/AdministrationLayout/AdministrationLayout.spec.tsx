@@ -58,11 +58,8 @@ const renderAdministrationLayout = (
       user: {
         currentUser: user,
         selectedAdminOfferer: offererNamesValidated[0],
-      },
-      offerer: {
         offererNamesValidated,
         offererNames: offererNamesValidated,
-        currentOfferer: offererNamesValidated[0],
       },
     },
     ...options,
@@ -90,10 +87,7 @@ describe('AdministrationLayout', () => {
   it('should render non attached banner if offerer is not attached', () => {
     renderAdministrationLayout(2, {
       storeOverrides: {
-        offerer: {
-          currentOfferer: {
-            id: 1,
-          },
+        user: {
           offererNamesValidated: [],
           offererNames: offererNamesValidated,
         },

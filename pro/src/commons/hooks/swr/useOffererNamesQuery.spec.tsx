@@ -34,7 +34,7 @@ const TestComponent = () => {
 
 const renderComponent = (
   overrides: DeepPartial<RootState> = {
-    offerer: {
+    user: {
       offererNamesValidated: null,
       offerersNamesWithPendingValidation: null,
       offererNames: null,
@@ -68,10 +68,10 @@ describe('useOffererNamesQuery', () => {
       expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
     })
 
-    expect(store.getState().offerer.offererNamesValidated).toEqual(
+    expect(store.getState().user.offererNamesValidated).toEqual(
       expectedOfferersNamesValidated
     )
-    expect(store.getState().offerer.offerersNamesWithPendingValidation).toEqual(
+    expect(store.getState().user.offerersNamesWithPendingValidation).toEqual(
       expectedOfferersNamesWithPendingValidation
     )
 
@@ -90,7 +90,7 @@ describe('useOffererNamesQuery', () => {
     ]
 
     renderComponent({
-      offerer: {
+      user: {
         offererNamesValidated: mockOffererNamesValidated,
         offerersNamesWithPendingValidation:
           mockOfferersNamesWithPendingValidation,

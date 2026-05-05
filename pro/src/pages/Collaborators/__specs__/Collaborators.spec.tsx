@@ -44,8 +44,6 @@ const renderCollaborators = async (options?: RenderWithProvidersOptions) => {
         user: {
           currentUser: sharedCurrentUserFactory(),
           selectedAdminOfferer: { id: 1 },
-        },
-        offerer: {
           offererNamesValidated,
           offererNames: offererNamesValidated,
         },

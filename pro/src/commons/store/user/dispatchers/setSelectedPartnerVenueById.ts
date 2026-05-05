@@ -14,12 +14,10 @@ import {
   localStorageManager,
 } from '@/commons/utils/localStorageManager'
 
-import {
-  setCurrentOffererName,
-  updateCurrentOfferer,
-} from '../../offerer/reducer'
+import { updateCurrentOfferer } from '../../offerer/reducer'
 import type { AppThunkApiConfig } from '../../store'
 import {
+  setCurrentOffererName,
   setSelectedPartnerVenue,
   type UserAccess,
   updateUserAccess,
@@ -41,7 +39,7 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
     try {
       const state = getState()
 
-      const offererNames = state.offerer.offererNames
+      const offererNames = state.user.offererNames
       assertOrFrontendError(offererNames, '`offererNames` is null.')
       const previousSelectedPartnerVenue = state.user.selectedPartnerVenue
       if (nextSelectedPartnerVenueId === previousSelectedPartnerVenue?.id) {

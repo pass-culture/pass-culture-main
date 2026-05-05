@@ -35,19 +35,16 @@ const renderHub: RenderComponentFunction<
 > = ({ venues }) => {
   return renderWithProviders(<Hub />, {
     storeOverrides: {
-      offerer: {
-        currentOfferer: { ...defaultGetOffererResponseModel, id: 100 },
-        currentOffererName: getOffererNameFactory({ id: 100 }),
-        offererNames: [
-          getOffererNameFactory({ id: 100 }),
-          getOffererNameFactory({ id: 200 }),
-        ],
-      },
       user: {
         access: 'full',
         currentUser: sharedCurrentUserFactory(),
         selectedPartnerVenue: null,
         venues,
+        currentOffererName: getOffererNameFactory({ id: 100 }),
+        offererNames: [
+          getOffererNameFactory({ id: 100 }),
+          getOffererNameFactory({ id: 200 }),
+        ],
       },
     },
     initialRouterEntries: ['/hub'],

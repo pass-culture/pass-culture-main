@@ -66,9 +66,8 @@ describe('useOffererAddresses', () => {
 
   it('should return an empty list when no offerer is set', async () => {
     renderComponent({
-      user: { currentUser: user },
+      user: { currentUser: user, offererNamesValidated: [] },
       offerer: {
-        offererNamesValidated: [],
         currentOfferer: null,
       },
     })

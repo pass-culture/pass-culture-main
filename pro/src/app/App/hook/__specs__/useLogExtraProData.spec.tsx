@@ -18,7 +18,6 @@ const Logger = (): null => {
 }
 
 const renderLogExtraProData = async (
-  features: string[] = [],
   overrides: DeepPartial<RootState> = {}
 ) => {
   const rendered = renderWithProviders(
@@ -28,15 +27,21 @@ const renderLogExtraProData = async (
     </>,
     {
       initialRouterEntries: ['/accueil'],
-      features,
       storeOverrides: {
         ...overrides,
-        offerer: currentOffererFactory({
+        offerer: currentOffererFactory(),
+        user: {
           offererNamesValidated: [
             getOffererNameFactory({ id: 1 }),
             getOffererNameFactory({ id: 2, name: 'super structure' }),
           ],
-        }),
+          selectedPartnerVenue: {
+            id: 123,
+            managingOfferer: {
+              id: 1,
+            },
+          },
+        },
       },
     }
   )
@@ -54,32 +59,12 @@ describe('useLogExtraProData', () => {
       logEvent: mockLogEvent,
     }))
   })
-
-  it('should log an event on page load', async () => {
-    await renderLogExtraProData()
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(1, 'extra_pro_data', {
-      offerer_id: 1,
-      from: '/accueil',
-    })
-  })
-
-  it('should log an event on page load with FF WIP_SWITCH_VENUE', async () => {
-    await renderLogExtraProData(['WIP_SWITCH_VENUE'])
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(1, 'extra_pro_data', {
-      offerer_id: 1,
-      from: '/accueil',
-    })
-  })
-
-  it('should log an event on page load with FF WIP_SWITCH_VENUE and a venue', async () => {
-    await renderLogExtraProData(['WIP_SWITCH_VENUE'], {
+  it('should log an event on page load with a venue', async () => {
+    await renderLogExtraProData({
       user: {
         selectedPartnerVenue: { id: 123, publicName: 'toto' },
       },
+      offerer: currentOffererFactory(),
     })
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)

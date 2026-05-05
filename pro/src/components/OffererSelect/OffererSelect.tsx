@@ -1,8 +1,8 @@
 import { useOffererNamesQuery } from '@/commons/hooks/swr/useOffererNamesQuery'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { ensureOffererNames } from '@/commons/store/offerer/selectors'
 import { setSelectedAdminOffererById } from '@/commons/store/user/dispatchers/setSelectedAdminOffererById'
+import { ensureOffererNames } from '@/commons/store/user/selectors'
 import { Select } from '@/ui-kit/form/Select/Select'
 
 import styles from './OffererSelect.module.scss'

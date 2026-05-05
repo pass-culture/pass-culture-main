@@ -56,10 +56,8 @@ describe('OffererSelect', () => {
 
     renderOffererSelect({
       storeOverrides: {
-        offerer: {
-          offererNames: offerers,
-        },
         user: {
+          offererNames: offerers,
           selectedAdminOfferer: fullOfferer,
         },
       },
@@ -82,11 +80,9 @@ describe('OffererSelect', () => {
 
     renderOffererSelect({
       storeOverrides: {
-        offerer: {
-          offererNames: offerers,
-        },
         user: {
           selectedAdminOfferer: fullOfferer,
+          offererNames: offerers,
         },
       },
     })
@@ -114,11 +110,9 @@ describe('OffererSelect', () => {
 
     renderOffererSelect({
       storeOverrides: {
-        offerer: {
-          offererNames: offerers,
-        },
         user: {
           selectedAdminOfferer: fullOfferer,
+          offererNames: offerers,
         },
       },
     })
@@ -149,11 +143,9 @@ describe('OffererSelect', () => {
 
     const { store } = renderOffererSelect({
       storeOverrides: {
-        offerer: {
-          offererNames: offerers,
-        },
         user: {
           selectedAdminOfferer: fullOfferer1,
+          offererNames: offerers,
         },
       },
     })
@@ -181,11 +173,9 @@ describe('OffererSelect', () => {
 
     renderOffererSelect({
       storeOverrides: {
-        offerer: {
-          offererNames: offerers,
-        },
         user: {
           selectedAdminOfferer: fullOfferer,
+          offererNames: offerers,
         },
       },
     })

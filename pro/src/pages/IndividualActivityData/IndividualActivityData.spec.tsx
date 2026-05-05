@@ -60,10 +60,7 @@ const renderIndividualActivityData = () =>
       user: {
         currentUser: user,
         selectedAdminOfferer: defaultGetOffererResponseModel,
-      },
-      offerer: {
         offererNamesValidated: [defaultGetOffererResponseModel],
-        currentOfferer: defaultGetOffererResponseModel,
       },
     },
   })

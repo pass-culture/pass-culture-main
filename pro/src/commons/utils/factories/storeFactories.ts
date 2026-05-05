@@ -18,14 +18,9 @@ export const sharedCurrentUserFactory = (
 export const currentOffererFactory = (
   customOfferer: DeepPartial<OffererState> = {}
 ): DeepPartial<OffererState> => ({
-  offererNamesValidated: [...(customOfferer.offererNamesValidated ?? [])],
   currentOfferer: {
     id: 1,
     isOnboarded: true,
     ...customOfferer.currentOfferer,
   },
-  offererNames: [...(customOfferer.offererNames ?? [])],
-  offerersNamesWithPendingValidation: [
-    ...(customOfferer.offerersNamesWithPendingValidation ?? []),
-  ],
 })

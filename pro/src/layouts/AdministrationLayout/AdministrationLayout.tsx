@@ -5,7 +5,7 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import {
   ensureOffererNames,
   ensureOffererNamesValidated,
-} from '@/commons/store/offerer/selectors'
+} from '@/commons/store/user/selectors'
 import { NonAttachedBanner } from '@/components/NonAttachedBanner/NonAttachedBanner'
 import { OffererSelect } from '@/components/OffererSelect/OffererSelect'
 

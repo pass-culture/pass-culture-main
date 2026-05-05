@@ -6,8 +6,8 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import {
   ensureOffererNames,
   ensureOffererNamesValidated,
-} from '@/commons/store/offerer/selectors'
-import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
+  ensureSelectedAdminOfferer,
+} from '@/commons/store/user/selectors'
 import { OffererSelect } from '@/components/OffererSelect/OffererSelect'
 import { ReimbursementsTabs } from '@/components/ReimbursementsTabs/ReimbursementsTabs'
 

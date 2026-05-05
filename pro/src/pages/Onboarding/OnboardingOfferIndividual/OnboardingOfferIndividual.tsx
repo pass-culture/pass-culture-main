@@ -10,7 +10,7 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
+import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import editFullIcon from '@/icons/full-edit.svg'
 import connectStrokeIcon from '@/icons/stroke-connect.svg'
@@ -23,7 +23,7 @@ import styles from './OnboardingOfferIndividual.module.scss'
 export const MAX_DRAFT_TO_DISPLAY = 50
 
 export const OnboardingOfferIndividual = (): JSX.Element => {
-  const selectedOfferer = useAppSelector(selectCurrentOfferer)
+  const selectedOfferer = useAppSelector(ensureSelectedAdminOfferer)
 
   const offersQuery = useSWR(
     [GET_OFFERS_QUERY_KEY, { status: 'DRAFT' }],

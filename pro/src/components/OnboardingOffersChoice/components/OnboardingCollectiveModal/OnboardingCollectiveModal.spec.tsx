@@ -31,10 +31,10 @@ const renderOnboardingCollectiveModal = (
 ) => {
   return renderWithProviders(<OnboardingCollectiveModal />, {
     storeOverrides: {
-      user: { currentUser: sharedCurrentUserFactory() },
-      offerer: {
-        currentOfferer: { id: 1, isOnboarded: false },
+      user: {
+        currentUser: sharedCurrentUserFactory(),
         offererNamesValidated: [],
+        selectedPartnerVenue: { managingOfferer: { id: 1 } },
       },
     },
     user: sharedCurrentUserFactory(),

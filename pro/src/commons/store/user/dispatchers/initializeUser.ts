@@ -3,9 +3,12 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 import { api } from '@/apiClient/api'
 import type { SharedCurrentUserResponseModel } from '@/apiClient/v1'
 import type { SharedCurrentUserResponseModel as SharedCurrentUserResponseModelNew } from '@/apiClient/v1/new'
-import { updateOffererNames } from '@/commons/store/offerer/reducer'
 import { setSelectedAdminOffererById } from '@/commons/store/user/dispatchers/setSelectedAdminOffererById'
-import { setVenues, updateUser } from '@/commons/store/user/reducer'
+import {
+  setVenues,
+  updateOffererNames,
+  updateUser,
+} from '@/commons/store/user/reducer'
 
 import type { AppThunkApiConfig } from '../../store'
 import { getInitialAdminOffererId } from '../utils/getInitialAdminOffererId'
