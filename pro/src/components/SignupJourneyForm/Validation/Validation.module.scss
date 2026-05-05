@@ -1,7 +1,21 @@
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+
+.validation-container {
+  max-width: rem.torem(640px);
+  margin-left: auto;
+  margin-right: auto;
+}
 
 .subtitle {
   @include fonts.title4;
+}
+
+.title {
+  @include fonts.title1;
+
+  margin-top: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-s);
 }
 
 .validation-screen {
@@ -13,4 +27,10 @@
     justify-content: space-between;
     align-items: center;
   }
+}
+
+.next-actions {
+  margin-top: var(--size-spacing-xxl);
+  display: flex;
+  justify-content: space-between;
 }

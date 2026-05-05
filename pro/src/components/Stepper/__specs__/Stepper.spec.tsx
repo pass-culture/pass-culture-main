@@ -37,6 +37,7 @@ describe('Stepper', () => {
       {
         id: '4',
         label: 'Confirmation',
+        disabled: true,
       },
     ]
     props = {
@@ -83,7 +84,30 @@ describe('Stepper', () => {
     expect(ConfirmationLink).toBeNull()
   })
 
-  it('should have right active element and be seelctionnable when it has url', async () => {
+  it('should not render link when step has url but is disabled', () => {
+    const stepsWithDisabledUrl: Step[] = [
+      { id: '1', label: 'Informations', url: '/informations' },
+      { id: '2', label: 'Stocks & Prix', url: '/stocks', disabled: true },
+    ]
+    renderStepper({ activeStep: '1', steps: stepsWithDisabledUrl })
+
+    const disabledLink = screen.getByText('Stocks & Prix').closest('a')
+    expect(disabledLink).toBeNull()
+  })
+
+  it('should be selectionnable without a url when not disabled', async () => {
+    const stepsWithoutUrl: Step[] = [
+      { id: '1', label: 'Done step' },
+      { id: '2', label: 'Disabled step', disabled: true },
+    ]
+    renderStepper({ activeStep: '1', steps: stepsWithoutUrl })
+
+    const listItems = await screen.findAllByRole('listitem')
+    expect(listItems[0].classList.contains('selectionnable')).toBe(true)
+    expect(listItems[1].classList.contains('selectionnable')).toBe(false)
+  })
+
+  it('should have right active element and be selectionnable when not disabled', async () => {
     renderStepper(props)
 
     const listItems = await screen.findAllByRole('listitem')

@@ -6,6 +6,7 @@ import { api } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
 import type { CreateOffererBodyModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { GET_VENUES_OF_OFFERER_FROM_SIRET_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   type Offerer,
@@ -17,6 +18,7 @@ import {
   tryRestoreOffererFromStorage,
 } from '@/commons/context/SignupJourneyContext/storage'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -46,6 +48,10 @@ import {
 import styles from './Offerers.module.scss'
 
 export const Offerers = (): JSX.Element => {
+  const isSignupSimulationEnabled = useActiveFeature(
+    'WIP_PRE_SIGNUP_SIMULATION'
+  )
+
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const navigate = useNavigate()
@@ -198,8 +204,11 @@ export const Offerers = (): JSX.Element => {
   return (
     <div className={styles['existing-offerers-layout-wrapper']}>
       <div>
-        <h1 className={styles['title']}>Ce SIRET est déjà inscrit</h1>
-        <h2 className={styles['subtitle']}>
+        <MainHeading
+          className={styles['main-heading']}
+          mainHeading="Ce SIRET est déjà inscrit"
+        />
+        <p className={styles['subheading-description']}>
           Ce SIRET est déjà associé à{' '}
           {pluralizeFr(
             displayedVenuesNames.length,
@@ -207,7 +216,7 @@ export const Offerers = (): JSX.Element => {
             'plusieurs structures'
           )}{' '}
           sur le pass Culture Pro.
-        </h2>
+        </p>
       </div>
 
       <div className={styles['existing-offerers-layout']}>

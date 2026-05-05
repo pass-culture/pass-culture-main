@@ -10,6 +10,22 @@ $small-gap: var(--size-spacing-s);
   flex-direction: column;
   align-items: flex-start;
   gap: $offerers-gap;
+
+  &-wrapper {
+    max-width: rem.torem(640px);
+    margin: auto auto var(--size-spacing-xxxl) auto;
+  }
+}
+
+.main-heading {
+  margin-bottom: var(--size-spacing-s);
+}
+
+.subheading-description {
+  @include fonts.body-xs;
+
+  color: var(--color-text-subtle);
+  margin-bottom: var(--size-spacing-xxl);
 }
 
 .venues-layout {
@@ -27,23 +43,6 @@ $small-gap: var(--size-spacing-s);
 
 .dialog-info {
   padding: 0 rem.torem(85px);
-}
-
-.existing-offerers-layout-wrapper {
-  margin-bottom: var(--size-spacing-xxxl);
-}
-
-.title {
-  @include fonts.title1;
-
-  margin-bottom: var(--size-spacing-s);
-}
-
-.subtitle {
-  @include fonts.body-xs;
-
-  color: var(--color-text-subtle, #696a6f);
-  margin-bottom: var(--size-spacing-xxl);
 }
 
 .view-move-button {

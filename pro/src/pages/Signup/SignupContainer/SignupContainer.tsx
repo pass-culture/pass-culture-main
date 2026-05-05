@@ -1,5 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useEffect, useRef } from 'react'
+import cn from 'classnames'
+import { useCallback, useEffect, useRef } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
@@ -12,6 +13,7 @@ import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useLogEventOnUnload } from '@/commons/hooks/useLogEventOnUnload'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -28,6 +30,9 @@ export const SignupContainer = (): JSX.Element => {
   const navigate = useNavigate()
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
+  const isSignupSimulationEnabled = useActiveFeature(
+    'WIP_PRE_SIGNUP_SIMULATION'
+  )
 
   useInitReCaptcha()
 
@@ -94,7 +99,7 @@ export const SignupContainer = (): JSX.Element => {
     errorsRef.current = errors
   }, [touchedFields, errors])
 
-  const logFormAbort = () => {
+  const logFormAbort = useCallback(() => {
     const filledFields = Object.keys(touchedRef.current)
     if (filledFields.length === 0) {
       return
@@ -111,7 +116,7 @@ export const SignupContainer = (): JSX.Element => {
       filled: filledFields,
       filledWithErrors: filledWithErrors,
     })
-  }
+  }, [logEvent])
 
   // Track the form state on tab closing
   useLogEventOnUnload(() => logFormAbort())
@@ -124,20 +129,30 @@ export const SignupContainer = (): JSX.Element => {
       }
       logFormAbort()
     }
-  }, [])
+  }, [logFormAbort])
 
   return (
-    <section className={styles['content']}>
-      <OperatingProcedures />
+    <div
+      className={cn({
+        [styles['validation-container']]: isSignupSimulationEnabled,
+      })}
+    >
+      <section className={styles['content']}>
+        {!isSignupSimulationEnabled && (
+          <>
+            <OperatingProcedures />
+            <div className={styles['mandatory']}>
+              <MandatoryInfo areAllFieldsMandatory={true} />
+            </div>
+          </>
+        )}
 
-      <div className={styles['mandatory']}>
-        <MandatoryInfo areAllFieldsMandatory={true} />
-      </div>
-      <FormProvider {...hookForm}>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <SignupForm />
-        </form>
-      </FormProvider>
-    </section>
+        <FormProvider {...hookForm}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <SignupForm />
+          </form>
+        </FormProvider>
+      </section>
+    </div>
   )
 }

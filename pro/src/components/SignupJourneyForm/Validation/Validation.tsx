@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 
@@ -23,6 +24,7 @@ import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
@@ -34,6 +36,8 @@ import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { humanizeSiret } from '@/commons/utils/siren'
+import { REGISTRATION_STEP_IDS } from '@/components/RegistrationStepper/constants'
+import { RegistrationStepper } from '@/components/RegistrationStepper/RegistrationStepper'
 import {
   DEFAULT_ADDRESS_FORM_VALUES,
   DEFAULT_OFFERER_FORM_VALUES,
@@ -55,6 +59,10 @@ import { ActionBar } from '../ActionBar/ActionBar'
 import styles from './Validation.module.scss'
 
 export const Validation = (): JSX.Element | undefined => {
+  const isSignupSimulationEnabled = useActiveFeature(
+    'WIP_PRE_SIGNUP_SIMULATION'
+  )
+
   const [loading, setLoading] = useState(false)
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
@@ -224,65 +232,114 @@ export const Validation = (): JSX.Element | undefined => {
   ].filter((line) => line !== null)
 
   return (
-    <div className={styles['validation-screen']}>
-      <section>
-        <div className={styles['validation-screen-subtitle']}>
-          <h2 className={styles['subtitle']}>Vos informations</h2>
-          <Button
-            as="a"
-            to="/inscription/structure/identification"
-            onClick={() => {
-              logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-                to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
-                used: SignupJourneyAction.UpdateFromValidation,
-              })
-            }}
-            variant={ButtonVariant.SECONDARY}
-            color={ButtonColor.NEUTRAL}
-            size={ButtonSize.SMALL}
-            iconPosition={IconPositionEnum.LEFT}
-            icon={fullEditIcon}
-            label="Modifier"
+    <div
+      className={cn({
+        [styles['validation-container']]: isSignupSimulationEnabled,
+      })}
+    >
+      {isSignupSimulationEnabled && (
+        <>
+          <RegistrationStepper />
+          <h1 className={styles['title']}>Vérifiez vos informations</h1>
+        </>
+      )}
+
+      <div className={styles['validation-screen']}>
+        <section>
+          <div className={styles['validation-screen-subtitle']}>
+            <h2 className={styles['subtitle']}>
+              {isSignupSimulationEnabled
+                ? 'Votre structure'
+                : 'Vos informations'}
+            </h2>
+            <Button
+              as="a"
+              to="/inscription/structure/identification"
+              onClick={() => {
+                logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+                  to: REGISTRATION_STEP_IDS.STRUCTURE,
+                  used: SignupJourneyAction.UpdateFromValidation,
+                })
+              }}
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              size={ButtonSize.SMALL}
+              iconPosition={IconPositionEnum.LEFT}
+              icon={fullEditIcon}
+              label="Modifier"
+            />
+          </div>
+
+          <DescriptionList lines={venueLines} />
+        </section>
+        <section className={styles['validation-screen']}>
+          <div className={styles['validation-screen-subtitle']}>
+            <h2 className={styles['subtitle']}>Votre activité</h2>
+            <Button
+              as="a"
+              to="/inscription/structure/activite"
+              onClick={() => {
+                logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+                  to: REGISTRATION_STEP_IDS.ACTIVITY,
+                  used: SignupJourneyAction.UpdateFromValidation,
+                })
+              }}
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              size={ButtonSize.SMALL}
+              iconPosition={IconPositionEnum.LEFT}
+              icon={fullEditIcon}
+              label="Modifier"
+            />
+          </div>
+
+          <DescriptionList lines={activityLines} />
+        </section>
+        <Banner title="Vous pourrez modifier ces informations à tout moment depuis votre espace partenaire." />
+
+        {isSignupSimulationEnabled ? (
+          <div className={styles['next-actions']}>
+            <Button
+              type="button"
+              label="Retour"
+              variant={ButtonVariant.SECONDARY}
+              onClick={() => {
+                logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+                  from: location.pathname,
+                  to: REGISTRATION_STEP_IDS.ACTIVITY,
+                  used: SignupJourneyAction.ActionBar,
+                })
+                handlePreviousStep()
+              }}
+              disabled={loading}
+            />
+            <Button
+              type="button"
+              label="Valider et créer ma structure"
+              onClick={() => {
+                logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+                  from: location.pathname,
+                  to: REGISTRATION_STEP_IDS.COMPLETED,
+                  used: SignupJourneyAction.ActionBar,
+                })
+                onSubmit()
+              }}
+              disabled={loading}
+            />
+          </div>
+        ) : (
+          <ActionBar
+            onClickPrevious={handlePreviousStep}
+            previousTo={SIGNUP_JOURNEY_STEP_IDS.ACTIVITY}
+            nextTo={SIGNUP_JOURNEY_STEP_IDS.COMPLETED}
+            onClickNext={onSubmit}
+            isDisabled={loading}
+            withRightIcon={false}
+            previousStepTitle="Retour"
+            nextStepTitle="Valider et créer ma structure"
           />
-        </div>
-
-        <DescriptionList lines={venueLines} />
-      </section>
-      <section className={styles['validation-screen']}>
-        <div className={styles['validation-screen-subtitle']}>
-          <h2 className={styles['subtitle']}>Votre activité</h2>
-          <Button
-            as="a"
-            to="/inscription/structure/activite"
-            onClick={() => {
-              logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-                to: SIGNUP_JOURNEY_STEP_IDS.ACTIVITY,
-                used: SignupJourneyAction.UpdateFromValidation,
-              })
-            }}
-            variant={ButtonVariant.SECONDARY}
-            color={ButtonColor.NEUTRAL}
-            size={ButtonSize.SMALL}
-            iconPosition={IconPositionEnum.LEFT}
-            icon={fullEditIcon}
-            label="Modifier"
-          />
-        </div>
-
-        <DescriptionList lines={activityLines} />
-      </section>
-      <Banner title="Vous pourrez modifier ces informations à tout moment depuis votre espace partenaire." />
-
-      <ActionBar
-        onClickPrevious={handlePreviousStep}
-        previousTo={SIGNUP_JOURNEY_STEP_IDS.ACTIVITY}
-        nextTo={SIGNUP_JOURNEY_STEP_IDS.COMPLETED}
-        onClickNext={onSubmit}
-        isDisabled={loading}
-        withRightIcon={false}
-        previousStepTitle="Retour"
-        nextStepTitle="Valider et créer ma structure"
-      />
+        )}
+      </div>
     </div>
   )
 }

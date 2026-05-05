@@ -3,6 +3,24 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_forms.scss" as forms;
 
+.validation-container {
+  max-width: rem.torem(640px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.main-heading {
+  margin-top: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-s);
+}
+
+.subheading-description {
+  @include fonts.body-xs;
+
+  color: var(--color-text-subtle);
+  margin-bottom: var(--size-spacing-xxl);
+}
+
 .content {
   .sign-up-infos-before-signup {
     margin-top: var(--size-spacing-xxl);
@@ -11,6 +29,7 @@
   .buttons-field {
     display: flex;
     flex-direction: column-reverse;
+    justify-content: space-between;
     gap: var(--size-spacing-xl);
     margin-top: var(--size-spacing-xxl);
     padding-bottom: var(--size-spacing-xxl);
