@@ -12,7 +12,6 @@ import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferCon
 import { DEFAULT_PAGE } from '@/commons/core/Offers/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import { computeIndividualOffersUrl } from '@/commons/core/Offers/utils/computeIndividualOffersUrl'
-import { serializeApiIndividualFilters } from '@/commons/core/Offers/utils/serializeApiIndividualFilters'
 import type { Audience } from '@/commons/core/shared/types'
 import { formatAndOrderAddresses } from '@/commons/format/venuesService'
 import { useVenueAddresses } from '@/commons/hooks/swr/useVenueAddresses'
@@ -79,7 +78,7 @@ export const IndividualOffers = () => {
   )
 
   const offersQuery = useSWR([GET_OFFERS_QUERY_KEY, apiFilters], () =>
-    apiNew.listOffers({ query: serializeApiIndividualFilters(apiFilters) })
+    apiNew.listOffers({ query: apiFilters })
   )
 
   const offersResponse = useGracefulSwrResponse(
