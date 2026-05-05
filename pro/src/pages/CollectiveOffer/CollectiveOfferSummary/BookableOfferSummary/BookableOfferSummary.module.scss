@@ -3,6 +3,12 @@
 @use "styles/mixins/_size.scss" as size;
 
 .header-title {
+  @media (min-width: size.$tablet) {
+    max-width: rem.torem(588px);
+  }
+}
+
+.header-status {
   position: absolute;
   top: 0;
   right: 0;
