@@ -9921,6 +9921,37 @@ export type postStocksBulkResponses = {
 
 export type postStocksBulkResponse = postStocksBulkResponses[keyof postStocksBulkResponses];
 
+export type getStructureCheckBySearchInputData = {
+    body?: never;
+    path: {
+        search_input: string;
+    };
+    query?: never;
+    url: '/structure/check/{search_input}';
+};
+
+export type getStructureCheckBySearchInputErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type getStructureCheckBySearchInputError = getStructureCheckBySearchInputErrors[keyof getStructureCheckBySearchInputErrors];
+
+export type getStructureCheckBySearchInputResponses = {
+    /**
+     * No Content
+     */
+    204: void;
+};
+
+export type getStructureCheckBySearchInputResponse = getStructureCheckBySearchInputResponses[keyof getStructureCheckBySearchInputResponses];
+
 export type getStructureSearchBySearchInputData = {
     body?: never;
     path: {
