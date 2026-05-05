@@ -75,7 +75,7 @@ class UserHasBookingResponse(HttpBodyModel):
     has_bookings: bool
 
 
-class ListBookingsResponseModel(HttpBodyModel):
+class GetBookingsProResponseModel(HttpBodyModel):
     bookingsRecap: list[BookingRecapResponseModel]
     page: int
     pages: int
@@ -98,17 +98,14 @@ class BookingsExportQueryModel(HttpQueryParamsModel):
     event_date: date
 
 
-class ListBookingsQueryModel(HttpQueryParamsModel):
+class _BookingsQueryModelBase(HttpQueryParamsModel):
     page: int = 1
-    offerer_id: int
-    venue_id: int | None = None
     offer_id: int | None = None
     event_date: date | None = None
     booking_status_filter: BookingStatusFilter | None = None
     booking_period_beginning_date: date | None = None
     booking_period_ending_date: date | None = None
     offerer_address_id: int | None = None
-    export_type: BookingExportType | None = None
 
     @pydantic_v2.model_validator(mode="before")
     @classmethod
@@ -132,6 +129,16 @@ class ListBookingsQueryModel(HttpQueryParamsModel):
         if booking_period_date and booking_period_date < date(1, 1, 2):
             raise PydanticError("invalid date")
         return booking_period_date
+
+
+class GetBookingsProQueryModel(_BookingsQueryModelBase):
+    venue_id: int
+
+
+class DownloadBookingsQueryModel(_BookingsQueryModelBase):
+    offerer_id: int
+    venue_id: int | None = None
+    export_type: BookingExportType | None = None
 
 
 # Serializers

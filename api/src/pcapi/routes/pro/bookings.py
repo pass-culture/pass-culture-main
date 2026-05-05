@@ -18,6 +18,7 @@ from pcapi.core.bookings import validation as bookings_validation
 from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.users import repository as users_repository
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.utils import get_or_404
@@ -27,10 +28,11 @@ from pcapi.routes.pro.auth_utils import check_user_can_validate_bookings_v2
 from pcapi.routes.serialization import bookings as serialization_bookings
 from pcapi.routes.serialization.bookings_recap_serialize import BookingsExportQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import BookingsExportStatusFilter
+from pcapi.routes.serialization.bookings_recap_serialize import DownloadBookingsQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import EventDateScheduleAndPriceCategoriesCountModel
 from pcapi.routes.serialization.bookings_recap_serialize import EventDatesInfos
-from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsQueryModel
-from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsResponseModel
+from pcapi.routes.serialization.bookings_recap_serialize import GetBookingsProQueryModel
+from pcapi.routes.serialization.bookings_recap_serialize import GetBookingsProResponseModel
 from pcapi.routes.serialization.bookings_recap_serialize import UserHasBookingResponse
 from pcapi.routes.serialization.bookings_recap_serialize import serialize_bookings
 from pcapi.serialization.decorator import spectree_serialize
@@ -44,12 +46,11 @@ from . import blueprint
 @private_api.route("/bookings/pro", methods=["GET"])
 @atomic()
 @login_required
-@spectree_serialize(response_model=ListBookingsResponseModel, api=blueprint.pro_private_schema)
-def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel:
+@spectree_serialize(response_model=GetBookingsProResponseModel, api=blueprint.pro_private_schema)
+def get_bookings_pro(query: GetBookingsProQueryModel) -> GetBookingsProResponseModel:
     user = current_user._get_current_object()
-    check_user_has_access_to_offerer(user, query.offerer_id)
-
-    venue_ids = _resolve_venue_ids_for_offerer(offerer_id=query.offerer_id, venue_id=query.venue_id)
+    if not users_repository.has_access_to_venues(user, [query.venue_id]):
+        raise api_errors.ResourceNotFoundError()
 
     page = query.page
     per_page_limit = bookings_constants.BOOKINGS_PER_PAGE_LIMIT
@@ -60,9 +61,9 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
             query.booking_period_ending_date,
         )
 
-    bookings_query, total = booking_repository.find_by_venues(
+    bookings_query, total = booking_repository.find_by_venue(
         pro_user_id=user.id,
-        venue_ids=venue_ids,
+        venue_id=query.venue_id,
         booking_period=booking_period,
         status_filter=query.booking_status_filter,
         event_date=query.event_date,
@@ -72,7 +73,7 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
         per_page_limit=per_page_limit,
     )
 
-    return ListBookingsResponseModel(
+    return GetBookingsProResponseModel(
         bookingsRecap=[serialize_bookings(booking) for booking in bookings_query],
         page=page,
         pages=int(math.ceil(total / per_page_limit)),
@@ -164,7 +165,7 @@ def export_bookings_for_offer_as_excel(offer_id: int, query: BookingsExportQuery
     },
     api=blueprint.pro_private_schema,
 )
-def get_bookings_csv(query: ListBookingsQueryModel) -> bytes:
+def get_bookings_csv(query: DownloadBookingsQueryModel) -> bytes:
     return _create_booking_export_file(query, BookingExportType.CSV)
 
 
@@ -179,7 +180,7 @@ def get_bookings_csv(query: ListBookingsQueryModel) -> bytes:
     },
     api=blueprint.pro_private_schema,
 )
-def get_bookings_excel(query: ListBookingsQueryModel) -> bytes:
+def get_bookings_excel(query: DownloadBookingsQueryModel) -> bytes:
     return _create_booking_export_file(query, BookingExportType.EXCEL)
 
 
@@ -237,7 +238,7 @@ def get_offer_price_categories_and_schedules_by_dates(offer_id: int) -> EventDat
     )
 
 
-def _create_booking_export_file(query: ListBookingsQueryModel, export_type: BookingExportType) -> bytes:
+def _create_booking_export_file(query: DownloadBookingsQueryModel, export_type: BookingExportType) -> bytes:
     user = current_user._get_current_object()
     check_user_has_access_to_offerer(user, query.offerer_id)
 
