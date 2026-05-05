@@ -93,8 +93,8 @@ describe('translate', () => {
       translateApiParamsToQueryParams(
         {
           nameOrIsbn: 'input de recherche',
-          offererId: '883',
-          venueId: '891',
+          offererId: 883,
+          venueId: 891,
           periodBeginningDate: '2024-08-08',
           periodEndingDate: '2024-08-24',
           status: OfferStatus.DRAFT,
@@ -104,8 +104,8 @@ describe('translate', () => {
     ).toEqual(
       expect.objectContaining({
         'nom-ou-isbn': 'input de recherche',
-        structure: '883',
-        lieu: '891',
+        structure: 883,
+        lieu: 891,
         'periode-evenement-debut': '2024-08-08',
         'periode-evenement-fin': '2024-08-24',
         statut: 'draft',

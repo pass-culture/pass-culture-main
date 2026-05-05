@@ -2,7 +2,6 @@ import { Outlet } from 'react-router'
 
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useCurrentRoute } from '@/commons/hooks/useCurrentRoute'
 import {
   ensureOffererNames,
   ensureOffererNamesValidated,
@@ -20,10 +19,9 @@ export const AdministrationLayout = () => {
   const isSelectedOffererValidated = offererNamesValidated.some(
     (offerer) => offerer.id === offererId
   )
-  const currentRoute = useCurrentRoute()
 
   return (
-    <BasicLayout mainHeading={currentRoute.handle?.title} isAdminArea>
+    <BasicLayout isAdminArea>
       {offererNames.length > 1 && <OffererSelect />}
       {isSelectedOffererValidated ? (
         <Outlet />

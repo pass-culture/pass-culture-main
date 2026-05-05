@@ -3,21 +3,18 @@ import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 import { beforeEach, expect } from 'vitest'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import {
   type GetOffererAddressResponseModel,
   type GetVenueAddressResponseModel,
   type ListOffersOfferResponseModel,
+  type ListOffersQueryModel,
   OfferStatus,
-} from '@/apiClient/v1'
-import {
-  ALL_CREATION_MODES,
-  CREATION_MODES_OPTIONS,
-  DEFAULT_SEARCH_FILTERS,
-} from '@/commons/core/Offers/constants'
-import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
+} from '@/apiClient/v1/new'
+import { DEFAULT_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import { computeIndividualOffersUrl } from '@/commons/core/Offers/utils/computeIndividualOffersUrl'
 import type { Audience } from '@/commons/core/shared/types'
+import * as useAccessibleScrollModule from '@/commons/hooks/useAccessibleScroll'
 import {
   defaultGetOffererResponseModel,
   listOffersOfferFactory,
@@ -34,7 +31,23 @@ import {
 } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
+import type { IndividualOffersFilters } from './common/types'
 import { IndividualOffers } from './IndividualOffers'
+
+const makeQuery = (
+  overrides: Partial<ListOffersQueryModel> = {}
+): ListOffersQueryModel => ({
+  nameOrIsbn: undefined,
+  offererId: 1,
+  venueId: 2,
+  categoryId: undefined,
+  status: undefined,
+  creationMode: undefined,
+  periodBeginningDate: undefined,
+  periodEndingDate: undefined,
+  offererAddressId: undefined,
+  ...overrides,
+})
 
 const categoriesAndSubcategories = {
   categories: [
@@ -84,8 +97,7 @@ const LABELS = {
 }
 
 const renderIndividualOffers = async (
-  filters: Partial<IndividualSearchFiltersParams> & {
-    page?: number
+  filters: Partial<IndividualOffersFilters> & {
     audience?: Audience
   } = DEFAULT_SEARCH_FILTERS,
   features: string[] = [],
@@ -126,17 +138,17 @@ const renderIndividualOffers = async (
 }
 
 describe('IndividualOffers', () => {
+  const scrollToContentWrapperMock = vi.fn()
+
   let offersRecap: ListOffersOfferResponseModel[]
   offersRecap = [listOffersOfferFactory({ venue: proVenues[0] })]
 
-  // Necessary because JSDOM doesn't implement the `scrollTo` method
-  // (which is used by the `useAccessibleScroll` hook in that component's scope)
-  beforeAll(() => {
-    Element.prototype.scrollTo = () => {}
-    window.scrollTo = () => {}
-  })
-
   beforeEach(() => {
+    vi.spyOn(useAccessibleScrollModule, 'useAccessibleScroll').mockReturnValue({
+      contentWrapperRef: { current: null },
+      scrollToContentWrapper: scrollToContentWrapperMock,
+    })
+
     vi.spyOn(api, 'getCategories').mockResolvedValue(categoriesAndSubcategories)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [],
@@ -145,7 +157,8 @@ describe('IndividualOffers', () => {
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
     vi.spyOn(api, 'getOffererAddresses').mockResolvedValue(offererAddress)
     vi.spyOn(api, 'getVenueAddresses').mockResolvedValue(venueAddress)
-    vi.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
+
+    vi.spyOn(apiNew, 'listOffers').mockResolvedValue(offersRecap)
   })
 
   afterEach(() => {
@@ -154,7 +167,7 @@ describe('IndividualOffers', () => {
 
   describe('filters', () => {
     it('should display only selectable categories on filters', async () => {
-      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+      vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(offersRecap)
 
       await renderIndividualOffers()
 
@@ -170,22 +183,11 @@ describe('IndividualOffers', () => {
     })
 
     it('should filter according to page query param', async () => {
-      vi.spyOn(api, 'listOffers').mockResolvedValueOnce([
-        listOffersOfferFactory({ venue: proVenues[0] }),
-        listOffersOfferFactory({ venue: proVenues[0] }),
-        listOffersOfferFactory({ venue: proVenues[0] }),
-        listOffersOfferFactory({ venue: proVenues[0] }),
-        listOffersOfferFactory({ venue: proVenues[0] }),
-        listOffersOfferFactory({ venue: proVenues[0] }),
-        listOffersOfferFactory({ venue: proVenues[0] }),
-        listOffersOfferFactory({ venue: proVenues[0] }),
-        listOffersOfferFactory({ venue: proVenues[0] }),
-        listOffersOfferFactory({ venue: proVenues[0] }),
-        listOffersOfferFactory({ venue: proVenues[0] }),
-        listOffersOfferFactory({ venue: proVenues[0] }),
-        listOffersOfferFactory({ venue: proVenues[0] }),
-        listOffersOfferFactory({ venue: proVenues[0] }),
-      ])
+      vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(
+        Array.from({ length: 14 }, () =>
+          listOffersOfferFactory({ venue: proVenues[0] })
+        )
+      )
       await renderIndividualOffers({ page: 2 })
 
       expect(
@@ -195,11 +197,11 @@ describe('IndividualOffers', () => {
 
     describe('status filters', () => {
       it('should filter on a given status filter', async () => {
-        vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+        vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(offersRecap)
 
         await renderIndividualOffers()
 
-        expect(api.listOffers).toHaveBeenCalledTimes(1)
+        expect(apiNew.listOffers).toHaveBeenCalledTimes(1)
 
         const statusSelect = screen.getByRole('combobox', {
           name: 'Statut',
@@ -211,23 +213,15 @@ describe('IndividualOffers', () => {
         )
 
         await waitFor(() => {
-          expect(api.listOffers).toHaveBeenCalledTimes(2)
-          expect(api.listOffers).toHaveBeenLastCalledWith(
-            null,
-            1,
-            'EXPIRED',
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
-          )
+          expect(apiNew.listOffers).toHaveBeenCalledTimes(2)
+        })
+        expect(apiNew.listOffers).toHaveBeenLastCalledWith({
+          query: makeQuery({ status: OfferStatus.EXPIRED }),
         })
       })
 
       it('should indicate that no offers match selected filters', async () => {
-        vi.spyOn(api, 'listOffers')
+        vi.spyOn(apiNew, 'listOffers')
           .mockResolvedValueOnce(offersRecap)
           .mockResolvedValueOnce([])
 
@@ -250,7 +244,7 @@ describe('IndividualOffers', () => {
       })
 
       it('should not display column titles when no offers are returned', async () => {
-        vi.spyOn(api, 'listOffers').mockResolvedValueOnce([])
+        vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce([])
 
         await renderIndividualOffers()
 
@@ -269,11 +263,11 @@ describe('IndividualOffers', () => {
 
     describe('on click on search button', () => {
       it('should load offers with written offer name filter', async () => {
-        vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+        vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(offersRecap)
 
         await renderIndividualOffers()
 
-        expect(api.listOffers).toHaveBeenCalledTimes(1)
+        expect(apiNew.listOffers).toHaveBeenCalledTimes(1)
 
         await userEvent.type(
           screen.getByRole('searchbox', {
@@ -287,27 +281,19 @@ describe('IndividualOffers', () => {
         )
 
         await waitFor(() => {
-          expect(api.listOffers).toHaveBeenCalledTimes(2)
-          expect(api.listOffers).toHaveBeenLastCalledWith(
-            'Any word',
-            1,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
-          )
+          expect(apiNew.listOffers).toHaveBeenCalledTimes(2)
+        })
+        expect(apiNew.listOffers).toHaveBeenLastCalledWith({
+          query: makeQuery({ nameOrIsbn: 'Any word' }),
         })
       })
 
       it('should load offers with selected adress filter', async () => {
-        vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+        vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(offersRecap)
 
         await renderIndividualOffers()
 
-        expect(api.listOffers).toHaveBeenCalledTimes(1)
+        expect(apiNew.listOffers).toHaveBeenCalledTimes(1)
 
         const offererAddressOption = screen.getByLabelText('Localisation')
 
@@ -322,27 +308,19 @@ describe('IndividualOffers', () => {
         await userEvent.click(screen.getByText('Rechercher'))
 
         await waitFor(() => {
-          expect(api.listOffers).toHaveBeenCalledTimes(2)
-          expect(api.listOffers).toHaveBeenLastCalledWith(
-            null,
-            1,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            2
-          )
+          expect(apiNew.listOffers).toHaveBeenCalledTimes(2)
+        })
+        expect(apiNew.listOffers).toHaveBeenLastCalledWith({
+          query: makeQuery({ offererAddressId: venueAddress[0].id }),
         })
       })
 
       it('should load offers with selected type filter', async () => {
-        vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+        vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(offersRecap)
 
         await renderIndividualOffers()
 
-        expect(api.listOffers).toHaveBeenCalledTimes(1)
+        expect(apiNew.listOffers).toHaveBeenCalledTimes(1)
 
         await waitFor(() => {
           expect(
@@ -361,60 +339,40 @@ describe('IndividualOffers', () => {
         await userEvent.click(screen.getByText('Rechercher'))
 
         await waitFor(() => {
-          expect(api.listOffers).toHaveBeenLastCalledWith(
-            null,
-            1,
-            null,
-            null,
-            'CINEMA',
-            null,
-            null,
-            null,
-            null
-          )
+          expect(apiNew.listOffers).toHaveBeenLastCalledWith({
+            query: makeQuery({ categoryId: 'CINEMA' }),
+          })
         })
       })
 
       it('should load offers with selected creation mode filter', async () => {
-        vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+        vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(offersRecap)
 
         await renderIndividualOffers()
 
-        expect(api.listOffers).toHaveBeenCalledTimes(1)
+        expect(apiNew.listOffers).toHaveBeenCalledTimes(1)
 
         const creationModeSelect = screen.getByRole('combobox', {
           name: 'Mode de création',
         })
-        const importedCreationMode = CREATION_MODES_OPTIONS[2].value
-        await userEvent.selectOptions(
-          creationModeSelect,
-          String(importedCreationMode)
-        )
+        await userEvent.selectOptions(creationModeSelect, 'imported')
 
         await userEvent.click(screen.getByText('Rechercher'))
 
         await waitFor(() => {
-          expect(api.listOffers).toHaveBeenCalledTimes(2)
-          expect(api.listOffers).toHaveBeenLastCalledWith(
-            null,
-            1,
-            null,
-            null,
-            null,
-            'imported',
-            null,
-            null,
-            null
-          )
+          expect(apiNew.listOffers).toHaveBeenCalledTimes(2)
+        })
+        expect(apiNew.listOffers).toHaveBeenLastCalledWith({
+          query: makeQuery({ creationMode: 'imported' }),
         })
       })
 
       it('should load offers with selected period beginning date', async () => {
-        vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+        vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(offersRecap)
 
         await renderIndividualOffers()
 
-        expect(api.listOffers).toHaveBeenCalledTimes(1)
+        expect(apiNew.listOffers).toHaveBeenCalledTimes(1)
 
         await userEvent.type(
           screen.getByLabelText('Début de la période'),
@@ -424,23 +382,15 @@ describe('IndividualOffers', () => {
         await userEvent.click(screen.getByText('Rechercher'))
 
         await waitFor(() => {
-          expect(api.listOffers).toHaveBeenCalledTimes(2)
-          expect(api.listOffers).toHaveBeenLastCalledWith(
-            null,
-            1,
-            null,
-            null,
-            null,
-            null,
-            '2020-12-25',
-            null,
-            null
-          )
+          expect(apiNew.listOffers).toHaveBeenCalledTimes(2)
+        })
+        expect(apiNew.listOffers).toHaveBeenLastCalledWith({
+          query: makeQuery({ periodBeginningDate: '2020-12-25' }),
         })
       })
 
       it('should load offers with selected period ending date', async () => {
-        vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+        vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(offersRecap)
 
         await renderIndividualOffers()
 
@@ -451,18 +401,10 @@ describe('IndividualOffers', () => {
         await userEvent.click(screen.getByText('Rechercher'))
 
         await waitFor(() => {
-          expect(api.listOffers).toHaveBeenCalledTimes(2)
-          expect(api.listOffers).toHaveBeenLastCalledWith(
-            null,
-            1,
-            null,
-            null,
-            null,
-            null,
-            null,
-            '2020-12-27',
-            null
-          )
+          expect(apiNew.listOffers).toHaveBeenCalledTimes(2)
+        })
+        expect(apiNew.listOffers).toHaveBeenLastCalledWith({
+          query: makeQuery({ periodEndingDate: '2020-12-27' }),
         })
       })
     })
@@ -470,10 +412,8 @@ describe('IndividualOffers', () => {
 
   describe('url query params', () => {
     it('should have page value when page value is not first page', async () => {
-      const offersRecap = Array.from({ length: 11 }, () =>
-        listOffersOfferFactory()
-      )
-      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+      const offers = Array.from({ length: 11 }, () => listOffersOfferFactory())
+      vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(offers)
 
       await renderIndividualOffers()
 
@@ -487,11 +427,11 @@ describe('IndividualOffers', () => {
     })
 
     it('should store search value', async () => {
-      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+      vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(offersRecap)
 
       await renderIndividualOffers()
 
-      expect(api.listOffers).toHaveBeenCalledTimes(1)
+      expect(apiNew.listOffers).toHaveBeenCalledTimes(1)
 
       const searchInput = screen.getByRole('searchbox', {
         name: LABELS.nameSearchInput,
@@ -501,23 +441,15 @@ describe('IndividualOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       await waitFor(() => {
-        expect(api.listOffers).toHaveBeenCalledTimes(2)
-        expect(api.listOffers).toHaveBeenLastCalledWith(
-          'search string',
-          1,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
-        )
+        expect(apiNew.listOffers).toHaveBeenCalledTimes(2)
+      })
+      expect(apiNew.listOffers).toHaveBeenLastCalledWith({
+        query: makeQuery({ nameOrIsbn: 'search string' }),
       })
     })
 
     it('should have offer name value be removed when name search value is an empty string', async () => {
-      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+      vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(offersRecap)
 
       await renderIndividualOffers()
 
@@ -528,26 +460,18 @@ describe('IndividualOffers', () => {
       )
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
       await waitFor(() => {
-        expect(api.listOffers).toHaveBeenCalledWith(
-          null,
-          1,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
-        )
+        expect(apiNew.listOffers).toHaveBeenLastCalledWith({
+          query: makeQuery(),
+        })
       })
     })
 
     it('should have adress value when user filters by venue', async () => {
-      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+      vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(offersRecap)
 
       await renderIndividualOffers()
 
-      expect(api.listOffers).toHaveBeenCalledTimes(1)
+      expect(apiNew.listOffers).toHaveBeenCalledTimes(1)
 
       const offererAddressOption = screen.getByLabelText('Localisation')
 
@@ -561,23 +485,15 @@ describe('IndividualOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       await waitFor(() => {
-        expect(api.listOffers).toHaveBeenCalledTimes(2)
-        expect(api.listOffers).toHaveBeenLastCalledWith(
-          null,
-          1,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          2
-        )
+        expect(apiNew.listOffers).toHaveBeenCalledTimes(2)
+      })
+      expect(apiNew.listOffers).toHaveBeenLastCalledWith({
+        query: makeQuery({ offererAddressId: venueAddress[0].id }),
       })
     })
 
     it('should have venue value be removed when user asks for all venues', async () => {
-      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+      vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(offersRecap)
       vi.spyOn(api, 'getCategories').mockResolvedValueOnce({
         categories: [
           { id: 'test_id_1', proLabel: 'My test value', isSelectable: true },
@@ -592,7 +508,7 @@ describe('IndividualOffers', () => {
 
       await renderIndividualOffers()
 
-      expect(api.listOffers).toHaveBeenCalledTimes(1)
+      expect(apiNew.listOffers).toHaveBeenCalledTimes(1)
 
       await waitFor(() => {
         expect(
@@ -610,23 +526,15 @@ describe('IndividualOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       await waitFor(() => {
-        expect(api.listOffers).toHaveBeenCalledTimes(2)
-        expect(api.listOffers).toHaveBeenLastCalledWith(
-          null,
-          1,
-          null,
-          null,
-          'test_id_1',
-          null,
-          null,
-          null,
-          null
-        )
+        expect(apiNew.listOffers).toHaveBeenCalledTimes(2)
+      })
+      expect(apiNew.listOffers).toHaveBeenLastCalledWith({
+        query: makeQuery({ categoryId: 'test_id_1' }),
       })
     })
 
     it('should have status value when user filters by status', async () => {
-      vi.spyOn(api, 'listOffers').mockResolvedValueOnce([
+      vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce([
         listOffersOfferFactory({
           status: OfferStatus.ACTIVE,
           stocks: [],
@@ -635,7 +543,7 @@ describe('IndividualOffers', () => {
 
       await renderIndividualOffers()
 
-      expect(api.listOffers).toHaveBeenCalledTimes(1)
+      expect(apiNew.listOffers).toHaveBeenCalledTimes(1)
 
       const statusSelect = screen.getByRole('combobox', {
         name: 'Statut',
@@ -645,23 +553,15 @@ describe('IndividualOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       await waitFor(() => {
-        expect(api.listOffers).toHaveBeenCalledTimes(2)
-        expect(api.listOffers).toHaveBeenLastCalledWith(
-          null,
-          1,
-          'SOLD_OUT',
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
-        )
+        expect(apiNew.listOffers).toHaveBeenCalledTimes(2)
+      })
+      expect(apiNew.listOffers).toHaveBeenLastCalledWith({
+        query: makeQuery({ status: OfferStatus.SOLD_OUT }),
       })
     })
 
     it('should have status value be removed when user ask for all status', async () => {
-      vi.spyOn(api, 'listOffers').mockResolvedValueOnce([
+      vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce([
         listOffersOfferFactory({
           status: OfferStatus.ACTIVE,
           stocks: [],
@@ -677,26 +577,18 @@ describe('IndividualOffers', () => {
 
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
       await waitFor(() => {
-        expect(api.listOffers).toHaveBeenLastCalledWith(
-          null,
-          1,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
-        )
+        expect(apiNew.listOffers).toHaveBeenLastCalledWith({
+          query: makeQuery(),
+        })
       })
     })
 
     it('should have creation mode value when user filters by creation mode', async () => {
-      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+      vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(offersRecap)
 
       await renderIndividualOffers()
 
-      expect(api.listOffers).toHaveBeenCalledTimes(1)
+      expect(apiNew.listOffers).toHaveBeenCalledTimes(1)
 
       await userEvent.selectOptions(
         screen.getByRole('combobox', { name: 'Mode de création' }),
@@ -705,27 +597,19 @@ describe('IndividualOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       await waitFor(() => {
-        expect(api.listOffers).toHaveBeenCalledTimes(2)
-        expect(api.listOffers).toHaveBeenLastCalledWith(
-          null,
-          1,
-          null,
-          null,
-          null,
-          'manual',
-          null,
-          null,
-          null
-        )
+        expect(apiNew.listOffers).toHaveBeenCalledTimes(2)
+      })
+      expect(apiNew.listOffers).toHaveBeenLastCalledWith({
+        query: makeQuery({ creationMode: 'manual' }),
       })
     })
 
     it('should have creation mode value be removed when user ask for all creation modes', async () => {
-      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+      vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(offersRecap)
 
       await renderIndividualOffers()
 
-      expect(api.listOffers).toHaveBeenCalledTimes(1)
+      expect(apiNew.listOffers).toHaveBeenCalledTimes(1)
 
       const searchButton = screen.getByText('Rechercher')
       await userEvent.selectOptions(
@@ -736,29 +620,21 @@ describe('IndividualOffers', () => {
 
       await userEvent.selectOptions(
         await screen.findByDisplayValue('Manuel'),
-        ALL_CREATION_MODES
+        'Tous'
       )
       await userEvent.click(searchButton)
 
-      expect(api.listOffers).toHaveBeenCalledTimes(2)
-      expect(api.listOffers).toHaveBeenLastCalledWith(
-        null,
-        1,
-        null,
-        null,
-        null,
-        'manual',
-        null,
-        null,
-        null
-      )
+      expect(apiNew.listOffers).toHaveBeenCalledTimes(2)
+      expect(apiNew.listOffers).toHaveBeenLastCalledWith({
+        query: makeQuery({ creationMode: 'manual' }),
+      })
     })
   })
 
   describe('page navigation', () => {
     it('should display next page when clicking on right arrow', async () => {
       const offers = Array.from({ length: 11 }, () => listOffersOfferFactory())
-      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offers)
+      vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(offers)
       await renderIndividualOffers()
       const nextIcon = screen.getByRole('button', { name: /page suivante/ })
 
@@ -766,12 +642,13 @@ describe('IndividualOffers', () => {
 
       expect(screen.getByLabelText(offers[10].name)).toBeInTheDocument()
       expect(screen.queryByLabelText(offers[0].name)).not.toBeInTheDocument()
+      expect(scrollToContentWrapperMock).toHaveBeenCalledTimes(1)
     })
 
     it('should display previous page when clicking on left arrow', async () => {
       const offers = Array.from({ length: 11 }, () => listOffersOfferFactory())
 
-      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offers)
+      vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(offers)
       await renderIndividualOffers()
       const nextIcon = screen.getByRole('button', { name: /page suivante/ })
       await userEvent.click(nextIcon)
@@ -783,6 +660,7 @@ describe('IndividualOffers', () => {
 
       expect(screen.getByLabelText(offers[0].name)).toBeInTheDocument()
       expect(screen.queryByText(offers[10].name)).not.toBeInTheDocument()
+      expect(scrollToContentWrapperMock).toHaveBeenCalledTimes(2)
     })
 
     describe('when 101 offers are fetched', () => {
@@ -793,7 +671,7 @@ describe('IndividualOffers', () => {
       })
 
       it('should have max number page of 10', async () => {
-        vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+        vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(offersRecap)
 
         await renderIndividualOffers()
 
@@ -803,7 +681,7 @@ describe('IndividualOffers', () => {
       })
 
       it('should not display the 101st offer', async () => {
-        vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+        vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(offersRecap)
         await renderIndividualOffers()
         const nextIcon = screen.getByRole('button', { name: /page suivante/ })
 
@@ -821,19 +699,14 @@ describe('IndividualOffers', () => {
 
   describe('should reset filters', () => {
     it('when clicking on "afficher toutes les offres" when no offers are displayed', async () => {
-      vi.spyOn(api, 'listOffers')
+      vi.spyOn(apiNew, 'listOffers')
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
         .mockResolvedValueOnce([])
 
-      // 3rd call is not made if filters are strictly the same
-      const filters = {
-        venueId: '666',
-      }
+      await renderIndividualOffers({ categoryId: 'CINEMA' })
 
-      await renderIndividualOffers(filters)
-
-      expect(api.listOffers).toHaveBeenCalledTimes(1)
+      expect(apiNew.listOffers).toHaveBeenCalledTimes(1)
 
       const offererAddressOption = screen.getByLabelText('Localisation')
 
@@ -853,18 +726,13 @@ describe('IndividualOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       await waitFor(() => {
-        expect(api.listOffers).toHaveBeenCalledTimes(2)
-        expect(api.listOffers).toHaveBeenLastCalledWith(
-          null,
-          1,
-          null,
-          666,
-          null,
-          null,
-          null,
-          null,
-          2
-        )
+        expect(apiNew.listOffers).toHaveBeenCalledTimes(2)
+      })
+      expect(apiNew.listOffers).toHaveBeenLastCalledWith({
+        query: makeQuery({
+          categoryId: 'CINEMA',
+          offererAddressId: venueAddress[0].id,
+        }),
       })
 
       screen.getByText(/Aucune offre trouvée pour votre recherche/)
@@ -872,36 +740,21 @@ describe('IndividualOffers', () => {
       await userEvent.click(screen.getByText(/Afficher toutes les offres/))
 
       await waitFor(() => {
-        expect(api.listOffers).toHaveBeenCalledTimes(3)
+        expect(apiNew.listOffers).toHaveBeenCalledTimes(3)
       })
-      expect(api.listOffers).toHaveBeenNthCalledWith(
-        3,
-        null,
-        1,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
-      )
+      expect(apiNew.listOffers).toHaveBeenLastCalledWith({ query: makeQuery() })
     })
 
     it('when clicking on "Réinitialiser les filtres" - except nameOrIsbn', async () => {
-      vi.spyOn(api, 'listOffers')
+      vi.spyOn(apiNew, 'listOffers')
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
 
-      // 3rd call is not made if filters are strictly the same
       const nameOrIsbn = 'Any word'
 
-      await renderIndividualOffers({
-        nameOrIsbn,
-        venueId: '666',
-      })
+      await renderIndividualOffers({ nameOrIsbn, categoryId: 'CINEMA' })
 
-      expect(api.listOffers).toHaveBeenCalledTimes(1)
+      expect(apiNew.listOffers).toHaveBeenCalledTimes(1)
 
       const offererAddressOption = screen.getByLabelText('Localisation')
 
@@ -921,18 +774,14 @@ describe('IndividualOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: /Rechercher/ }))
 
       await waitFor(() => {
-        expect(api.listOffers).toHaveBeenCalledTimes(2)
-        expect(api.listOffers).toHaveBeenLastCalledWith(
+        expect(apiNew.listOffers).toHaveBeenCalledTimes(2)
+      })
+      expect(apiNew.listOffers).toHaveBeenLastCalledWith({
+        query: makeQuery({
           nameOrIsbn,
-          1,
-          null,
-          666,
-          null,
-          null,
-          null,
-          null,
-          2
-        )
+          categoryId: 'CINEMA',
+          offererAddressId: venueAddress[0].id,
+        }),
       })
 
       await userEvent.click(
@@ -940,106 +789,42 @@ describe('IndividualOffers', () => {
       )
 
       await waitFor(() => {
-        expect(api.listOffers).toHaveBeenCalledTimes(3)
+        expect(apiNew.listOffers).toHaveBeenCalledTimes(3)
       })
-      expect(api.listOffers).toHaveBeenNthCalledWith(
-        3,
-        nameOrIsbn,
-        1,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
-      )
-    })
-  })
-  describe('With switch venue FF deactivated', () => {
-    it('should have offerer address value when user filters by address', async () => {
-      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
-      vi.spyOn(api, 'getOffererAddresses').mockResolvedValueOnce(offererAddress)
-      vi.spyOn(api, 'getOfferer').mockResolvedValueOnce(
-        defaultGetOffererResponseModel
-      )
-      await renderIndividualOffers(DEFAULT_SEARCH_FILTERS)
-
-      expect(api.listOffers).toHaveBeenCalledTimes(1)
-
-      const offererAddressOption = screen.getByLabelText('Localisation')
-
-      await waitFor(() => {
-        expect(within(offererAddressOption).getAllByRole('option').length).toBe(
-          3
-        )
-      })
-
-      const firstOffererAddressOption =
-        within(offererAddressOption).getAllByRole('option')[1]
-
-      await userEvent.selectOptions(
-        offererAddressOption,
-        firstOffererAddressOption
-      )
-      await userEvent.click(screen.getByText('Rechercher'))
-
-      await waitFor(() => {
-        expect(api.listOffers).toHaveBeenCalledTimes(2)
-        expect(api.listOffers).toHaveBeenLastCalledWith(
-          null,
-          defaultGetOffererResponseModel.id,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          offererAddress[1].id
-        )
+      expect(apiNew.listOffers).toHaveBeenLastCalledWith({
+        query: makeQuery({ nameOrIsbn }),
       })
     })
   })
-  describe('When switch venue FF is activated', () => {
-    it('should have offerer address value when user filters by address', async () => {
-      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
-      vi.spyOn(api, 'getVenueAddresses').mockResolvedValueOnce(venueAddress)
-      vi.spyOn(api, 'getOfferer').mockResolvedValueOnce(
-        defaultGetOffererResponseModel
-      )
-      await renderIndividualOffers(DEFAULT_SEARCH_FILTERS, ['WIP_SWITCH_VENUE'])
+  it('should have offerer address value when user filters by address', async () => {
+    vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(offersRecap)
+    vi.spyOn(api, 'getVenueAddresses').mockResolvedValueOnce(venueAddress)
+    vi.spyOn(api, 'getOfferer').mockResolvedValueOnce(
+      defaultGetOffererResponseModel
+    )
+    await renderIndividualOffers(DEFAULT_SEARCH_FILTERS)
 
-      expect(api.listOffers).toHaveBeenCalledTimes(1)
+    expect(apiNew.listOffers).toHaveBeenCalledTimes(1)
 
-      const venueAddressOption = screen.getByLabelText('Localisation')
+    const venueAddressOption = screen.getByLabelText('Localisation')
 
-      await waitFor(() => {
-        expect(within(venueAddressOption).getAllByRole('option').length).toBe(3)
-      })
+    await waitFor(() => {
+      expect(within(venueAddressOption).getAllByRole('option').length).toBe(3)
+    })
 
-      const firstOffererAddressOption =
-        within(venueAddressOption).getAllByRole('option')[1]
+    const firstOffererAddressOption =
+      within(venueAddressOption).getAllByRole('option')[1]
 
-      await userEvent.selectOptions(
-        venueAddressOption,
-        firstOffererAddressOption
-      )
-      await userEvent.click(screen.getByText('Rechercher'))
+    await userEvent.selectOptions(venueAddressOption, firstOffererAddressOption)
+    await userEvent.click(screen.getByText('Rechercher'))
 
-      await waitFor(() => {
-        expect(api.listOffers).toHaveBeenCalledTimes(2)
-        expect(api.listOffers).toHaveBeenLastCalledWith(
-          null,
-          defaultGetOffererResponseModel.id,
-          null,
-          2,
-          null,
-          null,
-          null,
-          null,
-          venueAddress[0].id
-        )
-      })
+    await waitFor(() => {
+      expect(apiNew.listOffers).toHaveBeenCalledTimes(2)
+    })
+    expect(apiNew.listOffers).toHaveBeenLastCalledWith({
+      query: makeQuery({
+        offererAddressId: venueAddress[0].id,
+      }),
     })
   })
 })

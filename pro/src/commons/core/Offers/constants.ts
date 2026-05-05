@@ -1,10 +1,8 @@
-import { OfferStatus, WithdrawalTypeEnum } from '@/apiClient/v1'
+import { WithdrawalTypeEnum } from '@/apiClient/v1'
 import type { SelectOption } from '@/commons/custom_types/form'
+import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/types'
 
-import type {
-  CollectiveSearchFiltersParams,
-  IndividualSearchFiltersParams,
-} from './types'
+import type { CollectiveSearchFiltersParams } from './types'
 
 export enum INDIVIDUAL_OFFER_SUBTYPE {
   PHYSICAL_GOOD = 'PHYSICAL_GOOD',
@@ -46,34 +44,27 @@ export const OFFER_WITHDRAWAL_TYPE_LABELS = {
   [WithdrawalTypeEnum.IN_APP]: 'Les billets seront affichés dans l’application',
 }
 
-// TODO (igabriele, 2025-08-14): Replace these pass-through variables with the actual OfferStatus enum values where it's used.
-/** @deprecated Use `OfferStatus` enum from the API client instead. */
-export const OFFER_STATUS_SOLD_OUT = OfferStatus.SOLD_OUT
-
 const ALL_OFFERS = ''
 const ALL_VENUES = 'all'
 export const ALL_OFFERER_ADDRESSES = 'all'
-const ALL_CATEGORIES = 'all'
 export const ALL_FORMATS = 'all'
-export const ALL_STATUS = 'all'
-export const ALL_CREATION_MODES = 'all'
 const ALL_EVENT_PERIODS = ''
 export const DEFAULT_PAGE = 1
 export const NUMBER_OF_OFFERS_PER_PAGE = 10
 export const MAX_TOTAL_PAGES = 10
 export const MAX_OFFERS_TO_DISPLAY = MAX_TOTAL_PAGES * NUMBER_OF_OFFERS_PER_PAGE
-export const DEFAULT_SEARCH_FILTERS: IndividualSearchFiltersParams = {
-  nameOrIsbn: ALL_OFFERS,
-  offererId: 'all',
-  venueId: ALL_VENUES,
-  categoryId: ALL_CATEGORIES,
-  format: ALL_FORMATS,
-  status: ALL_STATUS,
-  creationMode: ALL_CREATION_MODES,
-  periodBeginningDate: ALL_EVENT_PERIODS,
-  periodEndingDate: ALL_EVENT_PERIODS,
+
+export const DEFAULT_SEARCH_FILTERS: IndividualOffersFilters = {
+  nameOrIsbn: undefined,
+  offererId: undefined,
+  venueId: undefined,
+  categoryId: undefined,
+  status: undefined,
+  creationMode: undefined,
+  periodBeginningDate: undefined,
+  periodEndingDate: undefined,
   page: DEFAULT_PAGE,
-  offererAddressId: ALL_OFFERER_ADDRESSES,
+  offererAddressId: undefined,
 }
 
 export const DEFAULT_COLLECTIVE_SEARCH_FILTERS: CollectiveSearchFiltersParams =
@@ -93,21 +84,10 @@ export const ALL_OFFERER_ADDRESS_OPTION: SelectOption = {
   value: ALL_OFFERER_ADDRESSES,
 }
 
-export const ALL_CATEGORIES_OPTION: SelectOption = {
-  label: 'Toutes',
-  value: ALL_CATEGORIES,
-}
-
 export const ALL_FORMATS_OPTION: SelectOption = {
   label: 'Tous',
   value: ALL_FORMATS,
 }
-
-export const CREATION_MODES_OPTIONS: SelectOption[] = [
-  { label: 'Tous', value: ALL_CREATION_MODES },
-  { label: 'Manuel', value: 'manual' },
-  { label: 'Synchronisé', value: 'imported' },
-]
 
 export enum COLLECTIVE_OFFER_SUBTYPE {
   COLLECTIVE = 'COLLECTIVE',

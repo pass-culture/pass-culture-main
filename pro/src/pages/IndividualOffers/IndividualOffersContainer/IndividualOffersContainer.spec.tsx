@@ -5,15 +5,14 @@ import { expect } from 'vitest'
 import { api } from '@/apiClient/api'
 import {
   type GetOffererAddressResponseModel,
-  type ListOffersOfferResponseModel,
   OfferStatus,
 } from '@/apiClient/v1'
+import type { ListOffersOfferResponseModel } from '@/apiClient/v1/new'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
   ALL_OFFERER_ADDRESS_OPTION,
   DEFAULT_SEARCH_FILTERS,
 } from '@/commons/core/Offers/constants'
-import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeAddressDisplayName } from '@/commons/format/venuesService'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
@@ -31,6 +30,7 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
+import type { IndividualOffersFilters } from '../common/types'
 import {
   IndividualOffersContainer,
   type IndividualOffersContainerProps,
@@ -82,8 +82,8 @@ const offererAddress: GetOffererAddressResponseModel[] = [
   }),
 ]
 const offererAddressOptions = [
-  { value: '1', label: 'Label - 1 rue de paris 75001 Paris' },
-  { value: '2', label: '1 rue de paris 75001 New York' },
+  { value: 1, label: 'Label - 1 rue de paris 75001 Paris' },
+  { value: 2, label: '1 rue de paris 75001 New York' },
 ]
 
 vi.mock('@/commons/utils/date', async () => {
@@ -228,7 +228,7 @@ describe('IndividualOffersScreen', () => {
     await userEvent.click(screen.getByRole('button', { name: /Filtrer/ }))
 
     const searchAndChecked = async (
-      params: Partial<IndividualSearchFiltersParams>
+      params: Partial<IndividualOffersFilters>
     ) => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
       expect(redirectWithSelectedFiltersSpy).toHaveBeenCalled()
@@ -262,7 +262,7 @@ describe('IndividualOffersScreen', () => {
 
     await searchAndChecked({
       nameOrIsbn: 'Test',
-      offererAddressId: '1',
+      offererAddressId: 1,
     })
 
     await userEvent.selectOptions(screen.getByLabelText(/Localisation/), '2')
@@ -271,7 +271,7 @@ describe('IndividualOffersScreen', () => {
 
     await searchAndChecked({
       nameOrIsbn: 'Test',
-      offererAddressId: '2',
+      offererAddressId: 2,
     })
 
     expect(screen.getByLabelText(/Mode de création/)).toBeInTheDocument()
@@ -283,7 +283,7 @@ describe('IndividualOffersScreen', () => {
 
     await searchAndChecked({
       nameOrIsbn: 'Test',
-      offererAddressId: '2',
+      offererAddressId: 2,
       creationMode: 'imported',
     })
 
@@ -297,7 +297,7 @@ describe('IndividualOffersScreen', () => {
 
     await searchAndChecked({
       nameOrIsbn: 'Test',
-      offererAddressId: '2',
+      offererAddressId: 2,
       creationMode: 'imported',
       periodBeginningDate: '2025-02-02',
       periodEndingDate: '2025-02-03',
@@ -311,7 +311,7 @@ describe('IndividualOffersScreen', () => {
 
     await searchAndChecked({
       nameOrIsbn: 'Test',
-      offererAddressId: '2',
+      offererAddressId: 2,
       creationMode: 'imported',
       periodBeginningDate: '2025-02-02',
       periodEndingDate: '2025-02-03',

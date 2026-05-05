@@ -1,15 +1,13 @@
-import type {
-  CollectiveSearchFiltersParams,
-  IndividualSearchFiltersParams,
-} from '@/commons/core/Offers/types'
+import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { storageAvailable } from '@/commons/utils/storageAvailable'
+import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/types'
 
 type StoredFilterConfig = {
   filtersVisibility: boolean
   storedFilters: Partial<
-    IndividualSearchFiltersParams | CollectiveSearchFiltersParams
+    IndividualOffersFilters | CollectiveSearchFiltersParams
   >
 }
 
@@ -107,7 +105,7 @@ export function useStoredFilterConfig<
 
   const onApplyFilters = (
     selectedFilters: Partial<
-      IndividualSearchFiltersParams | CollectiveSearchFiltersParams
+      IndividualOffersFilters | CollectiveSearchFiltersParams
     >
   ) => {
     const newFilterConfig: StoredFilterConfig & {
@@ -117,7 +115,7 @@ export function useStoredFilterConfig<
       storedFilters: {
         ...filterConfig.storedFilters,
         ...selectedFilters,
-      },
+      } as StoredFilterConfig['storedFilters'],
       storedVenueId: selectedPartnerVenue.id,
     }
 

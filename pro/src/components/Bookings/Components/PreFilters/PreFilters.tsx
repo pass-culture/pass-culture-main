@@ -39,7 +39,7 @@ export interface PreFiltersProps {
   resetPreFilters: () => void
   urlParams?: PreFiltersParams
   updateUrl: (selectedPreFilters: PreFiltersParams) => void
-  offererAddresses: SelectOption[]
+  offererAddresses: SelectOption<string | number>[]
 }
 
 export const PreFilters = ({

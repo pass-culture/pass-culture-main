@@ -1,12 +1,10 @@
 import { act, renderHook } from '@testing-library/react'
 import { Provider } from 'react-redux'
 
-import type {
-  CollectiveSearchFiltersParams,
-  IndividualSearchFiltersParams,
-} from '@/commons/core/Offers/types'
+import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { configureTestStore } from '@/commons/store/testUtils'
 import { isEqual } from '@/commons/utils/isEqual'
+import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/types'
 
 import { getStoredFilterConfig, useStoredFilterConfig } from './utils'
 
@@ -25,20 +23,17 @@ const renderStoredFilterConfigHook = (venueId = 1) => {
   return result
 }
 
-const MOCKED_FILTERS:
-  | IndividualSearchFiltersParams
-  | CollectiveSearchFiltersParams = {
-  nameOrIsbn: 'nameOrIsbn',
-  offererId: 'offererId',
-  venueId: 'venueId',
-  categoryId: 'categoryId',
-  format: 'all',
-  status: 'all',
-  creationMode: 'creationMode',
-  periodBeginningDate: 'periodBeginningDate',
-  periodEndingDate: 'periodEndingDate',
-  offererAddressId: 'offererAddressId',
-}
+const MOCKED_FILTERS: IndividualOffersFilters | CollectiveSearchFiltersParams =
+  {
+    nameOrIsbn: 'nameOrIsbn',
+    offererId: 1,
+    venueId: 2,
+    categoryId: 'categoryId',
+    creationMode: 'creationMode',
+    periodBeginningDate: 'periodBeginningDate',
+    periodEndingDate: 'periodEndingDate',
+    offererAddressId: 3,
+  }
 
 describe('getStoredFilterConfig', () => {
   beforeEach(() => {

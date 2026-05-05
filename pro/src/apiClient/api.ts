@@ -44,9 +44,18 @@ adageClient.interceptors.error.use(createApiErrorInterceptor())
 export const api = new AppClient(config).default
 export const apiAdage = new AppClientAdage(configAdage).default
 
+import * as v1NewSdk from '@/apiClient/v1/new/sdk.gen'
+
 export * as apiAdageNew from '@/apiClient/adage/new/sdk.gen'
 export {
   getDataFromAddress,
   getDataFromAddressParts,
 } from '@/apiClient/adresse/apiAdresse'
-export * as apiNew from '@/apiClient/v1/new/sdk.gen'
+
+/**
+ * Plain object wrapper around the generated v1 SDK so consumers can spy on it via `vi.spyOn(apiNew, '...')`.
+ * ES module namespace objects are frozen which prevents spying on them directly.
+ */
+// Careful here:
+// The originally frozen ES module namespace objects prevented any accidental mutation, which we lose with this spread.
+export const apiNew = { ...v1NewSdk }

@@ -1,17 +1,17 @@
+import type { ListOffersQueryModel } from '@/apiClient/v1/new'
 import { DEFAULT_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
-import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 
-// TODO (igabriele, 2025-11-07): This util seems redundant with `serializeApiIndividualFilters`. Consider merging the logic.
+import type { IndividualOffersFilters } from '../common/types'
+
 export function computeIndividualApiFilters(
-  finalSearchFilters: Partial<IndividualSearchFiltersParams>,
+  finalSearchFilters: Partial<IndividualOffersFilters>,
   selectedOffererId: number
-): IndividualSearchFiltersParams {
-  const apiFilters: IndividualSearchFiltersParams = {
+): ListOffersQueryModel {
+  const { page: _, ...apiFilters } = {
     ...DEFAULT_SEARCH_FILTERS,
     ...finalSearchFilters,
-    ...{ offererId: selectedOffererId.toString() },
+    offererId: selectedOffererId,
   }
 
-  delete apiFilters.page
   return apiFilters
 }

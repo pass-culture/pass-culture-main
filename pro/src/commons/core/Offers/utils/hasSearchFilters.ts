@@ -1,19 +1,16 @@
+import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/types'
+
 import { DEFAULT_SEARCH_FILTERS } from '../constants'
-import type {
-  CollectiveSearchFiltersParams,
-  IndividualSearchFiltersParams,
-} from '../types'
+import type { CollectiveSearchFiltersParams } from '../types'
 
 type HasSearchFiltersParams = {
-  searchFilters: Partial<IndividualSearchFiltersParams>
-  lookup?: (keyof IndividualSearchFiltersParams)[]
-  ignore?: (keyof IndividualSearchFiltersParams)[]
+  searchFilters: Partial<IndividualOffersFilters>
+  lookup?: (keyof IndividualOffersFilters)[]
+  ignore?: (keyof IndividualOffersFilters)[]
 }
 export const hasSearchFilters = ({
   searchFilters,
-  lookup = Object.keys(
-    searchFilters
-  ) as (keyof IndividualSearchFiltersParams)[],
+  lookup = Object.keys(searchFilters) as (keyof IndividualOffersFilters)[],
   ignore = [],
 }: HasSearchFiltersParams): boolean => {
   // Those "filters" are ignored because none are to be interpreted
@@ -22,7 +19,7 @@ export const hasSearchFilters = ({
 
   return lookup.some(
     (filterName) =>
-      searchFilters[filterName] &&
+      searchFilters[filterName] !== undefined &&
       searchFilters[filterName] !== { ...DEFAULT_SEARCH_FILTERS }[filterName] &&
       !finalIgnore.has(filterName)
   )

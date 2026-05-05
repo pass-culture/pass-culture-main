@@ -19,7 +19,7 @@ const DEFAULT_OPTIONS: FrontendErrorOptions = {
  * - Logging it to Sentry
  * - Logging it to the console
  *
- * Can be used anywhere, inluding outside of the Redux context.
+ * Can be used anywhere, inluding outside of the React components/hooks.
  */
 export function handleUnexpectedError(
   error: FrontendError,

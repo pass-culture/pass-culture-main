@@ -1,7 +1,6 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: Layout is used once per page. There cannot be id duplications. */
 import cn from 'classnames'
-import type React from 'react'
-import { useRef, useState } from 'react'
+import { type ReactNode, useRef, useState } from 'react'
 
 import { ConnectedAsAside } from '@/app/App/layouts/components/ConnectedAsAside/ConnectedAsAside'
 import { Header } from '@/app/App/layouts/components/Header/Header'
@@ -15,15 +14,19 @@ import styles from './BasicLayout.module.scss'
 import { LateralPanel } from './LateralPanel/LateralPanel'
 
 interface BasicLayoutProps {
-  children?: React.ReactNode
+  children?: ReactNode
   /**
    * Name of the page to display in the main heading.
    * Make sure that only one heading is displayed per page.
+   *
+   * @deprecated Stop using this prop and render your heading within your page component instead.
    */
-  mainHeading?: React.ReactNode
+  mainHeading?: ReactNode
   /**
    * Complementary name of the page to display in the main heading,
    * as a subheading.
+   *
+   * @deprecated Stop using this prop and render your heading within your page component instead.
    */
   mainSubHeading?: string
   /**
@@ -81,6 +84,7 @@ export const BasicLayout = ({
           [styles['page-layout-connect-as']]: currentUser?.isImpersonated,
         })}
       >
+        {/* TODO (igabriele, 2026-04-29): Move lateral panels into `<AdministrationLayout>` and `<PartnerLayout>`. */}
         {!isFullPage && (
           <LateralPanel
             isOpen={isLateralPanelOpen}

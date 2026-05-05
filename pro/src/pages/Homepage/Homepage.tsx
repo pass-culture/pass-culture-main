@@ -2,6 +2,7 @@ import cn from 'classnames'
 import { useRef } from 'react'
 
 import { SimplifiedBankAccountStatus } from '@/apiClient/v1'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useOffererNamesQuery } from '@/commons/hooks/swr/useOffererNamesQuery'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
@@ -41,6 +42,8 @@ export const Homepage = (): JSX.Element => {
 
   return (
     <>
+      <MainHeading mainHeading="Bienvenue sur votre espace partenaire" />
+
       <div className={styles['reimbursements-banners']}>
         {shouldDisplayBankAccountCallout && (
           <AddBankAccountCallout venue={selectedPartnerVenue} />

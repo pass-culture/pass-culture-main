@@ -9,8 +9,6 @@ import {
 import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { MAX_OFFERS_TO_DISPLAY } from '@/commons/core/Offers/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
-import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
-import { serializeApiIndividualFilters } from '@/commons/core/Offers/utils/serializeApiIndividualFilters'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
@@ -22,6 +20,7 @@ import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullHideIcon from '@/icons/full-hide.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import fullValidateIcon from '@/icons/full-validate.svg'
+import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/types'
 import { computeDeletionErrorMessage } from '@/pages/IndividualOffers/utils/computeDeletionErrorMessage'
 import { computeDeletionSuccessMessage } from '@/pages/IndividualOffers/utils/computeDeletionSuccessMessage'
 import { computeIndividualApiFilters } from '@/pages/IndividualOffers/utils/computeIndividualApiFilters'
@@ -61,20 +60,19 @@ const updateIndividualOffersStatus = async (
   areAllOffersSelected: boolean,
   selectedOfferIds: number[],
   snackBar: ReturnType<typeof useSnackBar>,
-  apiFilters: IndividualSearchFiltersParams
+  apiFilters: IndividualOffersFilters
 ) => {
-  const filters = serializeApiIndividualFilters(apiFilters)
   const payload: PatchAllOffersActiveStatusBodyModel = {
-    categoryId: filters.categoryId ?? null,
-    creationMode: filters.creationMode ?? null,
+    categoryId: apiFilters.categoryId ?? null,
+    creationMode: apiFilters.creationMode ?? null,
     isActive: isActive,
-    nameOrIsbn: filters.nameOrIsbn ?? null,
-    offererId: filters.offererId ?? null,
-    periodBeginningDate: filters.periodBeginningDate ?? null,
-    periodEndingDate: filters.periodEndingDate ?? null,
-    status: filters.status ?? null,
-    venueId: filters.venueId ?? null,
-    offererAddressId: filters.offererAddressId ?? null,
+    nameOrIsbn: apiFilters.nameOrIsbn ?? null,
+    offererId: apiFilters.offererId ?? null,
+    periodBeginningDate: apiFilters.periodBeginningDate ?? null,
+    periodEndingDate: apiFilters.periodEndingDate ?? null,
+    status: apiFilters.status ?? null,
+    venueId: apiFilters.venueId ?? null,
+    offererAddressId: apiFilters.offererAddressId ?? null,
   }
   const deactivationWording = 'la mise en pause'
   if (areAllOffersSelected) {
@@ -131,7 +129,7 @@ export const IndividualOffersActionsBar = ({
   const { storedFilters } = useStoredFilterConfig('individual')
   const finalSearchFilters = {
     ...urlSearchFilters,
-    ...(storedFilters as Partial<IndividualSearchFiltersParams>),
+    ...(storedFilters as Partial<IndividualOffersFilters>),
   }
 
   const { mutate } = useSWRConfig()

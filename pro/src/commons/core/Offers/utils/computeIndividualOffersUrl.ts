@@ -1,28 +1,28 @@
 import { DEFAULT_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import { stringify } from '@/commons/utils/query-string'
 import { translateApiParamsToQueryParams } from '@/commons/utils/translate'
+import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/types'
 
 import { Audience } from '../../shared/types'
-import type { IndividualSearchFiltersParams } from '../types'
 
 const INDIVIDUAL_OFFERS_URL = '/offres'
 
 export const computeIndividualOffersUrl = (
-  offersSearchFilters: Partial<IndividualSearchFiltersParams>
+  offersSearchFilters: Partial<IndividualOffersFilters>
 ): string => {
-  const emptyNewFilters: Partial<IndividualSearchFiltersParams> = {}
-  const newFilters: Partial<IndividualSearchFiltersParams> = Object.entries({
+  const newFilters: Partial<IndividualOffersFilters> = Object.entries({
     page: 1,
     ...offersSearchFilters,
   }).reduce(
-    (accumulator, [filter, filterValue]) =>
-      filterValue ===
-      DEFAULT_SEARCH_FILTERS[filter as keyof IndividualSearchFiltersParams]
-        ? accumulator
-        : Object.assign(accumulator, {
-            [filter]: filterValue,
-          }),
-    emptyNewFilters
+    (accumulator, [filter, filterValue]) => {
+      const defaultValue =
+        DEFAULT_SEARCH_FILTERS[filter as keyof IndividualOffersFilters]
+      if (filterValue === defaultValue || filterValue === undefined) {
+        return accumulator
+      }
+      return Object.assign(accumulator, { [filter]: filterValue })
+    },
+    {} as Partial<IndividualOffersFilters>
   )
 
   const queryString = stringify(

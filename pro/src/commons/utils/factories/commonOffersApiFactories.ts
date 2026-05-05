@@ -1,8 +1,12 @@
-import type { LocationResponseModelV2 } from '@/apiClient/v1'
+import type {
+  ListOffersVenueResponseModelV2,
+  LocationResponseModel,
+  LocationResponseModelV2,
+} from '@/apiClient/v1/new'
 
 export const getLocationResponseModel = (
-  addressResponse: Partial<LocationResponseModelV2> = {}
-): LocationResponseModelV2 => {
+  addressResponse: Partial<LocationResponseModel> = {}
+): LocationResponseModel => {
   return {
     banId: 'ban',
     city: 'city',
@@ -39,3 +43,12 @@ export const getLocationResponseModelV2 = (
     ...addressResponse,
   }
 }
+
+export const listOffersVenueV2Factory = (
+  customListOffersVenue: Partial<ListOffersVenueResponseModelV2> = {}
+): ListOffersVenueResponseModelV2 => ({
+  id: 1,
+  name: 'Nom de la structure',
+  departementCode: '33',
+  ...customListOffersVenue,
+})

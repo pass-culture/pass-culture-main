@@ -5,6 +5,7 @@ import useSWR from 'swr'
 import { api } from '@/apiClient/api'
 import { GetVenueAddressesWithOffersOption } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import {
   GET_BOOKINGS_QUERY_KEY,
   GET_HAS_BOOKINGS_QUERY_KEY,
@@ -164,7 +165,9 @@ export const IndividualBookings = () => {
   }
 
   return (
-    <div>
+    <>
+      <MainHeading mainHeading="Réservations individuelles" />
+
       <PreFilters
         selectedPreFilters={selectedPreFilters}
         updateSelectedFilters={updateSelectedFilters}
@@ -214,7 +217,7 @@ export const IndividualBookings = () => {
           hasNoBooking={!hasBookingsQuery.hasBookings}
         />
       )}
-    </div>
+    </>
   )
 }
 

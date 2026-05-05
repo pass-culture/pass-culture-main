@@ -1,12 +1,9 @@
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
-import {
-  GetOffererAddressesWithOffersOption,
-  GetVenueAddressesWithOffersOption,
-} from '@/apiClient/v1'
-import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { api, apiNew } from '@/apiClient/api'
+import { GetVenueAddressesWithOffersOption } from '@/apiClient/v1'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import {
   GET_CATEGORIES_QUERY_KEY,
   GET_OFFERS_QUERY_KEY,
@@ -14,41 +11,33 @@ import {
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { DEFAULT_PAGE } from '@/commons/core/Offers/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
-import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeIndividualOffersUrl } from '@/commons/core/Offers/utils/computeIndividualOffersUrl'
-import { serializeApiIndividualFilters } from '@/commons/core/Offers/utils/serializeApiIndividualFilters'
 import type { Audience } from '@/commons/core/shared/types'
 import { formatAndOrderAddresses } from '@/commons/format/venuesService'
-import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
 import { useVenueAddresses } from '@/commons/hooks/swr/useVenueAddresses'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
+import { useGracefulSwrResponse } from '@/commons/hooks/useGracefulSwrResponse'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { sortByLabel } from '@/commons/utils/strings'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 
+import type { IndividualOffersFilters } from './common/types'
 import { IndividualOffersContainer } from './IndividualOffersContainer/IndividualOffersContainer'
 import { computeIndividualApiFilters } from './utils/computeIndividualApiFilters'
 
-export const IndividualOffers = (): JSX.Element => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-
+export const IndividualOffers = () => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const urlSearchFilters = useQuerySearchFilters()
   const { storedFilters } = useStoredFilterConfig('individual')
   const finalSearchFilters = {
     ...urlSearchFilters,
-    ...(storedFilters as Partial<IndividualSearchFiltersParams>),
-    ...(withSwitchVenueFeature
-      ? { venueId: selectedPartnerVenue.id.toString() }
-      : {}),
+    ...(storedFilters as Partial<IndividualOffersFilters>),
+    venueId: selectedPartnerVenue.id,
   }
 
   const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
   const navigate = useNavigate()
-  const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
 
   const categoriesQuery = useSWR(
     [GET_CATEGORIES_QUERY_KEY],
@@ -66,7 +55,9 @@ export const IndividualOffers = (): JSX.Element => {
   )
 
   const redirectWithSelectedFilters = (
-    filters: Partial<IndividualSearchFiltersParams> & { audience?: Audience }
+    filters: Partial<IndividualOffersFilters> & {
+      audience?: Audience
+    }
   ) => {
     // We dont need to pass the offererId in the URL since
     // its already present in the redux store (useSelector(selectCurrentOfferer))
@@ -76,63 +67,49 @@ export const IndividualOffers = (): JSX.Element => {
     navigate(computeIndividualOffersUrl(filters), { replace: true })
   }
 
-  const offererAddressQuery = useOffererAddresses(
-    GetOffererAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
-  )
   const venueAddressQuery = useVenueAddresses(
     GetVenueAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
   )
-  const offererAddresses = formatAndOrderAddresses(
-    withSwitchVenueFeature ? venueAddressQuery.data : offererAddressQuery.data
-  )
+  const offererAddresses = formatAndOrderAddresses(venueAddressQuery.data)
 
   const apiFilters = computeIndividualApiFilters(
     finalSearchFilters,
-    selectedOffererId
+    selectedPartnerVenue.managingOfferer.id
   )
 
-  const offersQuery = useSWR([GET_OFFERS_QUERY_KEY, apiFilters], () => {
-    const {
-      nameOrIsbn,
-      offererId,
-      venueId,
-      categoryId,
-      status,
-      creationMode,
-      periodBeginningDate,
-      periodEndingDate,
-      offererAddressId,
-    } = serializeApiIndividualFilters(apiFilters)
+  const offersQuery = useSWR([GET_OFFERS_QUERY_KEY, apiFilters], () =>
+    apiNew.listOffers({ query: apiFilters })
+  )
 
-    return api.listOffers(
-      nameOrIsbn,
-      offererId,
-      status,
-      venueId,
-      categoryId,
-      creationMode,
-      periodBeginningDate,
-      periodEndingDate,
-      offererAddressId
+  const offersResponse = useGracefulSwrResponse(
+    offersQuery,
+    'Une erreur est survenue pendant le rafraîchissement des offres.'
+  )
+  if (offersResponse.hasFirstLoadError) {
+    return (
+      <>
+        <MainHeading mainHeading="Offres individuelles" />
+        <p>Nous n'avons pas pu récupérer la liste des offres.</p>
+      </>
     )
-  })
-
-  const offers = offersQuery.error ? [] : offersQuery.data || []
+  }
 
   return (
-    <HeadlineOfferContextProvider>
-      <BasicLayout mainHeading="Offres individuelles">
+    <>
+      <MainHeading mainHeading="Offres individuelles" />
+
+      <HeadlineOfferContextProvider>
         <IndividualOffersContainer
           categories={categoriesOptions}
           currentPageNumber={currentPageNumber}
           initialSearchFilters={apiFilters}
-          isLoading={offersQuery.isLoading}
-          offers={offers}
+          isLoading={offersResponse.isFirstLoading}
+          offers={offersResponse.data}
           redirectWithSelectedFilters={redirectWithSelectedFilters}
           offererAddresses={offererAddresses}
         />
-      </BasicLayout>
-    </HeadlineOfferContextProvider>
+      </HeadlineOfferContextProvider>
+    </>
   )
 }
 

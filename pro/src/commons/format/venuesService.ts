@@ -23,7 +23,7 @@ export const formatAndOrderAddresses = (
 ) =>
   addresses
     .map((offerAddress) => ({
-      value: offerAddress.id.toString(),
+      value: offerAddress.id,
       label: computeAddressDisplayName(offerAddress),
     }))
     .sort((a, b) =>

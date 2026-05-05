@@ -17,8 +17,6 @@ import {
   type GetOfferVenueResponseModel,
   type GetStocksResponseModel,
   type GetVenueResponseModel,
-  type ListOffersOfferResponseModel,
-  type ListOffersStockResponseModel,
   type ManagedVenue,
   type OfferHomeResponseModel,
   OfferStatus,
@@ -28,14 +26,18 @@ import {
   type VenueListItemResponseModel,
   type VenueProviderResponse,
 } from '@/apiClient/v1'
-import { DisplayableActivity } from '@/apiClient/v1/new'
+import {
+  DisplayableActivity,
+  type ListOffersOfferResponseModel,
+  type ListOffersStockResponseModel,
+} from '@/apiClient/v1/new'
 import type { IndividualOfferContextValues } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
 import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
 import type { StocksEvent } from '@/pages/IndividualOffer/IndividualOfferTimetable/components/StocksCalendar/form/types'
 
 import type { PartialExcept } from '../types'
-import { listOffersVenueFactory } from './collectiveApiFactories'
+import { listOffersVenueV2Factory } from './commonOffersApiFactories'
 
 let offerId = 1
 let stockId = 1
@@ -59,7 +61,7 @@ export const listOffersOfferFactory = (
     subcategoryId: SubcategoryIdEnum.CINE_PLEIN_AIR,
     name: `offer name ${offerId}`,
     isEvent: true,
-    venue: listOffersVenueFactory(),
+    venue: listOffersVenueV2Factory(),
     stocks: [],
     highlightRequests: [],
     ...customListOffersOffer,

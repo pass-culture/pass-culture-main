@@ -1,35 +1,27 @@
 import type { ChangeEvent, Dispatch, SetStateAction, SubmitEvent } from 'react'
 
-import { OfferStatus } from '@/apiClient/v1'
-import {
-  ALL_CATEGORIES_OPTION,
-  ALL_OFFERER_ADDRESS_OPTION,
-  ALL_STATUS,
-  CREATION_MODES_OPTIONS,
-  DEFAULT_SEARCH_FILTERS,
-} from '@/commons/core/Offers/constants'
-import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
+import { OfferStatus } from '@/apiClient/v1/new'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OffersTableSearch } from '@/components/OffersTableSearch/OffersTableSearch'
+import { TypedSelect } from '@/components/TypedSelect/TypedSelect'
+import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/types'
 import styles from '@/pages/IndividualOffers/IndividualOffersContainer/IndividualOffersContainer.module.scss'
 import { PeriodSelector } from '@/ui-kit/form/PeriodSelector/PeriodSelector'
-import { Select } from '@/ui-kit/form/Select/Select'
 
 interface IndividualOffersSearchFiltersProps {
   hasFilters: boolean
-  applyFilters: (filters: IndividualSearchFiltersParams) => void
-  selectedFilters: IndividualSearchFiltersParams
-  setSelectedFilters: Dispatch<SetStateAction<IndividualSearchFiltersParams>>
+  applyFilters: (filters: IndividualOffersFilters) => void
+  selectedFilters: IndividualOffersFilters
+  setSelectedFilters: Dispatch<SetStateAction<IndividualOffersFilters>>
   disableAllFilters: boolean
   resetFilters: () => void
-  offererAddresses: SelectOption[]
+  offererAddresses: SelectOption<number>[]
   categories?: SelectOption[]
   searchButtonRef?: React.RefObject<HTMLButtonElement | null>
 }
 
-const individualFilterStatus = [
-  { label: 'Tous', value: ALL_STATUS },
+const individualFilterStatus: SelectOption<OfferStatus>[] = [
   { label: 'Brouillon', value: OfferStatus.DRAFT },
   { label: 'Publiée', value: OfferStatus.ACTIVE },
   { label: 'Programmée', value: OfferStatus.SCHEDULED },
@@ -38,6 +30,11 @@ const individualFilterStatus = [
   { label: 'Expirée', value: OfferStatus.EXPIRED },
   { label: 'En instruction', value: OfferStatus.PENDING },
   { label: 'Non conforme', value: OfferStatus.REJECTED },
+]
+
+const creationModeOptions: SelectOption[] = [
+  { label: 'Manuel', value: 'manual' },
+  { label: 'Synchronisé', value: 'imported' },
 ]
 
 export const IndividualOffersSearchFilters = ({
@@ -51,34 +48,20 @@ export const IndividualOffersSearchFilters = ({
   categories,
   searchButtonRef,
 }: Readonly<IndividualOffersSearchFiltersProps>) => {
-  const updateSearchFilters = (
-    patch: Partial<IndividualSearchFiltersParams>
-  ) => {
-    setSelectedFilters((prev: IndividualSearchFiltersParams) => ({
-      ...prev,
-      ...patch,
-    }))
+  const updateSearchFilters = (patch: Partial<IndividualOffersFilters>) => {
+    setSelectedFilters((prev) => ({ ...prev, ...patch }))
   }
 
-  // ONE generic change handler for text/select inputs.
-  const handleChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = event.currentTarget
-    // Cast is safe because we align `name` with keys of SearchFiltersParams
+  const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const value = event.currentTarget.value
     updateSearchFilters({
-      [name]: value,
-    } as Partial<IndividualSearchFiltersParams>)
+      nameOrIsbn: value === '' ? undefined : value,
+    })
   }
 
-  // Tiny helper for dates to keep the single point of update logic.
   const handleDateChange =
     (key: 'periodBeginningDate' | 'periodEndingDate') => (val: string) => {
-      const fallback =
-        key === 'periodBeginningDate'
-          ? DEFAULT_SEARCH_FILTERS.periodBeginningDate
-          : DEFAULT_SEARCH_FILTERS.periodEndingDate
-      updateSearchFilters({ [key]: val !== '' ? val : fallback })
+      updateSearchFilters({ [key]: val === '' ? undefined : val })
     }
 
   const requestFilteredOffers = (event: SubmitEvent<HTMLFormElement>) => {
@@ -95,54 +78,57 @@ export const IndividualOffersSearchFilters = ({
       nameInputProps={{
         label: 'Nom de l’offre ou EAN-13 (European Article Numbering)',
         disabled: disableAllFilters,
-        onChange: handleChange,
-        value: selectedFilters.nameOrIsbn,
+        onChange: handleNameChange,
+        value: selectedFilters.nameOrIsbn ?? '',
       }}
       onResetFilters={resetFilters}
       searchButtonRef={searchButtonRef}
     >
       <FormLayout.Row inline mdSpaceAfter>
-        <Select
+        <TypedSelect
           label="Statut"
-          value={selectedFilters.status as OfferStatus}
           name="status"
-          onChange={handleChange}
-          disabled={disableAllFilters}
+          emptyOptionLabel="Tous"
           options={individualFilterStatus}
+          value={selectedFilters.status}
+          onChange={(status) => updateSearchFilters({ status })}
+          disabled={disableAllFilters}
           className={styles['select-filter']}
         />
 
-        <Select
+        <TypedSelect
           label="Localisation"
-          defaultOption={ALL_OFFERER_ADDRESS_OPTION}
-          onChange={handleChange}
-          disabled={offererAddresses.length === 0 || disableAllFilters}
           name="offererAddressId"
+          emptyOptionLabel="Toutes"
+          isNumber
           options={offererAddresses}
           value={selectedFilters.offererAddressId}
+          onChange={(value) => updateSearchFilters({ offererAddressId: value })}
+          disabled={offererAddresses.length === 0 || disableAllFilters}
           className={styles['select-filter']}
         />
 
         {categories && (
-          <Select
+          <TypedSelect
             label="Catégorie"
-            defaultOption={ALL_CATEGORIES_OPTION}
-            onChange={handleChange}
-            disabled={disableAllFilters}
             name="categoryId"
+            emptyOptionLabel="Toutes"
             options={categories}
             value={selectedFilters.categoryId}
+            onChange={(value) => updateSearchFilters({ categoryId: value })}
+            disabled={disableAllFilters}
             className={styles['select-filter']}
           />
         )}
 
-        <Select
+        <TypedSelect
           label="Mode de création"
-          onChange={handleChange}
-          disabled={disableAllFilters}
           name="creationMode"
-          options={CREATION_MODES_OPTIONS}
+          emptyOptionLabel="Tous"
+          options={creationModeOptions}
           value={selectedFilters.creationMode}
+          onChange={(value) => updateSearchFilters({ creationMode: value })}
+          disabled={disableAllFilters}
           className={styles['select-filter']}
         />
       </FormLayout.Row>
@@ -153,8 +139,8 @@ export const IndividualOffersSearchFilters = ({
           onBeginningDateChange={handleDateChange('periodBeginningDate')}
           onEndingDateChange={handleDateChange('periodEndingDate')}
           isDisabled={disableAllFilters}
-          periodBeginningDate={selectedFilters.periodBeginningDate}
-          periodEndingDate={selectedFilters.periodEndingDate}
+          periodBeginningDate={selectedFilters.periodBeginningDate ?? ''}
+          periodEndingDate={selectedFilters.periodEndingDate ?? ''}
         />
       </FormLayout.Row>
     </OffersTableSearch>

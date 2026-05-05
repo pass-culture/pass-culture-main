@@ -12,7 +12,7 @@ import type { FrontendErrorOptions } from './types'
  * - Logging it to Sentry
  * - Logging it to the console
  *
- * Can be used anywhere, inluding outside of the Redux context.
+ * Can be used anywhere, inluding outside of React components/hooks.
  */
 export function handleError(
   error: unknown,

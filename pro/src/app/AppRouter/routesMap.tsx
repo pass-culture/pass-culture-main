@@ -21,7 +21,6 @@ import { routesSignupJourney } from './subroutesSignupJourneyMap'
 import { routesSignup } from './subroutesSignupMap'
 import type { CustomRouteTree } from './types'
 import {
-  isNewHomepageEnabled,
   mustBeAuthenticated,
   mustBeOnboardedWithSelectedPartnerVenue,
   mustBeUnauthenticated,
@@ -83,19 +82,10 @@ export const routes: CustomRouteTree = [
     lazy: () => import('@/pages/Errors/Unavailable/Unavailable'),
     loader: noop,
     path: '/erreur/indisponible',
-    title: 'Page indisponible',
     handle: {
       isErrorPage: true,
+      title: 'Page indisponible',
     },
-  },
-  {
-    lazy: () =>
-      isNewHomepageEnabled()
-        ? import('@/pages/Homepage/NewHomepage')
-        : import('@/pages/Homepage/Homepage'),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
-    path: '/accueil',
-    title: 'Espace acteurs culturels',
   },
   {
     lazy: () => import('@/pages/Desk/Desk'),
@@ -195,12 +185,6 @@ export const routes: CustomRouteTree = [
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
     path: '/offre/creation',
     title: 'Créer une offre collective',
-  },
-  {
-    lazy: () => import('@/pages/IndividualOffers/IndividualOffers'),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
-    path: '/offres',
-    title: 'Offres individuelles',
   },
   {
     lazy: () =>
@@ -511,9 +495,9 @@ export const routes: CustomRouteTree = [
     lazy: () => import('@/pages/Errors/NotFound/NotFound'),
     loader: noop,
     path: '/404',
-    title: 'Erreur 404 - Page indisponible',
     handle: {
       isErrorPage: true,
+      title: 'Erreur 404 - Page indisponible',
     },
   },
   {

@@ -9,6 +9,7 @@ import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import { OffererMemberStatus } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { GET_MEMBERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { OffererLinkEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -104,6 +105,8 @@ const Collaborators = () => {
 
   return (
     <>
+      <MainHeading mainHeading="Collaborateurs" />
+
       {isSelectedOffererValidated && (
         <section>
           <h2 className={styles['main-list-title']}>

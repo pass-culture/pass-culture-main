@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
 import type { OfferStatus } from './OfferStatus';
 export type ListOffersQueryModel = {
   categoryId?: string | null;
@@ -12,7 +11,7 @@ export type ListOffersQueryModel = {
   offererId?: number | null;
   periodBeginningDate?: string | null;
   periodEndingDate?: string | null;
-  status?: (OfferStatus | CollectiveOfferDisplayedStatus) | null;
+  status?: OfferStatus | null;
   venueId?: number | null;
 };
 

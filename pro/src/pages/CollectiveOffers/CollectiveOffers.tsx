@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import {
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   DEFAULT_PAGE,
@@ -66,15 +67,19 @@ export const CollectiveOffers = () => {
   )
 
   return (
-    <CollectiveOffersScreen
-      currentPageNumber={currentPageNumber}
-      initialSearchFilters={apiFilters}
-      isLoading={offersQuery.isLoading}
-      offererId={selectedOffererId.toString()}
-      offers={offersQuery.data}
-      redirectWithUrlFilters={redirectWithUrlFilters}
-      urlSearchFilters={urlSearchFilters}
-    />
+    <>
+      <MainHeading mainHeading="Offres réservables" />
+
+      <CollectiveOffersScreen
+        currentPageNumber={currentPageNumber}
+        initialSearchFilters={apiFilters}
+        isLoading={offersQuery.isLoading}
+        offererId={selectedOffererId.toString()}
+        offers={offersQuery.data}
+        redirectWithUrlFilters={redirectWithUrlFilters}
+        urlSearchFilters={urlSearchFilters}
+      />
+    </>
   )
 }
 

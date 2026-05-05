@@ -1,4 +1,4 @@
-import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
+import { getLocationResponseModelV2 } from '@/commons/utils/factories/commonOffersApiFactories'
 import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
 
 import {
@@ -23,11 +23,11 @@ describe('formatAndOrderVenues', () => {
       expect(sortingValues).toStrictEqual([
         {
           label: '2 rue de Montreuil 75001 Paris',
-          value: offererAddress[1].id.toString(),
+          value: offererAddress[1].id,
         },
         {
           label: 'Adresse - 1 Rue de paris 75001 Paris',
-          value: offererAddress[0].id.toString(),
+          value: offererAddress[0].id,
         },
       ])
     })
@@ -37,7 +37,7 @@ describe('formatAndOrderVenues', () => {
 describe('computeAddressDisplayName', () => {
   it('should format the address without the label', () => {
     const computedAddressDisplayName = computeAddressDisplayName(
-      getLocationResponseModel({ label: undefined })
+      getLocationResponseModelV2({ label: undefined })
     )
 
     expect(computedAddressDisplayName).toBe('ma super rue 75008 city')
@@ -45,7 +45,7 @@ describe('computeAddressDisplayName', () => {
 
   it('should format the address with the the label', () => {
     const computedAddressDisplayName = computeAddressDisplayName(
-      getLocationResponseModel({ label: 'Mon Label' })
+      getLocationResponseModelV2({ label: 'Mon Label' })
     )
 
     expect(computedAddressDisplayName).toBe(
@@ -55,7 +55,7 @@ describe('computeAddressDisplayName', () => {
 
   it('should format the address without the the label if `showAddress` is false', () => {
     const computedAddressDisplayName = computeAddressDisplayName(
-      getLocationResponseModel({ label: 'Mon Label' }),
+      getLocationResponseModelV2({ label: 'Mon Label' }),
       false
     )
 
