@@ -1,11 +1,14 @@
-import test, { expect } from '@playwright/test'
+import test, { expect, request as playwrightRequest } from '@playwright/test'
 
 import {
   expectCollectiveModules,
   expectIndividualModules,
   loginAsAndGoToHomepage,
 } from './fixtures/newHomepage'
+import { doLogin } from './helpers/auth'
+import { setFeatureFlags } from './helpers/features'
 import {
+  BASE_API_URL,
   createEacCompleteLt30d,
   createEacEnInstruction,
   createEacWithNonValidatedOfferer,
@@ -13,6 +16,7 @@ import {
   createProUserWithIndividualOffers,
   createProUserWithNonDraftIndividualOffer,
   createProUserWithNonValidatedOfferer,
+  createRegularProUser,
 } from './helpers/sandbox'
 
 test.describe('when I do individual', () => {
@@ -182,5 +186,60 @@ test.describe('when I do both individual and collective', () => {
       'NEWSLETTER_CARD',
       'WEBINAR_CARD',
     ])
+  })
+})
+
+test.describe('when I have no offers and no collective access', () => {
+  test('should display onboarding offers choice cards', async ({ page }) => {
+    const requestContext = await playwrightRequest.newContext({
+      baseURL: BASE_API_URL,
+    })
+    const userData = await createRegularProUser(requestContext)
+    await setFeatureFlags(requestContext, [
+      { name: 'WIP_ENABLE_NEW_PRO_HOME', isActive: true },
+    ])
+    await requestContext.dispose()
+
+    await page.context().addCookies([
+      {
+        name: 'DID_SKIP_ONBOARDING',
+        value: 'true',
+        domain: 'localhost',
+        path: '/',
+      },
+    ])
+
+    await doLogin(page, userData.user.email)
+    await page.goto('/accueil')
+    await expect(page).toHaveURL(/\/accueil$/)
+
+    await expect
+      .soft(
+        page.getByRole('heading', {
+          level: 2,
+          name: 'Diffusez votre première offre et pilotez ici votre activité !',
+        })
+      )
+      .toBeVisible()
+
+    await expect
+      .soft(
+        page.getByRole('heading', {
+          name: 'Sur l’application mobile à destination des jeunes',
+        })
+      )
+      .toBeVisible()
+
+    await expect
+      .soft(
+        page.getByRole('heading', {
+          name: 'Sur ADAGE à destination des enseignants',
+        })
+      )
+      .toBeVisible()
+
+    await expect.soft(page.getByRole('tablist')).not.toBeVisible()
+
+    await expect.soft(page.getByText('Je le ferai plus tard')).not.toBeVisible()
   })
 })

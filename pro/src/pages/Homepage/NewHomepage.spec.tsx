@@ -284,18 +284,32 @@ describe('NewHomepage', () => {
       )
     })
 
-    it('should display unavailable page when venue has no tab', () => {
-      vi.spyOn(console, 'error').mockImplementation(() => {})
-
+    it('should display onboarding offers choice when venue has no tab', () => {
       renderNewHomepage({
         ...defaultGetVenueResponseModel,
         allowedOnAdage: false,
         hasNonDraftOffers: false,
       })
 
-      expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
-        'Page indisponible'
-      )
+      expect(
+        screen.getByRole('heading', {
+          level: 2,
+          name: 'Diffusez votre première offre et pilotez ici votre activité !',
+        })
+      ).toBeVisible()
+      expect(
+        screen.getByRole('link', {
+          name: 'Commencer la création d’offre sur l’application mobile',
+        })
+      ).toBeVisible()
+      expect(
+        screen.getByRole('button', {
+          name: 'Commencer la création d’offre sur ADAGE',
+        })
+      ).toBeVisible()
+      expect(
+        screen.queryByText('Je le ferai plus tard')
+      ).not.toBeInTheDocument()
     })
   })
 

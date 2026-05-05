@@ -6,15 +6,12 @@ import {
   type GetVenueResponseModel,
 } from '@/apiClient/v1/new'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
-import { FrontendError } from '@/commons/errors/FrontendError'
-import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getToday } from '@/commons/utils/date'
 import { CollectiveDmsTimeline } from '@/components/CollectiveDmsTimeline/CollectiveDmsTimeline'
 import { CollectiveDmsTimelineVariant } from '@/components/CollectiveDmsTimeline/types'
-import strokeWipIcon from '@/icons/stroke-wip.svg'
-import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
+import { OnboardingOffersChoice } from '@/components/OnboardingOffersChoice/OnboardingOffersChoice'
 import {
   getPanelId,
   getTabId,
@@ -60,17 +57,12 @@ export const NewHomepage = (): JSX.Element => {
   const collectiveId = useId()
 
   if (!hasIndividualTab && !hasCollectiveTab) {
-    handleUnexpectedError(
-      new FrontendError(
-        'The venue must have at least one visible tab (individual or collective).'
-      ),
-      { isSilent: true }
-    )
     return (
-      <div className={styles['content']}>
-        <SvgIcon className={styles['error-icon']} src={strokeWipIcon} alt="" />
-        <h2 className={styles['title']}>Page indisponible</h2>
-        <p className={styles['description']}>Veuillez réessayer plus tard</p>
+      <div className={styles['onboarding-container']}>
+        <h2 className={styles['onboarding-title']}>
+          Diffusez votre première offre et pilotez ici votre activité !
+        </h2>
+        <OnboardingOffersChoice hideSkipOnboardingLink />
       </div>
     )
   }
