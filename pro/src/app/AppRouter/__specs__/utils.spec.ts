@@ -2,10 +2,12 @@ import type { FeatureResponseModel } from '@/apiClient/v1'
 import type { UserPermissions } from '@/commons/auth/types'
 import * as storeModule from '@/commons/store/store'
 import { configureTestStore } from '@/commons/store/testUtils'
+import { COOKIES } from '@/commons/utils/localStorageManager'
 
 import {
   isNewHomepageEnabled,
   mustBeAuthenticated,
+  mustBeOnboardedOrSkipped,
   mustBeOnboardedWithSelectedPartnerVenue,
   mustBeUnauthenticated,
   mustHaveSelectedAdminOfferer,
@@ -23,6 +25,9 @@ const makeUserPermissions = (
   ...overrides,
 })
 
+function mockCookie(value: string) {
+  Object.defineProperty(document, 'cookie', { writable: true, value })
+}
 describe('utils', () => {
   describe('mustBeAuthenticated', () => {
     it('should return true when user is authenticated', () => {
@@ -52,6 +57,37 @@ describe('utils', () => {
     })
   })
 
+  describe('mustBeOnboardedOrSkipped', () => {
+    it('should return true when user is onboarded whatever the sessions storage value is', () => {
+      mockCookie('')
+      const permissions = makeUserPermissions({
+        isOnboarded: true,
+      })
+      expect(mustBeOnboardedOrSkipped(permissions)).toBe(true)
+
+      mockCookie(`${COOKIES.DID_SKIP_ONBOARDING}=true`)
+      expect(mustBeOnboardedOrSkipped(permissions)).toBe(true)
+    })
+
+    it('should return false when user is not onboarded with no cookie', () => {
+      mockCookie('')
+      const permissions = makeUserPermissions({
+        isOnboarded: false,
+      })
+
+      expect(mustBeOnboardedOrSkipped(permissions)).toBe(false)
+    })
+
+    it('should return true when user is not onboarded with the cookie set', () => {
+      mockCookie(`${COOKIES.DID_SKIP_ONBOARDING}=true`)
+      const permissions = makeUserPermissions({
+        isOnboarded: false,
+      })
+
+      expect(mustBeOnboardedOrSkipped(permissions)).toBe(true)
+    })
+  })
+
   describe('mustBeOnboardedWithSelectedPartnerVenue', () => {
     it('should return true when user is authenticated, onboarded, and has associated venue', () => {
       const permissions = makeUserPermissions({
@@ -74,6 +110,7 @@ describe('utils', () => {
     })
 
     it('should return false when user is not onboarded', () => {
+      mockCookie('')
       const permissions = makeUserPermissions({
         isAuthenticated: true,
         isOnboarded: false,
