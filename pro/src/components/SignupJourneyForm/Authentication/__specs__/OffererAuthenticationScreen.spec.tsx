@@ -133,7 +133,8 @@ fetchMock.mockResponse(
 )
 
 const renderOffererAuthenticationScreen = (
-  contextValue: SignupJourneyContextValues
+  contextValue: SignupJourneyContextValues,
+  features: string[] = []
 ) => {
   return renderWithProviders(
     <>
@@ -158,6 +159,7 @@ const renderOffererAuthenticationScreen = (
     {
       user: sharedCurrentUserFactory(),
       initialRouterEntries: ['/inscription/structure/identification'],
+      features,
     }
   )
 }
@@ -338,6 +340,42 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
     ).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Retour' }))
     expect(screen.getByText('Offerer screen')).toBeInTheDocument()
+  })
+
+  describe('when WIP_PRE_SIGNUP_SIMULATION is enabled', () => {
+    it('should display new heading and hide old subtitle and ActionBar back button', async () => {
+      renderOffererAuthenticationScreen(contextValue, [
+        'WIP_PRE_SIGNUP_SIMULATION',
+      ])
+
+      expect(
+        await screen.findByRole('heading', { name: 'Votre structure' })
+      ).toBeInTheDocument()
+
+      expect(
+        screen.getByText(
+          /Vérifiez les informations récupérées depuis votre SIRET/
+        )
+      ).toBeInTheDocument()
+
+      expect(
+        screen.queryByRole('heading', {
+          name: 'Complétez les informations de votre structure',
+        })
+      ).not.toBeInTheDocument()
+
+      expect(
+        screen.queryByText("Les champs suivis d'un * sont obligatoires")
+      ).not.toBeInTheDocument()
+
+      expect(
+        screen.queryByRole('button', { name: 'Retour' })
+      ).not.toBeInTheDocument()
+
+      expect(
+        screen.getByRole('button', { name: 'Continuer' })
+      ).toBeInTheDocument()
+    })
   })
 
   describe('not diffusible', () => {

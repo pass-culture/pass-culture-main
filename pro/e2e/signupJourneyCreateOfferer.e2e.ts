@@ -344,7 +344,7 @@ test.describe('Signup journey with known offerer...', () => {
       await page.getByTestId('confirm-dialog-button-confirm').click()
       await postOfferersPromise
 
-      await page.getByText('Accéder à votre espace').click()
+      await page.getByText('Accéder à mon espace').click()
 
       await expect(page).toHaveURL('/rattachement-en-cours')
       await expect(

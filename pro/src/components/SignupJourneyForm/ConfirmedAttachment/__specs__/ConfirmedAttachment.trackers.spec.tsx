@@ -51,7 +51,7 @@ describe('ConfirmedAttachment trackers', () => {
   it('should redirect user on offerer page on continue button click', async () => {
     renderConfirmedAttachmentScreen(contextValue)
 
-    await userEvent.click(screen.getByText('Accéder à votre espace'))
+    await userEvent.click(screen.getByText('Accéder à mon espace'))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
