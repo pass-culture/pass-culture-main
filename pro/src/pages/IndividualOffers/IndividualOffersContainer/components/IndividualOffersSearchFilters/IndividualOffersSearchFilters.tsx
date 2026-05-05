@@ -1,7 +1,6 @@
 import type { ChangeEvent, Dispatch, SetStateAction, SubmitEvent } from 'react'
 
 import { OfferStatus } from '@/apiClient/v1/new'
-import { DEFAULT_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OffersTableSearch } from '@/components/OffersTableSearch/OffersTableSearch'
@@ -54,16 +53,15 @@ export const IndividualOffersSearchFilters = ({
   }
 
   const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    updateSearchFilters({ nameOrIsbn: event.currentTarget.value })
+    const value = event.currentTarget.value
+    updateSearchFilters({
+      nameOrIsbn: value === '' ? undefined : value,
+    })
   }
 
   const handleDateChange =
     (key: 'periodBeginningDate' | 'periodEndingDate') => (val: string) => {
-      const fallback =
-        key === 'periodBeginningDate'
-          ? DEFAULT_SEARCH_FILTERS.periodBeginningDate
-          : DEFAULT_SEARCH_FILTERS.periodEndingDate
-      updateSearchFilters({ [key]: val !== '' ? val : fallback })
+      updateSearchFilters({ [key]: val === '' ? undefined : val })
     }
 
   const requestFilteredOffers = (event: SubmitEvent<HTMLFormElement>) => {
