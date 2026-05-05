@@ -10,6 +10,11 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { OnboardingOffersChoice } from './OnboardingOffersChoice'
 
 const mockLogEvent = vi.fn()
+const mockNavigate = vi.fn()
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual('react-router')),
+  useNavigate: () => mockNavigate,
+}))
 
 describe('OnboardingOffersChoice Component', () => {
   beforeEach(() => {
@@ -38,36 +43,36 @@ describe('OnboardingOffersChoice Component', () => {
     expect(
       screen.getByRole('heading', {
         level: 3,
-        name: 'Sur l’application mobile à destination des jeunes',
+        name: 'Sur l\u2019application mobile \u00e0 destination des jeunes',
       })
     ).toBeInTheDocument()
 
     expect(
       screen.getByRole('link', {
-        name: 'Commencer la création d’offre sur l’application mobile',
+        name: 'Commencer la cr\u00e9ation d\u2019offre sur l\u2019application mobile',
       })
-    ).toHaveTextContent('Créer une offre individuelle')
+    ).toHaveTextContent('Cr\u00e9er une offre individuelle')
   })
 
   it('renders the second card with correct title, description, and button', () => {
     expect(
       screen.getByRole('heading', {
         level: 3,
-        name: 'Sur ADAGE à destination des enseignants',
+        name: 'Sur ADAGE \u00e0 destination des enseignants',
       })
     ).toBeInTheDocument()
 
     expect(
       screen.getByRole('button', {
-        name: 'Commencer la création d’offre sur ADAGE',
+        name: 'Commencer la cr\u00e9ation d\u2019offre sur ADAGE',
       })
-    ).toHaveTextContent('Déposer un dossier ADAGE')
+    ).toHaveTextContent('D\u00e9poser un dossier ADAGE')
   })
 
   it('displays the onboarding collective modal when the second button is clicked', async () => {
     await userEvent.click(
       screen.getByRole('button', {
-        name: 'Commencer la création d’offre sur ADAGE',
+        name: 'Commencer la cr\u00e9ation d\u2019offre sur ADAGE',
       })
     )
 
@@ -80,7 +85,7 @@ describe('OnboardingOffersChoice Component', () => {
     it('should track choosing collective offers', async () => {
       await userEvent.click(
         screen.getByRole('button', {
-          name: 'Commencer la création d’offre sur ADAGE',
+          name: 'Commencer la cr\u00e9ation d\u2019offre sur ADAGE',
         })
       )
 
@@ -90,5 +95,12 @@ describe('OnboardingOffersChoice Component', () => {
         )
       })
     })
+  })
+
+  it('should handle skip link', async () => {
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Je le ferai plus tard' })
+    )
+    expect(mockNavigate).toHaveBeenCalledWith('/accueil')
   })
 })

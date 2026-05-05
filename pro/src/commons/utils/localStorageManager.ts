@@ -18,6 +18,10 @@ export enum LOCAL_STORAGE_KEY {
   SELECTED_OFFERER_ID = 'homepageSelectedOffererId',
 }
 
+export enum COOKIES {
+  DID_SKIP_ONBOARDING = 'DID_SKIP_ONBOARDING',
+}
+
 export const PASS_CULTURE_PREFIX = 'PASS_CULTURE_'
 
 /**
