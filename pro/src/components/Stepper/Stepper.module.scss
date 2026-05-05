@@ -60,7 +60,9 @@ $number-size: rem.torem(30px);
           }
         }
       }
+    }
 
+    &.clickable {
       &:hover {
         .label {
           text-decoration: underline var(--color-text-default);

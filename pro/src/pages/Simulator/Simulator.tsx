@@ -16,10 +16,13 @@ export const Simulator = (): JSX.Element => {
   }
   return (
     <FullPageLayout>
-      <div className={styles['step-title']}>
-        {stepTitles[location.pathname]}
+      <div className={styles['simulator-container']}>
+        <div className={styles['step-title']}>
+          {stepTitles[location.pathname]}
+        </div>
+
+        <Outlet />
       </div>
-      <Outlet />
     </FullPageLayout>
   )
 }
