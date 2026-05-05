@@ -1,22 +1,21 @@
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
 
-$confirmed-attachment-gap: var(--size-spacing-xxl);
+.confirmed-attachment-container {
+  max-width: rem.torem(640px);
+  margin-left: auto;
+  margin-right: auto;
+}
 
-.title {
+.main-heading {
   @include fonts.title1;
 
   margin-bottom: var(--size-spacing-l);
 }
 
-.subtitle {
-  color: var(--color-text-subtle);
-
+.subheading-description {
   @include fonts.body-xs;
-}
 
-.confirmed-attachment-layout {
-  display: flex;
-  flex-direction: column;
-  gap: $confirmed-attachment-gap;
-  margin: auto;
+  color: var(--color-text-subtle);
+  margin-bottom: var(--size-spacing-xxl);
 }

@@ -1,20 +1,10 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 
-$offerers-gap: var(--size-spacing-l);
-$medium-gap: var(--size-spacing-l);
-$small-gap: var(--size-spacing-s);
-
-.existing-offerers-layout {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: $offerers-gap;
-
-  &-wrapper {
-    max-width: rem.torem(640px);
-    margin: auto auto var(--size-spacing-xxxl) auto;
-  }
+.existing-offerers-container {
+  max-width: rem.torem(640px);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .main-heading {
@@ -47,4 +37,10 @@ $small-gap: var(--size-spacing-s);
 
 .view-move-button {
   text-align: right;
+}
+
+.next-actions {
+  margin-top: var(--size-spacing-xxl);
+  display: flex;
+  justify-content: space-between;
 }
