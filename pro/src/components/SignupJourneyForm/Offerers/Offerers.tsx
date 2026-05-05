@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
@@ -25,6 +26,7 @@ import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
 import { ensureCurrentUser } from '@/commons/store/user/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
+import { REGISTRATION_STEP_IDS } from '@/components/RegistrationStepper/constants'
 import { generateVenueDataLines } from '@/components/SignupJourneyForm/Offerers/utils'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import { Button } from '@/design-system/Button/Button'
@@ -205,29 +207,48 @@ export const Offerers = (): JSX.Element => {
   }
 
   return (
-    <div className={styles['existing-offerers-layout-wrapper']}>
-      <div>
-        <MainHeading
-          className={styles['main-heading']}
-          mainHeading="Ce SIRET est déjà inscrit"
-        />
-        <p className={styles['subheading-description']}>
-          Ce SIRET est déjà associé à{' '}
-          {pluralizeFr(
-            displayedVenuesNames.length,
-            'une structure',
-            'plusieurs structures'
-          )}{' '}
-          sur le pass Culture Pro.
-        </p>
+    <div
+      className={cn({
+        [styles['existing-offerers-container']]: isSignupSimulationEnabled,
+      })}
+    >
+      <MainHeading
+        className={styles['main-heading']}
+        mainHeading="Ce SIRET est déjà inscrit"
+      />
+      <p className={styles['subheading-description']}>
+        Ce SIRET est déjà associé à{' '}
+        {pluralizeFr(
+          displayedVenuesNames.length,
+          'une structure',
+          'plusieurs structures'
+        )}{' '}
+        sur le pass Culture Pro.
+      </p>
+
+      <div className={styles['venues-layout']}>
+        <DescriptionList lines={venuesLines} />
       </div>
 
-      <div className={styles['existing-offerers-layout']}>
-        <div className={styles['venues-layout']}>
-          <DescriptionList lines={venuesLines} />
-        </div>
+      <div className={styles['next-actions']}>
+        {isSignupSimulationEnabled && (
+          <Button
+            as="a"
+            variant={ButtonVariant.SECONDARY}
+            onClick={() => {
+              setOfferer(null)
+              logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+                from: location.pathname,
+                to: REGISTRATION_STEP_IDS.SIRET,
+                used: SignupJourneyAction.ActionBar,
+              })
+            }}
+            to="/inscription/structure/recherche"
+            label="Retour"
+          />
+        )}
+
         <Button
-          variant={ButtonVariant.PRIMARY}
           onClick={doLinkUserToOfferer}
           ref={joinSpaceButtonRef}
           label="Rejoindre cet espace"
@@ -249,16 +270,20 @@ export const Offerers = (): JSX.Element => {
           />
         </>
       )}
-      <ActionBar
-        previousStepTitle="Retour à la recherche de SIRET"
-        hideRightButton
-        onClickPrevious={() => {
-          setOfferer(null)
-          navigate('/inscription/structure/recherche')
-        }}
-        previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
-        isDisabled={false}
-      />
+
+      {!isSignupSimulationEnabled && (
+        <ActionBar
+          previousStepTitle="Retour à la recherche de SIRET"
+          hideRightButton
+          onClickPrevious={() => {
+            setOfferer(null)
+            navigate('/inscription/structure/recherche')
+          }}
+          previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
+          isDisabled={false}
+        />
+      )}
+
       <ConfirmDialog
         hideIcon={true}
         onCancel={cancelLinkUserToOfferer}

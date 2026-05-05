@@ -7,6 +7,7 @@
 
 export enum REGISTRATION_STEP_IDS {
   SIGNUP = 'creation',
+  SIRET = 'structure',
   STRUCTURE = 'identification',
   ACTIVITY = 'activite',
   VALIDATION = 'confirmation',
