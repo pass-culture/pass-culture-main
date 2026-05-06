@@ -48,7 +48,7 @@
        data-bs-target="#{{ navbar_name }}-navbar"
        data-bs-smooth-scroll="true"
        tabindex="0"
-       class="py-3 overflow-y-auto pc-fill-to-bottom"
+       class="pb-3 overflow-y-auto pc-fill-to-bottom"
        id="{{ navbar_name }}-container">
     <div class="vstack gap-1">
       {# wrap sections in divs to separate them with gaps #}
@@ -58,7 +58,7 @@
 {% endmacro %}
 {% macro nav_section(section_name, title) %}
   <div>
-    <h4 class="pb-2{{ ' focus' if (active_tab == section_name) else ''}}"
+    <h4 class="pt-3 pb-2{{ ' focus' if (active_tab == section_name) else ''}}"
         id="{{ section_name }}-section">{{ title }}</h4>
     {{ caller() }}
   </div>
