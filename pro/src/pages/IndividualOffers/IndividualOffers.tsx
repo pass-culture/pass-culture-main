@@ -1,8 +1,9 @@
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
-import { api, apiNew } from '@/apiClient/api'
-import { GetVenueAddressesWithOffersOption } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import { GetVenueAddressesWithOffersOption } from '@/apiClient/v1/new'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import {
   GET_CATEGORIES_QUERY_KEY,
@@ -16,7 +17,7 @@ import type { Audience } from '@/commons/core/shared/types'
 import { formatAndOrderAddresses } from '@/commons/format/venuesService'
 import { useVenueAddresses } from '@/commons/hooks/swr/useVenueAddresses'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useGracefulSwrResponse } from '@/commons/hooks/useGracefulSwrResponse'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { sortByLabel } from '@/commons/utils/strings'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
@@ -27,6 +28,7 @@ import { computeIndividualApiFilters } from './utils/computeIndividualApiFilters
 
 export const IndividualOffers = () => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const snackbar = useSnackBar()
 
   const urlSearchFilters = useQuerySearchFilters()
   const { storedFilters } = useStoredFilterConfig('individual')
@@ -41,12 +43,12 @@ export const IndividualOffers = () => {
 
   const categoriesQuery = useSWR(
     [GET_CATEGORIES_QUERY_KEY],
-    () => api.getCategories(),
+    () => apiNew.getCategories(),
     { fallbackData: { categories: [], subcategories: [] } }
   )
 
   const categoriesOptions = sortByLabel(
-    categoriesQuery.data.categories
+    (categoriesQuery.data?.categories ?? [])
       .filter((category) => category.isSelectable)
       .map((category) => ({
         value: category.id,
@@ -81,18 +83,13 @@ export const IndividualOffers = () => {
     apiNew.listOffers({ query: apiFilters })
   )
 
-  const offersResponse = useGracefulSwrResponse(
-    offersQuery,
-    'Une erreur est survenue pendant le rafraîchissement des offres.'
-  )
-  if (offersResponse.hasFirstLoadError) {
-    return (
-      <>
-        <MainHeading mainHeading="Offres individuelles" />
-        <p>Nous n'avons pas pu récupérer la liste des offres.</p>
-      </>
-    )
-  }
+  useEffect(() => {
+    if (offersQuery.error) {
+      snackbar.error(
+        'Une erreur est survenue pendant le rafraîchissement des offres.'
+      )
+    }
+  }, [offersQuery.error, snackbar.error])
 
   return (
     <>
@@ -103,8 +100,8 @@ export const IndividualOffers = () => {
           categories={categoriesOptions}
           currentPageNumber={currentPageNumber}
           initialSearchFilters={apiFilters}
-          isLoading={offersResponse.isFirstLoading}
-          offers={offersResponse.data}
+          isLoading={offersQuery.isLoading}
+          offers={offersQuery.data}
           redirectWithSelectedFilters={redirectWithSelectedFilters}
           offererAddresses={offererAddresses}
         />

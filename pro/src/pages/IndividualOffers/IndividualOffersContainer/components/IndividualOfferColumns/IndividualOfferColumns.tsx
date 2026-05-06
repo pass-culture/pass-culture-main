@@ -1,5 +1,8 @@
-import { type HeadLineOfferResponseModel, OfferStatus } from '@/apiClient/v1'
-import type { ListOffersOfferResponseModel } from '@/apiClient/v1/new'
+import {
+  type HeadLineOfferResponseModel,
+  type ListOffersOfferResponseModel,
+  OfferStatus,
+} from '@/apiClient/v1/new'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,

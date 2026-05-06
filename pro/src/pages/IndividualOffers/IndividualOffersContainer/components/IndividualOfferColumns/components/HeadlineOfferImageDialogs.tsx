@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient/api'
-import type { ListOffersOfferResponseModel } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import type { ListOffersOfferResponseModel } from '@/apiClient/v1/new'
 import {
   GET_OFFER_QUERY_KEY,
   GET_OFFERS_QUERY_KEY,
@@ -76,11 +76,11 @@ export const HeadlineOfferImageDialogs = ({
 
       await mutate(
         [GET_OFFERS_QUERY_KEY, apiFilters],
-        api.createThumbnail(thumbnail),
+        apiNew.createThumbnail({ body: thumbnail }),
         {
           populateCache: (updatedThumbnail, offersList = []) => {
             return offersList.map((item: ListOffersOfferResponseModel) =>
-              item.id === offerId
+              item.id === offerId && updatedThumbnail
                 ? { ...item, thumbUrl: updatedThumbnail.url }
                 : item
             )

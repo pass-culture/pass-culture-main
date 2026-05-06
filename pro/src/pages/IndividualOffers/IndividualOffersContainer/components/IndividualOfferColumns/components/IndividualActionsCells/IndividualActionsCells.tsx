@@ -2,8 +2,11 @@ import { useCallback, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient/api'
-import { type ListOffersOfferResponseModel, OfferStatus } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import {
+  type ListOffersOfferResponseModel,
+  OfferStatus,
+} from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
@@ -86,8 +89,10 @@ export const IndividualActionsCells = ({
 
   const onConfirmDeleteDraftOffer = async () => {
     try {
-      await api.deleteDraftOffers({
-        ids: [offer.id],
+      await apiNew.deleteDraftOffers({
+        body: {
+          ids: [offer.id],
+        },
       })
       snackBar.success(computeDeletionSuccessMessage(1))
       logEvent(Events.DELETE_DRAFT_OFFER, {

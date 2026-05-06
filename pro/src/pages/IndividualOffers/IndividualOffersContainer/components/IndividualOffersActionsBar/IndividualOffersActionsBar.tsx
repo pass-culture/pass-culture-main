@@ -1,11 +1,11 @@
 import { useRef, useState } from 'react'
 import { mutate, useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   OfferStatus,
   type PatchAllOffersActiveStatusBodyModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { MAX_OFFERS_TO_DISPLAY } from '@/commons/core/Offers/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
@@ -63,24 +63,26 @@ const updateIndividualOffersStatus = async (
   apiFilters: IndividualOffersFilters
 ) => {
   const payload: PatchAllOffersActiveStatusBodyModel = {
-    categoryId: apiFilters.categoryId ?? null,
-    creationMode: apiFilters.creationMode ?? null,
+    categoryId: apiFilters.categoryId,
+    creationMode: apiFilters.creationMode,
     isActive: isActive,
-    nameOrIsbn: apiFilters.nameOrIsbn ?? null,
-    offererId: apiFilters.offererId ?? null,
-    periodBeginningDate: apiFilters.periodBeginningDate ?? null,
-    periodEndingDate: apiFilters.periodEndingDate ?? null,
-    status: apiFilters.status ?? null,
-    venueId: apiFilters.venueId ?? null,
-    offererAddressId: apiFilters.offererAddressId ?? null,
+    nameOrIsbn: apiFilters.nameOrIsbn,
+    offererId: apiFilters.offererId,
+    periodBeginningDate: apiFilters.periodBeginningDate,
+    periodEndingDate: apiFilters.periodEndingDate,
+    status: apiFilters.status,
+    venueId: apiFilters.venueId,
+    offererAddressId: apiFilters.offererAddressId,
   }
   const deactivationWording = 'la mise en pause'
   if (areAllOffersSelected) {
     //  Bulk edit if all editable offers are selected
     try {
-      await api.patchAllOffersActiveStatus({
-        ...payload,
-        isActive,
+      await apiNew.patchAllOffersActiveStatus({
+        body: {
+          ...payload,
+          isActive,
+        },
       })
       snackBar.success(
         isActive
@@ -96,9 +98,11 @@ const updateIndividualOffersStatus = async (
     }
   } else {
     try {
-      await api.patchOffersActiveStatus({
-        ids: selectedOfferIds.map((id) => Number(id)),
-        isActive,
+      await apiNew.patchOffersActiveStatus({
+        body: {
+          ids: selectedOfferIds.map((id) => Number(id)),
+          isActive,
+        },
       })
       snackBar.success(
         isActive
@@ -187,8 +191,10 @@ export const IndividualOffersActionsBar = ({
 
   const handleDelete = async () => {
     try {
-      await api.deleteDraftOffers({
-        ids: selectedOffers.map((offer) => offer.id),
+      await apiNew.deleteDraftOffers({
+        body: {
+          ids: selectedOffers.map((offer) => offer.id),
+        },
       })
       snackBar.success(
         computeDeletionSuccessMessage(
