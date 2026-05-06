@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type { StatisticsModel } from '@/apiClient/v1'
 import { GET_STATISTICS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 
@@ -10,15 +10,16 @@ export const useIncome = (selectedVenues: string[]) => {
   const selectedVenuesAsNumbers = selectedVenues
     .map(Number)
     .sort((a, b) => a - b)
+
   const {
     data,
     error: incomeApiError,
     isLoading: isIncomeLoading,
-  } = useSWR<StatisticsModel | null, string, [string, number[]] | null>(
+  } = useSWR<StatisticsModel | undefined, string, [string, number[]] | null>(
     selectedVenuesAsNumbers.length > 0
       ? [GET_STATISTICS_QUERY_KEY, selectedVenuesAsNumbers]
       : null,
-    ([, selectedVenuesParam]) => api.getStatistics(selectedVenuesParam),
+    ([, venueIds]) => apiNew.getStatistics({ query: { venueIds } }),
     { revalidateOnMount: true }
   )
 
