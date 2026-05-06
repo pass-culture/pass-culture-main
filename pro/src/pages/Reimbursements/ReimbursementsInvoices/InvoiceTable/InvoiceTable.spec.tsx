@@ -115,11 +115,11 @@ describe('InvoiceTable', () => {
     const user = userEvent.setup()
 
     const getCombinedInvoicesMock = vi
-      .spyOn(apiModule.api, 'getCombinedInvoices')
+      .spyOn(apiModule.apiNew, 'getCombinedInvoices')
       .mockResolvedValueOnce(new Blob(['dummy-pdf']))
 
     const getReimbursementsCsvV2Mock = vi
-      .spyOn(apiModule.api, 'getReimbursementsCsvV2')
+      .spyOn(apiModule.apiNew, 'getReimbursementsCsvV2')
       .mockResolvedValueOnce(new Blob(['dummy-csv']))
 
     renderReimbursementsInvoicesTable(invoices)
@@ -129,11 +129,16 @@ describe('InvoiceTable', () => {
     await user.click(screen.getByText('Télécharger les justificatifs'))
     await user.click(screen.getByText('Télécharger les détails'))
 
-    expect(getCombinedInvoicesMock).toHaveBeenCalledWith(['INV-001', 'INV-002'])
-    expect(getReimbursementsCsvV2Mock).toHaveBeenCalledWith([
-      'INV-001',
-      'INV-002',
-    ])
+    expect(getCombinedInvoicesMock).toHaveBeenCalledWith({
+      query: {
+        invoiceReferences: ['INV-001', 'INV-002'],
+      },
+    })
+    expect(getReimbursementsCsvV2Mock).toHaveBeenCalledWith({
+      query: {
+        invoicesReferences: ['INV-001', 'INV-002'],
+      },
+    })
   })
 
   it(`shows error when downloading more than ${MAX_ITEMS_DOWNLOAD} invoices`, async () => {
