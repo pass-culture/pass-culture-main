@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { GET_VENUES_STATS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Card } from '@/ui-kit/Card/Card'
@@ -17,7 +17,7 @@ interface StatsCardProps {
 export const StatsCard = ({ venue }: StatsCardProps) => {
   const { data: stats } = useSWR(
     [GET_VENUES_STATS_QUERY_KEY, venue.id],
-    ([, venueId]) => api.getVenueOffersStats(venueId)
+    ([, venueId]) => apiNew.getVenueOffersStats({ path: { venue_id: venueId } })
   )
 
   const dailyViews = stats?.jsonData.dailyViews ?? []

@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   EngagementEvents,
@@ -166,7 +166,7 @@ describe('EditoCard', () => {
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: mockLogEvent,
       }))
-      vi.spyOn(api, 'getHighlights').mockResolvedValue([])
+      vi.spyOn(apiNew, 'getHighlights').mockResolvedValue([])
 
       renderWithProviders(
         <EditoCard {...defaultProps} canDisplayHighlights={true} />

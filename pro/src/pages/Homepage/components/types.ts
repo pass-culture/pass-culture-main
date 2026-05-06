@@ -1,7 +1,7 @@
 import type {
   CollectiveOfferHomeResponseModel,
   CollectiveOfferTemplateHomeResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 
 export enum HomepageVariant {
   COLLECTIVE = 'collective',

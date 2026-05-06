@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { GET_OFFERS_HOME_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -22,7 +22,7 @@ export const IndividualOffersCard = ({
 }: IndividualOffersCardProps): JSX.Element => {
   const { isLoading, data: offers } = useSWR(
     [GET_OFFERS_HOME_QUERY_KEY, venueId],
-    () => api.listOffersHome(venueId),
+    () => apiNew.listOffersHome({ query: { venueId } }),
     { fallbackData: [] }
   )
 
@@ -30,7 +30,7 @@ export const IndividualOffersCard = ({
     return <Skeleton height="15rem" width="100%" />
   }
 
-  if (offers.length === 0) {
+  if (offers?.length === 0 || !offers) {
     return <OffersRetentionCard variant="INDIVIDUAL" />
   }
 
