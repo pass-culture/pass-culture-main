@@ -31,7 +31,7 @@ export const onSubmit = async (
   offerId: number,
   snackBar: ReturnType<typeof useSnackBar>,
   stockQueryKeys: stockQueryKeysType
-): Promise<StocksEvent[] | void> => {
+) => {
   const dates = getRecurrenceDates(values)
   const generatedStocks = generateStocksForDates(values, dates, departmentCode)
 

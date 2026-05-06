@@ -13,7 +13,7 @@ type IndividualImageOfferContextValues = {
   handleEanImage: (imageUrl?: string) => void
   handleImageOnSubmit: (
     offerId: number
-  ) => Promise<CreateThumbnailResponseModel | void>
+  ) => Promise<CreateThumbnailResponseModel | undefined>
 }
 
 export const useIndividualOfferImageUpload = (
@@ -70,9 +70,13 @@ export const useIndividualOfferImageUpload = (
         }
 
         return await api.createThumbnail(thumbnail)
-      } else if (shouldDeleteThumbnail) {
-        return await api.deleteThumbnail(offerId)
       }
+
+      if (shouldDeleteThumbnail) {
+        await api.deleteThumbnail(offerId)
+      }
+
+      return undefined
     },
     [hasUpsertedImage, imageToUpsert]
   )
