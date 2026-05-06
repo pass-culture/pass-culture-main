@@ -45,11 +45,7 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
   return (
     <SummarySection
       title="Vos informations"
-      editLink={getVenuePagePathToNavigateTo(
-        venue.managingOfferer.id,
-        venue.id,
-        '/edition'
-      )}
+      editLink={getVenuePagePathToNavigateTo('/edition')}
     >
       {isVolunteeringActive && (
         <SummarySubSection title="Bénévolat" shouldShowDivider={false} isNew>

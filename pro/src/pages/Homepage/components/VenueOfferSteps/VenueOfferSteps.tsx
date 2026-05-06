@@ -1,7 +1,5 @@
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -15,7 +13,6 @@ import styles from './VenueOfferSteps.module.scss'
 
 export const VenueOfferSteps = () => {
   const { logEvent } = useAnalytics()
-  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   return (
     <Panel>
@@ -28,7 +25,7 @@ export const VenueOfferSteps = () => {
           color={ButtonColor.NEUTRAL}
           iconPosition={IconPositionEnum.LEFT}
           icon={fullNextIcon}
-          to={`/structures/${selectedPartnerVenue.managingOfferer.id}/lieux/${selectedPartnerVenue.id}/collectif`}
+          to={`/partenaire/page-collective`}
           label="Renseigner mes informations à destination des enseignants"
         />
 
@@ -40,7 +37,7 @@ export const VenueOfferSteps = () => {
           color={ButtonColor.NEUTRAL}
           iconPosition={IconPositionEnum.LEFT}
           icon={fullNextIcon}
-          to={`/structures/${selectedPartnerVenue.managingOfferer.id}/lieux/${selectedPartnerVenue.id}/collectif`}
+          to={`/partenaire/page-collective`}
           onClick={() => {
             logEvent(Events.CLICKED_EAC_DMS_TIMELINE, {
               from: location.pathname,

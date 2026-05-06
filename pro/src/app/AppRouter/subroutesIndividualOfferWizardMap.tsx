@@ -15,7 +15,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferDescription/IndividualOfferDescription'
       ),
     path: '/offre/individuelle/:offerId/edition/details',
-    title: 'Détails de l’offre - Modifier une offre individuelle',
+    handle: {
+      title: 'Détails de l’offre - Modifier une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -24,7 +26,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOfferSummary/IndividualOfferSummaryDetails/IndividualOfferSummaryDetails'
       ),
     path: '/offre/individuelle/:offerId/recapitulatif/description',
-    title: 'Détails de l’offre - Consulter une offre individuelle',
+    handle: {
+      title: 'Détails de l’offre - Consulter une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   //  Description
@@ -34,7 +38,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferDescription/IndividualOfferDescription'
       ),
     path: '/offre/individuelle/creation/description',
-    title: 'Description - Créer une offre individuelle',
+    handle: {
+      title: 'Description - Créer une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -43,7 +49,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferDescription/IndividualOfferDescription'
       ),
     path: '/offre/individuelle/:offerId/creation/description',
-    title: 'Description - Créer une offre individuelle',
+    handle: {
+      title: 'Description - Créer une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -52,7 +60,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferDescription/IndividualOfferDescription'
       ),
     path: '/offre/individuelle/:offerId/edition/description',
-    title: 'Description - Modifier une offre individuelle',
+    handle: {
+      title: 'Description - Modifier une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -61,7 +71,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOfferSummary/IndividualOfferSummaryDetails/IndividualOfferSummaryDetails'
       ),
     path: '/offre/individuelle/:offerId/recapitulatif/description',
-    title: 'Description - Consulter une offre individuelle',
+    handle: {
+      title: 'Description - Consulter une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   //  Informations pratiques
@@ -71,7 +83,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferLocation/IndividualOfferLocation'
       ),
     path: '/offre/individuelle/:offerId/creation/pratiques',
-    title: 'Informations pratiques - Créer une offre individuelle',
+    handle: {
+      title: 'Informations pratiques - Créer une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -80,7 +94,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferLocation/IndividualOfferLocation'
       ),
     path: '/offre/individuelle/:offerId/edition/pratiques',
-    title: 'Informations pratiques - Modifier une offre individuelle',
+    handle: {
+      title: 'Informations pratiques - Modifier une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   //  Location
@@ -90,7 +106,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferLocation/IndividualOfferLocation'
       ),
     path: '/offre/individuelle/:offerId/creation/localisation',
-    title: 'Localisation - Créer une offre individuelle',
+    handle: {
+      title: 'Localisation - Créer une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -99,7 +117,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferLocation/IndividualOfferLocation'
       ),
     path: '/offre/individuelle/:offerId/edition/localisation',
-    title: 'Localisation - Modifier une offre individuelle',
+    handle: {
+      title: 'Localisation - Modifier une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -108,7 +128,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOfferSummary/IndividualOfferSummaryLocation/IndividualOfferSummaryLocation'
       ),
     path: '/offre/individuelle/:offerId/localisation',
-    title: 'Localisation - Consulter une offre individuelle',
+    handle: {
+      title: 'Localisation - Consulter une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   // Image & video (media) pages
@@ -118,7 +140,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferMedia/IndividualOfferMedia'
       ),
     path: '/offre/individuelle/:offerId/creation/media',
-    title: 'Image et vidéo - Créer une offre individuelle',
+    handle: {
+      title: 'Image et vidéo - Créer une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -127,7 +151,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferMedia/IndividualOfferMedia'
       ),
     path: '/offre/individuelle/:offerId/edition/media',
-    title: 'Image et vidéo - Modifier une offre individuelle',
+    handle: {
+      title: 'Image et vidéo - Modifier une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -136,7 +162,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOfferSummary/IndividualOfferSummaryMedia/IndividualOfferSummaryMedia'
       ),
     path: '/offre/individuelle/:offerId/media',
-    title: 'Image et vidéo - Consulter une offre individuelle',
+    handle: {
+      title: 'Image et vidéo - Consulter une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   // Price categories pages
@@ -146,7 +174,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferPriceTable/IndividualOfferPriceTable'
       ),
     path: '/offre/individuelle/:offerId/creation/tarifs',
-    title: 'Tarifs - Créer une offre individuelle',
+    handle: {
+      title: 'Tarifs - Créer une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -155,7 +185,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferPriceTable/IndividualOfferPriceTable'
       ),
     path: '/offre/individuelle/:offerId/edition/tarifs',
-    title: 'Tarifs - Modifier une offre individuelle',
+    handle: {
+      title: 'Tarifs - Modifier une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -164,7 +196,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOfferSummary/IndividualOfferSummaryPriceCategories/IndividualOfferSummaryPriceCategories'
       ),
     path: '/offre/individuelle/:offerId/tarifs',
-    title: 'Tarifs - Consulter une offre individuelle',
+    handle: {
+      title: 'Tarifs - Consulter une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   // Timetable
@@ -174,7 +208,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferTimetable/IndividualOfferTimetable'
       ),
     path: '/offre/individuelle/:offerId/creation/horaires',
-    title: 'Horaires - Créer une offre individuelle',
+    handle: {
+      title: 'Horaires - Créer une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -183,7 +219,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferTimetable/IndividualOfferTimetable'
       ),
     path: '/offre/individuelle/:offerId/edition/horaires',
-    title: 'Horaires - Modifier une offre individuelle',
+    handle: {
+      title: 'Horaires - Modifier une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -192,7 +230,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOfferSummary/IndividualOfferSummaryStocks/IndividualOfferSummaryStocks'
       ),
     path: '/offre/individuelle/:offerId/horaires',
-    title: 'Horaires - Consulter une offre individuelle',
+    handle: {
+      title: 'Horaires - Consulter une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -201,7 +241,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferPracticalInfos/IndividualOfferPracticalInfos'
       ),
     path: '/offre/individuelle/:offerId/creation/informations_pratiques',
-    title: 'Informations pratiques - Créer une offre individuelle',
+    handle: {
+      title: 'Informations pratiques - Créer une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -210,7 +252,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferPracticalInfos/IndividualOfferPracticalInfos'
       ),
     path: '/offre/individuelle/:offerId/edition/informations_pratiques',
-    title: 'Informations pratiques - Modifier une offre individuelle',
+    handle: {
+      title: 'Informations pratiques - Modifier une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -219,7 +263,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOfferSummary/IndividualOfferSummaryPracticalInfos/IndividualOfferSummaryPracticalInfos'
       ),
     path: '/offre/individuelle/:offerId/informations_pratiques',
-    title: 'Informations pratiques - Consulter une offre individuelle',
+    handle: {
+      title: 'Informations pratiques - Consulter une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   // Booking summary page
@@ -229,7 +275,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOfferSummary/IndividualOfferSummaryBookings/IndividualOfferSummaryBookings'
       ),
     path: '/offre/individuelle/:offerId/reservations',
-    title: 'Réservations - Consulter une offre individuelle',
+    handle: {
+      title: 'Réservations - Consulter une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   // Confirmation pages
@@ -239,7 +287,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferConfirmation/IndividualOfferConfirmation'
       ),
     path: '/offre/individuelle/:offerId/creation/confirmation',
-    title: 'Confirmation - Offre individuelle publiée',
+    handle: {
+      title: 'Confirmation - Offre individuelle publiée',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   // Summary pages
@@ -249,7 +299,9 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferSummary/IndividualOfferSummary'
       ),
     path: '/offre/individuelle/:offerId/creation/recapitulatif',
-    title: 'Récapitulatif - Créer une offre individuelle',
+    handle: {
+      title: 'Récapitulatif - Créer une offre individuelle',
+    },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
 ]
@@ -262,7 +314,9 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferDescription/IndividualOfferDescription'
       ),
     path: '/onboarding/offre/individuelle/creation/description',
-    title: 'Description - Créer une offre individuelle - Onboarding',
+    handle: {
+      title: 'Description - Créer une offre individuelle - Onboarding',
+    },
     loader: withUserPermissions(mustNotBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -271,7 +325,9 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferDescription/IndividualOfferDescription'
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/description',
-    title: 'Description - Créer une offre individuelle - Onboarding',
+    handle: {
+      title: 'Description - Créer une offre individuelle - Onboarding',
+    },
     loader: withUserPermissions(mustNotBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -280,7 +336,10 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferLocation/IndividualOfferLocation'
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/pratiques',
-    title: 'Informations pratiques - Créer une offre individuelle - Onboarding',
+    handle: {
+      title:
+        'Informations pratiques - Créer une offre individuelle - Onboarding',
+    },
     loader: withUserPermissions(mustNotBeOnboardedWithSelectedPartnerVenue),
   },
   //  Localisation
@@ -290,7 +349,9 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferLocation/IndividualOfferLocation'
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/localisation',
-    title: 'Localisation - Créer une offre individuelle - Onboarding',
+    handle: {
+      title: 'Localisation - Créer une offre individuelle - Onboarding',
+    },
     loader: withUserPermissions(mustNotBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -299,7 +360,9 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferMedia/IndividualOfferMedia'
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/media',
-    title: 'Image et vidéo - Créer une offre individuelle - Onboarding',
+    handle: {
+      title: 'Image et vidéo - Créer une offre individuelle - Onboarding',
+    },
     loader: withUserPermissions(mustNotBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -308,7 +371,9 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferPriceTable/IndividualOfferPriceTable'
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/tarifs',
-    title: 'Tarifs - Créer une offre individuelle - Onboarding',
+    handle: {
+      title: 'Tarifs - Créer une offre individuelle - Onboarding',
+    },
     loader: withUserPermissions(mustNotBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -317,7 +382,10 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferPracticalInfos/IndividualOfferPracticalInfos'
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/informations_pratiques',
-    title: 'Informations pratiques - Créer une offre individuelle - Onboarding',
+    handle: {
+      title:
+        'Informations pratiques - Créer une offre individuelle - Onboarding',
+    },
     loader: withUserPermissions(mustNotBeOnboardedWithSelectedPartnerVenue),
   },
   //  Stocks
@@ -327,7 +395,9 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferTimetable/IndividualOfferTimetable'
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/stocks',
-    title: 'Stocks et prix - Créer une offre individuelle - Onboarding',
+    handle: {
+      title: 'Stocks et prix - Créer une offre individuelle - Onboarding',
+    },
     loader: withUserPermissions(mustNotBeOnboardedWithSelectedPartnerVenue),
   },
   //  Timetable
@@ -337,7 +407,9 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferTimetable/IndividualOfferTimetable'
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/horaires',
-    title: 'Horaires - Créer une offre individuelle - Onboarding',
+    handle: {
+      title: 'Horaires - Créer une offre individuelle - Onboarding',
+    },
     loader: withUserPermissions(mustNotBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -346,7 +418,9 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
         '@/pages/IndividualOffer/IndividualOfferSummary/IndividualOfferSummary'
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/recapitulatif',
-    title: 'Récapitulatif - Créer une offre individuelle - Onboarding',
+    handle: {
+      title: 'Récapitulatif - Créer une offre individuelle - Onboarding',
+    },
     loader: withUserPermissions(mustNotBeOnboardedWithSelectedPartnerVenue),
   },
 ]

@@ -74,7 +74,7 @@ export const PartnerPage = () => {
             color={ButtonColor.NEUTRAL}
             size={ButtonSize.SMALL}
             icon={fullParametersIcon}
-            to={`/structures/${selectedPartnerVenue.managingOfferer.id}/lieux/${selectedPartnerVenue.id}/parametres`}
+            to={`/partenaire/page-individuelle/parametres`}
             label="Paramètres généraux"
           />
         </div>
@@ -85,7 +85,6 @@ export const PartnerPage = () => {
         <PartnerPageIndividualSection
           venueId={selectedPartnerVenue.id}
           venueName={selectedPartnerVenue.name}
-          offererId={selectedPartnerVenue.managingOfferer.id}
         />
       )}
       <PartnerPageCollectiveSection
@@ -94,7 +93,6 @@ export const PartnerPage = () => {
         }
         venueId={selectedPartnerVenue.id}
         venueName={selectedPartnerVenue.name}
-        offererId={selectedPartnerVenue.managingOfferer.id}
         allowedOnAdage={selectedPartnerVenue.allowedOnAdage}
         isDisplayedInHomepage
       />

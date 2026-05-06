@@ -11,14 +11,18 @@ export const routesWelcomeCarousel: CustomRouteGroupChild[] = [
     lazy: () => import('@/pages/WelcomeCarousel/WelcomeStepHub/WelcomeStepHub'),
     loader: withUserPermissions(mustBeUnauthenticated),
     path: '/bienvenue',
-    title: 'Bienvenue sur pass Culture Pro',
+    handle: {
+      title: 'Bienvenue sur pass Culture Pro',
+    },
   },
   {
     lazy: () =>
       import('@/pages/WelcomeCarousel/WelcomeStepTarget/WelcomeStepTarget'),
     loader: withUserPermissions(mustBeUnauthenticated),
     path: '/bienvenue/publics',
-    title: 'Deux manières de vous faire connaître',
+    handle: {
+      title: 'Deux manières de vous faire connaître',
+    },
   },
   {
     lazy: () =>
@@ -27,7 +31,9 @@ export const routesWelcomeCarousel: CustomRouteGroupChild[] = [
       ),
     loader: withUserPermissions(mustBeUnauthenticated),
     path: '/bienvenue/offres-jeunes',
-    title: 'Offres pour les jeunes via l’application',
+    handle: {
+      title: 'Offres pour les jeunes via l’application',
+    },
   },
   {
     lazy: () =>
@@ -36,7 +42,9 @@ export const routesWelcomeCarousel: CustomRouteGroupChild[] = [
       ),
     loader: withUserPermissions(mustBeUnauthenticated),
     path: '/bienvenue/offres-scolaires',
-    title: 'Offres pour les groupes scolaires',
+    handle: {
+      title: 'Offres pour les groupes scolaires',
+    },
   },
   {
     lazy: () =>
@@ -45,7 +53,9 @@ export const routesWelcomeCarousel: CustomRouteGroupChild[] = [
       ),
     loader: withUserPermissions(mustBeUnauthenticated),
     path: '/bienvenue/avantages',
-    title: 'Pourquoi rejoindre le pass Culture ?',
+    handle: {
+      title: 'Pourquoi rejoindre le pass Culture ?',
+    },
   },
   {
     lazy: () =>
@@ -54,6 +64,8 @@ export const routesWelcomeCarousel: CustomRouteGroupChild[] = [
       ),
     loader: withUserPermissions(mustBeUnauthenticated),
     path: '/bienvenue/prochaines-etapes',
-    title: 'Comment fonctionne l’inscription ?',
+    handle: {
+      title: 'Comment fonctionne l’inscription ?',
+    },
   },
 ]

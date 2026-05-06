@@ -12,14 +12,12 @@ import styles from './PartnerPage.module.scss'
 
 export type PartnerPageIndividualSectionProps = {
   venueId: number
-  offererId: number
   venueName: string
 }
 
 export function PartnerPageIndividualSection({
   venueId,
   venueName,
-  offererId,
 }: PartnerPageIndividualSectionProps) {
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
@@ -48,7 +46,7 @@ export function PartnerPageIndividualSection({
           as="a"
           variant={ButtonVariant.SECONDARY}
           color={ButtonColor.NEUTRAL}
-          to={`/structures/${offererId}/lieux/${venueId}/page-partenaire`}
+          to={`/partenaire/page-partenaire`}
           aria-label={`Gérer la page ${venueName}`}
           icon={fullNextIcon}
           onClick={() =>

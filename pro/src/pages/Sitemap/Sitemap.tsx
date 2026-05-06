@@ -2,8 +2,6 @@ import { Link, useNavigate } from 'react-router'
 
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { selectSelectedPartnerPageId } from '@/commons/store/nav/selector'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -22,9 +20,7 @@ interface SitemapLink {
 }
 
 export const Sitemap = () => {
-  const selectedOffererId = useAppSelector(selectCurrentOffererId)
   const navigate = useNavigate()
-  const reduxStoredPartnerPageId = useAppSelector(selectSelectedPartnerPageId)
   const selectedPartnerVenue = useAppSelector(
     (state) => state.user.selectedPartnerVenue
   )
@@ -53,7 +49,7 @@ export const Sitemap = () => {
             { title: 'Guichet', path: '/guichet', children: [] },
             {
               title: "Page sur l'application (si offre individuelle créée)",
-              path: `/structures/${selectedOffererId}/lieux/${reduxStoredPartnerPageId}/page-partenaire`,
+              path: `/partenaire/page-partenaire`,
               hidden: !selectedPartnerVenue?.hasPartnerPage,
               children: [],
             },
@@ -75,7 +71,7 @@ export const Sitemap = () => {
             },
             {
               title: 'Page sur ADAGE (si validé ADAGE)',
-              path: `/structures/${selectedOffererId}/lieux/${selectedPartnerVenue?.id}/collectif`,
+              path: `/partenaire/page-collective`,
               hidden: !selectedPartnerVenue?.allowedOnAdage,
               children: [],
             },
@@ -133,7 +129,7 @@ export const Sitemap = () => {
     },
     {
       title: 'Paramètres généraux',
-      path: `/structures/${selectedOffererId}/lieux/${selectedPartnerVenue?.id}/parametres`,
+      path: `/partenaire/page-individuelle/parametres`,
       children: [],
     },
     {

@@ -134,7 +134,7 @@ export const CollectiveOfferType = ({
               title="Référencement en cours"
               actions={[
                 {
-                  href: `/structures/${offerer?.id}/lieux/${lastCollectiveDmsApplication.venueId}/collectif`,
+                  href: `/partenaire/page-collective`,
                   label: 'Voir ma demande de référencement',
                   type: 'link',
                   icon: fullNextIcon,

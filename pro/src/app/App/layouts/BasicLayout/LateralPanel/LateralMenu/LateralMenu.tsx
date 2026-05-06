@@ -84,7 +84,7 @@ const generateNavItems = (
             type: 'link',
             group: 'main' as const,
             title: 'Page sur l’application',
-            to: `/structures/${selectedOfferer.id}/lieux/${selectedPartnerPageVenueId}/page-partenaire`,
+            to: `/partenaire/page-partenaire`,
             end: true,
             showNotification:
               isVolunteeringActive && !hasSeenVolunteeringSection,
@@ -115,7 +115,7 @@ const generateNavItems = (
             type: 'link',
             group: 'main' as const,
             title: 'Page dans ADAGE',
-            to: `/structures/${selectedOfferer.id}/lieux/${venueId}/collectif`,
+            to: `/partenaire/page-collective`,
             end: true,
           },
         ]

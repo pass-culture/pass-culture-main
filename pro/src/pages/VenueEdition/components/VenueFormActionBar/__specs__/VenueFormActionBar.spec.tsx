@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   type RenderWithProvidersOptions,
@@ -37,20 +36,16 @@ function renderVenueFormActionBar(
 
 describe('VenueFormActionBar', () => {
   it('should display right message on edition', () => {
-    renderVenueFormActionBar({
-      venue: { ...defaultGetVenue },
-    })
+    renderVenueFormActionBar({})
     expect(screen.getByText('Enregistrer')).toBeInTheDocument()
   })
 
   it('should display venue cancel link when not creating', () => {
-    renderVenueFormActionBar({
-      venue: { ...defaultGetVenue },
-    })
+    renderVenueFormActionBar({})
 
     expect(screen.getByRole('link', { name: 'Annuler' })).toHaveAttribute(
       'href',
-      `/structures/${defaultGetVenue.managingOfferer.id}/lieux/${defaultGetVenue.id}`
+      `/partenaire/page-individuelle`
     )
   })
 })

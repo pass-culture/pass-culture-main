@@ -144,7 +144,7 @@ export const VenueSettingsForm = ({
           />
         )}
       </FormLayout>
-      <VenueFormActionBar venue={venue} isSubmitting={isSubmitting} />
+      <VenueFormActionBar isSubmitting={isSubmitting} />
       <RouteLeavingGuardIndividualOffer
         when={isDirty && !isSubmitting && !isSubmitted}
       />

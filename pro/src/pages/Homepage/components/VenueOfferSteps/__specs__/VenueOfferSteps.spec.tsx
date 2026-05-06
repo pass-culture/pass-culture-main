@@ -30,13 +30,13 @@ describe('VenueOfferSteps', () => {
       screen.getByRole('link', {
         name: 'Renseigner mes informations à destination des enseignants',
       })
-    ).toHaveAttribute('href', '/structures/7/lieux/42/collectif')
+    ).toHaveAttribute('href', '/partenaire/page-collective')
 
     expect(screen.getByText('Démarche en cours :')).toBeInTheDocument()
     expect(
       screen.getByRole('link', {
         name: 'Suivre ma demande de référencement ADAGE',
       })
-    ).toHaveAttribute('href', '/structures/7/lieux/42/collectif')
+    ).toHaveAttribute('href', '/partenaire/page-collective')
   })
 })

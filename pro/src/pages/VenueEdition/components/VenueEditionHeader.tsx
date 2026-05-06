@@ -100,11 +100,7 @@ export const VenueEditionHeader = ({
             color={ButtonColor.NEUTRAL}
             size={ButtonSize.SMALL}
             icon={fullParametersIcon}
-            to={getVenuePagePathToNavigateTo(
-              venue.managingOfferer.id,
-              venue.id,
-              '/parametres'
-            )}
+            to={getVenuePagePathToNavigateTo('/parametres')}
             label="Paramètres généraux"
           />
           {venue.isPermanent && context === 'partnerPage' && (

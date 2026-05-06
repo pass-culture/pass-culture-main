@@ -15,6 +15,7 @@ import {
   defaultDMSApplicationForEACV2,
   defaultGetVenue,
 } from '@/commons/utils/factories/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -28,10 +29,6 @@ import {
 const mockedUsedNavigate = vi.fn()
 vi.mock('react-router', async () => ({
   ...(await vi.importActual('react-router')),
-  useParams: () => ({
-    offererId: 'O1',
-    venueId: 'V1',
-  }),
   useNavigate: () => mockedUsedNavigate,
 }))
 
@@ -44,7 +41,15 @@ const renderCollectiveDataEdition = (
       venue={{ ...defaultGetVenue, hasAdageId: true }}
       {...props}
     />,
-    { initialRouterEntries: ['/edition'], ...options }
+    {
+      initialRouterEntries: ['/edition'],
+      storeOverrides: {
+        user: {
+          selectedAdminOfferer: defaultGetOffererResponseModel,
+        },
+      },
+      ...options,
+    }
   )
 
 describe('CollectiveDataEdition', () => {
@@ -293,7 +298,7 @@ describe('CollectiveDataEdition', () => {
     await userEvent.click(submitButton)
 
     expect(mockedUsedNavigate).toHaveBeenCalledWith(
-      '/structures/1/lieux/1/collectif'
+      '/partenaire/page-collective'
     )
   })
 

@@ -1,4 +1,3 @@
-import { useParams } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -9,14 +8,13 @@ import {
 } from '@/commons/config/swrQueryKeys'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { VenueSettingsScreen } from './components/VenueSettingsScreen'
 
 const VenueSettings = (): JSX.Element | null => {
-  const { venueId } = useParams<{
-    venueId: string
-  }>()
+  const venueId = useAppSelector(ensureSelectedPartnerVenue).id
 
   const offerer = useAppSelector(selectCurrentOfferer)
 
