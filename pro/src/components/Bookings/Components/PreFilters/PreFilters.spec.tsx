@@ -18,10 +18,6 @@ vi.mock('@/commons/utils/date', async () => {
   }
 })
 
-vi.mock('@/apiClient/api', () => ({
-  api: { getVenues: vi.fn() },
-}))
-
 /**
  * Harness to control selectedPreFilters from the test and
  * to capture the final payload when the user clicks "Afficher".
@@ -70,7 +66,7 @@ describe('filter bookings by bookings period', () => {
     mockApplyNow.mockReset()
 
     props = {
-      offererAddresses: [{ value: '21', label: 'label - street city cp' }],
+      venueAddresses: [{ value: '21', label: 'label - street city cp' }],
       hasResult: true,
       resetPreFilters: vi.fn(),
       isFiltersDisabled: false,

@@ -3,7 +3,7 @@ import { useLocation } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import { GetVenueAddressesWithOffersOption } from '@/apiClient/v1'
+import { GetVenueAddressesWithOffersOption } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import {
@@ -61,7 +61,7 @@ export const IndividualBookings = () => {
   const venueAddressQuery = useVenueAddresses(
     GetVenueAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
   )
-  const offererAddresses = formatAndOrderAddresses(venueAddressQuery.data)
+  const venueAddresses = formatAndOrderAddresses(venueAddressQuery.data ?? [])
 
   const { data: bookingsQuery, isLoading } = useSWR(
     wereBookingsRequested ? [GET_BOOKINGS_QUERY_KEY, appliedPreFilters] : null,
@@ -172,7 +172,7 @@ export const IndividualBookings = () => {
         isFiltersDisabled={!hasBookingsQuery.hasBookings}
         isLocalLoading={venueAddressQuery.isLoading}
         isTableLoading={isLoading}
-        offererAddresses={offererAddresses}
+        venueAddresses={venueAddresses}
         urlParams={urlParams}
         updateUrl={updateUrl}
       />

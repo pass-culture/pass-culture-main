@@ -4,7 +4,7 @@ import { add } from 'date-fns'
 import * as router from 'react-router'
 import { beforeAll } from 'vitest'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   CollectiveLocationType,
   CollectiveOfferDisplayedStatus,
@@ -75,8 +75,6 @@ vi.mock('@/apiClient/api', () => {
   return {
     apiNew: {
       getCollectiveOffers: vi.fn(),
-    },
-    api: {
       getVenueAddresses: vi.fn(),
     },
   }
@@ -110,7 +108,7 @@ const renderOffers = (
 describe('CollectiveOffers', () => {
   beforeEach(() => {
     vi.spyOn(apiNew, 'getCollectiveOffers').mockResolvedValue(offersRecap)
-    vi.spyOn(api, 'getVenueAddresses').mockResolvedValue(venueAddresses)
+    vi.spyOn(apiNew, 'getVenueAddresses').mockResolvedValue(venueAddresses)
   })
 
   afterEach(() => {

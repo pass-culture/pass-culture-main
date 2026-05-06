@@ -1,7 +1,7 @@
 import { act } from '@testing-library/react'
 import type { RouteObject } from 'react-router'
 
-import { BookingStatusFilter } from '@/apiClient/v1'
+import { BookingStatusFilter } from '@/apiClient/v1/new'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 

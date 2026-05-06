@@ -3,11 +3,11 @@ import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
 import { api, apiNew } from '@/apiClient/api'
-import type { ListOffersOfferResponseModel } from '@/apiClient/v1/new'
-import {
-  type GetOffererAddressResponseModel,
-  OfferStatus,
+import type {
+  GetVenueAddressResponseModel,
+  ListOffersOfferResponseModel,
 } from '@/apiClient/v1/new'
+import { OfferStatus } from '@/apiClient/v1/new'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
   ALL_OFFERER_ADDRESS_OPTION,
@@ -19,9 +19,11 @@ import {
   listOffersOfferFactory,
   venueListItemFactory,
 } from '@/commons/utils/factories/individualApiFactories'
-import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
-import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
+import {
+  makeGetVenueResponseModel,
+  venueAddressFactory,
+} from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -69,15 +71,15 @@ const categoriesAndSubcategories = {
   subcategories: [],
 }
 
-const offererAddress: GetOffererAddressResponseModel[] = [
-  offererAddressFactory({
+const venueAddress: GetVenueAddressResponseModel[] = [
+  venueAddressFactory(2, {
     label: 'Label',
   }),
-  offererAddressFactory({
+  venueAddressFactory(2, {
     city: 'New York',
   }),
 ]
-const offererAddressOptions = [
+const venueAddressOptions = [
   { value: 1, label: 'Label - 1 rue de paris 75001 Paris' },
   { value: 2, label: '1 rue de paris 75001 New York' },
 ]
@@ -121,7 +123,7 @@ describe('IndividualOffersScreen', () => {
       offers: offersRecap,
       initialSearchFilters: DEFAULT_SEARCH_FILTERS,
       redirectWithSelectedFilters: vi.fn(),
-      offererAddresses: offererAddressOptions,
+      venueAddresses: venueAddressOptions,
       categories: categoriesAndSubcategories.categories.map(
         ({ id, proLabel }) => ({ value: id, label: proLabel })
       ),
@@ -333,12 +335,12 @@ describe('IndividualOffersScreen', () => {
         value: ALL_OFFERER_ADDRESS_OPTION.label,
       },
       {
-        id: [offererAddress[0].id],
-        value: computeAddressDisplayName(offererAddress[0]),
+        id: [venueAddress[0].id],
+        value: computeAddressDisplayName(venueAddress[0]),
       },
       {
-        id: [offererAddress[1].id],
-        value: computeAddressDisplayName(offererAddress[1]),
+        id: [venueAddress[1].id],
+        value: computeAddressDisplayName(venueAddress[1]),
       },
     ]
 

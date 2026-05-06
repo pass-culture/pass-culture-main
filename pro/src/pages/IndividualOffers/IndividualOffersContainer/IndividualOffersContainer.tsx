@@ -41,7 +41,7 @@ export type IndividualOffersContainerProps = {
       audience?: Audience
     }
   ) => void
-  offererAddresses: SelectOption<number>[]
+  venueAddresses: SelectOption<number>[]
   categories?: SelectOption[]
   offers?: ListOffersOfferResponseModel[]
 }
@@ -51,7 +51,7 @@ export const IndividualOffersContainer = ({
   isLoading,
   initialSearchFilters,
   redirectWithSelectedFilters,
-  offererAddresses,
+  venueAddresses,
   categories,
   offers = [],
 }: IndividualOffersContainerProps): JSX.Element => {
@@ -154,7 +154,7 @@ export const IndividualOffersContainer = ({
         resetFilters={() => resetFilters(false)}
         selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}
-        offererAddresses={offererAddresses}
+        venueAddresses={venueAddresses}
         searchButtonRef={searchButtonRef}
       />
 

@@ -6,11 +6,8 @@ import {
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient/api'
-import type {
-  GetOffererAddressResponseModel,
-  GetVenueAddressResponseModel,
-} from '@/apiClient/v1'
+import { api, apiNew } from '@/apiClient/api'
+import type { GetVenueAddressResponseModel } from '@/apiClient/v1/new'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import { ALL_OFFERER_ADDRESS_OPTION } from '@/commons/core/Offers/constants'
 import type { DeepPartial } from '@/commons/custom_types/utils'
@@ -24,7 +21,6 @@ import {
   defaultGetOffererVenueResponseModel,
   venueListItemFactory,
 } from '@/commons/utils/factories/individualApiFactories'
-import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
@@ -71,7 +67,8 @@ vi.mock('@/apiClient/api', () => ({
     getVenues: vi.fn(),
     getUserHasBookings: vi.fn(),
     getBookingsCsv: vi.fn(),
-    getOffererAddresses: vi.fn(),
+  },
+  apiNew: {
     getVenueAddresses: vi.fn(),
   },
 }))
@@ -129,15 +126,6 @@ const waitForCompleteLoading = async () => {
   })
 }
 
-const offererAddress: GetOffererAddressResponseModel[] = [
-  offererAddressFactory({
-    label: 'Label',
-  }),
-  offererAddressFactory({
-    city: 'New York',
-  }),
-]
-
 describe('components | BookingsRecap | Pro user', () => {
   beforeEach(() => {
     const emptyBookingsRecapPage = {
@@ -152,9 +140,8 @@ describe('components | BookingsRecap | Pro user', () => {
       venues: [venueListItemFactory()],
     })
     vi.spyOn(api, 'getUserHasBookings').mockResolvedValue({ hasBookings: true })
-    vi.spyOn(api, 'getOffererAddresses').mockResolvedValue(offererAddress)
     vi.spyOn(api, 'getBookingsCsv').mockResolvedValue({})
-    vi.spyOn(api, 'getVenueAddresses').mockResolvedValue(venueAddress)
+    vi.spyOn(apiNew, 'getVenueAddresses').mockResolvedValue(venueAddress)
   })
 
   it('should show a pre-filter section', async () => {
@@ -199,7 +186,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     await userEvent.selectOptions(
       screen.getByLabelText('Localisation'),
-      offererAddress[0].id.toString()
+      venueAddress[0].id.toString()
     )
     await userEvent.click(
       screen.getByRole('button', { name: 'Rechercher les réservations' })
@@ -210,7 +197,7 @@ describe('components | BookingsRecap | Pro user', () => {
       spyGetBookingsPro.mock.calls[0][
         NTH_ARGUMENT_GET_BOOKINGS.offererAddressId - 1
       ]
-    ).toBe(offererAddress[0].id)
+    ).toBe(venueAddress[0].id)
   })
 
   it('should warn user that his prefilters returned no booking when no bookings where returned by selected pre-filters', async () => {
@@ -245,7 +232,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     await userEvent.selectOptions(
       screen.getByLabelText('Localisation'),
-      offererAddress[0].id.toString()
+      venueAddress[0].id.toString()
     )
     await userEvent.click(
       screen.getByRole('button', { name: 'Rechercher les réservations' })
@@ -294,7 +281,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     await userEvent.selectOptions(
       screen.getByLabelText('Localisation'),
-      offererAddress[0].id.toString()
+      venueAddress[0].id.toString()
     )
     const beginningPeriodInput = screen.getByLabelText('Début de la période')
     const endingPeriodInput = screen.getByLabelText('Fin de la période')
@@ -335,7 +322,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     await userEvent.selectOptions(
       screen.getByLabelText('Localisation'),
-      offererAddress[0].id.toString()
+      venueAddress[0].id.toString()
     )
     await userEvent.click(
       screen.getByRole('button', { name: 'Rechercher les réservations' })
@@ -381,7 +368,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     await userEvent.selectOptions(
       screen.getByLabelText('Localisation'),
-      offererAddress[0].id.toString()
+      venueAddress[0].id.toString()
     )
     await userEvent.click(
       screen.getByRole('button', { name: 'Rechercher les réservations' })
@@ -401,7 +388,7 @@ describe('components | BookingsRecap | Pro user', () => {
       spyGetBookingsPro.mock.calls[0][
         NTH_ARGUMENT_GET_BOOKINGS.offererAddressId - 1
       ]
-    ).toBe(offererAddress[0].id)
+    ).toBe(venueAddress[0].id)
     expect(
       spyGetBookingsPro.mock.calls[1][NTH_ARGUMENT_GET_BOOKINGS.page - 1]
     ).toBe(2)
@@ -409,7 +396,7 @@ describe('components | BookingsRecap | Pro user', () => {
       spyGetBookingsPro.mock.calls[1][
         NTH_ARGUMENT_GET_BOOKINGS.offererAddressId - 1
       ]
-    ).toBe(offererAddress[0].id)
+    ).toBe(venueAddress[0].id)
   })
 
   it('should request bookings of event date requested by user when user clicks on "Afficher"', async () => {
@@ -570,7 +557,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     await userEvent.selectOptions(
       screen.getByLabelText('Localisation'),
-      offererAddress[0].id.toString()
+      venueAddress[0].id.toString()
     )
 
     await userEvent.click(
@@ -610,7 +597,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     await userEvent.selectOptions(
       screen.getByLabelText('Localisation'),
-      offererAddress[0].id.toString()
+      venueAddress[0].id.toString()
     )
     await userEvent.click(
       screen.getByRole('button', { name: 'Rechercher les réservations' })
@@ -641,7 +628,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     await userEvent.selectOptions(
       screen.getByLabelText('Localisation'),
-      offererAddress[0].id.toString()
+      venueAddress[0].id.toString()
     )
     await userEvent.click(
       screen.getByRole('button', { name: 'Rechercher les réservations' })
@@ -798,7 +785,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     await userEvent.selectOptions(
       screen.getByLabelText('Localisation'),
-      offererAddress[0].id.toString()
+      venueAddress[0].id.toString()
     )
     await userEvent.click(
       screen.getByRole('button', { name: 'Rechercher les réservations' })

@@ -2,12 +2,11 @@ import { act, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import type { RouteObject } from 'react-router'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { setSelectedAdminOfferer } from '@/commons/store/user/reducer'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
-import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { AdministrationLayout } from '@/layouts/AdministrationLayout/AdministrationLayout'
@@ -15,10 +14,9 @@ import { AdministrationLayout } from '@/layouts/AdministrationLayout/Administrat
 import { Component as IndividualActivityData } from './IndividualActivityData'
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     getBookingsCsv: vi.fn(),
     getBookingsExcel: vi.fn(),
-    getOffererAddresses: vi.fn(),
   },
 }))
 const mockLogEvent = vi.fn()
@@ -34,10 +32,6 @@ vi.mock('@/commons/utils/date', async () => ({
 }))
 
 const user = sharedCurrentUserFactory()
-const offererAddresses = [
-  offererAddressFactory({ label: 'Adresse principale' }),
-  offererAddressFactory({ city: 'Lyon' }),
-]
 
 const routes: RouteObject[] = [
   {
@@ -70,10 +64,6 @@ const renderIndividualActivityData = () =>
   })
 
 describe('IndividualActivityData', () => {
-  beforeEach(() => {
-    vi.spyOn(api, 'getOffererAddresses').mockResolvedValue(offererAddresses)
-  })
-
   it('should render the subtitle', () => {
     renderIndividualActivityData()
 
@@ -107,7 +97,7 @@ describe('IndividualActivityData', () => {
   })
 
   it('should pass admin offerer id to CSV download', async () => {
-    vi.spyOn(api, 'getBookingsCsv').mockResolvedValue({})
+    vi.spyOn(apiNew, 'getBookingsCsv').mockResolvedValue({})
     renderIndividualActivityData()
 
     await userEvent.click(
@@ -118,16 +108,18 @@ describe('IndividualActivityData', () => {
     })
     await userEvent.click(downloadSubButton)
 
-    expect(api.getBookingsCsv).toHaveBeenCalledWith(
-      defaultGetOffererResponseModel.id,
-      1,
-      null,
-      null,
-      DEFAULT_PRE_FILTERS.bookingStatusFilter,
-      DEFAULT_PRE_FILTERS.bookingBeginningDate,
-      DEFAULT_PRE_FILTERS.bookingEndingDate,
-      null
-    )
+    expect(apiNew.getBookingsCsv).toHaveBeenCalledWith({
+      query: {
+        offererId: defaultGetOffererResponseModel.id,
+        page: 1,
+        offerId: null,
+        eventDate: null,
+        bookingStatusFilter: DEFAULT_PRE_FILTERS.bookingStatusFilter,
+        bookingPeriodBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
+        bookingPeriodEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
+        offererAddressId: null,
+      },
+    })
   })
 
   it('should reset filters when the selected offerer changes', async () => {
@@ -150,8 +142,8 @@ describe('IndividualActivityData', () => {
   })
 
   it('should track download clicks', async () => {
-    vi.spyOn(api, 'getBookingsCsv').mockResolvedValue({})
-    vi.spyOn(api, 'getBookingsExcel').mockResolvedValue({})
+    vi.spyOn(apiNew, 'getBookingsCsv').mockResolvedValue({})
+    vi.spyOn(apiNew, 'getBookingsExcel').mockResolvedValue({})
     renderIndividualActivityData()
 
     await userEvent.click(

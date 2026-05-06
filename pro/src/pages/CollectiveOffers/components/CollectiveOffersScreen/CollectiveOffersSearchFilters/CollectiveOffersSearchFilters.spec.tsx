@@ -14,13 +14,11 @@ import {
   type CollectiveOffersSearchFiltersProps,
 } from './CollectiveOffersSearchFilters'
 
-vi.mock('@/apiClient/api', () => {
-  return {
-    api: {
-      listOfferersNames: vi.fn().mockReturnValue({}),
-    },
-  }
-})
+vi.mock('@/apiClient/api', () => ({
+  apiNew: {
+    getVenueAddresses: vi.fn(),
+  },
+}))
 
 vi.mock('@/commons/hooks/useActiveFeature', () => ({
   useActiveFeature: vi.fn(),

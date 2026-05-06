@@ -2,9 +2,10 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import type {
   CollectiveOfferTemplateResponseModel,
+  GetVenueAddressResponseModel,
   VenueListItemResponseModel,
 } from '@/apiClient/v1'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
@@ -57,6 +58,8 @@ vi.mock('@/apiClient/api', () => {
       getOfferer: vi.fn(),
       listOfferersNames: vi.fn(),
       getVenues: vi.fn(() => mockVenuesResponse),
+    },
+    apiNew: {
       getVenueAddresses: vi.fn(),
     },
   }
@@ -105,11 +108,11 @@ vi.mock('repository/venuesService', async () => ({
 describe('route TemplateCollectiveOffers', () => {
   let offersRecap: CollectiveOfferTemplateResponseModel[]
 
-  const offererAddress = [
+  const venueAddress: GetVenueAddressResponseModel[] = [
     venueAddressFactory(1, {
       label: 'Label',
     }),
-    venueAddressFactory(1, {
+    venueAddressFactory(2, {
       city: 'New York',
     }),
   ]
@@ -127,7 +130,7 @@ describe('route TemplateCollectiveOffers', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
     })
-    vi.spyOn(api, 'getVenueAddresses').mockResolvedValue(offererAddress)
+    vi.spyOn(apiNew, 'getVenueAddresses').mockResolvedValue(venueAddress)
   })
 
   afterEach(() => {
@@ -273,13 +276,13 @@ describe('route TemplateCollectiveOffers', () => {
 
     const getMockedAddresses = () => [
       venueAddressFactory(1, { label: 'Label' }),
-      venueAddressFactory(1, { city: 'New York' }),
+      venueAddressFactory(2, { city: 'New York' }),
     ]
 
     const setupAddresses = () => {
-      const offererAddress = getMockedAddresses()
-      vi.spyOn(api, 'getVenueAddresses').mockResolvedValue(offererAddress)
-      return offererAddress
+      const venueAddress = getMockedAddresses()
+      vi.spyOn(apiNew, 'getVenueAddresses').mockResolvedValue(venueAddress)
+      return venueAddress
     }
 
     it('should have locationType value in the url when user filters by localisation', async () => {

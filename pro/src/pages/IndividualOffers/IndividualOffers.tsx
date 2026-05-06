@@ -70,7 +70,7 @@ export const IndividualOffers = () => {
   const venueAddressQuery = useVenueAddresses(
     GetVenueAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
   )
-  const offererAddresses = formatAndOrderAddresses(venueAddressQuery.data)
+  const venueAddresses = formatAndOrderAddresses(venueAddressQuery.data ?? [])
 
   const apiFilters = computeIndividualApiFilters(
     finalSearchFilters,
@@ -101,7 +101,7 @@ export const IndividualOffers = () => {
           isLoading={offersQuery.isLoading}
           offers={offersQuery.data}
           redirectWithSelectedFilters={redirectWithSelectedFilters}
-          offererAddresses={offererAddresses}
+          venueAddresses={venueAddresses}
         />
       </HeadlineOfferContextProvider>
     </>

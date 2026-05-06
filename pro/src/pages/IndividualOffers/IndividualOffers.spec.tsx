@@ -5,7 +5,6 @@ import { beforeEach, expect } from 'vitest'
 
 import { api, apiNew } from '@/apiClient/api'
 import {
-  type GetOffererAddressResponseModel,
   type GetVenueAddressResponseModel,
   type ListOffersOfferResponseModel,
   type ListOffersQueryModel,
@@ -20,7 +19,6 @@ import {
   listOffersOfferFactory,
   makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
-import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
@@ -68,15 +66,6 @@ const proVenues = [
     name: 'Ma venue virtuelle',
     offererName: 'Mon offerer',
     isVirtual: true,
-  }),
-]
-
-const offererAddress: GetOffererAddressResponseModel[] = [
-  offererAddressFactory({
-    label: 'Label',
-  }),
-  offererAddressFactory({
-    city: 'New York',
   }),
 ]
 
@@ -153,8 +142,7 @@ describe('IndividualOffers', () => {
       offerersNamesWithPendingValidation: [],
     })
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
-    vi.spyOn(api, 'getOffererAddresses').mockResolvedValue(offererAddress)
-    vi.spyOn(api, 'getVenueAddresses').mockResolvedValue(venueAddress)
+    vi.spyOn(apiNew, 'getVenueAddresses').mockResolvedValue(venueAddress)
 
     vi.spyOn(apiNew, 'listOffers').mockResolvedValue(offersRecap)
   })

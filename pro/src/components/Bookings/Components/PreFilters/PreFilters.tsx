@@ -35,7 +35,7 @@ export interface PreFiltersProps {
   resetPreFilters: () => void
   urlParams?: PreFiltersParams
   updateUrl: (selectedPreFilters: PreFiltersParams) => void
-  offererAddresses: SelectOption<string | number>[]
+  venueAddresses?: SelectOption<string | number>[]
   download?: (type: 'CSV' | 'XLS') => Promise<void>
   isDownloading?: boolean
 }
@@ -52,7 +52,7 @@ export const PreFilters = ({
   isTableLoading,
   isLocalLoading,
   resetPreFilters,
-  offererAddresses,
+  venueAddresses,
   download,
   isDownloading,
 }: PreFiltersProps): JSX.Element => {
@@ -78,7 +78,7 @@ export const PreFilters = ({
           })}
         >
           <FormLayout.Row inline mdSpaceAfter>
-            {!isAdministrationSpace && (
+            {!isAdministrationSpace && venueAddresses && (
               <Select
                 className={styles['venue-filter']}
                 label="Localisation"
@@ -88,7 +88,7 @@ export const PreFilters = ({
                 }
                 disabled={isFiltersDisabled}
                 name="address"
-                options={offererAddresses}
+                options={venueAddresses}
                 value={selectedPreFilters.offererAddressId}
               />
             )}
