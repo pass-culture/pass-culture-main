@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
 
 import { apiNew } from '@/apiClient/api'
-import { isErrorAPIError } from '@/apiClient/helpers'
+import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Button } from '@/design-system/Button/Button'
@@ -21,22 +21,6 @@ type UserPasswordFormValues = {
   newConfirmationPassword: string
 }
 
-export const isUserPasswordError = (
-  error: unknown
-): error is Record<keyof UserPasswordFormValues, string[]> => {
-  if (typeof error !== 'object' || error === null) {
-    return false
-  }
-  if (
-    'oldPassword' in error ||
-    'newPassword' in error ||
-    'newConfirmationPassword' in error
-  ) {
-    return true
-  }
-  return false
-}
-
 export const UserPasswordForm = ({
   closeForm,
 }: UserPasswordFormProps): JSX.Element => {
@@ -47,16 +31,8 @@ export const UserPasswordForm = ({
       closeForm()
     } catch (error) {
       // Check if we have a specific error message for one or more fields
-      if (
-        isErrorAPIError(error) &&
-        error.status < 500 &&
-        isUserPasswordError(error.body)
-      ) {
-        // If so, let's set the error message for each field
-        for (const [field, message] of Object.entries(error.body)) {
-          const typedField = field as keyof UserPasswordFormValues
-          setError(typedField, { message: message.join('\n') })
-        }
+      if (isErrorAPIError(error) && error.status < 500) {
+        serializeApiErrors(error.body, setError)
       } else {
         // In any other case, it's a generic error
         snackBar.error(

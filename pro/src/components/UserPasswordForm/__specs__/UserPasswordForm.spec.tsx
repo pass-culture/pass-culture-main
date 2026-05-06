@@ -7,7 +7,6 @@ import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactori
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
-  isUserPasswordError,
   UserPasswordForm,
   type UserPasswordFormProps,
 } from '../UserPasswordForm'
@@ -166,24 +165,5 @@ describe('components:UserPasswordForm', () => {
     expect(newPasswordInput).toHaveValue('')
     expect(confirmationPasswordInput).toHaveValue('')
     expect(props.closeForm).toHaveBeenCalledTimes(1)
-  })
-
-  describe('isUserPasswordError util', () => {
-    it('should detect if the error is a UserPasswordError', () => {
-      const error = {
-        oldPassword: ['Old password is incorrect'],
-      }
-      expect(isUserPasswordError(error)).toBe(true)
-    })
-
-    it('should detect if the error is not a UserPasswordError', () => {
-      const notEvenAnError = null
-      expect(isUserPasswordError(notEvenAnError)).toBe(false)
-
-      const error = {
-        message: 'Internal server error',
-      }
-      expect(isUserPasswordError(error)).toBe(false)
-    })
   })
 })
