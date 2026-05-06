@@ -3,10 +3,7 @@ import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { getHumanReadableApiError } from '@/apiClient/helpers'
-import type {
-  CreateThumbnailResponseModel,
-  GetIndividualOfferWithAddressResponseModel,
-} from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -104,10 +101,7 @@ export const IndividualOfferMediaScreen = ({
             handleImageOnSubmit(offer.id),
             {
               revalidate: false,
-              populateCache: (
-                thumbnailResult: CreateThumbnailResponseModel | void,
-                offer
-              ) => {
+              populateCache: (thumbnailResult, offer) => {
                 // If defined, the result comes from a thumbnail
                 // creation. Otherwise, its a result from a deletion.
                 // FIXME: in cache we update both offer.activeMediation and offer.thumbUrl

@@ -47,7 +47,7 @@ jobs:
 
       - run: yarn tsc -b
       - run: yarn lint:dead-code
-      - run: yarn lint:js --diagnostic-level=warn
+      - run: yarn lint:js
       - run: yarn lint:scss
       - run: yarn lint:scss:checkunused
 

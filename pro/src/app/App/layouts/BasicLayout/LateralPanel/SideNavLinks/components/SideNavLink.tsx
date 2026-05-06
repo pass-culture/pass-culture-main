@@ -1,6 +1,7 @@
 import classnames from 'classnames'
 import { NavLink, type To } from 'react-router'
 
+import { noop } from '@/commons/utils/noop'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import type { NavItem } from '../SideNavLinks'
@@ -54,8 +55,8 @@ const SideNavLink = ({
 
 export const RenderNavItem = ({
   item,
-  isOpen,
-  onToggleButtonClick = () => {},
+  isOpen = false,
+  onToggleButtonClick = noop,
 }: {
   item: NavItem
   isOpen?: boolean
@@ -84,7 +85,7 @@ export const RenderNavItem = ({
           <SideNavToggleButton
             icon={item.icon || ''}
             title={item.title || ''}
-            isExpanded={isOpen!}
+            isExpanded={isOpen}
             onClick={onToggleButtonClick}
             ariaControls={`${item.key}-sublist`}
             id={`${item.key}-sublist-button`}
@@ -93,7 +94,7 @@ export const RenderNavItem = ({
           {isOpen && (
             <ul id={`${item.key}-sublist`}>
               {item.children?.map((child: NavItem) => (
-                <RenderNavItem key={child.key} item={child} />
+                <RenderNavItem key={child.key} isOpen item={child} />
               ))}
             </ul>
           )}
