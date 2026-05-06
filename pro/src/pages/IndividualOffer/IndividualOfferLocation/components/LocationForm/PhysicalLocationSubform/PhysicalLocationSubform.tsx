@@ -4,6 +4,7 @@ import type { AdresseData } from '@/apiClient/adresse/types.ts'
 import { computeAddressDisplayName } from '@/commons/format/venuesService'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
+import { objectKeys } from '@/commons/utils/object'
 import { AddressFields } from '@/components/AddressFields/AddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
@@ -12,7 +13,10 @@ import { OFFER_LOCATION } from '@/pages/IndividualOffer/commons/constants'
 import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
 
 import { EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES } from '../../../commons/constants'
-import type { LocationFormValues } from '../../../commons/types'
+import type {
+  LocationFormValues,
+  PhysicalAddressSubformValues,
+} from '../../../commons/types'
 import styles from './PhysicalLocationSubform.module.scss'
 
 export interface PhysicalLocationSubformProps {
@@ -38,42 +42,34 @@ export const PhysicalLocationSubform = ({
     ? ['street', 'postalCode', 'city', 'coords']
     : []
 
-  const toggleIsVenueAddress = () => {
-    const willBeVenueAddress = !isVenueAddress
-
-    if (willBeVenueAddress) {
-      setValue(
-        'location.inseeCode',
-        selectedPartnerVenue.location.inseeCode ?? null
-      )
-      setValue('location.banId', selectedPartnerVenue.location.banId ?? null)
-      setValue('location.city', selectedPartnerVenue.location.city)
-      setValue(
-        'location.latitude',
-        selectedPartnerVenue.location.latitude.toString()
-      )
-      setValue(
-        'location.longitude',
-        selectedPartnerVenue.location.longitude.toString()
-      )
-      setValue(
-        'location.coords',
-        `${selectedPartnerVenue.location.latitude}, ${selectedPartnerVenue.location.longitude}`
-      )
-      setValue('location.postalCode', selectedPartnerVenue.location.postalCode)
-      // TODO (igabriele, 2025-08-25): This should not be nullable. Investigate why we can receive a venue location without street since it's mandatory.
-      setValue('location.street', selectedPartnerVenue.location.street ?? null)
-      setValue('location.label', selectedPartnerVenue.location.label ?? null)
-      setValue(
-        'location.offerLocation',
-        selectedPartnerVenue.location.id.toString()
-      )
-    } else {
-      setValue('location', EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES)
+  const setLocationFields = (values: PhysicalAddressSubformValues) => {
+    const keys = objectKeys(values)
+    for (const key of keys) {
+      setValue(`location.${key}`, values[key])
     }
+  }
 
-    setValue('location.isManualEdition', false)
-    setValue('location.isVenueLocation', willBeVenueAddress)
+  const toggleIsVenueAddress = () => {
+    if (isVenueAddress) {
+      setLocationFields(EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES)
+    } else {
+      const { location } = selectedPartnerVenue
+      setLocationFields({
+        ...EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES,
+        banId: location.banId ?? null,
+        city: location.city,
+        coords: `${location.latitude}, ${location.longitude}`,
+        inseeCode: location.inseeCode ?? null,
+        isVenueLocation: true,
+        // TODO (igabriele, 2025-08-25): This should not be nullable. Investigate why we can receive a venue location without street since it's mandatory.
+        label: location.label ?? null,
+        latitude: location.latitude.toString(),
+        longitude: location.longitude.toString(),
+        offerLocation: location.id.toString(),
+        postalCode: location.postalCode,
+        street: location.street ?? null,
+      })
+    }
   }
 
   const toggleIsManualEdition = () => {
