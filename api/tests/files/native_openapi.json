@@ -12137,6 +12137,41 @@
                 "tags": []
             }
         },
+        "/native/v1/signout": {
+            "post": {
+                "description": "",
+                "operationId": "post__native_v1_signout",
+                "parameters": [],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "signout <POST>",
+                "tags": []
+            }
+        },
         "/native/v1/subcategories/v2": {
             "get": {
                 "description": "",

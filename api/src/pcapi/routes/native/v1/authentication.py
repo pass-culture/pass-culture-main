@@ -19,6 +19,7 @@ from pcapi.core.users.password_utils import check_password_strength
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.core.users.sessions import create_user_jwt_tokens
 from pcapi.core.users.sessions import refresh_user_jwt_tokens
+from pcapi.core.users.sessions._native import delete_jwt
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -26,6 +27,7 @@ from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import InternalError
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.native.security import authenticated_and_active_user_required
+from pcapi.routes.native.security import authenticated_maybe_inactive_user_required
 from pcapi.routes.native.security import authenticated_with_refresh_token
 from pcapi.routes.native.v1.serialization.authentication import ChangePasswordRequest
 from pcapi.routes.native.v1.serialization.authentication import RequestPasswordResetRequest
@@ -80,6 +82,18 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
         refresh_token=tokens.refresh,
         account_state=user.account_state,
     )
+
+
+@blueprint.native_route("/signout", methods=["POST"])
+@atomic()
+@authenticated_maybe_inactive_user_required
+@spectree_serialize(
+    on_success_status=204,
+    on_error_statuses=[401],
+    api=blueprint.api,
+)
+def signout() -> None:
+    delete_jwt()
 
 
 @blueprint.native_route("/refresh_access_token", methods=["POST"])

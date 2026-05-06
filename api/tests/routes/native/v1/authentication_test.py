@@ -1410,3 +1410,40 @@ class RefreshTest:
             )
             .count()
         )
+
+
+@pytest.mark.usefixtures("db_session")
+class SignoutTest:
+    def test_signout_user(self, client):
+        data = {
+            "identifier": "ouai_cest_micheeeel@test.com",
+            "password": settings.TEST_DEFAULT_PASSWORD,
+            "device_info": {
+                "os": "iOS",
+                "deviceId": "ID",
+                "source": "app",
+            },
+        }
+        users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=True)
+
+        signin_response = client.post("/native/v2/signin", json=data)
+        access_token = signin_response.json["accessToken"]
+
+        # Ensure the access token is valid
+        client.with_explicit_token(access_token)
+        response = client.get("/native/v1/me")
+        assert response.status_code == 200
+
+        response = client.post("/native/v1/signout", json={})
+        assert response.status_code == 204
+
+        response = client.get("/native/v1/me")
+        assert response.status_code == 401
+
+        response = client.post("/native/v1/signout", json={})
+        assert response.status_code == 401
+
+    def test_signout_user_no_access_token(self, client):
+        client.auth_header = {}
+        response = client.post("/native/v1/signout", json={})
+        assert response.status_code == 401
