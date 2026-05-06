@@ -3,8 +3,8 @@ import { useRef, useState } from 'react'
 import { useLocation } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient/api'
-import type { BankAccountResponseModel } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import type { BankAccountResponseModel } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
@@ -27,11 +27,11 @@ import styles from './BankInformations.module.scss'
 import { LinkVenuesDialog } from './LinkVenuesDialog/LinkVenuesDialog'
 
 const BankInformations = (): JSX.Element => {
-  const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   const location = useLocation()
   const { mutate } = useSWRConfig()
   const { syncVenue } = useSyncVenueCache()
+  const snackBar = useSnackBar()
 
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
   const selectedPartnerVenue = useAppSelector(
@@ -51,13 +51,20 @@ const BankInformations = (): JSX.Element => {
   const addBankAccountButtonRef = useRef<HTMLButtonElement>(null)
   const editBankAccountDialogTriggerRef = useRef<HTMLButtonElement>(null)
 
+  const hasBankAccount =
+    selectedAdminOfferer.hasValidBankAccount ||
+    selectedAdminOfferer.hasPendingBankAccount ||
+    selectedAdminOfferer.hasBankAccountWithPendingCorrections
+
   const [selectedBankAccount, setSelectedBankAccount] =
     useState<BankAccountResponseModel | null>(null)
 
   const bankAccountVenuesQuery = useSWR(
     [GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY, offererId],
     ([, offererId]) =>
-      api.getOffererBankAccountsAndAttachedVenues(Number(offererId)),
+      apiNew.getOffererBankAccountsAndAttachedVenues({
+        path: { offerer_id: Number(offererId) },
+      }),
     {
       onError: () =>
         snackBar.error(
@@ -66,7 +73,7 @@ const BankInformations = (): JSX.Element => {
     }
   )
 
-  if (bankAccountVenuesQuery.isLoading) {
+  if (bankAccountVenuesQuery.isLoading || bankAccountVenuesQuery.isValidating) {
     return <Spinner />
   }
 
@@ -99,7 +106,7 @@ const BankInformations = (): JSX.Element => {
     if (!bankAccountVenuesQuery.data) {
       return
     }
-    void bankAccountVenuesQuery.mutate(
+    bankAccountVenuesQuery.mutate(
       {
         ...bankAccountVenuesQuery.data,
         managedVenues: bankAccountVenuesQuery.data.managedVenues.map((venue) =>
@@ -115,8 +122,7 @@ const BankInformations = (): JSX.Element => {
   return (
     <div className={styles['bank-information']}>
       <div>
-        {selectedAdminOfferer.hasValidBankAccount ||
-        selectedAdminOfferer.hasPendingBankAccount ? (
+        {hasBankAccount ? (
           <p>
             Vous pouvez ajouter plusieurs comptes bancaires afin de percevoir
             les remboursements de vos offres. Chaque compte bancaire fera

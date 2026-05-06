@@ -2,11 +2,11 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import {
   BankAccountApplicationStatus,
   type BankAccountResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import {
@@ -78,7 +78,10 @@ describe('BankInformations page', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue(
       defaultGetOffererResponseModel
     )
-    vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
+    vi.spyOn(
+      apiNew,
+      'getOffererBankAccountsAndAttachedVenues'
+    ).mockResolvedValue({
       bankAccounts: [defaultBankAccountResponseModel],
       id: 1,
       managedVenues: [
@@ -234,14 +237,16 @@ describe('BankInformations page', () => {
 
   it('should render default page if error on getOffererBankAccountsAndAttachedVenues request', async () => {
     vi.spyOn(
-      api,
+      apiNew,
       'getOffererBankAccountsAndAttachedVenues'
     ).mockRejectedValueOnce({})
 
     renderBankInformations()
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-    expect(api.getOffererBankAccountsAndAttachedVenues).toHaveBeenCalledTimes(1)
+    expect(
+      apiNew.getOffererBankAccountsAndAttachedVenues
+    ).toHaveBeenCalledTimes(1)
     expect(
       screen.getByText(
         'Impossible de récupérer les informations relatives à vos comptes bancaires.'
@@ -341,7 +346,7 @@ describe('BankInformations page', () => {
     const user = userEvent.setup()
     vi.spyOn(api, 'linkVenueToBankAccount').mockResolvedValue()
     const getOffererBankAccountsSpy = vi
-      .spyOn(api, 'getOffererBankAccountsAndAttachedVenues')
+      .spyOn(apiNew, 'getOffererBankAccountsAndAttachedVenues')
       .mockResolvedValue({
         id: 1,
         bankAccounts: [{ ...defaultBankAccount }],
@@ -359,7 +364,9 @@ describe('BankInformations page', () => {
     await user.click(screen.getByRole('button', { name: 'Enregistrer' }))
     await user.click(screen.getByRole('button', { name: 'Confirmer' }))
 
-    expect(getOffererBankAccountsSpy).toHaveBeenLastCalledWith(1)
+    expect(getOffererBankAccountsSpy).toHaveBeenLastCalledWith({
+      path: { offerer_id: 1 },
+    })
   })
 
   it('should refresh the selected venue in the Redux store after linking a venue to a bank account', async () => {
@@ -376,7 +383,10 @@ describe('BankInformations page', () => {
     })
 
     vi.spyOn(api, 'linkVenueToBankAccount').mockResolvedValue()
-    vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
+    vi.spyOn(
+      apiNew,
+      'getOffererBankAccountsAndAttachedVenues'
+    ).mockResolvedValue({
       id: 1,
       bankAccounts: [{ ...defaultBankAccount }],
       managedVenues: [{ ...defaultManagedVenue }],

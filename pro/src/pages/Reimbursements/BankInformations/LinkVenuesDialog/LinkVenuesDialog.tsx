@@ -2,10 +2,12 @@ import cn from 'classnames'
 import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { api } from '@/apiClient/api'
-import type { BankAccountResponseModel, ManagedVenue } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
+import type { BankAccountResponseModel, ManagedVenue } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
+import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isEqual } from '@/commons/utils/isEqual'
 import { pluralizeFr } from '@/commons/utils/pluralize'
@@ -73,8 +75,14 @@ export const LinkVenuesDialog = ({
     }
 
     try {
-      await api.linkVenueToBankAccount(offererId, selectedBankAccount.id, {
-        venuesIds: selectedVenuesIds,
+      await apiNew.linkVenueToBankAccount({
+        body: {
+          venuesIds: selectedVenuesIds,
+        },
+        path: {
+          offerer_id: offererId,
+          bank_account_id: selectedBankAccount.id,
+        },
       })
 
       logEvent(BankAccountEvents.CLICKED_SAVE_VENUE_TO_BANK_ACCOUNT, {
@@ -84,10 +92,12 @@ export const LinkVenuesDialog = ({
 
       snackBar.success('Vos modifications ont bien été prises en compte.')
       closeDialog(true)
-    } catch {
-      snackBar.error(
-        'Une erreur est survenue. Vos modifications n’ont pas été prises en compte'
-      )
+    } catch (error) {
+      if (isErrorAPIError(error) && error.status === 400) {
+        serializeApiErrors(error.body, methods.setError)
+      } else {
+        snackBar.error(SENT_DATA_ERROR_MESSAGE)
+      }
     }
   }
 

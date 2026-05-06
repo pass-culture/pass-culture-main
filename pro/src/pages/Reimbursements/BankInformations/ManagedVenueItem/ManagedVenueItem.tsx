@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import type { BankAccountResponseModel, ManagedVenue } from '@/apiClient/v1'
+import type { BankAccountResponseModel, ManagedVenue } from '@/apiClient/v1/new'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'

@@ -2,8 +2,8 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as Dialog from '@radix-ui/react-dialog'
 import { useForm } from 'react-hook-form'
 
-import { api } from '@/apiClient/api'
-import type { ManagedVenue } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import type { ManagedVenue } from '@/apiClient/v1/new'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
@@ -45,8 +45,13 @@ export const PricingPointDialog = ({
       return
     }
     try {
-      await api.linkVenueToPricingPoint(selectedVenue.id, {
-        pricingPointId: Number(pricingPointId),
+      await apiNew.linkVenueToPricingPoint({
+        body: {
+          pricingPointId: Number(pricingPointId),
+        },
+        path: {
+          venue_id: selectedVenue.id,
+        },
       })
       updateVenuePricingPoint(selectedVenue.id)
       closeDialog()
