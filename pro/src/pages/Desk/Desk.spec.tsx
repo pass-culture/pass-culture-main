@@ -2,10 +2,9 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import { ApiError } from '@/apiClient/adage'
 import type { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
-import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
+import { ApiError, type ApiResult } from '@/apiClient/compat'
 import { HTTP_STATUS } from '@/apiClient/helpers'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { defaultGetBookingResponse } from '@/commons/utils/factories/individualApiFactories'
@@ -42,7 +41,7 @@ describe('Desk', () => {
 
   describe('token typing behaviour', () => {
     it('removes QR code prefix', async () => {
-      vi.spyOn(api, 'getBookingByToken').mockResolvedValue(
+      vi.spyOn(apiNew, 'getBookingByToken').mockResolvedValue(
         defaultGetBookingResponse
       )
 
@@ -56,7 +55,7 @@ describe('Desk', () => {
     })
 
     it('updates character counter', async () => {
-      vi.spyOn(api, 'getBookingByToken').mockResolvedValue(
+      vi.spyOn(apiNew, 'getBookingByToken').mockResolvedValue(
         defaultGetBookingResponse
       )
 
@@ -72,7 +71,7 @@ describe('Desk', () => {
     })
 
     it('calls API and displays booking details when token valid', async () => {
-      vi.spyOn(api, 'getBookingByToken').mockResolvedValue(
+      vi.spyOn(apiNew, 'getBookingByToken').mockResolvedValue(
         defaultGetBookingResponse
       )
 
@@ -82,7 +81,11 @@ describe('Desk', () => {
       const input = screen.getByRole('textbox', { name: 'Contremarque' })
       await user.type(input, 'AAAAAA')
 
-      expect(api.getBookingByToken).toHaveBeenCalledWith('AAAAAA')
+      expect(apiNew.getBookingByToken).toHaveBeenCalledWith({
+        path: {
+          token: 'AAAAAA',
+        },
+      })
 
       expect(
         await screen.findByText(defaultGetBookingResponse.offerName)
@@ -96,7 +99,7 @@ describe('Desk', () => {
 
   describe('form validation', () => {
     beforeEach(() => {
-      vi.spyOn(api, 'getBookingByToken').mockResolvedValue(
+      vi.spyOn(apiNew, 'getBookingByToken').mockResolvedValue(
         defaultGetBookingResponse
       )
     })
@@ -144,13 +147,13 @@ describe('Desk', () => {
 
   describe('validate contremarque', () => {
     beforeEach(() => {
-      vi.spyOn(api, 'getBookingByToken').mockResolvedValue(
+      vi.spyOn(apiNew, 'getBookingByToken').mockResolvedValue(
         defaultGetBookingResponse
       )
     })
 
     it('validates token successfully', async () => {
-      vi.spyOn(api, 'patchBookingUseByToken').mockResolvedValueOnce()
+      vi.spyOn(apiNew, 'patchBookingUseByToken').mockResolvedValueOnce()
 
       const user = userEvent.setup()
       renderDesk()
@@ -170,7 +173,7 @@ describe('Desk', () => {
     })
 
     it('shows API error message when validation fails', async () => {
-      vi.spyOn(api, 'patchBookingUseByToken').mockRejectedValue(
+      vi.spyOn(apiNew, 'patchBookingUseByToken').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
           {
@@ -203,7 +206,7 @@ describe('Desk', () => {
 
   describe('invalidate contremarque', () => {
     beforeEach(() => {
-      vi.spyOn(api, 'getBookingByToken').mockRejectedValue(
+      vi.spyOn(apiNew, 'getBookingByToken').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
           { body: {}, status: HTTP_STATUS.GONE } as ApiResult,
@@ -213,7 +216,7 @@ describe('Desk', () => {
     })
 
     it('invalidates token successfully', async () => {
-      vi.spyOn(api, 'patchBookingKeepByToken').mockResolvedValueOnce()
+      vi.spyOn(apiNew, 'patchBookingKeepByToken').mockResolvedValueOnce()
 
       const user = userEvent.setup()
       renderDesk()
@@ -233,7 +236,7 @@ describe('Desk', () => {
     })
 
     it('shows error when invalidation fails', async () => {
-      vi.spyOn(api, 'patchBookingKeepByToken').mockRejectedValue(
+      vi.spyOn(apiNew, 'patchBookingKeepByToken').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
           { body: {}, status: 410 } as ApiResult,

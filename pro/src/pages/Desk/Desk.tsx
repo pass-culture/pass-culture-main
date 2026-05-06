@@ -3,8 +3,9 @@ import type React from 'react'
 import { useEffect, useId, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { api } from '@/apiClient/api'
-import type { ApiError, GetBookingResponse } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import type { ApiError } from '@/apiClient/compat'
+import type { GetBookingResponse } from '@/apiClient/v1/new'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Banner } from '@/design-system/Banner/Banner'
@@ -25,7 +26,9 @@ interface FormValues {
 
 export const Desk = (): JSX.Element => {
   const [isTokenValidated, setIsTokenValidated] = useState(false)
-  const [booking, setBooking] = useState<GetBookingResponse | null>(null)
+  const [booking, setBooking] = useState<GetBookingResponse | undefined>(
+    undefined
+  )
   const snackBar = useSnackBar()
 
   const statusId = useId()
@@ -52,7 +55,7 @@ export const Desk = (): JSX.Element => {
 
   useEffect(() => {
     if (!isValid || !token) {
-      setBooking(null)
+      setBooking(undefined)
       return
     }
 
@@ -60,7 +63,9 @@ export const Desk = (): JSX.Element => {
 
     const fetchBooking = async () => {
       try {
-        const response = await api.getBookingByToken(token)
+        const response = await apiNew.getBookingByToken({
+          path: { token: token },
+        })
 
         if (!cancelled) {
           setBooking(response)
@@ -68,7 +73,7 @@ export const Desk = (): JSX.Element => {
       } catch (error) {
         if (!cancelled) {
           handleSubmitError(error as ApiError)
-          setBooking(null)
+          setBooking(undefined)
         }
       }
     }
@@ -92,10 +97,10 @@ export const Desk = (): JSX.Element => {
 
   const handleSubmitValidate = async (formValues: FormValues) => {
     try {
-      await api.patchBookingUseByToken(formValues.token)
+      await apiNew.patchBookingUseByToken({ path: { token: formValues.token } })
       snackBar.success('Contremarque validée')
 
-      setBooking(null)
+      setBooking(undefined)
       resetField('token')
     } catch (error) {
       handleSubmitError(error as ApiError)
@@ -104,7 +109,9 @@ export const Desk = (): JSX.Element => {
 
   const handleSubmitInvalidate = async (token: string) => {
     try {
-      await api.patchBookingKeepByToken(token)
+      await apiNew.patchBookingKeepByToken({
+        path: { token: token },
+      })
       snackBar.success('Contremarque invalidée')
 
       setIsTokenValidated(false)
@@ -117,7 +124,12 @@ export const Desk = (): JSX.Element => {
   }
 
   const handleSubmitError = (error: ApiError) => {
-    if (error.status === 503 || error.status === 502 || error.status === 500) {
+    if (
+      error.status === 404 ||
+      error.status === 503 ||
+      error.status === 502 ||
+      error.status === 500
+    ) {
       snackBar.error(
         error['body']?.global ||
           'Le service de validation des contremarques est momentanément indisponible. Veuillez réessayer dans quelques instants.'
