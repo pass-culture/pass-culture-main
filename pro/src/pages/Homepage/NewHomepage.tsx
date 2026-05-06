@@ -4,7 +4,7 @@ import { useId, useState } from 'react'
 import {
   DMSApplicationstatus,
   type GetVenueResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'

@@ -2,20 +2,20 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { defaultOfferHomeResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { IndividualOffersCard } from './IndividualOffersCard'
 
-vi.mock('@/apiClient/api', () => ({ api: { listOffersHome: vi.fn() } }))
+vi.mock('@/apiClient/api', () => ({ apiNew: { listOffersHome: vi.fn() } }))
 vi.mock('../OffersRetentionCard/OffersRetentionCard', () => ({
   OffersRetentionCard: () => <div>OffersRetentionCard</div>,
 }))
 
 describe('<IndividualOffersCard />', () => {
   it('should render without accessibility violations', async () => {
-    vi.spyOn(api, 'listOffersHome').mockResolvedValue([
+    vi.spyOn(apiNew, 'listOffersHome').mockResolvedValue([
       defaultOfferHomeResponseModel,
     ])
     const { container } = renderWithProviders(
@@ -29,7 +29,7 @@ describe('<IndividualOffersCard />', () => {
   })
 
   it('should render the retention card if no offers are returned', async () => {
-    vi.spyOn(api, 'listOffersHome').mockResolvedValue([])
+    vi.spyOn(apiNew, 'listOffersHome').mockResolvedValue([])
     renderWithProviders(
       <IndividualOffersCard venueId={12} venueDepartmentCode={'75'} />
     )
@@ -38,7 +38,7 @@ describe('<IndividualOffersCard />', () => {
 
   it('should have a CTA that sends to collective offer list', async () => {
     const user = userEvent.setup()
-    vi.spyOn(api, 'listOffersHome').mockResolvedValue([
+    vi.spyOn(apiNew, 'listOffersHome').mockResolvedValue([
       defaultOfferHomeResponseModel,
     ])
 

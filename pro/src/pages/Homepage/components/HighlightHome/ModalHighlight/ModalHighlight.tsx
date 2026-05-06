@@ -2,7 +2,7 @@ import * as Dialog from '@radix-ui/react-dialog'
 import type { ReactNode } from 'react'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_HIGHLIGHTS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -29,7 +29,7 @@ export const ModalHighlight = ({
 }: ModalHighlight): JSX.Element | null => {
   const { logEvent } = useAnalytics()
   const { data, isLoading } = useSWR([GET_HIGHLIGHTS_QUERY_KEY], () =>
-    api.getHighlights()
+    apiNew.getHighlights()
   )
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 

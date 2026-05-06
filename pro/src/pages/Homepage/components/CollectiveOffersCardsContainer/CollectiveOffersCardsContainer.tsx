@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   GET_COLLECTIVE_OFFER_TEMPLATES_HOME_QUERY_KEY,
   GET_COLLECTIVE_OFFERS_HOME_QUERY_KEY,
@@ -15,25 +15,25 @@ export const CollectiveOffersCardsContainer = ({
 }) => {
   const bookableOffersQuery = useSWR(
     [GET_COLLECTIVE_OFFERS_HOME_QUERY_KEY, venueId],
-    () => api.getCollectiveOffersHome(venueId),
+    () => apiNew.getCollectiveOffersHome({ query: { venueId } }),
     {
       fallbackData: { hasOffers: false, offers: [] },
     }
   )
 
-  const hasBookableOffers = bookableOffersQuery.data?.hasOffers
-  const bookableOffers = bookableOffersQuery.data?.offers
+  const hasBookableOffers = Boolean(bookableOffersQuery.data?.hasOffers)
+  const bookableOffers = bookableOffersQuery.data?.offers ?? []
 
   const templateOffersQuery = useSWR(
     [GET_COLLECTIVE_OFFER_TEMPLATES_HOME_QUERY_KEY, venueId],
-    () => api.getCollectiveOfferTemplatesHome(venueId),
+    () => apiNew.getCollectiveOfferTemplatesHome({ query: { venueId } }),
     {
       fallbackData: { hasOffers: false, offers: [] },
     }
   )
 
-  const hasTemplateOffers = templateOffersQuery.data?.hasOffers
-  const templateOffers = templateOffersQuery.data?.offers
+  const hasTemplateOffers = Boolean(templateOffersQuery.data?.hasOffers)
+  const templateOffers = templateOffersQuery.data?.offers ?? []
 
   const templateOffersComponent = (
     <CollectiveOffersCard

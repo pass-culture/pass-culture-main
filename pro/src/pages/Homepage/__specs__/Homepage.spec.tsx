@@ -1,6 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -59,7 +59,7 @@ describe('Homepage', () => {
       jsonData: { dailyViews: [], topOffers: [], totalViewsLast30Days: 0 },
       venueId: defaultGetVenue.id,
     })
-    vi.spyOn(api, 'getHighlights').mockResolvedValue([])
+    vi.spyOn(apiNew, 'getHighlights').mockResolvedValue([])
   })
 
   it('should display the presence section', async () => {
