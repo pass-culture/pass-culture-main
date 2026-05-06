@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form'
 
 import { AdageFrontRoles } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
-import { parseAndValidateFrenchPhoneNumber } from '@/commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isDateValid } from '@/commons/utils/date'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -320,23 +319,10 @@ export const RequestFormDialog = ({
           <FormLayout.Row mdSpaceAfter>
             <PhoneNumberInput
               {...hookForm.register('teacherPhone')}
-              onBlur={(event) => {
-                // This is because entries like "+33600110011invalid" are considered valid by libphonenumber-js,
-                // We need to explicitely extract "+33600110011" that is in the .number property
-                try {
-                  const phoneNumber = parseAndValidateFrenchPhoneNumber(
-                    event.target.value
-                  ).number
-                  hookForm.setValue('teacherPhone', phoneNumber)
-                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                } catch (_e) {
-                  // phone is considered invalid by the lib, so we does nothing here and let yup indicates the error
-                }
-              }}
-              value={watch('teacherPhone')}
               onChange={(event) =>
                 hookForm.setValue('teacherPhone', event.target.value)
               }
+              value={hookForm.watch('teacherPhone')}
               error={hookForm.formState.errors.teacherPhone?.message}
               name="phoneNumber"
               label={'Téléphone'}

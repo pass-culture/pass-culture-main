@@ -44,7 +44,6 @@ export const UserPhoneForm = ({
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-    setValue,
   } = hookForm
 
   const onSubmit = async (values: UserPhoneInitialValues) => {
@@ -82,21 +81,7 @@ export const UserPhoneForm = ({
         <FormLayout.Row mdSpaceAfter>
           <PhoneNumberInput
             label="Téléphone"
-            {...register('phoneNumber', {
-              onBlur(event) {
-                // This is because entries like "+33600110011invalid" are considered valid by libphonenumber-js,
-                // We need to explicitely extract "+33600110011" that is in the .number property
-                try {
-                  const phoneNumber = parseAndValidateFrenchPhoneNumber(
-                    event.target.value
-                  ).number
-                  setValue('phoneNumber', phoneNumber)
-                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                } catch (_e) {
-                  // phone is considered invalid by the lib, so we does nothing here and let yup indicates the error
-                }
-              },
-            })}
+            {...register('phoneNumber')}
             required
             error={errors.phoneNumber?.message}
             requiredIndicator="explicit"
