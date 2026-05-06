@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -43,7 +43,7 @@ export const UserPasswordForm = ({
   const snackBar = useSnackBar()
   const onSubmit = async (values: UserPasswordFormValues) => {
     try {
-      await api.postChangePassword(values)
+      await apiNew.postChangePassword({ body: { ...values } })
       closeForm()
     } catch (error) {
       // Check if we have a specific error message for one or more fields
