@@ -411,7 +411,7 @@ class SSOSigninTest:
         oauth_state_token = token_utils.UUIDToken.create(
             token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
         )
-        mocked_apple_oauth.return_value = self.valid_sso_user
+        mocked_apple_oauth.return_value = (self.valid_sso_user, None)
         mocked_google_oauth.return_value = self.valid_sso_user
         user.email = self.valid_sso_user.email
 
@@ -489,7 +489,7 @@ class SSOSigninTest:
         oauth_state_token = token_utils.UUIDToken.create(
             token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
         )
-        mocked_apple_oauth.return_value = self.valid_sso_user
+        mocked_apple_oauth.return_value = (self.valid_sso_user, None)
         mocked_google_oauth.return_value = self.valid_sso_user
 
         response = client.post(
@@ -592,6 +592,80 @@ class SSOSigninTest:
 
         assert response.status_code == 200, response.json
         mocked_google_oauth.assert_called_with("4/google_code", is_web)
+
+
+@pytest.mark.features(WIP_ENABLE_SSO_TOKEN_REVOCATION=True)
+class SSORefreshTokenPersistenceTest:
+    valid_sso_user = users_schemas.SSOUser(
+        sub="100428144463745704968",
+        email="docteur.cuesta@passculture.app",
+        email_verified=True,
+    )
+
+    @patch("pcapi.connectors.apple_oauth.get_apple_user")
+    def test_persists_encrypted_refresh_token(self, mocked_apple_oauth, client):
+        user = users_factories.UserFactory(email=self.valid_sso_user.email, isActive=True)
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        mocked_apple_oauth.return_value = (self.valid_sso_user, "apple-refresh-token")
+
+        response = client.post(
+            "/native/v1/oauth/apple/authorize",
+            json={"authorizationCode": "4/apple_code", "oauthStateToken": oauth_state_token.encoded_token},
+        )
+
+        assert response.status_code == 200
+        sso = (
+            db.session.query(SingleSignOn).filter(SingleSignOn.user == user, SingleSignOn.ssoProvider == "apple").one()
+        )
+        assert sso.encryptedRefreshToken is not None
+        assert crypto.decrypt(sso.encryptedRefreshToken) == "apple-refresh-token"
+
+    @patch("pcapi.connectors.apple_oauth.get_apple_user")
+    def test_does_not_overwrite_existing_refresh_token_when_provider_returns_none(self, mocked_apple_oauth, client):
+        user = users_factories.UserFactory(email=self.valid_sso_user.email, isActive=True)
+        users_factories.SingleSignOnFactory(
+            user=user,
+            ssoProvider="apple",
+            ssoUserId=self.valid_sso_user.sub,
+            encryptedRefreshToken=crypto.encrypt("previous-token"),
+        )
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        mocked_apple_oauth.return_value = (self.valid_sso_user, None)
+
+        response = client.post(
+            "/native/v1/oauth/apple/authorize",
+            json={"authorizationCode": "4/apple_code", "oauthStateToken": oauth_state_token.encoded_token},
+        )
+
+        assert response.status_code == 200
+        sso = (
+            db.session.query(SingleSignOn).filter(SingleSignOn.user == user, SingleSignOn.ssoProvider == "apple").one()
+        )
+        assert crypto.decrypt(sso.encryptedRefreshToken) == "previous-token"
+
+    @pytest.mark.features(WIP_ENABLE_SSO_TOKEN_REVOCATION=False)
+    @patch("pcapi.connectors.apple_oauth.get_apple_user")
+    def test_does_not_persist_refresh_token_when_flag_disabled(self, mocked_apple_oauth, client):
+        user = users_factories.UserFactory(email=self.valid_sso_user.email, isActive=True)
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        mocked_apple_oauth.return_value = (self.valid_sso_user, "apple-refresh-token")
+
+        response = client.post(
+            "/native/v1/oauth/apple/authorize",
+            json={"authorizationCode": "4/apple_code", "oauthStateToken": oauth_state_token.encoded_token},
+        )
+
+        assert response.status_code == 200
+        sso = (
+            db.session.query(SingleSignOn).filter(SingleSignOn.user == user, SingleSignOn.ssoProvider == "apple").one()
+        )
+        assert sso.encryptedRefreshToken is None
 
 
 class TrustedDeviceFeatureTest:

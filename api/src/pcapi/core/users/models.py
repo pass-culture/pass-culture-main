@@ -1379,6 +1379,8 @@ class SingleSignOn(PcObject, Model):
     ssoProvider: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
     ssoUserId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
 
+    encryptedRefreshToken: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+
     __table_args__ = (
         sa.UniqueConstraint(
             "ssoProvider",

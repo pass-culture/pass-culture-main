@@ -26,6 +26,7 @@ import pcapi.core.users.models as users_models
 import pcapi.core.users.utils as users_utils
 from pcapi import settings
 from pcapi.connectors import api_adresse
+from pcapi.connectors import apple_oauth
 from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.core import object_storage
 from pcapi.core.chronicles import api as chronicles_api
@@ -46,8 +47,10 @@ from pcapi.core.users import exceptions
 from pcapi.core.users import models
 from pcapi.core.users import schemas
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.utils import crypto
 from pcapi.utils import date as date_utils
 from pcapi.utils import transaction_manager
 from pcapi.utils.date import get_naive_utc_now
@@ -80,6 +83,29 @@ def anonymize_user_by_id(user_id: int) -> bool:
     return anonymize_user(user=user)
 
 
+def _revoke_sso_tokens(user: models.User) -> None:
+    # Best-effort revocation of Apple-side OAuth tokens before account anonymization.
+    # Apple App Store Review Guideline 5.1.1(v) requires this for Sign in with Apple.
+    # Failures are logged but do not block deletion.
+    if not FeatureToggle.WIP_ENABLE_SSO_TOKEN_REVOCATION.is_active():
+        return
+
+    for sso in user.single_sign_ons:
+        if sso.ssoProvider != "apple" or not sso.encryptedRefreshToken:
+            continue
+        try:
+            refresh_token = crypto.decrypt(sso.encryptedRefreshToken)
+            apple_oauth.revoke_refresh_token(refresh_token)
+            # Clear the stored token so the late-stage anonymization cron does not retry a
+            # revocation that has already succeeded.
+            sso.encryptedRefreshToken = None
+        except Exception as exc:
+            logger.error(
+                "SSO token revocation failed",
+                extra={"user_id": user.id, "provider": sso.ssoProvider, "exc": str(exc)},
+            )
+
+
 def anonymize_user(
     user: models.User,
     *,
@@ -88,6 +114,13 @@ def anonymize_user(
 ) -> bool:
     if has_unprocessed_extract(user):
         return False
+
+    _revoke_sso_tokens(user)
+    # GDPR: never keep a provider token (even encrypted) on an anonymized account, including
+    # when provider-side revocation failed. `pre_anonymize_user` keeps the token on failure on
+    # purpose, so that this final anonymization can retry the revocation.
+    for single_sign_on in user.single_sign_ons:
+        single_sign_on.encryptedRefreshToken = None
 
     iris = None
     if user.address:
@@ -408,6 +441,10 @@ def is_sole_user_with_ongoing_activities(user: models.User) -> bool:
 def pre_anonymize_user(user: models.User, author: models.User, is_backoffice_action: bool = False) -> None:
     if has_user_pending_anonymization(user.id):
         raise exceptions.UserAlreadyHasPendingAnonymization()
+
+    # Apple App Store Review Guideline 5.1.1(v) requires that token revocation happens
+    # at the moment the user requests account deletion, not when the deferred anonymization runs.
+    _revoke_sso_tokens(user)
 
     api.suspend_account(
         user=user,

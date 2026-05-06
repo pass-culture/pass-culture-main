@@ -1,6 +1,7 @@
 import dataclasses
 import datetime
 import json
+import logging
 import os
 import pathlib
 import zipfile
@@ -45,6 +46,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as brevo_testing
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.utils import crypto
 from pcapi.utils import date as date_utils
 
 import tests
@@ -1428,6 +1430,92 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         db.session.refresh(user_to_anonymize)
         assert user_to_anonymize.firstName != "user_to_anonymize"
         assert db.session.query(users_models.GdprUserAnonymization).count() == 0
+
+
+@pytest.mark.features(WIP_ENABLE_SSO_TOKEN_REVOCATION=True)
+class RevokeSsoTokensOnAnonymizationTest:
+    def test_revokes_apple_refresh_token(self):
+        user = users_factories.UserFactory()
+        users_factories.SingleSignOnFactory(
+            user=user,
+            ssoProvider="apple",
+            ssoUserId="apple_sub",
+            encryptedRefreshToken=crypto.encrypt("rt_apple"),
+        )
+
+        with mock.patch("pcapi.core.users.gdpr_api.apple_oauth.revoke_refresh_token") as mocked_apple_revoke:
+            with mock.patch("pcapi.core.users.gdpr_api.delete_user_attributes"):
+                gdpr_api.anonymize_user(user=user)
+
+        mocked_apple_revoke.assert_called_once_with("rt_apple")
+
+    def test_skips_when_no_refresh_token_stored(self):
+        user = users_factories.UserFactory()
+        users_factories.SingleSignOnFactory(user=user, ssoProvider="apple", ssoUserId="apple_sub")
+
+        with mock.patch("pcapi.core.users.gdpr_api.apple_oauth.revoke_refresh_token") as mocked_apple_revoke:
+            with mock.patch("pcapi.core.users.gdpr_api.delete_user_attributes"):
+                gdpr_api.anonymize_user(user=user)
+
+        mocked_apple_revoke.assert_not_called()
+
+    def test_revocation_failure_does_not_block_anonymization(self, caplog):
+        user = users_factories.BeneficiaryFactory(firstName="should_be_anonymized")
+        users_factories.SingleSignOnFactory(
+            user=user,
+            ssoProvider="apple",
+            ssoUserId="apple_sub",
+            encryptedRefreshToken=crypto.encrypt("rt_apple"),
+        )
+
+        with mock.patch(
+            "pcapi.core.users.gdpr_api.apple_oauth.revoke_refresh_token",
+            side_effect=Exception("apple unreachable"),
+        ):
+            with mock.patch("pcapi.core.users.gdpr_api.delete_user_attributes"):
+                with caplog.at_level(logging.ERROR):
+                    result = gdpr_api.anonymize_user(user=user)
+
+        assert result is True
+        assert any("SSO token revocation failed" in m for m in caplog.messages)
+        db.session.refresh(user)
+        assert user.firstName != "should_be_anonymized"
+
+    def test_purges_refresh_token_even_when_revocation_fails(self):
+        user = users_factories.UserFactory()
+        sso = users_factories.SingleSignOnFactory(
+            user=user,
+            ssoProvider="apple",
+            ssoUserId="apple_sub",
+            encryptedRefreshToken=crypto.encrypt("rt_apple"),
+        )
+
+        with mock.patch(
+            "pcapi.core.users.gdpr_api.apple_oauth.revoke_refresh_token",
+            side_effect=Exception("apple unreachable"),
+        ):
+            with mock.patch("pcapi.core.users.gdpr_api.delete_user_attributes"):
+                result = gdpr_api.anonymize_user(user=user)
+
+        assert result is True
+        db.session.refresh(sso)
+        assert sso.encryptedRefreshToken is None
+
+    @pytest.mark.features(WIP_ENABLE_SSO_TOKEN_REVOCATION=False)
+    def test_does_nothing_when_flag_disabled(self):
+        user = users_factories.UserFactory()
+        users_factories.SingleSignOnFactory(
+            user=user,
+            ssoProvider="apple",
+            ssoUserId="apple_sub",
+            encryptedRefreshToken=crypto.encrypt("rt_apple"),
+        )
+
+        with mock.patch("pcapi.core.users.gdpr_api.apple_oauth.revoke_refresh_token") as mocked_apple_revoke:
+            with mock.patch("pcapi.core.users.gdpr_api.delete_user_attributes"):
+                gdpr_api.anonymize_user(user=user)
+
+        mocked_apple_revoke.assert_not_called()
 
 
 class AnonymizeUserDepositsTest:

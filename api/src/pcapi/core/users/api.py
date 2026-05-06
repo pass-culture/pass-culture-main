@@ -51,6 +51,7 @@ from pcapi.core.users.password_utils import random_password
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import users as users_serialization
+from pcapi.utils import crypto
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils import transaction_manager
 from pcapi.utils.clean_accents import clean_accents
@@ -106,6 +107,7 @@ def create_account(
     firebase_pseudo_id: str | None = None,
     sso_provider: str | None = None,
     sso_user_id: str | None = None,
+    sso_encrypted_refresh_token: str | None = None,
 ) -> models.User:
     email = email_utils.sanitize_email(email)
     if users_repository.find_user_by_email(email):
@@ -126,7 +128,7 @@ def create_account(
     if not user.age or user.age < constants.ACCOUNT_CREATION_MINIMUM_AGE:
         raise exceptions.UnderAgeUserException()
 
-    setup_login(user, password, sso_provider, sso_user_id)
+    setup_login(user, password, sso_provider, sso_user_id, sso_encrypted_refresh_token)
 
     if user.externalIds is None:
         user.externalIds = {}
@@ -154,8 +156,14 @@ def _bypass_email_confirmation(email: str) -> bool:
 
 
 def setup_login(
-    user: models.User, password: str | None, sso_provider: str | None = None, sso_user_id: str | None = None
+    user: models.User,
+    password: str | None,
+    sso_provider: str | None = None,
+    sso_user_id: str | None = None,
+    sso_encrypted_refresh_token: str | None = None,
 ) -> None:
+    # `sso_encrypted_refresh_token` MUST already be Fernet-encrypted by the caller — the value
+    # is persisted as-is on `single_sign_on.encryptedRefreshToken`.
     if password:
         user.setPassword(password)
         return
@@ -164,6 +172,8 @@ def setup_login(
         raise exceptions.MissingLoginMethod()
 
     single_sign_on = users_repository.create_single_sign_on(user, sso_provider, sso_user_id)
+    if sso_encrypted_refresh_token:
+        single_sign_on.encryptedRefreshToken = sso_encrypted_refresh_token
     db.session.add(single_sign_on)
 
 
@@ -882,11 +892,16 @@ def create_oauth_state_token() -> str:
     return token.encoded_token
 
 
-def create_account_creation_token(google_user: users_schemas.SSOUser) -> str:
+def create_account_creation_token(sso_user: users_schemas.SSOUser, refresh_token: str | None = None) -> str:
+    data = sso_user.model_dump()
+    if refresh_token:
+        # Encrypt at emission so the SSO refresh token never sits in clear text, not even inside
+        # the short-lived account-creation token.
+        data["encrypted_refresh_token"] = crypto.encrypt(refresh_token)
     token = token_utils.UUIDToken.create(
         token_utils.TokenType.ACCOUNT_CREATION,
         constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME,
-        data=google_user.model_dump(),
+        data=data,
     )
     return token.encoded_token
 

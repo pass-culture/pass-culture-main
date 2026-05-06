@@ -39,6 +39,7 @@ from pcapi.routes.native.v1.serialization.authentication import ResetPasswordRes
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailRequest
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailResponse
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import crypto
 from pcapi.utils.repository import transaction
 from pcapi.utils.transaction_manager import atomic
 
@@ -256,13 +257,17 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) ->
     oauth_state_token.expire()
 
     is_web = request.headers.get("platform") == "web"
+    refresh_token: str | None = None
     if sso_provider == "apple":
         try:
-            sso_user = apple_oauth.get_apple_user(body.authorization_code, is_web)
+            sso_user, refresh_token = apple_oauth.get_apple_user(body.authorization_code, is_web)
         except apple_oauth.AppleSignInException:
             raise ApiErrors({"code": "SSO_ERROR", "general": "L'authentification a échoué"}, status_code=401)
     elif sso_provider == "google":
         sso_user = google_oauth.get_google_user(body.authorization_code, is_web)
+
+    if not FeatureToggle.WIP_ENABLE_SSO_TOKEN_REVOCATION.is_active():
+        refresh_token = None
 
     if not sso_user.email_verified:
         logger.warning(
@@ -290,7 +295,7 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) ->
             extra={"sso_provider": sso_provider, "avoid_current_user": True},
             technical_message_id=f"users.login.sso.{sso_provider}",
         )
-        encoded_account_creation_token = users_api.create_account_creation_token(sso_user)
+        encoded_account_creation_token = users_api.create_account_creation_token(sso_user, refresh_token)
         # the frontends (web, ios & android app) will handle this error and redirect to the account creation form
         raise ApiErrors(
             {
@@ -326,6 +331,12 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) ->
         else:
             current_provider_sso = users_repo.create_single_sign_on(user, sso_provider, sso_user_id)
             db.session.add(current_provider_sso)
+
+        # Persist the refresh token (encrypted) so we can revoke it provider-side on account deletion.
+        # Always overwrite with the newest refresh_token we receive ; only skip when the provider
+        # does not return one (Apple only returns a refresh token on the first consent).
+        if refresh_token:
+            current_provider_sso.encryptedRefreshToken = crypto.encrypt(refresh_token)
 
     users_api.save_device_info_and_notify_user(user, body.device_info)
 

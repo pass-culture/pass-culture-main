@@ -248,6 +248,8 @@ def create_account_with_sso(sso_provider: str, body: serializers.SSOAccountReque
         logger.error("Error loading account creation token data", extra={"error": str(e)})
         raise api_errors.ApiErrors({"error": "Internal error"})
 
+    sso_encrypted_refresh_token = account_creation_token.data.get("encrypted_refresh_token")
+
     account_creation_token.expire()
 
     if not sso_user.email_verified:
@@ -264,6 +266,7 @@ def create_account_with_sso(sso_provider: str, body: serializers.SSOAccountReque
             password=None,
             sso_provider=sso_provider,
             sso_user_id=sso_user.sub,
+            sso_encrypted_refresh_token=sso_encrypted_refresh_token,
             birthdate=body.birthdate,
             marketing_email_subscription=bool(body.marketing_email_subscription),
             is_email_validated=True,
