@@ -4,44 +4,39 @@ import type { SWRResponse } from 'swr'
 import { assertOrFrontendError } from '../errors/assertOrFrontendError'
 import { useSnackBar } from './useSnackBar'
 
-interface UseGracefulSwrResponse<Data> {
-  data: Data | undefined
+interface UseGracefulSwrResponse<T> {
+  data: T
   hasFirstLoadError: boolean
   hasReloadError: boolean
   isFirstLoading: boolean
   isReloading: boolean
 }
 
-interface FirstLoadingResponse<Data> extends UseGracefulSwrResponse<Data> {
-  data: undefined
+interface FirstLoadingResponse extends UseGracefulSwrResponse<undefined> {
   hasFirstLoadError: false
   hasReloadError: false
   isFirstLoading: true
   isReloading: false
 }
 interface ReloadingResponse<Data> extends UseGracefulSwrResponse<Data> {
-  data: Data
   hasFirstLoadError: false
   hasReloadError: false
   isFirstLoading: false
   isReloading: true
 }
 interface SuccessfulResponse<Data> extends UseGracefulSwrResponse<Data> {
-  data: Data
   hasFirstLoadError: false
   hasReloadError: false
   isFirstLoading: false
   isReloading: false
 }
-interface FailedResponseOnFirstLoad<Data> extends UseGracefulSwrResponse<Data> {
-  data: undefined
+interface FailedResponseOnFirstLoad extends UseGracefulSwrResponse<undefined> {
   hasFirstLoadError: true
   hasReloadError: false
   isFirstLoading: false
   isReloading: false
 }
 interface FailedResponseOnReload<Data> extends UseGracefulSwrResponse<Data> {
-  data: Data
   hasFirstLoadError: false
   hasReloadError: true
   isFirstLoading: false
@@ -71,13 +66,13 @@ interface FailedResponseOnReload<Data> extends UseGracefulSwrResponse<Data> {
  * ```
  */
 export function useGracefulSwrResponse<Data>(
-  swrResponse: SWRResponse<Data>,
+  swrResponse: SWRResponse<Data | undefined>,
   userErrorMessageOnReload: string
 ):
-  | FirstLoadingResponse<Data>
+  | FirstLoadingResponse
   | ReloadingResponse<Data>
   | SuccessfulResponse<Data>
-  | FailedResponseOnFirstLoad<Data>
+  | FailedResponseOnFirstLoad
   | FailedResponseOnReload<Data> {
   const lastDataRef = useRef<Data | undefined>(undefined)
   // Updating refs and states on props changes during rendering is OK as long the render stays pure:
@@ -101,7 +96,7 @@ export function useGracefulSwrResponse<Data>(
       hasReloadError: false,
       isFirstLoading: true,
       isReloading: false,
-    } satisfies FirstLoadingResponse<Data>
+    } satisfies FirstLoadingResponse
   }
 
   if (lastDataRef.current === undefined && swrResponse.error) {
@@ -111,7 +106,7 @@ export function useGracefulSwrResponse<Data>(
       hasReloadError: false,
       isFirstLoading: false,
       isReloading: false,
-    } satisfies FailedResponseOnFirstLoad<Data>
+    } satisfies FailedResponseOnFirstLoad
   }
 
   assertOrFrontendError(
