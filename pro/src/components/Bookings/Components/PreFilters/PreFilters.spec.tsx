@@ -5,6 +5,7 @@ import { useState } from 'react'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { PreFilters, type PreFiltersProps } from './PreFilters'
@@ -55,7 +56,12 @@ const renderPreFilters = (
     )
   }
 
-  renderWithProviders(<Harness />, { features })
+  renderWithProviders(<Harness />, {
+    features,
+    storeOverrides: {
+      user: { selectedAdminOfferer: defaultGetOffererResponseModel },
+    },
+  })
 }
 
 describe('filter bookings by bookings period', () => {
@@ -74,7 +80,9 @@ describe('filter bookings by bookings period', () => {
       isLocalLoading: false,
       updateUrl: vi.fn(),
 
-      selectedPreFilters: { ...DEFAULT_PRE_FILTERS, offererId: '42' },
+      selectedPreFilters: {
+        ...DEFAULT_PRE_FILTERS,
+      },
       updateSelectedFilters: vi.fn(),
       hasPreFilters: false,
       isRefreshRequired: false,
@@ -139,10 +147,7 @@ describe('filter bookings by bookings period', () => {
       bookingEndingDate: '2020-12-02',
       bookingStatusFilter: 'reimbursed',
       offerEventDate: '2020-12-13',
-      offerId: DEFAULT_PRE_FILTERS.offerId,
-      offerVenueId: DEFAULT_PRE_FILTERS.offerVenueId,
       offererAddressId: '21',
-      offererId: '42',
     })
   })
 
@@ -160,10 +165,7 @@ describe('filter bookings by bookings period', () => {
       bookingEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
       bookingStatusFilter: DEFAULT_PRE_FILTERS.bookingStatusFilter,
       offerEventDate: DEFAULT_PRE_FILTERS.offerEventDate,
-      offerId: DEFAULT_PRE_FILTERS.offerId,
-      offerVenueId: DEFAULT_PRE_FILTERS.offerVenueId,
       offererAddressId: '21',
-      offererId: '42',
     })
   })
 

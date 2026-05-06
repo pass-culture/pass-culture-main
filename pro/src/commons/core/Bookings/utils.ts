@@ -1,30 +1,21 @@
+import type { GetBookingsProQueryModel } from '@/apiClient/v1'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
-import type {
-  APIFilters,
-  PreFiltersParams,
-} from '@/commons/core/Bookings/types'
+import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 
 export const buildBookingsRecapQuery = ({
-  offererId,
-  offerVenueId = DEFAULT_PRE_FILTERS.offerVenueId,
   offererAddressId = DEFAULT_PRE_FILTERS.offererAddressId,
   offerEventDate = DEFAULT_PRE_FILTERS.offerEventDate,
   bookingBeginningDate = DEFAULT_PRE_FILTERS.bookingBeginningDate,
   bookingEndingDate = DEFAULT_PRE_FILTERS.bookingEndingDate,
   bookingStatusFilter = DEFAULT_PRE_FILTERS.bookingStatusFilter,
-  offerId,
   page,
 }: Partial<PreFiltersParams> & {
-  offererId: string
   page?: number
-}): APIFilters => {
-  const params = { page, offererId } as APIFilters
+}): Partial<GetBookingsProQueryModel> => {
+  const params: Partial<GetBookingsProQueryModel> = { page }
 
-  if (offerVenueId !== DEFAULT_PRE_FILTERS.offerVenueId) {
-    params.venueId = offerVenueId
-  }
   if (offererAddressId !== DEFAULT_PRE_FILTERS.offererAddressId) {
-    params.offererAddressId = offererAddressId
+    params.offererAddressId = Number(offererAddressId)
   }
   if (offerEventDate !== DEFAULT_PRE_FILTERS.offerEventDate) {
     params.eventDate = offerEventDate
@@ -35,10 +26,6 @@ export const buildBookingsRecapQuery = ({
 
   if (bookingEndingDate) {
     params.bookingPeriodEndingDate = bookingEndingDate
-  }
-
-  if (offerId) {
-    params.offerId = offerId
   }
 
   params.bookingStatusFilter = bookingStatusFilter

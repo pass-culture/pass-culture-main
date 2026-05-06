@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+
 import { GetVenueAddressesWithOffersOption } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
@@ -27,9 +29,13 @@ const IndividualActivityData = () => {
     updateUrl,
     urlParams,
     wereBookingsRequested,
-  } = useBookingsFilters({
-    offererId: selectedAdminOfferer.id.toString(),
-  })
+  } = useBookingsFilters()
+
+  // we want to reset filters when selected offerer changes
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reset filters when selected offerer changes
+  useEffect(() => {
+    resetPreFilters()
+  }, [resetPreFilters, selectedAdminOfferer.id])
 
   const venueAddressQuery = useVenueAddresses(
     GetVenueAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY

@@ -8,7 +8,9 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { ALL_OFFERER_ADDRESS_OPTION } from '@/commons/core/Offers/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import type { SelectOption } from '@/commons/custom_types/form'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
 import { isDateValid } from '@/commons/utils/date'
 import { DownloadDropdown } from '@/components/DownloadDropdown/DownloadDropdown'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -61,6 +63,9 @@ export const PreFilters = ({
 
   const [isDownloading, setIsDownloading] = useState(false)
 
+  const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
+  const offererId = selectedAdminOfferer.id
+
   const requestFilteredBookings = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
     applyNow()
@@ -75,9 +80,9 @@ export const PreFilters = ({
       try {
         /* istanbul ignore next: DEBT to fix */
         if (type === 'CSV') {
-          await downloadIndividualBookingsCSVFile(filters)
+          await downloadIndividualBookingsCSVFile(filters, offererId)
         } else {
-          await downloadIndividualBookingsXLSFile(filters)
+          await downloadIndividualBookingsXLSFile(filters, offererId)
         }
       } catch {
         snackBar.error(GET_DATA_ERROR_MESSAGE)
@@ -85,7 +90,7 @@ export const PreFilters = ({
 
       setIsDownloading(false)
     },
-    [selectedPreFilters, snackBar]
+    [selectedPreFilters, snackBar, offererId]
   )
 
   return (

@@ -133,10 +133,9 @@ describe('IndividualOfferSummaryBookingsScreen', () => {
 
     await screen.findAllByRole('link', { name: 'Offre de test' })
     expect(api.getBookingsPro).toHaveBeenCalledWith(
-      '42',
+      15,
       1,
-      undefined,
-      String(offer.id),
+      offer.id,
       undefined,
       DEFAULT_PRE_FILTERS.bookingStatusFilter,
       '2015-01-01',

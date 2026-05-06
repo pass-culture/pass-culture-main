@@ -15,6 +15,8 @@ import {
   GET_OFFER_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { isOfferProductBased } from '@/commons/core/Offers/utils/typology'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 export interface IndividualOfferContextValues {
@@ -62,6 +64,8 @@ export const IndividualOfferContextProvider = ({
       ? Number(offerIdAsString)
       : null
 
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+
   const SWRConfig = useSWRConfig()
 
   const navigate = useNavigate()
@@ -84,14 +88,16 @@ export const IndividualOfferContextProvider = ({
     }
   )
   const offer = offerQuery.data
+  const offerEan = offer?.extraData?.ean
 
   //  Get the offer on the venue with the same EAN if it exists
-  const offerEan = offer?.extraData?.ean
-  const offerVenueId = offer?.venue.id
-  const isProductBased = isOfferProductBased(offer)
   const publishedOfferWithSameEANQuery = useSWR(
-    isProductBased && offerEan && offerVenueId
-      ? [GET_ACTIVE_VENUE_OFFER_BY_EAN_QUERY_KEY, offerVenueId, offerEan]
+    isOfferProductBased(offer) && offerEan
+      ? [
+          GET_ACTIVE_VENUE_OFFER_BY_EAN_QUERY_KEY,
+          selectedPartnerVenue.id,
+          offerEan,
+        ]
       : null,
     ([, venueId, ean]) => api.getActiveVenueOfferByEan(venueId, ean),
     {

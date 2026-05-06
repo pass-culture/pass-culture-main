@@ -14,8 +14,6 @@ export const BOOKING_STATUS = {
   PENDING: 'pending',
 }
 
-const ALL_VENUES = 'all'
-
 const ALL_DATES = 'all'
 
 export const EMPTY_FILTER_VALUE = ''
@@ -30,9 +28,7 @@ export const DEFAULT_PRE_FILTERS = {
   bookingEndingDate: format(startOfDay(getToday()), FORMAT_ISO_DATE_ONLY),
   bookingStatusFilter: BookingStatusFilter.BOOKED,
   offerEventDate: ALL_DATES,
-  offerVenueId: ALL_VENUES,
   offererAddressId: ALL_OFFERER_ADDRESSES,
-  offerId: undefined,
 }
 
 export const BOOKING_STATUS_FILTER_OPTIONS: SelectOption[] = [
