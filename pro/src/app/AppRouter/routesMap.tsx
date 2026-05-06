@@ -136,6 +136,14 @@ export const routes: CustomRouteTree = [
     handle: {
       title: 'Page sur l’application',
     },
+    children: [
+      {
+        lazy: () => import('@/pages/VenueEdition/VenueEdition'),
+        loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+        path: '*',
+        title: 'Gérer ma page sur l’application',
+      },
+    ],
   },
   {
     lazy: () => import('@/pages/VenueEdition/VenueEdition'),
@@ -144,6 +152,14 @@ export const routes: CustomRouteTree = [
     handle: {
       title: 'Page dans ADAGE',
     },
+    children: [
+      {
+        lazy: () => import('@/pages/VenueEdition/VenueEdition'),
+        loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+        path: '*',
+        title: 'Gérer ma page sur ADAGE',
+      },
+    ],
   },
   {
     lazy: () => import('@/pages/VenueEdition/VenueEdition'),
@@ -152,6 +168,14 @@ export const routes: CustomRouteTree = [
     handle: {
       title: 'Page sur l’application',
     },
+    children: [
+      {
+        lazy: () => import('@/pages/VenueEdition/VenueEdition'),
+        loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+        path: '*',
+        title: 'Gérer ma page sur l’application',
+      },
+    ],
   },
   {
     lazy: () => import('@/pages/VenueSettings/VenueSettings'),
