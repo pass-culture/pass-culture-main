@@ -11,13 +11,13 @@ export const DownloadsMovedBanner = ({
   const bannerContent = isIndividual
     ? {
         title:
-          'Télécharger vos réservations dans l’onglet “Données d’activité” de votre Espace Administration accessible en haut à droite.',
+          'Télécharger vos réservations dans l’onglet “Données d’activité” de votre Espace administration accessible en haut à droite.',
         label: 'Accéder à la page de téléchargement des réservations',
         href: '/administration/donnees-activite/individuel',
       }
     : {
         title:
-          'Télécharger vos offres réservables dans l’onglet “Données d’activité” de votre Espace Administration accessible en haut à droite.',
+          'Télécharger vos offres réservables dans l’onglet “Données d’activité” de votre Espace administration accessible en haut à droite.',
         label: 'Accéder à la page de téléchargement des offres',
         href: '/administration/donnees-activite/collectif',
       }

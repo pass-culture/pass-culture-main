@@ -72,7 +72,7 @@ export const ReimbursementsTabs = ({
       type="links"
       items={tabs}
       selectedKey={activeStep}
-      navLabel="Sous menu - gestion financière"
+      navLabel="Sous menu - Gestion financière"
     />
   )
 }

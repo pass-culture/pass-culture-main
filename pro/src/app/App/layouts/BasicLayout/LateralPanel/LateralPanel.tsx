@@ -151,7 +151,7 @@ export const LateralPanel = ({
               to="/administration/remboursements"
               iconPosition={IconPositionEnum.LEFT}
               icon={strokeRepaymentIcon}
-              label="Espace Administration"
+              label="Espace administration"
               fullWidth
             />
           </div>

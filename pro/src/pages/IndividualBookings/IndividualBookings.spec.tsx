@@ -729,7 +729,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     expect(
       screen.queryByText(
-        'Télécharger vos réservations dans l’onglet “Données d’activité” de votre Espace Administration accessible en haut à droite.'
+        'Télécharger vos réservations dans l’onglet “Données d’activité” de votre Espace administration accessible en haut à droite.'
       )
     ).not.toBeInTheDocument()
 
@@ -756,7 +756,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     expect(
       screen.queryByText(
-        'Télécharger vos réservations dans l’onglet “Données d’activité” de votre Espace Administration accessible en haut à droite.'
+        'Télécharger vos réservations dans l’onglet “Données d’activité” de votre Espace administration accessible en haut à droite.'
       )
     ).toBeInTheDocument()
   })

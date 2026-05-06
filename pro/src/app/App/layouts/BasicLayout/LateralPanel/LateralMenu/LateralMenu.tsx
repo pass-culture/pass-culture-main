@@ -201,7 +201,7 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
           to="/remboursements"
           iconPosition={IconPositionEnum.LEFT}
           icon={strokeRepaymentIcon}
-          label="Espace Administration"
+          label="Espace administration"
           fullWidth
         />
       </div>

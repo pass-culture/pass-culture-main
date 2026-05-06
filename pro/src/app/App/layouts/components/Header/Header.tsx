@@ -59,7 +59,7 @@ export const Header = forwardRef(
     const isTablet = useMediaQuery(TABLET_MEDIA_QUERY)
 
     const adminButtonLabel = isAdminArea
-      ? 'Revenir à l’Espace Partenaire'
+      ? 'Revenir à l’Espace partenaire'
       : 'Espace administration'
 
     // In mobile mode, we don't use a button label, BUT we must have an aria-label in backup for assistive technologies

@@ -16,10 +16,10 @@ describe('Header', () => {
     ).toHaveAttribute('href', '/administration/remboursements')
   })
 
-  it('should show "Revenir à l’Espace Partenaire" button when isAdminArea is true', () => {
+  it('should show "Revenir à l’Espace partenaire" button when isAdminArea is true', () => {
     renderWithProviders(<Header isAdminArea />)
     expect(
-      screen.getByRole('link', { name: 'Revenir à l’Espace Partenaire' })
+      screen.getByRole('link', { name: 'Revenir à l’Espace partenaire' })
     ).toHaveAttribute('href', '/accueil')
   })
 
@@ -53,11 +53,11 @@ describe('Header', () => {
       )
     })
 
-    it('should NOT track "Revenir à l’Espace Partenaire" button click', async () => {
+    it('should NOT track "Revenir à l’Espace partenaire" button click', async () => {
       const user = userEvent.setup()
       renderWithProviders(<Header isAdminArea />)
       await user.click(
-        screen.getByRole('link', { name: 'Revenir à l’Espace Partenaire' })
+        screen.getByRole('link', { name: 'Revenir à l’Espace partenaire' })
       )
       expect(mockLogEvent).not.toHaveBeenCalled()
     })
