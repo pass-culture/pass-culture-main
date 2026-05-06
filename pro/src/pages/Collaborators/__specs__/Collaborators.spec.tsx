@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { ApiError, OffererMemberStatus } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
@@ -17,7 +17,7 @@ import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContai
 import { Component as Collaborators } from '../Collaborators'
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     getOffererMembers: vi.fn(),
     inviteMember: vi.fn(),
   },
@@ -57,9 +57,9 @@ const renderCollaborators = async (options?: RenderWithProvidersOptions) => {
 
 describe('Collaborators', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getOffererMembers').mockResolvedValue({ members: [] })
+    vi.spyOn(apiNew, 'getOffererMembers').mockResolvedValue({ members: [] })
 
-    vi.spyOn(api, 'inviteMember').mockResolvedValue(undefined)
+    vi.spyOn(apiNew, 'inviteMember').mockResolvedValue(undefined)
 
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
@@ -149,7 +149,7 @@ describe('Collaborators', () => {
   })
 
   it('should display api email error message', async () => {
-    vi.spyOn(api, 'inviteMember').mockRejectedValue(
+    vi.spyOn(apiNew, 'inviteMember').mockRejectedValue(
       new ApiError(
         { method: 'POST' } as ApiRequestOptions,
         {
@@ -182,7 +182,7 @@ describe('Collaborators', () => {
   })
 
   it('should display default error message on server error', async () => {
-    vi.spyOn(api, 'inviteMember').mockRejectedValue({})
+    vi.spyOn(apiNew, 'inviteMember').mockRejectedValue({})
 
     await renderCollaborators()
 
@@ -208,7 +208,7 @@ describe('Collaborators', () => {
 
 describe('ViewAllList', () => {
   it('should display button to show all members', async () => {
-    vi.spyOn(api, 'getOffererMembers').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOffererMembers').mockResolvedValue({
       members: [
         { email: 'email1@gmail.com', status: OffererMemberStatus.VALIDATED },
         { email: 'email2@gmail.com', status: OffererMemberStatus.VALIDATED },
@@ -258,7 +258,7 @@ describe('ViewAllList', () => {
   })
 
   it('should display validated and pending statuses correctly', async () => {
-    vi.spyOn(api, 'getOffererMembers').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOffererMembers').mockResolvedValue({
       members: [
         {
           email: 'validated@test.fr',
@@ -281,7 +281,7 @@ describe('ViewAllList', () => {
   })
 
   it('should hide show-more button when members count is exactly 10', async () => {
-    vi.spyOn(api, 'getOffererMembers').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOffererMembers').mockResolvedValue({
       members: Array.from({ length: 10 }, (_, index) => ({
         email: `user${index}@test.fr`,
         status: OffererMemberStatus.VALIDATED,

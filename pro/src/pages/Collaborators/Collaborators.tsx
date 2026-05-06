@@ -5,9 +5,9 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import { OffererMemberStatus } from '@/apiClient/v1'
+import { OffererMemberStatus } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { GET_MEMBERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
@@ -55,7 +55,7 @@ const Collaborators = () => {
     ([, offererIdParam]) =>
       !offererIdParam || !isSelectedOffererValidated
         ? null
-        : api.getOffererMembers(offererIdParam),
+        : apiNew.getOffererMembers({ path: { offerer_id: offererIdParam } }),
     { fallbackData: null }
   )
   const members = data?.members ?? []
@@ -80,7 +80,10 @@ const Collaborators = () => {
         return
       }
 
-      await api.inviteMember(offererId, { email: email })
+      await apiNew.inviteMember({
+        path: { offerer_id: offererId },
+        body: { email: email },
+      })
 
       members.unshift({
         email,
