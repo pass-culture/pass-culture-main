@@ -23,6 +23,15 @@ export const partnerRouteGroup: CustomRouteGroup = {
       },
     },
 
+    {
+      lazy: () => import('@/pages/Desk/Desk'),
+      loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+      path: '/guichet',
+      handle: {
+        title: 'Guichet',
+      },
+    },
+
     // -------------------------------------------------------------------------
     // Individual
 

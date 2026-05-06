@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form'
 import { apiNew } from '@/apiClient/api'
 import type { ApiError } from '@/apiClient/compat'
 import type { GetBookingResponse } from '@/apiClient/v1/new'
-import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
@@ -142,7 +142,8 @@ export const Desk = (): JSX.Element => {
   }
 
   return (
-    <BasicLayout mainHeading="Guichet">
+    <>
+      <MainHeading mainHeading={'Guichet'} />
       <p className={styles['desk-advice']}>
         Saisissez les contremarques présentées par les bénéficiaires afin de les
         valider ou de les invalider.
@@ -197,7 +198,7 @@ export const Desk = (): JSX.Element => {
           />
         </div>
       </Panel>
-    </BasicLayout>
+    </>
   )
 }
 
