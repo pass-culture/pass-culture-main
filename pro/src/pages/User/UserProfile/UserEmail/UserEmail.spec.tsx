@@ -1,12 +1,12 @@
 import { render, screen } from '@testing-library/react'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 
 import { UserEmail } from './UserEmail'
 
 describe('UserEmail', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getUserEmailPendingValidation').mockResolvedValue({
+    vi.spyOn(apiNew, 'getUserEmailPendingValidation').mockResolvedValue({
       newEmail: 'newEmail@example.com',
     })
   })

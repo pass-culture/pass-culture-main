@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { GET_USER_EMAIL_PENDING_VALIDATION } from '@/commons/config/swrQueryKeys'
 import { Button } from '@/design-system/Button/Button'
 import {
@@ -34,7 +34,7 @@ export const UserEmail = ({
 
   const { data: pendingEmailValidation } = useSWR(
     [GET_USER_EMAIL_PENDING_VALIDATION],
-    () => api.getUserEmailPendingValidation()
+    () => apiNew.getUserEmailPendingValidation()
   )
 
   return (

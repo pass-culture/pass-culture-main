@@ -1,10 +1,11 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { UserResetEmailBodyModel } from '@/apiClient/v1'
-import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
+import type { UserResetEmailBodyModel } from '@/apiClient/v1/new'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureCurrentUser } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -26,7 +27,7 @@ type UserEmailFormValues = {
 export const UserEmailForm = ({
   closeForm,
 }: UserEmailFormProps): JSX.Element => {
-  const { currentUser } = useCurrentUser()
+  const currentUser = useAppSelector(ensureCurrentUser)
 
   const initialValues: UserEmailFormValues = {
     email: '',
@@ -49,7 +50,7 @@ export const UserEmailForm = ({
 
   const onSubmit = async (values: UserResetEmailBodyModel) => {
     try {
-      await api.postUserEmail(values)
+      await apiNew.postUserEmail({ body: { ...values } })
       closeForm()
     } catch (error) {
       if (isErrorAPIError(error)) {
