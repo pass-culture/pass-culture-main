@@ -7,15 +7,7 @@ import styles from './RegistrationStepper.module.scss'
 export const RegistrationStepper = () => {
   const activeStep = useActiveStep()
 
-  const stepIds = [
-    REGISTRATION_STEP_IDS.SIGNUP,
-    REGISTRATION_STEP_IDS.STRUCTURE,
-    REGISTRATION_STEP_IDS.ACTIVITY,
-    REGISTRATION_STEP_IDS.VALIDATION,
-  ]
-  const activeStepIndex = stepIds.indexOf(activeStep as REGISTRATION_STEP_IDS)
-
-  const registrationSteps: Step[] = [
+  const steps: Step[] = [
     {
       id: REGISTRATION_STEP_IDS.SIGNUP,
       label: 'Votre compte',
@@ -32,7 +24,13 @@ export const RegistrationStepper = () => {
       id: REGISTRATION_STEP_IDS.VALIDATION,
       label: 'Validation',
     },
-  ].map((step, index) => ({
+  ]
+
+  const activeStepIndex = steps.findIndex(
+    ({ id }) => id === (activeStep as REGISTRATION_STEP_IDS)
+  )
+
+  const registrationSteps = steps.map((step, index) => ({
     ...step,
     disabled: index > activeStepIndex,
   }))
