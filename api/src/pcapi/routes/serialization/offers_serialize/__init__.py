@@ -397,7 +397,6 @@ class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     city: str | None
     departementCode: str | None
     id: int
-    isVirtual: bool  # TODO(xordoquy): remove `isVirtual` once the front is cleaned
     managingOfferer: GetOfferManagingOffererResponseModel
     name: str
     postalCode: str | None

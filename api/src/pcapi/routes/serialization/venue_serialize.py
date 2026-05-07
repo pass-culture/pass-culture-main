@@ -82,7 +82,6 @@ def get_current_pricing_point(
 
 
 class GetVenueResponseModel(HttpBodyModel):
-    isVirtual: bool = False  # TODO(xordoquy): remove `isVirtual` once the front is cleaned
     name: str
     bannerUrl: str | None
     contact: offerers_schemas.VenueContactModelV2 | None

@@ -198,16 +198,6 @@ describe('VenueEditionFormScreen', () => {
     })
   })
 
-  it('should mention "structure" instead of "lieu"', () => {
-    renderForm({ ...baseVenue, isVirtual: true })
-
-    expect(
-      screen.getByText(
-        /Cette structure vous permet uniquement de créer des offres numériques, elle/
-      )
-    ).toBeInTheDocument()
-  })
-
   describe('on readonly (VenueEditionReadOnly)', () => {
     it('should display readonly info', async () => {
       renderForm(
@@ -676,50 +666,11 @@ describe('VenueEditionFormScreen', () => {
     })
 
     it('should render the withdrawal details section', async () => {
-      renderForm({ ...baseVenue, isVirtual: false })
+      renderForm({ ...baseVenue })
 
       expect(
         await screen.findByText('Informations de retrait de vos offres')
       ).toBeInTheDocument()
-    })
-
-    describe('when the venue is virtual', () => {
-      it('should display a specific message', () => {
-        renderForm({ ...baseVenue, isVirtual: true })
-        expect(
-          screen.getByText(
-            /Cette structure vous permet uniquement de créer des offres numériques/
-          )
-        ).toBeInTheDocument()
-
-        expect(screen.queryAllByRole('input')).toHaveLength(0)
-      })
-
-      it('should diplay only some fields', async () => {
-        renderForm({ ...baseVenue, isVirtual: true })
-
-        await waitFor(() => {
-          expect(
-            screen.queryByTestId('wrapper-publicName')
-          ).not.toBeInTheDocument()
-        })
-
-        expect(
-          screen.queryByTestId('wrapper-description')
-        ).not.toBeInTheDocument()
-        expect(
-          screen.queryByText('Accessibilité du lieu')
-        ).not.toBeInTheDocument()
-        expect(
-          screen.queryByText('Informations de retrait de vos offres')
-        ).not.toBeInTheDocument()
-        expect(screen.queryByText('Contact')).not.toBeInTheDocument()
-        expect(
-          screen.queryByText(
-            'Cette adresse s’applique par défaut à toutes vos offres, vous pouvez la modifier à l’échelle de chaque offre.'
-          )
-        ).not.toBeInTheDocument()
-      })
     })
 
     describe('when the venue is not permanent', () => {

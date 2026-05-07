@@ -16,14 +16,7 @@ const SynchronizationsProviders = () => {
   )
   const venueProviders = venueProvidersQuery.data?.venueProviders ?? []
   return (
-    <>
-      {!venue.isVirtual && (
-        <SynchronizationConnexions
-          venueProviders={venueProviders}
-          venue={venue}
-        />
-      )}
-    </>
+    <SynchronizationConnexions venueProviders={venueProviders} venue={venue} />
   )
 }
 

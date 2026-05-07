@@ -30,7 +30,6 @@ const onSubmit = vi.fn()
 const defaultFormContext: SiretOrCommentFieldsProps['formContext'] = {
   isCaledonian: false,
   withSiret: true,
-  isVenueVirtual: false,
   siren: '123456789',
   isOpenToPublic: 'true',
   activity: 'someActivity' as VenueSettingsFormValues['activity'],
@@ -251,7 +250,7 @@ describe('SiretOrCommentFields', () => {
       expect(onSubmit).toHaveBeenCalledTimes(1)
     })
 
-    it('should display required message if siret is empty for non virtual venue', async () => {
+    it('should display required message if siret is empty', async () => {
       renderSiretOrComment(props)
 
       expect(
@@ -271,22 +270,6 @@ describe('SiretOrCommentFields', () => {
       expect(
         await screen.findByText('Veuillez renseigner un SIRET')
       ).toBeInTheDocument()
-    })
-
-    it('should not display required message if siret is empty for virtual venue', async () => {
-      renderSiretOrComment(props, {
-        ...defaultInitialValues,
-        siret: '',
-      })
-
-      expect(
-        screen.queryByText('Veuillez renseigner un SIRET')
-      ).not.toBeInTheDocument()
-      await userEvent.click(
-        screen.getByRole('button', {
-          name: 'Enregistrer',
-        })
-      )
     })
 
     it('user should not be able to enter non number characters', async () => {
@@ -321,7 +304,7 @@ describe('SiretOrCommentFields', () => {
       expect(siretInput.value).toEqual('123')
     })
 
-    it('should display too short message if siret is not 14 characters if venue is non virtual', async () => {
+    it('should display too short message if siret is not 14 characters', async () => {
       renderSiretOrComment(props)
 
       const siretInput = screen.getByLabelText('SIRET de la structure', {
@@ -342,7 +325,7 @@ describe('SiretOrCommentFields', () => {
       expect(errorMessage).toBeInTheDocument()
     })
 
-    it('should display error message if siret does not match siren if venue is non virtual', async () => {
+    it('should display error message if siret does not match siren', async () => {
       renderSiretOrComment(props)
 
       const siretInput = screen.getByLabelText('SIRET de la structure', {
@@ -361,36 +344,6 @@ describe('SiretOrCommentFields', () => {
         'Le code SIRET doit correspondre à un établissement de votre structure'
       )
       expect(errorMessage).toBeInTheDocument()
-    })
-  })
-
-  describe('should validate comment on submit', () => {
-    it('should display error message if comment empty', async () => {
-      const commentFormContext: SiretOrCommentFieldsProps['formContext'] = {
-        ...defaultFormContext,
-        withSiret: false,
-        isVenueVirtual: true,
-      }
-      renderSiretOrComment(
-        {
-          ...props,
-          formContext: commentFormContext,
-        },
-        {
-          ...defaultInitialValues,
-          siret: '',
-        }
-      )
-
-      await userEvent.click(
-        screen.getByRole('button', {
-          name: 'Enregistrer',
-        })
-      )
-
-      expect(
-        screen.getByText('Veuillez renseigner un commentaire')
-      ).toBeInTheDocument()
     })
   })
 })

@@ -104,7 +104,6 @@ describe('GeneralInformation', () => {
     it('should render the administrative information section with SIRET and address fields', async () => {
       renderGeneralInformation({
         id: 1,
-        isVirtual: false,
         siret: '12345678901234',
       })
 
@@ -117,7 +116,7 @@ describe('GeneralInformation', () => {
     })
 
     it('should toggle manual address when clicking the manual address button', async () => {
-      renderGeneralInformation({ id: 1, isVirtual: false })
+      renderGeneralInformation({ id: 1 })
 
       await userEvent.click(
         await screen.findByText("Entrer l'adresse manuellement")
@@ -127,27 +126,11 @@ describe('GeneralInformation', () => {
     })
 
     it('should fill address fields when an address is selected', async () => {
-      renderGeneralInformation({ id: 1, isVirtual: false })
+      renderGeneralInformation({ id: 1 })
 
       await userEvent.click(await screen.findByText('Sélectionner une adresse'))
 
       expect(screen.getByTestId('address-fields')).toBeInTheDocument()
-    })
-  })
-
-  describe('when the venue is virtual', () => {
-    it('should not render SIRET or withdrawal fields', async () => {
-      renderGeneralInformation({ id: 1, isVirtual: true })
-
-      await waitFor(() => {
-        expect(
-          screen.queryByLabelText(/SIRET de la structure/)
-        ).not.toBeInTheDocument()
-        expect(screen.queryByLabelText('Nom public')).not.toBeInTheDocument()
-        expect(
-          screen.queryByText('Informations de retrait de vos offres')
-        ).not.toBeInTheDocument()
-      })
     })
   })
 

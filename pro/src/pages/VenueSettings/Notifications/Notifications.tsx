@@ -23,7 +23,6 @@ const Notifications = () => {
 
   const formContext: VenueSettingsFormContext = {
     isCaledonian: venue.isCaledonian,
-    isVenueVirtual: venue.isVirtual ?? false,
     siren: venue.managingOfferer?.siren,
     withSiret: Boolean(venue.siret),
   }
@@ -60,18 +59,15 @@ const Notifications = () => {
                 label="Adresse email"
                 type="email"
                 description="Format : email@exemple.com"
-                disabled={venue.isVirtual}
                 error={errors.bookingEmail?.message}
               />
             </FormLayout.Row>
-            {!venue.isVirtual && (
-              <FormLayout.Row>
-                <TipsBanner>
-                  Cette adresse s’applique par défaut à toutes vos offres, vous
-                  pouvez la modifier à l’échelle de chaque offre.
-                </TipsBanner>
-              </FormLayout.Row>
-            )}
+            <FormLayout.Row>
+              <TipsBanner>
+                Cette adresse s’applique par défaut à toutes vos offres, vous
+                pouvez la modifier à l’échelle de chaque offre.
+              </TipsBanner>
+            </FormLayout.Row>
           </FormLayout.Section>
         </FormLayout>
         <VenueFormActionBar isSubmitting={isSubmitting} />

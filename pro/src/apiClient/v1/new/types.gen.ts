@@ -2366,10 +2366,6 @@ export type GetEducationalOffererVenueResponseModel = {
      */
     id: number;
     /**
-     * Isvirtual
-     */
-    isVirtual?: boolean;
-    /**
      * Mentaldisabilitycompliant
      */
     mentalDisabilityCompliant?: boolean | null;
@@ -2886,10 +2882,6 @@ export type GetOfferVenueResponseModel = {
      * Id
      */
     id: number;
-    /**
-     * Isvirtual
-     */
-    isVirtual: boolean;
     managingOfferer: GetOfferManagingOffererResponseModel;
     /**
      * Mentaldisabilitycompliant
@@ -3163,10 +3155,6 @@ export type GetOffererVenueResponseModel = {
      * Ispermanent
      */
     isPermanent: boolean;
-    /**
-     * Isvirtual
-     */
-    isVirtual?: boolean;
     lastCollectiveDmsApplication: DMSApplicationForEAC | null;
     /**
      * Name
@@ -3554,10 +3542,6 @@ export type GetVenueResponseModel = {
      * Isvalidated
      */
     isValidated: boolean;
-    /**
-     * Isvirtual
-     */
-    isVirtual?: boolean;
     lastCollectiveDmsApplication: DMSApplicationForEAC | null;
     location: LocationResponseModelV2;
     managingOfferer: GetVenueManagingOffererResponseModel;
@@ -6501,10 +6485,6 @@ export type VenueListItemResponseModel = {
      * Isvalidated
      */
     isValidated: boolean;
-    /**
-     * Isvirtual
-     */
-    isVirtual: boolean;
     location: LocationResponseModelV2 | null;
     /**
      * Managingoffererid
