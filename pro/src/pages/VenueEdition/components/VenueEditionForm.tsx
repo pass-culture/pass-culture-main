@@ -315,7 +315,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                     ),
                   ]}
                   label="Activité principale"
-                  disabled={venue.isVirtual}
                   error={methods.formState.errors.activity?.message}
                   required
                 />
@@ -352,13 +351,11 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
               )}
 
               <FormLayout.Row>
-                {!venue.isVirtual && (
-                  <p className={styles['description-helper']}>
-                    Vous pouvez décrire les différentes actions que vous menez,
-                    votre histoire ou préciser des informations sur votre
-                    activité.
-                  </p>
-                )}
+                <p className={styles['description-helper']}>
+                  Vous pouvez décrire les différentes actions que vous menez,
+                  votre histoire ou préciser des informations sur votre
+                  activité.
+                </p>
                 <TextArea
                   label="Description"
                   description="Par exemple : mon établissement propose des spectacles, de l’improvisation..."

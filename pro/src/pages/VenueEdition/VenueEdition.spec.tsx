@@ -146,7 +146,7 @@ describe('VenueEdition', () => {
     beforeEach(() => {
       localStorage.removeItem('PASS_CULTURE_HAS_SEEN_VOLUNTEERING_SECTION')
     })
-    it('should not let choose an other partner page when there is only one partner page', async () => {
+    it('should not let choose another partner page when there is only one partner page', async () => {
       vi.spyOn(api, 'getVenues').mockResolvedValue({
         venues: [
           makeVenueListItem({

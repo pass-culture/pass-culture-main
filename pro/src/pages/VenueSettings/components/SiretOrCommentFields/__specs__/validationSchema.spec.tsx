@@ -17,7 +17,6 @@ describe('SiretOrCommentValidationSchema', () => {
     isCaledonian: false,
     withSiret: true,
     siren: '123456789',
-    isVenueVirtual: false,
   }
 
   const baseFormValues: SiretOrCommentFormValues = {
@@ -128,21 +127,24 @@ describe('SiretOrCommentValidationSchema', () => {
       },
       context: {
         ...baseContext,
-        isVenueVirtual: true,
       },
       expectedErrors: [],
     },
     {
-      description: 'comment error with required',
+      description: 'siret error with no siret nor comment',
       formValues: {
         ...baseFormValues,
+        siret: '',
         comment: '',
       },
       context: {
         ...baseContext,
-        isVenueVirtual: true,
       },
-      expectedErrors: ['Veuillez renseigner un commentaire'],
+      expectedErrors: [
+        'Veuillez renseigner un SIRET',
+        'Le SIRET doit comporter 14 caractères',
+        'Le code SIRET doit correspondre à un établissement de votre structure',
+      ],
     },
     {
       description: 'venue without siret',

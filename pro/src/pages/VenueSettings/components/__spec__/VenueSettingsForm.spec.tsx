@@ -48,7 +48,6 @@ const secondVenueProvider = {
 const defaultFormContext: VenueSettingsFormContext = {
   isCaledonian: false,
   withSiret: true,
-  isVenueVirtual: false,
   siren: '123456789',
 }
 

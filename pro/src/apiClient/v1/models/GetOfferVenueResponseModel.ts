@@ -9,7 +9,6 @@ export type GetOfferVenueResponseModel = {
   city?: string | null;
   departementCode?: string | null;
   id: number;
-  isVirtual: boolean;
   managingOfferer: GetOfferManagingOffererResponseModel;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;

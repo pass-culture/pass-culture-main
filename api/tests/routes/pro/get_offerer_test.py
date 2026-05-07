@@ -100,7 +100,6 @@ class GetOffererTest:
                     else None,
                     "id": venue.id,
                     "isPermanent": venue.isPermanent,
-                    "isVirtual": False,  # TODO(xordoquy): remove `isVirtual` once the front is cleaned
                     "hasAdageId": bool(venue.adageId),
                     "hasCreatedOffer": venue.has_individual_offers or venue.has_collective_offers,
                     "hasPartnerPage": False,

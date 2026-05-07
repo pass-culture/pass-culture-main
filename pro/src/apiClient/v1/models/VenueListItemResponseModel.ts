@@ -19,7 +19,6 @@ export type VenueListItemResponseModel = {
   isCaledonian: boolean;
   isPermanent: boolean;
   isValidated: boolean;
-  isVirtual: boolean;
   location: (LocationResponseModelV2 | null);
   managingOffererId: number;
   mentalDisabilityCompliant: (boolean | null);
