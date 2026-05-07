@@ -21,7 +21,6 @@ vi.mock('@/apiClient/api', () => {
   return {
     api: {
       listOfferersNames: vi.fn().mockReturnValue({}),
-      deleteDraftOffers: vi.fn(),
     },
   }
 })
