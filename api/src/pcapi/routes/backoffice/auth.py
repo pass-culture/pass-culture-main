@@ -50,7 +50,7 @@ def login() -> response_utils.BackofficeResponse:
         login_user(local_admin, remember=True)
         return werkzeug.utils.redirect(url_for(".home"))
 
-    redirect_uri = url_for(".authorize", _external=True)
+    redirect_uri = url_for(".authorize")
     return backoffice_oauth.google.authorize_redirect(redirect_uri)
 
 
