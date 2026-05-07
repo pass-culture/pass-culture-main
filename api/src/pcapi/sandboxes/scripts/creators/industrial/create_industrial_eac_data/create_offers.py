@@ -14,8 +14,6 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
-from pcapi.core.geography import factories as geography_factories
-from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users import factories as user_factory
@@ -29,72 +27,6 @@ from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 from pcapi.utils.image_conversion import DO_NOT_CROP
-
-
-class LocationOption(typing.TypedDict):
-    name: str
-    interventionArea: typing.NotRequired[list[str]]
-    locationType: educational_models.CollectiveLocationType
-    locationComment: typing.NotRequired[str]
-    isManualEdition: typing.NotRequired[bool]
-    street: typing.NotRequired[str]  # used in the Address model
-    isLocatedAtVenue: typing.NotRequired[bool]  # True in the case offer.offererAddress = offer.venue.offererAddress
-
-
-def get_location_options() -> list[LocationOption]:
-    return [
-        {
-            "name": "La culture dans la structure de l'acteur",
-            "locationType": educational_models.CollectiveLocationType.ADDRESS,
-            "isLocatedAtVenue": True,
-        },
-        {
-            "name": "La culture dans l'école",
-            "interventionArea": ["75", "92", "93", "94", "95"],
-            "locationType": educational_models.CollectiveLocationType.SCHOOL,
-        },
-        {
-            "name": "La culture à une adresse précise (avec edition manuelle)",
-            "locationType": educational_models.CollectiveLocationType.ADDRESS,
-            "isManualEdition": True,
-            "street": "35 Bd de Sébastopol",
-        },
-        {
-            "name": "La culture à une adresse précise",
-            "locationType": educational_models.CollectiveLocationType.ADDRESS,
-            "street": "35 Bd de Sébastopol",
-        },
-        {
-            "name": "La culture dans un lieu à déterminer",
-            "interventionArea": ["75", "92", "93", "94", "95"],
-            "locationType": educational_models.CollectiveLocationType.TO_BE_DEFINED,
-            "locationComment": "A coté de la mairie",
-        },
-    ]
-
-
-def _get_or_create_offerer_address(
-    venue: offerers_models.Venue,
-    location_option: LocationOption,
-    managing_offerer: offerers_models.Offerer,
-    oa_label: str,
-) -> offerers_models.OffererAddress | None:
-    if location_option["locationType"] != educational_models.CollectiveLocationType.ADDRESS:
-        return None
-
-    if location_option.get("isLocatedAtVenue", False):
-        return venue.offererAddress
-
-    factory = (
-        geography_factories.ManualAddressFactory
-        if location_option.get("isManualEdition", False)
-        else geography_factories.AddressFactory
-    )
-    address = factory(street=location_option["street"])
-    offerer_address = offerers_factories.OfferLocationFactory.create(
-        label=oa_label, address=address, offerer=managing_offerer
-    )
-    return offerer_address
 
 
 @log_func_duration
@@ -183,24 +115,6 @@ def create_eac_offers(
     venue_public_api = next(v for v in offerer.managedVenues if "PUBLIC_API" in v.name)
     create_collective_offers_with_different_displayed_status(
         institutions=institutions, domains=domains, venue=venue_public_api, provider=provider
-    )
-
-    # eac_with_addresses_cases
-    offerer_for_addresses = next(o for o in offerers if o.name == "eac_with_addresses_cases")
-    provider_for_addresses = create_collective_api_provider(offerer_for_addresses.managedVenues)
-
-    venue_pc_pro_for_addresses = next(v for v in offerer_for_addresses.managedVenues if "PC_PRO" in v.name)
-    create_collective_offers_with_different_locations(
-        institutions=institutions, domains=domains, venue=venue_pc_pro_for_addresses, provider=None
-    )
-    create_collective_offer_templates_with_different_locations(domains=domains, venue=venue_pc_pro_for_addresses)
-
-    venue_public_api_for_addresses = next(v for v in offerer_for_addresses.managedVenues if "PUBLIC_API" in v.name)
-    create_collective_offers_with_different_locations(
-        institutions=institutions,
-        domains=domains,
-        venue=venue_public_api_for_addresses,
-        provider=provider_for_addresses,
     )
 
     create_complete_collective_offers_with_template()
@@ -818,85 +732,6 @@ def create_collective_offer_templates_with_different_displayed_status(
             educational_domains=[next(domains_iterator)],
             bookingEmails=["toto@totoland.com"],
             formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
-        )
-
-
-def _get_offerer_address(
-    # offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
-    offer_name: str,
-    is_template: bool,
-    venue: offerers_models.Venue,
-    location_option: LocationOption,
-    offerer: offerers_models.Offerer,
-) -> offerers_models.OffererAddress | None:
-    oa_label = f"OA pour l'offre {offer_name}"
-    if is_template:
-        oa_label += " (template)"
-
-    return _get_or_create_offerer_address(
-        venue=venue, location_option=location_option, managing_offerer=offerer, oa_label=oa_label
-    )
-
-
-def create_collective_offers_with_different_locations(
-    *,
-    institutions: list[educational_models.EducationalInstitution],
-    domains: list[educational_models.EducationalDomain],
-    venue: offerers_models.Venue,
-    provider: providers_models.Provider | None,
-) -> None:
-    domains_iterator = cycle(domains)
-    institution_iterator = cycle(institutions)
-
-    for location_option in get_location_options():
-        name = f"{location_option['name']}{' (public api)' if provider is not None else ''}"
-        offerer_address = _get_offerer_address(
-            offer_name=name,
-            is_template=False,
-            venue=venue,
-            location_option=location_option,
-            offerer=venue.managingOfferer,
-        )
-
-        educational_factories.PublishedCollectiveOfferFactory.create(
-            name=name,
-            educational_domains=[next(domains_iterator)],
-            venue=venue,
-            bookingEmails=["toto@totoland.com"],
-            institution=next(institution_iterator),
-            formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
-            provider=provider,
-            interventionArea=location_option.get("interventionArea", []),
-            locationType=location_option["locationType"],
-            locationComment=location_option.get("locationComment"),
-            offererAddress=offerer_address,
-        )
-
-
-def create_collective_offer_templates_with_different_locations(
-    *, domains: list[educational_models.EducationalDomain], venue: offerers_models.Venue
-) -> None:
-    domains_iterator = cycle(domains)
-
-    for location_option in get_location_options():
-        offerer_address = _get_offerer_address(
-            offer_name=location_option["name"],
-            is_template=True,
-            venue=venue,
-            location_option=location_option,
-            offerer=venue.managingOfferer,
-        )
-
-        educational_factories.CollectiveOfferTemplateFactory.create(
-            name=location_option["name"],
-            venue=venue,
-            educational_domains=[next(domains_iterator)],
-            bookingEmails=["toto@totoland.com"],
-            formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
-            interventionArea=location_option.get("interventionArea", []),
-            locationType=location_option["locationType"],
-            locationComment=location_option.get("locationComment"),
-            offererAddress=offerer_address,
         )
 
 
